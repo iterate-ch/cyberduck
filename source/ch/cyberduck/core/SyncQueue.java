@@ -72,7 +72,7 @@ public class SyncQueue extends Queue {
 		}
 	}
 
-	private void addLocalChilds(List childs, Path p) {
+	private List addLocalChilds(List childs, Path p) {
 		if(p.getLocal().exists()) {
 			if(!childs.contains(p)) {
 				childs.add(p);
@@ -87,9 +87,10 @@ public class SyncQueue extends Queue {
 				}
 			}
 		}
+        return childs;
 	}
 
-	private void addRemoteChilds(List childs, Path p) {
+	private List addRemoteChilds(List childs, Path p) {
 		if(p.getRemote().exists()) {
 			if(!childs.contains(p)) {
 				childs.add(p);
@@ -103,11 +104,12 @@ public class SyncQueue extends Queue {
 				}
 			}
 		}
+        return childs;
 	}
 
 	protected List getChilds(List childs, Path root) {
-		this.addRemoteChilds(childs, root);
-		this.addLocalChilds(childs, root);
+		childs = this.addRemoteChilds(childs, root);
+		childs = this.addLocalChilds(childs, root);
 		return childs;
 	}
 

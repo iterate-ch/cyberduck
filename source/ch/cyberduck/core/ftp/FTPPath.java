@@ -73,7 +73,7 @@ public class FTPPath extends Path {
 	private FTPSession session;
 
 	/**
-	 * @param session The connection to work with for regular file operations
+	 * @param s The connection to work with for regular file operations
 	 * @param parent  The parent directory relative to this file
 	 * @param name    The filename of this path
 	 */
@@ -93,7 +93,7 @@ public class FTPPath extends Path {
 	}
 
 	/**
-	 * @param session The connection to work with for regular file operations
+	 * @param s The connection to work with for regular file operations
 	 * @param parent  The parent directory relative to this file
 	 * @param file    The corresponding local file to the remote path
 	 */

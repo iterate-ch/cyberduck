@@ -312,7 +312,7 @@ public class Host {
 	 * @param port The port number to connect to or -1 to use the default port for this protocol
 	 */
 	public void setPort(int port) {
-		this.port = port != -1 ? port : this.getDefaultPort(this.getProtocol());
+		this.port = port != -1 ? port : getDefaultPort(this.getProtocol());
 	}
 
 	public int getPort() {

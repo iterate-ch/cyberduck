@@ -143,7 +143,12 @@ public abstract class Path {
 	}
 
 	public void setPath(String p) {
-		this.path = p;
+        if(p.charAt(p.length()-1) == '/') {
+            this.path = p.substring(0, p.length()-1);   
+        }
+        else {
+            this.path = p;
+        }
 	}
 
 	public abstract void reset();
@@ -155,15 +160,17 @@ public abstract class Path {
 	 */
 	public Path getParent() {
 		if(null == parent) {
-			int index = this.getAbsolute().lastIndexOf('/');
-			String absolute = null;
-			if(index > 0) {
-				absolute = this.getAbsolute().substring(0, index);
+            int index = this.getAbsolute().length()-1;
+            if(this.getAbsolute().charAt(index)=='/') {
+                index--;
+            }
+            int cut = this.getAbsolute().lastIndexOf('/', index);
+			if(cut != -1) {
+                this.parent = PathFactory.createPath(this.getSession(), this.getAbsolute().substring(0, cut));
 			}
 			else {//if (index == 0) //parent is root
-				absolute = "/";
+                this.parent = PathFactory.createPath(this.getSession(), "/");
 			}
-			this.parent = PathFactory.createPath(this.getSession(), absolute);
 		}
 		return this.parent;
 	}

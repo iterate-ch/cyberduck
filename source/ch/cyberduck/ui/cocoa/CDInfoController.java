@@ -169,6 +169,9 @@ public class CDInfoController extends CDController {
 			if(this.numberOfFiles() > 1) {
 				this.filenameField.setEnabled(false);
 			}
+			else {
+				this.filenameField.setEnabled(true);
+			}
 			this.pathField.setStringValue(file.getParent().getAbsolute());
 			this.groupField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
 			                               file.attributes.getGroup());

@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableArray;
@@ -295,6 +296,9 @@ public abstract class Queue extends Observable {
 	}
 	
 	public String getSizeAsString() {
+		if(0 == this.getSize()) {
+			return NSBundle.localizedString("Unknown size", "");
+		}
 		return Status.getSizeAsString(this.getSize());
 	}
 	

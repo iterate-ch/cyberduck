@@ -114,18 +114,13 @@ public class CDBrowserController extends CDController implements Observer {
 		Object userObj = args.objectForKey("Username");
 		if(userObj != null) {
 			host.setCredentials((String)args.objectForKey("Username"), (String)args.objectForKey("Password"));
-		}
-		this.mount(host);
-        while(!this.isMounted()) {
-            try {
-                Thread.sleep(500);
-            }
-            catch(InterruptedException e) {
-                log.error(e.getMessage());
-            }
         }
-		return null;
-	}
+		this.init(host);
+        Session session = SessionFactory.createSession(host);
+		session.addObserver((Observer)this);
+        session.mount();
+        return null;
+    }
 	
 	public Object handleDisconnectScriptCommand(NSScriptCommand command) {
 		log.debug("handleDisconnectScriptCommand:"+command);
@@ -244,20 +239,9 @@ public class CDBrowserController extends CDController implements Observer {
 											   (String)args.objectForKey("Path"));
 			path.setLocal(new Local((String)args.objectForKey("Local")));
 			path.attributes.setType(Path.DIRECTORY_TYPE);
-            Thread session = new Thread("Session") {
-                public void run() {
-					for(Iterator i = new SyncQueue(path).getChilds().iterator(); i.hasNext(); ) {
-						((Path)i.next()).sync();
-					}
-				}
-			};
-			session.start();
-            try {
-                session.join();
-            }
-            catch (InterruptedException e) {
-                log.error(e.getMessage());
-            }
+			for(Iterator i = new SyncQueue(path).getChilds().iterator(); i.hasNext(); ) {
+				((Path)i.next()).sync();
+			}
             //			Queue queue = new SyncQueue(path);
 			//			queue.process(false, false);
 		}
@@ -280,20 +264,9 @@ public class CDBrowserController extends CDController implements Observer {
 			if(nameObj != null) {
 				path.setLocal(new Local(path.getLocal().getParent(), (String)nameObj));
 			}
-            Thread session = new Thread("Session") {
-                public void run() {
-					for(Iterator i = new DownloadQueue(path).getChilds().iterator(); i.hasNext(); ) {
-                        ((Path)i.next()).download();
-                    }
-                }
-            };
-            session.start();
-            try {
-                session.join();
-            }
-            catch (InterruptedException e) {
-                log.error(e.getMessage());
-            }
+			for(Iterator i = new DownloadQueue(path).getChilds().iterator(); i.hasNext(); ) {
+				((Path)i.next()).download();
+			}
             //			Queue queue = new DownloadQueue(path);
 			//			queue.processs(false, false);
 		}
@@ -316,20 +289,9 @@ public class CDBrowserController extends CDController implements Observer {
 			if(nameObj != null) {
 				path.setPath(this.workdir().getAbsolute(), (String)nameObj);
 			}
-            Thread session = new Thread("Session") {
-                public void run() {
-					for(Iterator i = new UploadQueue(path).getChilds().iterator(); i.hasNext(); ) {
-						((Path)i.next()).upload();
-					}
-				}
-			};
-            session.start();
-            try {
-                session.join();
-            }
-            catch (InterruptedException e) {
-                log.error(e.getMessage());
-            }
+			for(Iterator i = new UploadQueue(path).getChilds().iterator(); i.hasNext(); ) {
+				((Path)i.next()).upload();
+			}
 			//			Queue queue = new UploadQueue(path);
 			//			queue.processs(false, false);
 		}
@@ -476,6 +438,9 @@ public class CDBrowserController extends CDController implements Observer {
 						toolbar.validateVisibleItems();
 					}
 				});
+				File bookmark = new File(HISTORY_FOLDER+"/"+((Session)o).getHost().getHostname()+".duck");
+				CDBookmarkTableDataSource.instance().exportBookmark(((Session)o).getHost(),
+																	bookmark);
 			}
 			else if(msg.getTitle().equals(Message.CLOSE)) {
 				this.progressIndicator.stopAnimation(this);
@@ -1549,23 +1514,21 @@ public class CDBrowserController extends CDController implements Observer {
 	private Path workdir() {
 		return this.workdir;
 	}
+	
+	private void init(Host host) {
+		TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(this.logView));
+		this.window().setTitle(host.getProtocol()+":"+host.getCredentials().getUsername()+"@"+host.getHostname());
+		this.window().setRepresentedFilename(new File(HISTORY_FOLDER+"/"+host.getHostname()+".duck").getAbsolutePath());
+	}
 
 	public Session mount(Host host) {
 		log.debug("mount:"+host);
 		if(this.unmount(new NSSelector("mountSheetDidEnd",
 		    new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
 		)) {
-			this.window().setTitle(host.getProtocol()+":"+host.getCredentials().getUsername()+"@"+host.getHostname());
-			this.infoLabel.setStringValue("");
-			File bookmark = new File(HISTORY_FOLDER+"/"+host.getHostname()+".duck");
-			CDBookmarkTableDataSource.instance().exportBookmark(host,
-			    bookmark);
-			this.window().setRepresentedFilename(bookmark.getAbsolutePath());
-			TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(this.logView));
-
+			this.init(host);
 			final Session session = SessionFactory.createSession(host);
 			session.addObserver((Observer)this);
-			
 			if(session instanceof ch.cyberduck.core.sftp.SFTPSession) {
 				host.setHostKeyVerificationController(new CDHostKeyController(this));
 			}
