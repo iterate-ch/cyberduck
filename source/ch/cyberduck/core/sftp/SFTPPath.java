@@ -385,6 +385,7 @@ public class SFTPPath extends Path {
 			}
 			SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
 			this.status.setCurrent(0); // sftp resume not possible
+			this.status.setSize(p.getAttributes().getSize().intValue());
 			SftpFileInputStream in = new SftpFileInputStream(p);
 			if (in == null) {
 				throw new IOException("Unable opening data stream");

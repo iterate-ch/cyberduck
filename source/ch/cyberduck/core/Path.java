@@ -64,7 +64,12 @@ public abstract class Path {
 		log.debug("Path");
 		this.setPath((String) dict.objectForKey("Remote"));
 		this.setLocal(new Local((String)dict.objectForKey("Local")));
-		this.attributes = new Attributes((NSDictionary)dict.objectForKey("Attributes"));
+		Object attributesObj = dict.objectForKey("Attributes");
+		if(attributesObj != null)
+			this.attributes = new Attributes((NSDictionary)attributesObj);
+		Object statusObj = dict.objectForKey("Status");
+		if(statusObj != null)
+			this.status = new Status((NSDictionary)statusObj);
 	}
 
 	public NSDictionary getAsDictionary() {
@@ -72,6 +77,7 @@ public abstract class Path {
 		dict.setObjectForKey(this.getAbsolute(), "Remote");
 		dict.setObjectForKey(this.getLocal().toString(), "Local");
 		dict.setObjectForKey(this.attributes.getAsDictionary(), "Attributes");
+		dict.setObjectForKey(this.status.getAsDictionary(), "Status");
 		return dict;
 	}
 
@@ -373,7 +379,7 @@ public abstract class Path {
 		BufferedWriter out = new BufferedWriter(writer);
 
 		this.status.reset();
-
+		
 		long current = this.status.getCurrent();
 		boolean complete = false;
 		// read/write a line at a time

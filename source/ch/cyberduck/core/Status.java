@@ -21,6 +21,9 @@ package ch.cyberduck.core;
 import java.io.Serializable;
 import java.util.Observable;
 
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableDictionary;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -43,7 +46,7 @@ public class Status extends Observable implements Serializable {
 	/**
 	 * The number of transfered bytes. Must be less or equals size.
 	 */
-	private long current = 0;
+	private long current = -1;
 	/**
 	 * Indiciating wheter the transfer has been cancled by the user.
 	 */
@@ -52,7 +55,23 @@ public class Status extends Observable implements Serializable {
 	 * Indicates that the last action has been completed.
 	 */
 	private boolean complete = false;
+	
+	public Status() {
+		super(); //
+	}
 
+	public Status(NSDictionary dict) {
+		this.size = Integer.parseInt((String)dict.objectForKey("Size"));
+		this.current = Integer.parseInt((String)dict.objectForKey("Current"));
+	}
+	
+	public NSDictionary getAsDictionary() {
+		NSMutableDictionary dict = new NSMutableDictionary();
+		dict.setObjectForKey(this.size+"", "Size");
+		dict.setObjectForKey(this.current+"", "Current");
+		return dict;
+	}
+	
 	/**
 	 * Notify all observers
 	 * @param arg The message to send to the observers
@@ -75,6 +94,7 @@ public class Status extends Observable implements Serializable {
 	 * @return length the size of file in bytes.
 	 */
 	public long getSize() {
+		log.debug(this.toString()+">getSize:"+this.size);//@todo remove
 		return size;
 	}
 
@@ -119,6 +139,7 @@ public class Status extends Observable implements Serializable {
 	}
 
 	public long getCurrent() {
+		log.debug(this.toString()+">getCurrent:"+this.current);//@todo remove
 		return this.current;
 	}
 
@@ -143,6 +164,5 @@ public class Status extends Observable implements Serializable {
 	public void reset() {
 		this.complete = false;
 		this.canceled = false;
-		this.current = 0;
 	}
 }

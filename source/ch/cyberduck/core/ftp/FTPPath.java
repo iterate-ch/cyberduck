@@ -343,6 +343,7 @@ public class FTPPath extends Path {
 			if (!this.isFile())
 				throw new IOException("Download must be a file.");
 			this.session.check();
+			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
 			if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 				this.session.FTP.setTransferType(FTPTransferType.BINARY);
 				this.getLocal().getParentFile().mkdirs();

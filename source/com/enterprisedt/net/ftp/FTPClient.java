@@ -52,6 +52,9 @@ import org.apache.log4j.Logger;
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.30  2004/03/21 15:40:23  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.29  2004/03/20 18:16:34  dkocher
  *        *** empty log message ***
  *
@@ -726,7 +729,7 @@ public class FTPClient {
 	 */
 	public void noop() throws IOException, FTPException {
 		String reply = control.sendCommand("NOOP");
-		control.validateReply(reply, "200");
+		lastValidReply = control.validateReply(reply, "200");
 	}
 	
 	/**

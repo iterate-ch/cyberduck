@@ -109,7 +109,7 @@ public class Queue extends Observable implements Observer { //Thread {
 
 	private long timeLeft = -1;
 	private long current = -1;
-	private long size = 0;
+	private long size = -1;
 
 	private String status = "";
 	private String error = "";
@@ -143,13 +143,13 @@ public class Queue extends Observable implements Observer { //Thread {
 		NSArray items = (NSArray) dict.objectForKey("Items");
 		if(null != items) {
 			for (int i = 0; i < items.count(); i++) {
-				this.jobs.add(PathFactory.createPath(s, (NSDictionary) items.objectAtIndex(i)));
+				this.add(PathFactory.createPath(s, (NSDictionary) items.objectAtIndex(i)));
 			}
 		}
 		this.kind = Integer.parseInt((String)dict.objectForKey("Kind"));
 		this.status = (String) dict.objectForKey("Status");
-		this.size = Integer.parseInt((String)dict.objectForKey("Size"));
-		this.current = Integer.parseInt((String)dict.objectForKey("Current"));
+//		this.size = Integer.parseInt((String)dict.objectForKey("Size"));
+//		this.current = Integer.parseInt((String)dict.objectForKey("Current"));
 		this.init();
 	}
 
@@ -157,8 +157,8 @@ public class Queue extends Observable implements Observer { //Thread {
 		NSMutableDictionary dict = new NSMutableDictionary();
 		dict.setObjectForKey(this.status, "Status");
 		dict.setObjectForKey(this.kind+"", "Kind");
-		dict.setObjectForKey(this.getSize()+"", "Size");
-		dict.setObjectForKey(this.getCurrent()+"", "Current");
+//		dict.setObjectForKey(this.getSize()+"", "Size");
+//		dict.setObjectForKey(this.getCurrent()+"", "Current");
 		dict.setObjectForKey(this.getRoot().getHost().getAsDictionary(), "Host");
 		NSMutableArray roots = new NSMutableArray();
 //		for (Iterator iter = roots.iterator() ; iter.hasNext() ;) {
@@ -358,12 +358,11 @@ public class Queue extends Observable implements Observer { //Thread {
 	 * @return The cummulative file size of all files remaining in the this
 	 */
 	public long getSize() {
-		return this.size;
-//		return this.calculateTotalSize();
+		return this.calculateTotalSize();
 	}
 
 
-	/*private long calculateTotalSize() {
+	private long calculateTotalSize() {
 		long value = 0;
 		for (Iterator iter = jobs.iterator() ; iter.hasNext() ;) {
 			value += ((Path) iter.next()).status.getSize();
@@ -371,8 +370,9 @@ public class Queue extends Observable implements Observer { //Thread {
 		if (value > 0)
 			this.size = value;
 		log.debug("Total:"+size);
+		log.debug(this.toString()+">calculateTotalSize:"+this.size);//@todo remove
 		return this.size;
-	}*/
+	}
 
 	public String getSizeAsString() {
 		if (this.getSize() != -1) //@todo performance
@@ -394,6 +394,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		}
 		if (value > 0)
 			this.current = value;
+		log.debug(this.toString()+">calculateCurrentSize:"+this.size);//@todo remove
 		return this.current;
 	}
 
@@ -472,10 +473,10 @@ public class Queue extends Observable implements Observer { //Thread {
 	private void init() {
 		log.debug("init");
 		
-		for (Iterator iter = jobs.iterator(); iter.hasNext(); ) {
-			Path item = (Path)iter.next();
-			item.status.reset();
-		}
+//		for (Iterator iter = jobs.iterator(); iter.hasNext(); ) {
+//			Path item = (Path)iter.next();
+//			item.status.reset();
+//		}
 
 		this.completedJobs = 0;
 		this.processedJobs = 0;

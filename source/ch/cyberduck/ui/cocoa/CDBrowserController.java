@@ -822,7 +822,7 @@ public class CDBrowserController extends NSObject implements Observer {
 						q.add(path);
 					}
 					else {
-						//					Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
+						// Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
 						Queue queue = path.getQueue(Queue.KIND_DOWNLOAD);
 						CDQueuesImpl.instance().addItem(queue);
 						CDQueueController.instance().startItem(queue);
