@@ -1,0 +1,23 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {permissionsSelectionChanged = id; }; 
+            CLASS = "ch.cyberduck.ui.cocoa.CDBookmarkController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {
+                hostField = NSTextField; 
+                nicknameField = NSTextField; 
+                pathField = NSTextField; 
+                pkCheckbox = NSButton; 
+                pkLabel = NSTextField; 
+                protocolPopup = NSPopUpButton; 
+                urlField = NSTextField; 
+                usernameField = NSTextField; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = "java.lang.Object"; 
+        }
+    ); 
+    IBVersion = 1; 
+}
