@@ -322,14 +322,14 @@ public class FTPPath extends Path {
 		OutputStream out = null;
 		try {
 			session.FTP.setTransferType(FTPTransferType.BINARY);
-			try {
-				session.log("Determining file size...", Message.PROGRESS);
-				this.setSize(session.FTP.size(this.getAbsolute()));
-			}
-			catch(FTPException e) {
-				log.error(e.getMessage());
-				//ignore; SIZE command not recognized
-			}
+//			try {
+//				session.log("Determining file size...", Message.PROGRESS);
+//				this.setSize(session.FTP.size(this.getAbsolute()));
+//			}
+//			catch(FTPException e) {
+//				log.error(e.getMessage());
+//				//ignore; SIZE command not recognized
+//			}
 			if(this.status.isResume()) {
 				this.status.setCurrent(this.getLocal().getSize());
 			}
