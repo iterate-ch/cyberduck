@@ -148,12 +148,7 @@ public abstract class Path {
 
     public void setPath(String p) {
         log.debug("setPath:" + p);
-		//        if (p.length() > 1 && p.charAt(p.length() - 1) == '/') {
-		//            this.path = p.substring(0, p.length() - 1);
-		//      }
-		//        else {
 		this.path = p;
-		//        }
 		//this.parent = null;
     }
 
@@ -164,7 +159,7 @@ public abstract class Path {
 		int index = this.getAbsolute().lastIndexOf('/');
 		String parent = null;
 		if (index > 0) {
-			parent = abs.substring(0, index);
+			parent = this.getAbsolute().substring(0, index);
 		}
 		else {//if (index == 0) //parent is root
 			parent = "/";
@@ -223,10 +218,6 @@ public abstract class Path {
 	
     public abstract void rename(String newFilename);
 	
-    public abstract void changeOwner(String owner, boolean recursive);
-
-    public abstract void changeGroup(String group, boolean recursive);
-
     /**
      * @param recursive Include subdirectories and files
      */
@@ -288,19 +279,16 @@ public abstract class Path {
      * @return true if this paths points to '/'
      */
     public boolean isRoot() {
-        return this.getAbsolute().equals("/");
+        return this.getAbsolute().equals("/") || this.getAbsolute().indexOf('/') == -1;
     }
 
     /**
      * @return the path relative to its parent directory
      */
     public String getName() {
-		//		if(null == name) {
 		String abs = this.getAbsolute();
 		int index = abs.lastIndexOf('/');
 		return (index > 0) ? abs.substring(index + 1) : abs.substring(1);
-		//		}
-		//		return this.name;
 	}
 	
 	/**
@@ -421,12 +409,6 @@ public abstract class Path {
             }
         }
         this.transfer(reader, writer);
-//		if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
-//			Permission perm = this.getLocal().getPermission();
-//			if(!perm.isUndefined()) {
-//				this.changePermissions(perm, false);
-//			}
-//		}
     }
 
     /**
@@ -446,12 +428,6 @@ public abstract class Path {
             }
         }
         this.transfer(i, o);
-//		if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
-//			Permission perm = this.getLocal().getPermission();
-//			if(!perm.isUndefined()) {
-//				this.changePermissions(perm, false);
-//			}
-//		}
     }
 
     /**
@@ -465,12 +441,6 @@ public abstract class Path {
         this.getSession().log("Downloading " + this.getName() + " (ASCII)", Message.PROGRESS);
         this.transfer(reader, writer);
         //this.getLocal().getTemp().renameTo(this.getLocal());
-//		if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-//			Permission perm = this.attributes.getPermission();
-//			if(!perm.isUndefined()) {
-//				this.getLocal().setPermission(perm);
-//			}
-//		}
     }
 
     /**
@@ -484,12 +454,6 @@ public abstract class Path {
         this.getSession().log("Downloading " + this.getName(), Message.PROGRESS);
         this.transfer(i, o);
         //this.getLocal().getTemp().renameTo(this.getLocal());
-//		if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-//			Permission perm = this.attributes.getPermission();
-//			if(!perm.isUndefined()) {
-//				this.getLocal().setPermission(perm);
-//			}
-//		}
     }
 
     /**

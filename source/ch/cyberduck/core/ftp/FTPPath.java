@@ -243,46 +243,11 @@ public class FTPPath extends Path {
 
     public void changePermissions(Permission perm, boolean recursive) {
         log.debug("changePermissions:" + perm);
-        String command = recursive ? "chmod -R" : "chmod";
+        String command = "chmod";
         try {
             session.check();
+			//@todo support recursion
             session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
-        }
-        catch (FTPException e) {
-            session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            session.log("Idle", Message.STOP);
-        }
-    }
-
-    public void changeOwner(String owner, boolean recursive) {
-        log.debug("changeOwner");
-        String command = recursive ? "chown -R" : "chown";
-        try {
-            session.check();
-            session.FTP.site(command + " " + owner + " " + this.getAbsolute());
-        }
-        catch (FTPException e) {
-            session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            session.log("Idle", Message.STOP);
-        }
-    }
-
-    public void changeGroup(String group, boolean recursive) {
-        log.debug("changeGroup");
-        String command = recursive ? "chgrp -R" : "chgrp";
-        try {
-            session.check();
-            session.FTP.site(command + " " + group + " " + this.getAbsolute());
         }
         catch (FTPException e) {
             session.log("FTP Error: " + e.getMessage(), Message.ERROR);

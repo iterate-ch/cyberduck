@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSTextView;
 import com.apple.cocoa.foundation.NSRange;
+import com.apple.cocoa.application.NSFont;
 
 import ch.cyberduck.core.Transcript;
 
@@ -35,8 +36,10 @@ public class CDTranscriptImpl implements Transcript {
     }
 
     public void awakeFromNib() {
-        textView.setEditable(true);
-        textView.setSelectable(true);
+        this.textView.setEditable(true);
+        this.textView.setSelectable(true);
+		this.textView.setUsesFontPanel(false);
+		this.textView.setRichText(false);
     }
 
     public void log(String message) {
@@ -44,10 +47,10 @@ public class CDTranscriptImpl implements Transcript {
         // formatting attributes of the first character of the text it replaces, or of the character immediately
         // before aRange if the range's length is 0. If the range's location is 0, the formatting
         // attributes of the first character in the receiver are used.
-        NSRange range = new NSRange(textView.string().length(), 0);
-		this.textView.replaceCharactersInRange(range, message + "\n"); // @warning very bad performance
-		//if (range.length() > 0) {
-        //    this.textView.scrollRangeToVisible(range);
-        //}
+		int l = textView.textStorage().length();
+		this.textView.textStorage().replaceCharactersInRange(new NSRange(l, 0), 
+															 message + "\n"); // @warning very bad performance
+		this.textView.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
+        this.textView.scrollRangeToVisible(new NSRange(l, 0));
     }
 }

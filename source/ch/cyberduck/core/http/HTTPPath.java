@@ -94,24 +94,6 @@ public class HTTPPath extends Path {
         this.session = s;
     }
 
-    public Path getParent() {
-        String abs = this.getAbsolute();
-        if ((null == parent)) {
-            int index = abs.lastIndexOf('/');
-            String dirname = abs;
-            if (index > 0) {
-                dirname = abs.substring(0, index);
-            }
-            if (index == 0) //parent is root
-            {
-                dirname = "/";
-            }
-            parent = PathFactory.createPath(session, dirname);
-        }
-        log.debug("getParent:" + parent);
-        return parent;
-    }
-
     public Session getSession() {
         return this.session;
     }
@@ -142,14 +124,6 @@ public class HTTPPath extends Path {
     }
 
     public void changePermissions(Permission perm, boolean recursive) {
-        session.log("Invalid Operation", Message.ERROR);
-    }
-
-    public void changeOwner(String owner, boolean recursive) {
-        session.log("Invalid Operation", Message.ERROR);
-    }
-
-    public void changeGroup(String group, boolean recursive) {
         session.log("Invalid Operation", Message.ERROR);
     }
 

@@ -265,50 +265,11 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void changeOwner(String uid, boolean recursive) {
-        //@todo assert uid is a number
-        log.debug("changeOwner:" + uid);
-        try {
-            session.check();
-            FileAttributes attrs = session.SFTP.getAttributes(this.getAbsolute());
-            attrs.setUID(new UnsignedInteger32(uid));
-            session.SFTP.setAttributes(this.getAbsolute(), attrs);
-        }
-        catch (SshException e) {
-            session.log("SSH Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            session.log("Idle", Message.STOP);
-        }
-    }
-
-    public void changeGroup(String gid, boolean recursive) {
-        //@todo assert gid is a number
-        log.debug("changeGroup:" + gid);
-        try {
-            session.check();
-            FileAttributes attrs = session.SFTP.getAttributes(this.getAbsolute());
-            attrs.setGID(new UnsignedInteger32(gid));
-            session.SFTP.setAttributes(this.getAbsolute(), attrs);
-        }
-        catch (SshException e) {
-            session.log("SSH Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            session.log("Idle", Message.STOP);
-        }
-    }
-
     public void changePermissions(Permission perm, boolean recursive) {
         log.debug("changePermissions");
         try {
             session.check();
+			//@todo support recursion
             session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
         }
         catch (SshException e) {
