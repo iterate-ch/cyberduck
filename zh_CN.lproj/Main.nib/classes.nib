@@ -5,6 +5,7 @@
                 addBookmarkButtonClicked = id; 
                 backButtonClicked = id; 
                 connectButtonClicked = id; 
+                copyURLButtonClicked = id; 
                 deleteButtonClicked = id; 
                 downloadAsButtonClicked = id; 
                 downloadButtonClicked = id; 

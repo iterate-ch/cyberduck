@@ -36,9 +36,12 @@ public class CDValidatorController extends Validator {
     private static Logger log = Logger.getLogger(CDValidatorController.class);
 
     private static NSMutableArray instances = new NSMutableArray();
+	
+	private Controller windowController;
 
-    public CDValidatorController(int kind, boolean resume) {
+    public CDValidatorController(Controller windowController, int kind, boolean resume) {
         super(kind, resume);
+		this.windowController = windowController;
         instances.addObject(this);
         if (false == NSApplication.loadNibNamed("Validator", this)) {
             log.fatal("Couldn't load Validator.nib");
@@ -98,8 +101,15 @@ public class CDValidatorController extends Validator {
     private boolean resumeChoosen = false;
 	
     public boolean prompt(final Path path) {
-		Controller windowController = CDQueueController.instance();
-		log.debug("******** Attached sheet:"+windowController.window().attachedSheet());
+		while (windowController.window().attachedSheet() != null) {
+			try {
+				log.debug("Sleeping...");
+				Thread.sleep(1000); //milliseconds
+			}
+			catch (InterruptedException e) {
+				log.error(e.getMessage());
+			}
+		}
         if (!applySettingsToAll) {
 			synchronized(this) {
 				resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());

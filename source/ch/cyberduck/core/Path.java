@@ -38,7 +38,6 @@ public abstract class Path {
 
     private String path = null;
     private Local local = null;
-//	private Path linkedPath = null;
     public Status status = new Status();
     public Attributes attributes = new Attributes();
 
@@ -255,17 +254,9 @@ public abstract class Path {
     }
 
     /**
-     * Manually set the name viewable by the end user; thereby obfuscating the real pathname
-     */
-//	public void setName(String name) {
-//		this.name = name;
-//	}
-
-    /**
      * @return the absolute path name, e.g. /home/user/filename
      */
     public String getAbsolute() {
-        //log.debug("getAbsolute:"+this.path);
         return this.path;
     }
 

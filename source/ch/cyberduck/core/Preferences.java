@@ -107,9 +107,6 @@ public abstract class Preferences {
         defaults.put("editor.name", "SubEthaEdit");
         defaults.put("editor.bundleIdentifier", "de.codingmonkeys.SubEthaEdit");
 
-//		defaults.put("history.size", "50");
-//		defaults.put("history.save", "true");
-
         defaults.put("favorites.save", "true");
 
         defaults.put("queue.openByDefault", "false");
@@ -127,18 +124,16 @@ public abstract class Preferences {
 
         defaults.put("connection.login.name", System.getProperty("user.name"));
         defaults.put("connection.login.useKeychain", "true");
-
         defaults.put("connection.buffer", "16384"); //in bytes, is 128kbit
         defaults.put("connection.buffer.default", "16384");
         defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
-
 		defaults.put("connection.proxy.useProxy", Proxy.isSOCKSProxyEnabled() ? "true" : "false");
 		defaults.put("connection.proxy.host", Proxy.getSOCKSProxyHost());
 		defaults.put("connection.proxy.port", Proxy.getSOCKSProxyPort());
-//		defaults.put("connection.proxy.useAuthentication", "false");
-//		defaults.put("connection.proxy.username", System.getProperty("user.name"));
-//		defaults.put("connection.proxy.password", "");
+//		defaults.put("connection.proxy.useAuthentication", Proxy.isSOCKSAuthenticationEnabled() ? "true" : "false");
+//		defaults.put("connection.proxy.username", Proxy.getSOCKSProxyUser());
+//		defaults.put("connection.proxy.password", Proxy.getSOCKSProxyPassword());
 
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");

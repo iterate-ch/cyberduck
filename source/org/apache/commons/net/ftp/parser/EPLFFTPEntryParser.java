@@ -75,15 +75,15 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
             this.path = aPath;
         }
         
-        public boolean hasSpecifiedPermissionsFact() {
+        protected boolean hasSpecifiedPermissionsFact() {
             return hasFact("up");
         }
         
-        public boolean hasMayBeRetreivedFact() {
+        protected boolean hasMayBeRetreivedFact() {
             return hasFact("r");
         }
         
-        public boolean hasMayCWDToFact() {
+        protected boolean hasMayCWDToFact() {
             return hasFact("/");
         }
 
@@ -92,7 +92,7 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
             else return false;
         }
 
-        public void handleFact(String fact) {
+        protected void handleFact(String fact) {
             if (fact.length() == 0) return;
 
             // readable file
@@ -138,45 +138,17 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
             }
         }
         
-        public void conclude() {
+        protected void conclude() {
             if (hasMayCWDToFact()) {
                 path.attributes.setType(Path.DIRECTORY_TYPE);
-//                if (hasSpecifiedPermissionsFact()) 
-//					createAndSetSpecifiedDirPermission();
-//              else 
-//					createAndSetStandardDirPermission();
-                
             } 
 			else if (hasMayBeRetreivedFact()) {
                 path.attributes.setType(Path.FILE_TYPE);
             }
 			if (hasSpecifiedPermissionsFact()) 
 				createAndSetSpecifiedPermission();
-			else 
-				createAndSetStandardPermission();
         }
         
-//        private void createAndSetSpecifiedDirPermission() {
-//            Permission newPermission = createSpecifiedDirPermission();
-//            if (newPermission != null) 
-//				path.attributes.setPermission(newPermission);
-//        }
-
-//        private Permission createSpecifiedDirPermission() {
-//            try {
-//                int perm = Integer.valueOf((String)facts.get("up"), 8).intValue();
-//                Permission permission = new Permission(perm);
-//                String newMask = "d" + permission.getMask().substring(1);
-//                return new Permission(newMask);
-//            } 
-//			catch (NumberFormatException ignored) {}
-//            return null;
-//        }
-
-//        private void createAndSetStandardDirPermission() {
-//            path.attributes.setPermission(new Permission("dr-xr-xr-x"));
-//        }
-
         private void createAndSetSpecifiedPermission() {
             Permission newPermission = createSpecifiedPermission();
             if (newPermission != null) 
@@ -190,10 +162,6 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
             } 
 			catch (NumberFormatException ignored) {}
             return null;
-        }
-        
-        private void createAndSetStandardPermission() {
-            path.attributes.setPermission(new Permission("r--r--r--"));
         }
     }
 }

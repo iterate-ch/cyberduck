@@ -125,8 +125,6 @@ static ODBEditor	*_sharedODBEditor;
 
 - (void)abortEditingFile:(NSString *)path
 {
-//	 #warning REVIEW if we created a temporary file for this session should we try to delete it and/or close it in the editor?
-
 	if (nil == [_filesBeingEdited objectForKey: path])
 		NSLog(@"ODBEditor: No active editing session for \"%@\"", path);
 
@@ -135,8 +133,6 @@ static ODBEditor	*_sharedODBEditor;
 
 - (void)abortAllEditingSessionsForClient:(id)client
 {
-//	 #warning REVIEW if we created a temporary file for this session should we try to delete it and/or close it in the editor?
-
 	BOOL			found = NO;
 	NSEnumerator	*enumerator = [_filesBeingEdited objectEnumerator];
 	NSMutableArray  *keysToRemove = [NSMutableArray array];
@@ -166,19 +162,7 @@ static ODBEditor	*_sharedODBEditor;
 	return [self _editFile: path isEditingString: NO options: options forClient: client context: context];
 }
 
-//- (BOOL)editString:(NSString *)string options:(NSDictionary *)options forClient:(id)client context:(void *)context
-//{
-//	BOOL		success = NO;
-//	NSString	*path = [self _tempFileForEditingString: string];
-//	
-//	if (path != nil)
-//		success = [self _editFile: path isEditingString: NO options: options forClient: client context: context];
-//
-//	return success;
-//}
-
 @end
-
 
 @implementation ODBEditor(Private)
 
@@ -211,23 +195,6 @@ static ODBEditor	*_sharedODBEditor;
 	
 	return success;
 }
-
-//- (NSString *)_tempFileForEditingString:(NSString *)string
-//{
-//	static  unsigned sTempFileSequence;
-//	
-//	NSString	*fileName = nil;
-//
-//	sTempFileSequence++;
-//	
-//	fileName = [NSString stringWithFormat: @"ODBEditor-%@-%06d.txt", [[NSBundle mainBundle] bundleIdentifier], sTempFileSequence];
-//	fileName = [NSTemporaryDirectory() stringByAppendingPathComponent: fileName];
-//
-//	if (NO == [string writeToFile: fileName atomically: NO])
-//		fileName = nil;
-//
-//	return fileName;
-//}
 
 - (BOOL)_editFile:(NSString *)fileName isEditingString:(BOOL)editingStringFlag options:(NSDictionary *)options forClient:(id)client context:(NSDictionary *)context
 {

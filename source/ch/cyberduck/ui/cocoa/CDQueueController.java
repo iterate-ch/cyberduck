@@ -102,12 +102,10 @@ public class CDQueueController extends NSObject implements Controller {
 	 */
 	
     public boolean windowShouldClose(NSWindow sender) {
-        log.debug("windowShouldClose");
         return true;
     }
 
     public void windowWillClose(NSNotification notification) {
-        log.debug("windowWillClose");
 		this.window = null;
 //		instances.removeObject(this);
 //		instance = null;
@@ -224,7 +222,7 @@ public class CDQueueController extends NSObject implements Controller {
 													 );
             }
         }
-        queue.start(new CDValidatorController(queue.kind(), resumeRequested));
+        queue.start(new CDValidatorController(this, queue.kind(), resumeRequested));
     }
 	
 	public boolean isVisible() {
@@ -416,6 +414,15 @@ public class CDQueueController extends NSObject implements Controller {
 
     public void openButtonClicked(Object sender) {
         if (this.queueTable.selectedRow() != -1) {
+			while (this.window().attachedSheet() != null) {
+				try {
+					log.debug("Sleeping...");
+					Thread.sleep(1000); //milliseconds
+				}
+				catch (InterruptedException e) {
+					log.error(e.getMessage());
+				}
+			}
             Queue item = QueueList.instance().getItem(this.queueTable.selectedRow());
             Path f = item.getRoot();
             String file = item.getRoot().getLocal().toString();
@@ -456,6 +463,15 @@ public class CDQueueController extends NSObject implements Controller {
 
     public void revealButtonClicked(Object sender) {
         if (this.queueTable.selectedRow() != -1) {
+			while (this.window().attachedSheet() != null) {
+				try {
+					log.debug("Sleeping...");
+					Thread.sleep(1000); //milliseconds
+				}
+				catch (InterruptedException e) {
+					log.error(e.getMessage());
+				}
+			}
             Queue item = QueueList.instance().getItem(this.queueTable.selectedRow());
             Path f = item.getRoot();
             String file = item.getRoot().getLocal().toString();

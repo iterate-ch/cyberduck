@@ -118,6 +118,15 @@ public class CDLoginController extends LoginController {
     private boolean tryAgain = false;
 
     public boolean promptUser(final Login l, final String message) {
+		while (windowController.window().attachedSheet() != null) {
+			try {
+				log.debug("Sleeping...");
+				Thread.sleep(1000); //milliseconds
+			}
+			catch (InterruptedException e) {
+				log.error(e.getMessage());
+			}
+		}
 		synchronized(this) {
 			textField.setStringValue(message);
 			userField.setStringValue(l.getUsername());

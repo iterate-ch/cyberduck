@@ -247,7 +247,8 @@ public class SFTPPath extends Path {
                 session.SFTP.removeFile(this.getAbsolute());
             }
             else if (this.attributes.isDirectory()) {
-                List files = this.list(false, true);
+//				session.SFTP.openDirectory(this.getParent().getAbsolute());
+                List files = this.list(true, true);
                 java.util.Iterator iterator = files.iterator();
                 Path file = null;
                 while (iterator.hasNext()) {
@@ -266,7 +267,7 @@ public class SFTPPath extends Path {
                         session.SFTP.removeFile(file.getAbsolute());
                     }
                 }
-                session.SFTP.openDirectory(this.getParent().getAbsolute());
+//                session.SFTP.openDirectory(this.getParent().getAbsolute());
                 session.log("Deleting " + this.getName(), Message.PROGRESS);
                 session.SFTP.removeDirectory(this.getAbsolute());
             }

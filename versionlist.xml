@@ -9,6 +9,7 @@
 	<key>comment</key>
         <string>Changelog:
 2.3.2
+- [Feature] Slovak Localization
 - [Feature] Support for EPFL file listings to support servers running "publicfile" (FTP)
 - [Bugfix] Improved PASV response parsing (FTP)
 - [Bugfix] Better parsing symbolic links
@@ -16,6 +17,8 @@
 - [Feature] Supporting SOCKS proxies
 - [Feature] Change file permissions on multiple files
 - [Feature] Copy the URL of a remote site
+- [Bugfix] Use date formatting rules set in the System Preferences
+- [Featuer] Preference item to set the action when double-clicking files (Download or edit)
 
 2.3.1
 - [Feature] Chinese (Simplified) Localization

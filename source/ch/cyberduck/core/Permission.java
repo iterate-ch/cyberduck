@@ -252,7 +252,6 @@ public class Permission {
     }
 
     private boolean[] getOwnerPermissions(String s) {
-		log.debug("getOwnerPermissions:"+s);
         boolean[] b = {
             s.charAt(0) == 'r',
             s.charAt(1) == 'w',
@@ -261,7 +260,6 @@ public class Permission {
     }
 
     private boolean[] getGroupPermissions(String s) {
-		log.debug("getGroupPermissions:"+s);
         boolean[] b = {
             s.charAt(3) == 'r',
             s.charAt(4) == 'w',
@@ -270,7 +268,6 @@ public class Permission {
     }
 
     private boolean[] getOtherPermissions(String s) {
-		log.debug("getOtherPermissions:"+s);
         boolean[] b = {
             s.charAt(6) == 'r',
             s.charAt(7) == 'w',

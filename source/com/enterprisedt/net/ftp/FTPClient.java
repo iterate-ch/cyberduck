@@ -456,7 +456,6 @@ public class FTPClient {
             String line = null;
             while ((line = in.readLine()) != null) {
                 entries.add(line);
-				log.debug(line);
                 //@todo transcript.log(line); //bad performance
             }
             try {

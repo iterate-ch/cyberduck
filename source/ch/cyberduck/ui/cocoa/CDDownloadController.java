@@ -74,6 +74,10 @@ public class CDDownloadController extends NSObject implements Controller {
                         new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
                 null); //contextInfo
     }
+	
+	public boolean windowShouldClose(NSWindow sender) {
+		return true;
+	}
 
     public void windowWillClose(NSNotification notification) {
         instances.removeObject(this);

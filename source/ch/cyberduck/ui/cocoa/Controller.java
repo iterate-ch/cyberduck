@@ -19,7 +19,11 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.NSWindow;
+import com.apple.cocoa.foundation.NSNotification;
 
 interface Controller {
+	public void awakeFromNib();
 	public NSWindow window();
+	public boolean windowShouldClose(NSWindow sender);
+	public void windowWillClose(NSNotification notification);
 }

@@ -326,7 +326,7 @@ public abstract class AbstractKnownHostsKeyVerification
         // The host is unknown os ask the user
         onUnknownHost(host, pk);
 
-        // Recheck ans return the result
+        // Recheck and return the result
         return checkKey(host, pk);
     }
 

@@ -1346,14 +1346,8 @@ public class CDBrowserController extends NSObject implements Controller, Observe
         lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
     }
 
-    private static final NSDictionary TABLE_CELL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]
-    {
-        lineBreakByTruncatingMiddleParagraph
-    },
-            new Object[]{
-                NSAttributedString.ParagraphStyleAttributeName
-            } //keys
-    );
+    private static final NSDictionary TABLE_CELL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[] { lineBreakByTruncatingMiddleParagraph },
+																						 new Object[]{ NSAttributedString.ParagraphStyleAttributeName });
 
     private class CDBrowserTableDataSource extends CDTableDataSource {
         private List fullData;

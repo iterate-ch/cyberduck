@@ -332,22 +332,6 @@ public class CDInfoController extends NSObject {
         }
     }
 	
-/*	public void octalInputDidEndEditing(NSNotification sender) {
-        log.debug("octalInputDidEndEditing");
-        Permission permission = new Permission(Integer.parseInt(ocalField.stringValue()));
-		permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
-		// send the changes to the remote host
-		Iterator i = files.iterator();
-		Path f = null;
-		while(i.hasNext()) {
-			f = (Path)i.next();
-			f.changePermissions(permission);
-		}
-		// refresh the file listing so that the observers (if any) get notified of the change
-		f.getParent().list(true);
-	}
-*/
-	
     public void permissionsSelectionChanged(Object sender) {
         log.debug("permissionsSelectionChanged");
         boolean[][] p = new boolean[3][3];
