@@ -502,6 +502,10 @@ public class CDQueueController extends CDController {
 		}
 	}
 
+	public void deleteKeyPerformed(Object sender) {
+		this.deleteButtonClicked(sender);
+	}
+
 	public void deleteButtonClicked(Object sender) {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		int j = 0;

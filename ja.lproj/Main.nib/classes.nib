@@ -6,7 +6,8 @@
                 backButtonClicked = id; 
                 connectButtonClicked = id; 
                 copyURLButtonClicked = id; 
-                deleteButtonClicked = id; 
+                deleteBookmarkButtonClicked = id; 
+                deleteFileButtonClicked = id; 
                 downloadAsButtonClicked = id; 
                 downloadButtonClicked = id; 
                 editBookmarkButtonClicked = id; 
@@ -17,7 +18,6 @@
                 infoButtonClicked = id; 
                 insideButtonClicked = id; 
                 reloadButtonClicked = id; 
-                removeBookmarkButtonClicked = id; 
                 showHiddenFilesClicked = id; 
                 showTransferQueueClicked = id; 
                 syncButtonClicked = id; 

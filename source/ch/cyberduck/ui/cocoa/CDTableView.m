@@ -55,8 +55,8 @@
         }
     } 
 	else if (key == NSDeleteCharacter || key == NSBackspaceCharacter) {
-        if ([[self target] respondsToSelector:@selector(deleteButtonClicked:)]) {
-            [[self target] performSelector:@selector(deleteButtonClicked:) withObject:self];
+        if ([[self target] respondsToSelector:@selector(deleteKeyPerformed:)]) {
+            [[self target] performSelector:@selector(deleteKeyPerformed:) withObject:self];
             return;
         }
     }

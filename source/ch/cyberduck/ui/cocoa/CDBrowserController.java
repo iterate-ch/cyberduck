@@ -452,7 +452,7 @@ public class CDBrowserController extends CDController implements Observer {
 	public void bookmarkSelectionDidChange(NSNotification notification) {
 		log.debug("bookmarkSelectionDidChange");
 		editBookmarkButton.setEnabled(bookmarkTable.numberOfSelectedRows() == 1);
-		removeBookmarkButton.setEnabled(bookmarkTable.numberOfSelectedRows() == 1);
+		deleteBookmarkButton.setEnabled(bookmarkTable.numberOfSelectedRows() == 1);
 	}
 
 	public void bookmarkTableRowDoubleClicked(Object sender) {
@@ -605,21 +605,21 @@ public class CDBrowserController extends CDController implements Observer {
 		CDBookmarkController controller = new CDBookmarkController(bookmarkTable, item);
 	}
 
-	private NSButton removeBookmarkButton; // IBOutlet
+	private NSButton deleteBookmarkButton; // IBOutlet
 
-	public void setRemoveBookmarkButton(NSButton removeBookmarkButton) {
-		this.removeBookmarkButton = removeBookmarkButton;
-		this.removeBookmarkButton.setImage(NSImage.imageNamed("remove.tiff"));
-		this.removeBookmarkButton.setAlternateImage(NSImage.imageNamed("removePressed.tiff"));
-		this.removeBookmarkButton.setTarget(this);
-		this.removeBookmarkButton.setEnabled(false);
-		this.removeBookmarkButton.setAction(new NSSelector("removeBookmarkButtonClicked", new Class[]{Object.class}));
+	public void setRemoveBookmarkButton(NSButton deleteBookmarkButton) {
+		this.deleteBookmarkButton = deleteBookmarkButton;
+		this.deleteBookmarkButton.setImage(NSImage.imageNamed("remove.tiff"));
+		this.deleteBookmarkButton.setAlternateImage(NSImage.imageNamed("removePressed.tiff"));
+		this.deleteBookmarkButton.setTarget(this);
+		this.deleteBookmarkButton.setEnabled(false);
+		this.deleteBookmarkButton.setAction(new NSSelector("deleteBookmarkButtonClicked", new Class[]{Object.class}));
 	}
 
-	public void removeBookmarkButtonClicked(Object sender) {
+	public void deleteBookmarkButtonClicked(Object sender) {
 		this.bookmarkDrawer.open();
 		switch(NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", ""),
-		    NSBundle.localizedString("Do you want to delete the selected bookmark?", "")+" ("+bookmarkModel.getItem(bookmarkTable.selectedRow()).getNickname()+")",
+		    NSBundle.localizedString("Do you want to delete the selected bookmark?", "")+" ["+bookmarkModel.getItem(bookmarkTable.selectedRow()).getNickname()+"]",
 		    NSBundle.localizedString("Delete", ""),
 		    NSBundle.localizedString("Cancel", ""),
 		    null)) {
@@ -847,10 +847,20 @@ public class CDBrowserController extends CDController implements Observer {
 			}
 		}
 	}
-		
-	public void deleteButtonClicked(Object sender) {
-		log.debug("deleteButtonClicked");
-		if(browserTable.selectedRow() != -1) {
+	
+	public void deleteKeyPerformed(Object sender) { //@todo
+		log.debug("deleteKeyPerformed:"+sender);
+		if(sender == this.browserTable) {
+			this.deleteFileButtonClicked(sender);
+		}	
+		if(sender == this.bookmarkTable) {
+			this.deleteBookmarkButtonClicked(sender);
+		}	
+	}
+	
+	public void deleteFileButtonClicked(Object sender) {
+		log.debug("deleteFileButtonClicked");
+		if(this.browserTable.selectedRow() != -1) {
 			NSEnumerator enum = browserTable.selectedRowEnumerator();
 			Vector files = new Vector();
 			StringBuffer alertText = new StringBuffer(NSBundle.localizedString("Really delete the following files? This cannot be undone.", "Confirm deleting files."));
@@ -1428,7 +1438,7 @@ public class CDBrowserController extends CDController implements Observer {
 		if(identifier.equals("addBookmarkButtonClicked:")) {
 			return true;
 		}
-		if(identifier.equals("removeBookmarkButtonClicked:")) {
+		if(identifier.equals("deleteBookmarkButtonClicked:")) {
 			return bookmarkTable.numberOfSelectedRows() == 1;
 		}
 		if(identifier.equals("editBookmarkButtonClicked:")) {
@@ -1459,7 +1469,7 @@ public class CDBrowserController extends CDController implements Observer {
 		if(identifier.equals("New File") || identifier.equals("fileButtonClicked:")) {
 			return this.isMounted();
 		}
-		if(identifier.equals("Delete") || identifier.equals("deleteButtonClicked:")) {
+		if(identifier.equals("Delete") || identifier.equals("deleteFileButtonClicked:")) {
 			return this.isMounted() && browserTable.selectedRow() != -1;
 		}
 		if(identifier.equals("Refresh") || identifier.equals("reloadButtonClicked:")) {
@@ -1500,18 +1510,6 @@ public class CDBrowserController extends CDController implements Observer {
 	// ----------------------------------------------------------
 
 	public boolean validateToolbarItem(NSToolbarItem item) {
-		/* @todo
-		if(item.itemIdentifier().equals("Edit")) {
-			NSSelector absolutePathForAppBundleWithIdentifierSelector =
-			    new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
-			if(absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-				String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(Preferences.instance().getProperty("editor.bundleIdentifier"));
-				if(editorPath != null) {
-					item.setImage(NSWorkspace.sharedWorkspace().iconForFile(editorPath));
-				}
-			}
-		}
-		 */
 		boolean enabled = pathPopupItems.size() > 0;
 		this.backButton.setEnabled(enabled);
 		this.upButton.setEnabled(enabled);
@@ -1627,7 +1625,7 @@ public class CDBrowserController extends CDController implements Observer {
 			item.setToolTip(NSBundle.localizedString("Delete file", "Toolbar item tooltip"));
 			item.setImage(NSImage.imageNamed("deleteFile.tiff"));
 			item.setTarget(this);
-			item.setAction(new NSSelector("deleteButtonClicked", new Class[]{Object.class}));
+			item.setAction(new NSSelector("deleteFileButtonClicked", new Class[]{Object.class}));
 			return item;
 		}
 		if(itemIdentifier.equals("New Folder")) {

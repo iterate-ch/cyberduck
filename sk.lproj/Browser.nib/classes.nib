@@ -4,7 +4,7 @@
         {
             ACTIONS = {
                 addBookmarkButtonClicked = id; 
-                deleteButtonClicked = id; 
+                deleteFileButtonClicked = id; 
                 downloadAsButtonClicked = id; 
                 downloadButtonClicked = id; 
                 editBookmarkButtonClicked = id; 
@@ -29,6 +29,7 @@
                 bookmarkDrawer = NSDrawer; 
                 bookmarkTable = NSTableView; 
                 browserTable = NSTableView; 
+                deleteBookmarkButton = NSButton; 
                 editBookmarkButton = NSButton; 
                 encodingPopup = NSPopUpButton; 
                 infoLabel = NSTextField; 
@@ -37,7 +38,6 @@
                 pathPopup = NSPopUpButton; 
                 progressIndicator = NSProgressIndicator; 
                 quickConnectPopup = NSComboBox; 
-                removeBookmarkButton = NSButton; 
                 searchField = NSTextField; 
                 statusIcon = NSImageView; 
                 statusLabel = NSTextField; 

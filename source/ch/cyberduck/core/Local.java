@@ -165,13 +165,6 @@ public class Local extends File {
 		return super.length();
 	}
 	
-//	public boolean exists(boolean returnFalseIfSizeIsZero) {
-//		if(returnFalseIfSizeIsZero) {
-//			return super.exists() && this.getSize() > 0;
-//		}
-//		return super.exists();
-//	}
-
 	public boolean equals(Object other) {
 		if(other instanceof Local) {
 			return this.getAbsolutePath().equals(((Local)other).getAbsolutePath());// && this.attributes.getTimestamp().equals(((Local)other).attributes.getTimestamp());

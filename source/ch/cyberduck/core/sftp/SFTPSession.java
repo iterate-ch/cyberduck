@@ -92,14 +92,10 @@ public class SFTPSession extends Session {
 		SSH.addEventHandler(new SshEventAdapter() {
 			public void onSocketTimeout(TransportProtocol transport) {
 				log.debug("onSocketTimeout");
-				SFTPSession.this.log("Disconnected", Message.PROGRESS);
-				SFTPSession.this.setClosed();
 			}
 
 			public void onDisconnect(TransportProtocol transport) {
 				log.debug("onDisconnect");
-				SFTPSession.this.log("Disconnected", Message.PROGRESS);
-				SFTPSession.this.setClosed();
 			}
 		});
 		SshConnectionProperties properties = new SshConnectionProperties();
@@ -222,9 +218,8 @@ public class SFTPSession extends Session {
 				}
 			}
 			else {
-				if(
-				    AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
-				    AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
+				if(AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
+				   AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
 					this.log("Login successful", Message.PROGRESS);
 					credentials.addInternetPasswordToKeychain();
 					return;
@@ -239,9 +234,7 @@ public class SFTPSession extends Session {
 				throw new SshException("Login as user "+credentials.getUsername()+" canceled.");
 			}
 		}
-		else {
-			throw new IOException("Login as user "+host.getCredentials().getUsername()+" failed.");
-		}
+		throw new IOException("Login as user "+host.getCredentials().getUsername()+" failed.");
 	}
 
 	public synchronized Path workdir() {

@@ -351,7 +351,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 				while(i.hasMoreElements()) {
 					element = i.nextElement();
 					if(element instanceof NSDictionary) { //new since 2.1
-						this.addItem(new Host((NSDictionary)element));
+						this.data.add(new Host((NSDictionary)element));
 					}
 					if(element instanceof String) { //backward compatibilty <= 2.1beta5 (deprecated)
 						try {

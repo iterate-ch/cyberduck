@@ -202,7 +202,8 @@ public class FTPPath extends Path {
 				this.attributes.setSize(session.FTP.size(this.getAbsolute()));
 			}
 			catch(FTPException e) {
-//				session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+				log.error(e.getMessage());
+				//ignore
 			}
 			catch(IOException e) {
 				session.log("IO Error: "+e.getMessage(), Message.ERROR);

@@ -75,16 +75,22 @@ public abstract class CDValidatorController extends AbstractValidator implements
 			}
 		}
 		q.getRoot().getSession().deleteObserver(this);
-		if(this.visible && !this.isCanceled()) {
-			this.statusIndicator.stopAnimation(null);
-			this.setEnabled(true);
-			this.fileTableView.sizeToFit();
-			this.windowController.waitForSheet();
+		if(this.visible) {
+			if(!this.isCanceled()) {
+				this.statusIndicator.stopAnimation(null);
+				this.setEnabled(true);
+				this.fileTableView.sizeToFit();
+				this.windowController.waitForSheet();
+			}
+			else {
+				this.windowController.endSheet();
+			}
 		}
 	}
 
 	protected boolean validateFile(Path path, boolean resumeRequested) {
-		path.reset(); //@todo
+		path.reset();
+		
 		if(resumeRequested) { // resume existing files independant of settings in preferences
 			path.status.setResume(this.isExisting(path));
 			return true;
@@ -110,11 +116,6 @@ public abstract class CDValidatorController extends AbstractValidator implements
 			}
 			if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
 				log.debug("Apply validation rule to ask:"+path.getName());
-				//@todo
-//				List parentListing = path.getParent().list(false, true);
-//				Path current = (Path)parentListing.get(parentListing.indexOf(path));
-//				current.setLocal(path.getLocal());
-//				this.prompt(current);
 				this.prompt(path);
 				return false;
 			}
@@ -231,8 +232,8 @@ public abstract class CDValidatorController extends AbstractValidator implements
 		}
 		{
 			NSTableColumn c = new NSTableColumn();
-			c.headerCell().setStringValue(NSBundle.localizedString("Local File", ""));
-			c.setIdentifier("LOCAL");
+			c.headerCell().setStringValue(NSBundle.localizedString("Server File", ""));
+			c.setIdentifier("REMOTE");
 			c.setMinWidth(100f);
 			c.setWidth(180f);
 			c.setMaxWidth(500f);
@@ -243,8 +244,8 @@ public abstract class CDValidatorController extends AbstractValidator implements
 		}
 		{
 			NSTableColumn c = new NSTableColumn();
-			c.headerCell().setStringValue(NSBundle.localizedString("Server File", ""));
-			c.setIdentifier("REMOTE");
+			c.headerCell().setStringValue(NSBundle.localizedString("Local File", ""));
+			c.setIdentifier("LOCAL");
 			c.setMinWidth(100f);
 			c.setWidth(180f);
 			c.setMaxWidth(500f);
