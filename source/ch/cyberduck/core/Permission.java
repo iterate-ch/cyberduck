@@ -20,12 +20,15 @@ package ch.cyberduck.core;
 
 import java.util.Arrays;
 
+import org.apache.log4j.Logger;
+
 /**
 * Encapsulating unix file permissions.
  * @version $Id$
  */
-public class Permission {//implements java.io.Serializable {
-	
+public class Permission {
+	private static Logger log = Logger.getLogger(Permission.class);
+
     /**
 	* Index of OWNER bit
      */
@@ -65,6 +68,7 @@ public class Permission {//implements java.io.Serializable {
         this.owner = this.getOwnerPermissions(s);
         this.group = this.getGroupPermissions(s);
         this.other = this.getOtherPermissions(s);
+//		log.debug("Permission:"+this.toString());
     }
 	
     /**
@@ -83,7 +87,96 @@ public class Permission {//implements java.io.Serializable {
 		this.other[READ] = p[OTHER][READ];
 		this.other[WRITE] = p[OTHER][WRITE];
 		this.other[EXECUTE] = p[OTHER][EXECUTE];
+//		log.debug("Permission:"+this.toString());
     }
+	
+	
+	public Permission(int decimal) {
+//		log.debug("Permission(decimal):"+decimal);
+		String octal = Integer.toOctalString(decimal);
+//		log.debug("Permission(octal):"+octal);
+		if(octal.length() != 3)
+			throw new IllegalArgumentException("Permission must be a three digit number");
+		switch(Integer.parseInt(octal.substring(0, 1))) {
+			case(0) :
+				this.owner = new boolean[]{false, false, false};
+				break;
+			case(1) :
+				this.owner = new boolean[]{false, false, true};
+				break;
+			case(2) :
+				this.owner = new boolean[]{false, true, false};
+				break;
+			case(3) :
+				this.owner = new boolean[]{false, true, true};
+				break;
+			case(4) :
+				this.owner = new boolean[]{true, false, false};
+				break;
+			case(5) :
+				this.owner = new boolean[]{true, false, true};
+				break;
+			case(6) :
+				this.owner = new boolean[]{true, true, false};
+				break;
+			case(7) :
+				this.owner = new boolean[]{true, true, true};
+				break;
+		}
+		 switch(Integer.parseInt(octal.substring(1, 2))) {
+			case(0) :
+				this.group = new boolean[]{false, false, false};
+				break;
+			case(1) :
+				this.group = new boolean[]{false, false, true};
+				break;
+			case(2) :
+				this.group = new boolean[]{false, true, false};
+				break;
+			case(3) :
+				this.group = new boolean[]{false, true, true};
+				break;
+			case(4) :
+				this.group = new boolean[]{true, false, false};
+				break;
+			case(5) :
+				this.group = new boolean[]{true, false, true};
+				break;
+			case(6) :
+				this.group = new boolean[]{true, true, false};
+				break;
+			case(7) :
+				this.group = new boolean[]{true, true, true};
+				break;
+		}
+		  switch(Integer.parseInt(octal.substring(2, 3))) {
+			case(0) :
+				this.other = new boolean[]{false, false, false};
+				break;
+			case(1) :
+				this.other = new boolean[]{false, false, true};
+				break;
+			case(2) :
+				this.other = new boolean[]{false, true, false};
+				break;
+			case(3) :
+				this.other = new boolean[]{false, true, true};
+				break;
+			case(4) :
+				this.other = new boolean[]{true, false, false};
+				break;
+			case(5) :
+				this.other = new boolean[]{true, false, true};
+				break;
+			case(6) :
+				this.other = new boolean[]{true, true, false};
+				break;
+			case(7) :
+				this.other = new boolean[]{true, true, true};
+				break;
+		}
+//		log.debug("Permission:"+this.toString());
+	}
 	
     /**
 		* @return a thee-dimensional boolean array representing read, write
@@ -188,91 +281,7 @@ public class Permission {//implements java.io.Serializable {
             return 7;
         return -1;
     }
-	
-	public Permission(int decimal) {
-		String octal = Integer.toOctalString(decimal);
-		if(octal.length() != 3)
-			throw new IllegalArgumentException("Permission must be a three digit number");
-		switch(octal.charAt(OWNER)) {
-			case(0) :
-				this.owner = new boolean[]{false, false, false};
-				break;
-			case(1) :
-				this.owner = new boolean[]{false, false, true};
-				break;
-			case(2) :
-				this.owner = new boolean[]{false, true, false};
-				break;
-			case(3) :
-				this.owner = new boolean[]{false, true, true};
-				break;
-			case(4) :
-				this.owner = new boolean[]{true, false, false};
-				break;
-			case(5) :
-				this.owner = new boolean[]{true, false, true};
-				break;
-			case(6) :
-				this.owner = new boolean[]{true, true, false};
-				break;
-			case(7) :
-				this.owner = new boolean[]{true, true, true};
-				break;
-		}
-		switch(octal.charAt(GROUP)) {
-			case(0) :
-				this.group = new boolean[]{false, false, false};
-				break;
-			case(1) :
-				this.group = new boolean[]{false, false, true};
-				break;
-			case(2) :
-				this.group = new boolean[]{false, true, false};
-				break;
-			case(3) :
-				this.group = new boolean[]{false, true, true};
-				break;
-			case(4) :
-				this.group = new boolean[]{true, false, false};
-				break;
-			case(5) :
-				this.group = new boolean[]{true, false, true};
-				break;
-			case(6) :
-				this.group = new boolean[]{true, true, false};
-				break;
-			case(7) :
-				this.group = new boolean[]{true, true, true};
-				break;
-		}
-		switch(octal.charAt(OTHER)) {
-			case(0) :
-				this.other = new boolean[]{false, false, false};
-				break;
-			case(1) :
-				this.other = new boolean[]{false, false, true};
-				break;
-			case(2) :
-				this.other = new boolean[]{false, true, false};
-				break;
-			case(3) :
-				this.other = new boolean[]{false, true, true};
-				break;
-			case(4) :
-				this.other = new boolean[]{true, false, false};
-				break;
-			case(5) :
-				this.other = new boolean[]{true, false, true};
-				break;
-			case(6) :
-				this.other = new boolean[]{true, true, false};
-				break;
-			case(7) :
-				this.other = new boolean[]{true, true, true};
-				break;
-		}
-	}
-		
+			
     private String getAccessString(boolean[] permissions) {
         String read = permissions[READ] ? "r" : "-";
         String write = permissions[WRITE] ? "w" : "-";

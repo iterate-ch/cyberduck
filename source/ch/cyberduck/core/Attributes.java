@@ -86,6 +86,7 @@ public class Attributes extends Observable {
     }
 	
     public void setPermission(Permission p) {
+		log.debug("setPermission:"+p);
 		this.permission = p;
     }
 	

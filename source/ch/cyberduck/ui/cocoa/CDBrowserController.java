@@ -645,7 +645,7 @@ public class CDBrowserController implements Observer {
 				Session session = parent.getSession().copy();
 				while (enumerator.hasMoreElements()) {
 					Path item = parent.copy(session);
-					item.setPath(parent.getAbsolute(), new java.io.File((String)enumerator.nextElement()));
+					item.setPath(parent.getAbsolute(), new Local((String)enumerator.nextElement()));
 					items.add(item);
 				}
 				CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_UPLOAD);
@@ -801,32 +801,32 @@ public class CDBrowserController implements Observer {
     public boolean validateToolbarItem(NSToolbarItem item) {
 		//	log.debug("validateToolbarItem:"+item.label());
 		String label = item.label();
-		backButton.setEnabled(pathController.numberOfItems() > 0);
-		upButton.setEnabled(pathController.numberOfItems() > 0);
-		pathPopup.setEnabled(pathController.numberOfItems() > 0);
+		backButton.setEnabled(!this.isMounting && pathController.numberOfItems() > 0);
+		upButton.setEnabled(!this.isMounting && pathController.numberOfItems() > 0);
+		pathPopup.setEnabled(!this.isMounting && pathController.numberOfItems() > 0);
 		if(label.equals(NSBundle.localizedString("New Connection"))) {
 			return !this.isMounting;
 		}
 		if(label.equals(NSBundle.localizedString("Refresh"))) {
-			return this.mounted;
+			return !this.isMounting && this.mounted;
 		}
 		else if(label.equals(NSBundle.localizedString("Download"))) {
-			return this.mounted && browserTable.selectedRow() != -1;
+			return !this.isMounting && this.mounted && browserTable.selectedRow() != -1;
 		}
 		else if(label.equals(NSBundle.localizedString("Upload"))) {
-			return this.mounted;
+			return !this.isMounting && this.mounted;
 		}
 		else if(label.equals(NSBundle.localizedString("Delete"))) {
-			return this.mounted && browserTable.selectedRow() != -1;
+			return !this.isMounting && this.mounted && browserTable.selectedRow() != -1;
 		}
 		else if(label.equals(NSBundle.localizedString("New Folder"))) {
-			return this.mounted;
+			return !this.isMounting && this.mounted;
 		}
 		else if(label.equals(NSBundle.localizedString("Get Info"))) {
-			return this.mounted && browserTable.selectedRow() != -1;
+			return !this.isMounting && this.mounted && browserTable.selectedRow() != -1;
 		}
 		else if (label.equals(NSBundle.localizedString("Disconnect"))) {
-			return this.mounted && host.getSession().isConnected();
+			return !this.isMounting && this.mounted && host.getSession().isConnected();
 		}
 		return true;
     }
@@ -836,28 +836,28 @@ public class CDBrowserController implements Observer {
         String sel = cell.action().name();
 		log.debug("validateMenuItem:"+sel);
         if (sel.equals("gotoButtonClicked:")) {
-			return this.mounted;
+			return !this.isMounting && this.mounted;
         }
         if (sel.equals("infoButtonClicked:")) {
-			return this.mounted && browserTable.selectedRow() != -1;
+			return !this.isMounting && this.mounted && browserTable.selectedRow() != -1;
         }
         if (sel.equals("folderButtonClicked:")) {
-			return this.mounted;
+			return !this.isMounting && this.mounted;
         }
         if (sel.equals("deleteButtonClicked:")) {
-			return this.mounted && browserTable.selectedRow() != -1;
+			return !this.isMounting && this.mounted && browserTable.selectedRow() != -1;
         }
         if (sel.equals("refreshButtonClicked:")) {
-			return this.mounted;
+			return !this.isMounting && this.mounted;
         }
         if (sel.equals("insideButtonClicked:")) {
-			return this.mounted && browserTable.selectedRow() != -1;
+			return !this.isMounting && this.mounted && browserTable.selectedRow() != -1;
         }
         if (sel.equals("upButtonClicked:")) {
-			return this.mounted;
+			return !this.isMounting && this.mounted;
         }
         if (sel.equals("backButtonClicked:")) {
-			return this.mounted;
+			return !this.isMounting && this.mounted;
         }
         return true;
     }

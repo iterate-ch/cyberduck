@@ -56,7 +56,8 @@ public class HTTPPath extends Path {
     }
     
     public Path copy(Session s) {
-		HTTPPath copy = new HTTPPath((HTTPSession)s, this.getParent().getAbsolute(), this.getLocal());
+		HTTPPath copy = new HTTPPath((HTTPSession)s, this.getAbsolute());
+//		HTTPPath copy = new HTTPPath((HTTPSession)s, this.getParent().getAbsolute(), this.getLocal());
 		copy.attributes = this.attributes;
 		//	copy.status = this.status;
 		return copy;

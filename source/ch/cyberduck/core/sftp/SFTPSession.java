@@ -119,8 +119,12 @@ public class SFTPSession extends Session {
 				try {
 					connect();
 					SFTPPath home;
-					if(host.hasReasonableDefaultPath())
-						home = new SFTPPath(SFTPSession.this, host.getDefaultPath());
+					if(host.hasReasonableDefaultPath()) {
+						if(host.getDefaultPath().charAt(0) != '/')
+							home = new SFTPPath(SFTPSession.this, ((SFTPPath)SFTPSession.this.workdir()).getAbsolute(), host.getDefaultPath());
+						else
+							home = new SFTPPath(SFTPSession.this, host.getDefaultPath());						
+					}
 					else
 						home = (SFTPPath)SFTPSession.this.workdir();
 					home.list();

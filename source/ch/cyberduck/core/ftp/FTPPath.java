@@ -65,7 +65,8 @@ public class FTPPath extends Path {
     }
 	
     public Path copy(Session s) {
-		FTPPath copy = new FTPPath((FTPSession)s, this.getParent().getAbsolute(), this.getLocal());
+		FTPPath copy = new FTPPath((FTPSession)s, this.getAbsolute());
+//		FTPPath copy = new FTPPath((FTPSession)s, this.getParent().getAbsolute(), this.getLocal());
 		copy.attributes = this.attributes;
 		//	copy.status = this.status;
 		return copy;
@@ -201,7 +202,7 @@ public class FTPPath extends Path {
 		log.debug("changePermissions:"+permissions);
 		try {
 			session.check();
-			session.FTP.site("chmod "+permissions+" "+this.getAbsolute());
+			session.FTP.site("chmod "+permissions+" \""+this.getAbsolute()+"\"");
 		}
 		catch(FTPException e) {
 			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
@@ -367,7 +368,6 @@ public class FTPPath extends Path {
 				this.upload(out, in);
 				this.session.FTP.validateTransfer();
 				this.changePermissions(this.getLocal().attributes.getPermission().getOctalCode());
-//				this.changePermissions(Integer.parseInt(Integer.toOctalString(this.getLocalPermissions())));
 			}
 			else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 				this.session.FTP.setTransferType(FTPTransferType.ASCII);

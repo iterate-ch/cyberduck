@@ -382,7 +382,7 @@ public class CDTransferController implements Observer, Validator {
 								proposal = filename.substring(0, index)+"-"+no+filename.substring(index);
 							else
 								proposal = filename+"-"+no;
-							path.setLocal(new java.io.File(parent, proposal));
+							path.setLocal(new Local(parent, proposal));
 							no++;
 						}
 						this.init();

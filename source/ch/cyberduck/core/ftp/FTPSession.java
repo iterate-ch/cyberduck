@@ -102,8 +102,12 @@ public class FTPSession extends Session {
 				try {
 					connect();
 					FTPPath home;
-					if(host.hasReasonableDefaultPath())
-						home = new FTPPath(FTPSession.this, host.getDefaultPath());
+					if(host.hasReasonableDefaultPath()) {
+						if(host.getDefaultPath().charAt(0) != '/')
+							home = new FTPPath(FTPSession.this, ((FTPPath)FTPSession.this.workdir()).getAbsolute(), host.getDefaultPath());
+						else
+							home = new FTPPath(FTPSession.this, host.getDefaultPath());						
+					}
 					else
 						home = (FTPPath)FTPSession.this.workdir();
 					home.list();

@@ -45,85 +45,85 @@ import org.apache.log4j.Logger;
  */
 public class CDDownloadController {
     private static Logger log = Logger.getLogger(CDDownloadController.class);
-
+	
     private NSWindow window;
     public void setWindow(NSWindow window) {
-	this.window = window;
+		this.window = window;
     }
-
+	
     private NSTextField urlField;
     public void setUrlField(NSTextField urlField) {
-	this.urlField = urlField;
+		this.urlField = urlField;
     }
-
+	
     private static NSMutableArray allDocuments = new NSMutableArray();
-
+	
     public CDDownloadController() {
-	allDocuments.addObject(this);
+		allDocuments.addObject(this);
         if (false == NSApplication.loadNibNamed("Download", this)) {
             log.fatal("Couldn't load Download.nib");
             return;
         }
     }
-
+	
     public NSWindow window() {
-	return this.window;
+		return this.window;
     }
-
+	
     public void awakeFromNib() {
-	log.debug("awakeFromNib");
-	NSPoint origin = this.window.frame().origin();
-	this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
+		log.debug("awakeFromNib");
+		NSPoint origin = this.window.frame().origin();
+		this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
     }
-
+	
     public void windowWillClose(NSNotification notification) {
-	this.window().setDelegate(null);
-	allDocuments.removeObject(this);
+		this.window().setDelegate(null);
+		allDocuments.removeObject(this);
     }
     
     public void closeWindow(NSButton sender) {
-	switch(sender.tag()) {
-	    case(NSAlertPanel.DefaultReturn):
-		URL url = null;
-		try {
-		    url = new URL(urlField.stringValue());
-		    Host host = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()));
-		    Session session = host.getSession();
-		    Path path = null;
-		    String file = url.getFile();
-		    if(file.length() > 1) {
-			if(host.getProtocol().equals(Session.FTP)) {
-			    path = new FTPPath((FTPSession)session, file);
-			}
-			else if(host.getProtocol().equals(Session.HTTP)) {
-			    path = new HTTPPath((HTTPSession)session, file);
-			}
-			this.window().orderOut(null);
-			CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
-			controller.transfer();
-		    }
-		    else
-			throw new MalformedURLException("URL must contain reference to a file");
+		switch(sender.tag()) {
+			case(NSAlertPanel.DefaultReturn):
+				URL url = null;
+				try {
+					url = new URL(urlField.stringValue());
+					Host host = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()));
+					Session session = host.getSession();
+					Path path = null;
+					String file = url.getFile();
+					if(file.length() > 1) {
+						if(host.getProtocol().equals(Session.FTP)) {
+							path = new FTPPath((FTPSession)session, file);
+						}
+						else if(host.getProtocol().equals(Session.HTTP)) {
+							path = new HTTPPath((HTTPSession)session, file);
+						}
+						this.window().orderOut(null);
+						CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
+						controller.transfer();
+					}
+					else
+						throw new MalformedURLException("URL must contain reference to a file");
+				}
+					catch(MalformedURLException e) {
+						NSAlertPanel.beginCriticalAlertSheet(
+										   "Error", //title
+										   "OK",// defaultbutton
+										   null,//alternative button
+										   null,//other button
+										   this.window(), //docWindow
+										   null, //modalDelegate
+										   null, //didEndSelector
+										   null, // dismiss selector
+										   null, // context
+										   e.getMessage() // message
+										   );
+						
+					}
+					break;
+			case(NSAlertPanel.AlternateReturn):
+				this.window().orderOut(null);
+				break;
 		}
-		catch(MalformedURLException e) {
-		    NSAlertPanel.beginCriticalAlertSheet(
-				   "Error", //title
-				   "OK",// defaultbutton
-				   null,//alternative button
-				   null,//other button
-				   this.window(), //docWindow
-				   null, //modalDelegate
-				   null, //didEndSelector
-				   null, // dismiss selector
-				   null, // context
-				   e.getMessage() // message
-				   );
-
-		}
-		break;
-	    case(NSAlertPanel.AlternateReturn):
-		this.window().orderOut(null);
-		break;
-	}
     }
 }

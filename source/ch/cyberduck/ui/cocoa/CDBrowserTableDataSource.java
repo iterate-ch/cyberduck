@@ -23,9 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.FTPPath;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.sftp.SFTPPath;
@@ -46,7 +44,6 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
     public CDBrowserTableDataSource() {
 		super();
 		this.data = new ArrayList();
-		log.debug("CDBrowserTableDataSource");
     }
     
     public void setWorkdir(Path workdir) {
@@ -99,7 +96,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
     
     //setValue()
     public void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row) {
-		log.debug("tableViewSetObjectValueForLocation:"+row);
+//		log.debug("tableViewSetObjectValueForLocation:"+row);
 		Path p = (Path)data.get(row);
 		p.rename((String)value);
     }
@@ -153,9 +150,9 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
 		for(int i = 0; i < filesList.count(); i++) {
 			log.debug(filesList.objectAtIndex(i));
 			if(this.workdir() instanceof FTPPath)
-				roots[i] = new FTPPath((FTPSession)session, this.workdir().getAbsolute(), new java.io.File((String)filesList.objectAtIndex(i)));
+				roots[i] = new FTPPath((FTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i)));
 			if(this.workdir() instanceof SFTPPath)
-				roots[i] = new SFTPPath((SFTPSession)session, this.workdir().getAbsolute(), new java.io.File((String)filesList.objectAtIndex(i)));
+				roots[i] = new SFTPPath((SFTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i)));
 		}
 		CDTransferController controller = new CDTransferController(roots, Queue.KIND_UPLOAD);
 		controller.transfer();
@@ -241,7 +238,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
 		NSMutableArray promisedDragNames = new NSMutableArray();
 		for(int i = 0; i < promisedDragPaths.length; i++) {
 			try {
-				promisedDragPaths[i].setLocal(new java.io.File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), promisedDragPaths[i].getName()));
+				promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), promisedDragPaths[i].getName()));
 				promisedDragNames.addObject(promisedDragPaths[i].getName());
 			}
 			catch(java.io.UnsupportedEncodingException e) {
@@ -355,7 +352,6 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
 			if(selectedColumn != null)
 				tableView.setIndicatorImage(null, selectedColumn);
 			this.selectedColumn = tableColumn;
-//			tableView.setHighlightedTableColumn(tableColumn);
 		}
 		tableView.setIndicatorImage(this.sortAscending ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), tableColumn);
 		this.sort(tableColumn, sortAscending);

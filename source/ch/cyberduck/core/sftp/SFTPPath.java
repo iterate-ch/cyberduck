@@ -58,7 +58,8 @@ public class SFTPPath extends Path {
     }
 	
     public Path copy(Session s) {
-		SFTPPath copy = new SFTPPath((SFTPSession)s, this.getParent().getAbsolute(), this.getLocal());
+		SFTPPath copy = new SFTPPath((SFTPSession)s, this.getAbsolute());
+//		SFTPPath copy = new SFTPPath((SFTPSession)s, this.getParent().getAbsolute(), this.getLocal());
 		copy.attributes = this.attributes;
 		//	copy.status = this.status;
 		return copy;
@@ -271,7 +272,6 @@ public class SFTPPath extends Path {
 		try {
 			session.check();
 			session.SFTP.changePermissions(this.getAbsolute(), permissions);
-//			session.SFTP.changePermissions(this.getAbsolute(), this.attributes.getPermission().getString());
 		}
 		catch(SshException e) {
 			session.log("SSH Error: "+e.getMessage(), Message.ERROR);
