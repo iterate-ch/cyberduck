@@ -1,14 +1,15 @@
-change<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.4.1</string>
+	<string>2.5b1</string>
 	<key>file</key>
-	<string>Cyberduck-2.4.1.dmg</string>
+	<string>Cyberduck-2.5b1.dmg</string>
 	<key>comment</key>
         <string>Changelog:
-2.4.1
+2.5b1
+- [Feature] FTP using TLS support (using AUTH TLS as in draft-murray-auth-ftp-ssl-16) for the control channel (sending login credentials) and optionally the data channel (file listings and transfers) if the server is capable of.
 - [Feature] History of recently connected hosts in connection dialog
 - [Feature] History of recently connected hosts in bookmark menu
 - [Feature] Selecting remote server timezone in synchronization dialog
@@ -20,11 +21,19 @@ change<?xml version="1.0" encoding="UTF-8"?>
 - [Feature] Apply button in File Info dialog
 - [Feature] Duplicate files on server
 
+2.4.1
+- [Localize] Hungarian Localization
+- [Bugfix] Modification date changed when uploading files from the external editor
+- [Bugfix] Browser window could lock up when reconnecting and login was needed
+- [Feature] Disconnect item in menubar
+
 2.4
 - [Localize] Swedish Localization
 - [Feature] Additional encryption ciphers supported (SFTP)
 - [Feature] Action dropdown menu in toolbar
 - [Feature] Added Jedit X to the list of supported editors (http://www.artman21.net/product/JeditX/)
+- [Feature] Added mi to the list of supported editors (http://mimikaki.net/)
+- [Feature] Added Smultron to the list of supported editors (http://smultron.sourceforge.net/)
 - [Bugfix] Rendezvous implementation updated 
 - [Bugfix] Folder to synchronize not selectable in some cases
 - [Bugfix] Fallback to default directory when specified directory doesn't exist
