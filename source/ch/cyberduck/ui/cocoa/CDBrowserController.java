@@ -1802,7 +1802,7 @@ public class CDBrowserController extends CDController implements Observer {
 			return this.isMounted() && this.browserTable.selectedRow() != -1;
 		}
 		if(identifier.equals("upButtonClicked:")) {
-			return this.isMounted();
+			return this.isMounted() && !this.workdir().isRoot();
 		}
 		if(identifier.equals("backButtonClicked:")) {
 			return this.isMounted();

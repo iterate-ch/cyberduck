@@ -289,33 +289,33 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	
 	// ----------------------------------------------------------
 	//	Data Manipulation
-	// ----------------------------------------------------------
+    // ----------------------------------------------------------
 
-	public boolean add(Object host) {
-		super.add(host);
-		this.save();
-		return true;
-	}
+    public boolean add(Object host) {
+        super.add(host);
+        this.save();
+        return true;
+    }
 
-	public void add(int row, Object host) {
-		super.add(row, host);
-		this.save();
-	}
-	
-	public Object remove(int row) {
-		super.remove(row);
-		this.save();
-		return null;
-	}
+    public void add(int row, Object host) {
+        super.add(row, host);
+        this.save();
+    }
 
-	public void save() {
-		this.save(BOOKMARKS_FILE);
-	}
+    public Object remove(int row) {
+        super.remove(row);
+        this.save();
+        return null;
+    }
 
-	/**
-	 * Saves this collection of bookmarks in to a file to the users's application support directory
-	 * in a plist xml format
-	 */
+    public void save() {
+        this.save(BOOKMARKS_FILE);
+    }
+
+    /**
+     * Saves this collection of bookmarks in to a file to the users's application support directory
+     * in a plist xml format
+     */
 	public void save(java.io.File f) {
 		if(Preferences.instance().getBoolean("favorites.save")) {
 			try {
