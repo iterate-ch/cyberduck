@@ -1,0 +1,47 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                deleteButtonClicked = id; 
+                downloadButtonClicked = id; 
+                folderButtonClicked = id; 
+                infoButtonClicked = id; 
+                refreshButtonClicked = id; 
+            }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            CLASS = "ch.cyberduck.ui.cocoa.CDBrowserController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {
+                addBookmarkButton = NSButton; 
+                backButton = NSButton; 
+                bookmarkDrawer = NSDrawer; 
+                bookmarkTable = NSTableView; 
+                browserTable = NSTableView; 
+                editBookmarkButton = NSButton; 
+                logDrawer = NSDrawer; 
+                pathPopup = NSPopUpButton; 
+                progressIndicator = NSProgressIndicator; 
+                quickConnectPopup = NSComboBox; 
+                removeBookmarkButton = NSButton; 
+                searchField = NSTextField; 
+                showBookmarkButton = NSButton; 
+                statusIcon = NSImageView; 
+                statusLabel = NSTextField; 
+                upButton = NSButton; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = "java.lang.Object"; 
+        }, 
+        {
+            CLASS = "ch.cyberduck.ui.cocoa.CDTranscriptImpl"; 
+            LANGUAGE = Java; 
+            OUTLETS = {textView = NSTextView; }; 
+            SUPERCLASS = "java.lang.Object"; 
+        }
+    ); 
+    IBVersion = 1; 
+}
