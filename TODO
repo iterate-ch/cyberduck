@@ -3,6 +3,7 @@
 	ftps-data       989/tcp     # ftp protocol, data, over TLS/SSL
 	ftps            990/udp     # ftp protocol, control, over TLS/SSL
 	ftps            990/tcp     # ftp protocol, control, over TLS/SSL
+[OPEN] Server to Server Transfers (FXP)
 [OPEN] NSWorkspace noteFileSystemChangedAtPath when downloading
 [OPEN] SFTP protocol version 4 (support for SSH_FILEXFER_ATTR_OWNERGROUP)
 [OPEN] Group bookmarks (Outline View)
