@@ -9,9 +9,11 @@
                 downloadRadioCell = NSButtonCell; 
                 fileTableView = NSTableView; 
                 localField = NSTextField; 
+                localTimestampField = NSTextField; 
+                remoteTimestampField = NSTextField; 
                 statusIndicator = NSProgressIndicator; 
                 syncButton = NSButton; 
-                syncRadioCell = id; 
+                syncRadioCell = NSButtonCell; 
                 uploadRadioCell = NSButtonCell; 
                 urlField = NSTextField; 
                 window = NSWindow; 

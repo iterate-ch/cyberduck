@@ -289,7 +289,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             c.setResizable(true);
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
-            //log.info("Using date formatter with scheme "+NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString));
             c.dataCell().setFormatter(new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString),
                     true));
             this.browserTable.addTableColumn(c);

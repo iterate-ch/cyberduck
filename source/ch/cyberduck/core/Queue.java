@@ -233,7 +233,7 @@ public abstract class Queue extends Observable implements Observer {
 		for (Iterator iter = jobs.iterator(); iter.hasNext();) {
 			this.size += ((Path)iter.next()).status.getSize();
 		}
-		return !this.isCanceled();
+		return this.validator.isCanceled();
 	}
 	
 	protected abstract void process(Path p);

@@ -70,13 +70,12 @@ public abstract class AbstractValidator implements Validator {
 	}
 	
 	protected boolean validate(Path p) {
-        if (!this.isCanceled()) {
+        if (!this.isCanceled) {
 			if (p.attributes.isDirectory()) {
 				return this.validateDirectory(p);
 			}
 			if (p.attributes.isFile()) {
 				return this.validateFile(p);
-				
 			}
 		}
 		log.info("Canceled " + p.getName() + " - no further validation needed");

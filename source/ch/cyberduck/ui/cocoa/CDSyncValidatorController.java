@@ -71,6 +71,18 @@ public class CDSyncValidatorController extends CDValidatorController {
 	public void setUploadRadioCell(NSButtonCell uploadRadioCell) {
 		this.uploadRadioCell = uploadRadioCell;
 	}
+
+	private NSTextField localTimestampField;
+	
+	public void setLocalTimestampField(NSTextField localTimestampField) {
+		this.localTimestampField = localTimestampField;
+	}
+
+	private NSTextField remoteTimestampField;
+	
+	public void setRemoteTimestampField(NSTextField remoteTimestampField) {
+		this.remoteTimestampField = remoteTimestampField;
+	}
 	
 	private NSTextField urlField;
 	
@@ -109,6 +121,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 
 	public void cancelActionFired(NSButton sender) {
         this.setCanceled(true);
+		this.workset.clear();
         NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 	
@@ -120,25 +133,24 @@ public class CDSyncValidatorController extends CDValidatorController {
 	private List workset = new ArrayList();
 
 	public void reloadData() {
+		log.debug("reloadData");
 		this.fileTableView.deselectAll(null);
 		this.workset = new ArrayList();
 		for(Iterator i = this.candidates.iterator(); i.hasNext(); ) {
 			Path p = (Path)i.next();
 			if(mirrorRadioCell.state() == NSCell.OnState) {
 				this.workset.add(p);
-				continue;
 			}
-			if(downloadRadioCell.state() == NSCell.OnState) {
+			else if(downloadRadioCell.state() == NSCell.OnState) {
 				if(p.remote.exists())
 					this.workset.add(p);
-				continue;
 			}
-			if(uploadRadioCell.state() == NSCell.OnState) {
+			else if(uploadRadioCell.state() == NSCell.OnState) {
 				if(p.local.exists())
 					this.workset.add(p);
-				continue;
 			}
 		}
+		log.debug("Working set: "+this.workset);
 		this.fileTableView.reloadData();
 	}
 	
@@ -211,20 +223,51 @@ public class CDSyncValidatorController extends CDValidatorController {
 	// ----------------------------------------------------------
     // NSTableView.DataSource
     // ----------------------------------------------------------
+
+	private final NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
 	
 	public void tableViewSelectionDidChange(NSNotification notification) {
 		if(this.fileTableView.selectedRow() != -1) {
 			Path p = (Path)this.workset.get(this.fileTableView.selectedRow());
 			if(p != null) {
-				this.urlField.setAttributedStringValue(new NSAttributedString(p.getHost().getURL()+p.getAbsolute(), 
-																			  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-				this.localField.setAttributedStringValue(new NSAttributedString(p.getLocal().getAbsolute(),
-																				TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+				try {
+					if(p.local.exists()) {
+						this.localField.setAttributedStringValue(new NSAttributedString(p.getLocal().getAbsolute(),
+																						TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
+																 );
+						String localeTS = formatter.stringForObjectValue(new NSGregorianDate((double)p.local.getTimestamp().getTime()/1000, 
+																							 NSDate.DateFor1970)
+																		 );
+						this.localTimestampField.setAttributedStringValue(new NSAttributedString(localeTS, TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+					}
+					else {
+						this.localField.setStringValue("");
+						this.localTimestampField.setStringValue("");
+					}
+					if(p.remote.exists()) {
+						this.urlField.setAttributedStringValue(new NSAttributedString(p.getHost().getURL()+p.getAbsolute(), 
+																					  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
+															   );
+						String remoteTS = formatter.stringForObjectValue(new NSGregorianDate((double)p.remote.attributes.getTimestamp().getTime()/1000, 
+																							 NSDate.DateFor1970)
+																		 );
+						this.remoteTimestampField.setAttributedStringValue(new NSAttributedString(remoteTS, TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+					}
+					else {
+						this.urlField.setStringValue("");
+						this.remoteTimestampField.setStringValue("");
+					}
+				}
+				catch(NSFormatter.FormattingException e) {
+					log.error(e.toString());
+				}
 			}
 		}
 		else {
 			this.urlField.setStringValue("");
+			this.remoteTimestampField.setStringValue("");
 			this.localField.setStringValue("");
+			this.localTimestampField.setStringValue("");
 		}
 	}
 	
