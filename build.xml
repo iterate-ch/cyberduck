@@ -139,6 +139,31 @@
 	    </copy>
 	</target>
 
+	<target name="swing" depends="init">
+	    <mkdir dir="${classes}/swing" />
+	    <javac 
+		debug="${debug}"
+		deprecation="on"
+		classpath="${classpath}:${build}/core.jar" 
+		srcdir="${source}" 
+		destdir="${classes}/swing"
+		includes="ch/cyberduck/ui/swing/**">
+	    </javac>
+	    
+	    <jar jarfile="${build}/swing.jar"
+		update="yes">
+		<fileset dir="${classes}/swing/">
+		    <include name="ch/cyberduck/ui/swing/**/*.class"/>
+		</fileset>
+	    </jar>
+	    
+	    <copy todir="${app.jar}">
+		<fileset dir="${build}">
+		    <include name="swing.jar" />
+		</fileset>
+	    </copy>
+	</target>
+
 
 	<target name="ssh" depends="init">
 	    <mkdir dir="${classes}/ssh" />
