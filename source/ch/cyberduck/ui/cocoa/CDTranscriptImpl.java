@@ -70,7 +70,7 @@ public class CDTranscriptImpl implements Transcript {
 				// before aRange if the range's length is 0. If the range's location is 0, the formatting
 				// attributes of the first character in the receiver are used.
 				textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0),
-																new NSAttributedString(message+"\n", FIXED_WITH_FONT_ATTRIBUTES)); //@warning very bad performance
+																new NSAttributedString(message+"\n", FIXED_WITH_FONT_ATTRIBUTES));
 			}
 		});
 	}
