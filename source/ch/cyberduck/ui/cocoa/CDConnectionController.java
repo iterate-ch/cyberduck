@@ -361,6 +361,7 @@ public class CDConnectionController extends NSObject implements Observer {
             }
             else {
                 log.info("Password for " + usernameField.stringValue() + " NOT found in Keychain");
+                this.passField.setStringValue("");
             }
         }
     }

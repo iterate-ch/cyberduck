@@ -70,6 +70,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(J
 										NULL, //No attribute data to release
 										pass //Release data buffer allocated by SecKeychainFindGenericPassword
 										);
+			pass[passLength] = '\0';
 			return (*env)->NewStringUTF(env, pass);
 			break;
 		case errSecItemNotFound:

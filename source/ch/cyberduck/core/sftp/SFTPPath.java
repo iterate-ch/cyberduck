@@ -107,7 +107,7 @@ public class SFTPPath extends Path {
         session.addPathToHistory(this);
         if (refresh || files.size() == 0) {
             files.clear();
-            session.log("Listing " + this.getAbsolute(), Message.PROGRESS);
+            session.log("Listing "+this.getName(), Message.PROGRESS);
             SftpFile workingDirectory = null;
             try {
                 session.check();

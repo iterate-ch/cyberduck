@@ -45,6 +45,10 @@ public class CDLoginController extends LoginController {
 
     public void setUserField(NSTextField userField) {
         this.userField = userField;
+//        NSNotificationCenter.defaultCenter().addObserver(this,
+//														 new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
+//														 NSControl.ControlTextDidEndEditingNotification,
+//														 userField);
     }
 
     private NSTextField textField; // IBOutlet
@@ -92,7 +96,7 @@ public class CDLoginController extends LoginController {
         instances.removeObject(this);
         NSNotificationCenter.defaultCenter().removeObserver(this);
     }
-
+	
     private boolean done = false;
     private boolean tryAgain = false;
 

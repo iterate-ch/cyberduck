@@ -944,7 +944,13 @@ public class CDBrowserController extends NSObject implements Observer {
         if (identifier.equals("Edit") || identifier.equals("editButtonClicked:")) {
             if (this.isMounted() && browserModel.numberOfRowsInTableView(browserTable) > 0 && browserTable.selectedRow() != -1) {
                 Path p = (Path) browserModel.getEntry(browserTable.selectedRow());
-                return p.attributes.isFile();
+				String editorPath = null;
+				NSSelector absolutePathForAppBundleWithIdentifierSelector =
+                    new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
+				if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
+					editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(Preferences.instance().getProperty("editor.bundleIdentifier"));
+				}
+				return p.attributes.isFile() && editorPath != null;
             }
             return false;
         }
@@ -1064,13 +1070,14 @@ public class CDBrowserController extends NSObject implements Observer {
             item.setLabel(NSBundle.localizedString("Edit", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Edit", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Edit file in external editor", "Toolbar item tooltip"));
+			item.setImage(NSImage.imageNamed("pencil.tiff"));
             NSSelector absolutePathForAppBundleWithIdentifierSelector =
                     new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
             if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-                item.setImage(NSWorkspace.sharedWorkspace().iconForFile(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(Preferences.instance().getProperty("editor.bundleIdentifier"))));
-            }
-            else {
-                item.setImage(NSImage.imageNamed("pencil.tiff"));
+				String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(Preferences.instance().getProperty("editor.bundleIdentifier"));
+				if(editorPath != null) {
+					item.setImage(NSWorkspace.sharedWorkspace().iconForFile(editorPath));
+				}
             }
             item.setTarget(this);
             item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));

@@ -137,16 +137,11 @@ public class Queue extends Observable implements Observer { //Thread {
                 }
             }
         }
-        Object statusObj = dict.objectForKey("Status");
-        if (statusObj != null) {
-            this.status = (String) statusObj;
-        }
         this.init();
     }
 
     public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
-        dict.setObjectForKey(this.status, "Status");
         dict.setObjectForKey(this.kind + "", "Kind");
         dict.setObjectForKey(this.getRoot().getHost().getAsDictionary(), "Host");
         NSMutableArray r = new NSMutableArray();
