@@ -105,9 +105,11 @@ public abstract class Session extends Observable {
 			if(host.hasReasonableDefaultPath()) {
 				if(host.getDefaultPath().charAt(0) != '/') {
 					home = PathFactory.createPath(this, workdir().getAbsolute(), host.getDefaultPath());
+					home.attributes.setType(Path.DIRECTORY_TYPE);
 				}
 				else {
 					home = PathFactory.createPath(this, host.getDefaultPath());
+					home.attributes.setType(Path.DIRECTORY_TYPE);
 				}
 				if(null == home.list(encoding, true, showHiddenFiles)) {
 					// the default path does not exist

@@ -239,7 +239,9 @@ public class SFTPSession extends Session {
 
 	public synchronized Path workdir() {
 		try {
-			return PathFactory.createPath(this, SFTP.getDefaultDirectory());
+			Path workdir = PathFactory.createPath(this, SFTP.getDefaultDirectory());
+			workdir.attributes.setType(Path.DIRECTORY_TYPE);
+			return workdir;
 		}
 		catch(SshException e) {
 			this.log("SSH Error: "+e.getMessage(), Message.ERROR);
