@@ -245,4 +245,8 @@ public class VMSFTPEntryParser extends FTPFileEntryParserImpl
         }
         return (entry.length() == 0 ? null : entry.toString());
     }
+	
+	protected boolean isVersioning() {
+        return false;
+    }	
 }

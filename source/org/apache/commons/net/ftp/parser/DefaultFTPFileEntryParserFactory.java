@@ -56,6 +56,8 @@ package org.apache.commons.net.ftp.parser;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 
+import com.enterprisedt.net.ftp.FTPException;
+
 /**
  * This is the default implementation of the 
  * FTPFileEntryParserFactory interface.  This is the 
@@ -82,15 +84,19 @@ public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFacto
      * @return the FTPFileEntryParser corresponding to the supplied key.
      * @see FTPFileEntryParser
      */
-    public FTPFileEntryParser createFileEntryParser(String key) {
+    public FTPFileEntryParser createFileEntryParser(String key) throws FTPException {
 		String ukey = null;
 		if (null != key) {
 			ukey = key.toUpperCase();
 			if (ukey.indexOf("UNIX") >= 0) {
 				return new UnixFTPEntryParser();
 			} else if (ukey.indexOf("VMS") >= 0) {
-				return new VMSVersioningFTPEntryParser();
+				throw new FTPException("'"+key+"' is not currently a supported system. Think about a good motivation 
+for the author of this sofware to write an appropriate parser. See the Help > Send Feedback
+menu.");
+				//return new VMSFTPEntryParser();
 			} else if (ukey.indexOf("WINDOWS") >= 0) {
+				//@todo check for 4.0 or 5.0. (either windos or unix file listings)
 				return new NTFTPEntryParser();
 			} else if (ukey.indexOf("OS/2") >= 0) {
 				return new OS2FTPEntryParser();

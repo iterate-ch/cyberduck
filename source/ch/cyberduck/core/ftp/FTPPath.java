@@ -369,10 +369,17 @@ public class FTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			this.download(in, out);
+			if (in != null) {
+				in.close();
+			}
+			if (out != null) {
+				out.flush();
+				out.close();
+			}
 			if (this.status.isComplete()) {
 				this.session.FTP.validateTransfer();
 			}
-			if(status.isCanceled()) {
+			if (status.isCanceled()) {
 				this.session.FTP.abor();
 			}
 		}
@@ -417,10 +424,17 @@ public class FTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			this.download(in, out);
+			if (in != null) {
+				in.close();
+			}
+			if (out != null) {
+				out.flush();
+				out.close();
+			}			
 			if (this.status.isComplete()) {
 				this.session.FTP.validateTransfer();
 			}
-			if(status.isCanceled()) {
+			if (status.isCanceled()) {
 				this.session.FTP.abor();
 			}
 		}
@@ -507,6 +521,13 @@ public class FTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			this.upload(out, in);
+			if (in != null) {
+				in.close();
+			}
+			if (out != null) {
+				out.flush();
+				out.close();
+			}
 			if (this.status.isComplete()) {
 				this.session.FTP.validateTransfer();
 			}
@@ -557,12 +578,20 @@ public class FTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			this.upload(out, in);
-			if (this.status.isComplete())
+			if (in != null) {
+				in.close();
+			}
+			if (out != null) {
+				out.flush();
+				out.close();
+			}
+			if (this.status.isComplete()) {
 				this.session.FTP.validateTransfer();
+			}
 			if (status.isCanceled()) {
 				this.session.FTP.abor();
 			}
-			if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
+			if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
 				this.changePermissions(this.getLocal().getPermission(), false);
 			}
 		}
