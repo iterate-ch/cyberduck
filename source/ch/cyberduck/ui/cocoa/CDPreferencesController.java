@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
  * @version $Id$
@@ -93,6 +94,30 @@ public class CDPreferencesController {
     // Outlets
     // ----------------------------------------------------------
 
+	private NSPopUpButton editorCombobox;
+	
+	public void setEditorCombobox(NSPopUpButton editorCombobox) {
+		this.editorCombobox = editorCombobox;
+        this.editorCombobox.setTarget(this);
+        this.editorCombobox.setAction(new NSSelector("editorComboboxClicked", new Class[]{NSPopUpButton.class}));
+        this.editorCombobox.removeAllItems();
+		java.util.Map editors = Editor.SUPPORTED_EDITORS;
+		String[] items = new String[editors.size()];
+        java.util.Iterator iterator = editors.keySet().iterator();
+        int i = 0;
+        while (iterator.hasNext()) {
+            items[i] = (String)iterator.next();
+            i++;
+        }
+        this.editorCombobox.addItemsWithTitles(new NSArray(items));
+		this.editorCombobox.setTitle(Preferences.instance().getProperty("editor.name"));
+	}
+
+	public void editorComboboxClicked(NSPopUpButton sender) {
+        Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
+        Preferences.instance().setProperty("editor.bundleIdentifier", (String)Editor.SUPPORTED_EDITORS.get(sender.titleOfSelectedItem()));
+    }
+	
     private NSPopUpButton encodingCombobox;
 
     public void setEncodingCombobox(NSPopUpButton encodingCombobox) {

@@ -148,6 +148,7 @@ img/history.tiff -text
 img/info.tiff svneol=native#unset
 img/newfolder.tiff -text
 img/notfound.tiff -text
+img/pencil.tiff -text
 img/refresh.tiff svneol=native#unset
 img/reload.tiff svneol=native#unset
 img/remove.tiff svneol=native#unset

@@ -168,11 +168,13 @@ public class CDInfoController {
 
         NSImage fileIcon = null;
         if (file.isFile()) {
-            this.iconImageView.setImage(fileIcon = CDIconCache.instance().get(file.getExtension()));
+			fileIcon = CDIconCache.instance().get(file.getExtension());
+			fileIcon.setSize(new NSSize(32f, 32f));
         }
         if (file.isDirectory()) {
-            this.iconImageView.setImage(fileIcon = NSImage.imageNamed("folder32.tiff"));
+            fileIcon = NSImage.imageNamed("folder32.tiff");
         }
+		this.iconImageView.setImage(fileIcon);
 
         (NSNotificationCenter.defaultCenter()).addObserver(this,
                 new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),

@@ -26,6 +26,7 @@ import java.util.*;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
  * @version $Id$
@@ -190,7 +191,7 @@ public class CDBrowserController implements Observer {
     public void browserTableRowDoubleClicked(Object sender) {
         log.debug("browserTableRowDoubleClicked");
         searchField.setStringValue("");
-        if (browserTable.numberOfSelectedRows() > 0) {
+        if (browserModel.size() > 0 && browserTable.numberOfSelectedRows() > 0) {
             Path p = (Path) browserModel.getEntry(browserTable.selectedRow()); //last row selected
             if (p.isFile() || browserTable.numberOfSelectedRows() > 1) {
 				this.downloadButtonClicked(sender);
@@ -339,7 +340,6 @@ public class CDBrowserController implements Observer {
                     while (i.hasNext()) {
                         next = (Path) i.next();
                         if(next.getName().toLowerCase().startsWith(searchString.toLowerCase())) {
-//                        if (next.getName().toLowerCase().indexOf(searchString.toLowerCase()) != -1) {
                             subset.add(next);
                         }
                     }
@@ -638,6 +638,19 @@ public class CDBrowserController implements Observer {
     // Selector methods for the toolbar items
     // ----------------------------------------------------------
 
+	public void editButtonClicked(Object sender) {
+		NSEnumerator enum = browserTable.selectedRowEnumerator();
+		while (enum.hasMoreElements()) {
+			int selected = ((Integer) enum.nextElement()).intValue();
+			Path path = browserModel.getEntry(selected);
+			if(path.attributes.isFile()) {
+//				Editor editor = new Editor(path);
+//				editor.open();
+				Editor.instance().open(path);
+			}
+		}
+	}
+
     public void gotoButtonClicked(Object sender) {
         log.debug("folderButtonClicked");
         CDGotoController controller = new CDGotoController(pathController.workdir());
@@ -726,7 +739,7 @@ public class CDBrowserController implements Observer {
     }
 
 	public void downloadButtonClicked(Object sender) {
-		if (browserTable.numberOfSelectedRows() > 0) {
+		if (browserModel.size() > 0 && browserTable.numberOfSelectedRows() > 0) {
 			NSEnumerator enum = browserTable.selectedRowEnumerator();
 			if (this.isMounted()) {
 				while (enum.hasMoreElements()) {
@@ -932,6 +945,13 @@ public class CDBrowserController implements Observer {
 		if (sel.equals("editBookmarkButtonClicked:")) {
 			return bookmarkTable.numberOfSelectedRows() == 1;
 		}
+		if (sel.equals("editButtonClicked:")) {
+			if( this.isMounted() && browserModel.size() > 0 && browserTable.numberOfSelectedRows() == 1) {
+				Path p = (Path) browserModel.getEntry(browserTable.selectedRow());
+				return p.attributes.isFile();
+			}
+			return false;
+        }
 		if (sel.equals("gotoButtonClicked:")) {
             return this.isMounted();
         }
@@ -982,6 +1002,15 @@ public class CDBrowserController implements Observer {
         else if (identifier.equals("Upload")) {
             return this.isMounted();
         }
+		else if (identifier.equals("Edit")) {
+            if(this.isMounted()) {
+				if( browserModel.size() > 0 && browserTable.numberOfSelectedRows() == 1) {
+					Path p = (Path) browserModel.getEntry(browserTable.selectedRow()); //last row selected
+					return p.attributes.isFile();
+				}
+			}
+			return false;
+		}
         else if (identifier.equals("Delete")) {
             return this.isMounted() && browserTable.selectedRow() != -1;
         }
@@ -1053,6 +1082,21 @@ public class CDBrowserController implements Observer {
             item.setTarget(this);
             item.setAction(new NSSelector("infoButtonClicked", new Class[]{Object.class}));
         }
+        else if (itemIdentifier.equals("Edit")) {
+            item.setLabel(NSBundle.localizedString("Edit", "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString("Edit", "Toolbar item"));
+            item.setToolTip(NSBundle.localizedString("Edit file in external editor", "Toolbar item tooltip"));
+			NSSelector absolutePathForAppBundleWithIdentifierSelector =
+                new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
+			if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
+				item.setImage(NSWorkspace.sharedWorkspace().iconForFile(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(Preferences.instance().getProperty("editor.bundleIdentifier"))));
+            }
+			else {
+				item.setImage(NSImage.imageNamed("pencil.tiff"));
+			}
+			item.setTarget(this);
+            item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));
+        }
         else if (itemIdentifier.equals("Delete")) {
             item.setLabel(NSBundle.localizedString("Delete", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Delete", "Toolbar item"));
@@ -1094,6 +1138,7 @@ public class CDBrowserController implements Observer {
             "Quick Connect",
             "Refresh",
             "Get Info",
+			"Edit",
             "Download",
             "Upload",
             NSToolbarItem.FlexibleSpaceItemIdentifier,
@@ -1109,6 +1154,7 @@ public class CDBrowserController implements Observer {
             "Refresh",
             "Download",
             "Upload",
+            "Edit",
             "Delete",
             "New Folder",
             "Get Info",
@@ -1443,6 +1489,10 @@ public class CDBrowserController implements Observer {
         // ----------------------------------------------------------
         // Data access
         // ----------------------------------------------------------
+		
+		public int size() {
+			return this.currentData.size();
+		}
 
         public void clear() {
             this.fullData.clear();
