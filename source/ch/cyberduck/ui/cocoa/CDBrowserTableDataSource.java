@@ -34,7 +34,7 @@ import java.util.*;
 /**
 * @version $Id$
  */
-public class CDBrowserTableDataSource {//implements NSTableView.DataSource {
+public class CDBrowserTableDataSource extends CDTableDataSource {//implements NSTableView.DataSource {
     private static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 	
     private List data;

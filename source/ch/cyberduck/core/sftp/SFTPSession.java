@@ -106,12 +106,9 @@ public class SFTPSession extends Session {
 		this.log(SSH.getServerId(), Message.TRANSCRIPT);
 		
 		log.info(SSH.getAvailableAuthMethods(host.getLogin().getUsername()));
-		
 		this.login();
 		this.log("Starting SFTP subsystem...", Message.PROGRESS);
-		//	SFTP = SSH.openSftpClient();
         this.SFTP = SSH.openSftpChannel();
-		
 		this.log("SFTP subsystem ready", Message.PROGRESS);
 		this.setConnected(true);
     }

@@ -41,13 +41,15 @@ public class CDBrowserController implements Observer {
     }
 		
     private CDBrowserTableDataSource browserModel;
+	private CDTableDelegate browserTableDelegate;
     private NSTableView browserTable; // IBOutlet
     public void setBrowserTable(NSTableView browserTable) {
 		this.browserTable = browserTable;
 		this.browserTable.setTarget(this);
-//		this.browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
-		this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
 		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
+		this.browserTable.setDelegate(this.browserTableDelegate = new CDBrowserTableDataDelegate());
+		this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
+//		this.browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
 		this.browserTable.setDoubleAction(new NSSelector("browserTableViewDidClickTableRow", new Class[] {Object.class}));
     }
 		
@@ -71,12 +73,13 @@ public class CDBrowserController implements Observer {
     }
 	
     private CDBookmarkTableDataSource bookmarkModel;
+	private CDTableDelegate bookmarkTableDelegate;
     private NSTableView bookmarkTable; // IBOutlet
     public void setBookmarkTable(NSTableView bookmarkTable) {
 		this.bookmarkTable = bookmarkTable;
-		this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
 		this.bookmarkTable.setTarget(this);
-		this.bookmarkTable.setDelegate(this);
+		this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
+		this.bookmarkTable.setDelegate(this.bookmarkTableDelegate = new CDBookmarkTableDataDelegate());
 		this.bookmarkTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
 //		this.bookmarkTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
 		this.bookmarkTable.tableColumnWithIdentifier("FAVORITE").setDataCell(new CDBookmarkCell());

@@ -20,14 +20,18 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Bookmarks;
+
+import java.util.List;
+
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+
 import org.apache.log4j.Logger;
 
 /**
 * @version $Id$
  */
-public class CDBookmarkTableDataSource {//implements NSTableView.DataSource {
+public class CDBookmarkTableDataSource extends CDTableDataSource {//implements NSTableView.DataSource {
     private static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 	
 	Bookmarks bookmarks = CDBookmarksImpl.instance();
@@ -181,4 +185,8 @@ public class CDBookmarkTableDataSource {//implements NSTableView.DataSource {
 		}
 		return promisedDragNames;
     }
+	
+	public List values() {
+		return this.bookmarks.values();
+    }	
 }	
