@@ -203,11 +203,11 @@ public abstract class Path {// extends Observable {
      * or the full path if it is a directory
      */
     public String getName() {
-	if(name == null) {
+//	if(name == null) {
 	    String abs = this.getAbsolute();
 	    int index = abs.lastIndexOf("/");
 	    name = (index > 0) ? abs.substring(index + 1) : abs;
-	}
+//	}
 	return name;
     }
 

@@ -131,7 +131,6 @@ public class SFTPPath extends Path {
 	    this.setCache(files);
 	    if(notifyobservers) {
 		session.callObservers(this);
-//		session.log("Listing complete", Message.PROGRESS);
 	    }
 	}
 	catch(SshException e) {
@@ -205,6 +204,7 @@ public class SFTPPath extends Path {
 	    session.check();
 	    session.log("Renaming "+this.getName()+" to "+filename, Message.PROGRESS);
 	    session.SFTP.renameFile(this.getAbsolute(), this.getParent().getAbsolute()+"/"+filename);
+	    this.setPath(this.getParent().getAbsolute(), filename);
 	    this.getParent().list();
 	}
 	catch(SshException e) {
@@ -223,7 +223,6 @@ public class SFTPPath extends Path {
 	try {
 	    session.check();
 	    session.log("Make directory "+name, Message.PROGRESS);
-//		session.SFTP.makeDirectory(this.getAbsolute());
 	    session.SFTP.makeDirectory(name);
 	    this.list();
 	}
@@ -258,7 +257,6 @@ public class SFTPPath extends Path {
 	log.debug("changePermissions");
 	try {
 	    session.check();
-//		session.SFTP.changePermissions(this.getAbsolute(), this.attributes.getPermission().getCode());
 	    session.SFTP.changePermissions(this.getAbsolute(), this.attributes.getPermission().getString());
 	}
 	catch(SshException e) {
@@ -377,7 +375,7 @@ public class SFTPPath extends Path {
 	    SftpFile remoteFile = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
 	    FileAttributes attrs = remoteFile.getAttributes();
 	    //@ todo default permissions
-	    attrs.setPermissions("rw-r-----");
+	    attrs.setPermissions("rw-r--r--");
 	    session.SFTP.setAttributes(remoteFile, attrs);
 	    SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);
 	    if(out == null) {

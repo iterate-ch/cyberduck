@@ -21,17 +21,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Bug fixes, suggestions and comments should be sent to bruce@enterprisedt.com
- *
- *  Change Log:
- *
- *        $Log$
- *        Revision 1.1  2003/02/10 20:13:12  dkocher
- *        Initial revision
- *
- *        Revision 1.1  2002/11/19 22:01:25  bruceb
- *        changes for 1.2
- *
- *
  */
 
 package com.enterprisedt.net.ftp;

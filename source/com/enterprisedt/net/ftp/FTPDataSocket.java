@@ -21,22 +21,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Bug fixes, suggestions and comments should be sent to bruce@enterprisedt.com
- *
- *  Change Log:
- *
- *        $Log$
- *        Revision 1.1  2003/02/10 20:13:12  dkocher
- *        Initial revision
- *
- *        Revision 1.2  2002/11/19 22:01:25  bruceb
- *        changes for 1.2
- *
- *        Revision 1.1  2001/10/09 20:53:46  bruceb
- *        Active mode changes
- *
- *        Revision 1.1  2001/10/05 14:42:03  bruceb
- *        moved from old project
- *
  */
 
 package com.enterprisedt.net.ftp;
@@ -47,7 +31,6 @@ import java.io.OutputStream;
 
 import java.net.Socket;
 import java.net.ServerSocket;
-import java.net.InetAddress;
 
 
 /**

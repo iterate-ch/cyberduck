@@ -21,31 +21,11 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Bug fixes, suggestions and comments should be sent to bruce@enterprisedt.com
- *
- *  Change Log:
- *
- *    $Log$
- *    Revision 1.3  2003/04/16 17:24:34  dkocher
- *    No log message.
- *
- *    Revision 1.2  2003/03/21 14:14:43  dkocher
- *    No log message.
- *
- *    Revision 1.1.1.1  2003/02/10 20:13:12  dkocher
- *    initial import
- *
- *    Revision 1.4  2002/11/19 22:01:25  bruceb
- *    changes for 1.2
- *
- *    Revision 1.3  2001/10/09 20:54:08  bruceb
- *    No change
- *
- *    Revision 1.1  2001/10/05 14:42:04  bruceb
- *    moved from old project
- *
  */
 
 package com.enterprisedt.net.ftp;
+
+import java.io.IOException;
 
 /**
  *  FTP specific exceptions
@@ -54,9 +34,6 @@ package com.enterprisedt.net.ftp;
  *  @version    $Revision$
  *
  */
-
-import java.io.IOException;
-
  public class FTPException extends IOException {
 
     /**

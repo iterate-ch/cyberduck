@@ -21,38 +21,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Bug fixes, suggestions and comments should be sent to bruce@enterprisedt.com
- *
- *  Change Log:
- *
- *        $Log$
- *        Revision 1.6  2003/05/23 20:22:46  dkocher
- *        No log message.
- *
- *        Revision 1.5  2003/04/23 13:20:23  dkocher
- *        No log message.
- *
- *        Revision 1.4  2003/04/16 17:24:34  dkocher
- *        No log message.
- *
- *        Revision 1.3  2003/04/01 22:06:58  dkocher
- *        *** empty log message ***
- *
- *        Revision 1.2  2003/03/21 14:14:43  dkocher
- *        No log message.
- *
- *        Revision 1.1.1.1  2003/02/10 20:13:12  dkocher
- *        initial import
- *
- *        Revision 1.4  2002/11/19 22:01:25  bruceb
- *        changes for 1.2
- *
- *        Revision 1.3  2001/10/09 20:53:46  bruceb
- *        Active mode changes
- *
- *        Revision 1.1  2001/10/05 14:42:03  bruceb
- *        moved from old project
- *
- */
+*/
 
 package com.enterprisedt.net.ftp;
 
@@ -65,7 +34,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.FileReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.BufferedInputStream;
@@ -74,16 +42,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.File;
+
 import java.text.SimpleDateFormat;
 import java.text.ParsePosition;
+
 import java.net.InetAddress;
-import java.net.Socket;
 import java.util.Date;
 import java.util.Vector;
 import java.util.Properties;
-import org.apache.log4j.Logger;
-import ch.cyberduck.core.Transcript;
-
 
 /**
  *  Supports client-side FTP. Most common
@@ -95,8 +61,6 @@ import ch.cyberduck.core.Transcript;
  */
 public class FTPClient {
 
-    private static Logger log = Logger.getLogger(FTPClient.class);
-
     /**
      *  Revision control id
      */
@@ -105,7 +69,7 @@ public class FTPClient {
     /**
      *  Format to interpret MTDM timestamp
      */
-    private SimpleDateFormat tsFormat = 
+    private SimpleDateFormat tsFormat =
         new SimpleDateFormat("yyyyMMddHHmmss");
 
     /**
@@ -142,22 +106,22 @@ public class FTPClient {
      */
     private FTPReply lastValidReply;
 
+
     public FTPClient() {
 	super();
     }
 
     /**
-     *  Creates the control
-	*  socket
+	*  Creates the control
+     *  socket
      *
      *  @param   remoteHost  the remote hostname
      *  @param   controlPort  port for control stream
      */
     public void connect(String remoteHost, int controlPort) throws IOException, FTPException {
-	log.debug("connect");
-        this.control = new FTPControlSocket(remoteHost, controlPort);
+        control = new FTPControlSocket(remoteHost, controlPort);
     }
-
+    
     /**
      *   Set the TCP timeout on the underlying socket.
      *
@@ -168,29 +132,13 @@ public class FTPClient {
      *
      *   @param millis The length of the timeout, in milliseconds
      */
-    public void setTimeout(int millis) throws IOException {
-	log.debug("setTimeout");
+    public void setTimeout(int millis)
+        throws IOException {
 
         this.timeout = millis;
         control.setTimeout(millis);
     }
 
-
-    /**
-	* @return true if the control socket isn't null
-     */
-    public boolean isAlive() {
-	if(null == control)
-	    return false;
-	try {
-	    this.noop();
-	    return true;
-	}
-	catch(IOException e) {
-	    return false;
-	}
-    }
-    
     /**
      *  Set the connect mode
      *
@@ -254,127 +202,11 @@ public class FTPClient {
         lastValidReply = control.validateReply(reply, validCodes);
     }
 
-
     /**
-	*  Validate that the put() or get() was successful
-	*  @modified
-	*/
-    public void validateTransfer() 
-        throws IOException, FTPException {
-
-	    // check the control response
-	    String[] validCodes = {"226", "250"};
-	    String reply = control.readReply();
-	    lastValidReply = control.validateReply(reply, validCodes);
-	}
-
-    /**
-	*  Request the server to set up the put
-	*
-	*  @param  remoteFile  name of remote file in
-	*                      current directory
-	*  @param  append      true if appending, false otherwise
-	*/
-    private void initPut(String remoteFile, boolean append)
-        throws IOException, FTPException {
-
-	    // set up data channel
-	    data = control.createDataSocket(connectMode);
-	    data.setTimeout(timeout);
-
-	    // send the command to store
-	    String cmd = append ? "APPE " : "STOR ";
-	    String reply = control.sendCommand(cmd + remoteFile);
-
-	    // Can get a 125 or a 150
-	    String[] validCodes = {"125", "150"};
-	    lastValidReply = control.validateReply(reply, validCodes);
-	}
-
-
-    /**
-	*  Request to the server that the get is set up
-	*
-	*  @param  remoteFile  name of remote file
-	*  @modified
-	*/
-    private void initGet(String remoteFile, int resume)
-        throws IOException, FTPException {
-
-	    // set up data channel
-	    data = control.createDataSocket(connectMode);
-	    data.setTimeout(timeout);
-
-	    // send the restart command
-	    if(resume > 0) {
-		String[] validReplyCodes = {"125", "350"};
-		lastValidReply= control.validateReply(control.sendCommand("REST " + resume), validReplyCodes);
-	    }
-
-	    // send the retrieve command
-	    String reply = control.sendCommand("RETR " + remoteFile);
-
-	    // Can get a 125 or a 150
-	    String[] validCodes1 = {"125", "150"};
-	    lastValidReply = control.validateReply(reply, validCodes1);
-	}
-
-    
-    /**
-	*  Put as ASCII, i.e. read a line at a time and write
-     *  inserting the correct FTP separator
-     *
-     *  @param localPath   full path of local file to read from
-     *  @param remoteFile  name of remote file we are writing to
-     *  @param  append      true if appending, false otherwise
-     */
-//@todo    public java.io.Writer putASCII(String remoteFile, boolean append) throws IOException, FTPException {
-    public java.io.Writer putASCII(String remoteFile) throws IOException, FTPException {
-	        this.initPut(remoteFile, false);
-	        return new OutputStreamWriter(data.getOutputStream());
-    }
-        /**
-	*  Put as binary, i.e. read and write raw bytes
-	 *
-	 *  @param localPath   full path of local file to read from
-	 *  @param remoteFile  name of remote file we are writing to
-	 *  @param  append      true if appending, false otherwise
-	 */
-//@todo    public java.io.OutputStream putBinary(String remoteFile, boolean append) throws IOException, FTPException {
-    public java.io.OutputStream putBinary(String remoteFile) throws IOException, FTPException {
-	        this.initPut(remoteFile, false);
-	        return data.getOutputStream();
-    }
-
-
-    /**
-	*  Get as ASCII, i.e. read a line at a time and write
-     *  using the correct newline separator for the OS
-     *
-     *  @param localPath   full path of local file to write to
-     *  @param remoteFile  name of remote file
-     */
-    public java.io.Reader getASCII(String remoteFile, int resume) throws IOException, FTPException {
-	this.initGet(remoteFile, resume);
-	return new InputStreamReader(data.getInputStream());
-    }
-         /**
-	*  Get as binary file, i.e. straight transfer of data
-	  *
-	  *  @param localPath   full path of local file to write to
-	  *  @param remoteFile  name of remote file
-	  */
-    public java.io.InputStream getBinary(String remoteFile, int resume) throws IOException, FTPException {
-	this.initGet(remoteFile, resume);
-	return data.getInputStream();
-    }
-
-    
-    /**
-	*  Set up SOCKS v4/v5 proxy settings. This can be used if there
-	*  is a SOCKS proxy server in place that must be connected thru.
-	*  Note that setting these properties directs <b>all</b> TCP  
-	*  sockets in this JVM to the SOCKS proxy
+     *  Set up SOCKS v4/v5 proxy settings. This can be used if there
+     *  is a SOCKS proxy server in place that must be connected thru.
+     *  Note that setting these properties directs <b>all</b> TCP
+     *  sockets in this JVM to the SOCKS proxy
      *
      *  @param  port  SOCKS proxy port
      *  @param  host  SOCKS proxy hostname
@@ -387,14 +219,14 @@ public class FTPClient {
     }
 
     /**
-     *  Set up SOCKS username and password for SOCKS username/password 
+     *  Set up SOCKS username and password for SOCKS username/password
      *  authentication. Often, no authentication will be required
      *  but the SOCKS server may be configured to request these.
      *
-     *  @param  username   the SOCKS username 
-     *  @param  password   the SOCKS password 
+     *  @param  username   the SOCKS username
+     *  @param  password   the SOCKS password
      */
-    public static void initSOCKSAuthentication(String username, 
+    public static void initSOCKSAuthentication(String username,
                                                String password) {
         Properties props = System.getProperties();
         props.put("java.net.socks.username", username);
@@ -430,6 +262,117 @@ public class FTPClient {
 
 
     /**
+	*  Validate that the put() or get() was successful
+     *  @modified
+     */
+    public void validateTransfer()
+        throws IOException, FTPException {
+	    
+	    // check the control response
+	    String[] validCodes = {"226", "250"};
+	    String reply = control.readReply();
+	    lastValidReply = control.validateReply(reply, validCodes);
+	}
+    
+    /**
+	*  Request the server to set up the put
+     *
+     *  @param  remoteFile  name of remote file in
+     *                      current directory
+     *  @param  append      true if appending, false otherwise
+     */
+    private void initPut(String remoteFile, boolean append)
+        throws IOException, FTPException {
+	    
+	    // set up data channel
+	    data = control.createDataSocket(connectMode);
+	    data.setTimeout(timeout);
+	    
+	    // send the command to store
+	    String cmd = append ? "APPE " : "STOR ";
+	    String reply = control.sendCommand(cmd + remoteFile);
+	    
+	    // Can get a 125 or a 150
+	    String[] validCodes = {"125", "150"};
+	    lastValidReply = control.validateReply(reply, validCodes);
+	}
+
+
+    /**
+	*  Request to the server that the get is set up
+     *
+     *  @param  remoteFile  name of remote file
+     *  @modified
+     */
+    private void initGet(String remoteFile, int resume)
+        throws IOException, FTPException {
+	    
+	    // set up data channel
+	    data = control.createDataSocket(connectMode);
+	    data.setTimeout(timeout);
+	    
+	    // send the restart command
+	    if(resume > 0) {
+		String[] validReplyCodes = {"125", "350"};
+		lastValidReply= control.validateReply(control.sendCommand("REST " + resume), validReplyCodes);
+	    }
+	    
+	    // send the retrieve command
+	    String reply = control.sendCommand("RETR " + remoteFile);
+	    
+	    // Can get a 125 or a 150
+	    String[] validCodes1 = {"125", "150"};
+	    lastValidReply = control.validateReply(reply, validCodes1);
+	}
+
+
+    /**
+	*  Put as ASCII, i.e. read a line at a time and write
+     *  inserting the correct FTP separator
+     *
+     *  @param localPath   full path of local file to read from
+     *  @param remoteFile  name of remote file we are writing to
+     *  @param  append      true if appending, false otherwise
+     */
+    public java.io.Writer putASCII(String remoteFile, boolean append) throws IOException, FTPException {
+	this.initPut(remoteFile, false);
+	return new OutputStreamWriter(data.getOutputStream());
+    }
+    /**
+	*  Put as binary, i.e. read and write raw bytes
+     *
+     *  @param localPath   full path of local file to read from
+     *  @param remoteFile  name of remote file we are writing to
+     *  @param  append      true if appending, false otherwise
+     */
+    public java.io.OutputStream putBinary(String remoteFile, boolean append) throws IOException, FTPException {
+	this.initPut(remoteFile, false);
+	return data.getOutputStream();
+    }
+
+    /**
+	*  Get as ASCII, i.e. read a line at a time and write
+     *  using the correct newline separator for the OS
+     *
+     *  @param localPath   full path of local file to write to
+     *  @param remoteFile  name of remote file
+     */
+    public java.io.Reader getASCII(String remoteFile, int resume) throws IOException, FTPException {
+	this.initGet(remoteFile, resume);
+	return new InputStreamReader(data.getInputStream());
+    }
+    /**
+	*  Get as binary file, i.e. straight transfer of data
+     *
+     *  @param localPath   full path of local file to write to
+     *  @param remoteFile  name of remote file
+     */
+    public java.io.InputStream getBinary(String remoteFile, int resume) throws IOException, FTPException {
+	this.initGet(remoteFile, resume);
+	return data.getInputStream();
+    }
+    
+    /**
      *  Run a site-specific command on the
      *  server. Support for commands is dependent
      *  on the server
@@ -457,9 +400,8 @@ public class FTPClient {
             return false;
     }
 
-    
     /**
-     *  List current directory's contents as an array of strings of 
+     *  List current directory's contents as an array of strings of
      *  filenames.
      *
      *  @return  an array of current directory listing strings
@@ -479,7 +421,7 @@ public class FTPClient {
     public String[] dir(String dirname)
         throws IOException, FTPException {
 
-        return dir(dirname, false);
+        return dir(dirname, true);
     }
 
 
@@ -505,48 +447,50 @@ public class FTPClient {
         // send the retrieve command
         String command = full ? "LIST ":"NLST ";
         if (dirname != null)
-            command += dirname;        
+            command += dirname;
 
         // some FTP servers bomb out if NLST has whitespace appended
         command = command.trim();
         String reply = control.sendCommand(command);
 
-        // Can get a 125 or a 150
-        String[] validCodes1 = {"125", "150"};
-        lastValidReply = control.validateReply(reply, validCodes1);
+        // check the control response. wu-ftp returns 550 if the
+        // directory is empty, so we handle 550 appropriately. Similarly
+        // proFTPD returns 450 
+        String[] validCodes1 = {"125", "150", "450", "550"};
+        lastValidReply = control.validateReply(reply, validCodes1);  
 
-        // get an character input stream to read data from ... AFTER we
-        // have the ok to go ahead
-        LineNumberReader in =
-            new LineNumberReader(
-                new InputStreamReader(data.getInputStream()));
-
-        // read a line at a time
-        Vector lines = new Vector();
-        String line = null;
-        while ((line = in.readLine()) != null) {
-	    Transcript.instance().transcript(line);
-            lines.add(line);
-        }
-
-        try {
-            in.close();
-            data.close();
-        }
-        catch (IOException ignore) {}       
-
-        // check the control response - some servers seem to return
-        // with 550 if no files found (although not a standard reply for
-        // these commands in RFC 959)
-        String[] validCodes2 = {"226", "250", "550"};
-        reply = control.readReply();
-        lastValidReply = control.validateReply(reply, validCodes2);
-
-        // if we got a 550, return an empty array
+        // an empty array of files for 450/550
         String[] result = new String[0];
-        if (!lastValidReply.getReplyCode().equals("550"))       
-            result = (String[])lines.toArray(new String[0]);
 
+        // a normal reply ... extract the file list
+        String replyCode = lastValidReply.getReplyCode();
+        if (!replyCode.equals("450") && !replyCode.equals("550")) {
+            // get an character input stream to read data from .
+            LineNumberReader in =
+                new LineNumberReader(
+                     new InputStreamReader(data.getInputStream()));
+
+            // read a line at a time
+            Vector lines = new Vector();    
+            String line = null;
+            while ((line = in.readLine()) != null) {
+                lines.add(line);
+            }        
+            try {
+                in.close();
+                data.close();
+            }
+            catch (IOException ignore) {}
+                
+            // check the control response
+            String[] validCodes2 = {"226", "250"};
+            reply = control.readReply();
+            lastValidReply = control.validateReply(reply, validCodes2);
+
+            // empty array is default
+            if (!lines.isEmpty())
+                result = (String[])lines.toArray(result);
+        }
         return result;
     }
 
@@ -558,29 +502,6 @@ public class FTPClient {
     public FTPReply getLastValidReply() {
         return lastValidReply;
     }
-
-
-    /**
-     *  Switch debug of responses on or off
-     *
-     *  @param  on  true if you wish to have responses to
-     *              stdout, false otherwise
-     */
-    /*
-    public void debugResponses(boolean on) {
-        control.debugResponses(on);
-    }
-     */
-
-     /**
-      *  Set the logging stream, replacing
-      *  stdout
-      *
-      *  @param log  the new logging stream
-      */
-//     public void setLogStream(PrintWriter log) {
-//         control.setLogStream(log);
-//     }
 
     /**
      *  Get the current transfer type
@@ -614,7 +535,21 @@ public class FTPClient {
         transferType = type;
     }
 
-
+    /**
+	* Wrapper for the command <code>size [fileName]</code>.  If the file does
+     * not exist, we return -1;
+     */
+    public long size(String fileName) throws IOException, FTPException {
+	String reply = control.sendCommand("SIZE " + fileName);
+        //control.validateReply(reply, "213");
+        try {
+            return Long.parseLong(reply.substring(4));
+        }
+        catch (Exception e) {
+            return -1L;
+        }
+    }
+    
     /**
      *  Delete the specified remote file
      *
@@ -677,13 +612,7 @@ public class FTPClient {
         lastValidReply = control.validateReply(reply, "257");
     }
 
-    public void cdup()
-	throws IOException, FTPException {
 
-	String reply = control.sendCommand("CDUP");
-	lastValidReply = control.validateReply(reply, "250");
-    }
-    
     /**
      *  Change the remote working directory to
      *  that supplied
@@ -698,10 +627,18 @@ public class FTPClient {
         lastValidReply = control.validateReply(reply, "250");
     }
 
+    public void cdup()
+	throws IOException, FTPException {
+
+	    String reply = control.sendCommand("CDUP");
+	    lastValidReply = control.validateReply(reply, "250");
+	}
+    
+
     /**
      *  Get modification time for a remote file
      *
-     *  @param    remoteFile   name of remote file 
+     *  @param    remoteFile   name of remote file
      *  @return   modification time of file as a date
      */
     public Date modtime(String remoteFile)
@@ -709,9 +646,9 @@ public class FTPClient {
 
         String reply = control.sendCommand("MDTM " + remoteFile);
         lastValidReply = control.validateReply(reply, "213");
-        
+
         // parse the reply string ...
-        Date ts = tsFormat.parse(lastValidReply.getReplyText(), 
+        Date ts = tsFormat.parse(lastValidReply.getReplyText(),
                                  new ParsePosition(0));
         return ts;
     }
@@ -726,17 +663,17 @@ public class FTPClient {
 
         String reply = control.sendCommand("PWD");
         lastValidReply = control.validateReply(reply, "257");
-        
-        // get the reply text and extract the dir 
+
+        // get the reply text and extract the dir
         // listed in quotes, if we can find it. Otherwise
         // just return the whole reply string
         String text = lastValidReply.getReplyText();
-        int start = text.indexOf('"')+1;
-        int end = text.lastIndexOf('"');                
+        int start = text.indexOf('"');
+        int end = text.lastIndexOf('"');
         if (start >= 0 && end > start)
-            return text.substring(start, end);
+            return text.substring(start+1, end);
         else
-            return text;        
+            return text;
     }
 
     /**
@@ -753,30 +690,7 @@ public class FTPClient {
     }
 
     /**
-	* Wrapper for the command <code>size [fileName]</code>.  If the file does
-     * not exist, we return -1;
-     */
-    public long size(String fileName) throws IOException, FTPException {
-	        String reply = control.sendCommand("SIZE " + fileName);
-        //control.validateReply(reply, "213");
-        try {
-            return Long.parseLong(reply.substring(4));
-        }
-        catch (Exception e) {
-            return -1L;
-        }
-    }
-        /**
-	* NOOP
-	 * 200 NOOP command successful.
-	 */
-    public void noop() throws IOException, FTPException {
-        String reply = control.sendCommand("NOOP");
-        control.validateReply(reply, "200");
-    }
-    
-    /**
-	*  Get the help text for the specified command
+     *  Get the help text for the specified command
      *
      *  @param  command  name of the command to get help on
      *  @return help text from the server for the supplied command
@@ -785,26 +699,50 @@ public class FTPClient {
         throws IOException, FTPException {
 
         String reply = control.sendCommand("HELP " + command);
-	    String[] validCodes = {"211", "214"};
-	    lastValidReply = control.validateReply(reply, validCodes);
-	    return lastValidReply.getReplyText();
-	}
+        String[] validCodes = {"211", "214"};
+        lastValidReply = control.validateReply(reply, validCodes);
+        return lastValidReply.getReplyText();
+    }
 
     /**
-	*  Quit the FTP session
+	* NOOP
+     * 200 NOOP command successful.
+     */
+    public void noop() throws IOException, FTPException {
+        String reply = control.sendCommand("NOOP");
+        control.validateReply(reply, "200");
+    }
+    
+    /**
+     *  Quit the FTP session
      *
      */
-    public void quit() throws IOException, FTPException {
-	if(control != null) {
-	    try {
-		String reply = control.sendCommand("QUIT");
-		String[] validCodes = {"221", "226"};
-		lastValidReply = control.validateReply(reply, validCodes);
-	    }
-	    finally { // ensure we clean up the connection
-		control.logout();
-		control = null;
-	    }
+    public void quit()
+        throws IOException, FTPException {
+
+        try {
+            String reply = control.sendCommand("QUIT");
+            String[] validCodes = {"221", "226"};
+            lastValidReply = control.validateReply(reply, validCodes);
+        }
+        finally { // ensure we clean up the connection
+            control.logout();
+            control = null;
+        }
+    }
+
+    /**
+	* @return true if the control socket isn't null
+     */
+    public boolean isAlive() {
+	if(null == control)
+	    return false;
+	try {
+	    this.noop();
+	    return true;
+	}
+	catch(IOException e) {
+	    return false;
 	}
     }
 }

@@ -169,8 +169,9 @@ public class CDInfoController {//implements Observer {
 	
 	if(filenameField.stringValue() != file.getName()) {
 	    String newName = filenameField.stringValue();
+	    log.debug("Before renaming:"+file.toString());
 	    file.rename(newName);
-//	    file.setPath(file.getParent().getAbsolute(), newName);
+	    log.debug("After renaming:"+file.toString());
 	}
     }
     

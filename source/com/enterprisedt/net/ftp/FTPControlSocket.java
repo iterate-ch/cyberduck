@@ -21,38 +21,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Bug fixes, suggestions and comments should be sent to bruce@enterprisedt.com
- *
- *  Change Log:
- *
- *        $Log$
- *        Revision 1.6  2003/05/23 20:22:46  dkocher
- *        No log message.
- *
- *        Revision 1.5  2003/04/16 17:24:34  dkocher
- *        No log message.
- *
- *        Revision 1.4  2003/04/01 22:06:58  dkocher
- *        *** empty log message ***
- *
- *        Revision 1.3  2003/03/28 00:00:28  dkocher
- *        No log message.
- *
- *        Revision 1.2  2003/03/21 14:14:43  dkocher
- *        No log message.
- *
- *        Revision 1.1.1.1  2003/02/10 20:13:12  dkocher
- *        initial import
- *
- *        Revision 1.4  2002/11/19 22:01:25  bruceb
- *        changes for 1.2
- *
- *        Revision 1.3  2001/10/09 20:53:46  bruceb
- *        Active mode changes
- *
- *        Revision 1.1  2001/10/05 14:42:04  bruceb
- *        moved from old project
- *
- *
  */
 
 package com.enterprisedt.net.ftp;
@@ -65,10 +33,11 @@ import java.io.OutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.net.InetAddress;
-import org.apache.log4j.Logger;
+
 import ch.cyberduck.core.Transcript;
 
 /**
@@ -79,8 +48,6 @@ import ch.cyberduck.core.Transcript;
  *
  */
  public class FTPControlSocket {
-
-     private static Logger log = Logger.getLogger(FTPControlSocket.class);
 
      /**
       *  Revision control id
@@ -95,19 +62,17 @@ import ch.cyberduck.core.Transcript;
      /**
       *   The control port number for FTP
       */
-     private static final int CONTROL_PORT = 21;
-
+     static final int CONTROL_PORT = 21;
+     
      /**
-      *   Controls if responses sent back by the
-      *   server are sent to assigned output stream
+      *   Used to flag messages
       */
-//     private boolean debugResponses = false;
-
+     private static final String DEBUG_ARROW = "---> ";
+     
      /**
-      *  Output stream debug is written to, 
-      *  stdout by default
+      *   Start of password message
       */
-//     private PrintWriter log = new PrintWriter(System.out);
+     private static final String PASSWORD_MESSAGE = DEBUG_ARROW + "PASS";
 
      /**
       *  The underlying socket.
@@ -125,19 +90,6 @@ import ch.cyberduck.core.Transcript;
       */
      private BufferedReader reader = null;
 
-
-     /**
-      *   Constructor. Performs TCP connection and
-      *   sets up reader/writer
-      *
-      *   @param   remoteHost   Remote hostname
-      */
-     public FTPControlSocket(String remoteHost) throws IOException, FTPException {
-	 this(remoteHost, CONTROL_PORT);
-	 log.debug("FTPControlSocket");
-     }
-
-
      /**
       *   Constructor. Performs TCP connection and
       *   sets up reader/writer. Allows different control
@@ -146,38 +98,10 @@ import ch.cyberduck.core.Transcript;
       *   @param   remoteHost   Remote hostname
       *   @param   controlPort  port for control stream
       */
-     public FTPControlSocket(String remoteHost, int controlPort) throws IOException, FTPException {
-
-         controlSock = new Socket(remoteHost, controlPort);
-         initStreams();
-         validateConnection();
-	 log.debug("FTPControlSocket");
-     }
-
-
-     /**
-      *   Constructor. Performs TCP connection and
-      *   sets up reader/writer
-      *
-      *   @param   remoteAddr   Remote inet address
-      */
-     public FTPControlSocket(InetAddress remoteAddr) throws IOException, FTPException {
-         this(remoteAddr, CONTROL_PORT);
-	 log.debug("FTPControlSocket");
-     }
-
-     /**
-      *   Constructor. Performs TCP connection and
-      *   sets up reader/writer. Allows different control
-      *   port to be used
-      *
-      *   @param   remoteAddr   Remote inet address
-      *   @param   controlPort  port for control stream
-      */
-     public FTPControlSocket(InetAddress remoteAddr, int controlPort)
+     public FTPControlSocket(String remoteHost, int controlPort)
          throws IOException, FTPException {
 
-         controlSock = new Socket(remoteAddr, controlPort);
+         controlSock = new Socket(remoteHost, controlPort);
          initStreams();
          validateConnection();
      }
@@ -187,8 +111,9 @@ import ch.cyberduck.core.Transcript;
       *   Checks that the standard 220 reply is returned
       *   following the initiated connection
       */
-     private void validateConnection() throws IOException, FTPException {
-	 log.debug("validateConnection");
+     private void validateConnection()
+         throws IOException, FTPException {
+
          String reply = readReply();
          validateReply(reply, "220");
      }
@@ -198,8 +123,9 @@ import ch.cyberduck.core.Transcript;
       *  Obtain the reader/writer streams for this
       *  connection
       */
-     private void initStreams() throws IOException {
-	 log.debug("initStreams");
+     private void initStreams()
+         throws IOException {
+
          // input stream
          InputStream is = controlSock.getInputStream();
          reader = new BufferedReader(new InputStreamReader(is));
@@ -230,9 +156,13 @@ import ch.cyberduck.core.Transcript;
      *
      *   @param millis The length of the timeout, in milliseconds
      */
-    void setTimeout(int millis) throws IOException {
+    void setTimeout(int millis)
+        throws IOException {
+
         if (controlSock == null)
-	    throw new IllegalStateException("Failed to set timeout - no control socket");
+            throw new IllegalStateException(
+                        "Failed to set timeout - no control socket");
+
         controlSock.setSoTimeout(millis);
     }
 
@@ -240,10 +170,8 @@ import ch.cyberduck.core.Transcript;
      /**
       *  Quit this FTP session and clean up.
       */
-     public void logout() throws IOException {
-
-         //log.flush();
-         //log = null;
+     public void logout()
+         throws IOException {
 
          IOException ex = null;
          try {
@@ -452,10 +380,10 @@ import ch.cyberduck.core.Transcript;
       *
       *  @return  reply to the supplied command
       */
-     String sendCommand(String command) throws IOException {
-	 Transcript.instance().transcript(command);
-         //if (debugResponses)
-             //log.println("---> " + command);
+     String sendCommand(String command)
+         throws IOException {
+
+    	 Transcript.instance().transcript(command);
 
          // send it
          writer.write(command + EOL);
@@ -464,7 +392,6 @@ import ch.cyberduck.core.Transcript;
          // and read the result
          return readReply();
      }
-
 
      /**
       *  Read the FTP server's reply to a previously
@@ -476,17 +403,19 @@ import ch.cyberduck.core.Transcript;
       *
       *  @return  reply string
       */
-     String readReply() throws IOException {
+     String readReply()
+         throws IOException {
+
          String firstLine = reader.readLine();
-	 log.debug("readReply:"+firstLine);
-         if (firstLine == null)
-             throw new IOException("Unexpect null reply received");
+         if (firstLine == null || firstLine.length() == 0)
+             throw new IOException("Unexpected null reply received");
 
          StringBuffer reply = new StringBuffer(firstLine);
-         //if (debugResponses)
-             //log.println(reply.toString());
 
+	 Transcript.instance().transcript(reply.toString());
+ 
          String replyCode = reply.toString().substring(0, 3);
+
          // check for multiline response and build up
          // the reply
          if (reply.charAt(3) == '-') {
@@ -497,8 +426,7 @@ import ch.cyberduck.core.Transcript;
                  if (line == null)
                      throw new IOException("Unexpected null reply received");
 
-                 //if (debugResponses)
-                     //log.println(line);
+		 Transcript.instance().transcript(line);
 
                  if (line.length() > 3 &&
                      line.substring(0, 3).equals(replyCode) &&
@@ -526,9 +454,9 @@ import ch.cyberduck.core.Transcript;
       *  @param   expectedReplyCode  the reply we expected to receive
       *
       */
-     FTPReply validateReply(String reply, String expectedReplyCode) throws IOException, FTPException {
-	 log.debug("validateReply:"+reply);
-	 Transcript.instance().transcript(reply);
+     FTPReply validateReply(String reply, String expectedReplyCode)
+         throws IOException, FTPException {
+
          // all reply codes are 3 chars long
          String replyCode = reply.substring(0, 3);
          String replyText = reply.substring(4);
@@ -552,10 +480,9 @@ import ch.cyberduck.core.Transcript;
       *  @return  an object encapsulating the server's reply
       *
       */
-     FTPReply validateReply(String reply, String[] expectedReplyCodes) throws IOException, FTPException {
-	 log.debug("validateReply:"+reply);
-	 Transcript.instance().transcript(reply);
-	 
+     FTPReply validateReply(String reply, String[] expectedReplyCodes)
+         throws IOException, FTPException {
+
          // all reply codes are 3 chars long
          String replyCode = reply.substring(0, 3);
          String replyText = reply.substring(4);
@@ -569,27 +496,6 @@ import ch.cyberduck.core.Transcript;
          // got this far, not recognised
          throw new FTPException(replyText, replyCode);
      }
+}
 
 
-     /**
-      *  Switch debug of responses on or off
-      *
-      *  @param  on  true if you wish to have responses to
-      *              stdout, false otherwise
-      */
- //    void debugResponses(boolean on) {
-//         debugResponses = on;
-  //   }
-
-     /**
-      *  Set the logging stream, replacing
-      *  stdout
-      *
-      *  @param log  the new logging stream
-      */
-//     void setLogStream(PrintWriter log) {
-//         this.log = log;
-//     }
- }
-
-//

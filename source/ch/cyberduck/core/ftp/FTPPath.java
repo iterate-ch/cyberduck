@@ -162,6 +162,7 @@ public class FTPPath extends Path {
 	    session.FTP.chdir(this.getParent().getAbsolute());
 	    session.log("Renaming "+this.getName()+" to "+filename, Message.PROGRESS);
 	    session.FTP.rename(this.getName(), filename);
+	    this.setPath(this.getParent().getAbsolute(), filename);
 	    this.getParent().list();
 	}
 	catch(FTPException e) {
@@ -212,7 +213,7 @@ public class FTPPath extends Path {
 	log.debug("changePermissions");
 	try {
 	    session.check();
-	    session.FTP.site("chmod \""+permissions+" "+this.getAbsolute()+"\"");
+	    session.FTP.site("chmod "+permissions+" "+this.getAbsolute());
 	}
 	catch(FTPException e) {
 	    session.log("FTP Error: "+e.getMessage(), Message.ERROR);
@@ -387,7 +388,7 @@ public class FTPPath extends Path {
 
 		session.log("Opening data stream...", Message.PROGRESS);
 
-		java.io.OutputStream out = session.FTP.putBinary(this.getAbsolute());//@todo resume
+		java.io.OutputStream out = session.FTP.putBinary(this.getAbsolute(), this.status.isResume());
 		if(out == null) {
 		    throw new IOException("Unable opening data stream");
 		}
@@ -406,7 +407,7 @@ public class FTPPath extends Path {
 		}
 
 		session.log("Opening data stream...", Message.PROGRESS);
-		java.io.Writer out = session.FTP.putASCII(this.getAbsolute());//@todo resume
+		java.io.Writer out = session.FTP.putASCII(this.getAbsolute(), this.status.isResume());
 		if(out == null) {
 		    throw new IOException("Unable opening data stream");
 		}
