@@ -20,12 +20,13 @@ public class CDPathPopUpButton extends NSPopUpButton implements Observer {
 	//	log.debug("update:"+arg);
 	if(o instanceof Host) {
 	    if(arg instanceof Path) {
+		log.debug("update:"+arg);
 		Path p = (Path)arg;
 		this.removeAllItems();
-		this.addItem(p.getPath());
+		this.addItem(p.getAbsolute());
 		while(!p.isRoot()) {
 		    p = p.getParent();
-		    this.addItem(p.getPath());
+		    this.addItem(p.getAbsolute());
 		}
 	    }
 	}

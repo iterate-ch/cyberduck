@@ -32,6 +32,8 @@ public class CDLogView extends NSScrollView implements Observer {
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
 	this.setDocumentView(documentView = new NSTextView());
+	documentView.setEditable(false);
+	documentView.setSelectable(true);
 	this.setHasVerticalScroller(true);
 	this.setHasHorizontalScroller(false);
     }
@@ -41,8 +43,16 @@ public class CDLogView extends NSScrollView implements Observer {
 	if(o instanceof Status) {
 	    Message msg = (Message)arg;
 	    if(msg.getTitle().equals(Message.TRANSCRIPT)) {
-		log.debug("documentView.insertText()");
-		documentView.insertText(msg.getDescription());
+
+		/**
+		* Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
+		 * formatting attributes of the first character of the text it replaces, or of the character immediately
+		 * before aRange if the range's length is 0. If the range's location is 0, the formatting
+		 * attributes of the first character in the receiver are used.
+*/
+		documentView.replaceCharactersInRange(new NSRange(documentView.string().length(), 0), msg.getDescription());
+//		documentView.scrollRangeToVisible(new NSRange(documentView.string().length()-1, documentView.string().length()-1));
+		
 	    }
 	}
     }

@@ -21,6 +21,8 @@
 
 package ch.cyberduck.ui.cocoa;
 
+import ch.cyberduck.core.Session;
+
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
@@ -53,8 +55,7 @@ public class CDConnectionDialog extends NSWindow {
     }
 
     public void awakeFromNib() {
-	log.debug("CDConnectionDialog:awakeFromNib");
-	this.textInputDidChange(null);
+	log.debug("awakeFromNib");
 //	this.urlLabel.setStringValue("");
 	// Notify the textInputDidChange() method if the user types.
 	(NSNotificationCenter.defaultCenter()).addObserver(
@@ -77,21 +78,27 @@ public class CDConnectionDialog extends NSWindow {
 						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
 						    NSControl.ControlTextDidChangeNotification,
 						    usernameField);
+
+	this.textInputDidChange(null);
+	this.portField.setIntValue(protocolPopup.selectedItem().tag());
+	this.pathField.setStringValue("~");
     }
 
-    private static final int SFTP_TAG = 1;
-    private static final int FTP_TAG = 2;
     
     public void protocolSelectionChanged(NSObject sender) {
+	log.debug("protocolSelectionChanged");
 	NSMenuItem selectedItem = protocolPopup.selectedItem();
-	log.debug("protocol selection changed");
-	if(selectedItem.tag() == SFTP_TAG)
-	    portField.setIntValue(22); //@todo: use constant
-	if(selectedItem.tag() == FTP_TAG)
-	    portField.setIntValue(21);
+	if(selectedItem.tag() == Session.SSH_PORT)
+	    portField.setIntValue(Session.SSH_PORT);
+	if(selectedItem.tag() == Session.FTP_PORT)
+	    portField.setIntValue(Session.FTP_PORT);
+	if(selectedItem.tag() == Session.HTTP_PORT)
+	    portField.setIntValue(Session.HTTP_PORT);
+	//@todo HTTPS
     }
 
     public void textInputDidChange(NSNotification sender) {
+	log.debug("textInputDidChange");
 	urlLabel.setStringValue(usernameField.stringValue()+"@"+hostNameField.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
     }
 

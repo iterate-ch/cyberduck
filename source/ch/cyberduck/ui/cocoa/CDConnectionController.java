@@ -117,13 +117,14 @@ public class CDConnectionController extends NSObject implements Observer {
 		Login login = new CDLogin(usernameField.stringValue(), passwordField.stringValue());
 		host = new Host(protocol, hostField.stringValue(), 22, login);
 	    }
+	    host.status.fireActiveEvent();
 
 	    mainWindow.setTitle(host.getName());
 	    
 	    host.addObserver((CDBrowserView)browserTable);
+	    host.addObserver((CDPathPopUpButton)pathPopUpButton);
 	    host.status.addObserver((CDStatusLabel)statusLabel);
 	    host.status.addObserver((CDLogView)logView);
-	    host.status.addObserver((CDPathPopUpButton)pathPopUpButton);
 	    host.status.addObserver((CDProgressWheel)progressIndicator);
 	    host.status.addObserver(this);
 	    
@@ -131,7 +132,6 @@ public class CDConnectionController extends NSObject implements Observer {
 	    //@todo only when sftp
 	    if(protocol.equals(Session.SFTP))
 		host.setHostKeyVerification(new CDHostKeyVerification());
-	    host.status.fireActiveEvent();
 	    session.start();
 	}
 	catch(IOException e) {

@@ -64,10 +64,11 @@ public class CDBrowserView extends NSTableView implements Observer {
 	* The delegate can modify the display attributes of a cell to alter the appearance of the cell.
 	* Because aCell is reused for every row in aTableColumn, the delegate must set the display attributes both when drawing special cells and when drawing normal cells.
 	*/
+    /*
     public void tableViewWillDisplayCell(NSTableView browserTable, Object c, NSTableColumn tableColumn, int row) {
 	String identifier = (String)tableColumn.identifier();
 	CDBrowserTableDataSource ds = (CDBrowserTableDataSource)this.dataSource();
-	log.debug(ds.toString());
+//@todo throws null pointer fo ds ???
         Path p = (Path)ds.tableViewObjectValueForLocation(browserTable, tableColumn, row);
 	NSTextFieldCell cell = (NSTextFieldCell)c;
 	cell.setDrawsBackground(true);
@@ -81,6 +82,7 @@ public class CDBrowserView extends NSTableView implements Observer {
 		cell.setImage(NSImage.imageNamed("folder.tiff"));
 	}
     }
+     */
 
     /**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
 	* The delegate can implement this method to disallow selection of particular rows.

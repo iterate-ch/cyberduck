@@ -90,17 +90,19 @@ public class CDMainWindow extends NSWindow {//implements Observer {
 	NSToolbar toolbar = new NSToolbar("mainToolbar");
 	this.toolbarItems = new NSMutableDictionary();
 
-	this.addToolbarItem(toolbarItems, "New Connection", "New Connection", "New Connection", "Connect to remote host", this, new NSSelector("openConnectionSheet", new Class[] {null}), NSImage.imageNamed("server.tiff"));
+	this.addToolbarItem(toolbarItems, "New Connection", "New Connection", "New Connection", "Connect to host", this, new NSSelector("openConnectionSheet", new Class[] {null}), NSImage.imageNamed("server.tiff"));
 
 	this.addToolbarItem(toolbarItems, "Back", "Back", "Back", "Show parent directory", this, new NSSelector("back", new Class[] {null}), NSImage.imageNamed("back.tiff"));
 
-	this.addToolbarItem(toolbarItems, "Path", "Path", "Path", null, this, null, null);
+	//    private void addToolbarItem(NSMutableDictionary toolbarItems, String identifier, String label, String paletteLabel, String toolTip, Object target, NSSelector action, NSImage image) {
+
+	this.addToolbarItem(toolbarItems, "Path", "Path", "Path", "Change working directory", this, null, null);
 	NSToolbarItem pathPopUpButtonItem = (NSToolbarItem)toolbarItems.objectForKey("Path");
 	pathPopUpButtonItem.setView(pathPopUpButton);
 	pathPopUpButtonItem.setMinSize(pathPopUpButton.frame().size());
 	pathPopUpButtonItem.setMaxSize(pathPopUpButton.frame().size());
 
-	this.addToolbarItem(toolbarItems, "Quick Connect", "Quick Connect", "Quick Connect", null, this, null, null);
+	this.addToolbarItem(toolbarItems, "Quick Connect", "Quick Connect", "Quick Connect", "Connect to host", this, null, null);
 	NSToolbarItem quickConnectItem = (NSToolbarItem)toolbarItems.objectForKey("Quick Connect");
 	quickConnectItem.setView(quickConnectField);
 	quickConnectItem.setMinSize(quickConnectField.frame().size());
@@ -126,7 +128,7 @@ public class CDMainWindow extends NSWindow {//implements Observer {
 
 	this.addToolbarItem(toolbarItems, "Get Info", "Get Info", "Get Info", "Show file permissions", this, new NSSelector("showInfo", new Class[] {null}), NSImage.imageNamed("info.tiff"));
 
-	this.addToolbarItem(toolbarItems, "Toggle Drawer", "Toggle Drawer", "Toggle Drawer", "Show connection transcript", this, new NSSelector("showTranscriptDrawer", new Class[] {null}), NSImage.imageNamed("transcript.tiff"));
+	this.addToolbarItem(toolbarItems, "Toggle Drawer", "Toggle Drawer", "Toggle Drawer", "Show connection transcript", this, new NSSelector("showTranscriptDrawer", new Class[] {NSObject.class}), NSImage.imageNamed("transcript.tiff"));
 
 	this.addToolbarItem(toolbarItems, "Delete", "Delete", "Delete", "Delete file", this, new NSSelector("deleteFile", new Class[] {null}), NSImage.imageNamed("delete.tiff"));
 
