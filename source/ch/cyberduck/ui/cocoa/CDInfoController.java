@@ -161,16 +161,16 @@ public class CDInfoController extends NSObject {
 		NSPoint origin = this.window.frame().origin();
 		this.window.setFrameOrigin(this.window.cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y())));
 
-		this.filenameField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
+		this.filenameField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
 		                                  file.getName());
 		if(this.numberOfFiles() > 1) {
 			this.filenameField.setEnabled(false);
 		}
 		this.pathField.setStringValue(file.getParent().getAbsolute());
-		this.groupField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
+		this.groupField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
 		                               file.attributes.getGroup());
 		if(this.numberOfFiles() > 1) {
-			this.kindField.setStringValue(NSBundle.localizedString("(Multiple files)", ""));
+			this.kindField.setStringValue("("+NSBundle.localizedString("Multiple files", "")+")");
 		}
 		else {
 			if(file.attributes.isSymbolicLink()) {
@@ -196,13 +196,13 @@ public class CDInfoController extends NSObject {
 			NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
 			String timestamp = formatter.stringForObjectValue(new NSGregorianDate((double)file.attributes.getTimestamp().getTime()/1000,
 			    NSDate.DateFor1970));
-			this.modifiedField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
+			this.modifiedField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
 			                                  timestamp);
 		}
 		catch(NSFormatter.FormattingException e) {
 			log.error(e.toString());
 		}
-		this.ownerField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
+		this.ownerField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
 		                               file.attributes.getOwner());
 		int size = 0;
 		for(Iterator i = files.iterator(); i.hasNext();) {
@@ -254,7 +254,7 @@ public class CDInfoController extends NSObject {
 		
 //		octalField.setStringValue(""+file.getOctalCode());
 		if(this.numberOfFiles() > 1) {
-			permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+NSBundle.localizedString("(Multiple files)", ""));
+			permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+"("+NSBundle.localizedString("Multiple files", "")+")");
 		}
 		else {
 			permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+permission.toString());

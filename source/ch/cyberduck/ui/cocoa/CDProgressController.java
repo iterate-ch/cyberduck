@@ -78,7 +78,6 @@ public class CDProgressController extends NSObject implements Observer {
 	public void update(NSTimer t) {
 		this.updateProgressbar();
 		this.updateProgressfield();
-//		this.update((Observable)t.userInfo(), new Message(Message.DATA));
 	}
 	
 	public void update(final Observable o, final Object arg) {
@@ -263,4 +262,3 @@ public class CDProgressController extends NSObject implements Observer {
 		return this.progressView;
 	}
 }
-

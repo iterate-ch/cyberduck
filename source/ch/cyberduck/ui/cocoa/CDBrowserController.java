@@ -909,7 +909,7 @@ public class CDBrowserController extends CDController implements Observer {
 		if(setMessageSelector.implementedByClass(NSOpenPanel.class)) {
 			panel.setMessage(NSBundle.localizedString("Synchronize", "")
 			    +" "+selection.getName()+" "
-			    +NSBundle.localizedString("with", "")+"...");
+			    +NSBundle.localizedString("with", "Synchronize <file> with <file>")+"...");
 		}
 		panel.setPrompt(NSBundle.localizedString("Choose", ""));
 		panel.setTitle(NSBundle.localizedString("Synchronize", ""));
@@ -1418,7 +1418,7 @@ public class CDBrowserController extends CDController implements Observer {
 	// ----------------------------------------------------------
 
 	public boolean validateToolbarItem(NSToolbarItem item) {
-		//	log.debug("validateToolbarItem:"+item.label());
+		/* @todo
 		if(item.itemIdentifier().equals("Edit")) {
 			NSSelector absolutePathForAppBundleWithIdentifierSelector =
 			    new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
@@ -1429,10 +1429,10 @@ public class CDBrowserController extends CDController implements Observer {
 				}
 			}
 		}
+		 */
 		boolean enabled = pathPopupItems.size() > 0;
 		this.backButton.setEnabled(enabled);
 		this.upButton.setEnabled(enabled);
-		this.pathPopupButton.setEnabled(enabled);
 		this.pathPopupButton.setEnabled(enabled);
 		this.searchField.setEnabled(enabled);
 		return this.validateItem(item.itemIdentifier());
@@ -1495,7 +1495,7 @@ public class CDBrowserController extends CDController implements Observer {
 			return item;
 		}
 		if(itemIdentifier.equals("Synchronize")) {
-			item.setLabel(NSBundle.localizedString("Sync", "Toolbar item"));
+			item.setLabel(NSBundle.localizedString("Synchronize", "Toolbar item"));
 			item.setPaletteLabel(NSBundle.localizedString("Synchronize", "Toolbar item"));
 			item.setToolTip(NSBundle.localizedString("Synchronize files", "Toolbar item tooltip"));
 			item.setImage(NSImage.imageNamed("sync32.tiff"));

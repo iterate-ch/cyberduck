@@ -153,6 +153,7 @@ public abstract class Path {
 		* @param size the size of file in bytes.
 	 */
 	public void setSize(long size) {
+		log.debug("setSize:"+size);
 		this.size = size;
 	}
 	

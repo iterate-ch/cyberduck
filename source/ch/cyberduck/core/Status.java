@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
@@ -59,7 +60,7 @@ public class Status /*extends Observable*/ {
 	 */
 	public static String getSizeAsString(long size) {
 		if(-1 == size) {
-			return "Unknown size";
+			return NSBundle.localizedString("Unknown size", "");
 		}
 		if(size < KILO) {
 			return size+"B";
@@ -80,6 +81,7 @@ public class Status /*extends Observable*/ {
 
 	public void setComplete(boolean complete) {
 		this.complete = complete;
+		log.info("------------------- Complete:"+this.getCurrent());
 	}
 
 	public boolean isComplete() {

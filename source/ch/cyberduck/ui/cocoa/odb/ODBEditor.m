@@ -166,12 +166,12 @@ static ODBEditor	*_sharedODBEditor;
 
 - (BOOL)_launchExternalEditor
 {
-	BOOL			success = NO;
-	BOOL			running = NO;
-	NSWorkspace		*workspace = [NSWorkspace sharedWorkspace];
-	NSArray			*runningApplications = [workspace launchedApplications];
-	NSEnumerator	*enumerator = [runningApplications objectEnumerator];
-	NSDictionary	*applicationInfo;
+	BOOL success = NO;
+	BOOL running = NO;
+	NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
+	NSArray *runningApplications = [workspace launchedApplications];
+	NSEnumerator *enumerator = [runningApplications objectEnumerator];
+	NSDictionary *applicationInfo;
 	
 	while (nil != (applicationInfo = [enumerator nextObject]))
 	{
@@ -196,9 +196,9 @@ static ODBEditor	*_sharedODBEditor;
 
 - (BOOL)_editFile:(NSString *)fileName isEditingString:(BOOL)editingStringFlag options:(NSDictionary *)options forClient:(id)client context:(NSDictionary *)context
 {
-	BOOL					success = NO;
-	OSStatus				status = noErr;
-	NSData					*targetBundleID = [_editorBundleIdentifier dataUsingEncoding: NSUTF8StringEncoding];
+	BOOL success = NO;
+	OSStatus status = noErr;
+	NSData *targetBundleID = [_editorBundleIdentifier dataUsingEncoding: NSUTF8StringEncoding];
 	NSAppleEventDescriptor  *targetDescriptor = [NSAppleEventDescriptor descriptorWithDescriptorType: typeApplicationBundleID
 																								data: targetBundleID];
 	NSAppleEventDescriptor  *appleEvent = [NSAppleEventDescriptor appleEventWithEventClass: kCoreEventClass
@@ -206,10 +206,10 @@ static ODBEditor	*_sharedODBEditor;
 																		  targetDescriptor: targetDescriptor
 																				  returnID: kAutoGenerateReturnID
 																		     transactionID: kAnyTransactionID];
-	NSAppleEventDescriptor  *replyDescriptor = nil;
-	NSAppleEventDescriptor  *errorDescriptor = nil;
-	AEDesc					reply = {typeNull, NULL};														
-	NSString				*customPath = [options objectForKey: ODBEditorCustomPathKey];
+	NSAppleEventDescriptor *replyDescriptor = nil;
+	NSAppleEventDescriptor *errorDescriptor = nil;
+	AEDesc reply = {typeNull, NULL};														
+	NSString *customPath = [options objectForKey: ODBEditorCustomPathKey];
 	
 	[self _launchExternalEditor];
 	
@@ -263,12 +263,9 @@ static ODBEditor	*_sharedODBEditor;
 - (void)handleModifiedFileEvent:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
 {
 	NSAppleEventDescriptor  *descriptor = [[event paramDescriptorForKeyword: keyDirectObject] coerceToDescriptorType: typeFileURL];
-	NSString				*urlString = [[[NSString alloc] initWithData: [descriptor data] encoding: NSUTF8StringEncoding] autorelease];
-	
-	NSString				*fileName = [[NSURL URLWithString: urlString] path];
-	
-	NSDictionary			*dictionary = nil;
-	
+	NSString *urlString = [[[NSString alloc] initWithData: [descriptor data] encoding: NSUTF8StringEncoding] autorelease];
+	NSString *fileName = [[NSURL URLWithString: urlString] path];
+	NSDictionary *dictionary = nil;
 	dictionary = [_filesBeingEdited objectForKey: fileName];
 	
 	if (dictionary != nil)
@@ -284,19 +281,17 @@ static ODBEditor	*_sharedODBEditor;
 
 - (void)handleClosedFileEvent:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
 {
-	NSAppleEventDescriptor  *descriptor = [[event paramDescriptorForKeyword: keyDirectObject] coerceToDescriptorType: typeFileURL];
-	NSString				*urlString = [[[NSString alloc] initWithData: [descriptor data] encoding: NSUTF8StringEncoding] autorelease];
+	NSAppleEventDescriptor *descriptor = [[event paramDescriptorForKeyword: keyDirectObject] coerceToDescriptorType: typeFileURL];
+	NSString *urlString = [[[NSString alloc] initWithData: [descriptor data] encoding: NSUTF8StringEncoding] autorelease];
 	
-	NSString				*fileName = [[NSURL URLWithString: urlString] path];
-	
-	NSDictionary			*dictionary = nil;
-	
+	NSString *fileName = [[NSURL URLWithString: urlString] path];
+	NSDictionary *dictionary = nil;
 	dictionary = [_filesBeingEdited objectForKey: fileName];
 	
 	if (dictionary != nil)
 	{
-		id			client = [[dictionary objectForKey: ODBEditorNonRetainedClient] nonretainedObjectValue];
-		void		*context = [[dictionary objectForKey: ODBEditorClientContext] pointerValue];
+		id client = [[dictionary objectForKey: ODBEditorNonRetainedClient] nonretainedObjectValue];
+		void *context = [[dictionary objectForKey: ODBEditorClientContext] pointerValue];
 		[client odbEditor: self didClosefile: fileName context: context];
 		NSLog(@"Remove \"%@\" from files being edited", fileName);
 		[_filesBeingEdited removeObjectForKey: fileName];
