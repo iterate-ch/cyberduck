@@ -30,7 +30,7 @@ import ch.cyberduck.core.Path;
 /**
  * @version $Id$
  */
-public class CDGotoController extends NSObject {
+public class CDGotoController extends CDController {
 	private static Logger log = Logger.getLogger(CDGotoController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -39,28 +39,17 @@ public class CDGotoController extends NSObject {
 		this.window().setReleasedWhenClosed(true);
 	}
 
-	private NSWindow window; // IBOutlet
-
-	public void setWindow(NSWindow window) {
-		this.window = window;
-		this.window.setDelegate(this);
-	}
-
 	private NSTextField folderField; // IBOutlet
 
 	public void setFolderField(NSTextField folderField) {
 		this.folderField = folderField;
-		this.folderField.setStringValue(current.getAbsolute());
+	}
+	
+	public void setCurrentString(String folder) {
+		this.folderField.setStringValue(folder);
 	}
 
-	public NSWindow window() {
-		return this.window;
-	}
-
-	private Path current;
-
-	public CDGotoController(Path current) {
-		this.current = current;
+	public CDGotoController() {
 		instances.addObject(this);
 		if(false == NSApplication.loadNibNamed("Goto", this)) {
 			log.fatal("Couldn't load Goto.nib");
@@ -77,12 +66,12 @@ public class CDGotoController extends NSObject {
 		}
 		else {
 			// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-			NSApplication.sharedApplication().endSheet(this.window, ((NSButton)sender).tag());
+			NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
 		}
 	}
 
 	public void cancelButtonClicked(Object sender) {
-		NSApplication.sharedApplication().endSheet(this.window, ((NSButton)sender).tag());
+		NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
 	}
 
 	public void gotoSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
@@ -90,19 +79,23 @@ public class CDGotoController extends NSObject {
 		sheet.orderOut(null);
 		switch(returncode) {
 			case (NSAlertPanel.DefaultReturn):
-				Path current = (Path)contextInfo;
-				Path go = current.copy(current.getSession());
-				String name = this.folderField.stringValue();
-				if(name.charAt(0) != '/') {
-					go.setPath(current.getAbsolute(), name);
-				}
-				else {
-					go.setPath(name);
-				}
-				go.list();
+				Path workdir = (Path)contextInfo;
+				this.gotoFolder(workdir, this.folderField.stringValue());
 				break;
 			case (NSAlertPanel.AlternateReturn):
 				break;
 		}
+	}
+	
+	public Path gotoFolder(Path workdir, String filename) {
+		Path go = workdir.copy(workdir.getSession());
+		if(filename.charAt(0) != '/') {
+			go.setPath(workdir.getAbsolute(), filename);
+		}
+		else {
+			go.setPath(filename);
+		}
+		go.list();
+		return go;
 	}
 }

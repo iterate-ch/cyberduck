@@ -111,7 +111,7 @@ public class CDFileController extends CDController {
 		}
 	}
 
-	private Path create(Path workdir, String filename) {
+	public Path create(Path workdir, String filename) {
 		Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), new Local(NSPathUtilities.temporaryDirectory(), filename));
 		if(!file.getRemote().exists()) {
 			try {

@@ -153,15 +153,22 @@ public class CDBrowserController extends CDController implements Observer {
 		log.debug("handleCreateFolderScriptCommand:"+command);
 		if(this.isMounted()) {
 			NSDictionary args = command.evaluatedArguments();
-			Path path = PathFactory.createPath(this.workdir().getSession(), 
-												this.workdir().getAbsolute(), 
-												(String)args.objectForKey("Path"));
-			path.mkdir(false);
-			workdir.list(true);
+			CDFolderController c = new CDFolderController();
+			c.create(this.workdir(), (String)args.objectForKey("Path"));
 		}
 		return null;
 	}
-		
+
+	public Object handleCreateFileScriptCommand(NSScriptCommand command) {
+		log.debug("handleCreateFolderScriptCommand:"+command);
+		if(this.isMounted()) {
+			NSDictionary args = command.evaluatedArguments();
+			CDFileController c = new CDFileController();
+			c.create(this.workdir(), (String)args.objectForKey("Path"));
+		}
+		return null;
+	}
+	
 	public Object handleDeleteScriptCommand(NSScriptCommand command) {
 		log.debug("handleDeleteScriptCommand:"+command);
 		if(this.isMounted()) {
@@ -186,10 +193,8 @@ public class CDBrowserController extends CDController implements Observer {
 		log.debug("handleGotoScriptCommand:"+command);
 		if(this.isMounted()) {
 			NSDictionary args = command.evaluatedArguments();
-			Path path = PathFactory.createPath(this.workdir().getSession(), 
-											   this.workdir().getAbsolute(), 
-											   (String)args.objectForKey("Path"));
-			path.list();
+			CDGotoController c = new CDGotoController();
+			c.gotoFolder(this.workdir(), (String)args.objectForKey("Path"));
 		}
 		return null;
 	}
@@ -1035,7 +1040,8 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void gotoButtonClicked(Object sender) {
 		log.debug("gotoButtonClicked");
-		CDGotoController controller = new CDGotoController(this.workdir());
+		CDGotoController controller = new CDGotoController();
+		controller.setCurrentString(this.workdir().getAbsolute());
 		this.beginSheet(controller.window(), //sheet
 		    controller, //modal delegate
 		    new NSSelector("gotoSheetDidEnd",
@@ -1043,16 +1049,26 @@ public class CDBrowserController extends CDController implements Observer {
 		    this.workdir()); //contextInfo
 	}
 
+    public void fileButtonClicked(Object sender) {
+        log.debug("fileButtonClicked");
+        CDFileController controller = new CDFileController();
+        this.beginSheet(controller.window(), //sheet
+                        controller, //modal delegate
+                        new NSSelector("newFileSheetDidEnd",
+                                       new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
+                        this.workdir()); //contextInfo
+    }
+    
 	public void folderButtonClicked(Object sender) {
 		log.debug("folderButtonClicked");
 		CDFolderController controller = new CDFolderController();
 		this.beginSheet(controller.window(), //sheet
-		    controller, //modal delegate
-		    new NSSelector("newFolderSheetDidEnd",
-		        new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
-		    this.workdir()); //contextInfo
+						controller, //modal delegate
+						new NSSelector("newFolderSheetDidEnd",
+									   new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
+						this.workdir()); //contextInfo
 	}
-
+	
 	public void infoButtonClicked(Object sender) {
 		log.debug("infoButtonClicked");
 		if(browserTable.selectedRow() != -1) {

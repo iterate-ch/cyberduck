@@ -90,12 +90,17 @@ public class CDFolderController extends CDController {
 		switch(returncode) {
 			case (NSAlertPanel.DefaultReturn):
 				Path workdir = (Path)contextInfo;
-				Path child = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), folderField.stringValue());
-				child.mkdir(false);
-				workdir.list(true);
+				this.create(workdir, folderField.stringValue());
 				break;
 			case (NSAlertPanel.AlternateReturn):
 				break;
 		}
+	}
+	
+	public Path create(Path workdir, String filename) {
+		Path child = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
+		child.mkdir(false);
+		workdir.list(true);
+		return child;
 	}
 }
