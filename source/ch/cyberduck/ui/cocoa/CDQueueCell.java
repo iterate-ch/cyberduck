@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Codec;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Queue;
@@ -27,7 +28,7 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-public class CDQueueCell extends NSCell {
+public class CDQueueCell extends CDTableCell {
 	private static Logger log = Logger.getLogger(CDQueueCell.class);
 
 	private Queue queue;
@@ -62,68 +63,11 @@ public class CDQueueCell extends NSCell {
 //	}
 	
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
+		super.drawInteriorWithFrameInView(cellFrame, controlView);
 ///		log.debug("drawInteriorWithFrameInView");
 		
 		NSPoint cellPoint = cellFrame.origin();
 		NSSize cellSize = cellFrame.size();	
-
-		NSMutableParagraphStyle paragraphStyle = new NSMutableParagraphStyle();
-		paragraphStyle.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle()); 
-		paragraphStyle.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
-
-//		Methods supporting the drawing of NSAttributedStrings are found in the Application Kit class NSGraphics.
-		NSDictionary boldFont;
-		NSDictionary tinyFont;
-		// cell is selected (white font)
-		if (this.isHighlighted() && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(NSColor.secondarySelectedControlColor())) {
-			boldFont = new NSDictionary(
-							   new Object[]{
-								   NSFont.boldSystemFontOfSize(11.0f), 
-								   NSColor.whiteColor(), 
-								   paragraphStyle}, //objects
-							   new Object[]{
-								   NSAttributedString.FontAttributeName, 
-								   NSAttributedString.ForegroundColorAttributeName, 
-								   NSAttributedString.ParagraphStyleAttributeName} //keys
-							   );
-			
-			tinyFont = new NSDictionary(
-							   new Object[]{
-								   NSFont.systemFontOfSize(10.0f), 
-								   NSColor.whiteColor(),
-								   paragraphStyle},
-							   new Object[]{
-								   NSAttributedString.FontAttributeName, 
-								   NSAttributedString.ForegroundColorAttributeName, 
-								   NSAttributedString.ParagraphStyleAttributeName}
-							   );
-//			NSGraphics.fillRectListWithColors(new NSRect[]{new NSRect(cellPoint.x()-2, cellSize.height(), cellSize.width()+2, 1)}, new NSColor[]{NSColor.whiteColor()});
-		}
-		// cell is not selected (black font)
-		else {
-			boldFont = new NSDictionary(
-							   new Object[]{
-								   NSFont.boldSystemFontOfSize(11.0f), 
-//								   NSColor.darkGrayColor(), 
-								   paragraphStyle}, //objects
-							   new Object[]{
-								   NSAttributedString.FontAttributeName, 
-//								   NSAttributedString.ForegroundColorAttributeName, 
-								   NSAttributedString.ParagraphStyleAttributeName} //keys
-							   );
-			
-			tinyFont = new NSDictionary(
-							   new Object[]{
-								   NSFont.systemFontOfSize(10.0f), 
-								   NSColor.darkGrayColor(),
-								   paragraphStyle},
-							   new Object[]{
-								   NSAttributedString.FontAttributeName, 
-								   NSAttributedString.ForegroundColorAttributeName, 
-								   NSAttributedString.ParagraphStyleAttributeName}
-										);
-			//			NSGraphics.fillRectListWithColors(new NSRect[]{new NSRect(cellPoint.x()-2, cellSize.height(), cellSize.width()+2, 1)}, new NSColor[]{NSColor.darkGrayColor()});
-		}
 		
 		//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and 
 		//coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
@@ -162,7 +106,7 @@ public class CDQueueCell extends NSCell {
 		// drawing path properties
 		// local file
 		NSGraphics.drawAttributedString(
-										new NSAttributedString(queue.getRoot().getDecodedName(), boldFont), 
+										new NSAttributedString(Codec.encode(queue.getRoot().getName()), boldFont), 
 										new NSRect(cellPoint.x()+BORDER+SPACE, 
 												   cellPoint.y()+SPACE,
 												   cellSize.width()-BORDER-SPACE, 
@@ -177,16 +121,12 @@ public class CDQueueCell extends NSCell {
 												   cellSize.height())
 										);
 		// drawing status
-		NSGraphics.drawAttributedString(
+/*		NSGraphics.drawAttributedString(
 										new NSAttributedString(
-															   //								  Status.getSizeAsString(queue.getRoot().status.getCurrent())+
-															   //								  " "+NSBundle.localizedString("of")+
-															   //								  " "+Status.getSizeAsString(queue.getRoot().status.getSize())+" ("+
 															   queue.getCurrentAsString()
 															   +" of "+
 															   queue.getSizeAsString()
 															   +" - "+//NSBundle.localizedString("Total")+"), "+
-//															   queue.getSpeedAsString()+", "+
 															   queue.getTimeLeft(),
 															   tinyFont),
 										new NSRect(cellPoint.x()+BORDER+SPACE, 
@@ -194,46 +134,18 @@ public class CDQueueCell extends NSCell {
 												   cellSize.width()-BORDER-SPACE, 
 												   cellSize.height())
 										);
+*/
 		
 		NSGraphics.drawAttributedString(
 										new NSAttributedString(
 															   queue.getStatus(),
 															   tinyFont),
 										new NSRect(cellPoint.x()+BORDER+SPACE, 
-												   cellPoint.y()+46, 
+												   cellPoint.y()+33, 
+//												   cellPoint.y()+46, 
 												   cellSize.width()-BORDER-SPACE, 
 												   cellSize.height())
 										);
-		/*
-		if(queue.isEmpty()) {
-			NSGraphics.drawAttributedString(
-											new NSAttributedString(
-																   queue.getElapsedTime()+" "+
-																   "Complete ("+(queue.completedJobs())+
-																   " of "+
-																   (queue.numberOfJobs())+
-																   ")", 
-																   tinyFont),
-											new NSRect(cellPoint.x()+BORDER+SPACE, 
-													   cellPoint.y()+46, 
-													   cellSize.width()-BORDER-SPACE, 
-													   cellSize.height())
-											);
-		}
-		else {
-			NSGraphics.drawAttributedString(
-											new NSAttributedString(
-																   Queue.KIND_DOWNLOAD == queue.kind() ? 
-																   queue.getElapsedTime()+" "+"Downloading "+queue.getRoot().getDecodedName()+" ("+(queue.completedJobs())+" of "+(queue.numberOfJobs())+")" : 
-																   queue.getElapsedTime()+" "+"Uploading "+queue.getRoot().getDecodedName()+" ("+(queue.completedJobs())+" of "+(queue.numberOfJobs())+")", 
-																   tinyFont),
-											new NSRect(cellPoint.x()+BORDER+SPACE, 
-													   cellPoint.y()+46, 
-													   cellSize.width()-BORDER-SPACE, 
-													   cellSize.height())
-											);
-		}
-		 */
 		controlView.unlockFocus();
 	}	
 }

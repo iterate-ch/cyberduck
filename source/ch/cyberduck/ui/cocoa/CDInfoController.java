@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Codec;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Permission;
@@ -112,7 +113,7 @@ public class CDInfoController {
 		NSPoint origin = this.window.frame().origin();
 		this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 		
-		this.filenameField.setStringValue(file.getDecodedName());
+		this.filenameField.setStringValue(Codec.encode(file.getName()));
 		this.pathField.setStringValue(file.getParent().getAbsolute());
 		this.groupField.setStringValue(file.attributes.getGroup());
 		this.kindField.setStringValue(file.getKind());
@@ -161,7 +162,7 @@ public class CDInfoController {
     }
 	
     public void windowWillClose(NSNotification notification) {
-		if(!filenameField.stringValue().equals(file.getDecodedName())) {
+		if(!filenameField.stringValue().equals(Codec.encode(file.getName()))) {
 			String newName = filenameField.stringValue();
 			file.rename(newName);
 		}
@@ -173,7 +174,7 @@ public class CDInfoController {
 	
     public void filenameInputDidEndEditing(NSNotification sender) {
 		log.debug("textInputDidEndEditing");
-		if(!filenameField.stringValue().equals(file.getDecodedName())) {
+		if(!filenameField.stringValue().equals(Codec.encode(file.getName()))) {
 			String newName = filenameField.stringValue();
 			file.rename(newName);
 		}

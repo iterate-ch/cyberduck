@@ -97,10 +97,10 @@ public class Status extends Observable implements Serializable {
 		* @return The size of the file
      */
     public static String getSizeAsString(long size) {
-		if(size <= 0)
-			return null;
-		else if(size < KILO)
-			return size + " B";
+//		if(size <= 0)
+//			return null;
+		if(size < KILO)
+			return size + "B";
 		else if(size < MEGA)
 			return new Long(size/KILO).intValue() + "kB";
 		else if(size < GIGA)

@@ -178,10 +178,8 @@ public abstract class Bookmarks {
 		this.removeItem(this.data.lastIndexOf(item));
     }
 	
-    /**
-		* @param name the Key the host is stored with (ususally host.toString())
-     */
     public Host getItem(int index) {
+		log.debug("getItem:"+index);
 		Host result = (Host)this.data.get(index);
 		if(null == result)
 			throw new IllegalArgumentException("No host with index "+index+" in Bookmarks.");
@@ -192,6 +190,10 @@ public abstract class Bookmarks {
 		return data;
     }
 	
+	public void clear() {
+		this.data.clear();
+	}
+		
     public Iterator iterator() {
 		return data.iterator();
     }

@@ -114,7 +114,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	private long current = -1;
 	private long size = -1;
 	
-	private String progress;
+	private String status;
 	
 	public Queue(Path root, int kind) {
 		this.root = root;
@@ -162,6 +162,7 @@ public class Queue extends Observable implements Observer { //Thread {
 				log.error("Unknown protocol");
 			}
 		}
+		this.status = (String)dict.objectForKey("Status");
 		this.size = ((Long)dict.objectForKey("Size")).longValue();
 		this.current = ((Long)dict.objectForKey("Current")).longValue();
 		this.init();
@@ -175,6 +176,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	
 	public NSDictionary getAsDictionary() {
 		NSMutableDictionary dict = new NSMutableDictionary();
+		dict.setObjectForKey(this.status, "Status");
 		dict.setObjectForKey(new Integer(this.kind()), "Kind");
 		dict.setObjectForKey(new Long(this.getSize()), "Size");
 		dict.setObjectForKey(new Long(this.getCurrent()), "Current");
@@ -189,19 +191,6 @@ public class Queue extends Observable implements Observer { //Thread {
 		return dict;
 	}
 	
-//	public void addRoot(Path root) {
-//		this.roots.add(root);
-//	}
-	
-    /**
-		* @param file The base file to build a this for. If this is a not a folder
-     * the this will consist of only this.
-     * @param  kind Specifiying a download or upload.
-     */
-//    public Queue(Path root, int kind, Validator validator) {
-//		this(new Path[]{root}, kind, validator);
-//    }
-	
     public int kind() {
 		return this.kind;
     }
@@ -214,12 +203,12 @@ public class Queue extends Observable implements Observer { //Thread {
 	
     public void update(Observable o, Object arg) {
 		//Forwarding all messages from the current file's status to my observers
-		this.callObservers(arg);
 		if(arg instanceof Message) {
 			Message msg = (Message)arg;
-			if(msg.getTitle().equals(Message.PROGRESS))
-				this.progress = (String)msg.getContent();
+			if(msg.getTitle().equals(Message.PROGRESS) || msg.getTitle().equals(Message.ERROR))
+				this.status = (String)msg.getContent();
 		}
+		this.callObservers(arg);
 	}
 	
     private void process() {
@@ -358,7 +347,7 @@ public class Queue extends Observable implements Observer { //Thread {
     }
 	
 	public String getStatus() {
-		return this.progress;
+		return this.status;
 		/*
 		if(this.isRunning()) {
 			if(Queue.KIND_DOWNLOAD == this.kind())
@@ -381,10 +370,10 @@ public class Queue extends Observable implements Observer { //Thread {
 	}
 	
 	public String getSizeAsString() {
-		String size = Status.getSizeAsString(this.getSize());
-		if(null == size)
-			return "";
-		return size;
+		return Status.getSizeAsString(this.getSize());
+//		if(null == size)
+//			return "";
+//		return size;
     }
 	
     /**
@@ -400,7 +389,7 @@ public class Queue extends Observable implements Observer { //Thread {
     public long calculateTotalSize() {
 //		this.size = -1;
 		if(this.isRunning()) {
-			this.size = -1; //todo
+			this.size = 0; //todo
 			Iterator elements = jobs.iterator();
 			while(elements.hasNext()) {
 				this.size += ((Path)elements.next()).status.getSize();
@@ -422,7 +411,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	private long calculateCurrentSize() {
 //		int value = -1;
 		if(this.isRunning()) {
-			this.current = -1; //todo
+			this.current = 0; //todo
 			Iterator elements = jobs.iterator();
 			while(elements.hasNext()) {
 				this.current += ((Path)elements.next()).status.getCurrent();
@@ -442,10 +431,10 @@ public class Queue extends Observable implements Observer { //Thread {
     }
 	
     public String getCurrentAsString() {
-		String current = Status.getSizeAsString(this.getCurrent());
-		if(null == current)
-			return "";
-		return current;
+		return Status.getSizeAsString(this.getCurrent());
+//		if(null == current)
+//			return "";
+//		return current;
     }
 
     /**
@@ -460,10 +449,13 @@ public class Queue extends Observable implements Observer { //Thread {
 		* @return double current bytes/second
      */
     public String getSpeedAsString() {
-		String speed = Status.getSizeAsString(this.getSpeed());
-		if(null == speed)
-			return "";
-		return speed+"/sec";
+		if(this.isRunning())
+			return Status.getSizeAsString(this.getSpeed());
+		return "";
+//		String speed = Status.getSizeAsString(this.getSpeed());
+//		if(null == speed)
+//			return "";
+//		return speed+"/sec";
     }
 	
 	public long getSpeed() {
@@ -481,17 +473,20 @@ public class Queue extends Observable implements Observer { //Thread {
     }
 	
     public String getTimeLeft() {
-        String message = "";
+		if(this.isRunning()) {
+//        String message = "";
         //@todo: implementation of better 'time left' management.
-        if(this.timeLeft != -1) {
+//        if(this.timeLeft != -1) {
             if(this.timeLeft >= 60) {
-                message = (int)this.timeLeft/60 + " minutes remaining.";
+                return (int)this.timeLeft/60 + " minutes remaining.";
             }
             else {
-                message = this.timeLeft + " seconds remaining.";
+                return this.timeLeft + " seconds remaining.";
             }
-        }
-        return message;
+//        }
+//        return message;
+		}
+		return "";
     }
 	
 	public String getElapsedTime() {

@@ -66,8 +66,8 @@ public abstract class Session extends Observable {
 		log.debug("Session("+h+")");
 		this.host = h;
 		this.history = new ArrayList();
-        this.log("-------" + new Date().toString(), Message.TRANSCRIPT);
-        this.log("-------" + host.getIp(), Message.TRANSCRIPT);
+//        this.log("-------" + new Date().toString(), Message.TRANSCRIPT);
+//        this.log("-------" + host.getIp(), Message.TRANSCRIPT);
     }
 	
     public void callObservers(Object arg) {

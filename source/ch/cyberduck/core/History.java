@@ -22,12 +22,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public abstract class History extends Bookmarks {
-	
+	private static Logger log = Logger.getLogger(History.class);
+
 	private Map data = new HashMap();
 
 	public History() {
@@ -49,14 +51,20 @@ public abstract class History extends Bookmarks {
     }
 	
     public Host getItem(int index) {
-		return this.getItem(this.values().toArray()[index].toString());
+		log.debug("getItem:"+index);
+		Host h = (Host)this.values().toArray()[index];
+		return this.getItem(h.getHostname());
 	}
 	
 	public Host getItem(String key) {
-		return (Host)this.data.get(key);
-//		if(null == result)
-			//throw new IllegalArgumentException("Host "+key+" not found in Bookmarks.");
-//		return result;
+		Host result = (Host)this.data.get(key);
+		if(null == result)
+			throw new IllegalArgumentException("No host with key "+key+" in History.");
+		return result;
+	}
+	
+	public void clear() {
+		this.data.clear();
 	}
 
 	public Collection values() {

@@ -140,7 +140,7 @@ public class CDBrowserController implements Observer {
 
 		this.browserTable.setTarget(this);
 		// double click action
-		this.browserTable.setDoubleAction(new NSSelector("browserTableViewDidClickTableRow", new Class[] {Object.class}));
+		this.browserTable.setDoubleAction(new NSSelector("browserTableRowDoubleClicked", new Class[] {Object.class}));
 		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
 		this.browserTable.setDelegate(this.browserModel);
 		
@@ -154,8 +154,8 @@ public class CDBrowserController implements Observer {
 		
     }
 		
-	public void browserTableViewDidClickTableRow(Object sender) {
-		log.debug("browserTableViewDidClickTableRow");
+	public void browserTableRowDoubleClicked(Object sender) {
+		log.debug("browserTableRowDoubleClicked");
 		searchField.setStringValue("");
 			if(browserTable.numberOfSelectedRows() > 0) {
 			Path p = (Path)browserModel.getEntry(browserTable.selectedRow()); //last row selected 
@@ -200,7 +200,7 @@ public class CDBrowserController implements Observer {
 		
 		this.bookmarkTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
 		this.bookmarkTable.tableColumnWithIdentifier("BOOKMARK").setDataCell(new CDBookmarkCell());
-		this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkRowClicked", new Class[] {Object.class}));
+		this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableRowDoubleClicked", new Class[] {Object.class}));
 		(NSNotificationCenter.defaultCenter()).addObserver(
 													 this,
 													 new NSSelector("bookmarkSelectionDidChange", new Class[]{NSNotification.class}),
@@ -215,8 +215,8 @@ public class CDBrowserController implements Observer {
 		removeBookmarkButton.setEnabled(bookmarkTable.numberOfSelectedRows() == 1);
 	}
 	
-	public void bookmarkRowClicked(Object sender) {
-		log.debug("bookmarkRowClicked");
+	public void bookmarkTableRowDoubleClicked(Object sender) {
+		log.debug("bookmarkTableRowDoubleClicked");
 		if(bookmarkTable.clickedRow() != -1) { //table header clicked
 			Host host = (Host)CDBookmarksImpl.instance().getItem(bookmarkTable.clickedRow());
 			this.mount(host);
@@ -236,6 +236,10 @@ public class CDBrowserController implements Observer {
 	public void quickConnectSelectionChanged(Object sender) {
 		log.debug("quickConnectSelectionChanged");
 		String input = ((NSControl)sender).stringValue();
+		if(input.equals("Clear")) {
+			CDHistoryImpl.instance().clear();
+			this.quickConnectPopup.reloadData();
+		}
 		Host host = CDHistoryImpl.instance().getItem(input);
 		if(null == host) {
 			int index;
@@ -276,7 +280,7 @@ public class CDBrowserController implements Observer {
 					Path next;
 					while (i.hasNext()) {
 						next = (Path)i.next();
-						if(next.getDecodedName().indexOf(searchString) != -1) {
+						if(Codec.encode(next.getName()).indexOf(searchString) != -1) {
 //						if(next.getName().startsWith(searchString)) {
 							subset.add(next);
 						}
@@ -652,25 +656,26 @@ public class CDBrowserController implements Observer {
 				else if(msg.getTitle().equals(Message.OPEN)) {
 					this.statusIcon.setImage(null);
 					this.statusIcon.setNeedsDisplay(true);
-					//this.toolbar.validateVisibleItems();//todo
 //					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
+					this.toolbar.validateVisibleItems();
 				}
 				else if(msg.getTitle().equals(Message.CLOSE)) {
 //					this.statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
 					progressIndicator.stopAnimation(this);
 					//this.toolbar.validateVisibleItems();//todo
+					this.toolbar.validateVisibleItems();
 				}
 				else if(msg.getTitle().equals(Message.START)) {
 					progressIndicator.startAnimation(this);
 					this.statusIcon.setImage(null);
 					this.statusIcon.setNeedsDisplay(true);
 //					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
-					//this.toolbar.validateVisibleItems();//todo
+					this.toolbar.validateVisibleItems();
 				}
 				else if(msg.getTitle().equals(Message.STOP)) {
 					progressIndicator.stopAnimation(this);
 					statusLabel.setObjectValue(NSBundle.localizedString("Idle"));
-					//this.toolbar.validateVisibleItems();//todo
+					this.toolbar.validateVisibleItems();
 				}
 			}
 		}
@@ -725,7 +730,7 @@ public class CDBrowserController implements Observer {
 			int selected = ((Integer)enum.nextElement()).intValue();
 			Path p = (Path)browserModel.getEntry(selected);
 			files.add(p);
-			alertText.append("\n- "+p.getDecodedName());
+			alertText.append("\n- "+Codec.encode(p.getName()));
 		}
 		NSAlertPanel.beginCriticalAlertSheet(
 									   NSBundle.localizedString("Delete"), //title
@@ -826,7 +831,7 @@ public class CDBrowserController implements Observer {
 		
     public void insideButtonClicked(Object sender) {
 		log.debug("insideButtonClicked");
-		this.browserTableViewDidClickTableRow(sender);
+		this.browserTableRowDoubleClicked(sender);
     }
 
     public void backButtonClicked(Object sender) {

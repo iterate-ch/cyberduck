@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Codec;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -81,8 +82,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			return icon;
 		}
 		if(identifier.equals("FILENAME")) {
-			return p.getDecodedName();
-			//			return p.getName();
+			return Codec.encode(p.getName());
 		}
 		else if(identifier.equals("SIZE"))
 			return Status.getSizeAsString(p.status.getSize());
@@ -236,8 +236,8 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		for(int i = 0; i < promisedDragPaths.length; i++) {
 			try {
 				//todo check if url decoding still needed
-				promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), promisedDragPaths[i].getDecodedName()));
-				promisedDragNames.addObject(promisedDragPaths[i].getDecodedName());
+				promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), Codec.encode(promisedDragPaths[i].getName())));
+				promisedDragNames.addObject(Codec.encode(promisedDragPaths[i].getName()));
 			}
 			catch(java.io.UnsupportedEncodingException e) {
 				log.error(e.getMessage());	

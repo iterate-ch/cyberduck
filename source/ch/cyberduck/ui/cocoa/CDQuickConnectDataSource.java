@@ -61,5 +61,4 @@ public class CDQuickConnectDataSource { //implements NSComboBox.DataSource {
 		}
 		throw new IllegalArgumentException("Unknown identifier: "+identifier);
     }
-	
 }

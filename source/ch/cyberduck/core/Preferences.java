@@ -119,7 +119,7 @@ public abstract class Preferences {
 
 	defaults.put("connection.login.name", System.getProperty("user.name"));
 	defaults.put("connection.download.folder", System.getProperty("user.home"));
-	defaults.put("download.duplicate", "similar");
+	defaults.put("download.duplicate", "ask");
 	
 	//defaults.put("files.encode", "true");
 	defaults.put("connection.download.postprocess", "false");

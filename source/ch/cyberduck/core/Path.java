@@ -257,20 +257,20 @@ public abstract class Path {
 		return name;
     }
 	
-	public String getDecodedName() {
-		String filename = this.getName();
-		try {
-			String encoding = Preferences.instance().getProperty("browser.encoding");
+//	public String getDecodedName() {
+//		String filename = this.getName();
+//		try {
+//			String encoding = Preferences.instance().getProperty("browser.encoding");
 //			log.info("Assuminging remote encoding:"+encoding);
-			filename = new String(filename.getBytes(), encoding).toString();
-		}
-		catch(java.io.UnsupportedEncodingException e) {
-			log.error(e.getMessage());	
-		}
-		finally {
-			return filename;
-		}
-	}
+//			filename = new String(filename.getBytes(), encoding).toString();
+//		}
+//		catch(java.io.UnsupportedEncodingException e) {
+//			log.error(e.getMessage());	
+//		}
+//		finally {
+//			return filename;
+//		}
+//	}
 	
     /**
 		* @return the absolute path name
@@ -376,7 +376,7 @@ public abstract class Path {
 		boolean complete = false;
   // read/write a line at a time
         String line = null;
-        while (!status.isComplete() && !status.isCanceled()) {
+        while (!complete && !status.isCanceled()) {
             line = in.readLine();
             if(line == null) {
 				complete = true;
@@ -415,7 +415,7 @@ public abstract class Path {
         long current = this.status.getCurrent();		
 		boolean complete = false;
         // read from socket (bytes) & write to file in chunks
-        while (!status.isComplete() && !status.isCanceled()) {
+        while (!complete && !status.isCanceled()) {
 			// Reads up to len bytes of data from the input stream into  an array of bytes.  An attempt is made to read as many as  len bytes, but a smaller number may be read, possibly  zero. The number of bytes actually read is returned as an integer. 
             amount = in.read(chunk, 0, chunksize);
             if(amount == -1) {

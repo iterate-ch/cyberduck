@@ -23,7 +23,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
-public class CDBookmarkCell extends NSCell {
+public class CDBookmarkCell extends CDTableCell {
 	private static Logger log = Logger.getLogger(CDBookmarkCell.class);
 
 	private Host bookmark;
@@ -42,63 +42,7 @@ public class CDBookmarkCell extends NSCell {
 	}
 	
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
-//		log.debug("drawInteriorWithFrameInView");
-		NSMutableParagraphStyle paragraphStyle = new NSMutableParagraphStyle();
-		paragraphStyle.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle()); 
-		paragraphStyle.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
-
-//		Methods supporting the drawing of NSAttributedStrings are found in the Application Kit class NSGraphics.
-		NSDictionary boldFont;
-		NSDictionary tinyFont;
-		// cell is selected (white font)
-		if (this.isHighlighted() && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(NSColor.secondarySelectedControlColor())) {
-			boldFont = new NSDictionary(
-							   new Object[]{
-								   NSFont.boldSystemFontOfSize(11.0f), 
-								   NSColor.whiteColor(), 
-								   paragraphStyle}, //objects
-							   new Object[]{
-								   NSAttributedString.FontAttributeName, 
-								   NSAttributedString.ForegroundColorAttributeName, 
-								   NSAttributedString.ParagraphStyleAttributeName} //keys
-							   );
-			
-			tinyFont = new NSDictionary(
-							   new Object[]{
-								   NSFont.systemFontOfSize(10.0f), 
-								   NSColor.whiteColor(),
-								   paragraphStyle},
-							   new Object[]{
-								   NSAttributedString.FontAttributeName, 
-								   NSAttributedString.ForegroundColorAttributeName, 
-								   NSAttributedString.ParagraphStyleAttributeName}
-							   );
-		}
-		// cell is not selected (black font)
-		else {
-			boldFont = new NSDictionary(
-							   new Object[]{
-								   NSFont.boldSystemFontOfSize(11.0f), 
-//								   NSColor.darkGrayColor(), 
-								   paragraphStyle}, //objects
-							   new Object[]{
-								   NSAttributedString.FontAttributeName, 
-//								   NSAttributedString.ForegroundColorAttributeName, 
-								   NSAttributedString.ParagraphStyleAttributeName} //keys
-							   );
-			
-			tinyFont = new NSDictionary(
-							   new Object[]{
-								   NSFont.systemFontOfSize(10.0f), 
-								   NSColor.darkGrayColor(),
-								   paragraphStyle},
-							   new Object[]{
-								   NSAttributedString.FontAttributeName, 
-								   NSAttributedString.ForegroundColorAttributeName, 
-								   NSAttributedString.ParagraphStyleAttributeName}
-							   );
-		}
-
+		super.drawInteriorWithFrameInView(cellFrame, controlView);
 		//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and 
   //coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
   //invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.

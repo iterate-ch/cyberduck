@@ -48,6 +48,30 @@ public class CDConnectionController implements Observer {
 		return this.sheet;
     }
     
+    private NSPopUpButton historyPopup;
+    public void setHistoryPopup(NSPopUpButton historyPopup) {
+		this.historyPopup = historyPopup;
+		this.historyPopup.setImage(NSImage.imageNamed("history.tiff"));
+		Iterator i = CDHistoryImpl.instance().iterator();
+		while(i.hasNext())
+			historyPopup.addItem(i.next().toString());
+		this.historyPopup.addItem("Clear");
+		this.historyPopup.setTarget(this);
+		this.historyPopup.setAction(new NSSelector("historySelectionChanged", new Class[] {Object.class}));
+    }
+    
+	public void historySelectionChanged(Object sender) {
+		log.debug("historySelectionChanged:"+sender);
+		if(historyPopup.titleOfSelectedItem().equals("Clear")) {
+			CDHistoryImpl.instance().clear();
+			historyPopup.removeAllItems();
+		}
+		else {
+			this.updateFields(CDHistoryImpl.instance().getItem(historyPopup.indexOfSelectedItem()-1));
+			this.updateLabel(sender);
+		}
+    }
+	
     private NSPopUpButton bookmarksPopup;
     public void setBookmarksPopup(NSPopUpButton bookmarksPopup) {
 		this.bookmarksPopup = bookmarksPopup;
@@ -274,13 +298,18 @@ public class CDConnectionController implements Observer {
 	
     public void updateFields(Host selectedItem) {
 		log.debug("updateFields:"+selectedItem);
-		log.debug("Protocol of selected item:"+selectedItem.getProtocol());
 		this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.hostPopup.setStringValue(selectedItem.getHostname());
 		this.pathField.setStringValue(selectedItem.getDefaultPath());
 		this.portField.setIntValue(protocolPopup.selectedItem().tag());
 		this.usernameField.setStringValue(selectedItem.getLogin().getUsername());
 		this.pkCheckbox.setEnabled(selectedItem.getProtocol().equals(Session.SFTP));
+		if(selectedItem.getLogin().getPrivateKeyFile() != null) {
+			this.pkCheckbox.setState(NSCell.OnState);
+			this.pkLabel.setStringValue(selectedItem.getLogin().getPrivateKeyFile());
+		}
+		else
+			this.pkCheckbox.setState(NSCell.OffState);
     }
 	
     public void updateLabel(Object sender) {
@@ -291,7 +320,6 @@ public class CDConnectionController implements Observer {
 		else if(selectedItem.tag() == Session.FTP_PORT)
 			protocol = Session.FTP+"://";
 		urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostPopup.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
-		this.pkCheckbox.setEnabled(selectedItem.tag() == Session.SSH_PORT);
     }
 	
     public void closeSheet(NSButton sender) {

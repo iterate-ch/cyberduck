@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Codec;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Local;
@@ -61,8 +62,28 @@ public class CDQueueController implements Observer, Validator {
 		this.queueTable.setTarget(this);
 		this.queueTable.setDataSource(this.queueModel = new CDQueueTableDataSource());
 		this.queueTable.setDelegate(this.queueModel);
-		this.queueTable.tableColumnWithIdentifier("DATA").setDataCell(new CDQueueCell());
-		this.queueTable.tableColumnWithIdentifier("PROGRESS").setDataCell(new CDProgressCell());
+		this.queueTable.setRowHeight(50f);
+
+		NSTableColumn dataColumn = new NSTableColumn();
+		dataColumn.setIdentifier("DATA");
+		dataColumn.setMinWidth(200f);
+		dataColumn.setWidth(350f);
+		dataColumn.setMaxWidth(1000f);
+		dataColumn.setResizable(true);
+		dataColumn.setDataCell(new CDQueueCell());
+		this.queueTable.addTableColumn(dataColumn);
+
+		NSTableColumn progressColumn = new NSTableColumn();
+		progressColumn.setIdentifier("DATA");
+		progressColumn.setMinWidth(50f);
+		progressColumn.setWidth(250f);
+		progressColumn.setMaxWidth(1000f);
+		progressColumn.setResizable(true);
+		progressColumn.setDataCell(new CDProgressCell());
+		this.queueTable.addTableColumn(progressColumn);
+		
+//		this.queueTable.tableColumnWithIdentifier("DATA").setDataCell(new CDQueueCell());
+//		this.queueTable.tableColumnWithIdentifier("PROGRESS").setDataCell(new CDProgressCell());
 		this.queueTable.setDoubleAction(new NSSelector("revealButtonClicked", new Class[] {Object.class}));
 		this.queueTable.sizeToFit();
     }
@@ -129,12 +150,12 @@ public class CDQueueController implements Observer, Validator {
 	public void update(Observable observable, Object arg) {
 		if(arg instanceof Message) {
 			Message msg = (Message)arg;
-			if(msg.getTitle().equals(Message.CLOCK)
-			   || msg.getTitle().equals(Message.DATA)
-			   || msg.getTitle().equals(Message.PROGRESS)) {
-				this.queueTable.reloadData();
-			}
-			else if(msg.getTitle().equals(Message.START)) {
+//			if(msg.getTitle().equals(Message.CLOCK)
+//			   || msg.getTitle().equals(Message.DATA)
+//			   || msg.getTitle().equals(Message.PROGRESS)) {
+			this.queueTable.reloadData();
+//			}
+			if(msg.getTitle().equals(Message.START)) {
 				this.toolbar.validateVisibleItems();
 			}
 			else if(msg.getTitle().equals(Message.STOP)) {
@@ -144,6 +165,7 @@ public class CDQueueController implements Observer, Validator {
 					if(queue.isEmpty()) {
 						if(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
 							this.queueModel.removeEntry(queue);
+							this.queueTable.reloadData();
 						}
 						if(Queue.KIND_DOWNLOAD == queue.kind()) {
 							if(Preferences.instance().getProperty("connection.download.postprocess").equals("true")) {
@@ -269,35 +291,35 @@ public class CDQueueController implements Observer, Validator {
     
 	public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {		
 		NSToolbarItem item = new NSToolbarItem(itemIdentifier);
-		if (itemIdentifier.equals(NSBundle.localizedString("Stop"))) {
+		if (itemIdentifier.equals("Stop")) {
 			item.setLabel(NSBundle.localizedString("Stop"));
 			item.setPaletteLabel(NSBundle.localizedString("Stop"));
 			item.setImage(NSImage.imageNamed("stop.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("stopButtonClicked", new Class[] {Object.class}));
 		}
-		if (itemIdentifier.equals(NSBundle.localizedString("Resume"))) {
+		if (itemIdentifier.equals("Resume")) {
 			item.setLabel(NSBundle.localizedString("Resume"));
 			item.setPaletteLabel(NSBundle.localizedString("Resume"));
 			item.setImage(NSImage.imageNamed("resume.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("resumeButtonClicked", new Class[] {Object.class}));
 		}
-		if (itemIdentifier.equals(NSBundle.localizedString("Reload"))) {
+		if (itemIdentifier.equals("Reload")) {
 			item.setLabel(NSBundle.localizedString("Reload"));
 			item.setPaletteLabel(NSBundle.localizedString("Reload"));
 			item.setImage(NSImage.imageNamed("reload.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("reloadButtonClicked", new Class[] {Object.class}));
 		}
-		if (itemIdentifier.equals(NSBundle.localizedString("Reveal"))) {
+		if (itemIdentifier.equals("Reveal")) {
 			item.setLabel(NSBundle.localizedString("Reveal"));
 			item.setPaletteLabel(NSBundle.localizedString("Reveal in Finder"));
 			item.setImage(NSImage.imageNamed("reveal.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("revealButtonClicked", new Class[] {Object.class}));
 		}
-		if (itemIdentifier.equals(NSBundle.localizedString("Remove"))) {
+		if (itemIdentifier.equals("Remove")) {
 			item.setLabel(NSBundle.localizedString("Remove"));
 			item.setPaletteLabel(NSBundle.localizedString("Remove"));
 			item.setImage(NSImage.imageNamed("clean.tiff"));
@@ -381,22 +403,22 @@ public class CDQueueController implements Observer, Validator {
 	
 	public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
 		return new NSArray(new Object[] {
-			NSBundle.localizedString("Resume"),
+			"Resume",
 			NSBundle.localizedString("Reload"),
-			NSBundle.localizedString("Stop"),
-			NSBundle.localizedString("Remove"),
+			"Stop",
+			"Remove",
 			NSToolbarItem.FlexibleSpaceItemIdentifier,
-			NSBundle.localizedString("Reveal")
+			"Reveal"
 		});
 	}
 
 	public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
 		return new NSArray(new Object[] {
-			NSBundle.localizedString("Resume"),
-			NSBundle.localizedString("Reload"),
-			NSBundle.localizedString("Stop"),
-			NSBundle.localizedString("Remove"),
-			NSBundle.localizedString("Reveal"),
+			"Resume",
+			"Reload",
+			"Stop",
+			"Remove",
+			"Reveal",
 			NSToolbarItem.CustomizeToolbarItemIdentifier, 
 			NSToolbarItem.SpaceItemIdentifier, 
 			NSToolbarItem.SeparatorItemIdentifier, 
@@ -491,7 +513,7 @@ public class CDQueueController implements Observer, Validator {
 			  ),// end selector
 										   null, // dismiss selector
 										   path, // context
-										   NSBundle.localizedString("The file")+" "+path.getDecodedName()+" "+NSBundle.localizedString("alredy exists in")+" "+path.getLocal().getParent()+"." // message
+										   NSBundle.localizedString("The file")+" "+Codec.encode(path.getName())+" "+NSBundle.localizedString("alredy exists in")+" "+path.getLocal().getParent() // message
 										   );
 						while(!done) {
 							try {

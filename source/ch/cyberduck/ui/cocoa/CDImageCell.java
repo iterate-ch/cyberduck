@@ -25,7 +25,7 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-public class CDImageCell extends NSCell {
+public class CDImageCell extends CDTableCell {
 	private static Logger log = Logger.getLogger(CDImageCell.class);
 	
 	private Queue queue;
