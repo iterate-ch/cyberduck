@@ -25,12 +25,25 @@ import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRect;
 import com.apple.cocoa.foundation.NSSize;
+import com.apple.cocoa.foundation.NSCoder;
 
 import ch.cyberduck.core.Host;
 
 public class CDBookmarkCell extends CDTableCell {
     private Host bookmark;
 
+	public CDBookmarkCell() {
+		super();
+	}
+	
+	protected CDBookmarkCell(NSCoder decoder, long token) {
+		super(decoder, token);
+	}
+	
+	protected void encodeWithCoder(NSCoder encoder) {
+		super.encodeWithCoder(encoder);
+	}
+	
     public void setObjectValue(Object bookmark) {
         this.bookmark = (Host) bookmark;
     }

@@ -24,15 +24,25 @@ import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRect;
 import com.apple.cocoa.foundation.NSSize;
-
-import org.apache.log4j.Logger;
+import com.apple.cocoa.foundation.NSCoder;
 
 import ch.cyberduck.core.Queue;
 
 public class CDQueueCell extends CDTableCell {
-    private static Logger log = Logger.getLogger(CDQueueCell.class);
 
     private Queue queue;
+	
+	public CDQueueCell() {
+		super();
+	}
+	
+	protected CDQueueCell(NSCoder decoder, long token) {
+		super(decoder, token);
+	}
+	
+	protected void encodeWithCoder(NSCoder encoder) {
+		super.encodeWithCoder(encoder);
+	}
 	
     public void setObjectValue(Object q) {
         this.queue = (Queue) q;

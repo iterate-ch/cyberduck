@@ -23,16 +23,26 @@ import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRect;
 import com.apple.cocoa.foundation.NSSize;
-
-import org.apache.log4j.Logger;
+import com.apple.cocoa.foundation.NSCoder;
 
 import ch.cyberduck.core.Queue;
 
 public class CDProgressCell extends CDTableCell {
-    private static Logger log = Logger.getLogger(CDProgressCell.class);
 
     private Queue queue;
 
+	public CDProgressCell() {
+		super();
+	}
+	
+	protected CDProgressCell(NSCoder decoder, long token) {
+		super(decoder, token);
+	}
+	
+	protected void encodeWithCoder(NSCoder encoder) {
+		super.encodeWithCoder(encoder);
+	}
+	
     public void setObjectValue(Object queue) {
         this.queue = (Queue) queue;
     }

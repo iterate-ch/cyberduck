@@ -281,8 +281,10 @@ public class CDMainController extends NSObject {
     }
 
     public void newBrowserMenuClicked(Object sender) {
+		log.debug("newBrowserMenuClicked");
         CDBrowserController controller = new CDBrowserController();
 		controller.window().makeKeyAndOrderFront(null);
+		log.debug("newBrowserMenuClicked-init");
     }
 
     public void showTransferQueueClicked(Object sender) {
@@ -327,8 +329,6 @@ public class CDMainController extends NSObject {
     }
 
     public void applicationDidFinishLaunching(NSNotification notification) {
-        // To get service requests to go to the controller...
-        //        NSApplication.sharedApplication().setServicesProvider(this);
         log.info("Available localizations:" + NSBundle.mainBundle().localizations());
         if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
 			CDBrowserController controller = new CDBrowserController();
