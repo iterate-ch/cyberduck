@@ -103,6 +103,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             Message msg = (Message)arg;
             if (msg.getTitle().equals(Message.ERROR)) {
                 if (window().isVisible()) {
+					/* @todo we can only use this if update is called exclusivly from third party threads
 					while (this.window().attachedSheet() != null) {
 						try {
 							log.debug("Sleeping...");
@@ -112,6 +113,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 							log.error(e.getMessage());
 						}
 					}
+					*/
 					synchronized (this) {
 						NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
 														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton

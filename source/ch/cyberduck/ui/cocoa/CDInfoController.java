@@ -111,13 +111,13 @@ public class CDInfoController extends NSObject {
         this.permissionsBox = permissionsBox;
     }
 
-//    private NSButton recursiveCheckbox;
-//
-//    public void setRecursiveCheckbox(NSButton recursiveCheckbox) {
-//        this.recursiveCheckbox = recursiveCheckbox;
-//        this.recursiveCheckbox.setState(NSCell.OffState);
-//    }
-
+    private NSButton recursiveCheckbox;
+	
+    public void setRecursiveCheckbox(NSButton recursiveCheckbox) {
+        this.recursiveCheckbox = recursiveCheckbox;
+        this.recursiveCheckbox.setState(NSCell.OffState);
+    }
+	
     public NSButton ownerr; //IBOutlet
     public NSButton ownerw; //IBOutlet
     public NSButton ownerx; //IBOutlet
@@ -364,8 +364,7 @@ public class CDInfoController extends NSObject {
         Path f = null;
         for (Iterator i = files.iterator(); i.hasNext();) {
             f = (Path)i.next();
-            f.changePermissions(permission);
-//			f.changePermissions(permission, recursiveCheckbox.state() == NSCell.OnState);
+			f.changePermissions(permission, recursiveCheckbox.state() == NSCell.OnState);
         }
         // refresh the file listing so that the observers (if any) get notified of the change
         f.getParent().list(true);

@@ -173,8 +173,7 @@ public class FTPPath extends Path {
             session.check();
             session.log("Make directory " + this.getName(), Message.PROGRESS);
             session.FTP.mkdir(this.getAbsolute());
-            this.setCache(new ArrayList());
-            //this.getParent().invalidate();
+			this.getParent().invalidate();
             session.log("Idle", Message.STOP);
         }
         catch (FTPException e) {
@@ -217,7 +216,7 @@ public class FTPPath extends Path {
                 Path file = null;
                 while (iterator.hasNext()) {
                     file = (Path)iterator.next();
-                    if (file.attributes.isFile() || file.attributes.isSymbolicLink()) {
+                    if (file.attributes.isFile()) {
                         session.log("Deleting " + this.getName(), Message.PROGRESS);
                         session.FTP.delete(file.getName());
                     }
@@ -240,12 +239,36 @@ public class FTPPath extends Path {
         }
     }
 
-    public synchronized void changePermissions(Permission perm) {
+    public synchronized void changePermissions(Permission perm, boolean recursive) {
         log.debug("changePermissions:" + perm);
         String command = "chmod";
         try {
             session.check();
-            session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
+            if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
+                session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
+				session.FTP.site(command+" "+perm.getOctalCode()+" "+this.getAbsolute());
+            }
+            else if (this.attributes.isDirectory()) {
+                session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
+				session.FTP.site(command+" "+perm.getOctalCode()+" "+this.getAbsolute());
+				if(recursive) {
+					List files = this.list(false, false); //@todo also change on invisible files?
+					java.util.Iterator iterator = files.iterator();
+					Path file = null;
+					while (iterator.hasNext()) {
+						file = (Path)iterator.next();
+						if (file.attributes.isFile() && !file.attributes.isSymbolicLink()) {
+							session.log("Changing permission to "+perm.getOctalCode()+" on "+file.getName(), Message.PROGRESS);
+							session.FTP.site(command+" "+perm.getOctalCode()+" "+file.getAbsolute());
+							file.getParent().invalidate();
+						}
+						if (file.attributes.isDirectory()) {
+							file.changePermissions(perm, recursive);
+						}
+					}
+				}
+            }
+            this.getParent().invalidate();
             session.log("Idle", Message.STOP);
         }
         catch (FTPException e) {
@@ -477,6 +500,7 @@ public class FTPPath extends Path {
 						}
 					}
 					catch (FTPException e) {
+						// catch chmodding exceptions and change the preferences as the server doesn't seem to support CHMOD
 						Preferences.instance().setProperty("queue.upload.changePermissions", "false");
 					}
                 }

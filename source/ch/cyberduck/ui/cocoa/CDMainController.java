@@ -492,7 +492,7 @@ public class CDMainController extends NSObject {
 	
 	public void applicationWillFinishLaunching(NSNotification notification) {
         this.rendezvous.init();
-//		Growl.instance().launch();
+		Growl.instance().launch();
 	}
 	
     public void applicationDidFinishLaunching(NSNotification notification) {

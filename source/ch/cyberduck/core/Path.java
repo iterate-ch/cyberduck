@@ -222,7 +222,7 @@ public abstract class Path {
     /**
      * @param recursive Include subdirectories and files
      */
-    public abstract void changePermissions(Permission perm);
+    public abstract void changePermissions(Permission perm, boolean recursive);
 
     public boolean exists() {
         boolean exists;

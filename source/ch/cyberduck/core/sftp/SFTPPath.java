@@ -194,8 +194,7 @@ public class SFTPPath extends Path {
             session.check();
             session.log("Make directory " + this.getName(), Message.PROGRESS);
             session.SFTP.makeDirectory(this.getAbsolute());
-            this.setCache(new ArrayList());
-            //this.getParent().invalidate();
+            this.getParent().invalidate();
             session.log("Idle", Message.STOP);
         }
         catch (SshException e) {
@@ -237,7 +236,7 @@ public class SFTPPath extends Path {
                 Path file = null;
                 while (iterator.hasNext()) {
                     file = (Path)iterator.next();
-                    if (file.attributes.isFile() || file.attributes.isSymbolicLink()) {
+                    if (file.attributes.isFile()) {
                         session.log("Deleting " + this.getName(), Message.PROGRESS);
                         session.SFTP.removeFile(file.getAbsolute());
                     }
@@ -259,11 +258,35 @@ public class SFTPPath extends Path {
         }
     }
 
-    public synchronized void changePermissions(Permission perm) {
+    public synchronized void changePermissions(Permission perm, boolean recursive) {
         log.debug("changePermissions");
         try {
             session.check();
-            session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
+            if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
+                session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
+				session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
+            }
+            else if (this.attributes.isDirectory()) {
+                session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
+				session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
+				if(recursive) {
+					List files = this.list(false, false);
+					java.util.Iterator iterator = files.iterator();
+					Path file = null;
+					while (iterator.hasNext()) {
+						file = (Path)iterator.next();
+						if (file.attributes.isFile() && !file.attributes.isSymbolicLink()) {
+							session.log("Changing permission to "+perm.getOctalCode()+" on "+file.getName(), Message.PROGRESS);
+							session.SFTP.changePermissions(file.getAbsolute(), perm.getDecimalCode());
+							file.getParent().invalidate();
+						}
+						if (file.attributes.isDirectory()) {
+							file.changePermissions(perm, recursive);
+						}
+					}
+				}
+            }
+            this.getParent().invalidate();
             session.log("Idle", Message.STOP);
         }
         catch (SshException e) {
@@ -380,12 +403,12 @@ public class SFTPPath extends Path {
                 if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
                     if (Preferences.instance().getProperty("queue.permissions.useDefault").equals("true")) {
                         Permission perm = new Permission(Preferences.instance().getProperty("queue.permissions.default"));
-                        this.changePermissions(perm);
+                        this.changePermissions(perm, false);
                     }
                     else {
                         Permission perm = this.getLocal().getPermission();
                         if (!perm.isUndefined()) {
-                            this.changePermissions(perm);
+                            this.changePermissions(perm, false);
                         }
                     }
                 }

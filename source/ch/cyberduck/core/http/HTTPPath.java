@@ -127,7 +127,7 @@ public class HTTPPath extends Path {
         session.log("Invalid Operation", Message.ERROR);
     }
 
-    public synchronized void changePermissions(Permission perm) {
+    public synchronized void changePermissions(Permission perm, boolean recursive) {
         session.log("Invalid Operation", Message.ERROR);
     }
 

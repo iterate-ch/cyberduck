@@ -23,6 +23,7 @@
                 ownerx = NSButton; 
                 pathField = NSTextField; 
                 permissionsBox = NSBox; 
+                recursiveCheckbox = NSButton; 
                 sizeField = NSTextField; 
                 window = NSWindow; 
             }; 

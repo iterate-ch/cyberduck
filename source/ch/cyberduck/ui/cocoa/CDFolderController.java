@@ -26,6 +26,7 @@ import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
+import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Path;
 
 /**
@@ -79,12 +80,9 @@ public class CDFolderController extends NSObject {
                     NSBundle.localizedString("Invalid character in folder name.", "") // message
             );
         }
-        else if (folderField.stringValue().length() == 0) {
-//			folderField.setStringValue(this.file.getName());
-        }
-        else {
-            NSApplication.sharedApplication().endSheet(this.window, ((NSButton)sender).tag());
-        }
+        else if (folderField.stringValue().length() == 0)
+			return;
+		NSApplication.sharedApplication().endSheet(this.window, ((NSButton)sender).tag());
     }
 
     public void cancelButtonClicked(Object sender) {
@@ -96,10 +94,10 @@ public class CDFolderController extends NSObject {
         sheet.orderOut(null);
         switch (returncode) {
             case (NSAlertPanel.DefaultReturn):
-                Path p = (Path)contextInfo;
-                p.setPath(p.getAbsolute(), folderField.stringValue());
-                p.mkdir(false);
-                p.getParent().list(true);
+                Path workdir = (Path)contextInfo;
+				Path child = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), folderField.stringValue());
+                child.mkdir(false);
+                workdir.list(true);
                 break;
             case (NSAlertPanel.AlternateReturn):
                 break;
