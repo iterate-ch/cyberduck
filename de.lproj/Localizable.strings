@@ -1,0 +1,71 @@
+/* General */
+"Error" = "Fehler";
+"OK" = "OK";
+"Cancel" = "Abbrechen";
+
+/* CDMainController - Main.nib */
+"There was a problem checking for an update. Please try again later." = "Beim Überprüfen auf ein Update ist ein Fehler aufgetreten. Bitte versuchen Sie später.";
+"No update" = "Keine neue Version";
+"No newer version available." = "Keine neuere Version verfügbar.";
+"is up to date." = "ist auf dem neusten Stand.";
+"is out of date. The current version is" = "ist nicht mehr aktuell. Die neueste Version ist";
+"Donate!" = "Spenden!";
+
+/* CDConnectionController - Connection.nib */
+"FTP (File Transfer)" = "FTP (File Transfer)";
+"SFTP (SSH Secure File Transfer)" = "SFTP (SSH Secure File Transfer)";
+"Quick Connect" = "Quick Connect";
+
+/* CDTransferController - Transfer.nib */
+"of" = "von";
+"Total" = "Total";
+"Complete" = "Fertig";
+"Stop" = "Stop";
+"File exists" = "Datei existiert";
+"Resume" = "Resume";
+"Overwrite" = "Überschreiben";
+"Cancel transfer?" = "Dateitransfer abbrechen?";
+"The file" = "Die Datei";
+"alredy exists in" = "existiert bereits in";
+"Closing this window will stop the file transfer" = "Beim Schliessen des Fensters wird der Transfer abgebrochen";
+
+/* CDInfoController - Info.nib */
+"Permissions" = "Berechtigungen";
+
+/* CDHostKeyController */
+"Unknown host key" = "Unbekannter Host Schlüssel";
+"Host key mismatch" = "Host Schlüssel Mismatch";
+"Could not open or read the host file" = "Das Host File konnte nicht gelesen werden";
+"Allow" = "Erlauben";
+"Deny" = "Ablehnen";
+"Always" = "Immer";
+"The host key supplied is" = "The host key supplied is";
+"The current allowed key for this host is" = "Der aktuell erlaubte Schlüssel für den Server ist";
+"Do you want to allow the host access?" = "Soll der Server Zugriff erlaubt werden?";
+"The host is currently unknown to the system. The host key fingerprint is" = "Der Server ist unbekannt. Der Fingerprint des Host Schlüssel ist";
+"Invalid host key" = "Ungültiger Host Schlüssel";
+"Cannot continue without a valid host key." = "Ohne einen validen Host Schlüssel kann nicht fortgefahren werden.";
+
+
+/* CDBrowserController - Browser.nib */
+"Idle" = "Idle";
+"New Connection" = "Neue Verbindung";
+"Connect to host" = "Zu Server verbinden";
+"Refresh" = "Aktualisieren";
+"Refresh directory listing" = "Ordnerliste aktualisieren";
+"Download" = "Download";
+"Download file" = "Datei herunterladen";
+"Upload" = "Upload";
+"Get Info" = "Zeige Info";
+"Show file attributes" = "Zeige Datei Attribute";
+"Delete" = "Löschen";
+"Delete file" = "Datei löschen";
+"Really delete the following files? This cannot be undone." = "Die folgenden Dateien wirklich löschen? Kein Widerruf möglich.";
+"New Folder" = "Neuer Ordner";
+"Create New Folder" = "Neuer Ordner anlegen";
+"Disconnect" = "Trennen";
+"Close session?" = "Verbindung schliessen?";
+"Disconnect from" = "Verbindung trennen von";
+"Close" = "Schliessen";
+"Disconnect from" = "Verbindung zu":
+"The connection will be closed." = "Die Verbindung wird unterbrochen.";
