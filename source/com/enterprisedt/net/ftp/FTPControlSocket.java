@@ -21,56 +21,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Bug fixes, suggestions and comments should be sent to bruce@enterprisedt.com
- *
- *  Change Log:
- *
- *        $Log$
- *        Revision 1.26  2004/11/02 12:26:27  dkocher
- *        *** empty log message ***
- *
- *        Revision 1.17  2004/10/18 15:56:46  bruceb
- *        set encoding for sock, remove sendCommandOld etc
- *
- *        Revision 1.16  2004/09/18 09:33:47  bruceb
- *        1.1.8 tweaks
- *
- *        Revision 1.15  2004/08/31 10:46:59  bruceb
- *        restructured reply code
- *
- *        Revision 1.14  2004/07/23 23:29:57  bruceb
- *        sendcommand public again
- *
- *        Revision 1.13  2004/07/23 08:30:40  bruceb
- *        restructured re non-strict replies
- *
- *        Revision 1.12  2004/05/22 16:52:57  bruceb
- *        message listener
- *
- *        Revision 1.11  2004/05/01 17:05:15  bruceb
- *        Logger stuff added
- *
- *        Revision 1.10  2004/03/23 20:25:47  bruceb
- *        added US-ASCII to control stream constructor
- *
- *        Revision 1.9  2003/11/15 11:23:55  bruceb
- *        changes required for ssl subclasses
- *
- *        Revision 1.6  2003/05/31 14:53:44  bruceb
- *        1.2.2 changes
- *
- *        Revision 1.5  2003/01/29 22:46:08  bruceb
- *        minor changes
- *
- *        Revision 1.4  2002/11/19 22:01:25  bruceb
- *        changes for 1.2
- *
- *        Revision 1.3  2001/10/09 20:53:46  bruceb
- *        Active mode changes
- *
- *        Revision 1.1  2001/10/05 14:42:04  bruceb
- *        moved from old project
- *
- *
  */
 
 package com.enterprisedt.net.ftp;

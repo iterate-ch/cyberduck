@@ -21,26 +21,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Bug fixes, suggestions and comments should be sent to bruce@enterprisedt.com
- *
- *  Change Log:
- *
- *        $Log$
- *        Revision 1.7  2004/11/02 12:26:27  dkocher
- *        *** empty log message ***
- *
- *        Revision 1.3  2004/07/23 08:27:19  bruceb
- *        made public cvsId
- *
- *        Revision 1.2  2002/11/19 22:01:25  bruceb
- *        changes for 1.2
- *
- *        Revision 1.1  2001/10/09 20:53:46  bruceb
- *        Active mode changes
- *
- *        Revision 1.1  2001/10/05 14:42:04  bruceb
- *        moved from old project
- *
- *
  */
 
 package com.enterprisedt.net.ftp;

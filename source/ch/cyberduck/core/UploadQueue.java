@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import java.io.File;
 import java.util.List;
+import java.util.Observer;
 
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
@@ -28,12 +29,23 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
  */
 public class UploadQueue extends Queue {
 
+	/**
+	* The observer to notify when an upload is complete
+	 */
+	private Observer callback;
+	
+	
 	public UploadQueue() {
-		super();
+		//
 	}
 
+	public UploadQueue(Path root, Observer callback) {
+		this.callback = callback;
+		this.addRoot(root);
+	}
+		
 	public UploadQueue(java.util.Observer callback) {
-		super(callback);
+		this.callback = callback;
 	}
 
 	public NSMutableDictionary getAsDictionary() {
@@ -42,6 +54,20 @@ public class UploadQueue extends Queue {
 		return dict;
 	}
 
+	public void callObservers(Object arg) {
+		super.callObservers(arg);
+		if(arg instanceof Message) {
+			Message msg = (Message)arg;
+			if(msg.getTitle().equals(Message.QUEUE_STOP)) {
+				if(this.isComplete()) {
+					if(callback != null) {
+						callback.update(null, new Message(Message.REFRESH));
+					}
+				}
+			}
+		}
+	}
+	
 	protected List getChilds(List childs, Path p) {
 		if(p.attributes.isDirectory()) {
 			childs.add(p);

@@ -19,24 +19,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Bug fixes, suggestions and comments should be sent to bruce@enterprisedt.com
- *
- *  Change Log:
- *
- *        $Log$
- *        Revision 1.7  2004/11/02 12:26:27  dkocher
- *        *** empty log message ***
- *
- *        Revision 1.4  2004/07/23 08:27:03  bruceb
- *        made public cvsId
- *
- *        Revision 1.3  2003/11/15 11:23:55  bruceb
- *        changes required for ssl subclasses
- *
- *        Revision 1.1  2003/11/02 21:49:52  bruceb
- *        implement FTPDataSocket interface
- *
- *
  */
+
 package com.enterprisedt.net.ftp;
 
 import java.io.IOException;

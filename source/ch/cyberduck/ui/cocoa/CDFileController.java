@@ -112,12 +112,10 @@ public class CDFileController extends CDController {
 		Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), new Local(NSPathUtilities.temporaryDirectory(), filename));
 		if(!file.getRemote().exists()) {
 			try {
-				String parent = NSPathUtilities.temporaryDirectory();
-				String proposal = filename;
+				String proposal;
 				int no = 0;
 				int index = filename.lastIndexOf(".");
-				do {
-					file.setLocal(new Local(parent, proposal));
+				while(file.getLocal().exists()) {
 					no++;
 					if(index != -1) {
 						proposal = filename.substring(0, index)+"-"+no+filename.substring(index);
@@ -125,8 +123,8 @@ public class CDFileController extends CDController {
 					else {
 						proposal = filename+"-"+no;
 					}
-				} while(file.getLocal().exists());
-				
+					file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
+				}
 				file.getLocal().createNewFile();
 				file.upload();
 				file.getLocal().delete();

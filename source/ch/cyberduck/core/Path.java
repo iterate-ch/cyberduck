@@ -118,13 +118,14 @@ public abstract class Path {
 	 */
 	protected Path(String parent, Local local) {
 		this.setPath(parent, local);
-		this.attributes.setType(this.getLocal().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE);
-		this.status.setSize(this.getLocal().isFile() ? this.getLocal().size() : 0);
 	}
 
 	public void setPath(String parent, Local file) {
 		this.setPath(parent, file.getName());
 		this.setLocal(file);
+		if(this.getLocal().exists()) {
+			this.attributes.setType(this.getLocal().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+		}
 	}
 
 	/**
@@ -249,6 +250,7 @@ public abstract class Path {
 	}
 
 	public void setLocal(Local file) {
+		log.debug("setLocal:"+file);
 		this.local = file;
 	}
 

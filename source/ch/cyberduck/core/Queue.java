@@ -40,11 +40,6 @@ public abstract class Queue extends Observable {
 	private List roots;
 
 	/**
-	 * The observer to notify when an upload is complete
-	 */
-	private Observer callback;
-
-	/**
 	 * Creating an empty queue containing no items. Items have to be added later
 	 * using the <code>addRoot</code> method.
 	 */
@@ -53,17 +48,9 @@ public abstract class Queue extends Observable {
 		this.roots = new ArrayList();
 	}
 
-	public Queue(Observer callback) {
-		this();
-		this.callback = callback;
-	}
-
 	public Queue(Path root) {
-		this(root, null);
-	}
-
-	public Queue(Path root, Observer callback) {
-		this(callback);
+		this.worker = new Worker(this, ValidatorFactory.createValidator(this.getClass()));
+		this.roots = new ArrayList();
 		this.addRoot(root);
 	}
 
@@ -160,16 +147,6 @@ public abstract class Queue extends Observable {
 	public void callObservers(Object arg) {
 		this.setChanged();
 		this.notifyObservers(arg);
-		if(arg instanceof Message) {
-			Message msg = (Message)arg;
-			if(msg.getTitle().equals(Message.QUEUE_STOP)) {
-				if(this.isComplete()) {
-					if(callback != null) {
-						callback.update(null, new Message(Message.REFRESH));
-					}
-				}
-			}
-		}
 	}
 	
 	private void reset(List jobs) {

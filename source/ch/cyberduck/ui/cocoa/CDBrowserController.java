@@ -741,7 +741,7 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 
 	public void gotoButtonClicked(Object sender) {
-		log.debug("folderButtonClicked");
+		log.debug("gotoButtonClicked");
 		CDGotoController controller = new CDGotoController(this.workdir());
 		NSApplication.sharedApplication().beginSheet(controller.window(), //sheet
 		    this.window(), //docwindow
@@ -953,6 +953,7 @@ public class CDBrowserController extends CDController implements Observer {
 		log.debug("uploadButtonClicked");
 		NSOpenPanel panel = NSOpenPanel.openPanel();
 		panel.setCanChooseDirectories(true);
+		panel.setCanCreateDirectories(false);
 		panel.setCanChooseFiles(true);
 		panel.setAllowsMultipleSelection(true);
 		panel.setPrompt(NSBundle.localizedString("Upload", ""));

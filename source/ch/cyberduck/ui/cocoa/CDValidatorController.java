@@ -381,10 +381,14 @@ public abstract class CDValidatorController extends AbstractValidator {
 					return NSImage.imageNamed("notfound.tiff");
 				}
 				if(identifier.equals("REMOTE")) {
-					return new NSAttributedString(Status.getSizeAsString(p.status.getSize())+", "+p.attributes.getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+					if(p.getRemote().exists())
+						return new NSAttributedString(Status.getSizeAsString(p.status.getSize())+", "+p.attributes.getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+					return null;
 				}
 				if(identifier.equals("LOCAL")) {
-					return new NSAttributedString(Status.getSizeAsString(p.getLocal().getSize())+", "+p.getLocal().getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+					if(p.getLocal().exists())
+						return new NSAttributedString(Status.getSizeAsString(p.getLocal().getSize())+", "+p.getLocal().getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+					return null;
 				}
 				if(identifier.equals("TOOLTIP")) {
 					StringBuffer tooltip = new StringBuffer();
