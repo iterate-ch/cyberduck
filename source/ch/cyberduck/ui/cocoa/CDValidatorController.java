@@ -225,8 +225,8 @@ public abstract class CDValidatorController extends AbstractValidator {
 						loaded = true;
 					}
 					this.workset.add(child);
-					this.fireDataChanged();
 				}
+				this.fireDataChanged();
 			}
 		}
 		if(loaded) {
@@ -235,8 +235,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 			
 			while (this.windowController.window().attachedSheet() != null) {
 				try {
-					log.debug("Sleeping...");
-					this.wait();
+					log.debug("Sleeping..."); this.wait();
 				}
 				catch (InterruptedException e) {
 					log.error(e.getMessage());

@@ -203,9 +203,11 @@ public class CDPreferencesController extends NSObject {
         switch (sender.state()) {
             case NSCell.OnState:
                 Preferences.instance().setProperty("queue.upload.changePermissions", true);
+				this.chmodUploadDefaultCheckbox.setEnabled(false);
                 break;
             case NSCell.OffState:
                 Preferences.instance().setProperty("queue.upload.changePermissions", false);
+				this.chmodUploadDefaultCheckbox.setEnabled(true);
                 break;
         }
     }
@@ -217,6 +219,7 @@ public class CDPreferencesController extends NSObject {
         this.chmodUploadDefaultCheckbox.setTarget(this);
         this.chmodUploadDefaultCheckbox.setAction(new NSSelector("chmodUploadDefaultCheckboxClicked", new Class[]{NSButton.class}));
         this.chmodUploadDefaultCheckbox.setState(Preferences.instance().getProperty("queue.upload.permissions.useDefault").equals("true") ? NSCell.OnState : NSCell.OffState);
+		this.chmodUploadDefaultCheckbox.setEnabled(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true"));
     }
 	
     public void chmodUploadDefaultCheckboxClicked(NSButton sender) {
@@ -243,9 +246,11 @@ public class CDPreferencesController extends NSObject {
         switch (sender.state()) {
             case NSCell.OnState:
                 Preferences.instance().setProperty("queue.download.changePermissions", true);
+				this.chmodDownloadDefaultCheckbox.setEnabled(true);
                 break;
             case NSCell.OffState:
                 Preferences.instance().setProperty("queue.download.changePermissions", false);
+				this.chmodDownloadDefaultCheckbox.setEnabled(false);
                 break;
         }
     }
@@ -257,6 +262,7 @@ public class CDPreferencesController extends NSObject {
         this.chmodDownloadDefaultCheckbox.setTarget(this);
         this.chmodDownloadDefaultCheckbox.setAction(new NSSelector("chmodDownloadDefaultCheckboxClicked", new Class[]{NSButton.class}));
         this.chmodDownloadDefaultCheckbox.setState(Preferences.instance().getProperty("queue.download.permissions.useDefault").equals("true") ? NSCell.OnState : NSCell.OffState);
+		this.chmodDownloadDefaultCheckbox.setEnabled(Preferences.instance().getProperty("queue.download.changePermissions").equals("true"));
     }
 	
     public void chmodDownloadDefaultCheckboxClicked(NSButton sender) {
