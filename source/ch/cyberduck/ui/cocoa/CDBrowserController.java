@@ -867,7 +867,6 @@ public class CDBrowserController extends NSObject implements Controller, Observe
         NSOpenPanel panel = NSOpenPanel.openPanel();
         panel.setCanChooseDirectories(true);
         panel.setCanChooseFiles(true);
-		panel.setCanSelectHiddenExtension(Preferences.instance().getProperty("browser.showHidden").equals("true"));
         panel.setAllowsMultipleSelection(true);
         panel.beginSheetForDirectory(null, null, null, this.window(), this, new NSSelector("uploadPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }
