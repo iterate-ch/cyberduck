@@ -41,8 +41,9 @@ public class Proxy {
 	}
 	
 	public static native boolean isSOCKSProxyEnabled();
-
 	public static native String getSOCKSProxyHost();
-	
-	public static native String getSOCKSProxyPort();
+	public static native int getSOCKSProxyPort();
+	public static native boolean isSOCKSAuthenticationEnabled();
+	public static native String getSOCKSProxyUser();
+	public static native String getSOCKSProxyPassword();
 }

@@ -19,6 +19,65 @@
 
 #include <Keychain.h>
 
+/*
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getInternetPasswordFromKeychain(JNIEnv *env, 
+																					   jobject this, 
+																					   jstring jServer, 
+																					   jstring jAccount,
+																					   jstring jProtocol,
+																					   jint port) {
+    const char *server = (*env)->GetStringUTFChars(env, jServer, JNI_FALSE);
+    const char *account = (*env)->GetStringUTFChars(env, jAccount, JNI_FALSE);
+    const char *protocol = (*env)->GetStringUTFChars(env, jProtocol, JNI_FALSE);
+    char *pass;
+    UInt32 passLength;
+	
+    OSStatus status = SecKeychainFindInternetPassword(NULL, 
+											strlen(server), 
+											server, 
+											0, 
+											NULL, 
+											strlen(account), 
+											account, 
+											0, 
+											NULL, 
+											port, 
+											protocol, 
+											kSecAuthenticationTypeDefault, 
+											&passLength, 
+											(void**)&pass, 
+											NULL);
+    
+	(*env)->ReleaseStringUTFChars(env, jServer, server);
+	(*env)->ReleaseStringUTFChars(env, jAccount, account);
+	(*env)->ReleaseStringUTFChars(env, jProtocol, protocol);
+	
+	switch (status) {
+		case noErr:
+			// ...free the memory allocated in call to SecKeychainFindGenericPassword() above
+			SecKeychainItemFreeContent (
+										NULL, //No attribute data to release
+										pass //Release data buffer allocated by SecKeychainFindGenericPassword
+										);
+			pass[passLength] = '\0';
+			return (*env)->NewStringUTF(env, pass);
+			break;
+		case errSecItemNotFound:
+			syslog(LOG_INFO, "Keychain item not found");
+			return(NULL);
+		case errSecAuthFailed:
+			syslog(LOG_ERR, "Authorization failed.");
+			return(NULL);
+		case errSecNoDefaultKeychain:
+		syslog(LOG_INFO, "No default Keychain!");
+			return(NULL);
+		default:
+			syslog(LOG_ERR, "Unknown error");
+			return(NULL);
+    }
+}
+*/
+
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(JNIEnv *env, 
 																			   jobject this, 
 																			   jstring jService, 
@@ -27,24 +86,6 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(J
     const char *account = (*env)->GetStringUTFChars(env, jAccount, JNI_FALSE);
     char *pass;
     UInt32 passLength;
-
-	/*
-	OSStatus status = SecKeychainFindInternetPassword(NULL, 
-													  strlen([server UTF8String]), 
-													  [server UTF8String],
-													  strlen([domain UTF8String]),
-													  [domain UTF8String], 
-													  strlen([account UTF8String]),
-													  [account UTF8String], 
-													  strlen([path UTF8String]), 
-													  [path UTF8String], 
-													  port, 
-													  protocol, 
-													  authType, 
-													  &passLength, 
-													  (void **)&pass, 
-													  NULL);
-	 */
 
 	OSStatus status = SecKeychainFindGenericPassword(NULL,
 											strlen(service), 

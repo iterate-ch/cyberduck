@@ -130,10 +130,10 @@ public abstract class Preferences {
         defaults.put("connection.protocol.default", "ftp");
 		defaults.put("connection.proxy.useProxy", Proxy.isSOCKSProxyEnabled() ? "true" : "false");
 		defaults.put("connection.proxy.host", Proxy.getSOCKSProxyHost());
-		defaults.put("connection.proxy.port", Proxy.getSOCKSProxyPort());
-//		defaults.put("connection.proxy.useAuthentication", Proxy.isSOCKSAuthenticationEnabled() ? "true" : "false");
-//		defaults.put("connection.proxy.username", Proxy.getSOCKSProxyUser());
-//		defaults.put("connection.proxy.password", Proxy.getSOCKSProxyPassword());
+		defaults.put("connection.proxy.port", ""+Proxy.getSOCKSProxyPort());
+		defaults.put("connection.proxy.useAuthentication", Proxy.isSOCKSAuthenticationEnabled() ? "true" : "false");
+		defaults.put("connection.proxy.username", Proxy.getSOCKSProxyUser());
+		defaults.put("connection.proxy.password", Proxy.getSOCKSProxyPassword());
 
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");
