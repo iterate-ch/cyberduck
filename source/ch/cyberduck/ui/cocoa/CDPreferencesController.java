@@ -34,6 +34,16 @@ public class CDPreferencesController {
     // Outlets
     // ----------------------------------------------------------
 
+    private NSTextField usernameField;
+    public void setUsernameField(NSTextField usernameField) {
+	this.usernameField = usernameField;
+    }
+
+    private NSTextField passField;
+    public void setPassField(NSTextField passField) {
+	this.passField = passField;
+    }
+
     private NSTextField downloadPathField;
     public void setDownloadPathField(NSTextField downloadPathField) {
 	this.downloadPathField = downloadPathField;
@@ -69,6 +79,28 @@ public class CDPreferencesController {
             log.error("Couldn't load Preferences.nib");
             return;
         }
+	this.init();
+    }
+
+    private void init() {
+	usernameField.setStringValue(Preferences.instance().getProperty("connection.login.anonymous.name"));
+	passField.setStringValue(Preferences.instance().getProperty("connection.login.anonymous.pass"));
+	NSNotificationCenter.defaultCenter().addObserver(
+						  this,
+						  new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
+						  NSControl.ControlTextDidChangeNotification,
+						  usernameField);
+	NSNotificationCenter.defaultCenter().addObserver(
+						  this,
+						  new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
+						  NSControl.ControlTextDidChangeNotification,
+						  passField);
+	NSNotificationCenter.defaultCenter().addObserver(
+						  this,
+						  new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
+						  NSControl.ControlTextDidChangeNotification,
+						  downloadPathField);
+	
     }
 
     public static CDPreferencesController instance() {

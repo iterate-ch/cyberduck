@@ -29,7 +29,7 @@ import ch.cyberduck.core.Preferences;
 * @version $Id$
 */
 public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
-    private static Logger log = Logger.getLogger(Preferences.class);
+    private static Logger log = Logger.getLogger(CDPreferencesImpl.class);
 
     private NSUserDefaults props = NSUserDefaults.standardUserDefaults();
 

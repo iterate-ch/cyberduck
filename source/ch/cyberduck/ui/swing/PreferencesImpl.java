@@ -32,7 +32,7 @@ import ch.cyberduck.core.Preferences;
 * @version $Id$
  */
 public class PreferencesImpl extends Preferences { //PreferencesImplSwing
-    private static Logger log = Logger.getLogger(Preferences.class);
+    private static Logger log = Logger.getLogger(PreferencesImpl.class);
 
     private static final File PREFS_DIRECTORY = new File(System.getProperty("user.home"), ".cyberduck");
     private static final String PREFERENCES_FILE = "cyberduck.preferences";

@@ -49,21 +49,25 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
     protected CDBrowserView() {
 	super();
 	log.debug("CDBrowserView");
+	this.init();
     }
 
     protected CDBrowserView(NSRect frame) {
 	super(frame);
 	log.debug("CDBrowserView");
+	this.init();
     }
 
     protected CDBrowserView(NSCoder decoder, long token) {
 	super(decoder, token);
 	log.debug("CDBrowserView:"+decoder+","+token);
+	this.init();
     }
     
     protected void encodeWithCoder(NSCoder encoder) {
 	super.encodeWithCoder(encoder);
 	log.debug("encodeWithCoder");
+	this.init();
     }
 
     public Object dataSource() {
@@ -71,11 +75,9 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	return this.model;
     }
     
-    /**
-	* Gets called multiple times if this class is references from multiple nib files
-     */
-    public void awakeFromNib() {
-	log.debug("awakeFromNib");
+
+    private void init() {
+	log.debug("init");
 
 	this.setDataSource(model);
 	
@@ -169,6 +171,8 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
      NSTableView
      **/
     public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
+//java.lang.NullPointerException
+//	at ch.cyberduck.ui.cocoa.CDBrowserView.tableViewWillDisplayCell(CDBrowserView.java:181)
 	if(cell instanceof NSTextFieldCell) {
 	    if (! (view == null || cell == null || column == null)) {
 		if (row % 2 == 0) {
@@ -180,9 +184,9 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	    }
 	}
     }
-    
+
     /*
-    public void highlightSelectionInClipRect(NSRect rect) {
+     public void highlightSelectionInClipRect(NSRect rect) {
 	super.highlightSelectionInClipRect(rect);
 	this.drawStripesInRect(rect);
     }

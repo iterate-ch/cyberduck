@@ -144,9 +144,9 @@ public class CDMainController {
 	    return NSApplication.TerminateLater;
 	}
 	return NSApplication.TerminateNow;
-}
+    }
 
-public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
+    public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
 	return false;
     }
 }

@@ -33,8 +33,14 @@ public abstract class Login {
 	* @param pass Passphrase
      */
     public Login(String user, String pass) {
-	this.user = user;
-	this.pass = pass;
+	if(null == user || user.equals(""))
+	    this.user = Preferences.instance().getProperty("connection.login.anonymous.name");
+	else
+	    this.user = user;
+	if(null == pass || pass.equals(""))
+	    this.pass = Preferences.instance().getProperty("connection.login.anonymous.pass");
+	else
+	    this.pass = pass;
     }
 
     public String getUsername() {

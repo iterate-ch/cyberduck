@@ -49,9 +49,9 @@ public abstract class Preferences {//extends Properties {
         if(null == current) {
             String strVendor = System.getProperty("java.vendor");
             if(strVendor.indexOf("Apple") != -1)
-                current = new ch.cyberduck.ui.cocoa.CDPreferencesImpl();
-            else
-                current = new ch.cyberduck.ui.swing.PreferencesImpl();
+		current = new ch.cyberduck.ui.cocoa.CDPreferencesImpl();
+	    else
+		current = new ch.cyberduck.ui.swing.PreferencesImpl();
             current.setDefaults();
             current.load();
         }
@@ -142,7 +142,7 @@ public abstract class Preferences {//extends Properties {
         
         //Connection
         //defaults.put("connection.log", "true");
-        defaults.put("connection.log.file", "cyberduck.connection.log");
+//        defaults.put("connection.log.file", "cyberduck.connection.log");
         defaults.put("connection.buffer", "4096");
 //        defaults.put("connection.log.speech", "false");
         defaults.put("connection.port.default", "21");
@@ -157,16 +157,14 @@ public abstract class Preferences {//extends Properties {
       //  defaults.put("connection.proxy.username", "user");
       //  defaults.put("connection.proxy.password", "pass");
 
-        defaults.put("connection.path.default", "~");
+//        defaults.put("connection.path.default", "~");
 
         defaults.put("connection.login.name", System.getProperty("user.name"));
         defaults.put("connection.login.anonymous.name", "anonymous");
         defaults.put("connection.login.anonymous.pass", "user@domain.tld");
         
         //ftp properties
-//	defaults.put("ftp.connectmode", "passive");
-	defaults.put("ftp.active", "true");
-	defaults.put("ftp.passive", "false");
+	defaults.put("ftp.connectmode", "passive");
 
 	//listing properties
         defaults.put("listing.showHidden", "false");
@@ -198,12 +196,6 @@ public abstract class Preferences {//extends Properties {
         defaults.put("newconnectiondialog.height", "300");
 //        defaults.put("newconnectiondialog.x", getXLocation(500));
 //        defaults.put("newconnectiondialog.y", getYLocation(300));
-        
-        //Status messages in detail panel
-        //defaults.put("statuspanel.localpath", "true");
-        //defaults.put("statuspanel.errormessage", "true");
-        //defaults.put("statuspanel.progressmessage", "true");
-        //defaults.put("statuspanel.transcriptmessage", "false");
     }
     
 

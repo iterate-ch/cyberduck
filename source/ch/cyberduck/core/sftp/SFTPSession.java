@@ -310,6 +310,7 @@ public class SFTPSession extends Session {
 //		    properties.setPrefSCMac("hmac-md5");
 
 	    SSH.connect(properties, host.getHostKeyVerification());
+	    this.setConnected(true);
 	    this.log("SSH connection opened", Message.PROGRESS);
 	    this.log(SSH.getServerId(), Message.TRANSCRIPT);
 

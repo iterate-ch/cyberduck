@@ -113,7 +113,6 @@ public class CDBrowserTableDataSource implements NSTableView.DataSource {
 	// find the best match of the types we'll accept and what's actually on the pasteboard
 	// In the file format type that we're working with, get all data on the pasteboard
 	NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
-	// Insert the MP3 filenames into our songs array
 	int i = 0;
 	for(i = 0; i < filesList.count(); i++) {
 	    log.debug(filesList.objectAtIndex(i));

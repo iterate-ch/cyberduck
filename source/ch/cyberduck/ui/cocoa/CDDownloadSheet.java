@@ -65,13 +65,14 @@ public class CDDownloadSheet {
             log.error("Couldn't load Download.nib");
             return;
         }
+	this.init();
     }
 
     public NSWindow window() {
 	return this.sheet;
     }
 
-    public void awakeFromNib() {
+    private void init() {
 	NSNotificationCenter.defaultCenter().addObserver(
 						  this,
 						  new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
@@ -97,8 +98,6 @@ public class CDDownloadSheet {
 
     public void protocolSelectionChanged(Object sender) {
 	NSMenuItem selectedItem = protocolPopup.selectedItem();
-	if(selectedItem.tag() == Session.SSH_PORT)
-	    portField.setIntValue(Session.SSH_PORT);
 	if(selectedItem.tag() == Session.FTP_PORT)
 	    portField.setIntValue(Session.FTP_PORT);
 	if(selectedItem.tag() == Session.HTTP_PORT)
@@ -109,12 +108,10 @@ public class CDDownloadSheet {
 
     public void textInputDidChange(NSNotification sender) {
 	NSMenuItem selectedItem = protocolPopup.selectedItem();
-	String protocol;
-	if(selectedItem.tag() == Session.SSH_PORT)
-	    protocol = Session.SFTP+"://";
+	String protocol = null;
 	if(selectedItem.tag() == Session.FTP_PORT)
 	    protocol = Session.FTP+"://";
-	if(selectedItem.tag() == Session.HTTP_PORT)
+	else if(selectedItem.tag() == Session.HTTP_PORT)
 	    protocol = Session.HTTP+"://";
 	urlLabel.setStringValue(protocol+hostField.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
     }
@@ -125,20 +122,19 @@ public class CDDownloadSheet {
 	    case(NSAlertPanel.DefaultReturn):
 		int tag = protocolPopup.selectedItem().tag();
 		Host host;
+//		Path file;
 		switch(tag) {
-		    case(Session.SSH_PORT):
-			host = new Host(Session.SFTP, hostField.stringValue(), Session.SSH_PORT, new CDLoginController(this.window()));
-			break;
 		    case(Session.FTP_PORT):
 			host = new Host(Session.FTP, hostField.stringValue(), Session.FTP_PORT, new CDLoginController(this.window()));
+			//file = new FTPFile(pathField.stringValue());
 			break;
 		    case(Session.HTTP_PORT):
 			host = new Host(Session.HTTP, hostField.stringValue(), Session.HTTP_PORT, new CDLoginController(this.window()));
+			//file = new HTTPFile(pathField.stringValue());
 			break;
 		}
-//@todo new Path(pathField.stringValue());
-//		CDTransferController controller = new CDTransferController(path);
-//		controller.download();
+		//CDTransferController controller = new CDTransferController(file);
+		//controller.download();
 	    case(NSAlertPanel.AlternateReturn):
 		//
 	}

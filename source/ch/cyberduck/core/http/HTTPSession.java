@@ -271,6 +271,7 @@ public class HTTPSession extends Session {
 //		else {
 	HTTP.connect(host.getName(), host.getPort(), false);//@todo implement https
 //		}
+	    this.setConnected(true);
 	    log("HTTP connection opened", Message.PROGRESS);
 //		HTTPFile p = new HTTPFile(host.getWorkdir());
 //		p.download();

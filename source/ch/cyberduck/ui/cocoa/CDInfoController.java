@@ -173,29 +173,31 @@ public class CDInfoController {//implements Observer {
 	    file.rename(filenameField.stringValue());
     }
     public void ownerInputDidEndEditing(NSNotification sender) {
-	if(ownerField.stringValue() != file.attributes.getOwner())
+	if(ownerField.stringValue() != file.attributes.getOwner()) {
 //@todo	    file.changeOwner(ownerField.stringValue());
+	}
     }
     public void groupInputDidEndEditing(NSNotification sender) {
-	if(groupField.stringValue() != file.attributes.getGroup())
+	if(groupField.stringValue() != file.attributes.getGroup()) {
 //@todo	    file.changeGroup(groupField.stringValue());
+	}
     }
 
     
     public void permissionsSelectionChanged(Object sender) {
 	log.debug("permissionsSelectionChanged");
         boolean[][] p = new boolean[3][3];
-	p[Permission.OWNER][Permission.READ] = ownerr.state() == NSCell.OnState;
-	p[Permission.OWNER][Permission.WRITE] = ownerw.state() == NSCell.OnState;
-	p[Permission.OWNER][Permission.EXECUTE] = ownerx.state() == NSCell.OnState;
+	p[Permission.OWNER][Permission.READ] = (ownerr.state() == NSCell.OnState);
+	p[Permission.OWNER][Permission.WRITE] = (ownerw.state() == NSCell.OnState);
+	p[Permission.OWNER][Permission.EXECUTE] = (ownerx.state() == NSCell.OnState);
 
-	p[Permission.GROUP][Permission.READ] = groupr.state() == NSCell.OnState;
-	p[Permission.GROUP][Permission.WRITE] = groupw.state() == NSCell.OnState;
-	p[Permission.GROUP][Permission.EXECUTE] = groupx.state() == NSCell.OnState;
+	p[Permission.GROUP][Permission.READ] = (groupr.state() == NSCell.OnState);
+	p[Permission.GROUP][Permission.WRITE] = (groupw.state() == NSCell.OnState);
+	p[Permission.GROUP][Permission.EXECUTE] = (groupx.state() == NSCell.OnState);
 
-	p[Permission.OTHER][Permission.READ] = otherr.state() == NSCell.OnState;
-	p[Permission.OTHER][Permission.WRITE] = otherw.state() == NSCell.OnState;
-	p[Permission.OTHER][Permission.EXECUTE] = otherx.state() == NSCell.OnState;
+	p[Permission.OTHER][Permission.READ] = (otherr.state() == NSCell.OnState);
+	p[Permission.OTHER][Permission.WRITE] = (otherw.state() == NSCell.OnState);
+	p[Permission.OTHER][Permission.EXECUTE] = (otherx.state() == NSCell.OnState);
 
 	Permission permission = new Permission(p);
 	file.attributes.setPermission(permission);

@@ -31,21 +31,7 @@ import org.apache.log4j.Logger;
 public class CDConnectionSheet {
     private static Logger log = Logger.getLogger(CDConnectionSheet.class);
 
-    private CDBrowserController browser;
-    // ----------------------------------------------------------
-    // Constructors
-    // ----------------------------------------------------------
-
-    public CDConnectionSheet(CDBrowserController browser) {
-	this.browser = browser;
-	log.debug("CDConnectionSheet");
-        if (false == NSApplication.loadNibNamed("Connection", this)) {
-            log.error("Couldn't load Connection.nib");
-            return;
-        }
-    }
-    
-    // ----------------------------------------------------------
+        // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
 
@@ -53,14 +39,14 @@ public class CDConnectionSheet {
     public void setSheet(NSWindow sheet) {
 	this.sheet = sheet;
     }
-    
-    private NSPopUpButton protocolPopup;    
+
+    private NSPopUpButton protocolPopup;
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
 	this.protocolPopup = protocolPopup;
     }
 
-    private NSTextField hostField;
-    public void setHostField(NSTextField hostField) {
+    private NSPopUpButton hostField;
+    public void setHostField(NSPopUpButton hostField) {
 	this.hostField = hostField;
     }
     
@@ -68,7 +54,7 @@ public class CDConnectionSheet {
 //    public void setPathField(NSTextField pathField) {
 //	this.pathField = pathField;
 //    }
-    
+
     private NSTextField portField;
     public void setPortField(NSTextField portField) {
 	this.portField = portField;
@@ -83,20 +69,34 @@ public class CDConnectionSheet {
     public void setPassField(NSTextField passField) {
 	this.passField = passField;
     }
-    
+
     private NSTextField urlLabel;
     public void setUrlLabel(NSTextField urlLabel) {
 	this.urlLabel = urlLabel;
     }
 
-
-    
     public NSWindow window() {
 	return this.sheet;
     }
-        
-    public void awakeFromNib() {
-	log.debug("awakeFromNib");
+
+    
+    private CDBrowserController browser;
+    // ----------------------------------------------------------
+    // Constructors
+    // ----------------------------------------------------------
+
+    public CDConnectionSheet(CDBrowserController browser) {
+	this.browser = browser;
+	log.debug("CDConnectionSheet");
+        if (false == NSApplication.loadNibNamed("Connection", this)) {
+            log.error("Couldn't load Connection.nib");
+            return;
+        }
+	this.init();
+    }
+            
+    private void init() {
+	log.debug("init");
 	// Notify the textInputDidChange() method if the user types.
 	NSNotificationCenter.defaultCenter().addObserver(
 						    this,
@@ -145,12 +145,12 @@ public class CDConnectionSheet {
 
     public void textInputDidChange(NSNotification sender) {
 	NSMenuItem selectedItem = protocolPopup.selectedItem();
-	String protocol;
+	String protocol = null;
 	if(selectedItem.tag() == Session.SSH_PORT)
 	    protocol = Session.SFTP+"://";
-	if(selectedItem.tag() == Session.FTP_PORT)
+	else if(selectedItem.tag() == Session.FTP_PORT)
 	    protocol = Session.FTP+"://";
-	if(selectedItem.tag() == Session.HTTP_PORT)
+	else if(selectedItem.tag() == Session.HTTP_PORT)
 	    protocol = Session.HTTP+"://";
 	urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostField.stringValue()+":"+portField.stringValue());
     }
@@ -159,7 +159,7 @@ public class CDConnectionSheet {
     public void closeSheet(Object sender) {
 	log.debug("closeSheet");
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-	NSApplication.sharedApplication().endSheet(hostField.window(), ((NSButton)sender).tag());
+	NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
     }
     
     public void connectionSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {

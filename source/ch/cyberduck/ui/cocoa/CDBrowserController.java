@@ -107,7 +107,18 @@ public class CDBrowserController implements Observer {
             log.error("Couldn't load Browser.nib");
             return;
         }
+	this.init();
     }
+
+    private void init() {
+	log.debug("innit");
+
+	this.pathController = new CDPathController(pathPopup);
+	this.connectionSheet = new CDConnectionSheet(this);
+
+	this.setupToolbar();
+    }
+
     
     public void finalize() throws Throwable {
 	super.finalize();
@@ -326,17 +337,7 @@ public class CDBrowserController implements Observer {
 	host.closeSession();
     }
 
-    
-    public void awakeFromNib() {
-	log.debug("awakeFromNib");
-
-	this.pathController = new CDPathController(pathPopup);
-	this.connectionSheet = new CDConnectionSheet(this);
-
-	this.setupToolbar();
-    }
-
-    // ----------------------------------------------------------
+        // ----------------------------------------------------------
     // Toolbar
     // ----------------------------------------------------------
 
@@ -561,27 +562,32 @@ public class CDBrowserController implements Observer {
     // ----------------------------------------------------------
 
     public boolean windowShouldClose(NSWindow sender) {
-	NSAlertPanel.beginAlertSheet(
-			      "End session?", //title
-			      "Close",// defaultbutton
-			      "Cancel",//alternative button
-			      null,//other button
-			      sender,//window
-			      this, //delegate
-			      new NSSelector
-			      (
-	  "closeSheetDidEnd",
-	  new Class[]
-	  {
-	      NSWindow.class, int.class, NSWindow.class
-	  }
-	  ),// end selector
-			      null, // dismiss selector
-			      sender, // context
-			      "The connection to the remote host will be closed." // message
-			      );
+	if(host != null) {
+	    if(host.getSession().isConnected()) {
+		NSAlertPanel.beginAlertSheet(
+			       "End session?", //title
+			       "Close",// defaultbutton
+			       "Cancel",//alternative button
+			       null,//other button
+			       sender,//window
+			       this, //delegate
+			       new NSSelector
+			       (
+	   "closeSheetDidEnd",
+	   new Class[]
+	   {
+	       NSWindow.class, int.class, NSWindow.class
+	   }
+	   ),// end selector
+			       null, // dismiss selector
+			       sender, // context
+			       "The connection to the remote host will be closed." // message
+			       );
 	//@todo return the actual selection
-	return false;
+		return false;
+	    }
+	}
+	return true;
     }
     
     // ----------------------------------------------------------

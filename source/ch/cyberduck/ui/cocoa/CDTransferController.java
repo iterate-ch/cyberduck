@@ -99,14 +99,14 @@ public class CDTransferController implements Observer {
     }
 
     private void init() {
+	log.debug("init");
 	this.fileIconView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
 	this.urlField.setStringValue(file.getAbsolute()); //@todo url
 	this.fileField.setStringValue(file.getLocal().toString());
 	this.window().setTitle(file.getName());
 	this.progressBar.setMinValue(0);
 	this.progressBar.setMaxValue(file.status.getSize());
-	
-	//@todo anything else?
+	this.progressField.setStringValue("");
     }
 
     public void update(Observable o, Object arg) {
@@ -142,11 +142,11 @@ public class CDTransferController implements Observer {
 		}
 		if(msg.getTitle().equals(Message.START)) {
 		    this.resumeButton.setTitle("Resume");
-//		    this.progressBar.startAnimation(this);
+		    this.progressBar.startAnimation(this);
 		    return;
 		}
 		if(msg.getTitle().equals(Message.STOP)) {
-//		    this.progressBar.stopAnimation(this);
+		    this.progressBar.stopAnimation(this);
 		    this.stopButton.setEnabled(false);
 		    this.resumeButton.setEnabled(true);
 		    return;
@@ -154,6 +154,8 @@ public class CDTransferController implements Observer {
 		if(msg.getTitle().equals(Message.COMPLETE)) {
 		    this.progressBar.setDoubleValue((double)file.status.getCurrent());
 		    this.resumeButton.setTitle("Reload");
+		    this.stopButton.setEnabled(false);
+		    this.resumeButton.setEnabled(true);
 		    return;
 		}
 	    }

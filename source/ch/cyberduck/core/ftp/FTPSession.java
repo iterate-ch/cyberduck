@@ -303,13 +303,10 @@ public class FTPSession extends Session {
 //			FTP.initSOCKSAuthentication(Preferences.instance().getProperty("connection.proxy.username"), Preferences.instance().getProperty("connection.proxy.password"));
 //		    }
 	    FTP.connect(host.getName(), host.getPort());
-	    FTPSession.this.log("FTP connection opened", Message.PROGRESS);
-	    FTPSession.this.login();
-	    FTPSession.this.setConnected(true);
+	    this.setConnected(true);
+	    this.log("FTP connection opened", Message.PROGRESS);
+	    this.login();
 	    FTP.system();
-//		    String path = host.getWorkdir().equals(Preferences.instance().getProperty("connection.path.default")) ? FTP.pwd() : host.getWorkdir();
-//		    FTPFile home = new FTPFile(path);
-//		    home.list();
 	}
 	catch(FTPException e) {
 	    this.log("FTP Error: "+e.getMessage(), Message.ERROR);
@@ -382,13 +379,13 @@ public class FTPSession extends Session {
 	if(TRANSFERTYPE.equals("binary")) {
 	    this.log("Setting transfer mode to BINARY", Message.PROGRESS);
 	    FTP.setType(FTPTransferType.BINARY);
-	    file.status.setSize((int)(FTP.size(file.getName())));
+	    file.status.setSize((int)(FTP.size(file.getAbsolute())));
 	    OutputStream out = new FileOutputStream(file.getLocal(), file.status.isResume());
 	    if(out == null) {
 		throw new IOException("Unable to buffer data");
 	    }
 	    this.log("Opening data stream...", Message.PROGRESS);
-	    java.io.InputStream in = FTP.getBinary(file.getName(), file.status.isResume() ? file.status.getCurrent() : 0);
+	    java.io.InputStream in = FTP.getBinary(file.getAbsolute(), file.status.isResume() ? file.status.getCurrent() : 0);
 	    if(in == null) {
 		throw new IOException("Unable opening data stream");
 	    }
@@ -399,7 +396,7 @@ public class FTPSession extends Session {
 	else if(TRANSFERTYPE.equals("ascii")) {
 	    this.log("Setting transfer type to ASCII", Message.PROGRESS);
 	    FTP.setType(FTPTransferType.ASCII);
-	    file.status.setSize((int)(FTP.size(file.getName())));
+	    file.status.setSize((int)(FTP.size(file.getAbsolute())));
 	    java.io.Writer out = new FileWriter(file.getLocal(), file.status.isResume());
 	    if(out == null) {
 		throw new IOException("Unable to buffer data");
@@ -409,7 +406,7 @@ public class FTPSession extends Session {
 	    if(in == null) {
 		throw new IOException("Unable opening data stream");
 	    }
-	    this.log("Downloading "+file.getName()+"...", Message.PROGRESS);
+	    this.log("Downloading "+file.getAbsolute()+"...", Message.PROGRESS);
 	    file.download(in, out);
 	    FTP.validateTransfer();
 	}
