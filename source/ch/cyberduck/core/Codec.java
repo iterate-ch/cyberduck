@@ -35,7 +35,6 @@ public class Codec {
 	 */
 	public static String decode(String text) {
 		return Codec.decode(text, Preferences.instance().getProperty("browser.charset.encoding"));
-//		return Codec.decode(text, Preferences.instance().getProperty("browser.charset.decoding"));
 	}
 
 	/**
@@ -52,11 +51,9 @@ public class Codec {
 	 */
 	public static String decode(byte[] text) {
 		return Codec.decode(text, Preferences.instance().getProperty("browser.charset.encoding"));
-//		return Codec.decode(text, Preferences.instance().getProperty("browser.charset.decoding"));
 	}
 	
 	public static String decode(byte[] text, String encoding) {
-		log.debug("decode:"+new String(text).toString()+","+encoding); //@todo remove
 		String decoded = null;
 		try {
 			decoded = new String(text, encoding);
@@ -65,7 +62,6 @@ public class Codec {
 			log.error(e.getMessage());
 		}
 		finally {
-			log.debug("Decoded:"+decoded); //@todo remove
 			return decoded;
 		}
 	}
@@ -79,7 +75,6 @@ public class Codec {
 	 * Encodes this String into a sequence of bytes using the named charset, storing the result into a new byte array.
 	 */
 	public static byte[] encode(String text, String encoding) {
-		log.debug("encode:"+text+","+encoding); //@todo remove
 		byte[] encoded = null;
 		try {
 			encoded = text.getBytes(encoding);
@@ -88,34 +83,7 @@ public class Codec {
 			log.error(e.getMessage());
 		}
 		finally {
-			log.debug("Encoded:"+new String(encoded).toString()); //@todo remove
 			return encoded;
 		}
-	}
-	
-	
-	//////////////////////
-	
-	private void test() {
-		org.apache.log4j.BasicConfigurator.configure();
-		String testString = "aÃàoÃàuÃàaÃàaÃàaÃà!eÃÄ&%cÃß\"";
-		log.info("Test String:"+testString);
-	{
-		String decoded = Codec.decode(testString);
-//		log.info("Test String decoded:"+decoded);
-		String encoded = new String(Codec.encode(decoded));
-//		log.info("Test String encoded:"+encoded);
-	}
-	{
-		String decoded = Codec.decode(testString, "ISO-8859-1");
-//		log.info("Test String decoded:"+decoded);
-		String encoded = new String(Codec.encode(decoded, "ISO-8859-1"));
-//		log.info("Test String encoded:"+encoded);
-	}
-	}
-	
-	public static void main(String[] args) {
-		Codec c = new Codec();
-		c.test();
 	}
 }

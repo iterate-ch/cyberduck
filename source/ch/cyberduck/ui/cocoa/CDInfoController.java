@@ -143,9 +143,7 @@ public class CDInfoController {
 		this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 
 		this.filenameField.setStringValue(file.getName());
-//		this.filenameField.setStringValue(Codec.decode(file.getName()));
 		this.pathField.setStringValue(file.getParent().getAbsolute());
-//		this.pathField.setStringValue(Codec.decode(file.getParent().getAbsolute()));
 		this.groupField.setStringValue(file.attributes.getGroup());
 		this.kindField.setStringValue(file.getKind());
 		this.modifiedField.setStringValue(file.attributes.getModified());

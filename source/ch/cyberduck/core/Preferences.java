@@ -101,8 +101,7 @@ public abstract class Preferences {
 		defaults.put("browser.horizontalLines", "true");
 		defaults.put("browser.openByDefault", "true");
 		defaults.put("browser.showHidden", "false");
-//		defaults.put("browser.charset.decoding", "UTF-8");
-		defaults.put("browser.charset.encoding", "ISO-8859-1");
+		defaults.put("browser.charset.encoding", "UTF-8");
 
 		defaults.put("history.size", "10");
 		defaults.put("history.save", "true");

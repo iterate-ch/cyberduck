@@ -90,7 +90,6 @@ public class CDQueueCell extends CDTableCell {
 		// drawing path properties
 		// local file
 		NSGraphics.drawAttributedString(
-			//		    new NSAttributedString(Codec.decode(queue.getRoot().getName())),
 			new NSAttributedString(queue.getRoot().getName(),
 								   boldFont),
 			new NSRect(cellPoint.x() + BORDER + SPACE,
@@ -103,7 +102,6 @@ public class CDQueueCell extends CDTableCell {
 		    new NSAttributedString(queue.getRoot().getHost().getProtocol()+"://"+
 								   queue.getRoot().getHost().getHostname() + 
 								   queue.getRoot().getAbsolute(),
-//								   Codec.decode(queue.getRoot().getAbsolute()),
 		        tinyFont),
 		    new NSRect(cellPoint.x() + BORDER + SPACE,
 		        cellPoint.y() + 20,

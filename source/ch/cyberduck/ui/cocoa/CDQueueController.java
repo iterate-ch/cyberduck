@@ -494,17 +494,16 @@ public class CDQueueController implements Observer, Validator {
 						    this, //delegate
 						    new NSSelector
 						        (
-						            "validateSheetDidEnd",
-						            new Class[]
-						            {
-							            NSWindow.class, int.class, Object.class
-						            }
-						        ), // end selector
-						    null, // dismiss selector
-						    path, // context
+								 "validateSheetDidEnd",
+								 new Class[]
+								 {
+									 NSWindow.class, int.class, Object.class
+								 }
+								 ), // end selector
+															 null, // dismiss selector
+															 path, // context
 															 NSBundle.localizedString("The file", "") + " " + path.getName() + " " + NSBundle.localizedString("alredy exists in", "") + " " + path.getLocal().getParent() // message
-//						    NSBundle.localizedString("The file", "") + " " + Codec.decode(path.getName()) + " " + NSBundle.localizedString("alredy exists in", "") + " " + path.getLocal().getParent() // message
-						);
+															 );
 						while (!done) {
 							try {
 								log.debug("Sleeping...");

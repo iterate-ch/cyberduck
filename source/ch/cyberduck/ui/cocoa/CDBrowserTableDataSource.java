@@ -75,7 +75,6 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		}
 		if (identifier.equals("FILENAME")) {
 			return p.getName();
-//			return Codec.decode(p.getName());
 		}
 		else if (identifier.equals("SIZE"))
 			return Status.getSizeAsString(p.status.getSize());

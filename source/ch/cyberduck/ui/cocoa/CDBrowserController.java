@@ -329,7 +329,6 @@ public class CDBrowserController implements Observer {
 						next = (Path) i.next();
 						//						if(next.getName().startsWith(searchString)) {
 						if(next.getName().indexOf(searchString) != -1) {
-//						if(Codec.decode(next.getName()).indexOf(searchString) != -1) {
 							subset.add(next);
 						}
 					}
@@ -663,7 +662,6 @@ public class CDBrowserController implements Observer {
 			Path p = (Path) browserModel.getEntry(selected);
 			files.add(p);
 			alertText.append("\n- " + p.getName());
-//			alertText.append("\n- " + Codec.decode(p.getName()));
 		}
 		NSAlertPanel.beginCriticalAlertSheet(
 		    NSBundle.localizedString("Delete", "Alert sheet title"), //title
