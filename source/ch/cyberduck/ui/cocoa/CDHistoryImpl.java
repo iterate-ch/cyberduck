@@ -26,9 +26,9 @@ import com.apple.cocoa.foundation.NSPathUtilities;
 /**
 * @version $Id$
  */
-public class CDHistoryImpl extends Bookmarks {
+public class CDHistoryImpl extends History {
 		
-	private static Bookmarks instance;
+	private static History instance;
 
     private static final File HISTORY_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History.plist"));
 	
@@ -41,7 +41,7 @@ public class CDHistoryImpl extends Bookmarks {
 		this.load();
     }
 	
-    public static Bookmarks instance() {
+    public static History instance() {
 		if(null == instance) {
 			instance = new CDHistoryImpl();
 		}
