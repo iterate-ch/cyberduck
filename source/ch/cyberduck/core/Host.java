@@ -374,6 +374,7 @@ public class Host {
 			return this.getProtocol().equals(o.getProtocol())
 				&& this.getCredentials().getUsername().equals(o.getCredentials().getUsername())
 				&& this.getHostname().equals(o.getHostname())
+				&& this.getNickname().equals(o.getNickname())
 				&& this.getPort() == o.getPort()
 				&& this.getDefaultPath().equals(o.getDefaultPath());
 		}
