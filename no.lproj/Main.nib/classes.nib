@@ -12,7 +12,7 @@
                 editBookmarkButtonClicked = id; 
                 editButtonClicked = id; 
                 folderButtonClicked = id; 
-                gotoMenuClicked = id; 
+                gotoButtonClicked = id; 
                 infoButtonClicked = id; 
                 insideButtonClicked = id; 
                 refreshButtonClicked = id; 
@@ -21,8 +21,6 @@
                 toggleBookmarkDrawer = id; 
                 toggleLogDrawer = id; 
                 upButtonClicked = id; 
-                viewAsColumnsMenuClicked = id; 
-                viewAsListMenuClicked = id; 
             }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 
