@@ -27,7 +27,7 @@ import ch.cyberduck.core.sftp.SFTPSession;
 
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 
-public class Host implements Cloneable {
+public class Host {
     private static Logger log = Logger.getLogger(Host.class);
 
     private String protocol;
@@ -37,15 +37,16 @@ public class Host implements Cloneable {
     private Session session;
     private Login login;
 
-    public Host(String url) {
-	this(url.substring(0, url.indexOf("://")),
-      url.substring(url.indexOf("://")+3, url.lastIndexOf(":")),
-      Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length())));
-    }
+//    public Host(String url) {
+//	this(url.substring(0, url.indexOf("://")),
+  //    url.substring(url.indexOf("://")+3, url.lastIndexOf("@")),
+    //  url.substring(url.indexOf("@")+1, url.lastIndexOf(":")),
+ //     Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length())));
+   // }
 
-    public Host(String protocol, String name, int port) {
-	this(protocol, name, port, null);
-    }
+//    public Host(String protocol, String host, int port) {
+//	this(protocol, String user, host, port, null);
+//    }
     
     public Host(String protocol, String name, int port, Login login) {
         this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
@@ -135,15 +136,12 @@ public class Host implements Cloneable {
     // Accessor methods
     // ----------------------------------------------------------
 
+    public void setLoginController(Login login) {
+	this.login = login;
+    }
+    
     public Login getLogin() {
 	return this.login;
-    }
-
-    public String getLoginname() {
-	if(this.login != null) {
-	    return login.getUsername();
-	}
-	return Preferences.instance().getProperty("ftp.anonymous.name");
     }
 
     public String getProtocol() {
@@ -174,11 +172,11 @@ public class Host implements Cloneable {
     }
 
     //ssh specific
-    public void setHostKeyVerification(HostKeyVerification h) {
+    public void setHostKeyVerificationController(HostKeyVerification h) {
 	this.hostKeyVerification = h;
     }
 
-    public HostKeyVerification getHostKeyVerification() {
+    public HostKeyVerification getHostKeyVerificationController() {
 	return this.hostKeyVerification;
     }
 
@@ -206,8 +204,12 @@ public class Host implements Cloneable {
             return "Unknown host";
         }
     }
-    
+
+    /**
+	* protocol://user@host:port
+	@ return The URL of the remote host including user login name and port
+     */
     public String toString() {
-	return this.getProtocol()+"://"+this.getName()+":"+this.getPort();
+	return this.getProtocol()+"://"+this.getLogin().getUsername()+"@"+this.getName()+":"+this.getPort();
     }
 }

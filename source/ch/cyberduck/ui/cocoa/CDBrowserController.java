@@ -32,8 +32,8 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.History;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Login;
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Queue;
@@ -559,10 +559,10 @@ public class CDBrowserController implements Observer {
 
     public void connectFieldClicked(Object sender) {
 	log.debug("connectFieldClicked");
-	Host host = new Host(((NSControl)sender).stringValue(), new CDLoginController(this.window()));
+	Host host = new Host(((NSControl)sender).stringValue(), new Login());
 	if(host.getProtocol().equals(Session.SFTP)) {
 	    try {
-		host.setHostKeyVerification(new CDHostKeyController(this.window()));
+		host.setHostKeyVerificationController(new CDHostKeyController(this.window()));
 	    }
 	    catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
 		//This exception is thrown whenever an exception occurs open or reading from the host file.
@@ -607,8 +607,9 @@ public class CDBrowserController implements Observer {
 	this.unmount();
 
 	this.host = host;
-	History.instance().add(host);
-
+	//oops- ugly
+	this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
+	
 	Session session = host.getSession();
 	
 	session.addObserver((Observer)this);

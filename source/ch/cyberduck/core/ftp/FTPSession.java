@@ -123,7 +123,7 @@ public class FTPSession extends Session {
 	}
 	catch(FTPException e) {
 	    this.log("Login failed", Message.PROGRESS);
-            if(host.getLogin().loginFailure("Authentication for user "+ host.getLogin().getUsername() + " failed. The server response is: "+e.getMessage())) {
+            if(host.getLogin().getController().loginFailure("Authentication for user "+ host.getLogin().getUsername() + " failed. The server response is: "+e.getMessage())) {
                 // let's try again with the new values
 		this.login();
             }

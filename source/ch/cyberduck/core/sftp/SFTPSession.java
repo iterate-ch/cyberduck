@@ -97,7 +97,7 @@ public class SFTPSession extends Session {
 		    // Sets the preffered server->client message authentication
 //		    properties.setPrefSCMac("hmac-md5");
 
-	SSH.connect(properties, host.getHostKeyVerification());
+	SSH.connect(properties, host.getHostKeyVerificationController());
 	this.log("SSH connection opened", Message.PROGRESS);
 	this.log(SSH.getServerId(), Message.TRANSCRIPT);
 
@@ -154,7 +154,7 @@ public class SFTPSession extends Session {
 		explanation = "Authentication as user "+host.getLogin().getUsername()+" succeeded but another authentication method is required.";
 	    else //(AuthenticationProtocolState.FAILED == result)
 		explanation = "Authentication as user "+host.getLogin().getUsername()+" failed.";
-	    if(host.getLogin().loginFailure(explanation))
+	    if(host.getLogin().getController().loginFailure(explanation))
 		this.login();
 	    else {
 		throw new SshException("Login as user "+host.getLogin().getUsername()+" failed.");

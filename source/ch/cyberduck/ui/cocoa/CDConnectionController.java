@@ -19,11 +19,11 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Login;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.RendezvousListener;
-import ch.cyberduck.core.History;
 import ch.cyberduck.core.Favorites;
 
 import com.apple.cocoa.application.*;
@@ -81,7 +81,11 @@ public class CDConnectionController {
 	
 	public void addItem(Object o) {
 	    log.debug("addItem:"+o);
-	    Host h = new Host(o.toString());
+	    String url = o.toString();
+	    Host h = new Host(url.substring(0, url.indexOf("://")),
+	  url.substring(url.indexOf("@")+1, url.lastIndexOf(":")),
+	  Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length())),
+		       new Login(url.substring(url.indexOf("://")+3, url.lastIndexOf("@"))));
 	    this.data.put(h.toString(), h);
 	    favoritesPopup.addItem(h.toString());
 	}
@@ -139,73 +143,78 @@ public class CDConnectionController {
 	this.protocolPopup = protocolPopup;
     }
 
-    private NSComboBox hostCombo;
-    private HostDataSource hostDataSource;
-    public void setHostPopup(NSComboBox hostCombo) {
-	this.hostCombo = hostCombo;
-	this.hostCombo.setTarget(this);
-	this.hostCombo.setAction(new NSSelector("hostSelectionChanged", new Class[] {Object.class}));
-	this.hostCombo.setUsesDataSource(true);
-	this.hostCombo.setDataSource(hostDataSource = new HostDataSource());
-    }
-
-    private class HostDataSource implements NSComboBox.DataSource {
-	private List data = new ArrayList();
-
-	public void addItem(NSComboBox aComboBox, Object o) {
-	    log.debug("HostDataSource:addItem:"+o);
-	    this.data.add(0, o);
-	    aComboBox.reloadData();
-	}
+//    private NSComboBox hostCombo;
+//    private HostDataSource hostDataSource;
+//    public void setHostPopup(NSComboBox hostCombo) {
+//	this.hostCombo = hostCombo;
+//	this.hostCombo.setTarget(this);
+//	this.hostCombo.setAction(new NSSelector("hostSelectionChanged", new Class[] {Object.class}));
+//	this.hostCombo.setUsesDataSource(true);
+//	this.hostCombo.setDataSource(hostDataSource = new HostDataSource());
+  //  }
+//
+  //  private class HostDataSource implements NSComboBox.DataSource {
+//	private List data = new ArrayList();
+//
+//	public void addItem(NSComboBox aComboBox, Object o) {
+//	    log.debug("HostDataSource:addItem:"+o);
+//	    this.data.add(0, o);
+//	    aComboBox.reloadData();
+//	}
 
 	/**
 	* An NSComboBox, aComboBox, uses this method to perform incremental-or "smart"-searches when the user types into the text field. Your implementation should return the first complete string that starts with uncompletedString.
 	 As the user types in the text field, the receiver uses this method to search for items from the pop-up list that start with what the user has typed. The receiver adds the new text to the end of the field and selects the new text, so when the user types another character, it replaces the new text.
 	 */
-	public String comboBoxCompletedString(NSComboBox aComboBox, String uncompletedString) {
-	    log.debug("comboBoxCompletedString:"+uncompletedString);
-	    Iterator i = data.iterator();
-	    while(i.hasNext()) {
-		String h = ((Host)i.next()).getName();
-		if(h.startsWith(uncompletedString))
-		    return h;
-	    }
-	    return null;
-	}
-
-	public int comboBoxIndexOfItem( NSComboBox combo, String aString) {
-	    log.debug("comboBoxIndexOfItem:"+aString);
-	    Iterator i = data.iterator();
-	    int index = -1;
-	    while(i.hasNext()) {
-		index++;
-		if(i.next().toString().equals(aString))
-		    return index;
-	    }
-	    return index;
-	}
-
-	public Object getItem(int index) {
-	    return data.get(index);
-	}
+//	public String comboBoxCompletedString(NSComboBox aComboBox, String uncompletedString) {
+//	    log.debug("comboBoxCompletedString:"+uncompletedString);
+//	    Iterator i = data.iterator();
+//	    while(i.hasNext()) {
+//		String h = ((Host)i.next()).getName();
+//		if(h.startsWith(uncompletedString))
+//		    return h;
+//	    }
+//	    return null;
+//	}
+//
+//	public int comboBoxIndexOfItem( NSComboBox combo, String aString) {
+//	    log.debug("comboBoxIndexOfItem:"+aString);
+//	    Iterator i = data.iterator();
+//	    int index = -1;
+//	    while(i.hasNext()) {
+//		index++;
+//		if(i.next().toString().equals(aString))
+//		    return index;
+//	    }
+//	    return index;
+//	}
+//
+//	public Object getItem(int index) {
+//	    return data.get(index);
+//	}
 	
 	/**
 	    * Implement this method to return the object that corresponds to the item at index in aComboBox
 	 */
-	public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int index) {
-	    //log.debug("comboBoxObjectValueForItemAtIndex:"+index);
-	    return ((Host)data.get(index)).getName();
-	}
-	
-	public int numberOfItemsInComboBox(NSComboBox combo) {
-	    //log.debug("numberOfItemsInComboBox");
-	    return data.size();
-	}
+//	public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int index) {
+//	    //log.debug("comboBoxObjectValueForItemAtIndex:"+index);
+//	    return ((Host)data.get(index)).getName();
+//	}
+//	
+//	public int numberOfItemsInComboBox(NSComboBox combo) {
+//	    //log.debug("numberOfItemsInComboBox");
+//	    return data.size();
+//	}
+//
+//	public void clear(NSComboBox aComboBox) {
+//	    this.data.clear();
+//	    aComboBox.reloadData();
+//	}
+//  }
 
-	public void clear(NSComboBox aComboBox) {
-	    this.data.clear();
-	    aComboBox.reloadData();
-	}
+    private NSTextField hostField;
+    public void setHostField(NSTextField hostField) {
+	this.hostField = hostField;
     }
     
 //    private NSTextField pathField;
@@ -270,7 +279,7 @@ public class CDConnectionController {
 						    this,
 						    new NSSelector("updateLabel", new Class[]{Object.class}),
 						    NSControl.ControlTextDidChangeNotification,
-						    hostCombo);
+						    hostField);
 //	NSNotificationCenter.defaultCenter().addObserver(
 //						    this,
 //						    new NSSelector("updateLabel", new Class[]{Object.class}),
@@ -298,28 +307,20 @@ public class CDConnectionController {
 //	this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalent("S");
 //	this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
 	this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals("ftp") ? FTP_STRING : SFTP_STRING);
-
-	//initializing host popup
-
-//	History history = History.instance();
-//	for(int i = 0; i < history.size(); i++) {
-//	    hostDataSource.addItem(hostCombo, history.get(i));
-//	}
 	
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
 //	this.pathField.setStringValue("~");
     }
 		
-    public void hostSelectionChanged(Object sender) {
-	log.debug("hostSelectionChanged:"+sender);
-	this.updateFields((Host)hostDataSource.getItem(hostCombo.indexOfSelectedItem()));
-	this.updateLabel(sender);
-    }
+//    public void hostSelectionChanged(Object sender) {
+//	log.debug("hostSelectionChanged:"+sender);
+//	this.updateFields((Host)hostDataSource.getItem(hostCombo.indexOfSelectedItem()));
+//	this.updateLabel(sender);
+//  }
 
     public void favoritesSelectionChanged(Object sender) {
 	log.debug("favoritesSelectionChanged:"+sender);
 	Object selectedItem = favoritesDataSource.getItem(favoritesPopup.titleOfSelectedItem());
-	hostDataSource.addItem(hostCombo, selectedItem);
 	this.updateFields((Host)selectedItem);
 	this.updateLabel(sender);
     }
@@ -348,8 +349,9 @@ public class CDConnectionController {
 	this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals("ftp") ? FTP_STRING : SFTP_STRING);
 	//should not be called when usesDataSource is set to YES
 //	this.hostCombo.selectItemWithObjectValue(selectedItem.getName());
+	this.hostField.setStringValue(selectedItem.getName());
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
-	this.usernameField.setStringValue(selectedItem.getLoginname());
+	this.usernameField.setStringValue(selectedItem.getLogin().getUsername());
     }
 
     public void updateLabel(Object sender) {
@@ -359,7 +361,7 @@ public class CDConnectionController {
 	    protocol = Session.SFTP+"://";
 	else if(selectedItem.tag() == Session.FTP_PORT)
 	    protocol = Session.FTP+"://";
-	urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostCombo.stringValue()+":"+portField.stringValue());
+	urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostField.stringValue()+":"+portField.stringValue());
     }
 
     public void closeSheet(NSButton sender) {
@@ -379,8 +381,8 @@ public class CDConnectionController {
 		switch(tag) {
 		    case(Session.SSH_PORT):
 			try {
-			    host = new Host(Session.SFTP, hostCombo.stringValue(), Integer.parseInt(portField.stringValue()), new CDLoginController(browser.window(), usernameField.stringValue(), passField.stringValue()));
-			    host.setHostKeyVerification(new CDHostKeyController(browser.window()));
+			    host = new Host(Session.SFTP, hostField.stringValue(), Integer.parseInt(portField.stringValue()), new Login(usernameField.stringValue(), passField.stringValue()));
+			    host.setHostKeyVerificationController(new CDHostKeyController(browser.window()));
 			}
 			    catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
 		//This exception is thrown whenever an exception occurs open or reading from the host file.
@@ -399,7 +401,7 @@ public class CDConnectionController {
 			    }
 			    break;
 		    case(Session.FTP_PORT):
-			host = new Host(Session.FTP, hostCombo.stringValue(), Integer.parseInt(portField.stringValue()), new CDLoginController(browser.window(), usernameField.stringValue(), passField.stringValue()));
+			host = new Host(Session.FTP, hostField.stringValue(), Integer.parseInt(portField.stringValue()), new Login(usernameField.stringValue(), passField.stringValue()));
 			break;
 		    default:
 			throw new IllegalArgumentException("No protocol selected.");

@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Login;
+import ch.cyberduck.ui.LoginController;
+
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
@@ -26,7 +28,7 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDLoginController extends Login {
+public class CDLoginController extends LoginController {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
     // ----------------------------------------------------------
@@ -57,23 +59,20 @@ public class CDLoginController extends Login {
 
     private static NSMutableArray allDocuments = new NSMutableArray();
 
-    public CDLoginController(NSWindow parentWindow, String user, String pass) {
-	super(user, pass);
-	allDocuments.addObject(this);
-	this.parentWindow = parentWindow;
-    }
-
-    public CDLoginController(NSWindow parentWindow) {
-	super();
-	allDocuments.addObject(this);
-	this.parentWindow = parentWindow;
-    }
-
-    public void finalize() throws Throwable {
-	log.debug("finalize");
-	super.finalize();
-    }    
+    private Login login;
     
+    public CDLoginController(NSWindow parentWindow, Login login) {
+	this.login = login;
+	this.parentWindow = parentWindow;
+	allDocuments.addObject(this);
+    }
+
+//    public CDLoginController(NSWindow parentWindow) {
+//	super();
+//	allDocuments.addObject(this);
+//	this.parentWindow = parentWindow;
+//  }
+
     public void closeSheet(Object sender) {
 	log.debug("closeSheet");
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
@@ -96,6 +95,7 @@ public class CDLoginController extends Login {
 	log.info("Authentication failed");
 	NSApplication.loadNibNamed("Login", this);
 	this.textField.setStringValue(message);
+	this.userField.setStringValue(login.getUsername());
 	NSApplication.sharedApplication().beginSheet(
 					      this.window(), //sheet
 					      parentWindow,
@@ -127,8 +127,8 @@ public class CDLoginController extends Login {
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
 		tryAgain = true;
-		this.setUsername(userField.stringValue());
-		this.setPassword(passField.stringValue());
+		this.login.setUsername(userField.stringValue());
+		this.login.setPassword(passField.stringValue());
 		break;
 	    case(NSAlertPanel.AlternateReturn):
 		tryAgain = false;

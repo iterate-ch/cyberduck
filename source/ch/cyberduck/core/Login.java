@@ -17,9 +17,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-public abstract class Login {
+import ch.cyberduck.ui.LoginController;
+
+public class Login {
     private String user;
     private transient String pass;
+    private LoginController controller;
     
     /**
 	* New instance with default values. Anonymous login.
@@ -28,6 +31,17 @@ public abstract class Login {
 	this.user = Preferences.instance().getProperty("ftp.anonymous.name");
 	this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
     }
+
+    public Login(String l) {
+	if(l.indexOf(':') != -1) {
+	    this.user = l.substring(0, l.indexOf(':')-1);
+	    this.pass = l.substring(l.indexOf(':'), l.length()-1);
+	}
+	else {
+	    this.user = l;
+	}
+    }
+
 
     /**
 	* @param user Login with this username
@@ -60,13 +74,13 @@ public abstract class Login {
 	this.pass = p;
     }
 
-    /**
-    * Call this to allow the user to reenter the new login credentials.
-    * A concrete sublcass could eg. display a panel. 
-    	* @return true If we whould try again with new login
-	* @param explanation Any additional information why the login failed.
-     */
-    public abstract boolean loginFailure(String explanation);
+    public void setController(LoginController c) {
+	this.controller = c;
+    }
+
+    public LoginController getController() {
+	return this.controller;
+    }
     
     public String toString() {
 	return this.getUsername()+":"+this.getPassword();

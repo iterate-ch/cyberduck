@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Favorites;
-import ch.cyberduck.core.History;
 import ch.cyberduck.core.Preferences;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -255,8 +254,6 @@ public class CDMainController {
 //	}
 	Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses"))+1);
         Preferences.instance().save();
-	History.instance().save();
-	//Favorites.instance().save();
 
 	/*
 	if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {

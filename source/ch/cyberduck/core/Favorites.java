@@ -31,7 +31,7 @@ import java.net.URL;
  * @version $Id$
  */
 public abstract class Favorites {
-    private static Logger log = Logger.getLogger(History.class);
+    private static Logger log = Logger.getLogger(Favorites.class);
     
     private List data = new ArrayList();
 
