@@ -1,4 +1,4 @@
-		    Licencia Pública GNU
+﻿		    Licencia Pública GNU
 Esta es la conocida GNU Public License (GPL), versión 2 (de junio de 1.991), 
 que cubre la mayor parte del software de la Free Software Foundation, 
 y muchos más programas.
