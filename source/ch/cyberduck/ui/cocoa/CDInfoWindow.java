@@ -158,7 +158,8 @@ public class CDInfoWindow extends NSPanel implements Observer {
 
     public void textInputDidEndEditing(NSNotification sender) {
 	log.debug("textInputDidEndEditing");
-	selectedPath.rename(filenameField.stringValue());
+	if(selectedPath != null)
+	    selectedPath.rename(filenameField.stringValue());
     }
 
     public void permissionsSelectionChanged(NSObject sender) {

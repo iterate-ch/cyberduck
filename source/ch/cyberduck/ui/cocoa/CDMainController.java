@@ -145,8 +145,8 @@ public class CDMainController extends NSObject {
 	    NSApplication.loadNibNamed("Info", this);
 //	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
 //	infoWindow.update(path, new Message(Message.SELECTION));
-//	infoWindow.orderFront(this);
-	infoWindow.makeKeyAndOrderFront(this);
+//	infoWindow.makeKeyAndOrderFront(this);
+	infoWindow.orderFront(this);
     }
 
     public void deleteButtonPressed(NSObject sender) {
@@ -245,7 +245,7 @@ public class CDMainController extends NSObject {
 	log.debug("preferencesButtonPressed");
 	if(null == preferencesWindow)
 	    NSApplication.loadNibNamed("Preferences", this);
-        preferencesWindow.makeKeyAndOrderFront(this);
+        preferencesWindow.orderFront(this);
     }
     
     public void awakeFromNib() {

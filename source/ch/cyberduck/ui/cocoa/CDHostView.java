@@ -31,7 +31,6 @@ import ch.cyberduck.core.Message;
 * @version $Id$
  */
 public class CDHostView extends NSTableView implements Observer {
-
     private static Logger log = Logger.getLogger(CDHostView.class);
 
     private CDHostTableDataSource model = new CDHostTableDataSource();
@@ -61,15 +60,14 @@ public class CDHostView extends NSTableView implements Observer {
 	log.debug("awakeFromNib");
 
 	this.addTableColumn(new CDStatusTableColumn());
-	this.addTableColumn(new CDButtonTableColumn());
+	this.addTableColumn(new CDHostnameTableColumn());
+	this.addTableColumn(new CDAddFavoriteTableColumn());
+	this.addTableColumn(new CDCloseTableColumn());
 	this.setDataSource(model);
-	
-
-	ObserverList.instance().registerObserver((Observer)this);
-
 	this.setDelegate(this);
 	this.setAutoresizesAllColumnsToFit(true);
-	this.model.addEntry(new Host("ftp", "hostname", 12, null));
+	
+	ObserverList.instance().registerObserver((Observer)this);
 
 
 //	if(this.tableColumnWithIdentifier("STATUS") != null)
@@ -79,6 +77,11 @@ public class CDHostView extends NSTableView implements Observer {
 //	this.tableColumnWithIdentifier("HOST").setDataCell(new CDHostCell());
     }
 
+    public void reloadData() {
+	super.reloadData();
+	this.setNeedsDisplay(true);
+    }
+    
     // ----------------------------------------------------------
     // Delegate methods
     // ----------------------------------------------------------
@@ -105,11 +108,6 @@ public class CDHostView extends NSTableView implements Observer {
 	    h.callObservers(new Message(Message.SELECTION));
 	}
     }
-
-    public void reloadData() {
-	super.reloadData();
-	this.setNeedsDisplay(true);
-    }    
     
     // ----------------------------------------------------------
     // Observer interface
@@ -137,6 +135,8 @@ public class CDHostView extends NSTableView implements Observer {
 	public CDStatusTableColumn() {
 	    super();
 	    log.debug("NSTableColumn");
+	    this.setMinWidth(20);
+	    this.setMaxWidth(20);
 	}
 
 	public Object identifier() {
@@ -160,16 +160,65 @@ public class CDHostView extends NSTableView implements Observer {
 	    return new NSImageCell(NSImage.imageNamed("blipGray.tiff"));
 	}
     }
-	
-	
-    class CDButtonTableColumn extends NSTableColumn {
-	public CDButtonTableColumn() {
+
+
+    class CDHostnameTableColumn extends NSTableColumn {
+	public CDHostnameTableColumn() {
 	    super();
-	    log.debug("NSTableColumn");
+	    log.debug("CDHostnameTableColumn");
 	}
 
 	public Object identifier() {
-	    return "BUTTON";
+	    return "HOSTNAME";
+	}
+    }
+
+
+    class CDAddFavoriteTableColumn extends NSTableColumn {
+	public CDAddFavoriteTableColumn() {
+	    super();
+	    log.debug("CDCloseTableColumn");
+	    this.setMinWidth(20);
+	    this.setMaxWidth(20);
+	}
+
+	public Object identifier() {
+	    return "FAVORITE";
+	}
+
+	public NSCell dataCellForRow(int row) {
+	    log.debug("dataCellForRow");
+	    return new CDFavoriteCell(NSImage.imageNamed("favorite.tiff"));
+	}
+
+	class CDFavoriteCell extends NSButtonCell {
+	    public CDFavoriteCell(NSImage img) {
+		super();
+		log.debug("CDFavoriteCell");
+		this.setImage(img);
+		this.setControlTint(NSButtonCell.ClearControlTint);
+		this.setBordered(false);
+		this.setTarget(this);
+		this.setAction(new NSSelector("cellClicked", new Class[]{null}));
+	    }
+
+	    public void cellClicked(NSObject sender) {
+		log.debug("cellClicked");
+//		Favorites.instance().add(model.getEntry(selectedRow());
+	    }
+	}	
+    }
+	
+    class CDCloseTableColumn extends NSTableColumn {
+	public CDCloseTableColumn() {
+	    super();
+	    log.debug("CDCloseTableColumn");
+	    this.setMinWidth(20);
+	    this.setMaxWidth(20);
+	}
+
+	public Object identifier() {
+	    return "CLOSE";
 	}
 
 	/**
@@ -182,26 +231,22 @@ public class CDHostView extends NSTableView implements Observer {
 	public NSCell dataCellForRow(int row) {
 	    log.debug("dataCellForRow");
 //	    return new CDImageCell(NSImage.imageNamed("reload.tiff"));
-	    Host h = (Host)model.getEntry(row);
-	    if(h.hasValidSession()) {
-		return new CDButtonCell(NSImage.imageNamed("stop.tiff"));
-	    }
-	    return new CDButtonCell(NSImage.imageNamed("reload.tiff"));
+//	    Host h = (Host)model.getEntry(row);
+//	    if(h.hasValidSession()) {
+	    return new CDCloseCell(NSImage.imageNamed("stop.tiff"));
+//	    }
+//	    return new CDCloseCell(NSImage.imageNamed("reload.tiff"));
 	}
 
 
-	class CDButtonCell extends NSButtonCell {
-	    public CDButtonCell(NSImage img) {
+	class CDCloseCell extends NSButtonCell {
+	    public CDCloseCell(NSImage img) {
 		super();
 		this.setImage(img);
-		//	    this.setTransparent(true);
-  //	    this.setHighlightsBy(NSButtonCell.NoCellMask);
-  //	    this.setGradientType(NSButtonCell.NSGradientNone);
 		this.setControlTint(NSButtonCell.ClearControlTint);
 		this.setBordered(false);
 		this.setTarget(this);
 		this.setAction(new NSSelector("cellClicked", new Class[]{null}));
-		//	    this.setDrawsBackground(false);
 		log.debug("CDImageCell");
 	    }
 

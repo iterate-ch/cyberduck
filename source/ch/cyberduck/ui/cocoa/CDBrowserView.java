@@ -81,7 +81,7 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	
 	ObserverList.instance().registerObserver(this);
 	// Registering for File Drops
-	this.registerForDraggedTypes(new NSArray(NSPasteboard.FileContentsPboardType));
+	this.registerForDraggedTypes(new NSArray(new Object[] {NSPasteboard.FileContentsPboardType}));
 
 //	if(null == this.model) 
 //	    this.model = (CDBrowserTableDataSource)this.dataSource();
@@ -125,11 +125,15 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 		Message msg = (Message)arg;
 		// A new session has been opened.
 		if(msg.getTitle().equals(Message.OPEN)) {
-		    model.clear();
-		    this.reloadData();
+//	@todo?	    model.clear();
+//		    this.reloadData();
 		}
 		// The host's session has been closed.
 		if(msg.getTitle().equals(Message.CLOSE)) {
+		    model.clear();
+		    this.reloadData();
+		}
+		if(msg.getTitle().equals(Message.SELECTION)) {
 		    model.clear();
 		    this.reloadData();
 		}
@@ -215,23 +219,26 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	* Informs the receiver that the user has released a key event specified by theEvent. NSResponder's
      * implementation simply passes this message to the next responder.
      */
-    public void keyUp(NSEvent event) {
-	log.debug("keyUp:"+event.toString());
-        Path p = (Path)model.getEntry(this.selectedRow());
-//@todo enter key	if(event.keyCode() == //36 76
-	if(event.modifierFlags() == NSEvent.CommandKeyMask) {
-	    if(event.keyCode() == NSEvent.UpArrowFunctionKey)
-		p.getParent().getParent().list(); //@todo use current directory. what if no file in current folder????
-	    if(event.keyCode() == NSEvent.DownArrowFunctionKey) {
-		if(p.isDirectory())
-		    p.list();
-		if(p.isFile())
-		    p.download();
-	    }
-	}
-    }
+//    public void keyUp(NSEvent event) {
+//	log.debug("keyUp:"+event.toString());
+//	int row = this.selectedRow();
+//	if(row!=-1) {
+//	    Path p = (Path)model.getEntry(row);
+//	    //@todo enter key	if(event.keyCode() == //36 76
+//	    if(event.modifierFlags() == NSEvent.CommandKeyMask) {
+//		if(event.keyCode() == NSEvent.UpArrowFunctionKey)
+//		    p.getParent().getParent().list(); //@todo use current directory. what if no file in current folder????
+//		if(event.keyCode() == NSEvent.DownArrowFunctionKey) {
+//		    if(p.isDirectory())
+//			p.list();
+//		    if(p.isFile())
+//			p.download();
+//		}
+//	    }
+//	}
+//  }
 
-//    public void viewDidEndLiveResize() {
+    //    public void viewDidEndLiveResize() {
 //	super.viewDidEndLiveResize();
 //	this.setNeedsDisplay(true);
   //  }

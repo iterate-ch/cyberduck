@@ -20,29 +20,33 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 import ch.cyberduck.core.Host;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import org.apache.log4j.Logger;
 
 /**
  * Keeps track of recently connected hosts
  * @version $Id$
  */
-public class History extends ArrayList {
+public abstract class History extends ArrayList {
     private static Logger log = Logger.getLogger(History.class);
 
     private static History instance;
 
-    private History() {
+    public History() {
 	//
     }
 
-    public History instance() {
+    public static History instance() {
         if(null == instance) {
             String strVendor = System.getProperty("java.vendor");
             if(strVendor.indexOf("Apple") != -1)
                 instance = new ch.cyberduck.ui.cocoa.CDHistoryImpl();
             else
                 instance = new ch.cyberduck.ui.swing.HistoryImpl();
+            instance.setDefaults();
+            instance.load();
 	}
         return instance;
     }
@@ -55,5 +59,20 @@ public class History extends ArrayList {
     /**
 	* Read from file into memory.
      */
-    public abstract List restore();
+    public abstract void load();
+
+    public Host getHost(String name) {
+	Iterator i = this.iterator();
+	Host h;
+	while(i.hasNext()) {
+	    h = (Host)i.next();
+	    if(h.getName().equals(name))
+		return h;
+	}
+	throw new IllegalArgumentException("Host "+name+" not found in History.");
+    }	
+
+    public void setDefaults() {
+	//@todo add any default hosts?
+    }
 }

@@ -63,7 +63,7 @@ public class FTPSession extends Session {
 	}
 	
 	public void list() {
-	    this.list(this.cache() == null);
+	    return list(this.cache() == null);
 	}
 	
 	/**
@@ -79,7 +79,7 @@ public class FTPSession extends Session {
 			    FTPSession.this.check();
 			    FTPSession.this.log("Listing "+FTPFile.this.getName(), Message.PROGRESS);
 			    FTP.setType(FTPTransferType.ASCII);
-			    FTP.chdir(getAbsolute());
+			    FTP.chdir(FTPFile.this.getAbsolute());
 			    FTPFile.this.setCache(new FTPParser().parseList(FTPFile.this.getAbsolute(), FTP.dir()));
 			    FTPSession.this.host.callObservers(FTPFile.this);
 			    FTPSession.this.log("Listing complete", Message.PROGRESS);
@@ -383,7 +383,9 @@ public class FTPSession extends Session {
 	catch(IOException e) {
 	    FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
-//	host.status.fireStopEvent();
+	finally {
+	    this.setConnected(false);
+	}
     }
 
     public synchronized void connect() {
@@ -419,9 +421,6 @@ public class FTPSession extends Session {
 		catch(IOException e) {
 		    FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 		}
-//		finally {
-//		    host.status.fireStopEvent();
-//		}
 	    }
 	}.start();
     }
@@ -435,12 +434,12 @@ public class FTPSession extends Session {
 	}
 	catch(FTPException e) {
 	    this.log("Login failed", Message.PROGRESS);
-            if(host.getLogin().loginFailure()) {
+            if(host.getLogin().loginFailure("Authentication for user "+ host.login.getUsername() + " failed. The server response is: "+e.getMessage())) {
                 // let's try again with the new values
 		this.login();
             }
 	    else {
-		this.log(e.getMessage(), Message.ERROR);
+		throw new FTPException("Login as user "+host.login.getUsername()+" failed.");
 	    }
 	}
     }

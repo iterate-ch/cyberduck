@@ -44,22 +44,26 @@ public class CDHostTableDataSource extends NSObject {
     }
 
     public int numberOfRowsInTableView(NSTableView tableView) {
-//	log.debug("CDFavoriteTableDataSource:numberOfRowsInTableView");
+//	log.debug("numberOfRowsInTableView");
 	return data.size();
     }
 
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-	//	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
+	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 	Host h = (Host)data.get(row);
 	String identifier = (String)tableColumn.identifier();
-	if(identifier.equals("STATUS")) {
-	    //@todo 
-	    return NSImage.imageNamed("blipBlue.tiff");
+	if(identifier.equals("HOSTNAME")) {
+	    return h.getName();
 	}
-	if(identifier.equals("BUTTON")) {
-	    return NSImage.imageNamed("stop.tiff");
-	}
-	return h.getName();	
+	return null;
+//	if(identifier.equals("STATUS")) {
+//	    //@todo 
+//	    return NSImage.imageNamed("blipBlue.tiff");
+//	}
+//	if(identifier.equals("BUTTON")) {
+//	    return NSImage.imageNamed("stop.tiff");
+//	}
+//	return h.getName();	
     }
 
     public void tableViewSetObjectValueForLocation(NSTableView tableView, Object object, NSTableColumn tableColumn, int row) {
@@ -71,12 +75,10 @@ public class CDHostTableDataSource extends NSObject {
     }
 
     public void addEntry(Object entry) {
-	log.debug("addEntry("+entry+")");
 	this.data.add(entry);
     }
 
     public Object getEntry(int row) {
-	log.debug("getEntry("+row+")");
 	return this.data.get(row);
     }
 

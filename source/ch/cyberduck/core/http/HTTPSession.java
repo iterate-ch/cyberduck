@@ -25,13 +25,10 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-
-import ch.cyberduck.core.Preferences;import ch.cyberduck.core.*;
-
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.*;
 import org.apache.log4j.Logger;
-
 import com.enterprisedt.net.ftp.FTPTransferType;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.Base64;
 import org.apache.commons.httpclient.Header;
@@ -239,7 +236,9 @@ public class HTTPSession extends Session {
 	catch(IOException e) {
 	    e.printStackTrace();
 	}
-//	host.status.fireStopEvent();
+	finally {
+	    this.setConnected(false);
+	}
     }
 
     public void check() throws IOException {

@@ -21,13 +21,17 @@ package ch.cyberduck.core.sftp;
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
-
 import com.sshtools.j2ssh.session.SessionChannelClient;
+import com.sshtools.j2ssh.configuration.SshConnectionProperties;
 import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
+import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
+import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
+import com.sshtools.j2ssh.transport.publickey.SshtoolsPrivateKeyFormat;
+import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.sftp.*;
+import com.sshtools.j2ssh.subsystem.*;
 import com.sshtools.j2ssh.*;
-
 import ch.cyberduck.core.Preferences;
 import org.apache.log4j.Logger;
 
@@ -75,7 +79,7 @@ public class SFTPSession extends Session {
 	}
 	
 	public synchronized void list() {
-	    this.list(this.cache() == null);
+	    this.list(null == this.cache());
 	}
 	
 	public synchronized void list(boolean refresh) {
@@ -85,7 +89,7 @@ public class SFTPSession extends Session {
 		    public void run() {
 			List files = null;
 			SftpFile workingDirectory = null;
-			boolean showHidden = Preferences.instance().getProperty("listing.listing.showHidden").equals("true");
+			boolean showHidden = Preferences.instance().getProperty("listing.showHidden").equals("true");
 			//@todo throw exception if we are not a directory
 			try {
 			    SFTPSession.this.check();
@@ -168,9 +172,9 @@ public class SFTPSession extends Session {
 			}
 		    }
 //		    FTP.cdup();
+		     */
 		    SFTPSession.this.log("Deleting "+this.getName(), Message.PROGRESS);
 		    SFTP.removeDirectory(this.getAbsolute());
-		     */
 		}
 		if(this.isFile()) {
 		    SFTPSession.this.log("Deleting "+this.getName(), Message.PROGRESS);
@@ -363,7 +367,9 @@ public class SFTPSession extends Session {
 	catch(IOException e) {
 	    SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
-///	host.status.fireStopEvent();
+	finally {
+	    this.setConnected(false);
+	}
     }
 
     public synchronized void connect() {
@@ -372,28 +378,31 @@ public class SFTPSession extends Session {
 //		host.status.fireActiveEvent();
 		SFTPSession.this.log("Opening SSH connection to " + host.getIp()+"...", Message.PROGRESS);
 		try {
-/*@todo
-		    import com.sshtools.j2ssh.configuration.SshConnectionProperties
 		    SshConnectionProperties properties = new SshConnectionProperties();
-		    properties.setHost("firestar");
-		    properties.setPort(22);
+		    properties.setHost(host.getName());
+		    properties.setPort(host.getPort());
 
 		    // Sets the prefered client->server encryption cipher
-		    properties.setPrefCSEncryption("blowfish-cbc");
+//		    properties.setPrefCSEncryption("blowfish-cbc");
 		    // Sets the preffered server->client encryption cipher
-		    properties.setPrefSCEncryption("3des-cbc");
+//		    properties.setPrefSCEncryption("3des-cbc");
 
 		    // Sets the preffered client->server message authenticaiton
-		    properties.setPrefCSMac("hmac-sha1");
+//		    properties.setPrefCSMac("hmac-sha1");
 		    // Sets the preffered server->client message authentication
-		    properties.setPrefSCMac("hmac-md5");
+//		    properties.setPrefSCMac("hmac-md5");
 
-		    ssh.connect(properties, host.getHostKeyVerification());
-*/
-		    SSH.connect(host.getName(), host.getHostKeyVerification());
+		    SSH.connect(properties, host.getHostKeyVerification());
 		    SFTPSession.this.log("SSH connection opened", Message.PROGRESS);
 		    SFTPSession.this.log(SSH.getServerId(), Message.TRANSCRIPT);
 		    SFTPSession.this.login();
+		    SFTPSession.this.log("Opening SSH session channel", Message.PROGRESS);
+		    // The connection is authenticated we can now do some real work!
+		    channel = SSH.openSessionChannel();
+		    SFTPSession.this.log("Starting SFTP subsystem", Message.PROGRESS);
+		    SFTP = new SftpSubsystemClient();
+		    channel.startSubsystem(SFTP);
+		    SFTPSession.this.log("SFTP subsystem ready.", Message.PROGRESS);
 		    String path = host.getWorkdir().equals(Preferences.instance().getProperty("connection.path.default")) ? SFTP.getDefaultDirectory() : host.getWorkdir();
 		    SFTPFile home = new SFTPFile(path);
 		    home.list();
@@ -404,13 +413,26 @@ public class SFTPSession extends Session {
 		catch(IOException e) {
 		    SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 		}
-//		finally {
-//		    host.status.fireStopEvent();
-//		}
+
+		/*public key connection
+
+		PublicKeyAuthentication pk = new PublicKeyAuthentication();
+		pk.setUsername("username");
+		// Open up the private key file
+		SshPrivateKeyFile file =
+		    SshPrivateKeyFile.parse(new File(filename),
+			      new SshtoolsPrivateKeyFormat());
+		// Get the key
+		SshPrivateKey key = file.toPrivateKey(“your passphrase”);
+		// Set the key and authenticate
+		pk.setKey(key);
+		int result = session.authenticate(pk);
+
+		*/
 	    }
 	}.start();
     }
-
+    
     private synchronized void login() throws IOException {
 	log.debug("login");
 	// Create a password authentication instance
@@ -423,23 +445,20 @@ public class SFTPSession extends Session {
 	int result = SSH.authenticate(auth);
 //	this.log(SSH.getAuthenticationBanner(100), Message.TRANSCRIPT);
 	// Evaluate the result
-	if (result == AuthenticationProtocolState.COMPLETE) {
+	if (AuthenticationProtocolState.COMPLETE == result) {
 	    this.log("Login sucessfull", Message.PROGRESS);
-//	    this.log("Opening SSH session channel", Message.PROGRESS);
-	    // The connection is authenticated we can now do some real work!
-	    channel = SSH.openSessionChannel();
-	    this.log("Starting SFTP subsystem", Message.PROGRESS);
-	    SFTP = new SftpSubsystemClient();
-	    channel.startSubsystem(SFTP);
-	    this.log("SFTP subsystem ready.", Message.PROGRESS);
 	}
 	else {
 	    this.log("Login failed", Message.PROGRESS);
-	    if(host.getLogin().loginFailure())
+	    String explanation = null;
+	    if(AuthenticationProtocolState.PARTIAL == result)
+		explanation = "Authentication as user "+host.login.getUsername()+" succeeded but another authentication method is required.";
+	    else //(AuthenticationProtocolState.FAILED == result)
+		explanation = "Authentication as user "+host.login.getUsername()+" failed.";
+	    if(host.getLogin().loginFailure(explanation))
 		this.login();
 	    else {
-		this.log("Login failed", Message.ERROR);
-		//this.close();
+		throw new SshException("Login as user "+host.login.getUsername()+" failed.");
 	    }
 	}
     }

@@ -78,7 +78,20 @@ public class CDSplitView extends NSSplitView {
     //	Returns the thickness of the divider. You can subclass NSSplitView and override this method to change the divider's size, if necessary.
 //    public float dividerThickness()
 
-    //public abstract float splitViewConstrainMaxSplitPosition( NSSplitView sender, float proposedMax, int offset)
+    public float splitViewConstrainMaxSplitPosition(NSSplitView sender, float proposedMax, int offset) {
+	log.debug("splitViewConstrainMaxSplitPosition:"+proposedMax);
+	return proposedMax;
+    }
 
-    //public abstract float splitViewConstrainMinSplitPosition( NSSplitView sender, float proposedMin, int offset)
+    //Allows the delegate for sender to constrain the minimum coordinate limit of a divider when the user drags it.
+    //This method is invoked before the NSSplitView begins tracking the cursor to position a divider. You may further constrain the
+    //limits that have been already set, but you cannot extend the divider limits. proposedMin is specified in the NSSplitView's
+    //flipped coordinate system. If the split bars are horizontal (views are one on top of the other), proposedMin is the top limit. If the
+    //split bars are vertical (views are side by side), proposedMin is the left limit. The initial value of proposedMin is the top
+    //(or left side) of the subview before the divider. offset specifies the divider the user is moving, with the first divider being
+    //0 and going up from top to bottom (or left to right).
+    public float splitViewConstrainMinSplitPosition(NSSplitView sender, float proposedMin, int offset) {
+	log.debug("splitViewConstrainMinSplitPosition:"+proposedMin);
+	return proposedMin;
+    }
 }

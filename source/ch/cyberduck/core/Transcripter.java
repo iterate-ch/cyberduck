@@ -18,7 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+/**
+ * @version $Id$
+ */
 public interface Transcripter {
-        
     public void transcript(String text);
 }

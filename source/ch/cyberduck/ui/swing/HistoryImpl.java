@@ -20,9 +20,17 @@ package ch.cyberduck.ui.swing;
 
 import org.apache.log4j.Logger;
 import java.util.List;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.io.IOException;
+import java.io.EOFException;
+import ch.cyberduck.core.History;
 import ch.cyberduck.core.Host;
 
-public class HistoryImpl {
+public class HistoryImpl extends History {
     private static Logger log = Logger.getLogger(HistoryImpl.class);
     private static File PREFS_DIRECTORY = new File(System.getProperty("user.home"), ".cyberduck");
     private static final String HISTORY_FILE = "cyberduck.history";
@@ -57,19 +65,19 @@ public class HistoryImpl {
         }
     }
 
-    public List restore() {
+    public void load() {
         log.debug("restore");
 //        java.util.List l = new java.util.ArrayList();
         FileInputStream st1 = null;
         ObjectInputStream st2 = null;
-        if (path.exists()) {
+        if (PREFS_DIRECTORY.exists()) {
             try {
                 st1 = new FileInputStream(new File(PREFS_DIRECTORY, HISTORY_FILE));
                 st2 = new ObjectInputStream(st1);
                 while(true) {
                     try {
                         Host h = (Host)st2.readObject();
-                        this.add(Host);
+                        this.add(h);
                     }
                     catch(ClassNotFoundException e) {
                         log.error(e.getMessage());
@@ -97,7 +105,6 @@ public class HistoryImpl {
                 }
             }
         }
-        return l;
     }
     
 }

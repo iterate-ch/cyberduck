@@ -20,15 +20,13 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
+
 import java.util.Observer;
 import java.util.Observable;
+import java.util.Iterator;
 import java.util.List;
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.http.*;
-import ch.cyberduck.core.sftp.*;
-import ch.cyberduck.core.ftp.*;
-import ch.cyberduck.ui.ObserverList;
-import ch.cyberduck.ui.cocoa.CDPathComboBox;
+import org.apache.log4j.Logger;
+
 import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.transport.InvalidHostFileException;
 import com.sshtools.j2ssh.transport.AbstractHostKeyVerification;
@@ -36,7 +34,10 @@ import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
 import com.sshtools.j2ssh.sftp.*;
 import com.sshtools.j2ssh.*;
-import org.apache.log4j.Logger;
+
+import ch.cyberduck.core.*;
+import ch.cyberduck.ui.ObserverList;
+import ch.cyberduck.ui.cocoa.CDPathComboBox;
 
 /**
 * @version $Id$
@@ -46,7 +47,7 @@ public class CDConnectionController extends NSObject implements Observer {
 
 
     // ----------------------------------------------------------
-    // Outlets
+    // Outlets from CDMainWindow
     // ----------------------------------------------------------
     
     private CDMainWindow mainWindow; // IBOutlet
@@ -65,7 +66,7 @@ public class CDConnectionController extends NSObject implements Observer {
     }
     
     private NSProgressIndicator progressIndicator; // IBOutlet
-    public void setLoginSheet(NSProgressIndicator progressIndicator) {
+    public void setProgressIndicator(NSProgressIndicator progressIndicator) {
 	this.progressIndicator = progressIndicator;
 	this.progressIndicator.setIndeterminate(true);
     }
@@ -75,10 +76,16 @@ public class CDConnectionController extends NSObject implements Observer {
 	this.statusLabel = statusLabel;
     }
 
-    private NSMenuItem recentConnectionsMenu;
-    public void setRecentConnectionsMenu(NSMenuItem recentConnectionsMenu) {
-	this.recentConnectionsMenu = recentConnectionsMenu;
+    private NSMenu recentConnectionsMenu;
+    private NSMenuItem recentConnectionsMenuItem;
+    public void setRecentConnectionsMenuItem(NSMenuItem recentConnectionsMenuItem) {
+	this.recentConnectionsMenuItem = recentConnectionsMenuItem;
     }
+
+
+    // ----------------------------------------------------------
+    // Outlets from CDConnectionSheet
+    // ----------------------------------------------------------
     
     public CDPathComboBox pathComboBox; // IBOutlet
     public NSTextField pathField; // IBOutlet
@@ -93,14 +100,22 @@ public class CDConnectionController extends NSObject implements Observer {
 //    public CDBrowserView browserView; // IBOutlet
 //    public CDTransferView transferView; // IBOutlet
     public CDHostView hostView; // IBOutlet
+
+    public void awakeFromNib() {
+	ObserverList.instance().registerObserver(this);
+	recentConnectionsMenuItem.setSubmenu(recentConnectionsMenu = new NSMenu());
+	List hosts = History.instance();
+	Iterator i = hosts.iterator();
+	while(i.hasNext()) {
+	    Host h = (Host)i.next();
+	    // Adds a new item with title aString, action aSelector, and key equivalent keyEquiv to the end of the receiver. Returns the new menu item. If you do not want the menu item to have a key equivalent, keyEquiv should be an empty string and not null.
+	    recentConnectionsMenu.addItem(h.getName(), new NSSelector("connect", new Class[] {null}), "");
+	}
+    }    
   
     public CDConnectionController() {
 	super();
 	log.debug("CDConnectionController");
-    }
-
-    public void awakeFromNib() {
-	ObserverList.instance().registerObserver(this);
     }
 
     public void recycle(NSObject sender) {
@@ -126,15 +141,20 @@ public class CDConnectionController extends NSObject implements Observer {
 	int port = -1;
 	Login login = new CDLogin(); //anonymous
 
-	//@todo new connection via menu item recent connection
- //	if(sender instanceof NSMenu
- //NSMenuItem item = menu.getSelectedItem()
- //host = item.
-
+	//connection initiated from menu item "recent connections"
+	if(sender instanceof NSMenuItem) {
+	    log.debug("New connection from \"Recent Connections\"");
+	    NSMenuItem item = (NSMenuItem)sender;
+	    Host h = History.instance().getHost(item.title());
+	    h.openSession();
+	    return;
+	}
 	if(sender instanceof NSTextField) { //connection initiated from toolbar text field
+	    log.debug("New connection from \"Quick Connect\"");
 	    server = ((NSControl)sender).stringValue();
 	}
 	if(sender instanceof NSButton) { //connection initiated from connection sheet
+	    log.debug("New connection from \"Connection Sheet\"");
 	    NSApplication.sharedApplication().endSheet(connectionSheet, NSAlertPanel.AlternateReturn);
 	    server = hostField.stringValue();
 	    path = pathField.stringValue();
@@ -206,9 +226,9 @@ public class CDConnectionController extends NSObject implements Observer {
 
     public void update(Observable o, Object arg) {
 	//	log.debug("update:"+arg);
-	if(o instanceof Status) {
+	if(o instanceof Host) {
 	    if(arg instanceof Message) {
-		// show error dialog
+		Host host = (Host)o;
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.ERROR)) {
 		    //public static void beginAlertSheet( String title, String defaultButton, String alternateButton, String otherButton, NSWindow docWindow, Object modalDelegate, NSSelector didEndSelector, NSSelector didDismissSelector, Object contextInfo, String message)
@@ -229,44 +249,17 @@ public class CDConnectionController extends NSObject implements Observer {
 		if(msg.getTitle().equals(Message.PROGRESS)) {
 		    statusLabel.setStringValue(msg.getDescription());
 		}
-		if(msg.getTitle().equals(Message.START)) {
+		if(msg.getTitle().equals(Message.OPEN)) {
 		    progressIndicator.startAnimation(this);
+		    History.instance().add(host);
 		}
-		if(msg.getTitle().equals(Message.STOP)) {
+		if(msg.getTitle().equals(Message.CONNECTED)) {
 		    progressIndicator.stopAnimation(this);
 		}
-	    }
-	}
-	if(o instanceof Host) {
-	    // update window title
-	    if(arg instanceof Message) {
-		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.SELECTION)) {
-		    Host host = (Host)o;
-		    //@todo does not work
 		    mainWindow.setTitle(host.getName());
 		}
 	    }
-	    // update Path Combobox
-	    /*
-	    if(arg instanceof Path) {
-		Path p = (Path)arg;
-		pathComboBox.removeAllItems();
-		pathComboBox.addItem(p);
-		while(!p.isRoot()) {
-		    p = p.getParent();
-		    pathComboBox.addItem(p);
-		}
-	    }
-	     */
-//	    if(arg instanceof Path) {
-//		List cache = ((Path)arg).cache();
-//		java.util.Iterator i = cache.iterator();
-//		while(i.hasNext()) {
-//		    //((Path)i.next()).addObserver(infoWindow);
-//		    ((Path)i.next()).addObserver(transferView);
-//		}
-//	    }
 	}
     }
 
@@ -307,12 +300,13 @@ public class CDConnectionController extends NSObject implements Observer {
 	    loginSheet.close();
 	}
 
-	public boolean loginFailure() {
+	public boolean loginFailure(String message) {
 	    log.info("Authentication failed");
 	    if(loginSheet == null)
 		NSApplication.loadNibNamed("Login", CDConnectionController.this);
 //	    loginSheet.makeKeyAndOrderFront(this);//@todo
-//	    loginSheet.setUser(this.getUsername());
+//@todo	    loginSheet.setUser(this.getUsername());
+	    loginSheet.setExplanation(message);
 	    NSApplication.sharedApplication().beginSheet(
 						  loginSheet, //sheet
 						  mainWindow, //docWindow

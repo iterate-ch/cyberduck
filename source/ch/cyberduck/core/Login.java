@@ -57,8 +57,9 @@ public abstract class Login {
     * Call this to allow the user to reenter the new login credentials.
     * A concrete sublcass could eg. display a panel. 
     	* @return true If we whould try again with new login
+	* @param explanation Any additional information why the login failed.
      */
-    public abstract boolean loginFailure();
+    public abstract boolean loginFailure(String explanation);
     
     public String toString() {
 	return this.getUsername()+":"+this.getPassword();

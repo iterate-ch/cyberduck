@@ -28,11 +28,20 @@ import org.apache.log4j.Logger;
 public class CDLoginSheet extends NSPanel {
     private static Logger log = Logger.getLogger(CDLoginSheet.class);
 
+    // ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
+    
     private NSTextField userField;
     public void setUserField(NSTextField userField) {
 	this.userField = userField;
     }
 
+    private NSTextField textField;
+    public void setTextField(NSTextField textField) {
+	this.textField = textField;
+    }
+    
     private NSSecureTextField passField;
     public void setPassField(NSSecureTextField passField) {
 	this.passField = passField;
@@ -71,13 +80,9 @@ public class CDLoginSheet extends NSPanel {
 	NSApplication.sharedApplication().endSheet(this, ((NSButton)sender).tag());
     }
     
-    /*
-    public void textInputDidChange(NSNotification sender) {
-	log.debug("textInputDidChange");
-	this.setUsername(userField.stringValue());
-	this.setPassword(passField.stringValue());
+    public void setExplanation(String text) {
+	this.textField.setStringValue(text);
     }
-    */
 
     public String user() {
 	return userField.stringValue();

@@ -77,22 +77,18 @@ public class CDTransferTableDataSource extends NSObject {//implements NSTableVie
     }
 
     public void addEntry(Object entry) {
-	log.debug("addEntry("+entry+")");
 	this.data.add(entry);
     }
 
     public void removeEntry(Object o) {
-	log.debug("removeEntry("+o+")");
 	data.remove(data.indexOf(o));
     }
 
     public void removeEntry(int row) {
-	log.debug("removeEntry("+row+")");
 	data.remove(row);
     }
     
     public Object getEntry(int row) {
-	log.debug("getEntry("+row+")");
 	return this.data.get(row);
     }
     

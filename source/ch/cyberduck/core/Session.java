@@ -96,6 +96,7 @@ public abstract class Session {//extends Thread {
 
     public void setConnected(boolean connected) {
 	this.connected = connected;
+	host.callObservers(new Message(Message.CONNECTED));
     }
     
     public void log(String message, String title) {
