@@ -9,6 +9,7 @@
                 downloadButtonClicked = id; 
                 editBookmarkButtonClicked = id; 
                 editButtonClicked = id; 
+                fileButtonClicked = id; 
                 folderButtonClicked = id; 
                 infoButtonClicked = id; 
                 refreshButtonClicked = id; 
@@ -29,7 +30,6 @@
                 bookmarkTable = NSTableView; 
                 browserTable = NSTableView; 
                 editBookmarkButton = NSButton; 
-                historyTable = NSTableView; 
                 infoLabel = NSTextField; 
                 logDrawer = NSDrawer; 
                 logView = NSTextView; 

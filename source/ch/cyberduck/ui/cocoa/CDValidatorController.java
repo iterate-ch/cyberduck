@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import java.util.Iterator;
 import java.util.Observable;
+import java.util.List;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -60,45 +61,49 @@ public abstract class CDValidatorController extends AbstractValidator {
 			}
 		}
 	}
-
-	public boolean validate(Queue q) {
+	
+	public List validate(Queue q) {
+		q.addObserver(this);
 		synchronized(CDQueueController.instance()) {
-			boolean visible = false;
-			for(Iterator iter = q.getChilds().iterator(); iter.hasNext();) {
+			for(Iterator iter = q.getChilds().iterator(); iter.hasNext() && !this.isCanceled(); ) {
 				Path child = (Path)iter.next();
 				if(this.validate(child)) {
-					log.info(child.getName()+" validated.");
 					this.validated.add(child);
 				}
-				else {
-					log.info(child.getName()+" in workset.");
-					if(!visible) {
-						this.prompt();
-						visible = true;
-					}
-					this.workset.add(child);
-				}
-				if(visible)
+				if(this.visible) {
 					this.fireDataChanged();
+				}
 			}
-			if(visible) {
+			if(this.visible && !this.isCanceled()) {
 				this.statusIndicator.stopAnimation(null);
 				this.setEnabled(true);
-
-				while(CDQueueController.instance().hasSheet()) {
-					try {
-						log.debug("Sleeping...");
-						CDQueueController.instance().wait();
-					}
-					catch(InterruptedException e) {
-						log.error(e.getMessage());
-					}
-				}
 			}
-			return !this.isCanceled();
 		}
+		q.deleteObserver(this);
+		return this.getResult();
 	}
 
+	protected abstract List getResult();
+
+	protected abstract void load();
+	
+	protected boolean visible = false;
+	
+	protected void prompt(Path p) {
+		log.debug("prompt:"+p);
+		if(!this.visible) {
+			this.load();
+			CDQueueController.instance().beginSheet(this.window());
+			this.statusIndicator.startAnimation(null);
+			this.visible = true;
+		}
+		this.workset.add(p);
+	}
+	
+	protected void adjustFilename(Path path) {
+		//
+	}
+	
 	// ----------------------------------------------------------
 	// Outlets
 	// ----------------------------------------------------------
@@ -185,18 +190,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.reloadTable();
 	}
 
-	protected abstract void load();
-
-	protected void prompt() {
-		this.load();
-		CDQueueController.instance().beginSheet(this.window());
-		this.statusIndicator.startAnimation(null);
-	}
-
-	protected void adjustFilename(Path path) {
-
-	}
-
 	public void resumeActionFired(NSButton sender) {
 		log.debug("resumeActionFired");
 		for(Iterator i = this.workset.iterator(); i.hasNext();) {
@@ -222,6 +215,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 	public void cancelActionFired(NSButton sender) {
 		log.debug("cancelActionFired");
 		this.setCanceled(true);
+		this.validated.clear();
 		this.workset.clear();
 		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
 	}
@@ -263,7 +257,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-		if(row < numberOfRowsInTableView(tableView)) {
+		if(row < this.numberOfRowsInTableView(tableView)) {
 			String identifier = (String)tableColumn.identifier();
 			Path p = (Path)this.workset.get(row);
 			if(p != null) {
@@ -297,6 +291,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 
 	public int numberOfRowsInTableView(NSTableView tableView) {
-		return workset.size();
+		return this.workset.size();
 	}
 }

@@ -64,7 +64,7 @@ public class SyncQueue extends Queue {
 	}
 
 	private void addRemoteChilds(List childs, Path root) {
-		if(root.exists()) {
+		if(root.getRemote().exists()) {
 			childs.add(root);
 			if(root.attributes.isDirectory() && !root.attributes.isSymbolicLink()) {
 				for(Iterator i = root.list(false, true).iterator(); i.hasNext();) {

@@ -29,10 +29,5 @@ public interface Validator extends Observer {
 	/**
 	 * @return true if validatino was successfull, false if canceled by the user for whatever reason
 	 */
-	public boolean validate(Queue q);
-
-	/**
-	 * @return The Path objects successfully validated
-	 */
-	public List getResult();
+	public List validate(Queue q);
 }

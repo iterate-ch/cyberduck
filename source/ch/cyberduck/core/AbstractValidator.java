@@ -56,19 +56,16 @@ public abstract class AbstractValidator implements Validator {
 	protected List validated = new ArrayList();
 	protected List workset = new ArrayList();
 
-	public abstract List getResult();
+	protected abstract void prompt(Path p);
 
 	protected boolean validate(Path p) {
-		if(!this.isCanceled()) {
-			if(p.attributes.isFile()) {
-				return this.validateFile(p);
-			}
-			if(p.attributes.isDirectory()) {
-				return this.validateDirectory(p);
-			}
+		if(p.attributes.isFile()) {
+			return this.validateFile(p);
 		}
-		log.info("Canceled "+p.getName()+" - no further validation needed");
-		return false;
+		if(p.attributes.isDirectory()) {
+			return this.validateDirectory(p);
+		}
+		throw new IllegalArgumentException(p.getName()+" is neither file nor directory");
 	}
 
 	protected boolean validateFile(Path path) {
@@ -101,6 +98,7 @@ public abstract class AbstractValidator implements Validator {
 			}
 			else {//if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
 				log.debug("Prompting user on "+path.getName());
+				this.prompt(path);
 				return false;
 			}
 		}

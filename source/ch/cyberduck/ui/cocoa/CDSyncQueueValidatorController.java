@@ -69,16 +69,33 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
 	}
 
+	protected boolean validateFile(Path p) {
+		log.debug("validateFile:"+p);
+		if(p.getRemote().exists(false) && p.getLocal().exists()) {
+			if (!(p.status.getSize() == p.getLocal().size())) { //@todo size should be correct!?
+				this.prompt(p);
+			}
+		}
+		else {
+			this.prompt(p);
+		}
+		return false;
+	}
+	
+	protected boolean exists(Path p) {
+		return p.getRemote().exists(false) || p.getLocal().exists();
+	}
+	
 	protected void setEnabled(boolean enabled) {
 		this.syncButton.setEnabled(enabled);
 	}
 
 	public void mirrorCellClicked(Object sender) {
 		if(this.mirrorRadioCell.state() == NSCell.OnState) {
-			this.workset = new ArrayList();
-			for(Iterator i = this.validated.iterator(); i.hasNext();) {
+			this.validated = new ArrayList();
+			for(Iterator i = this.workset.iterator(); i.hasNext();) {
 				Path p = (Path)i.next();
-				this.workset.add(p);
+				this.validated.add(p);
 			}
 			this.reloadTable();
 		}
@@ -86,11 +103,11 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
 	public void downloadCellClicked(Object sender) {
 		if(this.downloadRadioCell.state() == NSCell.OnState) {
-			this.workset = new ArrayList();
-			for(Iterator i = this.validated.iterator(); i.hasNext();) {
+			this.validated = new ArrayList();
+			for(Iterator i = this.workset.iterator(); i.hasNext();) {
 				Path p = (Path)i.next();
 				if(p.getRemote().exists(false)) {
-					this.workset.add(p);
+					this.validated.add(p);
 				}
 			}
 			this.reloadTable();
@@ -99,11 +116,11 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
 	public void uploadCellClicked(Object sender) {
 		if(this.uploadRadioCell.state() == NSCell.OnState) {
-			this.workset = new ArrayList();
-			for(Iterator i = this.validated.iterator(); i.hasNext();) {
+			this.validated = new ArrayList();
+			for(Iterator i = this.workset.iterator(); i.hasNext();) {
 				Path p = (Path)i.next();
 				if(p.getLocal().exists()) {
-					this.workset.add(p);
+					this.validated.add(p);
 				}
 			}
 			this.reloadTable();
@@ -117,7 +134,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	}
 
 	public List getResult() {
-		return this.workset;
+		return this.validated;
 	}
 
 	// ----------------------------------------------------------
@@ -153,18 +170,6 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		log.debug("syncActionFired");
 		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
 	}
-
-	protected boolean validateFile(Path p) {
-		log.debug("validateFile:"+p);
-		if(p.getRemote().exists(false) && p.getLocal().exists()) {
-			return !(p.status.getSize() == p.getLocal().size()); //@todo size should be correct!?
-		}
-		return true; // Include if mirroring
-	}
-
-	protected boolean exists(Path p) {
-		return p.getRemote().exists(false) || p.getLocal().exists();
-	}
 	
 	// ----------------------------------------------------------
 	// NSTableView.DataSource
@@ -174,10 +179,14 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDownBlack16.tiff");
 	private static final NSImage PLUS_ICON = NSImage.imageNamed("plus.tiff");
 
+	public int numberOfRowsInTableView(NSTableView tableView) {
+		return this.validated.size();
+	}
+	
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-		if(row < numberOfRowsInTableView(tableView)) {
+		if(row < this.numberOfRowsInTableView(tableView)) {
 			String identifier = (String)tableColumn.identifier();
-			Path p = (Path)this.workset.get(row);
+			Path p = (Path)this.validated.get(row);
 			if(p != null) {
 				if(identifier.equals("TYPE")) {
 					if(p.getRemote().exists(false) && p.getLocal().exists()) {

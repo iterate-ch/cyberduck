@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 public abstract class Queue extends Observable implements Observer {
 	protected static Logger log = Logger.getLogger(Queue.class);
 
-	private Validator validator;
+//	private Validator validator;
 	private Worker worker;
 
 	private List roots = new ArrayList();
@@ -52,7 +52,7 @@ public abstract class Queue extends Observable implements Observer {
 	 * using the <code>addRoot</code> method.
 	 */
 	public Queue() {
-		this.worker = new Worker(this);
+		this.worker = new Worker(this, ValidatorFactory.createValidator(this.getClass()));
 	}
 
 	public Queue(Observer callback) {
@@ -141,11 +141,17 @@ public abstract class Queue extends Observable implements Observer {
 		this.roots.add(item);
 	}
 
-	public void addJob(Path item) {
+	private void addJob(Path item) {
 		this.jobs.add(item);
 	}
 
-
+	protected void setJobs(List jobs) {
+		if(jobs.size() > 0) {
+			this.jobs = jobs;
+			this.reset();
+		}
+	}
+	
 	public Path getRoot() {
 		return (Path)roots.get(0);
 	}
@@ -216,54 +222,6 @@ public abstract class Queue extends Observable implements Observer {
 
 	protected abstract List getChilds(List childs, Path root);
 
-	private Timer progress;
-
-	/**
-	 * @return true if initialization was successfull
-	 */
-	private boolean init() {
-		this.progress = new Timer(500,
-		    new java.awt.event.ActionListener() {
-			    int i = 0;
-			    long current;
-			    long last;
-			    long[] speeds = new long[8];
-
-			    public void actionPerformed(java.awt.event.ActionEvent e) {
-				    long diff = 0;
-				    current = getCurrent(); // Bytes
-				    if(current <= 0) {
-					    setSpeed(0);
-				    }
-				    else {
-					    speeds[i] = (current-last)*2; // Bytes per second
-					    i++;
-					    last = current;
-					    if(i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
-						    i = 0;
-					    }
-					    for(int k = 0; k < speeds.length; k++) {
-						    diff = diff+speeds[k]; // summe der differenzen zwischen einer halben sekunde
-					    }
-					    setSpeed((diff/speeds.length)); //Bytes per second
-				    }
-
-			    }
-		    });
-		this.addObserver(this.validator);
-		boolean validated = this.validator.validate(this);
-		this.deleteObserver(this.validator);
-		if(validated) {
-			List result = this.validator.getResult();
-			if(result.size() > 0) {
-				this.jobs = result;
-				this.reset();
-				return true;
-			}
-		}
-		return false;
-	}
-
 	protected abstract void process(Path p);
 
 	/**
@@ -272,22 +230,79 @@ public abstract class Queue extends Observable implements Observer {
 	 * @param validator A callback class where the user can decide what to do if
 	 *                  the file already exists at the download or upload location respectively
 	 */
-	public synchronized void start(Validator validator) {
-		log.debug("start");
-		this.validator = validator;
-		this.worker = new Worker(this);
+	public void start(Validator validator) {
+		this.worker = new Worker(this, validator);
 		this.worker.start();
 	}
 
 	private class Worker extends Thread {
 		private Queue queue;
+		private Validator validator;
+		private Timer progress;
 		private boolean running;
 		private boolean canceled;
 
-		public Worker(Queue queue) {
+		public Worker(Queue queue, Validator validator) {
 			this.queue = queue;
+			this.validator = validator;
 		}
-
+				
+		public void run() {
+			this.init();
+			this.queue.setJobs(this.validator.validate(this.queue));
+			for(Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
+				Path job = (Path)iter.next();
+				job.status.addObserver(queue);
+				this.queue.process(job);
+				job.status.deleteObserver(queue);
+			}
+			this.finish();
+		}
+		
+		private void init() {
+			this.running = true;
+			this.progress = new Timer(500,
+									  new java.awt.event.ActionListener() {
+										  int i = 0;
+										  long current;
+										  long last;
+										  long[] speeds = new long[8];
+										  
+										  public void actionPerformed(java.awt.event.ActionEvent e) {
+											  long diff = 0;
+											  current = getCurrent(); // Bytes
+											  if(current <= 0) {
+												  setSpeed(0);
+											  }
+											  else {
+												  speeds[i] = (current-last)*2; // Bytes per second
+												  i++;
+												  last = current;
+												  if(i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
+													  i = 0;
+												  }
+												  for(int k = 0; k < speeds.length; k++) {
+													  diff = diff+speeds[k]; // summe der differenzen zwischen einer halben sekunde
+												  }
+												  setSpeed((diff/speeds.length)); //Bytes per second
+											  }
+											  
+										  }
+									  });
+			this.progress.start();
+			this.queue.getRoot().getSession().addObserver(this.queue);
+			//@todo			this.queue.getRoot().getSession().cache().clear();
+			this.queue.callObservers(new Message(Message.QUEUE_START));
+		}
+		
+		private void finish() {
+			this.running = false;
+			this.progress.stop();
+			this.queue.getRoot().getSession().close();
+			this.queue.getRoot().getSession().deleteObserver(this.queue);
+			this.queue.callObservers(new Message(Message.QUEUE_STOP));
+		}
+		
 		public void cancel() {
 			for(Iterator iter = jobs.iterator(); iter.hasNext();) {
 				((Path)iter.next()).status.setCanceled(true);
@@ -301,31 +316,6 @@ public abstract class Queue extends Observable implements Observer {
 
 		public boolean isRunning() {
 			return this.running;
-		}
-
-		public void run() {
-			this.running = true;
-			this.queue.callObservers(new Message(Message.QUEUE_START));
-
-			this.queue.getRoot().getSession().addObserver(this.queue);
-			this.queue.getRoot().getSession().cache().clear();
-			if(this.queue.init()) {
-				progress.start();
-				for(Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled();) {
-					Path job = (Path)iter.next();
-					job.status.addObserver(queue);
-					process(job);
-					job.status.deleteObserver(queue);
-				}
-				progress.stop();
-			}
-
-			this.queue.getRoot().getSession().close();
-			this.queue.getRoot().getSession().deleteObserver(this.queue);
-
-			this.running = false;
-			log.debug("+++++++++++++++++++++++++QUEUE_STOP");
-			this.queue.callObservers(new Message(Message.QUEUE_STOP));
 		}
 	}
 
@@ -358,7 +348,6 @@ public abstract class Queue extends Observable implements Observer {
 	 */
 	public int numberOfJobs() {
 		return this.jobs.size();
-//		return this.worker.numberOfEntries();
 	}
 
 	/**

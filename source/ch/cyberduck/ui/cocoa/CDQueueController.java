@@ -272,7 +272,6 @@ public class CDQueueController extends CDController implements Observer {
 		if(Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
 			this.window().makeKeyAndOrderFront(null);
 		}
-		//@todo reference to this.window() may become invalid
 		queue.getRoot().getHost().getLogin().setController(new CDLoginController(this));
 		if(queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
 			try {
@@ -289,7 +288,8 @@ public class CDQueueController extends CDController implements Observer {
 			}
 		}
 		Validator validator = ValidatorFactory.createValidator(queue.getClass(), resumeRequested);
-		queue.start(validator);
+		validator.validate(queue);
+		queue.start(validator.getResult());
 	}
 
 	public boolean isVisible() {
