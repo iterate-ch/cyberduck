@@ -30,18 +30,22 @@ import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
 
 import org.apache.log4j.Logger;
 
+/**
+* @version $Id$
+*/
 public class CDMainController extends NSObject {
 
+    public CDTransferController transferController;
     public NSPanel infoPanel;
     public NSWindow mainWindow;
     public NSWindow preferencesWindow;
     public NSWindow donationSheet;
     public NSTableView browserTable;
-    public NSWindow infoWindow; /* IBOutlet */
-    public NSWindow connectionSheet; /* IBOutlet */
-    public NSTextField quickConnectField; /* IBOutlet */
-    public NSPopUpButton pathPopUpButton; /* IBOutlet */
-    public NSDrawer drawer; /* IBOutlet */
+    public NSWindow infoWindow;
+    public NSWindow connectionSheet;
+    public NSTextField quickConnectField;
+    public NSPopUpButton pathPopUpButton;
+    public NSDrawer drawer;
 
     private NSMutableDictionary toolbarItems;
     
@@ -61,6 +65,7 @@ public class CDMainController extends NSObject {
 
     public void folderButtonPressed(NSObject sender) {
         log.debug("folderButtonPressed");
+//        NSApplication.loadNibNamed("Folder", this);
     }
     
     public void infoButtonPressed(NSObject sender) {
@@ -84,8 +89,7 @@ public class CDMainController extends NSObject {
     public void downloadButtonPressed(NSObject sender) {
 	log.debug("downloadButtonPressed");
 	CDBrowserTableDataSource source = (CDBrowserTableDataSource)browserTable.dataSource();
-	Path p = (Path)source.getEntry(browserTable.selectedRow());
-//	p.download();
+        transferController.download((Path)source.getEntry(browserTable.selectedRow()));
     }
 
     public void uploadButtonPressed(NSObject sender) {
@@ -206,6 +210,7 @@ public class CDMainController extends NSObject {
     }
 
     public boolean validateToolbarItem(NSToolbarItem item) {
+        //@todo disable if action not possible
 	return true;
     }
 
@@ -216,6 +221,7 @@ public class CDMainController extends NSObject {
     
     public int applicationShouldTerminate(NSObject sender) {
 	log.debug("applicationShouldTerminate");
+        Preferences.instance().store();
         NSApplication.loadNibNamed("Donate", this);
         if(Preferences.instance().getProperty("cyberduck.donate").equals("true")) {
             NSApplication.sharedApplication().beginSheet(
