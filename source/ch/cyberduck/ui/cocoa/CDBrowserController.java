@@ -193,10 +193,10 @@ public class CDBrowserController implements Observer {
 		this.progressIndicator.setUsesThreadedAnimation(true);
     }
 	
-    private NSImageView statusIcon; // IBOutlet
-    public void setStatusIcon(NSImageView statusIcon) {
-		this.statusIcon = statusIcon;
-	}
+//    private NSImageView statusIcon; // IBOutlet
+//    public void setStatusIcon(NSImageView statusIcon) {
+//		this.statusIcon = statusIcon;
+//	}
 
     private NSTextField statusLabel; // IBOutlet
     public void setStatusLabel(NSTextField statusLabel) {
@@ -410,7 +410,7 @@ public class CDBrowserController implements Observer {
 										  (String)msg.getContent() // message
 										  );
 					progressIndicator.stopAnimation(this);
-					statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
+//					statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
 					statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
 				}
 				// update status label
@@ -429,12 +429,12 @@ public class CDBrowserController implements Observer {
 					mainWindow.setTitle(host.getProtocol()+":"+host.getHostname());
 				}
 				else if(msg.getTitle().equals(Message.CLOSE)) {
-					statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
+//					statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
 					progressIndicator.stopAnimation(this);
 				}
 				
 				else if(msg.getTitle().equals(Message.START)) {
-					statusIcon.setImage(NSImage.imageNamed("online.tiff"));
+//					statusIcon.setImage(NSImage.imageNamed("online.tiff"));
 					progressIndicator.startAnimation(this);
 					//@todo disable toolbar
 				}
@@ -802,7 +802,6 @@ public class CDBrowserController implements Observer {
 		backButton.setEnabled(pathController.numberOfItems() > 0);
 		upButton.setEnabled(pathController.numberOfItems() > 0);
 		pathPopup.setEnabled(pathController.numberOfItems() > 0);
-//todo		statusIcon.setImage(NSImage.imageNamed("offline.tiff");
 		if(label.equals(NSBundle.localizedString("New Connection"))) {
 			return !this.isMounting;
 		}
