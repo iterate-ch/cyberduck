@@ -30,7 +30,7 @@ public class Host {
     private int port;
     private String hostname;
     private String nickname;
-    private String defaultpath;
+    private String defaultpath = Path.HOME;
     private transient HostKeyVerification hostKeyVerification;
 //    private transient Session session;
     private transient Login login;
