@@ -582,7 +582,7 @@ public class CDConnectionController extends CDController {
 				else {
 					throw new IllegalArgumentException("No protocol selected.");
 				}
-				browserController.setEncoding(encodingPopup.titleOfSelectedItem());
+				browserController.changeEncoding(encodingPopup.titleOfSelectedItem());
 				browserController.mount(host);
 				break;
 			case (NSAlertPanel.AlternateReturn):

@@ -1118,8 +1118,7 @@ public class CDBrowserController extends CDController implements Observer {
         log.debug("bookmarkTableRowDoubleClicked");
         if (this.bookmarkTable.selectedRow() != -1) {
             Host h = (Host) bookmarkModel.get(bookmarkTable.selectedRow());
-            this.setEncoding(h.getEncoding());
-            this.mount(h);
+            this.mount(h, h.getEncoding());
         }
     }
 
@@ -1376,22 +1375,28 @@ public class CDBrowserController extends CDController implements Observer {
         this.encodingPopup.setTitle(Preferences.instance().getProperty("browser.charset.encoding"));
     }
 
-    public void setEncoding(String encoding) {
+    public void changeEncoding(String encoding)  {
+        this.changeEncoding(encoding, true);
+    }
+
+    public void changeEncoding(String encoding, boolean force) {
         this.encoding = encoding;
         log.info("Encoding changed to:" + this.encoding);
         this.encodingPopup.setTitle(this.encoding);
-        if (this.isMounted()) {
-            this.workdir().getSession().close();
-            this.reloadButtonClicked(null);
+        if(force) {
+            if (this.isMounted()) {
+                this.workdir().getSession().close();
+                this.reloadButtonClicked(null);
+            }
         }
     }
 
     public void encodingButtonClicked(Object sender) {
         if (sender instanceof NSMenuItem) {
-            this.setEncoding(((NSMenuItem) sender).title());
+            this.changeEncoding(((NSMenuItem) sender).title());
         }
         if (sender instanceof NSPopUpButton) {
-            this.setEncoding(this.encodingPopup.titleOfSelectedItem());
+            this.changeEncoding(this.encodingPopup.titleOfSelectedItem());
         }
     }
 
@@ -1898,12 +1903,17 @@ public class CDBrowserController extends CDController implements Observer {
     }
 
     public Session mount(Host host) {
+        return this.mount(host, this.encoding);
+    }
+
+    public Session mount(Host host, final String encoding) {
         log.debug("mount:" + host);
         if (this.unmount(new NSSelector("mountSheetDidEnd",
                 new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
         )) {
             final Session session = SessionFactory.createSession(host);
             this.init(host, session);
+            this.changeEncoding(encoding, false);
             if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
                 ((ch.cyberduck.core.sftp.SFTPSession) session).setHostKeyVerificationController(new CDHostKeyController(this));
             }
