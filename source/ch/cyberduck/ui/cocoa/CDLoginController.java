@@ -45,12 +45,19 @@ public class CDLoginController extends LoginController {
 
     public void setUserField(NSTextField userField) {
         this.userField = userField;
-//        NSNotificationCenter.defaultCenter().addObserver(this,
-//														 new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
-//														 NSControl.ControlTextDidEndEditingNotification,
-//														 userField);
+        NSNotificationCenter.defaultCenter().addObserver(this,
+														 new NSSelector("userFieldDidChange", new Class[]{NSNotification.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 this.userField);
     }
 
+	public void userFieldDidChange(Object sender) {
+		log.debug("userFieldDidChange");
+        if (null == userField.objectValue() || userField.objectValue().equals("")) {
+            log.warn("Value of username textfield is null");
+        }
+	}
+	
     private NSTextField textField; // IBOutlet
 
     public void setTextField(NSTextField textField) {
@@ -61,7 +68,18 @@ public class CDLoginController extends LoginController {
 
     public void setPassField(NSSecureTextField passField) {
         this.passField = passField;
+        NSNotificationCenter.defaultCenter().addObserver(this,
+														 new NSSelector("passFieldDidChange", new Class[]{NSNotification.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 this.passField);
     }
+	
+	public void passFieldDidChange(Object sender) {
+		log.debug("passFieldDidChange");
+        if (null == passField.objectValue() || passField.objectValue().equals("")) {
+            log.warn("Value of password textfield is null");
+        }
+	}
 
     private NSButton keychainCheckbox;
 
@@ -126,10 +144,10 @@ public class CDLoginController extends LoginController {
     public void closeSheet(NSButton sender) {
         log.debug("closeSheet");
         if (null == userField.objectValue() || userField.objectValue().equals("")) {
-            log.warn("Value of username field is null");
+            log.warn("Value of username textfield is null");
         }
         if (null == passField.objectValue() || passField.objectValue().equals("")) {
-            log.warn("Value of password field is null");
+            log.warn("Value of password textfield is null");
         }
         // Ends a document modal session by specifying the sheet window, sheet.
         // Also passes along a returnCode to the delegate.
@@ -148,8 +166,8 @@ public class CDLoginController extends LoginController {
         switch (returncode) {
             case (NSAlertPanel.DefaultReturn):
                 this.tryAgain = true;
-                ((Login) context).setUsername((String) userField.objectValue());
-                ((Login) context).setPassword((String) passField.objectValue());
+				((Login) context).setUsername((String) userField.objectValue());
+				((Login) context).setPassword((String) passField.objectValue());
                 ((Login) context).setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
                 break;
             case (NSAlertPanel.AlternateReturn):

@@ -62,9 +62,7 @@ public class Login {
     }
 
     public native void addPasswordToKeychain(String serviceName, String account, String password);
-	
-//	public native void changePasswordInKeychain(String serviceName, String account, String password);
-	
+		
     public void addPasswordToKeychain() {
         if (this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
 			this.addPasswordToKeychain(this.getServiceName(), this.getUsername(), this.getPassword());

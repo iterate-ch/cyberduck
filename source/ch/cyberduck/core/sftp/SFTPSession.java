@@ -189,7 +189,9 @@ public class SFTPSession extends Session {
             if (AuthenticationProtocolState.COMPLETE == result) {
                 this.log("Login sucessfull", Message.PROGRESS);
                 if (keyFile.isPassphraseProtected()) {
-                    credentials.addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(), passphrase);
+					if(credentials.usesKeychain()) {
+						credentials.addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(), passphrase);
+					}
                 }
             }
             else {
