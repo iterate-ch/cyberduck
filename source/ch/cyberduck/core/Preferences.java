@@ -131,17 +131,15 @@ public abstract class Preferences {
 
 	defaults.put("ssh.knownhosts", System.getProperty("user.home")+"/.ssh/known_hosts");
 
-//@todo	defaults.put("ssh.encryption", "aes128-cbc");
-//@todo	defaults.put("ssh.encryption.authentication", "hmac-md5");
-//@todo	defaults.put("ssh.compression", "zlib");
-//@todo	defaults.put("ssh.authentication", "password");
-	
-//	Supported Encryption Client->Server [aes128-cbc, 3des-cbc, blowfish-cbc, cast128-cbc, arcfour, aes192-cbc, aes256-cbc, rijndael-cbc@lysator.liu.se]
-//	    Supported Encryption Server->Client [aes128-cbc, 3des-cbc, blowfish-cbc, cast128-cbc, arcfour, aes192-cbc, aes256-cbc, rijndael-cbc@lysator.liu.se]
-//	    Supported Mac Client->Server [hmac-md5, hmac-sha1, hmac-ripemd160, hmac-ripemd160@openssh.com, hmac-sha1-96, hmac-md5-96]
-//	    Supported Mac Server->Client [hmac-md5, hmac-sha1, hmac-ripemd160, hmac-ripemd160@openssh.com, hmac-sha1-96, hmac-md5-96]
-	    // [publickey, password, keyboard-interactive]
+	defaults.put("ssh.CSEncryption", "Default"); //client -> server encryption cipher
+	defaults.put("ssh.SCEncryption", "Default"); //server -> client encryption cipher
 
+	defaults.put("ssh.CSAuthentication", "Default"); //client -> server message authentication
+	defaults.put("ssh.SCAuthentication", "Default"); //server -> client message authentication
+
+	defaults.put("ssh.publickey", "Default");
+
+	defaults.put("ssh.compression", "zlib");
     }
     
 

@@ -62,12 +62,14 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
 
 		NSMutableArray data = new NSMutableArray();
 		while(i.hasNext()) {
-		    data.addObject(((Host)i.next()).getURL());
+		    Host next = (Host)i.next();
+		    data.addObject(new NSArray(new String[]{next.getNickname(), next.getURL()}));
 		}
 		NSMutableData collection = new NSMutableData();
 		collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(data));
 		
-	    // data is written to a backup location, and then, assuming no errors occur, the backup location is renamed to the specified name
+	    // data is written to a backup location, and then, assuming no errors occur, 
+		// the backup location is renamed to the specified name
 		if(collection.writeToURL(FAVORTIES_FILE.toURL(), true))
 		    log.info("Favorites sucessfully saved in :"+FAVORTIES_FILE.toString());
 		else
@@ -118,7 +120,8 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
 	    NSAttributedString text = new NSAttributedString(h.getURL(), attributes);
 	    return text;
 	     */
-	    return h.getURL();
+//	    return h.getURL();
+	    return h.getNickname();
 	}
 	throw new IllegalArgumentException("Unknown identifier: "+identifier);
     }

@@ -95,42 +95,34 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	    }
 	}
     }
-
+    
     public boolean performKeyEquivalent(NSEvent e) {
+	log.debug(e);
+	log.debug("modifier flags:"+e.modifierFlags());
+	log.debug("charactersIgnoringModifiers:"+e.charactersIgnoringModifiers());
+	log.debug("NSEvent.UpArrowFunctionKey:"+NSEvent.UpArrowFunctionKey);
+	log.debug("NSEvent.DownArrowFunctionKey:"+NSEvent.DownArrowFunctionKey);
+	log.debug("NSEvent.CommandKeyMask & NSEvent.UpArrowFunctionKey:"+(NSEvent.CommandKeyMask & NSEvent.UpArrowFunctionKey));
 	if(e.modifierFlags() == NSEvent.CommandKeyMask) {
-	//left arrow key
-//60871 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.4 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=123
-//	60871 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - character:?
-	//up arrow key
-//	61063 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.6 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=126
-//	61063 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - character:?
+	    log.debug("*** NSEvent.CommandKeyMask");
+     //up arrow key
+     //	61063 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.6 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=126
 	    if(e.keyCode() == 126) {
-		log.debug(e);
 		if(this.workdir != null) {
 		    this.workdir.getParent().list();
 		    return true;
 		}
 	    }
-	//down arrow key
-//	61254 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.7 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=125
-//	61255 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - character:?
+     //down arrow key
+     //	61254 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.7 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=125
 	    if(e.keyCode() == 125) {
-		log.debug(e);
 		this.browserTableViewDidClickTableRow(e);
 		return true;
 	    }
-	//right arrow key
-//	61438 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.9 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=124
-//	61438 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - character:?
 	}
 	return super.performKeyEquivalent(e);
     }
-
-//    public void keyUp(NSEvent e) {
-//	if(e.keyCode() == 36) //where is the static variable for the return key?!
-//	    this.browserTableViewDidClickTableRow(e);
-//    }
-
+    
     public void browserTableViewDidClickTableRow(Object sender) {
 	log.debug("browserTableViewDidClickTableRow:"+sender);
 //	if(this.clickedRow() != -1) { //table header clicked
@@ -260,20 +252,20 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	}
 	 */
 
-//	public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
-//	    if (view != null && cell != null && column != null) {
-//		if(cell instanceof NSTextFieldCell) {
+	public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
+	    if (view != null && cell != null && column != null) {
+		if(cell instanceof NSTextFieldCell) {
 //		    if (row % 2 == 0) {
 //			((NSTextFieldCell)cell).setDrawsBackground(true);
 //			((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
 //		    }
 //		    else {
-//			((NSTextFieldCell)cell).setDrawsBackground(false);
+		    ((NSTextFieldCell)cell).setDrawsBackground(false);
 //			((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
 //		    }
-//		}
-//	    }
-//	}
+		}
+	    }
+	}
 
 	/**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
 	    * The delegate can implement this method to disallow selection of particular rows.

@@ -22,6 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Preferences;
 import com.sshtools.j2ssh.SshClient;
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
@@ -88,15 +89,19 @@ public class SFTPSession extends Session {
 	properties.setHost(host.getHostname());
 	properties.setPort(host.getPort());
 	
-		    // Sets the prefered client->server encryption cipher
-//		    properties.setPrefCSEncryption("blowfish-cbc");
-		    // Sets the preffered server->client encryption cipher
-//		    properties.setPrefSCEncryption("3des-cbc");
-	
-		    // Sets the preffered client->server message authenticaiton
-//		    properties.setPrefCSMac("hmac-sha1");
-		    // Sets the preffered server->client message authentication
-//		    properties.setPrefSCMac("hmac-md5");
+	// Sets the prefered client->server encryption cipher
+	properties.setPrefCSEncryption(Preferences.instance().getProperty("ssh.CSEncryption"));
+	// Sets the preffered server->client encryption cipher
+	properties.setPrefSCEncryption(Preferences.instance().getProperty("ssh.SCEncryption"));
+	// Sets the preffered client->server message authentication
+	properties.setPrefCSMac(Preferences.instance().getProperty("ssh.CSAuthentication"));
+	// Sets the preffered server->client message authentication
+	properties.setPrefSCMac(Preferences.instance().getProperty("ssh.SCAuthentication"));
+	// Sets the preferred server host key for server authentication
+	properties.setPrefPublicKey(Preferences.instance().getProperty("ssh.publickey"));
+	// Set the zlib compression
+	properties.setPrefSCComp(Preferences.instance().getProperty("ssh.compression"));
+	properties.setPrefCSComp(Preferences.instance().getProperty("ssh.compression"));
 
 	this.log("Opening SSH session...", Message.PROGRESS);
 	SSH.connect(properties, host.getHostKeyVerificationController());
@@ -106,14 +111,9 @@ public class SFTPSession extends Session {
 	log.info(SSH.getAvailableAuthMethods(host.getLogin().getUsername()));
 
 	this.login();
-//	this.log("Opening SSH session channel", Message.PROGRESS);
-		    // The connection is authenticated we can now do some real work!
-//	this.channel = SSH.openSessionChannel();
 	this.log("Starting SFTP subsystem...", Message.PROGRESS);
 //	SFTP = SSH.openSftpClient();
         this.SFTP = SSH.openSftpChannel();
-//	SFTP = new SftpSubsystemClient();
-//	this.channel.startSubsystem(SFTP);
 	
 	this.log("SFTP subsystem ready", Message.PROGRESS);
 	this.setConnected(true);

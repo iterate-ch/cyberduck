@@ -91,21 +91,21 @@
 	
 	<target name="build-core" depends="init">
 	    <mkdir dir="${classes}/core" />
-	    <javac 
-		debug="${debug}"
-		deprecation="on"
-		srcdir="${source}" 
-		destdir="${classes}/core"
-		includes="ch/cyberduck/core/**">
-		<classpath refid="classpath"/>
+            <javac 
+            debug="${debug}"
+            deprecation="on"
+            srcdir="${source}" 
+            destdir="${classes}/core"
+            includes="ch/cyberduck/core/**">
+            <classpath refid="classpath"/>
 	    </javac>
 	    
 	    <jar jarfile="${build}/core.jar"
-		update="yes"
-		manifest="${build}/MANIFEST.MF">
-		<fileset dir="${classes}/core">
-		    <include name="ch/cyberduck/core/**/*.class"/>
-		</fileset>
+            update="yes"
+            manifest="${build}/MANIFEST.MF">
+            <fileset dir="${classes}/core">
+                <include name="ch/cyberduck/core/**/*.class"/>
+            </fileset>
 	    </jar>
 
 	    <copy todir="${app.jar}">
