@@ -94,6 +94,7 @@ fr.lproj/Main.strings svneol=native#unset
 fr.lproj/Preferences.nib/keyedobjects.nib -text
 fr.lproj/Preferences.strings svneol=native#unset
 fr.lproj/Queue.nib/keyedobjects.nib -text
+fr.lproj/Queue.strings svneol=native#unset
 fr.lproj/Update.nib/keyedobjects.nib -text
 fr.lproj/Update.strings svneol=native#unset
 /generic-document.icns -text
