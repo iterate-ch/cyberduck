@@ -353,16 +353,8 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 				Object element;
 				while(i.hasMoreElements()) {
 					element = i.nextElement();
-					if(element instanceof NSDictionary) { //new since 2.1
+					if(element instanceof NSDictionary) {
 						this.data.add(new Host((NSDictionary)element));
-					}
-					if(element instanceof String) { //backward compatibilty <= 2.1beta5 (deprecated)
-						try {
-							this.addItem(new Host((String)element));
-						}
-						catch(java.net.MalformedURLException e) {
-							log.error("Bookmark has invalid URL: "+e.getMessage());
-						}
 					}
 				}
 			}
