@@ -92,55 +92,58 @@ public class SFTPPath extends Path {
 	return this.uploadSession;
     }
     
-    public synchronized List list() {
+    public List list() {
 	return this.list(true);
     }
 
-    public synchronized List list(boolean notifyobservers) {
-	    boolean showHidden = Preferences.instance().getProperty("browser.showHidden").equals("true");
-	    try {
-		session.check();
-		session.log("Listing "+this.getName(), Message.PROGRESS);
-		SftpFile workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
-		List children = new ArrayList();
-		int read = 1;
-		while(read > 0) {
-		    read = session.SFTP.listChildren(workingDirectory, children);
-		}
-		java.util.Iterator i = children.iterator();
-		List files = new java.util.ArrayList();
-		while(i.hasNext()) {
-		    SftpFile x = (SftpFile)i.next();
-		    if(!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
-			SFTPPath p = new SFTPPath(session, SFTPPath.this.getAbsolute(), x.getFilename());
+    public List list(boolean notifyobservers) {
+	boolean showHidden = Preferences.instance().getProperty("browser.showHidden").equals("true");
+	try {
+	    session.check();
+	    session.log("Listing "+this.getName(), Message.PROGRESS);
+	    SftpFile workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
+	    List children = new ArrayList();
+	    int read = 1;
+	    while(read > 0) {
+		read = session.SFTP.listChildren(workingDirectory, children);
+	    }
+	    java.util.Iterator i = children.iterator();
+	    List files = new java.util.ArrayList();
+	    while(i.hasNext()) {
+		SftpFile x = (SftpFile)i.next();
+		if(!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
+		    SFTPPath p = new SFTPPath(session, SFTPPath.this.getAbsolute(), x.getFilename());
 				    //log.debug(p.getName());
-			if(p.getName().charAt(0) == '.' && !showHidden) {
+		    if(p.getName().charAt(0) == '.' && !showHidden) {
 					//p.attributes.setVisible(false);
 			    //@todo show . files if desired
-			}
-			else {
-			    p.attributes.setOwner(x.getAttributes().getUID().toString());
-			    p.attributes.setGroup(x.getAttributes().getGID().toString());
-			    p.status.setSize(x.getAttributes().getSize().intValue());
-			    p.attributes.setModified(x.getAttributes().getModifiedTime().longValue());
-			    p.attributes.setMode(x.getAttributes().getPermissionsString());
-			    p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
-			    files.add(p);
-			}
+		    }
+		    else {
+			p.attributes.setOwner(x.getAttributes().getUID().toString());
+			p.attributes.setGroup(x.getAttributes().getGID().toString());
+			p.setSize(x.getAttributes().getSize().intValue());
+			p.attributes.setModified(x.getAttributes().getModifiedTime().longValue());
+			p.attributes.setMode(x.getAttributes().getPermissionsString());
+			p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
+			files.add(p);
 		    }
 		}
-		this.setCache(files);
-		if(notifyobservers) {
-		    session.callObservers(this);
-		session.log("Listing complete", Message.PROGRESS);
-		}
 	    }
-	    catch(SshException e) {
-		session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	    this.setCache(files);
+	    if(notifyobservers) {
+		session.callObservers(this);
+//		session.log("Listing complete", Message.PROGRESS);
 	    }
-	    catch(IOException e) {
-		session.log("IO Error: "+e.getMessage(), Message.ERROR);
-	    }
+	}
+	catch(SshException e) {
+	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	}
+	catch(IOException e) {
+	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
+	finally {
+	    session.log("Idle", Message.STOP);
+	}
 	     //@todo
 //	     finally {
 //		 if(workingDirectory != null) {
@@ -158,7 +161,7 @@ public class SFTPPath extends Path {
 	return this.cache();
     }
 
-    public synchronized void delete() {
+    public void delete() {
 	log.debug("delete");
 	try {
 	    session.check();
@@ -192,9 +195,12 @@ public class SFTPPath extends Path {
 	catch(IOException e) {
 	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
+	finally {
+	    session.log("Idle", Message.STOP);
+	}
     }
 
-    public synchronized void rename(String filename) {
+    public void rename(String filename) {
 	log.debug("rename");
 	try {
 	    session.check();
@@ -208,9 +214,12 @@ public class SFTPPath extends Path {
 	catch(IOException e) {
 	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
+	finally {
+	    session.log("Idle", Message.STOP);
+	}
     }
 
-    public synchronized Path mkdir(String name) {
+    public Path mkdir(String name) {
 	log.debug("mkdir");
 	try {
 	    session.check();
@@ -225,10 +234,13 @@ public class SFTPPath extends Path {
 	catch(IOException e) {
 	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
+	finally {
+	    session.log("Idle", Message.STOP);
+	}
 	return new SFTPPath(session, this.getAbsolute(), name);
     }
 
-//    public synchronized int size() {
+//    public int size() {
 //	try {
 //	    session.check();
 //	    SftpFile p = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
@@ -243,7 +255,7 @@ public class SFTPPath extends Path {
 //	return -1;
 //  }
 
-    public synchronized void changePermissions(int permissions) {
+    public void changePermissions(int permissions) {
 	log.debug("changePermissions");
 	try {
 	    session.check();
@@ -255,6 +267,9 @@ public class SFTPPath extends Path {
 	}
 	catch(IOException e) {
 	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
+	finally {
+	    session.log("Idle", Message.STOP);
 	}
     }
 
@@ -274,7 +289,7 @@ public class SFTPPath extends Path {
 	    }
 	    else if(isFile()) {
 		SftpFile p = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-		this.status.setSize(p.getAttributes().getSize().intValue());
+		this.setSize(p.getAttributes().getSize().intValue());
 		queue.add(this);
 	    }
 	    else
@@ -288,12 +303,12 @@ public class SFTPPath extends Path {
 	}
     }
     
-    public synchronized void download() {
+    public void download() {
 	try {
 	    log.debug("download:"+this.toString());
 	    if(!this.isFile())
 		throw new IOException("Download must be a file.");
-	    status.fireActiveEvent();
+//	    status.fireActiveEvent();
 	    session.check();
 	    this.getLocal().getParentFile().mkdir();
 	    OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
@@ -335,7 +350,7 @@ public class SFTPPath extends Path {
 		}
 	    }
 	    else if(this.getLocal().isFile()) {
-		this.status.setSize((int)this.getLocal().length());
+		this.setSize((int)this.getLocal().length());
 		queue.add(this);
 	    }
 	    else
@@ -352,7 +367,7 @@ public class SFTPPath extends Path {
     public void upload() {
 	try {
 	    log.debug("upload:"+this.toString());
-	    status.fireActiveEvent();
+//	    status.fireActiveEvent();
 	    session.check();
 //	    this.status.setSize((int)this.getLocal().length());
 	    java.io.InputStream in = new FileInputStream(this.getLocal());

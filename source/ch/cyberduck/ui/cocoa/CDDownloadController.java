@@ -77,7 +77,7 @@ public class CDDownloadController {
 		URL url = null;
 		try {
 		    url = new URL(urlField.stringValue());
-		    this.window().close();
+		    this.window().orderOut(null);
 		    String protocol = url.getProtocol();
 		    String host = url.getHost();
 		    String file = url.getPath();
@@ -109,7 +109,7 @@ public class CDDownloadController {
 			//@todo SCP
 		    controller.setPath(path);
 		    this.references = references.arrayByAddingObject(controller);
-		    controller.start(path.status.isResume());
+		    controller.transfer(path.status.isResume());
 		}
 		catch(MalformedURLException e) {
 		    NSAlertPanel.beginCriticalAlertSheet(
@@ -128,7 +128,7 @@ public class CDDownloadController {
 		}
 		break;
 	    case(NSAlertPanel.AlternateReturn):
-		this.window().close();
+		this.window().orderOut(null);
 		break;
 	}
     }

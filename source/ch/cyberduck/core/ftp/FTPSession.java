@@ -74,7 +74,6 @@ public class FTPSession extends Session {
     }
 
     public synchronized void connect() throws IOException {
-//		host.status.fireActiveEvent();
 	this.callObservers(new Message(Message.OPEN, "Opening session."));
 	this.log("Opening FTP connection to " + host.getIp()+"...", Message.PROGRESS);
 	if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
@@ -151,6 +150,7 @@ public class FTPSession extends Session {
 
     public void check() throws IOException {
 	log.debug("check");
+	this.log("Working", Message.START);
 	if(!FTP.isAlive()) {
 	    this.setConnected(false);
 	    this.connect();

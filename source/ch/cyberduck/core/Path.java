@@ -43,28 +43,51 @@ public abstract class Path {// extends Observable {
     public static String FILE = "FILE";
     public static String FOLDER = "FOLDER";
     public static String LINK = "LINK";
+
+    /**
+	* Download is resumable
+     */
+    private transient boolean resume = false;
+
+    /**
+     * The file length
+     */
+    private int size = -1;
     
     /**
+	* A remote path where nothing is known about a local equivalent.
      * @param path the absolute directory
      * @param name the file relative to param path
-     * @return Path new instance
      */
     public Path(String parent, String name) {
 	this.setPath(parent, name);
     }
 
     /**
-     * @param path The absolute path of the file
+	* A remote path where nothing is known about a local equivalent.
+     * @param path The absolute path of the remote file
      */
     public Path(String path) {
         this.setPath(path);
     }
 
+    /**
+	* Create a new path where you know the local file already exists
+     * and the remote equivalent might be created later.
+     * The remote filename will be extracted from the local file.
+	* @parm parent The absolute path to the parent directory on the remote host
+     * @param file The associated local file
+     */
     public Path(String parent, java.io.File file) {
         this(parent, file.getName());
 	this.setLocal(file);
     }
 
+    /**
+	* Change this path later for example if the name has changed
+     * @param parent The parent directory
+     * @param name The relative filename
+     */
     public void setPath(String parent, String name) {
         if(parent.charAt(parent.length()-1) == '/')
             this.setPath(parent + name);
@@ -83,7 +106,7 @@ public abstract class Path {// extends Observable {
     }
 
     /**
-	* @return my parent directory
+	* @return My parent directory
      */
     public abstract Path getParent();
 
@@ -102,6 +125,9 @@ public abstract class Path {// extends Observable {
 //    }
     
 
+    /**
+	* @return My directory listing
+     */
     public List cache() {
 	return this.cache;
     }
@@ -219,6 +245,60 @@ public abstract class Path {// extends Observable {
 	    return new File(Preferences.instance().getProperty("connection.download.folder"), this.getName());
 	return this.local;
     }
+
+
+    /**
+	* @ param size the size of file in bytes.
+     */
+    public void setSize(int size) {
+	//	log.debug("setSize:"+size);
+	this.size = size;
+    }
+
+    /**
+	* @ return length the size of file in bytes.
+     */
+    public int getSize() {
+//	log.debug("getSize:"+size);
+	return size;
+    }
+
+    private static final int KILO = 1024; //2^10
+    private static final int MEGA = 1048576; // 2^20
+    private static final int GIGA = 1073741824; // 2^30
+
+    /**
+	* @return The size of the file
+     */
+    public String getSizeAsString() {
+	if(size < KILO) {
+	    return size + " B";
+	}
+	else if(size < MEGA) {
+	    return new Double(size/KILO).intValue() + " KB";
+	}
+	else if(size < GIGA) {
+	    return new Double(size/MEGA).intValue() + " MB";
+	}
+	else {
+	    return new Double(size/GIGA).intValue() + " GB";
+	}
+    }
+    
+//    public BoundedRangeModel getProgressModel() {
+//	DefaultBoundedRangeModel m = null;
+//	try {
+//	    if(this.getSize() < 0) {
+//		m = new DefaultBoundedRangeModel(0, 0, 0, 100);
+//	    }
+//	    m = new DefaultBoundedRangeModel(this.status.getCurrent(), 0, 0, this.getSize());
+//	}
+//	catch(IllegalArgumentException e) {
+//	    m = new DefaultBoundedRangeModel(0, 0, 0, 100);
+//	}
+//	return m;
+//  }
+    
 
     /**
 	* @returns the extensdion if any
@@ -349,7 +429,11 @@ public abstract class Path {// extends Observable {
     private void transfer(java.io.Reader reader, java.io.Writer writer) throws IOException {
         LineNumberReader in = new LineNumberReader(reader);
         BufferedWriter out = new BufferedWriter(writer);
-        int current = this.status.getCurrent();
+
+        this.status.setCanceled(false);
+        this.status.setComplete(false);
+
+	int current = this.status.getCurrent();
         boolean complete = false;
         // read/write a line at a time
         String line = null;
@@ -364,7 +448,8 @@ public abstract class Path {// extends Observable {
                 out.newLine();
             }
         }
-        this.eof(complete);
+	this.status.setComplete(complete);
+//        this.eof(complete);
         // close streams
         if(in != null) {
             in.close();
@@ -382,6 +467,9 @@ public abstract class Path {// extends Observable {
     private void transfer(java.io.InputStream i, java.io.OutputStream o) throws IOException {
         BufferedInputStream in = new BufferedInputStream(new DataInputStream(i));
         BufferedOutputStream out = new BufferedOutputStream(new DataOutputStream(o));
+
+	this.status.setCanceled(false);
+        this.status.setComplete(false);
 
         // do the retrieving
         int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
@@ -401,7 +489,8 @@ public abstract class Path {// extends Observable {
                 out.write(chunk, 0, amount);
             }
         }
-        this.eof(complete);
+	this.status.setComplete(complete);
+//        this.eof(complete);
         // close streams
         if(in != null) {
             in.close();
@@ -415,15 +504,16 @@ public abstract class Path {// extends Observable {
     /**
 	* Do some cleanup if transfer has been completed
      */
-    private void eof(boolean complete) {
-        if(complete) {
+//    private void eof(boolean complete) {
+//	log.debug("eof:"+complete);
+  //      if(complete) {
 //            this.status.setCurrent(this.status.getSize());
-            this.status.fireCompleteEvent();
-        }
-        else {
-            this.status.fireStopEvent();
-        }
-    }
+    //        this.status.fireCompleteEvent();
+//        }
+//        else {
+  //          this.status.fireStopEvent();
+    //    }
+    //}
     
     public String toString() {
 	return this.getAbsolute();

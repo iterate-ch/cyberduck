@@ -126,9 +126,14 @@ public class CDConnectionSheet {
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
 
 	//initalizaing protcol popup
+//	this.protocolPopup.removeAllItems();
 //	this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{FTP_STRING, SFTP_STRING}));
-	this.protocolPopup.itemWithTitle(FTP_STRING).setTag(Session.FTP_PORT);
-	this.protocolPopup.itemWithTitle(SFTP_STRING).setTag(Session.SSH_PORT);
+//	this.protocolPopup.itemWithTitle(FTP_STRING).setTag(Session.FTP_PORT);
+//	this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalent("F");
+//	this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+//	this.protocolPopup.itemWithTitle(SFTP_STRING).setTag(Session.SSH_PORT);
+//	this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalent("S");
+//	this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
 	this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals("ftp") ? FTP_STRING : SFTP_STRING);
 
 	//initializing host popup

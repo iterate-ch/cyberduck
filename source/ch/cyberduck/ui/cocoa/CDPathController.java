@@ -45,7 +45,7 @@ public class CDPathController implements Observer {
     }
 
     private void init() {
-	this.removeAllItems();
+	//this.removeAllItems();
     }
 
     public void finalize() throws Throwable {

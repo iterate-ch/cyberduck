@@ -81,7 +81,6 @@ public class SFTPSession extends Session {
     }
 
     public synchronized void connect() throws IOException {
-//		host.status.fireActiveEvent();
 	this.callObservers(new Message(Message.OPEN, "Opening session."));
 	this.log("Opening SSH connection to " + host.getIp()+"...", Message.PROGRESS);
 	SshConnectionProperties properties = new SshConnectionProperties();
@@ -193,6 +192,7 @@ public class SFTPSession extends Session {
 
     public void check() throws IOException {
 	log.debug("check");
+	this.log("Working", Message.START);
 	if(!SSH.isConnected()) {
 	  //  host.recycle();
 	    this.setConnected(false);

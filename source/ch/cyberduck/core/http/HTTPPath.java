@@ -114,7 +114,7 @@ public class HTTPPath extends Path {
 	GetMethod GET = null;
 	try {
 	    log.debug("download:"+this.toString());
-	    this.status.fireActiveEvent();
+//	    this.status.fireActiveEvent();
 	    session.check();
 	    GET = new GetMethod(this.getAbsolute()); //@todo encode url
 	    GET.setUseDisk(false);
@@ -182,25 +182,25 @@ public class HTTPPath extends Path {
 	    Header transferEncodingHeader = GET.getResponseHeader("Bookmark-Encoding");
 	    if(lengthHeader != null) {
 		try {
-		    this.status.setSize(Integer.parseInt(lengthHeader.getValue()));
+		    this.setSize(Integer.parseInt(lengthHeader.getValue()));
 		}
 		catch(NumberFormatException e) {
-		    this.status.setSize(-1);
+		    this.setSize(-1);
 		}
 	    }
 	    if(rangeHeader != null) {
 		try {
 		    String r = rangeHeader.getValue();
 		    int l = Integer.parseInt(r.substring(v.indexOf('/') + 1));
-		    this.status.setSize(l);
+		    this.setSize(l);
 		}
 		catch(NumberFormatException e) {
-		    this.status.setSize(-1);
+		    this.setSize(-1);
 		}
 	    }
 	    else if(null != transferEncodingHeader) {
 		if("chunked".equalsIgnoreCase(transferEncodingHeader.getValue())) {
-		    this.status.setSize(-1);
+		    this.setSize(-1);
 		}
 	    }
 

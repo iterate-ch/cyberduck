@@ -123,8 +123,6 @@ public class CDBrowserController implements Observer {
     private CDPathController pathController;
 
     private NSToolbar toolbar;
-//    private NSToolbarItem pathItem;
-//  private NSToolbarItem quickConnectItem;
 
     /**
      * The host this browser windowis associated with
@@ -157,12 +155,11 @@ public class CDBrowserController implements Observer {
 	browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
 	browserTable.setAutosaveTableColumns(true);
 
+	connectionSheet = new CDConnectionSheet(this);
 	pathController = new CDPathController(pathPopup);
 
-	this.pathPopup.setTarget(pathController);
-	this.pathPopup.setAction(new NSSelector("selectionChanged", new Class[] { Object.class } ));
-
-	connectionSheet = new CDConnectionSheet(this);
+	pathPopup.setTarget(pathController);
+	pathPopup.setAction(new NSSelector("selectionChanged", new Class[] { Object.class } ));
 
 	this.setupToolbar();
     }
@@ -228,10 +225,10 @@ public class CDBrowserController implements Observer {
 			      Path p1 = (Path)o1;
 			      Path p2 = (Path)o2;
 			      if(ascending) {
-				  return p1.getName().compareTo(p2.getName());
+				  return p1.getName().compareToIgnoreCase(p2.getName());
 			      }
 			      else {
-				  return -p1.getName().compareTo(p2.getName());
+				  return -p1.getName().compareToIgnoreCase(p2.getName());
 			      }
 			  }
 		      }
@@ -241,8 +238,8 @@ public class CDBrowserController implements Observer {
 	    Collections.sort(browserModel.list(),
 				new Comparator() {
 				    public int compare(Object o1, Object o2) {
-					int p1 = ((Path)o1).status.getSize();
-					int p2 = ((Path)o2).status.getSize();
+					int p1 = ((Path)o1).getSize();
+					int p2 = ((Path)o2).getSize();
 					if (p1 > p2) {
 					    return lower;
 					}
@@ -263,7 +260,7 @@ public class CDBrowserController implements Observer {
 			  public int compare(Object o1, Object o2) {
 			      Path p1 = (Path) o1;
 			      Path p2 = (Path) o2;
-			      return p1.attributes.getModified().compareTo(p2.attributes.getModified());
+			      return p1.attributes.getModified().compareToIgnoreCase(p2.attributes.getModified());
 			  }
 		      }
 		      );
@@ -274,7 +271,7 @@ public class CDBrowserController implements Observer {
 			  public int compare(Object o1, Object o2) {
 			      Path p1 = (Path) o1;
 			      Path p2 = (Path) o2;
-			      return p1.attributes.getOwner().compareTo(p2.attributes.getOwner());
+			      return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
 			  }
 		      }
 		      );
@@ -351,8 +348,10 @@ public class CDBrowserController implements Observer {
 				   msg.getDescription() // message
 				   );
 		    progressIndicator.stopAnimation(this);
+		    //@tdodo use attributed string???
 		    statusLabel.setStringValue(msg.getDescription());
 		}
+		
 		// update status label
 		else if(msg.getTitle().equals(Message.PROGRESS)) {
 		    statusLabel.setStringValue(msg.getDescription());
@@ -360,18 +359,27 @@ public class CDBrowserController implements Observer {
 		else if(msg.getTitle().equals(Message.TRANSCRIPT)) {
 		    statusLabel.setStringValue(msg.getDescription());
 		}
+		
 		else if(msg.getTitle().equals(Message.OPEN)) {
+		    progressIndicator.startAnimation(this);
+
 		    browserModel.clear();
 		    browserTable.reloadData();
 
-		    progressIndicator.startAnimation(this);
 		    mainWindow.setTitle(host.getProtocol()+":"+host.getName());
 		}
 		else if(msg.getTitle().equals(Message.CLOSE)) {
-		    browserModel.clear();
-		    browserTable.reloadData();
-
 		    progressIndicator.stopAnimation(this);
+		}
+		
+		else if(msg.getTitle().equals(Message.START)) {
+		    progressIndicator.startAnimation(this);
+		    //@todo disable toolbar
+		}
+		else if(msg.getTitle().equals(Message.STOP)) {
+		    progressIndicator.stopAnimation(this);
+		    statusLabel.setStringValue("Idle");
+		    //@todo enable toolbar
 		}
 	    }
 	    if(arg instanceof Path) {
@@ -395,6 +403,10 @@ public class CDBrowserController implements Observer {
     public void toggleDrawer(Object sender) {
 	drawer.toggle(this);
     }
+
+//    public void changePathButtonClicked(Object sender) {
+//
+//  }
     
     public void folderButtonClicked(Object sender) {
         log.debug("folderButtonClicked");
@@ -487,7 +499,7 @@ public class CDBrowserController implements Observer {
 	    path = (Path)browserModel.getEntry(selected);
 	    CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
 	    this.references = references.arrayByAddingObject(controller);
-	    controller.start(path.status.isResume());
+	    controller.transfer(path.status.isResume());
 	}
     }
 
@@ -521,7 +533,7 @@ public class CDBrowserController implements Observer {
 		    }
 		    CDTransferController controller = new CDTransferController(path, Queue.KIND_UPLOAD);
 		    this.references = references.arrayByAddingObject(controller);
-		    controller.start(path.status.isResume());
+		    controller.transfer(path.status.isResume());
 		}
 		break;
 	    }
@@ -589,7 +601,7 @@ public class CDBrowserController implements Observer {
 
     public void disconnectButtonClicked(Object sender) {
 	this.unmount();
-	//@todo show in disconnected state in gui
+	//@todo show disconnected state in gui
     }
 
     public void mount(Host host) {
@@ -607,7 +619,6 @@ public class CDBrowserController implements Observer {
     }
 
     public void unmount() {
-	this.host.getSession().deleteObservers();
 	this.host.closeSession();
     }
 
@@ -795,10 +806,13 @@ public class CDBrowserController implements Observer {
     public boolean validateToolbarItem(NSToolbarItem item) {
 //	log.debug("validateToolbarItem:"+item.label());
 	String label = item.label();
-	if(label.equals("Path")) {
-	    return pathController.numberOfItems() > 0;
-	}
-	else if(label.equals("Refresh")) {
+	upButton.setEnabled(pathController.numberOfItems() > 0);
+	pathPopup.setEnabled(pathController.numberOfItems() > 0);
+//not called because it is a custom view
+	//if(label.equals("Path")) {
+//	    return pathController.numberOfItems() > 0;
+//	}
+	if(label.equals("Refresh")) {
 	    return pathController.numberOfItems() > 0;
 	}
 	else if(label.equals("Download")) {
@@ -870,8 +884,9 @@ public class CDBrowserController implements Observer {
     }
 
     public boolean validateMenuItem(_NSObsoleteMenuItemProtocol aCell) {
+	log.debug("validateMenuItem:"+aCell);
         String sel = aCell.action().name();
-//	log.debug("validateMenuItem:"+sel);
+	log.debug("validateMenuItem:"+sel);
 
         if (sel.equals("infoButtonClicked:")) {
 	    return browserTable.selectedRow() != -1;
@@ -912,7 +927,7 @@ public class CDBrowserController implements Observer {
 	    if(identifier.equals("FILENAME"))
 		return p.getName();
 	    else if(identifier.equals("SIZE"))
-		return p.status.getSizeAsString();
+		return p.getSizeAsString();
 	    else if(identifier.equals("MODIFIED"))
 		return p.attributes.getModified();
 	    else if(identifier.equals("OWNER"))
@@ -984,7 +999,7 @@ public class CDBrowserController implements Observer {
 		    }
 		    CDTransferController controller = new CDTransferController(path, Queue.KIND_UPLOAD);
 		    references = references.arrayByAddingObject(controller);
-		    controller.start(path.status.isResume());
+		    controller.transfer(path.status.isResume());
 		}
 		tableView.reloadData();
 		tableView.setNeedsDisplay(true);
@@ -1003,14 +1018,15 @@ public class CDBrowserController implements Observer {
 	    *@param rows is the list of row numbers that will be participating in the drag.
 	    */
 	public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
-	    if(rows.count() > 1)
-		return false;
+//	    if(rows.count() > 1)
+//		return false;
+//
+//	    Path p = (Path)this.getEntry(((Integer)rows.objectAtIndex(0)).intValue());
+//	    String filename = p.getLocal().getAbsolutePath();
+//	    pboard.declareTypes(new NSArray(NSPasteboard.FilenamesPboardType), this);
+//	    pboard.setPropertyListForType(new NSArray(filename), NSPasteboard.FilenamesPboardType);
 
-	    Path p = (Path)this.getEntry(((Integer)rows.objectAtIndex(0)).intValue());
-	    String filename = p.getLocal().getAbsolutePath();
-	    pboard.declareTypes(new NSArray(NSPasteboard.FilenamesPboardType), this);
-	    pboard.setPropertyListForType(new NSArray(filename), NSPasteboard.FilenamesPboardType);
-	    
+	
 //	    [self dragImage:iconImage at:dragPoint offset:NSMakeSize(0,0)
 //	       event:event
 //	  pasteboard:pb source:self slideBack:YES];
@@ -1018,7 +1034,8 @@ public class CDBrowserController implements Observer {
 //	Path p = (Path)this.getEntry(((Integer)rows.objectAtIndex(0)).intValue());
 //	pboard.declareTypes(new NSArray(NSPasteboard.FilenamesPboardType), null);
 //	pboard.setStringForType(p.getLocal().toString(), NSPasteboard.FilenamesPboardType);
-	    return true;
+
+	    return false;
 	}
 
 

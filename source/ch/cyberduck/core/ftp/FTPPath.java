@@ -90,7 +90,7 @@ public class FTPPath extends Path {
 	return this.list(true);
     }
 
-    public synchronized List list(boolean notifyobservers) {
+    public List list(boolean notifyobservers) {
 	try {
 	    session.check();
 	    session.log("Listing "+this.getName(), Message.PROGRESS);
@@ -99,7 +99,7 @@ public class FTPPath extends Path {
 	    this.setCache(new FTPParser().parseList(this.getAbsolute(), session.FTP.dir()));
 	    if(notifyobservers) {
 		session.callObservers(this);
-		session.log("Listing complete", Message.PROGRESS);
+//		session.log("Listing complete", Message.PROGRESS);
 	    }
 	}
 	catch(FTPException e) {
@@ -108,10 +108,13 @@ public class FTPPath extends Path {
 	catch(IOException e) {
 	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
+	finally {
+	    session.log("Idle", Message.STOP);
+	}
 	return this.cache();
     }
 
-    public synchronized void delete() {
+    public void delete() {
 	log.debug("delete");
 	try {
 	    session.check();
@@ -147,9 +150,12 @@ public class FTPPath extends Path {
 	catch(IOException e) {
 	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
+	finally {
+	    session.log("Idle", Message.STOP);
+	}
     }
 
-    public synchronized void rename(String filename) {
+    public void rename(String filename) {
 	log.debug("rename");
 	try {
 	    session.check();
@@ -164,9 +170,12 @@ public class FTPPath extends Path {
 	catch(IOException e) {
 	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
+	finally {
+	    session.log("Idle", Message.STOP);
+	}
     }
 
-    public synchronized Path mkdir(String name) {
+    public Path mkdir(String name) {
 	log.debug("mkdir");
 	try {
 	    session.check();
@@ -199,7 +208,7 @@ public class FTPPath extends Path {
 //	return status.getSize();
   //  }
 
-    public synchronized void changePermissions(int permissions) {
+    public void changePermissions(int permissions) {
 	log.debug("changePermissions");
 	try {
 	    session.check();
@@ -211,9 +220,12 @@ public class FTPPath extends Path {
 	catch(IOException e) {
 	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
+	finally {
+	    session.log("Idle", Message.STOP);
+	}
     }
 
-//  public synchronized void changeOwner(String owner) {
+//  public void changeOwner(String owner) {
 //	log.debug("changeOwner");
 //	try {
 //	    session.check();
@@ -227,7 +239,7 @@ public class FTPPath extends Path {
 //	}
 //    }
 
-//    public synchronized void changeGroup(String group) {
+//    public void changeGroup(String group) {
 //	log.debug("changeGroup");
 //	try {
 //	    session.check();
@@ -245,22 +257,6 @@ public class FTPPath extends Path {
 	return this.session;
     }
 
-    /*
-    public Session getDownloadSession() {
-	if(null == this.downloadSession) {
-	    downloadSession = (FTPSession)session.copy();
-	}
-	return this.downloadSession;
-    }
-
-    public Session getUploadSession() {
-	if(null == this.uploadSession) {
-	    uploadSession = (FTPSession)session.copy();
-	}
-	return this.uploadSession;
-    }
-     */
-
     public void fillDownloadQueue(Queue queue, Session downloadSession) {
 	this.session = (FTPSession)downloadSession;
 	try {
@@ -275,7 +271,7 @@ public class FTPPath extends Path {
 		}
 	    }
 	    else if(isFile()) {
-		this.status.setSize((int)session.FTP.size(this.getAbsolute()));
+		this.setSize((int)session.FTP.size(this.getAbsolute()));
 		queue.add(this);
 	    }
 	    else
@@ -294,7 +290,7 @@ public class FTPPath extends Path {
 	    log.debug("download:"+this.toString());
 	    if(!this.isFile())
 		throw new IOException("Download must be a file.");
-	    status.fireActiveEvent();
+//	    status.fireActiveEvent();
 	    session.check();
 	    if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 		session.log("Setting transfer mode to BINARY", Message.PROGRESS);
@@ -317,7 +313,7 @@ public class FTPPath extends Path {
 	    else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 		session.log("Setting transfer type to ASCII", Message.PROGRESS);
 		session.FTP.setType(FTPTransferType.ASCII);
-		this.status.setSize((int)(session.FTP.size(this.getAbsolute())));
+		this.setSize((int)(session.FTP.size(this.getAbsolute())));
 		this.getLocal().getParentFile().mkdir();
 		java.io.Writer out = new FileWriter(this.getLocal(), this.status.isResume());
 		if(out == null) {
@@ -360,7 +356,7 @@ public class FTPPath extends Path {
 		}
 	    }
 	    else if(this.getLocal().isFile()) {
-		this.status.setSize((int)this.getLocal().length());
+		this.setSize((int)this.getLocal().length());
 		queue.add(this);
 	    }
 	    else
@@ -374,10 +370,10 @@ public class FTPPath extends Path {
 	}
     }
 
-    public synchronized void upload() {
+    public void upload() {
 	try {
 	    log.debug("upload:"+this.toString());
-	    status.fireActiveEvent();
+//	    status.fireActiveEvent();
 	    session.check();
 	    if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 		session.log("Setting transfer mode to BINARY.", Message.PROGRESS);
@@ -402,7 +398,7 @@ public class FTPPath extends Path {
 	    else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 		session.log("Setting transfer type to ASCII.", Message.PROGRESS);
 		session.FTP.setType(FTPTransferType.ASCII);
-		this.status.setSize((int)this.getLocal().length());
+		this.setSize((int)this.getLocal().length());
 
 		java.io.Reader in = new FileReader(this.getLocal());
 		if(in == null) {
@@ -536,7 +532,7 @@ public class FTPPath extends Path {
 		    p.attributes.setModified(date);
 		    p.attributes.setMode(access);
 		    p.attributes.setPermission(new Permission(access));
-		    p.status.setSize(size);
+		    p.setSize(size);
 		    return p;
 	    }
 	    catch(NumberFormatException e) {
@@ -614,7 +610,7 @@ public class FTPPath extends Path {
 		p.attributes.setModified(date);
 		p.attributes.setMode(access);
 		p.attributes.setPermission(new Permission(access));
-		p.status.setSize(Integer.parseInt(size));
+		p.setSize(Integer.parseInt(size));
 
 //		 if(isLink(line)) {
 //		    // the following lines are the most ugly. I just don't know how I can be sure

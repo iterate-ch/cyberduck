@@ -29,7 +29,7 @@ import com.sshtools.j2ssh.transport.HostKeyVerification;
 public class Host implements Serializable {
     private static Logger log = Logger.getLogger(Host.class);
 
-    protected transient Login login;
+    public transient Login login;
     private String protocol;
     private int port;
     private String name;

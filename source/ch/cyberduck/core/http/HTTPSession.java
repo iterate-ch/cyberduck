@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.log4j.Logger;
-
 import java.io.IOException;
 
 /**
@@ -54,10 +53,33 @@ public class HTTPSession extends Session {
 	}
     }
 
+
+    public Session copy() {
+	return new HTTPSession(this.host);
+    }
+    
+
+    public synchronized void connect() {
+	this.callObservers(new Message(Message.OPEN, "Opening session."));
+	HTTPSession.this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
+//		if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
+//		    HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
+//		}
+//		else {
+	HTTP.connect(host.getName(), host.getPort(), false);
+//		}
+	this.setConnected(true);
+	log("HTTP connection opened", Message.PROGRESS);
+    }
+    
+    public void mount() {
+	this.log("Invalid Operation", Message.ERROR);
+    }
+
     public void check() throws IOException {
+	this.log("Working", Message.START);
 	log.debug("check");
 	if(!HTTP.isAlive()) {
-	  //  host.recycle();
 	    this.setConnected(false);
 	    this.connect();
 	    while(true) {
@@ -67,34 +89,7 @@ public class HTTPSession extends Session {
 		Thread.yield();
 	    }
 	}
-    }
-
-
-    public Session copy() {
-	return new HTTPSession(this.host);
-    }
-    
-
-    public synchronized void connect() {
-//		host.status.fireActiveEvent();
-	this.callObservers(new Message(Message.OPEN, "Opening session."));
-	HTTPSession.this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
-//		if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
-//		    HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
-//		}
-//		else {
-	HTTP.connect(host.getName(), host.getPort(), false);//@todo implement https
-//		}
-	    this.setConnected(true);
-	    log("HTTP connection opened", Message.PROGRESS);
-//		HTTPFile p = new HTTPFile(host.getWorkdir());
-//		p.download();
-//		host.status.fireStopEvent();
-    }
-    
-    public void mount() {
-	this.log("Invalid Operation", Message.ERROR);
-    }
+    }    
 
     public Path workdir() {
 	this.log("Invalid Operation", Message.ERROR);
