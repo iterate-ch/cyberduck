@@ -47,12 +47,6 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 
 	private CDController windowController;
 
-    private NSWindow sheet;
-
-    public NSWindow window() {
-        return this.sheet;
-    }
-
 	public void windowWillClose(NSNotification notification) {
 		instances.removeObject(this);
 	}
