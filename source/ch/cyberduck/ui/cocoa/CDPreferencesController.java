@@ -656,7 +656,6 @@ public class CDPreferencesController extends CDController {
 			aes128_cbc,
 			cast128_cbc
 		}));
-
 		this.csEncryptionCombobox.setTitle(Preferences.instance().getProperty("ssh.CSEncryption"));
 	}
 
