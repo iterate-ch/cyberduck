@@ -49,21 +49,6 @@ public class CDBrowserController implements Observer {
 		this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
 		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
 		this.browserTable.setDoubleAction(new NSSelector("browserTableViewDidClickTableRow", new Class[] {Object.class}));
-//		NSMutableArray sortDescriptors = new NSMutableArray();
-//		sortDescriptors.addObject(new NSSortDescriptor(
-//											   "FILENAME", 
-//											   true, 
-//											   new NSSelector("sortByFilenames", new Class[] {Object.class})
-//											   )
-//						  );
-//		this.browserTable.setSortDescriptors(sortDescriptors);
-		
-//		this.browserTable.tableColumnWithIdentifier("FILENAME").setSortDescriptorPrototype(
-//																					 new NSSortDescriptor(
-//										   "FILENAME", 
-//										   true, 
-//										   new NSSelector("sortByFilenames", new Class[] {NSTableView.class, Object.class}))
-//																					 );
     }
 		
 	public void browserTableViewDidClickTableRow(Object sender) {
@@ -84,10 +69,6 @@ public class CDBrowserController implements Observer {
 				p.list();
 		}
     }
-	
-//	public void sortByFilenames(NSTableView table, Object o) {
-//		log.debug("sortByFilenames:"+o);
-//	}
 	
     private CDBookmarkTableDataSource bookmarkModel;
     private NSTableView bookmarkTable; // IBOutlet

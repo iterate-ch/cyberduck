@@ -6,6 +6,12 @@ You can open connections to multiple servers thanks to its document based interf
 Drag and drop is supported for both downloading and uploading files. Just drag the file(s) or folder from the Finder to the browser window or vice versa to start the transfer. 
 File deletion and renaming, checking and changing of permissions is possible with a Finder-like info panel.
 
+2.1
+
+http://cyberduck.ch/download.php?Cyberduck-2.1.dmg
+http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1.dmg
+http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1.tar.gz
+
 2.1beta5
 - HTTP is now supported again. Files can be downloaded from regular web servers.
 - Cyberduck can now be configured as the default FTP helper application. See "http://www.monkeyfood.com/software/moreInternet/". This seems to work with Safari and Internet Explorer.
@@ -39,6 +45,7 @@ http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta4.tar.g
 - There is a new command 'Go to folder' for changing the working directory quickly.
 - Many smaller bug fixes.
 
+http://cyberduck.ch/download.php?Cyberduck-2.1beta3.dmg
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1beta3.dmg.gz
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta3.tar.gz
 
@@ -46,5 +53,6 @@ http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta3.tar.g
 - SSH (SFTP) support
 - Completly rewritten user interface using the Cocoa Framework
 
+http://cyberduck.ch/download.php?Cyberduck-2.1beta2.dmg
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1beta2.dmg.gz
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta2.tar.gz

@@ -9,8 +9,15 @@
 	<key>comment</key>
         <string>Changelog:
 2.1
-- Updated SSH Core
+- Bookmarks can now be edited.
+- Bookmarks can now be saved as a regular file (Drag the bookmarks to the Finder).
+- Bookmarks saved as files can be imported by dropping them on the Bookmarks Drawer.
+- Double clicking a Cyberduck bookmark file in the Finder will open a new browser and connect to the remote site
+- Ability to specify an initial directory upon new connection (e.g. public_html instead of the default home).
+- Updated icon set
 - 
+- Updated SSH Core (0.2.5)
+- Smaller changes and bug fixes.
 
 2.1beta5
 - HTTP is now supported again. Files can be downloaded from regular web servers.

@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Host;

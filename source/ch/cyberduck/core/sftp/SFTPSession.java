@@ -28,9 +28,7 @@ import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
 import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
-//import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
-//import com.sshtools.j2ssh.SftpClient;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -45,7 +43,6 @@ public class SFTPSession extends Session {
 	
     protected SftpSubsystemClient SFTP;
     private SshClient SSH;
-	//    private SessionChannelClient channel;
 	
     /**
 		* @param client The client to use which does implement the ftp protocol

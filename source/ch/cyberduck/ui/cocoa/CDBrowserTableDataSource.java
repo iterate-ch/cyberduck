@@ -58,105 +58,15 @@ public class CDBrowserTableDataSource {//implements NSTableView.DataSource {
 		return data.size();
     }
     
-    public void tableViewSortDescriptorsDidChange(NSTableView tableView, NSArray oldDescriptors) {
-		log.debug("tableViewSortDescriptorsDidChange:"+oldDescriptors);
-		
-		java.util.Enumeration i = oldDescriptors.objectEnumerator();
-		while(i.hasMoreElements()) {
-			NSSortDescriptor descriptor = (NSSortDescriptor)i.nextElement();
-			final boolean ascending = descriptor.ascending();		
-			final int higher = ascending ? 1 : -1 ;
-			final int lower = ascending ? -1 : 1;
-			if(descriptor.key().equals("TYPE")) {
-				//		if(tableColumn.identifier().equals("TYPE")) {
-				Collections.sort(this.list(),
-					 new Comparator() {
-						 public int compare(Object o1, Object o2) {
-							 Path p1 = (Path) o1;
-							 Path p2 = (Path) o2;
-							 if(p1.isDirectory() && p2.isDirectory())
-								 return 0;
-							 if(p1.isFile() && p2.isFile())
-								 return 0;
-							 if(p1.isFile())
-								 return higher;
-							 return lower;
-						 }
-					 }
-					 );
-				}
-			if(descriptor.key().equals("FILENAME")) {
-				//		else if(tableColumn.identifier().equals("FILENAME")) {
-				Collections.sort(this.list(),
-					 new Comparator() {
-						 public int compare(Object o1, Object o2) {
-							 Path p1 = (Path)o1;
-							 Path p2 = (Path)o2;
-							 if(ascending)
-								 return p1.getName().compareToIgnoreCase(p2.getName());
-							 else
-								 return -p1.getName().compareToIgnoreCase(p2.getName());
-						 }
-					 }
-					 );
-				}
-			if(descriptor.key().equals("SIZE")) {
-				//		else if(tableColumn.identifier().equals("SIZE")) {
-				Collections.sort(this.list(),
-					 new Comparator() {
-						 public int compare(Object o1, Object o2) {
-							 long p1 = ((Path)o1).status.getSize();
-							 long p2 = ((Path)o2).status.getSize();
-							 if (p1 > p2)
-								 return lower;
-							 else if (p1 < p2)
-								 return higher;
-							 else if (p1 == p2)
-								 return 0;
-							 return 0;
-						 }
-					 }
-					 );
-				}
-			if(descriptor.key().equals("MODIFIED")) {
-				//		else if(tableColumn.identifier().equals("MODIFIED")) {
-				Collections.sort(this.list(),
-					 new Comparator() {
-						 public int compare(Object o1, Object o2) {
-							 Path p1 = (Path) o1;
-							 Path p2 = (Path) o2;
-							 if(ascending)
-								 return p1.attributes.getModifiedDate().compareTo(p2.attributes.getModifiedDate());
-							 else
-								 return -p1.attributes.getModifiedDate().compareTo(p2.attributes.getModifiedDate());
-						 }
-					 }
-					 );
-				}
-			if(descriptor.key().equals("OWNER")) {
-				//		else if(tableColumn.identifier().equals("OWNER")) {
-				Collections.sort(this.list(),
-					 new Comparator() {
-						 public int compare(Object o1, Object o2) {
-							 Path p1 = (Path) o1;
-							 Path p2 = (Path) o2;
-							 if(ascending)
-								 return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
-							 else
-								 return -p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
-						 }
-					 }
-					 );
-				}
-			}
-		tableView.reloadData();
-			}
+//    public void tableViewSortDescriptorsDidChange(NSTableView tableView, NSArray oldDescriptors) {
+//		log.debug("tableViewSortDescriptorsDidChange:"+oldDescriptors);
+//			}
     
     //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 		//	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 		String identifier = (String)tableColumn.identifier();
-		Path p = (Path)data.get(row);
+		Path p = (Path)this.data.get(row);
 		if(identifier.equals("TYPE")) {
 			if(p.isDirectory())
 				return NSImage.imageNamed("folder.tiff");
@@ -363,7 +273,7 @@ public class CDBrowserTableDataSource {//implements NSTableView.DataSource {
 		return data.indexOf(o);
     }
     
-    public List list() {
+    public List values() {
 		return this.data;
     }
 }    
