@@ -51,7 +51,7 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
 		log.debug("File:"+file);
 		Host h = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()));
 		if(file.length() > 1) {
-		    Path p = new FTPPath((FTPSession)h.getSession(), file);
+		    Path p = new FTPPath((FTPSession)h.createSession(), file);
 		    // we assume a file has an extension
 		    if(null != p.getExtension()) {
 			log.debug("Opening transfer window");

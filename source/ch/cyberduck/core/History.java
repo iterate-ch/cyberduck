@@ -52,10 +52,10 @@ public abstract class History extends Bookmarks {
 	}
 	
 	public Host getItem(String key) {
-		Host result =  (Host)this.data.get(key);
-		if(null == result)
-			throw new IllegalArgumentException("Host "+key+" not found in Bookmarks.");
-		return result;
+		return (Host)this.data.get(key);
+//		if(null == result)
+			//throw new IllegalArgumentException("Host "+key+" not found in Bookmarks.");
+//		return result;
 	}
 
 	public Collection values() {

@@ -88,7 +88,7 @@ public class CDDownloadController {
 				try {
 					url = new URL(urlField.stringValue());
 					Host host = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()));
-					Session session = host.getSession();
+					Session session = host.createSession();
 					Path path = null;
 					String file = url.getFile();
 					if(file.length() > 1) {
