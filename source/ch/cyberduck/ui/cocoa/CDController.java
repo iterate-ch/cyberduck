@@ -43,15 +43,15 @@ public abstract class CDController {
 		super.finalize();
 	}
 
-	private NSWindow sheet; // IBOutlet
+	private NSWindow window; // IBOutlet
 
 	public void setWindow(NSWindow window) {
-		this.sheet = window;
-		this.sheet.setDelegate(this);
+		this.window = window;
+		this.window.setDelegate(this);
 	}
 
 	public NSWindow window() {
-		return this.sheet;
+		return this.window;
 	}
 
 	public abstract void awakeFromNib();
@@ -83,7 +83,6 @@ public abstract class CDController {
             modalSession = null;
         }
         NSApplication.sharedApplication().endSheet(sheet, tag);
-        sheet.orderOut(null);
         synchronized(this) {
             this.notifyAll();
         }
@@ -95,6 +94,13 @@ public abstract class CDController {
             while(this.hasSheet()) {
                 try {
                     if(Thread.currentThread().getName().equals("main")) {
+                        log.warn("Waiting on main thread; will run modal!");
+                        NSApplication app = NSApplication.sharedApplication();
+                        modalSession = NSApplication.sharedApplication().beginModalSessionForWindow(
+                                this.window().attachedSheet());
+                        while(this.hasSheet()) {
+                            app.runModalSession(modalSession);
+                        }
                         return;
                     }
                     log.debug("Sleeping:waitForSheetEnd...");
@@ -108,64 +114,58 @@ public abstract class CDController {
         }
     }
 
-    public void waitForSheetDisplay(NSWindow sheet) {
-        log.debug("waitForSheetDisplay:"+sheet);
-        synchronized(this) {
-            while(this.window().attachedSheet() != sheet) {
-                try {
-                    if(Thread.currentThread().getName().equals("main")) {
-                        return;
-                    }
-                    log.debug("Sleeping:waitForSheetDisplay...");
-                    this.wait();
-                    log.debug("Awakened:waitForSheetDisplay");
-                }
-                catch(InterruptedException e) {
-                    log.error(e.getMessage());
-                }
-            }
-        }
-    }
+//    public void waitForSheetDisplay(NSWindow sheet) {
+//        log.debug("waitForSheetDisplay:"+sheet);
+//        synchronized(this) {
+//            while(this.window().attachedSheet() != sheet) {
+//                try {
+//                    if(Thread.currentThread().getName().equals("main")) {
+//                        return;
+//                    }
+//                    log.debug("Sleeping:waitForSheetDisplay...");
+//                    this.wait();
+//                    log.debug("Awakened:waitForSheetDisplay");
+//                }
+//                catch(InterruptedException e) {
+//                    log.error(e.getMessage());
+//                }
+//            }
+//        }
+//    }
 
-    public void sheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
+    public void sheetWithoutTargetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         this.endSheet(sheet, returncode);
+        sheet.orderOut(null);
     }
 
     public void beginSheet(NSWindow sheet) {
-        this.beginSheet(sheet, new NSSelector
-                ("sheetDidClose",
+        this.beginSheet(sheet, this, new NSSelector
+                ("sheetWithoutTargetDidEnd",
                         new Class[]
                         {
                             NSWindow.class, int.class, Object.class
-                        })); // end selector);
+                        }), null); // end selector);
     }
-
-    public void beginSheet(NSWindow sheet, NSSelector endSelector) {
-        this.beginSheet(sheet, endSelector, null);
-    }
-
-    public void beginSheet(NSWindow sheet, NSSelector endSelector, Object contextInfo) {
-        this.beginSheet(sheet, this, endSelector, contextInfo);
-    }
+//
+//    public void beginSheet(NSWindow sheet, NSSelector endSelector) {
+//        this.beginSheet(sheet, endSelector, null);
+//    }
+//
+//    public void beginSheet(NSWindow sheet, NSSelector endSelector, Object contextInfo) {
+//        this.beginSheet(sheet, this, endSelector, contextInfo);
+//    }
 
     public void beginSheet(final NSWindow sheet, final Object delegate, final NSSelector endSelector, final Object contextInfo) {
         log.debug("beginSheet:"+sheet);
         synchronized(this) {
             this.waitForSheetEnd();
             NSApplication app = NSApplication.sharedApplication();
-            app.beginSheet(sheet, //sheet
+            app.beginSheet(sheet, //window
                     this.window(),
                     delegate, //modalDelegate
                     endSelector, // did end selector
                     contextInfo); //contextInfo
             sheet.makeKeyAndOrderFront(null);
-            if(Thread.currentThread().getName().equals("main")) {
-                log.warn("Waiting on main thread; will run modal!");
-                modalSession = NSApplication.sharedApplication().beginModalSessionForWindow(sheet);
-                while(this.hasSheet()) {
-                    app.runModalSession(modalSession);
-                }
-            }
             this.notifyAll();
         }
     }

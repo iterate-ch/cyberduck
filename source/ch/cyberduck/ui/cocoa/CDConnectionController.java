@@ -312,7 +312,6 @@ public class CDConnectionController extends CDController {
 	}
 
 	public void pkSelectionPanelDidEnd(NSOpenPanel window, int returnCode, Object contextInfo) {
-		window.orderOut(null);
 		switch(returnCode) {
 			case (NSAlertPanel.DefaultReturn):
 				{
@@ -534,59 +533,60 @@ public class CDConnectionController extends CDController {
 	}
 	
 	public void closeSheet(NSButton sender) {
-		this.endSheet(this.window(), sender.tag());
-		NSNotificationCenter.defaultCenter().removeObserver(this);
-		this.rendezvous.deleteObserver(this.observer);
-		switch(sender.tag()) {
-			case (NSAlertPanel.DefaultReturn):
-				Host host = null;
-				if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
-					// SFTP has been selected as the protocol to connect with
-					host = new Host(Session.SFTP,
-									hostPopup.stringValue(),
-									Integer.parseInt(portField.stringValue()),
-									pathField.stringValue());
-					host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
-					if(pkCheckbox.state() == NSCell.OnState) {
-						host.getCredentials().setPrivateKeyFile(pkLabel.stringValue());
-					}
-				}
-				else if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
-					// FTP has been selected as the protocol to connect with
-					host = new Host(Session.FTP,
-									hostPopup.stringValue(),
-									Integer.parseInt(portField.stringValue()),
-									pathField.stringValue());
-					host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
-					if(connectmodePopup.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
-						host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
-					}
-					if(connectmodePopup.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
-						host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
-					}
-				}
-				else if(protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
-					// FTP has been selected as the protocol to connect with
-					host = new Host(Session.FTP_TLS,
-									hostPopup.stringValue(),
-									Integer.parseInt(portField.stringValue()),
-									pathField.stringValue());
-					host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
-					if(connectmodePopup.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
-						host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
-					}
-					if(connectmodePopup.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
-						host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
-					}
-				}
-				else {
-					throw new IllegalArgumentException("No protocol selected.");
-				}
-				browserController.changeEncoding(encodingPopup.titleOfSelectedItem());
-				browserController.mount(host);
-				break;
-			case (NSAlertPanel.AlternateReturn):
-				break;
-		}
-	}
+        this.endSheet(this.window(), sender.tag());
+    }
+
+    public void connectionSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+        sheet.orderOut(null);
+        NSNotificationCenter.defaultCenter().removeObserver(this);
+        this.rendezvous.deleteObserver(this.observer);
+        switch(returncode) {
+            case (NSAlertPanel.DefaultReturn):
+                Host host = null;
+                if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
+                    // SFTP has been selected as the protocol to connect with
+                    host = new Host(Session.SFTP,
+                            hostPopup.stringValue(),
+                            Integer.parseInt(portField.stringValue()),
+                            pathField.stringValue());
+                    host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
+                    if(pkCheckbox.state() == NSCell.OnState) {
+                        host.getCredentials().setPrivateKeyFile(pkLabel.stringValue());
+                    }
+                }
+                else if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
+                    // FTP has been selected as the protocol to connect with
+                    host = new Host(Session.FTP,
+                            hostPopup.stringValue(),
+                            Integer.parseInt(portField.stringValue()),
+                            pathField.stringValue());
+                    host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
+                    if(connectmodePopup.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
+                        host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
+                    }
+                    if(connectmodePopup.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
+                        host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
+                    }
+                }
+                else if(protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
+                    // FTP has been selected as the protocol to connect with
+                    host = new Host(Session.FTP_TLS,
+                            hostPopup.stringValue(),
+                            Integer.parseInt(portField.stringValue()),
+                            pathField.stringValue());
+                    host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
+                    if(connectmodePopup.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
+                        host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
+                    }
+                    if(connectmodePopup.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
+                        host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
+                    }
+                }
+                else {
+                    throw new IllegalArgumentException("No protocol selected.");
+                }
+                browserController.changeEncoding(encodingPopup.titleOfSelectedItem());
+                browserController.mount(host);
+        }
+    }
 }

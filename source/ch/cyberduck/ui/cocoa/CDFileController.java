@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.foundation.NSBundle;
@@ -54,6 +53,10 @@ public abstract class CDFileController extends CDController {
 		instances.removeObject(this);
 	}
 
+    public void editButtonClicked(NSButton sender) {
+        this.createButtonClicked(sender);
+    }
+
 	public void createButtonClicked(NSButton sender) {
 		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 		if(filenameField.stringValue().indexOf('/') != -1) {
@@ -79,9 +82,5 @@ public abstract class CDFileController extends CDController {
 
 	public void cancelButtonClicked(NSButton sender) {
 		this.endSheet(this.window(), sender.tag());
-	}
-
-	public void editButtonClicked(NSButton sender) {
-		this.createButtonClicked(sender);
 	}
 }

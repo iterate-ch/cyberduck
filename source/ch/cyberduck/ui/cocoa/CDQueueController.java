@@ -107,7 +107,6 @@ public class CDQueueController extends CDController {
 	}
 
 	public void checkForRunningTransfersSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-		sheet.orderOut(null);
 		if(returncode == NSAlertPanel.DefaultReturn) { //Quit
 			this.stopAllButtonClicked(null);
 			NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);

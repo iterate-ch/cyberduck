@@ -254,7 +254,6 @@ public class CDBookmarkController extends CDController {
 
 	public void pkSelectionPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
 		log.debug("pkSelectionPanelDidEnd");
-		sheet.orderOut(null);
 		switch(returnCode) {
 			case (NSAlertPanel.DefaultReturn):
 				{

@@ -632,15 +632,12 @@ public class CDBrowserController extends CDController implements Observer {
                 this.statusLabel.setAttributedStringValue(new NSAttributedString((String) msg.getContent(),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                 this.statusLabel.display();
-                NSApplication.sharedApplication().beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
                         (String) msg.getContent(), // message
                         NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
                         null, //alternative button
-                        null //other button
-                ),
-                this.window(),
-                        null,
-                null);
+                        null) //other button
+                );
             }
             else if (msg.getTitle().equals(Message.PROGRESS)) {
                 this.statusLabel.setAttributedStringValue(new NSAttributedString((String) msg.getContent(),
@@ -1612,7 +1609,6 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
 		log.debug("deleteSheetDidEnd");
-		sheet.orderOut(null);
 		switch(returnCode) {
 			case (NSAlertPanel.DefaultReturn):
 				final List files = (List)contextInfo;
@@ -1711,7 +1707,6 @@ public class CDBrowserController extends CDController implements Observer {
     }
 
     public void syncPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
-        sheet.orderOut(null);
         switch (returnCode) {
             case (NSAlertPanel.DefaultReturn):
                 Path selection = (Path) contextInfo;
@@ -1756,7 +1751,6 @@ public class CDBrowserController extends CDController implements Observer {
     }
 
     public void uploadPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
-        sheet.orderOut(null);
         switch (returnCode) {
             case (NSAlertPanel.DefaultReturn):
                 Path workdir = this.workdir();
@@ -1799,7 +1793,9 @@ public class CDBrowserController extends CDController implements Observer {
     public void connectButtonClicked(Object sender) {
         log.debug("connectButtonClicked");
         CDConnectionController controller = new CDConnectionController(this);
-        this.beginSheet(controller.window());
+        this.beginSheet(controller.window(), controller,
+                new NSSelector("connectionSheetDidEnd", new Class[]{NSWindow.class, int.class, Object.class}),
+                null);
     }
 
     public void disconnectButtonClicked(Object sender) {
@@ -1939,6 +1935,7 @@ public class CDBrowserController extends CDController implements Observer {
     }
 
     public void mountSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+        sheet.orderOut(null);
         this.unmountSheetDidEnd(sheet, returncode, contextInfo);
         if (returncode == NSAlertPanel.DefaultReturn) {
             this.mount((Host) contextInfo);
@@ -1960,13 +1957,12 @@ public class CDBrowserController extends CDController implements Observer {
         log.debug("unmount");
         if (this.isConnected()) {
             if (Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                NSApplication.sharedApplication().beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.workdir().getSession().getHost().getHostname(), //title
+                this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.workdir().getSession().getHost().getHostname(), //title
                         NSBundle.localizedString("The connection will be closed.", "Alert sheet text"), // message
                         NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
                         NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
                         null //other button
                 ),
-                        this.window(),
                         this,
                         selector,
                         context);
@@ -2064,6 +2060,7 @@ public class CDBrowserController extends CDController implements Observer {
     }
 
     public void terminateReviewSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+        sheet.orderOut(null);
         this.closeSheetDidEnd(sheet, returncode, contextInfo);
         if (returncode == NSAlertPanel.DefaultReturn) { //Disconnect
             CDBrowserController.applicationShouldTerminate(null);

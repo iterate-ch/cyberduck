@@ -120,7 +120,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
             this.windowController.beginSheet(this.sheet,
                     this, //delegate
                     new NSSelector
-                            ("clientCertificateAlertSheetDidClose",
+                            ("clientCertificateAlertSheetDidEnd",
                                     new Class[]
                                     {
                                         NSWindow.class, int.class, Object.class
@@ -133,7 +133,8 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
         }
     }
 
-    public void clientCertificateAlertSheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
+    public void clientCertificateAlertSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+        sheet.orderOut(null);
         if (returncode == NSAlertPanel.DefaultReturn) {
             this.allowClientCertificate = true;
         }
@@ -175,7 +176,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
             this.windowController.beginSheet(sheet,
                     this, //delegate
                     new NSSelector
-                            ("serverCertificateAlertSheetDidClose",
+                            ("serverCertificateAlertSheetDidEnd",
                                     new Class[]
                                     {
                                         NSWindow.class, int.class, Object.class
@@ -188,7 +189,8 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
         }
     }
 
-    public void serverCertificateAlertSheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
+    public void serverCertificateAlertSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+        sheet.orderOut(null);
         if (returncode == NSAlertPanel.DefaultReturn) {
             this.allowServerCertificate = true;
         }

@@ -57,7 +57,7 @@ public class CDDuplicateFileController extends CDFileController {
 	
 	public void duplicateFileSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
 		log.debug("duplicateFileSheetDidEnd");
-		sheet.orderOut(null);
+        sheet.orderOut(null);
 		Path workdir = (Path)contextInfo;
 		switch(returncode) {
 			case (NSAlertPanel.DefaultReturn): //Duplicate

@@ -105,7 +105,8 @@ public class CDGotoController extends CDController {
 	}
 
 	public void gotoSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-		sheet.orderOut(null);
+        log.debug("gotoSheetDidEnd");
+        sheet.orderOut(null);
 		switch(returncode) {
 			case (NSAlertPanel.DefaultReturn):
 				Path workdir = (Path)contextInfo;
@@ -116,7 +117,7 @@ public class CDGotoController extends CDController {
 		}
 	}
 	
-	public Path gotoFolder(Path workdir, String filename) {
+	protected Path gotoFolder(Path workdir, String filename) {
 		Path dir = workdir.copy(workdir.getSession());
 		if(filename.charAt(0) != '/') {
 			dir.setPath(workdir.getAbsolute(), filename);

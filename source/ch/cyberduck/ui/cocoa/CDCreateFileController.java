@@ -41,7 +41,7 @@ public class CDCreateFileController extends CDFileController {
 	
 	public void createFileSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
 		log.debug("newFileSheetDidEnd");
-		sheet.orderOut(null);
+        sheet.orderOut(null);
 		Path workdir = (Path)contextInfo;
 		switch(returncode) {
 			case (NSAlertPanel.DefaultReturn): //Create

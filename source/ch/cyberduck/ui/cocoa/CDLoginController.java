@@ -117,7 +117,7 @@ public class CDLoginController extends CDController implements LoginController {
 		this.windowController.beginSheet(this.window(),
 										 this,
 										 new NSSelector
-										 ("loginSheetDidClose",
+										 ("loginSheetDidEnd",
 										  new Class[]
 										  {
 											  NSWindow.class, int.class, Object.class
@@ -127,7 +127,8 @@ public class CDLoginController extends CDController implements LoginController {
 		return this.login;
 	}
 
-	public void loginSheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
+	public void loginSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+        sheet.orderOut(null);
 		if(null == userField.objectValue() || userField.objectValue().equals("")) {
 			log.warn("Value of username textfield is null");
 		}

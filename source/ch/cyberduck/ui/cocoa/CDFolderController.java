@@ -90,7 +90,7 @@ public class CDFolderController extends CDController {
 
 	public void newFolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
 		log.debug("newFolderSheetDidEnd");
-		sheet.orderOut(null);
+        sheet.orderOut(null);
 		switch(returncode) {
 			case (NSAlertPanel.DefaultReturn):
 				Path workdir = (Path)contextInfo;
