@@ -260,7 +260,6 @@ public class SFTPSession extends Session {
 
 	public synchronized void check() throws IOException {
 		this.log("Working", Message.START);
-		//		this.log("Checking connection...", Message.PROGRESS);
 		if(null == this.SSH) {
 			this.connect();
 			return;

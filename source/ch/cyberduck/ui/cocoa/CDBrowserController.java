@@ -37,15 +37,6 @@ public class CDBrowserController extends CDController implements Observer {
 
 	private static final File HISTORY_FOLDER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
 
-	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
-	
-	static {
-		lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
-	}
-
-	private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
-																							  new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-	
 	static {
 		HISTORY_FOLDER.mkdirs();
 	}

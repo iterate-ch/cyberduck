@@ -129,15 +129,6 @@ public class CDQueueController extends CDController {
 	private CDQueueTableDataSource queueModel;
 	private NSTableView queueTable; // IBOutlet
 
-	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
-
-	static {
-		lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
-	}
-
-	private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
-	    new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-
 	public void setQueueTable(NSTableView queueTable) {
 		this.queueTable = queueTable;
 		this.queueTable.setTarget(this);

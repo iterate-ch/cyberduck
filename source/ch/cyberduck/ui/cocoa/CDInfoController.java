@@ -172,7 +172,8 @@ public class CDInfoController extends CDController {
 			else {
 				this.filenameField.setEnabled(true);
 			}
-			this.pathField.setStringValue(file.getParent().getAbsolute());
+			this.pathField.setAttributedStringValue(new NSAttributedString(file.getParent().getAbsolute(),
+																			   TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 			this.groupField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
 			                               file.attributes.getGroup());
 			if(this.numberOfFiles() > 1) {
@@ -199,11 +200,16 @@ public class CDInfoController extends CDController {
 			}
 
 			try {
-				NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
-				String timestamp = formatter.stringForObjectValue(new NSGregorianDate((double)file.attributes.getTimestamp().getTime()/1000,
-				    NSDate.DateFor1970));
-				this.modifiedField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
-				                                  timestamp);
+				if(this.numberOfFiles() > 1) {
+					this.modifiedField.setStringValue("("+NSBundle.localizedString("Multiple files", "")+")");
+				}
+				else {
+					NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
+					String timestamp = formatter.stringForObjectValue(new NSGregorianDate((double)file.attributes.getTimestamp().getTime()/1000,
+																						  NSDate.DateFor1970));
+					this.modifiedField.setAttributedStringValue(new NSAttributedString(timestamp,
+																			  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+				}
 			}
 			catch(NSFormatter.FormattingException e) {
 				log.error(e.toString());
@@ -310,7 +316,6 @@ public class CDInfoController extends CDController {
 	public void windowWillClose(NSNotification notification) {
 		log.debug("windowWillClose");
 		filenameField.cell().endEditing(filenameField.currentEditor());
-		//		if(!Preferences.instance().getBoolean("browser.info.isInspector")) {
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 	}
 

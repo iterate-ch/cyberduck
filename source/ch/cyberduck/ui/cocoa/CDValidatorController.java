@@ -39,6 +39,15 @@ public abstract class CDValidatorController extends AbstractValidator {
 
 	private static NSMutableArray instances = new NSMutableArray();
 
+	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
+	
+	static {
+		lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
+	}
+	
+	protected static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
+																								new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+	
 	protected CDController windowController;
 
 	public CDValidatorController(CDController windowController) {
@@ -302,15 +311,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.windowController.endSheet();
 	}
 
-	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
-
-	static {
-		lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
-	}
-
-	private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
-	    new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-	
 	// ----------------------------------------------------------
 	// NSTableView.DataSource
 	// ----------------------------------------------------------

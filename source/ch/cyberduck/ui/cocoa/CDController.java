@@ -20,6 +20,10 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSWindow;
+import com.apple.cocoa.application.NSMutableParagraphStyle;
+import com.apple.cocoa.application.NSParagraphStyle;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSPoint;
@@ -33,6 +37,15 @@ import org.apache.log4j.Logger;
 public abstract class CDController {
 	protected static Logger log = Logger.getLogger(CDController.class);
 
+	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
+	
+	static {
+		lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
+	}
+	
+	protected static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
+																							  new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+	
 	protected void finalize() throws Throwable {
 		log.debug("------------- finalize:"+this.toString());
 		super.finalize();
