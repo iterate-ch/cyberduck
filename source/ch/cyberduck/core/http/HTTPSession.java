@@ -87,6 +87,10 @@ public class HTTPSession extends Session {
             HTTPSession.this.log("Invalid Operation", Message.ERROR);
         }
 
+	public void changePermissions(int p) {
+            HTTPSession.this.log("Invalid Operation", Message.ERROR);
+	}
+
         public void download() {
 	    GetMethod GET = null;
 	    try {
@@ -243,25 +247,29 @@ public class HTTPSession extends Session {
 	host.status.fireStopEvent();
     }
 
-    public void connect() {
-	new Runner().start();
+    public void check() throws IOException {
+	if(!HTTP.isAlive())
+	    this.connect();
     }
+	
 
-    class Runner extends Thread {
-	public void run() {
-	    host.status.fireActiveEvent();
-	    HTTPSession.this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
-	    //            if(this.action.toString().equals(TransferAction.GET)) {
-	    if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
-		HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
+    public void connect() {
+	new Thread() {
+	    public void run() {
+		host.status.fireActiveEvent();
+		HTTPSession.this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
+		//            if(this.action.toString().equals(TransferAction.GET)) {
+		if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
+		    HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
+		}
+		else {
+		    HTTP.connect(host.getName(), host.getPort(), false);//@todo implement https
+		}
+		HTTPSession.this.log("HTTP connection opened", Message.PROGRESS);
+		//@todo     	           this.check();
+		HTTPFile p = new HTTPFile(host.getWorkdir());
+		p.download();
 	    }
-	    else {
-		HTTP.connect(host.getName(), host.getPort(), false);//@todo implement https
-	    }
-	    HTTPSession.this.log("HTTP connection opened", Message.PROGRESS);
-	    //@todo     	           this.check();
-	    HTTPFile p = new HTTPFile(host.getWorkdir());
-	    p.download();
-	}
+	}.start();
     }
 }

@@ -35,7 +35,7 @@ public class CDTransferController extends NSObject {
 
     private static Logger log = Logger.getLogger(CDTransferController.class);
 
-    public NSTableView transferTable;
+    public NSTableView transferTable; /* IBOutlet */
 
     public CDTransferController() {
 	super();

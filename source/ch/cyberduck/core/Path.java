@@ -34,16 +34,14 @@ import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
 import java.util.Observable;
 import java.util.Observer;
-
 import ch.cyberduck.core.Preferences;
-
 import org.apache.log4j.Logger;
 
 /**
  * A path is a remote directory or file.
  * @version $Id$
  */
-public abstract class Path implements Serializable {//, Transferable {
+public abstract class Path extends Observable implements Serializable {//, Transferable {
 
     private static Logger log = Logger.getLogger(Path.class);
 
@@ -60,6 +58,7 @@ public abstract class Path implements Serializable {//, Transferable {
     /**
      * @param path the absolute directory
      * @param name the file relative to param path
+     * @return Path new instance
      */
     public Path(String path, String name) {
         if(path.charAt(path.length() -1) == '/')
@@ -78,41 +77,20 @@ public abstract class Path implements Serializable {//, Transferable {
     private void init(String pathname) {
 	log.debug("init:"+pathname);
         this.path = pathname.trim();
-	/*
-        if(this.isDirectory()) {
-           // if(!this.isRoot()) {
-          //      this.parent = this.getPathFragment(this.getPathDepth() - 1);
-          //  }
-            if(this.getPathDepth() > 1) {
-                this.name = p.substring(parent.toString().length(), p.lastIndexOf('/'));
-            }
-            else if(this.getPathDepth() > 0) {// must always be true if this.isDirectory()
-                this.name = p.substring(1, p.lastIndexOf('/'));
-            }
-        }
-        else if(this.isFile()) {
-            this.parent = this.getPathFragment(this.getPathDepth());
-            this.name = p.substring(p.lastIndexOf('/') + 1);
-        }
-//        log.debug("Path:" + this.path + ", Name:" + this.getName() + ", Parent:" + this.getParent());
-	 */
     }
 
-    /**
-     * Only use this if you know what you do! Use constructor by default.
-     * @see #Path(String, String)
-     */
-    /*
-    private void setPath(String p) {
-        log.debug("[Path] setPath(" + p + ")");
-        StringBuffer buffer = new StringBuffer();
-        for(int i = 0; i < p.length(); i++) {
-            if(! Character.isWhitespace(p.charAt(i)))
-                buffer.append(p.charAt(i));
-        }
-        this.path = buffer.toString();
+    public void addObserver(Observer o) {
+	this.status.addObserver(o);
+	this.attributes.addObserver(o);
+	super.addObserver(o);
     }
-     */
+
+    public void callObservers(Object arg) {
+	//        log.debug("callObservers:"+arg.toString());
+	this.setChanged();
+	this.notifyObservers(arg);
+    }
+    
 
     /**
 	* @return my parent directory
@@ -133,6 +111,8 @@ public abstract class Path implements Serializable {//, Transferable {
     public abstract void download();
 
     public abstract void upload();
+
+    public abstract void changePermissions(int p);
     
     /**
 	* Overwrite this is in the implementation to determine the file type uppon the
@@ -222,20 +202,25 @@ public abstract class Path implements Serializable {//, Transferable {
     }
 
     public String getExtension() {
-	String name = this.getName();
-	int index = name.lastIndexOf(".");
-	if(index != -1)
-	    return name.substring(index, name.length());
-	return "txt";
+	if(this.isDirectory()) {
+	    return "/";
+	}
+	else {
+	    String name = this.getName();
+	    int index = name.lastIndexOf(".");
+	    if(index != -1)
+		return name.substring(index, name.length());
+	    return "txt";
+	}
     }
-    
+
     /**
 	* @return Returns the number of '/' characters in a path
      */
     /*
-    public int getPathDepth() {
-        int depth = 0;
-        int length = 0;
+     public int getPathDepth() {
+	 int depth = 0;
+	 int length = 0;
         while((length = this.toString().indexOf('/', length + 1)) != -1) {
             depth++;
         }
@@ -293,7 +278,7 @@ public abstract class Path implements Serializable {//, Transferable {
     // File attributes
     // ----------------------------------------------------------    
     
-    public class Attributes {
+    public class Attributes extends Observable {
 	private int size;
 	private long modified;
 
@@ -370,14 +355,15 @@ public abstract class Path implements Serializable {//, Transferable {
 	/**
 	    * @param access unix access permitions, i.e. -rwxrwxrwx
 	 */
+
 	public void setMode(String access) {
 	    this.access = access;
 	}
 
 	/**
-	    * @return The unix access permissions
+	    * @return The unix access permissions including the the first bit
 	 */
-	public String getMode() {
+	protected String getMode() {
 	    return this.access;
 	}
 
@@ -405,8 +391,17 @@ public abstract class Path implements Serializable {//, Transferable {
 	    return this.group;
 	}
 
+	public String getKind() {
+	    if(Path.this.isFile())
+		return "File";
+	    if(Path.this.isDirectory())
+		return "Folder";
+	    if(Path.this.isLink())
+		return "Link";
+	    return "Unknown";
+	}
     }
-
+    
     public class FileStatus extends Status {
 
 	/**
@@ -447,6 +442,7 @@ public abstract class Path implements Serializable {//, Transferable {
 	public int getCurrent() {
 	    return current;
 	}
+
 	/**
 	* @param c The currently transfered bytes
 	 */

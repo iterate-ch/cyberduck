@@ -48,25 +48,25 @@ public class CDConnectionController extends NSObject implements Observer {
 
     private static Logger log = Logger.getLogger(CDConnectionController.class);
 
-    public NSWindow mainWindow;
-    public NSWindow connectionSheet;
-    public NSWindow loginSheet;
+    public NSWindow mainWindow; /* IBOutlet */
+    public NSWindow connectionSheet; /* IBOutlet */
+    public NSWindow loginSheet; /* IBOutlet */
 
-    public NSObject logController;
+    public NSObject logController; /* IBOutlet */
 
-    public NSPopUpButton pathPopUpButton;
-    public NSTextField statusLabel;
-    public NSTextField pathField;
-    public NSTextField portField;
-    public NSPopUpButton protocolPopup;
-    public NSTextField hostField;
-    public NSTextField usernameField;
-    public NSTextField passwordField;
-    public NSTextView logView;
-    public NSProgressIndicator progressIndicator;
+    public NSPopUpButton pathPopUpButton; /* IBOutlet */
+    public NSTextField statusLabel; /* IBOutlet */
+    public NSTextField pathField; /* IBOutlet */
+    public NSTextField portField; /* IBOutlet */
+    public NSPopUpButton protocolPopup; /* IBOutlet */
+    public NSTextField hostField; /* IBOutlet */
+    public NSTextField usernameField; /* IBOutlet */
+    public NSTextField passwordField; /* IBOutlet */
+    public NSTextView logView; /* IBOutlet */
+    public NSProgressIndicator progressIndicator; /* IBOutlet */
     
-    public NSTableView browserTable;
-    public NSTableView hostTable;
+    public NSTableView browserTable; /* IBOutlet */
+    public NSTableView hostTable; /* IBOutlet */
     
     public CDConnectionController() {
 	super();
@@ -102,6 +102,7 @@ public class CDConnectionController extends NSObject implements Observer {
                 server = ((NSControl)sender).stringValue();
 	    }
 	    if(sender instanceof NSButton) { //connection initiated from connection sheet
+		//if(sender.tag() == )
 		NSApplication.sharedApplication().endSheet(connectionSheet, NSAlertPanel.AlternateReturn);
                 server = hostField.stringValue();
 		path = pathField.stringValue();

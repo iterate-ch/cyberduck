@@ -73,6 +73,11 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 
 //	this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
 
+//void setHighlightedTableColumn(NSTableColumn tableColumn);
+	
+	//The default sorting order indicators are now available as named NSImages.  These images can be accessed with [NSImage imageNamed:] using the names NSAscendingSortIndicator (the "^" icon), and NSDescendingSortIndicator (the "v" icon).
+	
+
 	//	this.setIndicatorImage(NSImage.imageNamed("file.tiff"), this.tableColumnWithIdentifier("FILENAME"))
 
     }
@@ -190,6 +195,9 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
     public void tableViewSelectionDidChange(NSNotification notification) {
 	log.debug("tableViewSelectionDidChange");
 	//	NSTableView table = (NSTableView)notification.object(); // Returns the object associated with the receiver. This is often the object that posted this notification
+
+//	Path p = model.getEntry(this.selectedRow());
+//@todo	p.callObservers(
     }
 
 /*

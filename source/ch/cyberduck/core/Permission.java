@@ -66,6 +66,13 @@ public class Permission implements java.io.Serializable {
     	this.other[EXECUTE] = p[OTHER][EXECUTE];
     }
 
+    /*
+     //@todo
+    public Permission(int p) {
+
+    }
+     */
+
     /**
      * @return a thee-dimensional boolean array representing read, write
      * and execute permissions (in that order) of the file owner.
@@ -123,11 +130,11 @@ public class Permission implements java.io.Serializable {
     /**
      * @return The unix equivalent access code like 777
      */
-    public String getCode() {
+    public int getCode() {
         String owner = ""+ this.getAccessNumber(this.getOwnerPermissions());
         String group = ""+ this.getAccessNumber(this.getGroupPermissions());
         String other = ""+ this.getAccessNumber(this.getOtherPermissions());
-        return owner+group+other;
+        return Integer.parseInt(owner+group+other);
     }
    
    /* 

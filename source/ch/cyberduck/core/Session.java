@@ -86,6 +86,12 @@ public abstract class Session {//extends Thread {
      */
     public abstract void close();
 
+    /**
+	* Assert that the connection to the remote host is still alive. Open connection if needed.
+     * @throws IOException The connection to the remote host failed.
+     */
+    public abstract void check() throws IOException;
+
     
     /**
         * Can be called within the <code>run()</code> to check if the thread should die.

@@ -22,6 +22,7 @@ import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
 
@@ -32,20 +33,21 @@ import org.apache.log4j.Logger;
 */
 public class CDMainController extends NSObject {
 
-    public NSPanel infoPanel;
-    public NSPanel newfolderSheet;
-    public NSWindow mainWindow;
-    public NSWindow preferencesWindow;
-    public NSWindow donationSheet;
-    public NSTableView browserTable;
-    public NSWindow infoWindow;
-    public NSWindow connectionSheet;
-    public NSTextField quickConnectField;
-    public NSPopUpButton pathPopUpButton;
-    public NSDrawer drawer;
+    public NSPanel infoPanel; /* IBOutlet */
+    public NSPanel newfolderSheet; /* IBOutlet */
+    public NSWindow mainWindow; /* IBOutlet */
+    public NSWindow preferencesWindow; /* IBOutlet */
+    public NSWindow donationSheet; /* IBOutlet */
+    public NSWindow infoWindow; /* IBOutlet */
+    public NSWindow connectionSheet; /* IBOutlet */
+    public NSTextField quickConnectField; /* IBOutlet */
+    public NSPopUpButton pathPopUpButton; /* IBOutlet */
+    public NSDrawer drawer; /* IBOutlet */
 
     private NSMutableDictionary toolbarItems;
-    
+
+    public NSTableView browserTable; /* IBOutlet */
+
     private static Logger log = Logger.getLogger(CDMainController.class);
 
     public CDMainController() {
@@ -69,34 +71,40 @@ public class CDMainController extends NSObject {
 					      this, //delegate
 					      new NSSelector(
 			  "newfolderSheetDidEnd",
-			  new Class[] { NSWindow.class, int.class, NSWindow.class }
+			  new Class[] { NSWindow.class, int.class, Object.class }
 			  ),// did end selector
 					      null); //contextInfo
     }
 
-    public void newfolderSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+    public void newfolderSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
-		//path.mkdir();
+		/*
+		path.mkdir();
+		path.list();//@todo path.getParent().list();
+		 */
 	    case(NSAlertPanel.AlternateReturn):
 		//
 	}
 	sheet.close();
     }
+
+    public void closeNewfolderSheet(NSObject sender) {
+	NSApplication.sharedApplication().endSheet(newfolderSheet, ((NSButton)sender).tag());
+    }
     
     public void infoButtonPressed(NSObject sender) {
 	log.debug("infoButtonPressed");
         NSApplication.loadNibNamed("Info", this); //@todo if(infoWindow == null)
+	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
+	((CDInfoWindow)infoWindow).update(path, new Message(Message.SELECTION, null));
 	infoWindow.orderFront(this);
     }
     
     public void deleteButtonPressed(NSObject sender) {
 	log.debug("deleteButtonPressed");
-	int row = browserTable.selectedRow();
-	if(row != -1) {
-	    CDBrowserTableDataSource source = (CDBrowserTableDataSource)browserTable.dataSource();
-	    Path p = (Path)source.getEntry(row);
-	    NSAlertPanel.beginInformationalAlertSheet(
+	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
+	NSAlertPanel.beginInformationalAlertSheet(
 					       "Delete", //title
 					       "Delete",// defaultbutton
 					       "Cancel",//alternative button
@@ -108,24 +116,21 @@ public class CDMainController extends NSObject {
 	     "deleteSheetDidEnd",
 	     new Class[]
 	     {
-		 NSWindow.class, int.class, NSWindow.class
+		 NSWindow.class, int.class, Object.class
 	     }
 	     ),// end selector
 					       null, // dismiss selector
-					       this, // context
-					       "Really delete the file '"+p.getName()+"'? This cannot be undone" // message
+					       path, // contextInfo
+					       "Really delete the file '"+path.getName()+"'? This cannot be undone." // message
 					       );
 	}
-    }
 
-    public void deleteSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+    public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
 	sheet.close();
-	switch(returncode) {
+	switch(returnCode) {
 	    case(NSAlertPanel.DefaultReturn):
-		int row = browserTable.selectedRow();
-		CDBrowserTableDataSource source = (CDBrowserTableDataSource)browserTable.dataSource();
-		Path p = (Path)source.getEntry(row);
-		p.delete();
+		Path path = (Path)contextInfo;
+		path.delete();
 	    case(NSAlertPanel.AlternateReturn):
 		//
 	}
@@ -134,19 +139,16 @@ public class CDMainController extends NSObject {
 
     public void refreshButtonPressed(NSObject sender) {
 	log.debug("refreshButtonPressed");
-	CDBrowserTableDataSource source = (CDBrowserTableDataSource)browserTable.dataSource();
-	//
-
+	/*
+	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
+	path.getParent().list();
+	 */
     }
 
     public void downloadButtonPressed(NSObject sender) {
 	log.debug("downloadButtonPressed");
-	int row = browserTable.selectedRow();
-	if(row != -1) {
-	    CDBrowserTableDataSource source = (CDBrowserTableDataSource)browserTable.dataSource();
-	    Path p = (Path)source.getEntry(row);
-	    p.download();
-	}
+	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
+	path.download();
     }
 
     public void uploadButtonPressed(NSObject sender) {
@@ -161,6 +163,14 @@ public class CDMainController extends NSObject {
     }
      */
 
+    /*
+     public void upButtonPressed(NSObject sender) {
+	 log.debug("backButtonPressed");
+	 Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
+	 path.getParent().list();
+     }
+     */
+    
     public void drawerButtonPressed(NSObject sender) {
 	log.debug("drawerButtonPressed");
 	drawer.toggle(mainWindow);
