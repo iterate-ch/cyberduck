@@ -263,18 +263,6 @@ public class CDBrowserController extends NSObject implements Observer {
                     Path next;
                     while (i.hasNext()) {
                         next = (Path) i.next();
-                        /*
-                        try {
-                            Perl5Matcher matcher = new Perl5Matcher();
-                            Pattern pattern = new Perl5Compiler().compile(searchString);
-                            if (matcher.matches(next.getName().toLowerCase(), pattern)) {
-                                subset.add(next);
-                            }
-                        }
-                        catch (MalformedPatternException e) {
-                            log.error("Unparseable filter string supplied:" + searchString);
-                        }
-                         */
                         if (next.getName().toLowerCase().startsWith(searchString.toLowerCase())) {
                             subset.add(next);
                         }
@@ -372,7 +360,6 @@ public class CDBrowserController extends NSObject implements Observer {
                 this.bookmarkTable.reloadData();
                 break;
             case NSAlertPanel.AlternateReturn:
-
                 break;
         }
     }
@@ -822,7 +809,7 @@ public class CDBrowserController extends NSObject implements Observer {
         if (this.unmount(new NSSelector("mountSheetDidEnd",
 										new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
 						 )) {
-			CDBrowserController.this.window().setTitle(host.getProtocol() + ":" + host.getHostname());
+			this.window().setTitle(host.getProtocol() + ":" + host.getHostname());
 			pathController.removeAllItems();
 			browserModel.clear();
 			browserTable.reloadData();
@@ -830,14 +817,14 @@ public class CDBrowserController extends NSObject implements Observer {
 			TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(logView));
 			
 			Session session = SessionFactory.createSession(host);
-			session.addObserver((Observer) CDBrowserController.this);
+			session.addObserver((Observer) this);
 			session.addObserver((Observer) pathController);
 			
-			progressIndicator.startAnimation(CDBrowserController.this);
+			progressIndicator.startAnimation(this);
 			
 			if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
 				try {
-					host.setHostKeyVerificationController(new CDHostKeyController(CDBrowserController.this.window()));
+					host.setHostKeyVerificationController(new CDHostKeyController(this.window()));
 				}
 				catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
 					//This exception is thrown whenever an exception occurs open or reading from the host file.
@@ -845,7 +832,7 @@ public class CDBrowserController extends NSObject implements Observer {
 														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
 														 null, //alternative button
 														 null, //other button
-														 CDBrowserController.this.window(), //docWindow
+														 this.window(), //docWindow
 														 null, //modalDelegate
 														 null, //didEndSelector
 														 null, // dismiss selector
@@ -854,7 +841,7 @@ public class CDBrowserController extends NSObject implements Observer {
 														 );
 				}
 			}
-			host.getLogin().setController(new CDLoginController(CDBrowserController.this.window()));
+			host.getLogin().setController(new CDLoginController(this.window()));
 			session.mount();
 		}
 	}
