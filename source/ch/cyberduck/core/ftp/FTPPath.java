@@ -362,7 +362,7 @@ public class FTPPath extends Path {
 						}
 					}
 					if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
-						if(this.attributes.isUndefined()) {
+						if(!this.attributes.isUndefined()) {
 							this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
 						}
 					}
