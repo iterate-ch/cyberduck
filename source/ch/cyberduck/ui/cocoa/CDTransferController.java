@@ -126,7 +126,7 @@ public class CDTransferController implements Observer {
     private static NSMutableArray allDocuments = new NSMutableArray();
 
     private int kind;
-//    private Path parent;
+    private Path root;
     private Host host;
     private Queue queue;
     
@@ -134,16 +134,9 @@ public class CDTransferController implements Observer {
 	* @param kind Tag specifiying if it is a download or upload.
      */
     public CDTransferController(Host host, Path root, int kind) {
-	this(host, new ArrayList(), kind);
-	this.roots.add(root);
-    }
-
-    public CDTransferController(Host host, List roots, int kind) {
 	this.host = host;
-	this.roots = roots;
+	this.root = root;
 	this.kind = kind;
-//	this.queue = new queue(file, kind);
-//	this.queue.addObserver(this);
 	this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
         if (false == NSApplication.loadNibNamed("Transfer", this)) {
             log.fatal("Couldn't load Transfer.nib");
@@ -158,11 +151,30 @@ public class CDTransferController implements Observer {
      */
     private void init() {
 	log.debug("init");
-	this.progressField.setAttributedStringValue(new NSAttributedString(""));
-	this.fileDataField.setAttributedStringValue(new NSAttributedString(""));
-	this.totalDataField.setAttributedStringValue(new NSAttributedString(""));
-	this.speedField.setAttributedStringValue(new NSAttributedString(""));
-	this.clockField.setAttributedStringValue(new NSAttributedString("00:00"));
+	this.window().setTitle(root.getName());
+	this.urlField.setStringValue(host.getURL()+root.getAbsolute());
+	this.fileField.setStringValue(root.getLocal().toString());
+	this.progressField.setStringValue("");
+	this.fileDataField.setStringValue("");
+	this.totalDataField.setStringValue("");
+	this.speedField.setStringValue("");
+	this.clockField.setStringValue("00:00");
+	switch(kind) {
+	    case Queue.KIND_DOWNLOAD:
+		iconView.setImage(NSImage.imageNamed("download.tiff"));
+		if(root.isFile())
+		    fileIconView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(root.getExtension()));
+		else
+		    fileIconView.setImage(NSImage.imageNamed("folder.tiff"));
+		break;
+	    case Queue.KIND_UPLOAD:
+		iconView.setImage(NSImage.imageNamed("upload.tiff"));
+		if(root.getLocal().isFile())
+		    fileIconView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(root.getExtension()));
+		else
+		    fileIconView.setImage(NSImage.imageNamed("folder.tiff"));
+		break;
+	}
 //	this.totalProgressBar.startAnimation(null);
 	this.window().makeKeyAndOrderFront(null);
     }
@@ -173,31 +185,26 @@ public class CDTransferController implements Observer {
 	    Message msg = (Message)arg;
 	    // CURRENT
 	    if(msg.getTitle().equals(Message.DATA)) {
-
-//		    this.fileProgressBar.setDoubleValue((double)status.getCurrent());
 		this.totalProgressBar.setIndeterminate(false);
 		this.totalProgressBar.setMinValue(0);
 		this.totalProgressBar.setDoubleValue((double)queue.getCurrent());
 		this.totalProgressBar.setMaxValue(queue.getSize());
 		
-		this.fileDataField.setStringValue(msg.getContent());
+		this.fileDataField.setStringValue((String)msg.getContent());
 		this.fileDataField.display();
 //@todo percent		this.totalDataField.setAttributedStringValue(new NSAttributedString(queue.getCurrent()/queue.getSize()*100+"%"));
-		    this.totalDataField.setAttributedStringValue(new NSAttributedString(Status.parseDouble(queue.getCurrent()/1024)+" of "+Status.parseDouble(queue.getSize()/1024) + " kBytes."));
+		    this.totalDataField.setStringValue(Status.parseDouble(queue.getCurrent()/1024)+" of "+Status.parseDouble(queue.getSize()/1024) + " kBytes.");
 	    }
 	    else if(msg.getTitle().equals(Message.SPEED)) {
-		this.speedField.setAttributedStringValue(new NSAttributedString(msg.getContent()));
+		this.speedField.setStringValue((String)msg.getContent());
 		//this.speedField.display();
 	    }
 	    else if(msg.getTitle().equals(Message.CLOCK)) {
-		this.clockField.setAttributedStringValue(new NSAttributedString(msg.getContent()));
+		this.clockField.setStringValue((String)msg.getContent());
 		//this.clockField.display();
 	    }
 	    // START
 	    else if(msg.getTitle().equals(Message.START)) {
-//		    this.fileProgressBar.setIndeterminate(false);
-//		    this.fileProgressBar.setMinValue(0);
-//			this.fileProgressBar.setMaxValue(status.getSize());
 		this.totalProgressBar.setIndeterminate(true);
 		this.totalProgressBar.startAnimation(null);
 
@@ -220,13 +227,11 @@ public class CDTransferController implements Observer {
 	    }
 	    // COMPLETE
 	    else if(msg.getTitle().equals(Message.COMPLETE)) {
-//		this.fileProgressBar.setValue(fileProgressBar.maxValue());
-//		this.totalProgressBar.setDoubleValue(totalProgressBar.maxValue());
-		this.progressField.setAttributedStringValue(new NSAttributedString("Complete"));
+		this.progressField.setStringValue("Complete");
 		if(Queue.KIND_DOWNLOAD == kind) {
 		    if(1 == queue.numberOfJobs()) {
 			if(Preferences.instance().getProperty("connection.download.postprocess").equals("true")) {
-			    NSWorkspace.sharedWorkspace().openFile(parent.getLocal().toString());
+			    NSWorkspace.sharedWorkspace().openFile(root.getLocal().toString());
 			}
 			if(Preferences.instance().getProperty("transfer.close").equals("true")) {
 			    this.window.close();
@@ -245,38 +250,15 @@ public class CDTransferController implements Observer {
 				       null, //didEndSelector
 				       null, // dismiss selector
 				       null, // context
-				       msg.getContent() // message
+				       (String)msg.getContent() // message
 				       );
 		this.queue.cancel();
-		this.progressField.setAttributedStringValue(new NSAttributedString(msg.getContent()));
+		this.progressField.setStringValue((String)msg.getContent());
 	    }
 	    else if(msg.getTitle().equals(Message.PROGRESS)) {
-		this.progressField.setAttributedStringValue(new NSAttributedString(msg.getContent()));
+		this.progressField.setStringValue((String)msg.getContent());
 		this.progressField.display();
 	    }
-	}
-	else if(arg instanceof Path) {
-	    Path p = (Path)arg;
-	    switch(kind) {
-		case Queue.KIND_DOWNLOAD:
-		    iconView.setImage(NSImage.imageNamed("download.tiff"));
-		    if(p.isFile())
-			fileIconView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension()));
-		    else
-			fileIconView.setImage(NSImage.imageNamed("folder.tiff"));
-		    break;
-		case Queue.KIND_UPLOAD:
-		    iconView.setImage(NSImage.imageNamed("upload.tiff"));
-		    if(p.getLocal().isFile())
-			fileIconView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension()));
-		    else
-			fileIconView.setImage(NSImage.imageNamed("folder.tiff"));
-		    break;
-	    }
-	    this.window().setTitle(p.getName());
-	    this.progressField.setStringValue(KIND_DOWNLOAD == kind ? "Downloading " : "Uploading ") +p.getName()+" ("+(queue.completedJobs()+1)+" of "+queue.size()+")")););
-	    this.urlField.setAttributedStringValue(new NSAttributedString(host.getURL()+p.getAbsolute()));
-	    this.fileField.setAttributedStringValue(new NSAttributedString(p.getLocal().toString()));
 	}
     }
 
@@ -311,7 +293,7 @@ public class CDTransferController implements Observer {
     }
 
     public void showInFinderClicked(NSButton sender) {
-	NSWorkspace.sharedWorkspace().selectFile(parent.getLocal().toString(), "");
+	NSWorkspace.sharedWorkspace().selectFile(root.getLocal().toString(), "");
     }
 
     public boolean windowShouldClose(Object sender) {
@@ -361,11 +343,9 @@ public class CDTransferController implements Observer {
 //	this.totalProgressBar.startAnimation(null);
 
 	if(null == this.queue) {
-//	    this.queue = parent.getQueue(this.kind);
-	    this.queue = new Queue(roots, this.kind);
+//	    this.queue = root.getQueue(this.kind);
+	    this.queue = new Queue(root, this.kind);
 	    this.queue.addObserver(this);
-// @todo	    if(this.queue.numberOfJobs() > 1)
-//		window().setTitle(parent.getName()+" - "+queue.numberOfJobs()+" files");
 	}
 
 //is upload
@@ -375,7 +355,7 @@ public class CDTransferController implements Observer {
 //	}
 	//is download
 	if(resume) {
-	    if(parent.status.isComplete()) {
+	    if(root.status.isComplete()) {
 		NSAlertPanel.beginInformationalAlertSheet(
 				       "Error", //title
 				       "OK",// defaultbutton
@@ -394,14 +374,14 @@ public class CDTransferController implements Observer {
 //		return false;
 		return;
 	    }
-	    if(! parent.status.isComplete()) {
-		resume = parent.getLocal().exists();
+	    if(! root.status.isComplete()) {
+		resume = root.getLocal().exists();
 //		this.file.status.setResume(file.getLocal().exists());
 //	    return true;
 	    }
 	}
 	if(! resume) {
-	    if(parent.getLocal().exists()) {
+	    if(root.getLocal().exists()) {
 		if(Preferences.instance().getProperty("connection.download.duplicate.ask").equals("true")) {
 		    NSAlertPanel.beginCriticalAlertSheet(
 					   "File exists", //title
@@ -420,7 +400,7 @@ public class CDTransferController implements Observer {
 	 ),// end selector
 					   null, // dismiss selector
 					   null, // context
-					   "The file "+parent.getName()+" alredy exists in "+parent.getLocal().getParent()+"." // message
+					   "The file "+root.getName()+" alredy exists in "+root.getLocal().getParent()+"." // message
 					   );
 		    return;
 		}
