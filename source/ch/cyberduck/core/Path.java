@@ -412,7 +412,10 @@ public abstract class Path {
 	}
 
 	public boolean exists() {
-		return this.getParent().list(false, true, false).contains(this);
+		List listing = this.getParent().list(false, true, false);
+		if(null == listing)
+			return false;
+		return listing.contains(this);
 	}
 
 	public boolean equals(Object other) {
