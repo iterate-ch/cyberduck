@@ -64,7 +64,6 @@ package org.apache.commons.httpclient.methods;
 
 import java.io.*;
 import java.net.URLEncoder;
-
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpMethodBase;

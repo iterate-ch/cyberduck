@@ -65,7 +65,6 @@ package org.apache.commons.httpclient;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import org.apache.commons.httpclient.log.Log;
 import org.apache.commons.httpclient.log.LogSource;
 

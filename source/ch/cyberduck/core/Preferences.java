@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import java.util.Hashtable;
-
 import org.apache.log4j.Logger;
 
 /**

@@ -20,7 +20,6 @@ package ch.cyberduck.core;
 
 import java.io.Serializable;
 import java.util.Observable;
-
 import org.apache.log4j.Logger;
 
 /**

@@ -25,12 +25,11 @@
 
 package com.enterprisedt.net.ftp;
 
+import ch.cyberduck.core.Transcript;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import ch.cyberduck.core.Transcript;
 
 /**
  *  Supports client-side FTP operations

@@ -20,11 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSControl;
-import com.apple.cocoa.application.NSPopUpButton;
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSWindow;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 

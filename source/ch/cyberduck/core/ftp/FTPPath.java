@@ -18,17 +18,11 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
-import java.io.*;
-import java.util.List;
-
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
+import java.io.*;
+import java.util.List;
 import org.apache.log4j.Logger;
 
 /**

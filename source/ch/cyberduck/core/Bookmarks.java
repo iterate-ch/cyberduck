@@ -18,12 +18,11 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.Collection;
+import com.apple.cocoa.foundation.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 /**

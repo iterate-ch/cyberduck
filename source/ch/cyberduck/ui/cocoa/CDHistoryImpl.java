@@ -18,10 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import java.io.File;
-
 import ch.cyberduck.core.History;
 import com.apple.cocoa.foundation.NSPathUtilities;
+import java.io.File;
 
 /**
 * @version $Id$

@@ -18,14 +18,13 @@ package ch.cyberduck.core.http;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.List;
-
-import ch.cyberduck.core.*;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;

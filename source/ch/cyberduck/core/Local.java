@@ -18,13 +18,11 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.io.File;
-import java.util.Date;
-import java.text.DateFormat;
-
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSPathUtilities;
-
+import java.io.File;
+import java.text.DateFormat;
+import java.util.Date;
 import org.apache.log4j.Logger;
 
 /**

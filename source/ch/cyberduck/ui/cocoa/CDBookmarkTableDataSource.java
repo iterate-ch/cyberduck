@@ -21,11 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Bookmarks;
 import ch.cyberduck.core.Host;
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSRect;
-import com.apple.cocoa.foundation.NSSize;
+import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 /**
