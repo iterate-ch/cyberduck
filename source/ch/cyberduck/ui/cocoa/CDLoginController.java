@@ -127,6 +127,10 @@ public class CDLoginController extends CDController implements LoginController {
 		return this.login;
 	}
 
+    public void closeSheet(NSButton sender) {
+        this.windowController.endSheet(this.window(), sender.tag());
+    }
+
 	public void loginSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
 		if(null == userField.objectValue() || userField.objectValue().equals("")) {
@@ -135,20 +139,18 @@ public class CDLoginController extends CDController implements LoginController {
 		if(null == passField.objectValue() || passField.objectValue().equals("")) {
 			log.warn("Value of password textfield is null");
 		}
-		if(returncode == NSAlertPanel.DefaultReturn) {
-			log.info("Updating login credentials...");
-			this.login.setTryAgain(true);
-			this.login.setUsername((String)userField.objectValue());
-			this.login.setPassword((String)passField.objectValue());
-			this.login.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
-		}
-		if(returncode == NSAlertPanel.AlternateReturn) {
-			log.info("Cancelling login...");
-			this.login.setTryAgain(false);
-		}
+        switch(returncode) {
+            case (NSAlertPanel.DefaultReturn):
+                log.info("Updating login credentials...");
+                this.login.setTryAgain(true);
+                this.login.setUsername((String)userField.objectValue());
+                this.login.setPassword((String)passField.objectValue());
+                this.login.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
+                break;
+            case (NSAlertPanel.AlternateReturn):
+                log.info("Cancelling login...");
+                this.login.setTryAgain(false);
+                break;
+        }
 	}
-
-    public void closeSheet(NSButton sender) {
-        this.windowController.endSheet(this.window(), sender.tag());
-    }
 }
