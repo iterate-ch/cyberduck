@@ -25,6 +25,8 @@ import com.sshtools.j2ssh.transport.InvalidHostFileException;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import org.apache.log4j.Logger;
 
+import ch.cyberduck.core.Preferences;
+
 /**
 * @version $Id$
  * Concrete Coccoa implementation of a SSH HostKeyVerification
@@ -39,7 +41,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
     private NSWindow parentWindow;
 
     public CDHostKeyController(NSWindow parentWindow) throws InvalidHostFileException {
-	super(Preferences.instance.getProperty("ssh.knownhosts"));
+	super(Preferences.instance().getProperty("ssh.knownhosts"));
 	this.parentWindow = parentWindow;
     }
 

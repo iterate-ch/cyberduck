@@ -460,7 +460,7 @@ public class CDTransferController implements Observer, Validator {
 	    NSAlertPanel.beginCriticalAlertSheet(
 					       NSBundle.localizedString("Cancel transfer?"), //title
 					       NSBundle.localizedString("Stop"),// defaultbutton
-					       NSBundle.localizedString("Cancel"=,//alternative button
+					       NSBundle.localizedString("Cancel"),//alternative button
 					       null,//other button
 					       this.window(),
 					       this, //delegate

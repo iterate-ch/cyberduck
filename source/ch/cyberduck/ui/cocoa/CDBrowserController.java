@@ -361,8 +361,8 @@ public class CDBrowserController implements Observer {
 	}
 	NSAlertPanel.beginCriticalAlertSheet(
 				      NSBundle.localizedString("Delete"), //title
-				      NSBundle.localizedString"Delete"),// defaultbutton
-				      NSBundle.localizedString"Cancel"),//alternative button
+				      NSBundle.localizedString("Delete"),// defaultbutton
+				      NSBundle.localizedString("Cancel"),//alternative button
 				      null,//other button
 				      this.window(),//window
 				      this, //delegate
@@ -583,10 +583,10 @@ public class CDBrowserController implements Observer {
 
 	NSToolbarItem item = new NSToolbarItem(itemIdentifier);
 
-	if (itemIdentifier.equals(NSBundle.localizedString("New Connection")) {
-	    item.setLabel(NSBundle.localizedString("New Connection");
-	    item.setPaletteLabel(NSBundle.localizedString("New Connection");
-	    item.setToolTip(NSBundle.localizedString("Connect to remote host");
+	if (itemIdentifier.equals(NSBundle.localizedString("New Connection"))) {
+	    item.setLabel(NSBundle.localizedString("New Connection"));
+	    item.setPaletteLabel(NSBundle.localizedString("New Connection"));
+	    item.setToolTip(NSBundle.localizedString("Connect to remote host"));
 	    item.setImage(NSImage.imageNamed("connect.tiff"));
 	    item.setTarget(this);
 	    item.setAction(new NSSelector("connectButtonClicked", new Class[] {Object.class}));
@@ -599,10 +599,10 @@ public class CDBrowserController implements Observer {
 //	    item.setMinSize(pathBox.frame().size());
 //	    item.setMaxSize(pathBox.frame().size());
 //	}
-	else if (itemIdentifier.equals(NSBundle.localizedString("Quick Connect")) {
-	    item.setLabel(NSBundle.localizedString("Quick Connect");
-	    item.setPaletteLabel(NSBundle.localizedString("Quick Connect");
-	    item.setToolTip(NSBundle.localizedString("Connect to host");
+	else if (itemIdentifier.equals(NSBundle.localizedString("Quick Connect"))) {
+	    item.setLabel(NSBundle.localizedString("Quick Connect"));
+	    item.setPaletteLabel(NSBundle.localizedString("Quick Connect"));
+	    item.setToolTip(NSBundle.localizedString("Connect to host"));
 	    item.setView(quickConnectPopup);
 	    item.setMinSize(quickConnectPopup.frame().size());
 	    item.setMaxSize(quickConnectPopup.frame().size());
@@ -704,7 +704,7 @@ public class CDBrowserController implements Observer {
 	   ),// end selector
 			       null, // dismiss selector
 			       null, // context
-			       NSBundle.localizedString(The connection will be closed) // message
+			       NSBundle.localizedString("The connection will be closed.") // message
 			       );
 		return false;
 	    }
@@ -786,6 +786,4 @@ public class CDBrowserController implements Observer {
         }
         return true;
     }
-
-
 }

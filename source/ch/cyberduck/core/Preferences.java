@@ -124,7 +124,7 @@ public abstract class Preferences {
 	defaults.put("ftp.connectmode", "passive");
         defaults.put("ftp.transfermode", "binary");
 
-	defaults.put("ssh.knownhosts", System.getProperty("user.home")+"/.ssh/known_hosts"));
+	defaults.put("ssh.knownhosts", System.getProperty("user.home")+"/.ssh/known_hosts");
 
 //@todo	defaults.put("ssh.encryption", "aes128-cbc");
 //@todo	defaults.put("ssh.encryption.authentication", "hmac-md5");

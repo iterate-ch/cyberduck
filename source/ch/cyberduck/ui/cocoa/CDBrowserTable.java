@@ -118,10 +118,10 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	return super.performKeyEquivalent(e);
     }
 
-    public void keyUp(NSEvent e) {
-	if(e.keyCode() == 36) //where is the static variable for the return key?!
-	    this.browserTableViewDidClickTableRow(e);
-    }
+//    public void keyUp(NSEvent e) {
+//	if(e.keyCode() == 36) //where is the static variable for the return key?!
+//	    this.browserTableViewDidClickTableRow(e);
+//    }
 
     public void browserTableViewDidClickTableRow(Object sender) {
 	log.debug("browserTableViewDidClickTableRow:"+sender);

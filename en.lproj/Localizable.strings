@@ -47,7 +47,6 @@
 
 
 /* CDBrowserController - Browser.nib */
-/* Toolbar items */
 "Idle" = "Idle";
 "New Connection" = "New Connection";
 "Connect to host" = "Connect to host";
@@ -60,6 +59,7 @@
 "Show file attributes" = "Show file attributes";
 "Delete" = "Delete";
 "Delete file" = "Delete file";
+"Really delete the following files? This cannot be undone." = "Really delete the following files? This cannot be undone.";
 "New Folder" = "New Folder";
 "Create New Folder" = "Create New Folder";
 "Disconnect" = "Disconnect";
@@ -67,5 +67,3 @@
 "Disconnect from" = "Disconnect from";
 "Close" = "Close";
 "The connection will be closed" = "The connection will be closed.";
-
-"Really delete the following files? This cannot be undone." = "Really delete the following files? This cannot be undone.";
