@@ -57,7 +57,9 @@ public class UploadQueue extends Queue {
 		if(p.attributes.isFile()) {
 			if(p.exists()) {
 				List l = p.getParent().list(false, true);
-				childs.add(l.get(l.indexOf(this)));
+				Path r = (Path)l.get(l.indexOf(p));
+				r.setLocal(p.getLocal());
+				childs.add(r); //@todo
 			}
 		}
 		return childs;

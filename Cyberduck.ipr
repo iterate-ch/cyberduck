@@ -83,7 +83,7 @@
       <module fileurl="file://$PROJECT_DIR$/Cyberduck.iml" filepath="$PROJECT_DIR$/Cyberduck.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" assert-keyword="false" />
+  <component name="ProjectRootManager" version="2" assert-keyword="false" project-jdk-name="java version &quot;1.4.2_03&quot;" />
   <component name="WebManager">
     <option enabled="false" />
   </component>

@@ -1,24 +1,23 @@
 {
     IBClasses = (
         {CLASS = AMToolTipTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
-        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {cancelActionFired = id; syncActionFired = id; }; 
-            CLASS = "ch.sudo.cyberduck.ui.cocoa.CDSyncValidatorController"; 
+            CLASS = NSObject; 
+            LANGUAGE = ObjC; 
+        }, 
+        {
+            CLASS = "ch.cyberduck.ui.cocoa.CDSyncQueueController"; 
             LANGUAGE = Java; 
             OUTLETS = {
-                downloadRadioCell = NSButtonCell; 
+                downloadRadioCell = NSCell; 
                 fileTableView = NSTableView; 
                 infoLabel = NSTextField; 
                 localField = NSTextField; 
-                localSizeField = NSTextField; 
-                localTimestampField = NSTextField; 
-                mirrorRadioCell = NSButtonCell; 
-                remoteSizeField = NSTextField; 
-                remoteTimestampField = NSTextField; 
+                mirrorRadioCell = NSCell; 
                 statusIndicator = NSProgressIndicator; 
                 syncButton = NSButton; 
-                uploadRadioCell = NSButtonCell; 
+                uploadRadioCell = NSCell; 
                 urlField = NSTextField; 
                 window = NSWindow; 
             }; 

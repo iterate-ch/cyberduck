@@ -197,7 +197,7 @@ public abstract class Queue extends Observable implements Observer {
 		this.callObservers(arg);
 	}
 
-	private void reset() {
+	public void reset() {
 		this.size = 0;
 		for(Iterator iter = jobs.iterator(); iter.hasNext();) {
 			Path p = (Path)iter.next();

@@ -26,6 +26,8 @@ cs.lproj/Donate.nib/keyedobjects.nib -text
 cs.lproj/Donate.strings svneol=native#unset
 cs.lproj/Download.nib/keyedobjects.nib -text
 cs.lproj/Download.strings svneol=native#unset
+cs.lproj/File.nib/keyedobjects.nib -text
+cs.lproj/File.strings svneol=native#unset
 cs.lproj/Folder.nib/keyedobjects.nib -text
 cs.lproj/Folder.strings svneol=native#unset
 cs.lproj/Goto.nib/keyedobjects.nib -text
@@ -65,6 +67,8 @@ de.lproj/Donate.nib/keyedobjects.nib -text
 de.lproj/Donate.strings svneol=native#unset
 de.lproj/Download.nib/keyedobjects.nib -text
 de.lproj/Download.strings svneol=native#unset
+de.lproj/File.nib/keyedobjects.nib -text
+de.lproj/File.strings svneol=native#unset
 de.lproj/Folder.nib/keyedobjects.nib -text
 de.lproj/Folder.strings svneol=native#unset
 de.lproj/Goto.nib/keyedobjects.nib -text
@@ -133,6 +137,8 @@ es.lproj/Donate.nib/keyedobjects.nib -text
 es.lproj/Donate.strings svneol=native#unset
 es.lproj/Download.nib/keyedobjects.nib -text
 es.lproj/Download.strings svneol=native#unset
+es.lproj/File.nib/keyedobjects.nib -text
+es.lproj/File.strings svneol=native#unset
 es.lproj/Folder.nib/keyedobjects.nib -text
 es.lproj/Folder.strings svneol=native#unset
 es.lproj/Goto.nib/keyedobjects.nib -text
@@ -166,6 +172,8 @@ fi.lproj/Donate.nib/keyedobjects.nib -text
 fi.lproj/Donate.strings svneol=native#unset
 fi.lproj/Download.nib/keyedobjects.nib -text
 fi.lproj/Download.strings svneol=native#unset
+fi.lproj/File.nib/keyedobjects.nib -text
+fi.lproj/File.strings svneol=native#unset
 fi.lproj/Folder.nib/keyedobjects.nib -text
 fi.lproj/Folder.strings svneol=native#unset
 fi.lproj/Goto.nib/keyedobjects.nib -text
@@ -199,6 +207,8 @@ fr.lproj/Donate.nib/keyedobjects.nib -text
 fr.lproj/Donate.strings svneol=native#unset
 fr.lproj/Download.nib/keyedobjects.nib -text
 fr.lproj/Download.strings svneol=native#unset
+fr.lproj/File.nib/keyedobjects.nib -text
+fr.lproj/File.strings svneol=native#unset
 fr.lproj/Folder.nib/keyedobjects.nib -text
 fr.lproj/Folder.strings svneol=native#unset
 fr.lproj/Goto.nib/keyedobjects.nib -text
@@ -229,10 +239,14 @@ img/addPressed.tiff svneol=native#unset
 img/alert.tiff -text
 img/arrowDown.tiff -text
 img/arrowDown16.tiff -text
+img/arrowDownBlack.tiff -text
+img/arrowDownBlack16.tiff -text
 img/arrowLeft.tiff -text
 img/arrowLeft16.tiff -text
 img/arrowUp.tiff -text
 img/arrowUp16.tiff -text
+img/arrowUpBlack.tiff -text
+img/arrowUpBlack16.tiff -text
 img/bookmarks.tiff svneol=native#unset
 img/cancel.tiff -text
 img/clean.tiff -text
@@ -288,6 +302,7 @@ img/newfolder.tiff -text
 img/notfound.tiff -text
 img/open.tiff -text
 img/pencil.tiff -text
+img/plus.tiff -text
 img/refresh.tiff svneol=native#unset
 img/reload.tiff svneol=native#unset
 img/remove.tiff svneol=native#unset
@@ -311,6 +326,8 @@ it.lproj/Donate.nib/keyedobjects.nib -text
 it.lproj/Donate.strings svneol=native#unset
 it.lproj/Download.nib/keyedobjects.nib -text
 it.lproj/Download.strings svneol=native#unset
+it.lproj/File.nib/keyedobjects.nib -text
+it.lproj/File.strings svneol=native#unset
 it.lproj/Folder.nib/keyedobjects.nib -text
 it.lproj/Folder.strings svneol=native#unset
 it.lproj/Goto.nib/keyedobjects.nib -text
@@ -344,6 +361,8 @@ ja.lproj/Donate.nib/keyedobjects.nib -text
 ja.lproj/Donate.strings svneol=native#unset
 ja.lproj/Download.nib/keyedobjects.nib -text
 ja.lproj/Download.strings svneol=native#unset
+ja.lproj/File.nib/keyedobjects.nib -text
+ja.lproj/File.strings svneol=native#unset
 ja.lproj/Folder.nib/keyedobjects.nib -text
 ja.lproj/Folder.strings svneol=native#unset
 ja.lproj/Goto.nib/keyedobjects.nib -text
@@ -378,6 +397,8 @@ ko.lproj/Donate.nib/keyedobjects.nib -text
 ko.lproj/Donate.strings svneol=native#unset
 ko.lproj/Download.nib/keyedobjects.nib -text
 ko.lproj/Download.strings svneol=native#unset
+ko.lproj/File.nib/keyedobjects.nib -text
+ko.lproj/File.strings svneol=native#unset
 ko.lproj/Folder.nib/keyedobjects.nib -text
 ko.lproj/Folder.strings svneol=native#unset
 ko.lproj/Goto.nib/keyedobjects.nib -text
@@ -417,6 +438,8 @@ nl.lproj/Donate.nib/keyedobjects.nib -text
 nl.lproj/Donate.strings svneol=native#unset
 nl.lproj/Download.nib/keyedobjects.nib -text
 nl.lproj/Download.strings svneol=native#unset
+nl.lproj/File.nib/keyedobjects.nib -text
+nl.lproj/File.strings svneol=native#unset
 nl.lproj/Folder.nib/keyedobjects.nib -text
 nl.lproj/Folder.strings svneol=native#unset
 nl.lproj/Goto.nib/keyedobjects.nib -text
@@ -450,6 +473,8 @@ no.lproj/Donate.nib/keyedobjects.nib -text
 no.lproj/Donate.strings svneol=native#unset
 no.lproj/Download.nib/keyedobjects.nib -text
 no.lproj/Download.strings svneol=native#unset
+no.lproj/File.nib/keyedobjects.nib -text
+no.lproj/File.strings svneol=native#unset
 no.lproj/Folder.nib/keyedobjects.nib -text
 no.lproj/Folder.strings svneol=native#unset
 no.lproj/Goto.nib/keyedobjects.nib -text
@@ -484,6 +509,8 @@ pt.lproj/Donate.nib/keyedobjects.nib -text
 pt.lproj/Donate.strings svneol=native#unset
 pt.lproj/Download.nib/keyedobjects.nib -text
 pt.lproj/Download.strings svneol=native#unset
+pt.lproj/File.nib/keyedobjects.nib -text
+pt.lproj/File.strings svneol=native#unset
 pt.lproj/Folder.nib/keyedobjects.nib -text
 pt.lproj/Folder.strings svneol=native#unset
 pt.lproj/Goto.nib/keyedobjects.nib -text
@@ -517,6 +544,8 @@ sk.lproj/Donate.nib/keyedobjects.nib -text
 sk.lproj/Donate.strings svneol=native#unset
 sk.lproj/Download.nib/keyedobjects.nib -text
 sk.lproj/Download.strings svneol=native#unset
+sk.lproj/File.nib/keyedobjects.nib -text
+sk.lproj/File.strings svneol=native#unset
 sk.lproj/Folder.nib/keyedobjects.nib -text
 sk.lproj/Folder.strings svneol=native#unset
 sk.lproj/Goto.nib/keyedobjects.nib -text
@@ -554,6 +583,8 @@ zh_CN.lproj/Donate.nib/keyedobjects.nib -text
 zh_CN.lproj/Donate.strings svneol=native#unset
 zh_CN.lproj/Download.nib/keyedobjects.nib -text
 zh_CN.lproj/Download.strings svneol=native#unset
+zh_CN.lproj/File.nib/keyedobjects.nib -text
+zh_CN.lproj/File.strings svneol=native#unset
 zh_CN.lproj/Folder.nib/keyedobjects.nib -text
 zh_CN.lproj/Folder.strings svneol=native#unset
 zh_CN.lproj/Goto.nib/keyedobjects.nib -text
@@ -587,6 +618,8 @@ zh_TW.lproj/Donate.nib/keyedobjects.nib -text
 zh_TW.lproj/Donate.strings svneol=native#unset
 zh_TW.lproj/Download.nib/keyedobjects.nib -text
 zh_TW.lproj/Download.strings svneol=native#unset
+zh_TW.lproj/File.nib/keyedobjects.nib -text
+zh_TW.lproj/File.strings svneol=native#unset
 zh_TW.lproj/Folder.nib/keyedobjects.nib -text
 zh_TW.lproj/Folder.strings svneol=native#unset
 zh_TW.lproj/Goto.nib/keyedobjects.nib -text

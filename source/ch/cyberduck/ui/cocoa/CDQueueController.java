@@ -469,6 +469,7 @@ public class CDQueueController extends CDController implements Observer {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		while(enum.hasMoreElements()) {
 			Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
+			queue.reset();
 			if(!queue.isRunning()) {
 				this.startItem(queue, true);
 			}
@@ -479,6 +480,7 @@ public class CDQueueController extends CDController implements Observer {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		while(enum.hasMoreElements()) {
 			Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
+			queue.reset();
 			if(!queue.isRunning()) {
 				this.startItem(queue, false);
 			}
