@@ -1,8 +1,8 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2002 David Kocher. All rights reserved.
- *  http://icu.unizh.ch/~dkocher/
+ *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,10 +22,10 @@ import ch.cyberduck.core.Favorites;
 import ch.cyberduck.core.Host;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+import java.io.File;
 import org.apache.log4j.Logger;
 
 import java.util.Iterator;
-import java.util.List;
 
 /**
 * @version $Id$
@@ -33,23 +33,47 @@ import java.util.List;
 public class CDFavoritesImpl extends Favorites {
     private static Logger log = Logger.getLogger(CDFavoritesImpl.class);
 
-    private static final String KEY = "favorites";
+    private static final File FAVORTIES_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Favorites.plist"));
+
+    static {
+	FAVORTIES_FILE.getParentFile().mkdir();
+    }
 
     public void save() {
 	log.debug("save");
-//	NSArchiver.archiveRootObjectToFile( this.getData(), String path)
+	try {
+	    Iterator i = super.getIterator();
 
-//	NSUserDefaults.standardUserDefaults().setObjectForKey(this.getData(), KEY);
-//	NSUserDefaults.standardUserDefaults().synchronize();
+	    NSMutableArray data = new NSMutableArray();
+	    while(i.hasNext()) {
+		data.addObject(i.next().toString());
+	    }
+	    NSMutableData collection = new NSMutableData();
+	    collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(data));
+
+	    // data is written to a backup location, and then, assuming no errors occur, the backup location is renamed to the specified name
+	    if(collection.writeToURL(FAVORTIES_FILE.toURL(), true))
+		log.info("Favorites sucessfully saved in :"+FAVORTIES_FILE.toString());
+	    else
+		log.error("Error saving Favorites in :"+FAVORTIES_FILE.toString());
+	}
+	catch(java.net.MalformedURLException e) {
+	    log.error(e.getMessage());
+	}
     }
 
     public void load() {
 	log.debug("load");
-	List list = (List)NSUserDefaults.standardUserDefaults().objectForKey(KEY);
-	if(list != null) {
-	    Iterator i = list.iterator();
-	    while(i.hasNext())
-		this.add((Host)i.next());
+	if(FAVORTIES_FILE.exists()) {
+	    log.info("Found Favorites file: "+FAVORTIES_FILE.toString());
+
+	    NSData plistData = new NSData(FAVORTIES_FILE);
+	    NSArray entries = (NSArray)NSPropertyListSerialization.propertyListFromXMLData(plistData);
+	    log.info("Successfully read Favorites: "+entries);
+	    java.util.Enumeration i = entries.objectEnumerator();
+	    while(i.hasMoreElements()) {
+		this.add(i.nextElement());
+	    }
 	}
     }
 }

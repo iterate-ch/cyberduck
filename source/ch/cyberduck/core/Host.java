@@ -37,11 +37,10 @@ public class Host implements Cloneable {
     private Session session;
     private Login login;
 
-    public Host(URL url) {
-	this.protocol = url.getProtocol();
-	this.name = url.getHost();
-	this.port = url.getPort();
-	//@todo
+    public Host(String url) {
+	this(url.substring(0, url.indexOf("://")),
+      url.substring(url.indexOf("://")+3, url.lastIndexOf(":")),
+      Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length())));
     }
 
     public Host(String protocol, String name, int port) {
@@ -105,6 +104,32 @@ public class Host implements Cloneable {
 	return -1;
     }
 
+/*
+ public void setServerPath(String p) {
+     Cyberduck.DEBUG("[Bookmark] setServerPath("+ p.toString() + ")");
+     if(p == null || p.equals("")) {
+	 this.serverPath = new Path("/");
+	 this.serverDirectory = serverPath;
+     }
+     else {
+	 this.serverPath = new Path(p);
+	 if(serverPath.isDirectory()) {
+	     this.serverDirectory = serverPath;
+	     this.serverFilename = null;
+	     this.localFilename = null;
+	     this.localFinalPath = null;
+	     this.localTempPath = null;
+	     this.localDirectory = null;
+	 }
+	 else {
+	     this.serverDirectory = serverPath.getParent();
+                //this.serverFilename = Path.encode(serverPath.getName());
+	     this.serverFilename = serverPath.getName();
+	     this.setLocalPath(new File(Preferences.instance().getProperty("download.path"), this.serverFilename));
+	 }
+     }
+ }
+ */
     
     // ----------------------------------------------------------
     // Accessor methods
@@ -112,6 +137,13 @@ public class Host implements Cloneable {
 
     public Login getLogin() {
 	return this.login;
+    }
+
+    public String getLoginname() {
+	if(this.login != null) {
+	    return login.getUsername();
+	}
+	return Preferences.instance().getProperty("ftp.anonymous.name");
     }
 
     public String getProtocol() {
@@ -176,8 +208,6 @@ public class Host implements Cloneable {
     }
     
     public String toString() {
-	//@todo getlogin name
 	return this.getProtocol()+"://"+this.getName()+":"+this.getPort();
-//	return("Host:"+protocol+","+name+","+port+","+login);
     }
 }

@@ -1,8 +1,8 @@
 package ch.cyberduck.core.ftp;
 
 /*
- *  Copyright (c) 2002 David Kocher. All rights reserved.
- *  http://icu.unizh.ch/~dkocher/
+ *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -117,18 +117,18 @@ public class FTPSession extends Session {
     private synchronized void login() throws IOException {
 	log.debug("login");
 	try {
-	    this.log("Authenticating as " + host.login.getUsername() + "...", Message.PROGRESS);
-	    FTP.login(host.login.getUsername(), host.login.getPassword());
+	    this.log("Authenticating as " + host.getLogin().getUsername() + "...", Message.PROGRESS);
+	    FTP.login(host.getLogin().getUsername(), host.getLogin().getPassword());
 	    this.log("Login successfull.", Message.PROGRESS);
 	}
 	catch(FTPException e) {
 	    this.log("Login failed", Message.PROGRESS);
-            if(host.getLogin().loginFailure("Authentication for user "+ host.login.getUsername() + " failed. The server response is: "+e.getMessage())) {
+            if(host.getLogin().loginFailure("Authentication for user "+ host.getLogin().getUsername() + " failed. The server response is: "+e.getMessage())) {
                 // let's try again with the new values
 		this.login();
             }
 	    else {
-		throw new FTPException("Login as user "+host.login.getUsername()+" failed.");
+		throw new FTPException("Login as user "+host.getLogin().getUsername()+" failed.");
 	    }
 	}
     }

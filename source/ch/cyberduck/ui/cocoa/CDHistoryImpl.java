@@ -1,8 +1,8 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2002 David Kocher. All rights reserved.
- *  http://icu.unizh.ch/~dkocher/
+ *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,37 +19,40 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.History;
-import ch.cyberduck.core.Host;
+import java.io.File;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
-import org.apache.log4j.Logger;
-
-import java.util.List;
 
 /**
 * @version $Id$
  */
 public class CDHistoryImpl extends History {
-    private static Logger log = Logger.getLogger(CDHistoryImpl.class);
 
-    private static String FILE = NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History.data");
+    private static final File HISTORY_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Favorites.plist"));
 
-    public void save() {
-	log.info("Saving history to "+FILE);
-	boolean success = NSArchiver.archiveRootObjectToFile(data, FILE);
-	log.info("Success archiving history:"+success);
-//	NSUserDefaults.standardUserDefaults().setObjectForKey(this.getData(), KEY);
-	//2003-05-23 21:59:33.202 Cyberduck[11903] *** -[NSUserDefaults setObject:forKey:]: Attempt to insert non-property value '[]' of class 'java/util/ArrayList'.
-
-//@todo	NSUserDefaults.standardUserDefaults().synchronize();
+    public CDHistoryImpl() {
+	super();
     }
-
-    public void load() {
-	log.debug("load");
-	List h = (List)NSUnarchiver.unarchiveObjectWithFile(FILE);
-//	List h = (List)NSUnarchiver.unarchiveObjectWithFile("History.data");
-//	List h = (List)NSUnarchiver.unarchiveObjectWithFile("~/Library/Application Support/Cyberduck/History.data");
-	if(h != null)
-	    this.data  = h;
+    
+    public File getPath() {
+	return HISTORY_FILE;
     }
+    
+//    public void save() {
+//	log.info("Saving history to "+FILE);
+//	boolean success = NSArchiver.archiveRootObjectToFile(data, FILE);
+//	log.info("Success archiving history:"+success);
+//  }
+
+    
+//    public void load() {
+//	log.debug("load");
+//	NSMutableArray hosts = (NSMutableArray)NSUnarchiver.unarchiveObjectWithFile(FILE);
+//	if(hosts != null) {
+//	    log.info("Success loading history");
+//	    this.data  = hosts;
+//	}
+//	else
+//	    log.info("Failed loading history");
+//    }
 }

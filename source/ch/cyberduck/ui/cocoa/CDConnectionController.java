@@ -82,7 +82,7 @@ public class CDConnectionController {
 	public void addItem(Object o) {
 	    log.debug("addItem:"+o);
 	    Host h = new Host(o.toString());
-	    this.data.put(h.getName(), h.toString());
+	    this.data.put(h.toString(), h);
 	    favoritesPopup.addItem(h.toString());
 	}
 
@@ -153,9 +153,9 @@ public class CDConnectionController {
 	private List data = new ArrayList();
 
 	public void addItem(NSComboBox aComboBox, Object o) {
-	    log.debug("addItem:"+o);
+	    log.debug("HostDataSource:addItem:"+o);
 	    this.data.add(0, o);
-	    //todo aComboBox.reloadData();
+	    aComboBox.reloadData();
 	}
 
 	/**
@@ -184,13 +184,17 @@ public class CDConnectionController {
 	    }
 	    return index;
 	}
+
+	public Object getItem(int index) {
+	    return data.get(index);
+	}
 	
 	/**
 	    * Implement this method to return the object that corresponds to the item at index in aComboBox
 	 */
 	public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int index) {
 	    //log.debug("comboBoxObjectValueForItemAtIndex:"+index);
-	    return data.get(index).toString();
+	    return ((Host)data.get(index)).getName();
 	}
 	
 	public int numberOfItemsInComboBox(NSComboBox combo) {
@@ -308,7 +312,7 @@ public class CDConnectionController {
 		
     public void hostSelectionChanged(Object sender) {
 	log.debug("hostSelectionChanged:"+sender);
-	this.updateFields(sender);
+	this.updateFields((Host)hostDataSource.getItem(hostCombo.indexOfSelectedItem()));
 	this.updateLabel(sender);
     }
 
@@ -316,15 +320,15 @@ public class CDConnectionController {
 	log.debug("favoritesSelectionChanged:"+sender);
 	Object selectedItem = favoritesDataSource.getItem(favoritesPopup.titleOfSelectedItem());
 	hostDataSource.addItem(hostCombo, selectedItem);
-	this.updateFields(sender);
+	this.updateFields((Host)selectedItem);
 	this.updateLabel(sender);
     }
 
     public void rendezvousSelectionChanged(Object sender) {
 	log.debug("rendezvousSelectionChanged:"+sender);
 	// TODO
-	this.updateFields(sender);
-	this.updateLabel(sender);
+	//this.updateFields(sender);
+	//this.updateLabel(sender);
     }
     
     public void protocolSelectionChanged(Object sender) {
@@ -338,10 +342,12 @@ public class CDConnectionController {
 	this.updateLabel(sender);
     }
 
-    public void updateFields(Object sender) {
-	log.debug("updateFields:"+sender);
-	Host selectedItem = (Host)hostDataSource.comboBoxObjectValueForItemAtIndex(hostCombo, hostCombo.indexOfSelectedItem());
+    public void updateFields(Host selectedItem) {
+	log.debug("updateFields:"+selectedItem);
+//	Host selectedItem = (Host)hostDataSource.comboBoxObjectValueForItemAtIndex(hostCombo, hostCombo.indexOfSelectedItem());
 	this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals("ftp") ? FTP_STRING : SFTP_STRING);
+	//should not be called when usesDataSource is set to YES
+//	this.hostCombo.selectItemWithObjectValue(selectedItem.getName());
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
 	this.usernameField.setStringValue(selectedItem.getLoginname());
     }

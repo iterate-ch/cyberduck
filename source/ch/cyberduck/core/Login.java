@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 public abstract class Login {
     private String user;
     private transient String pass;
+    
     /**
 	* New instance with default values. Anonymous login.
      */

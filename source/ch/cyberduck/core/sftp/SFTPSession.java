@@ -1,8 +1,8 @@
 package ch.cyberduck.core.sftp;
 
 /*
- *  Copyright (c) 2002 David Kocher. All rights reserved.
- *  http://icu.unizh.ch/~dkocher/
+ *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -101,7 +101,7 @@ public class SFTPSession extends Session {
 	this.log("SSH connection opened", Message.PROGRESS);
 	this.log(SSH.getServerId(), Message.TRANSCRIPT);
 
-	log.info(SSH.getAvailableAuthMethods(host.login.getUsername()));
+	log.info(SSH.getAvailableAuthMethods(host.getLogin().getUsername()));
 
 	this.login();
 	this.log("Opening SSH session channel", Message.PROGRESS);
@@ -135,10 +135,10 @@ public class SFTPSession extends Session {
     private synchronized void login() throws IOException {
 	log.debug("login");
 	// password authentication
-	this.log("Authenticating as '"+host.login.getUsername()+"'", Message.PROGRESS);
+	this.log("Authenticating as '"+host.getLogin().getUsername()+"'", Message.PROGRESS);
 	PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
-	auth.setUsername(host.login.getUsername());
-	auth.setPassword(host.login.getPassword());
+	auth.setUsername(host.getLogin().getUsername());
+	auth.setPassword(host.getLogin().getPassword());
 
 	// Try the authentication
 	int result = SSH.authenticate(auth);
@@ -151,24 +151,24 @@ public class SFTPSession extends Session {
 	    this.log("Login failed", Message.PROGRESS);
 	    String explanation = null;
 	    if(AuthenticationProtocolState.PARTIAL == result)
-		explanation = "Authentication as user "+host.login.getUsername()+" succeeded but another authentication method is required.";
+		explanation = "Authentication as user "+host.getLogin().getUsername()+" succeeded but another authentication method is required.";
 	    else //(AuthenticationProtocolState.FAILED == result)
-		explanation = "Authentication as user "+host.login.getUsername()+" failed.";
+		explanation = "Authentication as user "+host.getLogin().getUsername()+" failed.";
 	    if(host.getLogin().loginFailure(explanation))
 		this.login();
 	    else {
-		throw new SshException("Login as user "+host.login.getUsername()+" failed.");
+		throw new SshException("Login as user "+host.getLogin().getUsername()+" failed.");
 	    }
 	}
 
 	/*
 	//public key authentication
 	PublicKeyAuthenticationClient auth = new PublicKeyAuthenticationClient();
-	auth.setUsername(host.login.getUsername());
+	auth.setUsername(host.getLogin().getUsername());
 	// Open up the private key file
 	SshPrivateKeyFile file = SshPrivateKeyFile.parse(new File(System.getProperty("user.home"), ".ssh/privateKey"));
 	// Get the key
-	SshPrivateKey key = file.toPrivateKey(host.login.getPassword());
+	SshPrivateKey key = file.toPrivateKey(host.getLogin().getPassword());
 	// Set the key and authenticate
 	auth.setKey(key);
 	int result = session.authenticate(auth);

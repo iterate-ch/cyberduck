@@ -1,8 +1,8 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2002 David Kocher. All rights reserved.
- *  http://icu.unizh.ch/~dkocher/
+ *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
 
     public void setProperty(String property, String value) {
         log.info("setProperty(" + property + ", " + value + ")");
-        props.setObjectForKey(value, property);
+        this.props.setObjectForKey(value, property);
     }
 
     public void setProperty(String property, boolean v) {
@@ -54,13 +54,13 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
         }
 	//NSUserprops.setObjectForKey( Object value, String defaultName)
 	//Sets the value of the default identified by defaultName in the standard application domain. Setting a default has no effect on the value returned by the objectForKey method if the same key exists in a domain that precedes the application domain in the search list.
-        props.setObjectForKey(value, property);
+        this.props.setObjectForKey(value, property);
     }
 
     public void setProperty(String property, int v) {
         log.info("setProperty(" + property + ", " + v + ")");
         String value = String.valueOf(v);
-        props.setObjectForKey(value, property);
+        this.props.setObjectForKey(value, property);
     }
 
     public void setDefaults() {
@@ -75,7 +75,7 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
      */
     public void load() {
         log.debug("load()");
-	props = NSUserDefaults.standardUserDefaults();
+	this.props = NSUserDefaults.standardUserDefaults();
     }
 
     public void save() {
@@ -84,6 +84,6 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
 	// periodic intervals, use this method only if you cannot wait for the automatic synchronization (for example, if your
 	// application is about to exit) or if you want to update user props to what is on disk even though you have not made
 	// any changes.
-	props.synchronize();
+	this.props.synchronize();
     }
 }
