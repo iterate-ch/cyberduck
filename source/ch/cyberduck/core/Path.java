@@ -186,6 +186,9 @@ public abstract class Path {
 		this.getSession().cache().remove(this.getAbsolute());
 	}
 
+	/**
+	 * @return null if there is an error, otherewise a list with 0-n <code>Path</code> references
+	 */
 	public List list() {
 		return this.list(false);
 	}

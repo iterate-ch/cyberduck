@@ -8,6 +8,8 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Bugfix] Rendezvous implementation updated 
 - [Feature] Additional encryption ciphers supported (SFTP)
 - [Feature] ZLib Compression (SFTP)
+- [Bugfix] Folder to synchronize not selectable in some cases
+- [Bugfix] Fallback to default directory when specified directory doesn't exist
 
 2.4b4
 - [Bugfix] Dragging files to the Finder

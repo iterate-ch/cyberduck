@@ -97,7 +97,7 @@ public abstract class Session extends Observable {
 	/**
 	 * Connect to the remote host and mount the home directory
 	 */
-	public synchronized void mount() {
+	public synchronized void mount(String encoding, boolean showHiddenFiles) {
 		this.log("Mounting "+host.getHostname()+"...", Message.PROGRESS);
 		try {
 			this.check();
@@ -109,11 +109,16 @@ public abstract class Session extends Observable {
 				else {
 					home = PathFactory.createPath(this, host.getDefaultPath());
 				}
+				if(null == home.list(encoding, true, showHiddenFiles)) {
+					// the default path does not exist
+					home = workdir();
+					home.list(encoding, true, showHiddenFiles);
+				}
 			}
 			else {
 				home = workdir();
+				home.list(encoding, true, showHiddenFiles);
 			}
-			home.list(true);
 			Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl Notification"),
 									host.getHostname());
 		}

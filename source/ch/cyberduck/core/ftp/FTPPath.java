@@ -114,7 +114,9 @@ public class FTPPath extends Path {
 	public List list(String encoding, boolean refresh, boolean showHidden, boolean notifyObservers) {
 		synchronized(session) {
 			List files = session.cache().get(this.getAbsolute());
-			session.addPathToHistory(this);
+			if(notifyObservers) {
+				session.addPathToHistory(this);
+			}
 			if(refresh || null == files) {
 				files = new ArrayList();
 				session.log("Listing "+this.getAbsolute(), Message.PROGRESS);
@@ -137,12 +139,12 @@ public class FTPPath extends Path {
 				}
 				catch(FTPException e) {
 					session.log("FTP Error: "+e.getMessage(), Message.ERROR);
-					return files;
+					return null;
 				}
 				catch(IOException e) {
 					session.log("IO Error: "+e.getMessage(), Message.ERROR);
 					session.close();
-					return files;
+					return null;
 				}
 			}
 			if(notifyObservers) {

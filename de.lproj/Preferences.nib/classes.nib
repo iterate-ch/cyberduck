@@ -49,7 +49,6 @@
                 lineEndingCombobox = NSPopUpButton; 
                 listCheckbox = NSButton; 
                 loginField = NSTextField; 
-                newBrowserCheckbox = NSButton; 
                 processCheckbox = NSButton; 
                 protocolCombobox = NSPopUpButton; 
                 publickeyCombobox = NSPopUpButton; 

@@ -103,7 +103,6 @@ public abstract class Preferences {
 		defaults.put("browser.alternatingRows", "false");
 		defaults.put("browser.verticalLines", "false");
 		defaults.put("browser.horizontalLines", "true");
-		defaults.put("browser.openByDefault", "true");
 		defaults.put("browser.confirmQuit", "true");
 		defaults.put("browser.showHidden", "false");
 		defaults.put("browser.charset.encoding", "ISO-8859-1");

@@ -58,7 +58,7 @@ public class CDApplescriptabilityController extends NSScriptCommand {
 					return null;
 				}
 			}
-			CDBrowserController controller = new CDBrowserController();
+			CDBrowserController controller = CDMainController.newDocument();
 			controller.mount(h);
 		}
 		catch(java.net.MalformedURLException e) {

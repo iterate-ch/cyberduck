@@ -118,7 +118,7 @@ public class CDBrowserController extends CDController implements Observer {
 		this.init(host);
         Session session = SessionFactory.createSession(host);
 		session.addObserver((Observer)this);
-        session.mount();
+        session.mount(this.encoding, this.showHiddenFiles);
         return null;
     }
 	
@@ -1546,7 +1546,7 @@ public class CDBrowserController extends CDController implements Observer {
             host.setLoginController(new CDLoginController(this));
             new Thread("Session") {
                 public void run() {
-                    session.mount();
+                    session.mount(encoding, showHiddenFiles);
                 }
             }.start();
             return session;

@@ -470,7 +470,7 @@ public class CDMainController extends NSObject {
 	}
 
 	public void newBrowserMenuClicked(Object sender) {
-		CDController c = CDMainController.newDocument();
+		CDController c = CDMainController.newDocument(true);
 		c.cascade();
 	}
 
@@ -507,10 +507,11 @@ public class CDMainController extends NSObject {
 	 */
 	public boolean applicationOpenUntitledFile(NSApplication app) {
 		log.debug("applicationOpenUntitledFile");
-		if(Preferences.instance().getBoolean("browser.openByDefault")) {
-			return CDMainController.newDocument() != null;
-		}
-		return false;
+		return CDMainController.newDocument() != null;
+//		if(Preferences.instance().getBoolean("browser.openByDefault")) {
+//			return CDMainController.newDocument() != null;
+//		}
+//		return false;
 	}
 
 	public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
@@ -612,9 +613,32 @@ public class CDMainController extends NSObject {
 		Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses")+1);
 		Preferences.instance().save();
 	}
-
+	
 	public static CDBrowserController newDocument() {
+		return CDMainController.newDocument(false);
+	}
+
+	public static CDBrowserController newDocument(boolean force) {
 		log.debug("newDocument");
+		if(!force) {
+			NSApplication app = NSApplication.sharedApplication();
+			NSArray orderedWindows = (NSArray)NSKeyValue.valueForKey(app, "orderedWindows");
+			int i, c = orderedWindows.count();
+			NSMutableArray orderedDocs = new NSMutableArray();
+			Object curDelegate;
+			for(i = 0; i < c; i++) {
+				if(((NSWindow)orderedWindows.objectAtIndex(i)).isVisible()) {
+					curDelegate = ((NSWindow)orderedWindows.objectAtIndex(i)).delegate();
+					if((curDelegate != null) && (curDelegate instanceof CDBrowserController)) {
+						CDBrowserController controller = (CDBrowserController)curDelegate;
+						if(!controller.isMounted()) {
+							controller.window().makeKeyAndOrderFront(null);
+							return controller;
+						}
+					}
+				}
+			}
+		}
 		CDBrowserController controller = new CDBrowserController();
 		controller.window().makeKeyAndOrderFront(null);
 		return controller;
