@@ -303,7 +303,7 @@
 						<key>Description</key>
 						<string>The filename.</string>
 						<key>Name</key>
-						<string>folder</string>
+						<string>directory</string>
 					</dict>
 				</dict>
 			</dict>
