@@ -1026,7 +1026,7 @@ public class FTPClient {
 	public void quit()
 	    throws IOException, FTPException {
 
-		this.checkConnection(true);
+//		this.checkConnection(true);
 
 		try {
 			FTPReply reply = control.sendCommand("QUIT");

@@ -507,15 +507,11 @@ public class CDMainController extends NSObject {
 	public boolean applicationOpenUntitledFile(NSApplication app) {
 		log.debug("applicationOpenUntitledFile");
 		return CDMainController.newDocument() != null;
-//		if(Preferences.instance().getBoolean("browser.openByDefault")) {
-//			return CDMainController.newDocument() != null;
-//		}
-//		return false;
 	}
 
 	public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
 		log.debug("applicationShouldHandleReopen");
-		return true;
+		return CDMainController.newDocument() == null;
 	}
 
 	public void applicationDidFinishLaunching(NSNotification notification) {
