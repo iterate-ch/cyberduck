@@ -32,7 +32,7 @@ import ch.cyberduck.ui.LoginController;
 /**
  * @version $Id$
  */
-public class CDLoginController extends LoginController {
+public class CDLoginController implements LoginController {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
     private static NSMutableArray instances = new NSMutableArray();

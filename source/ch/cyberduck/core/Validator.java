@@ -66,6 +66,9 @@ public abstract class Validator {
         // directory won't need validation, will get created if missing otherwise ignored
         if (Queue.KIND_DOWNLOAD == kind) {
             path.getLocal().mkdirs();
+			if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
+				path.getLocal().setLastModified(path.attributes.getTimestamp().getTime());
+			}
         }
         if (Queue.KIND_UPLOAD == kind) {
             if (!path.exists()) {

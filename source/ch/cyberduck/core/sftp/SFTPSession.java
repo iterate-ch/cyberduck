@@ -96,15 +96,14 @@ public class SFTPSession extends Session {
 		SSH.addEventHandler(new SshEventAdapter() {
 			public void onSocketTimeout(TransportProtocol transport) {
 				log.debug("onSocketTimeout");
-				SFTPSession.this.close();
+				SFTPSession.this.log("Disconnected", Message.PROGRESS);
+				SFTPSession.this.setConnected(false);
 			}
 			
 			public void onDisconnect(TransportProtocol transport) {
 				log.debug("onDisconnect");
-			}
-			
-			public void onConnected(TransportProtocol transport) {
-				log.debug("onConnected");
+				SFTPSession.this.log("Disconnected", Message.PROGRESS);
+				SFTPSession.this.setConnected(false);
 			}
 		}
 							);

@@ -479,6 +479,48 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         }
     }
 
+	public void paste(Object sender) {
+		log.debug("paste");
+		NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+		if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+			Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
+			if (o != null) {
+				NSArray elements = (NSArray)o;
+				for (int i = 0; i < elements.count(); i++) {
+					NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
+					Queue q = new Queue(dict);
+					Path workdir = this.pathController.workdir();
+					for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
+						Path p = (Path)iter.next();
+						PathFactory.createPath(workdir.getSession(), p.getAbsolute()).rename(workdir.getAbsolute() + "/" + p.getName());
+						p.getParent().invalidate();
+						workdir.list(true);
+					}
+				}
+				pboard.setPropertyListForType(null, "QueuePBoardType");
+				this.browserTable.reloadData();
+			}
+		}
+	}
+	
+	public void copy(Object sender) {
+		NSMutableArray queueDictionaries = new NSMutableArray();
+		Session session = pathController.workdir().getSession().copy();
+		Queue q = new Queue(Queue.KIND_DOWNLOAD);
+        NSEnumerator enum = browserTable.selectedRowEnumerator();
+        while (enum.hasMoreElements()) {
+            Path path = browserModel.getEntry(((Integer)enum.nextElement()).intValue());
+			q.addRoot(path.copy(session));
+		}
+		queueDictionaries.addObject(q.getAsDictionary());
+		// Writing data for private use when the item gets dragged to the transfer queue.
+		NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+		queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
+		if (queuePboard.setPropertyListForType(queueDictionaries, "QueuePBoardType")) {
+			log.debug("QueuePBoardType data sucessfully written to pasteboard");
+		}
+	}
+	
     public void copyURLButtonClicked(Object sender) {
         log.debug("copyURLButtonClicked");
         Host h = pathController.workdir().getSession().getHost();
@@ -560,7 +602,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 
     public void setStatusIcon(NSImageView statusIcon) {
         this.statusIcon = statusIcon;
-//		this.statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
     }
 
     private NSTextField statusLabel; // IBOutlet
@@ -632,8 +673,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             else if (msg.getTitle().equals(Message.PROGRESS)) {
                 statusLabel.setObjectValue(msg.getContent());
                 statusLabel.display();
-                //statusIcon.setImage(isConnected() ? NSImage.imageNamed("online.tiff") : NSImage.imageNamed("offline.tiff"));
-                //statusIcon.setNeedsDisplay(true);
             }
             else if (msg.getTitle().equals(Message.OPEN)) {
                 statusIcon.setImage(null);
@@ -642,9 +681,12 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                 window().setDocumentEdited(true);
             }
             else if (msg.getTitle().equals(Message.CLOSE)) {
-//                window().setDocumentEdited(false);
-//				browserModel.clear();
-//				browserTable.reloadData();
+				//@todo
+                progressIndicator.stopAnimation(this);
+                statusIcon.setImage(null);
+                statusIcon.setNeedsDisplay(true);
+                toolbar.validateVisibleItems();
+                window().setDocumentEdited(false);
             }
             else if (msg.getTitle().equals(Message.START)) {
                 statusIcon.setImage(null);
@@ -656,8 +698,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                 progressIndicator.stopAnimation(this);
                 statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
                 statusLabel.display();
-                //statusIcon.setImage(isConnected() ? NSImage.imageNamed("online.tiff") : NSImage.imageNamed("offline.tiff"));
-                //statusIcon.setNeedsDisplay(true);
                 toolbar.validateVisibleItems();
             }
         }
@@ -666,7 +706,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
     // ----------------------------------------------------------
     // Selector methods for the toolbar items
     // ----------------------------------------------------------
-
+	
     public void editButtonClicked(Object sender) {
         NSEnumerator enum = browserTable.selectedRowEnumerator();
         while (enum.hasMoreElements()) {
@@ -844,15 +884,15 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         sheet.orderOut(null);
         switch (returnCode) {
             case (NSAlertPanel.DefaultReturn):
-                Path parent = pathController.workdir();
+                Path workdir = pathController.workdir();
                 // selected files on the local filesystem
                 NSArray selected = sheet.filenames();
                 java.util.Enumeration enumerator = selected.objectEnumerator();
                 Queue q = new Queue(Queue.KIND_UPLOAD);
-                Session session = parent.getSession().copy();
+                Session session = workdir.getSession().copy();
                 while (enumerator.hasMoreElements()) {
-                    Path item = parent.copy(session);
-                    item.setPath(parent.getAbsolute(), new Local((String)enumerator.nextElement()));
+                    Path item = workdir.copy(session);
+                    item.setPath(workdir.getAbsolute(), new Local((String)enumerator.nextElement()));
                     q.addRoot(item);
                 }
                     CDQueueController.instance().addItem(q);
@@ -1142,12 +1182,58 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         this.logDrawer.close();
         instances.removeObject(this);
     }
-
+	
     public boolean validateMenuItem(NSMenuItem item) {
+		if(item.action().name().equals("paste:")) {
+			if(this.isMounted()) {
+				NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+				if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null
+				   && pboard.propertyListForType("QueuePBoardType") != null) {
+					NSArray elements = (NSArray)pboard.propertyListForType("QueuePBoardType");
+					for (int i = 0; i < elements.count(); i++) {
+						NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
+						Queue q = new Queue(dict);
+						if(q.numberOfRoots() == 1)
+							item.setTitle(NSBundle.localizedString("Paste", "Menu item")+" \""+q.getRoot().getName()+"\"");
+						else {
+							item.setTitle(NSBundle.localizedString("Paste", "Menu item")
+										  +" "+q.numberOfRoots()+" "+
+										  NSBundle.localizedString("files", ""));
+						}
+					}
+				}
+				else {
+					item.setTitle(NSBundle.localizedString("Paste", "Menu item"));
+				}
+			}
+		}
+		if(item.action().name().equals("copy:")) {
+			if(this.isMounted() && browserTable.selectedRow() != -1) {
+				if(browserTable.numberOfSelectedRows() == 1) {
+					Path p = (Path)browserModel.getEntry(browserTable.selectedRow());
+					item.setTitle(NSBundle.localizedString("Copy", "Menu item")+" \""+p.getName()+"\"");
+				}
+				else
+					item.setTitle(NSBundle.localizedString("Copy", "Menu item")
+								  +" "+browserTable.numberOfSelectedRows()+" "+
+								  NSBundle.localizedString("files", ""));
+			}
+			else
+				item.setTitle(NSBundle.localizedString("Copy", "Menu item"));
+		}
         return this.validateItem(item.action().name());
     }
 
     private boolean validateItem(String identifier) {
+		if (identifier.equals("copy:")) {
+            return this.isMounted() && browserTable.selectedRow() != -1;
+		}
+		if (identifier.equals("paste:")) {
+			NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+            return this.isMounted() 
+				&& pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null
+				&& pboard.propertyListForType("QueuePBoardType") != null;
+		}
         if (identifier.equals("addBookmarkButtonClicked:")) {
             return true;
         }
@@ -1523,8 +1609,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                         Path parent = this.getEntry(row);
                         if (parent.attributes.isDirectory()) {
                             Queue q = new Queue(dict);
-                            List files = q.getRoots();
-                            for (Iterator iter = files.iterator(); iter.hasNext();) {
+                            for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                                 Path p = (Path)iter.next();
                                 PathFactory.createPath(parent.getSession(), p.getAbsolute()).rename(parent.getAbsolute() + "/" + p.getName());
                             }
@@ -1603,10 +1688,10 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 
         /**
          * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-         *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-         *         Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
-         *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
-         *         blocking the destination application.
+         * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+         * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
+         * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
+         * blocking the destination application.
          */
         public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
             log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);

@@ -61,10 +61,6 @@ public class Queue extends Observable implements Observer {
      */
     private List roots = new ArrayList();
 
-    public Path getRoot() {
-        return (Path)roots.get(0);
-    }
-
     /**
      * This has the same size as the roots and contains the root
      * path itself and all subelements (in case of a directory)
@@ -155,6 +151,10 @@ public class Queue extends Observable implements Observer {
         this.roots.add(item);
     }
 
+	public Path getRoot() {
+        return (Path)roots.get(0);
+    }
+		
     public List getRoots() {
         return this.roots;
     }

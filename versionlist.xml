@@ -14,6 +14,10 @@
 - [Feature] Refactored transfer queue
 - [Feature] Updated toolbar icons
 - [Feature] Added BBedit Lite to the list of supported editors
+- [Feature] Move remote files with copy & paste
+- [Feature] Put remote files into the transfer queue with copy & paste
+- [Bugfix] Preserve modification dates of downloaded folders
+- [Bugfix] Bookmark drawer icon has no text-only equivalent
 
 2.3.3
 - [Bugfix] Correctly parsing symbolic links

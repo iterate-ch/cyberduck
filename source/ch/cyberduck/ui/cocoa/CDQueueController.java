@@ -150,17 +150,21 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 	
 	public void tableViewSelectionDidChange(NSNotification notification) {
 		this.toolbar.validateVisibleItems();
+		this.updateLabels();
+	}
+	
+	private void updateLabels() {
 		if(this.queueTable.selectedRow() != -1) {
 			Queue q = this.queueModel.getItem(this.queueTable.selectedRow());
 			this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()+q.getRoot().getAbsolute(), 
 																		  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 			if (q.numberOfRoots() == 1)
 				this.localField.setAttributedStringValue(new NSAttributedString(q.getRoot().getLocal().getAbsolute(),
-																	  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+																				TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 			else
 				this.localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiples files", "")
-											   +" ("+q.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
-											   TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+																				+" ("+q.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
+																				TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 		}
 		else {
 			this.urlField.setStringValue("");
@@ -280,78 +284,69 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     }
 
     public void update(Observable observable, Object arg) {
-//		log.debug("update:"+observable+","+arg);
-            if (arg instanceof Message) {
-                Message msg = (Message)arg;
-                if (msg.getTitle().equals(Message.PROGRESS)) {
-//					this.queueTable.reloadData();
-                }
-                else if (msg.getTitle().equals(Message.DATA)) {
-//					this.queueTable.reloadData();
-                }
-                else if (msg.getTitle().equals(Message.ERROR)) {
-                    while (this.window().attachedSheet() != null) {
-                        try {
-                            log.debug("Sleeping...");
-                            Thread.sleep(1000); //milliseconds
-                        }
-                        catch (InterruptedException e) {
-                            log.error(e.getMessage());
-                        }
-                    }
-                    synchronized (this) {
-                        this.window().makeKeyAndOrderFront(null);
-                        NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                                NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                                null, //alternative button
-                                null, //other button
-                                this.window(), //docWindow
-                                null, //modalDelegate
-                                null, //didEndSelector
-                                null, // dismiss selector
-                                null, // context
-                                (String)msg.getContent() // message
-                        );
-                    }
-                }
-                else if (msg.getTitle().equals(Message.QUEUE_START)) {
-                    this.toolbar.validateVisibleItems();
-//					this.queueModel.save();
-//                    QueueList.instance().save();
-                }
-                else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
-                    this.toolbar.validateVisibleItems();
-                    Queue queue = (Queue)observable;
-                    if (queue.isComplete()) {
-                        if (Queue.KIND_DOWNLOAD == queue.kind()) {
-							Growl.instance().notify(NSBundle.localizedString("Download complete", "Growl Notification"), 
-													queue.getRoot().getName());
-                            if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
-                                boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
-                                log.debug("Success opening file:" + success);
-                            }
-                        }
-                        if (Queue.KIND_UPLOAD == queue.kind()) {
-							Growl.instance().notify(NSBundle.localizedString("Upload complete", "Growl Notification"),
-													queue.getRoot().getName());
-//@todo                            if (callback != null) {
-//                                log.debug("Telling observable to refresh directory listing");
-//                                callback.update(null, new Message(Message.REFRESH));
-//                            }
-                        }
-                        if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
-//                            this.queueTable.deselectAll(null);
-//                            QueueList.instance().removeItem(queue);
-							this.queueModel.removeItem(queue);
-							this.reloadQueueTable();
-                        }
-                    }
-					this.queueModel.save();
-//                    QueueList.instance().save();
-                }
-            }
-        }
-	 
+		if (arg instanceof Message) {
+			Message msg = (Message)arg;
+			if (msg.getTitle().equals(Message.PROGRESS)) {
+				this.updateLabels();
+			}
+			else if (msg.getTitle().equals(Message.ERROR)) {
+				while (this.window().attachedSheet() != null) {
+					try {
+						log.debug("Sleeping...");
+						Thread.sleep(1000); //milliseconds
+					}
+					catch (InterruptedException e) {
+						log.error(e.getMessage());
+					}
+				}
+				synchronized (this) {
+					this.window().makeKeyAndOrderFront(null);
+					NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+														 null, //alternative button
+														 null, //other button
+														 this.window(), //docWindow
+														 null, //modalDelegate
+														 null, //didEndSelector
+														 null, // dismiss selector
+														 null, // context
+														 (String)msg.getContent() // message
+														 );
+				}
+			}
+			else if (msg.getTitle().equals(Message.QUEUE_START)) {
+				this.toolbar.validateVisibleItems();
+			}
+			else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+				this.toolbar.validateVisibleItems();
+				Queue queue = (Queue)observable;
+				if (queue.isComplete()) {
+					if (Queue.KIND_DOWNLOAD == queue.kind()) {
+						Growl.instance().notify(NSBundle.localizedString("Download complete", "Growl Notification"), 
+												queue.getRoot().getName());
+						if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
+							boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+							log.debug("Success opening file:" + success);
+						}
+					}
+					if (Queue.KIND_UPLOAD == queue.kind()) {
+						Growl.instance().notify(NSBundle.localizedString("Upload complete", "Growl Notification"),
+												queue.getRoot().getName());
+						//@todo                            if (callback != null) {
+						//                                log.debug("Telling observable to refresh directory listing");
+						//                                callback.update(null, new Message(Message.REFRESH));
+						//                            }
+					}
+					if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
+						this.queueModel.removeItem(queue);
+						this.reloadQueueTable();
+					}
+				}
+				this.queueModel.save();
+			}
+		}
+	}
+	
     public void awakeFromNib() {
         log.debug("awakeFromNib");
         this.toolbar = new NSToolbar("Queue Toolbar");
@@ -440,6 +435,23 @@ if (returncode == NSAlertPanel.DefaultReturn) {
         }
     }
 
+	public void paste(Object sender) {
+		log.debug("paste");
+		NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+		if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+			Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
+			if (o != null) {
+				NSArray elements = (NSArray)o;
+				for (int i = 0; i < elements.count(); i++) {
+					NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
+					this.queueModel.addItem(new Queue(dict));
+				}
+				pboard.setPropertyListForType(null, "QueuePBoardType");
+				this.queueTable.reloadData();
+			}
+		}
+	}
+	
     public void stopButtonClicked(Object sender) {
         NSEnumerator enum = queueTable.selectedRowEnumerator();
         while (enum.hasMoreElements()) {
@@ -585,19 +597,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
                 this.queueModel.removeItem(i);
             }
 		}
-			/*
-        for (Iterator iter = this.queueModel.iterator(); iter.hasNext();) {
-            Queue q = (Queue)iter.next();
-            if (q.getSize() == q.getCurrent() && q.getSize() > 0) {
-                iter.remove();
-            }
-        }
-		 */
 		this.reloadQueueTable();
-    }
-
-    public boolean validateMenuItem(NSMenuItem item) {
-        return this.validateItem(item.action().name());
     }
 
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
@@ -628,6 +628,10 @@ if (returncode == NSAlertPanel.DefaultReturn) {
             NSToolbarItem.FlexibleSpaceItemIdentifier
         });
     }
+	
+    public boolean validateMenuItem(NSMenuItem item) {
+		return this.validateItem(item.action().name());
+	}
 
     public boolean validateToolbarItem(NSToolbarItem item) {
         String identifier = item.itemIdentifier();
@@ -635,6 +639,11 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     }
 
     private boolean validateItem(String identifier) {
+		if (identifier.equals("paste:")) {
+			NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+			return pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null
+				&& pboard.propertyListForType("QueuePBoardType") != null;
+		}
         if (identifier.equals("Stop") || identifier.equals("stopButtonClicked:")) {
             if (this.queueTable.numberOfSelectedRows() < 1) {
                 return false;
@@ -654,20 +663,6 @@ if (returncode == NSAlertPanel.DefaultReturn) {
                 return !queue.isRunning() && !queue.isComplete();
             }
             return false;
-            /*
-			 if (this.queueTable.numberOfSelectedRows() < 1) {
-				 return false;
-			 }
-			 NSEnumerator enum = queueTable.selectedRowEnumerator();
-			 while (enum.hasMoreElements()) {
-				 Queue queue = this.queueModel.getItem(((Integer) enum.nextElement()).intValue());
-				 //                if (!(queue.isCanceled() && !(queue.remainingJobs() == 0) && (queue.getRoot() instanceof FTPPath))) {
-				 if (!(queue.isCanceled() && !(queue.remainingJobs() == 0))) {
-					 return false;
-				 }
-				 }
-			 return true;
-			 */
         }
         if (identifier.equals("Reload") || identifier.equals("reloadButtonClicked:")) {
             if (this.queueTable.numberOfSelectedRows() == 1) {
@@ -675,19 +670,6 @@ if (returncode == NSAlertPanel.DefaultReturn) {
                 return !queue.isRunning();
             }
             return false;
-            /*
-			 if (this.queueTable.numberOfSelectedRows() < 1) {
-				 return false;
-			 }
-			 NSEnumerator enum = queueTable.selectedRowEnumerator();
-			 while (enum.hasMoreElements()) {
-				 Queue queue = this.queueModel.getItem(((Integer) enum.nextElement()).intValue());
-				 if (queue.isRunning()) {
-					 return false;
-				 }
-			 }
-			 return true;
-			 */
         }
         if (identifier.equals("Show") || identifier.equals("revealButtonClicked:")) {
             return this.queueTable.numberOfSelectedRows() == 1;
