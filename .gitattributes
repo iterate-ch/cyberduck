@@ -283,6 +283,7 @@ hu.lproj/Validator.nib/keyedobjects.nib -text
 hu.lproj/Validator.strings svneol=native#unset
 img/add.tiff svneol=native#unset
 img/addPressed.tiff svneol=native#unset
+img/advanced.tiff -text
 img/alert.tiff -text
 img/arrowDown.tiff -text
 img/arrowDown16.tiff -text
@@ -297,6 +298,7 @@ img/arrowUp16.tiff -text
 img/arrowUpBlack.tiff -text
 img/arrowUpBlack16.tiff -text
 img/bookmarks.tiff svneol=native#unset
+img/browser.tiff -text
 img/cancel.tiff -text
 img/certificate.tiff -text
 img/clean.tiff -text
@@ -345,7 +347,9 @@ img/eject.tiff -text
 img/folder.tiff -text
 img/folder16.tiff -text
 img/folder32.tiff -text
+img/ftp.tiff -text
 img/gear.tiff -text
+img/general.tiff -text
 img/history.tiff -text
 img/info.tiff svneol=native#unset
 img/list.tiff -text
@@ -358,6 +362,7 @@ img/open.tiff -text
 img/outline.tiff -text
 img/pencil.tiff -text
 img/plus.tiff -text
+img/queue.tiff -text
 img/refresh.tiff svneol=native#unset
 img/reload.tiff svneol=native#unset
 img/remove.tiff svneol=native#unset
@@ -367,7 +372,12 @@ img/rendezvous16.tiff -text
 img/resume.tiff -text
 img/reveal.tiff -text
 img/run.tiff -text
+img/sftp.tiff -text
+img/statusGreen.tiff -text
+img/statusRed.tiff -text
+img/statusYellow.tiff -text
 img/stop.tiff svneol=native#unset
+img/stop16.tiff -text
 img/symlink.tiff -text
 img/sync32.tiff -text
 img/transparent.tiff -text
