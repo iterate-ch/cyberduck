@@ -132,8 +132,14 @@ public class Local extends File {
 	public Calendar getTimestampAsCalendar() {
 		Calendar c = Calendar.getInstance();
 		c.setTime(this.getTimestamp());
-		c.clear(Calendar.MILLISECOND);
-		c.clear(Calendar.SECOND);
+		if(Preferences.instance().getBoolean("queue.sync.ignore.millisecond"))
+			c.clear(Calendar.MILLISECOND);
+		if(Preferences.instance().getBoolean("queue.sync.ignore.second"))
+			c.clear(Calendar.SECOND);
+		if(Preferences.instance().getBoolean("queue.sync.ignore.minute"))
+			c.clear(Calendar.MINUTE);
+		if(Preferences.instance().getBoolean("queue.sync.ignore.hour"))
+			c.clear(Calendar.HOUR);
 		return c;
 	}
 

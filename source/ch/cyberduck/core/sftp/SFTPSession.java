@@ -252,7 +252,9 @@ public class SFTPSession extends Session {
 	}
 
 	public synchronized void noop() throws IOException {
-		this.SSH.noop();
+		if(this.isConnected()) {
+			this.SSH.noop();
+		}
 	}
 
 	public synchronized void check() throws IOException {

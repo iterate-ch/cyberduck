@@ -122,14 +122,22 @@ public abstract class Preferences {
 		defaults.put("queue.orderFrontOnTransfer", "true");
 		defaults.put("queue.download.folder", System.getProperty("user.home")+"/Desktop");
 		defaults.put("queue.fileExists", "ask");
+		
 		defaults.put("queue.upload.changePermissions", "true");
 		defaults.put("queue.upload.permissions.useDefault", "false");
 		defaults.put("queue.upload.permissions.default", "rw-r--r--");
 		defaults.put("queue.upload.preserveDate", "true");
+		
 		defaults.put("queue.download.changePermissions", "false");
 		defaults.put("queue.download.permissions.useDefault", "false");
 		defaults.put("queue.download.permissions.default", "rw-r--r--");
 		defaults.put("queue.download.preserveDate", "true");
+
+		defaults.put("queue.sync.ignore.hour", "false");
+		defaults.put("queue.sync.ignore.minute", "false");
+		defaults.put("queue.sync.ignore.second", "true");
+		defaults.put("queue.sync.ignore.millisecond", "true");
+		
 		
 		defaults.put("queue.transformer.useTransformer", "false");
 		defaults.put("queue.transformer.maxLength", "-1");
