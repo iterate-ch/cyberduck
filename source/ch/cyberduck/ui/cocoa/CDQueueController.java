@@ -280,7 +280,7 @@ public class CDQueueController extends CDController {
 				}
 			}
 		});
-		if(Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
+		if(Preferences.instance().getBoolean("queue.orderFrontOnTransfer")) {
 			this.window().makeKeyAndOrderFront(null);
 		}
 		queue.getRoot().getHost().getCredentials().setController(new CDLoginController(this));

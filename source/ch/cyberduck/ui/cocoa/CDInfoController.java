@@ -306,7 +306,7 @@ public class CDInfoController extends CDController {
 
 	public void windowWillClose(NSNotification notification) {
 		log.debug("windowWillClose");
-		if(Preferences.instance().getProperty("browser.info.isInspector").equals("true")) {
+		if(Preferences.instance().getBoolean("browser.info.isInspector")) {
 			NSNotificationCenter.defaultCenter().removeObserver(this);
 			instances.removeObject(this);
 		}

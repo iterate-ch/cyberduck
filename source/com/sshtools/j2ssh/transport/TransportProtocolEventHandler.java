@@ -35,8 +35,7 @@ public interface TransportProtocolEventHandler {
 	/**
 	 * @param transport
 	 */
-	public void onSocketTimeout(TransportProtocol transport /*,
-	boolean stillConnected*/);
+	public void onSocketTimeout(TransportProtocol transport);
 
 	/**
 	 * @param transport

@@ -179,7 +179,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 
 	private void save(java.io.File f) {
 		log.debug("save");
-		if(Preferences.instance().getProperty("queue.save").equals("true")) {
+		if(Preferences.instance().getBoolean("queue.save")) {
 			try {
 				NSMutableArray list = new NSMutableArray();
 				for(int i = 0; i < this.size(); i++) {

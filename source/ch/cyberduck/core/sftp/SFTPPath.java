@@ -344,9 +344,9 @@ public class SFTPPath extends Path {
 					this.download(in, out);
 					if(this.status.isComplete()) {
 						log.info("Updating permissions");
-						if(Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
+						if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
 							Permission perm = null;
-							if(Preferences.instance().getProperty("queue.download.permissions.useDefault").equals("true")) {
+							if(Preferences.instance().getBoolean("queue.download.permissions.useDefault")) {
 								perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
 							}
 							else {
@@ -357,7 +357,7 @@ public class SFTPPath extends Path {
 							}
 						}
 					}
-					if(Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
+					if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
 						this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
 					}
 				}
@@ -431,9 +431,9 @@ public class SFTPPath extends Path {
 						}
 					}
 					this.upload(out, in);
-					if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
+					if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
 						Permission perm = null;
-						if(Preferences.instance().getProperty("queue.upload.permissions.useDefault").equals("true")) {
+						if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
 							perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
 						}
 						else {
@@ -443,7 +443,7 @@ public class SFTPPath extends Path {
 							session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
 						}
 					}
-					if(Preferences.instance().getProperty("queue.upload.preserveDate").equals("true")) {
+					if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
 						f.getAttributes().setTimes(f.getAttributes().getAccessedTime(),
 												   new UnsignedInteger32(this.getLocal().getTimestamp().getTime()/1000));
 						session.SFTP.setAttributes(f, f.getAttributes());

@@ -206,7 +206,7 @@ public class
 	public void setCredentials(String username, String password) {
 		this.setCredentials(username, 
 							password, 
-							Preferences.instance().getProperty("connection.login.useKeychain").equals("true")
+							Preferences.instance().getBoolean("connection.login.useKeychain")
 							);
 	}
 		

@@ -183,7 +183,7 @@ public abstract class Path {
 	public List list(boolean refresh) {
 		return this.list(Preferences.instance().getProperty("browser.charset.encoding"), 
 				  refresh,
-				  Preferences.instance().getProperty("browser.showHidden").equals("true"));
+				  Preferences.instance().getBoolean("browser.showHidden"));
 	}
 
 	public List list(boolean refresh, boolean showHidden) {
@@ -411,7 +411,7 @@ public abstract class Path {
 		}
 		BufferedInputStream in = new BufferedInputStream(i);
 		BufferedOutputStream out = new BufferedOutputStream(o);
-		int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
+		int chunksize = Preferences.instance().getInteger("connection.buffer");
 		byte[] chunk = new byte[chunksize];
 		int amount = 0;
 		long current = this.status.getCurrent();

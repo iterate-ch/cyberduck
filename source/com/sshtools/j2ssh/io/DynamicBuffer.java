@@ -58,7 +58,7 @@ public class DynamicBuffer {
 	 */
 //    protected static final int DEFAULT_BUFFER_SIZE = 32768;
 	protected static final int DEFAULT_BUFFER_SIZE
-	    = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
+	    = Preferences.instance().getInteger("connection.buffer");
 
 	/**
 	 * The buffer

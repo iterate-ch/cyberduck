@@ -90,7 +90,7 @@ public class SFTPSession extends Session {
 		this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
 		this.log(host.getIp(), Message.TRANSCRIPT);
 		SSH = new SshClient();
-		//SSH.setSocketTimeout(Integer.parseInt(Preferences.instance().getProperty("connection.timeout")));
+		//SSH.setSocketTimeout(Preferences.instance().getInteger("connection.timeout"));
 		SSH.addEventHandler(new SshEventAdapter() {
 			public void onSocketTimeout(TransportProtocol transport) {
 				log.debug("onSocketTimeout");
@@ -248,6 +248,10 @@ public class SFTPSession extends Session {
 		return null;
 	}
 
+	public synchronized void noop() throws IOException {
+		this.SSH.noop();
+	}
+		
 	public synchronized void check() throws IOException {
 		this.log("Working", Message.START);
 		//		this.log("Checking connection...", Message.PROGRESS);

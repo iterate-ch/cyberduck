@@ -348,9 +348,9 @@ public class FTPPath extends Path {
 					}
 					if(this.status.isComplete()) {
 						log.info("Updating permissions");
-						if(Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
+						if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
 							Permission perm = null;
-							if(Preferences.instance().getProperty("queue.download.permissions.useDefault").equals("true")) {
+							if(Preferences.instance().getBoolean("queue.download.permissions.useDefault")) {
 								perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
 							}
 							else {
@@ -361,7 +361,7 @@ public class FTPPath extends Path {
 							}
 						}
 					}
-					if(Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
+					if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
 						this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
 					}
 				}
@@ -454,18 +454,18 @@ public class FTPPath extends Path {
 				lineSeparator = DOS_LINE_SEPARATOR;
 			}
 			session.FTP.setTransferType(FTPTransferType.ASCII);
-			if(this.status.isResume()) {
-				this.status.setCurrent(this.getLocal().getSize());
-			}
-			out = new FromNetASCIIOutputStream(new FileOutputStream(this.getLocal(),
-			    this.status.isResume()),
-			    lineSeparator);
+//			if(this.status.isResume()) {
+//				this.status.setCurrent(this.getLocal().getSize());
+//			}
+			out = new FromNetASCIIOutputStream(new FileOutputStream(this.getLocal(), false),
+																	//this.status.isResume()),
+																	lineSeparator);
 			if(out == null) {
 				throw new IOException("Unable to buffer data");
 			}
-			in = new FromNetASCIIInputStream(session.FTP.get(this.getAbsolute(),
-			    this.status.isResume() ? this.getLocal().getSize() : 0),
-			    lineSeparator);
+			in = new FromNetASCIIInputStream(session.FTP.get(this.getAbsolute(), 0),
+											 //			    this.status.isResume() ? this.getLocal().getSize() : 0),
+											 lineSeparator);
 			if(in == null) {
 				throw new IOException("Unable opening data stream");
 			}
@@ -536,9 +536,9 @@ public class FTPPath extends Path {
 					else {
 						throw new FTPException("Transfer mode not set");
 					}
-					if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
+					if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
 						try {
-							if(Preferences.instance().getProperty("queue.upload.permissions.useDefault").equals("true")) {
+							if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
 								Permission perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
 								session.FTP.site("CHMOD "+perm.getOctalCode()+" "+this.getAbsolute());
 							}
@@ -553,7 +553,7 @@ public class FTPPath extends Path {
 							log.warn(e.getMessage());
 						}
 					}
-					if(Preferences.instance().getProperty("queue.upload.preserveDate").equals("true")) {
+					if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
 						try {
 							session.FTP.setmodtime(this.getLocal().getTimestamp(), this.getAbsolute());
 						}

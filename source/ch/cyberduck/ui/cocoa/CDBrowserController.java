@@ -106,10 +106,10 @@ public class CDBrowserController extends CDController implements Observer {
 		this.window().setTitle("Cyberduck "+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		this.window().setInitialFirstResponder(quickConnectPopup);
 		// Drawer states
-		if(Preferences.instance().getProperty("logDrawer.isOpen").equals("true")) {
+		if(Preferences.instance().getBoolean("logDrawer.isOpen")) {
 			this.logDrawer.open();
 		}
-		if(Preferences.instance().getProperty("bookmarkDrawer.isOpen").equals("true")) {
+		if(Preferences.instance().getBoolean("bookmarkDrawer.isOpen")) {
 			this.bookmarkDrawer.open();
 		}
 		// Configure Toolbar
@@ -259,7 +259,7 @@ public class CDBrowserController extends CDController implements Observer {
 		this.browserTable.setAllowsColumnReordering(true);
 		this._updateBrowserTableColumns();
 		
-		if(Preferences.instance().getProperty("browser.info.isInspector").equals("true")) {
+		if(Preferences.instance().getBoolean("browser.info.isInspector")) {
 			(NSNotificationCenter.defaultCenter()).addObserver(this,
 															   new NSSelector("browserSelectionDidChange", new Class[]{NSNotification.class}),
 															   NSTableView.TableViewSelectionDidChangeNotification,
@@ -285,18 +285,18 @@ public class CDBrowserController extends CDController implements Observer {
 		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
 		new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
 		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
-			this.browserTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getProperty("browser.alternatingRows").equals("true"));
+			this.browserTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
 		}
 		NSSelector setGridStyleMaskSelector =
 		    new NSSelector("setGridStyleMask", new Class[]{int.class});
 		if(setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
-			if(Preferences.instance().getProperty("browser.horizontalLines").equals("true") && Preferences.instance().getProperty("browser.verticalLines").equals("true")) {
+			if(Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
 				this.browserTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
 			}
-			else if(Preferences.instance().getProperty("browser.verticalLines").equals("true")) {
+			else if(Preferences.instance().getBoolean("browser.verticalLines")) {
 				this.browserTable.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
 			}
-			else if(Preferences.instance().getProperty("browser.horizontalLines").equals("true")) {
+			else if(Preferences.instance().getBoolean("browser.horizontalLines")) {
 				this.browserTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
 			}
 			else {
@@ -311,7 +311,7 @@ public class CDBrowserController extends CDController implements Observer {
 			this.browserTable.removeTableColumn((NSTableColumn)enum.nextElement()); 
 		}
 		// ading table columns
-		if(Preferences.instance().getProperty("browser.columnIcon").equals("true")) {
+		if(Preferences.instance().getBoolean("browser.columnIcon")) {
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("TYPE");
 			c.headerCell().setStringValue("");
@@ -324,7 +324,7 @@ public class CDBrowserController extends CDController implements Observer {
 			c.dataCell().setAlignment(NSText.CenterTextAlignment);
 			this.browserTable.addTableColumn(c);
 		}
-		if(Preferences.instance().getProperty("browser.columnFilename").equals("true")) {
+		if(Preferences.instance().getBoolean("browser.columnFilename")) {
 			NSTableColumn c = new NSTableColumn();
 			c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
 			c.setIdentifier("FILENAME");
@@ -337,7 +337,7 @@ public class CDBrowserController extends CDController implements Observer {
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.browserTable.addTableColumn(c);
 		}
-		if(Preferences.instance().getProperty("browser.columnSize").equals("true")) {
+		if(Preferences.instance().getBoolean("browser.columnSize")) {
 			NSTableColumn c = new NSTableColumn();
 			c.headerCell().setStringValue(NSBundle.localizedString("Size", "A column in the browser"));
 			c.setIdentifier("SIZE");
@@ -349,7 +349,7 @@ public class CDBrowserController extends CDController implements Observer {
 			c.dataCell().setAlignment(NSText.RightTextAlignment);
 			this.browserTable.addTableColumn(c);
 		}
-		if(Preferences.instance().getProperty("browser.columnModification").equals("true")) {
+		if(Preferences.instance().getBoolean("browser.columnModification")) {
 			NSTableColumn c = new NSTableColumn();
 			c.headerCell().setStringValue(NSBundle.localizedString("Modified", "A column in the browser"));
 			c.setIdentifier("MODIFIED");
@@ -363,7 +363,7 @@ public class CDBrowserController extends CDController implements Observer {
 			    true));
 			this.browserTable.addTableColumn(c);
 		}
-		if(Preferences.instance().getProperty("browser.columnOwner").equals("true")) {
+		if(Preferences.instance().getBoolean("browser.columnOwner")) {
 			NSTableColumn c = new NSTableColumn();
 			c.headerCell().setStringValue(NSBundle.localizedString("Owner", "A column in the browser"));
 			c.setIdentifier("OWNER");
@@ -375,7 +375,7 @@ public class CDBrowserController extends CDController implements Observer {
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.browserTable.addTableColumn(c);
 		}
-		if(Preferences.instance().getProperty("browser.columnPermissions").equals("true")) {
+		if(Preferences.instance().getBoolean("browser.columnPermissions")) {
 			NSTableColumn c = new NSTableColumn();
 			c.headerCell().setStringValue(NSBundle.localizedString("Permissions", "A column in the browser"));
 			c.setIdentifier("PERMISSIONS");
@@ -401,7 +401,7 @@ public class CDBrowserController extends CDController implements Observer {
 				p.list(this.encoding, false, this.showHiddenFiles);
 			}
 			if(p.attributes.isFile() || browserTable.numberOfSelectedRows() > 1) {
-				if(Preferences.instance().getProperty("browser.doubleclick.edit").equals("true")) {
+				if(Preferences.instance().getBoolean("browser.doubleclick.edit")) {
 					this.editButtonClicked(sender);
 				}
 				else {
@@ -453,7 +453,7 @@ public class CDBrowserController extends CDController implements Observer {
 		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
 		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
 		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
-			this.bookmarkTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getProperty("browser.alternatingRows").equals("true"));
+			this.bookmarkTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
 		}
 		NSSelector setGridStyleMaskSelector =
 		    new NSSelector("setGridStyleMask", new Class[]{int.class});
@@ -523,13 +523,13 @@ public class CDBrowserController extends CDController implements Observer {
 		if((index = input.indexOf('@')) != -1) {
 			host = new Host(Preferences.instance().getProperty("connection.protocol.default"),
 							input.substring(index+1, input.length()),
-							Integer.parseInt(Preferences.instance().getProperty("connection.port.default")));
+							Preferences.instance().getInteger("connection.port.default"));
 			host.setCredentials(input.substring(0, index), null);
 		}
 		else {
 			host = new Host(Preferences.instance().getProperty("connection.protocol.default"),
 							input,
-							Integer.parseInt(Preferences.instance().getProperty("connection.port.default")));
+							Preferences.instance().getInteger("connection.port.default"));
 			if(host.getProtocol().equals(Session.FTP)) {
 				host.getCredentials().setUsername(Preferences.instance().getProperty("ftp.anonymous.name"));
 			}
@@ -621,7 +621,7 @@ public class CDBrowserController extends CDController implements Observer {
 		else {
 			item = new Host(Preferences.instance().getProperty("connection.protocol.default"),
 							"localhost",
-							Integer.parseInt(Preferences.instance().getProperty("connection.port.default")));
+							Preferences.instance().getInteger("connection.port.default"));
 		}
 		this.bookmarkModel.addItem(item);
 		this.bookmarkTable.reloadData();
@@ -867,7 +867,7 @@ public class CDBrowserController extends CDController implements Observer {
 				int selected = ((Integer)enum.nextElement()).intValue();
 				files.add(browserModel.getEntry(selected));
 			}
-			if(Preferences.instance().getProperty("browser.info.isInspector").equals("true")) {
+			if(Preferences.instance().getBoolean("browser.info.isInspector")) {
 				if(null == this.inspector) {
 					this.inspector = new CDInfoController(files);
 				} 
@@ -1139,7 +1139,7 @@ public class CDBrowserController extends CDController implements Observer {
 		);
 	}
 	
-	private boolean showHiddenFiles = Preferences.instance().getProperty("browser.showHidden").equals("true");
+	private boolean showHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
 		
 	public void showHiddenFilesClicked(Object sender) {
 		if(sender instanceof NSMenuItem) {

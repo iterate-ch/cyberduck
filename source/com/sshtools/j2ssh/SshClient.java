@@ -50,6 +50,7 @@ import com.sshtools.j2ssh.transport.ConsoleKnownHostsKeyVerification;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 import com.sshtools.j2ssh.transport.TransportProtocolClient;
 import com.sshtools.j2ssh.transport.TransportProtocolState;
+import com.sshtools.j2ssh.transport.SshMsgIgnore;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import com.sshtools.j2ssh.util.State;
 
@@ -761,6 +762,10 @@ public class SshClient {
 		if(useDefaultForwarding) {
 			forwarding = new ForwardingClient(connection);
 		}
+	}
+
+	public void noop() throws IOException {
+		transport.sendMessage(new SshMsgIgnore("NOOP"), this);
 	}
 
 	/**

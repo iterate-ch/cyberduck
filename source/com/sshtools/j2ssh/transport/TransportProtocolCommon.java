@@ -338,7 +338,6 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 			startBinaryPacketProtocol();
 		}
 		catch(Throwable e) {
-			e.printStackTrace();
 			if(e instanceof IOException) {
 				state.setLastError((IOException)e);
 			}
@@ -350,10 +349,9 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 		finally {
 			thread = null;
 		}
-
-		log.debug("The Transport Protocol has been stopped");
+		log.info("The Transport Protocol has been stopped");
 	}
-
+	
 	/**
 	 * @param msg
 	 * @param sender
@@ -428,7 +426,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 		log.info("Starting transport protocol");
 		thread = new SshThread(this, "Transport protocol", true);
 		thread.start();
-		onStartTransportProtocol();
+		this.onStartTransportProtocol();
 	}
 
 	/**
@@ -1148,7 +1146,6 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 			}
 
 			Integer messageId = SshMessage.getMessageId(msgdata);
-
 			// First check the filter
 			for(int i = 0; i < filter.length; i++) {
 				if(filter[i] == messageId.intValue()) {
@@ -1158,11 +1155,9 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 					else {
 						SshMessageStore ms = getMessageStore(messageId);
 						msg = ms.createMessage(msgdata);
-
 						if(log.isDebugEnabled()) {
 							log.debug("Processing "+msg.getMessageName());
 						}
-
 						return msg;
 					}
 				}
@@ -1170,33 +1165,28 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 
 			if(messageStore.isRegisteredMessage(messageId)) {
 				msg = messageStore.createMessage(msgdata);
-
 				switch(messageId.intValue()) {
 					case SshMsgDisconnect.SSH_MSG_DISCONNECT:
 						{
 							onMsgDisconnect((SshMsgDisconnect)msg);
-
 							break;
 						}
 
 					case SshMsgIgnore.SSH_MSG_IGNORE:
 						{
 							onMsgIgnore((SshMsgIgnore)msg);
-
 							break;
 						}
 
 					case SshMsgUnimplemented.SSH_MSG_UNIMPLEMENTED:
 						{
 							onMsgUnimplemented((SshMsgUnimplemented)msg);
-
 							break;
 						}
 
 					case SshMsgDebug.SSH_MSG_DEBUG:
 						{
 							onMsgDebug((SshMsgDebug)msg);
-
 							break;
 						}
 
@@ -1208,7 +1198,6 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 				throw new IOException("Unexpected message received");
 			}
 		}
-
 		throw new IOException("The transport protocol disconnected");
 	}
 
@@ -1223,7 +1212,6 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 
 		while(state.getValue() != TransportProtocolState.DISCONNECTED) {
 			long currentTime = System.currentTimeMillis();
-
 			if(((currentTime-startTime) > kexTimeout) ||
 			    ((sshIn.getNumBytesTransfered()+
 			    sshOut.getNumBytesTransfered()) > kexTransferLimit)) {
@@ -1232,23 +1220,19 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 			}
 
 			boolean hasmsg = false;
-
 			while(!hasmsg) {
 				try {
 					msgdata = sshIn.readMessage();
 					hasmsg = true;
 				}
-				catch(InterruptedIOException ex /*SocketTimeoutException ex*/) {
+				catch(InterruptedIOException ex /*SocketTimeoutException ex*/) { //@todo
 					log.info("Possible timeout on transport inputstream");
-
 					Iterator it = eventHandlers.iterator();
-					TransportProtocolEventHandler eventHandler;
-
 					while(it.hasNext()) {
-						eventHandler = (TransportProtocolEventHandler)it.next();
-						eventHandler.onSocketTimeout(this /*,
-						provider.isConnected()*/);
+						TransportProtocolEventHandler eventHandler = (TransportProtocolEventHandler)it.next();
+						eventHandler.onSocketTimeout(this);
 					}
+					throw ex; //@todo
 				}
 			}
 
@@ -1276,7 +1260,6 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 				return messageStore.createMessage(msgdata);
 			}
 		}
-
 		throw new IOException("The transport protocol has disconnected");
 	}
 

@@ -114,7 +114,7 @@ public class CDProgressController extends NSObject implements Observer {
 						Growl.instance().notify(NSBundle.localizedString("Download complete",
 																		 "Growl Notification"),
 												queue.getName());
-						if(Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
+						if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
 							boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
 							log.debug("Success opening file:"+success);
 						}
@@ -129,7 +129,7 @@ public class CDProgressController extends NSObject implements Observer {
 																		 "Growl Notification"),
 												queue.getName());
 					}
-					if(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
+					if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
 						CDQueueController.instance().removeItem(queue);
 					}
 				}

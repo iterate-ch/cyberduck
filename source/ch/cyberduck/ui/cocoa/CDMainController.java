@@ -101,7 +101,7 @@ public class CDMainController extends NSObject {
 		this.autoUpdateCheckbox = autoUpdateCheckbox;
 		this.autoUpdateCheckbox.setTarget(this);
 		this.autoUpdateCheckbox.setAction(new NSSelector("autoUpdateCheckboxClicked", new Class[]{NSButton.class}));
-		this.autoUpdateCheckbox.setState(Preferences.instance().getProperty("update.check").equals("true") ? NSCell.OnState : NSCell.OffState);
+		this.autoUpdateCheckbox.setState(Preferences.instance().getBoolean("update.check") ? NSCell.OnState : NSCell.OffState);
 	}
 
 	public void autoUpdateCheckboxClicked(NSButton sender) {
@@ -499,7 +499,7 @@ public class CDMainController extends NSObject {
 	 */
 	public boolean applicationOpenUntitledFile(NSApplication app) {
 		log.debug("applicationOpenUntitledFile");
-		if(Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
+		if(Preferences.instance().getBoolean("browser.openByDefault")) {
 			return CDMainController.newDocument() != null;
 		}
 		return false;
@@ -511,11 +511,11 @@ public class CDMainController extends NSObject {
 
 	public void applicationDidFinishLaunching(NSNotification notification) {
 		log.info("Available localizations:"+NSBundle.mainBundle().localizations());
-		if(Preferences.instance().getProperty("queue.openByDefault").equals("true")) {
+		if(Preferences.instance().getBoolean("queue.openByDefault")) {
 			this.showTransferQueueClicked(null);
 		}
-		int uses = Integer.parseInt(Preferences.instance().getProperty("uses"));
-		if(Preferences.instance().getProperty("donate").equals("true")) {
+		int uses = Preferences.instance().getInteger("uses");
+		if(Preferences.instance().getBoolean("donate")) {
 			if(false == NSApplication.loadNibNamed("Donate", this)) {
 				log.fatal("Couldn't load Donate.nib");
 			}
@@ -525,7 +525,7 @@ public class CDMainController extends NSObject {
 				this.donationSheet.makeKeyAndOrderFront(null);
 			}
 		}
-		if(Preferences.instance().getProperty("update.check").equals("true")) {
+		if(Preferences.instance().getBoolean("update.check")) {
 			this.checkForUpdate(false);
 		}
 		this.rendezvous.init();
@@ -561,7 +561,7 @@ public class CDMainController extends NSObject {
 				CDBrowserController controller = CDBrowserController.controllerForWindow(window);
 				if(null != controller) {
 					if(controller.isConnected()) {
-						if(Preferences.instance().getProperty("browser.confirmQuit").equals("true")) {
+						if(Preferences.instance().getBoolean("browser.confirmQuit")) {
 							int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
 															   NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
 															   NSBundle.localizedString("Review...", ""), //default
@@ -600,7 +600,7 @@ public class CDMainController extends NSObject {
 		//Writing version info
 		this.saveVersionInfo();
 		//Writing usage info
-		Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses"))+1);
+		Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses")+1);
 		Preferences.instance().save();
 	}
 

@@ -84,7 +84,7 @@ public class FTPSession extends Session {
 		this.log(host.getIp(), Message.TRANSCRIPT);
 		this.FTP = new FTPClient(host.getHostname(), 
 								 host.getPort(), 
-								 Integer.parseInt(Preferences.instance().getProperty("connection.timeout")), //timeout 
+								 Preferences.instance().getInteger("connection.timeout"), //timeout 
 								 encoding);
 		this.FTP.setMessageListener(new FTPMessageListener() {
 			public void logCommand(String cmd) {
@@ -114,7 +114,7 @@ public class FTPSession extends Session {
 		}
 		this.log("FTP connection opened", Message.PROGRESS);
 		this.login();
-		if(Preferences.instance().getProperty("ftp.sendSystemCommand").equals("true")) {
+		if(Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
 			this.host.setIdentification(this.FTP.system());
 		}
 		this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.host.getIdentification());
@@ -159,6 +159,10 @@ public class FTPSession extends Session {
 			this.close();
 		}
 		return null;
+	}
+	
+	public synchronized void noop() throws IOException {
+		this.FTP.noop();
 	}
 
 	public synchronized void check() throws IOException {

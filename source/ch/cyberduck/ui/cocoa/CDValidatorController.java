@@ -138,18 +138,18 @@ public abstract class CDValidatorController extends AbstractValidator {
 		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
 		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
 		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
-			this.fileTableView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getProperty("browser.alternatingRows").equals("true"));
+			this.fileTableView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
 		}
 		NSSelector setGridStyleMaskSelector =
 		    new NSSelector("setGridStyleMask", new Class[]{int.class});
 		if(setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
-			if(Preferences.instance().getProperty("browser.horizontalLines").equals("true") && Preferences.instance().getProperty("browser.verticalLines").equals("true")) {
+			if(Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
 				this.fileTableView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
 			}
-			else if(Preferences.instance().getProperty("browser.verticalLines").equals("true")) {
+			else if(Preferences.instance().getBoolean("browser.verticalLines")) {
 				this.fileTableView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
 			}
-			else if(Preferences.instance().getProperty("browser.horizontalLines").equals("true")) {
+			else if(Preferences.instance().getBoolean("browser.horizontalLines")) {
 				this.fileTableView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
 			}
 			else {

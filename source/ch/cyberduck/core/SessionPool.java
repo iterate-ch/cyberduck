@@ -54,8 +54,8 @@ public class SessionPool extends Hashtable {
 	public int getSize(Host h) {
 		String key = h.getURL();
 		if(this.containsKey(key))
-			return Integer.parseInt(Preferences.instance().getProperty("connection.pool.max"))-((List)this.get(key)).size();
-		return Integer.parseInt(Preferences.instance().getProperty("connection.pool.max"));
+			return Preferences.instance().getInteger("connection.pool.max")-((List)this.get(key)).size();
+		return Preferences.instance().getInteger("connection.pool.max");
 	}
 
 	/**
@@ -70,15 +70,15 @@ public class SessionPool extends Hashtable {
 		List connections = null;
 		if(this.containsKey(key)) {
 			connections = (List)this.get(key);
-			while(connections.size() >= Integer.parseInt(Preferences.instance().getProperty("connection.pool.max"))) {
+			while(connections.size() >= Preferences.instance().getInteger("connection.pool.max")) {
 				try {
 					session.log(NSBundle.localizedString("Maximum allowed connections exceeded. Waiting...", ""), Message.PROGRESS);
-					this.wait(Integer.parseInt(Preferences.instance().getProperty("connection.pool.timeout"))*1000);
+					this.wait(Preferences.instance().getInteger("connection.pool.timeout")*1000);
 				}
 				catch(InterruptedException ignored) {
 					//
 				}
-				if(connections.size() >= Integer.parseInt(Preferences.instance().getProperty("connection.pool.max"))) {
+				if(connections.size() >= Preferences.instance().getInteger("connection.pool.max")) {
 					// not awakened by another session but because of the timeout
 					//I gave up after waiting for "+Preferences.instance().getProperty("connection.pool.timeout")+" seconds
 					throw new IOException(NSBundle.localizedString("Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences.", ""));

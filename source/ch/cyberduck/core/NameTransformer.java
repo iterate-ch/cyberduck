@@ -41,8 +41,8 @@ public class NameTransformer {
 	
 	protected String transformByHonoringMaxLength(String transformName) {
 		int fileLen = transformName.length();
-		int maxLength = Integer.parseInt(Preferences.instance().getProperty("queue.transformer.maxLength"));
-		if(Preferences.instance().getProperty("queue.transformer.keepsFilenameExtensions").equals("true")) {
+		int maxLength = Preferences.instance().getInteger("queue.transformer.maxLength");
+		if(Preferences.instance().getBoolean("queue.transformer.keepsFilenameExtensions")) {
 			maxLength -= NSPathUtilities.pathExtension(transformName).length()+1;
 		}
 		log.debug("transformByHonoringMaxLength fileLen: "+fileLen);
@@ -71,7 +71,7 @@ public class NameTransformer {
 	public String transform(String originalName) {
 		String transformName = originalName;
 		String extension = NSPathUtilities.pathExtension(transformName);
-		if(Preferences.instance().getProperty("queue.transformer.keepsFilenameExtensions").equals("true")) {
+		if(Preferences.instance().getBoolean("queue.transformer.keepsFilenameExtensions")) {
 			transformName = NSPathUtilities.stringByDeletingPathExtension(originalName);
 		} 
 		log.debug("preparing to transform: "+transformName);
@@ -89,7 +89,7 @@ public class NameTransformer {
 		log.debug("replaceWithString = "+replaceWithString);
 		
 		if(replaceSearchString != null) {
-			boolean replaceAll = Preferences.instance().getProperty("queue.transformer.replaceAllOccurances").equals("true");
+			boolean replaceAll = Preferences.instance().getBoolean("queue.transformer.replaceAllOccurances");
 			do {
 				transformName = replaceStringWithString(transformName, replaceSearchString, replaceWithString);
 			} while (transformName.indexOf(replaceSearchString) > -1 && replaceAll);
@@ -172,7 +172,7 @@ public class NameTransformer {
 	
 	private String fixExtension(String transformName, String extension) {
 		if(null != extension && extension.length() > 0) {
-			if(Preferences.instance().getProperty("queue.transformer.keepsFilenameExtensions").equals("true") && NSPathUtilities.pathExtension(transformName) != null) {
+			if(Preferences.instance().getBoolean("queue.transformer.keepsFilenameExtensions") && NSPathUtilities.pathExtension(transformName) != null) {
 				transformName = NSPathUtilities.stringByAppendingPathExtension(transformName, extension);
 			}
 		}

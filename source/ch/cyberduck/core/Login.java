@@ -214,7 +214,7 @@ public class Login {
 	 */
 	public boolean check() {
 		if(!this.hasReasonableValues()) {
-			if(Preferences.instance().getProperty("connection.login.useKeychain").equals("true")) {
+			if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
 				log.info("Searching keychain for password...");
 				String passFromKeychain = this.getInternetPasswordFromKeychain();
 				if(null == passFromKeychain || passFromKeychain.equals("")) {

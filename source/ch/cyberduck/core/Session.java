@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  */
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -160,6 +162,8 @@ public abstract class Session extends Observable {
 	 */
 	public abstract Path workdir();
 
+	public abstract void noop() throws IOException;
+
 	/**
 	 * Assert that the connection to the remote host is still alive. Open connection if needed.
 	 *
@@ -175,11 +179,20 @@ public abstract class Session extends Observable {
 		return this.connected;
 	}
 
+	private Timer keepAliveTimer = null;
+	
 	public void setConnected() throws IOException {
 		log.debug("setConnected");
 		SessionPool.instance().add(this);
 		this.callObservers(new Message(Message.OPEN, "Session opened."));
 		this.connected = true;
+		if(Preferences.instance().getBoolean("connection.keepalive")) {
+			this.keepAliveTimer = new Timer(true);
+			this.keepAliveTimer.scheduleAtFixedRate(new KeepAliveTask(),
+													Preferences.instance().getInteger("connection.keepalive.interval"),
+													Preferences.instance().getInteger("connection.keepalive.interval")
+													);
+		}
 	}
 
 	public void setClosed() {
@@ -188,6 +201,20 @@ public abstract class Session extends Observable {
 		this.callObservers(new Message(Message.CLOSE, "Session closed."));
 		this.cache().clear();
 		this.connected = false;
+		if(Preferences.instance().getBoolean("connection.keepalive")) {
+			this.keepAliveTimer.cancel();
+		}
+	}
+	
+	private class KeepAliveTask extends TimerTask {
+		public void run() {
+			try {
+				Session.this.noop();
+			}
+			catch(IOException e) {
+				this.cancel();
+			}
+		}
 	}
 
 	public void addPathToHistory(Path p) {

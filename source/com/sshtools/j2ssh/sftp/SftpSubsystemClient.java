@@ -708,7 +708,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 		attrs.setPermissions(permissions);
 		setAttributes(filename, attrs);
 	}
-
+	
 	/**
 	 * @return
 	 * @throws IOException

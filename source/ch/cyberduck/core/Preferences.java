@@ -161,8 +161,10 @@ public abstract class Preferences {
 		defaults.put("connection.buffer.default", "16384");
 		defaults.put("connection.port.default", "21");
 		defaults.put("connection.protocol.default", "ftp");
-		defaults.put("connection.timeout", "30000");
-
+		defaults.put("connection.timeout", "20000");
+		defaults.put("connection.keepalive", "true");
+		defaults.put("connection.keepalive.interval", "30000");
+		
 		defaults.put("http.agent", "Cyberduck/"+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		defaults.put("http.acceptheader", "*/*");
 
@@ -191,6 +193,14 @@ public abstract class Preferences {
 		}
 //		log.debug("getProperty:"+property+">"+value);
 		return value;
+	}
+
+	public int getInteger(String property) {
+		return Integer.parseInt(this.getProperty(property));
+	}
+
+	public boolean getBoolean(String property) {
+		return this.getProperty(property).equals("true");
 	}
 
 	/**

@@ -294,7 +294,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	 * in a plist xml format
 	 */
 	public void save(java.io.File f) {
-		if(Preferences.instance().getProperty("favorites.save").equals("true")) {
+		if(Preferences.instance().getBoolean("favorites.save")) {
 			try {
 				NSMutableArray list = new NSMutableArray();
 				java.util.Iterator i = this.iterator();

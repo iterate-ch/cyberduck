@@ -35,11 +35,11 @@ import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.subsystem.SubsystemMessageStore;
 import com.sshtools.j2ssh.util.OpenClosedState;
 
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Transcript;
 import ch.cyberduck.core.TranscriptFactory;
 
 class SftpMessageStore extends SubsystemMessageStore {
-	/**  */
 	public static Log log = LogFactory.getLog(SftpMessageStore.class);
 
 	private Transcript transcript;
@@ -49,7 +49,8 @@ class SftpMessageStore extends SubsystemMessageStore {
 	 */
 	public SftpMessageStore(String encoding) {
 		super(encoding);
-		this.transcript = TranscriptFactory.getImpl(this.toString()); //@nice get proper logger
+		this.transcript = TranscriptFactory.getImpl(this.toString()); 
+		//@todo get proper logger
 	}
 
 	/**
@@ -61,7 +62,7 @@ class SftpMessageStore extends SubsystemMessageStore {
 	    throws InterruptedException {
 		Iterator it;
 		SubsystemMessage msg;
-
+		int waiting = 0;
 		// If there are no messages available then wait untill there are.
 		while(getState().getValue() == OpenClosedState.OPEN) {
 			if(messages.size() > 0) {
@@ -79,11 +80,12 @@ class SftpMessageStore extends SubsystemMessageStore {
 					}
 				}
 			}
-
 			log.debug("Waiting for new messages");
-			wait(5000);
+			wait(5000); waiting += 5000;
+			if(waiting >= Preferences.instance().getInteger("connection.timeout")) {
+				throw new InterruptedException("Timeout waiting for server message");
+			}
 		}
-
 		return null;
 	}
 }

@@ -620,7 +620,7 @@ public class FTPClient {
 			
 			// send the retrieve command
 			String command;
-			if(Preferences.instance().getProperty("ftp.sendExtendedListCommand").equals("true")) {
+			if(Preferences.instance().getBoolean("ftp.sendExtendedListCommand")) {
 				command = "LIST -a ";
 			}
 			else {
@@ -854,7 +854,8 @@ public class FTPClient {
 			this.checkConnection(true);
 			
 			FTPReply reply = control.sendCommand("CWD "+dir);
-			lastValidReply = control.validateReply(reply, "250");
+			String[] validCodes = {"200", "250"};
+			lastValidReply = control.validateReply(reply, validCodes);
 		}
 	
 	/**
@@ -866,7 +867,8 @@ public class FTPClient {
 		this.checkConnection(true);
 		
 		FTPReply reply = control.sendCommand("CDUP");
-		lastValidReply = control.validateReply(reply, "250");
+		String[] validCodes = {"200", "250"};
+		lastValidReply = control.validateReply(reply, validCodes);
 	}
 	
 	
