@@ -494,7 +494,7 @@ public class CDMainController extends NSObject {
     }
 	
 	public void applicationWillFinishLaunching(NSNotification notification) {
-        this.rendezvous.init();
+		//
 	}
 	
     public void applicationDidFinishLaunching(NSNotification notification) {
@@ -516,6 +516,7 @@ public class CDMainController extends NSObject {
         if (Preferences.instance().getProperty("update.check").equals("true")) {
             this.checkForUpdate(false);
         }
+        this.rendezvous.init();
     }
 
     public void applicationShouldSleep(Object o) {

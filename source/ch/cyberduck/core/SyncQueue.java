@@ -66,6 +66,7 @@ public class SyncQueue extends Queue {
 		}
 		if(p.local.exists()) {
 			if(p.local.isDirectory()) {
+				log.debug(">>>> Directory:"+p);
 				p.attributes.setType(Path.DIRECTORY_TYPE);
 				p.status.setSize(0);
 				File[] files = p.getLocal().listFiles();
@@ -79,6 +80,7 @@ public class SyncQueue extends Queue {
 				}
 			}
 			else if(p.local.isFile()) {
+				log.debug(">>>> File:"+p);
 				p.attributes.setType(Path.FILE_TYPE);
 				p.status.setSize(p.getLocal().length()); //setting the file size to the known size of the local file
 //				list.add(p);
