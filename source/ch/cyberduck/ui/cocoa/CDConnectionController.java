@@ -222,13 +222,11 @@ public class CDConnectionController extends NSObject implements Observer {
 	    CDLoginSheet loginSheet = (CDLoginSheet)sheet;
 	    switch(returncode) {
 		case(NSAlertPanel.DefaultReturn):
-                    log.debug("NSAlertPanel.DefaultReturn");
 		    tryAgain = true;
-		    this.setUsername(loginSheet.getUser());///@todo
+                    this.setUsername(loginSheet.getUser());
 		    this.setPassword(loginSheet.getPass());
                     break;
 		case(NSAlertPanel.AlternateReturn):
-                    log.debug("NSAlertPanel.AlternateReturn");
 		    tryAgain = false;
                     break;
 	    }
@@ -238,7 +236,7 @@ public class CDConnectionController extends NSObject implements Observer {
 
 	public boolean loginFailure() {
 	    log.info("Authentication failed.");
-	    mainWindow.makeFirstResponder(loginSheet);
+//	    mainWindow.makeFirstResponder(loginSheet);
 	    //NSApplication.beginSheet( NSWindow sheet, NSWindow docWindow, Object modalDelegate, NSSelector didEndSelector, Object contextInfo)
 	    NSApplication.sharedApplication().beginSheet(
 						  loginSheet, //sheet
@@ -249,6 +247,7 @@ public class CDConnectionController extends NSObject implements Observer {
 		       new Class[] { NSWindow.class, int.class, NSWindow.class }
 		       ),// did end selector
 						  null); //contextInfo
+            mainWindow.makeFirstResponder(loginSheet);
 	    while(!done) {
 		try {
 		    Thread.sleep(500); //milliseconds

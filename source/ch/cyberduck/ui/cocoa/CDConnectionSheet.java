@@ -22,6 +22,7 @@
 package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Preferences;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
@@ -78,7 +79,8 @@ public class CDConnectionSheet extends NSWindow {
 						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
 						    NSControl.ControlTextDidChangeNotification,
 						    usernameField);
-
+        this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
+        this.pathField.setStringValue(Preferences.instance().getProperty("connection.path.default"));
 	this.textInputDidChange(null);
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
 	this.pathField.setStringValue("~");

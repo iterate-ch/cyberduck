@@ -73,7 +73,7 @@ public class FTPSession extends Session {
 //		Path currentDirectory;
 //		if(directory.getAbsolute().equals("/") && bookmark.getCurrentPath().getAbsolute().equals("/")) {
 //		    String cwd = FTP.pwd();
-		    //            cwd = cwd.substring(cwd.indexOf('"') + 1, cwd.lastIndexOf('"'));
+//            cwd = cwd.substring(cwd.indexOf('"') + 1, cwd.lastIndexOf('"'));
 //		    Path current = null;
 //		    if(cwd.length() == 1 && cwd.charAt(0) == '/')
 //			current = new FTPFile(cwd);
@@ -87,6 +87,7 @@ public class FTPSession extends Session {
 //		}
 		FTP.chdir(this.getAbsolute());
 		files = new FTPParser().parseList(this.getAbsolute(), FTP.dir());
+                host.callObservers(this);
 		host.callObservers(files);
 	    }
 	    catch(FTPException e) {
@@ -129,19 +130,31 @@ public class FTPSession extends Session {
 	    }
 	}
 
-	public void rename(String filename) {
-	    log.debug("rename");
-	}	
+        public void rename(String filename) {
+            log.debug("rename");
+            try {
+                FTP.chdir(this.getParent().getAbsolute());
+                this.log("Renaming '" + this.getName() + "' to '" + filename + "'...", Message.PROGRESS);
+                FTP.rename(this.getName(), filename);
+                this.getParent().list();
+                catch(FTPException e) {
+                    FTPSession.this.log(e.getMessage(), Message.ERROR);
+                }
+                catch(IOException e) {
+                    FTPSession.this.log(e.getMessage(), Message.ERROR);
+                }
+            }
+        }
 
-	public void mkdir() {
-	    log.debug("mkdir");
-	    try {
+        public void mkdir() {
+            log.debug("mkdir");
+            try {
                 FTP.mkdir(this.getName());
-	    }
-	    catch(FTPException e) {
-		FTPSession.this.log(e.getMessage(), Message.ERROR);
-	    }
-	    catch(IOException e) {
+            }
+            catch(FTPException e) {
+                FTPSession.this.log(e.getMessage(), Message.ERROR);
+            }
+            catch(IOException e) {
 		FTPSession.this.log(e.getMessage(), Message.ERROR);
 	    }
 	}
@@ -200,7 +213,8 @@ public class FTPSession extends Session {
 	    FTP.setTimeout(Integer.parseInt(Preferences.instance().getProperty("connection.timeout"))*60*1000);
 	    this.login();
 	    FTP.system();
-	    FTPFile home = new FTPFile(FTP.pwd());
+            String path = host.getPath().equals(Preferences.instance().getProperty("connection.path.default")) ? FTP.pwd() : host.getPath();
+	    FTPFile home = new FTPFile(path);
 	    home.list();
 	}
 	catch(FTPException e) {
@@ -222,8 +236,10 @@ public class FTPSession extends Session {
 	    this.log("Login successfull.", Message.PROGRESS);
 	}
 	catch(FTPException e) {
-	    if(host.getLogin().loginFailure())
+            if(host.getLogin().loginFailure()) {
+                // let's try again with the new values
 		this.login();
+            }
 	    else {
 		this.log(e.getMessage(), Message.ERROR);
 		this.close();

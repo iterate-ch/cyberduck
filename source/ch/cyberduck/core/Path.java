@@ -82,7 +82,7 @@ public abstract class Path implements Serializable, Transferable {
      * @param name the file relative to param path
      */
     public Path(String path, String name) {
-        //log.debug("[Path] Path(" + path+","+name+")");
+        log.debug("[Path] Path(" + path+","+name+")");
         if(path.charAt(path.length() -1) == '/')
             this.init(path + name);
         else
@@ -199,7 +199,7 @@ public abstract class Path implements Serializable, Transferable {
      * @return the absolute path name
      */
     public String getAbsolute() {
-//	log.debug("getAbsolute:"+this.path);
+	log.debug("getAbsolute:"+this.path);
 	return this.path;
     }
 

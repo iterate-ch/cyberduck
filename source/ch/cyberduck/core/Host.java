@@ -49,7 +49,7 @@ public class Host extends Observable {
     private int port = Integer.parseInt(Preferences.instance().getProperty("connection.port.default"));
     private String name;
 //    private Path path;
-    private String path;
+    private String path = Preferences.instance().getProperty("connection.path.default");
     
     private HostKeyVerification hostKeyVerification;
 
@@ -61,7 +61,7 @@ public class Host extends Observable {
         this.protocol = protocol != null ? protocol : this.protocol;
         this.port = port != -1 ? port : this.port;
         this.name = name;
-	this.path = path;
+        this.path = path != null ? path : this.path;
         this.login = login != null ? login : this.login;
 	
     }

@@ -243,7 +243,8 @@ public class SFTPSession extends Session {
 	    // Connect to the host
 	    SSH.connect(host.getName(), host.getHostKeyVerification());
 	    this.login();
-	    SFTPFile home = new SFTPFile(SFTP.getDefaultDirectory());
+            String path = host.getPath().equals(Preferences.instance().getProperty("connection.path.default")) ? SFTP.getDefaultDirectory() : host.getPath();
+	    SFTPFile home = new SFTPFile(path);
 	    home.list();
 	}
         catch (IOException e) {

@@ -52,7 +52,11 @@ public class CDLogView extends NSTextView implements Observer {
 		 * attributes of the first character in the receiver are used.
 */
 		if(msg.getDescription() != null) {
-		    this.replaceCharactersInRange(new NSRange(this.string().length(), 0), msg.getDescription());
+                    this.setString(msg.getDescription());
+//		    this.replaceCharactersInRange(new NSRange(this.string().length(), 0), msg.getDescription());
+
+
+
 //		    this.replaceCharactersInRange(new NSRange(0, this.string().length()), msg.getDescription());
 //		    documentView.replaceCharactersInRange(new NSRange(documentView.string().length(), 0), msg.getDescription());
 //		documentView.scrollRangeToVisible(new NSRange(documentView.string().length()-1, documentView.string().length()-1));

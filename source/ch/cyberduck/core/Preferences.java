@@ -218,6 +218,8 @@ public class Preferences extends Properties {
         this.setProperty("connection.proxy.username", "user");
         this.setProperty("connection.proxy.password", "pass");
 
+        this.setProperty("connection.path.default", "~");
+
         this.setProperty("connection.login.name", System.getProperty("user.name"));
         this.setProperty("connection.login.anonymous.name", "anonymous");
         this.setProperty("connection.login.anonymous.pass", "user@domain.tld");

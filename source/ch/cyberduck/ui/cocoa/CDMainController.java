@@ -59,8 +59,13 @@ public class CDMainController extends NSObject {
     // Selector methods for the toolbar items
     // ----------------------------------------------------------
 
+    public void folderButtonPressed(NSObject sender) {
+        log.debug("folderButtonPressed");
+    }
+    
     public void infoButtonPressed(NSObject sender) {
 	log.debug("infoButtonPressed");
+        NSApplication.loadNibNamed("Info", this); //@todo if(infoWindow == null)
 	infoWindow.orderFront(this);
     }
     
@@ -156,7 +161,7 @@ public class CDMainController extends NSObject {
 
 	this.addToolbarItem(toolbarItems, "Upload", "Upload", "Upload", "Upload file", this, new NSSelector("uploadButtonPressed", new Class[] {null}), NSImage.imageNamed("upload.tiff"));
 
-	this.addToolbarItem(toolbarItems, "New Folder", "New Folder", "New Folder", "Create New Folder", this, new NSSelector("mkdir", new Class[] {null}), NSImage.imageNamed("folder.tiff"));
+	this.addToolbarItem(toolbarItems, "New Folder", "New Folder", "New Folder", "Create New Folder", this, new NSSelector("folderButtonPressed", new Class[] {null}), NSImage.imageNamed("folder.tiff"));
 
 	this.addToolbarItem(toolbarItems, "Get Info", "Get Info", "Get Info", "Show file permissions", this, new NSSelector("infoButtonPressed", new Class[] {null}), NSImage.imageNamed("info.tiff"));
 
