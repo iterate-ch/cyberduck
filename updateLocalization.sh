@@ -23,9 +23,16 @@ usage() {
 	echo "Call with no parameters to update all languages and all nib files"
 }
 
-updateNibFromStrings() {
-    nib=`basename $nibfile .nib`
+init() {
+    genstrings -j -q -o English.lproj source/ch/cyberduck/ui/cocoa/*.java
+}
 
+update() {
+    updateNibFromStrings;
+    udpateStringsFromNib;
+}
+
+updateNibFromStrings() {
     rm -rf $language.lproj/$nibfile.bak
     mv $language.lproj/$nibfile $language.lproj/$nibfile.bak
 
@@ -49,8 +56,6 @@ updateNibFromStrings() {
 }
 
 udpateStringsFromNib() {
-    nib=`basename $nibfile .nib`
-    
     echo "Updating $nib.strings in $language.lproj..."
         
     rm $language.lproj/$nib.strings.bak
@@ -63,6 +68,8 @@ udpateStringsFromNib() {
 language="all";
 nibfile="all";
 force=false;
+
+init;
 
 while [ "$1" != "" ] # When there are arguments...
 do
@@ -105,17 +112,21 @@ if [ "$language" = "all" ] ; then
                 if [ "$nibfile" = "all" ] ; then
                     echo "*** Updating all NIBs...";
                     for nibfile in `ls $language.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; do
-                        updateNibFromStrings;
+                        nib=`basename $nibfile .nib`
+                        nibtool --localizable-strings English.lproj/$nibfile > English.lproj/$nib.strings
+                        update;
                     done;
                 fi;
                 if [ "$nibfile" != "all" ] ; then
-                        updateNibFromStrings;
+                        nib=`basename $nibfile .nib`
+                        nibtool --localizable-strings English.lproj/$nibfile > English.lproj/$nib.strings
+                        update;
                 fi;
             }
             fi;
         done;
     }
-    echo "*** Done.";
+    echo "*** DONE. ***";
     exit 0;
 fi;
 
@@ -126,16 +137,20 @@ if [ "$language" != "all" ] ; then
         if [ "$nibfile" = "all" ] ; then
             echo "*** Updating all NIBs...";
             for nibfile in `ls $language.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; do
-                updateNibFromStrings;
+                nib=`basename $nibfile .nib`
+                nibtool --localizable-strings English.lproj/$nibfile > English.lproj/$nib.strings
+                update;
             done;
         fi;
         if [ "$nibfile" != "all" ] ; then
         {
-            updateNibFromStrings;
+            nib=`basename $nibfile .nib`
+            nibtool --localizable-strings English.lproj/$nibfile > English.lproj/$nib.strings
+            update;
         }
         fi;
     }
-    echo "*** Done.";
+    echo "*** DONE. ***";
     exit 0;
 fi;
 
