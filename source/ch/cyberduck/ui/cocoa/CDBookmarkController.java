@@ -23,7 +23,6 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.BookmarkList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 
@@ -58,7 +57,7 @@ public class CDBookmarkController extends NSObject {
     public void windowWillClose(NSNotification notification) {
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
-        BookmarkList.instance().save();
+        CDBookmarkTableDataSource.instance().save();
     }
 
     private NSPopUpButton protocolPopup; // IBOutlet

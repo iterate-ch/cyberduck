@@ -29,15 +29,15 @@ import ch.cyberduck.core.Queue;
 /**
  * @version $Id$
  */
-public class CDQueueCell extends CDTableCell {
+public class CDIconCell extends CDTableCell {
 
     private Queue queue;
 
-    public CDQueueCell() {
+    public CDIconCell() {
         super();
     }
 
-    protected CDQueueCell(NSCoder decoder, long token) {
+    protected CDIconCell(NSCoder decoder, long token) {
         super(decoder, token);
     }
 
@@ -47,10 +47,6 @@ public class CDQueueCell extends CDTableCell {
 
     public void setObjectValue(Object q) {
         this.queue = (Queue)q;
-    }
-
-    public static NSMenu defaultMenu() {
-        return new NSMenu("Queue Item");
     }
 
     private static final NSImage arrowUpIcon = NSImage.imageNamed("arrowUp.tiff");
@@ -107,17 +103,22 @@ public class CDQueueCell extends CDTableCell {
                 fileIcon = multipleDocumentsIcon;
             }
 
-            final float BORDER = 40;
-            final float SPACE = 5;
+//            final float BORDER = 40;
+            final float SPACE = 2;
 
             if (fileIcon != null) {
                 fileIcon.setScalesWhenResized(true);
                 fileIcon.setSize(new NSSize(32f, 32f));
 
-                fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE, cellPoint.y() + 32 + SPACE), NSImage.CompositeSourceOver);
-                arrowIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE * 2, cellPoint.y() + 32 + SPACE * 2), NSImage.CompositeSourceOver);
+                fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE, 
+													  cellPoint.y() + 32 + SPACE), 
+										  NSImage.CompositeSourceOver);
+                arrowIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE * 2, 
+													   cellPoint.y() + 32 + SPACE * 2), 
+										   NSImage.CompositeSourceOver);
             }
 			
+			/*
             // drawing path properties
             // local file
             if (queue.numberOfRoots() == 1) {
@@ -159,6 +160,8 @@ public class CDQueueCell extends CDTableCell {
                             cellPoint.y() + 33,
                             cellSize.width() - BORDER - SPACE,
                             cellSize.height()));
+			 
+			 */
         }
     }
 }

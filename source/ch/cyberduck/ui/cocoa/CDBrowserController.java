@@ -31,7 +31,7 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 /**
  * @version $Id$
  */
-public class CDBrowserController extends NSObject implements Controller, Observer {
+public class CDBrowserController extends NSObject implements CDController, Observer {
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
     /**
@@ -225,10 +225,6 @@ public class CDBrowserController extends NSObject implements Controller, Observe
         }
     }
 
-//    public void browserTableRowEdited(Object sender) {
-//        log.debug("browserTableRowEdited");
-//    }
-
     private CDBookmarkTableDataSource bookmarkModel;
     private NSTableView bookmarkTable; // IBOutlet
 
@@ -237,7 +233,7 @@ public class CDBrowserController extends NSObject implements Controller, Observe
         this.bookmarkTable = bookmarkTable;
         this.bookmarkTable.setTarget(this);
         this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableRowDoubleClicked", new Class[]{Object.class}));
-        this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
+        this.bookmarkTable.setDataSource(this.bookmarkModel = CDBookmarkTableDataSource.instance());
         this.bookmarkTable.setDelegate(this.bookmarkModel);
 
         // receive drag events from types
@@ -301,7 +297,7 @@ public class CDBrowserController extends NSObject implements Controller, Observe
     public void bookmarkTableRowDoubleClicked(Object sender) {
         log.debug("bookmarkTableRowDoubleClicked");
         if (this.bookmarkTable.selectedRow() != -1) {
-            Host host = (Host)BookmarkList.instance().getItem(bookmarkTable.selectedRow());
+            Host host = (Host)bookmarkModel.getItem(bookmarkTable.selectedRow());
             this.window().setTitle(host.getProtocol() + ":" + host.getHostname());
             this.mount(host);
         }
@@ -317,11 +313,11 @@ public class CDBrowserController extends NSObject implements Controller, Observe
         this.quickConnectPopup.setUsesDataSource(true);
         this.quickConnectPopup.setDataSource(this.quickConnectDataSource = new Object() {
             public int numberOfItemsInComboBox(NSComboBox combo) {
-                return BookmarkList.instance().size();
+                return CDBookmarkTableDataSource.instance().size();
             }
 
             public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-                return BookmarkList.instance().getItem(row).getHostname();
+                return CDBookmarkTableDataSource.instance().getItem(row).getHostname();
             }
         });
     }
@@ -329,7 +325,7 @@ public class CDBrowserController extends NSObject implements Controller, Observe
     public void quickConnectSelectionChanged(Object sender) {
         log.debug("quickConnectSelectionChanged");
         String input = ((NSControl)sender).stringValue();
-        for (Iterator iter = BookmarkList.instance().iterator(); iter.hasNext();) {
+        for (Iterator iter = bookmarkModel.iterator(); iter.hasNext();) {
             Host h = (Host)iter.next();
             if (h.getHostname().equals(input)) {
                 this.mount(h);
@@ -398,16 +394,6 @@ public class CDBrowserController extends NSObject implements Controller, Observe
     // Manage Bookmarks
     // ----------------------------------------------------------
 
-    private NSButton showBookmarkButton; // IBOutlet
-
-    public void setShowBookmarkButton(NSButton showBookmarkButton) {
-        this.showBookmarkButton = showBookmarkButton;
-        this.showBookmarkButton.setImage(NSImage.imageNamed("drawer.tiff"));
-        this.showBookmarkButton.setAlternateImage(NSImage.imageNamed("drawerPressed.tiff"));
-        this.showBookmarkButton.setTarget(this);
-        this.showBookmarkButton.setAction(new NSSelector("toggleBookmarkDrawer", new Class[]{Object.class}));
-    }
-
     private NSButton editBookmarkButton; // IBOutlet
 
     public void setEditBookmarkButton(NSButton editBookmarkButton) {
@@ -422,7 +408,7 @@ public class CDBrowserController extends NSObject implements Controller, Observe
     public void editBookmarkButtonClicked(Object sender) {
         this.bookmarkDrawer.open();
         CDBookmarkController controller = new CDBookmarkController(bookmarkTable,
-                BookmarkList.instance().getItem(bookmarkTable.selectedRow()));
+                bookmarkModel.getItem(bookmarkTable.selectedRow()));
         controller.window().makeKeyAndOrderFront(null);
     }
 
@@ -450,10 +436,10 @@ public class CDBrowserController extends NSObject implements Controller, Observe
         else {
             item = new Host("", new Login("", null, null));
         }
-        BookmarkList.instance().addItem(item);
+        bookmarkModel.addItem(item);
         this.bookmarkTable.reloadData();
-        this.bookmarkTable.selectRow(BookmarkList.instance().indexOf(item), false);
-        this.bookmarkTable.scrollRowToVisible(BookmarkList.instance().indexOf(item));
+        this.bookmarkTable.selectRow(bookmarkModel.indexOf(item), false);
+        this.bookmarkTable.scrollRowToVisible(bookmarkModel.indexOf(item));
         CDBookmarkController controller = new CDBookmarkController(bookmarkTable, item);
     }
 
@@ -476,7 +462,7 @@ public class CDBrowserController extends NSObject implements Controller, Observe
                 NSBundle.localizedString("Cancel", ""),
                 null)) {
             case NSAlertPanel.DefaultReturn:
-                BookmarkList.instance().removeItem(bookmarkTable.selectedRow());
+                bookmarkModel.removeItem(bookmarkTable.selectedRow());
                 this.bookmarkTable.reloadData();
                 break;
             case NSAlertPanel.AlternateReturn:
@@ -604,7 +590,7 @@ public class CDBrowserController extends NSObject implements Controller, Observe
             this.logDrawer.open();
         }
         if (Preferences.instance().getProperty("bookmarkDrawer.isOpen").equals("true")) {
-            this.showBookmarkButton.setState(NSCell.OnState);
+//            this.showBookmarkButton.setState(NSCell.OnState);
             this.bookmarkDrawer.open();
         }
         // Toolbar
@@ -665,7 +651,6 @@ public class CDBrowserController extends NSObject implements Controller, Observe
             else if (msg.getTitle().equals(Message.OPEN)) {
                 statusIcon.setImage(null);
                 statusIcon.setNeedsDisplay(true);
-                //                CDHistoryImpl.instance().addItem(((Session) o).host);
                 toolbar.validateVisibleItems();
                 window().setDocumentEdited(true);
             }
@@ -834,7 +819,8 @@ public class CDBrowserController extends NSObject implements Controller, Observe
                         path.setLocal(new Local(filename));
                         Queue queue = new Queue(Queue.KIND_DOWNLOAD);
                         queue.addRoot(path);
-                        QueueList.instance().addItem(queue);
+						CDQueueController.instance().addItem(queue);
+//                        QueueList.instance().addItem(queue);
                         CDQueueController.instance().startItem(queue);
                     }
                     break;
@@ -856,7 +842,8 @@ public class CDBrowserController extends NSObject implements Controller, Observe
                     Path path = ((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session);
                     q.addRoot(path);
                 }
-                QueueList.instance().addItem(q);
+				CDQueueController.instance().addItem(q);
+//                QueueList.instance().addItem(q);
                 CDQueueController.instance().startItem(q);
             }
         }
@@ -886,8 +873,10 @@ public class CDBrowserController extends NSObject implements Controller, Observe
                     item.setPath(parent.getAbsolute(), new Local((String)enumerator.nextElement()));
                     q.addRoot(item);
                 }
-                QueueList.instance().addItem(q);
-                CDQueueController.instance().startItem(q, (Observer)this);
+                    CDQueueController.instance().addItem(q);
+//                QueueList.instance().addItem(q);
+                CDQueueController.instance().startItem(q);
+//                CDQueueController.instance().startItem(q, (Observer)this);
                 break;
             case (NSAlertPanel.AlternateReturn):
                 break;
@@ -1188,12 +1177,12 @@ public class CDBrowserController extends NSObject implements Controller, Observe
             return item;
         }
         if (itemIdentifier.equals("Bookmarks")) {
-//            item.setLabel(NSBundle.localizedString("Bookmarks", "Toolbar item"));
-//            item.setPaletteLabel(NSBundle.localizedString("Bookmarks", "Toolbar item"));
-//            item.setToolTip(NSBundle.localizedString("Toggle Bookmarks", "Toolbar item tooltip"));
-            item.setView(showBookmarkButton);
-            item.setMinSize(showBookmarkButton.frame().size());
-            item.setMaxSize(showBookmarkButton.frame().size());
+            item.setLabel(NSBundle.localizedString("Bookmarks", "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString("Bookmarks", "Toolbar item"));
+            item.setToolTip(NSBundle.localizedString("Toggle Bookmarks", "Toolbar item tooltip"));
+            item.setImage(NSImage.imageNamed("drawer.tiff"));
+            item.setTarget(this);
+            item.setAction(new NSSelector("toggleBookmarkDrawer", new Class[]{Object.class}));
             return item;
         }
         if (itemIdentifier.equals("Quick Connect")) {
@@ -1460,8 +1449,10 @@ public class CDBrowserController extends NSObject implements Controller, Observe
                     q.addRoot(p);
                 }
                 if (q.numberOfRoots() > 0) {
-                    QueueList.instance().addItem(q);
-                    CDQueueController.instance().startItem(q, (Observer)CDBrowserController.this);
+                    CDQueueController.instance().addItem(q);
+//                    QueueList.instance().addItem(q);
+                    CDQueueController.instance().startItem(q);
+//                    CDQueueController.instance().startItem(q, (Observer)CDBrowserController.this);
                 }
                 return true;
             }
@@ -1578,18 +1569,42 @@ public class CDBrowserController extends NSObject implements Controller, Observe
                     }
                 }
                 if (q.numberOfRoots() > 0) {
-                    QueueList.instance().addItem(q);
+                    CDQueueController.instance().addItem(q);
                     CDQueueController.instance().startItem(q);
                 }
-//                this.promisedDragPaths = null;
             }
             return promisedDragNames;
         }
 
-// ----------------------------------------------------------
-// Delegate methods
-// ----------------------------------------------------------
+		// ----------------------------------------------------------
+		// Delegate methods
+		// ----------------------------------------------------------
 
+		//@todo
+		public void typeAheadString(String inString) {
+			/*
+			// This general sample looks for a highlighted column, presuming that is that column we are sorted by, and uses that as the lookup key.
+			NSTableColumn *col = [tableView highlightedTableColumn];
+			if (nil != col) {
+				NSString *key = [col identifier];
+				int i;
+				for ( i = 0 ; i < [oData count] ; i++ ) {
+					NSDictionary *rowDict = [oData objectAtIndex:i];
+					NSString *compareTo = [rowDict objectForKey:key];
+					NSComparisonResult order = [inString caseInsensitiveCompare:compareTo];
+					if (order != NSOrderedDescending) break;
+				}
+				// Make sure we're not overflowing the row count.
+				if (i >= [oData count]) {
+					i = [oData count] - 1;
+				}
+				// Now select row i -- either the one we found, or the last row if not found.
+				[tableView selectRow:i byExtendingSelection:NO];
+				[tableView scrollRowToVisible:i];
+			}
+			 */
+		}
+		
         public boolean isSortedAscending() {
             return this.sortAscending;
         }

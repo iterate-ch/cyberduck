@@ -21,6 +21,7 @@ import com.apple.cocoa.foundation.NSScriptCommand;
 import com.apple.cocoa.foundation.NSScriptCommandDescription;
 
 import java.net.URL;
+import java.net.URLDecoder;
 
 import org.apache.log4j.Logger;
 
@@ -41,7 +42,7 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
         String arg = (String)this.directParameter();
         log.debug("Received URL from Apple Event: " + arg);
         try {
-            URL url = new URL(arg);
+            URL url = new URL(URLDecoder.decode(arg, "UTF-8"));
             String file = url.getFile();
             log.debug("File:" + file);
             Host h = new Host(url.getProtocol(),
@@ -56,7 +57,8 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
                     log.debug("Assume downloading");
                     Queue queue = new Queue(Queue.KIND_DOWNLOAD);
                     queue.addRoot(p);
-                    QueueList.instance().addItem(queue);
+					CDQueueController.instance().addItem(queue);
+//                    QueueList.instance().addItem(queue);
                     CDQueueController.instance().startItem(queue);
                     return null;
                 }
@@ -64,6 +66,9 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
             CDBrowserController controller = new CDBrowserController();
             controller.mount(h);
         }
+		catch (java.io.UnsupportedEncodingException e) {
+            log.error(e.getMessage());
+		}
         catch (java.net.MalformedURLException e) {
             log.error(e.getMessage());
         }

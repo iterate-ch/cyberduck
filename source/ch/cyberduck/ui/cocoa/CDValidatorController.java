@@ -37,9 +37,9 @@ public class CDValidatorController extends Validator {
 
     private static NSMutableArray instances = new NSMutableArray();
 
-    private Controller windowController;
+    private CDController windowController;
 
-    public CDValidatorController(Controller windowController, int kind, boolean resume) {
+    public CDValidatorController(CDController windowController, int kind, boolean resume) {
         super(kind, resume);
         this.windowController = windowController;
         instances.addObject(this);

@@ -84,7 +84,7 @@ public class CDConnectionController extends NSObject implements Observer {
     public void setBookmarksPopup(NSPopUpButton bookmarksPopup) {
         this.bookmarksPopup = bookmarksPopup;
         this.bookmarksPopup.setImage(NSImage.imageNamed("bookmarks.tiff"));
-        Iterator i = BookmarkList.instance().iterator();
+        Iterator i = CDBookmarkTableDataSource.instance().iterator();
         while (i.hasNext()) {
             bookmarksPopup.addItem(i.next().toString());
         }
@@ -94,7 +94,7 @@ public class CDConnectionController extends NSObject implements Observer {
 
     public void bookmarksSelectionChanged(Object sender) {
         log.debug("bookmarksSelectionChanged");
-        this.selectionChanged(BookmarkList.instance().getItem(bookmarksPopup.indexOfSelectedItem()));
+        this.selectionChanged(CDBookmarkTableDataSource.instance().getItem(bookmarksPopup.indexOfSelectedItem()));
     }
 
     private Rendezvous rendezvous;
@@ -161,11 +161,11 @@ public class CDConnectionController extends NSObject implements Observer {
         this.hostPopup.setUsesDataSource(true);
         this.hostPopup.setDataSource(this.quickConnectDataSource = new Object() {
             public int numberOfItemsInComboBox(NSComboBox combo) {
-                return BookmarkList.instance().size();
+                return CDBookmarkTableDataSource.instance().size();
             }
 
             public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-                return BookmarkList.instance().getItem(row).getHostname();
+                return CDBookmarkTableDataSource.instance().getItem(row).getHostname();
             }
         });
     }

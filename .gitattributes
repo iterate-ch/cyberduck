@@ -276,10 +276,7 @@ img/rendezvous.tiff svneol=native#unset
 img/resume.tiff -text
 img/reveal.tiff -text
 img/run.tiff -text
-img/server.tiff svneol=native#unset
 img/stop.tiff svneol=native#unset
-img/stripeGray.tiff -text
-img/stripeWhite.tiff -text
 img/symlink.tiff -text
 img/up.tiff svneol=native#unset
 img/uploadFile.tiff -text

@@ -22,16 +22,18 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import java.util.Iterator;
+import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.growl.*;
 
 /**
  * @version $Id$
  */
-public class CDQueueController extends NSObject implements Controller {
+public class CDQueueController extends NSObject implements Observer, CDController {
     private static Logger log = Logger.getLogger(CDQueueController.class);
 
     private static CDQueueController instance;
@@ -45,6 +47,18 @@ public class CDQueueController extends NSObject implements Controller {
 
     private NSToolbar toolbar;
 
+	private NSTextField urlField;
+	
+	public void setUrlField(NSTextField urlField) {
+		this.urlField = urlField;
+	}
+	
+	private NSTextField localField;
+	
+	public void setLocalField(NSTextField localField) {
+		this.localField = localField;
+	}
+	
     private CDQueueController() {
         instances.addObject(this);
     }
@@ -66,7 +80,7 @@ public class CDQueueController extends NSObject implements Controller {
 
     /*
      public int checkForRunningTransfers() {
-        Iterator iter = CDQueueList.instance().iterator();
+        Iterator iter = this.queueModel.iterator();
         while(iter.hasNext()) {
             ch.cyberduck.core.Queue q = (ch.cyberduck.core.Queue)iter.next();
             if(q.isRunning()) {
@@ -105,6 +119,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     }
 
     public void windowWillClose(NSNotification notification) {
+		this.queueModel.save();
         this.window = null;
 //		instances.removeObject(this);
 //		instance = null;
@@ -120,16 +135,45 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     public NSWindow window() {
         return this.window;
     }
-
+	
     private CDQueueTableDataSource queueModel;
     private NSTableView queueTable; // IBOutlet
+	
+    private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
+	
+    static {
+        lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
+    }
+	
+    private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
+																						 new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+	
+	public void tableViewSelectionDidChange(NSNotification notification) {
+		this.toolbar.validateVisibleItems();
+		if(this.queueTable.selectedRow() != -1) {
+			Queue q = this.queueModel.getItem(this.queueTable.selectedRow());
+			this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()+q.getRoot().getAbsolute(), 
+																		  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+			if (q.numberOfRoots() == 1)
+				this.localField.setAttributedStringValue(new NSAttributedString(q.getRoot().getLocal().getAbsolute(),
+																	  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+			else
+				this.localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiples files", "")
+											   +" ("+q.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
+											   TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+		}
+		else {
+			this.urlField.setStringValue("");
+			this.localField.setStringValue("");
+		}
+	}
 
     public void setQueueTable(NSTableView queueTable) {
         this.queueTable = queueTable;
         this.queueTable.setTarget(this);
         this.queueTable.setDoubleAction(new NSSelector("queueTableRowDoubleClicked", new Class[]{Object.class}));
-        this.queueTable.setDataSource(this.queueModel = new CDQueueTableDataSource());
-        this.queueTable.setDelegate(this.queueModel);
+        this.queueTable.setDataSource(this.queueModel = CDQueueTableDataSource.instance());
+        this.queueTable.setDelegate(this);
         // receive drag events from types
         // in fact we are not interested in file promises, but because the browser model can only initiate
         // a drag with tableView.dragPromisedFilesOfTypes(), we listens for those events
@@ -138,17 +182,17 @@ if (returncode == NSAlertPanel.DefaultReturn) {
                                                                          NSPasteboard.StringPboardType,
                                                                          NSPasteboard.FilesPromisePboardType}));
 
-        this.queueTable.setRowHeight(50f);
+        this.queueTable.setRowHeight(50f);//@todo
 
-        NSTableColumn dataColumn = new NSTableColumn();
-        dataColumn.setIdentifier("DATA");
-        dataColumn.setMinWidth(200f);
-        dataColumn.setWidth(350f);
-        dataColumn.setMaxWidth(1000f);
-        dataColumn.setEditable(false);
-        dataColumn.setResizable(true);
-        dataColumn.setDataCell(new CDQueueCell());
-        this.queueTable.addTableColumn(dataColumn);
+        NSTableColumn iconColumn = new NSTableColumn();
+        iconColumn.setIdentifier("ICON");
+		iconColumn.setMinWidth(36f);
+		iconColumn.setWidth(36f);
+		iconColumn.setMaxWidth(36f);
+        iconColumn.setEditable(false);
+        iconColumn.setResizable(true);
+        iconColumn.setDataCell(new CDIconCell());
+        this.queueTable.addTableColumn(iconColumn);
 
         NSTableColumn progressColumn = new NSTableColumn();
         progressColumn.setIdentifier("PROGRESS");
@@ -178,22 +222,29 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 
         this.queueTable.sizeToFit();
     }
+	
+	private void reloadQueueTable() {
+        log.debug("reloadQueueTable");
+		while (this.queueTable.subviews().count() > 0) {
+			((NSView)this.queueTable.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
+		}
+		this.queueTable.reloadData();
+	}
 
+	public void addItem(Queue queue) {
+		this.queueModel.addItem(queue);
+		this.reloadQueueTable();
+	}
+	
     public void startItem(Queue queue) {
-        this.startItem(queue, false);
-    }
-
-    public void startItem(Queue queue, Observer callback) {
-        this.callback = callback;
         this.startItem(queue, false);
     }
 
     public void startItem(Queue queue, boolean resumeRequested) {
         log.info("Starting item:" + queue);
-//        QueueList.instance().save();
-        this.queueTable.reloadData();
-        this.queueTable.selectRow(QueueList.instance().indexOf(queue), false);
-        this.queueTable.scrollRowToVisible(QueueList.instance().indexOf(queue));
+		queue.addObserver(this);
+//@todo        this.queueTable.selectRow(this.queueModel.indexOf(queue), false);
+       //@todo this.queueTable.scrollRowToVisible(this.queueModel.indexOf(queue));
 
         if (Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
             this.window().makeKeyAndOrderFront(null);
@@ -228,19 +279,15 @@ if (returncode == NSAlertPanel.DefaultReturn) {
         return this.window() != null && this.window().isVisible();
     }
 
-    public void update(Queue observable, Object arg) {
+    public void update(Observable observable, Object arg) {
 //		log.debug("update:"+observable+","+arg);
-        if (this.isVisible()) {
             if (arg instanceof Message) {
                 Message msg = (Message)arg;
-                if (msg.getTitle().equals(Message.PROGRESS)) {// || msg.getTitle().equals(Message.ERROR)) {
-                    if (this.window().isVisible()) {
-                        if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
-                            int row = QueueList.instance().indexOf(observable);
-                            NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
-                            this.queueTable.setNeedsDisplay(queueRect);
-                        }
-                    }
+                if (msg.getTitle().equals(Message.PROGRESS)) {
+//					this.queueTable.reloadData();
+                }
+                else if (msg.getTitle().equals(Message.DATA)) {
+//					this.queueTable.reloadData();
                 }
                 else if (msg.getTitle().equals(Message.ERROR)) {
                     while (this.window().attachedSheet() != null) {
@@ -267,47 +314,44 @@ if (returncode == NSAlertPanel.DefaultReturn) {
                         );
                     }
                 }
-                else if (msg.getTitle().equals(Message.DATA)) {
-                    if (this.window().isVisible()) {
-                        if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
-                            int row = QueueList.instance().indexOf(observable);
-                            NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
-                            this.queueTable.setNeedsDisplay(progressRect);
-                        }
-                    }
-                }
                 else if (msg.getTitle().equals(Message.QUEUE_START)) {
                     this.toolbar.validateVisibleItems();
-                    QueueList.instance().save();
+//					this.queueModel.save();
+//                    QueueList.instance().save();
                 }
                 else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
                     this.toolbar.validateVisibleItems();
                     Queue queue = (Queue)observable;
                     if (queue.isComplete()) {
                         if (Queue.KIND_DOWNLOAD == queue.kind()) {
+							Growl.instance().notify(NSBundle.localizedString("Download complete", "Growl Notification"), 
+													queue.getRoot().getName());
                             if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
                                 boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
                                 log.debug("Success opening file:" + success);
                             }
                         }
                         if (Queue.KIND_UPLOAD == queue.kind()) {
-                            if (callback != null) {
-                                log.debug("Telling observable to refresh directory listing");
-                                callback.update(null, new Message(Message.REFRESH));
-                            }
+							Growl.instance().notify(NSBundle.localizedString("Upload complete", "Growl Notification"),
+													queue.getRoot().getName());
+//@todo                            if (callback != null) {
+//                                log.debug("Telling observable to refresh directory listing");
+//                                callback.update(null, new Message(Message.REFRESH));
+//                            }
                         }
                         if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
-                            this.queueTable.deselectAll(null);
-                            QueueList.instance().removeItem(queue);
-                            this.queueTable.reloadData();
+//                            this.queueTable.deselectAll(null);
+//                            QueueList.instance().removeItem(queue);
+							this.queueModel.removeItem(queue);
+							this.reloadQueueTable();
                         }
                     }
-                    QueueList.instance().save();
+					this.queueModel.save();
+//                    QueueList.instance().save();
                 }
             }
         }
-    }
-
+	 
     public void awakeFromNib() {
         log.debug("awakeFromNib");
         this.toolbar = new NSToolbar("Queue Toolbar");
@@ -386,7 +430,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 
     public void queueTableRowDoubleClicked(Object sender) {
         if (this.queueTable.selectedRow() != -1) {
-            Queue item = QueueList.instance().getItem(this.queueTable.selectedRow());
+            Queue item = this.queueModel.getItem(this.queueTable.selectedRow());
             if (item.isComplete()) {
                 this.revealButtonClicked(sender);
             }
@@ -399,19 +443,9 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     public void stopButtonClicked(Object sender) {
         NSEnumerator enum = queueTable.selectedRowEnumerator();
         while (enum.hasMoreElements()) {
-            Queue queue = QueueList.instance().getItem(((Integer)enum.nextElement()).intValue());
+            Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
             if (queue.isRunning()) {
                 queue.cancel();
-            }
-        }
-    }
-
-    public void stopAllButtonClicked(Object sender) {
-        Iterator iter = CDQueueList.instance().iterator();
-        while (iter.hasNext()) {
-            Queue q = (Queue)iter.next();
-            if (q.isRunning()) {
-                q.cancel();
             }
         }
     }
@@ -419,7 +453,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     public void resumeButtonClicked(Object sender) {
         NSEnumerator enum = queueTable.selectedRowEnumerator();
         while (enum.hasMoreElements()) {
-            Queue queue = QueueList.instance().getItem(((Integer)enum.nextElement()).intValue());
+            Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
             if (!queue.isRunning()) {
                 this.startItem(queue, true);
             }
@@ -429,7 +463,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     public void reloadButtonClicked(Object sender) {
         NSEnumerator enum = queueTable.selectedRowEnumerator();
         while (enum.hasMoreElements()) {
-            Queue queue = QueueList.instance().getItem(((Integer)enum.nextElement()).intValue());
+            Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
             if (!queue.isRunning()) {
                 this.startItem(queue, false);
             }
@@ -447,7 +481,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
                     log.error(e.getMessage());
                 }
             }
-            Queue item = QueueList.instance().getItem(this.queueTable.selectedRow());
+            Queue item = this.queueModel.getItem(this.queueTable.selectedRow());
             Path f = item.getRoot();
             String file = item.getRoot().getLocal().toString();
             if (!NSWorkspace.sharedWorkspace().openFile(file)) {
@@ -496,7 +530,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
                     log.error(e.getMessage());
                 }
             }
-            Queue item = QueueList.instance().getItem(this.queueTable.selectedRow());
+            Queue item = this.queueModel.getItem(this.queueTable.selectedRow());
             Path f = item.getRoot();
             String file = item.getRoot().getLocal().toString();
             if (!NSWorkspace.sharedWorkspace().selectFile(file, "")) {
@@ -538,20 +572,28 @@ if (returncode == NSAlertPanel.DefaultReturn) {
         NSEnumerator enum = queueTable.selectedRowEnumerator();
         int i = 0;
         while (enum.hasMoreElements()) {
-            QueueList.instance().removeItem(((Integer)enum.nextElement()).intValue() - i);
+            this.queueModel.removeItem(((Integer)enum.nextElement()).intValue() - i);
             i++;
         }
-        this.queueTable.reloadData();
+		this.reloadQueueTable();
     }
 
     public void clearButtonClicked(Object sender) {
-        for (Iterator iter = QueueList.instance().iterator(); iter.hasNext();) {
+		for(int i = 0; i < this.queueModel.size(); i++) {
+			Queue q = this.queueModel.getItem(i);
+            if (q.getSize() == q.getCurrent() && q.getSize() > 0) {
+                this.queueModel.removeItem(i);
+            }
+		}
+			/*
+        for (Iterator iter = this.queueModel.iterator(); iter.hasNext();) {
             Queue q = (Queue)iter.next();
             if (q.getSize() == q.getCurrent() && q.getSize() > 0) {
                 iter.remove();
             }
         }
-        this.queueTable.reloadData();
+		 */
+		this.reloadQueueTable();
     }
 
     public boolean validateMenuItem(NSMenuItem item) {
@@ -599,7 +641,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
             }
             NSEnumerator enum = queueTable.selectedRowEnumerator();
             while (enum.hasMoreElements()) {
-                Queue queue = QueueList.instance().getItem(((Integer)enum.nextElement()).intValue());
+                Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
                 if (!queue.isRunning()) {
                     return false;
                 }
@@ -608,7 +650,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
         }
         if (identifier.equals("Resume") || identifier.equals("resumeButtonClicked:")) {
             if (this.queueTable.numberOfSelectedRows() == 1) {
-                Queue queue = QueueList.instance().getItem(this.queueTable.selectedRow());
+                Queue queue = this.queueModel.getItem(this.queueTable.selectedRow());
                 return !queue.isRunning() && !queue.isComplete();
             }
             return false;
@@ -618,7 +660,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 			 }
 			 NSEnumerator enum = queueTable.selectedRowEnumerator();
 			 while (enum.hasMoreElements()) {
-				 Queue queue = QueueList.instance().getItem(((Integer) enum.nextElement()).intValue());
+				 Queue queue = this.queueModel.getItem(((Integer) enum.nextElement()).intValue());
 				 //                if (!(queue.isCanceled() && !(queue.remainingJobs() == 0) && (queue.getRoot() instanceof FTPPath))) {
 				 if (!(queue.isCanceled() && !(queue.remainingJobs() == 0))) {
 					 return false;
@@ -629,7 +671,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
         }
         if (identifier.equals("Reload") || identifier.equals("reloadButtonClicked:")) {
             if (this.queueTable.numberOfSelectedRows() == 1) {
-                Queue queue = QueueList.instance().getItem(this.queueTable.selectedRow());
+                Queue queue = this.queueModel.getItem(this.queueTable.selectedRow());
                 return !queue.isRunning();
             }
             return false;
@@ -639,7 +681,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 			 }
 			 NSEnumerator enum = queueTable.selectedRowEnumerator();
 			 while (enum.hasMoreElements()) {
-				 Queue queue = QueueList.instance().getItem(((Integer) enum.nextElement()).intValue());
+				 Queue queue = this.queueModel.getItem(((Integer) enum.nextElement()).intValue());
 				 if (queue.isRunning()) {
 					 return false;
 				 }
@@ -662,7 +704,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
             }
             NSEnumerator enum = queueTable.selectedRowEnumerator();
             while (enum.hasMoreElements()) {
-                Queue queue = QueueList.instance().getItem(((Integer)enum.nextElement()).intValue());
+                Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
                 if (queue.isRunning()) {
                     return false;
                 }

@@ -96,9 +96,9 @@ public class CDLoginController extends LoginController {
         this.window.setDelegate(this);
     }
 
-    private Controller windowController;
+    private CDController windowController;
 
-    public CDLoginController(Controller windowController) {
+    public CDLoginController(CDController windowController) {
         instances.addObject(this);
         this.windowController = windowController;
         if (false == NSApplication.loadNibNamed("Login", this)) {

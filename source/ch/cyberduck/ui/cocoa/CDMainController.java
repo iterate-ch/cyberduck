@@ -31,6 +31,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.growl.*;
 
 public class CDMainController extends NSObject {
     private static Logger log = Logger.getLogger(CDMainController.class);
@@ -175,7 +176,7 @@ public class CDMainController extends NSObject {
         }
 
         public int numberOfItemsInMenu(NSMenu menu) {
-            return BookmarkList.instance().size() + 6; //index 0-3 are static menu items, 4 is sepeartor, 5 is Rendezvous with submenu, 6 is sepearator
+            return CDBookmarkTableDataSource.instance().size() + 6; //index 0-3 are static menu items, 4 is sepeartor, 5 is Rendezvous with submenu, 6 is sepearator
         }
 
         /**
@@ -194,7 +195,7 @@ public class CDMainController extends NSObject {
 //				item.setSubmenu(rendezvousMenu);
             }
             if (index > 5) {
-                Host h = BookmarkList.instance().getItem(index - 6);
+                Host h = CDBookmarkTableDataSource.instance().getItem(index - 6);
                 item.setTitle(h.getNickname());
                 item.setTarget(this);
 //				item.setImage(documentIcon);
@@ -490,7 +491,7 @@ public class CDMainController extends NSObject {
         File f = new File(filename);
         if (f.exists()) {
             log.info("Found file: " + f.toString());
-            Host host = BookmarkList.instance().importBookmark(f);
+            Host host = CDBookmarkTableDataSource.instance().importBookmark(f);
             if (host != null) {
                 CDBrowserController controller = new CDBrowserController();
                 controller.window().makeKeyAndOrderFront(null);
@@ -543,10 +544,10 @@ public class CDMainController extends NSObject {
             this.showTransferQueueClicked(null);
         }
         int uses = Integer.parseInt(Preferences.instance().getProperty("uses"));
-        String v = this.readVersionInfo();
-        if (null == v || !v.equals(NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion"))) {
-            Preferences.instance().setProperty("donate", "true");
-        }
+//        String v = this.readVersionInfo();
+//        if (null == v || !v.equals(NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion"))) {
+//            Preferences.instance().setProperty("donate", "true");
+//        }
         if (Preferences.instance().getProperty("donate").equals("true")) {
             if (false == NSApplication.loadNibNamed("Donate", this)) {
                 log.fatal("Couldn't load Donate.nib");
@@ -561,6 +562,7 @@ public class CDMainController extends NSObject {
             this.checkForUpdate(false);
         }
         this.rendezvous.init();
+		Growl.instance().launch();
     }
 
     public void applicationShouldSleep(Object o) {
@@ -587,8 +589,8 @@ public class CDMainController extends NSObject {
 //Writing usage info
         Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
         Preferences.instance().save();
-        BookmarkList.instance().save();
-        QueueList.instance().save();
+//@todo check        CDBookmarkTableDataSource.instance().save();
+//        QueueList.instance().save();
     }
 
     // ----------------------------------------------------------

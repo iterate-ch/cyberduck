@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSNotification;
 
-interface Controller {
+interface CDController {
     public void awakeFromNib();
 
     public NSWindow window();
