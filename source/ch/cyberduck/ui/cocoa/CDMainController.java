@@ -136,7 +136,11 @@ public class CDMainController extends NSObject {
 
     public void setBookmarkMenu(NSMenu bookmarkMenu) {
         this.bookmarkMenu = bookmarkMenu;
-        this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
+        NSSelector setDelegateSelector =
+			new NSSelector("setDelegate", new Class[]{Object.class});
+        if (setDelegateSelector.implementedByClass(NSMenu.class)) {
+			this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
+		}
     }
 
     private class BookmarkMenuDelegate extends NSObject {
