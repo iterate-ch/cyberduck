@@ -94,7 +94,7 @@ done;
 echo "Language:$language";
 echo "Nib:$nibfile";
 
-if [ "$language" == "all" ] ; then
+if [ "$language" = "all" ] ; then
     {
         echo "*** Updating all localizations...";
         for lproj in `ls . | grep lproj`; do
@@ -103,13 +103,13 @@ if [ "$language" == "all" ] ; then
             if [ $language != "English" ]; then
             {
                 echo "*** Updating $language Localization...";
-                if [ nibfile == "all" ] ; then
+                if [ "$nibfile" = "all" ] ; then
                     echo "*** Updating all NIBs...";
                     for nibfile in `ls $language.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; do
                         updateNibFromStrings;
                     done;
                 fi;
-                if [ nibfile != "all" ] ; then
+                if [ "$nibfile" != "all" ] ; then
                         updateNibFromStrings;
                 fi;
             }
@@ -124,13 +124,13 @@ fi;
 if [ "$language" != "all" ] ; then
     {
         echo "*** Updating $language Localization...";
-        if [ nibfile == "all" ] ; then
+        if [ "$nibfile" = "all" ] ; then
             echo "*** Updating all NIBs...";
             for nibfile in `ls $language.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; do
                 updateNibFromStrings;
             done;
         fi;
-        if [ nibfile != "all" ] ; then
+        if [ "$nibfile" != "all" ] ; then
         {
             updateNibFromStrings;
         }
