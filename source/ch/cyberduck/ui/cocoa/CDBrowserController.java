@@ -1555,6 +1555,10 @@ public class CDBrowserController extends CDController implements Observer {
 			item.setPaletteLabel(NSBundle.localizedString("Encoding", "Toolbar item"));
 			item.setToolTip(NSBundle.localizedString("Character Encoding", "Toolbar item tooltip"));
 			item.setView(encodingPopup);
+			NSMenuItem encodingMenu = new NSMenuItem();
+			encodingMenu.setTitle(NSBundle.localizedString("Encoding", "Toolbar item"));
+			encodingMenu.setSubmenu(encodingPopup.menu());
+			item.setMenuFormRepresentation(encodingMenu);
 			item.setMinSize(encodingPopup.frame().size());
 			item.setMaxSize(encodingPopup.frame().size());
 			return item;

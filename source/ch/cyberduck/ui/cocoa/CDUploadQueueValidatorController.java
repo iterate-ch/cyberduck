@@ -57,10 +57,6 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 		this.setEnabled(false);
 	}
 
-	protected void prompt(Path p) {
-		p.reset(); super.prompt(p);
-	}
-
 	protected boolean isExisting(Path p) {
 		return p.exists();
 	}

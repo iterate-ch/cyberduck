@@ -82,64 +82,62 @@ public class CDProgressController extends NSObject implements Observer {
 	
 	public void update(final Observable o, final Object arg) {
 		if(arg instanceof Message) {
-			if(this.view().window() != null && this.view().window().isVisible()) {
-				ThreadUtilities.instance().invokeLater(new Runnable() {
-					public void run() {
-						Message msg = (Message)arg;
-						if(msg.getTitle().equals(Message.PROGRESS)) {
-							statusText = (String)msg.getContent();
-							updateProgressfield();
-						}
-						else if(msg.getTitle().equals(Message.ERROR)) {
-							errorText.append("\n"+(String)msg.getContent());
-							alertIcon.setHidden(false);
-						}
-						else if(msg.getTitle().equals(Message.QUEUE_START)) {
-							progressBar.setIndeterminate(true);
-							progressBar.startAnimation(null);
-							errorText = new StringBuffer();
-							alertIcon.setHidden(true);
-							progressTimer = new NSTimer(0.5, //seconds
-														CDProgressController.this, //target
-														new NSSelector("update", new Class[]{NSTimer.class}),
-														getQueue(), //userInfo
-														true); //repeating
-							NSRunLoop.currentRunLoop().addTimerForMode(progressTimer, NSRunLoop.DefaultRunLoopMode);
-						}
-						else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
-							updateProgressbar();
-							updateProgressfield();
-							progressBar.stopAnimation(null);
-							progressBar.setIndeterminate(false);
-							if(queue.isComplete() && !queue.isCanceled()) {
-								if(queue instanceof DownloadQueue) {
-									Growl.instance().notify(NSBundle.localizedString("Download complete",
-																					 "Growl Notification"),
-															queue.getName());
-									if(Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
-										boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
-										log.debug("Success opening file:"+success);
-									}
-								}
-								if(queue instanceof UploadQueue) {
-									Growl.instance().notify(NSBundle.localizedString("Upload complete",
-																					 "Growl Notification"),
-															queue.getName());
-								}
-								if(queue instanceof SyncQueue) {
-									Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
-																					 "Growl Notification"),
-															queue.getName());
-								}
-								if(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
-									CDQueueController.instance().removeItem(queue);
+			ThreadUtilities.instance().invokeLater(new Runnable() {
+				public void run() {
+					Message msg = (Message)arg;
+					if(msg.getTitle().equals(Message.PROGRESS)) {
+						statusText = (String)msg.getContent();
+						updateProgressfield();
+					}
+					else if(msg.getTitle().equals(Message.ERROR)) {
+						errorText.append("\n"+(String)msg.getContent());
+						alertIcon.setHidden(false);
+					}
+					else if(msg.getTitle().equals(Message.QUEUE_START)) {
+						progressBar.setIndeterminate(true);
+						progressBar.startAnimation(null);
+						errorText = new StringBuffer();
+						alertIcon.setHidden(true);
+						progressTimer = new NSTimer(0.5, //seconds
+													CDProgressController.this, //target
+													new NSSelector("update", new Class[]{NSTimer.class}),
+													getQueue(), //userInfo
+													true); //repeating
+						NSRunLoop.currentRunLoop().addTimerForMode(progressTimer, NSRunLoop.DefaultRunLoopMode);
+					}
+					else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
+						updateProgressbar();
+						updateProgressfield();
+						progressBar.stopAnimation(null);
+						progressBar.setIndeterminate(false);
+						if(queue.isComplete() && !queue.isCanceled()) {
+							if(queue instanceof DownloadQueue) {
+								Growl.instance().notify(NSBundle.localizedString("Download complete",
+																				 "Growl Notification"),
+														queue.getName());
+								if(Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
+									boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+									log.debug("Success opening file:"+success);
 								}
 							}
-							progressTimer.invalidate();
+							if(queue instanceof UploadQueue) {
+								Growl.instance().notify(NSBundle.localizedString("Upload complete",
+																				 "Growl Notification"),
+														queue.getName());
+							}
+							if(queue instanceof SyncQueue) {
+								Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
+																				 "Growl Notification"),
+														queue.getName());
+							}
+							if(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
+								CDQueueController.instance().removeItem(queue);
+							}
 						}
+						progressTimer.invalidate();
 					}
-				});
-			}
+				}
+			});
 		}
 	}
 	

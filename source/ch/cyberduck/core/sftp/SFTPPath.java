@@ -207,6 +207,7 @@ public class SFTPPath extends Path {
 	public void reset() {
 		if(this.exists()) {
 			try {
+				session.check();
 				session.log("Getting timestamp of "+this.getName(), Message.PROGRESS);
 				SftpFile f = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
 				this.attributes.setTimestamp(Long.parseLong(f.getAttributes().getModifiedTime().toString())*1000L);

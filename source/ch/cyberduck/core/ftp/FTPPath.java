@@ -196,6 +196,7 @@ public class FTPPath extends Path {
 	public void reset() {
 		if(this.exists()) {
 			try {
+				session.check();
 				session.log("Getting timestamp of "+this.getName(), Message.PROGRESS);
 				this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()));
 				session.log("Getting size of "+this.getName(), Message.PROGRESS);

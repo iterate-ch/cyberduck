@@ -119,7 +119,8 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			if(!p.getRemote().exists()) {
 				p.getSession().cache().put(p.getAbsolute(), new ArrayList());
 			}
-			return true;
+			this.prompt(p); return false;
+//			return true;
 		}
 	}
 	

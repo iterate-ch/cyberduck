@@ -94,6 +94,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 	protected boolean visible = false;
 	
 	protected void prompt(Path p) {
+		p.reset();
 		if(!this.visible) {
 			this.load();
 			this.windowController.beginSheet(this.window());
