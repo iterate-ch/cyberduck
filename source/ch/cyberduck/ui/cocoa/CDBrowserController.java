@@ -122,6 +122,13 @@ public class CDBrowserController extends CDController implements Observer {
         return null;
     }
 	
+	public Object handleCloseScriptCommand(NSScriptCommand command) {
+		log.debug("handleCloseScriptCommand:"+command);
+		this.unmount();
+		this.window().close();
+		return null;
+	}
+	
 	public Object handleDisconnectScriptCommand(NSScriptCommand command) {
 		log.debug("handleDisconnectScriptCommand:"+command);
 		this.unmount();
