@@ -7,27 +7,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	/*
-	 * Class:     ch_cyberduck_core_Login
-	 * Method:    getInternetPasswordFromKeychain
-	 * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String)Ljava/lang/String;
-	 */
 	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getInternetPasswordFromKeychain
-	(JNIEnv *, jobject, jstring, jstring, jstring);
+	(JNIEnv *, jobject, jstring, jstring, jshort, jstring);
 	
-	/*
-	 * Class:     ch_cyberduck_core_Login
-	 * Method:    getPasswordFromKeychain
-	 * Signature: (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-	 */
 	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain
 		(JNIEnv *, jobject, jstring, jstring);
 	
-	/*
-	 * Class:     ch_cyberduck_core_Login
-	 * Method:    addPasswordToKeychain
-	 * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-	 */
+	JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addInternetPasswordToKeychain
+		(JNIEnv *, jobject, jstring, jstring, jshort, jstring, jstring);
+		
 	JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain
 		(JNIEnv *, jobject, jstring, jstring, jstring);
 	

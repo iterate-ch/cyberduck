@@ -22,33 +22,37 @@
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getInternetPasswordFromKeychain(JNIEnv *env, 
 																					   jobject this, 
 																					   jstring jProtocol,
-																					   jstring jServer, 
+																					   jstring jService,
+																					   jshort jPort,
 																					   jstring jAccount) {
-    const char *protocol = (*env)->GetStringUTFChars(env, jProtocol, JNI_FALSE); //todo
-    const char *server = (*env)->GetStringUTFChars(env, jServer, JNI_FALSE);
+    SecProtocolType protocol;
+    const char *protocolString = (*env)->GetStringUTFChars(env, jProtocol, JNI_FALSE);
+	memcpy(&protocol, protocolString, 4);
+    const char *service = (*env)->GetStringUTFChars(env, jService, JNI_FALSE);
     const char *account = (*env)->GetStringUTFChars(env, jAccount, JNI_FALSE);
+	UInt16 port = (UInt16)jPort;
     char *pass;
     UInt32 passLength;
 	
     OSStatus status = SecKeychainFindInternetPassword(NULL, 
-											strlen(server), 
-											server, 
+											strlen(service), 
+											service, 
 											0, 
 											NULL, 
 											strlen(account), 
 											account, 
 											0, 
 											NULL, 
-											0, 
-											kSecProtocolTypeFTP, 
+											port, 
+											protocol, 
 											kSecAuthenticationTypeDefault, 
 											&passLength, 
 											(void**)&pass, 
 											NULL);
     
-	(*env)->ReleaseStringUTFChars(env, jServer, server);
+	(*env)->ReleaseStringUTFChars(env, jService, service);
 	(*env)->ReleaseStringUTFChars(env, jAccount, account);
-	(*env)->ReleaseStringUTFChars(env, jProtocol, protocol);
+	(*env)->ReleaseStringUTFChars(env, jProtocol, protocolString);
 	
 	switch (status) {
 		case noErr:
@@ -122,14 +126,90 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(J
 }
 
 
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addInternetPasswordToKeychain(JNIEnv *env, 
+																				  jobject this, 
+																				  jstring jProtocol,
+																				  jstring jService,
+																				  jshort jPort,
+																				  jstring jUsername, 
+																				  jstring jPassword
+																				  ) 
+{
+    SecProtocolType protocol;
+    const char *protocolString = (*env)->GetStringUTFChars(env, jProtocol, JNI_FALSE);
+	memcpy(&protocol, protocolString, 4);
+    const char *service = (*env)->GetStringUTFChars(env, jService, JNI_FALSE);
+    const char *user = (*env)->GetStringUTFChars(env, jUsername, JNI_FALSE);
+    const char *pass = (*env)->GetStringUTFChars(env, jPassword, JNI_FALSE);
+	UInt16 port = (UInt16)jPort;
+			
+	syslog(LOG_INFO, "Adding password to Keychain");
+	OSStatus status = SecKeychainAddInternetPassword (
+													  NULL, // default keychain
+													  strlen(service), // server name length
+													  service, // server name
+													  0,//strlen(domain), // security domain length
+													  NULL,//domain, // security domain
+													  strlen(user), // account name length
+													  user, // account name
+													  0, // path length
+													  NULL, // path
+													  port, // port
+													  protocol,//kSecProtocolTypeFTP, // protocol
+													  kSecAuthenticationTypeDefault, // authentication type
+													  strlen(pass), // password length
+													  pass, // password
+													  NULL // item ref
+													  );
+	// if we have a duplicate item error...
+	if(status == errSecDuplicateItem) {
+		syslog(LOG_INFO, "Duplicate keychain item");
+		UInt32 existingPasswordLength;
+		char * existingPassword;
+		SecKeychainItemRef existingItem;
+		
+		// ...get the existing password and a reference to the existing keychain item, then...
+		status = SecKeychainFindInternetPassword(NULL, 
+												 strlen(service), //hostname length
+												 service, //hostname
+												 0, //security domain length
+												 NULL, //security domain
+												 strlen(user), //username length
+												 user, //username
+												 0, //path length
+												 NULL, //path
+												 port, // port
+												 protocol, //protocol (4 chars)
+												 kSecAuthenticationTypeDefault, 
+												 &existingPasswordLength, 
+												 (void **)&existingPassword,
+												 &existingItem);
+		
+		syslog(LOG_INFO, "Updating keychain item");
+		status = SecKeychainItemModifyContent (existingItem,
+											   NULL,
+											   strlen(pass),
+											   (const void*)pass
+											   );
+		// ...free the memory allocated in call to SecKeychainFindGenericPassword() above
+		SecKeychainItemFreeContent(NULL, existingPassword);
+		CFRelease(existingItem);
+	}	
+
+	(*env)->ReleaseStringUTFChars(env, jProtocol, protocolString);
+	(*env)->ReleaseStringUTFChars(env, jService, service);
+	(*env)->ReleaseStringUTFChars(env, jUsername, user);
+	(*env)->ReleaseStringUTFChars(env, jPassword, pass);
+}
+
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain(JNIEnv *env, 
 												   jobject this, 
 												   jstring jService, 
-												   jstring jAccount, 
+												   jstring jUsername, 
 												   jstring jPass) {
 
     const char *service = (*env)->GetStringUTFChars(env, jService, JNI_FALSE);
-    const char *account = (*env)->GetStringUTFChars(env, jAccount, JNI_FALSE);
+    const char *account = (*env)->GetStringUTFChars(env, jUsername, JNI_FALSE);
     const char *pass = (*env)->GetStringUTFChars(env, jPass, JNI_FALSE);
 
 	// http://sourceforge.net/projects/keychain/
@@ -150,7 +230,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain(JNIEnv
 													 NULL
 													 );
 	
-		// if we have a duplicate item error...
+	// if we have a duplicate item error...
 	if(status == errSecDuplicateItem) {
 		syslog(LOG_INFO, "Duplicate keychain item");
 		UInt32 existingPasswordLength;
@@ -169,10 +249,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain(JNIEnv
 												 );
 		
 		syslog(LOG_INFO, "Updating keychain item");
-		// ...modify the password for the existing keychain item;  (I'll admit to being mystified as to how this function works;  
-		// how does it know that it's the password data that's being modified??;  anyway, it seems to work); and finally...
-		// Answer: the data of a keychain item is what is being modified.  In the case of internet or generic passwords, 
-		// the data is the password.  For a certificate, for example, the data is the certificate itself.
 		status = SecKeychainItemModifyContent (existingItem,
 											   NULL,
 											   strlen(pass),
@@ -184,6 +260,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain(JNIEnv
 	}
 
 	(*env)->ReleaseStringUTFChars(env, jService, service);
-	(*env)->ReleaseStringUTFChars(env, jAccount, account);
+	(*env)->ReleaseStringUTFChars(env, jUsername, account);
 	(*env)->ReleaseStringUTFChars(env, jPass, pass);
 }

@@ -32,6 +32,7 @@ public class Login {
 
 	private String serviceName;
 	private String protocol;
+	private int port;
 	private String user;
 	private transient String pass;
 	private String privateKeyFile;
@@ -68,7 +69,7 @@ public class Login {
 	/**
 		* @see #getInternetPasswordFromKeychain
 	 */
-	public native String getInternetPasswordFromKeychain(String protocol, String serviceName, String account);
+	public native String getInternetPasswordFromKeychain(String protocol, String serviceName, String user);
 
 	public String getInternetPasswordFromKeychain() {
 		return this.getInternetPasswordFromKeychain(this.protocol, this.serviceName, this.getUsername());
@@ -77,7 +78,7 @@ public class Login {
 	/**
 	 * @see #getPasswordFromKeychain
 	 */
-	public native String getPasswordFromKeychain(String serviceName, String account);
+	public native String getPasswordFromKeychain(String serviceName, String user);
 
 	public String getPasswordFromKeychain() {
 		return this.getPasswordFromKeychain(this.serviceName, this.getUsername());
@@ -86,7 +87,7 @@ public class Login {
 	/**
 	 * @see #addPasswordToKeychain
 	 */
-	public native void addPasswordToKeychain(String serviceName, String account, String password);
+	public native void addPasswordToKeychain(String serviceName, String user, String password);
 
 	public void addPasswordToKeychain() {
 		if(this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
@@ -94,6 +95,17 @@ public class Login {
 		}
 	}
 
+	/**
+		* @see #addInternetPasswordToKeychain
+	 */
+	public native void addInternetPasswordToKeychain(String protocol, String serviceName, int port, String user, String password);
+	
+	public void addInternetPasswordToKeychain() {
+		if(this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
+			this.addInternetPasswordToKeychain(this.protocol, this.serviceName, this.port, this.getUsername(), this.getPassword());
+		}
+	}
+	
 	/**
 	 * @param serviceName The service to use when looking up the password in the keychain
 	 * @param user        Login with this username
@@ -115,6 +127,8 @@ public class Login {
 	public Login(Host h, String user, String pass, boolean shouldBeAddedToKeychain) {
 		this.serviceName = h.getHostname();
 		this.protocol = h.getProtocol();
+		this.port = h.getPort();
+
 		this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
 		this.init(user, pass);
 	}
@@ -202,8 +216,10 @@ public class Login {
 		if(!this.hasReasonableValues()) {
 			if(Preferences.instance().getProperty("connection.login.useKeychain").equals("true")) {
 				log.info("Searching keychain for password...");
-//				String passFromKeychain = this.getInternetPasswordFromKeychain();
-				String passFromKeychain = this.getPasswordFromKeychain();
+				String passFromKeychain = this.getInternetPasswordFromKeychain();
+				if(null == passFromKeychain || passFromKeychain.equals("")) {
+					passFromKeychain = this.getPasswordFromKeychain();
+				}
 				if(null == passFromKeychain || passFromKeychain.equals("")) {
 					return this.promptUser("The username or password does not seem reasonable.").tryAgain();
 				}
