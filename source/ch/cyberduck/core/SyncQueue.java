@@ -118,14 +118,14 @@ public class SyncQueue extends Queue {
 			Path path = ((Path)iter.next());
 			if(path.getRemote().exists() && path.getLocal().exists()) {
 				if(path.getLocal().getTimestamp().before(path.attributes.getTimestamp())) {
-					this.size += path.getRemote().getSize();
+					this.size += path.getRemote().getSize(true);
 				}
 				if(path.getLocal().getTimestamp().after(path.attributes.getTimestamp())) {
 					this.size += path.getLocal().getSize();
 				}
 			}
 			else if(path.getRemote().exists()) {
-				this.size += path.getRemote().getSize();
+				this.size += path.getRemote().getSize(true);
 			}
 			else if(path.getLocal().exists()) {
 				this.size += path.getLocal().getSize();

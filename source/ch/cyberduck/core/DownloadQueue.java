@@ -50,7 +50,7 @@ public class DownloadQueue extends Queue {
 	protected void reset() {
 		this.size = 0;
 		for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
-			this.size += ((Path)iter.next()).getSize();
+			this.size += ((Path)iter.next()).getSize(true);
 		}
 	}
 			

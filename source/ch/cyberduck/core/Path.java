@@ -39,7 +39,7 @@ public abstract class Path {
 	/**
 		* The file length
 	 */
-	private long size = -1;
+	protected long size = -1;
 	
 	public Status status = new Status();
 	public Attributes attributes = new Attributes();
@@ -160,9 +160,14 @@ public abstract class Path {
 		* @return length the size of file in bytes.
 	 */
 	public long getSize() {
-		return this.size;
+		return this.getSize(false);
 	}
-		
+
+	/**
+		* @param force Force to ask the server for the file size nevertheless of any cached values
+	 */
+	public abstract long getSize(boolean force);
+	
 	private Path parent;
 	
 	/*
@@ -244,18 +249,6 @@ public abstract class Path {
 	 * @param recursive Include subdirectories and files
 	 */
 	public abstract void changePermissions(Permission perm, boolean recursive);
-
-	/*
-	public boolean exists(boolean returnFalseIfSizeIsZero) {
-		if(this.isRoot()) {
-			return true;
-		}
-		if(returnFalseIfSizeIsZero) {
-			return this.getParent().list(false, true).contains(this) && this.getSize() > 0;
-		}
-		return this.getParent().list(false, true).contains(this);
-	}
-	 */
 
 	/**
 	 * @return true if this paths points to '/'

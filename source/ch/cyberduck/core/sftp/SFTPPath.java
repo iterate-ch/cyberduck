@@ -217,6 +217,13 @@ public class SFTPPath extends Path {
 		}
 	}
 
+	public synchronized long getSize(boolean force) {
+		if(force) {
+			return this.size;
+		}
+		return this.size;
+	}
+	
 	public synchronized void delete() {
 		log.debug("delete:"+this.toString());
 		try {

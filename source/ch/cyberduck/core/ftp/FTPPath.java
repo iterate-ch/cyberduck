@@ -192,7 +192,24 @@ public class FTPPath extends Path {
 			session.close();
 		}
 	}
-
+	
+	public synchronized long getSize(boolean force) {
+		if(force) {
+			try {
+				return this.session.FTP.size(this.getAbsolute());
+			}
+			catch(FTPException e) {
+				log.error(e.getMessage());
+				//ignore; SIZE command not recognized
+			}
+			catch(IOException e) {
+				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.close();
+			}
+		}
+		return this.size;
+	}
+	
 	public synchronized void delete() {
 		log.debug("delete:"+this.toString());
 		try {
