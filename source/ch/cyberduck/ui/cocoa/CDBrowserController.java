@@ -1275,6 +1275,7 @@ public class CDBrowserController extends CDController implements Observer {
 	public void unmount() {
 		if(this.isMounted()) {
 			this.workdir().getSession().close();
+			TranscriptFactory.removeImpl(this.workdir().getSession().getHost().getHostname());
 		}
 	}
 		

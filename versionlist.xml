@@ -16,6 +16,7 @@
 - [Bugfix] Determine changed files based on modification date when synchronizing
 - [Bugfix] Opening an URL linking to a file opens a browser window
 - [Bugfix] Changing the username of a newly created bookmark of a connected server might affect an existing bookmark of the same server but with a different username.
+- [Bugfix] Logging the response of 'LIST' (FTP)
 - [Bugfix] Don't write PASS to transcript (FTP)
 
 2.4b1

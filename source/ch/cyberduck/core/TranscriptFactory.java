@@ -34,6 +34,10 @@ public abstract class TranscriptFactory {
 	public static void addImpl(String host, Transcript impl) {
 		transcripts.put(host, impl);
 	}
+	
+	public static void removeImpl(String host) {
+		transcripts.remove(host);
+	}
 
 	public static Transcript getImpl(String host) {
 		Transcript impl = (Transcript)transcripts.get(host);

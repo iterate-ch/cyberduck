@@ -56,7 +56,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 	public void validate(Queue q) {
 		for(Iterator iter = q.getChilds().iterator(); iter.hasNext() && !this.isCanceled(); ) {
 			Path child = (Path)iter.next();
-			log.info("Validating:"+child);
+			log.debug("Validating:"+child);
 			if(this.validate(child, q.isResumeRequested())) {
 				log.info("Adding "+child+" to final set.");				
 				this.validatedList.add(child);
