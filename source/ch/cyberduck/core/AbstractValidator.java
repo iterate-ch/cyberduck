@@ -53,7 +53,7 @@ public abstract class AbstractValidator implements Validator {
 	protected boolean validate(Path p, boolean resume) {
 		if(p.attributes.isFile()) {
 			p.reset();
-			if(Preferences.instance().getBoolean("queue.useTransformer")) {
+			if(Preferences.instance().getBoolean("queue.transformer.useTransformer")) {
 				p.setPath(p.getParent().getAbsolute(), NameTransformer.instance().transform(p.getName()));
 			}
 			return this.validateFile(p, resume);

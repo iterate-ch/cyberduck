@@ -355,9 +355,6 @@ public class CDBrowserController extends CDController implements Observer {
 		this.window().setTitle("Cyberduck "+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		this.window().setInitialFirstResponder(quickConnectPopup);
 		// Drawer states
-//		if(Preferences.instance().getBoolean("logDrawer.isOpen")) {
-//			this.logDrawer.open();
-//		}
 		if(Preferences.instance().getBoolean("bookmarkDrawer.isOpen")) {
 			this.bookmarkDrawer.open();
 		}
@@ -1022,7 +1019,6 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void toggleLogDrawer(Object sender) {
 		this.logDrawer.toggle(this);
-		Preferences.instance().setProperty("logDrawer.isOpen", this.logDrawer.state() == NSDrawer.OpenState || this.logDrawer.state() == NSDrawer.OpeningState);
 	}
 
 	private NSDrawer bookmarkDrawer; // IBOutlet

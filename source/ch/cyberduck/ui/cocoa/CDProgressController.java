@@ -139,7 +139,7 @@ public class CDProgressController extends NSObject implements Observer {
 	}
 
 	private void updateProgressbar() {
-		if(queue.isInitialized()) {
+		if(queue.isInitialized() && queue.getSize() != 0) {
 			double progressValue = queue.getCurrent()/queue.getSize();
 			this.progressBar.setIndeterminate(false);
 			this.progressBar.setMinValue(0);

@@ -93,7 +93,6 @@ public abstract class Preferences {
 //		defaults.put("ftp.implementation", "enterprisedt");
 		
 		defaults.put("bookmarkDrawer.isOpen", "false");
-		defaults.put("logDrawer.isOpen", "false");
 
 		defaults.put("browser.columnIcon", "true");
 		defaults.put("browser.columnFilename", "true");
@@ -131,8 +130,8 @@ public abstract class Preferences {
 		defaults.put("queue.download.permissions.useDefault", "false");
 		defaults.put("queue.download.permissions.default", "rw-r--r--");
 		defaults.put("queue.download.preserveDate", "true");
-		defaults.put("queue.useTransformer", "false");
-
+		
+		defaults.put("queue.transformer.useTransformer", "false");
 		defaults.put("queue.transformer.maxLength", "-1");
 		defaults.put("queue.transformer.keepsFilenameExtensions", "true");
 		defaults.put("queue.transformer.prefixString", "");
@@ -166,9 +165,6 @@ public abstract class Preferences {
 		defaults.put("connection.keepalive", "false");
 		defaults.put("connection.keepalive.interval", "30000");
 
-		defaults.put("http.agent", "Cyberduck/"+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
-		defaults.put("http.acceptheader", "*/*");
-
 		defaults.put("ssh.knownhosts", System.getProperty("user.home")+"/.ssh/known_hosts");
 
 		defaults.put("ssh.CSEncryption", "aes128-cbc"); //client -> server encryption cipher
@@ -178,7 +174,6 @@ public abstract class Preferences {
 		defaults.put("ssh.publickey", "ssh-rsa");
 		defaults.put("ssh.compression", "zlib");
 	}
-
 
 	/**
 	 * Should be overriden by the implementation and only called if the property
@@ -192,7 +187,6 @@ public abstract class Preferences {
 		if(value == null) {
 			throw new IllegalArgumentException("No property with key '"+property.toString()+"'");
 		}
-//		log.debug("getProperty:"+property+">"+value);
 		return value;
 	}
 

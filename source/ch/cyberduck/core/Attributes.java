@@ -49,9 +49,9 @@ public class Attributes extends Observable {
 	}
 
 	public boolean isUndefined() {
-		boolean defined = this.modified == null || this.size == -1;
+		boolean defined = (null == this.modified || -1 == this.size);
 		if(!defined)
-			log.warn("Undefined file attributes");
+			log.info("Undefined file attributes");
 		return defined;
 	}
 
