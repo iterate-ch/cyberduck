@@ -67,14 +67,10 @@ public abstract class CDValidatorController extends AbstractValidator {
 			return;
 		}
 		if(this.hasPrompt()) {
-			ThreadUtilities.instance().invokeLater(new Runnable() {
-				public void run() {
-					CDValidatorController.this.statusIndicator.stopAnimation(null);
-					CDValidatorController.this.setEnabled(true);
-					CDValidatorController.this.fileTableView.sizeToFit();
-					CDValidatorController.this.infoLabel.setStringValue(CDValidatorController.this.workList.size()+" "+NSBundle.localizedString("files", ""));
-				}
-			});
+			CDValidatorController.this.statusIndicator.stopAnimation(null);
+			CDValidatorController.this.setEnabled(true);
+			CDValidatorController.this.fileTableView.sizeToFit();
+			CDValidatorController.this.infoLabel.setStringValue(CDValidatorController.this.workList.size()+" "+NSBundle.localizedString("files", ""));
 			this.windowController.waitForSheetEnd();
 		}
 	}
