@@ -561,6 +561,7 @@ sk.lproj/Main.strings svneol=native#unset
 sk.lproj/Preferences.nib/keyedobjects.nib -text
 sk.lproj/Preferences.strings svneol=native#unset
 sk.lproj/Progress.nib/keyedobjects.nib -text
+sk.lproj/Progress.strings svneol=native#unset
 sk.lproj/Queue.nib/keyedobjects.nib -text
 sk.lproj/Queue.strings svneol=native#unset
 sk.lproj/Sync.nib/keyedobjects.nib -text
