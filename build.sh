@@ -19,7 +19,7 @@
 target="$1";
 
 if [ "$target" == "" ] ; then
-	target="all";
+	target="build";
 fi;
-	
+
 xcodebuild -target $target -buildstyle Deployment

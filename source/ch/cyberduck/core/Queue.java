@@ -293,12 +293,7 @@ public class Queue extends Observable implements Observer {
 			return this.running;
 		}
 		
-//		private void init() {
-//			this.jobs = new ArrayList();
-//		}
-		
 		public void run() {
-//@todo			int mypool = NSAutoreleasePool.push();
 			this.running = true;
 			this.queue.callObservers(new Message(Message.QUEUE_START));
 			
@@ -326,8 +321,6 @@ public class Queue extends Observable implements Observer {
 			
 			this.running = false;
 			this.queue.callObservers(new Message(Message.QUEUE_STOP));
-			
-//			NSAutoreleasePool.pop(mypool);
 		}
 	}
 		

@@ -89,28 +89,11 @@
         <mkdir dir="${build.unittests.reports}/html"/>
 	</target>
 
-
 	<target name="release" depends="build">
-		<zip destfile="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip">
-			<zipfileset dir="${build}" includes="${app.name}.app/**"/>
-  			<zipfileset dir="${build}" includes="${app.name}.app/Contents/MacOS/Cyberduck" filemode="755"/>
-		</zip>
-		<tar destfile="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.tar">
-			<tarfileset dir="${build}" includes="${app.name}.app/**"/>
-  			<tarfileset dir="${build}" includes="${app.name}.app/Contents/MacOS/Cyberduck" mode="755"/>
-  		</tar>
-		<gzip destfile="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.tar.gz"
-				src="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.tar"/>
-				
-		<!--
-		<dmg destfile="${build}/${app-name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg" name="Cyberduck ${cyberduck.version.major}.${cyberduck.version.minor}" compressed="true" srcdir="${build}">
-			<dmgfileset dir="${build}">
-				<includes="${app-name}.app/**"/>
-			</dmgfileset>
-		</dmg>
-		-->
+		<exec executable="buildDMG.pl" spawn="false">
+		    <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor} -buildDir ${build} -compressionLevel 9 -volSize 10 ${build}/${app.name}.app ${app.name}\ FAQ.rtfd ${app.name}\ Website.webloc Donate.webloc English.lproj/License.txt Credits.html"/>
+		</exec>
 	</target>
-
 
 	<target name="build" depends="archive" description="Compile, jar and copy to application bundle"> 
 		<copy todir="${app.java}">

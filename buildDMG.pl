@@ -3,7 +3,7 @@
 my $versionStr = '$Id$';
 #
 #  Created by Jšrg Westheide on Fri Feb 13 2003.
-#  Copyright (c) 2003 Jšrg Westheide. All rights reserved.
+#  Copyright (c) 2003, 2004 Jšrg Westheide. All rights reserved.
 #
 #  Permission to use, copy, modify and distribute this software and its documentation
 #  is hereby granted, provided that both the copyright notice and this permission
@@ -23,10 +23,13 @@ my $versionStr = '$Id$';
 use strict;
 use diagnostics;
 use Getopt::Long;
+use Cwd;
 
 my $version;
+my $debug;
 my $help;
 my $output;
+my $err;
 my $minVolSize = 5;   # minimum size of a dmg volume in MB
 
 # determine the build directory, compression level, the list of files to copy, and the size of the dmg volume
@@ -39,13 +42,14 @@ my $dmgName          = $ENV{DMG_NAME};
 my $internetEnabled  = $ENV{DMG_INTERNETENABLED};
 my $slaRsrcFile      = $ENV{DMG_SLA_RSRCFILE};
 my $deleteHeaders    = ($ENV{DMG_DELETEHEADERS} && ($ENV{DMG_DELETEHEADERS} =~ /^\s*yes\s*$/i));
-my $files            = $ENV{DMG_FILESLIST};
+my $files;
 
 # override them with command line options
 GetOptions('help'               => \$help,
            'version'            => \$version,
            'buildDir=s'         => \$buildDir,
            'compressionLevel=i' => \$compressionLevel,
+           'debug'              => \$debug,
            'deleteHeaders!'     => \$deleteHeaders,
            'dmgName=s'          => \$dmgName,
            'internetEnabled!'   => \$internetEnabled,
@@ -65,15 +69,17 @@ if ($version) {
     exit 0;
 }
 
-push @ARGV, $files if $files;
-die "FATAL: No files to copy specified\n" unless @ARGV;
-
+my $firstFile = $ARGV[0];   # save an unescaped version, we may need it for the dmg's name
 for (my $i = @ARGV-1; $i >= 0; $i--) {
     $ARGV[$i] =~ s/ /\\ /g;         # escape spaces (we pass the files on the command line)
 }
-$files = join(' ', @ARGV);
 
-$buildDir = '.' unless $buildDir;
+die "FATAL: No files to copy specified\n" unless @ARGV or $ENV{DMG_FILESLIST};
+
+$files = join(' ', @ARGV);
+$files .= " $ENV{DMG_FILESLIST}" if $ENV{DMG_FILESLIST};
+
+$buildDir = cwd() unless $buildDir;
 
 # determine dmg and volume name
 if (my $settings = readSettings()) {
@@ -87,7 +93,7 @@ if (my $settings = readSettings()) {
 }
 
 unless ($ENV{SETTINGS_FILE}) {
-    $dmgName = $ARGV[0] unless $dmgName;
+    $dmgName = $firstFile unless $dmgName;
     $dmgName =~ s#.*/([^/]+)$#$1#;           # we have to cut off the path
     $dmgName =~ s/(.*?)(\.[^.]*)?$/$1/;      # cut off the extension
     $volName = $dmgName unless $volName;
@@ -113,74 +119,97 @@ unless ($volSize && ($volSize > 0)) {
 }
 
 # OK, we have determined all out parameters.
+
+# print them for debugging
+if ($debug) {
+    print STDERR "buildDir: ", $buildDir ? $buildDir : "", "\n";
+    print STDERR "compressionLevel: ", $compressionLevel ? $compressionLevel : "", "\n";
+    print STDERR "volSize: ", $volSize ? $volSize : "", "\n";
+    print STDERR "volName: ", $volName ? $volName : "", "\n";
+    print STDERR "dmgName: ", $dmgName ? $dmgName : "", "\n";
+    print STDERR "internetEnabled: ", $internetEnabled ? $internetEnabled : "", "\n";
+    print STDERR "slaRsrcFile: ", $slaRsrcFile ? $slaRsrcFile : "", "\n";
+    print STDERR "deleteHeaders: ", $deleteHeaders ? $deleteHeaders : "", "\n";
+    print STDERR "files: ", $files ? $files : "", "\n";
+}
+
 # Now we start our work...
 
 # create the dmg
-eval { $output = `hdiutil create \"$buildDir/$dmgName\" -ov -megabytes $volSize -fs HFS+ -volname \"$volName\"` };
-die "FATAL: Could not create image: $@\n" if $@;
-die "FATAL: Couldn't create dmg $dmgName.\nIs it possibly mounted?\n" if $?;
+print "> hdiutil create \"$buildDir/$dmgName\" -ov -megabytes $volSize -fs HFS+ -volname \"$volName\"\n" if $debug;
+$output = `hdiutil create \"$buildDir/$dmgName\" -ov -megabytes $volSize -fs HFS+ -volname \"$volName\"`;
+die "FATAL: Couldn't create dmg $dmgName (Error: $?)\nIs it possibly mounted?\n" if $?;
 
-# ($dmgName) = ($output =~ /created\s*:\s*(.+?)\s*$/m);
-$dmgName = ($dmgName . ".dmg");
+($dmgName) = ($output =~ /created\s*:\s*(?:.*?$buildDir\/)?(.+?)\s*$/m);
 die "FATAL: Couldn't read created dmg name\n" unless $dmgName;
 
+print "Changed dmgName to \"$dmgName\"\n" if $debug;
+
 # mount the dmg
-eval { $output = `hdiutil attach \"$dmgName\"` };
-die "FATAL: Couldn't mount DMG $dmgName\n" if $@;
+print "> hdiutil attach \"$buildDir/$dmgName\"\n" if $debug;
+$output = `hdiutil attach \"$buildDir/$dmgName\"`;
+die "FATAL: Couldn't mount DMG $dmgName (Error: $?)\n" if $?;
 
 my ($dev)  = ($output =~ /(\/dev\/.+?)\s*Apple_partition_scheme/im);
 my ($dest) = ($output =~ /Apple_HFS\s+(.+?)\s*$/im);
 
 # copy the files onto the dmg
-my $err;
 print "Copying files to $dest...\n";
-eval { $output = `/Developer/Tools/CpMac -r $files \"$dest\"`};
-if ($@) {
-    print STDERR "Error while copying $files to $dest: $@\n";
-    $err = $@;
-}
+print "> /Developer/Tools/CpMac -r $files \"$dest\"\n" if $debug;
+$output = `/Developer/Tools/CpMac -r $files \"$dest\"`;
+$err = $?;
 
 # delete headers
 if ($deleteHeaders) {
     print "Deleting header files and directories...\n";
+    print "> find -E -d \"$dest\" -regex \".*/(Private)?Headers\" -exec rm -rf {} \";\"\n" if $debug;
     $output = `find -E -d "$dest" -regex ".*/(Private)?Headers" -exec rm -rf {} ";"`;
 }
 
 # unmount the dmg
-eval { $output = `hdiutil detach $dev` };
-die "FATAL: Error while copying files\n" if $err;
-die "FATAL: Couldn't unmount device $dev: $@\n" if $@;
+print "> hdiutil detach $dev\n" if $debug;
+$output = `hdiutil detach $dev`;
+die "FATAL: Error while copying files (Error: $err)\n" if $err;
+die "FATAL: Couldn't unmount device $dev: $?\n" if $?;
 
 # compress the dmg
-my $tmpDmgName = "../$dmgName";
+my $tmpDmgName = "$dmgName~";
+
 if ($compressionLevel) {
     print "Compressing $dmgName...\n";
-
-    eval { $output = `hdiutil convert $dmgName -format UDZO -imagekey zlib-level=$compressionLevel -o $tmpDmgName`};
-    die "Error: Couldn't compress the dmg $dmgName: $@\n" if $@;
+    print "> mv -f \"$buildDir/$dmgName\" \"$buildDir/$tmpDmgName\"\n" if $debug;
+    $output = `mv -f "$buildDir/$dmgName" "$buildDir/$tmpDmgName"`;
     
-    eval { $output = `cp -f $tmpDmgName $dmgName`};
-    eval { $output = `rm $tmpDmgName`};
-    unlink "$tmpDmgName";
+    print "> hdiutil convert \"$buildDir/$tmpDmgName\" -format UDZO -imagekey zlib-level=$compressionLevel -o \"$buildDir/$dmgName\"\n" if $debug;
+    $output = `hdiutil convert "$buildDir/$tmpDmgName" -format UDZO -imagekey zlib-level=$compressionLevel -o "$buildDir/$dmgName"`;
+    die "Error: Couldn't compress the dmg $dmgName: $?\n" if $?;
+    
+    unlink "$buildDir/$tmpDmgName";
 }
 
 # Adding the SLA
 if ($slaRsrcFile) {
     print "Adding SLA...\n";
-    eval { $output = `hdiutil unflatten $dmgName`};
-    die "Couldn't unflatten dmg: $@\n" if $@;
+    print "> hdiutil unflatten \"$buildDir/$dmgName\"\n" if $debug;
+    $output = `hdiutil unflatten \"$buildDir/$dmgName"`;
+    die "Couldn't unflatten dmg (Error:$?)\n" if $?;
     
-    eval { $output = `/Developer/Tools/Rez /Developer/Headers/FlatCarbon/*.r $slaRsrcFile -a -o $dmgName`};
-    print "Couldn't add SLA: $@\n" if $@;
-    
-    eval { $output = `hdiutil flatten $dmgName`}; 
-    die "Couldn't flatten dmg: $@\n" if $@;
+    unless ($?) {
+        print "> /Developer/Tools/Rez /Developer/Headers/FlatCarbon/*.r \"$slaRsrcFile\" -a -o \"$buildDir/$dmgName\"\n" if $debug;
+        $output = `/Developer/Tools/Rez /Developer/Headers/FlatCarbon/*.r "$slaRsrcFile" -a -o "$buildDir/$dmgName"`;
+        print STDERR "Couldn't add SLA (Error: $?)\n" if $?;
+        
+        print "> hdiutil flatten \"$buildDir/$dmgName\"\n" if $debug;
+        $output = `hdiutil flatten "$buildDir/$dmgName"`;
+        die "Couldn't flatten dmg (Error: $?)\n" if $?;
+    }
 }
 
 # Enabling internet access
 if ($internetEnabled) {
-    eval { $output = `hdiutil internet-enable -yes $dmgName`};
-    print "Couldn't enable internet access for $dmgName: $@\n" if $@;
+    print "> hdiutil internet-enable -yes \"$buildDir/$dmgName\"\n" if $debug;
+    $output = `hdiutil internet-enable -yes "$buildDir/$dmgName"`;
+    print STDERR "Couldn't enable internet access for $dmgName (Error: $?)\n" if $?;
 }
 
 print "Done.\n";
@@ -213,7 +242,7 @@ B<buildDMG> - build a DMG from the commandline or from inside ProjectBuilder
 
 =head1 SYNOPSIS
 
-buildDMG.pl [-help] [-version] [-buildDir dir] [-compressionLevel n] [-deleteHeaders] [-dmgName name] [-slaRsrcFile file] [-volName name] 
+buildDMG.pl [-help] [-version] [-debug] [-buildDir dir] [-compressionLevel n] [-deleteHeaders] [-dmgName name] [-slaRsrcFile file] [-volName name] 
 [-volSize n] files...
 
 =head1 DESCRIPTION
@@ -235,6 +264,10 @@ directory
 
 specifies the compression level for zlib compression. Legal values for I<n> are 1-9 with 1 being fastet, 9 best compression. 0 turns 
 compression off. The corresponding environment variable is B<DMG_COMPRESSIONLEVEL>. The default is 0 (no compression)
+
+=item B<-debug>
+
+enables output of debug information
 
 =item B<-[no]deleteHeaders>
 
