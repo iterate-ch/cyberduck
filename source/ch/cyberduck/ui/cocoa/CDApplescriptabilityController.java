@@ -17,6 +17,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.foundation.NSScriptCommand;
 import com.apple.cocoa.foundation.NSScriptCommandDescription;
 
@@ -40,8 +41,7 @@ public class CDApplescriptabilityController extends NSScriptCommand {
 		log.debug("performDefaultImplementation");
 		String arg = (String)this.directParameter();
 		if(null == arg) {
-			CDController doc = CDMainController.newDocument();
-            return doc;
+			return ((CDMainController)NSApplication.sharedApplication().delegate()).newDocument();
 		}
 		log.debug("Received URL from Apple Event:"+arg);
 		try {
@@ -58,8 +58,8 @@ public class CDApplescriptabilityController extends NSScriptCommand {
 					return null;
 				}
 			}
-			CDBrowserController controller = CDMainController.newDocument();
-			controller.mount(h);
+			CDBrowserController doc = ((CDMainController)NSApplication.sharedApplication().delegate()).newDocument();
+			doc.mount(h);
 		}
 		catch(java.net.MalformedURLException e) {
 			log.error(e.getMessage());

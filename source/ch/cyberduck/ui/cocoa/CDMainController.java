@@ -205,7 +205,7 @@ public class CDMainController extends NSObject {
 
 		public void bookmarkMenuClicked(Object sender) {
 			log.debug("bookmarkMenuClicked:"+sender);
-			CDBrowserController controller = CDMainController.newDocument();
+			CDBrowserController controller = CDMainController.this.newDocument();
 			controller.mount((Host)items.get(sender));
 		}
 	}
@@ -275,7 +275,7 @@ public class CDMainController extends NSObject {
 
 		public void rendezvousMenuClicked(NSMenuItem sender) {
 			//log.debug("rendezvousMenuClicked:" + sender);
-			CDBrowserController controller = CDMainController.newDocument();
+			CDBrowserController controller = CDMainController.this.newDocument();
 			controller.mount((Host)items.get(sender.title()));
 		}
 	}
@@ -470,7 +470,7 @@ public class CDMainController extends NSObject {
 	}
 
 	public void newBrowserMenuClicked(Object sender) {
-		CDController c = CDMainController.newDocument(true);
+		CDController c = this.newDocument(true);
 	}
 
 	public void showTransferQueueClicked(Object sender) {
@@ -489,7 +489,7 @@ public class CDMainController extends NSObject {
 			log.info("Found file: "+f.toString());
 			Host host = CDBookmarkTableDataSource.instance().importBookmark(f);
 			if(host != null) {
-				CDMainController.newDocument().mount(host);
+				this.newDocument().mount(host);
 				return true;
 			}
 		}
@@ -506,13 +506,13 @@ public class CDMainController extends NSObject {
 	 */
 	public boolean applicationOpenUntitledFile(NSApplication app) {
 		log.debug("applicationOpenUntitledFile");
-		return CDMainController.newDocument() != null;
+		return this.newDocument() != null;
 	}
 
 	public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
 		log.debug("applicationShouldHandleReopen");
-		if(CDMainController.orderedBrowsers().count() == 0 && CDMainController.orderedTransfers().count() == 0) {
-			return CDMainController.newDocument() == null;
+		if(this.orderedBrowsers().count() == 0 && this.orderedTransfers().count() == 0) {
+			return this.newDocument() == null;
 		}
 		return false;
 	}
@@ -612,13 +612,13 @@ public class CDMainController extends NSObject {
 		Preferences.instance().save();
 	}
 	
-	public static CDBrowserController newDocument() {
-		return CDMainController.newDocument(false);
+	public CDBrowserController newDocument() {
+		return this.newDocument(false);
 	}
-
-	public static CDBrowserController newDocument(boolean force) {
+	
+	public CDBrowserController newDocument(boolean force) {
 		log.debug("newDocument");
-		NSArray browsers = CDMainController.orderedBrowsers();
+		NSArray browsers = this.orderedBrowsers();
 		if(!force) {
 			java.util.Enumeration enumerator = browsers.objectEnumerator();
 			while (enumerator.hasMoreElements()) {
@@ -648,7 +648,7 @@ public class CDMainController extends NSObject {
 		return false;
 	}
 
-	public static NSArray orderedTransfers() {
+	public NSArray orderedTransfers() {
 		log.debug("orderedTransfers");
 		NSApplication app = NSApplication.sharedApplication();
 		NSArray orderedWindows = (NSArray)NSKeyValue.valueForKey(app, "orderedWindows");
@@ -669,7 +669,7 @@ public class CDMainController extends NSObject {
 		return orderedDocs;
 	}
 
-	public static NSArray orderedBrowsers() {
+	public NSArray orderedBrowsers() {
 		log.debug("orderedBrowsers");
 		NSApplication app = NSApplication.sharedApplication();
 		NSArray orderedWindows = (NSArray)NSKeyValue.valueForKey(app, "orderedWindows");
@@ -684,7 +684,6 @@ public class CDMainController extends NSObject {
 				}
 			}
 		}
-		log.debug("orderedBrowsers:"+orderedDocs);
 		return orderedDocs;
 	}
 

@@ -32,6 +32,11 @@
 	select_timer = nil;
 }
 
+- (BOOL)acceptsFirstMouse:(NSEvent *)event
+{
+	return YES;
+}
+
 - (void)dealloc
 {
 	[select_string release];
