@@ -3,11 +3,14 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.3.1</string>
+	<string>2.3.2</string>
 	<key>file</key>
-	<string>Cyberduck-2.3.1.dmg</string>
+	<string>Cyberduck-2.3.2.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.3.2
+
+
 2.3.1
 - [Feature] Chinese (Simplified) Localization
 - [Feature] Rendezvous services in Bookmark menu
