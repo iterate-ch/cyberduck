@@ -43,7 +43,7 @@ public class CDProgressCell extends CDTableCell {
 			progress = (float)((float)queue.getCurrent()/(float)queue.getSize());
 		else
 			progress = 0;
-		log.debug("progress:"+progress);
+//		log.debug("progress:"+progress);
 		final float PROGRESS_WIDTH = progress*(cellSize.width()-SPACE*2);
 
 		NSRect barRect = new NSRect(cellPoint.x()+SPACE, 
@@ -55,24 +55,11 @@ public class CDProgressCell extends CDTableCell {
 										  PROGRESS_WIDTH, 
 										  PROGRESS_HEIGHT);
 
-		// cell is selected (white graphic)
-		if (this.isHighlighted() && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(NSColor.secondarySelectedControlColor())) {
-			NSColor.whiteColor().set();
-		}
-		// cell is not selected (black font)
-		else {
-			NSColor.lightGrayColor().set();
-		}
-
 		//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and 
   //coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
   //invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.
 		controlView.lockFocus();
 		
-		// drawing progress bar
-		NSBezierPath.strokeRect(barRect);
-		NSBezierPath.fillRect(barRectFilled);
-
 		// drawing current of size string
 		NSGraphics.drawAttributedString(
 										new NSAttributedString((int)(progress*100)+"%"
@@ -99,6 +86,21 @@ public class CDProgressCell extends CDTableCell {
 											 cellSize.height())
 								  );
 		
+		// drawing progress bar
+		if (highlighted)
+			NSColor.whiteColor().set();
+		else
+			NSColor.lightGrayColor().set();
+		NSBezierPath.strokeRect(barRect);
+		//		NSBezierPath.fillRect(barRectFilled);
+		if (highlighted)
+			NSColor.whiteColor().set();
+//			NSColor.colorWithPatternImage(NSImage.imageNamed("stripeWhite.tiff")).set();
+		else
+			NSColor.colorWithPatternImage(NSImage.imageNamed("stripeGray.tiff")).set();
+		NSColor.colorWithPatternImage(NSImage.imageNamed("stripe.tiff")).set();
+		NSBezierPath.fillRect(barRectFilled);
+				
 		controlView.unlockFocus();
 	}
 }
