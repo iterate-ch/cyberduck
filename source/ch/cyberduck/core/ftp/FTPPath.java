@@ -231,37 +231,35 @@ public class FTPPath extends Path {
 		}
 	}
 
-	public synchronized java.util.Date modificationDate() {
-		try {
-			this.attributes.setTimestamp(this.session.FTP.modtime(this.getAbsolute()));
-		}
-		catch(FTPException e) {
-			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
-		}
-		catch(IOException e) {
-			session.log("IO Error: "+e.getMessage(), Message.ERROR);
-		}
-		finally {
-			return this.attributes.getTimestamp();
-		}
-	}
-	
-	/*
-	public synchronized long size() {
-        try {
-			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
-		}
-		catch (FTPException e) {
-//			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-		}
-		catch (IOException e) {
-//			session.log("IO Error: " + e.getMessage(), Message.ERROR);
-		}
-		finally {
-			return this.status.getSize();
-		}
-	}
-	 */
+//	public synchronized java.util.Date modificationDate() {
+//		try {
+//			this.attributes.setTimestamp(this.session.FTP.modtime(this.getAbsolute()));
+//		}
+//		catch(FTPException e) {
+//			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+//		}
+//		catch(IOException e) {
+//			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+//		}
+//		finally {
+//			return this.attributes.getTimestamp();
+//		}
+//	}
+//
+//	public synchronized long size() {
+//        try {
+//			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
+//		}
+//		catch (FTPException e) {
+////			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
+//		}
+//		catch (IOException e) {
+////			session.log("IO Error: " + e.getMessage(), Message.ERROR);
+//		}
+//		finally {
+//			return this.status.getSize();
+//		}
+//	}
 	
 	public synchronized void changePermissions(Permission perm, boolean recursive) {
 		log.debug("changePermissions:"+perm);
@@ -276,7 +274,7 @@ public class FTPPath extends Path {
 				session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
 				session.FTP.site(command+" "+perm.getOctalCode()+" "+this.getAbsolute());
 				if(recursive) {
-					List files = this.list(false, false); //@todo also change on invisible files?
+					List files = this.list(false, true);
 					java.util.Iterator iterator = files.iterator();
 					Path file = null;
 					while(iterator.hasNext()) {
@@ -295,47 +293,45 @@ public class FTPPath extends Path {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
 		}
 	}
-
+	
 	public synchronized void download() {
 		try {
 			log.debug("download:"+this.toString());
-			if(this.attributes.isFile()) {
-				session.check();
-				if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-					if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
-						this.downloadASCII();
-					}
-					else {
-						this.downloadBinary();
-					}
-				}
-				else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
-					this.downloadBinary();
-				}
-				else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+			session.check();
+			if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+				if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
 					this.downloadASCII();
 				}
 				else {
-					throw new FTPException("Transfer type not set");
+					this.downloadBinary();
 				}
-				if(this.status.isComplete()) {
-					log.info("Updating permissions");
-					if(Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-						Permission perm = null;
-						if(Preferences.instance().getProperty("queue.download.permissions.useDefault").equals("true")) {
-							perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
-						}
-						else {
-							perm = this.attributes.getPermission();
-						}
-						if(!perm.isUndefined()) {
-							this.getLocal().setPermission(perm);
-						}
+			}
+			else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+				this.downloadBinary();
+			}
+			else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+				this.downloadASCII();
+			}
+			else {
+				throw new FTPException("Transfer type not set");
+			}
+			if(this.status.isComplete()) {
+				log.info("Updating permissions");
+				if(Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
+					Permission perm = null;
+					if(Preferences.instance().getProperty("queue.download.permissions.useDefault").equals("true")) {
+						perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
+					}
+					else {
+						perm = this.attributes.getPermission();
+					}
+					if(!perm.isUndefined()) {
+						this.getLocal().setPermission(perm);
 					}
 				}
-				if(Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
-					this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
-				}
+			}
+			if(Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
+				this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
 			}
 			session.log("Idle", Message.STOP);
 		}
@@ -482,42 +478,40 @@ public class FTPPath extends Path {
 	public synchronized void upload() {
 		log.debug("upload:"+this.toString());
 		try {
-			if(this.attributes.isFile()) { //@todo getLocal()?
-				session.check();
-				if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-					if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
-						this.uploadASCII();
-					}
-					else {
-						this.uploadBinary();
-					}
-				}
-				else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
-					this.uploadBinary();
-				}
-				else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+			session.check();
+			if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+				if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
 					this.uploadASCII();
 				}
 				else {
-					throw new FTPException("Transfer mode not set");
+					this.uploadBinary();
 				}
-				if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
-					try {
-						if(Preferences.instance().getProperty("queue.upload.permissions.useDefault").equals("true")) {
-							Permission perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
+			}
+			else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+				this.uploadBinary();
+			}
+			else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+				this.uploadASCII();
+			}
+			else {
+				throw new FTPException("Transfer mode not set");
+			}
+			if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
+				try {
+					if(Preferences.instance().getProperty("queue.upload.permissions.useDefault").equals("true")) {
+						Permission perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
+						session.FTP.site("CHMOD "+perm.getOctalCode()+" "+this.getAbsolute());
+					}
+					else {
+						Permission perm = this.getLocal().getPermission();
+						if(!perm.isUndefined()) {
 							session.FTP.site("CHMOD "+perm.getOctalCode()+" "+this.getAbsolute());
 						}
-						else {
-							Permission perm = this.getLocal().getPermission();
-							if(!perm.isUndefined()) {
-								session.FTP.site("CHMOD "+perm.getOctalCode()+" "+this.getAbsolute());
-							}
-						}
 					}
-					catch(FTPException e) {
-						// catch chmodding exceptions and change the preferences as the server doesn't seem to support CHMOD
-						Preferences.instance().setProperty("queue.upload.changePermissions", "false");
-					}
+				}
+				catch(FTPException e) {
+					// catch chmodding exceptions and change the preferences as the server doesn't seem to support CHMOD
+					Preferences.instance().setProperty("queue.upload.changePermissions", "false");
 				}
 			}
 			session.log("Idle", Message.STOP);

@@ -268,7 +268,7 @@ public class CDQueueController extends CDController implements Observer {
 	}
 
 	private void startItem(Queue queue, boolean resumeRequested) {
-		queue.addObserver(this); //@todo delete observer
+		queue.addObserver(this);
 		if(Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
 			this.window().makeKeyAndOrderFront(null);
 		}
@@ -337,6 +337,7 @@ public class CDQueueController extends CDController implements Observer {
 						this.reloadQueueTable();
 					}
 				}
+				queue.deleteObserver(this);
 			}
 		}
 	}

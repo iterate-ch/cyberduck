@@ -128,7 +128,7 @@ public class FTPClient {
 		*  Instance initializer. Sets formatter to GMT.
 		*/
     {
-        tsFormat.setTimeZone(TimeZone.getTimeZone("GMT")); //@todo
+        tsFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     }  
     
 	/**

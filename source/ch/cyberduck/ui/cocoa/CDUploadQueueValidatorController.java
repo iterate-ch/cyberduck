@@ -65,7 +65,7 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 	}
 
 	protected boolean exists(Path p) {
-		return p.exists(); //@todo , p.exists(false)?
+		return p.exists();
 	}
 
 	protected void adjustFilename(Path path) {

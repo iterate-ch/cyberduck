@@ -72,7 +72,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	protected boolean validateFile(Path p, boolean resume) {
 		log.debug("validateFile:"+p);
 		if(p.getRemote().exists(false) && p.getLocal().exists()) {
-			if (!(p.status.getSize() == p.getLocal().size())) { //@todo size should be correct!?
+			if (!(p.status.getSize() == p.getLocal().size())) {
 				this.prompt(p);
 			}
 		}
@@ -164,10 +164,11 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	public void setSyncButton(NSButton syncButton) {
 		this.syncButton = syncButton;
 		this.syncButton.setEnabled(false);
+		this.syncButton.setTarget(this);
+		this.syncButton.setAction(new NSSelector("syncActionFired", new Class[]{Object.class}));
 	}
 
 	public void syncActionFired(NSButton sender) {
-		log.debug("syncActionFired");
 		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
 	}
 	

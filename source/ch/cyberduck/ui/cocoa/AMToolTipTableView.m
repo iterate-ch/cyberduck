@@ -26,7 +26,6 @@
 @interface AMToolTipTableView (Private)
 - (NSString *)_amKeyForColumn:(int)columnIndex row:(int)rowIndex;
 - (NSTableColumn *)_typeAheadSelectionColumn;
-- (BOOL)_processKeyDownCharacter:(unichar)character;
 @end
 
 @implementation AMToolTipTableView
@@ -34,15 +33,8 @@
 - (id)init
 {
 	[super init];
-	// create region list
 	regionList = [[NSMutableDictionary alloc] initWithCapacity:20];
 	return self;
-}
-
-- (void)awakeFromNib
-{
-	// create region list
-	regionList = [[NSMutableDictionary alloc] initWithCapacity:20];
 }
 
 - (void)dealloc
@@ -82,7 +74,6 @@
 			}
 		}
 	}
-	//	[self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
 	[super keyDown:theEvent];
 }
 
@@ -125,11 +116,6 @@
 - (NSTableColumn *)_typeAheadSelectionColumn;
 {
 	return [self tableColumnWithIdentifier:@"FILENAME"];
-}
-
-- (BOOL)_processKeyDownCharacter:(unichar)character;
-{
-    return NO;
 }
 
 @end

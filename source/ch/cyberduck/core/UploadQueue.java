@@ -59,7 +59,7 @@ public class UploadQueue extends Queue {
 				List l = p.getParent().list(false, true);
 				Path r = (Path)l.get(l.indexOf(p));
 				r.setLocal(p.getLocal());
-				childs.add(r); //@todo
+				childs.add(r);
 			}
 		}
 		return childs;

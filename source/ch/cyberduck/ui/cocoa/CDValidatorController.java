@@ -55,7 +55,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 			Message msg = (Message)arg;
 			if(msg.getTitle().equals(Message.ERROR)) {
 				if(CDQueueController.instance().hasSheet()) {
-					NSApplication.sharedApplication().endSheet(this.window());//@todo send return code
+					NSApplication.sharedApplication().endSheet(this.window());
 				}
 			}
 		}
@@ -151,6 +151,8 @@ public abstract class CDValidatorController extends AbstractValidator {
 	public void setSkipButton(NSButton skipButton) {
 		this.skipButton = skipButton;
 		this.skipButton.setEnabled(false);
+		this.skipButton.setTarget(this);
+		this.skipButton.setAction(new NSSelector("skipActionFired", new Class[]{Object.class}));
 	}
 
 	private NSButton resumeButton; // IBOutlet
@@ -158,7 +160,8 @@ public abstract class CDValidatorController extends AbstractValidator {
 	public void setResumeButton(NSButton resumeButton) {
 		this.resumeButton = resumeButton;
 		this.resumeButton.setEnabled(false);
-		//@todo resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
+		this.resumeButton.setTarget(this);
+		this.resumeButton.setAction(new NSSelector("resumeActionFired", new Class[]{Object.class}));
 	}
 
 	private NSButton overwriteButton; // IBOutlet
@@ -166,8 +169,19 @@ public abstract class CDValidatorController extends AbstractValidator {
 	public void setOverwriteButton(NSButton overwriteButton) {
 		this.overwriteButton = overwriteButton;
 		this.overwriteButton.setEnabled(false);
+		this.overwriteButton.setTarget(this);
+		this.overwriteButton.setAction(new NSSelector("overwriteActionFired", new Class[]{Object.class}));
 	}
 
+	private NSButton cancelButton; // IBOutlet
+	
+	public void setCancelButton(NSButton cancelButton) {
+		this.cancelButton = cancelButton;
+		this.cancelButton.setEnabled(false);
+		this.cancelButton.setTarget(this);
+		this.cancelButton.setAction(new NSSelector("cancelActionFired", new Class[]{Object.class}));
+	}
+	
 	private NSPanel window; // IBOutlet
 
 	public void setWindow(NSPanel window) {
@@ -181,8 +195,9 @@ public abstract class CDValidatorController extends AbstractValidator {
 
 	protected void setEnabled(boolean enabled) {
 		this.overwriteButton.setEnabled(enabled);
-		this.resumeButton.setEnabled(enabled); //@todo
+		this.resumeButton.setEnabled(enabled);
 		this.skipButton.setEnabled(enabled);
+		this.cancelButton.setEnabled(enabled);
 	}
 
 	protected void reloadTable() {
@@ -199,7 +214,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 
 	public void resumeActionFired(NSButton sender) {
-		log.debug("resumeActionFired");
 		for(Iterator i = this.workset.iterator(); i.hasNext();) {
 			((Path)i.next()).status.setResume(true);
 		}
@@ -207,7 +221,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 
 	public void overwriteActionFired(NSButton sender) {
-		log.debug("overwriteActionFired");
 		for(Iterator i = this.workset.iterator(); i.hasNext();) {
 			((Path)i.next()).status.setResume(false);
 		}
@@ -215,13 +228,11 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 
 	public void skipActionFired(NSButton sender) {
-		log.debug("skipActionFired");
 		this.workset.clear();
 		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
 	}
 
 	public void cancelActionFired(NSButton sender) {
-		log.debug("cancelActionFired");
 		this.setCanceled(true);
 		this.validated.clear();
 		this.workset.clear();
