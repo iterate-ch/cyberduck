@@ -277,7 +277,7 @@ public class CDBrowserController extends NSObject implements Observer {
     }
 
     public void bookmarkTableRowDoubleClicked(Object sender) {
-        log.debug("bookmarkTableRowDoubleClicked");
+		log.debug("bookmarkTableRowDoubleClicked");
         if (this.bookmarkTable.selectedRow() != -1) {
             Host host = (Host) CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow());
             this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
@@ -314,9 +314,9 @@ public class CDBrowserController extends NSObject implements Observer {
             else {
                 host = new Host(input, new Login(input, null, null));
 				if(host.getProtocol().equals(Session.FTP))
-					host.setLogin(new Login(host.getHostname(), Preferences.instance().getProperty("ftp.anonymous.name"), null));
+					host.getLogin().setUsername(Preferences.instance().getProperty("ftp.anonymous.name"));
 				else
-					host.setLogin(new Login(host.getHostname(), Preferences.instance().getProperty("connection.login.name"), null));
+					host.getLogin().setUsername(Preferences.instance().getProperty("connection.login.name"));
             }
         }
         this.mount(host);
@@ -424,7 +424,7 @@ public class CDBrowserController extends NSObject implements Observer {
                     h.getHostname(),
                     h.getPort(),
                     new Login(h.getHostname(), h.getLogin().getUsername(), h.getLogin().getPassword()),
-                    h.getDefaultPath());
+                    pathController.workdir().getAbsolute());
         }
         else {
             item = new Host("", new Login("", null, null));
@@ -606,19 +606,19 @@ public class CDBrowserController extends NSObject implements Observer {
         else if (arg instanceof Message) {
             Message msg = (Message) arg;
             if (msg.getTitle().equals(Message.ERROR)) {
-                //if(this.window.isVisible()) {
-                NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                        NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                        null, //alternative button
-                        null, //other button
-                        this.window, //docWindow
-                        null, //modalDelegate
-                        null, //didEndSelector
-                        null, // dismiss selector
-                        null, // context
-                        (String) msg.getContent() // message
-                );
-                //}
+                if(this.window().isVisible()) {
+					NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+														 null, //alternative button
+														 null, //other button
+														 this.window, //docWindow
+														 null, //modalDelegate
+														 null, //didEndSelector
+														 null, // dismiss selector
+														 null, // context
+														 (String) msg.getContent() // message
+														 );
+				}
                 this.progressIndicator.stopAnimation(this);
                 this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
                 this.statusLabel.setObjectValue(msg.getContent());
@@ -905,9 +905,9 @@ public class CDBrowserController extends NSObject implements Observer {
 
     public void mount(Host host) {
         log.debug("mount:" + host);
-//        if (this.unmount(new NSSelector("mountSheetDidEnd",
-//										new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
-//						 )) {
+        if (this.unmount(new NSSelector("mountSheetDidEnd",
+										new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
+						 )) {
             this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
             pathController.removeAllItems();
             browserModel.clear();
@@ -942,7 +942,7 @@ public class CDBrowserController extends NSObject implements Observer {
             }
             host.getLogin().setController(new CDLoginController(this.window));
             session.mount();
-//        }
+        }
     }
 
     public void mountSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {

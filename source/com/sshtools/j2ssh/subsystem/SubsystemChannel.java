@@ -57,21 +57,21 @@ public abstract class SubsystemChannel extends Channel {
         return "session";
     }
 
-    protected void sendMessage(SubsystemMessage msg)
-        throws InvalidMessageException, IOException {
-        if (log.isDebugEnabled()) {
-            log.debug("Sending " + msg.getMessageName() + " subsystem message");
-        }
-
-        byte[] msgdata = msg.toByteArray();
-
-        // Write the message length
-        sendChannelData(ByteArrayWriter.encodeInt(msgdata.length));
-
-        // Write the message data
-        sendChannelData(msgdata);
-    }
-
+    protected void sendMessage(SubsystemMessage msg) throws InvalidMessageException, IOException {
+		//@todo write to log
+		if (log.isDebugEnabled()) {
+			log.debug("Sending " + msg.getMessageName() + " subsystem message");
+		}
+		
+		byte[] msgdata = msg.toByteArray();
+		
+		// Write the message length
+		sendChannelData(ByteArrayWriter.encodeInt(msgdata.length));
+		
+		// Write the message data
+		sendChannelData(msgdata);
+	}
+	
     protected void onChannelRequest(String requestType, boolean wantReply,
         byte[] requestData) throws java.io.IOException {
         log.debug("Channel Request received: " + requestType);

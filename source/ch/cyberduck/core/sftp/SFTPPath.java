@@ -356,17 +356,19 @@ public class SFTPPath extends Path {
 	}
 
 	public void download() {
+		InputStream in = null;
+		OutputStream out = null;
 		try {
 			log.debug("download:"+this.toString());
 			this.session.check();
 			this.getLocal().getParentFile().mkdirs();
-			OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
+			out = new FileOutputStream(this.getLocal(), this.status.isResume());
 			if (out == null) {
 				throw new IOException("Unable to buffer data");
 			}
 			SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
 			this.status.setSize(p.getAttributes().getSize().intValue());
-			SftpFileInputStream in = new SftpFileInputStream(p);
+			in = new SftpFileInputStream(p);
 			if (in == null) {
 				throw new IOException("Unable opening data stream");
 			}
@@ -377,7 +379,9 @@ public class SFTPPath extends Path {
 				if(skipped < this.status.getCurrent())
 					throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
 			}
-			this.download(in, out);
+			if(this.status.getCurrent() < this.status.getSize()) {
+				this.download(in, out);
+			}
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -386,6 +390,18 @@ public class SFTPPath extends Path {
 			this.session.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
 		finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+				if (out != null) {
+					out.flush();
+					out.close();
+				}
+			}
+			catch(IOException e) {
+				log.error(e.getMessage());
+			}
 			session.log("Idle", Message.STOP);
 		}
 	}
@@ -410,10 +426,12 @@ public class SFTPPath extends Path {
 	}
 
 	public void upload() {
+		InputStream in = null;
+		SftpFileOutputStream out = null;
 		try {
 			log.debug("upload:"+this.toString());
 			this.session.check();
-			java.io.InputStream in = new FileInputStream(this.getLocal());
+			in = new FileInputStream(this.getLocal());
 			if (in == null) {
 				throw new IOException("Unable to buffer data");
 			}
@@ -433,7 +451,7 @@ public class SFTPPath extends Path {
 			if(this.status.isResume()) {
 				this.status.setCurrent(p.getAttributes().getSize().intValue());
 			}
-			SftpFileOutputStream out = new SftpFileOutputStream(p);
+			out = new SftpFileOutputStream(p);
 			if (out == null) {
 				throw new IOException("Unable opening data stream");
 			}
@@ -443,7 +461,9 @@ public class SFTPPath extends Path {
 				if(skipped < this.status.getCurrent())
 					throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
 			}
-			this.upload(out, in);
+			if(this.status.getCurrent() < this.status.getSize()) {
+				this.upload(out, in);
+			}
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -452,6 +472,18 @@ public class SFTPPath extends Path {
 			this.session.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
 		finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+				if (out != null) {
+					out.flush();
+					out.close();
+				}
+			}
+			catch(IOException e) {
+				log.error(e.getMessage());
+			}
 			session.log("Idle", Message.STOP);
 		}
 	}

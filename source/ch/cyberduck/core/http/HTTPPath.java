@@ -179,6 +179,8 @@ public class HTTPPath extends Path {
 	}
 	
 	public void download() {
+		InputStream in = null;
+		OutputStream out = null;
 		GetMethod GET = null;
 		try {
 			log.debug("download:" + this.toString());
@@ -240,11 +242,11 @@ public class HTTPPath extends Path {
 				}
 			}
 			
-			OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
+			out = new FileOutputStream(this.getLocal(), this.status.isResume());
 			if (out == null) {
 				throw new IOException("Unable to buffer data");
 			}
-			InputStream in = session.HTTP.getInputStream(GET);
+			in = session.HTTP.getInputStream(GET);
 			if (in == null) {
 				throw new IOException("Unable opening data stream");
 			}
@@ -278,12 +280,24 @@ public class HTTPPath extends Path {
 			session.log(e.getMessage(), Message.ERROR);
 		}
 		finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+				if (out != null) {
+					out.flush();
+					out.close();
+				}
+			}
+			catch(IOException e) {
+				log.error(e.getMessage());
+			}
 			session.log("Idle", Message.STOP);
 		}
 	}
 
 	public void upload() {
-		throw new IllegalArgumentException("Upload not supported");
+		throw new IllegalArgumentException("HTTP PUT not supported");
 	}
 
 	public boolean isFile() {

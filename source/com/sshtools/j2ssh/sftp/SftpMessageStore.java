@@ -61,7 +61,7 @@ class SftpMessageStore extends SubsystemMessageStore {
         Iterator it;
         SubsystemMessage msg;
 
-        // If there ae no messages available then wait untill there are.
+        // If there are no messages available then wait untill there are.
         while (getState().getValue() == OpenClosedState.OPEN) {
             if (messages.size() > 0) {
                 it = messages.iterator();

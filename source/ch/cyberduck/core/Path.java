@@ -410,14 +410,6 @@ public abstract class Path {
 			}
 		}
 		this.status.setComplete(complete);
-		// close streams
-		if (in != null) {
-			in.close();
-		}
-		if (out != null) {
-			out.flush();
-			out.close();
-		}
 	}
 
 	/**
@@ -444,15 +436,6 @@ public abstract class Path {
 			}
 		}
 		this.status.setComplete(complete);
-		// close streams
-		//@todo finally
-		if (in != null) {
-			in.close();
-		}
-		if (out != null) {
-			out.flush();
-			out.close();
-		}
 	}
 
 	public boolean equals(Object other) {

@@ -179,20 +179,10 @@ public class UnixFTPEntryParser extends FTPFileEntryParserImpl
 			
 			f.attributes.setType(type);
 			f.attributes.setPermission(new Permission(typeStr+permStr));
-
-//			int g = 4;
-//          for (int access = 0; access < 3; access++, g += 4)
-//            {
-//              // Use != '-' to avoid having to check for suid and sticky bits
-//                f.setPermission(access, FTPFile.READ_PERMISSION,
-//                                   (!group(g).equals("-")));
-//                f.setPermission(access, FTPFile.WRITE_PERMISSION,
-//                                   (!group(g + 1).equals("-")));
-//                f.setPermission(access, FTPFile.EXECUTE_PERMISSION,
-//                                   (!group(g + 2).equals("-")));
-//			}
-//
-//            if (!isDevice)
+            f.attributes.setOwner(usr);
+            f.attributes.setGroup(grp);
+			
+//			if (!isDevice)
 //            {
 //                try
 //                {
@@ -203,9 +193,6 @@ public class UnixFTPEntryParser extends FTPFileEntryParserImpl
 //                    // intentionally do nothing
 //                }
 //            }
-
-            f.attributes.setOwner(usr);
-            f.attributes.setGroup(grp);
 
             try
             {
@@ -274,7 +261,6 @@ public class UnixFTPEntryParser extends FTPFileEntryParserImpl
                     else
                     {
                         f.setPath(parent.getAbsolute(), name.substring(0, end));
-//                        f.setPath(name.substring(end + 4));
                     }
 
                 }

@@ -340,9 +340,9 @@ public class CDConnectionController extends NSObject implements Observer {
 
     public void getPasswordFromKeychain(Object sender) {
         if (hostPopup.stringValue() != null &&
-                !hostPopup.stringValue().equals("") &&
-                usernameField.stringValue() != null &&
-                !usernameField.stringValue().equals("")) {
+			!hostPopup.stringValue().equals("") &&
+			usernameField.stringValue() != null &&
+			!usernameField.stringValue().equals("")) {
             Login l = new Login(hostPopup.stringValue(), usernameField.stringValue(), null);
             String passFromKeychain = l.getPasswordFromKeychain();
             if (passFromKeychain != null && !passFromKeychain.equals("")) {
@@ -350,7 +350,6 @@ public class CDConnectionController extends NSObject implements Observer {
                 this.passField.setStringValue(passFromKeychain);
             }
             else {
-//				this.passField.setStringValue("");
                 log.info("Password for " + usernameField.stringValue() + " NOT found in Keychain");
             }
         }

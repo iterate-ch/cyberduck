@@ -68,7 +68,7 @@ public class Login {
 	public native void addPasswordToKeychain(String service, String account, String password);
 
 	public void addPasswordToKeychain() {
-		if(this.addToKeychain) {
+		if(this.addToKeychain && !this.isAnonymousLogin()) {
 			int pool = NSAutoreleasePool.push();
 			this.addPasswordToKeychain(this.service, this.user, this.pass);
 			NSAutoreleasePool.pop(pool);
@@ -96,28 +96,35 @@ public class Login {
 		this.init(user, pass);
 	}
 
-	private void init(String user, String pass) {
-		if (null == user || user.equals("")) {
-			this.user = Preferences.instance().getProperty("connection.login.name");
-			if(this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"))) {
+	/**
+		* @param u The username to use or null if anonymous
+	 * @param pass The password to use or null if anonymous
+	 */
+	private void init(String u, String p) {
+		if (null == u || u.equals("")) {
+			this.user = Preferences.instance().getProperty("ftp.anonymous.name");
+		}
+		else {
+			if(u.indexOf(':') != -1) { //catch username/pass from java.net.URL.getUserInfo()
+				this.user = u.substring(0, u.indexOf(':'));
+				this.pass = u.substring(u.indexOf(':')+1,u.length());
+			}
+			else {
+				this.user = u;
+			}
+		}
+		if (null == p || p.equals("")) {
+			if(this.isAnonymousLogin()) {
 				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 			}
 		}
 		else {
-			if(user.indexOf(':') != -1) { //catch username/pass from java.net.URL.getUserInfo()
-				this.user = user.substring(0, user.indexOf(':'));
-				this.pass = user.substring(user.indexOf(':')+1, user.length());
-			}
-			else
-				this.user = user;
+			this.pass = p;
 		}
-		if (null == pass || pass.equals("")) {
-			if(this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"))) {
-				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
-			}
-		}
-		else 
-			this.pass = pass;
+	}
+	
+	public boolean isAnonymousLogin() {
+		return this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"));
 	}
 
 	public boolean usesPublicKeyAuthentication() {
