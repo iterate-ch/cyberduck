@@ -24,6 +24,7 @@
                 toggleBookmarkDrawer = id; 
                 toggleLogDrawer = id; 
                 upButtonClicked = id; 
+                uploadButtonClicked = id; 
             }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 

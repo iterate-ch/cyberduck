@@ -12,6 +12,7 @@
                 infoButtonClicked = id; 
                 refreshButtonClicked = id; 
                 syncButtonClicked = id; 
+                uploadButtonClicked = id; 
             }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 
