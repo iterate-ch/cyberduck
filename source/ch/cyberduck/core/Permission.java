@@ -32,7 +32,8 @@ import org.apache.log4j.Logger;
 public class Permission {
 	private static Logger log = Logger.getLogger(Permission.class);
 
-	private static final String DEFAULT_MASK = "-rw-r--r--"; //defaulting to a file
+//	private static final String DEFAULT_MASK = "-rw-r--r--"; //defaulting to a file
+	private static final String DEFAULT_MASK = "----------"; //defaulting to a file
 	private String mask;
 
 	public Permission(NSDictionary dict) {

@@ -65,6 +65,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
 
+import org.apache.log4j.Logger;
+
 /**
  * Implementation FTPFileEntryParser and FTPFileListParser for VMS Systems.
  * This is a sample of VMS LIST output
@@ -72,7 +74,7 @@ import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
  *  "1-JUN.LIS;1              9/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
  *  "1-JUN.LIS;2              9/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
  *  "DATA.DIR;1               1/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
- * <P><B>
+  * <P><B>
  * Note: VMSFTPEntryParser can only be instantiated through the 
  * DefaultFTPParserFactory by classname.  It will not be chosen
  * by the autodetection scheme.
@@ -90,6 +92,7 @@ import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
 public class VMSFTPEntryParser extends FTPFileEntryParserImpl
 {
 
+	private static Logger log = Logger.getLogger(VMSFTPEntryParser.class);
 
     /**
      * months abbreviations looked for by this parser.  Also used
@@ -103,17 +106,14 @@ public class VMSFTPEntryParser extends FTPFileEntryParserImpl
      */
     private static final String REGEX =
         "(.*;[0-9]+)\\s*" 
-        + "(\\d+)\\s*" 
-//        + "(\\d+)/\\d+\\s*" 
+        + "(\\d+)/\\d+\\s*" 
         + "(\\d{1,2})-" 
         + MONTHS 
         + "-([0-9]{4})\\s*"
-        + "((?:[01]\\d)|(?:2[0-3])):([012345]\\d):?([012345]\\d)?\\s*"
-        + "\\[(([0-9$A-Za-z_]+)|([0-9$A-Za-z_]+),([0-9$a-zA-Z_]+))\\]\\s*" 
+        + "((?:[01]\\d)|(?:2[0-3])):([012345]\\d):([012345]\\d)\\s*"
+        + "\\[(([0-9$A-Za-z_]+)|([0-9$A-Za-z_]+),([0-9$a-zA-Z_]+))\\]?\\s*" 
         + "\\([a-zA-Z]*,[a-zA-Z]*,[a-zA-Z]*,[a-zA-Z]*\\)";
-
-
-
+	
     /**
      * Constructor for a VMSFTPEntryParser object.   
      * 
@@ -126,29 +126,6 @@ public class VMSFTPEntryParser extends FTPFileEntryParserImpl
     {
         super(REGEX);
     }
-
-
-    /***
-     * Parses an FTP server file listing and converts it into a usable format
-     * in the form of an array of <code> FTPFile </code> instances.  If the
-     * file list contains no files, <code> null </code> should be
-     * returned, otherwise an array of <code> FTPFile </code> instances
-     * representing the files in the directory is returned.
-     * <p>
-     * @param listStream The InputStream from which the file list should be
-     *        read.
-     * @return The list of file information contained in the given path.  null
-     *     if the list could not be obtained or if there are no files in
-     *     the directory.
-     * @exception IOException  If an I/O error occurs reading the listStream.
-     ***/
-//    public FTPFile[] parseFileList(InputStream listStream) throws IOException {
-//    	FTPListParseEngine engine = new FTPListParseEngine(this);
-//    	engine.readServerList(listStream);
-//    	return engine.getFiles();
-//    }
-
-
 
     /**
      * Parses a line of a VMS FTP server file listing and converts it into a
@@ -175,8 +152,9 @@ public class VMSFTPEntryParser extends FTPFileEntryParserImpl
             String yr = group(5);
             String hr = group(6);
             String min = group(7);
-            String sec = group(8);
-            String owner = group(9);
+//            String sec = group(8);
+//            String owner = group(9);
+			/*
             String grp;
             String user;
             StringTokenizer t = new StringTokenizer(owner, ",");
@@ -193,6 +171,7 @@ public class VMSFTPEntryParser extends FTPFileEntryParserImpl
                     grp  = null;
                     user = null;
             }
+			 */
             
             if (name.lastIndexOf(".DIR") != -1) 
             {
@@ -228,11 +207,11 @@ public class VMSFTPEntryParser extends FTPFileEntryParserImpl
             cal.set(Calendar.YEAR, new Integer(yr).intValue());
             cal.set(Calendar.HOUR_OF_DAY, new Integer(hr).intValue());
             cal.set(Calendar.MINUTE, new Integer(min).intValue());
-            cal.set(Calendar.SECOND, new Integer(sec).intValue());
+//            cal.set(Calendar.SECOND, new Integer(sec).intValue());
             f.attributes.setTimestamp(cal.getTime());
 
-            f.attributes.setGroup(grp);
-            f.attributes.setOwner(user);
+//            f.attributes.setGroup(grp);
+//            f.attributes.setOwner(user);
             //set group and owner
             //Since I don't need the persmissions on this file (RWED), I'll 
             //leave that for further development. 'Cause it will be a bit 
