@@ -41,6 +41,8 @@ public class CDBrowserController extends CDController implements Observer {
 		HISTORY_FOLDER.mkdirs();
 	}
 
+	private String encoding = Preferences.instance().getProperty("browser.charset.encoding");
+
 	/**
 	 * Keep references of controller objects because otherweise they get garbage collected
 	 * if not referenced here.
@@ -397,7 +399,8 @@ public class CDBrowserController extends CDController implements Observer {
 		if(this.browserModel.numberOfRowsInTableView(browserTable) > 0 && browserTable.numberOfSelectedRows() > 0) {
 			Path p = (Path)this.browserModel.getEntry(browserTable.selectedRow()); //last row selected
 			if(p.attributes.isDirectory()) {
-				p.list(false, this.showHiddenFiles);
+				this.browserTable.deselectAll(null);
+				p.list(this.encoding, false, this.showHiddenFiles);
 			}
 			if(p.attributes.isFile() || browserTable.numberOfSelectedRows() > 1) {
 				if(Preferences.instance().getProperty("browser.doubleclick.edit").equals("true")) {
@@ -694,7 +697,8 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void pathPopupSelectionChanged(Object sender) {
 		Path p = (Path)pathPopupItems.get(pathPopupButton.indexOfSelectedItem());
-		p.list(false, this.showHiddenFiles);
+		this.browserTable.deselectAll(null);
+		p.list(this.encoding, false, this.showHiddenFiles);
 	}
 
 	private void addPathToPopup(Path p) {
@@ -707,8 +711,6 @@ public class CDBrowserController extends CDController implements Observer {
 			this.pathPopupButton.itemAtIndex(this.pathPopupButton.numberOfItems()-1).setImage(FOLDER_ICON);
 		}
 	}
-
-	private String encoding = Preferences.instance().getProperty("browser.charset.encoding");
 		
 	private NSPopUpButton encodingPopup;
 	
@@ -936,6 +938,7 @@ public class CDBrowserController extends CDController implements Observer {
 			case (NSAlertPanel.DefaultReturn):
 				final Vector files = (Vector)contextInfo;
 				if(files.size() > 0) {
+					this.browserTable.deselectAll(null);
 					new Thread() {
 						public void run() {
 							Iterator i = files.iterator();
@@ -944,7 +947,7 @@ public class CDBrowserController extends CDController implements Observer {
 								p = (Path)i.next();
 								p.delete();
 							}
-							p.getParent().list(true, showHiddenFiles);
+							p.getParent().list(encoding, true, showHiddenFiles);
 						}
 					}.start();
 				}
@@ -958,7 +961,7 @@ public class CDBrowserController extends CDController implements Observer {
 		log.debug("reloadButtonClicked");
 		if(this.isMounted()) {
 			this.browserTable.deselectAll(sender);
-			this.workdir().list(encoding, true, this.showHiddenFiles);
+			this.workdir().list(this.encoding, true, this.showHiddenFiles);
 		}
 	}
 
@@ -1110,12 +1113,14 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void backButtonClicked(Object sender) {
 		log.debug("backButtonClicked");
-		this.workdir().getSession().getPreviousPath().list(false, this.showHiddenFiles);
+		this.browserTable.deselectAll(null);
+		this.workdir().getSession().getPreviousPath().list(this.encoding, false, this.showHiddenFiles);
 	}
 
 	public void upButtonClicked(Object sender) {
 		log.debug("upButtonClicked");
-		this.workdir().getParent().list(false, this.showHiddenFiles);
+		this.browserTable.deselectAll(null);
+		this.workdir().getParent().list(this.encoding, false, this.showHiddenFiles);
 	}
 
 	public void connectButtonClicked(Object sender) {
@@ -1137,7 +1142,8 @@ public class CDBrowserController extends CDController implements Observer {
 			NSMenuItem item = (NSMenuItem)sender;
 			this.showHiddenFiles = item.state() == NSCell.OnState ? false : true;
 			item.setState(this.showHiddenFiles ? NSCell.OnState : NSCell.OffState);
-			this.workdir().list(true, this.showHiddenFiles);
+			this.browserTable.deselectAll(null);
+			this.workdir().list(this.encoding, true, this.showHiddenFiles);
 		}
 	}
 
@@ -1160,6 +1166,7 @@ public class CDBrowserController extends CDController implements Observer {
 		if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
 			Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
 			if(o != null) {
+				this.browserTable.deselectAll(null);
 				NSArray elements = (NSArray)o;
 				for(int i = 0; i < elements.count(); i++) {
 					NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
@@ -1169,7 +1176,7 @@ public class CDBrowserController extends CDController implements Observer {
 						Path p = (Path)iter.next();
 						PathFactory.createPath(workdir.getSession(), p.getAbsolute()).rename(workdir.getAbsolute()+"/"+p.getName());
 						p.getParent().invalidate();
-						workdir.list(true, this.showHiddenFiles);
+						workdir.list(this.encoding, true, this.showHiddenFiles);
 					}
 				}
 				pboard.setPropertyListForType(null, "QueuePBoardType");
@@ -1900,6 +1907,7 @@ public class CDBrowserController extends CDController implements Observer {
 				NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
 				log.debug("availableTypeFromArray:QueuePBoardType: "+pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
 				if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+					tableView.deselectAll(null);
 					NSArray elements = (NSArray)pboard.propertyListForType("QueuePBoardType");// get the data from pasteboard
 					for(int i = 0; i < elements.count(); i++) {
 						NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
@@ -1910,8 +1918,7 @@ public class CDBrowserController extends CDController implements Observer {
 								Path p = (Path)iter.next();
 								PathFactory.createPath(parent.getSession(), p.getAbsolute()).rename(parent.getAbsolute()+"/"+p.getName());
 							}
-							tableView.deselectAll(null);
-							workdir().list(true, showHiddenFiles);
+							workdir().list(encoding, true, showHiddenFiles);
 							return true;
 						}
 					}

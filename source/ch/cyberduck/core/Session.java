@@ -85,8 +85,6 @@ public abstract class Session extends Observable {
 	}
 
 	public void callObservers(Object arg) {
-//		log.debug("callObservers:"+arg);
-//		log.debug(this.countObservers()+" observer(s) known.");
 		this.setChanged();
 		this.notifyObservers(arg);
 	}
@@ -203,7 +201,6 @@ public abstract class Session extends Observable {
 	}
 
 	public Path getPreviousPath() {
-		log.info("Content of path history:"+history.toString());
 		int size = history.size();
 		if(size > 1) {
 			Path p = (Path)history.get(size-2);
@@ -223,10 +220,11 @@ public abstract class Session extends Observable {
 	}
 
 	public void log(String message, String title) {
-//		log.debug("["+title+"] "+message);
 		if(title.equals(Message.TRANSCRIPT)) {
 			this.transcript.log(message);
 		}
-		this.callObservers(new Message(title, message));
+		else {
+			this.callObservers(new Message(title, message));
+		}
 	}
 }
