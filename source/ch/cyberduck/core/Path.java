@@ -429,14 +429,19 @@ public abstract class Path {
 	public void sync() {
         try {
 			this.getSession().check();
-			if(this.getLocal().getTimestamp().before(this.attributes.getTimestamp())) {
+			if(p.remote.exists() && p.local.exists()) {
+				if(p.local.getTimestamp().before(p.attributes.getTimestamp())) {
+					this.download();
+				}
+				if(p.local.getTimestamp().after(p.attributes.getTimestamp())) {
+					this.upload();
+				}
+			}
+			else if(p.remote.exists()) {
 				this.download();
 			}
-			else if(this.getLocal().getTimestamp().after(this.attributes.getTimestamp())) {
+			else if(p.local.exists()) {
 				this.upload();
-			}
-			else if(this.getLocal().getTimestamp().equals(this.attributes.getTimestamp())) {
-				// no sync needed
 			}
 			this.getSession().log("Idle", Message.STOP);
 		}
