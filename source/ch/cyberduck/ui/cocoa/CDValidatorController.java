@@ -37,7 +37,7 @@ public abstract class CDValidatorController implements Validator {
 
     private static NSMutableArray instances = new NSMutableArray();
 
-    private CDController windowController;
+    protected CDController windowController;
 
     public CDValidatorController(CDController windowController) {
         this.windowController = windowController;
@@ -68,15 +68,15 @@ public abstract class CDValidatorController implements Validator {
         this.resumeButton = resumeButton;
     }
 
-    private NSWindow sheet; // IBOutlet
+    private NSWindow window; // IBOutlet
 
-    public void setWindow(NSWindow sheet) {
-        this.sheet = sheet;
-        this.sheet.setDelegate(this);
+    public void setWindow(NSWindow window) {
+        this.window = window;
+        this.window.setDelegate(this);
     }
 
     public NSWindow window() {
-        return this.sheet;
+        return this.window;
     }
 
     public void windowWillClose(NSNotification notification) {
@@ -155,8 +155,7 @@ public abstract class CDValidatorController implements Validator {
                 img.setScalesWhenResized(true);
                 img.setSize(new NSSize(64f, 64f));
                 iconView.setImage(img);
-                CDQueueController.instance().window().makeKeyAndOrderFront(null);
-                NSApplication.sharedApplication().beginSheet(sheet, //sheet
+                NSApplication.sharedApplication().beginSheet(this.window(), //sheet
                         windowController.window(),
                         CDValidatorController.this, //modalDelegate
                         new NSSelector("validateSheetDidEnd",
@@ -178,11 +177,6 @@ public abstract class CDValidatorController implements Validator {
         path.status.setResume(resumeChoosen);
         log.info("File " + path.getName() + " will be included:" + include);
         return include;
-    }
-
-    public void closeSheet(NSButton sender) {
-        this.applySettingsToAll = (applyCheckbox.state() == NSCell.OnState);
-        NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 
     public void resumeActionFired(NSButton sender) {
@@ -215,7 +209,7 @@ public abstract class CDValidatorController implements Validator {
     }
 
     public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-        this.window().close();
+        sheet.close();
         this.applySettingsToAll = (applyCheckbox.state() == NSCell.OnState);
         log.info("Action will applied to all subsequent validated items");
     }

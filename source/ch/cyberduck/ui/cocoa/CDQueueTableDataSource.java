@@ -127,7 +127,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
                                 url.getPort(),
                                 new Login(url.getHost(), url.getUserInfo(), null));
                         Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
-                        Queue q = new Queue(Queue.KIND_DOWNLOAD);
+                        Queue q = new DownloadQueue();
                         q.addRoot(p);
                         this.addItem(q, row);
                         CDQueueController.instance().startItem(q);
@@ -152,7 +152,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
                         NSArray elements = (NSArray)o;
                         for (int i = 0; i < elements.count(); i++) {
                             NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-                            this.addItem(new Queue(dict), row);
+                            this.addItem(Queue.createQueue(dict), row);
                             tableView.reloadData();
                             tableView.selectRow(row, false);
                         }
@@ -231,7 +231,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
                 while (i.hasMoreElements()) {
                     element = i.nextElement();
                     if (element instanceof NSDictionary) {
-                        this.addItem(new Queue((NSDictionary)element));
+                        this.addItem(Queue.createQueue((NSDictionary)element));
                     }
                 }
             }

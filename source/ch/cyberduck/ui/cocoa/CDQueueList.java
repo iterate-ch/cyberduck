@@ -102,7 +102,7 @@ public class CDQueueList extends QueueList { //implements NSTableView.DataSource
                 while (i.hasMoreElements()) {
                     element = i.nextElement();
                     if (element instanceof NSDictionary) {
-                        this.addItem(new Queue((NSDictionary)element));
+                        this.addItem(Queue.createQueue((NSDictionary)element));
                     }
                 }
             }

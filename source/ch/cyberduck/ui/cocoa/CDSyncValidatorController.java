@@ -18,7 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.Validator;
 import ch.cyberduck.core.SyncValidator;
@@ -34,10 +35,80 @@ public class CDSyncValidatorController extends CDValidatorController implements 
         if (false == NSApplication.loadNibNamed("Sync", this)) {
             log.fatal("Couldn't load Sync.nib");
         }
-		this.validator = new SyncValidator(resume);
+		this.validator = new SyncValidator();
     }
 	
-	public boolean prompt(Path p) {
-		return true; //@todo
+	private NSButton addFilesCheckbox;
+	
+	public void setAddFilesCheckbox(NSButton addFilesCheckbox) {
+		this.addFilesCheckbox = addFilesCheckbox;
+	}
+
+	private NSButton deleteFilesCheckbox;
+	
+	public void setDeleteFilesCheckbox(NSButton deleteFilesCheckbox) {
+		this.deleteFilesCheckbox = deleteFilesCheckbox;
+	}
+
+	private NSButtonCell downloadRadioCell;
+	
+	public void setDownloadRadioCell(NSButtonCell downloadRadioCell) {
+		this.downloadRadioCell = downloadRadioCell;
+	}
+
+	private NSButtonCell uploadRadioCell;
+	
+	public void setUploadRadioCell(NSButtonCell uploadRadioCell) {
+		this.uploadRadioCell = uploadRadioCell;
+	}
+	
+	private NSTableView fileTableView;
+	
+	public void setFileTableView(NSTableView fileTableView) {
+		this.fileTableView = fileTableView;
+	}
+	
+	public void syncActionFired(NSButton sender) {
+        NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+    }
+
+	public void cancelActionFired(NSButton sender) {
+        NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+    }
+	
+	public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+        sheet.close();
+	}
+
+	public boolean prompt(Path path) {
+        while (windowController.window().attachedSheet() != null) {
+            try {
+                log.debug("Sleeping...");
+                Thread.sleep(1000); //milliseconds
+            }
+            catch (InterruptedException e) {
+                log.error(e.getMessage());
+            }
+        }
+		NSApplication.sharedApplication().beginSheet(this.window(), //sheet
+													 windowController.window(),
+													 this, //modalDelegate
+													 new NSSelector("validateSheetDidEnd",
+																	new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
+													 path); //contextInfo
+		windowController.window().makeKeyAndOrderFront(null);
+		// Waiting for user to make choice
+		while (windowController.window().attachedSheet() != null) {
+			try {
+				log.debug("Sleeping...");
+				Thread.sleep(1000); //milliseconds
+			}
+			catch (InterruptedException e) {
+				log.error(e.getMessage());
+			}
+		}
+//		boolean shouldAddFiles = addFilesCheckbox.isSelected();
+//		boolean shouldDeleteFiles = deleteFilesCheckbox.isSelected();
+		return true;
 	}
 }

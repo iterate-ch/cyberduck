@@ -26,16 +26,19 @@ import org.apache.log4j.Logger;
 public class SyncValidator extends AbstractValidator {
     private static Logger log = Logger.getLogger(Validator.class);
 	
-	public SyncValidator(boolean resumeRequested) {
-        super(resumeRequested);
+	public SyncValidator() {
+        super(false);
     }
-		
-	protected boolean validateDirectory(Path path) {
-		return true;
+	
+	public boolean validate(Path path) {
+		return this.exists(path);
+	}		
+	
+	protected boolean exists(Path path) {
+		return path.exists() && path.getLocal().exists();
 	}
 	
-	protected boolean validateFile(Path path) {
-		return true;
+	protected void proposeFilename(Path path) {
+		// syncing, never change name
 	}
-	
 }	

@@ -54,7 +54,7 @@ public class CDApplescriptabilityController extends NSScriptCommand {
 				// we assume a file has an extension
 				if (null != p.getExtension()) {
 					log.debug("Assume downloading");
-					Queue queue = new Queue(Queue.KIND_DOWNLOAD);
+					Queue queue = new DownloadQueue();
 					queue.addRoot(p);
 					CDQueueController.instance().addItem(queue);
 					//                    QueueList.instance().addItem(queue);

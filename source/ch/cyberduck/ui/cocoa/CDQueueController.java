@@ -274,7 +274,6 @@ if (returncode == NSAlertPanel.DefaultReturn) {
         if (Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
             this.window().makeKeyAndOrderFront(null);
         }
-
         //@todo reference to this.window() may become invalid
         queue.getRoot().getHost().getLogin().setController(new CDLoginController(this));
         if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
@@ -297,19 +296,19 @@ if (returncode == NSAlertPanel.DefaultReturn) {
                 );
             }
         }
-		switch(queue.kind()) {
-			case Queue.KIND_DOWNLOAD:
-				queue.start(new CDDownloadValidatorController(this, resumeRequested));
-				break;
-			case Queue.KIND_UPLOAD:
-				queue.start(new CDUploadValidatorController(this, resumeRequested));
-				break;
-			case Queue.KIND_SYNC:
-				queue.start(new CDSyncValidatorController(this, resumeRequested));
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown queuing action");
+		if(queue instanceof DownloadQueue) {
+			queue.start(new CDDownloadValidatorController(this, resumeRequested));
+			return;
 		}
+		if(queue instanceof UploadQueue) {
+			queue.start(new CDUploadValidatorController(this, resumeRequested));
+			return;
+		}
+		if(queue instanceof SyncQueue) {
+			queue.start(new CDSyncValidatorController(this, resumeRequested));
+			return;
+		}
+		throw new IllegalArgumentException("Unknown queuing action");
     }
 
     public boolean isVisible() {
@@ -330,7 +329,6 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 					}
 				}
 				synchronized (this) {
-					this.window().makeKeyAndOrderFront(null);
 					NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
 														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
 														 null, //alternative button
@@ -351,7 +349,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 				this.toolbar.validateVisibleItems();
 				Queue queue = (Queue)observable;
 				if (queue.isComplete()) {
-					if (Queue.KIND_DOWNLOAD == queue.kind()) {
+					if (queue instanceof DownloadQueue) {
 						Growl.instance().notify(NSBundle.localizedString("Download complete", 
 																		 "Growl Notification"), 
 												queue.getName());
@@ -360,8 +358,13 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 							log.debug("Success opening file:" + success);
 						}
 					}
-					if (Queue.KIND_UPLOAD == queue.kind()) {
+					if (queue instanceof UploadQueue) {
 						Growl.instance().notify(NSBundle.localizedString("Upload complete", 
+																		 "Growl Notification"), 
+												queue.getName());
+					}
+					if (queue instanceof SyncQueue) {
+						Growl.instance().notify(NSBundle.localizedString("Synchronization complete", 
 																		 "Growl Notification"), 
 												queue.getName());
 					}
@@ -469,7 +472,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 				NSArray elements = (NSArray)o;
 				for (int i = 0; i < elements.count(); i++) {
 					NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-					this.queueModel.addItem(new Queue(dict));
+					this.queueModel.addItem(Queue.createQueue(dict));
 				}
 				pboard.setPropertyListForType(null, "QueuePBoardType");
 				this.reloadQueueTable();

@@ -118,7 +118,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
         if (row < tableView.numberOfRows()) {
             if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
                 NSArray filesList = (NSArray)info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
-                Queue q = new Queue(Queue.KIND_UPLOAD);
+                Queue q = new UploadQueue();
                 Host h = this.getItem(row);
                 Session session = SessionFactory.createSession(h);
                 for (int i = 0; i < filesList.count(); i++) {

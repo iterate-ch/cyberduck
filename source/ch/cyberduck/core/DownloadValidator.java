@@ -39,47 +39,11 @@ public class DownloadValidator extends AbstractValidator {
         return true;
     }
 	
-    protected boolean validateFile(Path path) {
-        if (this.isResumeRequested()) {
-            boolean fileExists = path.getLocal().getTemp().exists();
-            log.info("File " + path.getName() + " exists:" + fileExists);
-            path.status.setResume(fileExists);
-            return true;
-        }
-        // When overwriting file anyway we don't have to check if the file already exists
-        if (Preferences.instance().getProperty("queue.fileExists").equals("overwrite")) {
-            log.debug("Defaulting to overwrite on " + path.getName());
-            path.status.setResume(false);
-            return true;
-        }
-        boolean fileExists = path.getLocal().getTemp().exists();
-        log.info("File " + path.getName() + " exists:" + fileExists);
-        if (fileExists) {
-            if (Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
-                log.debug("Defaulting to resume on " + path.getName() + " succeeded:" + fileExists);
-                path.status.setResume(fileExists);
-                return true;
-            }
-            else if (Preferences.instance().getProperty("queue.fileExists").equals("similar")) {
-                log.debug("Defaulting to similar name on " + path.getName());
-                path.status.setResume(false);
-				this.proposeFilename(path);
-				log.debug("Changed name to " + path.getName());
-				return true;
-			}
-            else {//if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
-                log.debug("Prompting user on " + path.getName());
-				return false;
-				//                return this.prompt(path);
-            }
-		}
-        else {//if (!fileExists) {
-            path.status.setResume(false);
-            return true;
-        }
+	protected boolean exists(Path path) {
+		return path.getLocal().getTemp().exists();
 	}
 	
-	private void proposeFilename(Path path) {
+	protected void proposeFilename(Path path) {
         String parent = path.getLocal().getParent();
         String filename = path.getLocal().getName();
         String proposal = filename;
@@ -95,6 +59,6 @@ public class DownloadValidator extends AbstractValidator {
                 proposal = filename + "-" + no;
             }
         }
-        while (path.getLocal().getTemp().exists());
+        while (this.exists(path));
     }	
 }	

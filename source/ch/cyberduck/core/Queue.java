@@ -21,65 +21,66 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.*;
 
 import javax.swing.Timer;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.ui.cocoa.CDQueueController;
-
 /**
  * @version $Id$
  */
-public class Queue extends Observable implements Observer {
+public abstract class Queue extends Observable implements Observer {
     private static Logger log = Logger.getLogger(Queue.class);
 
-    public static final int KIND_DOWNLOAD = 1;
-    public static final int KIND_UPLOAD = 2;
-    public static final int KIND_SYNC = 4;
-
-    /**
-     * What kind of this, either KIND_DOWNLOAD or KIND_UPLOAD
-     */
-    private int kind;
+	private Validator validator;
+	private Worker worker;
 
     private List roots = new ArrayList();
 	private List jobs = new ArrayList();
 
     private String status = "";
 	
-	private Validator validator;
-
-	private Worker worker;
-
 	/**
 	 * The observer to notify when an upload is complete
      */
     private Observer callback;
 	
-    public Queue(int kind, Observer observer) {
-		this(kind);
-		this.callback = observer;
+    public Queue(Observer callback) {
+		this.callback = callback;
+		this.worker = new Worker(this);
     }
 
     /**
      * Creating an empty queue containing no items. Items have to be added later
      * using the <code>addRoot</code> method.
-     * 
-     * @param kind Either <code>KIND_DOWNLOAD</code> or <code>KIND_UPLOAD</code>
-     */
-    public Queue(int kind) {
-        this.kind = kind;
+	 */
+    public Queue() {
 		this.worker = new Worker(this);
     }
 
-    public Queue(NSDictionary dict) {
+	public static final int KIND_DOWNLOAD = 1;
+	public static final int KIND_UPLOAD = 2;
+	public static final int KIND_SYNC = 4;
+
+    public static Queue createQueue(NSDictionary dict) {
+		Queue q = null;
         Object kindObj = dict.objectForKey("Kind");
         if (kindObj != null) {
-            this.kind = Integer.parseInt((String)kindObj);
-        }
-		this.worker = new Worker(this);
+            int kind = Integer.parseInt((String)kindObj);
+			switch(kind) {
+				case KIND_DOWNLOAD:
+					q = new DownloadQueue();
+					break;
+				case KIND_UPLOAD:
+					q = new UploadQueue();
+					break;
+				case KIND_SYNC:
+					q = new SyncQueue();
+					break;
+				default:
+					throw new IllegalArgumentException("Unknown queue");
+			}
+		}
+//		this.worker = new Worker(this);
         Object hostObj = dict.objectForKey("Host");
         if (hostObj != null) {
             Host host = new Host((NSDictionary)hostObj);
@@ -88,7 +89,7 @@ public class Queue extends Observable implements Observer {
             if (rootsObj != null) {
                 NSArray r = (NSArray)rootsObj;
                 for (int i = 0; i < r.count(); i++) {
-                    this.addRoot(PathFactory.createPath(s, (NSDictionary)r.objectAtIndex(i)));
+                    q.addRoot(PathFactory.createPath(s, (NSDictionary)r.objectAtIndex(i)));
                 }
             }
             Object itemsObj = dict.objectForKey("Items");
@@ -96,16 +97,16 @@ public class Queue extends Observable implements Observer {
                 NSArray items = (NSArray)itemsObj;
                 if (null != items) {
                     for (int i = 0; i < items.count(); i++) {
-                        this.jobs.add(PathFactory.createPath(s, (NSDictionary)items.objectAtIndex(i)));
+                        q.addJob(PathFactory.createPath(s, (NSDictionary)items.objectAtIndex(i)));
                     }
                 }
             }
         }
+		return q;
     }
 
-    public NSDictionary getAsDictionary() {
+    public NSMutableDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
-        dict.setObjectForKey(this.kind + "", "Kind");
 //        dict.setObjectForKey(this.worker.size() + "", "Size");
         dict.setObjectForKey(this.getRoot().getHost().getAsDictionary(), "Host");
         NSMutableArray r = new NSMutableArray();
@@ -127,11 +128,13 @@ public class Queue extends Observable implements Observer {
      * @param item The path to be added in the queue
      */
     public void addRoot(Path item) {
-        if (log.isDebugEnabled()) {
-            log.debug("add:" + item);
-        }
         this.roots.add(item);
     }
+	
+	public void addJob(Path item) {
+        this.jobs.add(item);
+	}
+		
 
 	public Path getRoot() {
         return (Path)roots.get(0);
@@ -147,13 +150,6 @@ public class Queue extends Observable implements Observer {
 		
     public List getRoots() {
         return this.roots;
-    }
-
-    /**
-     * @return Either <code>KIND_DOWNLOAD</code> or <code>KIND_UPLOAD</code>
-     */
-    public int kind() {
-        return this.kind;
     }
 
 	/**
@@ -175,12 +171,10 @@ public class Queue extends Observable implements Observer {
 			}
 			else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
 				if (this.isComplete()) {
-					if (Queue.KIND_UPLOAD == this.kind()) {
-						if (callback != null) {
-							//@todo testing
-							log.debug("Telling observable to refresh directory listing");
-							callback.update(null, new Message(Message.REFRESH));
-						}
+					if (callback != null) {
+						//@todo testing
+						log.debug("Telling observable to refresh directory listing");
+						callback.update(null, new Message(Message.REFRESH));
 					}
 				}
 			}
@@ -193,33 +187,35 @@ public class Queue extends Observable implements Observer {
 		this.size = 0;
 	}
 	
+	protected abstract List getChilds(List list, Path p);
+	
 	private Timer progress;
 
-	public void init() {
+	protected void init() {
 		this.reset();
-		for (Iterator i = roots.iterator(); i.hasNext() && !worker.isCanceled(); ) {
-			Path r = (Path)i.next();
-			log.debug("Iterating over childs of " + r);
-			Iterator childs = r.getChilds(this.kind()).iterator();
+		for (Iterator i = this.getRoots().iterator(); i.hasNext() && !this.worker.isCanceled(); ) {
+			Path p = (Path)i.next();
+			log.debug("Iterating over childs of " + p);
+			Iterator childs = this.getChilds(new ArrayList(), p).iterator();
 			while (childs.hasNext() && !worker.isCanceled()) {
-				Path item = (Path)childs.next();
-				log.debug("Validating " + item.toString());
-				if (this.validator.validate(item)) {
-					item.status.reset();
-					this.size += item.status.getSize();
-					log.debug("Adding " + item.getName() + " as child to queue.");
-					this.jobs.add(item);
+				Path child = (Path)childs.next();
+				log.debug("Validating " + child.toString());
+				if (this.validator.validate(child)) {
+					child.status.reset();
+					this.size += child.status.getSize();
+					log.debug("Adding " + child.getName() + " as child to queue.");
+					this.addJob(child);
 				}
 			}
 		}
 		this.progress = new Timer(500,
-								  new ActionListener() {
+								  new java.awt.event.ActionListener() {
 									  int i = 0;
 									  long current;
 									  long last;
 									  long[] speeds = new long[8];
 									  
-									  public void actionPerformed(ActionEvent e) {
+									  public void actionPerformed(java.awt.event.ActionEvent e) {
 										  long diff = 0;
 										  current = getCurrent(); // Bytes
 										  if (current <= 0) {
@@ -242,6 +238,8 @@ public class Queue extends Observable implements Observer {
 								  }
 								  );
 	}
+	
+	protected abstract void process(Path p);
 	
     /**
      * Process the queue. All files will be downloaded or uploaded rerspectively.
@@ -290,15 +288,8 @@ public class Queue extends Observable implements Observer {
 			progress.start();
 			for (Iterator iter = jobs.iterator(); iter.hasNext() && !canceled; ) {
 				Path job = (Path)iter.next();
-				job.status.addObserver(queue);				
-				switch (kind) {
-					case KIND_DOWNLOAD:
-						job.download();
-						break;
-					case KIND_UPLOAD:
-						job.upload();
-						break;
-				}
+				job.status.addObserver(queue);
+				process(job);
 				job.status.deleteObserver(queue);
 			}
 			progress.stop();
@@ -320,6 +311,10 @@ public class Queue extends Observable implements Observer {
 		this.worker.cancel();
     }
 
+	public boolean isCanceled() {
+		return this.worker.isCanceled();
+	}
+	
     /**
      * @return True if this queue's thread is running
      */
@@ -374,12 +369,11 @@ public class Queue extends Observable implements Observer {
 		if(-1 == this.size) { // not yet initialized; get cached size of jobs
 			long value = 0;
 			for (Iterator iter = jobs.iterator(); iter.hasNext();) {
-				value += ((Path)iter.next()).status.getCurrent();
+				value += ((Path)iter.next()).status.getSize();
 			}
 			return value;
 		}
 		return this.size;
-		//		return this.worker.size();
     }
 
     public String getSizeAsString() {
@@ -395,7 +389,6 @@ public class Queue extends Observable implements Observer {
 			value += ((Path)iter.next()).status.getCurrent();
 		}
 		return value;
-		//		return this.worker.current();
     }
 
     public String getCurrentAsString() {

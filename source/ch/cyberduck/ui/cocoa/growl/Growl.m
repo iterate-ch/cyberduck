@@ -84,6 +84,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 
 #define	GROWL_DOWNLOAD_COMPLETE				NSLocalizedString(@"Download complete", @"Growl Notification")
 #define	GROWL_UPLOAD_COMPLETE				NSLocalizedString(@"Upload complete", @"Growl Notification")
+#define GROWL_SYNCHRONIZATION_COMPLETE		NSLocalizedString(@"Synchronization complete", @"Growl Notification")
 #define	GROWL_CONNECTION_OPENED				NSLocalizedString(@"Connection opened", @"Growl Notification")
 #define	GROWL_CONNECTION_FAILED				NSLocalizedString(@"Connection failed", @"Growl Notification")
 #define	GROWL_RENDEZVOUS_FOUND_SERVICE		NSLocalizedString(@"Rendezvous", @"Growl Notification")
@@ -131,6 +132,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 		NSArray *allNotifications = [NSArray arrayWithObjects:
 			GROWL_DOWNLOAD_COMPLETE,
 			GROWL_UPLOAD_COMPLETE,
+			GROWL_SYNCHRONIZATION_COMPLETE,
 			GROWL_CONNECTION_OPENED,
 			GROWL_CONNECTION_FAILED,
 			GROWL_RENDEZVOUS_FOUND_SERVICE,
@@ -138,6 +140,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 		NSArray *defaultNotifications = [NSArray arrayWithObjects:
 			GROWL_DOWNLOAD_COMPLETE,
 			GROWL_UPLOAD_COMPLETE,
+			GROWL_SYNCHRONIZATION_COMPLETE,
 			GROWL_CONNECTION_OPENED,
 			GROWL_CONNECTION_FAILED,
 			nil];

@@ -227,40 +227,7 @@ public abstract class Path {
         }
         return this.getParent().list(false, true).contains(this);
     }
-	
-	public synchronized void sync(int kind) {
-		this.sync(false, kind);
-	}	
-
-	public synchronized void sync(boolean recursive, int kind) {
-        try {
-            this.getSession().check();
-            if (this.attributes.isFile()) {
-				if(this.getLocal().getTimestamp().before(this.attributes.getTimestamp())) {
-					if(kind == 0) this.download(); else this.upload();
-				}
-				if(this.getLocal().getTimestamp().after(this.attributes.getTimestamp())) {
-					if(kind == 0) this.upload(); else this.download();
-				}
-            }
-            else if (this.attributes.isDirectory()) {
-				if(recursive) {
-					List files = this.list(false, true);
-					java.util.Iterator iterator = files.iterator();
-					Path file = null;
-					while (iterator.hasNext()) {
-						file = (Path)iterator.next();
-						file.sync(recursive, kind);
-					}
-				}
-            }
-            this.getSession().log("Idle", Message.STOP);
-        }
-        catch (IOException e) {
-            this.getSession().log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-	}
-	
+		
     /**
      * @return true if this paths points to '/'
      */
@@ -317,67 +284,6 @@ public abstract class Path {
     public abstract void download();
 
     public abstract void upload();
-
-    /**
-     * @return All childs if this file denotes a directory and/or the file itself.
-     */
-    public List getChilds(int kind) {
-        List childs = new ArrayList();
-        switch (kind) {
-            case Queue.KIND_DOWNLOAD:
-                childs = this.getDownloadQueue(childs);
-                break;
-            case Queue.KIND_UPLOAD:
-                childs = this.getUploadQueue(childs);
-                break;
-        }
-        return childs;
-    }
-
-    /**
-     * @return All childs of the local file representation and the file itself. Does not return any directory
-     *         names, but only plain files.
-     */
-    private List getDownloadQueue(List queue) {
-        log.debug("Adding " + this.toString() + " to download queue.");
-        queue.add(this);
-        if (this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
-            this.status.setSize(0);
-            for (Iterator i = this.list(false, true).iterator(); i.hasNext();) {
-                Path p = (Path)i.next();
-                p.setLocal(new Local(this.getLocal(), p.getName()));
-                p.getDownloadQueue(queue);
-            }
-        }
-        return queue;
-    }
-
-    /**
-     * @return The path itself and all files included if this path denotes a directory (recursive for all
-     *         subsequent directories)
-     *         Does not return any directory names, but only plain files.
-     */
-    private List getUploadQueue(List queue) {
-        log.debug("Adding " + this.toString() + " to upload queue.");
-        queue.add(this);
-        if (this.getLocal().isDirectory()) {
-            this.attributes.setType(Path.DIRECTORY_TYPE);
-            this.status.setSize(0);
-            File[] files = this.getLocal().listFiles();
-            for (int i = 0; i < files.length; i++) {
-                Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), new Local(files[i].getAbsolutePath()));
-                // users complaining about .DS_Store files getting uploaded. It should be apple fixing their crappy file system, but whatever.
-                if (!p.getName().equals(".DS_Store")) {
-                    p.getUploadQueue(queue);
-                }
-            }
-        }
-        else if (this.getLocal().isFile()) {
-            this.attributes.setType(Path.FILE_TYPE);
-            this.status.setSize(this.getLocal().length()); //setting the file size to the known size of the local file
-        }
-        return queue;
-    }
 
     // ----------------------------------------------------------
     // Transfer methods
@@ -515,6 +421,39 @@ public abstract class Path {
         this.status.setComplete(complete);
     }
 
+	public void sync(boolean recursive) {
+		log.debug("sync:"+recursive);
+        try {
+            this.getSession().check();
+            if (this.attributes.isFile()) {
+				if(this.getLocal().getTimestamp().before(this.attributes.getTimestamp())) {
+					this.download();
+				}
+				else if(this.getLocal().getTimestamp().after(this.attributes.getTimestamp())) {
+					this.upload();
+				}
+				else if(this.getLocal().getTimestamp().equals(this.attributes.getTimestamp())) {
+					// no sync needed
+				}
+            }
+            else if (this.attributes.isDirectory()) {
+				if(recursive) {
+					List files = this.list(false, true);
+					java.util.Iterator iterator = files.iterator();
+					Path file = null;
+					while (iterator.hasNext()) {
+						file = (Path)iterator.next();
+						file.sync(recursive);
+					}
+				}
+            }
+            this.getSession().log("Idle", Message.STOP);
+        }
+        catch (IOException e) {
+            this.getSession().log("IO Error: " + e.getMessage(), Message.ERROR);
+        }
+	}
+	
     public boolean equals(Object other) {
         if (other instanceof Path) {
             return this.getAbsolute().equals(((Path)other).getAbsolute());

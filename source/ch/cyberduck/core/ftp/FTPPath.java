@@ -204,8 +204,8 @@ public class FTPPath extends Path {
     public synchronized void delete() {
         log.debug("delete:" + this.toString());
         try {
+			session.check();
             if (this.attributes.isFile()) {
-				session.check();
 				session.FTP.chdir(this.getParent().getAbsolute());
                 session.log("Deleting " + this.getName(), Message.PROGRESS);
                 session.FTP.delete(this.getName());

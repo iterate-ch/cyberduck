@@ -24,7 +24,7 @@ import com.apple.cocoa.application.NSMenu;
 import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.foundation.*;
 
-import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.*;
 
 /**
  * @version $Id$
@@ -49,19 +49,19 @@ public class CDIconCell extends CDTableCell {
         this.queue = (Queue)q;
     }
 
-    private static final NSImage arrowUpIcon = NSImage.imageNamed("arrowUp.tiff");
-    private static final NSImage arrowDownIcon = NSImage.imageNamed("arrowDown.tiff");
-    private static final NSImage multipleDocumentsIcon = NSImage.imageNamed("multipleDocuments32.tiff");
-    private static final NSImage folderIcon = NSImage.imageNamed("folder32.tiff");
-    private static final NSImage notFoundIcon = NSImage.imageNamed("notfound.tiff");
+    private static final NSImage arrowUpIcon = NSImage.imageNamed("arrowUp");
+    private static final NSImage arrowDownIcon = NSImage.imageNamed("arrowDown");
+    private static final NSImage syncIcon = NSImage.imageNamed("sync");
+    private static final NSImage multipleDocumentsIcon = NSImage.imageNamed("multipleDocuments32");
+    private static final NSImage folderIcon = NSImage.imageNamed("folder32");
+    private static final NSImage notFoundIcon = NSImage.imageNamed("notfound");
+
+	private static final float SPACE = 2;
 
     static {
         arrowUpIcon.setSize(new NSSize(32f, 32f));
         arrowDownIcon.setSize(new NSSize(32f, 32f));
     }
-
-    private NSImage fileIcon = null;
-    private NSImage arrowIcon = null;
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         super.drawInteriorWithFrameInView(cellFrame, controlView);
@@ -70,98 +70,62 @@ public class CDIconCell extends CDTableCell {
             NSSize cellSize = cellFrame.size();
 			
             // drawing file icon
-            arrowIcon = queue.kind() == Queue.KIND_DOWNLOAD ? arrowDownIcon : arrowUpIcon;
-            if (queue.numberOfRoots() == 1) {
-                switch (queue.kind()) {
-                    case Queue.KIND_DOWNLOAD:
-                        if (queue.getRoot().attributes.isFile()) {
-                            fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
-                        }
-                        else if (queue.getRoot().attributes.isDirectory()) {
-                            fileIcon = folderIcon;
-                        }
-                        break;
-                    case Queue.KIND_UPLOAD:
-                        if (queue.getRoot().getLocal().isFile()) {
-                            if (queue.getRoot().getLocal().exists()) {
-                                fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
-                            }
-                            else {
-                                fileIcon = notFoundIcon;
-                            }
-                        }
-                        else if (queue.getRoot().getLocal().isDirectory()) {
-                            fileIcon = folderIcon;
-                        }
-                        else {
-                            fileIcon = notFoundIcon;
-                        }
-                        break;
-                }
-            }
-            else {
-                fileIcon = multipleDocumentsIcon;
-            }
-
-//            final float BORDER = 40;
-            final float SPACE = 2;
-
-            if (fileIcon != null) {
-                fileIcon.setScalesWhenResized(true);
-                fileIcon.setSize(new NSSize(32f, 32f));
-
-                fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE, 
+			NSImage fileIcon = null;
+            NSImage arrowIcon = null;
+			
+			if(queue instanceof DownloadQueue) {
+				arrowIcon = arrowDownIcon;
+				if (queue.numberOfRoots() == 1) {
+					if (queue.getRoot().attributes.isFile()) {
+						fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
+					}
+					else if (queue.getRoot().attributes.isDirectory()) {
+						fileIcon = folderIcon;
+					}
+				}
+				else {
+					fileIcon = multipleDocumentsIcon;
+				}
+			}
+			else if(queue instanceof UploadQueue) {
+				arrowIcon = arrowUpIcon;
+				if (queue.numberOfRoots() == 1) {
+					if (queue.getRoot().getLocal().isFile()) {
+						if (queue.getRoot().getLocal().exists()) {
+							fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
+						}
+						else {
+							fileIcon = notFoundIcon;
+						}
+					}
+					else if (queue.getRoot().getLocal().isDirectory()) {
+						fileIcon = folderIcon;
+					}
+					else {
+						fileIcon = notFoundIcon;
+					}
+				}
+				else {
+					fileIcon = multipleDocumentsIcon;
+				}
+			}
+			else if(queue instanceof SyncQueue) {
+				fileIcon = syncIcon;
+			}
+			
+			if (fileIcon != null) {
+				fileIcon.setScalesWhenResized(true);
+				fileIcon.setSize(new NSSize(32f, 32f));
+				
+				fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE, 
 													  cellPoint.y() + 32 + SPACE), 
 										  NSImage.CompositeSourceOver);
-                arrowIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE * 2, 
-													   cellPoint.y() + 32 + SPACE * 2), 
-										   NSImage.CompositeSourceOver);
-            }
-			
-			/*
-            // drawing path properties
-            // local file
-            if (queue.numberOfRoots() == 1) {
-                NSGraphics.drawAttributedString(new NSAttributedString(queue.getRoot().getName(),
-                        boldFont),
-                        new NSRect(cellPoint.x() + BORDER + SPACE,
-                                cellPoint.y() + SPACE,
-                                cellSize.width() - BORDER - SPACE - 40,
-                                cellSize.height()));
-            }
-            else {
-                NSGraphics.drawAttributedString(new NSAttributedString(NSBundle.localizedString("(Multiples files)", ""),
-                        tinyFont),
-                        new NSRect(cellPoint.x() + BORDER + SPACE,
-                                cellPoint.y() + SPACE,
-                                cellSize.width() - BORDER - SPACE,
-                                cellSize.height()));
-            }
-            // number of files of queue item
-            if (queue.numberOfJobs() > 0) {
-                NSGraphics.drawAttributedString(new NSAttributedString("(" + queue.numberOfJobs() + " " + NSBundle.localizedString("files", "") + ")",
-                        tinyFontRight),
-                        new NSRect(cellPoint.x() + BORDER + SPACE,
-                                cellPoint.y() + SPACE,
-                                cellSize.width() - BORDER - SPACE,
-                                cellSize.height()));
-            }
-            // hostname
-            NSGraphics.drawAttributedString(new NSAttributedString(queue.getRoot().getHost().getHostname() + "/" + queue.getRoot().getAbsolute(),
-                    normalFont),
-                    new NSRect(cellPoint.x() + BORDER + SPACE,
-                            cellPoint.y() + 20,
-                            cellSize.width() - BORDER - SPACE,
-                            cellSize.height()));
-            // status
-            NSGraphics.drawAttributedString(new NSAttributedString(queue.getStatus(),
-                    tinyFont),
-                    new NSRect(cellPoint.x() + BORDER + SPACE,
-                            cellPoint.y() + 33,
-                            cellSize.width() - BORDER - SPACE,
-                            cellSize.height()));
-			 
-			 */
-        }
-    }
+				if(arrowIcon != null) {
+					arrowIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE * 2, 
+														   cellPoint.y() + 32 + SPACE * 2), 
+											   NSImage.CompositeSourceOver);
+				}
+			}
+		}
+	}
 }

@@ -343,7 +343,7 @@ public class CDInfoController extends NSObject {
         log.debug("permissionsSelectionChanged");
         boolean[][] p = new boolean[3][3];
         if (((NSButton)sender).state() == NSCell.MixedState) {
-            ((NSButton)sender).setNextState();
+            ((NSButton)sender).setState(NSCell.OnState);
         }
 
         p[Permission.OWNER][Permission.READ] = (ownerr.state() == NSCell.OnState);

@@ -816,7 +816,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                     if ((filename = sheet.filename()) != null) {
                         Path path = (Path)contextInfo;
                         path.setLocal(new Local(filename));
-                        Queue queue = new Queue(Queue.KIND_DOWNLOAD);
+                        Queue queue = new DownloadQueue();
                         queue.addRoot(path);
 						CDQueueController.instance().addItem(queue);
                         CDQueueController.instance().startItem(queue);
@@ -829,10 +829,29 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                 }
         }
     }
+	
+	public void syncButtonClicked(Object sender) {
+        log.debug("syncButtonClicked");
+        NSOpenPanel panel = NSOpenPanel.openPanel();
+        panel.setCanChooseDirectories(true);
+        panel.setCanChooseFiles(true);
+        panel.setAllowsMultipleSelection(false);
+        panel.beginSheetForDirectory(null, null, null, this.window(), this, new NSSelector("syncPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+	}
 
+	public void syncPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
+        sheet.orderOut(null);
+        switch (returnCode) {
+            case (NSAlertPanel.DefaultReturn):
+				break;
+            case (NSAlertPanel.AlternateReturn):
+                break;
+		}
+	}
+				
     public void downloadButtonClicked(Object sender) {
 		NSEnumerator enum = browserTable.selectedRowEnumerator();
-		Queue q = new Queue(Queue.KIND_DOWNLOAD);
+		Queue q = new DownloadQueue();
 		Session session = pathController.workdir().getSession().copy();
 		while (enum.hasMoreElements()) {
 			Path path = ((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session);
@@ -859,7 +878,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                 // selected files on the local filesystem
                 NSArray selected = sheet.filenames();
                 java.util.Enumeration enumerator = selected.objectEnumerator();
-                Queue q = new Queue(Queue.KIND_UPLOAD, (Observer)this);
+                Queue q = new UploadQueue((Observer)this);
                 Session session = workdir.getSession().copy();
                 while (enumerator.hasMoreElements()) {
                     Path item = workdir.copy(session);
@@ -929,7 +948,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 				NSArray elements = (NSArray)o;
 				for (int i = 0; i < elements.count(); i++) {
 					NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-					Queue q = new Queue(dict);
+					Queue q = Queue.createQueue(dict);
 					Path workdir = this.pathController.workdir();
 					for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
 						Path p = (Path)iter.next();
@@ -948,7 +967,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 		if(browserTable.selectedRow() != -1) {
 			NSMutableArray queueDictionaries = new NSMutableArray();
 			Session session = pathController.workdir().getSession().copy();
-			Queue q = new Queue(Queue.KIND_DOWNLOAD);
+			Queue q = new DownloadQueue();
 			NSEnumerator enum = browserTable.selectedRowEnumerator();
 			while (enum.hasMoreElements()) {
 				Path path = this.browserModel.getEntry(((Integer)enum.nextElement()).intValue());
@@ -1196,7 +1215,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 					NSArray elements = (NSArray)pboard.propertyListForType("QueuePBoardType");
 					for (int i = 0; i < elements.count(); i++) {
 						NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-						Queue q = new Queue(dict);
+						Queue q = Queue.createQueue(dict);
 						if(q.numberOfRoots() == 1)
 							item.setTitle(NSBundle.localizedString("Paste", "Menu item")+" \""+q.getRoot().getName()+"\"");
 						else {
@@ -1579,7 +1598,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             NSPasteboard infoPboard = info.draggingPasteboard();
             if (infoPboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
                 NSArray filesList = (NSArray)infoPboard.propertyListForType(NSPasteboard.FilenamesPboardType);
-                Queue q = new Queue(Queue.KIND_UPLOAD, (Observer)CDBrowserController.this);
+                Queue q = new UploadQueue((Observer)CDBrowserController.this);
                 Session session = pathController.workdir().getSession().copy();
                 for (int i = 0; i < filesList.count(); i++) {
                     log.debug(filesList.objectAtIndex(i));
@@ -1611,7 +1630,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                         NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
                         Path parent = this.getEntry(row);
                         if (parent.attributes.isDirectory()) {
-                            Queue q = new Queue(dict);
+                            Queue q = Queue.createQueue(dict);
                             for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                                 Path p = (Path)iter.next();
                                 PathFactory.createPath(parent.getSession(), p.getAbsolute()).rename(parent.getAbsolute() + "/" + p.getName());
@@ -1649,7 +1668,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                 NSMutableArray queueDictionaries = new NSMutableArray();
                 // declare our dragged type in the paste board
                 pboard.declareTypes(new NSArray(NSPasteboard.FilesPromisePboardType), null);
-                Queue q = new Queue(Queue.KIND_DOWNLOAD);
+				Queue q = new DownloadQueue();
                 Session session = pathController.workdir().getSession().copy();
                 for (int i = 0; i < rows.count(); i++) {
                     promisedDragPaths[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue()).copy(session);
@@ -1700,7 +1719,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
             NSMutableArray promisedDragNames = new NSMutableArray();
             if (null != dropDestination) {
-                Queue q = new Queue(Queue.KIND_DOWNLOAD);
+				Queue q = new DownloadQueue();
                 for (int i = 0; i < promisedDragPaths.length; i++) {
                     try {
                         this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
