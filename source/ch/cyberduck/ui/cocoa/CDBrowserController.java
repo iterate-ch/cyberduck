@@ -103,7 +103,17 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             Message msg = (Message)arg;
             if (msg.getTitle().equals(Message.ERROR)) {
                 if (window().isVisible()) {
-                    NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+					while (this.window().attachedSheet() != null) {
+						try {
+							log.debug("Sleeping...");
+							Thread.sleep(1000); //milliseconds
+						}
+						catch (InterruptedException e) {
+							log.error(e.getMessage());
+						}
+					}
+					synchronized (this) {
+						NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
 														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
 														 null, //alternative button
 														 null, //other button
@@ -114,6 +124,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 														 null, // context
 														 (String)msg.getContent() // message
 														 );
+					}
                 }
                 progressIndicator.stopAnimation(this);
                 statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
@@ -763,31 +774,38 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         this.browserTable.deselectAll(sender);
         this.pathController.workdir().list(true);
     }
-
+	
     public void downloadAsButtonClicked(Object sender) {
-        if (browserModel.numberOfRowsInTableView(browserTable) > 0 && browserTable.numberOfSelectedRows() > 0) {
-            if (this.isMounted()) {
-                NSEnumerator enum = browserTable.selectedRowEnumerator();
-                while (enum.hasMoreElements()) {
-                    Session session = pathController.workdir().getSession().copy();
-                    Path path = ((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session);
-                    NSSavePanel panel = NSSavePanel.savePanel();
-                    panel.setMessage(NSBundle.localizedString("Download the selected file to...", ""));
-                    panel.setNameFieldLabel(NSBundle.localizedString("Download As:", ""));
-                    panel.setPrompt(NSBundle.localizedString("Download", ""));
-                    panel.setTitle("Download");
-                    panel.setCanCreateDirectories(true);
-                    panel.beginSheetForDirectory(null,
-                            path.getLocal().getName(),
-                            this.window(),
-                            this,
-                            new NSSelector("saveAsPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
-                            path);
-                }
-            }
-        }
+		Session session = pathController.workdir().getSession().copy();
+		NSEnumerator enum = browserTable.selectedRowEnumerator();
+		while (enum.hasMoreElements()) {
+			while (this.window().attachedSheet() != null) {
+				try {
+					log.debug("Sleeping...");
+					Thread.sleep(1000); //milliseconds
+				}
+				catch (InterruptedException e) {
+					log.error(e.getMessage());
+				}
+			}
+			synchronized (this) {
+				Path path = ((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session);
+				NSSavePanel panel = NSSavePanel.savePanel();
+				panel.setMessage(NSBundle.localizedString("Download the selected file to...", ""));
+				panel.setNameFieldLabel(NSBundle.localizedString("Download As:", ""));
+				panel.setPrompt(NSBundle.localizedString("Download", ""));
+				panel.setTitle("Download");
+				panel.setCanCreateDirectories(true);
+				panel.beginSheetForDirectory(null,
+											 path.getLocal().getName(),
+											 this.window(),
+											 this,
+											 new NSSelector("saveAsPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
+											 path);
+			}
+		}
     }
-
+	
     public void saveAsPanelDidEnd(NSSavePanel sheet, int returnCode, Object contextInfo) {
         switch (returnCode) {
             case (NSAlertPanel.DefaultReturn):
@@ -811,19 +829,15 @@ public class CDBrowserController extends NSObject implements CDController, Obser
     }
 
     public void downloadButtonClicked(Object sender) {
-        if (browserModel.numberOfRowsInTableView(browserTable) > 0 && browserTable.numberOfSelectedRows() > 0) {
-            if (this.isMounted()) {
-                NSEnumerator enum = browserTable.selectedRowEnumerator();
-                Queue q = new Queue(Queue.KIND_DOWNLOAD);
-                Session session = pathController.workdir().getSession().copy();
-                while (enum.hasMoreElements()) {
-                    Path path = ((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session);
-                    q.addRoot(path);
-                }
-				CDQueueController.instance().addItem(q);
-                CDQueueController.instance().startItem(q);
-            }
-        }
+		NSEnumerator enum = browserTable.selectedRowEnumerator();
+		Queue q = new Queue(Queue.KIND_DOWNLOAD);
+		Session session = pathController.workdir().getSession().copy();
+		while (enum.hasMoreElements()) {
+			Path path = ((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session);
+			q.addRoot(path);
+		}
+		CDQueueController.instance().addItem(q);
+		CDQueueController.instance().startItem(q);
     }
 
     public void uploadButtonClicked(Object sender) {
@@ -1265,8 +1279,8 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         if (identifier.equals("Upload") || identifier.equals("downloadButtonClicked:")) {
             return this.isMounted();
         }
-        if (identifier.equals("downloadAsButtonClicked:")) {
-            return this.isMounted() && browserTable.selectedRow() != -1;
+        if (identifier.equals("Download As") || identifier.equals("downloadAsButtonClicked:")) {
+            return this.isMounted() && browserTable.numberOfSelectedRows() == 1;
         }
         if (identifier.equals("insideButtonClicked:")) {
             return this.isMounted() && browserTable.selectedRow() != -1;

@@ -140,7 +140,7 @@ public class CDValidatorController extends Validator {
                         new NSSelector("validateSheetDidEnd",
                                 new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
                         path); //contextInfo
-                CDQueueController.instance().window().makeKeyAndOrderFront(null);
+//@todo?                CDQueueController.instance().window().makeKeyAndOrderFront(null);
                 // Waiting for user to make choice
                 while (windowController.window().attachedSheet() != null) {
                     try {
