@@ -96,6 +96,7 @@ public class HTTPSession extends Session {
 		public void run() {
 		    GetMethod GET = null;
 		    try {
+			HTTPFile.this.status.fireActiveEvent();
 			HTTPSession.this.check();
 			GET = new GetMethod(HTTPFile.this.getAbsolute()); //@todo encode url
 			GET.setUseDisk(false);

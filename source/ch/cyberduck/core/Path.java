@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
  * A path is a remote directory or file.
  * @version $Id$
  */
-public abstract class Path extends Observable implements Serializable {//, Transferable {
+public abstract class Path extends Observable {//implements Serializable {//, Transferable {
 
     private static Logger log = Logger.getLogger(Path.class);
 
@@ -200,17 +200,15 @@ public abstract class Path extends Observable implements Serializable {//, Trans
         return new File(Preferences.instance().getProperty("download.path"), this.getName());
     }
 
+    /**
+	* @returns the extensdion if any
+     */
     public String getExtension() {
-	if(this.isDirectory()) {
-	    return "/";
-	}
-	else {
-	    String name = this.getName();
-	    int index = name.lastIndexOf(".");
-	    if(index != -1)
-		return name.substring(index, name.length());
-	    return "txt";
-	}
+	String name = this.getName();
+	int index = name.lastIndexOf(".");
+	if(index != -1)
+	    return name.substring(index, name.length());
+	return null;
     }
 
     /**
@@ -466,7 +464,6 @@ public abstract class Path extends Observable implements Serializable {//, Trans
 			+ this.parseDouble(this.getOverall()/1024) + " kB/s. ");// + this.getTimeLeftMessage();
 		}
 	    }
-
 	    this.callObservers(msg);
 	}
 
@@ -499,12 +496,14 @@ public abstract class Path extends Observable implements Serializable {//, Trans
 
 	public void fireActiveEvent() {
 	    super.fireActiveEvent();
+	    Path.this.callObservers(new Message(Message.START, null));
 	    this.overallSpeedTimer.start();
 	    this.currentSpeedTimer.start();
 	}
 
 	public void fireStopEvent() {
 	    super.fireStopEvent();
+	    Path.this.callObservers(new Message(Message.STOP, null));
 	    if(this.currentSpeedTimer != null)
 		this.currentSpeedTimer.stop();
 	    if(this.overallSpeedTimer != null)
@@ -515,6 +514,7 @@ public abstract class Path extends Observable implements Serializable {//, Trans
 
 	public void fireCompleteEvent() {
 	    super.fireCompleteEvent();
+	    Path.this.callObservers(new Message(Message.COMPLETE, null));
 	    this.currentSpeedTimer.stop();
 	    this.overallSpeedTimer.stop();
             this.setResume(false);

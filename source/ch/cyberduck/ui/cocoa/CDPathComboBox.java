@@ -1,3 +1,5 @@
+package ch.cyberduck.ui.cocoa;
+
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
@@ -16,19 +18,13 @@
  *  dkocher@cyberduck.ch
  */
 
-package ch.cyberduck.ui.cocoa;
-
 import org.apache.log4j.Logger;
-
 import java.util.Observer;
 import java.util.Observable;
-
 import java.util.List;
 import java.util.ArrayList;
-
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
@@ -69,7 +65,7 @@ public class CDPathComboBox extends NSPopUpButton implements Observer {
 
     public void selectionChanged(NSObject sender) {
 	log.debug("index selected item:"+indexOfSelectedItem());
-	Path p = (Path)items.get(this.indexOfSelectedItem()-1);
+	Path p = (Path)items.get(this.indexOfSelectedItem());
 	p.list();
     }
 

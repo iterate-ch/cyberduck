@@ -196,7 +196,7 @@ public class Status extends Observable implements Serializable {
         this.setComplete(false);
         this.setStopped(false);
         this.chronoTimer.start();
-	this.callObservers(new Message(Message.ACTIVE, null));
+	this.callObservers(new Message(Message.START, null));
     }
 
     /**

@@ -39,9 +39,9 @@ public class Message implements java.io.Serializable {
 
     public static final String SELECTION="SELECTION";
 
-    public static final String ACTIVE = new String ("ACTIVE");
-    public static final String STOP = new String ("STOP");
-    public static final String COMPLETE = new String ("COMPLETE");
+    public static final String START = "START";
+    public static final String STOP = "STOP";
+    public static final String COMPLETE = "COMPLETE";
 //    public static final String CURRENT = new String("CURRENT");
     
     /**

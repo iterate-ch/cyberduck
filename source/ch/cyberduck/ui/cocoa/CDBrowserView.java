@@ -1,3 +1,5 @@
+package ch.cyberduck.ui.cocoa;
+
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
@@ -15,8 +17,6 @@
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
-
-package ch.cyberduck.ui.cocoa;
 
 import java.util.Observer;
 import java.util.Observable;
@@ -36,6 +36,11 @@ import org.apache.log4j.Logger;
 public class CDBrowserView extends NSTableView implements Observer, NSDraggingDestination {
     private static Logger log = Logger.getLogger(CDBrowserView.class);
 
+    private static final float STRIPE_RED = (float)(237.0 / 255.0);
+    private static final float STRIPE_GREEN = (float)(243.0 / 255.0);
+    private static final float STRIPE_BLUE = (float)(254.0 / 255.0);
+    private NSColor sStripeColor = null;
+    
     private CDBrowserTableDataSource model;
     
     public CDBrowserView() {
@@ -68,18 +73,10 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 //	this.setIntercellSpacing(NSSize.ZeroSize);
         this.setDoubleAction(new NSSelector("doubleClickAction", new Class[] {null}));
 	//By setting the drop row to -1, the entire table is highlighted instead of just a single row.
-
 	//this.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-
-//	this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
-
-//void setHighlightedTableColumn(NSTableColumn tableColumn);
-	
-	//The default sorting order indicators are now available as named NSImages.  These images can be accessed with [NSImage imageNamed:] using the names NSAscendingSortIndicator (the "^" icon), and NSDescendingSortIndicator (the "v" icon).
-	
-
-	//	this.setIndicatorImage(NSImage.imageNamed("file.tiff"), this.tableColumnWithIdentifier("FILENAME"))
-
+	if(this.tableColumnWithIdentifier("TYPE") != null)
+	    this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
+	//this.setIndicatorImage(NSImage.imageNamed("indicator.tiff"), this.tableColumnWithIdentifier("FILENAME"))
     }
 
     public void doubleClickAction(NSObject sender) {
@@ -91,18 +88,6 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	    p.list();
     }
     
-    /*
-    public void mouseUp(NSEvent event) {
-	log.debug(event.toString());
-	if(event.clickCount() == 2) { //double click
-            int clickedRow = this.clickedRow();
-            log.debug(""+clickedRow);
-            Path p = (Path)model.getEntry(clickedRow);
-            p.list();
-	}
-    }
-     */
-
     public void update(Observable o, Object arg) {
 	log.debug("update");
 	if(o instanceof Host) {
@@ -136,50 +121,42 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	}
     }
 
+    // ----------------------------------------------------------
+    // Drawing methods
+    // ----------------------------------------------------------
+
+    public void highlightSelectionInClipRect(NSRect rect) {
+	this.drawStripesInRect(rect);
+	super.highlightSelectionInClipRect(rect);
+    }
+
+    /**
+	* This method does the actual blue stripe drawing, filling in every other row of the table
+     * with a blue background so you can follow the rows easier with your eyes.
+     */
+    public void drawStripesInRect(NSRect clipRect) {
+	int fullRowHeight = (int)(this.rowHeight() + this.intercellSpacing().height());
+	int clipBottom = (int)clipRect.maxY();
+	int firstStripe = (int)(clipRect.origin().y() / fullRowHeight);
+	if (firstStripe % 2 == 0)
+	    firstStripe++;
+	// set up first rect
+	NSRect stripeRect = new NSRect(new NSPoint(clipRect.origin().x(), firstStripe * fullRowHeight), new NSSize(clipRect.size().width(), fullRowHeight));
+	// set the color
+	if (sStripeColor == null) {
+	    sStripeColor = NSColor.colorWithCalibratedRGB(STRIPE_RED, STRIPE_GREEN, STRIPE_BLUE, 1.0f);
+	}
+	sStripeColor.set();
+	// and draw the stripes
+	while (stripeRect.origin().y() < clipBottom) {
+	    NSBezierPath.fillRect(stripeRect);
+	    stripeRect = new NSRect(stripeRect.x(), (float)(stripeRect.y()+fullRowHeight*2.0), stripeRect.width(), stripeRect.height());
+	}
+    }
 
     // ----------------------------------------------------------
     // Delegate methods
     // ----------------------------------------------------------    
-
-    /**	Informs the delegate that aTableView will display the cell at rowIndex in aTableColumn using aCell.
-	* The delegate can modify the display attributes of a cell to alter the appearance of the cell.
-	* Because aCell is reused for every row in aTableColumn, the delegate must set the display attributes both when drawing special cells and when drawing normal cells.
-	*/
-    public void tableViewWillDisplayCell(NSTableView browserTable, Object cell, NSTableColumn tableColumn, int row) {
-//	log.debug("tableViewWillDisplayCell:"+row);
-
-	/*
-	String identifier = (String)tableColumn.identifier();
-	if(identifier.equals("TYPE"))
-	    tableColumn.setDataCell(new NSImageCell());
-*/
-
-
-	
-//	    tableColumn.dataCell().setImage(new NSImage());
-
-//@todo throws null pointer fo ds ???
-//        Path p = (Path)ds.tableViewObjectValueForLocation(browserTable, tableColumn, row);
-	//if(identifier.equals("TYPE")) {
-	//    browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());;
-//	    if(p.isFile())
-//		typeColumn.setDataCell(new NSImageCell(NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension())));
-//	    if(p.isDirectory())
-//		typeColumn.setDataCell(new NSImageCell(NSImage.imageNamed("folder.tiff")));
-	//}
-	//else {
-
-
-/*
-	if(cell instanceof NSTextFieldCell) {
-	    NSTextFieldCell textCell = (NSTextFieldCell)cell;
-	    if ((row % 2) == 0) {
-		textCell.setDrawsBackground(true);
-		textCell.setBackgroundColor(NSColor.lightGrayColor());
-	    }
-	}
- */
-    }
 
     /**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
 	* The delegate can implement this method to disallow selection of particular rows.

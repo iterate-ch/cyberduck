@@ -167,6 +167,7 @@ public abstract class Preferences {//extends Properties {
     
         //this.setProperty("files.encode", "true");
         this.setProperty("files.postprocess", "false");
+        this.setProperty("files.removeCompleted", "false");
         
         //BookmarkTable properties
         //this.setProperty("table.save", "true");
@@ -213,16 +214,18 @@ public abstract class Preferences {//extends Properties {
         this.setProperty("connection.login.anonymous.pass", "user@domain.tld");
         
         //ftp properties
-        this.setProperty("ftp.showHidden", "false");
 	this.setProperty("ftp.connectmode", "passive");
-//        this.setProperty("ftp.active", "true");
-//        this.setProperty("ftp.passive", "false");
-        this.setProperty("ftp.listing.showType", "true");
-        this.setProperty("ftp.listing.showFilenames", "true");
-        this.setProperty("ftp.listing.showSize", "true");
-        this.setProperty("ftp.listing.showDate", "true");
-        this.setProperty("ftp.listing.showOwner", "true");
-        this.setProperty("ftp.listing.showAccess", "false");
+	//        this.setProperty("ftp.active", "true");
+ //        this.setProperty("ftp.passive", "false");
+
+	//listing properties
+        this.setProperty("showHidden", "false");
+        this.setProperty("listing.showType", "true");
+        this.setProperty("listing.showFilenames", "true");
+        this.setProperty("listing.showSize", "true");
+        this.setProperty("listing.showDate", "true");
+        this.setProperty("listing.showOwner", "true");
+        this.setProperty("listing.showAccess", "false");
         
         //frame sizes
         this.setProperty("frame.width", "560");

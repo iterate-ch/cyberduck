@@ -49,11 +49,19 @@ public class Host extends Observable {
 
     private static Logger log = Logger.getLogger(Host.class);
 
-    public Host(String protocol, String name, int port, String path, Login login) {
+    public Host(String protocol, String name, int port, String workdir, Login login) {
         this.protocol = protocol != null ? protocol : this.protocol;
         this.port = port != -1 ? port : this.port;
         this.name = name;
-        this.workdir = path != null ? path : this.workdir;
+        this.workdir = workdir != null ? workdir : this.workdir;
+	/*
+	if(path != null) {
+	    if(path.charAt(0)=='/')
+		this.workdir = path;
+	    else
+		this.workdir = "/"+path;
+	}
+	 */
         this.login = login != null ? login : this.login;
 	
     }

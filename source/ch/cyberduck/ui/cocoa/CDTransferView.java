@@ -23,12 +23,19 @@ import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
 import java.util.Observer;
 import java.util.Observable;
+import ch.cyberduck.core.Path.FileStatus;
+import ch.cyberduck.core.Message;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 
 /**
 * @version $Id$
  */
-public class CDTransferView extends NSTableView {
+public class CDTransferView extends NSTableView implements Observer {
     private static Logger log = Logger.getLogger(CDTransferView.class);
+
+    private CDTransferTableDataSource model;
 
     public CDTransferView() {
 	super();
@@ -47,25 +54,59 @@ public class CDTransferView extends NSTableView {
     }
 
     public void awakeFromNib() {
+	this.model = (CDTransferTableDataSource)this.dataSource();
 	this.setDelegate(this);
 	this.setTarget(this);
         this.setDoubleAction(new NSSelector("doubleClickAction", new Class[] {null}));
 	this.setAutoresizesAllColumnsToFit(true);
-/*
-	NSArray columns = this.tableColumns();
-	log.debug("Size columns:"+columns.count());
-	NSTableColumn progressColumn = (NSTableColumn)columns.objectAtIndex(2);
-	progressColumn.setDataCell(new CDProgressCell());
-
-	//	log.debug("Index PROGRESS:"+columnWithIdentifier("PROGRESS"));
- */
-//	this.tableColumnWithIdentifier("PROGRESS").setDataCell(new CDProgressCell());
+	if(this.tableColumnWithIdentifier("PROGRESS") != null)
+	    this.tableColumnWithIdentifier("PROGRESS").setDataCell(new CDProgressCell());
+	if(this.tableColumnWithIdentifier("TYPE") != null)
+	    this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
     }
+
+    public void doubleClickAction(NSObject sender) {
+	log.debug("doubleClickAction");
+        Path p = (Path)model.getEntry(this.clickedRow());
+	p.download();
+    }    
 
     public void update(Observable o, Object arg) {
-	//
+	if(o instanceof FileStatus) {
+	    if(arg instanceof Message) {
+		Message msg = (Message)arg;
+		if(msg.getTitle().equals(Message.DATA))
+                  //  return new JProgressBar(bookmark.status.getProgressModel());
+		    this.reloadData();
+	    }
+	}
+	if(o instanceof Path) {
+	    if(arg instanceof Message) {
+		Message msg = (Message)arg;
+		if(msg.getTitle().equals(Message.START)) {
+		    model.addEntry(o);
+		    this.reloadData();
+		}
+		if(msg.getTitle().equals(Message.STOP)) {
+		    if(Preferences.instance().getProperty("files.removeCompleted").equals("true")) {
+			model.removeEntry(o);
+			this.reloadData();
+		    }
+		}
+	    }
+	}
+	if(o instanceof Host) {
+	    if(arg instanceof java.util.List) {
+		java.util.List files = (java.util.List)arg;
+		java.util.Iterator i = files.iterator();
+		while(i.hasNext()) {
+		    //@todo remove observers if path no longer in listing >memory leak!!!
+		    ((Path)i.next()).addObserver(this);
+		}
+	    }
+	}
     }
-
+	
 
     // ----------------------------------------------------------
     // Delegate methods
@@ -82,7 +123,7 @@ public class CDTransferView extends NSTableView {
     /**	Returns true to permit aTableView to edit the cell at rowIndex in aTableColumn, false to deny permission.
 	*The delegate can implemen this method to disallow editing of specific cells.
 	*/
-    public boolean tableViewShouldEditLocation( NSTableView view, NSTableColumn tableColumn, int row) {
+    public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
 	return false;
     }
 
@@ -90,11 +131,6 @@ public class CDTransferView extends NSTableView {
 	log.debug("tableViewSelectionDidChange");
 	//
     }
-
-    public void tableViewWillDisplayCell(NSTableView browserTable, Object cell, NSTableColumn tableColumn, int row) {
-	log.debug("tableViewWillDisplayCell");
-	//
-    }    
 
     class CDProgressCell extends NSCell {
 	NSProgressIndicator progressBar;
@@ -104,10 +140,11 @@ public class CDTransferView extends NSTableView {
 	}
 
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
+	    log.debug("drawInteriorWithFrameInView");
 	    if (null == progressBar) {
 		progressBar = new NSProgressIndicator(cellFrame);
-		progressBar.setControlSize(NSCell.SmallControlSize);
-		progressBar.setIndeterminate(false);
+		progressBar.setIndeterminate(true);
+		progressBar.setControlSize(NSProgressIndicator.SmallControlSize);
 		progressBar.setDoubleValue(0.0);
 		controlView.addSubview(progressBar);
 	    }

@@ -20,16 +20,13 @@ package ch.cyberduck.core;
 
 import java.io.*;
 import java.util.Date;
-
 import ch.cyberduck.core.Preferences;
-
 import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public abstract class Session {//extends Thread {
-
     private static Logger log = Logger.getLogger(Session.class);
 
     public static final String HTTP = "http";
@@ -42,35 +39,17 @@ public abstract class Session {//extends Thread {
     public static final int FTP_PORT = 21;
     public static final int SSH_PORT = 22;
 
-        
-//    private Log log;
-
     public Host host;
-//    public Bookmark bookmark;
-    /**
-     * the action to execute(download, upload, list, ...)
-     */
-//    public TransferAction action;
 
 //    public boolean secure = false;
 
-//    public Session(Bookmark b, TransferAction action) {
-//	this(b, action, false);
-//    }
-
     public Session(Host h) {//, TransferAction action) {//, boolean secure) {
 	log.debug("Session("+h+")");
-//        super(h.getName());
-//        this.bookmark = b;
 	this.host = h;
-//	this.action = action;
 //        this.secure = secure;
 	
-        System.getProperties().put("proxySet", Preferences.instance().getProperty("connection.proxy"));
-        System.getProperties().put("proxyHost", Preferences.instance().getProperty("connection.proxy.host"));
-        System.getProperties().put("proxyPort", Preferences.instance().getProperty("connection.proxy.port"));
-
 	//@todo        this.log = new Log();
+	this.log(System.getProperty("line.separator"));
         this.log("-------" + new Date().toString(), Message.TRANSCRIPT);
         this.log("-------" + host.getIp(), Message.TRANSCRIPT);
     }
@@ -92,34 +71,17 @@ public abstract class Session {//extends Thread {
     public abstract void check() throws IOException;
 
     
-    /**
-        * Can be called within the <code>run()</code> to check if the thread should die.
-     */
-//    public void check() {// throws SessionException {
-	/*@todo
-        if( bookmark.status.isCancled()) {
-            bookmark.status.ignoreEvents(false);
-            throw new SessionException("Session canceled.");
-        }
-	 */
-//    }
-
     public void log(String message, String title) {
 //        log.debug("[Session] log("+message+","+type+")");
-
-	host.status.setMessage(message, title);
 
         if(title.equals(Message.TRANSCRIPT)) {
             Transcript.instance().transcript(message);
         }
+	else
+	    host.status.setMessage(message, title);
+
 	
-	//	host.status.setMessage(host.getName()+System.getProperty("line.separator")+message, title);
-	/*
-//@todo        bookmark.status.setMessage(message, type);
-        if(type.equals(Message.TRANSCRIPT)) {
-            Transcript.instance().transcript(message);
-        }
-        if(type.equals(Status.LOG)) {
+/*        if(type.equals(Status.LOG)) {
 //@todo            log.append(message);
         }
         if(type.equals(Message.PROGRESS)) {
@@ -155,14 +117,6 @@ public abstract class Session {//extends Thread {
 	 */
     }
 }
-/*
-    public void saveLog() {
-//        if(Preferences.instance().getProperty("connection.log").equals("true")) {
-//@todo            log.save();
-    }
-}
-*/
-
 /*
 import java.util.*;
 

@@ -1,3 +1,5 @@
+package ch.cyberduck.ui.cocoa;
+
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
@@ -16,8 +18,6 @@
  *  dkocher@cyberduck.ch
  */
 
-package ch.cyberduck.ui.cocoa;
-
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
@@ -31,6 +31,7 @@ import ch.cyberduck.core.Permission;
 * @version $Id$
  */
 public class CDInfoWindow extends NSPanel implements Observer {
+    private static Logger log = Logger.getLogger(CDInfoWindow.class);
 
     public NSTextField filenameField; /* IBOutlet */
     public NSTextField groupField; /* IBOutlet */
@@ -53,8 +54,6 @@ public class CDInfoWindow extends NSPanel implements Observer {
     public NSImageView iconImageView;
 
     private Path selectedPath;
-
-    private static Logger log = Logger.getLogger(CDInfoWindow.class);
 
     public CDInfoWindow() {
 	super();
@@ -111,7 +110,11 @@ public class CDInfoWindow extends NSPanel implements Observer {
 
 		    permissionsBox.setTitle("Permissions | "+permission.getString()+" ("+permission.getCode()+")");
 
-		    this.iconImageView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(selectedPath.getExtension()));
+		    if(selectedPath.isFile()) {
+			this.iconImageView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(selectedPath.getExtension()));
+		    }
+		    if(selectedPath.isDirectory())
+			this.iconImageView.setImage(NSImage.imageNamed("folder.tiff"));
 		}
 	    }
 	}

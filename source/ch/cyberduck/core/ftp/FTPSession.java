@@ -33,11 +33,11 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class FTPSession extends Session {
-
     private static Logger log = Logger.getLogger(Session.class);
+    
+    private static final String TRANSFERTYPE = Preferences.instance().getProperty("connection.transfertype.default");
 
     class FTPFile extends Path {
-	private String transfertype = Preferences.instance().getProperty("connection.transfertype.default");
 
 	public FTPFile(String parent, String name) {
 	    super(parent, name);
@@ -192,7 +192,7 @@ public class FTPSession extends Session {
 		}
 
 		private void downloadFile() throws IOException {
-		    if(getTransferType().equals("binary")) {
+		    if(TRANSFERTYPE.equals("binary")) {
 			FTPSession.this.log("Setting transfer mode to BINARY", Message.PROGRESS);
 			FTP.setType(FTPTransferType.BINARY);
 			FTPFile.this.attributes.setSize((int)(FTP.size(FTPFile.this.getName())));
@@ -209,7 +209,7 @@ public class FTPSession extends Session {
 			FTPFile.this.download(in, out);
 			FTP.validateTransfer();
 		    }
-		    else if(FTPFile.this.getTransferType().equals("ascii")) {
+		    else if(TRANSFERTYPE.equals("ascii")) {
 			FTPSession.this.log("Setting transfer type to ASCII", Message.PROGRESS);
 			FTP.setType(FTPTransferType.ASCII);
 			FTPFile.this.attributes.setSize((int)(FTP.size(FTPFile.this.getName())));
@@ -276,8 +276,7 @@ public class FTPSession extends Session {
 
 		private void uploadFile() throws IOException {
 		    FTPFile.this.attributes.setSize((int)FTPFile.this.getLocal().length());
-		    FTPFile.this.status.setCurrent(0);
-		    if(FTPFile.this.getTransferType().equals(FTPTransferType.BINARY)) {
+		    if(TRANSFERTYPE.equals(FTPTransferType.BINARY)) {
 			FTPSession.this.log("Setting transfer mode to BINARY.", Message.PROGRESS);
 			FTP.setType(FTPTransferType.BINARY);
 			java.io.InputStream in = new FileInputStream(FTPFile.this.getLocal());
@@ -295,7 +294,7 @@ public class FTPSession extends Session {
 			FTPFile.this.upload(out, in);
 			FTP.validateTransfer();
 		    }
-		    else if(FTPFile.this.getTransferType().equals(FTPTransferType.ASCII)) {
+		    else if(TRANSFERTYPE.equals(FTPTransferType.ASCII)) {
 			FTPSession.this.log("Setting transfer type to ASCII.", Message.PROGRESS);
 			FTP.setType(FTPTransferType.ASCII);
 
@@ -331,7 +330,7 @@ public class FTPSession extends Session {
 		}
 	    }.start();
 	}
-	
+	/*
 	public void setTransferType(String t) {
             this.transfertype = t;
         }
@@ -339,6 +338,7 @@ public class FTPSession extends Session {
         public String getTransferType() {
             return this.transfertype;
         }
+	 */
     }
     
     
@@ -353,6 +353,9 @@ public class FTPSession extends Session {
     public FTPSession(Host h) {//, TransferAction action) {
         super(h);
 	this.FTP = new FTPClient();
+        System.getProperties().put("proxySet", Preferences.instance().getProperty("connection.proxy"));
+        System.getProperties().put("proxyHost", Preferences.instance().getProperty("connection.proxy.host"));
+        System.getProperties().put("proxyPort", Preferences.instance().getProperty("connection.proxy.port"));
     }
 
     public void close() {
@@ -434,281 +437,12 @@ public class FTPSession extends Session {
     public void check() throws IOException {
 	if(!FTP.isAlive()) {
 	    this.connect();
-	  //  while(!FTP.isAlive())
-	//	Thread.wait();
+	    //while(!FTP.isAlive())
+		//
 	}
     }
 
-
-
-    /*
-    private void deleteFile(String file) throws SessionException, IOException {
-        this.check();
-        this.log("Deleting '" + file + "'...", Message.PROGRESS);
-        FTP.delete(file);
-    }
-
-    private void putDirectory(java.io.File file) throws SessionException, IOException {
-        FTP.mkdir(file.getName());
-        FTP.chdir(file.getName());
-        File[] files = file.listFiles();
-        for(int i = 0; i < files.length; i++) {
-            if(files[i].isDirectory()) {
-                this.putDirectory(files[i]);
-            }
-            if(files[i].isFile()) {
-                this.putFile(files[i]);
-            }
-        }
-        FTP.cdup();
-    }
-
-    private void putFile(File file) throws SessionException, IOException {
-        this.check();
-        bookmark.status.fireActiveEvent();
-        bookmark.setLocalPath(file);
-        bookmark.status.setLength((int)file.length());
-        bookmark.status.setCurrent(0);
-        if(bookmark.getTransferType().equals(FTPTransferType.BINARY)) {
-            //this.log("Setting transfer mode to BINARY.", Message.PROGRESS);
-            FTP.setType(FTPTransferType.BINARY);
-
-            java.io.InputStream in = new FileInputStream(file);
-            if(in == null) {
-                throw new IOException("Unable to buffer data");
-            }
-
-            this.log("Opening data stream...", Message.PROGRESS);
-
-            java.io.OutputStream out = FTP.putBinary(file.getName(), bookmark.status.isResume());
-            if(out == null) {
-                throw new IOException("Unable opening data stream");
-            }
-            this.log("Uploading "+file.getName()+"...", Message.PROGRESS);
-            this.upload(out, in);
-	    FTP.validateTransfer();
-        }
-        else if(bookmark.getTransferType().equals(FTPTransferType.ASCII)) {
-            //this.log("Setting transfer type to ASCII.", Message.PROGRESS);
-            FTP.setType(FTPTransferType.ASCII);
-
-            java.io.Reader in = new FileReader(file);
-            if(in == null) {
-                throw new IOException("Unable to buffer data");
-            }
-
-            this.log("Opening data stream...", Message.PROGRESS);
-            java.io.Writer out = FTP.putASCII(file.getName(), bookmark.status.isResume());
-            if(out == null) {
-                throw new IOException("Unable opening data stream");
-            }
-            this.log("Uploading "+file.getName()+"...", Message.PROGRESS);
-            this.upload(out, in);
-	    FTP.validateTransfer();
-        }
-    }
-
-     */
-
-    /**
-     * @param remote The absolute path of the file on the server
-     * @param local The name of the file to save locally
-     */
-
-    /*
-    private void getDirectory(Path remote, File local) throws SessionException, IOException {
-        java.util.List files = FTPParser.parseList(remote.getAbsolute(), FTP.dir());
-        File dir = new File(local, remote.getName());
-        //log.debug("making directory: "+dir.toString());
-        dir.mkdir();
-        java.util.Iterator i = files.iterator();
-        while(i.hasNext()) {
-            Path r = (Path)i.next();
-            if(r.isDirectory()) {
-                //log.debug("changing directory: "+r.toString());
-                FTP.chdir(r.getAbsolute());
-                this.getDirectory(r, dir);
-            }
-            if(r.isFile()) {
-                bookmark.setServerPath(r.getAbsolute());
-                bookmark.setLocalPath(new java.io.File(dir, r.getName()));
-                bookmark.status.setCurrent(0);
-                //log.debug("getting file:"+r.toString());
-                this.getFile(r.getName(), bookmark.getLocalTempPath());
-            }
-        }
-        //log.debug("upping directory");
-        FTP.cdup();
-    }
-
-     */
-
-    /**
-     * @param file The filename of the remote file
-     * @param local The absolute path where to store the file locally
-     */
-    /*
-    private void getFile(String file, File local) throws SessionException, IOException {
-        this.check();
-        bookmark.status.fireActiveEvent();
-        if(bookmark.getTransferType().equals(FTPTransferType.BINARY)) {
-            //this.log("Setting transfer mode to BINARY", Message.PROGRESS);
-            FTP.setType(FTPTransferType.BINARY);
-            bookmark.status.setLength((int)(FTP.size(file)));
-            OutputStream out = new FileOutputStream(local.toString(), bookmark.status.isResume());
-            if(out == null) {
-                throw new IOException("Unable to buffer data");
-            }
-            this.log("Opening data stream...", Message.PROGRESS);
-//	    public void get(OutputStream destStream, String remoteFile)
-            java.io.InputStream in = FTP.getBinary(file, bookmark.status.isResume() ? bookmark.status.getCurrent() : 0);
-            if(in == null) {
-                throw new IOException("Unable opening data stream");
-            }
-            this.log("Downloading "+file+"...", Message.PROGRESS);
-            this.download(in, out);
-           FTP.validateTransfer();
-        }
-        else if(bookmark.getTransferType().equals(FTPTransferType.ASCII)) {
-            //this.log("Setting transfer type to ASCII", Message.PROGRESS);
-            FTP.setType(FTPTransferType.ASCII);
-            bookmark.status.setLength((int)(FTP.size(file)));
-            java.io.Writer out = new FileWriter(local.toString(), bookmark.status.isResume());
-            if(out == null) {
-                throw new IOException("Unable to buffer data");
-            }
-            this.log("Opening data stream...", Message.PROGRESS);
-            java.io.Reader in = FTP.getASCII(file, bookmark.status.isResume() ? bookmark.status.getCurrent() : 0);
-            if(in == null) {
-                throw new IOException("Unable opening data stream");
-            }
-            this.log("Downloading "+file+"...", Message.PROGRESS);
-            this.download(in, out);
-            FTP.validateTransfer();
-        }
-        else {
-            throw new FTPException("Unknown transfer type");
-        }
-    }
-     */
-
-    /*
-    public void run() {
-        bookmark.status.fireActiveEvent();
-        log.debug("[FtpSession] run():" + action.toString() + "************************************");
-        try {
-            this.log("Checking status...", Message.PROGRESS);
-            if(action.toString().equals(TransferAction.QUIT)) {
-                if(FTP.isAlive()) {
-	                this.log("Disconnecting from '" + bookmark.getHost() + "'...", Message.PROGRESS);
-                    FTP.quit();
-                }
-                this.log("Disconnected", Message.PROGRESS);
-                return;
-            }
-            if(!FTP.isAlive()) {
-                this.connect();
-            }
-            try {
-                FTP.noop();
-            }
-            catch(IOException e) {
-                log.debug(e.getMessage());
-                this.connect();
-            }
-            catch(SessionException e) {
-                log.debug(e.getMessage());
-                this.connect();
-            }
-            this.check();
-            if(action.toString().equals(TransferAction.GET)) {
-                FTP.chdir(bookmark.getServerDirectoryAsString());
-                Path p = bookmark.getServerPath();
-                if(p.isFile()) {
-                    this.getFile(bookmark.getServerFilename(), bookmark.getLocalTempPath());
-                }
-                if(p.isDirectory()) {
-                    bookmark.status.ignoreEvents(true);
-                    this.getDirectory(p, new java.io.File(Preferences.instance().getProperty("download.path")));
-                    bookmark.status.ignoreEvents(false);
-                    bookmark.status.fireCompleteEvent();
-                }
-                FTP.quit();
-            }
-            else if(action.toString().equals(TransferAction.PUT)) {
-                FTP.chdir(bookmark.getCurrentPathAsString());
-                File f = (File)action.getParam();
-                if(f.isDirectory()) {
-                    bookmark.status.ignoreEvents(true);
-                    this.putDirectory(f);
-                    bookmark.status.ignoreEvents(false);
-                    bookmark.status.fireCompleteEvent();
-                }
-                if(f.isFile()) {
-                    this.putFile(f);
-                }
-                this.list(bookmark.getCurrentPath());
-            }
-            else if(action.toString().equals(TransferAction.LIST)) {
-                Path directory;
-                if(action.getParam() == null)
-                    directory = bookmark.getCurrentPath();
-                else
-                    directory = (Path)action.getParam();
-                this.log("Listing directory '" + directory + "'...", Message.PROGRESS);
-                this.list(directory);
-                //this.log("Listing of '" + directory + "' complete", Message.PROGRESS);
-            }
-            else if(action.toString().equals(TransferAction.MKDIR)) {
-                FTP.chdir(bookmark.getCurrentPathAsString());
-                this.log("Making directory '" + action.getParam() + "'...", Message.PROGRESS);
-                FTP.mkdir((String)action.getParam());
-                this.list(bookmark.getCurrentPath());
-            }
-            else if(action.toString().equals(TransferAction.DELE)) {
-                FTP.chdir(bookmark.getCurrentPathAsString());
-                this.log("Deleting '" + action.getParam() + "'...", Message.PROGRESS);
-                this.delete((Path)action.getParam());
-                //this.log("'" + action.getParam() + "' deleted", Message.PROGRESS);
-                this.list(bookmark.getCurrentPath());
-            }
-            else if(action.toString().equals(TransferAction.RNFR)) {
-                FTP.chdir(bookmark.getCurrentPathAsString());
-                Path from = (Path)action.getParam();
-                Path to = ((Path)action.getParam2()).getRelativePath(bookmark.getCurrentPath());
-                this.log("Renaming '" + from + "' to '" + to + "'...", Message.PROGRESS);
-                FTP.rename(from.getName(), to.getAbsolute());
-                this.list(bookmark.getCurrentPath());
-            }
-            else if(action.toString().equals(TransferAction.SITE)) {
-                String command = (String)action.getParam();
-                this.log("Running SITE command...", Message.PROGRESS);
-                FTP.site(command);
-                this.list(bookmark.getCurrentPath());
-                //this.log("Renaming '" + from.getName() + "' to '" + to.getName() + "'...", Message.PROGRESS);
-            }
-            else {
-                throw new FTPException("Unknown action: " + action.toString());
-            }
-            this.log("Command completed.", Message.PROGRESS);
-        }
-        catch (SessionException e) {
-            this.log("FTP Error: " + e.getReplyCode() + " " + e.getMessage(), Message.ERROR);
-            this.log("Incomplete", Message.PROGRESS);
-        }
-        catch (IOException e) {
-            this.log("IO Error: " + e.getMessage(), Message.ERROR);
-            this.log("Incomplete", Message.PROGRESS);
-        }
-        finally {
-            this.saveLog();
-            this.bookmark.status.ignoreEvents(false);
-            this.bookmark.status.fireStopEvent();
-        }
-    }
-
-     */
-
+    
     class FTPParser {
 	private final String months[] = {
 	    "JAN", "FEB", "MAR",
@@ -728,10 +462,8 @@ public class FTPSession extends Session {
 		    Path p = parseListLine(parent, line);
 		    String filename = p.getName();
 		    if(!(filename.equals(".") || filename.equals(".."))) {
-			if(!Preferences.instance().getProperty("ftp.showHidden").equals("true")) {
-			    if(filename.charAt(0) == '.') {
-				p.attributes.setVisible(false);
-			    }
+			if(filename.charAt(0) == '.' && !showHidden) {
+			    p.attributes.setVisible(false);
 			}
 			parsedList.add(p);
 		    }

@@ -1,3 +1,5 @@
+package ch.cyberduck.ui.cocoa;
+
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
@@ -16,21 +18,16 @@
  *  dkocher@cyberduck.ch
  */
 
-package ch.cyberduck.ui.cocoa;
-
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.Preferences;
-
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Preferences;
 import org.apache.log4j.Logger;
 
 /**
 * @version $Id$
  */
 public class CDConnectionSheet extends NSPanel {
-
     private static Logger log = Logger.getLogger(CDConnectionSheet.class);
 
     public NSPopUpButton protocolPopup;    

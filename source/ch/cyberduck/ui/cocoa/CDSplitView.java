@@ -1,3 +1,5 @@
+package ch.cyberduck.ui.cocoa;
+
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
@@ -16,18 +18,14 @@
  *  dkocher@cyberduck.ch
  */
 
-package ch.cyberduck.ui.cocoa;
-
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-
 import org.apache.log4j.Logger;
 
 /**
 * @version $Id$
  */
 public class CDSplitView extends NSSplitView {
-
     private static Logger log = Logger.getLogger(CDSplitView.class);
 
     public NSView browserView;
@@ -43,16 +41,6 @@ public class CDSplitView extends NSSplitView {
 	log.debug("CDSplitView");
     }
 
-    public boolean splitViewCanCollapseSubview( NSSplitView sender, NSView subview) {
-	log.debug("splitViewCanCollapseSubview");
-	return true;
-    }
-    
-    public boolean canCollapseSubview(NSView subview) {
-	log.debug("canCollapseSubview");
-	return (subview == transferView);
-    }
-
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
 	this.setDelegate(this);
@@ -63,8 +51,27 @@ public class CDSplitView extends NSSplitView {
 	this.adjustSubviews();
     }
 
+    // ----------------------------------------------------------
+    // Delegate methods
+    // ----------------------------------------------------------
+
+    public boolean splitViewCanCollapseSubview( NSSplitView sender, NSView subview) {
+	log.debug("splitViewCanCollapseSubview");
+	return true;
+    }
+
+    public boolean canCollapseSubview(NSView subview) {
+	log.debug("canCollapseSubview");
+	return (subview == transferView);
+    }
+    
     //	Returns the thickness of the divider. You can subclass NSSplitView and override this method to change the divider's size, if necessary.
 //    public float dividerThickness()
+
+    //public abstract float splitViewConstrainMaxSplitPosition( NSSplitView sender, float proposedMax, int offset)
+
+    //public abstract float splitViewConstrainMinSplitPosition( NSSplitView sender, float proposedMin, int offset)
+
 
 	    
 }

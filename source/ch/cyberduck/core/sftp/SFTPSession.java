@@ -80,6 +80,7 @@ public class SFTPSession extends Session {
 	    host.callObservers(this);
 	    List files = null;
 	    SftpFile workingDirectory = null;
+	    boolean showHidden = Preferences.instance().getProperty("ftp.showHidden").equals("true");
 	    //@todo throw exception if we are not a directory
 	    try {
 		SFTPSession.this.check();
@@ -95,23 +96,18 @@ public class SFTPSession extends Session {
 		while(i.hasNext()) {
 		    SftpFile x = (SftpFile)i.next();
 		    if(!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
-			SFTPFile f = new SFTPFile(this.getAbsolute(), x.getFilename());
-			log.debug(f.getName());
-			//don't use this, because like this no cached data is used //SFTPFile f = new SFTPFile(x.getAbsolutePath());
-			if(!Preferences.instance().getProperty("ftp.showHidden").equals("true")) {
-			    if(f.getName().charAt(0) == '.') {
-				f.attributes.setVisible(false);
-			    }
+			SFTPFile p = new SFTPFile(this.getAbsolute(), x.getFilename());
+			//log.debug(p.getName());
+			if(p.getName().charAt(0) == '.' && !showHidden) {
+			    p.attributes.setVisible(false);
 			}
-			f.attributes.setOwner(x.getAttributes().getUID().toString());
-			f.attributes.setGroup(x.getAttributes().getGID().toString());
-			f.attributes.setSize(x.getAttributes().getSize().intValue());
-			f.attributes.setModified(x.getAttributes().getModifiedTime().longValue());
-			f.attributes.setMode(x.getAttributes().getPermissionsString());
-			f.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
-			//			    SFTPSession.this.log(f.getName(), Message.PROGRESS);
-   //			    log.debug("Adding "+f.getAbsolute()+" to file listing.");
-			files.add(f);
+			p.attributes.setOwner(x.getAttributes().getUID().toString());
+			p.attributes.setGroup(x.getAttributes().getGID().toString());
+			p.attributes.setSize(x.getAttributes().getSize().intValue());
+			p.attributes.setModified(x.getAttributes().getModifiedTime().longValue());
+			p.attributes.setMode(x.getAttributes().getPermissionsString());
+			p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
+			files.add(p);
 		    }
 		}
 		SFTPSession.this.log("Listing complete", Message.PROGRESS);
@@ -407,7 +403,7 @@ import com.sshtools.j2ssh.configuration.SshConnectionProperties
 
 	// Try the authentication
 	int result = SSH.authenticate(auth);
-	this.log(SSH.getAuthenticationBanner(1), Message.TRANSCRIPT);
+//	this.log(SSH.getAuthenticationBanner(100), Message.TRANSCRIPT);
 	// Evaluate the result
 	if (result == AuthenticationProtocolState.COMPLETE) {
 	    this.log("Login sucessfull", Message.PROGRESS);

@@ -56,7 +56,8 @@ public class CDHostView extends NSTableView implements Observer {
 	this.setDelegate(this);
 	this.setAutoresizesAllColumnsToFit(true);
 	this.model = (CDHostTableDataSource)this.dataSource();
-//@todo	this.tableColumnWithIdentifier("STATUS").setDataCell(new NSImageCell());;
+	if(this.tableColumnWithIdentifier("STATUS") != null)
+	    this.tableColumnWithIdentifier("STATUS").setDataCell(new NSImageCell());;
 //	this.tableColumnWithIdentifier("HOST").setDataCell(new CDHostCell());;
     }
 
