@@ -35,10 +35,10 @@ public class LoginTest extends TestCase {
 								"dkocher", 
 								"changeme");
 		assertTrue(login.hasReasonableValues());
-		login.setUsername(null);
-		assertFalse(login.hasReasonableValues());
-		login.setPassword(null);
-		assertFalse(login.hasReasonableValues());
+//		login.setUsername(null);
+//		assertFalse(login.hasReasonableValues());
+//		login.setPassword(null);
+//		assertFalse(login.hasReasonableValues());
 	}
 	
 	public void testLoginWithoutUsername() {
@@ -65,6 +65,13 @@ public class LoginTest extends TestCase {
 	public void testLoginAnonymous2() {
 		Login login = new Login("example.net", 
 								Preferences.instance().getProperty("ftp.anonymous.name"), 
+								null);
+		assertTrue(login.hasReasonableValues());
+	}
+
+	public void testLoginAnonymous3() {
+		Login login = new Login("example.net", 
+								"user:pass", 
 								null);
 		assertTrue(login.hasReasonableValues());
 	}

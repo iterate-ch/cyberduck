@@ -52,6 +52,7 @@ public class CDQueueController implements Observer, Validator {
 				log.fatal("Couldn't load Queue.nib");
 			}
 		}
+		instance.window().makeKeyAndOrderFront(null);
 		return instance;
 	}
 

@@ -157,6 +157,8 @@ public class SFTPSession extends Session {
 	private synchronized void login() throws IOException {
 		log.debug("login");
 		Login credentials = host.getLogin();
+//		List authMethods = SSH.getAvailableAuthMethods(credentials.getUsername());
+		
 		if (host.getLogin().usesPasswordAuthentication()) {// password authentication
 			if(credentials.check()) {
 				this.log("Authenticating as '" + credentials.getUsername() + "'", Message.PROGRESS);
@@ -168,8 +170,8 @@ public class SFTPSession extends Session {
 				// Try the authentication
 				int result = SSH.authenticate(auth);
 				if (AuthenticationProtocolState.COMPLETE == result) {
-					credentials.addPasswordToKeychain();
 					this.log("Login successfull", Message.PROGRESS);
+					credentials.addPasswordToKeychain();
 				}
 				else {
 					this.log("Login failed", Message.PROGRESS);
@@ -194,11 +196,14 @@ public class SFTPSession extends Session {
 			// If the private key is passphrase protected then ask for the passphrase
 			String passphrase = null;
 			if (keyFile.isPassphraseProtected()) {
-				if (host.getLogin().promptUser("The Private Key is password protected. Enter the passphrase for the key file '" + credentials.getPrivateKeyFile() + "'.")) {
-					passphrase = credentials.getPassword();
-				}
-				else {
-					throw new SshException("Login as user " + credentials.getUsername() + " failed.");
+				passphrase = credentials.getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
+				if(null == passphrase || passphrase.equals("")) {
+					if (host.getLogin().promptUser("The Private Key is password protected. Enter the passphrase for the key file '" + credentials.getPrivateKeyFile() + "'.")) {
+						passphrase = credentials.getPassword();
+					}
+					else {
+						throw new SshException("Login as user " + credentials.getUsername() + " failed.");
+					}
 				}
 			}
 			// Get the key
@@ -209,6 +214,9 @@ public class SFTPSession extends Session {
 			// Evaluate the result
 			if (AuthenticationProtocolState.COMPLETE == result) {
 				this.log("Login sucessfull", Message.PROGRESS);
+				if (keyFile.isPassphraseProtected()) {
+					credentials.addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(), passphrase);
+				}
 			}
 			else {
 				this.log("Login failed", Message.PROGRESS);

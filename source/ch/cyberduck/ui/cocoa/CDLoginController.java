@@ -109,7 +109,7 @@ public class CDLoginController extends LoginController {
 		        new Class[]{NSWindow.class, int.class, Object.class}
 		    ), // did end selector
 		    l); //contextInfo
-		this.window.makeKeyAndOrderFront(null);
+		this.window().makeKeyAndOrderFront(null);
 		while (!done) {
 			try {
 				log.debug("Sleeping...");

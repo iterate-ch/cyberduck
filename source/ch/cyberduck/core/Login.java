@@ -51,7 +51,7 @@ public class Login {
 	}
 
 	//char *getpwdfromkeychain( const char *service, const char *account, OSStatus *error );
-	native String getPasswordFromKeychain(String service, String account);
+	public native String getPasswordFromKeychain(String service, String account);
 
 	public String getPasswordFromKeychain() {
 //		log.debug("getPasswordFromKeychain:" + this.toString());
@@ -59,7 +59,7 @@ public class Login {
 	}
 
 	//void addpwdtokeychain( const char *service, const char *account, const char *password );
-	native void addPasswordToKeychain(String service, String account, String password);
+	public native void addPasswordToKeychain(String service, String account, String password);
 
 	public void addPasswordToKeychain() {
 //		log.debug("addPasswordToKeychain:" + this.toString());
@@ -148,8 +148,8 @@ public class Login {
 			if(this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"))) {
 				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 			}
-			else
-				this.pass = null;
+//			else
+//				this.pass = null;
 		}
 		else 
 			this.pass = pass;

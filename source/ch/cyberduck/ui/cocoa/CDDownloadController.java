@@ -60,11 +60,12 @@ public class CDDownloadController {
 		if (false == NSApplication.loadNibNamed("Download", this)) {
 			log.fatal("Couldn't load Download.nib");
 		}
+		this.window().makeKeyAndOrderFront(null);
 	}
 
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
-		CDQueueController.instance().window().makeKeyAndOrderFront(null);
+		CDQueueController.instance();
 		NSApplication.sharedApplication().beginSheet(
 		    this.window, //sheet
 		    CDQueueController.instance().window(),

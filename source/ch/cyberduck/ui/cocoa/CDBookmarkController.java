@@ -58,7 +58,6 @@ public class CDBookmarkController {
 	}
 	
 	private NSPopUpButton protocolPopup; // IBOutlet
-
 	public void setProtocolPopup(NSPopUpButton protocolPopup) {
 		this.protocolPopup = protocolPopup;
 		this.protocolPopup.setTarget(this);
@@ -82,47 +81,52 @@ public class CDBookmarkController {
 	}
 
 	private NSTextField nicknameField; // IBOutlet
-
 	public void setNicknameField(NSTextField nicknameField) {
 		this.nicknameField = nicknameField;
 	}
 
 	private NSTextField hostField; // IBOutlet
-
 	public void setHostField(NSTextField hostField) {
 		this.hostField = hostField;
 	}
 
+	private NSTextField portField; // IBOutlet
+	public void setPortField(NSTextField portField) {
+		this.portField = portField;
+	}
+	
 	private NSTextField pathField; // IBOutlet
-
 	public void setPathField(NSTextField pathField) {
 		this.pathField = pathField;
 	}
 
 	private NSTextField urlField; // IBOutlet
-
 	public void setUrlField(NSTextField urlField) {
 		this.urlField = urlField;
 	}
 
 	private NSTextField usernameField; // IBOutlet
-
 	public void setUsernameField(NSTextField usernameField) {
 		this.usernameField = usernameField;
 	}
 
 	private static NSMutableArray instances = new NSMutableArray();
+	
+	private NSTableView callback;
 
 	// ----------------------------------------------------------
 	// Constructors
 	// ----------------------------------------------------------
 
-	public CDBookmarkController(Host bookmark) {
-		this.host = bookmark;
+	public CDBookmarkController(NSTableView callback, Host host) {
+		this.callback = callback;
+		this.host = host;
+//		this.host = CDBookmarksImpl.instance().getItem(bookmarkTableView.selectedRow());
 		instances.addObject(this);
 		if(false == NSApplication.loadNibNamed("Bookmark", this)) {
 			log.fatal("Couldn't load Bookmark.nib");
 		}
+		this.window().makeKeyAndOrderFront(null);
 	}
 
 	public void awakeFromNib() {
@@ -131,28 +135,33 @@ public class CDBookmarkController {
 		this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 		this.window.setTitle(this.host.getNickname());
 		(NSNotificationCenter.defaultCenter()).addObserver(
-		    this,
-		    new NSSelector("hostInputDidEndEditing", new Class[]{NSNotification.class}),
-		    NSControl.ControlTextDidChangeNotification,
-		    hostField);
+														   this,
+														   new NSSelector("hostInputDidEndEditing", new Class[]{NSNotification.class}),
+														   NSControl.ControlTextDidChangeNotification,
+														   hostField);
 		(NSNotificationCenter.defaultCenter()).addObserver(
-		    this,
-		    new NSSelector("pathInputDidEndEditing", new Class[]{NSNotification.class}),
-		    NSControl.ControlTextDidChangeNotification,
-		    pathField);
+														   this,
+														   new NSSelector("portInputDidEndEditing", new Class[]{NSNotification.class}),
+														   NSControl.ControlTextDidChangeNotification,
+														   portField);
 		(NSNotificationCenter.defaultCenter()).addObserver(
-		    this,
-		    new NSSelector("nicknameInputDidEndEditing", new Class[]{NSNotification.class}),
-		    NSControl.ControlTextDidChangeNotification,
-		    nicknameField);
+														   this,
+														   new NSSelector("pathInputDidEndEditing", new Class[]{NSNotification.class}),
+														   NSControl.ControlTextDidChangeNotification,
+														   pathField);
 		(NSNotificationCenter.defaultCenter()).addObserver(
-		    this,
-		    new NSSelector("usernameInputDidEndEditing", new Class[]{NSNotification.class}),
-		    NSControl.ControlTextDidChangeNotification,
-		    usernameField);
+														   this,
+														   new NSSelector("nicknameInputDidEndEditing", new Class[]{NSNotification.class}),
+														   NSControl.ControlTextDidChangeNotification,
+														   nicknameField);
+		(NSNotificationCenter.defaultCenter()).addObserver(
+														   this,
+														   new NSSelector("usernameInputDidEndEditing", new Class[]{NSNotification.class}),
+														   NSControl.ControlTextDidChangeNotification,
+														   usernameField);
 		this.updateFields();
 	}
-
+	
 	private NSTextField pkLabel;
 
 	public void setPkLabel(NSTextField pkLabel) {
@@ -188,7 +197,7 @@ public class CDBookmarkController {
 		log.debug("pkSelectionPanelDidEnd");
 		sheet.orderOut(null);
 		switch (returnCode) {
-			case (NSPanel.OKButton):
+			case (NSAlertPanel.DefaultReturn):
 				{
 					NSArray selected = sheet.filenames();
 					java.util.Enumeration enumerator = selected.objectEnumerator();
@@ -199,7 +208,7 @@ public class CDBookmarkController {
 					}
 					break;
 				}
-			case (NSPanel.CancelButton):
+			case (NSAlertPanel.AlternateReturn):
 				{
 					this.host.getLogin().setPrivateKeyFile(null);
 					this.pkCheckbox.setState(NSCell.OffState);
@@ -215,6 +224,12 @@ public class CDBookmarkController {
 		this.updateFields();
 	}
 
+	public void portInputDidEndEditing(NSNotification sender) {
+		log.debug("hostInputDidEndEditing");
+		this.host.setPort(Integer.parseInt(portField.stringValue()));
+		this.updateFields();
+	}
+	
 	public void pathInputDidEndEditing(NSNotification sender) {
 		log.debug("pathInputDidEndEditing");
 		this.host.setDefaultPath(pathField.stringValue());
@@ -237,6 +252,7 @@ public class CDBookmarkController {
 		this.window.setTitle(this.host.getNickname());
 		this.urlField.setStringValue(this.host.getURL());
 		this.hostField.setStringValue(this.host.getHostname());
+		this.portField.setStringValue(""+this.host.getPort());
 		this.nicknameField.setStringValue(this.host.getNickname());
 		this.pathField.setStringValue(this.host.getDefaultPath());
 		this.usernameField.setStringValue(this.host.getLogin().getUsername());
@@ -250,5 +266,6 @@ public class CDBookmarkController {
 			this.pkCheckbox.setState(NSCell.OffState);
 			this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
 		}
+		this.callback.reloadData();
 	}
 }

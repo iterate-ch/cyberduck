@@ -241,8 +241,10 @@ public class Queue extends Observable implements Observer { //Thread {
 	 * @pre The thread must be running
 	 */
 	public void cancel() {
-		this.running = false;
-		currentJob.status.setCanceled(true);
+		if(this.isRunning()) {
+			this.running = false;
+			currentJob.status.setCanceled(true);
+		}
 	}
 
 	/**

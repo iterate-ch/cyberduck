@@ -50,6 +50,7 @@ public class CDPreferencesController {
 			if (false == NSApplication.loadNibNamed("Preferences", instance)) {
 				log.fatal("Couldn't load Preferences.nib");
 			}
+			instance.window().makeKeyAndOrderFront(null);
 		}
 		return instance;
 	}
@@ -442,7 +443,6 @@ public class CDPreferencesController {
 		Preferences.instance().setProperty("ssh.CSAuthentication", sender.titleOfSelectedItem());
 	}
 
-
 	private NSButton downloadPathButton; //IBOutlet
 
 	public void setDownloadPathButton(NSButton downloadPathButton) {
@@ -461,7 +461,7 @@ public class CDPreferencesController {
 
 	public void openPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
 		switch (returnCode) {
-			case (NSPanel.OKButton):
+			case (NSAlertPanel.DefaultReturn):
 			{
 				NSArray selected = sheet.filenames();
 				String filename;
@@ -471,7 +471,7 @@ public class CDPreferencesController {
 				}
 				break;
 			}
-			case (NSPanel.CancelButton):
+			case (NSAlertPanel.AlternateReturn):
 			{
 				break;
 			}

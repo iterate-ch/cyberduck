@@ -227,7 +227,7 @@ public class CDConnectionController implements Observer {
 	public void pkSelectionPanelDidEnd(NSOpenPanel window, int returnCode, Object contextInfo) {
 		window.orderOut(null);
 		switch (returnCode) {
-			case (NSPanel.OKButton):
+			case (NSAlertPanel.DefaultReturn):
 				{
 					NSArray selected = window.filenames();
 					java.util.Enumeration enumerator = selected.objectEnumerator();
@@ -237,7 +237,7 @@ public class CDConnectionController implements Observer {
 					this.passField.setEnabled(false);
 					break;
 				}
-			case (NSPanel.CancelButton):
+			case (NSAlertPanel.AlternateReturn):
 				{
 					this.passField.setEnabled(true);
 					this.pkCheckbox.setState(NSCell.OffState);

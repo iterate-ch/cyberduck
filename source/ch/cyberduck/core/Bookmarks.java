@@ -30,7 +30,6 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class Bookmarks {
-
 	protected List data = new ArrayList();
 
 	public Bookmarks() {

@@ -134,6 +134,7 @@ public class CDInfoController {
 		if(false == NSApplication.loadNibNamed("Info", this)) {
 			log.fatal("Couldn't load Info.nib");
 		}
+		this.window().makeKeyAndOrderFront(null);
 	}
 
 	public void awakeFromNib() {

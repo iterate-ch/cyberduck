@@ -367,9 +367,10 @@ public class CDBrowserController implements Observer {
 
 	public void editBookmarkButtonClicked(Object sender) {
 		this.bookmarkDrawer.open();
-		CDBookmarkController controller = new CDBookmarkController(CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow()));
-		controller.window().makeKeyAndOrderFront(null);
-		this.bookmarkTable.reloadData();
+		CDBookmarkController controller = new CDBookmarkController(bookmarkTable, 
+																   CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow()));
+//		controller.window().makeKeyAndOrderFront(null);
+//		this.bookmarkTable.reloadData();
 	}
 
 	private NSButton addBookmarkButton; // IBOutlet
@@ -393,9 +394,9 @@ public class CDBrowserController implements Observer {
 			item = new Host("", new Login("", null, null));
 		}
 		CDBookmarksImpl.instance().addItem(item);
-		CDBookmarkController controller = new CDBookmarkController(item);
-		controller.window().makeKeyAndOrderFront(null);
-		this.bookmarkTable.reloadData();
+		CDBookmarkController controller = new CDBookmarkController(bookmarkTable, item);
+//		this.window().makeKeyAndOrderFront(null);
+//		this.bookmarkTable.reloadData();
 	}
 
 	private NSButton removeBookmarkButton; // IBOutlet
@@ -411,8 +412,19 @@ public class CDBrowserController implements Observer {
 
 	public void removeBookmarkButtonClicked(Object sender) {
 		this.bookmarkDrawer.open();
-		CDBookmarksImpl.instance().removeItem(bookmarkTable.selectedRow());
-		this.bookmarkTable.reloadData();
+		switch(NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark"), 
+											 NSBundle.localizedString("Do you want to delete the selected bookmark?"), 
+											 NSBundle.localizedString("Delete"), 
+											 NSBundle.localizedString("Cancel"),
+											 null)) {
+			case NSAlertPanel.DefaultReturn :
+				CDBookmarksImpl.instance().removeItem(bookmarkTable.selectedRow());
+				this.bookmarkTable.reloadData();
+				break;
+			case NSAlertPanel.AlternateReturn :
+				
+				break;
+		}
 	}
 
 	// ----------------------------------------------------------
@@ -448,7 +460,6 @@ public class CDBrowserController implements Observer {
 	// ----------------------------------------------------------
 
 	private NSDrawer logDrawer; // IBOutlet
-//	private static boolean logDrawerOpen;
 
 	public void setLogDrawer(NSDrawer logDrawer) {
 		this.logDrawer = logDrawer;
@@ -457,11 +468,9 @@ public class CDBrowserController implements Observer {
 	public void toggleLogDrawer(Object sender) {
 		logDrawer.toggle(this);
 		Preferences.instance().setProperty("logDrawer.isOpen", logDrawer.state() == NSDrawer.OpenState || logDrawer.state() == NSDrawer.OpeningState);
-//		logDrawerOpen = logDrawer.state() == NSDrawer.OpenState || logDrawer.state() == NSDrawer.OpeningState;
 	}
 
 	private NSDrawer bookmarkDrawer; // IBOutlet
-//	private static boolean bookmarkDrawerOpen;
 
 	public void setBookmarkDrawer(NSDrawer bookmarkDrawer) {
 		this.bookmarkDrawer = bookmarkDrawer;
@@ -470,7 +479,6 @@ public class CDBrowserController implements Observer {
 	public void toggleBookmarkDrawer(Object sender) {
 		bookmarkDrawer.toggle(this);
 		Preferences.instance().setProperty("bookmarkDrawer.isOpen", bookmarkDrawer.state() == NSDrawer.OpenState || bookmarkDrawer.state() == NSDrawer.OpeningState);
-//		bookmarkDrawerOpen = bookmarkDrawer.state() == NSDrawer.OpenState || bookmarkDrawer.state() == NSDrawer.OpeningState;
 	}
 
 	// ----------------------------------------------------------
@@ -518,6 +526,7 @@ public class CDBrowserController implements Observer {
 		if (false == NSApplication.loadNibNamed("Browser", this)) {
 			log.fatal("Couldn't load Browser.nib");
 		}
+		this.window().makeKeyAndOrderFront(null);
 	}
 
 	public void awakeFromNib() {
@@ -651,7 +660,7 @@ public class CDBrowserController implements Observer {
 			Path path = browserModel.getEntry(selected);
 			//			Path path = browserModel.getEntry(browserTable.selectedRow());
 			CDInfoController controller = new CDInfoController(path);
-			controller.window().makeKeyAndOrderFront(null);
+//			controller.window().makeKeyAndOrderFront(null);
 		}
 	}
 
@@ -736,7 +745,7 @@ public class CDBrowserController implements Observer {
 	public void uploadPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
 		sheet.orderOut(null);
 		switch (returnCode) {
-			case NSPanel.OKButton:
+			case (NSAlertPanel.DefaultReturn):
 				Path parent = pathController.workdir();
 				// selected files on the local filesystem
 				NSArray selected = sheet.filenames();
@@ -750,7 +759,7 @@ public class CDBrowserController implements Observer {
 					CDQueueController.instance().startItem(queue, (Observer)this);
 				}
 				break;
-			case NSPanel.CancelButton:
+			case (NSAlertPanel.AlternateReturn):
 				break;
 		}
 	}

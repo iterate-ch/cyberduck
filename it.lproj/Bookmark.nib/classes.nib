@@ -11,6 +11,7 @@
                 pathField = NSTextField; 
                 pkCheckbox = NSButton; 
                 pkLabel = NSTextField; 
+                portField = NSTextField; 
                 protocolPopup = NSPopUpButton; 
                 urlField = NSTextField; 
                 usernameField = NSTextField; 

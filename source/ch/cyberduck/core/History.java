@@ -23,14 +23,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public abstract class History {
-	private static Logger log = Logger.getLogger(History.class);
-
 	private Map data = new HashMap();
 
 	public History() {
@@ -53,19 +49,16 @@ public abstract class History {
 	}
 
 	public void removeItem(int index) {
-		log.debug("removeItem:" + index);
 		this.data.remove(this.getItem(index).getHostname());
 		this.save();
 	}
 
 	public void removeItem(Host item) {
-		log.debug("removeItem:" + item);
 		this.data.remove(item.getHostname());
 		this.save();
 	}
 
 	public Host getItem(int index) {
-		log.debug("getItem:" + index);
 		Host h = (Host) this.values().toArray()[index];
 		return this.getItem(h.getHostname());
 	}

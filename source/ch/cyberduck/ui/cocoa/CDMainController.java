@@ -228,23 +228,23 @@ public class CDMainController {
 	}
 
 	public void preferencesMenuClicked(Object sender) {
-		CDPreferencesController.instance().window().makeKeyAndOrderFront(null);
+		CDPreferencesController.instance();
 	}
 
 	public CDDownloadController newDownloadMenuClicked(Object sender) {
 		CDDownloadController controller = new CDDownloadController();
-		controller.window().makeKeyAndOrderFront(null);
+//		controller.window().makeKeyAndOrderFront(null);
 		return controller;
 	}
 
 	public CDBrowserController newBrowserMenuClicked(Object sender) {
 		CDBrowserController controller = new CDBrowserController();
-		controller.window().makeKeyAndOrderFront(null);
+//		controller.window().makeKeyAndOrderFront(null);
 		return controller;
 	}
 
 	public void showTransferQueueClicked(Object sender) {
-		CDQueueController.instance().window().makeKeyAndOrderFront(null);
+		CDQueueController.instance();
 	}
 
 	// ----------------------------------------------------------

@@ -54,16 +54,13 @@ public class Codec {
 	}
 	
 	public static String decode(byte[] text, String encoding) {
-		String decoded = null;
 		try {
-			decoded = new String(text, encoding);
+			return new String(text, encoding);
 		}
 		catch (java.io.UnsupportedEncodingException e) {
 			log.error(e.getMessage());
 		}
-		finally {
-			return decoded;
-		}
+		return new String(text);
 	}
 	
 
@@ -73,17 +70,17 @@ public class Codec {
 	
 	/**
 	 * Encodes this String into a sequence of bytes using the named charset, storing the result into a new byte array.
+	 * If the encoding with the desired encoding fails, we return the bytes with the default encoding$
+	 * @param text The string to encode
+	 * @param encoding The desired encoding
 	 */
 	public static byte[] encode(String text, String encoding) {
-		byte[] encoded = null;
 		try {
-			encoded = text.getBytes(encoding);
+			return text.getBytes(encoding);
 		}
 		catch (java.io.UnsupportedEncodingException e) {
 			log.error(e.getMessage());
 		}
-		finally {
-			return encoded;
-		}
+		return text.getBytes();
 	}
 }
