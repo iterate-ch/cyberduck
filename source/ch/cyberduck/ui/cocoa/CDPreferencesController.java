@@ -184,7 +184,7 @@ public class CDPreferencesController {
     // Notifications
     // ----------------------------------------------------------
     public void loginFieldDidChange(NSNotification sender) {
-	Preferences.instance().setProperty("connection.login.name", anonymousField.stringValue());
+	Preferences.instance().setProperty("connection.login.name", loginField.stringValue());
     }
 
     public void anonymousFieldDidChange(NSNotification sender) {
