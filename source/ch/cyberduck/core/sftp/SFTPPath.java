@@ -116,7 +116,7 @@ public class SFTPPath extends Path {
 					else {
 						p.attributes.setOwner(x.getAttributes().getUID().toString());
 						p.attributes.setGroup(x.getAttributes().getGID().toString());
-						p.status.setSize(x.getAttributes().getSize().longValue());
+						p.status.setSize(x.getAttributes().getSize().intValue());
 						p.attributes.setModified(Long.parseLong(x.getAttributes().getModifiedTime().toString())*1000L);
 						p.attributes.setMode(x.getAttributes().getPermissionsString());
 						p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
@@ -321,7 +321,7 @@ public class SFTPPath extends Path {
 			}
 			else if(isFile()) {
 				SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-				this.status.setSize(p.getAttributes().getSize().longValue());
+				this.status.setSize(p.getAttributes().getSize().intValue());
 				queue.add(this);
 			}
 			else
@@ -375,7 +375,7 @@ public class SFTPPath extends Path {
 			}
 		}
 		else if(this.getLocal().isFile()) {
-			this.status.setSize(this.getLocal().length());
+			this.status.setSize((int)this.getLocal().length());
 			queue.add(this);
 		}
 		else

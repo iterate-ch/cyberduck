@@ -279,7 +279,7 @@ public class FTPPath extends Path {
 			}
 		}
 		else if(this.isFile()) {
-			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
+			this.status.setSize((int)this.session.FTP.size(this.getAbsolute()));
 			queue.add(this);
 		}
 		else
@@ -347,7 +347,7 @@ public class FTPPath extends Path {
 			}
 		}
 		else if(this.getLocal().isFile()) {
-			this.status.setSize(this.getLocal().length());
+			this.status.setSize((int)this.getLocal().length());
 			queue.add(this);
 		}
 		else

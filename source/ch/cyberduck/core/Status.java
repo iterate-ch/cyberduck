@@ -76,8 +76,7 @@ public class Status extends Observable implements Serializable {
     /**
 		* @param size the size of file in bytes.
      */
-    public void setSize(long size) {
-		//	log.debug("setSize:"+size);
+    public void setSize(int size) {
 		this.size = size;
     }
 	
@@ -85,7 +84,6 @@ public class Status extends Observable implements Serializable {
 		* @return length the size of file in bytes.
      */
     public long getSize() {
-		//	log.debug("getSize:"+size);
 		return size;
     }
 	
@@ -97,16 +95,14 @@ public class Status extends Observable implements Serializable {
 		* @return The size of the file
      */
     public static String getSizeAsString(long size) {
-//		if(size <= 0)
-//			return null;
 		if(size < KILO)
 			return size + "B";
 		else if(size < MEGA)
-			return new Long(size/KILO).intValue() + "kB";
+			return new Long(size/KILO).longValue() + "kB";
 		else if(size < GIGA)
-			return new Long(size/MEGA).intValue() + "MB";
+			return new Long(size/MEGA).longValue() + "MB";
 		else
-			return new Long(size/GIGA).intValue() + "GB";
+			return new Long(size/GIGA).longValue() + "GB";
     }
     
     public void setComplete(boolean complete) {
@@ -134,7 +130,6 @@ public class Status extends Observable implements Serializable {
     }
     
     public long getCurrent() {
-		//	log.debug("getCurrent:"+current);
 		return this.current;
     }
 	
@@ -145,24 +140,7 @@ public class Status extends Observable implements Serializable {
 		this.current = current;
 		this.callObservers(new Message(Message.DATA, this));
     }
-	
-    public static long parseLong(long d) {
-		//log.debug("Status.parseDouble(" + d + ")");
-		String s = Long.toString(d);
-        if(s.indexOf(".") != -1) {
-			int l = s.substring(s.indexOf(".")).length();
-            if(l > 3) {
-				return Long.parseLong(s.substring(0, s.indexOf('.') + 3));
-			}
-			else {
-				return Long.parseLong(s.substring(0, s.indexOf('.') + l));
-			}
-		}
-		else {
-			return d;
-		}
-    }
-    
+		
     public void setResume(boolean resume) {
 		this.resume = resume;
 		if(!resume)

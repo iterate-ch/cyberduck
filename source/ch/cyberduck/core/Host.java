@@ -192,7 +192,7 @@ public class Host {
     
     public void setNickname(String nickname) {
 //		log.debug("setNickname:"+nickname);
-        this.nickname = nickname != null ? nickname : this.getHostname()+" ("+this.getProtocol.toUppercase()+")";
+        this.nickname = nickname != null ? nickname : this.getHostname()+" ("+this.getProtocol().toUpperCase()+")";
     }
 	
     public String getHostname() {

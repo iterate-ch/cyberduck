@@ -188,7 +188,7 @@ public class HTTPPath extends Path {
 			Header lengthHeader = GET.getResponseHeader("Content-Length");
 			if(lengthHeader != null) {
 				try {
-					this.status.setSize(Long.parseLong(lengthHeader.getValue()));
+					this.status.setSize(Integer.parseInt(lengthHeader.getValue()));
 				}
 				catch(NumberFormatException e) {
 					log.error(e.getMessage());
@@ -199,7 +199,7 @@ public class HTTPPath extends Path {
 			if(rangeHeader != null) {
 				try {
 					String rangeValue = rangeHeader.getValue();
-					this.status.setSize(Long.parseLong(rangeValue.substring(rangeValue.indexOf("/") + 1)));
+					this.status.setSize(Integer.parseInt(rangeValue.substring(rangeValue.indexOf("/") + 1)));
 				}
 				catch(NumberFormatException e) {
 					log.error(e.getMessage());

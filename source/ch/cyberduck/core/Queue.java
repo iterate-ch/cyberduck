@@ -98,9 +98,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		* The this has been canceled from processing for any reason
      */
     private boolean running;
-	
-//	private boolean initialized;
-	
+		
     /*
      * 	current speed (bytes/second)
      */
@@ -110,19 +108,22 @@ public class Queue extends Observable implements Observer { //Thread {
      */
 	//    private transient double overall;
 
-    private int timeLeft = -1;
+    private long timeLeft = -1;
 	private long current = -1;
 	private long size = -1;
 	
 	private String status;
 	
 	public Queue(Path root, int kind) {
+		log.debug("Queue");
 		this.root = root;
 		this.kind = kind;
 		this.init();
 	}
 	
 	public Queue(NSDictionary dict) {
+		log.debug("Queue");
+		
 		Host host = new Host((NSDictionary)dict.objectForKey("Host"));
 		NSArray elements = (NSArray)dict.objectForKey("Roots");
 		for(int i = 0; i < elements.count(); i++) {
@@ -143,36 +144,33 @@ public class Queue extends Observable implements Observer { //Thread {
 				log.error("Unknown protocol");
 			}
 		}
-		this.kind = ((Integer)dict.objectForKey("Kind")).intValue();
+		this.kind = Integer.parseInt((String)dict.objectForKey("Kind"));
 		this.status = (String)dict.objectForKey("Status");
-		this.size = ((Long)dict.objectForKey("Size")).longValue();
-		this.current = ((Long)dict.objectForKey("Current")).longValue();
+		this.size = Integer.parseInt((String)dict.objectForKey("Size"));
+		this.current = Integer.parseInt((String)dict.objectForKey("Current"));
 		this.init();
-	}
-	
-	private void init() {
-	    this.calendar.set(Calendar.HOUR, 0);
-		this.calendar.set(Calendar.MINUTE, 0);
-		this.calendar.set(Calendar.SECOND, 0);		
 	}
 	
 	public NSDictionary getAsDictionary() {
 		NSMutableDictionary dict = new NSMutableDictionary();
 		dict.setObjectForKey(this.status, "Status");
-		dict.setObjectForKey(new Integer(this.kind()), "Kind");
-		dict.setObjectForKey(new Long(this.getSize()), "Size");
-		dict.setObjectForKey(new Long(this.getCurrent()), "Current");
+		dict.setObjectForKey(this.kind()+"", "Kind");
+		dict.setObjectForKey(this.getSize()+"", "Size");
+		dict.setObjectForKey(this.getCurrent()+"", "Current");
 		dict.setObjectForKey(this.root.getHost().getAsDictionary(), "Host");
-//		Iterator i = this.getRoots().iterator();
 		NSMutableArray list = new NSMutableArray();
-//		while(i.hasNext()) {
-//			list.addObject(((Path)i.next()).getAsDictionary());
-//		}
 		list.addObject(this.root.getAsDictionary());
 		dict.setObjectForKey(list, "Roots");
 		return dict;
 	}
 	
+	private void init() {
+		log.debug("init");
+	    this.calendar.set(Calendar.HOUR, 0);
+		this.calendar.set(Calendar.MINUTE, 0);
+		this.calendar.set(Calendar.SECOND, 0);		
+	}
+		
     public int kind() {
 		return this.kind;
     }
@@ -195,16 +193,9 @@ public class Queue extends Observable implements Observer { //Thread {
 	
     private void process() {
 		log.debug("process");
-		//		int i = 0;
-		//		Iterator rootIterator = roots.iterator();
-		//		while(rootIterator.hasNext()) {
-		//Iterating over all the files in the this
 		if(!this.isCanceled()) {
-//			Path root = (Path)rootIterator.next();
 			root.getSession().addObserver(this);
-			//			this.callObservers(root);
 			Iterator elements = jobs.iterator();
-//			Iterator elements = jobs[i].iterator();
 			while(elements.hasNext() && !this.isCanceled()) {
 				this.progressTimer.start();
 				this.leftTimer.start();
@@ -234,8 +225,6 @@ public class Queue extends Observable implements Observer { //Thread {
 				root.getSession().close();
 			}
 		}
-		//			i++;
-		//		}
 	}
 	
 	/**
@@ -245,7 +234,6 @@ public class Queue extends Observable implements Observer { //Thread {
 	 */
 	public void start(final Validator validator) {
 		log.debug("start");
-//		this.validator = validator;
 		new Thread() {
 			public void run() {
 //				reset();
@@ -273,10 +261,6 @@ public class Queue extends Observable implements Observer { //Thread {
 			currentJob.status.setCanceled(true);
     }
 	
-//	public boolean isInitialized() {
-//		return this.initialized;
-//	}
-	
 	public boolean isRunning() {
 		return this.running;
 	}
@@ -284,10 +268,6 @@ public class Queue extends Observable implements Observer { //Thread {
     public boolean isCanceled() {
 		return !this.isRunning();
     }
-	
-//	public Path getCurrentJob() {
-//		return this.currentJob;
-//	}
 	
     /**
 		* @return Number of remaining items to be processed in the this.
@@ -312,11 +292,6 @@ public class Queue extends Observable implements Observer { //Thread {
 		int value = 1;
 		if(this.isRunning())
 			value = jobs.size();
-//		int value = 0;
-//		for(int i = 0; i < jobs.length; i ++) {
-//			value += this.jobs[i].size();
-//		}
-//		log.debug("numberOfJobs:"+value);
 		return value;
     }
 	
@@ -351,16 +326,6 @@ public class Queue extends Observable implements Observer { //Thread {
 				this.size += ((Path)elements.next()).status.getSize();
 			}
 		}
-		//		for(int i = 0; i < jobs.length; i ++) {
-//			if(null != jobs[i]) {
-//				Iterator elements = jobs[i].iterator();
-//				while(elements.hasNext()) {
-//					value += ((Path)elements.next()).status.getSize();
-//				}
-//			}
-//		}
-//		log.debug("calculateTotalSize:"+value);
-//		return value;
 		return this.size;
     }
 	
@@ -373,24 +338,11 @@ public class Queue extends Observable implements Observer { //Thread {
 				this.current += ((Path)elements.next()).status.getCurrent();
 			}
 		}
-		//		for(int i = 0; i < jobs.length; i ++) {
-//			if(null != jobs[i]) {
-//				Iterator elements = jobs[i].iterator();
-//				while(elements.hasNext()) {
-//					value += ((Path)elements.next()).status.getCurrent();
-//				}
-//			}
-//		}
-//		log.debug("calculateCurrentSize:"+value);
-//		return value;
 		return this.current;
     }
 	
     public String getCurrentAsString() {
 		return Status.getSizeAsString(this.getCurrent());
-//		if(null == current)
-//			return "";
-//		return current;
     }
 
     /**
@@ -398,7 +350,6 @@ public class Queue extends Observable implements Observer { //Thread {
      */
     public long getCurrent() {
 		return this.calculateCurrentSize();
-//		return (this.current + currentJob.status.getCurrent());	
     }
 	
     /**

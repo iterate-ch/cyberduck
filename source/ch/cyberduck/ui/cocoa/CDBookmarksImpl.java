@@ -84,7 +84,6 @@ public class CDBookmarksImpl extends Bookmarks { //implements NSTableView.DataSo
 																					   NSPropertyListSerialization.PropertyListXMLFormat, 
 																					   errorString)
 									  );
-				//				collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(list));
 				if(errorString[0]!=null)
 					log.error("Problem writing bookmark file: "+errorString[0]);
 				

@@ -214,7 +214,7 @@ public class FTPParser {
 			p.attributes.setModified(date);
 			p.attributes.setMode(access);
 			p.attributes.setPermission(new Permission(access));
-			p.status.setSize(Long.parseLong(size));
+			p.status.setSize(Integer.parseInt(size));
 			return p;
 		}
 		catch(NoSuchElementException e) {
