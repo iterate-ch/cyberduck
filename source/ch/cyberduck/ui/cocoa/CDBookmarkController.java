@@ -308,7 +308,6 @@ public class CDBookmarkController extends CDController {
 	}
 
 	private void updateFields() {
-
 		this.window().setTitle(this.host.getNickname());
 		this.urlField.setStringValue(this.host.getURL()+host.getDefaultPath());
 		this.hostField.setStringValue(this.host.getHostname());

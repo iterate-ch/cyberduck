@@ -115,7 +115,7 @@ public class CDPreferencesController extends CDController {
 	private static final String WINDOWS_LINE_ENDINGS = NSBundle.localizedString("Windows Line Endings (CRLF)", "");
 
 	private static final String PROTOCOL_FTP = "FTP";
-    private static final String PROTOCOL_FTP_SSL = "FTP-TLS";
+    private static final String PROTOCOL_FTP_TLS = "FTP-TLS";
 	private static final String PROTOCOL_SFTP = "SFTP";
 
 	private static final String ASK_ME_WHAT_TO_DO = NSBundle.localizedString("Ask me what to do", "");
@@ -1316,13 +1316,18 @@ public class CDPreferencesController extends CDController {
 		this.protocolCombobox.setTarget(this);
 		this.protocolCombobox.setAction(new NSSelector("protocolComboboxClicked", new Class[]{NSPopUpButton.class}));
 		this.protocolCombobox.removeAllItems();
-		this.protocolCombobox.addItemsWithTitles(new NSArray(new String[]{PROTOCOL_FTP, PROTOCOL_SFTP}));
+		this.protocolCombobox.addItemsWithTitles(new NSArray(new String[]{PROTOCOL_FTP,
+                                                                          PROTOCOL_FTP_TLS,
+                                                                          PROTOCOL_SFTP}));
 		if(Preferences.instance().getProperty("connection.protocol.default").equals("ftp")) {
 			this.protocolCombobox.setTitle(PROTOCOL_FTP);
 		}
-		else {
-			this.protocolCombobox.setTitle(PROTOCOL_SFTP);
-		}
+        if(Preferences.instance().getProperty("connection.protocol.default").equals("ftpS")) {
+            this.protocolCombobox.setTitle(PROTOCOL_FTP_TLS);
+        }
+        if(Preferences.instance().getProperty("connection.protocol.default").equals("Sftp")) {
+            this.protocolCombobox.setTitle(PROTOCOL_SFTP);
+        }
 	}
 
 	public void protocolComboboxClicked(NSPopUpButton sender) {

@@ -336,7 +336,9 @@ public class Host {
 	}
 
 	public String getNickname() {
-		return this.nickname != null ? this.nickname : this.getHostname()+" ("+this.getProtocol().toUpperCase()+")";
+		if(this.nickname != null)
+            return this.nickname;
+        return this.getHostname()+" ("+this.getProtocol().toUpperCase()+")";
 	}
 
 	public void setNickname(String nickname) {
@@ -355,7 +357,9 @@ public class Host {
 	 * @param port The port number to connect to or -1 to use the default port for this protocol
 	 */
 	public void setPort(int port) {
-		this.port = port != -1 ? port : getDefaultPort(this.getProtocol());
+	    this.port = port;
+        if(-1 == port)
+            port = Host.getDefaultPort(this.getProtocol());
 	}
 
 	public int getPort() {
