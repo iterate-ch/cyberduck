@@ -96,7 +96,7 @@ public abstract class Preferences {
 		defaults.put("browser.columnFilename", "true");
 		defaults.put("browser.columnSize", "true");
 		defaults.put("browser.columnModification", "true");
-		defaults.put("browser.columnOwner", "true");
+		defaults.put("browser.columnOwner", "false");
 		defaults.put("browser.columnPermissions", "false");
 		defaults.put("browser.alternatingRows", "false");
 		defaults.put("browser.verticalLines", "false");
