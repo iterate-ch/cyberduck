@@ -451,12 +451,12 @@ public class FTPSession extends Session {
 	  //  host.recycle();
 	    this.setConnected(false);
 	    this.connect();
-	}
-	while(true) {
-	    if(this.isConnected())
-		return;
-	    this.log("Waiting for connection...", Message.PROGRESS);
-	    Thread.yield();
+	    while(true) {
+		if(this.isConnected())
+		    return;
+		this.log("Waiting for connection...", Message.PROGRESS);
+		Thread.yield();
+	    }
 	}
     }
     
@@ -479,10 +479,10 @@ public class FTPSession extends Session {
 		    Path p = parseListLine(parent, line);
 		    String filename = p.getName();
 		    if(!(filename.equals(".") || filename.equals(".."))) {
-			if(filename.charAt(0) == '.' && !showHidden) {
+//@todo			if(filename.charAt(0) == '.' && !showHidden) {
 			    //p.attributes.setVisible(false);
-			}
-			else
+//			}
+//			else
 			    parsedList.add(p);
 		    }
 		}
@@ -628,13 +628,6 @@ public class FTPSession extends Session {
 				toker.nextToken(),  // day
 				toker.nextToken()); // time or year
 		String name = toker.nextToken("").trim(); // name
-
-		/*
-		 //@ verify
-		 if(FTPParser.isDirectory(access) && !(name.charAt(name.length()-1) == '/')) {
-		     name = name + "/";
-		 }
-		 */
 
 		p = new FTPFile(path, name);
 		p.attributes.setOwner(owner);

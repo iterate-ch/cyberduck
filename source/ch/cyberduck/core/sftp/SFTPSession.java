@@ -206,7 +206,7 @@ public class SFTPSession extends Session {
 	    }
 	}
 	    
-	public synchronized void mkdir(String name) {
+	public synchronized Path mkdir(String name) {
 	    log.debug("mkdir");
 	    try {
 		SFTPSession.this.check();
@@ -221,6 +221,7 @@ public class SFTPSession extends Session {
 	    catch(IOException e) {
 		SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	    }
+	    return new SFTPFile(this.getAbsolute(), name);
 	}
 
 	public synchronized void changePermissions(int permissions) {
@@ -297,17 +298,17 @@ public class SFTPSession extends Session {
 	    }.start();
         }
 
-        public synchronized void upload() {
+        public synchronized void upload(final java.io.File file) {
 	    log.debug("upload");
 	    new Thread() {
 		public void run() {
 		    try {
 			SFTPFile.this.status.fireActiveEvent();
 			SFTPSession.this.check();
-			if(SFTPFile.this.isDirectory())
-			    this.uploadFolder();
-			if(SFTPFile.this.isFile())
-			    this.uploadFile();			
+			if(file.isDirectory())
+			    this.uploadFolder(file);
+			if(file.isFile())
+			    this.uploadFile(file);			
 		    }
 		    catch(SshException e) {
 			SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
@@ -317,16 +318,16 @@ public class SFTPSession extends Session {
 		    }
 		}
 
-		public void uploadFile() throws IOException {
+		private void uploadFile(java.io.File file) throws IOException {
 		    log.debug("not implemented");
 		    //@todo
 		    /*
-		    SftpFile file = SFTP.openFile(SFTPFile.this.getName(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
-		    SftpFileOutputStream out = new SftpFileOutputStream(SFTPFile.this.getLocal());
+		    SftpFile file = SFTP.openFile(file.getName(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
+		    SftpFileOutputStream out = new SftpFileOutputStream(file);
 */
 		}
 
-		public void uploadFolder() throws IOException {
+		private void uploadFolder(java.io.File file) throws IOException {
 		    log.debug("not implemented");
 		    //@todo
 		}
@@ -395,6 +396,9 @@ public class SFTPSession extends Session {
 		    SSH.connect(properties, host.getHostKeyVerification());
 		    SFTPSession.this.log("SSH connection opened", Message.PROGRESS);
 		    SFTPSession.this.log(SSH.getServerId(), Message.TRANSCRIPT);
+
+		    log.debug(SSH.getAvailableAuthMethods(host.login.getUsername()));
+
 		    SFTPSession.this.login();
 		    SFTPSession.this.log("Opening SSH session channel", Message.PROGRESS);
 		    // The connection is authenticated we can now do some real work!
@@ -413,29 +417,13 @@ public class SFTPSession extends Session {
 		catch(IOException e) {
 		    SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 		}
-
-		/*public key connection
-
-		PublicKeyAuthentication pk = new PublicKeyAuthentication();
-		pk.setUsername("username");
-		// Open up the private key file
-		SshPrivateKeyFile file =
-		    SshPrivateKeyFile.parse(new File(filename),
-			      new SshtoolsPrivateKeyFormat());
-		// Get the key
-		SshPrivateKey key = file.toPrivateKey(“your passphrase”);
-		// Set the key and authenticate
-		pk.setKey(key);
-		int result = session.authenticate(pk);
-
-		*/
 	    }
 	}.start();
     }
     
     private synchronized void login() throws IOException {
 	log.debug("login");
-	// Create a password authentication instance
+	// password authentication
 	this.log("Authenticating as '"+host.login.getUsername()+"'", Message.PROGRESS);
 	PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
 	auth.setUsername(host.login.getUsername());
@@ -461,13 +449,34 @@ public class SFTPSession extends Session {
 		throw new SshException("Login as user "+host.login.getUsername()+" failed.");
 	    }
 	}
+
+	/*
+	//public key authentication
+	PublicKeyAuthenticationClient auth = new PublicKeyAuthenticationClient();
+	auth.setUsername(host.login.getUsername());
+	// Open up the private key file
+	SshPrivateKeyFile file = SshPrivateKeyFile.parse(new File(System.getProperty("user.home"), ".ssh/privateKey"));
+	// Get the key
+	SshPrivateKey key = file.toPrivateKey(host.login.getPassword());
+	// Set the key and authenticate
+	auth.setKey(key);
+	int result = session.authenticate(auth);
+	 */
+	
     }
-    
+
     public void check() throws IOException {
 	log.debug("check");
 	if(!SSH.isConnected()) {
-	   // host.recycle();
+	  //  host.recycle();
+	    this.setConnected(false);
 	    this.connect();
+	    while(true) {
+		if(this.isConnected())
+		    return;
+		this.log("Waiting for connection...", Message.PROGRESS);
+		Thread.yield();
+	    }
 	}
     }
 }

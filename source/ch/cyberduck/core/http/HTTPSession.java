@@ -83,8 +83,9 @@ public class HTTPSession extends Session {
         public void rename(String filename) {
             HTTPSession.this.log("Invalid Operation", Message.ERROR);
         }
-        public void mkdir(String name) {
+        public Path mkdir(String name) {
             HTTPSession.this.log("Invalid Operation", Message.ERROR);
+	    return null;
         }
 
 	public void changePermissions(int p) {
@@ -208,7 +209,7 @@ public class HTTPSession extends Session {
 	    }.start();
 	}
 
-        public void upload() {
+        public void upload(java.io.File file) {
             HTTPSession.this.log("Invalid Operation", Message.ERROR);
         }
 
@@ -242,11 +243,21 @@ public class HTTPSession extends Session {
     }
 
     public void check() throws IOException {
-	if(!HTTP.isAlive())
+	log.debug("check");
+	if(!HTTP.isAlive()) {
+	  //  host.recycle();
+	    this.setConnected(false);
 	    this.connect();
+	    while(true) {
+		if(this.isConnected())
+		    return;
+		this.log("Waiting for connection...", Message.PROGRESS);
+		Thread.yield();
+	    }
+	}
     }
-	
 
+    
     public synchronized void connect() {
 	new Thread() {
 	    public void run() {
