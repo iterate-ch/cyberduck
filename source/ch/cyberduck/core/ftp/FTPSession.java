@@ -406,7 +406,7 @@ public class FTPSession extends Session {
 //			FTP.initSOCKSAuthentication(Preferences.instance().getProperty("connection.proxy.username"), Preferences.instance().getProperty("connection.proxy.password"));
 //		    }
 		    FTP.connect(host.getName(), host.getPort());
-		    HTTPSession.this.log("FTP connection opened", Message.PROGRESS);
+		    FTPSession.this.log("FTP connection opened", Message.PROGRESS);
 		    FTPSession.this.login();
 		    FTP.system();
 		    String path = host.getWorkdir().equals(Preferences.instance().getProperty("connection.path.default")) ? FTP.pwd() : host.getWorkdir();
