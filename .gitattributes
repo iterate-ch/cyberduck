@@ -160,7 +160,9 @@ img/up.tiff svneol=native#unset
 img/uploadFile.tiff -text
 it.lproj/Bookmark.nib/keyedobjects.nib -text
 it.lproj/Bookmark.strings svneol=native#unset
+it.lproj/Browser.nib/keyedobjects.nib -text
 it.lproj/Browser.strings svneol=native#unset
+it.lproj/Connection.nib/keyedobjects.nib -text
 it.lproj/Connection.strings svneol=native#unset
 it.lproj/Donate.nib/keyedobjects.nib -text
 it.lproj/Donate.strings svneol=native#unset
@@ -174,6 +176,7 @@ it.lproj/Info.nib/keyedobjects.nib -text
 it.lproj/Info.strings svneol=native#unset
 it.lproj/InfoPlist.strings svneol=native#unset
 it.lproj/Localizable.strings svneol=native#unset
+it.lproj/Login.nib/keyedobjects.nib -text
 it.lproj/Login.strings svneol=native#unset
 it.lproj/Main.nib/keyedobjects.nib -text
 it.lproj/Main.strings svneol=native#unset
