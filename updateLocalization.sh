@@ -35,6 +35,16 @@ update() {
     udpateStringsFromNib;
 }
 
+status() {
+	for lproj in `ls . | grep lproj`; do
+		language=$lproj;
+		if [ $language != "English.lproj" ]; then
+			echo "*** Status of $language Localization...";
+			polyglot -l `basename $language .lproj` .
+		fi;
+	done;
+}
+
 updateNibFromStrings() {
     rm -rf $language/$nibfile.bak
     mv $language/$nibfile $language/$nibfile.bak
@@ -82,6 +92,10 @@ do
         -h | --help) 
             usage;
             exit 0;
+        ;; 
+        -s | --status)
+        	status;
+        	exit 0;
         ;; 
         -l | --language) 
             shift;
