@@ -40,7 +40,6 @@ public abstract class AbstractValidator implements Validator {
     private boolean isCanceled = false;
 	
 	public boolean isCanceled() {
-		log.debug("isCanceled"+isCanceled);
 		return this.isCanceled;
 	}
 	
@@ -51,28 +50,26 @@ public abstract class AbstractValidator implements Validator {
 	protected abstract boolean prompt(Path p);
 	
 	protected abstract boolean exists(Path p);
-	
+		
 	public List validate(Queue q) {
-		List l = new ArrayList();
-		for (Iterator i = q.getRoots().iterator(); i.hasNext(); ) {
-			Path p = (Path)i.next();
-			if(p.exists()) {
-				log.debug("Iterating over childs of " + p);
-				List tree = q.getChilds(new ArrayList(), p);
-				for(Iterator childs = tree.iterator(); childs.hasNext();) {
-					Path child = (Path)childs.next();
-					log.debug("Validating " + child.toString());
-					if (this.validate(child)) {
-						child.status.reset();
-						l.add(child);
-					}
+		List validated = new ArrayList();
+		List roots = q.getRoots();
+		// for every root get its branches
+		for (Iterator rootIter = roots.iterator(); rootIter.hasNext(); ) {
+			Path root = (Path)rootIter.next();
+			List tree = q.getChilds(root);
+			for(Iterator iter = tree.iterator(); iter.hasNext(); ) {
+				Path child = (Path)iter.next();
+				if (this.validate(child)) {
+					validated.add(child);
 				}
 			}
 		}
-		return l;
+		return validated;
 	}
 	
 	protected boolean validate(Path p) {
+		log.debug("Validating "+p.toString());
         if (!this.isCanceled) {
 			if (p.attributes.isDirectory()) {
 				return this.validateDirectory(p);

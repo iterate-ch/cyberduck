@@ -40,6 +40,9 @@ public class CDSyncValidatorController extends CDValidatorController {
         }
     }
 	
+	protected List validated = new ArrayList();
+	protected List workset = new ArrayList();
+
 	public void awakeFromNib() {
 		this.fileTableView.setDelegate(this);
 		this.fileTableView.setDataSource(this);
@@ -54,7 +57,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 	
 	public void mirrorCellClicked(Object sender) {
 		this.workset = new ArrayList();
-		for(Iterator i = this.candidates.iterator(); i.hasNext(); ) {
+		for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
 			Path p = (Path)i.next();
 			log.debug("> add");
 			this.workset.add(p);
@@ -63,11 +66,10 @@ public class CDSyncValidatorController extends CDValidatorController {
 	}
 
 	public void downloadCellClicked(Object sender) {
-		this.workset = new ArrayList();
-		for(Iterator i = this.candidates.iterator(); i.hasNext(); ) {
+		this.workset.clear();
+		for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
 			Path p = (Path)i.next();
 			if(p.remote.exists()) {
-				log.debug("> add");
 				this.workset.add(p);
 			}
 		}
@@ -75,11 +77,10 @@ public class CDSyncValidatorController extends CDValidatorController {
 	}
 
 	public void uploadCellClicked(Object sender) {
-		this.workset = new ArrayList();
-		for(Iterator i = this.candidates.iterator(); i.hasNext(); ) {
+		this.workset.clear();
+		for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
 			Path p = (Path)i.next();
 			if(p.local.exists()) {
-				log.debug("> add");
 				this.workset.add(p);
 			}
 		}
@@ -165,9 +166,6 @@ public class CDSyncValidatorController extends CDValidatorController {
         sheet.close();
 	}
 	
-	private List candidates = new ArrayList();
-	private List workset = new ArrayList();
-
 	public void reloadData() {
 		log.debug("reloadData");
 		this.fileTableView.deselectAll(null);
@@ -178,7 +176,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 	public List validate(Queue q) {
 		this.statusIndicator.startAnimation(null);
 		this.prompt(null);
-		this.candidates = super.validate(q);
+		this.validated = super.validate(q);
 		if(this.mirrorRadioCell.state() == NSCell.OnState)
 			this.mirrorCellClicked(null);
 		if(this.downloadRadioCell.state() == NSCell.OnState)

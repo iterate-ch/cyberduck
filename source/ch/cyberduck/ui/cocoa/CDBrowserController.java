@@ -91,13 +91,15 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 	public void update(final Observable o, final Object arg) {
         log.debug("update:" + o + "," + arg);
         if (arg instanceof Path) {
-            browserModel.setData(((Path)arg).cache());
-            NSTableColumn selectedColumn = browserModel.selectedColumn() != null ? browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
-            browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
-            browserModel.sort(selectedColumn, browserModel.isSortedAscending());
-            browserTable.reloadData();
-            toolbar.validateVisibleItems();
+            this.browserModel.setData(((Path)arg).cache());
+            NSTableColumn selectedColumn = this.browserModel.selectedColumn() != null ? this.browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
+            this.browserTable.setIndicatorImage(this.browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
+            this.browserModel.sort(selectedColumn, this.browserModel.isSortedAscending());
+            this.browserTable.reloadData();
+            this.toolbar.validateVisibleItems();
 			this.window().makeFirstResponder(browserTable);
+			this.infoLabel.setStringValue(this.browserModel.numberOfRowsInTableView(this.browserTable)+" "+
+										  NSBundle.localizedString("files", ""));
         }
         else if (arg instanceof Message) {
             Message msg = (Message)arg;
@@ -328,8 +330,8 @@ public class CDBrowserController extends NSObject implements CDController, Obser
     public void browserTableRowDoubleClicked(Object sender) {
         log.debug("browserTableRowDoubleClicked");
         searchField.setStringValue("");
-        if (browserModel.numberOfRowsInTableView(browserTable) > 0 && browserTable.numberOfSelectedRows() > 0) {
-            Path p = (Path)browserModel.getEntry(browserTable.selectedRow()); //last row selected
+        if (this.browserModel.numberOfRowsInTableView(browserTable) > 0 && browserTable.numberOfSelectedRows() > 0) {
+            Path p = (Path)this.browserModel.getEntry(browserTable.selectedRow()); //last row selected
             if (p.attributes.isFile() || browserTable.numberOfSelectedRows() > 1) {
                 if (Preferences.instance().getProperty("browser.doubleClickOnFile").equals("edit")) {
                     this.editButtonClicked(sender);
@@ -667,6 +669,12 @@ public class CDBrowserController extends NSObject implements CDController, Obser
     public void setStatusLabel(NSTextField statusLabel) {
         this.statusLabel = statusLabel;
         this.statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
+    }
+
+	private NSTextField infoLabel; // IBOutlet
+	
+    public void setInfoLabel(NSTextField infoLabel) {
+        this.infoLabel = infoLabel;
     }
 	
     // ----------------------------------------------------------

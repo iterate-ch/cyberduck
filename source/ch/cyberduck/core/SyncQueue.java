@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import java.io.File;
@@ -42,8 +43,12 @@ public class SyncQueue extends Queue {
         dict.setObjectForKey(Queue.KIND_SYNC+"", "Kind");
         return dict;
     }
+		
+	protected List getChilds(Path p) {
+		return this.getChilds(new ArrayList(), p);
+	}
 	
-	protected List getChilds(List list, Path p) {
+	private List getChilds(List list, Path p) {
 		log.debug("getChilds:"+list+","+p);
 		if(p.remote.exists()) {
 			if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {

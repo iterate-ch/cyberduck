@@ -190,16 +190,23 @@ public abstract class Queue extends Observable implements Observer {
     }
 	
 	private void reset() {
-		this.jobs = new ArrayList();
+//		this.jobs = new ArrayList();
 		this.size = 0;
+		for (Iterator iter = jobs.iterator(); iter.hasNext();) {
+			Path p = (Path)iter.next();
+			p.status.reset();
+			this.size += p.status.getSize();
+		}
 	}
 	
-	protected abstract List getChilds(List list, Path p);
+	protected abstract List getChilds(Path p);
 	
 	private Timer progress;
 
+	/**
+		* @return true if initialization was successfull
+	 */
 	private boolean init() {
-		this.reset();
 		this.progress = new Timer(500,
 								  new java.awt.event.ActionListener() {
 									  int i = 0;
@@ -229,11 +236,12 @@ public abstract class Queue extends Observable implements Observer {
 									  }
 								  }
 								  );
-		this.jobs = this.validator.validate(this);
-		for (Iterator iter = jobs.iterator(); iter.hasNext();) {
-			this.size += ((Path)iter.next()).status.getSize();
+		List validated = this.validator.validate(this);
+		if(!this.validator.isCanceled()) {
+			this.jobs = validated;
+			this.reset();
 		}
-		return this.validator.isCanceled();
+		return !this.validator.isCanceled();
 	}
 	
 	protected abstract void process(Path p);
