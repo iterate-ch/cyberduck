@@ -82,6 +82,7 @@ public class CDValidatorController extends Validator {
 			img.setScalesWhenResized(true);
 			img.setSize(new NSSize(64f, 64f));
 			this.iconView.setImage(img);
+//@todo			while (!SHEET_CLOSED) {
 			NSApplication.sharedApplication().beginSheet(this.window(), //sheet
 														 CDQueueController.instance().window(),
 														 this, //modalDelegate

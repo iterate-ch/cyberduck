@@ -74,7 +74,7 @@ public class Login {
 			NSAutoreleasePool.pop(pool);
 		}
 	}
-
+	
 	/**
 	 * @param service The service to use when looking up the password in the keychain
 	 * @param user Login with this username

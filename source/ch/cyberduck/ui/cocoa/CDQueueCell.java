@@ -138,6 +138,7 @@ public class CDQueueCell extends CDTableCell {
 //            NSGraphics.drawAttributedString(new NSAttributedString(queue.getRoot().getHost().getProtocol() + "://" +
 //                    queue.getRoot().getHost().getHostname() +
 //                    queue.getRoot().getAbsolute(),
+			// hostname
             NSGraphics.drawAttributedString(new NSAttributedString(queue.getRoot().getHost().getHostname(),
 																   normalFont),
 											new NSRect(cellPoint.x() + BORDER + SPACE,

@@ -317,6 +317,10 @@ public class CDBrowserController extends NSObject implements Observer {
             }
             else {
                 host = new Host(input, new Login(input, null, null));
+				if(host.getProtocol().equals(Session.FTP))
+					host.setLogin(new Login(host.getHostname(), Preferences.instance().getProperty("ftp.anonymous.name"), null));
+				else
+					host.setLogin(new Login(host.getHostname(), Preferences.instance().getProperty("connection.login.name"), null));
             }
         }
         this.mount(host);

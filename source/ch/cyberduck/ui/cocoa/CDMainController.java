@@ -77,14 +77,40 @@ public class CDMainController extends NSObject {
 	private NSMenu bookmarkMenu;
 	
 	public void setBookmarkMenu(NSMenu bookmarkMenu) {
-		this.bookmarkMenu = bookmarkMenu;		
-		for(int i = 0; i < CDBookmarksImpl.instance().size(); i++) {
-			Host h = CDBookmarksImpl.instance().getItem(i);
-			NSMenuItem item = new NSMenuItem(h.getNickname(),
-											 new NSSelector("bookmarkMenuClicked", new Class[]{Object.class}),
-											 "");
-			this.bookmarkMenu.addItem(item);
+		this.bookmarkMenu = bookmarkMenu;
+//		this.bookmarkMenu.setDelegate(new BookmarkMenuDelegate());
+//		for(int i = 0; i < CDBookmarksImpl.instance().size(); i++) {
+//			Host h = CDBookmarksImpl.instance().getItem(i);
+//			NSMenuItem item = new NSMenuItem(h.getNickname(),
+//											 new NSSelector("bookmarkMenuClicked", new Class[]{Object.class}),
+//											 "");
+//			this.bookmarkMenu.addItem(item);
+//		}
+	}
+	
+	private class BookmarkMenuDelegate {
+		public int numberOfItemsInMenu(NSMenu menu) {
+			return CDBookmarksImpl.instance().size();
 		}
+
+		/**
+*		Called when a menu is about to be displayed at the start of a tracking session so the delegate
+		* can modify the menu. You can change the menu by adding, removing or modifying menu items. 
+		 * Be sure to set the proper enable state for any new menu items. If populating the menu will
+		 * take a long time, implement numberOfItemsInMenu and menuUpdateItemAtIndex instead.
+*/
+		public void menuNeedsUpdate(NSMenu menu) {
+			log.debug("menuNeedsUpdate:"+menu);
+		}
+
+		/**
+		* Called to let you update a menu item before it is displayed. If your numberOfItemsInMenu delegate method returns a positive value, then your menuUpdateItemAtIndex method is called for each item in the menu. You can then update the menu title, image, and so forth for the menu item. Return true to continue the process. If you return false, your menuUpdateItemAtIndex is not called again. In that case, it is your responsibility to trim any extra items from the menu.
+		 */
+		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
+			log.debug("menuUpdateItemAtIndex"+item);
+			return true;
+		}
+	
 	}
 	
 	public void bookmarkMenuClicked(Object sender) {

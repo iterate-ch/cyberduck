@@ -95,7 +95,7 @@ public class Host {
 		}
 		log.debug(this.toString());
 	}
-
+	
 	/**
 	 * New host with the default protocol and port
 	 * @param hostname The hostname of the server
@@ -113,8 +113,6 @@ public class Host {
 	public Host(String hostname, int port, Login login) {
 		this(getDefaultProtocol(port), hostname, port, login);
 	}
-
-//	public Host(String protocol, String hostname, int port, String path, String nickname)
 
 	/**
 	 * @param protocol The protocol to use, must be either Session.HTTP, Session.FTP or Session.SFTP

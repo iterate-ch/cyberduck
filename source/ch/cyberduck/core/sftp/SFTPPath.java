@@ -345,26 +345,17 @@ public class SFTPPath extends Path {
 		}
 		return childs;
 	}
-
+	
 	private List getDownloadQueue(List queue) throws IOException {
-		try {
-			if (this.isDirectory()) {
-				for (Iterator i = this.list(false, true).iterator() ; i.hasNext() ;) {
-					SFTPPath p = (SFTPPath) i.next();
-					p.setLocal(new Local(this.getLocal(), p.getName()));
-					//p.status.setResume(this.status.isResume());
-					p.getDownloadQueue(queue);
-				}
-			}
-			else if (this.isFile()) {
-				queue.add(this);
+		if (this.isDirectory()) {
+			for (Iterator i = this.list(false, true).iterator() ; i.hasNext() ;) {
+				SFTPPath p = (SFTPPath) i.next();
+				p.setLocal(new Local(this.getLocal(), p.getName()));
+				p.getDownloadQueue(queue);
 			}
 		}
-		catch (SshException e) {
-			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);
-		}
-		catch (IOException e) {
-			this.session.log("IO Error: " + e.getMessage(), Message.ERROR);
+		else if (this.isFile()) {
+			queue.add(this);
 		}
 		return queue;
 	}
@@ -410,7 +401,6 @@ public class SFTPPath extends Path {
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
 				Path p = PathFactory.createPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
-				//p.status.setResume(this.status.isResume());
 				((SFTPPath)p).getUploadQueue(queue);
 			}
 		}

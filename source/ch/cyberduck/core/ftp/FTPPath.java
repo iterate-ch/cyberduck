@@ -336,7 +336,6 @@ public class FTPPath extends Path {
 			for (Iterator i = this.list(false, true).iterator() ; i.hasNext() ;) {
 				FTPPath p = (FTPPath) i.next();
 				p.setLocal(new Local(this.getLocal(), p.getName()));
-				//p.status.setResume(this.status.isResume());
 				((FTPPath)p).getDownloadQueue(queue);
 			}
 		}
@@ -415,7 +414,6 @@ public class FTPPath extends Path {
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
 				Path p = PathFactory.createPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
-				//p.status.setResume(this.status.isResume());
 				((FTPPath)p).getUploadQueue(queue);
 			}
 		}
