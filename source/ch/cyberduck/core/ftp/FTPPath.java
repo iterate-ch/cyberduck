@@ -23,6 +23,7 @@ import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
 import java.io.*;
 import java.util.List;
+import com.apple.cocoa.foundation.NSDictionary;
 import org.apache.log4j.Logger;
 
 /**
@@ -55,6 +56,11 @@ public class FTPPath extends Path {
      */
     public FTPPath(FTPSession session, String parent, Local file) {
 		super(parent, file);
+		this.session = session;
+    }
+	
+	public FTPPath(FTPSession session, NSDictionary dict) {
+		super(dict);
 		this.session = session;
     }
 	

@@ -21,6 +21,8 @@ import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.sftp.SFTPSession;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableDictionary;
 import org.apache.log4j.Logger;
 
 public class Host {
@@ -111,7 +113,7 @@ public class Host {
 		//		}
   //		return this.session;
     }
-	
+		
     public void setDefaultPath(String defaultpath) {
 		this.defaultpath = defaultpath;
     }
@@ -238,6 +240,38 @@ public class Host {
     public String toString() {
 		return this.getURL();
     }
+	
+	public static final String HOSTNAME = "Hostname";
+    public static final String NICKNAME = "Nickname";
+    public static final String PORT = "Port";
+    public static final String PROTOCOL = "Protocol";
+    public static final String USERNAME = "Username";
+    public static final String PATH = "Path";
+    public static final String KEYFILE = "Private Key File";
+	
+	public Host(NSDictionary dict) {
+		this((String)dict.objectForKey(Host.PROTOCOL), 
+			 (String)dict.objectForKey(Host.HOSTNAME), 
+			 Integer.parseInt((String)dict.objectForKey(Host.PORT)),
+			 new Login((String)dict.objectForKey(Host.USERNAME)),
+			 (String)dict.objectForKey(Host.PATH),
+			 (String)dict.objectForKey(Host.NICKNAME)
+			 );
+		this.getLogin().setPrivateKeyFile((String)dict.objectForKey(Host.KEYFILE));
+	}
+	
+	public NSDictionary getAsDictionary() {
+		NSMutableDictionary dict = new NSMutableDictionary();
+		dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
+		dict.setObjectForKey(this.getHostname(), Host.HOSTNAME);
+		dict.setObjectForKey(this.getPort()+"", Host.PORT);
+		dict.setObjectForKey(this.getProtocol(), Host.PROTOCOL);
+		dict.setObjectForKey(this.getLogin().getUsername(), Host.USERNAME);
+		dict.setObjectForKey(this.getDefaultPath(), Host.PATH);
+		if(this.getLogin().getPrivateKeyFile() != null)
+			dict.setObjectForKey(this.getLogin().getPrivateKeyFile(), Host.KEYFILE);
+		return dict;
+	}
 	
     /**
 		* protocol://user@host:port

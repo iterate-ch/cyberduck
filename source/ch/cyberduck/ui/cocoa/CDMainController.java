@@ -97,35 +97,50 @@ public class CDMainController {
 				return;
 			}
 			log.debug(data.length() +" bytes.");
-			NSDictionary entries = (NSDictionary)NSPropertyListSerialization.propertyListFromXMLData(data);
-			if(null == entries)
-				log.error("Version info could not be retrieved.");
-			else
-				log.info(entries.toString());
-			
-			String latestVersionNumber = (String)entries.objectForKey("version");
-			log.info("Latest version:"+latestVersionNumber);
-			String filename = (String)entries.objectForKey("file");
-			String comment = (String)entries.objectForKey("comment");
-			
-			if(currentVersionNumber.equals(latestVersionNumber)) {
-				NSAlertPanel.runInformationalAlert(
-									   NSBundle.localizedString("No update"), //title
-									   NSBundle.localizedString("No newer version available.")+" Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is up to date."),
-									   "OK",// defaultbutton
-									   null,//alternative button
-									   null//other button
-									   );
+			//			NSDictionary entries = (NSDictionary)NSPropertyListSerialization.propertyListFromXMLData(data);
+			String[] errorString = new String[]{null};
+			Object propertyListFromXMLData = 
+				NSPropertyListSerialization.propertyListFromData(data, 
+																 NSPropertyListSerialization.PropertyListImmutable,
+																 new int[]{NSPropertyListSerialization.PropertyListXMLFormat}, 
+																 errorString);
+			if(errorString[0]!=null || null == propertyListFromXMLData) {
+				log.error("Version info could not be retrieved: "+errorString[0]);
+				NSAlertPanel.runCriticalAlert(
+											  NSBundle.localizedString("Error"), //title
+											  NSBundle.localizedString("Update check failed. Version info could not be retrieved")+": "+errorString[0],
+											  "OK",// defaultbutton
+											  null,//alternative button
+											  null//other button
+											  );
 			}
 			else {
-				if (false == NSApplication.loadNibNamed("Update", this)) {
-					log.fatal("Couldn't load Update.nib");
-					return;
+				log.info(propertyListFromXMLData.toString());
+				NSDictionary entries = (NSDictionary)propertyListFromXMLData;
+				String latestVersionNumber = (String)entries.objectForKey("version");
+				log.info("Latest version:"+latestVersionNumber);
+				String filename = (String)entries.objectForKey("file");
+				String comment = (String)entries.objectForKey("comment");
+				
+				if(currentVersionNumber.equals(latestVersionNumber)) {
+					NSAlertPanel.runInformationalAlert(
+													   NSBundle.localizedString("No update"), //title
+													   NSBundle.localizedString("No newer version available.")+" Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is up to date."),
+													   "OK",// defaultbutton
+													   null,//alternative button
+													   null//other button
+													   );
 				}
-				this.updateLabel.setStringValue("Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is out of date. The current version is")+" "+latestVersionNumber+".");
-				this.updateText.replaceCharactersInRange(new NSRange(updateText.textStorage().length(), 0), comment);
-				this.updateSheet.setTitle(filename);
-				this.updateSheet.makeKeyAndOrderFront(null);
+				else {
+					if (false == NSApplication.loadNibNamed("Update", this)) {
+						log.fatal("Couldn't load Update.nib");
+						return;
+					}
+					this.updateLabel.setStringValue("Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is out of date. The current version is")+" "+latestVersionNumber+".");
+					this.updateText.replaceCharactersInRange(new NSRange(updateText.textStorage().length(), 0), comment);
+					this.updateSheet.setTitle(filename);
+					this.updateSheet.makeKeyAndOrderFront(null);
+				}
 			}
 		}
 		catch(Exception e) {
@@ -224,7 +239,10 @@ public class CDMainController {
 		return controller;
     }
 	
-    
+	public void showTransferQueueClicked(Object sender) {
+		CDQueueController.instance().window().makeKeyAndOrderFront(null);
+	}
+	
     // ----------------------------------------------------------
     // Application delegate methods
     // ----------------------------------------------------------
@@ -248,9 +266,13 @@ public class CDMainController {
 		// To get service requests to go to the controller...
   //        NSApplication.sharedApplication().setServicesProvider(this);
 		log.info("Available localizations:"+NSBundle.mainBundle().localizations());
-		if(Preferences.instance().getProperty("browser.opendefault").equals("true")) {
+		if(Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
 			this.newBrowserMenuClicked(null);
 		}
+		if(Preferences.instance().getProperty("queue.openByDefault").equals("true")) {
+			this.showTransferQueueClicked(null);
+		}
+//todo load queue		CDQueueController.instance();
     }
 	
     public int applicationShouldTerminate (NSApplication app) {
@@ -270,6 +292,7 @@ public class CDMainController {
         Preferences.instance().save();
 		((CDBookmarksImpl)CDBookmarksImpl.instance()).save();
 		((CDHistoryImpl)CDHistoryImpl.instance()).save();
+		CDQueueController.instance().save();//todo replace with CDQueue
 		
 		if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
 			if (false == NSApplication.loadNibNamed("Donate", this)) {

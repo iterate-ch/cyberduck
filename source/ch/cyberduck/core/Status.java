@@ -98,7 +98,7 @@ public class Status extends Observable implements Serializable {
      */
     public static String getSizeAsString(long size) {
 		if(size <= 0)
-			return "";
+			return null;
 		else if(size < KILO)
 			return size + " B";
 		else if(size < MEGA)
@@ -109,11 +109,16 @@ public class Status extends Observable implements Serializable {
 			return new Long(size/GIGA).intValue() + "GB";
     }
     
-    public void setComplete(boolean b) {
-        this.complete = b;
-		this.callObservers(new Message(Message.COMPLETE));
-		if(complete)
+    public void setComplete(boolean complete) {
+        this.complete = complete;
+		if(complete) {
+			this.callObservers(new Message(Message.PROGRESS, "Complete"));
+//			this.callObservers(new Message(Message.COMPLETE));
 			this.setCurrent(this.getSize());
+		}
+		else
+			this.callObservers(new Message(Message.PROGRESS, "Incomplete"));
+//			this.callObservers(new Message(Message.INCOMPLETE));
     }
     
     public boolean isComplete() {

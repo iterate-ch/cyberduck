@@ -50,7 +50,8 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
 		    // we assume a file has an extension
 		    if(null != p.getExtension()) {
 			log.debug("Opening transfer window");
-				CDQueueController.instance().addTransfer(p, Queue.KIND_DOWNLOAD);
+				CDQueueController.instance().addItemAndStart(new Queue(p, 
+																   Queue.KIND_DOWNLOAD));
 //			CDTransferController controller = new CDTransferController(p, Queue.KIND_DOWNLOAD);
 //			controller.transfer();
 			return null;

@@ -20,6 +20,12 @@ package ch.cyberduck.core;
 
 import java.io.*;
 import java.util.List;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableDictionary;
+
+//import com.apple.cocoa.foundation.NSData;
+//import com.apple.cocoa.foundation.NSStringReference;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -41,7 +47,7 @@ public abstract class Path {
     public static final String LINK = "LINK";
 	
 	public static final String HOME = "~";
-    
+	
     /**
 		* A remote path where nothing is known about a local equivalent.
      * @param path the absolute directory
@@ -93,30 +99,56 @@ public abstract class Path {
         else
             this.setPath(parent + "/" + name);
     }
-	
-    /**
-		* @param pathname The absolute path of the file
-     */
-    public void setPath(String p) {
+
+	public void setPath(String p) {
 		log.debug("setPath:"+p);
-//		try {
-//			log.debug("***utf>latin1: "+new String(p.getBytes("UTF-8"), "ISO-8859-1").toString());
-//			String name = new String(p.getBytes("UTF-8"), "ISO-8859-1").toString();
-		com.apple.cocoa.foundation.NSData theData = new com.apple.cocoa.foundation.NSData(p.getBytes());
-		com.apple.cocoa.foundation.NSStringReference theString = new com.apple.cocoa.foundation.NSStringReference(theData, com.apple.cocoa.foundation.NSStringReference.ISOLatin1StringEncoding);
-		
-		String name = theString.string();
-		log.debug("setPath:(latin1)"+name);
-		
-		if(name.length() > 1 && name.charAt(name.length()-1) == '/')
+		if(p.length() > 1 && p.charAt(p.length()-1) == '/')
+			this.path = p.substring(0, p.length()-1);
+		else
+			this.path = p;
+	}
+	
+	/*
+	public void setPath(String p) {
+		log.debug("setPath:"+p);
+		String name = p;
+		try {
+			String encoding = Preferences.instance().getProperty("browser.encoding");
+			log.info("Assuming remote encoding:"+encoding);
+			name = new String(p.getBytes(), encoding).toString();
+//			name = new String(p.getBytes("utf-8"), "utf-8").toString();
+			log.debug("setPath:(decoded)"+name);
+		}
+		catch(java.io.UnsupportedEncodingException e) {
+			log.error(e.getMessage());	
+		}
+		finally {
+			if(name.length() > 1 && name.charAt(name.length()-1) == '/')
 				this.path = name.substring(0, name.length()-1);
 			else
 				this.path = name;
-//		}
-//		catch(java.io.UnsupportedEncodingException e) {
-//			log.error(e.getMessage());	
-//		}
+		}
+	}
+	 */
+	
+	/**
+		* @param pathname The absolute path of the file
+	 */
+	/*
+	public void setPath(String p) {
+		log.debug("setPath:"+p);
+		NSData data = new NSData(p.getBytes());
+		NSStringReference ref = new NSStringReference(data, NSStringReference.UTF8StringEncoding);
+		
+		String name = ref.string();
+		log.debug("setPath:(decoded)"+name);
+		
+		if(name.length() > 1 && name.charAt(name.length()-1) == '/')
+			this.path = name.substring(0, name.length()-1);
+		else
+			this.path = name;
     }
+	*/
 	
     /**
 		* @return My parent directory
@@ -225,6 +257,21 @@ public abstract class Path {
 		return name;
     }
 	
+	public String getDecodedName() {
+		String filename = this.getName();
+		try {
+			String encoding = Preferences.instance().getProperty("browser.encoding");
+//			log.info("Assuminging remote encoding:"+encoding);
+			filename = new String(filename.getBytes(), encoding).toString();
+		}
+		catch(java.io.UnsupportedEncodingException e) {
+			log.error(e.getMessage());	
+		}
+		finally {
+			return filename;
+		}
+	}
+	
     /**
 		* @return the absolute path name
      */
@@ -278,6 +325,7 @@ public abstract class Path {
      */
     public void upload(java.io.Writer writer, java.io.Reader reader) throws IOException {
         log.debug("upload(" + writer.toString() + ", " + reader.toString());
+        this.getSession().log("Uploading " + this.getName() + " (ASCII)", Message.PROGRESS);
         this.transfer(reader, writer);
     }
 	
@@ -288,6 +336,7 @@ public abstract class Path {
      */
     public void upload(java.io.OutputStream o, java.io.InputStream i) throws IOException {
         log.debug("upload(" + o.toString() + ", " + i.toString());
+        this.getSession().log("Uploading " + this.getName(), Message.PROGRESS);
         this.transfer(i, o);
     }
 	
@@ -298,6 +347,7 @@ public abstract class Path {
      */
     public void download(java.io.Reader reader, java.io.Writer writer) throws IOException {
         log.debug("transfer(" + reader.toString() + ", " + writer.toString());
+        this.getSession().log("Downloading " + this.getName() + " (ASCII)", Message.PROGRESS);
         this.transfer(reader, writer);
     }
 	
@@ -308,6 +358,7 @@ public abstract class Path {
      */
     public void download(java.io.InputStream i, java.io.OutputStream o) throws IOException {
         log.debug("transfer(" + i.toString() + ", " + o.toString());
+        this.getSession().log("Downloading " + this.getName(), Message.PROGRESS);
         this.transfer(i, o);
     }
 	
@@ -322,14 +373,13 @@ public abstract class Path {
         this.status.reset();
 		
 		long current = this.status.getCurrent();
-		//        boolean complete = false;
+		boolean complete = false;
   // read/write a line at a time
         String line = null;
         while (!status.isComplete() && !status.isCanceled()) {
             line = in.readLine();
             if(line == null) {
-				this.status.setComplete(true);
-				//                complete = true;
+				complete = true;
             }
             else {
                 this.status.setCurrent(current += line.getBytes().length);
@@ -337,8 +387,7 @@ public abstract class Path {
                 out.newLine();
             }
         }
-		//	this.status.setComplete(complete);
-  //        this.eof(complete);
+		this.status.setComplete(complete);
   // close streams
         if(in != null) {
             in.close();
@@ -363,24 +412,22 @@ public abstract class Path {
         int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
         byte[] chunk = new byte[chunksize];
         int amount = 0;
-        long current = this.status.getCurrent();
-		//        boolean complete = false;
-		
+        long current = this.status.getCurrent();		
+		boolean complete = false;
         // read from socket (bytes) & write to file in chunks
         while (!status.isComplete() && !status.isCanceled()) {
 			// Reads up to len bytes of data from the input stream into  an array of bytes.  An attempt is made to read as many as  len bytes, but a smaller number may be read, possibly  zero. The number of bytes actually read is returned as an integer. 
             amount = in.read(chunk, 0, chunksize);
             if(amount == -1) {
-				this.status.setComplete(true);
+				complete = true;
             }
             else {
                 this.status.setCurrent(current += amount);
                 out.write(chunk, 0, amount);
             }
         }
-		//	this.status.setComplete(complete);
-  //        this.eof(complete);
-  // close streams
+		this.status.setComplete(complete);
+		// close streams
         if(in != null) {
             in.close();
         }
@@ -402,6 +449,19 @@ public abstract class Path {
 		return false;
 	}
     
+	public Path(NSDictionary dict) {
+		this((String)dict.objectForKey("Remote"));
+		this.setLocal(new Local((String)dict.objectForKey("Local")));
+		//this.setStatus(new Status((NSDictionary)dict.objectForKey("Status")));
+	}
+	
+	public NSDictionary getAsDictionary() {
+		NSMutableDictionary dict = new NSMutableDictionary();
+		dict.setObjectForKey(this.getAbsolute(), "Remote");
+		dict.setObjectForKey(this.getLocal().toString(), "Local");
+		return dict;
+	}
+	
     public String toString() {
 		return this.getAbsolute();
     }

@@ -42,9 +42,9 @@ public class FTPSession extends Session {
      */
     public FTPSession(Host h) {//, TransferAction action) {
         super(h);
-        //@todo proxy        System.getProperties().put("proxySet", Preferences.instance().getProperty("connection.proxy"));
-        //@todo proxy        System.getProperties().put("proxyHost", Preferences.instance().getProperty("connection.proxy.host"));
-        //@todo proxy        System.getProperties().put("proxyPort", Preferences.instance().getProperty("connection.proxy.port"));
+        // System.getProperties().put("proxySet", Preferences.instance().getProperty("connection.proxy"));
+        // System.getProperties().put("proxyHost", Preferences.instance().getProperty("connection.proxy.host"));
+        // System.getProperties().put("proxyPort", Preferences.instance().getProperty("connection.proxy.port"));
     }
     
     public synchronized void close() {

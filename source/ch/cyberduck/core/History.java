@@ -39,11 +39,12 @@ public abstract class History extends Bookmarks {
     }
 	
 	public void removeItem(int index) {
+		log.debug("removeItem:"+index);
 		this.data.remove(this.getItem(index));
 	}
 	
     public void removeItem(Host item) {
-//		log.debug("removeItem:"+item);
+		log.debug("removeItem:"+item);
 		this.data.remove(item.getHostname());
     }
 	

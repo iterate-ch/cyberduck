@@ -47,12 +47,111 @@ public class CDBrowserController implements Observer {
     private NSTableView browserTable; // IBOutlet
     public void setBrowserTable(NSTableView browserTable) {
 		this.browserTable = browserTable;
+		
+		// setting appearance attributes
+		this.browserTable.setAutoresizesAllColumnsToFit(true);
+		this.browserTable.setUsesAlternatingRowBackgroundColors(CDPreferencesImpl.instance().getProperty("browser.alternatingRows").equals("true"));
+		if(Preferences.instance().getProperty("browser.horizontalLines").equals("true") && CDPreferencesImpl.instance().getProperty("browser.verticalLines").equals("true"))
+			this.browserTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
+		else if(Preferences.instance().getProperty("browser.verticalLines").equals("true"))
+			this.browserTable.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
+		else if(Preferences.instance().getProperty("browser.horizontalLines").equals("true"))
+			this.browserTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
+		else
+			this.browserTable.setGridStyleMask(NSTableView.GridNone);
+		
+		// ading table columns
+		if(Preferences.instance().getProperty("browser.columnIcon").equals("true")) {
+			NSTableColumn c = new NSTableColumn();
+			c.setIdentifier("ICON");
+			c.headerCell().setStringValue("");
+			c.setMinWidth(20f);
+			c.setWidth(20f);
+			c.setMaxWidth(20f);
+			c.setResizable(true);
+			c.setEditable(false);
+			c.setDataCell(new NSImageCell());
+			c.dataCell().setAlignment(NSText.CenterTextAlignment);
+			this.browserTable.addTableColumn(c);
+		}
+		if(Preferences.instance().getProperty("browser.columnFilename").equals("true")) {
+			NSTableColumn c = new NSTableColumn();
+			c.headerCell().setStringValue(NSBundle.localizedString("Filename"));
+			c.setIdentifier("FILENAME");
+			c.setMinWidth(100f);
+			c.setWidth(250f);
+			c.setMaxWidth(1000f);
+			c.setResizable(true);
+			c.setEditable(false);
+			c.setDataCell(new NSTextFieldCell());
+			c.dataCell().setAlignment(NSText.LeftTextAlignment);
+			this.browserTable.addTableColumn(c);
+		}
+		if(Preferences.instance().getProperty("browser.columnSize").equals("true")) {
+			NSTableColumn c = new NSTableColumn();
+			c.headerCell().setStringValue(NSBundle.localizedString("Size"));
+			c.setIdentifier("SIZE");
+			c.setMinWidth(50f);
+			c.setWidth(80f);
+			c.setMaxWidth(200f);
+			c.setResizable(true);
+			c.setDataCell(new NSTextFieldCell());
+			c.dataCell().setAlignment(NSText.RightTextAlignment);
+			this.browserTable.addTableColumn(c);
+		}
+		if(Preferences.instance().getProperty("browser.columnModification").equals("true")) {
+			NSTableColumn c = new NSTableColumn();
+			c.headerCell().setStringValue(NSBundle.localizedString("Modified"));
+			c.setIdentifier("MODIFIED");
+			c.setMinWidth(100f);
+			c.setWidth(180f);
+			c.setMaxWidth(500f);
+			c.setResizable(true);
+			c.setDataCell(new NSTextFieldCell());
+			c.dataCell().setAlignment(NSText.LeftTextAlignment);
+			this.browserTable.addTableColumn(c);
+		}
+		if(Preferences.instance().getProperty("browser.columnOwner").equals("true")) {
+			NSTableColumn c = new NSTableColumn();
+			c.headerCell().setStringValue(NSBundle.localizedString("Owner"));
+			c.setIdentifier("OWNER");
+			c.setMinWidth(100f);
+			c.setWidth(80f);
+			c.setMaxWidth(500f);
+			c.setResizable(true);
+			c.setDataCell(new NSTextFieldCell());
+			c.dataCell().setAlignment(NSText.LeftTextAlignment);
+			this.browserTable.addTableColumn(c);
+		}
+		if(Preferences.instance().getProperty("browser.columnPermissions").equals("true")) {
+			NSTableColumn c = new NSTableColumn();
+			c.headerCell().setStringValue(NSBundle.localizedString("Permissions"));
+			c.setIdentifier("PERMISSIONS");
+			c.setMinWidth(100f);
+			c.setWidth(100f);
+			c.setMaxWidth(800f);
+			c.setResizable(true);
+			c.setDataCell(new NSTextFieldCell());
+			c.dataCell().setAlignment(NSText.LeftTextAlignment);
+			this.browserTable.addTableColumn(c);
+		}
+		
+		this.browserTable.sizeToFit();
+
 		this.browserTable.setTarget(this);
+		// double click action
+		this.browserTable.setDoubleAction(new NSSelector("browserTableViewDidClickTableRow", new Class[] {Object.class}));
 		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
 		this.browserTable.setDelegate(this.browserModel);
+		
+		// selection properties
+		this.browserTable.setAllowsMultipleSelection(true);
+		this.browserTable.setAllowsEmptySelection(true);
+		this.browserTable.setAllowsColumnReordering(true);
+		
+		// receive drag events from types
 		this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
-//		this.browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
-		this.browserTable.setDoubleAction(new NSSelector("browserTableViewDidClickTableRow", new Class[] {Object.class}));
+		
     }
 		
 	public void browserTableViewDidClickTableRow(Object sender) {
@@ -64,12 +163,13 @@ public class CDBrowserController implements Observer {
 				NSEnumerator enum = browserTable.selectedRowEnumerator();
 //				List items = new ArrayList();
 				if(this.isMounted()) {
-//					Session session = browserModel.workdir().getSession().copy();
+					//					Session session = browserModel.workdir().getSession().copy();
 					while(enum.hasMoreElements()) {
 						Session session = browserModel.workdir().getSession().copy();
-//						items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
-						CDQueueController.instance().addTransfer(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session), 
-																 Queue.KIND_DOWNLOAD);
+						//						items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
+						CDQueueController.instance().addItemAndStart(new Queue(
+																		   ((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session), 
+																		   Queue.KIND_DOWNLOAD));
 					}
 //					CDQueueController.instance().addTransfer(items, Queue.KIND_DOWNLOAD);
 				}
@@ -86,9 +186,19 @@ public class CDBrowserController implements Observer {
 		this.bookmarkTable.setTarget(this);
 		this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
 		this.bookmarkTable.setDelegate(this.bookmarkModel);
+
+		// setting appearance attributes
+		this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
+
+		// selection properties
+		this.bookmarkTable.setAllowsMultipleSelection(false);
+		this.bookmarkTable.setAllowsEmptySelection(true);
+		this.bookmarkTable.setAllowsColumnReordering(false);
+
+		// receive drag events from types
 		this.bookmarkTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
-//		this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]{NSPasteboard.FilenamesPboardType, NSPasteboard.pasteboardWithName("BookmarkPboardType")}));
-//		this.bookmarkTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
+		
+		this.bookmarkTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
 		this.bookmarkTable.tableColumnWithIdentifier("BOOKMARK").setDataCell(new CDBookmarkCell());
 		this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkRowClicked", new Class[] {Object.class}));
 		(NSNotificationCenter.defaultCenter()).addObserver(
@@ -96,6 +206,8 @@ public class CDBrowserController implements Observer {
 													 new NSSelector("bookmarkSelectionDidChange", new Class[]{NSNotification.class}),
 													 NSTableView.TableViewSelectionDidChangeNotification,
 													 bookmarkTable);
+		
+		this.bookmarkTable.sizeToFit();
     }
 	
 	public void bookmarkSelectionDidChange(NSNotification notification) {
@@ -164,7 +276,7 @@ public class CDBrowserController implements Observer {
 					Path next;
 					while (i.hasNext()) {
 						next = (Path)i.next();
-						if(next.getName().indexOf(searchString) != -1) {
+						if(next.getDecodedName().indexOf(searchString) != -1) {
 //						if(next.getName().startsWith(searchString)) {
 							subset.add(next);
 						}
@@ -247,10 +359,6 @@ public class CDBrowserController implements Observer {
 		this.bookmarkTable.reloadData();
     }
 	
-	public void showTransferQueueClicked(Object sender) {
-		CDQueueController.instance().window().makeKeyAndOrderFront(null);
-	}
-
 	// ----------------------------------------------------------
 	// Browser navigation
 	// ----------------------------------------------------------
@@ -376,7 +484,7 @@ public class CDBrowserController implements Observer {
 		
 		NSToolbarItem item = new NSToolbarItem(itemIdentifier);
 		
-		if (itemIdentifier.equals(NSBundle.localizedString("New Connection"))) {
+		if(itemIdentifier.equals("New Connection")) {
 			item.setLabel(NSBundle.localizedString("New Connection"));
 			item.setPaletteLabel(NSBundle.localizedString("New Connection"));
 			item.setToolTip(NSBundle.localizedString("Connect to remote host"));
@@ -384,12 +492,12 @@ public class CDBrowserController implements Observer {
 			item.setTarget(this);
 			item.setAction(new NSSelector("connectButtonClicked", new Class[] {Object.class}));
 		}
-		else if (itemIdentifier.equals(NSBundle.localizedString("Bookmarks"))) {
+		else if(itemIdentifier.equals("Bookmarks")) {
 			item.setView(showBookmarkButton);
 			item.setMinSize(showBookmarkButton.frame().size());
 			item.setMaxSize(showBookmarkButton.frame().size());
 		}
-		else if (itemIdentifier.equals(NSBundle.localizedString("Quick Connect"))) {
+		else if(itemIdentifier.equals("Quick Connect")) {
 			item.setLabel(NSBundle.localizedString("Quick Connect"));
 			item.setPaletteLabel(NSBundle.localizedString("Quick Connect"));
 			item.setToolTip(NSBundle.localizedString("Connect to host"));
@@ -397,7 +505,7 @@ public class CDBrowserController implements Observer {
 			item.setMinSize(quickConnectPopup.frame().size());
 			item.setMaxSize(quickConnectPopup.frame().size());
 		}
-		else if (itemIdentifier.equals(NSBundle.localizedString("Refresh"))) {
+		else if(itemIdentifier.equals("Refresh")) {
 			item.setLabel(NSBundle.localizedString("Refresh"));
 			item.setPaletteLabel(NSBundle.localizedString("Refresh"));
 			item.setToolTip(NSBundle.localizedString("Refresh directory listing"));
@@ -405,23 +513,23 @@ public class CDBrowserController implements Observer {
 			item.setTarget(this);
 			item.setAction(new NSSelector("refreshButtonClicked", new Class[] {Object.class}));
 		}
-		else if (itemIdentifier.equals(NSBundle.localizedString("Download"))) {
+		else if(itemIdentifier.equals("Download")) {
 			item.setLabel(NSBundle.localizedString("Download"));
 			item.setPaletteLabel(NSBundle.localizedString("Download"));
 			item.setToolTip(NSBundle.localizedString("Download file"));
-			item.setImage(NSImage.imageNamed("download.tiff"));
+			item.setImage(NSImage.imageNamed("downloadFile.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("downloadButtonClicked", new Class[] {Object.class}));
 		}
-		else if (itemIdentifier.equals(NSBundle.localizedString("Upload"))) {
+		else if(itemIdentifier.equals("Upload")) {
 			item.setLabel(NSBundle.localizedString("Upload"));
 			item.setPaletteLabel(NSBundle.localizedString("Upload"));
 			item.setToolTip(NSBundle.localizedString("Upload local file to the remote host"));
-			item.setImage(NSImage.imageNamed("upload.tiff"));
+			item.setImage(NSImage.imageNamed("uploadFile.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("uploadButtonClicked", new Class[] {Object.class}));
 		}
-		else if (itemIdentifier.equals(NSBundle.localizedString("Get Info"))) {
+		else if(itemIdentifier.equals("Get Info")) {
 			item.setLabel(NSBundle.localizedString("Get Info"));
 			item.setPaletteLabel(NSBundle.localizedString("Get Info"));
 			item.setToolTip(NSBundle.localizedString("Show file attributes"));
@@ -429,15 +537,15 @@ public class CDBrowserController implements Observer {
 			item.setTarget(this);
 			item.setAction(new NSSelector("infoButtonClicked", new Class[] {Object.class}));
 		}
-		else if (itemIdentifier.equals(NSBundle.localizedString("Delete"))) {
+		else if (itemIdentifier.equals("Delete")) {
 			item.setLabel(NSBundle.localizedString("Delete"));
 			item.setPaletteLabel(NSBundle.localizedString("Delete"));
 			item.setToolTip(NSBundle.localizedString("Delete file"));
-			item.setImage(NSImage.imageNamed("delete.tiff"));
+			item.setImage(NSImage.imageNamed("deleteFile.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("deleteButtonClicked", new Class[] {Object.class}));
 		}
-		else if (itemIdentifier.equals(NSBundle.localizedString("New Folder"))) {
+		else if (itemIdentifier.equals("New Folder")) {
 			item.setLabel(NSBundle.localizedString("New Folder"));
 			item.setPaletteLabel(NSBundle.localizedString("New Folder"));
 			item.setToolTip(NSBundle.localizedString("Create New Folder"));
@@ -445,7 +553,7 @@ public class CDBrowserController implements Observer {
 			item.setTarget(this);
 			item.setAction(new NSSelector("folderButtonClicked", new Class[] {Object.class}));
 		}
-		else if (itemIdentifier.equals(NSBundle.localizedString("Disconnect"))) {
+		else if (itemIdentifier.equals("Disconnect")) {
 			item.setLabel(NSBundle.localizedString("Disconnect"));
 			item.setPaletteLabel(NSBundle.localizedString("Disconnect"));
 			item.setToolTip(NSBundle.localizedString("Disconnect"));
@@ -464,31 +572,31 @@ public class CDBrowserController implements Observer {
 	
 	public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
 		return new NSArray(new Object[] {
-			NSBundle.localizedString("New Connection"), 
+			"New Connection", 
 			NSToolbarItem.SeparatorItemIdentifier, 
-			NSBundle.localizedString("Bookmarks"), 
-			NSBundle.localizedString("Quick Connect"), 
-			NSBundle.localizedString("Refresh"), 
-			NSBundle.localizedString("Get Info"), 
-			NSBundle.localizedString("Download"), 
-			NSBundle.localizedString("Upload"), 
+			"Bookmarks", 
+			"Quick Connect", 
+			"Refresh", 
+			"Get Info", 
+			"Download", 
+			"Upload", 
 			NSToolbarItem.FlexibleSpaceItemIdentifier, 
-			NSBundle.localizedString("Disconnect")
+			"Disconnect"
 		});
 	}
 	
 	public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
 		return new NSArray(new Object[] {
-			NSBundle.localizedString("New Connection"), 
-			NSBundle.localizedString("Bookmarks"), 
-			NSBundle.localizedString("Quick Connect"), 
-			NSBundle.localizedString("Refresh"), 
-			NSBundle.localizedString("Download"), 
-			NSBundle.localizedString("Upload"), 
-			NSBundle.localizedString("Delete"), 
-			NSBundle.localizedString("New Folder"), 
-			NSBundle.localizedString("Get Info"), 
-			NSBundle.localizedString("Disconnect"), 
+			"New Connection", 
+			"Bookmarks", 
+			"Quick Connect", 
+			"Refresh", 
+			"Download", 
+			"Upload", 
+			"Delete", 
+			"New Folder", 
+			"Get Info", 
+			"Disconnect", 
 			NSToolbarItem.CustomizeToolbarItemIdentifier, 
 			NSToolbarItem.SpaceItemIdentifier, 
 			NSToolbarItem.SeparatorItemIdentifier, 
@@ -512,6 +620,7 @@ public class CDBrowserController implements Observer {
 				browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
 				browserModel.sort(selectedColumn, browserModel.isSortedAscending());
 				browserTable.reloadData();
+				//this.toolbar.validateVisibleItems();//todo
 			}
 			if(arg instanceof Message) {
 				Message msg = (Message)arg;
@@ -543,22 +652,25 @@ public class CDBrowserController implements Observer {
 				else if(msg.getTitle().equals(Message.OPEN)) {
 					this.statusIcon.setImage(null);
 					this.statusIcon.setNeedsDisplay(true);
+					//this.toolbar.validateVisibleItems();//todo
 //					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
 				}
 				else if(msg.getTitle().equals(Message.CLOSE)) {
 //					this.statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
 					progressIndicator.stopAnimation(this);
+					//this.toolbar.validateVisibleItems();//todo
 				}
 				else if(msg.getTitle().equals(Message.START)) {
 					progressIndicator.startAnimation(this);
 					this.statusIcon.setImage(null);
 					this.statusIcon.setNeedsDisplay(true);
 //					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
+					//this.toolbar.validateVisibleItems();//todo
 				}
 				else if(msg.getTitle().equals(Message.STOP)) {
 					progressIndicator.stopAnimation(this);
 					statusLabel.setObjectValue(NSBundle.localizedString("Idle"));
-					//@todo enable toolbar
+					//this.toolbar.validateVisibleItems();//todo
 				}
 			}
 		}
@@ -613,7 +725,7 @@ public class CDBrowserController implements Observer {
 			int selected = ((Integer)enum.nextElement()).intValue();
 			Path p = (Path)browserModel.getEntry(selected);
 			files.add(p);
-			alertText.append("\n- "+p.getName());
+			alertText.append("\n- "+p.getDecodedName());
 		}
 		NSAlertPanel.beginCriticalAlertSheet(
 									   NSBundle.localizedString("Delete"), //title
@@ -633,7 +745,6 @@ public class CDBrowserController implements Observer {
 									   null, // dismiss selector
 									   files, // contextInfo
 									   alertText.toString()
-									   //					  "Really delete the file '"+path.getName()+"'? This cannot be undone." // message
 									   );
     }
     
@@ -670,11 +781,11 @@ public class CDBrowserController implements Observer {
 //		List items = new ArrayList();
 		while(enum.hasMoreElements()) {
 			Session session = browserModel.workdir().getSession().copy();
-//			items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
-			CDQueueController.instance().addTransfer(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session), 
-													 Queue.KIND_DOWNLOAD);
+			//			items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
+			CDQueueController.instance().addItemAndStart(new Queue(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session), 
+															   Queue.KIND_DOWNLOAD));
 		}
-//		CDQueueController.instance().addTransfer(items, Queue.KIND_DOWNLOAD);
+		//		CDQueueController.instance().addTransfer(items, Queue.KIND_DOWNLOAD);
     }
     
     public void uploadButtonClicked(Object sender) {
@@ -700,11 +811,11 @@ public class CDBrowserController implements Observer {
 					Session session = parent.getSession().copy();
 					Path item = parent.copy(session);
 					item.setPath(parent.getAbsolute(), new Local((String)enumerator.nextElement()));
-//					items.add(item);
-					CDQueueController.instance().addTransfer(item, 
-															 Queue.KIND_UPLOAD);
+					//					items.add(item);
+					CDQueueController.instance().addItemAndStart(new Queue(item, 
+																	   Queue.KIND_UPLOAD));
 				}
-//				CDQueueController.instance().addTransfer(items, Queue.KIND_UPLOAD);
+				//				CDQueueController.instance().addTransfer(items, Queue.KIND_UPLOAD);
 				break;
 			}
 			case(NSPanel.CancelButton): {
@@ -780,7 +891,6 @@ public class CDBrowserController implements Observer {
 										 );
 			}
 		}
-		
 		host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
 		session.mount();
 		CDHistoryImpl.instance().addItem(host);

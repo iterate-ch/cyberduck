@@ -27,6 +27,7 @@ import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import com.apple.cocoa.foundation.NSDictionary;
 import org.apache.log4j.Logger;
 
 /**
@@ -51,12 +52,15 @@ public class SFTPPath extends Path {
 		super(parent, file);
 		this.session = session;
     }
+
+	public SFTPPath(SFTPSession session, NSDictionary dict) {
+		super(dict);
+		this.session = session;
+    }
 	
     public Path copy(Session s) {
 		SFTPPath copy = new SFTPPath((SFTPSession)s, this.getAbsolute());
-//		SFTPPath copy = new SFTPPath((SFTPSession)s, this.getParent().getAbsolute(), this.getLocal());
 		copy.attributes = this.attributes;
-		//	copy.status = this.status;
 		return copy;
     }
     

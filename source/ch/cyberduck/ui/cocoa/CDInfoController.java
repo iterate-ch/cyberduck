@@ -112,7 +112,7 @@ public class CDInfoController {
 		NSPoint origin = this.window.frame().origin();
 		this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 		
-		this.filenameField.setStringValue(file.getName());
+		this.filenameField.setStringValue(file.getDecodedName());
 		this.pathField.setStringValue(file.getParent().getAbsolute());
 		this.groupField.setStringValue(file.attributes.getGroup());
 		this.kindField.setStringValue(file.getKind());
@@ -161,7 +161,7 @@ public class CDInfoController {
     }
 	
     public void windowWillClose(NSNotification notification) {
-		if(!filenameField.stringValue().equals(file.getName())) {
+		if(!filenameField.stringValue().equals(file.getDecodedName())) {
 			String newName = filenameField.stringValue();
 			file.rename(newName);
 		}
@@ -173,7 +173,7 @@ public class CDInfoController {
 	
     public void filenameInputDidEndEditing(NSNotification sender) {
 		log.debug("textInputDidEndEditing");
-		if(!filenameField.stringValue().equals(file.getName())) {
+		if(!filenameField.stringValue().equals(file.getDecodedName())) {
 			String newName = filenameField.stringValue();
 			file.rename(newName);
 		}

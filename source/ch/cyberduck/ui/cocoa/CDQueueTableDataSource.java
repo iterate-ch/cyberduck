@@ -44,11 +44,6 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 		return data.size();
 	}
 	
-	public void tableViewWillDisplayCell(NSTableView aTableView, Object cell, NSTableColumn aTableColumn, int row) {
-//		if(cell instanceof CDProgressCell)
-//			((CDProgressCell)cell).setCurrent(this.getEntry(row).getCurrent());
-	}
-
 	//getValue()
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 //		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
@@ -84,6 +79,10 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 	
 	public void removeEntry(int row) {
 		this.data.remove(row);
+	}
+	
+	public void removeEntry(Queue o) {
+		this.data.remove(this.data.indexOf(o));
 	}
 	
 	public Queue getEntry(int row) {

@@ -29,6 +29,7 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import com.apple.cocoa.foundation.NSDictionary;
 import org.apache.log4j.Logger;
 
 /**
@@ -54,6 +55,11 @@ public class HTTPPath extends Path {
 		this.session = session;
     }
     
+	public HTTPPath(HTTPSession session, NSDictionary dict) {
+		super(dict);
+		this.session = session;
+    }
+	
     public Path copy(Session s) {
 		HTTPPath copy = new HTTPPath((HTTPSession)s, this.getAbsolute());
 //		HTTPPath copy = new HTTPPath((HTTPSession)s, this.getParent().getAbsolute(), this.getLocal());

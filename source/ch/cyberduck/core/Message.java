@@ -32,7 +32,6 @@ public class Message {//{implements java.io.Serializable {
     public static final String PROGRESS = "PROGRESS";
     public static final String ERROR = "ERROR";
     public static final String DATA = "DATA";
-	//    public static final String SPEED = "SPEED";
     public static final String CLOCK = "CLOCK";
 	
     // connection state of host
@@ -42,7 +41,8 @@ public class Message {//{implements java.io.Serializable {
     // connection state of file
     public static final String START = "START";
     public static final String STOP = "STOP";
-    public static final String COMPLETE = "COMPLETE";
+//    public static final String COMPLETE = "COMPLETE";
+//    public static final String INCOMPLETE = "INCOMPLETE";
 	
     public static final String RENDEZVOUS_ADD = "RENDEZVOUS_ADD";
     public static final String RENDEZVOUS_REMOVE = "RENDEZVOUS_REMOVE";

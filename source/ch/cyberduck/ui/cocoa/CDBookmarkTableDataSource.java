@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 public class CDBookmarkTableDataSource extends CDTableDataSource {
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 	
-	Bookmarks bookmarks = CDBookmarksImpl.instance();
+	private Bookmarks bookmarks = CDBookmarksImpl.instance();
 	
 	public int numberOfRowsInTableView(NSTableView tableView) {
 		return bookmarks.values().size();
@@ -52,9 +52,9 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 		throw new IllegalArgumentException("Unknown identifier: "+identifier);
 	}
 	
-	public Host getEntry(int row) {
-		return (Host)bookmarks.values().toArray()[row];
-    }
+//	public Host getEntry(int row) {
+//		return (Host)bookmarks.values().toArray()[row];
+//    }
 	
 	// ----------------------------------------------------------
  // Drop methods
@@ -131,7 +131,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 				// The types argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
 				NSMutableArray types = new NSMutableArray();
 				for(int i = 0; i < rows.count(); i++) {
-					promisedDragBookmarks[i] = (Host)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue());
+					promisedDragBookmarks[i] = (Host)bookmarks.getItem(((Integer)rows.objectAtIndex(i)).intValue());
 					types.addObject("duck");
 				}
 				NSEvent event = NSApplication.sharedApplication().currentEvent();

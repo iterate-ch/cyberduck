@@ -33,7 +33,14 @@ public class CDBookmarkCell extends NSCell {
 //		log.debug("setObjectValue:"+bookmark);
 		this.bookmark = (Host)bookmark;
     }
-    
+	
+	public NSMenu menu() {
+		log.debug("menu");
+		NSMenu menu = new NSMenu();
+		menu.addItem("Delete", new NSSelector("deleteButtonClicked", new Class[] {Object.class}), "");
+		return menu;
+	}
+	
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 //		log.debug("drawInteriorWithFrameInView");
 		NSMutableParagraphStyle paragraphStyle = new NSMutableParagraphStyle();

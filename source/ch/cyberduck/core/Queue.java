@@ -18,14 +18,26 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ftp.FTPPath;
+import ch.cyberduck.core.sftp.SFTPPath;
+import ch.cyberduck.core.http.HTTPPath;
+
+import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.http.HTTPSession;
+import ch.cyberduck.core.sftp.SFTPSession;
+
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableDictionary;
+import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSMutableArray;
 import org.apache.log4j.Logger;
 
 /**
-* Used to queue multiple connections. <code>queue.start()</code> will
+* Used to this multiple connections. <code>this.start()</code> will
  * start the the connections in the order the have been added to me.
  * Useful for actions where the order of the taken actions
  * is important, i.e. deleting directories or uploading directories.
@@ -47,25 +59,20 @@ public class Queue extends Observable implements Observer { //Thread {
      */
     private Timer elapsedTimer;
 	
-	/**
-		* The validator checks if the file already exists and propeses a solution to the user
-	 */
-    private Validator validator;
-	
     Calendar calendar = Calendar.getInstance();
 	
     public static final int KIND_DOWNLOAD = 0;
     public static final int KIND_UPLOAD = 1;
     /**
-		* What kind of queue, either KIND_DOWNLOAD or KIND_UPLOAD
+		* What kind of this, either KIND_DOWNLOAD or KIND_UPLOAD
      */
     private int kind;
     /**
-		* Number of completed jobs in the queue
+		* Number of completed jobs in the this
      */
     private int completedJobs;
     /**
-		* The file currently beeing processed in the queue
+		* The file currently beeing processed in the this
      */
     private Path currentJob;
 	
@@ -73,51 +80,122 @@ public class Queue extends Observable implements Observer { //Thread {
 		* This is a list of root paths. This is either a directory
 	 * or a regular file itself.
      */
-    private List roots; //Path
+//    private List roots; //Path
+    private Path root; //Path
 	
-	public List getRoots() {
-		return this.roots;
+	public Path getRoot() {
+		return this.root;
 	}
 	
     /**
 		* This has the same size as the roots and contains the root
      * path itself and all subelements (in case of a directory) 
      */
-    private List[] jobs;
+    private List jobs;
+//    private List[] jobs;
     
     /**
-		* The queue has been canceled from processing for any reason
+		* The this has been canceled from processing for any reason
      */
-    private boolean canceled;
+    private boolean running;
 	
-	private boolean initialized;
+//	private boolean initialized;
 	
     /*
      * 	current speed (bytes/second)
      */
-    private transient long speed;
+    private long speed;
     /*
      * overall speed (bytes/second)
      */
 	//    private transient double overall;
-    /**
-		* The size of all files accumulated
-     */
-//    private long size;
-//    private long current;
-    private int timeLeft;
-    
-    public Queue(List roots, int kind, Validator validator) {
-		log.debug("New queue with "+roots.size()+" root elements");
-		this.roots = roots;
+
+    private int timeLeft = -1;
+	private long current = -1;
+	private long size = -1;
+	
+	private String progress;
+	
+	public Queue(Path root, int kind) {
+		this.root = root;
 		this.kind = kind;
-		this.validator = validator;
-		this.currentJob = (Path)roots.get(0);
-    }
-    
+//		List roots = new ArrayList(); 
+//		roots.add(root);
+//		this.init(roots, kind);
+		this.init();
+	}
+	
+//    public Queue(List roots, int kind) {
+//		log.debug("New this with "+roots.size()+" root elements");
+//		this.init(roots, kind);
+//	}
+	
+//	private void init(List roots, int kind) {
+//		this.roots = roots;
+//		this.kind = kind;
+//		this.validator = validator;
+//		this.currentJob = (Path)roots.get(0);
+//    }
+	
+	public Queue(NSDictionary dict) {
+		this.kind = ((Integer)dict.objectForKey("Kind")).intValue();
+		Host host = new Host((NSDictionary)dict.objectForKey("Host"));
+		NSArray elements = (NSArray)dict.objectForKey("Roots");
+		for(int i = 0; i < elements.count(); i++) {
+			//todo Path Factory Pattern
+			if(host.getProtocol().equalsIgnoreCase(Session.HTTP)) {
+				this.root = new HTTPPath((HTTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
+//				this.addRoot(new HTTPPath((HTTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i)));
+			}
+			//  if(host.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
+			//            return new HTTPSession(this);
+			//        }
+			else if(host.getProtocol().equalsIgnoreCase(Session.FTP)) {
+				this.root = new FTPPath((FTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
+//				this.addRoot(new FTPPath((FTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i)));
+			}
+			else if(host.getProtocol().equalsIgnoreCase(Session.SFTP)) {
+				this.root = new SFTPPath((SFTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
+//				this.addRoot(new SFTPPath((SFTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i)));
+			}
+			else {
+				log.error("Unknown protocol");
+			}
+		}
+		this.size = ((Long)dict.objectForKey("Size")).longValue();
+		this.current = ((Long)dict.objectForKey("Current")).longValue();
+		this.init();
+	}
+	
+	private void init() {
+	    this.calendar.set(Calendar.HOUR, 0);
+		this.calendar.set(Calendar.MINUTE, 0);
+		this.calendar.set(Calendar.SECOND, 0);		
+	}
+	
+	public NSDictionary getAsDictionary() {
+		NSMutableDictionary dict = new NSMutableDictionary();
+		dict.setObjectForKey(new Integer(this.kind()), "Kind");
+		dict.setObjectForKey(new Long(this.getSize()), "Size");
+		dict.setObjectForKey(new Long(this.getCurrent()), "Current");
+		dict.setObjectForKey(this.root.getHost().getAsDictionary(), "Host");
+//		Iterator i = this.getRoots().iterator();
+		NSMutableArray list = new NSMutableArray();
+//		while(i.hasNext()) {
+//			list.addObject(((Path)i.next()).getAsDictionary());
+//		}
+		list.addObject(this.root.getAsDictionary());
+		dict.setObjectForKey(list, "Roots");
+		return dict;
+	}
+	
+//	public void addRoot(Path root) {
+//		this.roots.add(root);
+//	}
+	
     /**
-		* @param file The base file to build a queue for. If this is a not a folder
-     * the queue will consist of only this.
+		* @param file The base file to build a this for. If this is a not a folder
+     * the this will consist of only this.
      * @param  kind Specifiying a download or upload.
      */
 //    public Queue(Path root, int kind, Validator validator) {
@@ -137,36 +215,33 @@ public class Queue extends Observable implements Observer { //Thread {
     public void update(Observable o, Object arg) {
 		//Forwarding all messages from the current file's status to my observers
 		this.callObservers(arg);
-    }
+		if(arg instanceof Message) {
+			Message msg = (Message)arg;
+			if(msg.getTitle().equals(Message.PROGRESS))
+				this.progress = (String)msg.getContent();
+		}
+	}
 	
     private void process() {
 		log.debug("process");
-		int i = 0;
-		Iterator rootIterator = roots.iterator();
-		while(rootIterator.hasNext()) {
-			//Iterating over all the files in the queue
-			if(this.isCanceled()) {
-				break;
-			}
-			Path root = (Path)rootIterator.next();
+		//		int i = 0;
+		//		Iterator rootIterator = roots.iterator();
+		//		while(rootIterator.hasNext()) {
+		//Iterating over all the files in the this
+		if(!this.isCanceled()) {
+//			Path root = (Path)rootIterator.next();
 			root.getSession().addObserver(this);
-//			this.callObservers(root);
-			Iterator elements = jobs[i].iterator();
-			while(elements.hasNext() && !isCanceled()) {
+			//			this.callObservers(root);
+			Iterator elements = jobs.iterator();
+//			Iterator elements = jobs[i].iterator();
+			while(elements.hasNext() && !this.isCanceled()) {
 				this.progressTimer.start();
 				this.leftTimer.start();
 				
 				this.currentJob = (Path)elements.next();
-				this.initialized = true;
-
 				this.currentJob.status.setResume(root.status.isResume());
 				this.currentJob.status.addObserver(this);
-								
-				//				this.callObservers(new Message(Message.PROGRESS, 
-	//								   KIND_DOWNLOAD == kind ? 
- //								   "Downloading "+currentJob.getName()+" ("+(this.completedJobs())+" of "+(this.numberOfJobs())+")" : 
- //								   "Uploading "+currentJob.getName()+" ("+(this.completedJobs())+" of "+(this.numberOfJobs())+")"));
-				
+
 				switch(kind) {
 					case KIND_DOWNLOAD:
 						currentJob.download();
@@ -177,7 +252,7 @@ public class Queue extends Observable implements Observer { //Thread {
 				}
 				if(currentJob.status.isComplete()) {
 					this.completedJobs++;
-//					this.current += currentJob.status.getCurrent();
+					//					this.current += currentJob.status.getCurrent();
 				}
 				this.currentJob.status.deleteObserver(this);
 				
@@ -188,71 +263,64 @@ public class Queue extends Observable implements Observer { //Thread {
 			if(this.isEmpty()) {
 				root.getSession().close();
 			}
-			i++;
 		}
+		//			i++;
+		//		}
 	}
 	
 	/**
-		* Process the queue. All files will be downloaded or uploaded rerspectively.
-	 * @param resume If false finish all non finished items in the queue. If true refill the queue with all the childs from the parent Path and restart
+		* Process the this. All files will be downloaded or uploaded rerspectively.
+	 * @param validator A callback class where the user can decide what to do if
+	 * the file already exists at the download location
 	 */
-	public void start() {
+	public void start(final Validator validator) {
 		log.debug("start");
-		this.reset();
-		this.init();
-		this.jobs = new ArrayList[roots.size()];
-		int i = 0;
-		Iterator rootIterator = roots.iterator();
-		while(rootIterator.hasNext()) {
-			jobs[i] = new ArrayList();
-			Path root = (Path)rootIterator.next();
-			if(this.validator.validate(root, kind)) {
-				log.debug("Filling queue of root element "+root);
-				root.getSession().addObserver(this);
-				root.fillQueue(jobs[i], kind);
-				root.getSession().deleteObserver(this);
-			}
-			i++;
-		}
+//		this.validator = validator;
 		new Thread() {
 			public void run() {
-				canceled = false;
+//				reset();
+				running = true;
+				startTimers();
+				jobs = new ArrayList();
+				jobs = new ArrayList();
+				if(validator.validate(root, kind)) {
+					log.debug("Filling this of root element "+root);
+					root.getSession().addObserver(Queue.this);
+					root.fillQueue(jobs, kind);
+					root.getSession().deleteObserver(Queue.this);
+				}
 				elapsedTimer.start();
 				process();
 				elapsedTimer.stop();
-				canceled = true;
+				running = false;
 			}
 		}.start();
-    }
-	
-	//    public void resume() {
- //
- //    }
+	}
 	
     public void cancel() {
-		this.canceled = true;
+		this.running = false;
 //		if(currentJob != null)
 			currentJob.status.setCanceled(true);
     }
 	
-	public boolean isInitialized() {
-		return this.initialized;
-	}
+//	public boolean isInitialized() {
+//		return this.initialized;
+//	}
 	
 	public boolean isRunning() {
-		return !this.isCanceled();
+		return this.running;
 	}
 	
     public boolean isCanceled() {
-		return this.canceled;
+		return !this.isRunning();
     }
 	
-	public Path getCurrentJob() {
-		return this.currentJob;
-	}
+//	public Path getCurrentJob() {
+//		return this.currentJob;
+//	}
 	
     /**
-		* @return Number of remaining items to be processed in the queue.
+		* @return Number of remaining items to be processed in the this.
      */
     public int remainingJobs() {
 //		log.debug("remainingJobs:");
@@ -260,7 +328,7 @@ public class Queue extends Observable implements Observer { //Thread {
     }
 	
     /**
-		* @return Number of completed (totally transferred) items in the queue.
+		* @return Number of completed (totally transferred) items in the this.
      */
     public int completedJobs() {
 //		log.debug("completedJobs:"+completedJobs);
@@ -268,30 +336,59 @@ public class Queue extends Observable implements Observer { //Thread {
     }
 
     /**
-		* @return Number of jobs in the queue.
+		* @return Number of jobs in the this.
      */
     public int numberOfJobs() {
-		int value = 0;
-		for(int i = 0; i < jobs.length; i ++) {
-			value += this.jobs[i].size();
-		}
+		int value = 1;
+		if(this.isRunning())
+			value = jobs.size();
+//		int value = 0;
+//		for(int i = 0; i < jobs.length; i ++) {
+//			value += this.jobs[i].size();
+//		}
 //		log.debug("numberOfJobs:"+value);
 		return value;
     }
 	
     /**
-		* @return rue if all items in the queue have been processed sucessfully.
+		* @return rue if all items in the this have been processed sucessfully.
      */
     public boolean isEmpty() {
 		return this.remainingJobs() == 0;
     }
 	
+	public String getStatus() {
+		return this.progress;
+		/*
+		if(this.isRunning()) {
+			if(Queue.KIND_DOWNLOAD == this.kind())
+				return this.getElapsedTime()+" "+"Downloading "+this.getRoot().getDecodedName()+" ("+(this.completedJobs())+" of "+(this.numberOfJobs())+")";
+			return this.getElapsedTime()+" "+"Uploading "+this.getRoot().getDecodedName()+" ("+(this.completedJobs())+" of "+(this.numberOfJobs())+")";
+		}
+		if(this.isEmpty()) {
+			return this.getElapsedTime()+" "+
+			"Complete ("+(this.completedJobs())+
+			" of "+
+			(this.numberOfJobs())+
+			")";
+		}
+		return this.getElapsedTime()+" "+
+		"Incomplete ("+(this.completedJobs())+
+		" of "+
+		(this.numberOfJobs())+
+		")";
+		 */
+	}
+	
 	public String getSizeAsString() {
-		return Status.getSizeAsString(this.getSize());
+		String size = Status.getSizeAsString(this.getSize());
+		if(null == size)
+			return "";
+		return size;
     }
 	
     /**
-		* @return The cummulative file size of all files remaining in the queue
+		* @return The cummulative file size of all files remaining in the this
      */
     public long getSize() {
 //		if(this.size <= 0)
@@ -301,39 +398,58 @@ public class Queue extends Observable implements Observer { //Thread {
     }
 	
     public long calculateTotalSize() {
-		long value = 0;
-		for(int i = 0; i < jobs.length; i ++) {
-			if(null != jobs[i]) {
-				Iterator elements = jobs[i].iterator();
-				while(elements.hasNext()) {
-					value += ((Path)elements.next()).status.getSize();
-				}
+//		this.size = -1;
+		if(this.isRunning()) {
+			this.size = -1; //todo
+			Iterator elements = jobs.iterator();
+			while(elements.hasNext()) {
+				this.size += ((Path)elements.next()).status.getSize();
 			}
 		}
+		//		for(int i = 0; i < jobs.length; i ++) {
+//			if(null != jobs[i]) {
+//				Iterator elements = jobs[i].iterator();
+//				while(elements.hasNext()) {
+//					value += ((Path)elements.next()).status.getSize();
+//				}
+//			}
+//		}
 //		log.debug("calculateTotalSize:"+value);
-		return value;
+//		return value;
+		return this.size;
     }
 	
-    private int calculateCurrentSize() {
-		int value = 0;
-		for(int i = 0; i < jobs.length; i ++) {
-			if(null != jobs[i]) {
-				Iterator elements = jobs[i].iterator();
-				while(elements.hasNext()) {
-					value += ((Path)elements.next()).status.getCurrent();
-				}
+	private long calculateCurrentSize() {
+//		int value = -1;
+		if(this.isRunning()) {
+			this.current = -1; //todo
+			Iterator elements = jobs.iterator();
+			while(elements.hasNext()) {
+				this.current += ((Path)elements.next()).status.getCurrent();
 			}
 		}
+		//		for(int i = 0; i < jobs.length; i ++) {
+//			if(null != jobs[i]) {
+//				Iterator elements = jobs[i].iterator();
+//				while(elements.hasNext()) {
+//					value += ((Path)elements.next()).status.getCurrent();
+//				}
+//			}
+//		}
 //		log.debug("calculateCurrentSize:"+value);
-		return value;
+//		return value;
+		return this.current;
     }
 	
     public String getCurrentAsString() {
-		return Status.getSizeAsString(this.getCurrent());
+		String current = Status.getSizeAsString(this.getCurrent());
+		if(null == current)
+			return "";
+		return current;
     }
 
     /**
-		* @return The number of bytes already processed of all elements in the whole queue.
+		* @return The number of bytes already processed of all elements in the whole this.
      */
     public long getCurrent() {
 		return this.calculateCurrentSize();
@@ -344,7 +460,10 @@ public class Queue extends Observable implements Observer { //Thread {
 		* @return double current bytes/second
      */
     public String getSpeedAsString() {
-		return Status.getSizeAsString(this.getSpeed())+"/sec";
+		String speed = Status.getSizeAsString(this.getSpeed());
+		if(null == speed)
+			return "";
+		return speed+"/sec";
     }
 	
 	public long getSpeed() {
@@ -414,10 +533,9 @@ public class Queue extends Observable implements Observer { //Thread {
  //				   + Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
  //				   + Status.parseDouble(this.getOverall()/1024) + " kB/s. "+this.getTimeLeft()));
  //}
-	
+
+	/*
 private void reset() {
-//    this.size = -1;
-//    this.current = 0;
     this.speed = -1;
 	//    this.overall = 0;
     this.timeLeft = -1;
@@ -427,8 +545,12 @@ private void reset() {
     this.calendar.set(Calendar.SECOND, 0);
 //	this.callObservers(new Message(Message.DATA));
 }
+*/
 
-private void init() {
+private void startTimers() {
+    this.calendar.set(Calendar.HOUR, 0);
+    this.calendar.set(Calendar.MINUTE, 0);
+    this.calendar.set(Calendar.SECOND, 0);
     this.elapsedTimer = new Timer(1000,
 								  new ActionListener() {
 									  int seconds = 0;

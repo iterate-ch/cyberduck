@@ -20,8 +20,10 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
+
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -49,27 +51,185 @@ public class CDPreferencesController {
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
+	
+	private NSPopUpButton encodingCombobox;
+	public void setEncodingCombobox(NSPopUpButton encodingCombobox) {
+		this.encodingCombobox = encodingCombobox;
+		this.encodingCombobox.setTarget(this);
+		this.encodingCombobox.setAction(new NSSelector("encodingComboboxClicked", new Class[] {NSPopUpButton.class}));
+		this.encodingCombobox.removeAllItems();
+		java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
+		log.debug("Available charsets:"+charsets.values());
+		String[] items = new String[charsets.size()];
+		java.util.Iterator iterator = charsets.values().iterator();
+		int i = 0;
+		while(iterator.hasNext()) {
+			items[i] = ((java.nio.charset.Charset)iterator.next()).name();
+			i++;
+		}
+		this.encodingCombobox.addItemsWithTitles(
+												 new NSArray(items));
+		this.encodingCombobox.setTitle(Preferences.instance().getProperty("browser.encoding"));
+    }
     
+    public void encodingComboboxClicked(NSPopUpButton sender) {
+		Preferences.instance().setProperty("browser.encoding", sender.titleOfSelectedItem());
+    }    
+	
+    
+	private NSButton horizontalLinesCheckbox; //IBOutlet
+	public void setHorizontalLinesCheckbox(NSButton horizontalLinesCheckbox) {
+		this.horizontalLinesCheckbox = horizontalLinesCheckbox;
+		this.horizontalLinesCheckbox.setTarget(this);
+		this.horizontalLinesCheckbox.setAction(new NSSelector("horizontalLinesCheckboxClicked", new Class[] {NSButton.class}));
+		this.horizontalLinesCheckbox.setState(Preferences.instance().getProperty("browser.horizontalLines").equals("true") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void horizontalLinesCheckboxClicked(NSButton sender) {
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("browser.horizontalLines", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("browser.horizontalLines", false);
+				break;
+		}
+	}
+	
+    private NSButton verticalLinesCheckbox; //IBOutlet
+	public void setVerticalLinesCheckbox(NSButton verticalLinesCheckbox) {
+		this.verticalLinesCheckbox = verticalLinesCheckbox;
+		this.verticalLinesCheckbox.setTarget(this);
+		this.verticalLinesCheckbox.setAction(new NSSelector("verticalLinesCheckboxClicked", new Class[] {NSButton.class}));
+		this.verticalLinesCheckbox.setState(Preferences.instance().getProperty("browser.verticalLines").equals("true") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void verticalLinesCheckboxClicked(NSButton sender) {
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("browser.verticalLines", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("browser.verticalLines", false);
+				break;
+		}
+	}
+	
+	private NSButton alternatingRowBackgroundCheckbox; //IBOutlet
+	public void setAlternatingRowBackgroundCheckbox(NSButton alternatingRowBackgroundCheckbox) {
+		this.alternatingRowBackgroundCheckbox = alternatingRowBackgroundCheckbox;
+		this.alternatingRowBackgroundCheckbox.setTarget(this);
+		this.alternatingRowBackgroundCheckbox.setAction(new NSSelector("alternatingRowBackgroundCheckboxClicked", new Class[] {NSButton.class}));
+		this.alternatingRowBackgroundCheckbox.setState(Preferences.instance().getProperty("browser.alternatingRows").equals("true") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void alternatingRowBackgroundCheckboxClicked(NSButton sender) {
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("browser.alternatingRows", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("browser.alternatingRows", false);
+				break;
+		}
+	}
+		
+    private NSButton columnModificationCheckbox; //IBOutlet
+	public void setColumnModificationCheckbox(NSButton columnModificationCheckbox) {
+		this.columnModificationCheckbox = columnModificationCheckbox;
+		this.columnModificationCheckbox.setTarget(this);
+		this.columnModificationCheckbox.setAction(new NSSelector("columnModificationCheckboxClicked", new Class[] {NSButton.class}));
+		this.columnModificationCheckbox.setState(Preferences.instance().getProperty("browser.columnModification").equals("true") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void columnModificationCheckboxClicked(NSButton sender) {
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("browser.columnModification", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("browser.columnModification", false);
+				break;
+		}
+	}
+	
+	private NSButton columnOwnerCheckbox; //IBOutlet
+	public void setColumnOwnerCheckbox(NSButton columnOwnerCheckbox) {
+		this.columnOwnerCheckbox = columnOwnerCheckbox;
+		this.columnOwnerCheckbox.setTarget(this);
+		this.columnOwnerCheckbox.setAction(new NSSelector("columnOwnerCheckboxClicked", new Class[] {NSButton.class}));
+		this.columnOwnerCheckbox.setState(Preferences.instance().getProperty("browser.columnOwner").equals("true") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void columnOwnerCheckboxClicked(NSButton sender) {
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("browser.columnOwner", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("browser.columnOwner", false);
+				break;
+		}
+	}
+	
+	private NSButton columnPermissionsCheckbox; //IBOutlet
+	public void setColumnPermissionsCheckbox(NSButton columnPermissionsCheckbox) {
+		this.columnPermissionsCheckbox = columnPermissionsCheckbox;
+		this.columnPermissionsCheckbox.setTarget(this);
+		this.columnPermissionsCheckbox.setAction(new NSSelector("columnPermissionsCheckboxClicked", new Class[] {NSButton.class}));
+		this.columnPermissionsCheckbox.setState(Preferences.instance().getProperty("browser.columnPermissions").equals("true") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void columnPermissionsCheckboxClicked(NSButton sender) {
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("browser.columnPermissions", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("browser.columnPermissions", false);
+				break;
+		}
+	}
+	
+	private NSButton columnSizeCheckbox; //IBOutlet
+	public void setColumnSizeCheckbox(NSButton columnSizeCheckbox) {
+		this.columnSizeCheckbox = columnSizeCheckbox;
+		this.columnSizeCheckbox.setTarget(this);
+		this.columnSizeCheckbox.setAction(new NSSelector("columnSizeCheckboxClicked", new Class[] {NSButton.class}));
+		this.columnSizeCheckbox.setState(Preferences.instance().getProperty("browser.columnSize").equals("true") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void columnSizeCheckboxClicked(NSButton sender) {
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("browser.columnSize", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("browser.columnSize", false);
+				break;
+		}
+	}
+	
     // public-key algorithms
     private static final String SSH_DSS = "ssh-dss";
     private static final String SSH_RSA = "ssh-rsa";
 	
-    private NSPopUpButton publickeyCombo;
-    public void setPublickeyCombo(NSPopUpButton publickeyCombo) {
-		this.publickeyCombo = publickeyCombo;
-		this.publickeyCombo.setTarget(this);
-		this.publickeyCombo.setAction(new NSSelector("publickeyComboClicked", new Class[] {NSPopUpButton.class}));
-		this.publickeyCombo.removeAllItems();
-		this.publickeyCombo.addItemsWithTitles(
+    private NSPopUpButton publickeyCombobox;
+    public void setPublickeyCombobox(NSPopUpButton publickeyCombobox) {
+		this.publickeyCombobox = publickeyCombobox;
+		this.publickeyCombobox.setTarget(this);
+		this.publickeyCombobox.setAction(new NSSelector("publickeyComboboxClicked", new Class[] {NSPopUpButton.class}));
+		this.publickeyCombobox.removeAllItems();
+		this.publickeyCombobox.addItemsWithTitles(
 										 new NSArray(new String[]{
 											 "Default",
 											 SSH_DSS,
 											 SSH_RSA
 										 }));
 		
-		publickeyCombo.setTitle(Preferences.instance().getProperty("ssh.publickey"));
+		publickeyCombobox.setTitle(Preferences.instance().getProperty("ssh.publickey"));
     }
-    public void publickeyComboClicked(NSPopUpButton sender) {
+    public void publickeyComboboxClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("ssh.publickey", sender.titleOfSelectedItem());
     }    
 	
@@ -84,13 +244,13 @@ public class CDPreferencesController {
     private static final String aes128_cbc = "aes128-cbc";
     private static final String cast128_cbc = "cast128-cbc";
 	
-    private NSPopUpButton csEncryptionCombo;
-    public void setCsEncryptionCombo(NSPopUpButton csEncryptionCombo) {
-		this.csEncryptionCombo = csEncryptionCombo;
-		this.csEncryptionCombo.setTarget(this);
-		this.csEncryptionCombo.setAction(new NSSelector("csEncryptionComboClicked", new Class[] {NSPopUpButton.class}));
-		this.csEncryptionCombo.removeAllItems();
-		this.csEncryptionCombo.addItemsWithTitles(
+    private NSPopUpButton csEncryptionCombobox; //IBOutlet
+    public void setCsEncryptionCombobox(NSPopUpButton csEncryptionCombobox) {
+		this.csEncryptionCombobox = csEncryptionCombobox;
+		this.csEncryptionCombobox.setTarget(this);
+		this.csEncryptionCombobox.setAction(new NSSelector("csEncryptionComboboxClicked", new Class[] {NSPopUpButton.class}));
+		this.csEncryptionCombobox.removeAllItems();
+		this.csEncryptionCombobox.addItemsWithTitles(
 											new NSArray(new String[]{
 												"Default",
 												des_cbc, 
@@ -104,20 +264,20 @@ public class CDPreferencesController {
 												cast128_cbc
 											}));
 		
-		csEncryptionCombo.setTitle(Preferences.instance().getProperty("ssh.CSEncryption"));
+		this.csEncryptionCombobox.setTitle(Preferences.instance().getProperty("ssh.CSEncryption"));
     }
     
-    public void csEncryptionComboClicked(NSPopUpButton sender) {
+    public void csEncryptionComboboxClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("ssh.CSEncryption", sender.titleOfSelectedItem());
     }    
     
-    private NSPopUpButton scEncryptionCombo;
-    public void setScEncryptionCombo(NSPopUpButton scEncryptionCombo) {
-		this.scEncryptionCombo = scEncryptionCombo;
-		this.scEncryptionCombo.setTarget(this);
-		this.scEncryptionCombo.setAction(new NSSelector("scEncryptionComboClicked", new Class[] {NSPopUpButton.class}));
-		this.scEncryptionCombo.removeAllItems();
-		this.scEncryptionCombo.addItemsWithTitles(
+    private NSPopUpButton scEncryptionCombobox; //IBOutlet
+    public void setScEncryptionCombobox(NSPopUpButton scEncryptionCombobox) {
+		this.scEncryptionCombobox = scEncryptionCombobox;
+		this.scEncryptionCombobox.setTarget(this);
+		this.scEncryptionCombobox.setAction(new NSSelector("scEncryptionComboboxClicked", new Class[] {NSPopUpButton.class}));
+		this.scEncryptionCombobox.removeAllItems();
+		this.scEncryptionCombobox.addItemsWithTitles(
 											new NSArray(new String[]{
 												"Default",
 												des_cbc, 
@@ -131,10 +291,10 @@ public class CDPreferencesController {
 												cast128_cbc
 											}));
 		
-		scEncryptionCombo.setTitle(Preferences.instance().getProperty("ssh.SCEncryption"));
+		this.scEncryptionCombobox.setTitle(Preferences.instance().getProperty("ssh.SCEncryption"));
     }
     
-    public void scEncryptionComboClicked(NSPopUpButton sender) {
+    public void scEncryptionComboboxClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("ssh.SCEncryption", sender.titleOfSelectedItem());
     }    
 	
@@ -145,13 +305,13 @@ public class CDPreferencesController {
     private static final String hmac_md5 = "hmac-md5";
     private static final String hmac_md5_96 = "hmac-md5-96";
     
-    private NSPopUpButton scAuthenticationCombo;
-    public void setScAuthenticationCombo(NSPopUpButton scAuthenticationCombo) {
-		this.scAuthenticationCombo = scAuthenticationCombo;
-		this.scAuthenticationCombo.setTarget(this);
-		this.scAuthenticationCombo.setAction(new NSSelector("scAuthenticationComboClicked", new Class[] {NSPopUpButton.class}));
-		this.scAuthenticationCombo.removeAllItems();
-		this.scAuthenticationCombo.addItemsWithTitles(
+    private NSPopUpButton scAuthenticationCombobox; //IBOutlet
+    public void setScAuthenticationCombobox(NSPopUpButton scAuthenticationCombobox) {
+		this.scAuthenticationCombobox = scAuthenticationCombobox;
+		this.scAuthenticationCombobox.setTarget(this);
+		this.scAuthenticationCombobox.setAction(new NSSelector("scAuthenticationComboboxClicked", new Class[] {NSPopUpButton.class}));
+		this.scAuthenticationCombobox.removeAllItems();
+		this.scAuthenticationCombobox.addItemsWithTitles(
 												new NSArray(new String[]{
 													"Default",
 													hmac_sha1,
@@ -160,21 +320,21 @@ public class CDPreferencesController {
 													hmac_md5_96
 												}));
 		
-		scAuthenticationCombo.setTitle(Preferences.instance().getProperty("ssh.SCAuthentication"));
+		this.scAuthenticationCombobox.setTitle(Preferences.instance().getProperty("ssh.SCAuthentication"));
     }
     
-    public void scAuthenticationComboClicked(NSPopUpButton sender) {
+    public void scAuthenticationComboboxClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("ssh.SCAuthentication", sender.titleOfSelectedItem());
     }    
 	
     
-    private NSPopUpButton csAuthenticationCombo;
-    public void setCsAuthenticationCombo(NSPopUpButton csAuthenticationCombo) {
-		this.csAuthenticationCombo = csAuthenticationCombo;
-		this.csAuthenticationCombo.setTarget(this);
-		this.csAuthenticationCombo.setAction(new NSSelector("csAuthenticationComboClicked", new Class[] {NSPopUpButton.class}));
-		this.csAuthenticationCombo.removeAllItems();
-		this.csAuthenticationCombo.addItemsWithTitles(
+    private NSPopUpButton csAuthenticationCombobox; //IBOutlet
+    public void setCsAuthenticationCombobox(NSPopUpButton csAuthenticationCombobox) {
+		this.csAuthenticationCombobox = csAuthenticationCombobox;
+		this.csAuthenticationCombobox.setTarget(this);
+		this.csAuthenticationCombobox.setAction(new NSSelector("csAuthenticationComboboxClicked", new Class[] {NSPopUpButton.class}));
+		this.csAuthenticationCombobox.removeAllItems();
+		this.csAuthenticationCombobox.addItemsWithTitles(
 												new NSArray(new String[]{
 													"Default",
 													hmac_sha1,
@@ -183,15 +343,15 @@ public class CDPreferencesController {
 													hmac_md5_96
 												}));
 		
-		csAuthenticationCombo.setTitle(Preferences.instance().getProperty("ssh.CSAuthentication"));
+		this.csAuthenticationCombobox.setTitle(Preferences.instance().getProperty("ssh.CSAuthentication"));
     }
     
-    public void csAuthenticationComboClicked(NSPopUpButton sender) {
+    public void csAuthenticationComboboxClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("ssh.CSAuthentication", sender.titleOfSelectedItem());
     }    
 	
     
-    private NSButton downloadPathButton;
+    private NSButton downloadPathButton; //IBOutlet
     public void setDownloadPathButton(NSButton downloadPathButton) {
 		this.downloadPathButton = downloadPathButton;
 		this.downloadPathButton.setTarget(this);
@@ -206,7 +366,7 @@ public class CDPreferencesController {
 		panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window(), this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }
 	
-    private NSButton defaultBufferButton;
+    private NSButton defaultBufferButton; //IBOutlet
     public void setDefaultBufferButton(NSButton defaultBufferButton) {
 		this.defaultBufferButton = defaultBufferButton;
 		this.defaultBufferButton.setTarget(this);
@@ -225,7 +385,7 @@ public class CDPreferencesController {
 		}
     }
 	
-    private NSTextField bufferField;
+    private NSTextField bufferField; //IBOutlet
     public void setBufferField(NSTextField bufferField) {
 		this.bufferField = bufferField;
 		try {
@@ -253,13 +413,13 @@ public class CDPreferencesController {
 		}
     }
 	
-    private NSTextField userAgentField;
+    private NSTextField userAgentField; //IBOutlet
     public void setUserAgentField(NSTextField userAgentField) {
 		this.userAgentField = userAgentField;
 		this.userAgentField.setStringValue(Preferences.instance().getProperty("http.agent"));
     }
     
-    private NSTextField anonymousField;
+    private NSTextField anonymousField; //IBOutlet
     public void setAnonymousField(NSTextField anonymousField) {
 		this.anonymousField = anonymousField;
 		this.anonymousField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.pass"));
@@ -274,7 +434,7 @@ public class CDPreferencesController {
 		Preferences.instance().setProperty("ftp.anonymous.pass", this.anonymousField.stringValue());
     }
 	
-    private NSTextField historyField;
+    private NSTextField historyField; //IBOutlet
     public void setHistoryField(NSTextField historyField) {
 		this.historyField = historyField;
 		this.historyField.setStringValue(Preferences.instance().getProperty("history.size"));
@@ -289,7 +449,7 @@ public class CDPreferencesController {
 		Preferences.instance().setProperty("history.size", this.historyField.stringValue());
     }
 
-    private NSTextField downloadPathField;
+    private NSTextField downloadPathField; //IBOutlet
     public void setDownloadPathField(NSTextField downloadPathField) {
 		this.downloadPathField = downloadPathField;
 		this.downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
@@ -304,7 +464,7 @@ public class CDPreferencesController {
 		Preferences.instance().setProperty("connection.download.folder", this.downloadPathField.stringValue());
     }
 	
-    private NSTextField loginField;
+    private NSTextField loginField; //IBOutlet
     public void setLoginField(NSTextField loginField) {
 		this.loginField = loginField;
 		this.loginField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
@@ -319,64 +479,64 @@ public class CDPreferencesController {
 		Preferences.instance().setProperty("connection.login.name", this.loginField.stringValue());
     }
 	
-    private NSButton showHiddenCheckbox;
+    private NSButton showHiddenCheckbox; //IBOutlet
     public void setShowHiddenCheckbox(NSButton showHiddenCheckbox) {
 		this.showHiddenCheckbox = showHiddenCheckbox;
 		this.showHiddenCheckbox.setTarget(this);
 		this.showHiddenCheckbox.setAction(new NSSelector("showHiddenCheckboxClicked", new Class[] {NSButton.class}));
-		showHiddenCheckbox.setState(Preferences.instance().getProperty("browser.showHidden").equals("true") ? NSCell.OnState : NSCell.OffState);
+		this.showHiddenCheckbox.setState(Preferences.instance().getProperty("browser.showHidden").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
 	
     public void showHiddenCheckboxClicked(NSButton sender) {
 		switch(sender.state()) {
 			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.showHidden", "true");
+				Preferences.instance().setProperty("browser.showHidden", true);
 				break;
 			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.showHidden", "false");
+				Preferences.instance().setProperty("browser.showHidden", false);
 				break;
 		}
     }
 	
-    private NSButton newBrowserCheckbox;
+    private NSButton newBrowserCheckbox; //IBOutlet
     public void setNewBrowserCheckbox(NSButton newBrowserCheckbox) {
 		this.newBrowserCheckbox = newBrowserCheckbox;
 		this.newBrowserCheckbox.setTarget(this);
 		this.newBrowserCheckbox.setAction(new NSSelector("newBrowserCheckboxClicked", new Class[] {NSButton.class}));
-		newBrowserCheckbox.setState(Preferences.instance().getProperty("browser.opendefault").equals("true") ? NSCell.OnState : NSCell.OffState);
+		this.newBrowserCheckbox.setState(Preferences.instance().getProperty("browser.openByDefault").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
 	
     public void newBrowserCheckboxClicked(NSButton sender) {
 		switch(sender.state()) {
 			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.opendefault", "true");
+				Preferences.instance().setProperty("browser.openByDefault", true);
 				break;
 			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.opendefault", "false");
+				Preferences.instance().setProperty("browser.openByDefault", false);
 				break;
 		}
     }
 	
-    private NSButton closeTransferCheckbox;
+    private NSButton closeTransferCheckbox; //IBOutlet
     public void setCloseTransferCheckbox(NSButton closeTransferCheckbox) {
 		this.closeTransferCheckbox = closeTransferCheckbox;
 		this.closeTransferCheckbox.setTarget(this);
 		this.closeTransferCheckbox.setAction(new NSSelector("closeTransferCheckboxClicked", new Class[] {NSButton.class}));
-		this.closeTransferCheckbox.setState(Preferences.instance().getProperty("transfer.close").equals("true") ? NSCell.OnState : NSCell.OffState);
+		this.closeTransferCheckbox.setState(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
 	
     public void closeTransferCheckboxClicked(NSButton sender) {
 		switch(sender.state()) {
 			case NSCell.OnState:
-				Preferences.instance().setProperty("transfer.close", "true");
+				Preferences.instance().setProperty("queue.removeItemWhenComplete", true);
 				break;
 			case NSCell.OffState:
-				Preferences.instance().setProperty("transfer.close", "false");
+				Preferences.instance().setProperty("queue.removeItemWhenComplete", false);
 				break;
 		}
     }
 	
-    private NSButton processCheckbox;
+    private NSButton processCheckbox; //IBOutlet
     public void setProcessCheckbox(NSButton processCheckbox) {
 		this.processCheckbox = processCheckbox;
 		this.processCheckbox.setTarget(this);
@@ -387,32 +547,32 @@ public class CDPreferencesController {
     public void processCheckboxClicked(NSButton sender) {
 		switch(sender.state()) {
 			case NSCell.OnState:
-				Preferences.instance().setProperty("connection.download.postprocess", "true");
+				Preferences.instance().setProperty("connection.download.postprocess", true);
 				break;
 			case NSCell.OffState:
-				Preferences.instance().setProperty("connection.download.postprocess", "false");
+				Preferences.instance().setProperty("connection.download.postprocess", false);
 				break;
 		}
     }
 	
-    private NSPopUpButton duplicateCombo;
-    public void setDuplicateCombo(NSPopUpButton duplicateCombo) {
-		this.duplicateCombo = duplicateCombo;
-		this.duplicateCombo.setTarget(this);
-		this.duplicateCombo.setAction(new NSSelector("duplicateComboClicked", new Class[] {NSPopUpButton.class}));
-		this.duplicateCombo.removeAllItems();	
-		this.duplicateCombo.addItemsWithTitles(new NSArray(new String[]{ASK_ME_WHAT_TO_DO, OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
+    private NSPopUpButton duplicateCombobox; //IBOutlet
+    public void setDuplicateCombobox(NSPopUpButton duplicateCombobox) {
+		this.duplicateCombobox = duplicateCombobox;
+		this.duplicateCombobox.setTarget(this);
+		this.duplicateCombobox.setAction(new NSSelector("duplicateComboboxClicked", new Class[] {NSPopUpButton.class}));
+		this.duplicateCombobox.removeAllItems();	
+		this.duplicateCombobox.addItemsWithTitles(new NSArray(new String[]{ASK_ME_WHAT_TO_DO, OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
 		if(Preferences.instance().getProperty("download.duplicate").equals("ask"))
-			this.duplicateCombo.setTitle(ASK_ME_WHAT_TO_DO);
+			this.duplicateCombobox.setTitle(ASK_ME_WHAT_TO_DO);
 		if(Preferences.instance().getProperty("download.duplicate").equals("overwrite"))
-			this.duplicateCombo.setTitle(OVERWRITE_EXISTING_FILE);
+			this.duplicateCombobox.setTitle(OVERWRITE_EXISTING_FILE);
 		else if(Preferences.instance().getProperty("download.duplicate").equals("resume"))
-			this.duplicateCombo.setTitle(TRY_TO_RESUME_TRANSFER);
+			this.duplicateCombobox.setTitle(TRY_TO_RESUME_TRANSFER);
 		else if(Preferences.instance().getProperty("download.duplicate").equals("similar"))
-			this.duplicateCombo.setTitle(USE_A_SIMILAR_NAME);
+			this.duplicateCombobox.setTitle(USE_A_SIMILAR_NAME);
     }
 	
-    public void duplicateComboClicked(NSPopUpButton sender) {
+    public void duplicateComboboxClicked(NSPopUpButton sender) {
 		if(sender.selectedItem().title().equals(ASK_ME_WHAT_TO_DO))
 			Preferences.instance().setProperty("download.duplicate", "ask");
 		if(sender.selectedItem().title().equals(OVERWRITE_EXISTING_FILE))
@@ -423,60 +583,60 @@ public class CDPreferencesController {
 			Preferences.instance().setProperty("download.duplicate", "similar");
     }
 	
-    private NSPopUpButton transfermodeCombo;
-    public void setTransfermodeCombo(NSPopUpButton transfermodeCombo) {
-		this.transfermodeCombo = transfermodeCombo;
-		this.transfermodeCombo.setTarget(this);
-		this.transfermodeCombo.setAction(new NSSelector("transfermodeComboClicked", new Class[] {NSPopUpButton.class}));
-		this.transfermodeCombo.removeAllItems();
-		this.transfermodeCombo.addItemsWithTitles(new NSArray(new String[]{TRANSFERMODE_BINARY, TRANSFERMODE_ASCII}));
+    private NSPopUpButton transfermodeCombobox; //IBOutlet
+    public void setTransfermodeCombobox(NSPopUpButton transfermodeCombobox) {
+		this.transfermodeCombobox = transfermodeCombobox;
+		this.transfermodeCombobox.setTarget(this);
+		this.transfermodeCombobox.setAction(new NSSelector("transfermodeComboboxClicked", new Class[] {NSPopUpButton.class}));
+		this.transfermodeCombobox.removeAllItems();
+		this.transfermodeCombobox.addItemsWithTitles(new NSArray(new String[]{TRANSFERMODE_BINARY, TRANSFERMODE_ASCII}));
 		if(Preferences.instance().getProperty("ftp.transfermode").equals("binary"))
-			this.transfermodeCombo.setTitle(TRANSFERMODE_BINARY);
+			this.transfermodeCombobox.setTitle(TRANSFERMODE_BINARY);
 		else
-			this.transfermodeCombo.setTitle(TRANSFERMODE_ASCII);
+			this.transfermodeCombobox.setTitle(TRANSFERMODE_ASCII);
     }
 	
-    public void transfermodeComboClicked(NSPopUpButton sender) {
+    public void transfermodeComboboxClicked(NSPopUpButton sender) {
 		if(sender.selectedItem().title().equals(TRANSFERMODE_ASCII))
 			Preferences.instance().setProperty("ftp.transfermode", "ascii");
 		else
 			Preferences.instance().setProperty("ftp.transfermode", "binary");
     }
 	
-    private NSPopUpButton connectmodeCombo;
-    public void setConnectmodeCombo(NSPopUpButton connectmodeCombo) {
-		this.connectmodeCombo = connectmodeCombo;
-		this.connectmodeCombo.setTarget(this);
-		this.connectmodeCombo.setAction(new NSSelector("connectmodeComboClicked", new Class[] {NSPopUpButton.class}));
-		this.connectmodeCombo.removeAllItems();
-		this.connectmodeCombo.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
+    private NSPopUpButton connectmodeCombobox; //IBOutlet
+    public void setConnectmodeCombobox(NSPopUpButton connectmodeCombobox) {
+		this.connectmodeCombobox = connectmodeCombobox;
+		this.connectmodeCombobox.setTarget(this);
+		this.connectmodeCombobox.setAction(new NSSelector("connectmodeComboboxClicked", new Class[] {NSPopUpButton.class}));
+		this.connectmodeCombobox.removeAllItems();
+		this.connectmodeCombobox.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
 		if(Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
-			connectmodeCombo.setTitle(CONNECTMODE_PASSIVE);
+			this.connectmodeCombobox.setTitle(CONNECTMODE_PASSIVE);
 		else
-			connectmodeCombo.setTitle(CONNECTMODE_ACTIVE);
+			this.connectmodeCombobox.setTitle(CONNECTMODE_ACTIVE);
     }
 	
-    public void connectmodeComboClicked(NSPopUpButton sender) {
+    public void connectmodeComboboxClicked(NSPopUpButton sender) {
 		if(sender.selectedItem().title().equals(CONNECTMODE_ACTIVE))
 			Preferences.instance().setProperty("ftp.connectmode", "active");
 		else
 			Preferences.instance().setProperty("ftp.connectmode", "passive");
     }
 	
-    private NSPopUpButton protocolCombo;
-    public void setProtocolCombo(NSPopUpButton protocolCombo) {
-		this.protocolCombo = protocolCombo;
-		this.protocolCombo.setTarget(this);
-		this.protocolCombo.setAction(new NSSelector("protocolComboClicked", new Class[] {NSPopUpButton.class}));
-		this.protocolCombo.removeAllItems();
-		this.protocolCombo.addItemsWithTitles(new NSArray(new String[]{PROTOCOL_FTP, PROTOCOL_SFTP}));
+    private NSPopUpButton protocolCombobox; //IBOutlet
+    public void setProtocolCombobox(NSPopUpButton protocolCombobox) {
+		this.protocolCombobox = protocolCombobox;
+		this.protocolCombobox.setTarget(this);
+		this.protocolCombobox.setAction(new NSSelector("protocolComboboxClicked", new Class[] {NSPopUpButton.class}));
+		this.protocolCombobox.removeAllItems();
+		this.protocolCombobox.addItemsWithTitles(new NSArray(new String[]{PROTOCOL_FTP, PROTOCOL_SFTP}));
 		if(Preferences.instance().getProperty("connection.protocol.default").equals("ftp"))
-			protocolCombo.setTitle(PROTOCOL_FTP);
+			this.protocolCombobox.setTitle(PROTOCOL_FTP);
 		else
-			protocolCombo.setTitle(PROTOCOL_SFTP);
+			this.protocolCombobox.setTitle(PROTOCOL_SFTP);
     }
 	
-    public void protocolComboClicked(NSPopUpButton sender) {
+    public void protocolComboboxClicked(NSPopUpButton sender) {
 		if(sender.selectedItem().title().equals(PROTOCOL_FTP)) {
 			Preferences.instance().setProperty("connection.protocol.default", Session.FTP);
 			Preferences.instance().setProperty("connection.port.default", Session.FTP_PORT);
@@ -488,7 +648,7 @@ public class CDPreferencesController {
     }
 	
 	
-    private NSWindow window;
+    private NSWindow window; //IBOutlet
     public void setWindow(NSWindow window) {
 		this.window = window;
     }

@@ -49,6 +49,11 @@ public class CDBookmarksImpl extends Bookmarks { //implements NSTableView.DataSo
 		return instance;
     }
 	
+	protected void finalize() throws Throwable {
+		super.finalize();
+		this.save();
+	}
+	
 	public void save() {
 		this.save(FAVORTIES_FILE);
 	}

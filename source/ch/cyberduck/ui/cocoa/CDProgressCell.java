@@ -76,12 +76,19 @@ public class CDProgressCell extends NSCell {
 		NSPoint cellPoint = cellFrame.origin();
 		NSSize cellSize = cellFrame.size();	
 		
-		float progressHeight = 10;
-		float progress = (float)((float)queue.getCurrent()/(float)queue.getSize());
-		float progressWidth = progress*(cellSize.width()-10);
-		
-		NSRect barRect = new NSRect(cellPoint.x()+5, cellPoint.y()+cellSize.height()/2-progressHeight/2, cellSize.width()-10, progressHeight);
-		NSRect barRectFilled = new NSRect(cellPoint.x()+5, cellPoint.y()+cellSize.height()/2-progressHeight/2, progressWidth, progressHeight);
+		final float SPACE = 5;
+		final float PROGRESS_HEIGHT = 10;
+		final float progress = (float)((float)queue.getCurrent()/(float)queue.getSize());
+		final float PROGRESS_WIDTH = progress*(cellSize.width()-SPACE*2);
+
+		NSRect barRect = new NSRect(cellPoint.x()+SPACE, 
+									cellPoint.y()+cellSize.height()/2-PROGRESS_HEIGHT/2, 
+									cellSize.width()-SPACE*2, 
+									PROGRESS_HEIGHT);
+		NSRect barRectFilled = new NSRect(cellPoint.x()+SPACE, 
+										  cellPoint.y()+cellSize.height()/2-PROGRESS_HEIGHT/2, 
+										  PROGRESS_WIDTH, 
+										  PROGRESS_HEIGHT);
 
 		// cell is selected (white graphic)
 		if (this.isHighlighted() && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(NSColor.secondarySelectedControlColor())) {
@@ -99,10 +106,15 @@ public class CDProgressCell extends NSCell {
 		
 		NSBezierPath.strokeRect(barRect);
 		NSBezierPath.fillRect(barRectFilled);
-
 		NSGraphics.drawAttributedString(
-								  new NSAttributedString((int)(progress*100)+"%", tinyFont), 
-								  new NSRect(cellPoint.x()+5, cellPoint.y()+cellSize.height()/2+progressHeight+3, cellSize.width()-10, cellSize.height())
+								  new NSAttributedString((int)(progress*100)+"%"
+														 +" - "+
+														 queue.getSpeedAsString(),
+														 tinyFont), 
+								  new NSRect(cellPoint.x()+SPACE, 
+											 cellPoint.y()+cellSize.height()/2+PROGRESS_HEIGHT+3, 
+											 cellSize.width()-SPACE, 
+											 cellSize.height())
 								  );
 		
 		controlView.unlockFocus();

@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Status;
@@ -67,10 +68,10 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
         
     //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-		//	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
+//		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 		String identifier = (String)tableColumn.identifier();
 		Path p = (Path)this.currentData.get(row);
-		if(identifier.equals("TYPE")) {
+		if(identifier.equals("ICON")) {
 			NSImage icon;
 			if(p.isDirectory())
 				icon = NSImage.imageNamed("folder16.tiff");
@@ -80,7 +81,8 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			return icon;
 		}
 		if(identifier.equals("FILENAME")) {
-			return p.getName();
+			return p.getDecodedName();
+			//			return p.getName();
 		}
 		else if(identifier.equals("SIZE"))
 			return Status.getSizeAsString(p.status.getSize());
@@ -88,7 +90,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			return p.attributes.getModified();
 		else if(identifier.equals("OWNER"))
 			return p.attributes.getOwner();
-		else if(identifier.equals("PERMISSION"))
+		else if(identifier.equals("PERMISSIONS"))
 			return p.attributes.getPermission().toString();
 		throw new IllegalArgumentException("Unknown identifier: "+identifier);
     }
@@ -154,8 +156,8 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 				p = new FTPPath((FTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i)));
 			if(this.workdir() instanceof SFTPPath)
 				p = new SFTPPath((SFTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i)));
-			CDQueueController.instance().addTransfer(p, 
-													 Queue.KIND_UPLOAD);
+			CDQueueController.instance().addItemAndStart(new Queue(p, 
+															   Queue.KIND_UPLOAD));
 		}
 //		CDQueueController.instance().addTransfer(roots, Queue.KIND_UPLOAD);
 		return true;
@@ -211,10 +213,10 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		if(! (NSDraggingInfo.DragOperationNone == operation)) {
 			if(promisedDragPaths != null) {
 				for(int i = 0; i < promisedDragPaths.length; i++) {
-					CDQueueController.instance().addTransfer(promisedDragPaths[i], 
-															 Queue.KIND_DOWNLOAD);
+					CDQueueController.instance().addItemAndStart(new Queue(promisedDragPaths[i], 
+																	   Queue.KIND_DOWNLOAD));
 				}
-
+				
 				//				CDQueueController.instance().addTransfer(Arrays.asList(promisedDragPaths), Queue.KIND_DOWNLOAD);
 				promisedDragPaths = null;
 			}
@@ -233,8 +235,9 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		NSMutableArray promisedDragNames = new NSMutableArray();
 		for(int i = 0; i < promisedDragPaths.length; i++) {
 			try {
-				promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), promisedDragPaths[i].getName()));
-				promisedDragNames.addObject(promisedDragPaths[i].getName());
+				//todo check if url decoding still needed
+				promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), promisedDragPaths[i].getDecodedName()));
+				promisedDragNames.addObject(promisedDragPaths[i].getDecodedName());
 			}
 			catch(java.io.UnsupportedEncodingException e) {
 				log.error(e.getMessage());	

@@ -34,42 +34,8 @@ import org.apache.log4j.Logger;
  */
 public abstract class Bookmarks {
     private static Logger log = Logger.getLogger(Bookmarks.class);
-    
-	private static final String HOSTNAME = "Hostname";
-    private static final String NICKNAME = "Nickname";
-    private static final String PORT = "Port";
-    private static final String PROTOCOL = "Protocol";
-    private static final String USERNAME = "Username";
-    private static final String PATH = "Path";
-    private static final String KEYFILE = "Private Key File";	
-	
+    	
     protected List data = new ArrayList();
-	
-	private Host getFromDictionary(NSDictionary dict) {
-		Host h = new Host(
-				  (String)dict.objectForKey(Bookmarks.PROTOCOL), 
-				  (String)dict.objectForKey(Bookmarks.HOSTNAME), 
-				  Integer.parseInt((String)dict.objectForKey(Bookmarks.PORT)),
-				  new Login((String)dict.objectForKey(Bookmarks.USERNAME)),
-				  (String)dict.objectForKey(Bookmarks.PATH),
-				  (String)dict.objectForKey(Bookmarks.NICKNAME)
-				  );
-		h.getLogin().setPrivateKeyFile((String)dict.objectForKey(Bookmarks.KEYFILE));
-		return h;
-	}
-	
-	private NSDictionary getAsDictionary(Host bookmark) {
-		NSMutableDictionary dict = new NSMutableDictionary();
-		dict.setObjectForKey(bookmark.getNickname(), Bookmarks.NICKNAME);
-		dict.setObjectForKey(bookmark.getHostname(), Bookmarks.HOSTNAME);
-		dict.setObjectForKey(bookmark.getPort()+"", Bookmarks.PORT);
-		dict.setObjectForKey(bookmark.getProtocol(), Bookmarks.PROTOCOL);
-		dict.setObjectForKey(bookmark.getLogin().getUsername(), Bookmarks.USERNAME);
-		dict.setObjectForKey(bookmark.getDefaultPath(), Bookmarks.PATH);
-		if(bookmark.getLogin().getPrivateKeyFile() != null)
-			dict.setObjectForKey(bookmark.getLogin().getPrivateKeyFile(), Bookmarks.KEYFILE);
-		return dict;
-	}
 	
 	public Host importBookmark(java.io.File file) {
 		log.info("Importing bookmark from "+file);
@@ -85,7 +51,7 @@ public abstract class Bookmarks {
 		else
 			log.info("Successfully read bookmark file: "+propertyListFromXMLData);
 		if(propertyListFromXMLData instanceof NSDictionary) {
-			return getFromDictionary((NSDictionary)propertyListFromXMLData);
+			return new Host((NSDictionary)propertyListFromXMLData);
 		}
 		log.error("Invalid file format:"+file);
 		return null;
@@ -98,13 +64,13 @@ public abstract class Bookmarks {
 //			public static NSData dataFromPropertyList(Object plist, int format, String[] errorString)
 			String[] errorString = new String[]{null};
 			collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
-												 this.getAsDictionary(bookmark),
+												 bookmark.getAsDictionary(),
 												 NSPropertyListSerialization.PropertyListXMLFormat, 
 																				   errorString)
 					  );
 			if(errorString[0]!=null)
 				log.error("Problem writing bookmark file: "+errorString[0]);
-				//collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(this.getAsDictionary(bookmark)));
+				//collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(bookmark.getAsDictionary()));
 			if(collection.writeToURL(file.toURL(), true)) {
 				log.info("Bookmarks sucessfully saved in :"+file.toString());
 				NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolutePath());
@@ -129,7 +95,7 @@ public abstract class Bookmarks {
 				Iterator i = this.iterator();
 				while(i.hasNext()) {
 					Host bookmark = (Host)i.next();
-					list.addObject(this.getAsDictionary(bookmark));
+					list.addObject(bookmark.getAsDictionary());
 				}
 				NSMutableData collection = new NSMutableData();
 				String[] errorString = new String[]{null};
@@ -178,7 +144,7 @@ public abstract class Bookmarks {
 				while(i.hasMoreElements()) {
 					element = i.nextElement();
 					if(element instanceof NSDictionary) { //new since 2.1
-						this.addItem(this.getFromDictionary((NSDictionary)element));
+						this.addItem(new Host((NSDictionary)element));
 					}
 					if(element instanceof String) { //backward compatibilty <= 2.1beta5 (deprecated)
 						try {
@@ -203,6 +169,7 @@ public abstract class Bookmarks {
     }
 	
 	public void removeItem(int index) {
+		log.debug("removeItem:"+index);
 		this.data.remove(index);
 	}
 	

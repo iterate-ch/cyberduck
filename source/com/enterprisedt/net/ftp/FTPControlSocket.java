@@ -378,14 +378,16 @@ public class FTPControlSocket {
 	String readReply() throws IOException {			
 		String firstLine = reader.readLine();
 		if (firstLine == null || firstLine.length() == 0)
-			throw new IOException("Unexpected null reply received at first line");
+			throw new IOException("Unexpected null reply received");
 		
 		StringBuffer reply = new StringBuffer(firstLine);
+		
 		Transcript.instance().transcript(reply.toString());
+		
 		String replyCode = reply.toString().substring(0, 3);
 		
 		// check for multiline response and build up
-  // the reply
+		// the reply
 		if (reply.charAt(3) == '-') {
 			
 			boolean complete = false;
@@ -393,8 +395,12 @@ public class FTPControlSocket {
 				String line = reader.readLine();
 				if (line == null)
 					throw new IOException("Unexpected null reply received");
+
 				Transcript.instance().transcript(line);
-				if (line.length() > 3 && line.substring(0, 3).equals(replyCode) && line.charAt(3) == ' ') {
+				
+				if (line.length() > 3 &&
+					line.substring(0, 3).equals(replyCode) &&
+					line.charAt(3) == ' ') {
 					reply.append(line.substring(3));
 					complete = true;
 				}

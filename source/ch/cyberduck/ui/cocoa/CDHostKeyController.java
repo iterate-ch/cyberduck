@@ -74,7 +74,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		while(!this.done) {
 			try {
 				log.debug("Sleeping...");
-				Thread.sleep(500); //milliseconds
+				Thread.sleep(1000); //milliseconds
 			}
 			catch(InterruptedException e) {
 				log.error(e.getMessage());
@@ -109,7 +109,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		while(!this.done) {
 			try {
 				log.debug("Sleeping...");
-				Thread.sleep(500); //milliseconds
+				Thread.sleep(1000); //milliseconds
 			}
 			catch(InterruptedException e) {
 				log.error(e.getMessage());

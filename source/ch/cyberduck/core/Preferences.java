@@ -95,36 +95,49 @@ public abstract class Preferences {
 	defaults.put("website.update" , "http://cyberduck.ch/");
 	defaults.put("website.home" , "http://cyberduck.ch/");
 
-	defaults.put("browser.opendefault", "true");
-	defaults.put("browser.showHidden", "false");
-	defaults.put("transfer.close", "false");
+	defaults.put("browser.columnIcon", "true");
+	defaults.put("browser.columnFilename", "true");
+	defaults.put("browser.columnSize", "true");
+	defaults.put("browser.columnModification", "true");
+	defaults.put("browser.columnOwner", "true");
+	defaults.put("browser.columnPermissions", "false");
+	defaults.put("browser.alternatingRows", "true");
+	defaults.put("browser.verticalLines", "false");
+	defaults.put("browser.horizontalLines", "true");
+	defaults.put("browser.openByDefault", "true");
+	defaults.put("browser.showHidden", "false");	
+	defaults.put("browser.encoding", "UTF-8");
 	
 	defaults.put("history.size", "10");
 	defaults.put("history.save", "true");
 
 	defaults.put("favorites.save", "true");
 
-        defaults.put("connection.login.name", System.getProperty("user.name"));
-        defaults.put("connection.download.folder", System.getProperty("user.home"));
+	defaults.put("queue.openByDefault", "false");
+	defaults.put("queue.save", "true");
+	defaults.put("queue.removeItemWhenComplete", "false");
+
+	defaults.put("connection.login.name", System.getProperty("user.name"));
+	defaults.put("connection.download.folder", System.getProperty("user.home"));
 	defaults.put("download.duplicate", "similar");
 	
-        //defaults.put("files.encode", "true");
+	//defaults.put("files.encode", "true");
 	defaults.put("connection.download.postprocess", "false");
-        //Connection
-//	private int BLOCKSIZE = 65535;
-
-        defaults.put("connection.buffer", "4096");
+	//Connection
+	//	private int BLOCKSIZE = 65535;
+	
+	defaults.put("connection.buffer", "4096");
 	defaults.put("connection.buffer.default", "4096");
 	defaults.put("connection.port.default", "21");
-        defaults.put("connection.protocol.default", "ftp");
-//        defaults.put("connection.path.default", "~");
-        
-        //ftp properties
-        defaults.put("ftp.anonymous.name", "anonymous");
-        defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
+	defaults.put("connection.protocol.default", "ftp");
+	//        defaults.put("connection.path.default", "~");
+	
+	//ftp properties
+	defaults.put("ftp.anonymous.name", "anonymous");
+	defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
 	defaults.put("ftp.connectmode", "passive");
-        defaults.put("ftp.transfermode", "binary");
-
+	defaults.put("ftp.transfermode", "binary");
+	
 	defaults.put("http.agent", "Cyberduck/2.1");
 	defaults.put("http.acceptheader", "*/*");
 

@@ -90,7 +90,8 @@ public class CDDownloadController {
 							path = new HTTPPath((HTTPSession)session, file);
 						}
 						this.window().orderOut(null);
-						CDQueueController.instance().addTransfer(path, Queue.KIND_DOWNLOAD);
+						CDQueueController.instance().addItemAndStart(new Queue(path, 
+																		   Queue.KIND_DOWNLOAD));
 //						CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
 //						controller.transfer();
 					}

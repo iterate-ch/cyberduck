@@ -30,7 +30,6 @@ import com.apple.cocoa.application.NSTableView;
 public class CDQuickConnectDataSource { //implements NSComboBox.DataSource {
 	
 	private Bookmarks history = CDHistoryImpl.instance();
-//	private Bookmarks favorties = CDBookmarksImpl.instance();
 	
     // ----------------------------------------------------------
     // NSComboBox.DataSource
