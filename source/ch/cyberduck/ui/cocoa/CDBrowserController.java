@@ -119,86 +119,90 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 	
 	public void update(final Observable o, final Object arg) {
-		ThreadUtilities.instance().invokeLater(new Runnable() {
-			public void run() {
-				if(arg instanceof Path) {
-					workdir = (Path)arg;
-					pathPopupItems.clear();
-					pathPopupButton.removeAllItems();
-					addPathToPopup(workdir);
-					for(Path p = workdir; !p.isRoot();) {
-						p = p.getParent();
-						addPathToPopup(p);
-					}
-					browserModel.setData(workdir.getSession().cache().get(workdir.getAbsolute()));
-					NSTableColumn selectedColumn = browserModel.selectedColumn() != null ? browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
-					browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
-					browserModel.sort(selectedColumn, browserModel.isSortedAscending());
-					browserTable.reloadData();
-					window().makeFirstResponder(browserTable);
-					infoLabel.setStringValue(browserModel.numberOfRowsInTableView(browserTable)+" "+
-											 NSBundle.localizedString("files", ""));
-					toolbar.validateVisibleItems();
-				}
-				else if(arg instanceof Message) {
-					Message msg = (Message)arg;
-					if(msg.getTitle().equals(Message.ERROR)) {
-						progressIndicator.stopAnimation(this);
-						statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
-						statusIcon.setNeedsDisplay(true);
-						statusLabel.setObjectValue(msg.getContent());
-						statusLabel.display();
-						beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
-																   (String)msg.getContent(), // message
-																   NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-																   null, //alternative button
-																   null //other button
-																   )
-								   );
-						//window().setDocumentEdited(false);
-					}
-					else if(msg.getTitle().equals(Message.PROGRESS)) {
-						statusLabel.setObjectValue(msg.getContent());
-						statusLabel.display();
-					}
-					else if(msg.getTitle().equals(Message.REFRESH)) {
-						reloadButtonClicked(null);
-					}
-					else if(msg.getTitle().equals(Message.OPEN)) {
-						progressIndicator.startAnimation(this);
-						statusIcon.setImage(null);
-						statusIcon.setNeedsDisplay(true);
-						browserModel.clear();
-						browserTable.reloadData();
-						pathPopupItems.clear();
-						pathPopupButton.removeAllItems();
-						toolbar.validateVisibleItems();
-						//window().setDocumentEdited(true);
-					}
-					else if(msg.getTitle().equals(Message.CLOSE)) {
-						progressIndicator.stopAnimation(this);
-						statusIcon.setImage(null);
-						statusIcon.setNeedsDisplay(true);
-						toolbar.validateVisibleItems();
-						//window().setDocumentEdited(false);
-					}
-					else if(msg.getTitle().equals(Message.START)) {
-						statusIcon.setImage(null);
-						statusIcon.setNeedsDisplay(true);
-						progressIndicator.startAnimation(this);
-						toolbar.validateVisibleItems();
-					}
-					else if(msg.getTitle().equals(Message.STOP)) {
-						progressIndicator.stopAnimation(this);
-						statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
-						statusLabel.display();
-						toolbar.validateVisibleItems();
-					}
-				}
+		//			ThreadUtilities.instance().invokeLater(new Runnable() {
+		//				public void run() {
+		if(arg instanceof Path) {
+			this.workdir = (Path)arg;
+			this.pathPopupItems.clear();
+			this.pathPopupButton.removeAllItems();
+			this.addPathToPopup(workdir);
+			for(Path p = workdir; !p.isRoot();) {
+				p = p.getParent();
+				this.addPathToPopup(p);
 			}
-		});
+			this.browserModel.setData(this.workdir.getSession().cache().get(this.workdir.getAbsolute()));
+			NSTableColumn selectedColumn = this.browserModel.selectedColumn() != null ? 
+				this.browserModel.selectedColumn() : 
+				this.browserTable.tableColumnWithIdentifier("FILENAME");
+			this.browserTable.setIndicatorImage(this.browserModel.isSortedAscending() ? 
+												NSImage.imageNamed("NSAscendingSortIndicator") : 
+												NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
+			this.browserModel.sort(selectedColumn, this.browserModel.isSortedAscending());
+			this.browserTable.reloadData();
+			this.window().makeFirstResponder(this.browserTable);
+			this.infoLabel.setStringValue(this.browserModel.numberOfRowsInTableView(this.browserTable)+" "+
+										  NSBundle.localizedString("files", ""));
+			this.toolbar.validateVisibleItems();
+		}
+		else if(arg instanceof Message) {
+			Message msg = (Message)arg;
+			if(msg.getTitle().equals(Message.ERROR)) {
+				this.progressIndicator.stopAnimation(this);
+				this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
+				this.statusIcon.setNeedsDisplay(true);
+				this.statusLabel.setObjectValue(msg.getContent());
+				this.statusLabel.display();
+				this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
+																(String)msg.getContent(), // message
+																NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+																null, //alternative button
+																null //other button
+																)
+								);
+				//this.window().setDocumentEdited(false);
+			}
+			else if(msg.getTitle().equals(Message.PROGRESS)) {
+				this.statusLabel.setObjectValue(msg.getContent());
+				this.statusLabel.display();
+			}
+			else if(msg.getTitle().equals(Message.REFRESH)) {
+				this.reloadButtonClicked(null);
+			}
+			else if(msg.getTitle().equals(Message.OPEN)) {
+				this.progressIndicator.startAnimation(this);
+				this.statusIcon.setImage(null);
+				this.statusIcon.setNeedsDisplay(true);
+				this.browserModel.clear();
+				this.browserTable.reloadData();
+				this.pathPopupItems.clear();
+				this.pathPopupButton.removeAllItems();
+				this.toolbar.validateVisibleItems();
+				//this.window().setDocumentEdited(true);
+			}
+			else if(msg.getTitle().equals(Message.CLOSE)) {
+				this.progressIndicator.stopAnimation(this);
+				this.statusIcon.setImage(null);
+				this.statusIcon.setNeedsDisplay(true);
+				this.toolbar.validateVisibleItems();
+				//this.window().setDocumentEdited(false);
+			}
+			else if(msg.getTitle().equals(Message.START)) {
+				this.statusIcon.setImage(null);
+				this.statusIcon.setNeedsDisplay(true);
+				this.progressIndicator.startAnimation(this);
+				this.toolbar.validateVisibleItems();
+			}
+			else if(msg.getTitle().equals(Message.STOP)) {
+				this.progressIndicator.stopAnimation(this);
+				this.statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
+				this.statusLabel.display();
+				this.toolbar.validateVisibleItems();
+			}
+		}
+		//				}
+		//			});
 	}
-
+	
 	// ----------------------------------------------------------
 	// Outlets
 	// ----------------------------------------------------------
@@ -646,7 +650,7 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void setUpButton(NSButton upButton) {
 		this.upButton = upButton;
-		this.upButton.setImage(NSImage.imageNamed("arrowUp16.tiff"));
+		this.upButton.setImage(NSImage.imageNamed("arrowUpBlack16.tiff"));
 		this.upButton.setTarget(this);
 		this.upButton.setAction(new NSSelector("upButtonClicked", new Class[]{Object.class}));
 	}
@@ -655,7 +659,7 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void setBackButton(NSButton backButton) {
 		this.backButton = backButton;
-		this.backButton.setImage(NSImage.imageNamed("arrowLeft16.tiff"));
+		this.backButton.setImage(NSImage.imageNamed("arrowLeftBlack16.tiff"));
 		this.backButton.setTarget(this);
 		this.backButton.setAction(new NSSelector("backButtonClicked", new Class[]{Object.class}));
 	}

@@ -82,8 +82,8 @@ public class CDProgressController extends NSObject implements Observer {
 	
 	public void update(final Observable o, final Object arg) {
 		if(arg instanceof Message) {
-			ThreadUtilities.instance().invokeLater(new Runnable() {
-				public void run() {
+//			ThreadUtilities.instance().invokeLater(new Runnable() {
+//				public void run() {
 					Message msg = (Message)arg;
 					if(msg.getTitle().equals(Message.PROGRESS)) {
 						statusText = (String)msg.getContent();
@@ -136,8 +136,8 @@ public class CDProgressController extends NSObject implements Observer {
 						}
 						progressTimer.invalidate();
 					}
-				}
-			});
+//				}
+//			});
 		}
 	}
 	
