@@ -69,9 +69,7 @@ public class CDConnectionController extends CDController {
 
 	public void setHistoryPopup(NSPopUpButton historyPopup) {
 		this.historyPopup = historyPopup;
-		this.history = new CDTableDataSource() {
-			
-		};
+		this.history = new CDTableDataSource();
 		this.historyPopup.setImage(NSImage.imageNamed("history.tiff"));
 		this.historyPopup.setToolTip(NSBundle.localizedString("History", ""));
 		File[] files = HISTORY_FOLDER.listFiles();
