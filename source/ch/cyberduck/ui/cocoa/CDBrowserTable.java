@@ -52,8 +52,9 @@ public class CDBrowserTable extends CDTableView {
         log.debug("awakeFromNib");
 		// receive drag events from types
         this.registerForDraggedTypes(new NSArray(new Object[]{
-            NSPasteboard.FilenamesPboardType,
-            "QueuePboardType"}));
+			"QueuePboardType",
+            NSPasteboard.FilenamesPboardType})
+									 );
 
 		// setting appearance attributes
         this.setRowHeight(17f);

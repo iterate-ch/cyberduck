@@ -45,7 +45,7 @@
                 upButton = NSButton; 
                 window = NSWindow; 
             }; 
-            SUPERCLASS = NSObject; 
+            SUPERCLASS = NSDocument; 
         }, 
         {
             CLASS = "ch.cyberduck.ui.cocoa.CDBrowserTable"; 

@@ -53,6 +53,12 @@ public class CDMainController extends NSObject {
     // Outlets
     // ----------------------------------------------------------
 
+	private NSMenu dockMenu; // IBOutlet
+	
+	public void setDockMenu(NSMenu dockMenu) {
+		this.dockMenu = dockMenu;
+	}
+	
     private NSWindow donationSheet; // IBOutlet
 
     public void setDonationSheet(NSWindow donationSheet) {
@@ -495,5 +501,7 @@ public class CDMainController extends NSObject {
         return false;
     }
 
-    //    public abstract NSMenu applicationDockMenu(NSApplication sender)
+    public NSMenu applicationDockMenu(NSApplication sender) {
+		return this.dockMenu;
+	}
 }

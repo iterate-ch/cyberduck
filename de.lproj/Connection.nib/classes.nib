@@ -3,7 +3,7 @@
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {closeSheet = id; }; 
-            CLASS = "ch.cyberduck.ui.cocoa.CDConnectionSheet"; 
+            CLASS = "ch.cyberduck.ui.cocoa.CDConnectionController"; 
             LANGUAGE = Java; 
             OUTLETS = {
                 anonymousCheckbox = NSButton; 

@@ -31,7 +31,7 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 /**
  * @version $Id$
  */
-public class CDBrowserController extends NSObject implements Observer {
+public class CDBrowserController extends NSDocument implements Observer { //@todo
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
     /**
@@ -65,6 +65,11 @@ public class CDBrowserController extends NSObject implements Observer {
             return null;
         }
     }
+	
+//	public boolean isDocumentEdited() {
+//		log.debug("isDocumentEdited");
+//		return this.isConnected();
+//	}
 
     private NSTextView logView;
 
@@ -1150,7 +1155,7 @@ public class CDBrowserController extends NSObject implements Observer {
 // ----------------------------------------------------------
 
         public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-            log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
+            log.info("tableViewValidateDrop:row:" + row + ",operation:" + operation);
             if (isMounted()) {
                 if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
                     if (row != -1 && row < tableView.numberOfRows()) {

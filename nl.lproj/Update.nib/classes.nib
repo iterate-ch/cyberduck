@@ -5,8 +5,13 @@
             ACTIONS = {closeUpdateSheet = id; }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDMainController"; 
             LANGUAGE = Java; 
-            OUTLETS = {updateLabel = NSTextField; updateSheet = NSWindow; updateText = NSTextView; }; 
-            SUPERCLASS = "java.lang.Object"; 
+            OUTLETS = {
+                autoUpdateCheckbox = NSButton; 
+                updateLabel = NSTextField; 
+                updateSheet = NSWindow; 
+                updateText = NSTextView; 
+            }; 
+            SUPERCLASS = NSObject; 
         }
     ); 
     IBVersion = 1; 

@@ -11,7 +11,7 @@
 		<key>511</key>
 		<string>393 460 238 102 0 0 1024 746 </string>
 		<key>896</key>
-		<string>496 426 288 512 0 0 1280 1002 </string>
+		<string>275 490 288 512 0 0 1280 1002 </string>
 		<key>953</key>
 		<string>649 352 187 175 0 0 1280 1002 </string>
 	</dict>
@@ -21,7 +21,6 @@
 	<integer>2</integer>
 	<key>IBOpenObjects</key>
 	<array>
-		<integer>896</integer>
 		<integer>21</integer>
 	</array>
 	<key>IBSystem Version</key>
