@@ -1,9 +1,3 @@
-/* NSIBHelpConnector : <title:Are you sure?> (oid:22) */
-"Are you sure?" = "Bent u zeker?";
-
-/* NSIBHelpConnector : <title:Don't click me> (oid:21) */
-"Don't click me" = "Niet klikken";
-
 /* NSButton (Don't show this again.) : <title:Don't show this again.> (oid:12) */
 "Don't show this again." = "Toon dit niet opnieuw.";
 
@@ -24,7 +18,4 @@
 
 /* NSTextField (The transaction can be made easily over the Internet using PayPal.) : <title:The transaction can be made easily over the Internet using PayPal.> (oid:19) */
 "The transaction can be made easily over the Internet using PayPal." = "De transactie kan gemakkelijk gemaakt worden op het Internet met PayPal.";
-
-/* NSIBHelpConnector : <title:Yes! Click here!> (oid:20) */
-"Yes! Click here!" = "Ja! Klik hier!";
 

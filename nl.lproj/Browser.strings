@@ -1,9 +1,6 @@
 /* NSMenuItem : <title: > (oid:931) */
 " " = " ";
 
-/* NSIBHelpConnector : <title:Add new bookmark> (oid:1002) */
-"Add new bookmark" = "Nieuwe bladwijzer toevoegen";
-
 /* NSTabViewItem : <title:Bookmarks> (oid:901) */
 "Bookmarks" = "Bladwijzers";
 
@@ -16,29 +13,17 @@
 /* NSMenuItem : <title:Delete> (oid:957) */
 "Delete" = "Verwijder";
 
-/* NSIBHelpConnector : <title:Delete selected bookmark> (oid:996) */
-"Delete selected bookmark" = "Verwijder geselecteerde bladwijzer";
-
 /* NSMenuItem : <title:Download> (oid:955) */
 "Download" = "Download";
 
 /* NSMenuItem : <title:Download As...> (oid:1054) */
 "Download As..." = "Download As...";
 
-/* NSIBHelpConnector : <title:Edit selected bookmark> (oid:997) */
-"Edit selected bookmark" = "wijzig geselecteerde bladwijzer";
-
 /* NSTextField (0) : <title:Filter> (oid:1004) */
 "Filter" = "Filter";
 
-/* NSIBHelpConnector : <title:Go back> (oid:943) */
-"Go back" = "Ga terug";
-
 /* NSMenuItem : <title:Info> (oid:954) */
 "Info" = "Info";
-
-/* NSIBHelpConnector : <title:List parent directory> (oid:944) */
-"List parent directory" = "Toon bovenliggende map";
 
 /* NSMenu : <title:Menu> (oid:953) */
 "Menu" = "Menu";
@@ -54,7 +39,4 @@
 
 /* NSMenuItem : <title:Refresh> (oid:959) */
 "Refresh" = "Ververs";
-
-/* NSIBHelpConnector : <title:Toggle Bookmark Drawer> (oid:1001) */
-"Toggle Bookmark Drawer" = "Toon/verberg bladwijzer schuif";
 
