@@ -46,6 +46,10 @@ public class Attributes extends Observable {
 	public Attributes() {
 		super();
 	}
+	
+	public boolean isUndefined() {
+		return this.modified == null || this.size == -1;
+	}
 
 	public Attributes(NSDictionary dict) {
 		Object typeObj = dict.objectForKey("Type");

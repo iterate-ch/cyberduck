@@ -196,7 +196,7 @@ public class FTPPath extends Path {
 	}
 	
 	public void reset() {
-		if(this.attributes.isFile()) {
+		if(this.attributes.isFile() && this.attributes.isUndefined()) {
 			if(this.exists()) {
 				try {
 					session.check();
