@@ -110,13 +110,24 @@ public class CDConnectionController extends CDController {
 
 	public void setProtocolPopup(NSPopUpButton protocolPopup) {
 		this.protocolPopup = protocolPopup;
+		this.protocolPopup.removeAllItems();
+		this.protocolPopup.addItemsWithTitles(new NSArray(new String[] {FTP_STRING, SFTP_STRING}));
+		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalent("F");
+		this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+		this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalent("S");
 		this.protocolPopup.setTarget(this);
 		this.protocolPopup.setAction(new NSSelector("protocolSelectionDidChange", new Class[]{Object.class}));
 	}
 
 	public void protocolSelectionDidChange(Object sender) {
 		log.debug("protocolSelectionDidChange:"+sender);
-		this.portField.setIntValue(protocolPopup.selectedItem().tag());
+		if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
+			this.portField.setIntValue(Session.SSH_PORT);
+		}
+		if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
+			this.portField.setIntValue(Session.FTP_PORT);
+		}
 		this.pkCheckbox.setEnabled(protocolPopup.selectedItem().title().equals(SFTP_STRING));
 		this.updateURLLabel(sender);
 	}
@@ -339,7 +350,12 @@ public class CDConnectionController extends CDController {
 		
 		this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
 		this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
-		this.portField.setIntValue(protocolPopup.selectedItem().tag());
+		if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
+			this.portField.setIntValue(Session.SSH_PORT);
+		}
+		if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
+			this.portField.setIntValue(Session.FTP_PORT);
+		}
 		this.pkCheckbox.setEnabled(Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP));
 	}
 
@@ -350,7 +366,7 @@ public class CDConnectionController extends CDController {
 	public void getPasswordFromKeychain(Object sender) {
 		if(hostPopup.stringValue() != null && !hostPopup.stringValue().equals("") &&
 		    usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
-			Login l = new Login(new Host(hostPopup.stringValue(), protocolPopup.selectedItem().tag()), usernameField.stringValue(), null);
+			Login l = new Login(new Host(hostPopup.stringValue(), portField.stringValue()), usernameField.stringValue(), null);
 			String passFromKeychain = l.getInternetPasswordFromKeychain();
 			if(null == passFromKeychain || passFromKeychain.equals("")) {
 				passFromKeychain = l.getPasswordFromKeychain(); //legacy support
@@ -370,7 +386,12 @@ public class CDConnectionController extends CDController {
 		this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.hostPopup.setStringValue(selectedItem.getHostname());
 		this.pathField.setStringValue(selectedItem.getDefaultPath());
-		this.portField.setIntValue(protocolPopup.selectedItem().tag());
+		if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
+			this.portField.setIntValue(Session.SSH_PORT);
+		}
+		if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
+			this.portField.setIntValue(Session.FTP_PORT);
+		}
 		this.usernameField.setStringValue(selectedItem.getCredentials().getUsername());
 		this.pkCheckbox.setEnabled(selectedItem.getProtocol().equals(Session.SFTP));
 		if(selectedItem.getCredentials().getPrivateKeyFile() != null) {
@@ -384,17 +405,16 @@ public class CDConnectionController extends CDController {
 	}
 
 	private void updateURLLabel(Object sender) {
-		NSMenuItem selectedItem = protocolPopup.selectedItem();
 		String protocol = null;
-		if(selectedItem.tag() == Session.SSH_PORT) {
+		if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
 			protocol = Session.SFTP+"://";
 		}
-		else if(selectedItem.tag() == Session.FTP_PORT) {
+		if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
 			protocol = Session.FTP+"://";
 		}
 		urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostPopup.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
 	}
-
+	
 	public void closeSheet(NSButton sender) {
 		this.browserController.endSheet();
 		NSNotificationCenter.defaultCenter().removeObserver(this);
@@ -402,39 +422,37 @@ public class CDConnectionController extends CDController {
 		this.rendezvous.quit();
 		switch(sender.tag()) {
 			case (NSAlertPanel.DefaultReturn):
-				// Every item in the protocol popup has a tag
-				// The value of the tag is the default port number for the protocol selected
-				// Even if another port is manually entered, we still want to connect with the
-				// appropriate protocol
-				int tag = protocolPopup.selectedItem().tag();
+			{
 				Host host = null;
-				switch(tag) {
-					case (Session.SSH_PORT):
-						// SFTP has been selected as the protocol to connect with
-						host = new Host(Session.SFTP,
-						    hostPopup.stringValue(),
-						    Integer.parseInt(portField.stringValue()),
-						    pathField.stringValue());
-						host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
-						break;
-					case (Session.FTP_PORT):
-						// FTP has been selected as the protocol to connect with
-						host = new Host(Session.FTP,
-						    hostPopup.stringValue(),
-						    Integer.parseInt(portField.stringValue()),
-						    pathField.stringValue());
-						host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
-						break;
-					default:
-						throw new IllegalArgumentException("No protocol selected.");
+				if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
+					// SFTP has been selected as the protocol to connect with
+					host = new Host(Session.SFTP,
+									hostPopup.stringValue(),
+									Integer.parseInt(portField.stringValue()),
+									pathField.stringValue());
+					host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
+					if(pkCheckbox.state() == NSCell.OnState) {
+						host.getCredentials().setPrivateKeyFile(pkLabel.stringValue());
+					}
 				}
-				if(pkCheckbox.state() == NSCell.OnState) {
-					host.getCredentials().setPrivateKeyFile(pkLabel.stringValue());
+				else if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
+					// FTP has been selected as the protocol to connect with
+					host = new Host(Session.FTP,
+									hostPopup.stringValue(),
+									Integer.parseInt(portField.stringValue()),
+									pathField.stringValue());
+					host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
+				}
+				else {
+					throw new IllegalArgumentException("No protocol selected.");
 				}
 				browserController.mount(host);
 				break;
+			}
 			case (NSAlertPanel.AlternateReturn):
+			{
 				break;
+			}
 		}
 	}
 }

@@ -53,22 +53,25 @@ public class CDBookmarkController extends CDController {
 
 	public void setProtocolPopup(NSPopUpButton protocolPopup) {
 		this.protocolPopup = protocolPopup;
+		this.protocolPopup.removeAllItems();
+		this.protocolPopup.addItemsWithTitles(new NSArray(new String[] {FTP_STRING, SFTP_STRING}));
+		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalent("F");
+		this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+		this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalent("S");
 		this.protocolPopup.setTarget(this);
 		this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[]{Object.class}));
 	}
 
 	public void protocolSelectionChanged(Object sender) {
 		log.debug("protocolSelectionChanged:"+sender);
-		int tag = protocolPopup.selectedItem().tag();
-		switch(tag) {
-			case (Session.SSH_PORT):
-				this.host.setProtocol(Session.SFTP);
-				this.host.setPort(Session.SSH_PORT);
-				break;
-			case (Session.FTP_PORT):
-				this.host.setProtocol(Session.FTP);
-				this.host.setPort(Session.FTP_PORT);
-				break;
+		if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
+			this.host.setProtocol(Session.SFTP);
+			this.host.setPort(Session.SSH_PORT);
+		}
+		if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
+			this.host.setProtocol(Session.FTP);
+			this.host.setPort(Session.FTP_PORT);
 		}
 		this.updateFields();
 	}
