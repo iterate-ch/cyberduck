@@ -306,7 +306,7 @@ public class CDInfoController extends CDController {
 
 	public void windowWillClose(NSNotification notification) {
 		log.debug("windowWillClose");
-		if(Preferences.instance().getBoolean("browser.info.isInspector")) {
+		if(!Preferences.instance().getBoolean("browser.info.isInspector")) {
 			NSNotificationCenter.defaultCenter().removeObserver(this);
 			instances.removeObject(this);
 		}
@@ -317,7 +317,7 @@ public class CDInfoController extends CDController {
 	}
 
 	public void filenameInputDidEndEditing(NSNotification sender) {
-		log.debug("textInputDidEndEditing");
+		log.debug("filenameInputDidEndEditing");
 		final Path file = (Path)this.files.get(0);
 		if(!filenameField.stringValue().equals(file.getName())) {
 			if(filenameField.stringValue().indexOf('/') == -1) {

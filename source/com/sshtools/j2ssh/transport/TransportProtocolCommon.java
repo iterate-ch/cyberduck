@@ -646,8 +646,8 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 		SshMsgDisconnect msg = new SshMsgDisconnect(reason, description, "");
 
 		try {
-			sendMessage(msg, this);
-			stop();
+			this.sendMessage(msg, this);
+			this.stop();
 		}
 		catch(Exception e) {
 			log.warn("Failed to send disconnect", e);
@@ -893,7 +893,8 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 	 *
 	 */
 	protected final void stop() {
-		onDisconnect();
+		log.debug("stop-0");
+		this.onDisconnect();
 
 		Iterator it = eventHandlers.iterator();
 		TransportProtocolEventHandler eventHandler;
@@ -909,6 +910,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 			messageStore.close();
 		}
 
+		log.debug("stop-1");
 		// 05/01/2003 moiz change begin:
 		// all close all the registerd messageStores
 		SshMessageStore ms;
@@ -925,12 +927,14 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 			}
 		}
 
+		log.debug("stop-2");
 		messageStores.clear();
 
 		// 05/01/2003 moizd change end:
 		messageStore = null;
 
 		try {
+			log.debug("stop-3");
 			provider.close();
 		}
 		catch(IOException e) {

@@ -162,7 +162,7 @@ public abstract class Preferences {
 		defaults.put("connection.port.default", "21");
 		defaults.put("connection.protocol.default", "ftp");
 		defaults.put("connection.timeout", "20000");
-		defaults.put("connection.keepalive", "true");
+		defaults.put("connection.keepalive", "false");
 		defaults.put("connection.keepalive.interval", "30000");
 		
 		defaults.put("http.agent", "Cyberduck/"+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));

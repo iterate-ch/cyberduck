@@ -47,6 +47,7 @@ public class CDTranscriptImpl implements Transcript {
 		this.textView.setSelectable(true);
 		this.textView.setUsesFontPanel(false);
 		this.textView.setRichText(false);
+		this.textView.layoutManager().setBackgroundLayoutEnabled(false);
 	}
 	
 	private static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},

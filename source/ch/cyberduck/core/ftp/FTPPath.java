@@ -250,8 +250,8 @@ public class FTPPath extends Path {
 		synchronized(session) {
 			log.debug("delete:"+this.toString());
 			try {
-				session.check();
 				if(this.attributes.isFile()) {
+					session.check();
 					session.FTP.chdir(this.getParent().getAbsolute());
 					session.log("Deleting "+this.getName(), Message.PROGRESS);
 					session.FTP.delete(this.getName());
@@ -327,8 +327,8 @@ public class FTPPath extends Path {
 		synchronized(session) {
 			log.debug("download:"+this.toString());
 			try {
-				session.check();
 				if(this.attributes.isFile()) {
+					session.check();
 					if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
 						if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
 							this.downloadASCII();
@@ -516,8 +516,8 @@ public class FTPPath extends Path {
 		synchronized(session) {
 			log.debug("upload:"+this.toString());
 			try {
-				session.check();
 				if(this.attributes.isFile()) {
+					session.check();
 					this.attributes.setSize(this.getLocal().getSize());
 					if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
 						if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {

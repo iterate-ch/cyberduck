@@ -246,8 +246,8 @@ public class SFTPPath extends Path {
 		synchronized(session) {
 			log.debug("delete:"+this.toString());
 			try {
-				session.check();
 				if(this.attributes.isFile()) {
+					session.check();
 					session.log("Deleting "+this.getName(), Message.PROGRESS);
 					session.SFTP.removeFile(this.getAbsolute());
 				}
@@ -322,8 +322,8 @@ public class SFTPPath extends Path {
 			InputStream in = null;
 			OutputStream out = null;
 			try {
-				session.check();
 				if(this.attributes.isFile()) {
+					session.check();
 					out = new FileOutputStream(this.getLocal(), this.status.isResume());
 					if(out == null) {
 						throw new IOException("Unable to buffer data");
@@ -398,8 +398,8 @@ public class SFTPPath extends Path {
 			InputStream in = null;
 			SftpFileOutputStream out = null;
 			try {
-				session.check();
 				if(this.attributes.isFile()) {
+					session.check();
 					in = new FileInputStream(this.getLocal());
 					if(in == null) {
 						throw new IOException("Unable to buffer data");

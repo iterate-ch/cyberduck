@@ -190,6 +190,7 @@
 			manifest="${build}/MANIFEST.MF">
 			<fileset dir="${build.classes}">
 				<include name="com/sshtools/j2ssh/**/*.class"/>
+				<include name="com/jcraft/jsch/**/*.class"/>
 			</fileset>
 		</jar>
 		<jar jarfile="${build}/ftp.jar"

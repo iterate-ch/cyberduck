@@ -212,6 +212,7 @@ public class SFTPSession extends Session {
 			if(credentials.usesPublicKeyAuthentication()) {
 				if(AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(credentials)) {
 					this.log("Login successful", Message.PROGRESS);
+					this.setAuthenticated();
 					return;
 				}
 			}
@@ -220,6 +221,7 @@ public class SFTPSession extends Session {
 				   AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
 					this.log("Login successful", Message.PROGRESS);
 					credentials.addInternetPasswordToKeychain();
+					this.setAuthenticated();
 					return;
 				}
 			}

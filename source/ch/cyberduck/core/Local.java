@@ -65,7 +65,7 @@ public class Local extends File {
 		super(path);
 //		this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
-
+	
 	public String getAbsolute() {
 		return super.getAbsolutePath();
 	}
@@ -79,7 +79,7 @@ public class Local extends File {
 //	}
 	
 //	public File getParentFile() {
-//		return new Local(super.getParentFile().getAbsolutePath());
+//		return new Local(super.getParent());
 //	}
 	
 //	public boolean isFile() {

@@ -394,7 +394,7 @@ public class CDQueueController extends CDController {
 		if(this.queueTable.selectedRow() != -1) {
 			Queue item = this.queueModel.getItem(this.queueTable.selectedRow());
 			if(item.isRunning()) {
-				this.stopButtonClicked(sender);
+//				this.stopButtonClicked(sender);
 			}
 			else {
 				this.reloadButtonClicked(sender);

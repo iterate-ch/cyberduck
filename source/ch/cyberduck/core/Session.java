@@ -75,6 +75,8 @@ public abstract class Session extends Observable {
 
 	private boolean connected;
 
+	private boolean authenticated;
+
 	public Session copy() {
 		return SessionFactory.createSession(this.host);
 	}
@@ -179,15 +181,23 @@ public abstract class Session extends Observable {
 		return this.connected;
 	}
 
+	public boolean isAuthenticated() {
+		return this.authenticated;
+	}
+	
 	private Timer keepAliveTimer = null;
 	
-	public void setConnected() throws IOException {
+	public synchronized void setConnected() throws IOException {
 		log.debug("setConnected");
 		SessionPool.instance().add(this);
 		this.callObservers(new Message(Message.OPEN, "Session opened."));
 		this.connected = true;
+	}
+	
+	public synchronized void setAuthenticated() {
+		this.authenticated = true;
 		if(Preferences.instance().getBoolean("connection.keepalive")) {
-			this.keepAliveTimer = new Timer(true);
+			this.keepAliveTimer = new Timer();
 			this.keepAliveTimer.scheduleAtFixedRate(new KeepAliveTask(),
 													Preferences.instance().getInteger("connection.keepalive.interval"),
 													Preferences.instance().getInteger("connection.keepalive.interval")
@@ -195,7 +205,7 @@ public abstract class Session extends Observable {
 		}
 	}
 
-	public void setClosed() {
+	public synchronized void setClosed() {
 		log.debug("setClosed");
 		SessionPool.instance().release(this);
 		this.callObservers(new Message(Message.CLOSE, "Session closed."));

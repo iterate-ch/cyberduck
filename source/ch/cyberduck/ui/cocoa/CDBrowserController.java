@@ -156,7 +156,6 @@ public class CDBrowserController extends CDController implements Observer {
 				this.statusIcon.setNeedsDisplay(true);
 				this.statusLabel.setObjectValue(msg.getContent());
 				this.statusLabel.display();
-				//@todo thread safe
 				this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
 																					(String)msg.getContent(), // message
 																					NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
@@ -229,7 +228,6 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void setLogView(NSTextView logView) {
 		this.logView = logView;
-		this.logView.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
 	}
 
 	private CDBrowserTableDataSource browserModel;
@@ -894,11 +892,16 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 	
 	public void deleteFileButtonClicked(Object sender) {
-		log.debug("deleteFileButtonClicked");
-		if(this.browserTable.selectedRow() != -1) {
+		log.debug("deleteFileButtonClicked:"+sender);
+		List files = new ArrayList();
+		StringBuffer alertText = new StringBuffer(NSBundle.localizedString("Really delete the following files? This cannot be undone.", "Confirm deleting files."));
+		if(sender instanceof Path) {
+			Path p = (Path)sender;
+			files.add(p);
+			alertText.append("\n- "+p.getName());
+		}
+		else if(this.browserTable.selectedRow() != -1) {
 			NSEnumerator enum = browserTable.selectedRowEnumerator();
-			Vector files = new Vector();
-			StringBuffer alertText = new StringBuffer(NSBundle.localizedString("Really delete the following files? This cannot be undone.", "Confirm deleting files."));
 			int i = 0;
 			while(i < 10 && enum.hasMoreElements()) {
 				int selected = ((Integer)enum.nextElement()).intValue();
@@ -911,25 +914,25 @@ public class CDBrowserController extends CDController implements Observer {
 				alertText.append("\n- (...)");
 				while(enum.hasMoreElements()) {
 					int selected = ((Integer)enum.nextElement()).intValue();
-					Path p = (Path)browserModel.getEntry(selected);
-					files.add(p);
+					files.add(browserModel.getEntry(selected));
 				}
 			}
-			NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Delete", "Alert sheet title"), //title
-												 NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
-												 NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
-												 null, //other button
-												 this.window(), //window
-												 this, //delegate
-												 new NSSelector
-												 ("deleteSheetDidEnd",
-												  new Class[]
-												  {
-													  NSWindow.class, int.class, Object.class
-												  }), // end selector
-												 null, // dismiss selector
-												 files, // contextInfo
-												 alertText.toString());
+		}
+		if(files.size() > 0) {
+			this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Delete", "Alert sheet title"), //title
+															alertText.toString(),
+															NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
+															NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+															null //other button
+															),
+							this,
+							new NSSelector
+							("deleteSheetDidEnd",
+							 new Class[]
+							 {
+								 NSWindow.class, int.class, Object.class
+							 }), // end selector
+							files);
 		}
 	}
 
@@ -938,7 +941,7 @@ public class CDBrowserController extends CDController implements Observer {
 		sheet.orderOut(null);
 		switch(returnCode) {
 			case (NSAlertPanel.DefaultReturn):
-				final Vector files = (Vector)contextInfo;
+				final List files = (List)contextInfo;
 				if(files.size() > 0) {
 					this.browserTable.deselectAll(null);
 					new Thread() {
@@ -1301,17 +1304,16 @@ public class CDBrowserController extends CDController implements Observer {
 	public boolean unmount(NSSelector selector, Object context) {
 		log.debug("unmount");
 		if(this.isConnected()) {
-			NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Disconnect from", "Alert sheet title")+" "+this.workdir().getSession().getHost().getHostname(), //title
-			    NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
-			    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
-			    null, //other button
-			    this.window(), //window
-			    this, //delegate
-			    selector,
-			    null, // dismiss selector
-			    context, // context
-			    NSBundle.localizedString("The connection will be closed.", "Alert sheet text") // message
-			);
+			this.beginSheet(NSAlertPanel.criticalAlertPanel(
+															NSBundle.localizedString("Disconnect from", "Alert sheet title")+" "+this.workdir().getSession().getHost().getHostname(), //title
+															NSBundle.localizedString("The connection will be closed.", "Alert sheet text"), // message
+															NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
+															NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
+															null //other button
+															),
+							this,
+							selector,
+							context);
 			return false;
 		}
 		return true;
@@ -1996,25 +1998,36 @@ public class CDBrowserController extends CDController implements Observer {
 			// we return false because we don't want the table to draw the drag image
 			return false;
 		}
+		
+		public int draggingSourceOperationMaskForLocal(boolean local) {
+			if(local)
+				return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
+			return NSDraggingInfo.DragOperationCopy;
+		}
 
 		/**
 		 * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-		 *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-		 *         Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
-		 *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
-		 *         blocking the destination application.
+		 * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+		 * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
+		 * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
+		 * blocking the destination application.
 		 */
 		public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
 			log.debug("namesOfPromisedFilesDroppedAtDestination:"+dropDestination);
 			NSMutableArray promisedDragNames = new NSMutableArray();
 			if(null != dropDestination) {
 				Queue q = new DownloadQueue();
-				for(int i = 0; i < promisedDragPaths.length; i++) {
+				for(int i = 0; i < this.promisedDragPaths.length; i++) {
 					try {
 						this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
 						    this.promisedDragPaths[i].getName()));
-						q.addRoot(this.promisedDragPaths[i]);
-						promisedDragNames.addObject(this.promisedDragPaths[i].getName());
+						if(this.promisedDragPaths[i].getLocal().getParent().equals(System.getProperty("user.home")+"/.Trash")) {
+							deleteFileButtonClicked(this.promisedDragPaths[i].copy(workdir().getSession()));
+						}
+						else {
+							q.addRoot(this.promisedDragPaths[i]);
+							promisedDragNames.addObject(this.promisedDragPaths[i].getName());
+						}
 					}
 					catch(java.io.UnsupportedEncodingException e) {
 						log.error(e.getMessage());
@@ -2022,9 +2035,10 @@ public class CDBrowserController extends CDController implements Observer {
 				}
 				if(q.numberOfRoots() > 0) {
 					CDQueueController.instance().startItem(q);
+					return promisedDragNames;
 				}
 			}
-			return promisedDragNames;
+			return null;
 		}
 
 		// ----------------------------------------------------------

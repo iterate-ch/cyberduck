@@ -834,6 +834,53 @@ public class CDPreferencesController extends CDController {
 		}
 	}
 
+	private NSButton keepAliveCheckbox; //IBOutlet
+	
+	public void setKeepAliveCheckbox(NSButton keepAliveCheckbox) {
+		this.keepAliveCheckbox = keepAliveCheckbox;
+		this.keepAliveCheckbox.setTarget(this);
+		this.keepAliveCheckbox.setAction(new NSSelector("keepAliveCheckboxClicked", new Class[]{NSButton.class}));
+		this.keepAliveCheckbox.setState(Preferences.instance().getBoolean("connection.keepalive") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void keepAliveCheckboxClicked(NSButton sender) {
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("connection.keepalive", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("connection.keepalive", false);
+				break;
+		}
+	}
+	
+	private NSTextField keepAliveIntervalField; //IBOutlet
+	
+	public void setKeepAliveIntervalField(NSTextField keepAliveIntervalField) {
+		this.keepAliveIntervalField = keepAliveIntervalField;
+		try {
+			int i = Preferences.instance().getInteger("connection.keepalive.interval");
+			this.keepAliveIntervalField.setStringValue(""+i);
+		}
+		catch(NumberFormatException e) {
+			log.error(e.getMessage());
+		}
+		NSNotificationCenter.defaultCenter().addObserver(this,
+														 new NSSelector("keepAliveIntervalFieldDidChange", new Class[]{NSNotification.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 this.keepAliveIntervalField);
+	}
+	
+	public void keepAliveIntervalFieldDidChange(NSNotification sender) {
+		try {
+			int i = Integer.parseInt(this.keepAliveIntervalField.stringValue());
+			Preferences.instance().setProperty("connection.keepalive.interval", (int)i);
+		}
+		catch(NumberFormatException e) {
+			log.error(e.getMessage());
+		}
+	}
+			
 	private NSTextField userAgentField; //IBOutlet
 
 	public void setUserAgentField(NSTextField userAgentField) {

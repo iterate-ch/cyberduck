@@ -128,6 +128,7 @@ public class FTPSession extends Session {
 				this.log("Authenticating as "+host.getCredentials().getUsername()+"...", Message.PROGRESS);
 				this.FTP.login(credentials.getUsername(), credentials.getPassword());
 				credentials.addInternetPasswordToKeychain();
+				this.setAuthenticated();
 				this.log("Login successful", Message.PROGRESS);
 			}
 			catch(FTPException e) {
