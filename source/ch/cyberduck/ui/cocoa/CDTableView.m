@@ -56,8 +56,7 @@
         }
     }
 	
-	if ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] || (![[NSCharacterSet controlCharacterSet] characterIsMember:key]))
-	{
+	if ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] || (![[NSCharacterSet controlCharacterSet] characterIsMember:key])){
 		[select_string appendString:[event charactersIgnoringModifiers]];
 		[select_timer invalidate];
 		select_timer = [NSTimer scheduledTimerWithTimeInterval:0.4
@@ -66,8 +65,7 @@
 													  userInfo:nil 
 													   repeats:NO];
 	} 
-	else 
-	{
+	else {
 		[super keyDown:event];
 	}
 }
@@ -81,23 +79,19 @@
 	int to_index = 0;
 	int smallest_difference = -1;
 	int counter;
+
 	NSString *compare = [select_string lowercaseString];
-	for (counter = 0; counter < [self numberOfRows]; counter++)
-	{
-		NSString *object = [[[[self dataSource] tableView:self 
+	for (counter = 0; counter < [[self dataSource] numberOfRowsInTableView: self]; counter++) {
+		NSString *object = [[[self dataSource] tableView:self 
 								objectValueForTableColumn:[self _typeAheadSelectionColumn] 
-													  row:counter] string] lowercaseString];
-		if (to_index < [object length] && to_index < [compare length] + 1)
-		{
-			if (object && [[object substringToIndex:to_index] isEqualToString:[compare substringToIndex:to_index]])			
-			{
+													  row:counter] lowercaseString];
+		if (to_index < [object length] && to_index < [compare length] + 1) {
+			if (object && [[object substringToIndex:to_index] isEqualToString:[compare substringToIndex:to_index]])	{
 				char one = [compare characterAtIndex:to_index];
 				char two = (to_index == [object length])?' ':[object characterAtIndex:to_index];
 				int difference = abs(one - two);
-				if (difference == 0)
-				{
-					while (difference == 0)
-					{
+				if (difference == 0) {
+					while (difference == 0) {
 						to_index++;
 						if (to_index == [compare length] || to_index == [object length] + 1) { break; } // if we hava an exact match
 						one = [compare characterAtIndex:to_index];
@@ -107,8 +101,8 @@
 					smallest_difference = -1;
 					row = counter;
 					if (to_index == [compare length] || to_index == [object length] + 1) { break; } // if we hava an exact match
-				} else if (smallest_difference == -1 || difference < smallest_difference)
-				{
+				} 
+				else if (smallest_difference == -1 || difference < smallest_difference) {
 					smallest_difference = difference;
 					row = counter;
 				}
@@ -119,28 +113,12 @@
 		[self selectRow:row byExtendingSelection:NO];
 		[self scrollRowToVisible:row];
 	}
-	
 	[select_string setString:@""];
-}
-
-- (NSString *)view:(NSView *)view stringForToolTip:(NSToolTipTag)tag point:(NSPoint)point userData:(void *)data
-{
-	// ask our data source for the tool tip
-	if ([[self dataSource] respondsToSelector:@selector(tableView:objectValueForTableColumn:row:)]) 
-	{
-		if ([self rowAtPoint:point] >= 0) 
-		{
-			return [[self dataSource] tableView:self 
-					  objectValueForTableColumn:[[NSTableColumn alloc] initWithIdentifier:@"TOOLTIP"] 
-											row:[self rowAtPoint:point]];
-		}
-	}
-	return nil;
 }
 
 - (NSTableColumn *)_typeAheadSelectionColumn;
 {
-	return [self tableColumnWithIdentifier:@"FILENAME"];
+	return [[NSTableColumn alloc] initWithIdentifier:@"TYPEAHEAD"];
 }
 
 @end

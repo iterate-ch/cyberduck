@@ -1784,6 +1784,9 @@ public class CDBrowserController extends CDController implements Observer {
 				if(identifier.equals("FILENAME")) {
 					return new NSAttributedString(p.getName(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 				}
+				if(identifier.equals("TYPEAHEAD")) {
+					return p.getName();
+				}
 				if(identifier.equals("SIZE")) {
 					return new NSAttributedString(Status.getSizeAsString(p.attributes.getSize()), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 				}
@@ -1804,6 +1807,7 @@ public class CDBrowserController extends CDController implements Observer {
 				}
 				throw new IllegalArgumentException("Unknown identifier: "+identifier);
 			}
+			log.warn("tableViewObjectValueForLocation:return null");
 			return null;
 		}
 

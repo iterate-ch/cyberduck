@@ -84,15 +84,12 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			if(identifier.equals("BOOKMARK")) {
 				return this.getItem(row);
 			}
-			if(identifier.equals("FILENAME")) {
+			if(identifier.equals("TYPEAHEAD")) {
 				return this.getItem(row).getHostname();
 			}
-//			if(identifier.equals("TOOLTIP")) {
-//				Host h = this.getItem(row);
-//				return h.getURL()+h.getDefaultPath();
-//			}
 			throw new IllegalArgumentException("Unknown identifier: "+identifier);
 		}
+		log.warn("tableViewObjectValueForLocation:return null");
 		return null;
 	}
 
@@ -292,7 +289,6 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	 * in a plist xml format
 	 */
 	public void save(java.io.File f) {
-		log.debug("save");
 		if(Preferences.instance().getProperty("favorites.save").equals("true")) {
 			try {
 				NSMutableArray list = new NSMutableArray();
@@ -331,7 +327,6 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	 * Deserialize all the bookmarks saved previously in the users's application support directory
 	 */
 	public void load(java.io.File f) {
-		log.debug("load");
 		if(f.exists()) {
 			log.info("Found Bookmarks file: "+f.toString());
 			NSData plistData = new NSData(f);

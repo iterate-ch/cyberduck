@@ -391,6 +391,9 @@ public abstract class CDValidatorController extends AbstractValidator {
 					return new NSAttributedString(p.getRemote().getName(),
 												  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 				}
+				if(identifier.equals("TYPEAHEAD")) {
+					return p.getRemote().getName();
+				}
 				if(identifier.equals("ICON")) {
 					if(p.attributes.isDirectory()) {
 						return FOLDER_ICON;
@@ -428,24 +431,9 @@ public abstract class CDValidatorController extends AbstractValidator {
 					}
 					return null;
 				}
-				if(identifier.equals("TOOLTIP")) {
-					StringBuffer tooltip = new StringBuffer();
-					if(p.getRemote().exists()) {
-						tooltip.append(NSBundle.localizedString("Remote", "")+":\n"
-						    +"  "+Status.getSizeAsString(p.attributes.getSize())+"\n"
-						    +"  "+p.attributes.getTimestampAsString());
-					}
-					if(p.getRemote().exists() && p.getLocal().exists())
-						tooltip.append("\n");
-					if(p.getLocal().exists()) {
-						tooltip.append(NSBundle.localizedString("Local", "")+":\n"
-						    +"  "+Status.getSizeAsString(p.getLocal().length())+"\n"
-						    +"  "+p.getLocal().getTimestampAsString());
-					}
-					return tooltip.toString();
-				}
 			}
 		}
+		log.warn("tableViewObjectValueForLocation:return null");
 		return null;
 	}
 
