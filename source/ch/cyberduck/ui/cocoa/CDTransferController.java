@@ -22,6 +22,7 @@ import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Status;
+import ch.cyberduck.core.Preferences;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
@@ -70,6 +71,11 @@ public class CDTransferController implements Observer {
 	this.progressField = progressField;
     }
 
+    private NSTextField dataField;
+    public void setDataField(NSTextField dataField) {
+	this.dataField = dataField;
+    }
+    
     private NSProgressIndicator progressBar;
     public void setProgressBar(NSProgressIndicator progressBar) {
 	this.progressBar = progressBar;
@@ -110,7 +116,7 @@ public class CDTransferController implements Observer {
 	file.getSession().addObserver(this);
 	
         if (false == NSApplication.loadNibNamed("Transfer", this)) {
-            log.error("Couldn't load Transfer.nib");
+            log.fatal("Couldn't load Transfer.nib");
             return;
         }
 	this.init();
@@ -156,7 +162,7 @@ public class CDTransferController implements Observer {
 		    this.progressBar.setMinValue(0);
 		    this.progressBar.setMaxValue(file.status.getSize());
 		    this.progressBar.setDoubleValue((double)file.status.getCurrent());
-		    this.progressField.setStringValue(msg.getDescription());
+		    this.dataField.setStringValue(msg.getDescription());
 		}
 		else if(msg.getTitle().equals(Message.CLOCK)) {
 		    clockField.setStringValue(msg.getDescription());
@@ -164,6 +170,8 @@ public class CDTransferController implements Observer {
 		else if(msg.getTitle().equals(Message.START)) {
 		    this.resumeButton.setTitle("Resume");
 		    this.progressBar.startAnimation(null);
+		    this.stopButton.setEnabled(true);
+		    this.resumeButton.setEnabled(false);
 		}
 		else if(msg.getTitle().equals(Message.STOP)) {
 		    this.progressBar.stopAnimation(null);
@@ -175,6 +183,12 @@ public class CDTransferController implements Observer {
 		    this.resumeButton.setTitle("Reload");
 		    this.stopButton.setEnabled(false);
 		    this.resumeButton.setEnabled(true);
+		    if(KIND_DOWNLOAD == kind) {
+			//path.getLocalTemp().renameTo(path.getLocal());//@todo
+			if(Preferences.instance().getProperty("connection.download.postprocess").equals("true")) {
+
+			}
+		    }
 		}
 	    }
 	}
@@ -197,6 +211,9 @@ public class CDTransferController implements Observer {
 		    this.stopButtonClicked(null);
 
 		}
+		else if(msg.getTitle().equals(Message.PROGRESS)) {
+		    this.progressField.setStringValue(msg.getDescription());
+		}
 	    }
 	}
     }
@@ -208,15 +225,15 @@ public class CDTransferController implements Observer {
     public void resumeButtonClicked(NSButton sender) {
 	if(sender.title().equals("Resume"))
 	    this.file.status.setResume(true);
-	this.stopButton.setEnabled(true);
-	this.resumeButton.setEnabled(false);
 	this.start();
     }
 
     public void stopButtonClicked(NSButton sender) {
-	this.stopButton.setEnabled(false);
-	this.resumeButton.setEnabled(true);
 	this.file.status.setCanceled(true);
+    }
+
+    public void showInFinderClicked(NSButton sender) {
+	NSWorkspace.sharedWorkspace().selectFile(file.getLocal().toString(), "");
     }
 
     public boolean windowShouldClose(Object sender) {

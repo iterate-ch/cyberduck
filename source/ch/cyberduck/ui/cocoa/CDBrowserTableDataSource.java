@@ -19,11 +19,12 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
-import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-import java.util.List;
-import java.util.ArrayList;
+import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
 * @version $Id$

@@ -48,7 +48,7 @@ public class CDFolderSheet {
     public CDFolderSheet(Path parent) {
 	this.parent = parent;
         if (false == NSApplication.loadNibNamed("Folder", this)) {
-            log.error("Couldn't load Folder.nib");
+            log.fatal("Couldn't load Folder.nib");
             return;
         }
     }

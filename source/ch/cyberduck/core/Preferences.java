@@ -90,17 +90,22 @@ public abstract class Preferences {//extends Properties {
         defaults.put("uses", "0");
 	defaults.put("donate", "true");
 	defaults.put("mail", "mailto:dkocher@cyberduck.ch");
-	defaults.put("donate.url" , "http://www.cyberduck.ch/donate/");
+	defaults.put("website.donate" , "http://www.cyberduck.ch/donate/");
+	defaults.put("website.xml" , "http://www.cyberduck.ch/versionlist.xml");
 	defaults.put("website.update" , "http://www.cyberduck.ch/Cyberduck.dmg");
-	defaults.put("website.url" , "http://www.cyberduck.ch/");
-	defaults.put("open.newbrowser", "true");
+	defaults.put("website.home" , "http://www.cyberduck.ch/");
+	defaults.put("browser.opendefault", "true");
+	defaults.put("browser.showHidden", "false");
+	defaults.put("transfer.close", "false");
+
 //        defaults.put("laf.default", javax.swing.UIManager.getSystemLookAndFeelClassName());
         //defaults.put("laf.default", javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
 //        defaults.put("bookmarks.default", "My Bookmarks");
 //        defaults.put("interface.multiplewindow", "false");
 //        defaults.put("interface.error-dialog", "false");
         //Paths
-        defaults.put("download.path", System.getProperty("user.dir"));
+        defaults.put("connection.download.folder", System.getProperty("user.dir"));
+
 
         // font sizes
 //        String font_small = "10";
@@ -117,7 +122,7 @@ public abstract class Preferences {//extends Properties {
  //       defaults.put("status.sound.complete", "true");
     
         //defaults.put("files.encode", "true");
- //       defaults.put("files.postprocess", "false");
+	defaults.put("connection.download.postprocess", "false");
    //     defaults.put("files.removeCompleted", "false");
         
         //BookmarkTable properties
@@ -143,7 +148,11 @@ public abstract class Preferences {//extends Properties {
         //Connection
         //defaults.put("connection.log", "true");
 //        defaults.put("connection.log.file", "cyberduck.connection.log");
-//@todo        defaults.put("connection.buffer", "4096");
+//        defaults.put("connection.buffer", "512");
+//        defaults.put("connection.buffer", "1024");
+//        defaults.put("connection.buffer", "2048");
+//        defaults.put("connection.buffer", "4096");
+//        defaults.put("connection.buffer", "8192");
         defaults.put("connection.buffer", "16384");
 //        defaults.put("connection.log.speech", "false");
         defaults.put("connection.port.default", "21");
@@ -168,7 +177,6 @@ public abstract class Preferences {//extends Properties {
         defaults.put("ftp.transfermode", "binary");
 
 	//listing properties
-        defaults.put("listing.showHidden", "false");
 //        defaults.put("listing.showType", "true");
   //      defaults.put("listing.showFilenames", "true");
    //     defaults.put("listing.showSize", "true");

@@ -99,7 +99,7 @@ public abstract class Session extends Observable {
     /**
 	* @return The current working directory (pwd)
      */
-    public abstract Path workdir() throws IOException;
+    public abstract Path workdir();
     /**
 	* Assert that the connection to the remote host is still alive. Open connection if needed.
      * @throws IOException The connection to the remote host failed.

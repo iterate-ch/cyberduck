@@ -49,11 +49,8 @@ public abstract class Path {// extends Observable {
      * @param name the file relative to param path
      * @return Path new instance
      */
-    public Path(String path, String name) {
-        if(path.charAt(path.length()-1) == '/')
-            this.setPath(path + name);
-        else
-            this.setPath(path + "/" + name);
+    public Path(String parent, String name) {
+	this.setPath(parent, name);
     }
 
     /**
@@ -66,6 +63,13 @@ public abstract class Path {// extends Observable {
     public Path(String parent, java.io.File file) {
         this(parent, file.getName());
 	this.setLocal(file);
+    }
+
+    public void setPath(String parent, String name) {
+        if(parent.charAt(parent.length()-1) == '/')
+            this.setPath(parent + name);
+        else
+            this.setPath(parent + "/" + name);
     }
 
     /**
@@ -129,8 +133,9 @@ public abstract class Path {// extends Observable {
     public abstract void changePermissions(int p);
 
     public abstract void changeOwner(String owner);
-    
 
+    public abstract void changeGroup(String group);
+    
     public boolean isFile() {
 	return this.attributes.getMode().charAt(0) == '-';
     }
@@ -194,7 +199,7 @@ public abstract class Path {// extends Observable {
      */
     public File getLocal() {
 	if(null == this.local)
-	    return new File(Preferences.instance().getProperty("download.path"), this.getName());
+	    return new File(Preferences.instance().getProperty("connection.download.folder"), this.getName());
 	return this.local;
     }
 
@@ -399,18 +404,9 @@ public abstract class Path {// extends Observable {
     private void eof(boolean complete) {
         if(complete) {
             this.status.setCurrent(this.status.getSize());
-
-            //if(action.toString().equals(TransferAction.GET)) {
-            //    bookmark.getLocalTempPath().renameTo(bookmark.getLocalPath());
-            //    if(Preferences.instance().getProperty("files.postprocess").equals("true")) {
-            //        bookmark.open();
-            //    }
-	    // }
-           // this.log("Complete" , Message.PROGRESS);
             this.status.fireCompleteEvent();
         }
         else {
-//            this.log("Incomplete", Message.PROGRESS);
             this.status.fireStopEvent();
         }
     }

@@ -242,10 +242,10 @@ public class FTPPath extends Path {
 			this.downloadFile(FTPPath.this);
 		}
 		catch(FTPException e) {
-		    session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+		    downloadSession.log("FTP Error: "+e.getMessage(), Message.ERROR);
 		}
 		catch(IOException e) {
-		    session.log("IO Error: "+e.getMessage(), Message.ERROR);
+		    downloadSession.log("IO Error: "+e.getMessage(), Message.ERROR);
 		}
 	    }
 
@@ -328,10 +328,10 @@ public class FTPPath extends Path {
 			this.uploadFile(FTPPath.this);
 		}
 		catch(FTPException e) {
-		    session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+		    uploadSession.log("FTP Error: "+e.getMessage(), Message.ERROR);
 		}
 		catch(IOException e) {
-		    session.log("IO Error: "+e.getMessage(), Message.ERROR);
+		    uploadSession.log("IO Error: "+e.getMessage(), Message.ERROR);
 		}
 	    }
 
@@ -356,7 +356,7 @@ public class FTPPath extends Path {
 		    upload(out, in);
 		    uploadSession.FTP.validateTransfer();
 		}
-		if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+		else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 		    uploadSession.log("Setting transfer type to ASCII.", Message.PROGRESS);
 		    uploadSession.FTP.setType(FTPTransferType.ASCII);
 		    file.status.setSize((int)file.getLocal().length());
@@ -410,7 +410,7 @@ public class FTPPath extends Path {
 	public List parseList(String parent, String[] list) throws FTPException {
 	    //        log.debug("[FTPParser] parseList(" + parent + "," + list + ")");
 	    List parsedList = new ArrayList();
-	    boolean showHidden = Preferences.instance().getProperty("listing.showHidden").equals("true");
+	    boolean showHidden = Preferences.instance().getProperty("browser.showHidden").equals("true");
 	    for(int i = 0; i < list.length; i++) {
 		int index = 0;
 		String line = list[i].trim();

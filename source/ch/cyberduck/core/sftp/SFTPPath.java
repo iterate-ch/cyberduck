@@ -25,6 +25,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.sftp.SftpFile;
+import com.sshtools.j2ssh.sftp.FileAttributes;
 import com.sshtools.j2ssh.sftp.SftpFileInputStream;
 import com.sshtools.j2ssh.sftp.SftpFileOutputStream;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
@@ -84,7 +85,7 @@ public class SFTPPath extends Path {
 	if(refresh) {
 	    List files = null;
 	    SftpFile workingDirectory = null;
-	    boolean showHidden = Preferences.instance().getProperty("listing.showHidden").equals("true");
+	    boolean showHidden = Preferences.instance().getProperty("browser.showHidden").equals("true");
 			//@todo throw exception if we are not a directory
 	    try {
 		session.check();
@@ -237,6 +238,10 @@ public class SFTPPath extends Path {
 	session.log("Invalid Operation", Message.ERROR);
     }
 
+    public synchronized void changeGroup(String group) {
+	session.log("Invalid Operation", Message.ERROR);
+    }
+    
     public synchronized void download() {
 	log.debug("download");
 	new Thread() {
@@ -320,15 +325,16 @@ public class SFTPPath extends Path {
 	    }
 
 	    private void uploadFile(Path file) throws IOException {
+		file.status.setSize((int)file.getLocal().length());
 		java.io.InputStream in = new FileInputStream(file.getLocal());
 		if(in == null) {
 		    throw new IOException("Unable to buffer data");
 		}
 		uploadSession.log("Opening data stream...", Message.PROGRESS);
-		SftpFile remoteFile = uploadSession.SFTP.openFile(file.getName(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
-//	FileAttributes attrs = remoteFile.getAttributes();
-//	attrs.setPermissions("rwxr-xr-x");
-//	SFTP.setAttributes(remoteFile, attrs);
+		SftpFile remoteFile = uploadSession.SFTP.openFile(file.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
+		FileAttributes attrs = remoteFile.getAttributes();
+		attrs.setPermissions("rw-r-----");
+		uploadSession.SFTP.setAttributes(remoteFile, attrs);
 		SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);
 		if(out == null) {
 		    throw new IOException("Unable opening data stream");

@@ -89,7 +89,7 @@ public class CDConnectionSheet {
 	this.browser = browser;
 	log.debug("CDConnectionSheet");
         if (false == NSApplication.loadNibNamed("Connection", this)) {
-            log.error("Couldn't load Connection.nib");
+            log.fatal("Couldn't load Connection.nib");
             return;
         }
 	this.init();

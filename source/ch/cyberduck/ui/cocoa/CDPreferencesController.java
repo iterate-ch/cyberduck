@@ -61,6 +61,11 @@ public class CDPreferencesController {
 	this.newBrowserCheckbox = newBrowserCheckbox;
     }
 
+    private NSButton closeTransferCheckbox;
+    public void setCloseTransferCheckbox(NSButton closeTransferCheckbox) {
+	this.closeTransferCheckbox = closeTransferCheckbox;
+    }
+    
     private NSPopUpButton transfermodeCombo;
     public void setTransfermodeCombo(NSPopUpButton transfermodeCombo) {
 	this.transfermodeCombo = transfermodeCombo;
@@ -87,7 +92,7 @@ public class CDPreferencesController {
 	    instance = new CDPreferencesController();
 	}
         if (false == NSApplication.loadNibNamed("Preferences", instance)) {
-            log.error("Couldn't load Preferences.nib");
+            log.fatal("Couldn't load Preferences.nib");
         }
 	instance.init();
 	return instance;
@@ -116,9 +121,10 @@ public class CDPreferencesController {
     private void init() {
 	//setting values
 	anonymousField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.pass"));
-	downloadPathField.setStringValue(Preferences.instance().getProperty("download.path"));
-	showHiddenCheckbox.setState(Preferences.instance().getProperty("listing.showHidden").equals("true") ? NSCell.OnState : NSCell.OffState);
-	newBrowserCheckbox.setState(Preferences.instance().getProperty("open.newbrowser").equals("true") ? NSCell.OnState : NSCell.OffState);
+	downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
+	showHiddenCheckbox.setState(Preferences.instance().getProperty("browser.showHidden").equals("true") ? NSCell.OnState : NSCell.OffState);
+	newBrowserCheckbox.setState(Preferences.instance().getProperty("browser.opendefault").equals("true") ? NSCell.OnState : NSCell.OffState);
+	closeTransferCheckbox.setState(Preferences.instance().getProperty("transfer.close").equals("true") ? NSCell.OnState : NSCell.OffState);
 
 	    
 	connectmodeCombo.removeAllItems();
@@ -165,16 +171,16 @@ public class CDPreferencesController {
     }
 
     public void downloadPathFieldDidChange(NSNotification sender) {
-	Preferences.instance().setProperty("download.path", downloadPathField.stringValue());
+	Preferences.instance().setProperty("connection.download.folder", downloadPathField.stringValue());
     }
 
     public void showHiddenCheckboxClicked(NSButton sender) {
 	switch(sender.state()) {
 	    case NSCell.OnState:
-		Preferences.instance().setProperty("listing.showHidden", "true");
+		Preferences.instance().setProperty("browser.showHidden", "true");
 		return;
 	    case NSCell.OffState:
-		Preferences.instance().setProperty("listing.showHidden", "false");
+		Preferences.instance().setProperty("browser.showHidden", "false");
 		return;
 	}
     }
@@ -183,10 +189,21 @@ public class CDPreferencesController {
     public void newBrowserCheckboxClicked(NSButton sender) {
 	switch(sender.state()) {
 	    case NSCell.OnState:
-		Preferences.instance().setProperty("open.newbrowser", "true");
+		Preferences.instance().setProperty("browser.opendefault", "true");
 		return;
 	    case NSCell.OffState:
-		Preferences.instance().setProperty("open.newbrowser", "false");
+		Preferences.instance().setProperty("browser.opendefault", "false");
+		return;
+	}
+    }
+
+    public void closeTransferCheckboxClicked(NSButton sender) {
+	switch(sender.state()) {
+	    case NSCell.OnState:
+		Preferences.instance().setProperty("transfer.close", "true");
+		return;
+	    case NSCell.OffState:
+		Preferences.instance().setProperty("transfer.close", "false");
 		return;
 	}
     }
@@ -206,8 +223,8 @@ public class CDPreferencesController {
 		NSArray selected = sheet.filenames();
 		String filename;
 		if((filename = (String)selected.lastObject()) != null) {
-		    Preferences.instance().setProperty("download.path", filename);
-		    downloadPathField.setStringValue(Preferences.instance().getProperty("download.path"));
+		    Preferences.instance().setProperty("connection.download.folder", filename);
+		    downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
 		}		
 		return;
 	    }

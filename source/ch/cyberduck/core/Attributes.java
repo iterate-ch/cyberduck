@@ -18,10 +18,11 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.Observable;
-import java.util.Date;
-import java.text.DateFormat;
 import org.apache.log4j.Logger;
+
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Observable;
 
 /**
 * Attributes of a remote directory or file.

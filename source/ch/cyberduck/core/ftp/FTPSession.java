@@ -134,8 +134,18 @@ public class FTPSession extends Session {
 	}
     }
 
-    public Path workdir() throws IOException {
-	return new FTPPath(this, FTP.pwd());
+    public Path workdir() {
+	try {
+	    this.check();
+	    return new FTPPath(this, FTP.pwd());
+	}
+	catch(FTPException e) {
+	    this.log("FTP Error: "+e.getMessage(), Message.ERROR);
+	}
+	catch(IOException e) {
+	    this.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
+	return  null;
     }
 
 

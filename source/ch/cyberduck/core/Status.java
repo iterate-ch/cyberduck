@@ -60,18 +60,13 @@ public class Status extends Observable implements Serializable {
 
     private transient Timer currentSpeedTimer, overallSpeedTimer, chronoTimer;//timeLeftTimer;
 
-    /**
-    * Progress trackers.
-     */
-    //private transient Timer chronoTimer;
-
     private boolean canceled;
     /**
 	* Indicates that the last action has been completed.
      */
     private boolean complete = false;
     /**
-	* The last actioin has been stopped, but must not be completed.
+	* The last action has been stopped, but must not be completed.
      */
     private transient boolean stopped = true;
 
@@ -98,13 +93,9 @@ public class Status extends Observable implements Serializable {
      * @see ch.cyberduck.core.Message
      */
     public void callObservers(Message arg) {
-        log.debug("callObservers:"+arg.toString());
 	log.debug(this.countObservers()+" observers known.");
-        long start = System.currentTimeMillis();
         this.setChanged();
 	this.notifyObservers(arg);
-        long end = System.currentTimeMillis();
-	log.debug((end - start) + " ms");
     }
 
 
@@ -158,6 +149,7 @@ public class Status extends Observable implements Serializable {
 	    this.overallSpeedTimer.stop();
 	if(this.chronoTimer != null)
 	    this.chronoTimer.stop();
+	this.fireStopEvent();
     }
 
     public boolean isCancled() {
@@ -173,7 +165,6 @@ public class Status extends Observable implements Serializable {
         this.setCanceled(false);
         this.setComplete(false);
         this.setStopped(false);
-//        this.chronoTimer.start();
 	this.overallSpeedTimer.start();
 	this.currentSpeedTimer.start();
 	this.chronoTimer.start();
@@ -186,8 +177,6 @@ public class Status extends Observable implements Serializable {
     public void fireStopEvent() {
         log.debug("fireStopEvent()");
 	
-        //if(this.chronoTimer != null)
-          //  this.chronoTimer.stop();
 	this.setStopped(true);
 	if(this.currentSpeedTimer != null)
 	    this.currentSpeedTimer.stop();
@@ -204,7 +193,6 @@ public class Status extends Observable implements Serializable {
      */
     public void fireCompleteEvent() {
         log.debug("fireCompleteEvent()");
-//        this.chronoTimer.stop();
 	this.setStopped(true);
 	this.setComplete(true);
 	this.currentSpeedTimer.stop();

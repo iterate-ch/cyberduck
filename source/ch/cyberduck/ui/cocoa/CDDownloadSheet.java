@@ -65,7 +65,7 @@ public class CDDownloadSheet {
     
     public CDDownloadSheet() {
         if (false == NSApplication.loadNibNamed("Download", this)) {
-            log.error("Couldn't load Download.nib");
+            log.fatal("Couldn't load Download.nib");
             return;
         }
 	this.init();

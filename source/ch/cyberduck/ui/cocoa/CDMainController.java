@@ -46,6 +46,10 @@ public class CDMainController {
 //	controller.connectButtonClicked(this);
     }
 
+    /**
+	* Keep references of controller objects because otherweise they get garbage collected
+     * if not referenced here.
+     */
     private NSArray references = new NSArray();
     private CDDownloadSheet downloadSheet;
     
@@ -67,44 +71,78 @@ public class CDMainController {
     }
 
     public void updateMenuClicked(Object sender) {
-	/*
-	String currentVersionNumber = NSBundle.bundleForClass(this);
-	    infoDictionary] objectForKey:@"CFBundleVersion"];
+	try {
+	    NSBundle bundle = NSBundle.bundleForClass(this.getClass());
+	    String currentVersionNumber = (String)bundle.objectForInfoDictionaryKey("CFBundleVersion");
+	    log.debug("current version:"+currentVersionNumber);
 
-	NSDictionary dict = NSDictionary.dictionaryWithContentsOfURL:
-	    [NSURL URLWithString:@"http://www.cyberduck.ch/versionlist.xml"]];
+	    org.apache.commons.httpclient.HttpClient http = new org.apache.commons.httpclient.HttpClient();
+	    http.connect("www.cyberduck.ch", 80, false);
+	    org.apache.commons.httpclient.methods.GetMethod GET = new org.apache.commons.httpclient.methods.GetMethod("versionlist.xml");
+	    int response = http.executeMethod(GET);
+	    java.io.InputStream in = null;
+	    if(!org.apache.commons.httpclient.HttpStatus.isSuccessfulResponse(response)) {
+		in = http.getInputStream(GET);
+		java.io.OutputStream out = new java.io.FileOutputStream(new java.io.File(NSBundle.mainBundle().resourcePath(), "version.plist"));
+		boolean complete = false;
+		int amount = 0;
+		byte[] chunk = new byte[4096];
+		while (!complete) {
+		    amount = in.read(chunk, 0, 4096);
+		    if(amount == -1) {
+			complete = true;
+		    }
+		    else {
+			out.write(chunk, 0, amount);
+		    }
+		}
+		if(in != null) {
+		    in.close();
+		}
+		if(out != null) {
+		    out.flush();
+		    out.close();
+		}
+		NSData xmlData = new NSData(new java.io.File(NSBundle.mainBundle().resourcePath(), "version.plist"));	    
+//	NSData xmlData = new NSData(new java.net.URL(Preferences.instance().getProperty("website.xml")));
+		NSDictionary pList = (NSDictionary)NSPropertyListSerialization.propertyListFromXMLData(xmlData);
+		String latestVersionNumber = (String)pList.objectForKey("Cyberduck");
 
-	String latestVersionNumber = [productVersionDict.valueForKey:@"Cyberduck"];
-
-	 if(currentVersionNumber.equals(latestVersionNumber)) {
-	     public static int runInformationalAlert( String title, String message, String defaultButton, String alternateButton, String otherButton)
-	     NSAlertPanel.runInformationalAlert(
-						"No update", //title
+		if(currentVersionNumber.equals(latestVersionNumber)) {
+		    NSAlertPanel.runInformationalAlert(
+					 "No update", //title
 					 "No newer version available. Cyberduck "+currentVersionNumber+" is up to date.",
-						"OK",// defaultbutton
-						null,//alternative button
-						null,//other button
+					 "OK",// defaultbutton
+					 null,//alternative button
+					 null//other button
 					 );
-	 }
-	 else {
-	     int selection = NSAlertPanel.runInformationalAlert(
-					 "New version", //title
-					 "Cyberduck "+currentVersionNumber+" is out of date. The current version is Cyberduck "+currentVersionNumber,
-					 "Download",// defaultbutton
-					 "Later",//alternative button
-					 null,//other button
-					 );
-	     if(NSAlertPanel.DefaultReturn == selection) {
-		 NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")));
-
-	 }
-	 */
-	
+		}
+		else {
+		    int selection = NSAlertPanel.runInformationalAlert(
+							 "New version", //title
+							 "Cyberduck "+currentVersionNumber+" is out of date. The current version is Cyberduck "+currentVersionNumber,
+							 "Download",// defaultbutton
+							 "Later",//alternative button
+							 null//other button
+							 );
+		    if(NSAlertPanel.DefaultReturn == selection) {
+			NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")));
+		    }
+		}
+	    }
+	    else {
+		//blabla -failed
+	    }
+	}
+	catch(Exception e) {
+	    e.printStackTrace();
+	    log.error(e.getMessage());
+	}
     }
     
     public void websiteMenuClicked(Object sender) {
 	try {
-	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.url")));
+	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.home")));
 	}
 	catch(java.net.MalformedURLException e) {
 	    log.error(e.getMessage());
@@ -113,7 +151,7 @@ public class CDMainController {
     
     public void donateMenuClicked(Object sender) {
 	try {
-	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("donate.url")));
+	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.donate")));
 	}
 	catch(java.net.MalformedURLException e) {
 	    log.error(e.getMessage());
@@ -146,7 +184,7 @@ public class CDMainController {
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
 		try {
-		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("donate.url")));
+		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.donate")));
 		}
 		catch(java.net.MalformedURLException e) {
 		    log.error(e.getMessage());
@@ -164,7 +202,7 @@ public class CDMainController {
 	switch(sender.tag()) {
 	    case(NSAlertPanel.DefaultReturn):
 		try {
-		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("donate.url")));
+		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.donate")));
 		}
 		catch(java.net.MalformedURLException e) {
 		    log.error(e.getMessage());
@@ -202,11 +240,8 @@ public class CDMainController {
     public void applicationDidFinishLaunching (NSNotification notification) {
         // To get service requests to go to the controller...
 //        NSApplication.sharedApplication().setServicesProvider(this);
-	if(Preferences.instance().getProperty("open.newbrowser").equals("true")) {
-	    CDBrowserController controller = new CDBrowserController();
-	    this.references = references.arrayByAddingObject(controller);
-	    controller.window().makeKeyAndOrderFront(null);
-	    controller.connectButtonClicked(null);
+	if(Preferences.instance().getProperty("browser.opendefault").equals("true")) {
+	    this.newBrowserMenuClicked(null);
 	}
     }
 
@@ -231,7 +266,7 @@ public class CDMainController {
 	/*
 	if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
 	    if (false == NSApplication.loadNibNamed("Donate", this)) {
-		log.error("Couldn't load Donate.nib");
+		log.fatal("Couldn't load Donate.nib");
 		return NSApplication.TerminateNow;
 	    }
 //	    app.runModalForWindow(donationSheet);

@@ -99,7 +99,7 @@ public class CDInfoController {//implements Observer {
 	log.debug("CDInfoController:"+file);
 	this.file = file;
         if (false == NSApplication.loadNibNamed("Info", this)) {
-            log.error("Couldn't load Info.nib");
+            log.fatal("Couldn't load Info.nib");
             return;
         }
 	this.init();
@@ -166,17 +166,21 @@ public class CDInfoController {//implements Observer {
 
     public void filenameInputDidEndEditing(NSNotification sender) {
 	log.debug("textInputDidEndEditing");
-	if(filenameField.stringValue() != file.getName())
-	    file.rename(filenameField.stringValue());
+	
+	if(filenameField.stringValue() != file.getName()) {
+	    String newName = filenameField.stringValue();
+	    file.rename(newName);
+	    file.setPath(file.getParent().getAbsolute(), newName);
+	}
     }
     public void ownerInputDidEndEditing(NSNotification sender) {
 	if(ownerField.stringValue() != file.attributes.getOwner()) {
-//@todo	    file.changeOwner(ownerField.stringValue());
+	    file.changeOwner(ownerField.stringValue());
 	}
     }
     public void groupInputDidEndEditing(NSNotification sender) {
 	if(groupField.stringValue() != file.attributes.getGroup()) {
-//@todo	    file.changeGroup(groupField.stringValue());
+	    file.changeGroup(groupField.stringValue());
 	}
     }
 

@@ -21,8 +21,12 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.History;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ftp.FTPPath;
+import ch.cyberduck.core.sftp.SFTPPath;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
@@ -87,6 +91,12 @@ public class CDBrowserController implements Observer {
 
 //    private NSMutableDictionary toolbarItems;
 
+    /**
+	* Keep references of controller objects because otherweise they get garbage collected
+     * if not referenced here.
+     */
+    private NSArray references = new NSArray();
+    
     private CDConnectionSheet connectionSheet;
     private CDPathController pathController;
 
@@ -106,7 +116,7 @@ public class CDBrowserController implements Observer {
     public CDBrowserController() {
 	log.debug("CDBrowserController");
         if (false == NSApplication.loadNibNamed("Browser", this)) {
-            log.error("Couldn't load Browser.nib");
+            log.fatal("Couldn't load Browser.nib");
             return;
         }
 	this.init();
@@ -228,7 +238,7 @@ public class CDBrowserController implements Observer {
 		    browserTable.reloadData();
 
 		    progressIndicator.startAnimation(this);
-		    mainWindow.setTitle(host.getName());
+		    mainWindow.setTitle(host.getProtocol()+":"+host.getName());
 		    History.instance().add(host);
 		}
 		else if(msg.getTitle().equals(Message.CLOSE)) {
@@ -262,8 +272,9 @@ public class CDBrowserController implements Observer {
     
     public void folderButtonClicked(Object sender) {
         log.debug("folderButtonClicked");
-	CDFolderSheet sheet = new CDFolderSheet(host.getSession().workdir());
-//	CDFolderSheet sheet = new CDFolderSheet((Path)pathController.getItem(pathController.numberOfItems()-1));
+//	CDFolderSheet sheet = new CDFolderSheet(host.getSession().workdir());
+	Path parent = (Path)pathController.getItem(0);
+	CDFolderSheet sheet = new CDFolderSheet(parent);
 	NSApplication.sharedApplication().beginSheet(
 					      sheet.window(),//sheet
 					      mainWindow, //docwindow
@@ -281,6 +292,7 @@ public class CDBrowserController implements Observer {
 	if(browserTable.selectedRow() != -1) {
 	    Path path = (Path)model.getEntry(browserTable.selectedRow());
 	    CDInfoController controller = new CDInfoController(path);
+	    this.references = references.arrayByAddingObject(controller);
 	    controller.window().makeKeyAndOrderFront(null);
 	}
     }
@@ -323,8 +335,8 @@ public class CDBrowserController implements Observer {
 
     public void refreshButtonClicked(Object sender) {
 	log.debug("refreshButtonClicked");
-	Path p = host.getSession().workdir();
-//	Path p = (Path)pathController.getItem(0);
+//	Path p = host.getSession().workdir();
+	Path p = (Path)pathController.getItem(0);
 	p.list(true);
     }
 
@@ -357,11 +369,12 @@ public class CDBrowserController implements Observer {
 		    log.debug(filename+" selected to upload");
 		    Session session = host.getSession().copy();
 		    Path path = null;
+		    Path parent = (Path)pathController.getItem(0);
 		    if(session instanceof ch.cyberduck.core.ftp.FTPSession) {
-			path = new ch.cyberduck.core.ftp.FTPPath((ch.cyberduck.core.ftp.FTPSession)session, host.getSession().workdir().getAbsolute(), new java.io.File(filename));
+			path = new FTPPath((FTPSession)session, parent.getAbsolute(), new java.io.File(filename));
 		    }
 		    else if(session instanceof ch.cyberduck.core.sftp.SFTPSession) {
-			path = new ch.cyberduck.core.sftp.SFTPPath((ch.cyberduck.core.sftp.SFTPSession)session, host.getSession().workdir().getAbsolute(), new java.io.File(filename));
+			path = new SFTPPath((SFTPSession)session, parent.getAbsolute(), new java.io.File(filename));
 		    }
 		    	//@todo keep reference?
 		    CDTransferController controller = new CDTransferController(path, CDTransferController.KIND_UPLOAD);
@@ -420,7 +433,6 @@ public class CDBrowserController implements Observer {
 	Session session = host.getSession();
 	
 	session.addObserver((Observer)this);
-//	session.addObserver((Observer)browserTable);
 	session.addObserver((Observer)pathController);
 
 	session.mount();
