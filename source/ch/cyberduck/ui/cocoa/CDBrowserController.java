@@ -1180,12 +1180,6 @@ public class CDBrowserController extends CDController implements Observer {
 		return this.workdir;
 	}
 
-	public void unmount() {
-		if(this.isMounted()) {
-			this.workdir().getSession().close();
-		}
-	}
-
 	public void mount(NSScriptCommand command) {
 		log.debug("mount:"+command);
 		NSDictionary args = command.evaluatedArguments();
@@ -1243,6 +1237,12 @@ public class CDBrowserController extends CDController implements Observer {
 		}
 	}
 
+	public void unmount() {
+		if(this.isMounted()) {
+			this.workdir().getSession().close();
+		}
+	}
+		
 	/**
 	 * @return True if the unmount process has finished, false if the user has to agree first to close the connection
 	 */
@@ -1720,17 +1720,22 @@ public class CDBrowserController extends CDController implements Observer {
 			this.currentData = new ArrayList();
 		}
 
-//		public abstract int outlineViewNumberOfChildrenOfItem(NSOutlineView outlineView, Object object);
+//		public int outlineViewNumberOfChildrenOfItem(NSOutlineView outlineView, Object object);
 				
 		public int numberOfRowsInTableView(NSTableView tableView) {
 			return currentData.size();
 		}
 		
-//		public abstract boolean outlineViewIsItemExpandable(NSOutlineView outlineView, Object item);		
+//		public boolean outlineViewIsItemExpandable(NSOutlineView outlineView, Object item);		
 
-//		public abstract object outlineViewChildOfItem(NSOutlineView outlineView, int index, Object item);
+		/**
+		  * Invoked by outlineView, and returns the child item at the specified index. Children 
+		  * of a given parent item are accessed sequentially. If item is null, this method should 
+		  * return the appropriate child item of the root object
+		  */
+//		public Object outlineViewChildOfItem(NSOutlineView outlineView, int index, Object item);
 
-//		public abstract Object outlineViewObjectValueForItem(NSOutlineView outlineView, NSTableColumn tableColumn, Object item);
+//		public Object outlineViewObjectValueForItem(NSOutlineView outlineView, NSTableColumn tableColumn, Object item);
 
 		public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 			if(row < this.numberOfRowsInTableView(tableView)) {
@@ -1788,7 +1793,7 @@ public class CDBrowserController extends CDController implements Observer {
 		// Drop methods
 		// ----------------------------------------------------------
 
-//		public abstract int outlineViewValidateDrop(NSOutlineView outlineView, NSDraggingInfo info, Object item, int index);
+//		public int outlineViewValidateDrop(NSOutlineView outlineView, NSDraggingInfo info, Object item, int row);
 
 		public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 			log.info("tableViewValidateDrop:row:"+row+",operation:"+operation);
