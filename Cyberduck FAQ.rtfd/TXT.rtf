@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica-Oblique;
 \f3\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;}
-\vieww12040\viewh13540\viewkind0
+\vieww12040\viewh13640\viewkind0
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\fs24 \cf0      {{\NeXTGraphic cyberduck-application.icns \width2560 \height2560
@@ -12,13 +12,29 @@
 
 \f1\b \cf0 \
 
-\fs48 	Cyberduck FAQ\
-
-\fs24 	FTP and SFTP Browser for Mac OS X\
+\fs48 	Cyberduck [ 
+\fs24 FTP and SFTP Browser for Mac OS X  
+\fs48 ]
+\fs24 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 \
+\f2\i\b0 \cf0 	David Kocher <mailto:feedback@cyberduck.ch>
+\f0\i0 \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 	\
+	cocoaforge.com\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	Discuss anything reletead to Cyberduck at http://cyberduck.ch/forum/\
 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f1\b\fs48 \cf0 	 [1] FAQ
+\f0\b0\fs24 \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+\cf0 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 \'a5	Is Cyberduck free?\
@@ -26,18 +42,7 @@
 
 \f0\b0 \cf0 	Cyberduck is free software. Free software is a matter of the users' freedom to run, copy, distribute, study, change and improve the software. If you find this program useful, please consider making a donation. A donation would not only demonstrate your appreciation of this software, but also help to advance development in the future.\
 \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 \'a5	Who has written this piece of software?\
-	
-\f0\b0 Cyberduck has been written and is maintained by 
-\f2\i David Kocher <mailto:dk@cyberduck.ch>
-\f0\i0 . It does include third party software. Many have contributed localizations. Please see the credits. \
-
-\f1\b \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 \'a5	
+\'a5	
 \f1\b Why isn't there a <insert your preferred language here> localization?
 \f0\b0 \
 	Because nobody has written one yet. Why not doing it yourself? It's easy and you don't need any programming skills. Contact me and I'll send you the relevant files. Current available localizations are 
@@ -60,7 +65,7 @@
 
 \f0\b0 \cf0 	Write an email to 
 \f2\i <mailto:bugs@cyberduck.ch>
-\f0\i0  with a description what you have a done and what went wrong. It would help if you can include the crash report and also all the files with the pattern ~/Library/Logs/JavaNativeCrash_pid(****).log\
+\f0\i0  with a description what you have a done and what went wrong. It would help if you can include the crash report and also all the files with the pattern ~/Library/Logs/JavaNativeCrash_pid(****).log. Also please copy the output of the console.log available using the Console.app from /Applications/Utilities/Console.app.\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 \
@@ -80,7 +85,7 @@
 \f0\b0 \cf0 	Open a Terminal.app window and type:\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f3 \cf0 		defaults write ch.sudo.cyberduck browser.confirmQuit false\
+\f3 \cf0 		defaults write ch.sudo.cyberduck browser.confirmDisconnect false\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0 \cf0 \
@@ -101,10 +106,8 @@
 \f1\b \cf0 \'a5	The server does only allow one single connection; I can't transfer any files!\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 	Limit the maximum number of simultaneous to a server to one in the 'Advanced' tab in the Preferences. In addition, to force the browser connection to close upon transferring a file, open a Terminal.app window and type: \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f3 \cf0 		defaults write ch.sudo.cyberduck connection.pool.force true\
+\f0\b0 \cf0 	Limit the maximum number of simultaneous to a server to one in the 'Advanced' tab in the Preferences.
+\f3 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 \
@@ -125,7 +128,7 @@
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 \
-\'a5	I cannot sync files because the modifcation date differs as the server lives in a different time zone!\
+\'a5	I cannot sync files because the modifcation date differs; the server lives in a different time zone!\
 	
 \f0\b0 Currently you have to set the time zone of the server manually using the following command:
 \f3 	defaults write ch.sudo.cyberduck queue.sync.timezone <timezone>\
@@ -156,7 +159,7 @@
 \f1\b \cf0 \
 \
 
-\fs48 	Cyberduck How-to\
+\fs48 	[2] How-to\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0\fs24 \cf0 \
@@ -290,15 +293,19 @@
 	You can also upload files without first opening a connection to a server by dropping the file(s) onto a bookmark item in the bookmark drawer.\
 \
 	{{\NeXTGraphic Pasted Graphic 7.png \width4360 \height1760
-}¬}
-\f0\fs24 \
+}¬}\
+\
+	
+\f0\fs24 Note that dragging files is 
+\f2\i not
+\f0\i0  limited to the Finder, but also works i.e. with attachments Mail.app or any other application supporting file promises.\
 	\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 	Can I move files on a remote host?\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 	Yes, just drag the items into another folder as you would in the Finder. Currently, you can't move files to parent folders.\
+\f0\b0 \cf0 	Yes, just drag the items into another folder as you would in the Finder. Currently, you can't move files to parent folders (An outline view to be introduced in a later version will make this possible).\
 	\
 	{{\NeXTGraphic Pasted Graphic 10.tiff \width9640 \height1900
 }¬}
