@@ -579,16 +579,15 @@ public class CDMainController extends NSObject {
     }
 	
 	public void applicationWillTerminate(NSNotification notification) {
+        NSNotificationCenter.defaultCenter().removeObserver(this);
+		//Terminating rendezvous discovery
 		this.rendezvous.quit();
         //Writing version info
         this.saveVersionInfo();
         //Writing usage info
         Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
-		log.info("Saving Preferences...");
 		Preferences.instance().save();
-		log.info("Saving Bookmarks...");
 		BookmarkList.instance().save();
-		log.info("Saving Queue...");
 		QueueList.instance().save();
 	}
 
