@@ -170,14 +170,14 @@ public abstract class Path {
 	public Path getParent() {
 		if(null == parent) {
 			int index = this.getAbsolute().lastIndexOf('/');
-//			String parent = null;
+			String absolute = null;
 			if(index > 0) {
-				this.parent = this.getAbsolute().substring(0, index);
+				absolute = this.getAbsolute().substring(0, index);
 			}
 			else {//if (index == 0) //parent is root
-				this.parent = "/";
+				absolute = "/";
 			}
-			this.parent = PathFactory.createPath(this.getSession(), parent);
+			this.parent = PathFactory.createPath(this.getSession(), absolute);
 		}
 		return this.parent;
 	}

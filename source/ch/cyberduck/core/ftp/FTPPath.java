@@ -511,7 +511,7 @@ public class FTPPath extends Path {
 			if(this.attributes.isDirectory()) {
 				this.mkdir();
 			}
-			this.getParent().invalidate();
+//@todo			this.getParent().invalidate();
 			session.log("Idle", Message.STOP);
 		}
 		catch(FTPException e) {
