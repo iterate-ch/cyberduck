@@ -267,16 +267,17 @@ public class CDMainController {
 	
     public int applicationShouldTerminate (NSApplication app) {
 		log.debug("applicationShouldTerminate");
-		
-		//	NSArray windows = NSApplication.sharedApplication().windows();
-  //	if(windows.count() > 0) {
-  //	    log.debug("Open windows:"+windows);
-  //	java.util.Enumeration i = windows.objectEnumerator();
-  //	while(i.hasMoreElements()) {
-  //	    ((NSWindow)i.nextElement()).performClose(null);
-  //return NSApplication.TerminateLater
-  //	}
-  //	}
+//		NSArray windows = NSApplication.sharedApplication().windows();
+//		if(windows.count() > 0) {
+//			log.debug("Open windows:"+windows);
+//			java.util.Enumeration i = windows.objectEnumerator();
+//			while(i.hasMoreElements()) {
+//				NSWindow window = (NSWindow)i.nextElement();
+//				if(window.isVisible())
+//					window.performClose(null);
+//			}
+//			return NSApplication.TerminateLater;
+//		}
 		Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses"))+1);
         Preferences.instance().save();
 		((CDBookmarksImpl)CDBookmarksImpl.instance()).save();

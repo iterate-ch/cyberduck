@@ -68,7 +68,7 @@ public class Host {
     }
     
     public Host(String protocol, String hostname, int port, Login login) {
-		this(protocol, null, hostname, port, login, Path.HOME);
+		this(protocol, null, hostname, port, login, "");
     }
 
 	public Host(String protocol, String hostname, int port, Login login, String defaultpath) {

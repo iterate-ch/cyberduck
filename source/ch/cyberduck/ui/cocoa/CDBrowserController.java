@@ -63,13 +63,14 @@ public class CDBrowserController implements Observer {
 			if(p.isFile() || browserTable.numberOfSelectedRows() > 1) {
 				NSEnumerator enum = browserTable.selectedRowEnumerator();
 				List items = new ArrayList();
-//				Session session = this.session.copy();
-				Session session = browserModel.workdir().getSession().copy();
-				while(enum.hasMoreElements()) {
-					items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
+				if(this.isMounted()) {
+					Session session = browserModel.workdir().getSession().copy();
+					while(enum.hasMoreElements()) {
+						items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
+					}
+					CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
+					controller.transfer();
 				}
-				CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
-				controller.transfer();
 			}
 			if(p.isDirectory())
 				p.list();
@@ -103,7 +104,7 @@ public class CDBrowserController implements Observer {
 	public void bookmarkRowClicked(Object sender) {
 		log.debug("bookmarkRowClicked");
 		if(bookmarkTable.clickedRow() != -1) { //table header clicked
-			Host host = (Host)CDBookmarksImpl.instance().values().toArray()[bookmarkTable.clickedRow()];
+			Host host = (Host)CDBookmarksImpl.instance().getItem(bookmarkTable.clickedRow());
 			this.mount(host);
 		}
     }
@@ -145,10 +146,6 @@ public class CDBrowserController implements Observer {
 		this.showBookmarkButton.setAction(new NSSelector("toggleBookmarkDrawer", new Class[] {Object.class}));
     }
 
-	public void toggleBookmarkDrawer(Object sender) {
-		bookmarkDrawer.toggle(this);
-    }
-	
     private NSButton editBookmarkButton; // IBOutlet
     public void setEditBookmarkButton(NSButton editBookmarkButton) {
 		this.editBookmarkButton = editBookmarkButton;
@@ -160,7 +157,6 @@ public class CDBrowserController implements Observer {
     }
 	
 	public void editBookmarkButtonClicked(Object sender) {
-//		Host item = CDBookmarksImpl.instance().getItem(CDBookmarksImpl.instance().values().toArray()[bookmarkTable.selectedRow()].toString());
 		CDBookmarkController controller = new CDBookmarkController(CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow()));
 		controller.window().makeKeyAndOrderFront(null);
     }
@@ -200,7 +196,6 @@ public class CDBrowserController implements Observer {
     			
     public void removeBookmarkButtonClicked(Object sender) {
 		CDBookmarksImpl.instance().removeItem(bookmarkTable.selectedRow());
-//		CDBookmarksImpl.instance().removeItem(CDBookmarksImpl.instance().values().toArray()[row].toString());
 		this.bookmarkTable.reloadData();
     }
 
@@ -234,19 +229,27 @@ public class CDBrowserController implements Observer {
 	// ----------------------------------------------------------
 	
     private NSDrawer logDrawer; // IBOutlet
+	private static boolean logDrawerOpen;
     public void setLogDrawer(NSDrawer logDrawer) {
 		this.logDrawer = logDrawer;
     }
 	
 	public void toggleLogDrawer(Object sender) {
 		logDrawer.toggle(this);
+		logDrawerOpen = (logDrawer.state() == NSDrawer.OpenState || logDrawer.state() == NSDrawer.OpeningState);
     }
 	
     private NSDrawer bookmarkDrawer; // IBOutlet
+	private static boolean bookmarkDrawerOpen;
     public void setBookmarkDrawer(NSDrawer bookmarkDrawer) {
 		this.bookmarkDrawer = bookmarkDrawer;
     }
-    
+
+	public void toggleBookmarkDrawer(Object sender) {
+		bookmarkDrawer.toggle(this);
+		bookmarkDrawerOpen = (bookmarkDrawer.state() == NSDrawer.OpenState || bookmarkDrawer.state() == NSDrawer.OpeningState);
+    }
+		
 	// ----------------------------------------------------------
 	// Status
 	// ----------------------------------------------------------
@@ -261,6 +264,7 @@ public class CDBrowserController implements Observer {
     private NSImageView statusIcon; // IBOutlet
     public void setStatusIcon(NSImageView statusIcon) {
 		this.statusIcon = statusIcon;
+		this.statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
 	}
 
     private NSTextField statusLabel; // IBOutlet
@@ -278,12 +282,6 @@ public class CDBrowserController implements Observer {
     private CDPathController pathController;
 	
 	private NSToolbar toolbar;
-
-    /**
-		* The host this browser window is associated with
-     */
-//	private Session session;
-//    private Host host;
 	
     // ----------------------------------------------------------
     // Constructor
@@ -304,10 +302,14 @@ public class CDBrowserController implements Observer {
 		this.window().setTitle("Cyberduck "+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		this.window().setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 		this.pathController = new CDPathController(pathPopup);
+		// Drawer states
+		if(logDrawerOpen)
+			this.logDrawer.open();
+		if(bookmarkDrawerOpen)
+			this.bookmarkDrawer.open();
 		// Toolbar
 		this.toolbar = new NSToolbar("Cyberduck Toolbar");
 		this.toolbar.setDelegate(this);
-//		this.toolbar.setDelegate(new CDToolbarDelegate());
 		this.toolbar.setAllowsUserCustomization(true);
 		this.toolbar.setAutosavesConfiguration(true);
 		this.window().setToolbar(toolbar);
@@ -475,7 +477,7 @@ public class CDBrowserController implements Observer {
 										  (String)msg.getContent() // message
 										  );
 					progressIndicator.stopAnimation(this);
-					statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
+					this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
 					statusLabel.setObjectValue(msg.getContent());
 				}
 				// update status label
@@ -487,20 +489,20 @@ public class CDBrowserController implements Observer {
 					statusLabel.setObjectValue(msg.getContent());
 				}
 				else if(msg.getTitle().equals(Message.OPEN)) {
-					statusIcon.setImage(NSImage.imageNamed("online.tiff"));
+					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
 //					progressIndicator.startAnimation(this);
 //					browserModel.clear();
 //					browserTable.reloadData();
 //					mainWindow.setTitle(this.session.getHost().getProtocol()+":"+this.session.getHost().getHostname());
 				}
 				else if(msg.getTitle().equals(Message.CLOSE)) {
-					statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
+					this.statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
 					progressIndicator.stopAnimation(this);
 				}
 				
 				else if(msg.getTitle().equals(Message.START)) {
 					progressIndicator.startAnimation(this);
-					//@todo disable toolbar
+					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
 				}
 				else if(msg.getTitle().equals(Message.STOP)) {
 					progressIndicator.stopAnimation(this);
@@ -546,7 +548,6 @@ public class CDBrowserController implements Observer {
 	
     public void infoButtonClicked(Object sender) {
 		log.debug("infoButtonClicked");
-//		CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
 		Path path = (Path)browserModel.getEntry(browserTable.selectedRow());
 		CDInfoController controller = new CDInfoController(path);
 		controller.window().makeKeyAndOrderFront(null);
@@ -557,7 +558,6 @@ public class CDBrowserController implements Observer {
 		NSEnumerator enum = browserTable.selectedRowEnumerator();
 		Vector files = new Vector();
 		StringBuffer alertText = new StringBuffer(NSBundle.localizedString("Really delete the following files? This cannot be undone."));
-//		CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
 		while(enum.hasMoreElements()) {
 			int selected = ((Integer)enum.nextElement()).intValue();
 			Path p = (Path)browserModel.getEntry(selected);
@@ -614,7 +614,6 @@ public class CDBrowserController implements Observer {
 	
     public void downloadButtonClicked(Object sender) {
 		log.debug("downloadButtonClicked");
-//		CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
 		NSEnumerator enum = browserTable.selectedRowEnumerator();
 		Session session = browserModel.workdir().getSession().copy();
 		List items = new ArrayList();
@@ -699,7 +698,6 @@ public class CDBrowserController implements Observer {
 		log.debug("mount:"+host);
 		this.isMounting = true;
 		this.unmount();
-//		this.host = host;
 		Session session = host.createSession();
 		session.addObserver((Observer)this);
 		session.addObserver((Observer)pathController);
@@ -734,7 +732,6 @@ public class CDBrowserController implements Observer {
 		host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
 		session.mount();
 		this.isMounting = false;
-//		this.mounted = true;
 		CDHistoryImpl.instance().addItem(host);
     }
 	
@@ -751,13 +748,10 @@ public class CDBrowserController implements Observer {
     public void unmount() {
 		log.debug("unmount");
 		if(this.isConnected()) {
-//			this.host.closeSession();
 			browserModel.workdir().getSession().close();
 //			browserModel.workdir().getSession().deleteObserver((Observer)this);
 //			browserModel.workdir().getSession().deleteObserver((Observer)pathController);
 		}
-//		this.session = null;
-//		this.mounted = false;
     }
         
 	

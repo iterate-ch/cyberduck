@@ -66,7 +66,7 @@ public class CDConnectionController implements Observer {
     
 	public void bookmarksSelectionChanged(Object sender) {
 		log.debug("bookmarksSelectionChanged:"+sender);
-		this.updateFields(CDBookmarksImpl.instance().getItem(bookmarksPopup.indexOfSelectedItem()));
+		this.updateFields(CDBookmarksImpl.instance().getItem(bookmarksPopup.indexOfSelectedItem()-1));
 //		this.updateFields(CDBookmarksImpl.instance().getItem(bookmarksPopup.titleOfSelectedItem()));
 		this.updateLabel(sender);
     }
