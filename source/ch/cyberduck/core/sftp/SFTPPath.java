@@ -358,10 +358,14 @@ public class SFTPPath extends Path {
 			}
 			//	    this.session.log("Opening data stream...", Message.PROGRESS);
 			SftpFile remoteFile = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
-			//	    FileAttributes attrs = remoteFile.getAttributes();
-   //@ todo default upload permissions
-   //	    attrs.setPermissions("rw-r--r--");
-   //	    this.session.SFTP.setAttributes(remoteFile, attrs);
+			FileAttributes remoteAttributes = remoteFile.getAttributes();
+			
+			com.apple.cocoa.foundation.NSDictionary localAttributes = com.apple.cocoa.foundation.NSPathUtilities.fileAttributes(this.getLocal().getAbsolutePath(), true);
+			int localPermissions = ((Integer)localAttributes.objectForKey(com.apple.cocoa.foundation.NSPathUtilities.FilePosixPermissions)).intValue();
+			log.debug("***Local file permissions:"+localPermissions);
+				
+   			remoteAttributes.setPermissions("rw-r--r--"); //todo
+   			this.session.SFTP.setAttributes(remoteFile, remoteAttributes);
 			SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);
 			if(out == null) {
 				throw new IOException("Unable opening data stream");
