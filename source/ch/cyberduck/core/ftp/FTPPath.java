@@ -91,9 +91,9 @@ public class FTPPath extends Path {
     }
 
     public List list(boolean notifyobservers) {
+	session.log("Listing "+this.getName(), Message.PROGRESS);
 	try {
 	    session.check();
-	    session.log("Listing "+this.getName(), Message.PROGRESS);
 	    session.FTP.setType(FTPTransferType.ASCII);
 	    session.FTP.chdir(FTPPath.this.getAbsolute());
 	    this.setCache(new FTPParser().parseList(this.getAbsolute(), session.FTP.dir()));

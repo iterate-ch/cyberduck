@@ -32,11 +32,12 @@ import java.util.List;
 public class CDHistoryImpl extends History {
     private static Logger log = Logger.getLogger(CDHistoryImpl.class);
 
+    private static String FILE = NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History.data");
+
     public void save() {
-	log.debug("save");
-//	log.debug(NSSystem.currentHomeDirectory()+"/Library/Application Support/Cyberduck/");
-//	boolean success = NSArchiver.archiveRootObjectToFile(data, "History.data");
-//	log.debug("Success archiving history:"+success);
+	log.debug("Saving history to "+FILE);
+	boolean success = NSArchiver.archiveRootObjectToFile(data, FILE);
+	log.debug("Success archiving history:"+success);
 //	NSUserDefaults.standardUserDefaults().setObjectForKey(this.getData(), KEY);
 	//2003-05-23 21:59:33.202 Cyberduck[11903] *** -[NSUserDefaults setObject:forKey:]: Attempt to insert non-property value '[]' of class 'java/util/ArrayList'.
 
@@ -45,9 +46,10 @@ public class CDHistoryImpl extends History {
 
     public void load() {
 	log.debug("load");
+	List h = (List)NSUnarchiver.unarchiveObjectWithFile(FILE);
 //	List h = (List)NSUnarchiver.unarchiveObjectWithFile("History.data");
 //	List h = (List)NSUnarchiver.unarchiveObjectWithFile("~/Library/Application Support/Cyberduck/History.data");
-//	if(h != null)
-//	    this.data  = h;
+	if(h != null)
+	    this.data  = h;
     }
 }

@@ -55,13 +55,17 @@ public class CDLoginController extends Login {
 
     private NSWindow parentWindow;
 
+    private static NSMutableArray allDocuments = new NSMutableArray();
+
     public CDLoginController(NSWindow parentWindow, String user, String pass) {
 	super(user, pass);
+	allDocuments.addObject(this);
 	this.parentWindow = parentWindow;
     }
 
     public CDLoginController(NSWindow parentWindow) {
 	super();
+	allDocuments.addObject(this);
 	this.parentWindow = parentWindow;
     }
 
@@ -80,6 +84,10 @@ public class CDLoginController extends Login {
 	return this.sheet;
     }
 
+    public void windowWillClose(NSNotification notification) {
+	this.window().setDelegate(null);
+	allDocuments.removeObject(this);
+    }
 
     private boolean done;
     private boolean tryAgain;

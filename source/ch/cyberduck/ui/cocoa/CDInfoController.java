@@ -89,8 +89,9 @@ public class CDInfoController {//implements Observer {
     public void setWindow(NSWindow window) {
 	this.window = window;
     }
-    
-    
+
+    private static NSMutableArray allDocuments = new NSMutableArray();
+
     // ----------------------------------------------------------
     // Constructors
     // ----------------------------------------------------------
@@ -161,8 +162,14 @@ public class CDInfoController {//implements Observer {
     public void finalize() throws Throwable {
 	super.finalize();
 	log.debug("finalize");
-        NSNotificationCenter.defaultCenter().removeObserver(this);
     }
+
+    public void windowWillClose(NSNotification notification) {
+	this.window().setDelegate(null);
+	NSNotificationCenter.defaultCenter().removeObserver(this);
+	allDocuments.removeObject(this);
+    }
+
 
     public void filenameInputDidEndEditing(NSNotification sender) {
 	log.debug("textInputDidEndEditing");

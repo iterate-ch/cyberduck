@@ -45,14 +45,23 @@ public class CDFolderController {
 	return this.sheet;
     }
 
+    private static NSMutableArray allDocuments = new NSMutableArray();
+
     public CDFolderController(Path parent) {
 	this.parent = parent;
+	allDocuments.addObject(this);
         if (false == NSApplication.loadNibNamed("Folder", this)) {
             log.fatal("Couldn't load Folder.nib");
             return;
         }
     }
 
+    public void windowWillClose(NSNotification notification) {
+	this.window().setDelegate(null);
+//	NSNotificationCenter.defaultCenter().removeObserver(this);
+	allDocuments.removeObject(this);
+    }
+    
     public void closeSheet(Object sender) {
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 	NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());

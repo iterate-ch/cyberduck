@@ -30,8 +30,8 @@ import ch.cyberduck.core.History;
 /**
 * @version $Id$
  */
-public class CDConnectionSheet {
-    private static Logger log = Logger.getLogger(CDConnectionSheet.class);
+public class CDConnectionController {
+    private static Logger log = Logger.getLogger(CDConnectionController.class);
 
     private static final String FTP_STRING = "FTP (File Transfer)";
     private static final String SFTP_STRING = "SFTP (SSH Secure File Transfer)";
@@ -84,21 +84,30 @@ public class CDConnectionSheet {
 	return this.sheet;
     }
 
+    private static NSMutableArray allDocuments = new NSMutableArray();
     
     private CDBrowserController browser;
     // ----------------------------------------------------------
     // Constructors
     // ----------------------------------------------------------
 
-    public CDConnectionSheet(CDBrowserController browser) {
+    public CDConnectionController(CDBrowserController browser) {
 	this.browser = browser;
-	log.debug("CDConnectionSheet");
+	allDocuments.addObject(this);
+	log.debug("CDConnectionController");
         if (false == NSApplication.loadNibNamed("Connection", this)) {
             log.fatal("Couldn't load Connection.nib");
             return;
         }
 	this.init();
     }
+
+    public void windowWillClose(NSNotification notification) {
+	this.window().setDelegate(null);
+	NSNotificationCenter.defaultCenter().removeObserver(this);
+	allDocuments.removeObject(this);
+    }
+    
             
     private void init() {
 	log.debug("init");

@@ -76,6 +76,8 @@ public class Queue extends Observable implements Observer { //Thread {
      */
     private int size = -1;
 
+    Calendar calendar = Calendar.getInstance();
+
     /**
 	* @param file The base file to build a queue for. If this is a not a folder
      * the queue will consist of only this.
@@ -123,6 +125,9 @@ public class Queue extends Observable implements Observer { //Thread {
 	this.speed = 0;
 	this.overall = 0;
 	this.stopped = false;
+	calendar.set(Calendar.HOUR, 0);
+	calendar.set(Calendar.MINUTE, 0);
+	calendar.set(Calendar.SECOND, 0);
 //	this.current = this.isResume() ? current : 0;
 	new Thread() {
 	    public void run() {
@@ -131,10 +136,6 @@ public class Queue extends Observable implements Observer { //Thread {
 				   int seconds = 0;
 				   int minutes = 0;
 				   int hours = 0;
-				   Calendar calendar = Calendar.getInstance();
-//				   calendar.set(Calendar.HOUR, 0);
-//				   calendar.set(Calendar.MINUTE, 0);
-//				   calendar.set(Calendar.SECOND, 0);
 				   public void actionPerformed(ActionEvent event) {
 				       seconds++;
 				      // calendar.set(year, mont, date, hour, minute, second)
@@ -244,7 +245,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		    if(candidate.status.isComplete()) {			
 			callObservers(new Message(Message.COMPLETE));
 		    }
-		    candidate.status.deleteObserver(Queue.this);
+//		    candidate.status.deleteObserver(Queue.this);
 //		    candidate.getSession().deleteObserver(Queue.this);
 		    completedJobs++;
 		}
@@ -387,5 +388,5 @@ public class Queue extends Observable implements Observer { //Thread {
 //				 + Status.parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
 //	    }
 //	}
-}
+    }
 }

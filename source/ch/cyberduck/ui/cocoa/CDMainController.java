@@ -56,7 +56,7 @@ public class CDMainController {
 	* Keep references of controller objects because otherweise they get garbage collected
      * if not referenced here.
      */
-    private NSArray references = new NSArray();
+//    private static NSMutableArray references = new NSMutableArray();
     
     // ----------------------------------------------------------
     // Outlets
@@ -230,13 +230,11 @@ public class CDMainController {
 
     public void newDownloadMenuClicked(Object sender) {
 	CDDownloadController controller = new CDDownloadController();
-	this.references = references.arrayByAddingObject(controller);
 	controller.window().makeKeyAndOrderFront(null);
     }
 
     public void newBrowserMenuClicked(Object sender) {
 	CDBrowserController controller = new CDBrowserController();
-	this.references = references.arrayByAddingObject(controller);
 	controller.window().makeKeyAndOrderFront(null);
     }
 

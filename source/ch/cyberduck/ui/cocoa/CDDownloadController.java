@@ -47,9 +47,10 @@ public class CDDownloadController {
 	this.urlField = urlField;
     }
 
-    private NSArray references = new NSArray();
+    private static NSMutableArray allDocuments = new NSMutableArray();
 
     public CDDownloadController() {
+	allDocuments.addObject(this);
         if (false == NSApplication.loadNibNamed("Download", this)) {
             log.fatal("Couldn't load Download.nib");
             return;
@@ -70,6 +71,11 @@ public class CDDownloadController {
 	super.finalize();
     }
 
+    public void windowWillClose(NSNotification notification) {
+	this.window().setDelegate(null);
+	allDocuments.removeObject(this);
+    }
+    
     public void closeSheet(NSButton sender) {
 	//@ todo url field
 	switch(sender.tag()) {
@@ -108,7 +114,6 @@ public class CDDownloadController {
 			//@todo HTTPS
 			//@todo SCP
 		    controller.setPath(path);
-		    this.references = references.arrayByAddingObject(controller);
 		    controller.transfer(path.status.isResume());
 		}
 		catch(MalformedURLException e) {

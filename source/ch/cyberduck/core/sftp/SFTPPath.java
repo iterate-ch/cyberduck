@@ -98,13 +98,15 @@ public class SFTPPath extends Path {
 
     public List list(boolean notifyobservers) {
 	boolean showHidden = Preferences.instance().getProperty("browser.showHidden").equals("true");
+	SftpFile workingDirectory = null;
+	session.log("Listing "+this.getName(), Message.PROGRESS);
 	try {
 	    session.check();
-	    session.log("Listing "+this.getName(), Message.PROGRESS);
+	    workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
 	    List children = new ArrayList();
 	    int read = 1;
 	    while(read > 0) {
-		read = session.SFTP.listChildren(session.SFTP.openDirectory(this.getAbsolute()), children);
+		read = session.SFTP.listChildren(workingDirectory, children);
 	    }
 	    java.util.Iterator i = children.iterator();
 	    List files = new java.util.ArrayList();
@@ -141,21 +143,18 @@ public class SFTPPath extends Path {
 	}
 	finally {
 	    session.log("Idle", Message.STOP);
+	    if(workingDirectory != null) {
+		try {
+		    workingDirectory.close();
+		}
+		catch(SshException e) {
+		    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+		    session.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+	    }
 	}
-	     //@todo
-//	     finally {
-//		 if(workingDirectory != null) {
-//		     try {
-//			 workingDirectory.close();
-//		     }
-//		     catch(SshException e) {
-//			 session.log("SSH Error: "+e.getMessage(), Message.ERROR);
-//		     }
-//		     catch(IOException e) {
-//			 session.log("IO Error: "+e.getMessage(), Message.ERROR);
-//		     }
-//		 }
-//	     }
 	return this.cache();
     }
 

@@ -218,7 +218,6 @@ public abstract class Path {// extends Observable {
 	//log.debug("getAbsolute:"+this.path);
 	return this.path;
     }
-
     
 //    public String getAbsoluteEncoded(String path) {
   //      return java.net.URLEncoder.encode(this.getAbsolute());//, "utf-8");
@@ -237,7 +236,6 @@ public abstract class Path {// extends Observable {
 	return this.local;
     }
 
-    
 //    public BoundedRangeModel getProgressModel() {
 //	DefaultBoundedRangeModel m = null;
 //	try {
@@ -327,9 +325,6 @@ public abstract class Path {// extends Observable {
 
     public abstract void fillUploadQueue(Queue queue, Session session);
 
-//    public abstract Session getDownloadSession();
-
-  //  public abstract Session getUploadSession();
 
     // ----------------------------------------------------------
     // Transfer methods

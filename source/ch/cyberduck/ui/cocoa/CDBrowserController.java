@@ -117,9 +117,10 @@ public class CDBrowserController implements Observer {
 	* Keep references of controller objects because otherweise they get garbage collected
      * if not referenced here.
      */
-    private NSArray references = new NSArray();
+    private static NSMutableArray allDocuments = new NSMutableArray();
+//    private NSArray references = new NSArray();
     
-    private CDConnectionSheet connectionSheet;
+//    private CDConnectionSheet connectionSheet;
     private CDPathController pathController;
 
     private NSToolbar toolbar;
@@ -134,6 +135,7 @@ public class CDBrowserController implements Observer {
     // ----------------------------------------------------------
     
     public CDBrowserController() {
+	allDocuments.addObject(this);
 	log.debug("CDBrowserController");
         if (false == NSApplication.loadNibNamed("Browser", this)) {
             log.fatal("Couldn't load Browser.nib");
@@ -155,7 +157,7 @@ public class CDBrowserController implements Observer {
 	browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
 	browserTable.setAutosaveTableColumns(true);
 
-	connectionSheet = new CDConnectionSheet(this);
+//	connectionSheet = new CDConnectionSheet(this);
 	pathController = new CDPathController(pathPopup);
 
 	pathPopup.setTarget(pathController);
@@ -413,7 +415,6 @@ public class CDBrowserController implements Observer {
 //	CDFolderController sheet = new CDFolderController(host.getSession().workdir());
 	Path parent = (Path)pathController.getItem(0);
 	CDFolderController controller = new CDFolderController(parent);
-	this.references = references.arrayByAddingObject(controller);
 	NSApplication.sharedApplication().beginSheet(
 					      controller.window(),//sheet
 					      mainWindow, //docwindow
@@ -430,7 +431,6 @@ public class CDBrowserController implements Observer {
 	log.debug("infoButtonClicked");
 	Path path = (Path)browserModel.getEntry(browserTable.selectedRow());
 	CDInfoController controller = new CDInfoController(path);
-	this.references = references.arrayByAddingObject(controller);
 	controller.window().makeKeyAndOrderFront(null);
     }
 
@@ -498,7 +498,6 @@ public class CDBrowserController implements Observer {
 	    int selected = ((Integer)enum.nextElement()).intValue();
 	    path = (Path)browserModel.getEntry(selected);
 	    CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
-	    this.references = references.arrayByAddingObject(controller);
 	    controller.transfer(path.status.isResume());
 	}
     }
@@ -532,7 +531,6 @@ public class CDBrowserController implements Observer {
 			path = new SFTPPath((SFTPSession)session, parent.getAbsolute(), new java.io.File(filename));
 		    }
 		    CDTransferController controller = new CDTransferController(path, Queue.KIND_UPLOAD);
-		    this.references = references.arrayByAddingObject(controller);
 		    controller.transfer(path.status.isResume());
 		}
 		break;
@@ -587,11 +585,11 @@ public class CDBrowserController implements Observer {
 
     public void connectButtonClicked(Object sender) {
 	log.debug("connectButtonClicked");
-//keep a reference instead	CDConnectionSheet sheet = new CDConnectionSheet(this);
+	CDConnectionController controller = new CDConnectionController(this);
 	NSApplication.sharedApplication().beginSheet(
-					      connectionSheet.window(),//sheet
+					      controller.window(),//sheet
 					      mainWindow, //docwindow
-					      connectionSheet, //modal delegate
+					      controller, //modal delegate
 					      new NSSelector(
 		      "connectionSheetDidEnd",
 		      new Class[] { NSWindow.class, int.class, NSWindow.class }
@@ -869,6 +867,13 @@ public class CDBrowserController implements Observer {
 	}
 	return true;
     }
+
+    public void windowWillClose(NSNotification notification) {
+	this.window().setDelegate(null);
+//	NSNotificationCenter.defaultCenter().removeObserver(this);
+	allDocuments.removeObject(this);
+    }
+
     
     // ----------------------------------------------------------
     // IB action methods
@@ -998,7 +1003,6 @@ public class CDBrowserController implements Observer {
 			path = new SFTPPath((SFTPSession)session, parent.getAbsolute(), new java.io.File(filename));
 		    }
 		    CDTransferController controller = new CDTransferController(path, Queue.KIND_UPLOAD);
-		    references = references.arrayByAddingObject(controller);
 		    controller.transfer(path.status.isResume());
 		}
 		tableView.reloadData();
