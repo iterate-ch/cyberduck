@@ -686,9 +686,9 @@ public abstract class TransportProtocolCommon implements TransportProtocol, Runn
      * @throws IOException
      */
     protected void sendKeyExchangeInit() throws IOException {
-        setLocalKexInit(createLocalKexInit());
+        this.setLocalKexInit(this.createLocalKexInit());
 
-        sendMessage(getLocalKexInit(), this);
+        this.sendMessage(this.getLocalKexInit(), this);
 
         state.setValue(TransportProtocolState.PERFORMING_KEYEXCHANGE);
     }

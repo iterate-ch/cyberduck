@@ -44,7 +44,6 @@ public class SshCipherFactory {
 	private static HashMap ciphers;
 	private static String defaultCipher;
 	private static Log log = LogFactory.getLog(SshCipherFactory.class);
-	private static ArrayList supported;
 
 	static {
 		ciphers = new HashMap();
@@ -62,9 +61,6 @@ public class SshCipherFactory {
 		ciphers.put("cast128-cbc", CAST128Cbc.class);
 		
 		defaultCipher = "blowfish-cbc";
-
-		// Build a list of the supported ciphers
-		supported = new ArrayList(ciphers.keySet());
 	}
 
 	/**
@@ -90,8 +86,7 @@ public class SshCipherFactory {
 	 * @return
 	 */
 	public static List getSupportedCiphers() {
-		// Return the list
-		return supported;
+        return new ArrayList(ciphers.keySet());
 	}
 
 	/**

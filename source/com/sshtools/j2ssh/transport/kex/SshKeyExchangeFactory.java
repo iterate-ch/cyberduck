@@ -48,12 +48,7 @@ public class SshKeyExchangeFactory {
         log.info("Loading key exchange methods");
         kexs.put("diffie-hellman-group1-sha1", DhGroup1Sha1.class);
 
-        if ((defaultAlgorithm == null) || !kexs.containsKey(defaultAlgorithm)) {
-            log.debug("The default key exchange is not set! using first in list");
-
-            Iterator it = kexs.keySet().iterator();
-            defaultAlgorithm = (String) it.next();
-        }
+        defaultAlgorithm = "diffie-hellman-group1-sha1";
     }
 
     /**

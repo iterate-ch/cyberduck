@@ -141,7 +141,7 @@ public class SshConnectionProperties {
      * @return
      */
     public int getTransportProvider() {
-        return transportProvider;
+        return this.transportProvider;
     }
 
     /**
@@ -150,20 +150,20 @@ public class SshConnectionProperties {
     public void setTransportProviderString(String name) {
         if (name != null) {
             if (name.equalsIgnoreCase("http")) {
-                transportProvider = USE_HTTP_PROXY;
+                this.transportProvider = USE_HTTP_PROXY;
             }
             else if (name.equalsIgnoreCase("socks4")) {
-                transportProvider = USE_SOCKS4_PROXY;
+                this.transportProvider = USE_SOCKS4_PROXY;
             }
             else if (name.equalsIgnoreCase("socks5")) {
-                transportProvider = USE_SOCKS5_PROXY;
+                this.transportProvider = USE_SOCKS5_PROXY;
             }
             else {
-                transportProvider = USE_STANDARD_SOCKET;
+                this.transportProvider = USE_STANDARD_SOCKET;
             }
         }
         else {
-            transportProvider = USE_STANDARD_SOCKET;
+            this.transportProvider = USE_STANDARD_SOCKET;
         }
     }
 
@@ -171,13 +171,13 @@ public class SshConnectionProperties {
      * @return
      */
     public String getTransportProviderString() {
-        if (transportProvider == USE_HTTP_PROXY) {
+        if (this.transportProvider == USE_HTTP_PROXY) {
             return "http";
         }
-        else if (transportProvider == USE_SOCKS4_PROXY) {
+        else if (this.transportProvider == USE_SOCKS4_PROXY) {
             return "socks4";
         }
-        else if (transportProvider == USE_SOCKS5_PROXY) {
+        else if (this.transportProvider == USE_SOCKS5_PROXY) {
             return "socks5";
         }
         else {
@@ -189,28 +189,28 @@ public class SshConnectionProperties {
      * @return
      */
     public String getProxyHost() {
-        return proxyHostname;
+        return this.proxyHostname;
     }
 
     /**
      * @return
      */
     public int getProxyPort() {
-        return proxyPort;
+        return this.proxyPort;
     }
 
     /**
      * @return
      */
     public String getProxyUsername() {
-        return proxyUsername;
+        return this.proxyUsername;
     }
 
     /**
      * @return
      */
     public String getProxyPassword() {
-        return proxyPassword;
+        return this.proxyPassword;
     }
 
     /**
@@ -252,112 +252,112 @@ public class SshConnectionProperties {
      * @param pref
      */
     public void setPrefCSComp(String pref) {
-        prefSendComp = pref;
+        this.prefSendComp = pref;
     }
 
     /**
      * @return
      */
     public String getPrefCSComp() {
-        return prefSendComp;
+        return this.prefSendComp;
     }
 
     /**
      * @param pref
      */
     public void setPrefCSEncryption(String pref) {
-        prefEncryption = pref;
+        this.prefEncryption = pref;
     }
 
     /**
      * @return
      */
     public String getPrefCSEncryption() {
-        return prefEncryption;
+        return this.prefEncryption;
     }
 
     /**
      * @param pref
      */
     public void setPrefCSMac(String pref) {
-        prefSendMac = pref;
+        this.prefSendMac = pref;
     }
 
     /**
      * @return
      */
     public String getPrefCSMac() {
-        return prefSendMac;
+        return this.prefSendMac;
     }
 
     /**
      * @param pref
      */
     public void setPrefKex(String pref) {
-        prefKex = pref;
+        this.prefKex = pref;
     }
 
     /**
      * @return
      */
     public String getPrefKex() {
-        return prefKex;
+        return this.prefKex;
     }
 
     /**
      * @param pref
      */
     public void setPrefPublicKey(String pref) {
-        prefPK = pref;
+        this.prefPK = pref;
     }
 
     /**
      * @return
      */
     public String getPrefPublicKey() {
-        return prefPK;
+        return this.prefPK;
     }
 
     /**
      * @param pref
      */
     public void setPrefSCComp(String pref) {
-        prefRecvComp = pref;
+        this.prefRecvComp = pref;
     }
 
     /**
      * @return
      */
     public String getPrefSCComp() {
-        return prefRecvComp;
+        return this.prefRecvComp;
     }
 
     /**
      * @param pref
      */
     public void setPrefSCEncryption(String pref) {
-        prefDecryption = pref;
+        this.prefDecryption = pref;
     }
 
     /**
      * @return
      */
     public String getPrefSCEncryption() {
-        return prefDecryption;
+        return this.prefDecryption;
     }
 
     /**
      * @param pref
      */
     public void setPrefSCMac(String pref) {
-        prefRecvMac = pref;
+        this.prefRecvMac = pref;
     }
 
     /**
      * @return
      */
     public String getPrefSCMac() {
-        return prefRecvMac;
+        return this.prefRecvMac;
     }
 
     /**
@@ -371,6 +371,6 @@ public class SshConnectionProperties {
      * @return
      */
     public String getUsername() {
-        return username;
+        return this.username;
     }
 }
