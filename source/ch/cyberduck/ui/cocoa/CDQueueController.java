@@ -148,45 +148,47 @@ public class CDQueueController extends NSObject implements Observer {
         this.startItem(queue, false);
     }
 
+	public void startItem(Queue queue, Observer callback, boolean resumeRequested) {
+        this.callback = callback;
+        this.startItem(queue, resumeRequested);
+    }
+	
     public void startItem(final Queue queue, final boolean resumeRequested) {
         log.info("Starting item:" + queue);
-		//int mypool = NSAutoreleasePool.push();
-				QueueList.instance().save();
-				CDQueueController.this.queueTable.reloadData();
-				CDQueueController.this.queueTable.selectRow(QueueList.instance().indexOf(queue), false);
-				CDQueueController.this.queueTable.scrollRowToVisible(QueueList.instance().indexOf(queue));
-				
-				if (Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
-					CDQueueController.this.window().makeKeyAndOrderFront(null);
-				}
-				
-				queue.getRoot().getHost().getLogin().setController(new CDLoginController(CDQueueController.this.window()));
-				if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
-					try {
-						queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(CDQueueController.this.window()));
-					}
-					catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
-						CDQueueController.this.window().makeKeyAndOrderFront(null);
-						//This exception is thrown whenever an exception occurs open or reading from the host file.
-						NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", ""), //title
-															 NSBundle.localizedString("OK", ""), // defaultbutton
-															 null, //alternative button
-															 null, //other button
-															 CDQueueController.this.window(), //docWindow
-															 null, //modalDelegate
-															 null, //didEndSelector
-															 null, // dismiss selector
-															 null, // context
-															 NSBundle.localizedString("Could not open or read the host file", "") + ": " + e.getMessage() // message
-															 );
-						return;
-					}
-				}
-				queue.start(new CDValidatorController(queue.kind(), resumeRequested), CDQueueController.this);
+		QueueList.instance().save();
+		CDQueueController.this.queueTable.reloadData();
+		CDQueueController.this.queueTable.selectRow(QueueList.instance().indexOf(queue), false);
+		CDQueueController.this.queueTable.scrollRowToVisible(QueueList.instance().indexOf(queue));
 		
-		//NSAutoreleasePool.pop(mypool);
+		if (Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
+			CDQueueController.this.window().makeKeyAndOrderFront(null);
+		}
+		
+		queue.getRoot().getHost().getLogin().setController(new CDLoginController(CDQueueController.this.window()));
+		if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
+			try {
+				queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(CDQueueController.this.window()));
+			}
+			catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
+				CDQueueController.this.window().makeKeyAndOrderFront(null);
+				//This exception is thrown whenever an exception occurs open or reading from the host file.
+				NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", ""), //title
+													 NSBundle.localizedString("OK", ""), // defaultbutton
+													 null, //alternative button
+													 null, //other button
+													 CDQueueController.this.window(), //docWindow
+													 null, //modalDelegate
+													 null, //didEndSelector
+													 null, // dismiss selector
+													 null, // context
+													 NSBundle.localizedString("Could not open or read the host file", "") + ": " + e.getMessage() // message
+													 );
+				return;
+			}
+		}
+		queue.start(new CDValidatorController(queue.kind(), resumeRequested), CDQueueController.this);
     }
-
+	
     public void update(final Observable observable, final Object arg) {
 //		log.debug("update:"+observable+","+arg);
         ThreadUtilities.instance().invokeLater(new Runnable() {

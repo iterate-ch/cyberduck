@@ -141,7 +141,7 @@ public class CDValidatorController extends Validator {
 			}
         }
         path.status.setResume(resumeChoosen);
-        log.info("*** File " + path.getName() + " will be included:" + include);
+        log.info("File " + path.getName() + " will be included:" + include);
         return include;
     }
 
@@ -151,28 +151,28 @@ public class CDValidatorController extends Validator {
     }
 
     public void resumeActionFired(NSButton sender) {
-        log.debug("*** resumeActionFired");
+        log.debug("resumeActionFired");
         this.resumeChoosen = true;
         this.include = true;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
     }
 
     public void overwriteActionFired(NSButton sender) {
-        log.debug("*** overwriteActionFired");
+        log.debug("overwriteActionFired");
         this.resumeChoosen = false;
         this.include = true;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
     }
 
     public void skipActionFired(NSButton sender) {
-        log.debug("*** skipActionFired");
+        log.debug("skipActionFired");
         this.resumeChoosen = true;
         this.include = false;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
     }
 
     public void cancelActionFired(NSButton sender) {
-        log.debug("*** cancelActionFired");
+        log.debug("cancelActionFired");
         this.isCanceled = true;
         this.include = false;
         this.resumeChoosen = true;
@@ -182,7 +182,7 @@ public class CDValidatorController extends Validator {
     public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         this.window().close();
         this.applySettingsToAll = (applyCheckbox.state() == NSCell.OnState);
-        log.info("*** Action will applied to all subsequent validated items");
+        log.info("Action will applied to all subsequent validated items");
         this.sheetClosedAndSelectionMade = true;
     }
 }
