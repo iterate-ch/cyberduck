@@ -33,6 +33,11 @@ import org.apache.log4j.Logger;
 public abstract class CDController {
 	protected static Logger log = Logger.getLogger(CDController.class);
 
+	protected void finalize() throws Throwable {
+		log.debug("------------- finalize");
+		super.finalize();
+	}
+
 	private NSWindow window; // IBOutlet
 
 	public void setWindow(NSWindow window) {

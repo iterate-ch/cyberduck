@@ -51,9 +51,9 @@ public class Status /*extends Observable*/ {
 	 */
 	private boolean complete = false;
 
-	private static final long KILO = 1024; //2^10
-	private static final long MEGA = 1048576; // 2^20
-	private static final long GIGA = 1073741824; // 2^30
+	private static final long KILO = 1024l; //2^10
+	private static final long MEGA = 1048576l; // 2^20
+	private static final long GIGA = 1073741824l; // 2^30
 
 	/**
 	 * @return The size of the file
@@ -66,16 +66,13 @@ public class Status /*extends Observable*/ {
 			return size+"B";
 		}
 		if(size < MEGA) {
-			String v = String.valueOf((long)(size/KILO));
-			return v.substring(0, v.indexOf('.')+2)+"kB";
+			return String.valueOf(size/KILO)+"kB";
 		}
 		if(size < GIGA) {
-			String v = String.valueOf((long)(size/MEGA));
-			return v.substring(0, v.indexOf('.')+2)+"MB";
+			return String.valueOf(size/MEGA)+"MB";
 		}
 		else {
-			String v = String.valueOf((long)(size/GIGA));
-			return v.substring(0, v.indexOf('.')+2)+"GB";
+			return String.valueOf(size/GIGA)+"GB";
 		}
 	}
 

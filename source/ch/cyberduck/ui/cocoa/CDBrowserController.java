@@ -1432,6 +1432,7 @@ public class CDBrowserController extends CDController implements Observer {
 		this.bookmarkDrawer.close();
 		this.logDrawer.close();
 		instances.removeObject(this);
+		System.gc(); //@todo
 	}
 
 	public boolean validateMenuItem(NSMenuItem item) {
