@@ -619,7 +619,7 @@ public class CDBrowserController extends CDController implements Observer {
 	public void removeBookmarkButtonClicked(Object sender) {
 		this.bookmarkDrawer.open();
 		switch(NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", ""),
-		    NSBundle.localizedString("Do you want to delete the selected bookmark?"+" ("+bookmarkModel.getItem(bookmarkTable.selectedRow()).getNickname()+")", ""),
+		    NSBundle.localizedString("Do you want to delete the selected bookmark?", "")+" ("+bookmarkModel.getItem(bookmarkTable.selectedRow()).getNickname()+")",
 		    NSBundle.localizedString("Delete", ""),
 		    NSBundle.localizedString("Cancel", ""),
 		    null)) {

@@ -30,6 +30,7 @@
                 bookmarkTable = NSTableView; 
                 browserTable = NSTableView; 
                 editBookmarkButton = NSButton; 
+                encodingPopup = NSPopUpButton; 
                 infoLabel = NSTextField; 
                 logDrawer = NSDrawer; 
                 logView = NSTextView; 
