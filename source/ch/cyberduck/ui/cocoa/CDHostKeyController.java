@@ -59,9 +59,14 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 
     public void onHostKeyMismatch(final String host, final SshPublicKey allowedHostKey, final SshPublicKey actualHostKey) {
         log.debug("onHostKeyMismatch");
-		if(null == parentWindow || null == parentWindow.getDelegate()) {
+		if(null == parentWindow || null == parentWindow.delegate()) {
 			log.error("Parent window or its delegate is null; cannot begin sheet!");
-			this.allowHost(host, publicKey, false);
+			try {
+				this.allowHost(host, publicKey, false);
+			}
+			catch (InvalidHostFileException e) {
+				log.error(e.getMessage());
+			}
 			return;
 		}
         this.host = host;
@@ -99,14 +104,49 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
         }
     }
 
+    public void keyMismatchSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+        log.debug("keyMismatchSheetDidEnd");
+        sheet.orderOut(null);
+        try {
+            if (returncode == NSAlertPanel.DefaultReturn) {
+                this.allowHost(host, publicKey, false);
+            }
+            if (returncode == NSAlertPanel.AlternateReturn) {
+                NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Invalid host key", ""), //title
+													 "OK", // defaultbutton
+													 null, //alternative button
+													 null, //other button
+													 parentWindow,
+													 this, //delegate
+													 null, // end selector
+													 null, // dismiss selector
+													 null, // context
+													 NSBundle.localizedString("Cannot continue without a valid host key.", "") // message
+													 );
+                log.info("Cannot continue without a valid host key");
+            }
+            if (returncode == NSAlertPanel.OtherReturn) {
+                this.allowHost(host, publicKey, true); // always allow host
+            }
+            done = true;
+        }
+        catch (InvalidHostFileException e) {
+            log.error(e.getMessage());
+        }
+    }
 
-    public void onUnknownHost(final String host, final SshPublicKey publicKey) {
+	public void onUnknownHost(final String host, final SshPublicKey publicKey) {
         log.debug("onUnknownHost");
         this.host = host;
         this.publicKey = publicKey;
-		if(null == parentWindow || null == parentWindow.getDelegate()) {
+		if(null == parentWindow || null == parentWindow.delegate()) {
 			log.error("Parent window or its delegate is null; cannot begin sheet!");
-			this.allowHost(host, publicKey, false);
+			try {
+				this.allowHost(host, publicKey, false);
+			}
+			catch (InvalidHostFileException e) {
+				log.error(e.getMessage());
+			}
 			return;
 		}
         ThreadUtilities.instance().invokeLater(new Runnable() {
@@ -136,37 +176,6 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
             catch (InterruptedException e) {
                 log.error(e.getMessage());
             }
-        }
-    }
-
-    public void keyMismatchSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-        log.debug("keyMismatchSheetDidEnd");
-        sheet.orderOut(null);
-        try {
-            if (returncode == NSAlertPanel.DefaultReturn) {
-                this.allowHost(host, publicKey, false);
-            }
-            if (returncode == NSAlertPanel.AlternateReturn) {
-                NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Invalid host key", ""), //title
-                        "OK", // defaultbutton
-                        null, //alternative button
-                        null, //other button
-                        parentWindow,
-                        this, //delegate
-                        null, // end selector
-                        null, // dismiss selector
-                        null, // context
-                        NSBundle.localizedString("Cannot continue without a valid host key.", "") // message
-                );
-                log.info("Cannot continue without a valid host key");
-            }
-            if (returncode == NSAlertPanel.OtherReturn) {
-                this.allowHost(host, publicKey, true); // always allow host
-            }
-            done = true;
-        }
-        catch (InvalidHostFileException e) {
-            log.error(e.getMessage());
         }
     }
 

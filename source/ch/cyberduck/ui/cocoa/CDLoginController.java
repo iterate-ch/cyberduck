@@ -119,7 +119,7 @@ public class CDLoginController extends LoginController {
     private boolean tryAgain = false;
 
     public boolean promptUser(final Login l, final String message) {
-		if(null == parentWindow || null == parentWindow.getDelegate()) {
+		if(null == parentWindow || null == parentWindow.delegate()) {
 			log.error("Parent window or its delegate is null; cannot begin sheet!");
 			return false;
 		}
