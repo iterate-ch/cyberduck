@@ -101,24 +101,20 @@ public class CDQueueTableDataSource extends CDTableDataSource {
                                 url.getPort(),
                                 new Login(url.getHost(), url.getUserInfo(), null));
                         Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
-                        // we assume a file has an extension
-                        if (null != p.getExtension()) {
-                            Queue q = new Queue(Queue.KIND_DOWNLOAD);
-							q.addRoot(p);
-                            if (row != -1) {
-                                CDQueuesImpl.instance().addItem(q, row);
-                                tableView.reloadData();
-                                tableView.selectRow(row, false);
-                            }
-                            else {
-                                CDQueuesImpl.instance().addItem(q);
-                                tableView.reloadData();
-                                tableView.selectRow(tableView.numberOfRows() - 1, false);
-                            }
-                            CDQueueController.instance().startItem(q);
-                            return true;
-                        }
-						return false;
+						Queue q = new Queue(Queue.KIND_DOWNLOAD);
+						q.addRoot(p);
+						if (row != -1) {
+							CDQueuesImpl.instance().addItem(q, row);
+							tableView.reloadData();
+							tableView.selectRow(row, false);
+						}
+						else {
+							CDQueuesImpl.instance().addItem(q);
+							tableView.reloadData();
+							tableView.selectRow(tableView.numberOfRows() - 1, false);
+						}
+						CDQueueController.instance().startItem(q);
+						return true;
                     }
 					return false;
                 }

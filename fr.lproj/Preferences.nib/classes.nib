@@ -24,6 +24,7 @@
                 duplicateCombobox = NSPopUpButton; 
                 editorCombobox = NSPopUpButton; 
                 encodingCombobox = NSPopUpButton; 
+                extensionsField = NSTextField; 
                 historyField = NSTextField; 
                 horizontalLinesCheckbox = NSButton; 
                 keychainCheckbox = NSButton; 

@@ -79,6 +79,7 @@ public class CDPreferencesController extends NSObject {
     private static final String CONNECTMODE_ACTIVE = NSBundle.localizedString("Active", "");
     private static final String CONNECTMODE_PASSIVE = NSBundle.localizedString("Passive", "");
 
+    private static final String TRANSFERMODE_AUTO = NSBundle.localizedString("Auto", "");
     private static final String TRANSFERMODE_BINARY = NSBundle.localizedString("Binary", "");
     private static final String TRANSFERMODE_ASCII = NSBundle.localizedString("ASCII", "");
 	
@@ -699,6 +700,21 @@ public class CDPreferencesController extends NSObject {
         Preferences.instance().setProperty("queue.download.folder", this.downloadPathField.stringValue());
     }
 
+	private NSTextField extensionsField; //IBOutlet
+	
+    public void setExtensionsField(NSTextField extensionsField) {
+        this.extensionsField = extensionsField;
+        this.extensionsField.setStringValue(Preferences.instance().getProperty("ftp.transfermode.ascii.extensions"));
+        NSNotificationCenter.defaultCenter().addObserver(this,
+														 new NSSelector("extensionsFieldDidChange", new Class[]{NSNotification.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 this.extensionsField);
+    }
+	
+    public void extensionsFieldDidChange(NSNotification sender) {
+        Preferences.instance().setProperty("ftp.transfermode.ascii.extensions", this.extensionsField.stringValue());
+    }
+	
     private NSTextField loginField; //IBOutlet
 
     public void setLoginField(NSTextField loginField) {
@@ -912,12 +928,15 @@ public class CDPreferencesController extends NSObject {
         this.transfermodeCombobox.setTarget(this);
         this.transfermodeCombobox.setAction(new NSSelector("transfermodeComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.transfermodeCombobox.removeAllItems();
-        this.transfermodeCombobox.addItemsWithTitles(new NSArray(new String[]{TRANSFERMODE_BINARY, TRANSFERMODE_ASCII}));
+        this.transfermodeCombobox.addItemsWithTitles(new NSArray(new String[]{TRANSFERMODE_AUTO, TRANSFERMODE_BINARY, TRANSFERMODE_ASCII}));
         if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
             this.transfermodeCombobox.setTitle(TRANSFERMODE_BINARY);
         }
-        else {
+		else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
             this.transfermodeCombobox.setTitle(TRANSFERMODE_ASCII);
+        }
+		else if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+            this.transfermodeCombobox.setTitle(TRANSFERMODE_AUTO);
         }
     }
 
@@ -925,10 +944,17 @@ public class CDPreferencesController extends NSObject {
         if (sender.selectedItem().title().equals(TRANSFERMODE_BINARY)) {
             Preferences.instance().setProperty("ftp.transfermode", "binary");
 			this.lineEndingCombobox.setEnabled(false);
+			this.extensionsField.setEnabled(false);
         }
         else if (sender.selectedItem().title().equals(TRANSFERMODE_ASCII)) {
             Preferences.instance().setProperty("ftp.transfermode", "ascii");
 			this.lineEndingCombobox.setEnabled(true);
+			this.extensionsField.setEnabled(false);
+        }
+        else if (sender.selectedItem().title().equals(TRANSFERMODE_AUTO)) {
+            Preferences.instance().setProperty("ftp.transfermode", "auto");
+			this.lineEndingCombobox.setEnabled(true);
+			this.extensionsField.setEnabled(true);
         }
     }
 

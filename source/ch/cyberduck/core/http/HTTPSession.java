@@ -53,14 +53,18 @@ public class HTTPSession extends Session {
 	public synchronized void close() {
 //		this.callObservers(new Message(Message.CLOSE, "Closing session."));
 		try {
-			this.HTTP.quit();
-			this.getHost().getLogin().setPassword(null);
-			this.HTTP = null;
+			if (this.HTTP != null) {
+				this.log("Disconnecting...", Message.PROGRESS);
+				this.HTTP.quit();
+				this.getHost().getLogin().setPassword(null);
+				this.HTTP = null;
+			}
 		}
 		catch (IOException e) {
-			log.error(e.getMessage());
+			this.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
 		finally {
+			this.log("Disconnected", Message.PROGRESS);
 			this.setConnected(false);
 		}
 	}

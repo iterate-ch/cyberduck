@@ -72,7 +72,6 @@ public class SFTPSession extends Session {
 				this.SSH.disconnect();
 				this.SSH = null;
 			}
-			this.log("Disconnected", Message.PROGRESS);
 		}
 		catch (SshException e) {
 			this.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -81,6 +80,7 @@ public class SFTPSession extends Session {
 			this.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
 		finally {
+			this.log("Disconnected", Message.PROGRESS);
 			this.setConnected(false);
 		}
 	}

@@ -296,7 +296,15 @@ public class FTPPath extends Path {
 		try {
 			log.debug("download:"+this.toString());
 			this.session.check();
-			if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+			if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+				if(Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
+					this.downloadASCII();
+				}
+				else {
+					this.downloadBinary();
+				}
+			}
+			else if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 				this.downloadBinary();
 			}
 			else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
@@ -433,6 +441,14 @@ public class FTPPath extends Path {
 			this.session.check();
 			if(!this.getParent().exists()) {
 				this.getParent().getParent().mkdir(this.getParent().getName());
+			}
+			if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+				if(Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
+					this.uploadASCII();
+				}
+				else {
+					this.uploadBinary();
+				}
 			}
 			if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 				this.uploadBinary();

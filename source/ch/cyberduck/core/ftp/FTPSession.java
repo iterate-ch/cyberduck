@@ -60,7 +60,6 @@ public class FTPSession extends Session {
 				this.host.getLogin().setPassword(null);
 				this.FTP = null;
 			}
-			this.log("Disconnected", Message.PROGRESS);
 		}
 		catch (FTPException e) {
 			this.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -69,6 +68,7 @@ public class FTPSession extends Session {
 			this.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
 		finally {
+			this.log("Disconnected", Message.PROGRESS);
 			this.setConnected(false);
 		}
 	}
