@@ -45,14 +45,24 @@ public class CDMainController {
     // Outlets
     // ----------------------------------------------------------
 
-    private NSPanel donationSheet; // IBOutlet
-    public void setDonationSheet(NSPanel donationSheet) {
+    private NSWindow donationSheet; // IBOutlet
+    public void setDonationSheet(NSWindow donationSheet) {
 	this.donationSheet = donationSheet;
     }
 
-    public NSWindow updateSheet;
-    public void setDonationSheet(NSPanel donationSheet) {
-	this.donationSheet = donationSheet;
+    public NSWindow updateSheet; // IBOutlet
+    public void setUpdateSheet(NSWindow updateSheet) {
+	this.updateSheet = updateSheet;
+    }
+
+    private NSTextField updateLabel; // IBOutlet
+    public void setUpdateLabel(NSTextField updateLabel) {
+	this.updateLabel = updateLabel;
+    }
+    
+    private NSTextView updateText; // IBOutlet
+    public void setUpdateText(NSTextView updateText) {
+	this.updateText = updateText;
     }
     
     public void helpMenuClicked(Object sender) {
@@ -90,6 +100,7 @@ public class CDMainController {
 	    String latestVersionNumber = (String)entries.objectForKey("version");
 	    log.info("Latest version:"+latestVersionNumber);
 	    String filename = (String)entries.objectForKey("file");
+	    String comment = (String)entries.objectForKey("comment");
 
 	    if(currentVersionNumber.equals(latestVersionNumber)) {
 		NSAlertPanel.runInformationalAlert(
@@ -101,44 +112,30 @@ public class CDMainController {
 				     );
 	    }
 	    else {
-//		NSApplication.sharedApplication().beginSheet(
-//					       this.window(), //sheet
-//					       parentWindow,
-//					       this, //modalDelegate
-//					       new NSSelector(
-//			   "updateSheetDidEnd",
-//			   new Class[] { NSWindow.class, int.class, Object.class }
-//			   ),// did end selector
-//					       null); //contextInfo
-//		this.window().makeKeyAndOrderFront(filename);
-//
-//		
-		int selection = NSAlertPanel.runInformationalAlert(
-						     NSBundle.localizedString("New version"), //title
-						     "Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is out of date. The current version is")+" "+latestVersionNumber,
-						     NSBundle.localizedString("Download"),// defaultbutton
-						     NSBundle.localizedString("Later"),//alternative button
-						     null//other button
-						     );
-		if(NSAlertPanel.DefaultReturn == selection) {
-		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")+filename));
+		if (false == NSApplication.loadNibNamed("Update", this)) {
+		    log.fatal("Couldn't load Update.nib");
+		    return;
 		}
+		this.updateLabel.setStringValue("Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is out of date. The current version is")+" "+latestVersionNumber);
+		this.updateText.insertText(comment);
+		this.updateSheet.setTitle(filename);
+		this.updateSheet.makeKeyAndOrderFront(null);
+
+//		
+//		int selection = NSAlertPanel.runInformationalAlert(
+//						     NSBundle.localizedString("New version"), //title
+//						     "Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is out of date. The current version is")+" "+latestVersionNumber,
+//						     NSBundle.localizedString("Download"),// defaultbutton
+//						     NSBundle.localizedString("Later"),//alternative button
+//						     null//other button
+//						     );
+//		if(NSAlertPanel.DefaultReturn == selection) {
+//		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")+filename));
+//		}
 	    }
 	}
 	catch(Exception e) {
 	    log.error(e.getMessage());
-	}
-    }
-
-    public void updateSheetDidEnd(NSWindow sheet, int returncode, Object context) {
-	log.debug("updateSheetDidEnd");
-	sheet.orderOut(null);
-	switch(returncode) {
-	    case(NSAlertPanel.DefaultReturn):
-		NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")+context.toString()));
-		break;
-	    case(NSAlertPanel.AlternateReturn):
-		break;
 	}
     }
 
@@ -183,7 +180,19 @@ public class CDMainController {
 
     public void closeUpdateSheet(NSButton sender) {
 	log.debug("closeUpdateSheet");
-	NSApplication.sharedApplication().endSheet(udpateSheet, sender.tag());
+	updateSheet.close();
+	switch(sender.tag()) {
+	    case(NSAlertPanel.DefaultReturn):
+		try {
+		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")+updateSheet.title()));
+		}
+		catch(java.net.MalformedURLException e) {
+		    log.error(e.getMessage());
+		}
+		break;
+	    case(NSAlertPanel.AlternateReturn):
+		break;
+	}
     }
 	
     public void closeDonationSheet(NSButton sender) {

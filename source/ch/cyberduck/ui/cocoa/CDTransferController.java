@@ -355,7 +355,7 @@ public class CDTransferController implements Observer, Validator {
     public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
 	log.debug("validateSheetDidEnd:"+returncode+","+contextInfo);
 	sheet.orderOut(null);
-	this.window().makeKeyAndorderFront(null);
+	this.window().makeKeyAndOrderFront(null);
 	Path path = (Path)contextInfo;
 	switch(returncode) {
 	    case NSAlertPanel.DefaultReturn : //Resume
