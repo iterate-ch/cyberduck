@@ -38,23 +38,19 @@
 	<property name="classes" value="${build}/classes" />
 	<property name="resources" value="${home}/resources" />
 	<property name="doc" value="${home}/doc" />
-<!--	<property name="classpath" value="/System/Library/Java/:${lib}/j2ssh.jar:${lib}/log4j.jar:${lib}/jrendezvous.jar" /> -->
 
 	<path id="classpath">
-<!--	    <pathelement location="${classes}"/> -->
 	    <pathelement location="/System/Library/Java"/>
 	    <fileset dir="${lib}">
 		<include name="**/*.jar"/>
 	    </fileset>
 	</path>
-	
-	
-	<!-- mac os x properties used by target 'app'-->
+		
+	<!-- mac os x properties-->
 	<property name="app.name" value="Cyberduck" />
 	<property name="app.bundle" value="${build}/${app.name}.app" />
 	<property name="app.contents" value="${app.bundle}/Contents" />
 	<property name="app.resources" value="${app.contents}/Resources" />
-	<property name="app.config" value="${app.resources}/conf" />
 	<property name="app.classes" value="${home}/${build}/intermediates/${app.name}.build/JavaClasses" />
 	<property name="app.jar" value="${app.resources}/Java" />
 	
@@ -82,22 +78,14 @@
 		<echo message="Building ${app.name}..."/>
 		<mkdir dir="${classes}" />
 		<mkdir dir="${build}" />
-<!--		<mkdir dir="${app.config}" />-->
 	    <copy todir="${app.jar}">
 		<fileset dir="${lib}">
 		    <include name="*.jar" />
 		</fileset>
 	    </copy>
-	    <!--
-	    <copy todir="${app.config}">
-		<fileset dir="${config}">
-		    <include name="*.xml"/>
-		</fileset>
-	    </copy>
-	    -->
 	</target>
 
-	<target name="all-modules" depends="core,ftp,cocoa,swing"></target>
+	<target name="all-modules" depends="core,ftp,cocoa"></target>
 	
 	<target name="core" depends="init">
 	    <mkdir dir="${classes}/core" />
@@ -154,32 +142,6 @@
 		token="*version*" 
 		value="${cyberduck.version.major}.${cyberduck.version.minor}"
 		summary="true"/>
-	</target>
-
-	<target name="swing" depends="init">
-	    <mkdir dir="${classes}/swing" />
-	    <javac 
-		debug="${debug}"
-		deprecation="on"
-		srcdir="${source}" 
-		destdir="${classes}/swing"
-		includes="ch/cyberduck/ui/swing/**">
-		<classpath refid="classpath"/>
-	    </javac>
-	    
-	    <jar jarfile="${build}/swing.jar"
-		update="yes">
-		<fileset dir="${classes}/swing/">
-		    <include name="ch/cyberduck/ui/*.class"/>
-		    <include name="ch/cyberduck/ui/swing/**/*.class"/>
-		</fileset>
-	    </jar>
-	    
-	    <copy todir="${app.jar}">
-		<fileset dir="${build}">
-		    <include name="swing.jar" />
-		</fileset>
-	    </copy>
 	</target>
 
 <!--
@@ -267,22 +229,6 @@
 	</target>
 	-->
 
-<!--
-	<target name="jar" depends="compile" description="build executable jar file">
-		<jar	jarfile="${dist}/${app.name}.jar"
-				update="yes"
-				manifest="${resources}/${app.name}.MF">
-    			<fileset dir="${classes}">
-				 	<include name="**/*.class"/>
-				</fileset>
-				<fileset dir="${source}">
-				 	<include name="**/*.jpg"/>
-				 	<include name="**/*.gif"/>
-				 	<include name="**/*.au"/>
-				</fileset>
-		</jar>
-	</target>
--->	
 	<target name="doc" depends="init">
 		<mkdir dir="${doc}" />
 		<javadoc packagenames="ch.cyberduck.*"
@@ -306,33 +252,5 @@
 		<delete file="${build}/ftp.jar" />
 		<delete file="${build}/http.jar" />
 	</target>
-<!--
-	<target name="all" depends="clean, dist, doc"/>
--->
-
-<!--	<target name="dist" depends="app, zip, tar"/>-->
-
-<!--	<target name="zip" depends="jar" description="build zip file for distribution">
-		<zip zipfile="${dist}/${app.name}.zip" update="true">
-			<fileset dir="${dist}">
-				<include name="Readme.pdf" />
-				<include name="License.txt" />
-				<include name="${app.name}.jar" />
-			</fileset>
-		</zip>	
-	</target>
--->
-<!--	<target name="tar" depends="jar" description="build tar.gz file for distribution">
-		<tar tarfile="${dist}/${app.name}.tar">
-			<tarfileset dir="${dist}">
-				<include name="Readme.pdf" />
-				<include name="License.txt" />
-				<include name="${app.name}.jar" />
-			</tarfileset>
-		</tar>
-                <gzip src="${dist}/${app.name}.tar" zipfile="${dist}/${app.name}.tar.gz" />
-                <delete file="${dist}/${app.name}.tar"/>
-	</target>
--->
 </project>
 

@@ -232,17 +232,18 @@ public class CDPreferencesController {
 	}
     }
 
+
     private NSPopUpButton transfermodeCombo;
     public void setTransfermodeCombo(NSPopUpButton transfermodeCombo) {
 	this.transfermodeCombo = transfermodeCombo;
 	this.transfermodeCombo.setTarget(this);
 	this.transfermodeCombo.setAction(new NSSelector("transfermodeComboClicked", new Class[] {NSPopUpButton.class}));
-	transfermodeCombo.removeAllItems();
-	transfermodeCombo.addItemsWithTitles(new NSArray(new String[]{TRANSFERMODE_BINARY, TRANSFERMODE_ASCII}));
+	this.transfermodeCombo.removeAllItems();
+	this.transfermodeCombo.addItemsWithTitles(new NSArray(new String[]{TRANSFERMODE_BINARY, TRANSFERMODE_ASCII}));
 	if(Preferences.instance().getProperty("ftp.transfermode").equals("binary"))
-	    transfermodeCombo.setTitle(TRANSFERMODE_BINARY);
+	    this.transfermodeCombo.setTitle(TRANSFERMODE_BINARY);
 	else
-	    transfermodeCombo.setTitle(TRANSFERMODE_ASCII);
+	    this.transfermodeCombo.setTitle(TRANSFERMODE_ASCII);
     }
 
     public void transfermodeComboClicked(NSPopUpButton sender) {
