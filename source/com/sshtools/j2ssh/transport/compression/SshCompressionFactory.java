@@ -26,15 +26,15 @@
  */
 package com.sshtools.j2ssh.transport.compression;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.util.*;
+import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.configuration.ConfigurationLoader;
-import com.sshtools.j2ssh.io.IOUtil;
-import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 
 
 /**
@@ -56,7 +56,7 @@ public class SshCompressionFactory {
 		comps.put(COMP_NONE, "");
 		comps.put("zlib", com.sshtools.ext.jzlib.ZLibCompression.class);
 
-		defaultAlgorithm = "none";
+		defaultAlgorithm = "zlib";
 	}
 
 	/**

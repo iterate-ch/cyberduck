@@ -26,6 +26,8 @@
  */
 package com.sshtools.j2ssh.transport.hmac;
 
+import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +35,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 
 
 /**
@@ -41,62 +42,56 @@ import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
  * @version $Revision$
  */
 public class SshHmacFactory {
-	private static String defaultAlgorithm;
-	private static Map macs;
-	private static Log log = LogFactory.getLog(SshHmacFactory.class);
+    private static String defaultAlgorithm;
+    private static Map macs;
+    private static Log log = LogFactory.getLog(SshHmacFactory.class);
 
-	static {
-		macs = new HashMap();
+    static {
+        macs = new HashMap();
 
-		log.info("Loading message authentication methods");
+        log.info("Loading message authentication methods");
 
-		macs.put("hmac-sha1", HmacSha.class);
-		macs.put("hmac-sha1-96", HmacSha96.class);
-		macs.put("hmac-md5", HmacMd5.class);
-		macs.put("hmac-md5-96", HmacMd596.class);
+        macs.put("hmac-sha1", HmacSha.class);
+        macs.put("hmac-sha1-96", HmacSha96.class);
+        macs.put("hmac-md5", HmacMd5.class);
+        macs.put("hmac-md5-96", HmacMd596.class);
 
-		defaultAlgorithm = "hmac-sha1";
-	}
+        defaultAlgorithm = "hmac-sha1";
+    }
 
-	/**
-	 * Creates a new SshHmacFactory object.
-	 */
-	protected SshHmacFactory() {
-	}
+    /**
+     * Creates a new SshHmacFactory object.
+     */
+    protected SshHmacFactory() {
+    }
 
-	/**
-	 *
-	 */
-	public static void initialize() {
-	}
+    /**
+     * @return
+     */
+    public final static String getDefaultHmac() {
+        return defaultAlgorithm;
+    }
 
-	/**
-	 * @return
-	 */
-	public final static String getDefaultHmac() {
-		return defaultAlgorithm;
-	}
+    /**
+     * @return
+     */
+    public static List getSupportedMacs() {
+        return new ArrayList(macs.keySet());
+    }
 
-	/**
-	 * @return
-	 */
-	public static List getSupportedMacs() {
-		return new ArrayList(macs.keySet());
-	}
-
-	/**
-	 * @param methodName
-	 * @return
-	 * @throws AlgorithmNotSupportedException
-	 */
-	public static SshHmac newInstance(String methodName)
-	    throws AlgorithmNotSupportedException {
-		try {
-			return (SshHmac)((Class)macs.get(methodName)).newInstance();
-		}
-		catch(Exception e) {
-			throw new AlgorithmNotSupportedException(methodName+
-			    " is not supported!");
-		}
-	}
+    /**
+     * @param methodName
+     * @return
+     * @throws AlgorithmNotSupportedException
+     */
+    public static SshHmac newInstance(String methodName)
+            throws AlgorithmNotSupportedException {
+        try {
+            return (SshHmac) ((Class) macs.get(methodName)).newInstance();
+        }
+        catch (Exception e) {
+            throw new AlgorithmNotSupportedException(methodName +
+                    " is not supported!");
+        }
+    }
 }

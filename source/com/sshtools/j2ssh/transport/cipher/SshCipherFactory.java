@@ -26,16 +26,15 @@
  */
 package com.sshtools.j2ssh.transport.cipher;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.util.*;
+import com.sshtools.ext.bouncycastle.cipher.*;
+import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.configuration.ConfigurationLoader;
-import com.sshtools.j2ssh.io.IOUtil;
-import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
-import com.sshtools.ext.bouncycastle.cipher.*;
 
 /**
  * @author $author$

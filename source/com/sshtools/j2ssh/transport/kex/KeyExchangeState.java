@@ -34,104 +34,104 @@ import java.math.BigInteger;
  * @version $Revision$
  */
 public class KeyExchangeState {
-	/**  */
-	public final static int IN_PROGRESS = 0;
+    /**  */
+    public final static int IN_PROGRESS = 0;
 
-	/**  */
-	public final static int COMPLETE = 1;
+    /**  */
+    public final static int COMPLETE = 1;
 
-	/**  */
-	public final static int FAILED = 2;
-	private BigInteger secret;
-	private String reason;
-	private byte[] exchangeHash;
-	private byte[] hostKey;
-	private byte[] signature;
-	private int state = IN_PROGRESS;
+    /**  */
+    public final static int FAILED = 2;
+    private BigInteger secret;
+    private String reason;
+    private byte[] exchangeHash;
+    private byte[] hostKey;
+    private byte[] signature;
+    private int state = IN_PROGRESS;
 
-	/**
-	 * Creates a new KeyExchangeState object.
-	 */
-	public KeyExchangeState() {
-	}
+    /**
+     * Creates a new KeyExchangeState object.
+     */
+    public KeyExchangeState() {
+    }
 
-	/**
-	 * @param exchangeHash
-	 * @param hostKey
-	 * @param signature
-	 * @param secret
-	 */
-	public final synchronized void setComplete(byte[] exchangeHash,
-	                                           byte[] hostKey, byte[] signature, BigInteger secret) {
-		this.exchangeHash = exchangeHash;
-		this.hostKey = hostKey;
-		this.signature = signature;
-		this.secret = secret;
-		state = COMPLETE;
-		notifyAll();
-	}
+    /**
+     * @param exchangeHash
+     * @param hostKey
+     * @param signature
+     * @param secret
+     */
+    public final synchronized void setComplete(byte[] exchangeHash,
+                                               byte[] hostKey, byte[] signature, BigInteger secret) {
+        this.exchangeHash = exchangeHash;
+        this.hostKey = hostKey;
+        this.signature = signature;
+        this.secret = secret;
+        state = COMPLETE;
+        notifyAll();
+    }
 
-	/**
-	 * @return
-	 */
-	public byte[] getExchangeHash() {
-		return exchangeHash;
-	}
+    /**
+     * @return
+     */
+    public byte[] getExchangeHash() {
+        return exchangeHash;
+    }
 
-	/**
-	 * @param reason
-	 */
-	public final synchronized void setFailed(String reason) {
-		this.reason = reason;
-		state = FAILED;
-		notifyAll();
-	}
+    /**
+     * @param reason
+     */
+    public final synchronized void setFailed(String reason) {
+        this.reason = reason;
+        state = FAILED;
+        notifyAll();
+    }
 
-	/**
-	 * @return
-	 */
-	public byte[] getHostKey() {
-		return hostKey;
-	}
+    /**
+     * @return
+     */
+    public byte[] getHostKey() {
+        return hostKey;
+    }
 
-	/**
-	 * @return
-	 */
-	public BigInteger getSecret() {
-		return secret;
-	}
+    /**
+     * @return
+     */
+    public BigInteger getSecret() {
+        return secret;
+    }
 
-	/**
-	 * @return
-	 */
-	public byte[] getSignature() {
-		return signature;
-	}
+    /**
+     * @return
+     */
+    public byte[] getSignature() {
+        return signature;
+    }
 
-	/**
-	 * @return
-	 */
-	public synchronized int getState() {
-		return state;
-	}
+    /**
+     * @return
+     */
+    public synchronized int getState() {
+        return state;
+    }
 
-	/**
-	 *
-	 */
-	public final synchronized void waitForCompletion() {
-		while(state == IN_PROGRESS) {
-			try {
-				wait();
-			}
-			catch(InterruptedException e) {
-			}
-		}
-	}
+    /**
+     *
+     */
+    public final synchronized void waitForCompletion() {
+        while (state == IN_PROGRESS) {
+            try {
+                wait();
+            }
+            catch (InterruptedException e) {
+            }
+        }
+    }
 
-	/**
-	 * @return
-	 */
-	public synchronized String getFailureReason() {
-		return reason;
-	}
+    /**
+     * @return
+     */
+    public synchronized String getFailureReason() {
+        return reason;
+    }
 }

@@ -26,6 +26,8 @@
  */
 package com.sshtools.j2ssh.transport.cipher;
 
+import com.sshtools.j2ssh.transport.AlgorithmOperationException;
+
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
@@ -36,7 +38,6 @@ import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.transport.AlgorithmOperationException;
 
 
 /**

@@ -26,6 +26,8 @@
  */
 package com.sshtools.j2ssh.transport.cipher;
 
+import com.sshtools.j2ssh.transport.AlgorithmOperationException;
+
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKeyFactory;
@@ -37,8 +39,6 @@ import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-
-import com.sshtools.j2ssh.transport.AlgorithmOperationException;
 
 
 /**

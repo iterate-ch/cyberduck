@@ -26,13 +26,13 @@
  */
 package com.sshtools.j2ssh.transport.kex;
 
-import java.io.IOException;
-import java.math.BigInteger;
-
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
+
+import java.io.IOException;
+import java.math.BigInteger;
 
 
 /**
@@ -40,70 +40,70 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class SshMsgKexDhInit extends SshMessage {
-	/**  */
-	protected final static int SSH_MSG_KEXDH_INIT = 30;
+    /**  */
+    protected final static int SSH_MSG_KEXDH_INIT = 30;
 
-	// Stores the e value
-	private BigInteger e;
+    // Stores the e value
+    private BigInteger e;
 
-	/**
-	 * Creates a new SshMsgKexDhInit object.
-	 *
-	 * @param e
-	 */
-	public SshMsgKexDhInit(BigInteger e) {
-		super(SSH_MSG_KEXDH_INIT);
-		this.e = e;
-	}
+    /**
+     * Creates a new SshMsgKexDhInit object.
+     *
+     * @param e
+     */
+    public SshMsgKexDhInit(BigInteger e) {
+        super(SSH_MSG_KEXDH_INIT);
+        this.e = e;
+    }
 
-	/**
-	 * Creates a new SshMsgKexDhInit object.
-	 */
-	public SshMsgKexDhInit() {
-		super(SSH_MSG_KEXDH_INIT);
-	}
+    /**
+     * Creates a new SshMsgKexDhInit object.
+     */
+    public SshMsgKexDhInit() {
+        super(SSH_MSG_KEXDH_INIT);
+    }
 
-	/**
-	 * @return
-	 */
-	public BigInteger getE() {
-		return e;
-	}
+    /**
+     * @return
+     */
+    public BigInteger getE() {
+        return e;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getMessageName() {
-		return "SSH_MSG_KEXDH_INIT";
-	}
+    /**
+     * @return
+     */
+    public String getMessageName() {
+        return "SSH_MSG_KEXDH_INIT";
+    }
 
-	/**
-	 * @param baw
-	 * @throws InvalidMessageException
-	 */
-	protected void constructByteArray(ByteArrayWriter baw)
-	    throws InvalidMessageException {
-		try {
-			baw.writeBigInteger(e);
-		}
-		catch(IOException ioe) {
-			throw new InvalidMessageException("Error writing message data: "+
-			    ioe.getMessage());
-		}
-	}
+    /**
+     * @param baw
+     * @throws InvalidMessageException
+     */
+    protected void constructByteArray(ByteArrayWriter baw)
+            throws InvalidMessageException {
+        try {
+            baw.writeBigInteger(e);
+        }
+        catch (IOException ioe) {
+            throw new InvalidMessageException("Error writing message data: " +
+                    ioe.getMessage());
+        }
+    }
 
-	/**
-	 * @param bar
-	 * @throws InvalidMessageException
-	 */
-	protected void constructMessage(ByteArrayReader bar)
-	    throws InvalidMessageException {
-		try {
-			e = bar.readBigInteger();
-		}
-		catch(IOException ioe) {
-			throw new InvalidMessageException("Error reading message data: "+
-			    ioe.getMessage());
-		}
-	}
+    /**
+     * @param bar
+     * @throws InvalidMessageException
+     */
+    protected void constructMessage(ByteArrayReader bar)
+            throws InvalidMessageException {
+        try {
+            e = bar.readBigInteger();
+        }
+        catch (IOException ioe) {
+            throw new InvalidMessageException("Error reading message data: " +
+                    ioe.getMessage());
+        }
+    }
 }
