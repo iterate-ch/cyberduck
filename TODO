@@ -7,16 +7,16 @@
 [OPEN] NSWorkspace noteFileSystemChangedAtPath when downloading
 [OPEN] SFTP protocol version 4 (support for SSH_FILEXFER_ATTR_OWNERGROUP)
 [OPEN] Group bookmarks (Outline View)
-[OPEN] NSSegmentedControl in toolbar view to switch view
 [OPEN] Adjust icons reflecting progress when downloading files; NSFilewrapper.setIcon()
 [OPEN] Calculate folder sizes
 [OPEN] Manipulating permissions by entering octal value
 [OPEN] SSH Agent Authentication
 [OPEN] Kerberos (GSSAPI) Authentication
-[OPEN] Column View in browser window
 [OPEN] Grouping bookmarks
-
+-- Scheduled for 2.5
+[OPEN] NSSegmentedControl in toolbar view to switch view
 [DONE] Outline View in browser window
+[DONE] Column View in browser window
 [DONE] Set character encoding per bookmark
 [DONE] History of recently connected hosts in connection dialog
 [DONE] History of recently connected hosts in bookmark menu
