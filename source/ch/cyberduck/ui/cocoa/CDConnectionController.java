@@ -47,7 +47,7 @@ import com.sshtools.j2ssh.*;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 
-public class CDConnectionController extends NSObject {
+public class CDConnectionController extends NSObject implements Observer {
 
     private static Logger log = Logger.getLogger(CDConnectionController.class);
 
@@ -55,13 +55,14 @@ public class CDConnectionController extends NSObject {
     public NSWindow connectionSheet; /* IBOutlet */
     public NSWindow loginSheet; /* IBOutlet */
 
+    public NSTextField statusLabel;
     public NSTextField pathField; /* IBOutlet */
     public NSTextField portField; /* IBOutlet */
     public NSPopUpButton protocolPopup; /* IBOutlet */
     public NSTextField hostField; /* IBOutlet */
     public NSTextField usernameField; /* IBOutlet */
     public NSSecureTextField passwordField; /* IBOutlet */
-    public NSTextView logTextView; /* IBOutlet */
+    public NSView logView; /* IBOutlet */
     public NSProgressIndicator progressIndicator; /* IBOutlet */
     
     public NSTableView browserTable;  /* IBOutlet */
@@ -114,10 +115,20 @@ public class CDConnectionController extends NSObject {
 		Login login = new CDLogin(usernameField.stringValue(), passwordField.stringValue());
 		host = new Host(protocol, hostField.stringValue(), 22, login);
 	    }
-	    host.setHostKeyVerification(new CDHostKeyVerification());
+
 	    mainWindow.setTitle(host.getName());
+	    
 	    host.addObserver((CDBrowserView)browserTable);
+	    host.status.addObserver((CDStatusLabel)statusLabel);
+	    host.status.addObserver((CDLogView)logView);
+	    host.status.addObserver((CDProgressWheel)progressIndicator);
+	    host.status.addObserver(this);
+	    
 	    Session session = host.getSession();
+	    //@todo only when sftp
+	    if(protocol.equals(Session.SFTP))
+		host.setHostKeyVerification(new CDHostKeyVerification());
+	    host.status.fireActiveEvent();
 	    session.start();
 	}
 	catch(IOException e) {
@@ -141,65 +152,27 @@ public class CDConnectionController extends NSObject {
 	log.debug("disconnect");
     }
 
-
-    /*
-    private class Session extends Thread {
-	private Host host;
-	
-	public Session(Host host) {
-	    this.host = host;
-	}
-	public void run() {
-	    try {
-		SshClient SSH = new SshClient();
-		SSH.connect(hostField.stringValue(), new CDHostKeyVerification());
-		PasswordAuthentication auth = new PasswordAuthentication();
-		auth.setUsername(usernameField.stringValue());
-		auth.setPassword(passwordField.stringValue());
-		int result = SSH.authenticate(auth);
-		if (result == AuthenticationProtocolState.COMPLETE) {
-		    SessionChannelClient session = SSH.openSessionChannel();
-		    SftpSubsystemClient SFTP = new SftpSubsystemClient();
-		    session.startSubsystem(SFTP);
-		    SftpFile workingDirectory = SFTP.openDirectory(".");
-		    java.util.List children = new java.util.ArrayList();
-		    CDBrowserTableDataSource browserTableDataSource = (CDBrowserTableDataSource)browserTable.dataSource();
-		    int read = 1;
-		    while(read > 0) {
-			read = SFTP.listChildren(workingDirectory, children);
-		    }
-		    java.util.Iterator i = children.iterator();
-		    browserTableDataSource.clear();
-		    while(i.hasNext()) {
-			browserTableDataSource.addEntry(i.next());
-			browserTable.reloadData();
-		    }
-
-		}
-		else {
-		    NSApplication.sharedApplication().beginSheet(loginSheet, mainWindow, null,
-						   new NSSelector(
-			"loginSheetDidEnd",
-			new Class[] { NSWindow.class, int.class, NSWindow.class }
-			),// end selector
-						   null);
-		    log.info("Authentication failed.");
-		}
+    public void update(Observable o, Object arg) {
+//	log.debug("update:"+arg);
+	if(o instanceof Status) {
+	    Message msg = (Message)arg;
+	    if(msg.getTitle().equals(Message.ERROR)) {
+		//public static void beginAlertSheet( String title, String defaultButton, String alternateButton, String otherButton, NSWindow docWindow, Object modalDelegate, NSSelector didEndSelector, NSSelector didDismissSelector, Object contextInfo, String message)
+		NSAlertPanel.beginAlertSheet(
+			       "Error", //title
+			       "OK",// defaultbutton
+			       null,//alternative button
+			       null,//other button
+			       mainWindow, //docWindow
+			       null, //modalDelegate
+			       null, //didEndSelector
+			       null, // dismiss selector
+			       null, // context
+			       msg.getDescription() // message
+					    );
 	    }
-	    catch(InvalidHostFileException e) {
-		e.printStackTrace();
-	    }
-	    catch(java.io.IOException e) {
-		e.printStackTrace();
-	    }	    
 	}
-
-	public void loginSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	    sheet.close();
-	}	
     }
-
-     */
 
     public void closeLoginSheet(NSObject sender) {
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
@@ -219,7 +192,7 @@ public class CDConnectionController extends NSObject {
 	    switch(returncode) {
 		case(NSAlertPanel.DefaultReturn):
 		    tryAgain = true;
-		    this.setUsername(null);
+		    this.setUsername(null);///@todo
 		    this.setPassword(null);
 		case(NSAlertPanel.AlternateReturn):
 		    tryAgain = false;
@@ -230,12 +203,13 @@ public class CDConnectionController extends NSObject {
 
 	public boolean loginFailure() {
 	    log.info("Authentication failed.");
-	    NSApplication.sharedApplication().beginSheet(loginSheet, mainWindow, null,
+	    mainWindow.makeFirstResponder(loginSheet);
+	    NSApplication.sharedApplication().beginSheet(loginSheet, mainWindow, this,
 						  new NSSelector(
 		       "loginSheetDidEnd",
 		       new Class[] { NSWindow.class, int.class, NSWindow.class }
 		       ),// end selector
-						  null);
+						  this);
 	    while(!done) {
 		try {
 		    Thread.sleep(500); //milliseconds

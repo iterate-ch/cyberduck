@@ -39,6 +39,7 @@ public class CDMainWindow extends NSWindow {//implements Observer {
     //public NSPopUpButton favoritePopUpButton;
     public NSWindow connectionSheet; /* IBOutlet */
     public NSTextField quickConnectField; /* IBOutlet */
+    public NSPopUpButton pathPopUpButton; /* IBOutlet */
     public NSDrawer drawer; /* IBOutlet */
 
 //    public NSTextField statusLabel; /* IBOutlet */
@@ -93,11 +94,19 @@ public class CDMainWindow extends NSWindow {//implements Observer {
 
 	this.addToolbarItem(toolbarItems, "Back", "Back", "Back", "Show parent directory", this, new NSSelector("back", new Class[] {null}), NSImage.imageNamed("back.tiff"));
 
+	this.addToolbarItem(toolbarItems, "Path", "Path", "Path", null, this, null, null);
+	NSToolbarItem pathPopUpButtonItem = (NSToolbarItem)toolbarItems.objectForKey("Path");
+	pathPopUpButtonItem.setView(pathPopUpButton);
+	pathPopUpButtonItem.setMinSize(pathPopUpButton.frame().size());
+	pathPopUpButtonItem.setMaxSize(pathPopUpButton.frame().size());
+
 	this.addToolbarItem(toolbarItems, "Quick Connect", "Quick Connect", "Quick Connect", null, this, null, null);
 	NSToolbarItem quickConnectItem = (NSToolbarItem)toolbarItems.objectForKey("Quick Connect");
 	quickConnectItem.setView(quickConnectField);
 	quickConnectItem.setMinSize(quickConnectField.frame().size());
 	quickConnectItem.setMaxSize(quickConnectField.frame().size());
+
+
 	/*
 	this.addToolbarItem(toolbarItems, "Favorites", "Favorites", "Favorites", null, this, null, null);
 	
@@ -146,11 +155,11 @@ public class CDMainWindow extends NSWindow {//implements Observer {
     }
 
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Back", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer"});
+	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Back", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer"});
     }
 
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Back", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
+	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Back", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
     }
 
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
@@ -166,6 +175,7 @@ public class CDMainWindow extends NSWindow {//implements Observer {
     }
 
     public void openConnectionSheet(NSObject sender) {
+	this.makeFirstResponder(connectionSheet);
 	NSApplication.sharedApplication().beginSheet(connectionSheet, this, this,
 					      new NSSelector
 					      (
@@ -187,20 +197,6 @@ public class CDMainWindow extends NSWindow {//implements Observer {
 	sheet.close();
     }
 
-    /*
-    public void update(Observable o, Object arg) {
-	if(o instanceof Status) {
-	    log.debug("Observable "+o+" sent argument "+ arg);
-	    if(arg.equals(Status.TIME) || arg.equals(Status.PROGRESS) || arg.equals(Status.ERROR)) {
-		statusLabel.setStringValue(selected.status.getMessage(Status.TIME) + " : " + selected.status.getMessage(Status.PROGRESS) + " : " + selected.status.getMessage(Status.ERROR));
-	    }
-	    else
-		throw new IllegalArgumentException("Unknown observable argument: "+arg);
-	}
-	else
-	    throw new IllegalArgumentException("Unknown observable: "+o);
-    }
-     */
 
     // ----------------------------------------------------------
     // Window delegate methods

@@ -5,6 +5,7 @@ package ch.cyberduck.ui.cocoa;
 import java.util.Observer;
 import java.util.Observable;
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 
 import com.apple.cocoa.foundation.*;
@@ -44,17 +45,19 @@ public class CDBrowserView extends NSTableView implements Observer {
 
     public void update(Observable o, Object arg) {
 	log.debug("update");
-//	if(o instanceof Path) {
-	    java.util.List files = (java.util.List)arg;
-	    java.util.Iterator i = files.iterator();
-	    CDBrowserTableDataSource browserTableDataSource = (CDBrowserTableDataSource)this.dataSource();
-	    browserTableDataSource.clear();
-	    while(i.hasNext()) {
-		browserTableDataSource.addEntry(i.next());
-		this.reloadData();
+	if(o instanceof Host) {
+	    if(arg instanceof java.util.List) {
+		java.util.List files = (java.util.List)arg;
+		java.util.Iterator i = files.iterator();
+		CDBrowserTableDataSource browserTableDataSource = (CDBrowserTableDataSource)this.dataSource();
+		browserTableDataSource.clear();
+		while(i.hasNext()) {
+		    browserTableDataSource.addEntry(i.next());
+		    this.reloadData();
+		}
 	    }
 	    //this.reloadData();
-//	}
+	}
     }
 
     /**	Informs the delegate that aTableView will display the cell at rowIndex in aTableColumn using aCell.
