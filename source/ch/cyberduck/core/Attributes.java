@@ -22,6 +22,9 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Observable;
 
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableDictionary;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -34,10 +37,25 @@ public class Attributes extends Observable {
 	private Date modified;
 	private String owner;
 	private String group;
-	private String mode = "-rwxrwxrwx"; //defaulting to a file
-	private Permission permission;
+	protected Permission permission;
 	private boolean visible = true;
+	
+	public Attributes() {
+		super();
+	}
 
+	public Attributes(NSDictionary dict) {
+		log.debug("Attributes");
+		this.permission = new Permission((NSDictionary)dict.objectForKey("Permission"));
+	}
+	
+	
+	public NSDictionary getAsDictionary() {
+		NSMutableDictionary dict = new NSMutableDictionary();
+		dict.setObjectForKey(this.permission.getAsDictionary(), "Permission");
+		return dict;
+	}
+	
 	/**
 	 * @param visible If this path should be shown in the directory listing
 	 */
@@ -69,21 +87,6 @@ public class Attributes extends Observable {
 
 	public Date getModifiedDate() {
 		return this.modified;
-	}
-
-	/**
-	 * @param access unix access permitions, i.e. -rwxrwxrwx
-	 */
-
-	public void setMode(String mode) {
-		this.mode = mode;
-	}
-
-	/**
-	 * @return The unix access permissions including the the first bit
-	 */
-	public String getMode() {
-		return this.mode;
 	}
 
 	public void setPermission(Permission p) {

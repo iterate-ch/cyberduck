@@ -18,6 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableDictionary;
+
 import java.util.Arrays;
 
 import org.apache.log4j.Logger;
@@ -29,6 +32,19 @@ import org.apache.log4j.Logger;
 public class Permission {
 	private static Logger log = Logger.getLogger(Permission.class);
 
+	private String mask = "-rwxrwxrwx"; //defaulting to a file
+
+	public Permission(NSDictionary dict) {
+		log.debug("Attributes");
+		this.mask = (String)dict.objectForKey("Mask");
+	}
+	
+	public NSDictionary getAsDictionary() {
+		NSMutableDictionary dict = new NSMutableDictionary();
+		dict.setObjectForKey(this.mask, "Mask");
+		return dict;
+	}
+	
 	/**
 	 * Index of OWNER bit
 	 */
@@ -64,10 +80,11 @@ public class Permission {
 	 * @param s the access string to parse the permissions from.
 	 * Must be someting like -rwxrwxrwx
 	 */
-	public Permission(String s) {
-		this.owner = this.getOwnerPermissions(s);
-		this.group = this.getGroupPermissions(s);
-		this.other = this.getOtherPermissions(s);
+	public Permission(String mask) {
+		this.mask = mask;
+		this.owner = this.getOwnerPermissions(mask);
+		this.group = this.getGroupPermissions(mask);
+		this.other = this.getOtherPermissions(mask);
 //		log.debug("Permission:"+this.toString());
 	}
 
@@ -178,6 +195,21 @@ public class Permission {
 //		log.debug("Permission:"+this.toString());
 	}
 
+	/**
+		* @param access unix access permitions, i.e. -rwxrwxrwx
+	 */
+	
+	public void setMask(String mask) {
+		this.mask = mask;
+	}
+	
+	/**
+		* @return The unix access permissions including the the first bit
+	 */
+	public String getMask() {
+		return this.mask;
+	}
+		
 	/**
 	 * @return a thee-dimensional boolean array representing read, write
 	 * and execute permissions (in that order) of the file owner.

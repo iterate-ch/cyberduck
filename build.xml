@@ -27,8 +27,6 @@
 	<property file="build.properties"/>
 
 	<property name="debug" value="on"/>
-
-	<!-- set global properties for this build -->
 	<property name="home" value="."/>
 	<property name="build" value="${home}/build"/>
 	<property name="config" value="${home}/config"/>
@@ -179,11 +177,6 @@
 				<include name="**/*.jnilib"/>
 				<include name="ch/cyberduck/core/**/*.class"/>
 			</fileset>
-			<!--
-			<fileset dir="${build}">
-				<include name="*.jnilib"/>
-			</fileset>
-			-->
 		</jar>
 		<jar jarfile="${build}/j2ssh.jar"
 			update="yes">
@@ -209,7 +202,7 @@
 
 	<target name="doc" depends="init" description="Generate Javadoc">
 		<mkdir dir="${doc}"/>
-		<javadoc packagenames="ch.cyberduck.*"
+		<javadoc packagenames="ch.cyberduck.*,com.*,org.*"
 			sourcepath="${source}"
 			destdir="${doc}"
 			author="true"

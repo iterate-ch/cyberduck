@@ -122,7 +122,7 @@ public class SFTPPath extends Path {
 						p.attributes.setGroup(x.getAttributes().getGID().toString());
 						p.status.setSize(x.getAttributes().getSize().intValue());
 						p.attributes.setModified(Long.parseLong(x.getAttributes().getModifiedTime().toString()) * 1000L);
-						p.attributes.setMode(x.getAttributes().getPermissionsString());
+//						p.attributes.setMask(x.getAttributes().getPermissionsString());
 						p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
 						files.add(p);
 					}

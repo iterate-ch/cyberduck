@@ -90,21 +90,14 @@ public class CDDownloadController {
 		this.window.orderOut(null);
 		switch (returncode) {
 			case (NSAlertPanel.DefaultReturn):
-				URL url = null;
 				try {
-					url = new URL(urlField.stringValue());
+					URL url = new URL(urlField.stringValue());
 					Host host = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()));
-					Session session = host.createSession();
+					Session session = SessionFactory.createSession(host);
 					Path path = null;
 					String file = url.getFile();
 					if (file.length() > 1) {
 						path = PathFactory.createPath(SessionFactory.createSession(host), file);
-//						if (host.getProtocol().equals(Session.FTP)) {
-//							path = new FTPPath((FTPSession) session, file);
-//						}
-//						else if (host.getProtocol().equals(Session.HTTP)) {
-//							path = new HTTPPath((HTTPSession) session, file);
-//						}
 						this.window.orderOut(null);
 						CDQueueController.instance().addItem(new Queue(path,
 						    Queue.KIND_DOWNLOAD), true);

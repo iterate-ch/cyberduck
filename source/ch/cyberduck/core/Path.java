@@ -38,7 +38,7 @@ public abstract class Path {
 	protected Path parent = null;
 	private List cache = null;
 	public Status status = new Status();
-	public Attributes attributes = new Attributes();
+	public Attributes attributes;
 
 	public static final String FILE = "FILE";
 	public static final String FOLDER = "FOLDER";
@@ -50,6 +50,7 @@ public abstract class Path {
 		log.debug("Path");
 		this.setPath((String) dict.objectForKey("Remote"));
 		this.setLocal(new Local((String) dict.objectForKey("Local")));
+		this.attributes = new Attributes((NSDictionary)dict.objectForKey("Attributes"));
 		//this.setStatus(new Status((NSDictionary)dict.objectForKey("Status")));
 	}
 
@@ -57,7 +58,8 @@ public abstract class Path {
 		NSMutableDictionary dict = new NSMutableDictionary();
 		dict.setObjectForKey(this.getAbsolute(), "Remote");
 		dict.setObjectForKey(this.getLocal().toString(), "Local");
-		//dict.setObjectForkey(this.status.getAsDictionary(), "Status");
+		dict.setObjectForKey(this.attributes.getAsDictionary(), "Attributes");
+		//dict.setObjectForKey(this.status.getAsDictionary(), "Status");
 		return dict;
 	}
 
@@ -68,6 +70,7 @@ public abstract class Path {
 	 */
 	public Path(String parent, String name) {
 		this.setPath(parent, name);
+		this.attributes = new Attributes();
 	}
 
 	/**
@@ -77,6 +80,7 @@ public abstract class Path {
 	public Path(String path) {
 		log.debug("Path");
 		this.setPath(path);
+		this.attributes = new Attributes();
 	}
 
 	/**
@@ -88,6 +92,7 @@ public abstract class Path {
 	 */
 	public Path(String parent, Local file) {
 		this.setPath(parent, file);
+		this.attributes = new Attributes();
 	}
 
 	/**
@@ -194,7 +199,7 @@ public abstract class Path {
 	public abstract void changePermissions(int p, boolean recursive);
 
 	public boolean isFile() {
-		return this.attributes.getMode().charAt(0) == '-';
+		return this.attributes.permission.getMask().charAt(0) == '-';
 	}
 
 	/**
@@ -202,12 +207,12 @@ public abstract class Path {
 	 */
 	public boolean isDirectory() {
 		if (this.isLink())
-			return this.attributes.getPermission().getOtherPermissions()[Permission.EXECUTE];
-		return this.attributes.getMode().charAt(0) == 'd';
+			return this.attributes.permission.getOtherPermissions()[Permission.EXECUTE];
+		return this.attributes.permission.getMask().charAt(0) == 'd';
 	}
 
 	public boolean isLink() {
-		return this.attributes.getMode().charAt(0) == 'l';
+		return this.attributes.permission.getMask().charAt(0) == 'l';
 	}
 
 	/**

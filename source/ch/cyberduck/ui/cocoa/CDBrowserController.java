@@ -801,7 +801,6 @@ public class CDBrowserController implements Observer {
 		this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
 
 		if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
-//		if (host.getProtocol().equals(Session.SFTP)) {
 			try {
 				host.setHostKeyVerificationController(new CDHostKeyController(this.window));
 			}

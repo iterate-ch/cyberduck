@@ -135,7 +135,7 @@ public class FTPParser {
 			p = new FTPPath((FTPSession) parent.getSession(), parent.getAbsolute(), name);
 			p.attributes.setOwner(owner);
 			p.attributes.setModified(date);
-			p.attributes.setMode(access);
+//			p.attributes.setMask(access);
 			p.attributes.setPermission(new Permission(access));
 			p.status.setSize(size);
 			return p;
@@ -212,7 +212,7 @@ public class FTPParser {
 			p.attributes.setOwner(owner);
 			p.attributes.setGroup(group);
 			p.attributes.setModified(date);
-			p.attributes.setMode(access);
+//			p.attributes.setMask(access);
 			p.attributes.setPermission(new Permission(access));
 			p.status.setSize(Integer.parseInt(size));
 			return p;
