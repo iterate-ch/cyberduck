@@ -1,4 +1,5 @@
 * text=auto !eol
+/Cyberduck[!!-~]Website.webloc -text svneol=unset#application/octet-stream
 /cyberduck-application.icns svneol=native#unset
 /cyberduck-document.icns svneol=native#unset
 /cyberduck.app.icns svneol=native#unset
