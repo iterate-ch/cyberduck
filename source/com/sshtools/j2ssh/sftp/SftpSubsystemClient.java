@@ -257,18 +257,6 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	}
 
 	/**
-	 *
-	 *
-	 * @return
-	 *
-	 * @throws IOException
-	 */
-
-	/*protected boolean onStart() throws IOException {
-	  return initialize();
-	   }*/
-
-	/**
 	 * @param path
 	 * @return
 	 * @throws IOException

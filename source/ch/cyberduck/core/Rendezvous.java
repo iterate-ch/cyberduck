@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
+import javax.jmdns.ServiceEvent;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +71,10 @@ public class Rendezvous extends Observable implements ServiceListener {
 	public void quit() {
 		log.info("Removing Rendezvous service listener");
 		if(this.jmDNS != null) {
-			this.jmDNS.removeServiceListener(this);
+            for(int i = 0; i < serviceTypes.length; i++) {
+                log.info("Removing Rendezvous service listener for "+serviceTypes[i]);
+                Rendezvous.this.jmDNS.removeServiceListener(serviceTypes[i], Rendezvous.this);
+            }
 		}
 	}
 
@@ -88,58 +92,53 @@ public class Rendezvous extends Observable implements ServiceListener {
 		return (Host)services.get(key);
 	}
 
-	/**
-	 * This method is called when jmDNS discovers a service
-	 * for the first time. Only its name and type are known. We can
-	 * now request the service information.
-	 *
-	 * @param type something like _ftp._tcp.local.
-	 */
-	public void addService(JmDNS j, String type, String name) {
-		log.debug("addService:"+name+","+type);
-		j.requestServiceInfo(type, name);
-	}
+    /**
+     * This method is called when jmDNS discovers a service
+     * for the first time. Only its name and type are known. We can
+     * now request the service information.
+     */
+    public void serviceAdded(ServiceEvent event) {
+        log.debug("serviceAdded:"+event.getName()+","+event.getType());
+        this.jmDNS.requestServiceInfo(event.getType(), event.getName());
+    }
 
-	/**
-	 * This method is called when the ServiceInfo record is resolved.
-	 * The ServiceInfo.getURL() constructs an http url given the addres,
-	 * port, and path properties found in the ServiceInfo record.
-	 */
-	public void resolveService(JmDNS jmDNS, String type, String name, ServiceInfo info) {
-		log.debug("resolveService:"+name+","+type+","+info);
-		if(info != null) {
-			log.info("Rendezvous Service Name:"+info.getName());
-			log.info("Rendezvous Server Name:"+info.getServer());
-			
-			//Host(String hostname, int port, Login login, String nickname)
-			Host h = new Host(
-                    info.getServer(),
-                    info.getPort());
+    /**
+     * This method is called when a service is no longer available.
+     */
+    public void serviceRemoved(ServiceEvent event) {
+        log.debug("serviceRemoved:"+event.getName());
+        ServiceInfo info = event.getInfo();
+        if(info != null) {
+            String identifier = info.getServer()+" ("+Host.getDefaultProtocol(info.getPort()).toUpperCase()+")";
+            this.services.remove(identifier);
+            this.callObservers(new Message(Message.RENDEZVOUS_REMOVE, event.getName()));
+        }
+    }
+
+    /**
+     * This method is called when the ServiceInfo record is resolved.
+     * The ServiceInfo.getURL() constructs an http url given the addres,
+     * port, and path properties found in the ServiceInfo record.
+     */
+    public void serviceResolved(ServiceEvent event) {
+        log.debug("serviceResolved:"+event.getName()+","+event.getType());
+		if(event.getInfo() != null) {
+			log.info("Rendezvous Service Name:"+event.getInfo().getName());
+			log.info("Rendezvous Server Name:"+event.getInfo().getServer());
+
+			Host h = new Host(event.getInfo().getServer(), event.getInfo().getPort());
 			h.setCredentials(Preferences.instance().getProperty("connection.login.name"), null);
 			if(h.getProtocol().equals(Session.FTP)) {
 				h.setCredentials(null, null); //use anonymous login for FTP
 			}
 
-			String identifier = info.getServer()+" ("+Host.getDefaultProtocol(info.getPort()).toUpperCase()+")";
+			String identifier = event.getInfo().getServer()+" ("+Host.getDefaultProtocol(event.getInfo().getPort()).toUpperCase()+")";
 
 			this.services.put(identifier, h);
 			this.callObservers(new Message(Message.RENDEZVOUS_ADD, identifier));
 		}
 		else {
-			log.error("Failed to resolve "+name+" with type "+type);
+			log.error("Failed to resolve "+event.getName()+" with type "+event.getType());
 		}
-	}
-
-	/**
-	 * This method is called when a service is no longer available.
-	 */
-	public void removeService(JmDNS j, String type, String name) {
-		log.debug("removeService:"+name);
-		ServiceInfo info = j.getServiceInfo(type, name);
-		if(info != null) {
-			String identifier = info.getServer()+" ("+Host.getDefaultProtocol(info.getPort()).toUpperCase()+")";
-			this.services.remove(identifier);
-			this.callObservers(new Message(Message.RENDEZVOUS_REMOVE, identifier));
-		}
-	}
+    }
 }
