@@ -242,10 +242,13 @@ public abstract class Queue extends Observable {
 		this.progress.start();
 		this.callObservers(new Message(Message.QUEUE_START));
 		if(shouldValidate) {
-			if(this.validator.validate(this.getChilds(), resumeRequested)) {
-				if(this.validator.getValidated().size() > 0) {
-					this.jobs = this.validator.getValidated();
-					return true;
+			List childs = this.getChilds();
+			if(!this.isCanceled()) {
+				if(this.validator.validate(childs, resumeRequested)) {
+					if(this.validator.getValidated().size() > 0) {
+						this.jobs = this.validator.getValidated();
+						return true;
+					}
 				}
 			}
 			return false;
