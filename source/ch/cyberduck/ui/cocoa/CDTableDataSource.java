@@ -25,11 +25,9 @@ import com.apple.cocoa.application.NSTableView;
 /**
  * @version $Id$
  */
-public abstract class CDTableDataSource implements NSTableView.DataSource {
+public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 
     public abstract int numberOfRowsInTableView(NSTableView tableView);
-
-//	public abstract void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row);
 
     public abstract Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row);
 
@@ -52,6 +50,8 @@ public abstract class CDTableDataSource implements NSTableView.DataSource {
 	 */
 	public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
 		return false;
+		//if(tableColumn.identifier().equals("FILENAME"))
+		//	return true;
 	}
 	
     // ----------------------------------------------------------
@@ -63,9 +63,6 @@ public abstract class CDTableDataSource implements NSTableView.DataSource {
     }
 
     public int draggingSourceOperationMaskForLocal(boolean local) {
-//		if (local)
-//			return NSDraggingInfo.DragOperationNone;
-//		else
         return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
     }
 }

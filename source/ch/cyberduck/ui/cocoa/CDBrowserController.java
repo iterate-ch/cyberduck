@@ -243,7 +243,6 @@ public class CDBrowserController extends NSObject implements Observer {
         bookmarkColumn.setResizable(true);
         bookmarkColumn.setDataCell(new CDBookmarkCell());
         this.bookmarkTable.addTableColumn(bookmarkColumn);
-		/*
 
         // setting appearance attributes
         this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
@@ -270,7 +269,6 @@ public class CDBrowserController extends NSObject implements Observer {
                 bookmarkTable);
 
         this.bookmarkTable.sizeToFit();
-		 */
     }
 
     public void bookmarkSelectionDidChange(NSNotification notification) {
