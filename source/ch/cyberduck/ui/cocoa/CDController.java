@@ -46,15 +46,15 @@ public abstract class CDController {
 		super.finalize();
 	}
 
-	private NSWindow window; // IBOutlet
+	private NSWindow sheet; // IBOutlet
 
 	public void setWindow(NSWindow window) {
-		this.window = window;
-		this.window.setDelegate(this);
+		this.sheet = window;
+		this.sheet.setDelegate(this);
 	}
 
 	public NSWindow window() {
-		return this.window;
+		return this.sheet;
 	}
 
 	public abstract void awakeFromNib();
@@ -79,14 +79,12 @@ public abstract class CDController {
 		}
     }
 
-    public void endSheet(int tag) {
+    public void endSheet(NSWindow sheet, int tag) {
         log.debug("endSheet");
-        if(this.hasSheet()) {
-            NSApplication.sharedApplication().endSheet(this.window().attachedSheet(), tag);
-			this.window().attachedSheet().orderOut(null);
-			synchronized(this) {
-				this.notifyAll();
-			}
+        NSApplication.sharedApplication().endSheet(sheet, tag);
+        sheet.orderOut(null);
+        synchronized(this) {
+            this.notifyAll();
         }
     }
 
@@ -123,7 +121,7 @@ public abstract class CDController {
     }
 
     public void sheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
-        this.endSheet(returncode);
+        this.endSheet(sheet, returncode);
     }
 
     public void beginSheet(NSWindow sheet) {
@@ -147,7 +145,7 @@ public abstract class CDController {
         log.debug("beginSheet:"+sheet);
         synchronized(this) {
             if(!Thread.currentThread().getName().equals("Session") && this.hasSheet()) {
-                log.warn("Cannot display sheet because the window is already displaying a sheet running on the main thread");
+                log.warn("Cannot display sheet because the sheet is already displaying a sheet running on the main thread");
                 //sheet.makeKeyAndOrderFront(this);
                 return;
             }

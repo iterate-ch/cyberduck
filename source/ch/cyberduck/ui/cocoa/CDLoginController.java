@@ -147,6 +147,6 @@ public class CDLoginController extends CDController implements LoginController {
 	}
 
     public void closeSheet(NSButton sender) {
-        this.windowController.endSheet(sender.tag());
+        this.windowController.endSheet(this.window(), sender.tag());
     }
 }

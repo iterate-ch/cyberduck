@@ -62,13 +62,13 @@ public class SFTPSession extends Session {
 	public synchronized void close() {
 		try {
 			if(this.SFTP != null) {
-				this.log("Disconnecting...", Message.PROGRESS);
+				this.log(Message.PROGRESS, "Disconnecting...");
 				this.SFTP.close();
 				this.host.getCredentials().setPassword(null);
 				this.SFTP = null;
 			}
 			if(this.SSH != null) {
-				this.log("Closing SSH Session Channel", Message.PROGRESS);
+				this.log(Message.PROGRESS, "Closing SSH Session Channel");
 				this.SSH.disconnect();
 				this.SSH = null;
 			}
@@ -80,7 +80,7 @@ public class SFTPSession extends Session {
 			log.error("IO Error: "+e.getMessage());
 		}
 		finally {
-			this.log("Disconnected", Message.PROGRESS);
+			this.log(Message.PROGRESS, "Disconnected");
 			this.setClosed();
 		}
 	}
@@ -96,7 +96,7 @@ public class SFTPSession extends Session {
 			log.error("SSH Error: "+e.getMessage());
 		}
 		catch(IOException e) {
-			this.log("IO Error: "+e.getMessage(), Message.ERROR);
+			this.log(Message.ERROR, "IO Error: "+e.getMessage());
 		}
 	}
 	
@@ -111,11 +111,11 @@ public class SFTPSession extends Session {
 	}
 		
 	public synchronized void connect(String encoding) throws IOException {
-		this.log("Opening SSH connection to "+host.getIp()+"...", Message.PROGRESS);
+		this.log(Message.PROGRESS, "Opening SSH connection to "+host.getIp()+"...");
 		this.setConnected();
-		this.log("=====================================", Message.TRANSCRIPT);
-		this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
-		this.log(host.getIp(), Message.TRANSCRIPT);
+		this.log(Message.TRANSCRIPT, "=====================================");
+		this.log(Message.TRANSCRIPT, new java.util.Date().toString());
+		this.log(Message.TRANSCRIPT, host.getIp());
 		SSH = new SshClient();
 		//SSH.setSocketTimeout(Preferences.instance().getInteger("connection.timeout"));
 		SSH.addEventHandler(new SshEventAdapter() {
@@ -155,15 +155,15 @@ public class SFTPSession extends Session {
 		}
 		SSH.connect(properties, this.getHostKeyVerificationController());
 		if(SSH.isConnected()) {
-			this.log("SSH connection opened", Message.PROGRESS);
+			this.log(Message.PROGRESS, "SSH connection opened");
 			String id = SSH.getServerId();
 			this.host.setIdentification(id);
-			this.log(id, Message.TRANSCRIPT);
+			this.log(Message.TRANSCRIPT, id);
 			log.info(SSH.getAvailableAuthMethods(host.getCredentials().getUsername()));
 			this.login();
-			this.log("Starting SFTP subsystem...", Message.PROGRESS);
+			this.log(Message.PROGRESS, "Starting SFTP subsystem...");
 			this.SFTP = SSH.openSftpChannel(encoding);
-			this.log("SFTP subsystem ready", Message.PROGRESS);
+			this.log(Message.PROGRESS, "SFTP subsystem ready");
 		}
 	}
 
@@ -234,10 +234,10 @@ public class SFTPSession extends Session {
 		log.debug("login");
 		Login credentials = host.getCredentials();
 		if(credentials.check()) {
-			this.log("Authenticating as '"+credentials.getUsername()+"'", Message.PROGRESS);
+			this.log(Message.PROGRESS, "Authenticating as '"+credentials.getUsername()+"'");
 			if(credentials.usesPublicKeyAuthentication()) {
 				if(AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(credentials)) {
-					this.log("Login successful", Message.PROGRESS);
+					this.log(Message.PROGRESS, "Login successful");
 					this.setAuthenticated();
 					return;
 				}
@@ -245,13 +245,13 @@ public class SFTPSession extends Session {
 			else {
 				if(AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
 				    AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
-					this.log("Login successful", Message.PROGRESS);
+					this.log(Message.PROGRESS, "Login successful");
 					credentials.addInternetPasswordToKeychain();
 					this.setAuthenticated();
 					return;
 				}
 			}
-			this.log("Login failed", Message.PROGRESS);
+			this.log(Message.PROGRESS, "Login failed");
 			host.setCredentials(credentials.promptUser("Authentication for user "+credentials.getUsername()+" failed."));
 			if(host.getCredentials().tryAgain()) {
 				this.login();
@@ -270,10 +270,10 @@ public class SFTPSession extends Session {
 			return workdir;
 		}
 		catch(SshException e) {
-			this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+			this.log(Message.ERROR, "SSH Error: "+e.getMessage());
 		}
 		catch(IOException e) {
-			this.log("IO Error: "+e.getMessage(), Message.ERROR);
+			this.log(Message.ERROR, "IO Error: "+e.getMessage());
 		}
 		return null;
 	}
@@ -285,7 +285,7 @@ public class SFTPSession extends Session {
 	}
 
 	public synchronized void check() throws IOException {
-		this.log("Working", Message.START);
+		this.log(Message.START, "Working");
 		if(null == this.SSH) {
 			this.connect();
 			return;

@@ -57,7 +57,7 @@ public class FTPSession extends Session {
     public synchronized void close() {
         try {
             if (this.FTP != null) {
-                this.log("Disconnecting...", Message.PROGRESS);
+                this.log(Message.PROGRESS, "Disconnecting...");
                 this.FTP.quit();
                 this.host.getCredentials().setPassword(null);
                 this.FTP = null;
@@ -70,7 +70,7 @@ public class FTPSession extends Session {
             log.error("IO Error: " + e.getMessage());
         }
         finally {
-            this.log("Disconnected", Message.PROGRESS);
+            this.log(Message.PROGRESS, "Disconnected");
             this.setClosed();
         }
     }
@@ -83,29 +83,29 @@ public class FTPSession extends Session {
             this.FTP.interrupt();
         }
         catch (FTPException e) {
-            this.log("FTP Error: " + e.getMessage(), Message.ERROR);
+            this.log(Message.ERROR, "FTP Error: " + e.getMessage());
         }
         catch (IOException e) {
-            this.log("IO Error: " + e.getMessage(), Message.ERROR);
+            this.log(Message.ERROR, "IO Error: " + e.getMessage());
         }
     }
 
     public synchronized void connect(String encoding) throws IOException, FTPException {
-        this.log("Opening FTP connection to " + host.getIp() + "...", Message.PROGRESS);
+        this.log(Message.PROGRESS, "Opening FTP connection to " + host.getIp() + "...");
         this.setConnected();
-        this.log("=====================================", Message.TRANSCRIPT);
-        this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
-        this.log(host.getIp(), Message.TRANSCRIPT);
+        this.log(Message.TRANSCRIPT, "=====================================");
+        this.log(Message.TRANSCRIPT, new java.util.Date().toString());
+        this.log(Message.TRANSCRIPT, host.getIp());
         this.FTP = new FTPClient(host.getHostname(),
                 host.getPort(),
                 Preferences.instance().getInteger("connection.timeout"), //timeout
                 encoding, new FTPMessageListener() {
                     public void logCommand(String cmd) {
-                        FTPSession.this.log(cmd, Message.TRANSCRIPT);
+                        FTPSession.this.log(Message.TRANSCRIPT, cmd);
                     }
 
                     public void logReply(String reply) {
-                        FTPSession.this.log(reply, Message.TRANSCRIPT);
+                        FTPSession.this.log(Message.TRANSCRIPT, reply);
                     }
                 });
         this.FTP.setStrictReturnCodes(true);
@@ -120,7 +120,7 @@ public class FTPSession extends Session {
             }
         }
         this.FTP.setConnectMode(this.host.getFTPConnectMode());
-        this.log("FTP connection opened", Message.PROGRESS);
+        this.log(Message.PROGRESS, "FTP connection opened");
         this.login();
         if (Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
             this.host.setIdentification(this.FTP.system());
@@ -133,14 +133,14 @@ public class FTPSession extends Session {
         Login credentials = host.getCredentials();
         if (credentials.check()) {
             try {
-                this.log("Authenticating as " + host.getCredentials().getUsername() + "...", Message.PROGRESS);
+                this.log(Message.PROGRESS, "Authenticating as " + host.getCredentials().getUsername() + "...");
                 this.FTP.login(credentials.getUsername(), credentials.getPassword());
                 credentials.addInternetPasswordToKeychain();
                 this.setAuthenticated();
-                this.log("Login successful", Message.PROGRESS);
+                this.log(Message.PROGRESS, "Login successful");
             }
             catch (FTPException e) {
-                this.log("Login failed", Message.PROGRESS);
+                this.log(Message.PROGRESS, "Login failed");
                 host.setCredentials(credentials.promptUser("Authentication for user " + credentials.getUsername() + " failed. The server response is: " + e.getMessage()));
                 if (host.getCredentials().tryAgain()) {
                     this.login();
@@ -163,10 +163,10 @@ public class FTPSession extends Session {
             return workdir;
         }
         catch (FTPException e) {
-            this.log("FTP Error: " + e.getMessage(), Message.ERROR);
+            this.log(Message.ERROR, "FTP Error: " + e.getMessage());
         }
         catch (IOException e) {
-            this.log("IO Error: " + e.getMessage(), Message.ERROR);
+            this.log(Message.ERROR, "IO Error: " + e.getMessage());
             this.close();
         }
         return null;
@@ -179,7 +179,7 @@ public class FTPSession extends Session {
     }
 
     public synchronized void check() throws IOException {
-        this.log("Working", Message.START);
+        this.log(Message.START, "Working");
         if (null == this.FTP) {
             this.connect();
             return;

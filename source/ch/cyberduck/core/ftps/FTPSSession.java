@@ -61,21 +61,21 @@ public class FTPSSession extends FTPSession {
     private X509TrustManager trustManager;
 
     public synchronized void connect(String encoding) throws IOException, FTPException {
-        this.log("Opening FTP connection to " + host.getIp() + "...", Message.PROGRESS);
+        this.log(Message.PROGRESS, "Opening FTP connection to " + host.getIp() + "...");
         this.setConnected();
-        this.log("=====================================", Message.TRANSCRIPT);
-        this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
-        this.log(host.getIp(), Message.TRANSCRIPT);
+        this.log(Message.TRANSCRIPT, "=====================================");
+        this.log(Message.TRANSCRIPT, new java.util.Date().toString());
+        this.log(Message.TRANSCRIPT, host.getIp());
         this.FTP = new FTPSClient(host.getHostname(),
                 host.getPort(),
                 Preferences.instance().getInteger("connection.timeout"), //timeout
                 encoding, new FTPMessageListener() {
                     public void logCommand(String cmd) {
-                        FTPSSession.this.log(cmd, Message.TRANSCRIPT);
+                        FTPSSession.this.log(Message.TRANSCRIPT, cmd);
                     }
 
                     public void logReply(String reply) {
-                        FTPSSession.this.log(reply, Message.TRANSCRIPT);
+                        FTPSSession.this.log(Message.TRANSCRIPT, reply);
                     }
                 },
                 this.trustManager);
@@ -91,7 +91,7 @@ public class FTPSSession extends FTPSession {
             }
         }
         this.FTP.setConnectMode(this.host.getFTPConnectMode());
-        this.log("FTP connection opened", Message.PROGRESS);
+        this.log(Message.PROGRESS, "FTP connection opened");
         ((FTPSClient) this.FTP).auth();
         this.login();
         if (Preferences.instance().getBoolean("ftp.sendSystemCommand")) {

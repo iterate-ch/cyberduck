@@ -269,6 +269,9 @@ public class CDQueueController extends CDController {
 							toolbar.validateVisibleItems();
 							int row = queueTable.selectedRow();
 							reloadQueueTable(); queueTable.selectRow(row, false);
+							if(Preferences.instance().getBoolean("queue.orderBackOnTransfer")) {
+								window().close();
+							}
 						}
 					});
 					o.deleteObserver(this);

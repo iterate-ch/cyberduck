@@ -226,7 +226,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			}
 		}
 		this.setCanceled(false);
-		this.windowController.endSheet(sender.tag());
+		this.windowController.endSheet(this.window(), sender.tag());
 	}
 	
 	private NSPopUpButton timezonePopupButton;

@@ -114,6 +114,7 @@ public abstract class Preferences {
 		defaults.put("queue.removeItemWhenComplete", "false");
 		defaults.put("queue.postProcessItemWhenComplete", "false");
 		defaults.put("queue.orderFrontOnTransfer", "true");
+		defaults.put("queue.orderBackOnTransfer", "false");
 		defaults.put("queue.download.folder", System.getProperty("user.home")+"/Desktop");
 		defaults.put("queue.fileExists", "ask");
 		

@@ -38,7 +38,7 @@ public abstract class Session extends Observable {
 	public static final String FTP_TLS = "ftps";
 
     public static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer Protocol)", "");
-    public static final String FTP_SSL_STRING = NSBundle.localizedString("FTP-SSL (FTP over TLS/SSL)", "");
+    public static final String FTP_TLS_STRING = NSBundle.localizedString("FTP-SSL (FTP over TLS/SSL)", "");
     public static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
 
 	private Cache cache = new Cache();
@@ -86,6 +86,14 @@ public abstract class Session extends Observable {
 	}
 
 	/**
+		* Assert that the connection to the remote host is still alive. Open connection if needed.
+	 *
+	 * @throws IOException The connection to the remote host failed.
+	 * @see Host
+	 */
+	public abstract void check() throws IOException;
+	
+	/**
 	 * Connect to the remote Host
 	 * The protocol specific implementation has to  be coded in the subclasses.
 	 *
@@ -97,11 +105,23 @@ public abstract class Session extends Observable {
 		this.connect(this.host.getEncoding());
 	}
 
+//	public void open() {
+//		try {
+//			this.check();
+//		}
+//		catch(IOException e) {
+//			this.log("IO Error: "+e.getMessage(), Message.ERROR);
+//			Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl Notification"),
+//									host.getHostname());
+//			this.close();
+//		}
+//	}
+		
 	/**
 	 * Connect to the remote host and mount the home directory
 	 */
 	public synchronized void mount(String encoding, Filter filter) {
-		this.log("Mounting "+host.getHostname()+"...", Message.PROGRESS);
+		this.log(Message.PROGRESS, "Mounting "+host.getHostname()+"...");
 		try {
 			this.check();
 			Path home;
@@ -128,7 +148,7 @@ public abstract class Session extends Observable {
 									host.getHostname());
 		}
 		catch(IOException e) {
-			this.log("IO Error: "+e.getMessage(), Message.ERROR);
+			this.log(Message.ERROR, "IO Error: "+e.getMessage());
 			Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl Notification"),
 									host.getHostname());
 			this.close();
@@ -159,14 +179,6 @@ public abstract class Session extends Observable {
 	public abstract Path workdir();
 
 	public abstract void noop() throws IOException;
-
-	/**
-	 * Assert that the connection to the remote host is still alive. Open connection if needed.
-	 *
-	 * @throws IOException The connection to the remote host failed.
-	 * @see Host
-	 */
-	public abstract void check() throws IOException;
 
 	public abstract void interrupt();
 	
@@ -257,9 +269,8 @@ public abstract class Session extends Observable {
 		return this.cache;
 	}
 
-	public void log(String message, String title) {
+	public void log(String title, String message) {
 		if(title.equals(Message.TRANSCRIPT)) {
-//			this.transcript.log(message);
 			TranscriptFactory.getImpl(host.getHostname()).log(message);
 		}
 		else {

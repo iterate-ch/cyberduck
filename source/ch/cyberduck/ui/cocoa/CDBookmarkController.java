@@ -53,7 +53,7 @@ public class CDBookmarkController extends CDController {
         this.protocolPopup.setEnabled(true);
 		this.protocolPopup.removeAllItems();
 		this.protocolPopup.addItemsWithTitles(new NSArray(new String[] {Session.FTP_STRING,
-                                                                        Session.FTP_SSL_STRING,
+                                                                        Session.FTP_TLS_STRING,
                                                                         Session.SFTP_STRING}));
 		this.protocolPopup.itemWithTitle(Session.FTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
 		this.protocolPopup.itemWithTitle(Session.FTP_STRING).setKeyEquivalent("f");
@@ -69,11 +69,11 @@ public class CDBookmarkController extends CDController {
 			this.host.setProtocol(Session.SFTP);
 			this.host.setPort(Session.SSH_PORT);
 		}
-		if(protocolPopup.selectedItem().title().equals(Session.FTP_SSL_STRING)) {
+		if(protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
 			this.host.setProtocol(Session.FTP_TLS);
 			this.host.setPort(Session.FTP_PORT);
 		}
-        if(protocolPopup.selectedItem().title().equals(Session.FTP_SSL_STRING)) {
+        if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
             this.host.setProtocol(Session.FTP);
             this.host.setPort(Session.FTP_PORT);
         }
@@ -319,7 +319,7 @@ public class CDBookmarkController extends CDController {
             this.protocolPopup.setTitle(Session.FTP_STRING);
         }
         if(this.host.getProtocol().equals(Session.FTP_TLS)) {
-            this.protocolPopup.setTitle(Session.FTP_SSL_STRING);
+            this.protocolPopup.setTitle(Session.FTP_TLS_STRING);
         }
         if(this.host.getProtocol().equals(Session.SFTP)) {
             this.protocolPopup.setTitle(Session.SFTP_STRING);

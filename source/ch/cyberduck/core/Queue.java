@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
+import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
@@ -192,22 +193,28 @@ public abstract class Queue extends Observable {
 		* Process the queue. All files will be downloaded/uploaded/synced rerspectively.
 	 */
 	public void process(boolean resumeRequested, boolean shouldValidate) {
-		if(this.init(resumeRequested, shouldValidate)) {
-			this.reset();
-			for(Iterator iter = this.getJobs().iterator(); iter.hasNext() && !this.isCanceled();) {
-				((Path)iter.next()).status.reset();
-			}
-			for(Iterator iter = this.getJobs().iterator(); iter.hasNext() && !this.isCanceled();) {
-				this.process((Path)iter.next());
-			}
-		}
-		else {
-			this.cancel();
-		}
-		this.finish();
+        try {
+            if(this.init(resumeRequested, shouldValidate)) {
+                this.reset();
+                for(Iterator iter = this.getJobs().iterator(); iter.hasNext() && !this.isCanceled();) {
+                    ((Path)iter.next()).status.reset();
+                }
+                for(Iterator iter = this.getJobs().iterator(); iter.hasNext() && !this.isCanceled();) {
+                    this.process((Path)iter.next());
+                }
+            }
+            else {
+                this.cancel();
+            }
+            this.finish();
+        }
+        catch(IOException e) {
+            this.callObservers(new Message(Message.ERROR, e.getMessage()));
+        }
 	}
 	
-	private boolean init(boolean resumeRequested, boolean shouldValidate) {
+	private boolean init(boolean resumeRequested, boolean shouldValidate)
+            throws IOException {
         this.canceled = false;
 		this.running = true;
 		this.validator = ValidatorFactory.createValidator(this.getClass());
@@ -242,6 +249,9 @@ public abstract class Queue extends Observable {
 		this.progress.start();
 		this.jobs = null;
 		this.callObservers(new Message(Message.QUEUE_START));
+		
+		this.getSession().check();
+		
 		if(shouldValidate) {
 			List childs = this.getChilds();
 			if(!this.isCanceled()) {

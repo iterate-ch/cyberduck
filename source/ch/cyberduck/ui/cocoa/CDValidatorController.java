@@ -260,15 +260,15 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.cancelButton.setAction(new NSSelector("cancelActionFired", new Class[]{Object.class}));
 	}
 
-	private NSPanel window; // IBOutlet
+	private NSPanel sheet; // IBOutlet
 
 	public void setWindow(NSPanel window) {
-		this.window = window;
-		this.window.setDelegate(this);
+		this.sheet = window;
+		this.sheet.setDelegate(this);
 	}
 
 	public NSPanel window() {
-		return this.window;
+		return this.sheet;
 	}
 
 	protected void setEnabled(boolean enabled) {
@@ -287,7 +287,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 		}
 		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
 		this.setCanceled(false);
-		this.windowController.endSheet(sender.tag());
+		this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	public void overwriteActionFired(NSButton sender) {
@@ -296,20 +296,20 @@ public abstract class CDValidatorController extends AbstractValidator {
 		}
 		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
 		this.setCanceled(false);
-		this.windowController.endSheet(sender.tag());
+		this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	public void skipActionFired(NSButton sender) {
 		this.workList.clear();
 		this.setCanceled(false);
-		this.windowController.endSheet(sender.tag());
+		this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	public void cancelActionFired(NSButton sender) {
 		this.validatedList.clear();
 		this.workList.clear();
 		this.setCanceled(true);
-		this.windowController.endSheet(sender.tag());
+		this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	// ----------------------------------------------------------

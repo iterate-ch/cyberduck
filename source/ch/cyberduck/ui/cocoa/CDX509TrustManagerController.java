@@ -62,15 +62,15 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
     private NSTextView certificateField;
 
-    private NSWindow window;
+    private NSWindow sheet;
 
     public void setWindow(NSWindow window) {
-        this.window = window;
-		this.window.setDelegate(this);
+        this.sheet = window;
+		this.sheet.setDelegate(this);
     }
 	
 	public NSWindow window() {
-		return this.window;
+		return this.sheet;
 	}
 
     private CDController windowController;
@@ -117,7 +117,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 //                    NSBundle.localizedString("Disconnect", ""), // defaultbutton
 //                    null);
 //                    //NSBundle.localizedString("Always", "")); // other button
-            this.windowController.beginSheet(this.window,
+            this.windowController.beginSheet(this.sheet,
                     this, //delegate
                     new NSSelector
                             ("clientCertificateAlertSheetDidClose",
@@ -172,7 +172,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 //                    NSBundle.localizedString("Disconnect", ""), // defaultbutton
 //                    null);
 //                    //NSBundle.localizedString("Always", "")); // other button
-            this.windowController.beginSheet(window,
+            this.windowController.beginSheet(sheet,
                     this, //delegate
                     new NSSelector
                             ("serverCertificateAlertSheetDidClose",
@@ -208,6 +208,6 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
     }
 
     public void closeSheet(NSButton sender) {
-        this.windowController.endSheet(sender.tag());
+        this.windowController.endSheet(this.window(), sender.tag());
     }
 }
