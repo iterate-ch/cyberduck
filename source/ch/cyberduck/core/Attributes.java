@@ -39,10 +39,10 @@ public class Attributes extends Observable {
 	 */
 	private long size = -1;
 	private Date modified = null;
-	private String owner = NSBundle.localizedString("Unknown", "");
-	private String group = NSBundle.localizedString("Unknown", "");
+	private String owner = null;
+	private String group = null;
 	private int type = Path.FILE_TYPE;
-	protected Permission permission = new Permission();
+	protected Permission permission = null;
 
 	public Attributes() {
 		super();
@@ -96,7 +96,9 @@ public class Attributes extends Observable {
 	
 	public Calendar getTimestampAsCalendar() {
 		Calendar c = Calendar.getInstance();
-		c.setTime(this.getTimestamp());
+		if(this.getTimestamp() != null) {
+			c.setTime(this.getTimestamp());
+		}
 		c.clear(Calendar.MILLISECOND);
 		c.clear(Calendar.SECOND);
 		return c;
@@ -137,6 +139,8 @@ public class Attributes extends Observable {
 	}
 
 	public Permission getPermission() {
+		if(null == this.permission)
+			return new Permission();
 		return this.permission;
 	}
 
@@ -165,6 +169,8 @@ public class Attributes extends Observable {
 	}
 
 	public String getOwner() {
+		if(null == this.owner)
+			return NSBundle.localizedString("Unknown", "");
 		return this.owner;
 	}
 
@@ -173,6 +179,8 @@ public class Attributes extends Observable {
 	}
 
 	public String getGroup() {
+		if(null == this.group)
+			NSBundle.localizedString("Unknown", "")
 		return this.group;
 	}
 }
