@@ -310,10 +310,7 @@ static ODBEditor	*_sharedODBEditor;
 	if (dictionary != nil)
 	{
 		id  client = [[dictionary objectForKey: ODBEditorNonRetainedClient] nonretainedObjectValue];
-//		NSString	*stringContents = [NSString stringWithContentsOfFile: fileName];
-		
 		[client odbEditor: self didModifyFile: fileName newFileLocation: nil context: nil];
-//		[client odbEditor: self didModifyFileForString: stringContents context: nil];
 	}
 	else
 	{
@@ -336,10 +333,7 @@ static ODBEditor	*_sharedODBEditor;
 	{
 		id			client = [[dictionary objectForKey: ODBEditorNonRetainedClient] nonretainedObjectValue];
 		void		*context = [[dictionary objectForKey: ODBEditorClientContext] pointerValue];
-//		NSString	*stringContents = [NSString stringWithContentsOfFile: fileName];
-		
 		[client odbEditor: self didClosefile: fileName context: context];
-//		[client odbEditor: self didCloseFileForString: stringContents context: context];
 	}
 	else
 	{

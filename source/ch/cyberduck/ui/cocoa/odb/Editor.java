@@ -58,19 +58,9 @@ public class Editor extends NSObject {
 		}
 	}
 	
-//	private Map filesBeingEdited;
-
 	private static NSMutableArray instances = new NSMutableArray();
-
-//	public static Editor instance() {
-//		if(null == instance) {
-//			instance = new Editor();
-//		}
-//		return instance;
-//	}
 	
 	public Editor() {
-//		this.filesBeingEdited = new HashMap();
         instances.addObject(this);
 	}
 	
@@ -79,7 +69,6 @@ public class Editor extends NSObject {
 	public void open(Path f) {
 		this.file = f;
 		this.file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), file.getName()));
-//		this.filesBeingEdited.put(file.getLocal().getAbsolutePath(), file);
 		this.file.download();
 		this.edit(file.getLocal().getAbsolutePath());
 	}
@@ -88,17 +77,13 @@ public class Editor extends NSObject {
 	
 	public void didCloseFile() {
 		log.debug("didCloseFile");
-//		Path p = (Path)this.filesBeingEdited.get(file);
-//		p.getLocal().delete();
 		this.file.getLocal().delete();
         instances.removeObject(this);
-//		this.filesBeingEdited.remove(file);
 	}
 	
 	public void didModifyFile() {
 		log.debug("didModifyFile:");
-//		Path p = (Path)this.filesBeingEdited.get(file);
 		this.file.upload();
-//		p.upload();
+		this.file.getParent().list(true);
 	}
 }
