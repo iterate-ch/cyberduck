@@ -9,11 +9,12 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - Resume downloads (SFTP)
 - Resume uploads (SFTP)
 - Resume uploads (FTP)
+- Move files on remote host by drag and drop
 - Drag files onto bookmark to quickly upload
 - Bookmarks are shown in the menu
 - Menu item 'Download As...'
 - Editing multiple files in the external editor with the same name
-- Warning if a duplicate exists is also shown when uploading files
+- Warning if a duplicate exists when uploading files
 - 'Apply to all' checkbox in dialog asking for replace/resume/skip existing files
 - Improved caching of directory listings
 - When dropping files onto folders it will upload these into the folder
@@ -22,6 +23,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - Convert line endings when downloading in ASCII mode (FTP)
 - Auto transfer mode (FTP)
 - Dock menu item to open new browser
+- Correctly updating incorrect keychain entries 
 - Bug fixes
 
 2.3b1

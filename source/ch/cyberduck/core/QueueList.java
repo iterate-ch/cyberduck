@@ -23,14 +23,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public abstract class QueueList {
-    private static Logger log = Logger.getLogger(QueueList.class);
-
 	private static QueueList instance;
 	
     private List data = new ArrayList();
@@ -56,22 +52,19 @@ public abstract class QueueList {
 
     public void addItem(Queue item) {
         this.data.add(item);
-//        this.save();
     }
 
     public void addItem(Queue item, int row) {
         this.data.add(row, item);
-//        this.save();
     }
 
-    public void removeItem(int row) {
-        log.debug("removeItem:" + row);
-        this.data.remove(row);
-//        this.save();
+    public void removeItem(int index) {
+        if (index < this.size()) {
+			this.data.remove(index);
+		}
     }
 
     public void removeItem(Queue item) {
-        log.debug("removeItem:" + item);
         this.removeItem(this.data.lastIndexOf(item));
     }
 
@@ -79,9 +72,6 @@ public abstract class QueueList {
         Queue result = null;
         if (row < this.size()) {
             result = (Queue) this.data.get(row);
-        }
-        if (null == result) {
-            throw new IllegalArgumentException("No queue with index " + row + " in QueueList.");
         }
         return result;
     }

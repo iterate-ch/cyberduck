@@ -189,6 +189,8 @@ img/info.tiff svneol=native#unset
 img/multipleDocuments.tiff -text
 img/newfolder.tiff -text
 img/notfound.tiff -text
+img/offline.tiff -text
+img/online.tiff -text
 img/pencil.tiff -text
 img/refresh.tiff svneol=native#unset
 img/reload.tiff svneol=native#unset
@@ -303,14 +305,21 @@ lib/log4j.jar svneol=native#unset
 lib/logging.jar -text
 lib/oro.jar -text
 nl.lproj/Bookmark.nib/keyedobjects.nib -text
+nl.lproj/Bookmark.strings svneol=native#unset
 nl.lproj/Browser.nib/keyedobjects.nib -text
+nl.lproj/Browser.strings svneol=native#unset
 nl.lproj/Connection.nib/keyedobjects.nib -text
 nl.lproj/Connection.strings svneol=native#unset
 nl.lproj/Donate.nib/keyedobjects.nib -text
+nl.lproj/Donate.strings svneol=native#unset
 nl.lproj/Download.nib/keyedobjects.nib -text
+nl.lproj/Download.strings svneol=native#unset
 nl.lproj/Folder.nib/keyedobjects.nib -text
+nl.lproj/Folder.strings svneol=native#unset
 nl.lproj/Goto.nib/keyedobjects.nib -text
+nl.lproj/Goto.strings svneol=native#unset
 nl.lproj/Info.nib/keyedobjects.nib -text
+nl.lproj/Info.strings svneol=native#unset
 nl.lproj/InfoPlist.strings -text svneol=unset#application/octet-stream
 nl.lproj/Localizable.strings -text
 nl.lproj/Login.nib/keyedobjects.nib -text
@@ -320,7 +329,9 @@ nl.lproj/Main.strings svneol=native#unset
 nl.lproj/Preferences.nib/keyedobjects.nib -text
 nl.lproj/Preferences.strings svneol=native#unset
 nl.lproj/Queue.nib/keyedobjects.nib -text
+nl.lproj/Queue.strings svneol=native#unset
 nl.lproj/Update.nib/keyedobjects.nib -text
+nl.lproj/Update.strings svneol=native#unset
 nl.lproj/Validator.nib/keyedobjects.nib -text
 nl.lproj/Validator.strings svneol=native#unset
 pt.lproj/Bookmark.nib/keyedobjects.nib -text

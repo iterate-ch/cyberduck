@@ -23,8 +23,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 /**
  * Keeps track of user bookmarks
  *
@@ -32,8 +30,6 @@ import org.apache.log4j.Logger;
  * @see ch.cyberduck.core.Host
  */
 public abstract class BookmarkList {
-    private static Logger log = Logger.getLogger(BookmarkList.class);
-
 	private static BookmarkList instance;
 
     protected List data = new ArrayList();
@@ -63,32 +59,27 @@ public abstract class BookmarkList {
 
     public void addItem(Host item) {
         this.data.add(item);
-		//this.save();
     }
 
     public void addItem(Host item, int row) {
-        this.data.add(row, item);
-        //this.save();
+		this.data.add(row, item);
     }
 
     public void removeItem(int index) {
-        this.data.remove(index);
-        //this.save();
+        if (index < this.size()) {
+			this.data.remove(index);
+		}
     }
 
     public void removeItem(Host item) {
-        this.removeItem(this.data.lastIndexOf(item));
+		this.removeItem(this.data.lastIndexOf(item));
     }
 
     public Host getItem(int row) {
-//		log.debug("getItem:"+index);
 		Host result = null;
         if (row < this.size()) {
 			result = (Host) this.data.get(row);
 		}
-        if (null == result) {
-            throw new IllegalArgumentException("No host with index " + row + " in BookmarkList.");
-        }
         return result;
     }
 

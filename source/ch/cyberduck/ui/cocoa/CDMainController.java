@@ -394,8 +394,8 @@ public class CDMainController extends NSObject {
         this.saveVersionInfo();
         //Writing usage info
         Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
-		return this.checkForMountedBrowsers(app);
-//        return true;
+//		return this.checkForMountedBrowsers(app);
+        return true;
     }
 
     private boolean checkForMountedBrowsers(NSApplication app) {

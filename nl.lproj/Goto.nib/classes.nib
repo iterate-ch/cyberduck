@@ -6,7 +6,7 @@
             CLASS = "ch.cyberduck.ui.cocoa.CDGotoController"; 
             LANGUAGE = Java; 
             OUTLETS = {folderField = NSTextField; window = NSWindow; }; 
-            SUPERCLASS = "java.lang.Object"; 
+            SUPERCLASS = NSObject; 
         }
     ); 
     IBVersion = 1; 
