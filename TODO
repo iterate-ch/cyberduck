@@ -1,8 +1,4 @@
-[????] FTP-SSL Implementation
-	ftps-data       989/udp     # ftp protocol, data, over TLS/SSL
-	ftps-data       989/tcp     # ftp protocol, data, over TLS/SSL
-	ftps            990/udp     # ftp protocol, control, over TLS/SSL
-	ftps            990/tcp     # ftp protocol, control, over TLS/SSL
+[DONE] FTP-TLS (AUTH TLS) Implementation
 [????] Server to Server Transfers (FXP)
 [????] NSWorkspace noteFileSystemChangedAtPath when downloading
 [????] SFTP protocol version 4 (support for SSH_FILEXFER_ATTR_OWNERGROUP)

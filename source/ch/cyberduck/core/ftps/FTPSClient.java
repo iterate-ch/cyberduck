@@ -18,48 +18,63 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import com.enterprisedt.net.ftp.*;
+import com.enterprisedt.net.ftp.FTPClient;
+import com.enterprisedt.net.ftp.FTPControlSocket;
+import com.enterprisedt.net.ftp.FTPException;
+import com.enterprisedt.net.ftp.FTPMessageListener;
+
+import org.apache.log4j.Logger;
+
+import ch.cyberduck.core.Preferences;
 
 /**
  * @version $Id$
  */
 public class FTPSClient extends FTPClient {
+    private static Logger log = Logger.getLogger(SSLProtocolSocketFactory.class);
 
-    public FTPSClient(String remoteHost, int controlPort, int timeout, String encoding, FTPMessageListener listener) throws IOException, FTPException {
-        this(InetAddress.getByName(remoteHost), controlPort, timeout, encoding, listener);
-    }
-
-    public FTPSClient(InetAddress remoteAddr, int controlPort, int timeout, String encoding, FTPMessageListener listener) throws IOException, FTPException {
-
-        if (controlPort < 0) {
-            controlPort = FTPControlSocket.CONTROL_PORT;
-        }
-        this.messageListener = listener;
-        this.initialize(new FTPSControlSocket(remoteAddr, controlPort, timeout, encoding, listener));
-    }
-
-    public void auth(char datachannel_security) throws IOException, FTPException {
-        this.checkConnection(true);
-
-        FTPReply reply = control.sendCommand("AUTH TLS");
-        lastValidReply = control.validateReply(reply, "234");
-
-        ((FTPSControlSocket) this.control).startHandshake();
-
-        this.prot(datachannel_security);
+    public FTPSClient(String remoteHost, int controlPort, int timeout, String encoding,
+                      FTPMessageListener listener, X509TrustManager trustManager) throws IOException, FTPException {
+        super(listener);
+        this.control = new FTPSControlSocket(InetAddress.getByName(remoteHost),
+                controlPort, timeout, encoding, listener, trustManager);
     }
 
     /**
+     *
+     * @throws IOException
+     * @throws FTPException
+     */
+    public void auth() throws IOException, FTPException {
+        this.checkConnection(true);
+
+        lastValidReply = control.validateReply(control.sendCommand("AUTH TLS"), "234");
+
+        ((FTPSControlSocket) this.control).startHandshake();
+
+        this.prot();
+    }
+
+    /**
+     * The command defined in [RFC-2228] to negotiate data connection
+     * security is the PROT command.
      * For TLS, the data connection can have one of two security levels.
      * 1) Clear (requested by 'PROT C')
      * 2) Private (requested by 'PROT P')
      */
-    private void prot(char security) throws IOException, FTPException {
-        control.sendCommand("PBSZ 0");
-        FTPReply reply = control.sendCommand("PROT C");
-        lastValidReply = control.validateReply(reply, "200");
+    private void prot() throws IOException, FTPException {
+        lastValidReply = control.validateReply(control.sendCommand("PBSZ 0"), "200");
+        try {
+            lastValidReply = control.validateReply(control.sendCommand("PROT "
+                    + Preferences.instance().getProperty("ftp.ssl.datachannel")), "200");
+        }
+        catch(FTPException e) {
+            log.warn("No data channel security: "+e.getMessage());
+            ((FTPSControlSocket) this.control).setUseDataConnectionSecurity(false);
+        }
     }
 }

@@ -18,9 +18,12 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 
+import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPMessageListener;
+import com.enterprisedt.net.ftp.FTPException;
 import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
 import org.apache.log4j.Logger;
 
@@ -34,9 +37,7 @@ public class FTPSSession extends FTPSession {
     private static Logger log = Logger.getLogger(FTPSSession.class);
 
     static {
-        SessionFactory.addFactory(Session.FTPS, new Factory());
-        Protocol ftps = new Protocol("ftps", new SSLProtocolSocketFactory(), 21);
-        Protocol.registerProtocol("ftps", ftps);
+        SessionFactory.addFactory(Session.FTP_SSL, new Factory());
     }
 
     private static class Factory extends SessionFactory {
@@ -49,7 +50,17 @@ public class FTPSSession extends FTPSession {
         super(h);
     }
 
-    public synchronized void connect(String encoding) throws IOException {
+    public X509TrustManager getTrustManager() {
+        return trustManager;
+    }
+
+    public void setTrustManager(X509TrustManager trustManager) {
+        this.trustManager = trustManager;
+    }
+
+    private X509TrustManager trustManager;
+
+    public synchronized void connect(String encoding) throws IOException, FTPException {
         this.log("Opening FTP connection to " + host.getIp() + "...", Message.PROGRESS);
         this.setConnected();
         this.log("=====================================", Message.TRANSCRIPT);
@@ -66,21 +77,22 @@ public class FTPSSession extends FTPSession {
                     public void logReply(String reply) {
                         FTPSSession.this.log(reply, Message.TRANSCRIPT);
                     }
-                });
+                },
+                this.trustManager);
         this.FTP.setStrictReturnCodes(true);
         if (Proxy.isSOCKSProxyEnabled()) {
             log.info("Using SOCKS Proxy");
-            this.FTP.initSOCKS(Proxy.getSOCKSProxyPort(),
+            FTPClient.initSOCKS(Proxy.getSOCKSProxyPort(),
                     Proxy.getSOCKSProxyHost());
             if (Proxy.isSOCKSAuthenticationEnabled()) {
                 log.info("Using SOCKS Proxy Authentication");
-                this.FTP.initSOCKSAuthentication(Proxy.getSOCKSProxyUser(),
+                FTPClient.initSOCKSAuthentication(Proxy.getSOCKSProxyUser(),
                         Proxy.getSOCKSProxyPassword());
             }
         }
         this.FTP.setConnectMode(this.host.getFTPConnectMode());
         this.log("FTP connection opened", Message.PROGRESS);
-        ((FTPSClient) this.FTP).auth('c');
+        ((FTPSClient) this.FTP).auth();
         this.login();
         if (Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
             this.host.setIdentification(this.FTP.system());

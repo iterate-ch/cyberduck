@@ -35,7 +35,7 @@ public abstract class Session extends Observable {
 
 	public static final String SFTP = "sftp";
 	public static final String FTP = "ftp";
-	public static final String FTPS = "ftps";
+	public static final String FTP_SSL = "ftps";
 
 	private Cache cache = new Cache();
 

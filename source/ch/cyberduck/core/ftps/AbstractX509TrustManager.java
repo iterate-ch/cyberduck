@@ -60,16 +60,12 @@ import org.apache.log4j.Logger;
  *         </p>
  */
 
-public class CustomX509TrustManager implements X509TrustManager {
-    private static Logger log = Logger.getLogger(CustomX509TrustManager.class);
+public abstract class AbstractX509TrustManager implements X509TrustManager {
+    private static Logger log = Logger.getLogger(AbstractX509TrustManager.class);
 
     private X509TrustManager standardTrustManager = null;
 
-    /**
-     * Constructor for CustomCustomEasyX509TrustManager.
-     */
-    public CustomX509TrustManager(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
-        super();
+    protected void init(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
         TrustManagerFactory factory = TrustManagerFactory.getInstance("SunX509");
         factory.init(keystore);
         TrustManager[] trustmanagers = factory.getTrustManagers();
@@ -97,9 +93,11 @@ public class CustomX509TrustManager implements X509TrustManager {
             }
             catch (CertificateExpiredException e) {
                 log.warn(e.toString());
+                throw e;
             }
             catch (CertificateNotYetValidException e) {
                 log.warn(e.toString());
+                throw e;
             }
         }
         else {

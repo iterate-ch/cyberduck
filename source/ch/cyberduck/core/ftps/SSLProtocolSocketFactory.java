@@ -31,8 +31,10 @@ package ch.cyberduck.core.ftps;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -43,18 +45,17 @@ public class SSLProtocolSocketFactory implements SecureProtocolSocketFactory {
 
     private SSLContext sslcontext = null;
 
-    /**
-     * Constructor for SSLProtocolSocketFactory.
-     */
-    public SSLProtocolSocketFactory() {
-        super();
+    private X509TrustManager trustManager;
+
+    public SSLProtocolSocketFactory(X509TrustManager trustManager) {
+        this.trustManager = trustManager;
     }
 
-    private static SSLContext createEasySSLContext() {
+    private SSLContext createEasySSLContext() {
         try {
             SSLContext context = SSLContext.getInstance("SSL");
             context.init(null,
-                    new TrustManager[]{new CustomX509TrustManager(null)},
+                    new TrustManager[]{trustManager},
                     null);
             return context;
         }
@@ -71,43 +72,38 @@ public class SSLProtocolSocketFactory implements SecureProtocolSocketFactory {
         return this.sslcontext;
     }
 
-    /**
-     * @see SecureProtocolSocketFactory#createSocket(java.lang.String,int,java.net.InetAddress,int)
-     */
     public Socket createSocket(String host,
                                int port,
                                InetAddress clientHost,
                                int clientPort)
             throws IOException, UnknownHostException {
 
-        return getSSLContext().getSocketFactory().createSocket(host,
+        return this.getSSLContext().getSocketFactory().createSocket(host,
                 port,
                 clientHost,
                 clientPort);
     }
 
-
-    /**
-     * @see SecureProtocolSocketFactory#createSocket(java.lang.String,int)
-     */
     public Socket createSocket(String host, int port)
             throws IOException, UnknownHostException {
-        return getSSLContext().getSocketFactory().createSocket(host,
+        return this.getSSLContext().getSocketFactory().createSocket(host,
                 port);
     }
 
-    /**
-     * @see SecureProtocolSocketFactory#createSocket(java.net.Socket,java.lang.String,int,boolean)
-     */
     public Socket createSocket(Socket socket,
                                String host,
                                int port,
                                boolean autoClose)
             throws IOException, UnknownHostException {
-        return getSSLContext().getSocketFactory().createSocket(socket,
+        return this.getSSLContext().getSocketFactory().createSocket(socket,
                 host,
                 port,
                 autoClose);
+    }
+
+    public ServerSocket createServerSocket(int port)
+            throws IOException {
+        return getSSLContext().getServerSocketFactory().createServerSocket(port);
     }
 
     public boolean equals(Object obj) {
