@@ -85,6 +85,14 @@ force=false;
 while [ "$1" != "" ] # When there are arguments...
 do
     case "$1" in 
+        -l | --language) 
+            shift;
+            language=$1
+        ;;
+        -n | --nib) 
+            shift;
+            nibfile=$1
+        ;;
 		-g | --genstrings)
 			init;
 			exit 0;
@@ -97,14 +105,6 @@ do
         	status;
         	exit 0;
         ;; 
-        -l | --language) 
-            shift;
-            language=$1
-        ;;
-        -n | --nib) 
-            shift;
-            nibfile=$1
-        ;;
         -f | --force) 
             shift;
             force=true

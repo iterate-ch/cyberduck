@@ -20,6 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSFont;
 import com.apple.cocoa.application.NSTextView;
+import com.apple.cocoa.application.NSLayoutManager;
+import com.apple.cocoa.application.NSTextContainer;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSRange;
@@ -50,8 +52,17 @@ public class CDTranscriptImpl implements Transcript {
 	private static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
 																					new Object[]{NSAttributedString.FontAttributeName});
 	
+	public void layoutManagerDidCompleteLayoutForTextContainer(NSLayoutManager layoutManager, 
+															   NSTextContainer textContainer, 
+															   boolean finished) {
+		if(this.textView.window().isVisible()) {
+			this.textView.scrollRangeToVisible(new NSRange(this.textView.textStorage().length(), 0));
+		}
+	}
+		
 	public void log(final String message) {
 		log.info(message);
+		this.textView.layoutManager().setDelegate(this);
 		ThreadUtilities.instance().invokeLater(new Runnable() {
 			public void run() {
 				// Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
@@ -60,9 +71,6 @@ public class CDTranscriptImpl implements Transcript {
 				// attributes of the first character in the receiver are used.
 				textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0),
 																new NSAttributedString(message+"\n", FIXED_WITH_FONT_ATTRIBUTES)); //@warning very bad performance
-//				if(textView.window().isVisible()) {
-//				  	textView.scrollRangeToVisible(new NSRange(textView.textStorage().length(), 0));
-//				}
 			}
 		});
 	}
