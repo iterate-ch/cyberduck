@@ -123,6 +123,7 @@ public abstract class Preferences {
 		defaults.put("queue.upload.changePermissions", "true");
 		defaults.put("queue.upload.permissions.useDefault", "false");
 		defaults.put("queue.upload.permissions.default", "rw-r--r--");
+		defaults.put("queue.upload.preserveDate", "true");
 		defaults.put("queue.download.changePermissions", "false");
 		defaults.put("queue.download.permissions.useDefault", "false");
 		defaults.put("queue.download.permissions.default", "rw-r--r--");

@@ -30,6 +30,7 @@ import com.sshtools.j2ssh.sftp.SftpFile;
 import com.sshtools.j2ssh.sftp.SftpFileInputStream;
 import com.sshtools.j2ssh.sftp.SftpFileOutputStream;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
+import com.sshtools.j2ssh.io.UnsignedInteger32;
 
 import ch.cyberduck.core.*;
 
@@ -420,8 +421,13 @@ public class SFTPPath extends Path {
 						perm = this.getLocal().getPermission();
 					}
 					if(!perm.isUndefined()) {
-						this.changePermissions(perm, false);
+						session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
 					}
+				}
+				if(Preferences.instance().getProperty("queue.upload.preserveDate").equals("true")) {
+					f.getAttributes().setTimes(f.getAttributes().getAccessedTime(),
+											   new UnsignedInteger32(this.getLocal().getTimestamp().getTime()/1000));
+					session.SFTP.setAttributes(f, f.getAttributes());
 				}
 			}
 			if(this.attributes.isDirectory()) {

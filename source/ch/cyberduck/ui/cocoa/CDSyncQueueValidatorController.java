@@ -98,11 +98,9 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
 	protected boolean validateFile(Path p, boolean resume) {
 		if(p.getRemote().exists() && p.getLocal().exists()) {
-			if (!(p.getRemote().attributes.getSize() == p.getLocal().getSize())) {
+			if(!(p.getRemote().attributes.getTimestamp().equals(p.getLocal().getTimestamp()))) {
 				this.prompt(p);
 			}
-			//@todo what about same file sizes and different modification dates;
-			//problem: when uploading files the modification date on the remote site changes.
 		}
 		else {
 			this.prompt(p);

@@ -94,7 +94,7 @@ public class FTPSession extends Session {
 				FTPSession.this.log(reply, Message.TRANSCRIPT);
 			}
 		});
-		this.FTP.setStrictReturnCodes(false);
+		this.FTP.setStrictReturnCodes(true);
 		if(Proxy.isSOCKSProxyEnabled()) {
 			log.info("Using SOCKS Proxy");
 			this.FTP.initSOCKS(Proxy.getSOCKSProxyPort(),

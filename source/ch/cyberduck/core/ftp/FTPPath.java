@@ -531,9 +531,15 @@ public class FTPPath extends Path {
 						}
 					}
 					catch(FTPException e) {
-						log.error(e.getMessage());
-						// catch chmodding exceptions and change the preferences as the server doesn't seem to support CHMOD
-						Preferences.instance().setProperty("queue.upload.changePermissions", "false");
+						log.warn(e.getMessage());
+					}
+				}
+				if(Preferences.instance().getProperty("queue.upload.preserveDate").equals("true")) {
+					try {
+						session.FTP.setmodtime(this.getLocal().getTimestamp(), this.getAbsolute());
+					}
+					catch(FTPException e) {
+						log.warn(e.getMessage());
 					}
 				}
 			}

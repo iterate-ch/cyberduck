@@ -578,16 +578,10 @@ public class FTPControlSocket {
 
 		String replyCode = reply.getReplyCode();
 		if(strictReturnCodes) {
-			if(replyCode.equals(expectedReplyCode))
-				return true;
-			else
-				return false;
+			return replyCode.equals(expectedReplyCode);
 		}
 		else { // non-strict - match first char
-			if(replyCode.charAt(0) == expectedReplyCode.charAt(0))
-				return true;
-			else
-				return false;
+			return replyCode.charAt(0) == expectedReplyCode.charAt(0);
 		}
 	}
 

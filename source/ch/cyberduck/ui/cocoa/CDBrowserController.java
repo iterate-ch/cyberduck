@@ -771,7 +771,7 @@ public class CDBrowserController extends CDController implements Observer {
 		this.bookmarkDrawer.toggle(this);
 		Preferences.instance().setProperty("bookmarkDrawer.isOpen", this.bookmarkDrawer.state() == NSDrawer.OpenState || this.bookmarkDrawer.state() == NSDrawer.OpeningState);
 		if(this.bookmarkDrawer.state() == NSDrawer.OpenState || this.bookmarkDrawer.state() == NSDrawer.OpeningState) {
-			this.window().makeFirstResponder(this.bookmarkDrawer);
+			this.window().makeFirstResponder(this.bookmarkTable);
 		}
 		else {
 			if(this.isMounted()) {
