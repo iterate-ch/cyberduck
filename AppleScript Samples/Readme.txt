@@ -5,7 +5,7 @@ About the Cyberduck AppleScript Examples
 General
 -------
 
-For information about AppleScript in general, see http://www.apple.com/applescript/
+For information about AppleScript in general, see [http://www.apple.com/applescript/].
 
 To view the dictionary of Cyberduck available for scripting drag the Cyberduck application onto the Script Editor (/Applications/AppleScript/Script Editor) or choose 'Open Dictionary...' from the 'File' menu in Script Editor. Click the 'Cyberduck Suite' in the left pane  of the window to see the definitions.
 
@@ -17,23 +17,21 @@ You can copy the sample scripts to ~/Library/Scripts/. Please keep in mind that 
 Samples
 -------
 
-• Upload Sample.scpt
+- Upload Sample.scpt
 
-You have to modify this script with the correct connection settings. See the line where the connection is made:
+You have to modify this script with the correct connection settings. See the line where the connection is made: [connect to "hostname" with protocol "ftp" as user "username" with initial folder "directory"].
+You must attach this script to a folder in the 'Finder' (called 'Folder Action'). Right-click on a directory in the Finder, e.g. 'Upload' on the Desktop, and choose 'Attach Folder Action...'. Select the 'Upload Sample.scpt' script in ~/Library/Scripts/. 
+Every file dropped onto this folder will then be uploaded to the server specified above.
 
-	connect to "hostname" with protocol "ftp" as user "username" with initial folder "directory"
+- Edit Sample.scpt
 
-You can attach this script to a folder in the 'Finder' (called 'Folder Action'). Right-click on a directory in the Finder, e.g. 'Upload' on the Desktop and choose 'Attach Folder Action...'. Select the 'Upload Sample.scpt' script in ~/Library/Scripts/.
+Shows how to check for the existance of a file, create new folders and files and opening a file for editing.
 
-• Edit Sample.scpt
+- List Sample.scpt
 
-Shows how to check for the existance of a file, create new folders and files and finally opening a file for editing.
+Recursively lists a folder content on the server and prompts for each file found to download.
 
-• List Sample.scpt
+- Open URL Sample.scpt
 
-Recursively lists a folder content on the server.
-
-• Open URL Sample.scpt
-
-You can send any FTP or SFTP URL to Cyberduck as does a third party application when Cyberduck is the default protocol handler e.g. for FTP; see http://www.rubicode.com/Software/RCDefaultApp/
+You can send any FTP or SFTP URL to Cyberduck as does a third party application when Cyberduck is the default protocol handler e.g. for FTP; see [http://www.rubicode.com/Software/RCDefaultApp/].
 
