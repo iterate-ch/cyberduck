@@ -63,12 +63,9 @@
 "New Folder" = "New Folder";
 "Create New Folder" = "Create New Folder";
 "Disconnect" = "Disconnect";
-
 "Close session?" = "Close session?";
+"Disconnect from" = "Disconnect from";
 "Close" = "Close";
-
-"Delete" = "Delete";
-"The connection to the host" = "The connection to the host";
-"will be closed." = "will be closed.";
+"The connection will be closed" = "The connection will be closed.";
 
 "Really delete the following files? This cannot be undone." = "Really delete the following files? This cannot be undone.";
