@@ -1,0 +1,23 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                reloadButtonClicked = id; 
+                removeButtonClicked = id; 
+                resumeButtonClicked = id; 
+                revealButtonClicked = id; 
+                stopButtonClicked = id; 
+            }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            CLASS = "ch.cyberduck.core.CDQueueController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {queueTable = NSTableView; window = NSWindow; }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}
