@@ -409,10 +409,10 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 
         this.bookmarkTable.sizeToFit();
 
-//        (NSNotificationCenter.defaultCenter()).addObserver(this,
-//              new NSSelector("bookmarkSelectionDidChange", new Class[]{NSNotification.class}),
-//                NSTableView.TableViewSelectionDidChangeNotification,
-//                this.bookmarkTable);
+        (NSNotificationCenter.defaultCenter()).addObserver(this,
+              new NSSelector("bookmarkSelectionDidChange", new Class[]{NSNotification.class}),
+                NSTableView.TableViewSelectionDidChangeNotification,
+                this.bookmarkTable);
     }
 
     public void bookmarkSelectionDidChange(NSNotification notification) {

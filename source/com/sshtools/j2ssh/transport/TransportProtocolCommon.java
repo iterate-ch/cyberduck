@@ -347,9 +347,8 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 
             if (state.getValue() != TransportProtocolState.DISCONNECTED) {
                 log.error("The Transport Protocol thread failed", e);
-
                 //log.info(e.getMessage());
-                stop();
+                //@todo stop();
             }
         }
         finally {

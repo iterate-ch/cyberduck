@@ -160,13 +160,9 @@ class TransportProtocolInputStream {
                     // We have an interrupted io; inform the event handler
                     read = ex.bytesTransferred;
 
-                    Iterator it = transport.getEventHandlers().iterator();
-
                     TransportProtocolEventHandler eventHandler;
-
-                    while (it.hasNext()) {
+                    for (Iterator it = transport.getEventHandlers().iterator(); it.hasNext(); ) {
                         eventHandler = (TransportProtocolEventHandler)it.next();
-
                         eventHandler.onSocketTimeout(transport);
                     }
                 }
@@ -183,7 +179,8 @@ class TransportProtocolInputStream {
             System.arraycopy(buffered, startpos, buf, off, len);
         }
         catch (Throwable t) {
-            System.out.println();
+			log.error(t.getMessage());
+			t.printStackTrace();
         }
 
         startpos += len;

@@ -29,6 +29,7 @@
                 bookmarkTable = NSTableView; 
                 browserTable = NSTableView; 
                 editBookmarkButton = NSButton; 
+                historyTable = NSTableView; 
                 infoLabel = NSTextField; 
                 logDrawer = NSDrawer; 
                 logView = NSTextView; 

@@ -16,12 +16,17 @@
  *  dkocher@cyberduck.ch
  *  Created by Andreas on Fri Oct 18 2002.
  *  Copyright (c) 2002 Andreas Mayer. All rights reserved.
+ * 
+ *  Includes Type-Ahead functionality from the OmniGroup AppKit Framework
+ *  Copyright 1997-2004 Omni Development, Inc.  All rights reserved.
  */
 
 #import "AMToolTipTableView.h"
 
 @interface AMToolTipTableView (Private)
 - (NSString *)_amKeyForColumn:(int)columnIndex row:(int)rowIndex;
+- (NSTableColumn *)_typeAheadSelectionColumn;
+- (BOOL)_processKeyDownCharacter:(unichar)character;
 @end
 
 @implementation AMToolTipTableView
@@ -52,6 +57,33 @@
 	[regionList removeAllObjects];
 	[self removeAllToolTips];
 	[super reloadData];
+}
+
+- (void)keyDown:(NSEvent *)theEvent;
+{
+    NSString *characters;
+    unichar firstCharacter;
+	
+    characters = [theEvent characters];
+    firstCharacter = [characters characterAtIndex:0];
+	
+	NSTableColumn *typeAheadColumn = [self _typeAheadSelectionColumn];
+	if (typeAheadColumn != nil && ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:firstCharacter] || (![[NSCharacterSet controlCharacterSet] characterIsMember:firstCharacter]))) {
+
+		int rowIndex;
+		for (rowIndex = 0; rowIndex < [[self dataSource] numberOfRowsInTableView: self]; rowIndex++) {
+			NSAttributedString *name = [[self dataSource] tableView:self 
+							   objectValueForTableColumn:typeAheadColumn
+													 row:rowIndex];
+			if ([[[name string] lowercaseString] hasPrefix: characters]) {
+				[self selectRow:rowIndex byExtendingSelection:NO];
+				[self scrollRowToVisible:rowIndex];
+				return;
+			}
+		}
+	}
+	//	[self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
+	[super keyDown:theEvent];
 }
 
 - (NSRect)frameOfCellAtColumn:(int)columnIndex row:(int)rowIndex
@@ -88,6 +120,16 @@
 		}
 	}
 	return nil;
+}
+
+- (NSTableColumn *)_typeAheadSelectionColumn;
+{
+	return [self tableColumnWithIdentifier:@"FILENAME"];
+}
+
+- (BOOL)_processKeyDownCharacter:(unichar)character;
+{
+    return NO;
 }
 
 @end

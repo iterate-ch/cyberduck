@@ -98,7 +98,6 @@ public class Status extends Observable implements Serializable {
      * @param size the size of file in bytes.
      */
     public void setSize(long size) {
-		log.debug("***************************");
 		log.debug("*************************** setSize:"+size);
         this.size = size;
     }

@@ -27,7 +27,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-
 @interface AMToolTipTableView : NSTableView {
 	NSMutableDictionary *regionList;
 }
