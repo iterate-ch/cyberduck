@@ -29,9 +29,7 @@ extern "C" {
 	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_isSOCKSProxyEnabled(JNIEnv *, jobject);
 	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyHost(JNIEnv *, jobject);
 	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyPort(JNIEnv *, jobject);
-	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_isSOCKSAuthenticationEnabled(JNIEnv *, jobject);
 	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyUser(JNIEnv *, jobject);
-	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyPassword(JNIEnv *, jobject);
 #ifdef __cplusplus
 }
 #endif
@@ -46,7 +44,7 @@ extern "C" {
 	
 }
 
-+ (BOOL)usePassiveFTP;
+//+ (BOOL)usePassiveFTP;
 
 + (BOOL)isSOCKSProxyEnabled;
 
@@ -54,10 +52,6 @@ extern "C" {
 
 + (NSNumber *)getSOCKSProxyPort;
 
-+ (BOOL)isSOCKSAuthenticationEnabled;
-
 + (NSString *)getSOCKSProxyUser;
-
-+ (NSString *)getSOCKSProxyPassword;
 
 @end

@@ -325,7 +325,7 @@ public class FTPPath extends Path {
 				this.getLocal().mkdir();
 			}
 			if(Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
-//				this.getLocal().setLastModified(this.attributes.getTimestamp().getTime()); //@todo
+				this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
 			}
 			session.log("Idle", Message.STOP);
 		}

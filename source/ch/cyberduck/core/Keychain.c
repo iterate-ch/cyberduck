@@ -28,41 +28,41 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getInternetPasswordFromKe
     SecProtocolType protocol;
     const char *protocolString = (*env)->GetStringUTFChars(env, jProtocol, JNI_FALSE);
 	memcpy(&protocol, protocolString, 4);
-    const char *service = (*env)->GetStringUTFChars(env, jService, JNI_FALSE);
-    const char *account = (*env)->GetStringUTFChars(env, jAccount, JNI_FALSE);
+    const char *serviceString = (*env)->GetStringUTFChars(env, jService, JNI_FALSE);
+    const char *accountString = (*env)->GetStringUTFChars(env, jAccount, JNI_FALSE);
 	UInt16 port = (UInt16)jPort;
-    char *pass;
+    char *passString;
     UInt32 passLength;
 	
     OSStatus status = SecKeychainFindInternetPassword(NULL, 
-											strlen(service), 
-											service, 
+											strlen(serviceString), 
+											serviceString, 
 											0, 
 											NULL, 
-											strlen(account), 
-											account, 
+											strlen(accountString), 
+											accountString, 
 											0, 
 											NULL, 
 											port, 
 											protocol, 
 											kSecAuthenticationTypeDefault, 
 											&passLength, 
-											(void**)&pass, 
+											(void**)&passString, 
 											NULL);
     
-	(*env)->ReleaseStringUTFChars(env, jService, service);
-	(*env)->ReleaseStringUTFChars(env, jAccount, account);
 	(*env)->ReleaseStringUTFChars(env, jProtocol, protocolString);
+	(*env)->ReleaseStringUTFChars(env, jService, serviceString);
+	(*env)->ReleaseStringUTFChars(env, jAccount, accountString);
 	
 	switch (status) {
 		case noErr:
 			// ...free the memory allocated in call to SecKeychainFindGenericPassword() above
 			SecKeychainItemFreeContent (
 										NULL, //No attribute data to release
-										pass //Release data buffer allocated by SecKeychainFindGenericPassword
+										passString //Release data buffer allocated by SecKeychainFindGenericPassword
 										);
-			pass[passLength] = '\0';
-			return (*env)->NewStringUTF(env, pass);
+			passString[passLength] = '\0';
+			return (*env)->NewStringUTF(env, passString);
 			break;
 		case errSecItemNotFound:
 			syslog(LOG_INFO, "Keychain item not found");
@@ -84,32 +84,32 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(J
 																			   jobject this, 
 																			   jstring jService, 
 																			   jstring jAccount) {
-    const char *service = (*env)->GetStringUTFChars(env, jService, JNI_FALSE);
-    const char *account = (*env)->GetStringUTFChars(env, jAccount, JNI_FALSE);
-    char *pass;
+    const char *serviceString = (*env)->GetStringUTFChars(env, jService, JNI_FALSE);
+    const char *accountString = (*env)->GetStringUTFChars(env, jAccount, JNI_FALSE);
+    char *passString;
     UInt32 passLength;
 
 	OSStatus status = SecKeychainFindGenericPassword(NULL,
-											strlen(service), 
-											service,
-											strlen(account), 
-											account, 
+											strlen(serviceString), 
+											serviceString,
+											strlen(accountString), 
+											accountString, 
 											&passLength,
-											(void **)&pass, 
+											(void **)&passString, 
 											NULL);
 	
-	(*env)->ReleaseStringUTFChars(env, jService, service);
-	(*env)->ReleaseStringUTFChars(env, jAccount, account);
+	(*env)->ReleaseStringUTFChars(env, jService, serviceString);
+	(*env)->ReleaseStringUTFChars(env, jAccount, accountString);
 
 	switch (status) {
 		case noErr:
 			// ...free the memory allocated in call to SecKeychainFindGenericPassword() above
 			SecKeychainItemFreeContent (
 										NULL, //No attribute data to release
-										pass //Release data buffer allocated by SecKeychainFindGenericPassword
+										passString //Release data buffer allocated by SecKeychainFindGenericPassword
 										);
-			pass[passLength] = '\0';
-			return (*env)->NewStringUTF(env, pass);
+			passString[passLength] = '\0';
+			return (*env)->NewStringUTF(env, passString);
 		case errSecItemNotFound:
 			syslog(LOG_INFO, "Keychain item not found");
 			return(NULL);
@@ -138,27 +138,27 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addInternetPasswordToKeychai
     SecProtocolType protocol;
     const char *protocolString = (*env)->GetStringUTFChars(env, jProtocol, JNI_FALSE);
 	memcpy(&protocol, protocolString, 4);
-    const char *service = (*env)->GetStringUTFChars(env, jService, JNI_FALSE);
-    const char *user = (*env)->GetStringUTFChars(env, jUsername, JNI_FALSE);
-    const char *pass = (*env)->GetStringUTFChars(env, jPassword, JNI_FALSE);
+    const char *serviceString = (*env)->GetStringUTFChars(env, jService, JNI_FALSE);
+    const char *accountString = (*env)->GetStringUTFChars(env, jUsername, JNI_FALSE);
+    const char *passString = (*env)->GetStringUTFChars(env, jPassword, JNI_FALSE);
 	UInt16 port = (UInt16)jPort;
 			
 	syslog(LOG_INFO, "Adding password to Keychain");
 	OSStatus status = SecKeychainAddInternetPassword (
 													  NULL, // default keychain
-													  strlen(service), // server name length
-													  service, // server name
+													  strlen(serviceString), // server name length
+													  serviceString, // server name
 													  0,//strlen(domain), // security domain length
 													  NULL,//domain, // security domain
-													  strlen(user), // account name length
-													  user, // account name
+													  strlen(accountString), // account name length
+													  accountString, // account name
 													  0, // path length
 													  NULL, // path
 													  port, // port
 													  protocol,//kSecProtocolTypeFTP, // protocol
 													  kSecAuthenticationTypeDefault, // authentication type
-													  strlen(pass), // password length
-													  pass, // password
+													  strlen(passString), // password length
+													  passString, // password
 													  NULL // item ref
 													  );
 	// if we have a duplicate item error...
@@ -170,12 +170,12 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addInternetPasswordToKeychai
 		
 		// ...get the existing password and a reference to the existing keychain item, then...
 		status = SecKeychainFindInternetPassword(NULL, 
-												 strlen(service), //hostname length
-												 service, //hostname
+												 strlen(serviceString), //hostname length
+												 serviceString, //hostname
 												 0, //security domain length
 												 NULL, //security domain
-												 strlen(user), //username length
-												 user, //username
+												 strlen(accountString), //username length
+												 accountString, //username
 												 0, //path length
 												 NULL, //path
 												 port, // port
@@ -188,8 +188,8 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addInternetPasswordToKeychai
 		syslog(LOG_INFO, "Updating keychain item");
 		status = SecKeychainItemModifyContent (existingItem,
 											   NULL,
-											   strlen(pass),
-											   (const void*)pass
+											   strlen(passString),
+											   (const void*)passString
 											   );
 		// ...free the memory allocated in call to SecKeychainFindGenericPassword() above
 		SecKeychainItemFreeContent(NULL, existingPassword);
@@ -197,9 +197,9 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addInternetPasswordToKeychai
 	}	
 
 	(*env)->ReleaseStringUTFChars(env, jProtocol, protocolString);
-	(*env)->ReleaseStringUTFChars(env, jService, service);
-	(*env)->ReleaseStringUTFChars(env, jUsername, user);
-	(*env)->ReleaseStringUTFChars(env, jPassword, pass);
+	(*env)->ReleaseStringUTFChars(env, jService, serviceString);
+	(*env)->ReleaseStringUTFChars(env, jUsername, accountString);
+	(*env)->ReleaseStringUTFChars(env, jPassword, passString);
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain(JNIEnv *env, 
@@ -208,9 +208,9 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain(JNIEnv
 												   jstring jUsername, 
 												   jstring jPass) {
 
-    const char *service = (*env)->GetStringUTFChars(env, jService, JNI_FALSE);
-    const char *account = (*env)->GetStringUTFChars(env, jUsername, JNI_FALSE);
-    const char *pass = (*env)->GetStringUTFChars(env, jPass, JNI_FALSE);
+    const char *serviceString = (*env)->GetStringUTFChars(env, jService, JNI_FALSE);
+    const char *accountString = (*env)->GetStringUTFChars(env, jUsername, JNI_FALSE);
+    const char *passString = (*env)->GetStringUTFChars(env, jPass, JNI_FALSE);
 
 	// http://sourceforge.net/projects/keychain/
 	// SecKeychainAddGenericPassword() will enter new item into keychain, if item with attributes service and account don't already 
@@ -221,12 +221,12 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain(JNIEnv
 		
 	syslog(LOG_INFO, "Adding password to Keychain");
 	OSStatus status = SecKeychainAddGenericPassword (NULL,
-													 strlen(service), 
-													 service,
-													 strlen(account), 
-													 account, 
-													 strlen(pass),
-													 (const void*)pass,
+													 strlen(serviceString), 
+													 serviceString,
+													 strlen(accountString), 
+													 accountString, 
+													 strlen(passString),
+													 (const void*)passString,
 													 NULL
 													 );
 	
@@ -239,10 +239,10 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain(JNIEnv
 		
 		// ...get the existing password and a reference to the existing keychain item, then...
 		status = SecKeychainFindGenericPassword (NULL,
-												 strlen(service), 
-												 service,
-												 strlen(account), 
-												 account, 
+												 strlen(serviceString), 
+												 serviceString,
+												 strlen(accountString), 
+												 accountString, 
 												 &existingPasswordLength,
 												 (void **)&existingPassword,
 												 &existingItem
@@ -251,15 +251,15 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain(JNIEnv
 		syslog(LOG_INFO, "Updating keychain item");
 		status = SecKeychainItemModifyContent (existingItem,
 											   NULL,
-											   strlen(pass),
-											   (const void*)pass
+											   strlen(passString),
+											   (const void*)passString
 											   );
 		// ...free the memory allocated in call to SecKeychainFindGenericPassword() above
 		SecKeychainItemFreeContent(NULL, existingPassword);
 		CFRelease(existingItem);
 	}
 
-	(*env)->ReleaseStringUTFChars(env, jService, service);
-	(*env)->ReleaseStringUTFChars(env, jUsername, account);
-	(*env)->ReleaseStringUTFChars(env, jPass, pass);
+	(*env)->ReleaseStringUTFChars(env, jService, serviceString);
+	(*env)->ReleaseStringUTFChars(env, jUsername, accountString);
+	(*env)->ReleaseStringUTFChars(env, jPass, passString);
 }

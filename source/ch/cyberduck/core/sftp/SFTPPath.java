@@ -219,17 +219,17 @@ public class SFTPPath extends Path {
 	
 	public synchronized long getSize(boolean force) {
 		if(force) {
-			try {
-				SftpFile f = session.SFTP.openDirectory(this.getAbsolute());
-				this.size = f.getAttributes().getSize().longValue();
-			}
-			catch(SshException e) {
-				session.log("SSH Error: "+e.getMessage(), Message.ERROR);
-			}
-			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
-				session.close();
-			}
+//			try {
+//				SftpFile f = session.SFTP.openDirectory(this.getAbsolute());
+//				this.size = f.getAttributes().getSize().longValue();
+//			}
+//			catch(SshException e) {
+//				session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+//			}
+//			catch(IOException e) {
+//				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+//				session.close();
+//			}
 		}
 		return this.size;
 	}
@@ -349,7 +349,7 @@ public class SFTPPath extends Path {
 				this.getLocal().mkdir();
 			}
 			if(Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
-//				this.getLocal().setLastModified(this.attributes.getTimestamp().getTime()); //@todo
+				this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
 			}
 			session.log("Idle", Message.STOP);
 		}

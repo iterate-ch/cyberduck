@@ -349,9 +349,9 @@ public class FTPClient {
 		*  @param  port  SOCKS proxy port
 		*  @param  host  SOCKS proxy hostname
 		*/
-    public static void initSOCKS(String port, String host) {
+    public static void initSOCKS(int port, String host) {
         Properties props = System.getProperties();
-        props.put(SOCKS_PORT, port);
+        props.put(SOCKS_PORT, ""+port);
         props.put(SOCKS_HOST, host);
         System.setProperties(props);
     }

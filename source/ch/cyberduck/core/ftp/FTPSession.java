@@ -36,7 +36,7 @@ import ch.cyberduck.core.*;
  * @version $Id$
  */
 public class FTPSession extends Session {
-	private static Logger log = Logger.getLogger(Session.class);
+	private static Logger log = Logger.getLogger(FTPSession.class);
 
 	static {
 		SessionFactory.addFactory(Session.FTP, new Factory());
@@ -95,13 +95,15 @@ public class FTPSession extends Session {
 			}
 		});
 		this.FTP.setStrictReturnCodes(false);
-		if(Preferences.instance().getProperty("connection.proxy.useProxy").equals("true")) {
-			this.FTP.initSOCKS(Preferences.instance().getProperty("connection.proxy.host"),
-			    Preferences.instance().getProperty("connection.proxy.port"));
-//			if(Preferences.instance().getProperty("connection.proxy.useAuthentication").equals("true")) {
-//				this.FTP.initSOCKSAuthentication(Preferences.instance().getProperty("connection.proxy.username"),
-//										Preferences.instance().getProperty("connection.proxy.password"));
-//			}
+		if(Proxy.isSOCKSProxyEnabled()) {
+			log.info("Using SOCKS Proxy");
+			this.FTP.initSOCKS(Proxy.getSOCKSProxyPort(),
+							   Proxy.getSOCKSProxyHost());
+			if(Proxy.isSOCKSAuthenticationEnabled()) {
+				log.info("Using SOCKS Proxy Authentication");
+				this.FTP.initSOCKSAuthentication(Proxy.getSOCKSProxyUser(),
+												 Proxy.getSOCKSProxyPassword());
+			}
 		}
 		if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
 			this.FTP.setConnectMode(FTPConnectMode.ACTIVE);

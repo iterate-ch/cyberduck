@@ -38,7 +38,7 @@ import ch.cyberduck.core.*;
  * @version $Id$
  */
 public class SFTPSession extends Session {
-	private static Logger log = Logger.getLogger(Session.class);
+	private static Logger log = Logger.getLogger(SFTPSession.class);
 
 	static {
 		SessionFactory.addFactory(Session.SFTP, new Factory());
@@ -119,16 +119,17 @@ public class SFTPSession extends Session {
 		// Set the zlib compression
 		properties.setPrefSCComp(Preferences.instance().getProperty("ssh.compression"));
 		properties.setPrefCSComp(Preferences.instance().getProperty("ssh.compression"));
-		if(Preferences.instance().getProperty("connection.proxy.useProxy").equals("true")) {
+		if(Proxy.isSOCKSProxyEnabled()) {
+			log.info("Using SOCKS Proxy");
 			properties.setTransportProvider(SshConnectionProperties.USE_SOCKS5_PROXY); //todo V4?
-			properties.setProxyHost(Preferences.instance().getProperty("connection.proxy.host"));
-			properties.setProxyPort(Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
-//			if(Preferences.instance().getProperty("connection.proxy.useAuthentication").equals("true")) {
-//				properties.setProxyUsername(Preferences.instance().getProperty("connection.proxy.username"));
-//				properties.setProxyPassword(Preferences.instance().getProperty("connection.proxy.password"));
-//			}
+			properties.setProxyHost(Proxy.getSOCKSProxyHost());
+			properties.setProxyPort(Proxy.getSOCKSProxyPort());
+			if(Proxy.isSOCKSAuthenticationEnabled()) {
+				properties.setProxyUsername(Proxy.getSOCKSProxyUser());
+				properties.setProxyPassword(Proxy.getSOCKSProxyPassword());
+			}
 		}
-
+		
 		SSH.connect(properties, host.getHostKeyVerificationController());
 		if(SSH.isConnected()) {
 			this.log("SSH connection opened", Message.PROGRESS);

@@ -170,7 +170,7 @@ public class CDProgressController extends NSObject implements Observer {
 			+" "+NSBundle.localizedString("of", "")+" "+this.queue.getSizeAsString()+"  "+this.statusText;
 		}
 		return "("+NSBundle.localizedString("Unknown size", "")+")  "+this.statusText;
-	}	
+	}
 	
 	private String getErrorText() {
 		return this.errorText.toString();

@@ -506,7 +506,6 @@ public class CDMainController extends NSObject {
 	}
 
 	public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
-		log.info("applicationShouldHandleReopen");
 		return true;
 	}
 

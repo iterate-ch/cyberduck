@@ -37,78 +37,58 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_isSOCKSProxyEnabled(JNIE
 JNIEXPORT jint JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyPort(JNIEnv *env, 
 																	  jobject this)
 {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSNumber *port = [Proxy getSOCKSProxyPort];
+	[pool release];
 	return [port intValue];
-//	return convertToJString(env, port);
 }
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyHost(JNIEnv *env, 
 																		 jobject this)
 {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString * host = [Proxy getSOCKSProxyHost];
+	[pool release];
 	return convertToJString(env, host);
-}
-
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_isSOCKSAuthenticationEnabled(JNIEnv *env, 
-																					 jobject this) {
-	return [Proxy isSOCKSAuthenticationEnabled];
 }
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyUser(JNIEnv *env, 
 																		 jobject this) {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *user = [Proxy getSOCKSProxyUser];
+	[pool release];
 	return convertToJString(env, user);
-}
-
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyPassword(JNIEnv *env, 
-																			 jobject this) {
-	NSString *pass = [Proxy getSOCKSProxyPassword];
-	return convertToJString(env, pass);
 }
 
 @implementation Proxy
 
-+ (BOOL)usePassiveFTP
-{
-	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	//	[proxies writeToFile:@"proxyDict.dict" atomically:false];
-	return [[proxies objectForKey:(NSString *)kSCPropNetProxiesFTPPassive] boolValue];
-}
+//+ (BOOL)usePassiveFTP
+//{
+//	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
+//	return [[proxies objectForKey:(NSString *)kSCPropNetProxiesFTPPassive] boolValue];
+//}
 
 + (BOOL)isSOCKSProxyEnabled
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	//	[proxies writeToFile:@"proxyDict.dict" atomically:false];
 	return [[proxies objectForKey:(NSString *)kSCPropNetProxiesSOCKSEnable] boolValue];
 }
 
 + (NSString *)getSOCKSProxyHost
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	//	[proxies writeToFile:@"proxyDict.dict" atomically:false];
 	return [proxies objectForKey:(NSString *)kSCPropNetProxiesSOCKSProxy];
 }
 
 + (NSNumber *)getSOCKSProxyPort
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	//	[proxies writeToFile:@"proxyDict.dict" atomically:false];
 	return [proxies objectForKey:(NSNumber *)kSCPropNetProxiesSOCKSPort];
-}
-
-+ (BOOL)isSOCKSAuthenticationEnabled
-{
-	return false; //@todo
 }
 
 + (NSString *)getSOCKSProxyUser
 {
-	return nil; //@todo
-}
-
-+ (NSString *)getSOCKSProxyPassword
-{
-	return nil; //@todo
+	return nil;
 }
 
 @end

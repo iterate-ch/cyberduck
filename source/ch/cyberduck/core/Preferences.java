@@ -158,13 +158,7 @@ public abstract class Preferences {
 		defaults.put("connection.buffer.default", "16384");
 		defaults.put("connection.port.default", "21");
 		defaults.put("connection.protocol.default", "ftp");
-		defaults.put("connection.proxy.useProxy", Proxy.isSOCKSProxyEnabled() ? "true" : "false");
-		defaults.put("connection.proxy.host", Proxy.getSOCKSProxyHost());
-		defaults.put("connection.proxy.port", ""+Proxy.getSOCKSProxyPort());
-		defaults.put("connection.proxy.useAuthentication", Proxy.isSOCKSAuthenticationEnabled() ? "true" : "false");
-		defaults.put("connection.proxy.username", Proxy.getSOCKSProxyUser());
-		defaults.put("connection.proxy.password", Proxy.getSOCKSProxyPassword());
-
+		
 		defaults.put("http.agent", "Cyberduck/"+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		defaults.put("http.acceptheader", "*/*");
 
