@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.LoginController;
 
+import com.apple.cocoa.foundation.NSBundle;
 import org.apache.log4j.Logger;
 
 public class Login {
@@ -27,7 +28,10 @@ public class Login {
 
 	static {
         // Ensure native keychain library is loaded
-        System.loadLibrary("Keychain");
+//        System.loadLibrary("Keychain");
+		NSBundle bundle = NSBundle.mainBundle();
+		String lib = bundle.resourcePath()+"/Java/"+"libKeychain.jnilib";
+		System.load(lib);
     }
 	
 	//char *getpwdfromkeychain( const char *service, const char *account, OSStatus *error );

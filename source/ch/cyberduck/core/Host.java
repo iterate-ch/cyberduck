@@ -40,6 +40,38 @@ public class Host {
 	private transient HostKeyVerification hostKeyVerification;
 	private transient Login login;
 
+	public static final String HOSTNAME = "Hostname";
+	public static final String NICKNAME = "Nickname";
+	public static final String PORT = "Port";
+	public static final String PROTOCOL = "Protocol";
+	public static final String USERNAME = "Username";
+	public static final String PATH = "Path";
+	public static final String KEYFILE = "Private Key File";
+	
+	public Host(NSDictionary dict) {
+		this((String)dict.objectForKey(Host.PROTOCOL),
+			 (String)dict.objectForKey(Host.HOSTNAME),
+			 Integer.parseInt((String)dict.objectForKey(Host.PORT)),
+			 new Login((String)dict.objectForKey(Host.HOSTNAME), (String)dict.objectForKey(Host.USERNAME)),
+			 (String)dict.objectForKey(Host.PATH),
+			 (String)dict.objectForKey(Host.NICKNAME)
+			 );
+		this.getLogin().setPrivateKeyFile((String)dict.objectForKey(Host.KEYFILE));
+	}
+	
+	public NSDictionary getAsDictionary() {
+		NSMutableDictionary dict = new NSMutableDictionary();
+		dict.setObjectForKey(this.getProtocol(), Host.PROTOCOL);
+		dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
+		dict.setObjectForKey(this.getHostname(), Host.HOSTNAME);
+		dict.setObjectForKey(this.getPort() + "", Host.PORT);
+		dict.setObjectForKey(this.getLogin().getUsername(), Host.USERNAME);
+		dict.setObjectForKey(this.getDefaultPath(), Host.PATH);
+		if (this.getLogin().getPrivateKeyFile() != null)
+			dict.setObjectForKey(this.getLogin().getPrivateKeyFile(), Host.KEYFILE);
+		return dict;
+	}
+		
 	/**
 	 * For internal use only.
 	 * @deprecated
@@ -64,14 +96,32 @@ public class Host {
 		log.debug(this.toString());
 	}
 
+	/**
+		* New host with the default protocol and port
+		* @param hostname The hostname of the server
+	 * @param  login The login credentials to use
+	 */
 	public Host(String hostname, Login login) {
 		this(Preferences.instance().getProperty("connection.protocol.default"), hostname, Integer.parseInt(Preferences.instance().getProperty("connection.port.default")), login);
 	}
 
+	/**
+		* New host with the default protocol for this port
+		* @param hostname The hostname of the server
+	 * @param  login The login credentials to use
+	 */
 	public Host(String hostname, int port, Login login) {
 		this(getDefaultProtocol(port), hostname, port, login);
 	}
 
+//	public Host(String protocol, String hostname, int port, String path, String nickname)
+
+	/**
+		* @param protocol The protocol to use, must be either Session.HTTP, Session.FTP or Session.SFTP
+	 * @param hostname The hostname of the server
+	 * @param port The port number to connect to
+	 * @param  login The login credentials to use
+	 */
 	public Host(String protocol, String hostname, int port, Login login) {
 		this(protocol, hostname, port, login, "", null);
 	}
@@ -97,8 +147,7 @@ public class Host {
 	// ----------------------------------------------------------
 
 	public Session createSession() {
-		//		if(null == this.session) {
-		//			log.debug("Session is null! Constructing new one.");
+		log.debug("createSession");
 		if (this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
 			return new HTTPSession(this);
 		}
@@ -114,8 +163,6 @@ public class Host {
 		else {
 			throw new IllegalArgumentException("Unknown protocol");
 		}
-		//		}
-		//		return this.session;
 	}
 
 	public void setDefaultPath(String defaultpath) {
@@ -242,38 +289,6 @@ public class Host {
 
 	public String toString() {
 		return this.getURL();
-	}
-
-	public static final String HOSTNAME = "Hostname";
-	public static final String NICKNAME = "Nickname";
-	public static final String PORT = "Port";
-	public static final String PROTOCOL = "Protocol";
-	public static final String USERNAME = "Username";
-	public static final String PATH = "Path";
-	public static final String KEYFILE = "Private Key File";
-
-	public Host(NSDictionary dict) {
-		this((String) dict.objectForKey(Host.PROTOCOL),
-		    (String) dict.objectForKey(Host.HOSTNAME),
-		    Integer.parseInt((String) dict.objectForKey(Host.PORT)),
-		    new Login((String) dict.objectForKey(Host.HOSTNAME), (String) dict.objectForKey(Host.USERNAME)),
-		    (String) dict.objectForKey(Host.PATH),
-		    (String) dict.objectForKey(Host.NICKNAME)
-		);
-		this.getLogin().setPrivateKeyFile((String) dict.objectForKey(Host.KEYFILE));
-	}
-
-	public NSDictionary getAsDictionary() {
-		NSMutableDictionary dict = new NSMutableDictionary();
-		dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
-		dict.setObjectForKey(this.getHostname(), Host.HOSTNAME);
-		dict.setObjectForKey(this.getPort() + "", Host.PORT);
-		dict.setObjectForKey(this.getProtocol(), Host.PROTOCOL);
-		dict.setObjectForKey(this.getLogin().getUsername(), Host.USERNAME);
-		dict.setObjectForKey(this.getDefaultPath(), Host.PATH);
-		if (this.getLogin().getPrivateKeyFile() != null)
-			dict.setObjectForKey(this.getLogin().getPrivateKeyFile(), Host.KEYFILE);
-		return dict;
 	}
 
 	/**

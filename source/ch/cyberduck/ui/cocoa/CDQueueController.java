@@ -36,6 +36,11 @@ public class CDQueueController implements Observer, Validator {
 
 	private static CDQueueController instance;
 
+	/**
+		* The observer to notify when a upload is complete
+	 */
+	private Observer callback;
+
 	private NSToolbar toolbar;
 
 	public static CDQueueController instance() {
@@ -120,12 +125,12 @@ public class CDQueueController implements Observer, Validator {
 		this.queueTable.setAllowsEmptySelection(true);
 		this.queueTable.setAllowsColumnReordering(false);
 	}
-
-/*@todo	public void addItem(Queue queue, boolean start, Observer callback) {
+	
+	public void addItem(Queue queue, boolean start, Observer callback) {
 		this.addItem(queue, start);
 		this.callback = callback;
 	}
-*/
+
 	public void addItem(Queue queue, boolean start) {
 		this.window().makeKeyAndOrderFront(null);
 		CDQueuesImpl.instance().addItem(queue);
@@ -185,9 +190,8 @@ public class CDQueueController implements Observer, Validator {
 				this.toolbar.validateVisibleItems();
 				Queue queue = (Queue)observable;
 				if (Queue.KIND_UPLOAD == queue.kind()) {
-/*@todo				if(callback != null) {
-					callback.update(observable, queue.getRoot()); 
-					*/
+					if(callback != null)
+						callback.update(observable, queue.getRoot()); 
 				}
 			}
 			else if (msg.getTitle().equals(Message.START)) {

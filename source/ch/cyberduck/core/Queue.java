@@ -117,32 +117,34 @@ public class Queue extends Observable implements Observer { //Thread {
 	}
 
 	public Queue(NSDictionary dict) {
-		log.debug("Queue");
-
-		Host host = new Host((NSDictionary) dict.objectForKey("Host"));
-		NSArray elements = (NSArray) dict.objectForKey("Roots");
+		Host host = new Host((NSDictionary)dict.objectForKey("Host"));
+		NSArray elements = (NSArray)dict.objectForKey("Roots");
+		log.debug("-");
 		for (int i = 0; i < elements.count(); i++) {
-			//@@todo Path Factory Pattern
+			log.debug("--");
+			//@todo Path Factory Pattern
 			if (host.getProtocol().equalsIgnoreCase(Session.HTTP)) {
-				this.root = new HTTPPath((HTTPSession) host.createSession(), (NSDictionary) elements.objectAtIndex(i));
+				this.root = new HTTPPath((HTTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
 			}
 			//  if(host.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
 			//			this.root = new HTTPSPath((HTTPSSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
 			//        }
 			else if (host.getProtocol().equalsIgnoreCase(Session.FTP)) {
-				this.root = new FTPPath((FTPSession) host.createSession(), (NSDictionary) elements.objectAtIndex(i));
+				NSDictionary o = (NSDictionary)elements.objectAtIndex(i);
+				log.debug("---"+o);
+				this.root = new FTPPath((FTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
 			}
 			else if (host.getProtocol().equalsIgnoreCase(Session.SFTP)) {
-				this.root = new SFTPPath((SFTPSession) host.createSession(), (NSDictionary) elements.objectAtIndex(i));
+				this.root = new SFTPPath((SFTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
 			}
 			else {
 				log.error("Unknown protocol");
 			}
 		}
-		this.kind = Integer.parseInt((String) dict.objectForKey("Kind"));
-		this.status = (String) dict.objectForKey("Status");
-		this.size = Integer.parseInt((String) dict.objectForKey("Size"));
-		this.current = Integer.parseInt((String) dict.objectForKey("Current"));
+		this.kind = Integer.parseInt((String)dict.objectForKey("Kind"));
+		this.status = (String)dict.objectForKey("Status");
+		this.size = Integer.parseInt((String)dict.objectForKey("Size"));
+		this.current = Integer.parseInt((String)dict.objectForKey("Current"));
 		this.init();
 	}
 

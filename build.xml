@@ -86,7 +86,6 @@
 		</copy>
 		<copy todir="${app.jar}">
 			<fileset dir="${build}">
-				<include name="*.dylib"/>
 				<include name="*.jnilib"/>
 			</fileset>
 		</copy>
@@ -139,8 +138,14 @@
 			update="yes"
 			manifest="${build}/MANIFEST.MF">
 			<fileset dir="${classes}">
+				<include name="**/*.jnilib"/>
 				<include name="ch/cyberduck/core/**/*.class"/>
 			</fileset>
+			<!--
+			<fileset dir="${build}">
+				<include name="*.jnilib"/>
+			</fileset>
+			-->
 		</jar>
 		<jar jarfile="${build}/ftp.jar"
 			update="yes"

@@ -160,12 +160,12 @@ public class FTPSession extends Session {
 		if (null == this.FTP || !this.FTP.isAlive()) {
 			this.setConnected(false);
 			this.connect();
-			while (true) {
-				if (this.isConnected())
-					return;
-				this.log("Waiting for connection...", Message.PROGRESS);
-				Thread.yield();
-			}
+//			while (true) {
+//				if (this.isConnected())
+//					return;
+//				this.log(bundle.getString("Waiting for connection..."), Message.PROGRESS);
+//				Thread.yield();
+//			}
 		}
 	}
 

@@ -45,6 +45,21 @@ public abstract class Path {
 
 	public static final String HOME = "~";
 
+	public Path(NSDictionary dict) {
+		log.debug("Path");
+		this.setPath((String)dict.objectForKey("Remote"));
+		this.setLocal(new Local((String)dict.objectForKey("Local")));
+		//this.setStatus(new Status((NSDictionary)dict.objectForKey("Status")));
+	}
+	
+	public NSDictionary getAsDictionary() {
+		NSMutableDictionary dict = new NSMutableDictionary();
+		dict.setObjectForKey(this.getAbsolute(), "Remote");
+		dict.setObjectForKey(this.getLocal().toString(), "Local");
+		//dict.setObjectForkey(this.status.getAsDictionary(), "Status");
+		return dict;
+	}
+	
 	/**
 	 * A remote path where nothing is known about a local equivalent.
 	 * @param path the absolute directory
@@ -59,6 +74,7 @@ public abstract class Path {
 	 * @param path The absolute path of the remote file
 	 */
 	public Path(String path) {
+		log.debug("Path");
 		this.setPath(path);
 	}
 
@@ -444,19 +460,6 @@ public abstract class Path {
 			return this.getName().equals(local.getName()) && this.attributes.getModified().equals(local.getModified());
 		}
 		return false;
-	}
-
-	public Path(NSDictionary dict) {
-		this((String) dict.objectForKey("Remote"));
-		this.setLocal(new Local((String) dict.objectForKey("Local")));
-		//this.setStatus(new Status((NSDictionary)dict.objectForKey("Status")));
-	}
-
-	public NSDictionary getAsDictionary() {
-		NSMutableDictionary dict = new NSMutableDictionary();
-		dict.setObjectForKey(this.getAbsolute(), "Remote");
-		dict.setObjectForKey(this.getLocal().toString(), "Local");
-		return dict;
 	}
 
 	public String toString() {

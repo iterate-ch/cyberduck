@@ -69,9 +69,7 @@ public class FTPPath extends Path {
 
 	public Path copy(Session s) {
 		FTPPath copy = new FTPPath((FTPSession) s, this.getAbsolute());
-//		FTPPath copy = new FTPPath((FTPSession)s, this.getParent().getAbsolute(), this.getLocal());
 		copy.attributes = this.attributes;
-		//	copy.status = this.status;
 		return copy;
 	}
 

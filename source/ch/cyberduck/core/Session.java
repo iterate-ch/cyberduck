@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  */
 
 import java.io.IOException;
+import java.util.ResourceBundle;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -34,6 +36,8 @@ public abstract class Session extends Observable {
 	public static final String HTTPS = "https";
 	public static final String FTP = "ftp";
 	public static final String SFTP = "sftp";
+	
+//	protected ResourceBundle bundle = ResourceBundle.getBundle("core", Locale.getDefault());
 
 	/**
 	 * Default port for http

@@ -143,12 +143,12 @@ public class CDLoginController implements LoginController {
 		Login login = (Login)context;
 		switch (returncode) {
 			case (NSAlertPanel.DefaultReturn):
+				this.tryAgain = true;
 				login.setUsername(userField.stringValue());
 				login.setPassword(passField.stringValue());
 				if(keychainCheckbox.state() == NSCell.OnState) {
 					login.addPasswordToKeychain();
 				}
-					this.tryAgain = true;
 				break;
 			case (NSAlertPanel.AlternateReturn):
 				this.tryAgain = false;

@@ -102,7 +102,7 @@ public class CDQueueCell extends CDTableCell {
 										);
 		NSGraphics.drawAttributedString(
 										new NSAttributedString(
-															   NSBundle.localizedString(queue.getStatus(), "Progress.strings", ""),
+															   queue.getStatus(),
 															   tinyFont),
 										new NSRect(cellPoint.x() + BORDER + SPACE,
 												   cellPoint.y() + 33,

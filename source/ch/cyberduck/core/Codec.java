@@ -37,7 +37,8 @@ public class Codec {
 		String encoded = text;
 		try {
 //			log.info("Assuminging remote encoding:"+encoding);
-			encoded = new String(text.getBytes(), encoding).toString();
+//		 String roundTrip = new String(text.getBytes("UTF-8"), "UTF-8");
+			encoded = new String(text.getBytes(), encoding);
 		}
 		catch (java.io.UnsupportedEncodingException e) {
 			log.error(e.getMessage());
@@ -48,6 +49,25 @@ public class Codec {
 	}
 
 	public static String decode(String text) {
+		//@todo
 		return text;
 	}
+	
+	
+	/*
+	 try {
+		 byte[] utf8Bytes = original.getBytes("UTF8");
+		 byte[] defaultBytes = original.getBytes();
+		 
+		 String roundTrip = new String(utf8Bytes, "UTF8");
+		 System.out.println("roundTrip = " + roundTrip);
+		 
+		 System.out.println();
+		 printBytes(utf8Bytes, "utf8Bytes");
+		 System.out.println();
+		 printBytes(defaultBytes, "defaultBytes");
+	 } catch (UnsupportedEncodingException e) {
+		 e.printStackTrace();
+	 }
+	 */
 }

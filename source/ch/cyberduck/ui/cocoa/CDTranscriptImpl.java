@@ -21,7 +21,9 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Transcript;
 import ch.cyberduck.core.Transcripter;
 
+import com.apple.cocoa.application.NSClipView;
 import com.apple.cocoa.application.NSTextView;
+import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRange;
 
 import org.apache.log4j.Logger;
@@ -50,15 +52,6 @@ public class CDTranscriptImpl implements Transcripter {
 		Transcript.instance().addListener(this);
 	}
 
-	/*
-	 public void log (String msg) {
-		 log.replaceCharactersInRange(new NSRange(log.string().length(), 0), msg+"\n");
-		 NSClipView clip = (NSClipView)log.superview();
-		 NSRect l = log.bounds();
-		 clip.scrollToPoint(clip.constrainScrollPoint(new NSPoint(0f, l.height()+100f)));
-	 }	  
-*/	//@todo scroll to transcript
-
 	public void transcript(String message) {
 		//	log.debug("transcript:"+message);
 		/**
@@ -69,6 +62,10 @@ public class CDTranscriptImpl implements Transcripter {
 		 */
 		NSRange range = new NSRange(textView.string().length(), 0);
 		this.textView.replaceCharactersInRange(range, message + "\n");
+		//@todo scroll to transcript
+		NSClipView clip = (NSClipView)this.textView.superview();
+		clip.scrollToPoint(clip.constrainScrollPoint(new NSPoint(0f, this.textView.bounds().height()+100f)));
+		
 		//	this.textView.scrollRangeToVisible(range);
 		//	this.textView.scrollRangeToVisible(new NSRange(textView.string().length(), message.length()-1));
 

@@ -225,12 +225,12 @@ public class SFTPSession extends Session {
 			this.setConnected(false);
 			this.close();
 			this.connect();
-			while (true) {
-				if (this.isConnected())
-					return;
-				this.log("Waiting for connection...", Message.PROGRESS);
-				Thread.yield();
-			}
+//			while (true) {
+//				if (this.isConnected())
+//					return;
+//				this.log("Waiting for connection...", Message.PROGRESS);
+//				Thread.yield();
+//			}
 		}
 	}
 

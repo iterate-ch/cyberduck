@@ -174,9 +174,8 @@ public class CDBrowserController implements Observer {
 				if (this.isMounted()) {
 					while (enum.hasMoreElements()) {
 						Session session = browserModel.workdir().getSession().copy();
-						CDQueueController.instance().addItem(new Queue(
-						    ((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session),
-						    Queue.KIND_DOWNLOAD), true);
+						CDQueueController.instance().addItem(new Queue(((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session),	Queue.KIND_DOWNLOAD), 
+															 true);
 					}
 				}
 			}
@@ -572,11 +571,11 @@ public class CDBrowserController implements Observer {
 					);
 					this.progressIndicator.stopAnimation(this);
 					this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
-					this.statusLabel.setObjectValue(NSBundle.localizedString((String)msg.getContent(), "Progress.strings", ""));
+					this.statusLabel.setObjectValue(msg.getContent());
 				}
 				// update status label
 				else if (msg.getTitle().equals(Message.PROGRESS)) {
-					this.statusLabel.setObjectValue(NSBundle.localizedString((String)msg.getContent(), "Progress.strings", ""));
+					this.statusLabel.setObjectValue(msg.getContent());
 					this.statusLabel.display();
 				}
 				else if (msg.getTitle().equals(Message.TRANSCRIPT)) {
@@ -729,8 +728,7 @@ public class CDBrowserController implements Observer {
 	public void uploadPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
 		sheet.orderOut(null);
 		switch (returnCode) {
-			case (NSPanel.OKButton):
-				{
+			case NSPanel.OKButton:
 					Path parent = browserModel.workdir();
 					// selected files on the local filesystem
 					NSArray selected = sheet.filenames();
@@ -740,14 +738,11 @@ public class CDBrowserController implements Observer {
 						Path item = parent.copy(session);
 						item.setPath(parent.getAbsolute(), new Local((String) enumerator.nextElement()));
 						CDQueueController.instance().addItem(new Queue(item,
-						    Queue.KIND_UPLOAD), true);
+						    Queue.KIND_UPLOAD), true, (Observer)this);
 					}
 					break;
-				}
-			case (NSPanel.CancelButton):
-				{
+			case NSPanel.CancelButton:
 					break;
-				}
 		}
 	}
 

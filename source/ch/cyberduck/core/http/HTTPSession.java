@@ -88,12 +88,12 @@ public class HTTPSession extends Session {
 		if (null == HTTP || !HTTP.isAlive()) {
 			this.setConnected(false);
 			this.connect();
-			while (true) {
-				if (this.isConnected())
-					return;
-				this.log("Waiting for connection...", Message.PROGRESS);
-				Thread.yield();
-			}
+//			while (true) {
+//				if (this.isConnected())
+//					return;
+//				this.log("Waiting for connection...", Message.PROGRESS);
+//				Thread.yield();
+//			}
 		}
 	}
 
