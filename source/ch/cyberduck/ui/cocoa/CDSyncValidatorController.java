@@ -59,6 +59,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 			log.debug("> add");
 			this.workset.add(p);
 		}
+		this.reloadData();
 	}
 
 	public void downloadCellClicked(Object sender) {
@@ -70,6 +71,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 				this.workset.add(p);
 			}
 		}
+		this.reloadData();
 	}
 
 	public void uploadCellClicked(Object sender) {
@@ -81,6 +83,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 				this.workset.add(p);
 			}
 		}
+		this.reloadData();
 	}
 	
 	// ----------------------------------------------------------
@@ -176,6 +179,12 @@ public class CDSyncValidatorController extends CDValidatorController {
 		this.statusIndicator.startAnimation(null);
 		this.prompt(null);
 		this.candidates = super.validate(q);
+		if(this.mirrorRadioCell.state() == NSCell.OnState)
+			this.mirrorCellClicked(null);
+		if(this.downloadRadioCell.state() == NSCell.OnState)
+			this.downloadCellClicked(null);
+		if(this.uploadRadioCell.state() == NSCell.OnState)
+			this.uploadCellClicked(null);
 		this.reloadData();
 		this.statusIndicator.stopAnimation(null);
 		this.syncButton.setEnabled(true);

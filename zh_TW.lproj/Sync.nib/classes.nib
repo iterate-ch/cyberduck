@@ -10,10 +10,10 @@
                 fileTableView = NSTableView; 
                 localField = NSTextField; 
                 localTimestampField = NSTextField; 
+                mirrorRadioCell = NSButtonCell; 
                 remoteTimestampField = NSTextField; 
                 statusIndicator = NSProgressIndicator; 
                 syncButton = NSButton; 
-                syncRadioCell = NSButtonCell; 
                 uploadRadioCell = NSButtonCell; 
                 urlField = NSTextField; 
                 window = NSWindow; 

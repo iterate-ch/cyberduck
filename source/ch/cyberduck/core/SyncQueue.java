@@ -44,6 +44,7 @@ public class SyncQueue extends Queue {
     }
 	
 	protected List getChilds(List list, Path p) {
+		log.debug("getChilds:"+list+","+p);
 		if(p.remote.exists()) {
 			if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
 				for (Iterator i = p.list(false, true).iterator(); i.hasNext();) {
@@ -58,7 +59,7 @@ public class SyncQueue extends Queue {
 			}
 		}
 		if(p.local.exists()) {
-			if (p.local.isDirectory()) {
+			if(p.local.isDirectory()) {
 				p.attributes.setType(Path.DIRECTORY_TYPE);
 				p.status.setSize(0);
 				File[] files = p.getLocal().listFiles();
@@ -67,10 +68,11 @@ public class SyncQueue extends Queue {
 					// users complaining about .DS_Store files getting uploaded. It should be apple fixing their crappy file system, but whatever.
 					if (!child.getName().equals(".DS_Store")) {
 						this.getChilds(list, child);
+						//@todo this causes a file not found on the remote server because the parent directory doesn't exist
 					}
 				}
 			}
-			else if (p.local.isFile()) {
+			else if(p.local.isFile()) {
 				p.attributes.setType(Path.FILE_TYPE);
 				p.status.setSize(p.getLocal().length()); //setting the file size to the known size of the local file
 				list.add(p);

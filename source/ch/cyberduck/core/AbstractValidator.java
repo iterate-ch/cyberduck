@@ -40,6 +40,7 @@ public abstract class AbstractValidator implements Validator {
     private boolean isCanceled = false;
 	
 	public boolean isCanceled() {
+		log.debug("isCanceled"+isCanceled);
 		return this.isCanceled;
 	}
 	
@@ -55,14 +56,16 @@ public abstract class AbstractValidator implements Validator {
 		List l = new ArrayList();
 		for (Iterator i = q.getRoots().iterator(); i.hasNext(); ) {
 			Path p = (Path)i.next();
-			log.debug("Iterating over childs of " + p);
-			List tree = q.getChilds(new ArrayList(), p);
-			for(Iterator childs = tree.iterator(); childs.hasNext();) {
-				Path child = (Path)childs.next();
-				log.debug("Validating " + child.toString());
-				if (this.validate(child)) {
-					child.status.reset();
-					l.add(child);
+			if(p.exists()) {
+				log.debug("Iterating over childs of " + p);
+				List tree = q.getChilds(new ArrayList(), p);
+				for(Iterator childs = tree.iterator(); childs.hasNext();) {
+					Path child = (Path)childs.next();
+					log.debug("Validating " + child.toString());
+					if (this.validate(child)) {
+						child.status.reset();
+						l.add(child);
+					}
 				}
 			}
 		}
