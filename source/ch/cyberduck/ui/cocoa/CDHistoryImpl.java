@@ -35,9 +35,9 @@ public class CDHistoryImpl extends History {
     private static String FILE = NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History.data");
 
     public void save() {
-	log.debug("Saving history to "+FILE);
+	log.info("Saving history to "+FILE);
 	boolean success = NSArchiver.archiveRootObjectToFile(data, FILE);
-	log.debug("Success archiving history:"+success);
+	log.info("Success archiving history:"+success);
 //	NSUserDefaults.standardUserDefaults().setObjectForKey(this.getData(), KEY);
 	//2003-05-23 21:59:33.202 Cyberduck[11903] *** -[NSUserDefaults setObject:forKey:]: Attempt to insert non-property value '[]' of class 'java/util/ArrayList'.
 

@@ -101,21 +101,6 @@ public abstract class Path {// extends Observable {
      */
     public abstract Path getParent();
 
-
-//    public Path getPreviousPath() {
-//        Cyberduck.DEBUG("Content of path history:"+pathHistory.toString());
-//        int size = pathHistory.size();
-//        if((size != -1) && (size > 1)) {
-//            Path p = (Path)pathHistory.get(size-2);
-//            //delete the fetched path - otherwise we produce a loop
-//            pathHistory.remove(size-1);
-//            pathHistory.remove(size-2);
-//            return p;
-//        }
-//        return this.getCurrentPath();
-//    }
-    
-
     /**
 	* @return My directory listing
      */

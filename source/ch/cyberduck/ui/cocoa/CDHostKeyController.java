@@ -48,7 +48,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
     
 
     public void onDeniedHost(String hostname) {
-	log.debug("onDeniedHost");
+	log.info("onDeniedHost");
 	NSAlertPanel.beginCriticalAlertSheet(
 					   "Access denied", //title
 					   "OK",// defaultbutton
@@ -79,7 +79,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
     }
 
     public void onHostKeyMismatch(String host, String fingerprint, String actualHostKey) {
-	log.debug("onHostKeyMismatch");
+	log.info("onHostKeyMismatch");
 	this.host = host;
 	this.fingerprint = fingerprint;
 	NSAlertPanel.beginCriticalAlertSheet(
@@ -115,7 +115,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 
 
     public void onUnknownHost(String host, String fingerprint) {
-	log.debug("onUnknownHost");
+	log.info("onUnknownHost");
 	this.host = host;
 	this.fingerprint = fingerprint;
 	NSAlertPanel.beginInformationalAlertSheet(
@@ -149,13 +149,13 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 
 
     public void deniedHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	log.debug("deniedHostSheetDidEnd");
+	log.info("deniedHostSheetDidEnd");
 	sheet.orderOut(null);
 	done = true;
     }
 
     public void keyMismatchSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	log.debug("keyMismatchSheetDidEnd");
+	log.info("keyMismatchSheetDidEnd");
 	sheet.orderOut(null);
 	try {
 	    if(returncode == NSAlertPanel.DefaultReturn)
@@ -186,7 +186,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
     }
 
     public void unknownHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	log.debug("unknownHostSheetDidEnd");
+	log.info("unknownHostSheetDidEnd");
 	sheet.orderOut(null);
 	try {
 	    if(returncode == NSAlertPanel.DefaultReturn)

@@ -51,13 +51,7 @@ public class CDMainController {
 	log.debug("finalize");
 	super.finalize();
     }
-    
-    /**
-	* Keep references of controller objects because otherweise they get garbage collected
-     * if not referenced here.
-     */
-//    private static NSMutableArray references = new NSMutableArray();
-    
+        
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------

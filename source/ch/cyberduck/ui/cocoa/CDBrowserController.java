@@ -59,11 +59,6 @@ public class CDBrowserController implements Observer {
 //	this.mainWindow.setDelegate(this);
     }
 
-//    private CDBrowserView browserTable; // IBOutlet
-//    public void setBrowserTable(CDBrowserView browserTable) {
-//	this.browserTable = browserTable;
-  //  }
-
     private NSTableView browserTable; // IBOutlet
     public void setBrowserTable(NSTableView browserTable) {
 	this.browserTable = browserTable;
@@ -84,6 +79,12 @@ public class CDBrowserController implements Observer {
 	this.upButton.setImage(NSImage.imageNamed("up.tiff"));
     }
 
+    private NSButton backButton; // IBOutlet
+    public void setBackButton(NSButton backButton) {
+	this.backButton = backButton;
+	this.backButton.setImage(NSImage.imageNamed("back.tiff"));
+    }
+    
     private NSPopUpButton pathPopup; // IBOutlet
     public void setPathPopup(NSPopUpButton pathPopup) {
 	this.pathPopup = pathPopup;
@@ -126,7 +127,7 @@ public class CDBrowserController implements Observer {
     private NSToolbar toolbar;
 
     /**
-     * The host this browser windowis associated with
+     * The host this browser window is associated with
      */
     private Host host;
 
@@ -334,7 +335,6 @@ public class CDBrowserController implements Observer {
 	log.debug("update:"+o+","+arg);
 	if(o instanceof Session) {
 	    if(arg instanceof Message) {
-//		Host host = (Host)o;
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.ERROR)) {
 		    NSAlertPanel.beginCriticalAlertSheet(
@@ -443,7 +443,7 @@ public class CDBrowserController implements Observer {
 	    int selected = ((Integer)enum.nextElement()).intValue();
 	    Path p = (Path)browserModel.getEntry(selected);
 	    files.add(p);
-	    alertText.append("\n"+p.getName());
+	    alertText.append("\n- "+p.getName());
 	}
 	NSAlertPanel.beginCriticalAlertSheet(
 				      "Delete", //title
@@ -520,7 +520,7 @@ public class CDBrowserController implements Observer {
 		java.util.Enumeration enumerator = selected.objectEnumerator();
 		while (enumerator.hasMoreElements()) {
 		    filename = (String)enumerator.nextElement();
-		    log.debug(filename+" selected to upload");
+		    log.info(filename+" selected to upload");
 		    Session session = host.getSession().copy();
 		    Path path = null;
 		    Path parent = (Path)pathController.getItem(0);
@@ -543,7 +543,7 @@ public class CDBrowserController implements Observer {
 	
     public void backButtonClicked(Object sender) {
 	log.debug("backButtonClicked");
-	//@todoHistory
+	host.getSession().getPreviousPath().list();
     }
 
      public void upButtonClicked(Object sender) {
@@ -603,8 +603,8 @@ public class CDBrowserController implements Observer {
     }
 
     public void mount(Host host) {
-	if(this.host != null)
-	    this.unmount();
+	this.unmount();
+
 	this.host = host;
 	History.instance().add(host);
 
@@ -617,7 +617,8 @@ public class CDBrowserController implements Observer {
     }
 
     public void unmount() {
-	this.host.closeSession();
+	if(this.host != null)
+	    this.host.closeSession();
     }
 
         // ----------------------------------------------------------
@@ -804,6 +805,7 @@ public class CDBrowserController implements Observer {
     public boolean validateToolbarItem(NSToolbarItem item) {
 //	log.debug("validateToolbarItem:"+item.label());
 	String label = item.label();
+	backButton.setEnabled(pathController.numberOfItems() > 0); //todo host.getSession().getHistory().size() > 0
 	upButton.setEnabled(pathController.numberOfItems() > 0);
 	pathPopup.setEnabled(pathController.numberOfItems() > 0);
 //not called because it is a custom view

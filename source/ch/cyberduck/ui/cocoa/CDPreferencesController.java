@@ -91,10 +91,12 @@ public class CDPreferencesController {
 	this.window = window;
     }
 
+    private static NSMutableArray allDocuments = new NSMutableArray();
 
     public static CDPreferencesController instance() {
 	if(null == instance) {
 	    instance = new CDPreferencesController();
+	    allDocuments.addObject(instance);
 	}
         if (false == NSApplication.loadNibNamed("Preferences", instance)) {
             log.fatal("Couldn't load Preferences.nib");
@@ -104,18 +106,19 @@ public class CDPreferencesController {
     }
     
     private CDPreferencesController() {
-	super();
-    }
-
-    public void finalize() throws Throwable {
-	super.finalize();
-	NSNotificationCenter.defaultCenter().removeObserver(this);
+	allDocuments.addObject(this);
     }
 
     public NSWindow window() {
 	return this.window;
     }
 
+    public void windowWillClose(NSNotification notification) {
+	this.window().setDelegate(null);
+	NSNotificationCenter.defaultCenter().removeObserver(this);
+	allDocuments.removeObject(this);
+    }
+    
     private static String CONNECTMODE_ACTIVE = "Active";
     private static String CONNECTMODE_PASSIVE = "Passive";
     private static String TRANSFERMODE_BINARY = "Binary";

@@ -99,6 +99,7 @@ public class CDInfoController {//implements Observer {
     public CDInfoController(Path file) {
 	log.debug("CDInfoController:"+file);
 	this.file = file;
+	allDocuments.addObject(this);
         if (false == NSApplication.loadNibNamed("Info", this)) {
             log.fatal("Couldn't load Info.nib");
             return;

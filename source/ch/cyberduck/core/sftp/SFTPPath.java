@@ -100,6 +100,7 @@ public class SFTPPath extends Path {
 	boolean showHidden = Preferences.instance().getProperty("browser.showHidden").equals("true");
 	SftpFile workingDirectory = null;
 	session.log("Listing "+this.getName(), Message.PROGRESS);
+	session.addPathToHistory(this);
 	try {
 	    session.check();
 	    workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
@@ -159,7 +160,7 @@ public class SFTPPath extends Path {
     }
 
     public void delete() {
-	log.debug("delete");
+	log.debug("delete:"+this.toString());
 	try {
 	    session.check();
 	    if(this.isDirectory()) {
@@ -198,7 +199,7 @@ public class SFTPPath extends Path {
     }
 
     public void rename(String filename) {
-	log.debug("rename");
+	log.debug("rename:"+filename);
 	try {
 	    session.check();
 	    session.log("Renaming "+this.getName()+" to "+filename, Message.PROGRESS);
@@ -218,11 +219,11 @@ public class SFTPPath extends Path {
     }
 
     public Path mkdir(String name) {
-	log.debug("mkdir");
+	log.debug("mkdir:"+name);
 	try {
 	    session.check();
 	    session.log("Make directory "+name, Message.PROGRESS);
-	    session.SFTP.makeDirectory(name);
+	    session.SFTP.makeDirectory(this.getAbsolute()+"/"+name);
 	    this.list();
 	}
 	catch(SshException e) {
@@ -380,7 +381,7 @@ public class SFTPPath extends Path {
 	    if(out == null) {
 		throw new IOException("Unable opening data stream");
 	    }
-	    session.log("Uploading "+this.getName(), Message.PROGRESS);
+	    //session.log("Uploading "+this.getName(), Message.PROGRESS);
 	    this.upload(out, in);
 	}
 	catch(SshException e) {

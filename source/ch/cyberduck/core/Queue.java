@@ -103,7 +103,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	* @param file Add path to the queue for later processement.
      */
     public void add(Path file) {
-	log.debug("Adding file to queue:"+file);
+	log.info("Adding file to queue:"+file);
         files.add(file);
     }
 
@@ -231,7 +231,8 @@ public class Queue extends Observable implements Observer { //Thread {
 		candidate = null;
 		while(i.hasNext() && !isStopped()) {
 		    candidate = (Path)i.next();
-		    callObservers(new Message(Message.PROGRESS, "Downloading "+candidate.getName()+" ("+(completedJobs()+1)+" of "+numberOfJobs()+")"));
+		    String k = KIND_DOWNLOAD == kind ? "Downloading " : "Uploading ";
+		    callObservers(new Message(Message.PROGRESS, k+candidate.getName()+" ("+(completedJobs()+1)+" of "+numberOfJobs()+")"));
 		    candidate.status.addObserver(Queue.this);
 //		    candidate.getSession().addObserver(Queue.this);
 		    switch(kind) {

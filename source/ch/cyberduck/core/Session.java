@@ -22,6 +22,8 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Observable;
 
 /**
@@ -57,18 +59,21 @@ public abstract class Session extends Observable {
      */
     public Host host;
 
+    private List history = null;
+
     private boolean connected;
 
-    public Session(Host h) {//, TransferAction action) {//, boolean secure) {
+    public Session(Host h) {//, boolean secure) {
 	log.debug("Session("+h+")");
 	this.host = h;
+	this.history = new ArrayList();
         this.log("-------" + new Date().toString(), Message.TRANSCRIPT);
         this.log("-------" + host.getIp(), Message.TRANSCRIPT);
     }
 
     public void callObservers(Object arg) {
-        log.debug("callObservers:"+arg.toString());
-	log.debug(this.countObservers()+" observer(s) known.");
+        log.info("callObservers:"+arg.toString());
+	log.info(this.countObservers()+" observer(s) known.");
 	this.setChanged();
 	this.notifyObservers(arg);
     }
@@ -92,9 +97,10 @@ public abstract class Session extends Observable {
     public abstract void close();
 
      public void recycle() throws IOException {
+	 log.info("Recycling session");
 	 this.close();
 	 this.connect();
-     }
+   }
     
     /**
 	* @return The current working directory (pwd)
@@ -117,55 +123,39 @@ public abstract class Session extends Observable {
      * @return boolean True if the session has not yet been closed. 
      */
     public boolean isConnected() {
+	log.info("Connected:"+connected);
 	return this.connected;
     }
 
     public void setConnected(boolean connected) {
 	this.connected = connected;
     }
+
+    public void addPathToHistory(Path p) {
+	this.history.add(p);
+    }
+
+    public Path getPreviousPath() {
+	log.info("Content of path history:"+history.toString());
+	int size = history.size();
+	if((size != -1) && (size > 1)) {
+	    Path p = (Path)history.get(size-2);
+//delete the fetched path - otherwise we produce a loop
+	    history.remove(size-1);
+	    history.remove(size-2);
+	    return p;
+	}
+	else if(1 == size) {
+	    return (Path)history.get(size-1);
+	}
+	return null;
+    }
     
     public void log(String message, String title) {
-//        log.debug("[Session] log("+message+","+type+")");
         if(title.equals(Message.TRANSCRIPT)) {
             Transcript.instance().transcript(message);
         }
 	this.callObservers(new Message(title, message));
-
-	
-/*        if(type.equals(Status.LOG)) {
-//@todo            log.append(message);
-        }
-        if(type.equals(Message.PROGRESS)) {
-//@todo            log.append("       [PROGRESS] " + message);
-        }
-        if(type.equals(Message.ERROR)) {
-//            log.append("       [ERROR] " + message);
-            if(Preferences.instance().getProperty("interface.error-dialog").equals("true")) {
-                StringBuffer error = new StringBuffer();
-                //building lines with approx. 50 characters
-                int begin = 0;
-                int end = 50;
-                while(end > 0 && end < message.length()) {
-                    log.debug("***substring("+begin+","+end+")");
-                    String sub = message.substring(begin, end);
-                    int space = sub.lastIndexOf(' ');
-                    log.debug("***append("+begin+","+(begin + space)+")");
-                    error.append(message.substring(begin, (begin + space))+System.getProperty("line.separator"));
-                    begin = (begin + space + 1);
-                    end = (end + 30);
-                }
-                error.append(message.substring(begin));
-
-                javax.swing.JOptionPane.showMessageDialog(
-                                              null,
-                                              error.toString(),
-                                              host.getName(),
-                                              javax.swing.JOptionPane.ERROR_MESSAGE,
-                                              null
-                                              );
-            }
-        }
-	 */
     }
 }
 /*

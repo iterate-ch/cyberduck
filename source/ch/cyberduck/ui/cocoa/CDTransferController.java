@@ -126,12 +126,13 @@ public class CDTransferController implements Observer {
 	this.fileIconView = fileIconView;
     }
 
+    private static NSMutableArray allDocuments = new NSMutableArray();
 
     /**
 	* @param kind Tag specifiying if it is a download or upload.
      */
     public CDTransferController(Path file, int kind) {
-	super();
+	allDocuments.addObject(this);
 	this.setPath(file);
 	this.kind = kind;
         if (false == NSApplication.loadNibNamed("Transfer", this)) {
@@ -179,6 +180,7 @@ public class CDTransferController implements Observer {
 	this.init();
 	this.window().setTitle(file.getName());
 	this.totalProgressBar.startAnimation(null);
+//	this.fileProgressBar.startAnimation(null);
 	this.window().makeKeyAndOrderFront(null);
 	queue = new Queue(file, kind);
 	queue.addObserver(this);
@@ -216,6 +218,7 @@ public class CDTransferController implements Observer {
     }
 
     public void update(Observable o, Object arg) {
+	log.debug("update:"+o+","+arg);
 	if(arg instanceof Message) {
 	    Message msg = (Message)arg;
 	    if(msg.getTitle().equals(Message.DATA)) {
@@ -245,10 +248,8 @@ public class CDTransferController implements Observer {
 	    else if(msg.getTitle().equals(Message.START)) {
 		this.totalProgressBar.setIndeterminate(false);
 //		    this.fileProgressBar.setIndeterminate(false);
-
 		this.totalProgressBar.setMinValue(0);
 //		    this.fileProgressBar.setMinValue(0);
-
 		this.stopButton.setEnabled(true);
 		this.resumeButton.setEnabled(false);
 		this.reloadButton.setEnabled(false);
@@ -261,16 +262,13 @@ public class CDTransferController implements Observer {
 //		this.fileProgressBar.stopAnimation(null);
 	    }
 	    else if(msg.getTitle().equals(Message.COMPLETE)) {
-//@todo		    if(queue.done()) {
-//		this.resumeButton.setEnabled(false);
-//		this.reloadButton.setEnabled(true);
-//		this.stopButton.setEnabled(false);
+//		this.fileProgressBar.setValue(fileProgressBar.maxValue());
+		this.totalProgressBar.setDoubleValue(totalProgressBar.maxValue());
 		this.progressField.setAttributedStringValue(new NSAttributedString("Complete"));
-//		    }
 		if(Queue.KIND_DOWNLOAD == kind) {
 			//@todo temp path name
 			//path.getLocalTemp().renameTo(path.getLocal());
-		    if(queue.numberOfJobs() == 1) {
+		    if(1 == queue.numberOfJobs()) {
 			if(Preferences.instance().getProperty("connection.download.postprocess").equals("true") && queue.numberOfJobs() == 1) {
 			    NSWorkspace.sharedWorkspace().openFile(file.getLocal().toString());
 			}
@@ -304,6 +302,11 @@ public class CDTransferController implements Observer {
 	return this.window;
     }
 
+    public void windowWillClose(NSNotification notification) {
+	this.window().setDelegate(null);
+	allDocuments.removeObject(this);
+    }
+    
     public void resumeButtonClicked(NSButton sender) {
 	this.stopButton.setEnabled(true);
 	this.resumeButton.setEnabled(false);
@@ -367,7 +370,8 @@ public class CDTransferController implements Observer {
     private boolean validate(boolean resume) {
 	//is upload
 	if(Queue.KIND_UPLOAD == this.kind) {
-	    this.file.status.setResume(false);
+	    this.file.status.setResume(resume);
+//@todo	    this.file.status.setResume(false);
 	    return true;
 	}
 	//is download
@@ -385,6 +389,9 @@ public class CDTransferController implements Observer {
 				       null, // context
 				       "Download already complete." // message
 				       );
+		this.stopButton.setEnabled(false);
+		this.resumeButton.setEnabled(true);
+		this.reloadButton.setEnabled(true);
 		return false;
 	    }
 	    this.file.status.setResume(file.getLocal().exists());

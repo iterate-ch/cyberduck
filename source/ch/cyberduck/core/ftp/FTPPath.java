@@ -92,6 +92,7 @@ public class FTPPath extends Path {
 
     public List list(boolean notifyobservers) {
 	session.log("Listing "+this.getName(), Message.PROGRESS);
+	session.addPathToHistory(this);
 	try {
 	    session.check();
 	    session.FTP.setType(FTPTransferType.ASCII);
@@ -115,13 +116,12 @@ public class FTPPath extends Path {
     }
 
     public void delete() {
-	log.debug("delete");
+	log.debug("delete:"+this.toString());
 	try {
 	    session.check();
 	    if(this.isDirectory()) {
 		session.FTP.chdir(this.getAbsolute());
 		List files = this.list(false);
-//		List files = new FTPParser().parseList(this.getAbsolute(), session.FTP.dir());
 		java.util.Iterator iterator = files.iterator();
 		Path file = null;
 		while(iterator.hasNext()) {
@@ -156,7 +156,7 @@ public class FTPPath extends Path {
     }
 
     public void rename(String filename) {
-	log.debug("rename");
+	log.debug("rename:"+filename);
 	try {
 	    session.check();
 	    session.FTP.chdir(this.getParent().getAbsolute());
@@ -177,7 +177,7 @@ public class FTPPath extends Path {
     }
 
     public Path mkdir(String name) {
-	log.debug("mkdir");
+	log.debug("mkdir:"+name);
 	try {
 	    session.check();
 	    session.log("Make directory "+name, Message.PROGRESS);
@@ -210,7 +210,7 @@ public class FTPPath extends Path {
   //  }
 
     public void changePermissions(int permissions) {
-	log.debug("changePermissions");
+	log.debug("changePermissions:"+permissions);
 	try {
 	    session.check();
 	    session.FTP.site("chmod "+permissions+" "+this.getAbsolute());
@@ -392,7 +392,7 @@ public class FTPPath extends Path {
 		if(out == null) {
 		    throw new IOException("Unable opening data stream");
 		}
-		session.log("Uploading "+this.getName(), Message.PROGRESS);
+		//session.log("Uploading "+this.getName(), Message.PROGRESS);
 		upload(out, in);
 		session.FTP.validateTransfer();
 	    }
@@ -411,7 +411,7 @@ public class FTPPath extends Path {
 		if(out == null) {
 		    throw new IOException("Unable opening data stream");
 		}
-		session.log("Uploading "+this.getName(), Message.PROGRESS);
+		//session.log("Uploading "+this.getName(), Message.PROGRESS);
 		upload(out, in);
 		session.FTP.validateTransfer();
 	    }

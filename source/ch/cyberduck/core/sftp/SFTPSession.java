@@ -101,7 +101,7 @@ public class SFTPSession extends Session {
 	this.log("SSH connection opened", Message.PROGRESS);
 	this.log(SSH.getServerId(), Message.TRANSCRIPT);
 
-	log.debug(SSH.getAvailableAuthMethods(host.login.getUsername()));
+	log.info(SSH.getAvailableAuthMethods(host.login.getUsername()));
 
 	this.login();
 	this.log("Opening SSH session channel", Message.PROGRESS);
@@ -179,7 +179,7 @@ public class SFTPSession extends Session {
     public Path workdir() {
 	try {
 	    //this.check();
-	    return new SFTPPath(this, SFTP.getDefaultDirectory());
+	    return new SFTPPath(this, SFTP.getDefaultDirectory()); //todo change to return current directory
 	}
 	catch(SshException e) {
 	    this.log("SSH Error: "+e.getMessage(), Message.ERROR);
@@ -194,7 +194,6 @@ public class SFTPSession extends Session {
 	log.debug("check");
 	this.log("Working", Message.START);
 	if(!SSH.isConnected()) {
-	  //  host.recycle();
 	    this.setConnected(false);
 	    SSH.disconnect();
 	    this.connect();
