@@ -94,11 +94,13 @@
 
 	<target name="release" depends="build">
 		<zip destfile="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip">
-			<fileset dir="${build}" includes="${app.name}.app/**"/>
+			<zipfileset dir="${build}" includes="${app.name}.app/**"/>
+  			<zipfileset dir="${build}" includes="${app.name}.app/Contents/MacOS/Cyberduck" filemode="755"/>
 		</zip>
 		<tar destfile="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.tar">
 			<tarfileset dir="${build}" includes="${app.name}.app/**"/>
-		</tar>
+  			<tarfileset dir="${build}" includes="${app.name}.app/Contents/MacOS/Cyberduck" mode="755"/>
+  		</tar>
 		<gzip destfile="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.tar.gz"
 				src="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.tar"/>
 				
