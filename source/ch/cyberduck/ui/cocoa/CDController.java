@@ -69,58 +69,48 @@ public abstract class CDController {
 				break;
 			}
 		}
-	}
-
-	public void endSheet() {
-		log.debug("endSheet");
-		if(this.hasSheet()) {
-			NSApplication.sharedApplication().endSheet(this.window().attachedSheet());
-		}
-	}
-	
-	private boolean supressSheets;
-	
-	public void setSupressSheets(boolean supressSheets) {
-		this.supressSheets = supressSheets;
-	}
-	
-	public void waitForSheetEnd() {
-		if(!supressSheets) {
-			log.debug("waitForSheetEnd");
-			synchronized(this) {
-				while(this.hasSheet()) {
-					try {
-						log.debug("Sleeping:waitForSheetEnd...");
-						this.wait();
-						log.debug("Awakened:waitForSheetEnd");
-					}
-					catch(InterruptedException e) {
-						log.error(e.getMessage());
-					}
-				}
-			}
-		}
     }
 
-	public void waitForSheetDisplay(NSWindow sheet) {
-		if(!supressSheets) {
-			log.debug("waitForSheetDisplay:"+sheet);
-			synchronized(this) {
-				while(this.window().attachedSheet() != sheet) {
-					try {
-						log.debug("Sleeping:waitForSheetDisplay...");
-						this.wait();
-						log.debug("Awakened:waitForSheetDisplay");
-					}
-					catch(InterruptedException e) {
-						log.error(e.getMessage());
-					}
-				}
-			}
-		}
-	}
+    public void endSheet() {
+        log.debug("endSheet");
+        if(this.hasSheet()) {
+            NSApplication.sharedApplication().endSheet(this.window().attachedSheet());
+        }
+    }
 
-	public void beginSheet(NSWindow sheet) {
+    public void waitForSheetEnd() {
+        log.debug("waitForSheetEnd");
+        synchronized(this) {
+            while(this.hasSheet()) {
+                try {
+                    log.debug("Sleeping:waitForSheetEnd...");
+                    this.wait();
+                    log.debug("Awakened:waitForSheetEnd");
+                }
+                catch(InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
+    }
+
+    public void waitForSheetDisplay(NSWindow sheet) {
+        log.debug("waitForSheetDisplay:"+sheet);
+        synchronized(this) {
+            while(this.window().attachedSheet() != sheet) {
+                try {
+                    log.debug("Sleeping:waitForSheetDisplay...");
+                    this.wait();
+                    log.debug("Awakened:waitForSheetDisplay");
+                }
+                catch(InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
+    }
+
+    public void beginSheet(NSWindow sheet) {
 		this.beginSheet(sheet, new NSSelector("sheetDidEnd",
 		    new Class[]{NSWindow.class, int.class, Object.class}) // did end selector
 		);
@@ -135,26 +125,24 @@ public abstract class CDController {
 	}
 	
 	public void beginSheet(final NSWindow sheet, final Object delegate, final NSSelector endSelector, final Object contextInfo) {
-		if(!supressSheets) {
-			log.debug("beginSheet:"+sheet);
-			synchronized(this) {
-                if(!Thread.currentThread().getName().equals("Session") && this.hasSheet()) {
-                    log.warn("Cannot display sheet because the window is already displaying a sheet running on the main thread");
-                    log.info("Displaying dialog instead of sheet");
-                    sheet.makeKeyAndOrderFront(this);
-                    return;
-                }
-				this.waitForSheetEnd();
-				this.window().makeKeyAndOrderFront(null);
-				NSApplication.sharedApplication().beginSheet(sheet, //sheet
-															 this.window(),
-															 delegate, //modalDelegate
-															 endSelector, // did end selector
-															 contextInfo); //contextInfo
-				this.window().makeKeyAndOrderFront(null);
-				this.notifyAll();
-			}
-		}
+        log.debug("beginSheet:"+sheet);
+        synchronized(this) {
+            if(!Thread.currentThread().getName().equals("Session") && this.hasSheet()) {
+                log.warn("Cannot display sheet because the window is already displaying a sheet running on the main thread");
+                log.info("Displaying dialog instead of sheet");
+                sheet.makeKeyAndOrderFront(this);
+                return;
+            }
+            this.waitForSheetEnd();
+            this.window().makeKeyAndOrderFront(null);
+            NSApplication.sharedApplication().beginSheet(sheet, //sheet
+                    this.window(),
+                    delegate, //modalDelegate
+                    endSelector, // did end selector
+                    contextInfo); //contextInfo
+            this.window().makeKeyAndOrderFront(null);
+            this.notifyAll();
+        }
     }
 
 	public void sheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {

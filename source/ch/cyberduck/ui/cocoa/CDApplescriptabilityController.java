@@ -39,8 +39,7 @@ public class CDApplescriptabilityController extends NSScriptCommand {
 		String arg = (String)this.directParameter();
 		if(null == arg) {
 			CDController doc = CDMainController.newDocument();
-			doc.setSupressSheets(true);
-			return doc;
+            return doc;
 		}
 		log.debug("Received URL from Apple Event:"+arg);
 		try {

@@ -36,7 +36,7 @@ Recursively lists a folder content on the server and prompts for each file found
 
 - Sync Sample.scpt
 
-
+Synchronizes a remote with a local folder mirroring all missing files and replacing files on either site based on the modification time.
 
 - Open URL Sample.scpt
 

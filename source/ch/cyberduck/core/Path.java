@@ -143,7 +143,7 @@ public abstract class Path {
 	}
 
 	public void setPath(String p) {
-        if(p.charAt(p.length()-1) == '/') {
+        if((p.charAt(p.length()-1) == '/') && (p.length() > 1)) {
             this.path = p.substring(0, p.length()-1);   
         }
         else {
@@ -161,11 +161,12 @@ public abstract class Path {
 	public Path getParent() {
 		if(null == parent) {
             int index = this.getAbsolute().length()-1;
-            if(this.getAbsolute().charAt(index)=='/') {
-                index--;
+            if(this.getAbsolute().charAt(index) == '/') {
+                if(index > 0)
+                    index--;
             }
             int cut = this.getAbsolute().lastIndexOf('/', index);
-			if(cut != -1) {
+			if(cut > 0) {
                 this.parent = PathFactory.createPath(this.getSession(), this.getAbsolute().substring(0, cut));
 			}
 			else {//if (index == 0) //parent is root
