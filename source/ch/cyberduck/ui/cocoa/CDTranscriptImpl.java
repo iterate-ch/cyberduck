@@ -18,11 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.TranscriptFactory;
 import ch.cyberduck.core.Transcript;
-import ch.cyberduck.core.Transcripter;
 
-import com.apple.cocoa.application.NSScrollView;
-import com.apple.cocoa.application.NSClipView;
 import com.apple.cocoa.application.NSTextView;
 import com.apple.cocoa.application.NSFont;
 import com.apple.cocoa.foundation.NSRect;
@@ -32,26 +30,30 @@ import com.apple.cocoa.foundation.NSRange;
 /**
  * @version $Id$
  */
-public class CDTranscriptImpl implements Transcripter {
-
+public class CDTranscriptImpl implements Transcript {
+//	static {
+//		TranscriptFactory.addFactory("cocoa", new Factory());
+//	}
+//	
+//	private static class Factory extends TranscriptFactory {
+//		protected Transcript create(Session s) {
+//			return new CDTranscriptImpl(s);
+//		}
+//	}
+	
 	private NSTextView textView;
-
-	public void setTextView(NSTextView textView) {
-		this.textView = textView;
-		this.textView.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
-	}
-
-	public CDTranscriptImpl() {
+	
+	public CDTranscriptImpl(NSTextView textView) {
 		super();
+		this.textView = textView;
 	}
 
 	public void awakeFromNib() {
 		textView.setEditable(true);
 		textView.setSelectable(true);
-		Transcript.instance().addListener(this);
 	}
 
-	public void transcript(String message) {
+	public void log(String message) {
 		/**
 		 * Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
 		 * formatting attributes of the first character of the text it replaces, or of the character immediately
@@ -62,14 +64,5 @@ public class CDTranscriptImpl implements Transcripter {
 		this.textView.replaceCharactersInRange(range, message + "\n");
 		if(range.length() > 0)
 			this.textView.scrollRangeToVisible(range);
-	}
-
-	public void clearLogButtonClicked(Object sender) {
-//		this.textView.selectAll(null);
-//		this.textView.delete(null);
-	}
-
-	public Object getView() {
-		return textView;
 	}
 }

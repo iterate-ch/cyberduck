@@ -117,6 +117,26 @@ public class CDPreferencesController {
 		Preferences.instance().setProperty("browser.charset.encoding", sender.titleOfSelectedItem());
 	}
 
+	private NSButton listCheckbox; //IBOutlet
+	
+	public void setListCheckbox(NSButton listCheckbox) {
+		this.listCheckbox = listCheckbox;
+		this.listCheckbox.setTarget(this);
+		this.listCheckbox.setAction(new NSSelector("listCheckboxClicked", new Class[]{NSButton.class}));
+		this.listCheckbox.setState(Preferences.instance().getProperty("ftp.sendExtendedListCommand").equals("true") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void listCheckboxClicked(NSButton sender) {
+		switch (sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("ftp.sendExtendedListCommand", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("ftp.sendExtendedListCommand", false);
+				break;
+		}
+	}
+	
 	private NSButton systCheckbox; //IBOutlet
 	
 	public void setSystCheckbox(NSButton systCheckbox) {

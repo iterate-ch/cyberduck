@@ -35,7 +35,7 @@ for nibfile in `ls English.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; do
     echo Copying $nibfile
     cp -R English.lproj/$nibfile $language.lproj/$nibfile
     rm -rf $language.lproj/$nibfile/CVS
-    nibtool --localizable-strings $language.lproj/$nibfile > $language.lproj/$nibfile.strings
+    nibtool --localizable-strings $language.lproj/$nibfile > $language.lproj/$nib.strings
 done
 
 exit 0

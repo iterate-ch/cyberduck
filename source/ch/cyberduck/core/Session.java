@@ -37,6 +37,8 @@ public abstract class Session extends Observable {
 	public static final String SFTP = "sftp";
 
 //	protected ResourceBundle bundle = ResourceBundle.getBundle("core", Locale.getDefault());
+	
+	private Transcript transcript;
 
 	/**
 	 * Default port for http
@@ -72,8 +74,9 @@ public abstract class Session extends Observable {
 		log.debug("Session(" + h + ")");
 		this.host = h;
 		this.history = new ArrayList();
-//        this.log("-------" + new Date().toString(), Message.TRANSCRIPT);
-//        this.log("-------" + host.getIp(), Message.TRANSCRIPT);
+		this.transcript = TranscriptFactory.getImpl(host.getHostname());
+		this.transcript.log("-------" + new java.util.Date().toString());
+		this.transcript.log("-------" + host.getIp());
 	}
 
 	public void callObservers(Object arg) {
@@ -161,7 +164,7 @@ public abstract class Session extends Observable {
 
 	public void log(String message, String title) {
 		if (title.equals(Message.TRANSCRIPT)) {
-			Transcript.instance().transcript(message);
+			this.transcript.log(message);
 		}
 		this.callObservers(new Message(title, message));
 	}

@@ -202,7 +202,8 @@ public class CDQueueController implements Observer, Validator {
 					if (Queue.KIND_UPLOAD == queue.kind()) {
 						if (callback != null) {
 							queue.getRoot().getParent().list(true);
-							callback.update(observable, queue.getRoot().getParent());
+							callback.update(observable, new Message(Message.REFRESH));
+//							callback.update(observable, queue.getRoot().getParent());
 						}
 					}
 					if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {

@@ -26,6 +26,7 @@
 package com.enterprisedt.net.ftp;
 
 import ch.cyberduck.core.Codec;
+import ch.cyberduck.core.TranscriptFactory;
 import ch.cyberduck.core.Transcript;
 
 import java.io.*;
@@ -67,6 +68,8 @@ public class FTPControlSocket {
 	 *  control socket
 	 */
 	private BufferedReader reader = null;
+	
+	private Transcript transcript;
 
 	/**
 	 *   Constructor. Performs TCP connection and
@@ -82,6 +85,7 @@ public class FTPControlSocket {
 		// ensure we get debug from initial connection sequence if a
 		// log stream is supplied
 		controlSock = new Socket(remoteHost, controlPort);
+		transcript = TranscriptFactory.getImpl(remoteHost);
 		//			setTimeout(timeout);
 		initStreams();
 		validateConnection();
@@ -348,9 +352,9 @@ public class FTPControlSocket {
 		String command = new String(Codec.encode(c));
 		
 		if (command.indexOf("PASS") != -1)
-			Transcript.instance().transcript("PASS *********");
+			transcript.log("PASS *********");
 		else
-			Transcript.instance().transcript(command);
+			transcript.log(command);
 		// send it
 		writer.write(command + EOL);
 		writer.flush();
@@ -376,7 +380,7 @@ public class FTPControlSocket {
 
 		StringBuffer reply = new StringBuffer(firstLine);
 
-		Transcript.instance().transcript(reply.toString());
+		transcript.log(reply.toString());
 
 		String replyCode = reply.toString().substring(0, 3);
 
@@ -390,7 +394,7 @@ public class FTPControlSocket {
 				if (line == null)
 					throw new IOException("Unexpected null reply received");
 
-				Transcript.instance().transcript(line);
+				transcript.log(line);
 
 				if (line.length() > 3 &&
 				    line.substring(0, 3).equals(replyCode) &&

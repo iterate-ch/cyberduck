@@ -48,6 +48,15 @@ public class CDBrowserController implements Observer {
 		return this.window;
 	}
 
+	private NSTextView logView;
+//	private CDTranscriptImpl transcriptView;
+	
+	public void setLogView(NSTextView logView) {
+		this.logView = logView;
+		this.logView.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
+//		this.transcriptView = new CDTranscriptImpl(logView);
+	}
+	
 	private CDBrowserTableDataSource browserModel;
 	private NSTableView browserTable; // IBOutlet
 
@@ -557,7 +566,7 @@ public class CDBrowserController implements Observer {
 			browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
 			browserModel.sort(selectedColumn, browserModel.isSortedAscending());
 			browserTable.reloadData();
-//			this.toolbar.validateVisibleItems();
+			this.toolbar.validateVisibleItems();
 		}
 		else if(arg instanceof Message) {
 			Message msg = (Message) arg;
@@ -579,6 +588,9 @@ public class CDBrowserController implements Observer {
 				this.progressIndicator.stopAnimation(this);
 				this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
 				this.statusLabel.setObjectValue(msg.getContent());
+			}
+			else if (msg.getTitle().equals(Message.REFRESH)) {
+				this.refreshButtonClicked(null);
 			}
 			// update status label
 			else if (msg.getTitle().equals(Message.PROGRESS)) {
@@ -814,7 +826,10 @@ public class CDBrowserController implements Observer {
 									new Class[] { NSWindow.class, int.class, Object.class }
 									), host// end selector
 						)) {
+			TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(logView));
+
 			Session session = SessionFactory.createSession(host);
+			
 			session.addObserver((Observer) this);
 			session.addObserver((Observer) pathController);
 			

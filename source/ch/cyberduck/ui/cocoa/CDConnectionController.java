@@ -73,7 +73,7 @@ public class CDConnectionController implements Observer {
 //			CDHistoryImpl.instance().clear();
 //			historyPopup.removeAllItems();
 //		}
-		this.selectionChanged(CDHistoryImpl.instance().getItem(historyPopup.indexOfSelectedItem() - 1));
+		this.selectionChanged(CDHistoryImpl.instance().getItem(historyPopup.indexOfSelectedItem()-1));
 	}
 
 	private NSPopUpButton bookmarksPopup;
@@ -90,7 +90,7 @@ public class CDConnectionController implements Observer {
 
 	public void bookmarksSelectionChanged(Object sender) {
 		log.debug("bookmarksSelectionChanged:" + sender);
-		this.selectionChanged(CDBookmarksImpl.instance().getItem(bookmarksPopup.indexOfSelectedItem()));
+		this.selectionChanged(CDBookmarksImpl.instance().getItem(bookmarksPopup.indexOfSelectedItem()-1));
 	}
 
 	private Rendezvous rendezvous;

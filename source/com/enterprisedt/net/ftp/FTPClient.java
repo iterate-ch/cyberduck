@@ -27,6 +27,7 @@ package com.enterprisedt.net.ftp;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Transcript;
+import ch.cyberduck.core.TranscriptFactory;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -88,6 +89,8 @@ public class FTPClient {
 	 *  Holds the last valid reply from the server on the control socket
 	 */
 	private FTPReply lastValidReply;
+	
+	private Transcript transcript;
 
 	public FTPClient() {
 		super();
@@ -103,6 +106,7 @@ public class FTPClient {
 	 */
 	public void connect(String remoteHost, int controlPort) throws IOException, FTPException {
 		control = new FTPControlSocket(remoteHost, controlPort);
+		transcript = TranscriptFactory.getImpl(remoteHost);
 //		this.setTimeout(5000);
 	}
 
@@ -465,7 +469,7 @@ public class FTPClient {
 			String line = null;
 			while ((line = in.readLine()) != null) {
 				lines.add(line);
-				Transcript.instance().transcript(line);
+				transcript.log(line);
 			}
 			try {
 				in.close();
