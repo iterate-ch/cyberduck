@@ -34,7 +34,6 @@ public class UploadQueue extends Queue {
 	 */
 	private Observer callback;
 	
-	
 	public UploadQueue() {
 		//
 	}
