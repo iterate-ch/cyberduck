@@ -82,12 +82,14 @@ public class CDMainController extends NSObject {
     private NSMenu dockMenu; // IBOutlet
 
     public void setDockMenu(NSMenu dockMenu) {
+		log.debug("setDockMenu");
         this.dockMenu = dockMenu;
     }
 
     private NSWindow donationSheet; // IBOutlet
 
     public void setDonationSheet(NSWindow donationSheet) {
+		log.debug("setDonationSheet");
         this.donationSheet = donationSheet;
     }
 
@@ -144,6 +146,7 @@ public class CDMainController extends NSObject {
     private Rendezvous rendezvous;
 
     public void setBookmarkMenu(NSMenu bookmarkMenu) {
+		log.debug("setBookmarkMenu");
         this.bookmarkMenu = bookmarkMenu;
         this.rendezvousMenu = new NSMenu();
         this.rendezvousMenu.setAutoenablesItems(false);
@@ -155,13 +158,7 @@ public class CDMainController extends NSObject {
                     new RendezvousMenuDelegate(this.rendezvous = new Rendezvous()));
         }
         this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle("Rendezvous"));
-//		this.bookmarkMenu.itemWithTitle("Rendezvous").setEnabled(true);
     }
-
-//    private static NSImage documentIcon = NSImage.imageNamed("cyberduck-document.icns");
-//	static {
-//		documentIcon.setSize(new NSSize(16f, 16f));
-//	}
 
     private class BookmarkMenuDelegate extends NSObject {
         private Map items = new HashMap();
@@ -212,8 +209,7 @@ public class CDMainController extends NSObject {
         private Map items = new HashMap();
 
         public RendezvousMenuDelegate(Rendezvous rendezvous) {
-            super();
-//			this.rendezvous = new Rendezvous();
+			log.debug("RendezvousMenuDelegate");
             rendezvous.addObserver(this);
             rendezvous.init();
         }
@@ -273,16 +269,11 @@ public class CDMainController extends NSObject {
         }
 
         public void rendezvousMenuClicked(NSMenuItem sender) {
-//log.debug("rendezvousMenuClicked:" + sender);
+			//log.debug("rendezvousMenuClicked:" + sender);
             CDBrowserController controller = new CDBrowserController();
             controller.window().makeKeyAndOrderFront(null);
             controller.mount((Host)items.get(sender.title()));
         }
-		
-//		protected void finalize() throws Throwable {
-//			this.rendezvous.quit();
-//			super.finalize();
-//		}
     }
 
     public void helpMenuClicked(Object sender) {
@@ -465,13 +456,13 @@ public class CDMainController extends NSObject {
         controller.window().makeKeyAndOrderFront(null);
     }
 
-    public void newBrowserMenuClicked(Object sender) {
+	public void newBrowserMenuClicked(Object sender) {
         CDBrowserController controller = new CDBrowserController();
         controller.window().makeKeyAndOrderFront(null);
         NSPoint origin = controller.window().frame().origin();
         controller.window().setFrameOrigin(controller.window().cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y())));
     }
-
+	
     public void showTransferQueueClicked(Object sender) {
         CDQueueController controller = CDQueueController.instance();
         controller.window().makeKeyAndOrderFront(null);
@@ -514,27 +505,21 @@ public class CDMainController extends NSObject {
 
     public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
         log.info("applicationShouldHandleReopen:" + visibleWindowsFound);
-        NSArray windows = NSApplication.sharedApplication().windows();
-        if (windows.count() > 0) {
-            log.debug("Open windows:" + windows);
-        }
         if (visibleWindowsFound) {
-            return true;
+            return false;
         }
+		/*
         if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
             CDBrowserController controller = new CDBrowserController();
             controller.window().makeKeyAndOrderFront(null);
             return false;
         }
-        return true;
+		 */
+		return true;
     }
 
     public void applicationDidFinishLaunching(NSNotification notification) {
         log.info("Available localizations:" + NSBundle.mainBundle().localizations());
-//        if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
-//            CDBrowserController controller = new CDBrowserController();
-//            controller.window().makeKeyAndOrderFront(null);
-//        }
         if (Preferences.instance().getProperty("queue.openByDefault").equals("true")) {
             this.showTransferQueueClicked(null);
         }
@@ -576,6 +561,7 @@ public class CDMainController extends NSObject {
     }
 
     public void applicationWillTerminate(NSNotification notification) {
+        log.debug("applicationWillTerminate");
         NSNotificationCenter.defaultCenter().removeObserver(this);
         //Terminating rendezvous discovery
         this.rendezvous.quit();
@@ -589,19 +575,21 @@ public class CDMainController extends NSObject {
     }
 
     // ----------------------------------------------------------
-    // AppleScript support (NOT TESTED - FOR FURTURE USE)
+    // Applescriptability
     // ----------------------------------------------------------
 
     public boolean applicationDelegateHandlesKey(NSApplication application, String key) {
-        log.debug("applicationDelegateHandlesKey:" + key);
-        if (key.equals("orderedDocuments")) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        log.debug("applicationDelegateHandlesKey:"+key);
+        if (key.equals("browserController"))
+			return true;
+		return false;
     }
 
+	public CDBrowserController browserController() {
+		return new CDBrowserController();
+	}
+	
+	/*
     public NSArray orderedDocuments() {
         log.debug("orderedDocuments");
         NSApplication app = NSApplication.sharedApplication();
@@ -622,6 +610,7 @@ public class CDMainController extends NSObject {
         log.debug("insertInOrderedDocumentsAtIndex" + doc);
         doc.window().makeKeyAndOrderFront(null);
     }
+	 */
 
     private int checkForMountedBrowsers(NSApplication app) {
         NSArray windows = app.windows();

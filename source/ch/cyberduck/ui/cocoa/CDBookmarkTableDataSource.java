@@ -296,10 +296,10 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                 }
 				
                 if (collection.writeToURL(f.toURL(), true)) {
-                    log.info("BookmarkList sucessfully saved to :" + f.toString());
+                    log.info("Bookmarks sucessfully saved to :" + f.toString());
                 }
                 else {
-                    log.error("Error saving BookmarkList to :" + f.toString());
+                    log.error("Error saving Bookmarks to :" + f.toString());
                 }
             }
             catch (java.net.MalformedURLException e) {
@@ -318,7 +318,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
     public void load(java.io.File f) {
         log.debug("load");
         if (f.exists()) {
-            log.info("Found BookmarkList file: " + f.toString());
+            log.info("Found Bookmarks file: " + f.toString());
             NSData plistData = new NSData(f);
             String[] errorString = new String[]{null};
             Object propertyListFromXMLData =
@@ -330,7 +330,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                 log.error("Problem reading bookmark file: " + errorString[0]);
             }
             else {
-                log.debug("Successfully read BookmarkList: " + propertyListFromXMLData);
+                log.debug("Successfully read Bookmarks: " + propertyListFromXMLData);
             }
             if (propertyListFromXMLData instanceof NSArray) {
                 NSArray entries = (NSArray)propertyListFromXMLData;
@@ -388,11 +388,11 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                 log.error("Problem writing bookmark file: " + errorString[0]);
             }
             if (collection.writeToURL(file.toURL(), true)) {
-                log.info("BookmarkList sucessfully saved in :" + file.toString());
+                log.info("Bookmarks sucessfully saved in :" + file.toString());
                 NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolutePath());
             }
             else {
-                log.error("Error saving BookmarkList in :" + file.toString());
+                log.error("Error saving Bookmarks in :" + file.toString());
             }
         }
         catch (java.net.MalformedURLException e) {

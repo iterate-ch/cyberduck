@@ -54,6 +54,12 @@ public class CDProgressController extends NSObject implements Observer {
         }
     }
 	
+	public void awakeFromNib() {
+		log.debug("awakeFromNib");
+		this.updateProgressfield();
+		this.updateProgressbar();
+	}
+	
     public void update(Observable o, Object arg) {
 		if (arg instanceof Message) {
 			Message msg = (Message)arg;
@@ -101,20 +107,20 @@ public class CDProgressController extends NSObject implements Observer {
 		return this.queue;
 	}
 	
-	private NSTextField filenameField;
+	private NSTextField filenameField; // IBOutlet
 	
 	public void setFilenameField(NSTextField filenameField) {
 		this.filenameField = filenameField;
 	}
 
-	private NSTextField progressField;
+	private NSTextField progressField; // IBOutlet
 	
 	public void setProgressField(NSTextField progressField) {
 		this.progressField = progressField;
 		this.progressField.setTextColor(NSColor.darkGrayColor());
 	}
 		
-	private NSProgressIndicator progressBar;
+	private NSProgressIndicator progressBar; // IBOutlet
 	
 	public void setProgressBar(NSProgressIndicator progressBar) {
 		this.progressBar = progressBar;
@@ -127,7 +133,7 @@ public class CDProgressController extends NSObject implements Observer {
 		this.progressBar.setUsesThreadedAnimation(true);
 	}
 	
-	private NSView progressView;
+	private NSView progressView; // IBOutlet
 	
 	public void setProgressSubview(NSView progressView) {
 		this.progressView = progressView;
@@ -135,12 +141,6 @@ public class CDProgressController extends NSObject implements Observer {
 	
 	public NSView view() {
 		return this.progressView;
-	}
-	
-	public void awakeFromNib() {
-		log.debug("awakeFromNib");
-		this.updateProgressfield();
-		this.updateProgressbar();
 	}
 }
 
