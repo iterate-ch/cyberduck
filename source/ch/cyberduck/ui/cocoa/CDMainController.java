@@ -37,6 +37,26 @@ public class CDMainController extends NSObject {
 
     private static final File VERSION_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Version.plist"));
 
+	public void awakeFromNib() {
+		//@todo performance tests
+		this.threadWorkerTimer = new NSTimer(0.001, this, new NSSelector("handleThreadWorkerTimerEvent", new Class[] {NSTimer.class}), null, true);
+		NSRunLoop.currentRunLoop().addTimerForMode(this.threadWorkerTimer, NSRunLoop.DefaultRunLoopMode);
+	}
+
+	// If we want the equivalent to SwingUtilities.invokeLater() for Cocoa, we have to fend for ourselves, it seems.
+	private NSTimer threadWorkerTimer;
+	
+	/**
+		* Called very frequently, every 0.1 seconds
+	 */
+	private void handleThreadWorkerTimerEvent(NSTimer t) {
+		//log.debug("handleThreadWorkerTimerEvent");
+		Runnable item;
+		while((item = ThreadUtilities.instance().next()) != null) {
+			item.run();
+		}
+	}
+		
     static {
         org.apache.log4j.BasicConfigurator.configure();
         Logger log = Logger.getRootLogger();
@@ -171,7 +191,7 @@ public class CDMainController extends NSObject {
 	}
 	
 	public void checkForUpdate(final boolean verbose) {
-        new Thread() {
+        ThreadUtilities.instance().invokeLater(new Runnable() {
             public void run() {
 				// An autorelease pool is used to manage Foundation’s autorelease mechanism for 
 				// Objective-C objects. NSAutoreleasePool provides Java applications access to 
@@ -183,7 +203,7 @@ public class CDMainController extends NSObject {
                 try {
                     String currentVersionNumber = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
                     log.info("Current version:" + currentVersionNumber);
-
+					
                     NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.update.xml")));
                     if (null == data) {
 						if(verbose) {
@@ -198,10 +218,10 @@ public class CDMainController extends NSObject {
                     }
                     String[] errorString = new String[]{null};
                     Object propertyListFromXMLData =
-                            NSPropertyListSerialization.propertyListFromData(data,
-																			 NSPropertyListSerialization.PropertyListImmutable,
-																			 new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-																			 errorString);
+						NSPropertyListSerialization.propertyListFromData(data,
+																		 NSPropertyListSerialization.PropertyListImmutable,
+																		 new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+																		 errorString);
                     if (errorString[0] != null || null == propertyListFromXMLData) {
                         log.error("Version info could not be retrieved: " + errorString[0]);
 						if(verbose) {
@@ -220,7 +240,7 @@ public class CDMainController extends NSObject {
                         log.info("Latest version:" + latestVersionNumber);
                         String filename = (String) entries.objectForKey("file");
                         String comment = (String) entries.objectForKey("comment");
-
+						
                         if (currentVersionNumber.equals(latestVersionNumber)) {
 							if(verbose) {
 								NSAlertPanel.runInformationalAlert(NSBundle.localizedString("No update", "Alert sheet title"), //title
@@ -251,7 +271,8 @@ public class CDMainController extends NSObject {
 					NSAutoreleasePool.pop(mypool);
 				}
             }
-        }.start();
+        }
+									);
     }
 	
     public void websiteMenuClicked(Object sender) {

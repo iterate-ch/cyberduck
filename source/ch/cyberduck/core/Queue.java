@@ -159,7 +159,8 @@ public class Queue extends Observable implements Observer { //Thread {
      * @param item The path to be added in the queue
      */
     public void addRoot(Path item) {
-        log.debug("add:" + item);
+		if(log.isDebugEnabled())
+			log.debug("add:" + item);
         this.roots.add(item);
     }
 
@@ -202,81 +203,69 @@ public class Queue extends Observable implements Observer { //Thread {
      * @param validator A callback class where the user can decide what to do if
      *                  the file already exists at the download location
      */
-    public void start(final Validator validator, final Observer observer) {
-        log.debug("start");
-        this.error = "";
-        this.jobs.clear();
-        new Thread() {
-            public void run() {
-				int mypool = NSAutoreleasePool.push();
-
-                Queue.this.addObserver(observer);
-
-                Queue.this.elapsedTimer.start();
-                Queue.this.running = true;
-                Queue.this.canceled = false;
-                Queue.this.callObservers(new Message(Message.QUEUE_START, Queue.this));
-
-                Queue.this.getRoot().getSession().addObserver(Queue.this);
-                Queue.this.getRoot().getSession().cache().clear();
-                for (Iterator i = roots.iterator(); i.hasNext() && !Queue.this.isCanceled();) {
-                    Path r = (Path) i.next();
-                    log.debug("Iterating over childs of " + r);
-                    Iterator childs = r.getChilds(Queue.this.kind).iterator();
-                    while (childs.hasNext() && !Queue.this.isCanceled()) {
-                        log.debug("Adding child to queue...");
-                        Queue.this.jobs.add((Path) childs.next());
-                    }
-                }
-
-                for (Iterator iter = jobs.iterator(); iter.hasNext() && !Queue.this.isCanceled();) {
-                    Path item = (Path) iter.next();
-                    log.debug("Validating " + item.toString());
-                    if (!validator.validate(item)) {
-                        iter.remove();
-                    }
-                    item.status.reset();
-                }
-
-                for (Iterator iter = jobs.iterator(); iter.hasNext() && !Queue.this.isCanceled();) {
-                    Queue.this.run((Path) iter.next());
-                }
-
-                Queue.this.getRoot().getSession().close();
-                Queue.this.getRoot().getSession().deleteObserver(Queue.this);
-
-                Queue.this.running = false;
-                Queue.this.elapsedTimer.stop();
-                Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
-
-                Queue.this.deleteObserver(observer);
+    public synchronized void start(final Validator validator, final Observer observer) {
+		new Thread() {
+			public void run() {
+				log.debug("start");
+				Queue.this.error = "";
+				Queue.this.jobs.clear();
+				Queue.this.addObserver(observer);
 				
-				NSAutoreleasePool.pop(mypool);
-            }
-        }.start();
-    }
-
-    private void run(Path job) {
-        this.currentJob = job;
-
-        this.progressTimer.start();
-        this.leftTimer.start();
-
-        job.status.addObserver(this);
-
-        switch (kind) {
-            case KIND_DOWNLOAD:
-                job.download();
-                break;
-            case KIND_UPLOAD:
-                job.upload();
-                break;
-        }
-
-        job.status.deleteObserver(this);
-
-        this.progressTimer.stop();
-        this.leftTimer.stop();
+				Queue.this.elapsedTimer.start();
+				Queue.this.running = true;
+				Queue.this.canceled = false;
+				Queue.this.callObservers(new Message(Message.QUEUE_START, Queue.this));
+				
+				Queue.this.getRoot().getSession().addObserver(Queue.this);
+				Queue.this.getRoot().getSession().cache().clear();
+				for (Iterator i = roots.iterator(); i.hasNext() && !Queue.this.isCanceled();) {
+					Path r = (Path) i.next();
+					log.debug("Iterating over childs of " + r);
+					Iterator childs = r.getChilds(Queue.this.kind).iterator();
+					while (childs.hasNext() && !Queue.this.isCanceled()) {
+						log.debug("Adding child to queue...");
+						Queue.this.jobs.add((Path) childs.next());
+					}
+				}
+				
+				for (Iterator iter = jobs.iterator(); iter.hasNext() && !Queue.this.isCanceled();) {
+					Path item = (Path) iter.next();
+					if(log.isDebugEnabled())
+						log.debug("Validating " + item.toString());
+					if (!validator.validate(item)) {
+						iter.remove();
+					}
+					item.status.reset();
+				}
+				
+				Queue.this.progressTimer.start();
+				Queue.this.leftTimer.start();
+				for (Iterator iter = jobs.iterator(); iter.hasNext() && !Queue.this.isCanceled();) {
+					Queue.this.currentJob = (Path) iter.next();
+					Queue.this.currentJob.status.addObserver(Queue.this);
+					switch (kind) {
+						case KIND_DOWNLOAD:
+							Queue.this.currentJob.download();
+							break;
+						case KIND_UPLOAD:
+							Queue.this.currentJob.upload();
+							break;
+					}
+					Queue.this.currentJob.status.deleteObserver(Queue.this);
+				}
+				Queue.this.progressTimer.stop();
+				Queue.this.leftTimer.stop();
+				
+				Queue.this.getRoot().getSession().close();
+				Queue.this.getRoot().getSession().deleteObserver(Queue.this);
+				
+				Queue.this.running = false;
+				Queue.this.elapsedTimer.stop();
+				Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
+				
+				Queue.this.deleteObserver(observer);
+			}
+		}.start();
     }
 
     /**

@@ -83,8 +83,10 @@ public abstract class Session extends Observable {
     }
 
     public void callObservers(Object arg) {
-        log.debug("callObservers:" + arg);
-        log.debug(this.countObservers() + " observer(s) known.");
+		if(log.isDebugEnabled()) {
+			log.debug("callObservers:" + arg);
+			log.debug(this.countObservers() + " observer(s) known.");
+		}
         this.setChanged();
         this.notifyObservers(arg);
     }
@@ -102,30 +104,30 @@ public abstract class Session extends Observable {
      */
     public synchronized void mount() {
         this.log("Mounting " + host.getHostname() + "...", Message.PROGRESS);
-        new Thread() {
-            public void run() {
-                try {
-                    Session.this.check();
-                    Path home;
-                    if (host.hasReasonableDefaultPath()) {
-                        if (host.getDefaultPath().charAt(0) != '/') {
-                            home = PathFactory.createPath(Session.this, Session.this.workdir().getAbsolute(), host.getDefaultPath());
-                        }
-                        else {
-                            home = PathFactory.createPath(Session.this, host.getDefaultPath());
-                        }
-                    }
-                    else {
-                        home = Session.this.workdir();
-                    }
-                    home.list(true);
-                }
-                catch (IOException e) {
-                    Session.this.log("IO Error: " + e.getMessage(), Message.ERROR);
-                }
-            }
-        }.start();
-    }
+		new Thread() {
+			public void run() {
+				try {
+					Session.this.check();
+					Path home;
+					if (host.hasReasonableDefaultPath()) {
+						if (host.getDefaultPath().charAt(0) != '/') {
+							home = PathFactory.createPath(Session.this, Session.this.workdir().getAbsolute(), host.getDefaultPath());
+						}
+						else {
+							home = PathFactory.createPath(Session.this, host.getDefaultPath());
+						}
+					}
+					else {
+						home = Session.this.workdir();
+					}
+					home.list(true);
+				}
+				catch (IOException e) {
+					Session.this.log("IO Error: " + e.getMessage(), Message.ERROR);
+				}
+			}
+		}.start();
+	}
 	
     /**
      * Close the connecion to the remote host.

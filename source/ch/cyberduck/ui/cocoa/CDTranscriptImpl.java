@@ -42,15 +42,19 @@ public class CDTranscriptImpl implements Transcript {
 		this.textView.setRichText(false);
     }
 
-    public void log(String message) {
-        // Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
-        // formatting attributes of the first character of the text it replaces, or of the character immediately
-        // before aRange if the range's length is 0. If the range's location is 0, the formatting
-        // attributes of the first character in the receiver are used.
-		this.textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0), 
-															 message + "\n"); // @warning very bad performance
-		this.textView.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
-		//int loc = textView.textStorage().length();
-		//this.textView.scrollRangeToVisible(new NSRange(loc, 0));
+    public void log(final String message) {
+        ThreadUtilities.instance().invokeLater(new Runnable() {
+            public void run() {
+				// Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
+				// formatting attributes of the first character of the text it replaces, or of the character immediately
+				// before aRange if the range's length is 0. If the range's location is 0, the formatting
+				// attributes of the first character in the receiver are used.
+				textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0), 
+																	 message + "\n"); // @warning very bad performance
+				textView.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
+				textView.scrollRangeToVisible(new NSRange(textView.textStorage().length()-1, 0));
+			}
+		}
+											   );
     }
 }

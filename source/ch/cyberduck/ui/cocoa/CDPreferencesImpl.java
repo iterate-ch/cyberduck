@@ -44,7 +44,6 @@ public class CDPreferencesImpl extends Preferences {
     }
 
     public String getProperty(String property) {
-        //        log.debug("getProperty(" + property + ")");
         String value = (String) props.objectForKey(property);
         if (value == null) {
             return super.getProperty(property);
@@ -53,13 +52,15 @@ public class CDPreferencesImpl extends Preferences {
     }
 
     public void setProperty(String property, String value) {
-        log.debug("setProperty(" + property + ", " + value + ")");
+		if(log.isDebugEnabled())
+			log.debug("setProperty(" + property + ", " + value + ")");
         this.props.setObjectForKey(value, property);
         this.save();
     }
 
     public void setProperty(String property, boolean v) {
-        log.debug("setProperty(" + property + ", " + v + ")");
+		if(log.isDebugEnabled())
+			log.debug("setProperty(" + property + ", " + v + ")");
         String value = "false";
         if (v) {
             value = "true";
@@ -70,7 +71,8 @@ public class CDPreferencesImpl extends Preferences {
     }
 
     public void setProperty(String property, int v) {
-        log.debug("setProperty(" + property + ", " + v + ")");
+		if(log.isDebugEnabled())
+			log.debug("setProperty(" + property + ", " + v + ")");
         String value = String.valueOf(v);
         this.props.setObjectForKey(value, property);
         this.save();

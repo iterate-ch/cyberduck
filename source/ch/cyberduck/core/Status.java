@@ -174,7 +174,8 @@ public class Status extends Observable implements Serializable {
     }
 
     public void reset() {
-        log.debug("reset (resume=" + resume + ")");
+		if(log.isDebugEnabled())
+			log.debug("reset (resume=" + resume + ")");
         this.complete = false;
         this.canceled = false;
         if (!this.isResume()) {

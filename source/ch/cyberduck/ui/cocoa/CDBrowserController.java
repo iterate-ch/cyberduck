@@ -500,77 +500,82 @@ public class CDBrowserController extends NSObject implements Observer {
     }
 
 
-    public void update(Observable o, Object arg) {
+    public void update(final Observable o, final Object arg) {
         log.debug("update:" + o + "," + arg);
-        if (arg instanceof Path) {
-            this.browserModel.setData(((Path) arg).cache());
-            NSTableColumn selectedColumn = browserModel.selectedColumn() != null ? browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
-            this.browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
-            this.browserModel.sort(selectedColumn, browserModel.isSortedAscending());
-            this.browserTable.reloadData();
-			this.browserTable.setNeedsDisplay(true);
-            this.toolbar.validateVisibleItems();
-			this.window.makeFirstResponder(browserTable);
-        }
-        else if (arg instanceof Message) {
-            Message msg = (Message) arg;
-            if (msg.getTitle().equals(Message.ERROR)) {
-                if (this.window().isVisible()) {
-                    NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                            NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                            null, //alternative button
-                            null, //other button
-                            this.window(), //docWindow
-                            null, //modalDelegate
-                            null, //didEndSelector
-                            null, // dismiss selector
-                            null, // context
-                            (String) msg.getContent() // message
-                    );
-                }
-                this.progressIndicator.stopAnimation(this);
-                this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
-                this.statusIcon.setNeedsDisplay(true);
-                this.statusLabel.setObjectValue(msg.getContent());
-                this.statusLabel.display();
-            }
-            else if (msg.getTitle().equals(Message.REFRESH)) {
-                this.refreshButtonClicked(null);
-            }
-            // update status label
-            else if (msg.getTitle().equals(Message.PROGRESS)) {
-                this.statusLabel.setObjectValue(msg.getContent());
-                this.statusLabel.display();
-				//this.statusIcon.setImage(this.isConnected() ? NSImage.imageNamed("online.tiff") : NSImage.imageNamed("offline.tiff"));
-                //this.statusIcon.setNeedsDisplay(true);
-            }
-            else if (msg.getTitle().equals(Message.OPEN)) {
-                this.statusIcon.setImage(null);
-                this.statusIcon.setNeedsDisplay(true);
-//                CDHistoryImpl.instance().addItem(((Session) o).host);
-                this.toolbar.validateVisibleItems();
-				this.window().setDocumentEdited(true);
-            }
-            else if (msg.getTitle().equals(Message.CLOSE)) {
-				this.window().setDocumentEdited(false);
+		ThreadUtilities.instance().invokeLater(new Runnable() {
+			public void run() {
+				if (arg instanceof Path) {
+					browserModel.setData(((Path) arg).cache());
+					NSTableColumn selectedColumn = browserModel.selectedColumn() != null ? browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
+					browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
+					browserModel.sort(selectedColumn, browserModel.isSortedAscending());
+					browserTable.reloadData();
+					browserTable.setNeedsDisplay(true);
+					toolbar.validateVisibleItems();
+					window.makeFirstResponder(browserTable);
+				}
+				else if (arg instanceof Message) {
+					Message msg = (Message) arg;
+					if (msg.getTitle().equals(Message.ERROR)) {
+						if (window().isVisible()) {
+							NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+																 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+																 null, //alternative button
+																 null, //other button
+																 window(), //docWindow
+																 null, //modalDelegate
+																 null, //didEndSelector
+																 null, // dismiss selector
+																 null, // context
+																 (String) msg.getContent() // message
+																 );
+						}
+						progressIndicator.stopAnimation(this);
+						statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
+						statusIcon.setNeedsDisplay(true);
+						statusLabel.setObjectValue(msg.getContent());
+						statusLabel.display();
+					}
+					else if (msg.getTitle().equals(Message.REFRESH)) {
+						refreshButtonClicked(null);
+					}
+					// update status label
+					else if (msg.getTitle().equals(Message.PROGRESS)) {
+						statusLabel.setObjectValue(msg.getContent());
+						statusLabel.display();
+						//statusIcon.setImage(isConnected() ? NSImage.imageNamed("online.tiff") : NSImage.imageNamed("offline.tiff"));
+						//statusIcon.setNeedsDisplay(true);
+					}
+					else if (msg.getTitle().equals(Message.OPEN)) {
+						statusIcon.setImage(null);
+						statusIcon.setNeedsDisplay(true);
+						//                CDHistoryImpl.instance().addItem(((Session) o).host);
+						toolbar.validateVisibleItems();
+						window().setDocumentEdited(true);
+					}
+					else if (msg.getTitle().equals(Message.CLOSE)) {
+						window().setDocumentEdited(false);
+					}
+					else if (msg.getTitle().equals(Message.START)) {
+						progressIndicator.startAnimation(this);
+						statusIcon.setImage(null);
+						statusIcon.setNeedsDisplay(true);
+						toolbar.validateVisibleItems();
+					}
+					else if (msg.getTitle().equals(Message.STOP)) {
+						progressIndicator.stopAnimation(this);
+						statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
+						statusLabel.display();
+						//statusIcon.setImage(isConnected() ? NSImage.imageNamed("online.tiff") : NSImage.imageNamed("offline.tiff"));
+						//statusIcon.setNeedsDisplay(true);
+						toolbar.validateVisibleItems();
+					}
+				}
 			}
-            else if (msg.getTitle().equals(Message.START)) {
-              this.progressIndicator.startAnimation(this);
-                this.statusIcon.setImage(null);
-                this.statusIcon.setNeedsDisplay(true);
-                this.toolbar.validateVisibleItems();
-            }
-            else if (msg.getTitle().equals(Message.STOP)) {
-                this.progressIndicator.stopAnimation(this);
-                this.statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
-                this.statusLabel.display();
-				//this.statusIcon.setImage(this.isConnected() ? NSImage.imageNamed("online.tiff") : NSImage.imageNamed("offline.tiff"));
-                //this.statusIcon.setNeedsDisplay(true);
-                this.toolbar.validateVisibleItems();
-            }
-        }
+		}
+											   );
     }
-
+	
     // ----------------------------------------------------------
     // Selector methods for the toolbar items
     // ----------------------------------------------------------
@@ -816,48 +821,48 @@ public class CDBrowserController extends NSObject implements Observer {
 		log.info("Connected:"+connected);
         return connected;
     }
-
-    public void mount(Host host) {
+	
+    public void mount(final Host host) {
         log.debug("mount:" + host);
         if (this.unmount(new NSSelector("mountSheetDidEnd",
-                new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
-        )) {
-            this.window().setTitle(host.getProtocol() + ":" + host.getHostname());
-            pathController.removeAllItems();
-            browserModel.clear();
-            browserTable.reloadData();
-
-            TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(logView));
-
-            Session session = SessionFactory.createSession(host);
-            session.addObserver((Observer) this);
-            session.addObserver((Observer) pathController);
-
-            progressIndicator.startAnimation(this);
-
-            if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
-                try {
-                    host.setHostKeyVerificationController(new CDHostKeyController(this.window()));
-                }
-                catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
-                    //This exception is thrown whenever an exception occurs open or reading from the host file.
-                    NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                            NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                            null, //alternative button
-                            null, //other button
-                            this.window(), //docWindow
-                            null, //modalDelegate
-                            null, //didEndSelector
-                            null, // dismiss selector
-                            null, // context
-                            NSBundle.localizedString("Could not open or read the host file", "Alert sheet text") + ": " + e.getMessage() // message
-                    );
-                }
-            }
-            host.getLogin().setController(new CDLoginController(this.window()));
-            session.mount();
-        }
-    }
+										new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
+						 )) {
+			CDBrowserController.this.window().setTitle(host.getProtocol() + ":" + host.getHostname());
+			pathController.removeAllItems();
+			browserModel.clear();
+			browserTable.reloadData();
+			
+			TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(logView));
+			
+			Session session = SessionFactory.createSession(host);
+			session.addObserver((Observer) CDBrowserController.this);
+			session.addObserver((Observer) pathController);
+			
+			progressIndicator.startAnimation(CDBrowserController.this);
+			
+			if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
+				try {
+					host.setHostKeyVerificationController(new CDHostKeyController(CDBrowserController.this.window()));
+				}
+				catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
+					//This exception is thrown whenever an exception occurs open or reading from the host file.
+					NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+														 null, //alternative button
+														 null, //other button
+														 CDBrowserController.this.window(), //docWindow
+														 null, //modalDelegate
+														 null, //didEndSelector
+														 null, // dismiss selector
+														 null, // context
+														 NSBundle.localizedString("Could not open or read the host file", "Alert sheet text") + ": " + e.getMessage() // message
+														 );
+				}
+			}
+			host.getLogin().setController(new CDLoginController(CDBrowserController.this.window()));
+			session.mount();
+		}
+	}
 
     public void mountSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         this.unmountSheetDidEnd(sheet, returncode, contextInfo);

@@ -118,26 +118,31 @@ public class CDLoginController extends LoginController {
     private boolean done = false;
     private boolean tryAgain = false;
 
-    public boolean promptUser(Login l, String message) {
+    public boolean promptUser(final Login l, final String message) {
         this.done = false;
-        this.textField.setStringValue(message);
-        this.userField.setStringValue(l.getUsername());
-        NSApplication.sharedApplication().beginSheet(this.window, //sheet
-                parentWindow,
-                this, //modalDelegate
-                new NSSelector("loginSheetDidEnd",
-                        new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
-                l); //contextInfo
-        this.window().makeKeyAndOrderFront(null);
-        while (!done) {
-            try {
-                log.debug("Sleeping...");
-                Thread.sleep(1000); //milliseconds
-            }
-            catch (InterruptedException e) {
-                log.error(e.getMessage());
-            }
-        }
+        ThreadUtilities.instance().invokeLater(new Runnable() {
+            public void run() {
+				textField.setStringValue(message);
+				userField.setStringValue(l.getUsername());
+				NSApplication.sharedApplication().beginSheet(window, //sheet
+															 parentWindow,
+															 CDLoginController.this, //modalDelegate
+															 new NSSelector("loginSheetDidEnd",
+																			new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
+															 l); //contextInfo
+				window().makeKeyAndOrderFront(null);
+			}
+		}
+											   );
+		while (!done) {
+			try {
+				log.debug("Sleeping...");
+				Thread.sleep(1000); //milliseconds
+			}
+			catch (InterruptedException e) {
+				log.error(e.getMessage());
+			}
+		}
         return this.tryAgain;
     }
 

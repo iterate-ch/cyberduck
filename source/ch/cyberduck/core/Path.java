@@ -416,7 +416,8 @@ public abstract class Path {
      * @param writer The stream to write to
      */
     public void upload(java.io.Writer writer, java.io.Reader reader) throws IOException {
-        log.debug("upload(" + writer.toString() + ", " + reader.toString());
+		if(log.isDebugEnabled())
+			log.debug("upload(" + writer.toString() + ", " + reader.toString());
         this.getSession().log("Uploading " + this.getName() + " (ASCII)", Message.PROGRESS);
         if (this.status.isResume()) {
             long skipped = reader.skip(this.status.getCurrent());
@@ -435,7 +436,8 @@ public abstract class Path {
      * @param o The stream to write to
      */
     public void upload(java.io.OutputStream o, java.io.InputStream i) throws IOException {
-        log.debug("upload(" + o.toString() + ", " + i.toString());
+		if(log.isDebugEnabled())
+			log.debug("upload(" + o.toString() + ", " + i.toString());
         this.getSession().log("Uploading " + this.getName(), Message.PROGRESS);
         if (this.status.isResume()) {
             long skipped = i.skip(this.status.getCurrent());
@@ -446,15 +448,16 @@ public abstract class Path {
         }
         this.transfer(i, o);
     }
-
+	
     /**
-     * ascii download
+		* ascii download
      *
      * @param reader The stream to read from
      * @param writer The stream to write to
      */
     public void download(java.io.Reader reader, java.io.Writer writer) throws IOException {
-        log.debug("transfer(" + reader.toString() + ", " + writer.toString());
+		if(log.isDebugEnabled())
+			log.debug("transfer(" + reader.toString() + ", " + writer.toString());
         this.getSession().log("Downloading " + this.getName() + " (ASCII)", Message.PROGRESS);
         this.transfer(reader, writer);
         //this.getLocal().getTemp().renameTo(this.getLocal());
@@ -467,7 +470,8 @@ public abstract class Path {
      * @param o The stream to write to
      */
     public void download(java.io.InputStream i, java.io.OutputStream o) throws IOException {
-        log.debug("transfer(" + i.toString() + ", " + o.toString());
+		if(log.isDebugEnabled())
+			log.debug("transfer(" + i.toString() + ", " + o.toString());
         this.getSession().log("Downloading " + this.getName(), Message.PROGRESS);
         this.transfer(i, o);
         //this.getLocal().getTemp().renameTo(this.getLocal());
@@ -478,8 +482,9 @@ public abstract class Path {
      * @param writer The stream to write to
      */
     private void transfer(java.io.Reader reader, java.io.Writer writer) throws IOException {
-        log.debug("transfer(" + reader.toString() + ", " + writer.toString());
-        LineNumberReader in = new LineNumberReader(reader);
+		if(log.isDebugEnabled())
+			log.debug("transfer(" + reader.toString() + ", " + writer.toString());
+		LineNumberReader in = new LineNumberReader(reader);
         BufferedWriter out = new BufferedWriter(writer);
 
         long current = this.status.getCurrent();
@@ -506,7 +511,8 @@ public abstract class Path {
      * @param o The stream to write to
      */
     private void transfer(java.io.InputStream i, java.io.OutputStream o) throws IOException {
-        log.debug("transfer(" + i.toString() + ", " + o.toString());
+		if(log.isDebugEnabled())
+			log.debug("transfer(" + i.toString() + ", " + o.toString());
         BufferedInputStream in = new BufferedInputStream(i);
         BufferedOutputStream out = new BufferedOutputStream(o);
         int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));

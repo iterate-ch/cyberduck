@@ -60,24 +60,29 @@ public class CDPathController extends NSObject implements Observer {
         return this.workdir;
     }
 
-    public void update(Observable o, Object arg) {
+    public void update(final Observable o, final Object arg) {
         log.debug("update:" + o + "," + arg);
-        if (o instanceof Session) {
-            if (arg instanceof Path) {
-                this.workdir = (Path) arg;
-                this.removeAllItems();
-                // current path has index 0
-                this.addItem(this.workdir);
-                // root path has index numberOfItems()-1
-                Path p = this.workdir;
-                while (!p.isRoot()) {
-                    p = p.getParent();
-                    this.addItem(p);
-                }
-            }
-        }
-    }
-
+        ThreadUtilities.instance().invokeLater(new Runnable() {
+            public void run() {
+				if (o instanceof Session) {
+					if (arg instanceof Path) {
+						workdir = (Path) arg;
+						removeAllItems();
+						// current path has index 0
+						addItem(workdir);
+						// root path has index numberOfItems()-1
+						Path p = workdir;
+						while (!p.isRoot()) {
+							p = p.getParent();
+							addItem(p);
+						}
+					}
+				}
+			}
+		}
+											   );
+	}
+			
     public int numberOfItems() {
         return items.size();
     }

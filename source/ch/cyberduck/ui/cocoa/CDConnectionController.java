@@ -115,20 +115,25 @@ public class CDConnectionController extends NSObject implements Observer {
         this.selectionChanged((Host) rendezvous.getService(rendezvousPopup.titleOfSelectedItem()));
     }
 	
-    public void update(Observable o, Object arg) {
+    public void update(final Observable o, final Object arg) {
         log.debug("update:" + o + "," + arg);
-        if (o instanceof Rendezvous) {
-            if (arg instanceof Message) {
-                Message msg = (Message) arg;
-                if (msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
-                    rendezvousPopup.addItem((String) msg.getContent());
-                }
-                if (msg.getTitle().equals(Message.RENDEZVOUS_REMOVE)) {
-                    rendezvousPopup.removeItemWithTitle((String) msg.getContent());
-                }
-            }
-        }
-    }
+        ThreadUtilities.instance().invokeLater(new Runnable() {
+            public void run() {
+				if (o instanceof Rendezvous) {
+					if (arg instanceof Message) {
+						Message msg = (Message) arg;
+						if (msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
+							rendezvousPopup.addItem((String) msg.getContent());
+						}
+						if (msg.getTitle().equals(Message.RENDEZVOUS_REMOVE)) {
+							rendezvousPopup.removeItemWithTitle((String) msg.getContent());
+						}
+					}
+				}
+			}
+		}
+											   );
+	}
 	
     private NSPopUpButton protocolPopup;
 	

@@ -148,92 +148,101 @@ public class CDQueueController extends NSObject implements Observer {
         this.startItem(queue, false);
     }
 
-    public void startItem(Queue queue, boolean resumeRequested) {
+    public void startItem(final Queue queue, final boolean resumeRequested) {
         log.info("Starting item:" + queue);
-		QueueList.instance().save();
-        this.queueTable.reloadData();
-        this.queueTable.selectRow(QueueList.instance().indexOf(queue), false);
-        this.queueTable.scrollRowToVisible(QueueList.instance().indexOf(queue));
-
-        if (Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
-            this.window().makeKeyAndOrderFront(null);
-        }
-
-        queue.getRoot().getHost().getLogin().setController(new CDLoginController(this.window()));
-        if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
-            try {
-                queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(this.window()));
-            }
-            catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
-                this.window().makeKeyAndOrderFront(null);
-                //This exception is thrown whenever an exception occurs open or reading from the host file.
-                NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", ""), //title
-                        NSBundle.localizedString("OK", ""), // defaultbutton
-                        null, //alternative button
-                        null, //other button
-                        this.window(), //docWindow
-                        null, //modalDelegate
-                        null, //didEndSelector
-                        null, // dismiss selector
-                        null, // context
-                        NSBundle.localizedString("Could not open or read the host file", "") + ": " + e.getMessage() // message
-                );
-            }
-        }
-        queue.start(new CDValidatorController(queue.kind(), resumeRequested), this);
+		//int mypool = NSAutoreleasePool.push();
+				QueueList.instance().save();
+				CDQueueController.this.queueTable.reloadData();
+				CDQueueController.this.queueTable.selectRow(QueueList.instance().indexOf(queue), false);
+				CDQueueController.this.queueTable.scrollRowToVisible(QueueList.instance().indexOf(queue));
+				
+				if (Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
+					CDQueueController.this.window().makeKeyAndOrderFront(null);
+				}
+				
+				queue.getRoot().getHost().getLogin().setController(new CDLoginController(CDQueueController.this.window()));
+				if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
+					try {
+						queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(CDQueueController.this.window()));
+					}
+					catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
+						CDQueueController.this.window().makeKeyAndOrderFront(null);
+						//This exception is thrown whenever an exception occurs open or reading from the host file.
+						NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", ""), //title
+															 NSBundle.localizedString("OK", ""), // defaultbutton
+															 null, //alternative button
+															 null, //other button
+															 CDQueueController.this.window(), //docWindow
+															 null, //modalDelegate
+															 null, //didEndSelector
+															 null, // dismiss selector
+															 null, // context
+															 NSBundle.localizedString("Could not open or read the host file", "") + ": " + e.getMessage() // message
+															 );
+						return;
+					}
+				}
+				queue.start(new CDValidatorController(queue.kind(), resumeRequested), CDQueueController.this);
+		
+		//NSAutoreleasePool.pop(mypool);
     }
 
-    public void update(Observable observable, Object arg) {
+    public void update(final Observable observable, final Object arg) {
 //		log.debug("update:"+observable+","+arg);
-        if (arg instanceof Message) {
-            Message msg = (Message) arg;
-            if (msg.getTitle().equals(Message.PROGRESS) || msg.getTitle().equals(Message.ERROR)) {
-                if (this.window().isVisible()) {
-                    if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
-                        int row = QueueList.instance().indexOf((Queue) observable);
-                        NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
-                        this.queueTable.setNeedsDisplay(queueRect);
-                    }
-                }
-            }
-            else if (msg.getTitle().equals(Message.DATA)) {
-                if (this.window().isVisible()) {
-                    if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
-                        int row = QueueList.instance().indexOf((Queue) observable);
-                        NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
-                        this.queueTable.setNeedsDisplay(progressRect);
-                    }
-                }
-            }
-            else if (msg.getTitle().equals(Message.QUEUE_START)) {
-                this.toolbar.validateVisibleItems();
-				QueueList.instance().save();
-            }
-            else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
-                this.toolbar.validateVisibleItems();
-                Queue queue = (Queue) observable;
-                if (queue.isComplete()) {
-                    if (Queue.KIND_DOWNLOAD == queue.kind()) {
-                        if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
-                            boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
-                            log.debug("Success opening file:" + success);
-                        }
-                    }
-                    if (Queue.KIND_UPLOAD == queue.kind()) {
-                        if (callback != null) {
-                            log.debug("Telling observable to refresh directory listing");
-                            callback.update(observable, new Message(Message.REFRESH));
-                        }
-                    }
-                    if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
-                        this.queueTable.deselectAll(null);
-                        QueueList.instance().removeItem(queue);
-                        this.queueTable.reloadData();
-                    }
-                }
-				QueueList.instance().save();
-            }
-        }
+        ThreadUtilities.instance().invokeLater(new Runnable() {
+            public void run() {
+				if (arg instanceof Message) {
+					Message msg = (Message) arg;
+					if (msg.getTitle().equals(Message.PROGRESS) || msg.getTitle().equals(Message.ERROR)) {
+						if (window().isVisible()) {
+							if (queueTable.visibleRect() != NSRect.ZeroRect) {
+								int row = QueueList.instance().indexOf((Queue) observable);
+								NSRect queueRect = queueTable.frameOfCellAtLocation(0, row);
+								queueTable.setNeedsDisplay(queueRect);
+							}
+						}
+					}
+					else if (msg.getTitle().equals(Message.DATA)) {
+						if (window().isVisible()) {
+							if (queueTable.visibleRect() != NSRect.ZeroRect) {
+								int row = QueueList.instance().indexOf((Queue) observable);
+								NSRect progressRect = queueTable.frameOfCellAtLocation(1, row);
+								queueTable.setNeedsDisplay(progressRect);
+							}
+						}
+					}
+					else if (msg.getTitle().equals(Message.QUEUE_START)) {
+						toolbar.validateVisibleItems();
+						QueueList.instance().save();
+					}
+					else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+						toolbar.validateVisibleItems();
+						Queue queue = (Queue) observable;
+						if (queue.isComplete()) {
+							if (Queue.KIND_DOWNLOAD == queue.kind()) {
+								if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
+									boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+									log.debug("Success opening file:" + success);
+								}
+							}
+							if (Queue.KIND_UPLOAD == queue.kind()) {
+								if (callback != null) {
+									log.debug("Telling observable to refresh directory listing");
+									callback.update(observable, new Message(Message.REFRESH));
+								}
+							}
+							if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
+								queueTable.deselectAll(null);
+								QueueList.instance().removeItem(queue);
+								queueTable.reloadData();
+							}
+						}
+						QueueList.instance().save();
+					}
+				}
+			}
+		}
+											   );
     }
 
     public void awakeFromNib() {
