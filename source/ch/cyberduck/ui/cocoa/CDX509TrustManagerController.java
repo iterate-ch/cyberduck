@@ -100,6 +100,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
             this.allowClientCertificate = true;
         }
         if (returncode == NSAlertPanel.OtherReturn) {
+            this.allowClientCertificate = true;
             try {
                 X509Certificate cert = (X509Certificate)contextInfo;
                 this.keystore.setCertificateEntry(cert.getSubjectDN().getName(), cert);
@@ -154,6 +155,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
             this.allowServerCertificate = true;
         }
         if (returncode == NSAlertPanel.OtherReturn) {
+            this.allowServerCertificate = true;
             try {
                 X509Certificate cert = (X509Certificate)contextInfo;
                 this.keystore.setCertificateEntry(cert.getSubjectDN().getName(), cert);
