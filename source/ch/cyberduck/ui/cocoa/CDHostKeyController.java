@@ -65,7 +65,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 	 }
 	 ),// end selector
 					   null, // dismiss selector
-					   this, // context
+					   null, // context
 					   "Access to the host " + hostname + " is denied from this system" // message
 					   );
 	while(!this.done) {
@@ -98,7 +98,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 	 }
 	 ),// end selector
 					   null, // dismiss selector
-					   this, // context
+					   null, // context
 					   "The host key supplied by " + host + " is: "
 					   + actualHostKey +
 					   "\nThe current allowed key for " + host + " is: "
@@ -134,7 +134,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 	 }
 	 ),// end selector
 					   null, // dismiss selector
-					   this, // context
+					   null, // context
 					   "The host " + host
 					   + " is currently unknown to the system. The host key fingerprint is: " + fingerprint+".");
 	while(!this.done) {
@@ -170,7 +170,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 					    this, //delegate
 					    null,// end selector
 					    null, // dismiss selector
-					    this, // context
+					    null, // context
 					    "Cannot continue without a valid host key." // message
 					    );
 		log.info("Cannot continue without a valid host key");
@@ -201,7 +201,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 					    this, //delegate
 					    null,// end selector
 					    null, // dismiss selector
-					    this, // context
+					    null, // context
 					    "Cannot continue without a valid host key." // message
 					    );
 		log.info("Cannot continue without a valid host key");

@@ -122,7 +122,7 @@ public class CDConnectionSheet {
 						    NSControl.ControlTextDidChangeNotification,
 						    usernameField);
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
-	this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{FTP_STRING, SFTP_STRING}));
+//	this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{FTP_STRING, SFTP_STRING}));
 	this.protocolPopup.itemWithTitle(FTP_STRING).setTag(Session.FTP_PORT);
 	this.protocolPopup.itemWithTitle(SFTP_STRING).setTag(Session.SSH_PORT);
 	this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals("ftp") ? FTP_STRING : SFTP_STRING);
@@ -177,7 +177,7 @@ public class CDConnectionSheet {
 			}
 			    catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
 		//This exception is thrown whenever an exception occurs open or reading from the host file.
-				NSAlertPanel.beginAlertSheet(
+				NSAlertPanel.beginCriticalAlertSheet(
 				 "Error", //title
 				 "OK",// defaultbutton
 				 null,//alternative button

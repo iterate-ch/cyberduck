@@ -64,6 +64,11 @@ public class CDLoginController extends Login {
 	super();
 	this.parentWindow = parentWindow;
     }
+
+    public void finalize() throws Throwable {
+	log.debug("finalize");
+	super.finalize();
+    }    
     
     public void closeSheet(Object sender) {
 	log.debug("closeSheet");

@@ -93,7 +93,7 @@ public class Status extends Observable implements Serializable {
      * @see ch.cyberduck.core.Message
      */
     public void callObservers(Message arg) {
-	log.debug("callObserver:"+arg);
+//	log.debug("callObserver:"+arg);
 	log.debug(this.countObservers()+" observers known.");
         this.setChanged();
 	this.notifyObservers(arg);
@@ -109,7 +109,7 @@ public class Status extends Observable implements Serializable {
 	}
     }
 
-    public double parseDouble(double d) {
+    public static double parseDouble(double d) {
         //log.debug("parseDouble(" + d + ")");
         String s = Double.toString(d);
         if(s.indexOf(".") != -1) {
@@ -185,7 +185,7 @@ public class Status extends Observable implements Serializable {
 	    this.overallSpeedTimer.stop();
 	if(this.chronoTimer != null)
 	    this.chronoTimer.stop();
-	this.setResume(false);
+//	this.setResume(false);
 	this.callObservers(new Message(Message.STOP));
     }
 
@@ -203,7 +203,7 @@ public class Status extends Observable implements Serializable {
 	    this.overallSpeedTimer.stop();
 	if(this.chronoTimer != null)
 	    this.chronoTimer.stop();
-	this.setResume(false);
+//	this.setResume(false);
 	this.callObservers(new Message(Message.COMPLETE));
     }
 
@@ -233,19 +233,19 @@ public class Status extends Observable implements Serializable {
 	this.current = c;
 
 	if(this.getSpeed() <= 0 && this.getOverall() <= 0) {
-	    this.callObservers(new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of " + this.parseDouble(this.getSize()/1024) + " kBytes."));
+	    this.callObservers(new Message(Message.DATA, parseDouble(this.getCurrent()/1024) + " of " + parseDouble(this.getSize()/1024) + " kBytes."));
 	}
 	else {
 	    if(this.getOverall() <= 0) {
-		this.callObservers(new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of "
-		    + this.parseDouble(this.getSize()/1024) + " kBytes. Current: " +
-		    + this.parseDouble(this.getSpeed()/1024) + "kB/s.")); //\n" + this.getTimeLeftMessage());
+		this.callObservers(new Message(Message.DATA, parseDouble(this.getCurrent()/1024) + " of "
+		    + parseDouble(this.getSize()/1024) + " kBytes. Current: " +
+		    + parseDouble(this.getSpeed()/1024) + "kB/s.")); //\n" + this.getTimeLeftMessage());
 	    }
 	    else {
-		this.callObservers(new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of "
-		    + this.parseDouble(this.getSize()/1024) + " kBytes. Current: "
-		    + this.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
-		    + this.parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
+		this.callObservers(new Message(Message.DATA, parseDouble(this.getCurrent()/1024) + " of "
+		    + parseDouble(this.getSize()/1024) + " kBytes. Current: "
+		    + parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
+		    + parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
 	    }
 	}
 //	this.callObservers(msg);
@@ -263,6 +263,7 @@ public class Status extends Observable implements Serializable {
 	* @ return length the size of file in bytes.
      */
     public int getSize() {
+//	log.debug("getSize:"+size);
 	return size;
     }
 
@@ -310,6 +311,8 @@ public class Status extends Observable implements Serializable {
 
     public void setResume(boolean resume) {
 	this.resume = resume;
+	if(!resume)
+	    this.setCurrent(0);
     }
     
     public boolean isResume() {

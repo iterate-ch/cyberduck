@@ -42,6 +42,8 @@ public class Queue extends Thread implements Observer {
     private Observer observer;
     private int kind;
     private boolean stopped = false;
+    //number of completed transfers
+    private int completed = 0;
     private Path current;
 
     /**
@@ -58,8 +60,6 @@ public class Queue extends Thread implements Observer {
      */
     public void add(Path file) {
 	log.debug("Adding file to queue:"+file);
-	file.status.addObserver(this);
-	file.getSession().addObserver(this);
         files.add(file);
     }
 
@@ -78,6 +78,8 @@ public class Queue extends Thread implements Observer {
 	this.current = null;
 	while(i.hasNext() && !this.stopped) {
             current = (Path)i.next();
+	    current.status.addObserver(this);
+	    current.getSession().addObserver(this);
 	    switch(kind) {
 		case KIND_DOWNLOAD:
 		    current.download();
@@ -88,7 +90,9 @@ public class Queue extends Thread implements Observer {
 	    }
 	    current.status.deleteObserver(this);
 	    current.getSession().deleteObserver(this);
+	    completed++;
 	}
+	current.getSession().close();
     }
 
     public void cancel() {
@@ -98,11 +102,20 @@ public class Queue extends Thread implements Observer {
 	this.stopped = true;
     }
 
+    public boolean done() {
+	return this.numberOfElements() == completed;
+    }
+
     public int numberOfElements() {
+//	log.debug("numberOfElements:"+files.size());
 	return files.size();
     }
 
-    public int size() {
+    public int reamining() {
+	return this.numberOfElements() - completed;
+    }
+
+    public int getSize() {
 	if(-1 == this.size) {
 	    this.size = 0;
 	    Iterator i = files.iterator();
@@ -112,7 +125,21 @@ public class Queue extends Thread implements Observer {
 		this.size = this.size + file.status.getSize();
 	    }
 	}
+//	log.debug("getSize:"+size);
 	return this.size;
+    }
+
+    public int getCurrent() {
+	//@todo is it worth? ouch, calculating...
+	int current = 0;
+	Iterator i = files.iterator();
+	Path file = null;
+	while(i.hasNext()) {
+	    file = (Path)i.next();
+	    current = current + file.status.getCurrent();
+	}
+//	log.debug("getCurrent:"+current);
+	return current;
     }
 }
 

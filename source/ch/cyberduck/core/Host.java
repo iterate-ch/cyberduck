@@ -42,12 +42,10 @@ public class Host {
     }
     
     public Host(String protocol, String name, int port, Login login) {
-        this.protocol = protocol != null ? protocol : this.protocol;
-        this.port = port != -1 ? port : this.port;
-	//@todo extract protocol:// if accidentially added
+        this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
+        this.port = port != -1 ? port : this.getDefaultPort(protocol);
         this.name = name;
-        this.login = login != null ? login : this.login;
-//	ObserverList.instance().registerObservable(this);
+        this.login = login;
 	log.debug(this.toString());
     }
 
@@ -87,6 +85,17 @@ public class Host {
 	    this.session.close();
 	    this.session = null;
 	}
+    }
+    
+    
+    private int getDefaultPort(String protocol) {
+	if(protocol.equals(Session.FTP))
+	    return Session.FTP_PORT;
+	else if(protocol.equals(Session.SFTP))
+	    return Session.SSH_PORT;
+	else if(protocol.equals(Session.HTTP))
+	    return Session.HTTP_PORT;
+	return -1;
     }
 
     

@@ -24,6 +24,7 @@ import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.*;
 import ch.cyberduck.core.ftp.*;
+import ch.cyberduck.core.Preferences;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
@@ -33,8 +34,8 @@ import java.net.MalformedURLException;
 /**
 * @version $Id$
  */
-public class CDDownloadSheet {
-    private static Logger log = Logger.getLogger(CDDownloadSheet.class);
+public class CDDownloadController {
+    private static Logger log = Logger.getLogger(CDDownloadController.class);
 
     private NSWindow sheet;
     public void setSheet(NSWindow sheet) {
@@ -48,7 +49,7 @@ public class CDDownloadSheet {
 
     private NSArray references = new NSArray();
 
-    public CDDownloadSheet() {
+    public CDDownloadController() {
         if (false == NSApplication.loadNibNamed("Download", this)) {
             log.fatal("Couldn't load Download.nib");
             return;
@@ -82,19 +83,33 @@ public class CDDownloadSheet {
 		    String file = url.getPath();
 		    Path path = null;
 		    Session session = null;
+		    CDTransferController controller = new CDTransferController(Queue.KIND_DOWNLOAD);
 		    if(protocol.equals(Session.FTP)) {
-			session = new FTPSession(new Host(Session.FTP, host, url.getPort(), new CDLoginController(this.window())));
+			String userinfo = url.getUserInfo();
+			String user = Preferences.instance().getProperty("ftp.anonymous.name");
+			String pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+			if(userinfo != null) {
+			    int i = userinfo.indexOf(':');
+			    if(i != -1) {
+				user = userinfo.substring(0, i);
+				pass = userinfo.substring(i + 1);
+			    }
+			}
+
+			//@todo attach logincontroller to transfer window
+			session = new FTPSession(new Host(Session.FTP, host, url.getPort(), new CDLoginController(controller.window(), user, pass)));
 			path = new FTPPath((FTPSession)session, file);
 		    }
 		    else if (protocol.equals(Session.HTTP)) {
+//@todo			this.setServerPath(a.getPath() + "?" + a.getQuery());
 			session = new HTTPSession(new Host(Session.HTTP, host, url.getPort(), new CDLoginController(this.window())));
 			path = new HTTPPath((HTTPSession)session, file);
 		    }
 			//@todo HTTPS
 			//@todo SCP
-		    CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
+		    controller.setPath(path);
 		    this.references = references.arrayByAddingObject(controller);
-		    controller.start();
+		    controller.start(path.status.isResume());
 		}
 		catch(MalformedURLException e) {
 		    NSAlertPanel.beginCriticalAlertSheet(

@@ -179,7 +179,7 @@ public class SFTPSession extends Session {
 
     public Path workdir() {
 	try {
-	    this.check();
+	    //this.check();
 	    return new SFTPPath(this, SFTP.getDefaultDirectory());
 	}
 	catch(SshException e) {
@@ -196,6 +196,7 @@ public class SFTPSession extends Session {
 	if(!SSH.isConnected()) {
 	  //  host.recycle();
 	    this.setConnected(false);
+	    SSH.disconnect();
 	    this.connect();
 	    while(true) {
 		if(this.isConnected())

@@ -105,6 +105,7 @@ public abstract class Preferences {//extends Properties {
 //        defaults.put("interface.error-dialog", "false");
         //Paths
         defaults.put("connection.download.folder", System.getProperty("user.dir"));
+        defaults.put("connection.download.duplicate.ask", "true");
 
 
         // font sizes

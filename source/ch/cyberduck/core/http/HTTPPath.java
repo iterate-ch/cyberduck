@@ -23,6 +23,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Session;
 import org.apache.log4j.Logger;
+import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.methods.GetMethod;
+import java.io.*;
+import java.net.URL;
+import java.net.MalformedURLException;
+import ch.cyberduck.core.Preferences;
 
 import java.util.List;
 
@@ -59,17 +65,11 @@ public class HTTPPath extends Path {
 	return parent;
     }
 
-    public Session getDownloadSession() {
-	//@todo
-	return null;
-    }
-
-    public Session getUploadSession() {
-	session.log("Invalid Operation", Message.ERROR);
-	return null;
+    public Session getSession() {
+	return this.session;
     }
     
-    public List list(boolean refresh) {
+    public List list(boolean notifyobservers) {
 	session.log("Invalid Operation", Message.ERROR);
 	return null;
     }
@@ -90,6 +90,10 @@ public class HTTPPath extends Path {
 	return null;
     }
 
+//  public int size() {
+//	return this.status.getSize();
+//    }
+
     public void changePermissions(int p) {
 	session.log("Invalid Operation", Message.ERROR);
     }
@@ -103,135 +107,139 @@ public class HTTPPath extends Path {
     }
     
     public void fillDownloadQueue(Queue queue, Session session) {
+	queue.add(this);
+    }
+    
+    public void download() {
+	GetMethod GET = null;
+	try {
+	    log.debug("download:"+this.toString());
+	    this.status.fireActiveEvent();
+	    session.check();
+	    GET = new GetMethod(this.getAbsolute()); //@todo encode url
+	    GET.setUseDisk(false);
+//	@todo proxy		if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
+		    // enter the username and password for the proxy
+//			    String authString = Preferences.instance().getProperty("connection.proxy.username")+":"+Preferences.instance().getProperty("connection.proxy.password");
+		    // base64 encode the password.
+//			    String auth = "Basic " + Base64.encode(authString.getBytes());
+		    // Set up the connection so it knows we are sending proxy user information
+//			    GET.addRequestHeader( "Proxy-Authorization", auth );
+//			}
+	    GET.addRequestHeader("Accept", GET.getAcceptHeader());
+	    GET.addRequestHeader("User-Agent", "Cyberduck/" + Preferences.instance().getProperty("version"));
+	    if(this.status.isResume()) {
+		GET.addRequestHeader("Range", "bytes=" + this.status.getCurrent() + "-");
+	    }
+	    String v = GET.isHttp11() ? "session.HTTP/1.1" : "session.HTTP/1.0";
+	    session.log("GET " + this.getAbsolute() + " " + v, Message.TRANSCRIPT);
+	    Header[] requestHeaders = GET.getRequestHeaders();
+	    for(int i = 0; i < requestHeaders.length; i++) {
+		session.log(requestHeaders[i].toExternalForm(), Message.TRANSCRIPT);
+	    }
+	    int response = session.HTTP.executeMethod(GET);
+	    session.log(response + " " + HttpStatus.getStatusText(response), Message.TRANSCRIPT);
+	    Header[] responseHeaders = GET.getResponseHeaders();
+	    for(int i = 0; i < responseHeaders.length; i++) {
+		session.log(responseHeaders[i].toExternalForm(), Message.TRANSCRIPT);
+	    }
+	    if(response == HttpStatus.SC_MOVED_PERMANENTLY || response == HttpStatus.SC_MOVED_TEMPORARILY) {
+		//what about observers?
+		/*
+		try {
+		    URL url = new URL(GET.getResponseHeader("Location").getValue());
+		    session.close();
+		    log.debug("IMPLEMENT URL QUERY!!! "+url.getQuery());
+			//@todo url.getQuery()
+		    session.HTTPSession s = new session.HTTPSession(new Host(url.getProtocol(), url.getHost(), url.getPort()));
+		    session.HTTPPath redirect = new session.HTTPPath(s, url.getFile());
+		    redirect.download();
+		    return;
+		}
+		catch(MalformedURLException e) {
+		    throw new HttpException(HttpStatus.getStatusText(response), response);
+		}
+		 */
+	    }
 
+	    if(!HttpStatus.isSuccessfulResponse(response)) {
+		throw new HttpException(HttpStatus.getStatusText(response), response);
+	    }
+
+	    if(this.status.isResume()) {
+		if(GET.getStatusCode() != HttpStatus.SC_PARTIAL_CONTENT) {
+		    session.log("Resumption not possible.", Message.ERROR);
+		    this.status.setCurrent(0);
+		    this.status.setResume(false);
+		}
+		else {
+		    session.log("Resume at " + this.status.getCurrent() + ".", Message.PROGRESS);
+		}
+	    }
+
+	    Header rangeHeader = GET.getResponseHeader("Content-Range"); //Content-Range: bytes 21010-47021/47022
+	    Header lengthHeader = GET.getResponseHeader("Content-Length");
+	    Header transferEncodingHeader = GET.getResponseHeader("Bookmark-Encoding");
+	    if(lengthHeader != null) {
+		try {
+		    this.status.setSize(Integer.parseInt(lengthHeader.getValue()));
+		}
+		catch(NumberFormatException e) {
+		    this.status.setSize(-1);
+		}
+	    }
+	    if(rangeHeader != null) {
+		try {
+		    String r = rangeHeader.getValue();
+		    int l = Integer.parseInt(r.substring(v.indexOf('/') + 1));
+		    this.status.setSize(l);
+		}
+		catch(NumberFormatException e) {
+		    this.status.setSize(-1);
+		}
+	    }
+	    else if(null != transferEncodingHeader) {
+		if("chunked".equalsIgnoreCase(transferEncodingHeader.getValue())) {
+		    this.status.setSize(-1);
+		}
+	    }
+
+	    OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
+	    if(out == null) {
+		throw new IOException("Unable to buffer data");
+	    }
+	    session.log("Opening data stream...", Message.PROGRESS);
+	    InputStream in = session.HTTP.getInputStream(GET);
+	    if(in == null) {
+		throw new IOException("Unable opening data stream");
+	    }
+	    session.log("Downloading "+this.getName(), Message.PROGRESS);
+	    this.download(in, out);
+	}
+	catch(HttpException e) {
+	    Header[] responseHeaders = GET.getResponseHeaders();
+	    for(int i = 0; i < responseHeaders.length; i++) {
+		session.log(responseHeaders[i].toExternalForm(), Message.TRANSCRIPT);
+	    }
+	    session.log(e.getReplyCode() + " " +  e.getMessage(), Message.ERROR);
+	}
+	catch(IOException e) {
+	    session.log(e.getMessage(), Message.ERROR);
+	}
+	finally {
+            try {
+		session.HTTP.quit();
+            }
+            catch(IOException e) {
+		session.log(e.getMessage(), Message.ERROR);
+            }
+	}
     }
 
     public void fillUploadQueue(Queue queue, Session session) {
 	session.log("Invalid Operation", Message.ERROR);
     }
     
-    public synchronized void download() {
-	/*
-	new Thread() {
-	    public void run() {
-		GetMethod GET = null;
-		try {
-		    HTTPPath.this.status.fireActiveEvent();
-		    session.check();
-		    GET = new GetMethod(HTTPPath.this.getAbsolute()); //@todo encode url
-		    GET.setUseDisk(false);
-//	@todo proxy		if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
-			    // enter the username and password for the proxy
-//			    String authString = Preferences.instance().getProperty("connection.proxy.username")+":"+Preferences.instance().getProperty("connection.proxy.password");
-			    // base64 encode the password.
-//			    String auth = "Basic " + Base64.encode(authString.getBytes());
-			    // Set up the connection so it knows we are sending proxy user information
-//			    GET.addRequestHeader( "Proxy-Authorization", auth );
-//			}
-		    GET.addRequestHeader("Accept", GET.getAcceptHeader());
-		    GET.addRequestHeader("User-Agent", "Cyberduck/" + Preferences.instance().getProperty("version"));
-		    if(HTTPPath.this.status.isResume()) {
-			GET.addRequestHeader("Range", "bytes=" + HTTPPath.this.status.getCurrent() + "-");
-		    }
-		    String v = GET.isHttp11() ? "HTTP/1.1" : "HTTP/1.0";
-		    session.log("GET " + HTTPPath.this.getAbsolute() + " " + v, Message.TRANSCRIPT);
-		    Header[] requestHeaders = GET.getRequestHeaders();
-		    for(int i = 0; i < requestHeaders.length; i++) {
-			session.log(requestHeaders[i].toExternalForm(), Message.TRANSCRIPT);
-		    }
-		    int response = HTTP.executeMethod(GET);
-		    session.log(response + " " + HttpStatus.getStatusText(response), Message.TRANSCRIPT);
-		    Header[] responseHeaders = GET.getResponseHeaders();
-		    for(int i = 0; i < responseHeaders.length; i++) {
-			session.log(responseHeaders[i].toExternalForm(), Message.TRANSCRIPT);
-		    }
-		    if(response == HttpStatus.SC_MOVED_PERMANENTLY || response == HttpStatus.SC_MOVED_TEMPORARILY) {
-			    //@ todo
-//			    try {
-
-			//URL url = new URL(GET.getResponseHeader("Location").getValue());
-			 //session.close();
-				//@todo url.getQuery()
-			// HTTPSession s = new HTTPSession(new Host(url.getProtocol(), url.getHost(), url.getPort());
-			//	    HTTPPath redirect = new HTTPPath(url.getFile());
-			//	    redirect.download();
-			//	    return;
-
-//			    }
-//			    catch(MalformedURLException e) {
-			throw new HttpException(HttpStatus.getStatusText(response), response);
-//			    }
-			}
-
-		    if(!HttpStatus.isSuccessfulResponse(response)) {
-			throw new HttpException(HttpStatus.getStatusText(response), response);
-		    }
-
-		    if(HTTPPath.this.status.isResume()) {
-			if(GET.getStatusCode() != HttpStatus.SC_PARTIAL_CONTENT) {
-			    session.log("Resumption not possible.", Message.ERROR);
-			    HTTPPath.this.status.setCurrent(0);
-			    HTTPPath.this.status.setResume(false);
-			}
-			else {
-			    session.log("Resume at " + HTTPPath.this.status.getCurrent() + ".", Message.PROGRESS);
-			}
-		    }
-
-		    Header rangeHeader = GET.getResponseHeader("Content-Range"); //Content-Range: bytes 21010-47021/47022
-		    Header lengthHeader = GET.getResponseHeader("Content-Length");
-		    Header transferEncodingHeader = GET.getResponseHeader("Bookmark-Encoding");
-		    if(lengthHeader != null) {
-			try {
-			    HTTPPath.this.status.setSize(Integer.parseInt(lengthHeader.getValue()));
-			}
-			catch(NumberFormatException e) {
-			    HTTPPath.this.status.setSize(-1);
-			}
-		    }
-		    if(rangeHeader != null) {
-			try {
-			    String r = rangeHeader.getValue();
-			    int l = Integer.parseInt(r.substring(v.indexOf('/') + 1));
-			    HTTPPath.this.status.setSize(l);
-			}
-			catch(NumberFormatException e) {
-			    HTTPPath.this.status.setSize(-1);
-			}
-		    }
-		    else if(null != transferEncodingHeader) {
-			if("chunked".equalsIgnoreCase(transferEncodingHeader.getValue())) {
-			    HTTPPath.this.status.setSize(-1);
-			}
-		    }
-
-		    OutputStream out = new FileOutputStream(HTTPPath.this.getLocal(), HTTPPath.this.status.isResume());
-		    if(out == null) {
-			throw new IOException("Unable to buffer data");
-		    }
-		    session.log("Opening data stream...", Message.PROGRESS);
-		    InputStream in = HTTP.getInputStream(GET);
-		    if(in == null) {
-			throw new IOException("Unable opening data stream");
-		    }
-		    downloadSession.log("Downloading "+this.getName(), Message.PROGRESS);
-		    HTTPPath.this.download(in, out);
-		    }
-		catch(HttpException e) {
-		    Header[] responseHeaders = GET.getResponseHeaders();
-		    for(int i = 0; i < responseHeaders.length; i++) {
-			session.log(responseHeaders[i].toExternalForm(), Message.TRANSCRIPT);
-		    }
-		    session.log(e.getReplyCode() + " " +  e.getMessage(), Message.ERROR);
-		}
-		catch(IOException e) {
-		    session.log(e.getMessage(), Message.ERROR);
-		}
-		}
-	    }.start();
-	 */
-	}
-
     public void upload() {
 	session.log("Invalid Operation", Message.ERROR);
     }
@@ -242,9 +250,5 @@ public class HTTPPath extends Path {
 
     public boolean isDirectory() {
 	return false;
-    }
-
-    public Session getSession() {
-	return this.session;
     }
 }

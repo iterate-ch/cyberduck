@@ -69,17 +69,31 @@ public class CDTransferController implements Observer {
     public void setProgressField(NSTextField progressField) {
 	this.progressField = progressField;
     }
+    
+    private NSTextField fileDataField;
+    public void setFileDataField(NSTextField fileDataField) {
+	this.fileDataField = fileDataField;
+    }
 
-    private NSTextField dataField;
-    public void setDataField(NSTextField dataField) {
-	this.dataField = dataField;
+    private NSTextField totalDataField;
+    public void setTotalDataField(NSTextField totalDataField) {
+	this.totalDataField = totalDataField;
     }
     
-    private NSProgressIndicator progressBar;
-    public void setProgressBar(NSProgressIndicator progressBar) {
-	this.progressBar = progressBar;
-	this.progressBar.setIndeterminate(true);
-	this.progressBar.setUsesThreadedAnimation(true);
+    private NSProgressIndicator totalProgressBar;
+    public void setTotalProgressBar(NSProgressIndicator totalProgressBar) {
+	this.totalProgressBar = totalProgressBar;
+	this.totalProgressBar.setIndeterminate(true);
+	this.totalProgressBar.setUsesThreadedAnimation(true);
+//	this.totalProgressBar.setDoubleValue(0);
+    }
+
+    private NSProgressIndicator fileProgressBar;
+    public void setFileProgressBar(NSProgressIndicator fileProgressBar) {
+	this.fileProgressBar = fileProgressBar;
+	this.fileProgressBar.setIndeterminate(true);
+	this.fileProgressBar.setUsesThreadedAnimation(true);
+//	this.fileProgressBar.setDoubleValue(0);
     }
 
     private NSButton stopButton;
@@ -92,6 +106,11 @@ public class CDTransferController implements Observer {
 	this.resumeButton = resumeButton;
     }
 
+    private NSButton reloadButton;
+    public void setReloadButton(NSButton reloadButton) {
+	this.reloadButton = reloadButton;
+    }
+    
     public NSImageView iconView;
     public void setIconView(NSImageView iconView) {
 	this.iconView = iconView;
@@ -110,23 +129,29 @@ public class CDTransferController implements Observer {
 	super();
 	this.file = file;
 	this.kind = kind;
-	//register for events
-	
         if (false == NSApplication.loadNibNamed("Transfer", this)) {
             log.fatal("Couldn't load Transfer.nib");
             return;
         }
-	this.init();
+//@todo	this.init();
     }
 
+    public CDTransferController(int kind) {
+	this(null, kind);
+    }
+
+    public void setPath(Path file) {
+	this.file = file;
+    }
+    
     private void init() {
 	log.debug("init");
-	this.fileIconView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
 	this.urlField.setStringValue(file.getAbsolute()); //@todo url
 	this.fileField.setStringValue(file.getLocal().toString());
 	this.window().setTitle(file.getName());
 	this.progressField.setStringValue("");
-	this.dataField.setStringValue("");
+	this.fileDataField.setStringValue("");
+	this.totalDataField.setStringValue("");
 	this.clockField.setStringValue("00:00");
 	switch(kind) {
 	    case Queue.KIND_DOWNLOAD:
@@ -138,23 +163,46 @@ public class CDTransferController implements Observer {
 	}
     }
 
-    public void start() {
-//	file.getDownloadSession().addObserver(this);
+    public void finalize() throws Throwable {
+	log.debug("finalize");
+	super.finalize();
+    }
+    
+    public void start(boolean resume) {
+	this.init();
 	this.queue = new Queue(kind);
 	this.queue.addObserver(this);
+	this.window().setTitle(file.getName());
+
+//@todo	this.totalProgressBar.setDoubleValue(0);
+
+	this.totalProgressBar.startAnimation(null);
+	this.fileProgressBar.startAnimation(null);
+
+	this.window().makeKeyAndOrderFront(null);
+	if(this.validate(resume))
+	    this.start();
+    }
+
+    private void start() {
 	switch(kind) {
-	    case Queue.KIND_DOWNLOAD:
-	//@todo check if file exists in download folder
+	    case Queue.KIND_DOWNLOAD :
 		file.fillDownloadQueue(queue, file.getSession().copy());
+		if(file.isFile())
+		    this.fileIconView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
+		else
+		    this.fileIconView.setImage(NSImage.imageNamed("folder.tiff"));
 		break;
 	    case Queue.KIND_UPLOAD:
-	//@todo check if file exists on server
 		file.fillUploadQueue(queue, file.getSession().copy());
+		if(file.getLocal().isFile())
+		    this.fileIconView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
+		else
+		    this.fileIconView.setImage(NSImage.imageNamed("folder.tiff"));
 		break;
 	}
-//	this.progressBar.setMaxValue(queue.size());
-	this.window().setTitle(file.getName()+" - "+queue.numberOfElements()+" files");
-	this.window().makeKeyAndOrderFront(null);
+	if(queue.numberOfElements() > 1)
+	    this.window().setTitle(file.getName()+" - "+queue.numberOfElements()+" files");
 	queue.start();
     }
 
@@ -166,36 +214,52 @@ public class CDTransferController implements Observer {
 		Status status = (Status)o;
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.DATA)) {
-		    this.progressBar.setIndeterminate(false);
-		    this.progressBar.setDoubleValue((double)status.getCurrent());
-		    this.progressBar.setMaxValue(status.getSize());
-		    this.dataField.setStringValue(msg.getDescription());
+		    int currentQueue = queue.getCurrent();
+		    
+		    this.fileProgressBar.setDoubleValue((double)status.getCurrent());
+		    this.totalProgressBar.setDoubleValue((double)currentQueue);
+//		    log.debug("File progress:"+status.getCurrent());
+//		    log.debug("Total progress:"+queue.getCurrent());
+
+		    this.fileProgressBar.setMaxValue(status.getSize());
+		    this.totalProgressBar.setMaxValue(queue.getSize());
+
+		    this.fileDataField.setStringValue(msg.getDescription());
+		    this.fileDataField.sizeToFit();
+		    this.totalDataField.setStringValue(Status.parseDouble(currentQueue/1024)+" of "+Status.parseDouble(queue.getSize()/1024) + " kBytes.");
+		    this.totalDataField.sizeToFit();
 		}
 		else if(msg.getTitle().equals(Message.CLOCK)) {
 		    clockField.setStringValue(msg.getDescription());
 		}
 		else if(msg.getTitle().equals(Message.START)) {
-		    this.resumeButton.setTitle("Resume");
-		    this.progressBar.startAnimation(null);
+		    this.totalProgressBar.setIndeterminate(false);
+		    this.fileProgressBar.setIndeterminate(false);
+
+		    this.totalProgressBar.setMinValue(0);
+		    this.fileProgressBar.setMinValue(0);
+		    
 		    this.stopButton.setEnabled(true);
 		    this.resumeButton.setEnabled(false);
-		    this.progressBar.setMinValue(0);
+		    this.reloadButton.setEnabled(false);
 		}
 		else if(msg.getTitle().equals(Message.STOP)) {
-		    this.progressBar.stopAnimation(null);
 		    this.stopButton.setEnabled(false);
 		    this.resumeButton.setEnabled(true);
+		    this.reloadButton.setEnabled(true);
 		}
 		else if(msg.getTitle().equals(Message.COMPLETE)) {
-		    this.progressBar.setDoubleValue((double)status.getCurrent());
-		    this.resumeButton.setTitle("Reload");
-		    this.stopButton.setEnabled(false);
-		    this.resumeButton.setEnabled(true);
-		    this.progressField.setStringValue("Complete");
+//		    this.fileProgressBar.setDoubleValue((double)status.getCurrent());
+//@todo		    if(queue.done()) {
+			this.resumeButton.setEnabled(false);
+			this.reloadButton.setEnabled(true);
+			this.stopButton.setEnabled(false);
+			this.progressField.setStringValue("Complete");
+//		    }
 		    if(Queue.KIND_DOWNLOAD == kind) {
 			//@todo temp path name
 			//path.getLocalTemp().renameTo(path.getLocal());
-			if(Preferences.instance().getProperty("connection.download.postprocess").equals("true")) {
+			if(Preferences.instance().getProperty("connection.download.postprocess").equals("true") && queue.numberOfElements() == 1) {
 			    NSWorkspace.sharedWorkspace().openFile(file.getLocal().toString());
 			}
 		    }
@@ -206,7 +270,7 @@ public class CDTransferController implements Observer {
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.ERROR)) {
-		    NSAlertPanel.beginAlertSheet(
+		    NSAlertPanel.beginCriticalAlertSheet(
 				   "Error", //title
 				   "OK",// defaultbutton
 				   null,//alternative button
@@ -234,11 +298,14 @@ public class CDTransferController implements Observer {
     }
 
     public void resumeButtonClicked(NSButton sender) {
-	if(sender.title().equals("Resume"))
-	    this.file.status.setResume(true);
-	this.start();
+//	if(sender.title().equals("Resume"))
+	this.start(true);
     }
 
+    public void reloadButtonClicked(NSButton sender) {
+	this.start(false);
+    }
+    
     public void stopButtonClicked(NSButton sender) {
 	this.queue.cancel();
     }
@@ -265,7 +332,7 @@ public class CDTransferController implements Observer {
 	     }
 	     ),// end selector
 					       null, // dismiss selector
-					       this, // context
+					       null, // context
 					       "Closing this window will stop the file transfer" // message
 					       );
 	    return false;	    
@@ -275,12 +342,87 @@ public class CDTransferController implements Observer {
 
     public void confirmSheetDidEnd(NSWindow sheet, int returncode, NSWindow main)  {
 	sheet.orderOut(null);
-	if(returncode == NSAlertPanel.DefaultReturn) {
-	    this.stopButtonClicked(null);
-	    this.window().close();
+	switch(returncode) {
+	    case NSAlertPanel.DefaultReturn :
+		this.stopButtonClicked(null);
+		this.window().close();
+		break;
+	    case NSAlertPanel.AlternateReturn :
+		break;
 	}
-	if(returncode == NSAlertPanel.AlternateReturn) {
-	    //
+    }
+    
+    private boolean validate(boolean resume) {
+	//is upload
+	if(Queue.KIND_UPLOAD == this.kind) {
+	    this.file.status.setResume(false);
+	    return true;
+	}
+	//is download
+	if(resume) {
+	    if(file.status.isComplete()) {
+		NSAlertPanel.beginInformationalAlertSheet(
+				       "Error", //title
+				       "OK",// defaultbutton
+				       "Cancel",//alternative button
+				       null,//other button
+				       this.window(), //docWindow
+				       null, //modalDelegate
+				       null, //didEndSelector
+				       null, // dismiss selector
+				       null, // context
+				       "Download already complete." // message
+				       );
+		return false;
+	    }
+	    this.file.status.setResume(file.getLocal().exists());
+//	    status.setCurrent(new Long(transfer.getLocalTempPath().length()).intValue());
+	    return true;
+	}
+	else { //!resume
+	    if(file.getLocal().exists()) {
+		if(Preferences.instance().getProperty("connection.download.duplicate.ask").equals("true")) {
+		    NSAlertPanel.beginCriticalAlertSheet(
+					   "File exists", //title
+					   "Resume",// defaultbutton
+					   "Cancel",//alternative button
+					   "Overwrite",//other button
+					   this.window(),
+					   this, //delegate
+					   new NSSelector
+					   (
+	 "validateSheetDidEnd",
+	 new Class[]
+	 {
+	     NSWindow.class, int.class, NSWindow.class
+	 }
+	 ),// end selector
+					   null, // dismiss selector
+					   null, // context
+					   "The file "+file.getName()+" alredy exists in "+file.getLocal().getParent()+"." // message
+					   );
+		}
+		return false;
+	    }
+	    return true;
+	}
+    }
+
+    public void validateSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+	sheet.orderOut(null);
+	switch(returncode) {
+	    case NSAlertPanel.DefaultReturn : //Resume
+		this.file.status.setResume(true);
+		this.start();
+		break;
+	    case NSAlertPanel.AlternateReturn : //Cancel
+		this.totalProgressBar.stopAnimation(null);
+		this.fileProgressBar.stopAnimation(null);
+		break;
+	    case NSAlertPanel.OtherReturn : //Overwrite
+		this.file.status.setResume(false);
+		this.start();
+		break;
 	}
     }
 }

@@ -136,7 +136,7 @@ public class FTPSession extends Session {
 
     public Path workdir() {
 	try {
-	    this.check();
+	    //this.check();
 	    return new FTPPath(this, FTP.pwd());
 	}
 	catch(FTPException e) {

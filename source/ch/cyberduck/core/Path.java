@@ -65,7 +65,7 @@ public abstract class Path {// extends Observable {
 	this.setLocal(file);
     }
 
-    private void setPath(String parent, String name) {
+    public void setPath(String parent, String name) {
         if(parent.charAt(parent.length()-1) == '/')
             this.setPath(parent + name);
         else
@@ -75,7 +75,7 @@ public abstract class Path {// extends Observable {
     /**
 	* @param pathname The absolute path of the file
      */
-    private void setPath(String pathname) {
+    public void setPath(String pathname) {
 //	log.debug("setPath:"+pathname);
 //	if(pathname.charAt(pathname.length()-1) == '/')
 //	    pathname = pathname.substring(0, pathname.length()-2);
@@ -109,37 +109,51 @@ public abstract class Path {// extends Observable {
     public void setCache(List files) {
 	this.cache = files;
     }
-    
+
     /**
-    * @param refresh Refetch the list from the server
-    */
-    public abstract List list(boolean refresh);
+	* Request a file listing from the server. Has to be a directory
+     * @param notifyobservers Notify the observers if true
+     */
+    public abstract List list(boolean notifyobservers);
 
     public abstract List list();
 
+    /**
+	* Remove this file from the remote host. Does not affect
+     * any corresponding local file
+     */
     public abstract void delete();
 
     /**
-    *	Create a new directory inside me
+    *	Create a new directory inside me on the remote host
     * @param folder The relative name of the new folder
     */
     public abstract Path mkdir(String folder);
+
+//    public abstract int size();
     
+    /**
+	* Create a new emtpy file on the remote host
+     */
 //    public abstract void touch(String file);
 
     public abstract void rename(String n);
 
+    /**
+	* @param p ocal permissions
+     */
     public abstract void changePermissions(int p);
 
-//    public abstract void changeOwner(String owner);
-
-//    public abstract void changeGroup(String group);
-    
     public boolean isFile() {
 	return this.attributes.getMode().charAt(0) == '-';
     }
 
+    /**
+	* Returns true if is directory or a symbolic link that everyone can execute
+     */
     public boolean isDirectory() {
+	if(this.isLink())
+	    return this.attributes.getPermission().getOtherPermissions()[Permission.EXECUTE];
 	return this.attributes.getMode().charAt(0) == 'd';
     }
 
@@ -147,6 +161,9 @@ public abstract class Path {// extends Observable {
 	return this.attributes.getMode().charAt(0) == 'l';
     }
 
+    /**
+	* @return The file type
+     */
     public String getKind() {
 	if(this.isFile())
 	    return "File";
@@ -400,7 +417,7 @@ public abstract class Path {// extends Observable {
      */
     private void eof(boolean complete) {
         if(complete) {
-            this.status.setCurrent(this.status.getSize());
+//            this.status.setCurrent(this.status.getSize());
             this.status.fireCompleteEvent();
         }
         else {

@@ -34,7 +34,7 @@ import java.io.IOException;
 public class HTTPSession extends Session {
     private static Logger log = Logger.getLogger(Session.class);
 
-    private HttpClient HTTP;
+    protected HttpClient HTTP;
 
     public HTTPSession(Host h) {
         super(h);

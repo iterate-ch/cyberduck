@@ -99,8 +99,7 @@ public class Header extends NameValuePair {
     public String toExternalForm() {
         return ((null == getName() ? "" : getName()) +
                 ": " +
-                (null == getValue() ? "" : getValue()) +
-                "\r\n");
+                (null == getValue() ? "" : getValue()));
     }
 
     /**

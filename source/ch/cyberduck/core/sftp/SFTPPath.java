@@ -36,6 +36,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -227,6 +228,21 @@ public class SFTPPath extends Path {
 	return new SFTPPath(session, this.getAbsolute(), name);
     }
 
+//    public synchronized int size() {
+//	try {
+//	    session.check();
+//	    SftpFile p = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
+//	    return p.getAttributes().getSize().intValue();
+//	}
+//	catch(SshException e) {
+//	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+//	}
+//	catch(IOException e) {
+//	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
+//	}
+//	return -1;
+//  }
+
     public synchronized void changePermissions(int permissions) {
 	log.debug("changePermissions");
 	try {
@@ -243,12 +259,11 @@ public class SFTPPath extends Path {
     }
 
 
-    public void fillDownloadQueue(Queue queue, Session session) {
+    public void fillDownloadQueue(Queue queue, Session downloadSession) {
 	this.session = (SFTPSession)downloadSession;
 	try {
 	    session.check();
 	    if(isDirectory()) {
-		session.SFTP.chdir(this.getAbsolute());
 		List files = this.list(false);
 		java.util.Iterator i = files.iterator();
 		while(i.hasNext()) {
@@ -257,33 +272,11 @@ public class SFTPPath extends Path {
 		    p.fillDownloadQueue(queue, session);
 		}
 	    }
-	    else if(isFile())
+	    else if(isFile()) {
+		SftpFile p = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
+		this.status.setSize(p.getAttributes().getSize().intValue());
 		queue.add(this);
-	    else
-		throw new IOException("Cannot determine file type");
-	}
-	catch(SshException e) {
-	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
-	}
-	catch(IOException e) {
-	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
-	}
-    }
-
-    public void fillUploadQueue(Queue queue, Session session) {
-	this.session = (SFTPSession)uploadSession;
-	try {
-	    session.check();
-	    if(this.getLocal().isDirectory()) {
-		session.SFTP.makeDirectory(this.getAbsolute());//@todo do it here rather than in upload() ?
-		File[] files = this.getLocal().listFiles();
-		for(int i = 0; i < files.length; i++) {
-		    SFTPPath p = new SFTPPath(session, this.getAbsolute(), files[i]);
-		    p.fillUploadQueue(queue, session);
-		}
 	    }
-	    else if(this.getLocal().isFile())
-		queue.add(this);
 	    else
 		throw new IOException("Cannot determine file type");
 	}
@@ -302,19 +295,51 @@ public class SFTPPath extends Path {
 		throw new IOException("Download must be a file.");
 	    status.fireActiveEvent();
 	    session.check();
-	    OutputStream out = new FileOutputStream(file.getLocal(), file.status.isResume());
+	    this.getLocal().getParentFile().mkdir();
+	    OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
 	    if(out == null) {
 		throw new IOException("Unable to buffer data");
 	    }
-	    SftpFile p = session.SFTP.openFile(file.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-	    file.status.setSize(p.getAttributes().getSize().intValue());
+	    SftpFile p = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
+	    this.status.setCurrent(0);//@todo implmenet resume for sftp
+//	    this.status.setSize(p.getAttributes().getSize().intValue());
 	    session.log("Opening data stream...", Message.PROGRESS);
 	    SftpFileInputStream in = new SftpFileInputStream(p);
 	    if(in == null) {
 		throw new IOException("Unable opening data stream");
 	    }
 	    session.log("Downloading "+this.getName(), Message.PROGRESS);
-	    file.download(in, out);
+	    this.download(in, out);
+	}
+	catch(SshException e) {
+	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	}
+	catch(IOException e) {
+	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
+	finally {
+//	    session.close();
+	}
+    }
+
+    public void fillUploadQueue(Queue queue, Session uploadSession) {
+	this.session = (SFTPSession)uploadSession;
+	try {
+	    session.check();
+	    if(this.getLocal().isDirectory()) {
+		session.SFTP.makeDirectory(this.getAbsolute());//@todo do it here rather than in upload() ?
+		File[] files = this.getLocal().listFiles();
+		for(int i = 0; i < files.length; i++) {
+		    SFTPPath p = new SFTPPath(session, this.getAbsolute(), files[i]);
+		    p.fillUploadQueue(queue, session);
+		}
+	    }
+	    else if(this.getLocal().isFile()) {
+		this.status.setSize((int)this.getLocal().length());
+		queue.add(this);
+	    }
+	    else
+		throw new IOException("Cannot determine file type");
 	}
 	catch(SshException e) {
 	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
@@ -323,35 +348,38 @@ public class SFTPPath extends Path {
 	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
     }
-
+    
     public void upload() {
 	try {
 	    log.debug("upload:"+this.toString());
 	    status.fireActiveEvent();
 	    session.check();
-
-	    file.status.setSize((int)file.getLocal().length());
-	    java.io.InputStream in = new FileInputStream(file.getLocal());
+//	    this.status.setSize((int)this.getLocal().length());
+	    java.io.InputStream in = new FileInputStream(this.getLocal());
 	    if(in == null) {
 		throw new IOException("Unable to buffer data");
 	    }
 	    session.log("Opening data stream...", Message.PROGRESS);
-	    SftpFile remoteFile = session.SFTP.openFile(file.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
+	    SftpFile remoteFile = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
 	    FileAttributes attrs = remoteFile.getAttributes();
+	    //@ todo default permissions
 	    attrs.setPermissions("rw-r-----");
 	    session.SFTP.setAttributes(remoteFile, attrs);
 	    SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);
 	    if(out == null) {
 		throw new IOException("Unable opening data stream");
 	    }
-	    session.log("Uploading "+file.getName(), Message.PROGRESS);
-	    file.upload(out, in);
+	    session.log("Uploading "+this.getName(), Message.PROGRESS);
+	    this.upload(out, in);
 	}
 	catch(SshException e) {
 	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
 	}
 	catch(IOException e) {
 	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
+	finally {
+//	    session.close();
 	}
     }
 }

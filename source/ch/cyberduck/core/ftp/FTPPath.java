@@ -85,10 +85,6 @@ public class FTPPath extends Path {
 	return this.list(true);
     }
 
-    /**
-    * Request a file listing from the server. Has to be a directory
-     * @param notifyobservers Notify the observers if true
-     */
     public synchronized List list(boolean notifyobservers) {
 	try {
 	    session.check();
@@ -183,6 +179,21 @@ public class FTPPath extends Path {
 	return new FTPPath(session, this.getAbsolute(), name);
     }
 
+//    public int size() {
+//	try {
+//	    session.check();
+//	    //@todo ouch,upload?
+//	    this.status.setSize((int)(session.FTP.size(this.getAbsolute())));
+//	}
+//	catch(FTPException e) {
+//	    session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+//	}
+//	catch(IOException e) {
+//	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
+//	}
+//	return status.getSize();
+  //  }
+
     public synchronized void changePermissions(int permissions) {
 	log.debug("changePermissions");
 	try {
@@ -249,9 +260,7 @@ public class FTPPath extends Path {
 	this.session = (FTPSession)downloadSession;
 	try {
 	    session.check();
-//	    session = (FTPSession)this.getDownloadSession();
 	    if(isDirectory()) {
-		session.FTP.chdir(this.getAbsolute());
 		List files = this.list(false);
 		java.util.Iterator i = files.iterator();
 		while(i.hasNext()) {
@@ -259,10 +268,11 @@ public class FTPPath extends Path {
 		    p.setLocal(new File(this.getLocal(), p.getName()));
 		    p.fillDownloadQueue(queue, session);
 		}
-//		session.FTP.cdup();
 	    }
-	    else if(isFile())
+	    else if(isFile()) {
+		this.status.setSize((int)session.FTP.size(this.getAbsolute()));
 		queue.add(this);
+	    }
 	    else
 		throw new IOException("Cannot determine file type");
 	}
@@ -273,7 +283,7 @@ public class FTPPath extends Path {
 	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
     }
-    
+
     public void download() {
 	try {
 	    log.debug("download:"+this.toString());
@@ -284,7 +294,7 @@ public class FTPPath extends Path {
 	    if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 		session.log("Setting transfer mode to BINARY", Message.PROGRESS);
 		session.FTP.setType(FTPTransferType.BINARY);
-		this.status.setSize((int)(session.FTP.size(this.getAbsolute())));
+//		this.status.setSize((int)(session.FTP.size(this.getAbsolute())));
 		this.getLocal().getParentFile().mkdir();
 		OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
 		if(out == null) {
@@ -327,6 +337,9 @@ public class FTPPath extends Path {
 	catch(IOException e) {
 	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
+	finally {
+//	    session.close();
+	}
     }
 
     public void fillUploadQueue(Queue queue, Session uploadSession) {
@@ -335,16 +348,16 @@ public class FTPPath extends Path {
 	    session.check();
 	    if(this.getLocal().isDirectory()) {
 		session.FTP.mkdir(this.getAbsolute());//@todo do it here rather than in upload() ?
-//		session.FTP.chdir(this.getAbsolute());
 		File[] files = this.getLocal().listFiles();
 		for(int i = 0; i < files.length; i++) {
 		    FTPPath p = new FTPPath(session, this.getAbsolute(), files[i]);
 		    p.fillUploadQueue(queue, session);
 		}
-//		session.FTP.cdup();
 	    }
-	    else if(this.getLocal().isFile())
+	    else if(this.getLocal().isFile()) {
+		this.status.setSize((int)this.getLocal().length());
 		queue.add(this);
+	    }
 	    else
 		throw new IOException("Cannot determine file type");
 	}
@@ -364,7 +377,7 @@ public class FTPPath extends Path {
 	    if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 		session.log("Setting transfer mode to BINARY.", Message.PROGRESS);
 		session.FTP.setType(FTPTransferType.BINARY);
-		this.status.setSize((int)this.getLocal().length());
+//		this.status.setSize((int)this.getLocal().length());
 
 		java.io.InputStream in = new FileInputStream(this.getLocal());
 		if(in == null) {
@@ -409,6 +422,9 @@ public class FTPPath extends Path {
 	}
 	catch(IOException e) {
 	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
+	finally {
+//	    session.close();
 	}
     }
     
@@ -595,40 +611,39 @@ public class FTPPath extends Path {
 		p.attributes.setPermission(new Permission(access));
 		p.status.setSize(Integer.parseInt(size));
 
-		/*
-		 if(isLink(line)) {
-		    // the following lines are the most ugly. I just don't know how I can be sure
-      // a link is a directory or a file. Now I look if there's a '.' and if we have execute rights.
-		     
-		    //good chance it is a directory if everyone can execute
-		     boolean execute = p.attributes.getPermission().getOtherPermissions()[Permission.EXECUTE];
-		     boolean point = false;
-		     if(link.length() >= 4) {
-			 if(link.charAt(link.length()-3) == '.' || link.charAt(link.length()-4) == '.')
-			     point = true;
-		     }
-		     boolean directory = false;
-		     if(!point && execute)
-			 directory = true;
-
-		     if(directory) {
-			 log.debug("Parsing link as directory:"+link);
-			//if(!(link.charAt(link.length()-1) == '/'))
-			//    link = link+"/";
-			 if(link.charAt(0) == '/')
-			     p.setPath(link);
-			 else
-			     p.setPath(path + link);
-		     }
-		     else {
-			 log.debug("Parsing link as file:"+link);
-			 if(link.charAt(0) == '/')
-			     p.setPath(link);
-			 else
-			     p.setPath(path + link);
-		     }
-		 }
-		 */
+//		 if(isLink(line)) {
+//		    // the following lines are the most ugly. I just don't know how I can be sure
+  //    // a link is a directory or a file. Now I look if there's a '.' and if we have execute rights.
+//		     
+//		    //good chance it is a directory if everyone can execute
+//		     boolean execute = p.attributes.getPermission().getOtherPermissions()[Permission.EXECUTE];
+//		     boolean point = false;
+//		     if(link.length() >= 4) {
+//			 if(link.charAt(link.length()-3) == '.' || link.charAt(link.length()-4) == '.')
+//			     point = true;
+//		     }
+//		     boolean directory = false;
+//		     if(!point && execute)
+//			 directory = true;
+//
+//		     if(directory) {
+//			 log.debug("Parsing link as directory:"+link);
+//			//if(!(link.charAt(link.length()-1) == '/'))
+//			//    link = link+"/";
+//			 if(link.charAt(0) == '/')
+//			     p.setPath(link);
+//			 else
+//			     p.setPath(path + link);
+//		     }
+//		     else {
+//			 log.debug("Parsing link as file:"+link);
+//			 if(link.charAt(0) == '/')
+//			     p.setPath(link);
+//			 else
+//			     p.setPath(path + link);
+//		     }
+//		 }
+//		 */
 		return p;
 	    }
 	    catch(NoSuchElementException e) {

@@ -25,6 +25,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import java.io.File;
 
 public class CDMainController {
     private static Logger log = Logger.getLogger(CDMainController.class);
@@ -33,8 +34,8 @@ public class CDMainController {
 	org.apache.log4j.BasicConfigurator.configure();
 	Logger log = Logger.getRootLogger();
 //	log.setLevel(Level.OFF);
-	log.setLevel(Level.DEBUG);
-//	log.setLevel(Level.INFO);
+//	log.setLevel(Level.DEBUG);
+	log.setLevel(Level.INFO);
 //	log.setLevel(Level.WARN);
 //	log.setLevel(Level.ERROR);
 //	log.setLevel(Level.FATAL);
@@ -46,12 +47,16 @@ public class CDMainController {
 //	controller.connectButtonClicked(this);
     }
 
+    public void finalize() throws Throwable {
+	log.debug("finalize");
+	super.finalize();
+    }
+    
     /**
 	* Keep references of controller objects because otherweise they get garbage collected
      * if not referenced here.
      */
     private NSArray references = new NSArray();
-    private CDDownloadSheet downloadSheet;
     
     // ----------------------------------------------------------
     // Outlets
@@ -63,11 +68,11 @@ public class CDMainController {
     }
 
     public void helpMenuClicked(Object sender) {
-	NSWorkspace.sharedWorkspace().openFile("Help.rtfd", "TextEdit");
+	NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().resourcePath(), "Help.rtfd").toString());
     }
 
     public void licenseMenuClicked(Object sender) {
-	NSWorkspace.sharedWorkspace().openFile("License.rtf", "TextEdit");
+	NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().resourcePath(), "License.rtf").toString());
     }
 
     public void updateMenuClicked(Object sender) {
@@ -224,8 +229,9 @@ public class CDMainController {
     }
 
     public void newDownloadMenuClicked(Object sender) {
-	this.downloadSheet = new CDDownloadSheet();
-	downloadSheet.window().makeKeyAndOrderFront(null);
+	CDDownloadController controller = new CDDownloadController();
+	this.references = references.arrayByAddingObject(controller);
+	controller.window().makeKeyAndOrderFront(null);
     }
 
     public void newBrowserMenuClicked(Object sender) {

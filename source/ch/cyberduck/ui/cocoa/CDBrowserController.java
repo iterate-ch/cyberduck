@@ -31,9 +31,12 @@ import ch.cyberduck.core.sftp.SFTPPath;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
-
+import java.util.Vector;
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
 * @version $Id$
@@ -169,20 +172,36 @@ public class CDBrowserController implements Observer {
 		tableView.setIndicatorImage(null, c);
 	}
 	//@todo desscending
-//	boolean a = true;
 //	if(tableView.indicatorImage(tableColumn) != null && tableView.indicatorImage(tableColumn).name().equals("NSAscendingSortIndicator")) {
 //	    tableView.setIndicatorImage(NSImage.imageNamed("NSDescendingSortIndicator"), tableColumn);
 //	    a = false;
 //	}
 //	else {
-//	    tableView.setIndicatorImage(NSImage.imageNamed("NSAscendingSortIndicator"), tableColumn);
+	tableView.setIndicatorImage(NSImage.imageNamed("NSAscendingSortIndicator"), tableColumn);
 //	}
 	final boolean ascending = true;
 	final int higher = ascending ? 1 : -1 ;
 	final int lower = ascending ? -1 : 1;
-	if(tableColumn.identifier().equals("FILENAME")) {
-	    java.util.Collections.sort((java.util.List)browserModel.list(),
-		      new java.util.Comparator() {
+	if(tableColumn.identifier().equals("TYPE")) {
+	    Collections.sort(browserModel.list(),
+		      new Comparator() {
+			  public int compare(Object o1, Object o2) {
+			      Path p1 = (Path) o1;
+			      Path p2 = (Path) o2;
+			      if(p1.isDirectory() && p2.isDirectory())
+				  return 0;
+			      if(p1.isFile() && p2.isFile())
+				  return 0;
+			      if(p1.isFile())
+				  return higher;
+			      return lower;
+			  }
+		      }
+		      );
+	}
+	else if(tableColumn.identifier().equals("FILENAME")) {
+	    Collections.sort(browserModel.list(),
+		      new Comparator() {
 			  public int compare(Object o1, Object o2) {
 			      Path p1 = (Path)o1;
 			      Path p2 = (Path)o2;
@@ -195,11 +214,10 @@ public class CDBrowserController implements Observer {
 			  }
 		      }
 		      );
-	    browserTable.reloadData();
 	}
 	else if(tableColumn.identifier().equals("SIZE")) {
-	    java.util.Collections.sort((java.util.List)browserModel.list(),
-				new java.util.Comparator() {
+	    Collections.sort(browserModel.list(),
+				new Comparator() {
 				    public int compare(Object o1, Object o2) {
 					int p1 = ((Path)o1).status.getSize();
 					int p2 = ((Path)o2).status.getSize();
@@ -216,8 +234,30 @@ public class CDBrowserController implements Observer {
 				    }
 				}
 				);
-	    tableView.reloadData();
 	}
+	else if(tableColumn.identifier().equals("MODIFIED")) {
+	    Collections.sort(browserModel.list(),
+		      new Comparator() {
+			  public int compare(Object o1, Object o2) {
+			      Path p1 = (Path) o1;
+			      Path p2 = (Path) o2;
+			      return p1.attributes.getModified().compareTo(p2.attributes.getModified());
+			  }
+		      }
+		      );
+	}
+	else if(tableColumn.identifier().equals("OWNER")) {
+	    Collections.sort(browserModel.list(),
+		      new Comparator() {
+			  public int compare(Object o1, Object o2) {
+			      Path p1 = (Path) o1;
+			      Path p2 = (Path) o2;
+			      return p1.attributes.getOwner().compareTo(p2.attributes.getOwner());
+			  }
+		      }
+		      );
+	}
+	browserTable.reloadData();
     }
 
 
@@ -276,8 +316,7 @@ public class CDBrowserController implements Observer {
 //		Host host = (Host)o;
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.ERROR)) {
-		    //public static void beginAlertSheet( String title, String defaultButton, String alternateButton, String otherButton, NSWindow docWindow, Object modalDelegate, NSSelector didEndSelector, NSSelector didDismissSelector, Object contextInfo, String message)
-		    NSAlertPanel.beginAlertSheet(
+		    NSAlertPanel.beginCriticalAlertSheet(
 				   "Error", //title
 				   "OK",// defaultbutton
 				   null,//alternative button
@@ -366,31 +405,34 @@ public class CDBrowserController implements Observer {
     public void deleteButtonClicked(Object sender) {
 	log.debug("deleteButtonClicked");
 	NSEnumerator enum = browserTable.selectedRowEnumerator();
-	Path path = null;
+	Vector files = new Vector();
+	StringBuffer alertText = new StringBuffer("Really delete the following files? This cannot be undone.");
 	while(enum.hasMoreElements()) {
 	    int selected = ((Integer)enum.nextElement()).intValue();
-	    path = (Path)browserModel.getEntry(selected);
-
-	    NSAlertPanel.beginCriticalAlertSheet(
-					  "Delete", //title
-					  "Delete",// defaultbutton
-					  "Cancel",//alternative button
-					  null,//other button
-					  mainWindow,//window
-					  this, //delegate
-					  new NSSelector
-					  (
-	"deleteSheetDidEnd",
-	new Class[]
-	{
-	    NSWindow.class, int.class, Object.class
+	    Path p = (Path)browserModel.getEntry(selected);
+	    files.add(p);
+	    alertText.append("\n"+p.getName());
 	}
-	),// end selector
-					  null, // dismiss selector
-					  path, // contextInfo
-					  "Really delete the file '"+path.getName()+"'? This cannot be undone." // message
-					  );
-	}
+	NSAlertPanel.beginCriticalAlertSheet(
+				      "Delete", //title
+				      "Delete",// defaultbutton
+				      "Cancel",//alternative button
+				      null,//other button
+				      this.window(),//window
+				      this, //delegate
+				      new NSSelector
+				      (
+	   "deleteSheetDidEnd",
+	   new Class[]
+	   {
+	       NSWindow.class, int.class, Object.class
+	   }
+	   ),// end selector
+				      null, // dismiss selector
+				      files, // contextInfo
+				      alertText.toString()
+//					  "Really delete the file '"+path.getName()+"'? This cannot be undone." // message
+				      );
     }
     
     public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
@@ -398,10 +440,14 @@ public class CDBrowserController implements Observer {
 	sheet.orderOut(null);
 	switch(returnCode) {
 	    case(NSAlertPanel.DefaultReturn):
-		Path path = (Path)contextInfo;
-		path.delete();
+		Vector files = (Vector)contextInfo;
+		Iterator i = files.iterator();
+		while(i.hasNext()) {
+		    ((Path)i.next()).delete();
+		}
+		break;
 	    case(NSAlertPanel.AlternateReturn):
-		//
+		break;
 	}
     }
 
@@ -419,12 +465,9 @@ public class CDBrowserController implements Observer {
 	while(enum.hasMoreElements()) {
 	    int selected = ((Integer)enum.nextElement()).intValue();
 	    path = (Path)browserModel.getEntry(selected);
-	    //Path path = (Path)browserModel.getEntry(browserTable.selectedRow());
 	    CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
 	    this.references = references.arrayByAddingObject(controller);
-	    controller.start();
-//	controller.window().makeKeyAndOrderFront(null);
-//	path.download();
+	    controller.start(path.status.isResume());
 	}
     }
 
@@ -457,7 +500,7 @@ public class CDBrowserController implements Observer {
 		    	//@todo keep reference?
 		    CDTransferController controller = new CDTransferController(path, Queue.KIND_UPLOAD);
 		    this.references = references.arrayByAddingObject(controller);
-		    controller.start();
+		    controller.start(path.status.isResume());
 //		    controller.window().makeKeyAndOrderFront(null);
 //		    path.upload();
 		}
@@ -488,6 +531,26 @@ public class CDBrowserController implements Observer {
     public void connectFieldClicked(Object sender) {
 	log.debug("connectFieldClicked");
 	Host host = new Host(((NSControl)sender).stringValue(), new CDLoginController(this.window()));
+	if(host.getProtocol().equals(Session.SFTP)) {
+	    try {
+		host.setHostKeyVerification(new CDHostKeyController(this.window()));
+	    }
+	    catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
+		//This exception is thrown whenever an exception occurs open or reading from the host file.
+		NSAlertPanel.beginCriticalAlertSheet(
+			       "Error", //title
+			       "OK",// defaultbutton
+			       null,//alternative button
+			       null,//other button
+			       this.window(), //docWindow
+			       null, //modalDelegate
+			       null, //didEndSelector
+			       null, // dismiss selector
+			       null, // context
+			       "Could not open or read the host file: "+e.getMessage() // message
+			       );
+	    }
+	}
 	this.mount(host);
     }
 
@@ -757,7 +820,7 @@ public class CDBrowserController implements Observer {
     public boolean windowShouldClose(NSWindow sender) {
 	if(host != null) {
 	    if(host.getSession().isConnected()) {
-		NSAlertPanel.beginAlertSheet(
+		NSAlertPanel.beginCriticalAlertSheet(
 			       "End session?", //title
 			       "Close",// defaultbutton
 			       "Cancel",//alternative button
@@ -773,7 +836,7 @@ public class CDBrowserController implements Observer {
 	   }
 	   ),// end selector
 			       null, // dismiss selector
-			       sender, // context
+			       null, // context
 			       "The connection to the remote host will be closed." // message
 			       );
 	//@todo return the actual selection

@@ -31,12 +31,11 @@ import java.util.Observable;
 public class Attributes extends Observable {
     private static Logger log = Logger.getLogger(Path.class);
 
-    private int size;
     private long modified;
 
     private String owner;
     private String group;
-    private String access;
+    private String mode = "-rwxrwxrwx"; //defaulting to a file
     private Permission permission;
     private boolean visible = true;
 
@@ -71,15 +70,15 @@ public class Attributes extends Observable {
 	* @param access unix access permitions, i.e. -rwxrwxrwx
      */
 
-    public void setMode(String access) {
-	this.access = access;
+    public void setMode(String mode) {
+	this.mode = mode;
     }
 
     /**
 	* @return The unix access permissions including the the first bit
      */
     public String getMode() {
-	return this.access;
+	return this.mode;
     }
 
     public void setPermission(Permission p) {
