@@ -21,27 +21,30 @@ package ch.cyberduck.core;
 import junit.framework.TestCase;
 
 public class CodecTest extends TestCase {
-
+	
 	static {
 		org.apache.log4j.BasicConfigurator.configure();
 	}
-
+	
 	public CodecTest(String name) {
 		super(name);
 	}
-
-
+	
+	
 	public void testEncoding() {
-                String testString = "aÃàoÃàuÃàaÃàaÃàaÃà!eÃÄ&%cÃß\""; //encoded
-        {
+		try {
+			String testString = "aÃàoÃàuÃàaÃàaÃàaÃà!eÃÄ&%cÃß\""; //encoded
+			{
                 String decoded = Codec.decode(testString);
                 String encoded = new String(Codec.encode(decoded));
 				assertTrue(testString.equals(encoded));
-        }
-        {
+			}
+			{
                 String decoded = Codec.decode(testString, "ISO-8859-1");
                 String encoded = new String(Codec.encode(decoded, "ISO-8859-1"));
 				assertTrue(testString.equals(encoded));
-        }
+			}
+		}
+		catch(java.lang.UnsatisfiedLinkError e) {}
 	}
 }

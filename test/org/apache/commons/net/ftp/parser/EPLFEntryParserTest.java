@@ -23,11 +23,11 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
     private Path parentPath;
 
     public void setUp() {
-        this.parser = new UnixFTPEntryParser();
-        Login login = new Login("localhost", "anonymous", "anonymous@example.net", false);
-        Host host = new Host("localhost", login);
-        Session session = new FTPSession(host);
-        this.parentPath = PathFactory.createPath(session, "/");
+		this.parser = new UnixFTPEntryParser();
+		Login login = new Login("localhost", "anonymous", "anonymous@example.net", false);
+		Host host = new Host("localhost", login);
+		Session session = new FTPSession(host);
+		this.parentPath = PathFactory.createPath(session, "/");
     }
 
     public void testStandardBinls() {

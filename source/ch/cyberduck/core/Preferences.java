@@ -122,6 +122,16 @@ public abstract class Preferences {
         defaults.put("queue.download.changePermissions", "true");
         defaults.put("queue.download.preserveDate", "true");
 
+		//ftp properties
+        defaults.put("ftp.anonymous.name", "anonymous");
+        defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
+        defaults.put("ftp.connectmode", "passive");
+        defaults.put("ftp.transfermode", "binary");
+        defaults.put("ftp.transfermode.ascii.extensions", "txt cgi htm html shtml xml xsl php php3 js css asp java c cp cpp m h pl py rb sh");
+        defaults.put("ftp.line.separator", "unix");
+        defaults.put("ftp.sendSystemCommand", "true");
+        defaults.put("ftp.sendExtendedListCommand", "false");
+		
         defaults.put("connection.login.name", System.getProperty("user.name"));
         defaults.put("connection.login.useKeychain", "true");
         defaults.put("connection.buffer", "16384"); //in bytes, is 128kbit
@@ -134,16 +144,6 @@ public abstract class Preferences {
 		defaults.put("connection.proxy.useAuthentication", Proxy.isSOCKSAuthenticationEnabled() ? "true" : "false");
 		defaults.put("connection.proxy.username", Proxy.getSOCKSProxyUser());
 		defaults.put("connection.proxy.password", Proxy.getSOCKSProxyPassword());
-
-        //ftp properties
-        defaults.put("ftp.anonymous.name", "anonymous");
-        defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
-        defaults.put("ftp.connectmode", "passive");
-        defaults.put("ftp.transfermode", "binary");
-        defaults.put("ftp.transfermode.ascii.extensions", "txt cgi htm html shtml xml xsl php php3 js css asp java c cp cpp m h pl py rb sh");
-        defaults.put("ftp.line.separator", "unix");
-        defaults.put("ftp.sendSystemCommand", "true");
-        defaults.put("ftp.sendExtendedListCommand", "false");
 
         defaults.put("http.agent", "Cyberduck/" + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
         defaults.put("http.acceptheader", "*/*");

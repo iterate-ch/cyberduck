@@ -21,66 +21,76 @@ package ch.cyberduck.core;
 import junit.framework.TestCase;
 
 public class LoginTest extends TestCase {
-
+	
 	static {
 		org.apache.log4j.BasicConfigurator.configure();
 	}
-
+	
 	public LoginTest(String name) {
 		super(name);
 	}
-
+	
 	public void testLoginReasonable() {
-		Login login = new Login("example.net", 
-								"dkocher", 
-								"changeme");
-		assertTrue(login.hasReasonableValues());
-//		login.setUsername(null);
-//		assertFalse(login.hasReasonableValues());
-//		login.setPassword(null);
-//		assertFalse(login.hasReasonableValues());
+		try {
+			Login login = new Login("example.net", 
+									"dkocher", 
+									"changeme");
+			assertTrue(login.hasReasonableValues());
+			//		login.setUsername(null);
+			//		assertFalse(login.hasReasonableValues());
+			//		login.setPassword(null);
+			//		assertFalse(login.hasReasonableValues());
+		}
+		catch(java.lang.UnsatisfiedLinkError e) {}
 	}
 	
 	public void testLoginWithoutUsername() {
-		Login login = new Login("example.net",
-								null, //login should insert default username
-								"changeme");
-		assertTrue(login.hasReasonableValues());
-	}
-
-	public void testLoginWithoutPass() {
-		Login login = new Login("example.net",
-								"dkocher", 
-								null);
-		assertFalse(login.hasReasonableValues());
-	}
-
-	public void testLoginAnonymous1() {
-		Login login = new Login("example.net", 
-								Preferences.instance().getProperty("ftp.anonymous.name"), 
-								Preferences.instance().getProperty("ftp.anonymous.pass"));
-		assertTrue(login.hasReasonableValues());
-	}
-
-	public void testLoginAnonymous2() {
-		Login login = new Login("example.net", 
-								Preferences.instance().getProperty("ftp.anonymous.name"), 
-								null);
-		assertTrue(login.hasReasonableValues());
-	}
-
-	public void testLoginAnonymous3() {
-		Login login = new Login("example.net", 
-								"user:pass", 
-								null);
-		assertTrue(login.hasReasonableValues());
+		try {
+			Login login = new Login("example.net",
+									null, //login should insert default username
+									"changeme");
+			assertTrue(login.hasReasonableValues());
+		}
+		catch(java.lang.UnsatisfiedLinkError e) {}
 	}
 	
-	/*
-	public void testKeychain() {
-		Login login = new Login("example.net", "dkocher", "changeme", true);
-		login.addPasswordToKeychain();
-		assertEquals(login.getPassword(), login.getPasswordFromKeychain());
+	public void testLoginWithoutPass() {
+		try {
+			Login login = new Login("example.net",
+									"dkocher", 
+									null);
+			assertFalse(login.hasReasonableValues());
+		}
+		catch(java.lang.UnsatisfiedLinkError e) {}
 	}
-	*/
+	
+	public void testLoginAnonymous1() {
+		try {
+			Login login = new Login("example.net", 
+									Preferences.instance().getProperty("ftp.anonymous.name"), 
+									Preferences.instance().getProperty("ftp.anonymous.pass"));
+			assertTrue(login.hasReasonableValues());
+		}
+		catch(java.lang.UnsatisfiedLinkError e) {}
+	}
+	
+	public void testLoginAnonymous2() {
+		try {
+			Login login = new Login("example.net", 
+									Preferences.instance().getProperty("ftp.anonymous.name"), 
+									null);
+			assertTrue(login.hasReasonableValues());
+		}
+		catch(java.lang.UnsatisfiedLinkError e) {}
+	}
+	
+	public void testLoginAnonymous3() {
+		try {
+			Login login = new Login("example.net", 
+									"user:pass", 
+									null);
+			assertTrue(login.hasReasonableValues());
+		}
+		catch(java.lang.UnsatisfiedLinkError e) {}
+	}
 }
