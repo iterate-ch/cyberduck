@@ -44,21 +44,11 @@ public class Attributes extends Observable {
 		if(typeObj != null) {
 			this.type = Integer.parseInt((String)typeObj);
 		}
-//		Object permObj = dict.objectForKey("Permission");
-//		if(permObj != null) {
-//			this.permission = new Permission((NSDictionary)permObj);
-//		}
-//		Object timeObj = dict.objectForKey("Timestamp");
-//		if(timeObj != null) {
-//			this.modified = new Date(Long.parseLong((String)timeObj));
-//		}
 	}
 
 	public NSDictionary getAsDictionary() {
 		NSMutableDictionary dict = new NSMutableDictionary();
 		dict.setObjectForKey(this.type+"", "Type");
-//		dict.setObjectForKey(this.permission.getAsDictionary(), "Permission"); //@todo
-//		dict.setObjectForKey(""+this.modified.getTime(), "Timestamp"); //@todo
 		return dict;
 	}
 

@@ -75,10 +75,6 @@ public abstract class Path {
 		if(attributesObj != null) {
 			this.attributes = new Attributes((NSDictionary)attributesObj);
 		}
-		Object statusObj = dict.objectForKey("Status");
-		if(statusObj != null) {
-			this.status = new Status((NSDictionary)statusObj);
-		}
 	}
 
 	public NSDictionary getAsDictionary() {
@@ -86,7 +82,6 @@ public abstract class Path {
 		dict.setObjectForKey(this.getAbsolute(), "Remote");
 		dict.setObjectForKey(this.getLocal().toString(), "Local");
 		dict.setObjectForKey(this.attributes.getAsDictionary(), "Attributes");
-		dict.setObjectForKey(this.status.getAsDictionary(), "Status");
 		return dict;
 	}
 

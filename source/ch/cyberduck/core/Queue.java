@@ -330,7 +330,8 @@ public abstract class Queue extends Observable {
 	}
 	
 	public boolean isInitialized() {
-		return this.worker.isInitialized();
+		return this.getSize() != 0;
+//		return this.worker.isInitialized();
 	}
 	
 	/**

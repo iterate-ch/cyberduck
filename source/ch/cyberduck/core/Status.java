@@ -61,24 +61,6 @@ public class Status extends Observable implements Serializable {
 		super();
 	}
 
-	public Status(NSDictionary dict) {
-		Object sizeObj = dict.objectForKey("Size");
-		if(sizeObj != null) {
-			this.size = Integer.parseInt((String)sizeObj);
-		}
-		Object currentObj = dict.objectForKey("Current");
-		if(currentObj != null) {
-			this.current = Integer.parseInt((String)currentObj);
-		}
-	}
-
-	public NSDictionary getAsDictionary() {
-		NSMutableDictionary dict = new NSMutableDictionary();
-		dict.setObjectForKey(this.size+"", "Size");
-		dict.setObjectForKey(this.current+"", "Current");
-		return dict;
-	}
-
 	/**
 	 * Notify all observers
 	 *

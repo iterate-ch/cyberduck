@@ -147,7 +147,8 @@ public class CDProgressController extends NSObject implements Observer {
 	}
 	
 	private String getProgressText() {
-		if(this.queue.isInitialized()) {
+		if(this.queue.getSize() != 0) {
+//		if(this.queue.isInitialized()) {
 			if(this.queue.isRunning()) {
 				return this.queue.getCurrentAsString()
 				+" of "+this.queue.getSizeAsString()
