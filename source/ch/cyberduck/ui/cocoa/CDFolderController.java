@@ -89,8 +89,10 @@ public class CDFolderController extends NSObject {
 		sheet.orderOut(null);
         switch (returncode) {
             case (NSAlertPanel.DefaultReturn):
-				((Path) contextInfo).getSession().mkdir(((Path) contextInfo).getAbsolute()+"/"+folderField.stringValue());
-				((Path) contextInfo).list(true);
+				Path p = (Path)contextInfo;
+				p.setPath(p.getAbsolute(), folderField.stringValue());
+				p.mkdir(false);
+				p.list(true);
 				break;
             case (NSAlertPanel.AlternateReturn):
                 break;

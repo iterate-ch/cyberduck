@@ -158,10 +158,6 @@ public abstract class Session extends Observable {
      */
     public abstract void check() throws IOException;
 
-	public abstract void mkdir(String absolute);
-		
-    public abstract void rename(String oldFilename, String newFilename);
-
     /**
      * @return boolean True if the session has not yet been closed.
      */

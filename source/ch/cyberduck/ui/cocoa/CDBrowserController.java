@@ -1288,13 +1288,14 @@ public class CDBrowserController extends NSObject implements Observer {
                         NSArray elements = (NSArray) o;
                         for (int i = 0; i < elements.count(); i++) {
                             NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                            Path newParentFolder = this.getEntry(row);
-                            if (newParentFolder.isDirectory()) {
+                            Path parent = this.getEntry(row);
+                            if (parent.isDirectory()) {
 								Queue q = new Queue(dict);
 								List files = q.getRoots();
 								for (Iterator iter = files.iterator(); iter.hasNext();) {
 									Path p = (Path) iter.next();
-									newParentFolder.getSession().rename(p.getAbsolute(), newParentFolder.getAbsolute()+"/"+p.getName());
+///									p.rename(parent.getAbsolute()+"/"+p.getName());
+									PathFactory.createPath(parent.getSession(), p.getAbsolute(), p.getName()).rename(parent.getAbsolute()+"/"+p.getName());
 								}
 								tableView.deselectAll(null);
 								pathController.workdir().list(true);

@@ -130,44 +130,6 @@ public class FTPSession extends Session {
         }
         return null;
     }
-
-	public void mkdir(String name) {
-        log.debug("mkdir:" + name);
-        try {
-            this.check();
-            this.log("Make directory " + name, Message.PROGRESS);
-            this.FTP.mkdir(name);
-        }
-        catch (FTPException e) {
-            this.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            this.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            this.log("Idle", Message.STOP);
-        }
-    }
-	
-    public void rename(String oldFilename, String newFilename) {
-        log.debug("rename:" + newFilename);
-        try {
-            this.check();
-//            this.FTP.chdir(file.getParent().getAbsolute());
-            this.log("Renaming " + oldFilename + " to " + newFilename, Message.PROGRESS);
-            this.FTP.rename(oldFilename, newFilename);
-//            file.getParent().list(true);
-        }
-        catch (FTPException e) {
-            this.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            this.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            this.log("Idle", Message.STOP);
-        }
-    }
 	
     public synchronized void check() throws IOException {
         log.debug(this.toString() + ":check");

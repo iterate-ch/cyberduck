@@ -199,10 +199,6 @@ public class CDInfoController extends NSObject {
 	public void windowWillClose(NSNotification notification) {
 		log.debug("windowWillClose");
 		OFFSET =- 16;
-		//        if (!filenameField.stringValue().equals(this.file.getName())) {
-		//            			this.file.rename(filenameField.stringValue());
-
-		//        }
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 		instances.removeObject(this);
 	}
@@ -212,9 +208,7 @@ public class CDInfoController extends NSObject {
 		log.debug("textInputDidEndEditing");
 		if (!filenameField.stringValue().equals(this.file.getName())) {
 			if(filenameField.stringValue().indexOf('/') == -1) {
-				this.file.getSession().rename(this.file.getAbsolute(), filenameField.stringValue());
-				// adjust the path of the local reference
-				this.file.setPath(this.file.getParent().getAbsolute(), filenameField.stringValue());
+				this.file.rename(filenameField.stringValue());
 				// refresh the file listing so that the observers (if any) get notified of the change
 				this.file.getParent().list(true);
 			}

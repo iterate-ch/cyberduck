@@ -99,12 +99,4 @@ public class HTTPSession extends Session {
         this.log("Invalid Operation", Message.ERROR);
         return null;
     }
-	
-	public void mkdir(String name) {
-        this.log("Invalid Operation", Message.ERROR);
-    }
-	
-    public void rename(String oldFilename, String newFilename) {
-        this.log("Invalid Operation", Message.ERROR);
-	}
 }

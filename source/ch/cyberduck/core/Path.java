@@ -195,6 +195,10 @@ public abstract class Path {
         return this.getSession().cache().get(this.getAbsolute());
     }
 
+	public void invalidate() {
+        this.getSession().cache().remove(this.getAbsolute());
+	}
+
     protected void setCache(List files) {
 //		Path parent = this.getParent();
 //		parent.setName("..");
@@ -202,7 +206,7 @@ public abstract class Path {
 //		files.add(parent);
         this.getSession().cache().put(this.getAbsolute(), files);
     }
-
+	
     /**
      * Request a file listing from the server. Has to be a directory
      */
@@ -218,6 +222,15 @@ public abstract class Path {
      */
     public abstract void delete();
 
+	/**
+		* @param recursive Create intermediate directories as required.  If this option is
+	 * not specified, the full path prefix of each operand must already
+	 * exist
+	 */
+	public abstract void mkdir(boolean recursive);
+	
+    public abstract void rename(String newFilename);
+	
     public abstract void changeOwner(String owner, boolean recursive);
 
     public abstract void changeGroup(String group, boolean recursive);

@@ -69,29 +69,29 @@ public class HTTPPath extends Path {
 
     private HTTPSession session;
 
-    public HTTPPath(HTTPSession session, String parent, String name) {
+    public HTTPPath(HTTPSession s, String parent, String name) {
         super(parent, name);
-        this.session = session;
+        this.session = s;
     }
 
-    public HTTPPath(HTTPSession session, String path) {
+    public HTTPPath(HTTPSession s, String path) {
         super(path);
-        this.session = session;
+        this.session = s;
     }
 
-    public HTTPPath(HTTPSession session, String parent, Local file) {
+    public HTTPPath(HTTPSession s, String parent, Local file) {
         super(parent, file);
-        this.session = session;
+        this.session = s;
     }
 
-    public HTTPPath(HTTPSession session, NSDictionary dict) {
+    public HTTPPath(HTTPSession s, NSDictionary dict) {
         super(dict);
-        this.session = session;
+        this.session = s;
     }
 
-    public HTTPPath(HTTPSession session) {
+    public HTTPPath(HTTPSession s) {
         super();
-        this.session = session;
+        this.session = s;
     }
 
     public Path getParent() {
@@ -133,6 +133,10 @@ public class HTTPPath extends Path {
         session.log("Invalid Operation", Message.ERROR);
     }
 
+	public void mkdir(boolean recursive) {
+		session.log("Invalid Operation", Message.ERROR);
+	}
+	
     public void rename(String filename) {
         session.log("Invalid Operation", Message.ERROR);
     }
@@ -160,7 +164,7 @@ public class HTTPPath extends Path {
         GetMethod GET = null;
         try {
             log.debug("download:" + this.toString());
-            this.session.check();
+            session.check();
             GET = new GetMethod(this.getAbsolute());
             GET.setUseDisk(false);
             GET.setFollowRedirects(false);
@@ -237,7 +241,7 @@ public class HTTPPath extends Path {
                 log.info("Processing redirect");
                 try {
                     URL redirect = new URL(GET.getResponseHeader("Location").getValue());
-                    this.session = new HTTPSession(new Host(redirect.getProtocol(), redirect.getHost(),
+                    session = new HTTPSession(new Host(redirect.getProtocol(), redirect.getHost(),
                             redirect.getPort(),
                             new Login(redirect.getHost(), redirect.getUserInfo(), null))); //todo extract user from getUserInfo
                     this.setPath(redirect.getFile());

@@ -34,6 +34,8 @@ public class CDQueueController extends NSObject implements Observer {
 
     private static CDQueueController instance;
 
+	private static NSMutableArray instances = new NSMutableArray();
+
     /**
      * The observer to notify when an upload is complete
      */
@@ -53,7 +55,7 @@ public class CDQueueController extends NSObject implements Observer {
     }
 
     private CDQueueController() {
-		//
+        instances.addObject(this);
     }
 
 	public boolean windowShouldClose(NSWindow sender) {
@@ -64,6 +66,7 @@ public class CDQueueController extends NSObject implements Observer {
     public void windowWillClose(NSNotification notification) {
 		log.debug("windowWillClose:"+notification);
         QueueList.instance().save();
+        instances.removeObject(this);
         instance = null;
     }
 

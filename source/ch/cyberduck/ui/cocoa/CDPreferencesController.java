@@ -35,6 +35,8 @@ public class CDPreferencesController extends NSObject {
 
     private static CDPreferencesController instance;
 
+	private static NSMutableArray instances = new NSMutableArray();
+
     private NSWindow window; //IBOutlet
 
     public void setWindow(NSWindow window) {
@@ -54,7 +56,7 @@ public class CDPreferencesController extends NSObject {
     }
 
     private CDPreferencesController() {
-		//
+        instances.addObject(this);
     }
 
     public void awakeFromNib() {
@@ -73,6 +75,7 @@ public class CDPreferencesController extends NSObject {
 	
     public void windowWillClose(NSNotification notification) {
         NSNotificationCenter.defaultCenter().removeObserver(this);
+        instances.removeObject(this);
         instance = null;
     }
 
