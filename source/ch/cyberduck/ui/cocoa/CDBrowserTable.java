@@ -103,7 +103,9 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	log.debug("NSEvent.UpArrowFunctionKey:"+NSEvent.UpArrowFunctionKey);
 	log.debug("NSEvent.DownArrowFunctionKey:"+NSEvent.DownArrowFunctionKey);
 	log.debug("NSEvent.CommandKeyMask & NSEvent.UpArrowFunctionKey:"+(NSEvent.CommandKeyMask & NSEvent.UpArrowFunctionKey));
-	if(e.modifierFlags() == NSEvent.CommandKeyMask) {
+	log.debug("e.modifierFlags() & NSEvent.CommandKeyMask:"+(e.modifierFlags() & NSEvent.CommandKeyMask));
+
+	if((e.modifierFlags() == 11534608) {
 	    log.debug("*** NSEvent.CommandKeyMask");
      //up arrow key
      //	61063 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.6 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=126
