@@ -102,11 +102,11 @@ public class HTTPPath extends Path {
 	session.log("Invalid Operation", Message.ERROR);
     }
     
-    public void fillDownloadQueue(Queue queue) {
+    public void fillDownloadQueue(Queue queue, Session session) {
 
     }
 
-    public void fillUploadQueue(Queue queue) {
+    public void fillUploadQueue(Queue queue, Session session) {
 	session.log("Invalid Operation", Message.ERROR);
     }
     
@@ -214,7 +214,7 @@ public class HTTPPath extends Path {
 		    if(in == null) {
 			throw new IOException("Unable opening data stream");
 		    }
-		    session.log("Downloading "+HTTPPath.this.getName()+"...", Message.PROGRESS);
+		    downloadSession.log("Downloading "+this.getName(), Message.PROGRESS);
 		    HTTPPath.this.download(in, out);
 		    }
 		catch(HttpException e) {

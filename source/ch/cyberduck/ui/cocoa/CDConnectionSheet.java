@@ -31,8 +31,8 @@ import org.apache.log4j.Logger;
 public class CDConnectionSheet {
     private static Logger log = Logger.getLogger(CDConnectionSheet.class);
 
-    private static final String FTP_STRING;
-    private static final String SFTP_STRING;
+    private static final String FTP_STRING = "FTP (File Transfer)";
+    private static final String SFTP_STRING = "SFTP (SSH Secure File Transfer)";
     
         // ----------------------------------------------------------
     // Outlets
@@ -123,6 +123,8 @@ public class CDConnectionSheet {
 						    usernameField);
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
 	this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{FTP_STRING, SFTP_STRING}));
+	this.protocolPopup.itemWithTitle(FTP_STRING).setTag(Session.FTP_PORT);
+	this.protocolPopup.itemWithTitle(SFTP_STRING).setTag(Session.SSH_PORT);
 	this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals("ftp") ? FTP_STRING : SFTP_STRING);
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
 //	this.pathField.setStringValue("~");
@@ -141,9 +143,6 @@ public class CDConnectionSheet {
 	    portField.setIntValue(Session.SSH_PORT);
 	if(selectedItem.tag() == Session.FTP_PORT)
 	    portField.setIntValue(Session.FTP_PORT);
-	if(selectedItem.tag() == Session.HTTP_PORT)
-	    portField.setIntValue(Session.HTTP_PORT);
-	//@todo HTTPS
 	this.textInputDidChange(null);
     }
 
@@ -154,8 +153,6 @@ public class CDConnectionSheet {
 	    protocol = Session.SFTP+"://";
 	else if(selectedItem.tag() == Session.FTP_PORT)
 	    protocol = Session.FTP+"://";
-	else if(selectedItem.tag() == Session.HTTP_PORT)
-	    protocol = Session.HTTP+"://";
 	urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostField.stringValue()+":"+portField.stringValue());
     }
 

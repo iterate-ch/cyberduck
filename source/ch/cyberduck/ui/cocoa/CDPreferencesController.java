@@ -65,6 +65,11 @@ public class CDPreferencesController {
     public void setCloseTransferCheckbox(NSButton closeTransferCheckbox) {
 	this.closeTransferCheckbox = closeTransferCheckbox;
     }
+
+    private NSButton processCheckbox;
+    public void setProcessCheckbox(NSButton processCheckbox) {
+	this.processCheckbox = processCheckbox;
+    }
     
     private NSPopUpButton transfermodeCombo;
     public void setTransfermodeCombo(NSPopUpButton transfermodeCombo) {
@@ -204,6 +209,17 @@ public class CDPreferencesController {
 		break;
 	    case NSCell.OffState:
 		Preferences.instance().setProperty("transfer.close", "false");
+		break;
+	}
+    }
+
+    public void processCheckboxClicked(NSButton sender) {
+	switch(sender.state()) {
+	    case NSCell.OnState:
+		Preferences.instance().setProperty("connection.download.postprocess", "true");
+		break;
+	    case NSCell.OffState:
+		Preferences.instance().setProperty("connection.download.postprocess", "false");
 		break;
 	}
     }

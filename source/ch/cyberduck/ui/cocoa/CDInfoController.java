@@ -173,17 +173,6 @@ public class CDInfoController {//implements Observer {
 //	    file.setPath(file.getParent().getAbsolute(), newName);
 	}
     }
-    public void ownerInputDidEndEditing(NSNotification sender) {
-	if(ownerField.stringValue() != file.attributes.getOwner()) {
-	    file.changeOwner(ownerField.stringValue());
-	}
-    }
-    public void groupInputDidEndEditing(NSNotification sender) {
-	if(groupField.stringValue() != file.attributes.getGroup()) {
-	    file.changeGroup(groupField.stringValue());
-	}
-    }
-
     
     public void permissionsSelectionChanged(Object sender) {
 	log.debug("permissionsSelectionChanged");

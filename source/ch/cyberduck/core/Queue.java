@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Message;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
@@ -40,6 +41,8 @@ public class Queue extends Thread implements Observer {
     private Vector files = new java.util.Vector();
     private Observer observer;
     private int kind;
+    private boolean stopped = false;
+    private Path current;
 
     /**
 	* The size of all files accumulated
@@ -56,12 +59,7 @@ public class Queue extends Thread implements Observer {
     public void add(Path file) {
 	log.debug("Adding file to queue:"+file);
 	file.status.addObserver(this);
-	switch(kind) {
-	    case KIND_DOWNLOAD:
-		file.getDownloadSession().addObserver(this);
-	    case KIND_UPLOAD:
-		file.getUploadSession().addObserver(this);
-	}
+	file.getSession().addObserver(this);
         files.add(file);
     }
 
@@ -70,23 +68,34 @@ public class Queue extends Thread implements Observer {
     }
 
     public void update(Observable o, Object arg) {
+//	Message msg = (Message)arg;
+//@todo	if(msg.getTitle().equals(Message.START)) {
 	observer.update(o, arg);
     }
 
     public void run() {
 	Iterator i = files.iterator();
-	Path file = null;
-	while(i.hasNext()) {
-            file = (Path)i.next();
+	this.current = null;
+	while(i.hasNext() && !this.stopped) {
+            current = (Path)i.next();
 	    switch(kind) {
 		case KIND_DOWNLOAD:
-		    file.download();
+		    current.download();
 		    break;
 		case KIND_UPLOAD:
-		    file.upload();
+		    current.upload();
 		    break;
 	    }
+	    current.status.deleteObserver(this);
+	    current.getSession().deleteObserver(this);
 	}
+    }
+
+    public void cancel() {
+	this.current.status.setCanceled(true);
+	current.status.deleteObserver(this);
+	current.getSession().deleteObserver(this);
+	this.stopped = true;
     }
 
     public int numberOfElements() {

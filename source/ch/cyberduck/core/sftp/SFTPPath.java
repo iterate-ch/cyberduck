@@ -98,8 +98,6 @@ public class SFTPPath extends Path {
     public synchronized List list(boolean notifyobservers) {
 	    boolean showHidden = Preferences.instance().getProperty("browser.showHidden").equals("true");
 	    try {
-		if(!this.isDirectory())
-		    throw new IOException("Must be a directory.");
 		session.check();
 		session.log("Listing "+this.getName(), Message.PROGRESS);
 		SftpFile workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
@@ -245,123 +243,115 @@ public class SFTPPath extends Path {
     }
 
 
-    public void fillDownloadQueue(Queue queue) {
-	//@todo
+    public void fillDownloadQueue(Queue queue, Session session) {
+	this.session = (SFTPSession)downloadSession;
+	try {
+	    session.check();
+	    if(isDirectory()) {
+		session.SFTP.chdir(this.getAbsolute());
+		List files = this.list(false);
+		java.util.Iterator i = files.iterator();
+		while(i.hasNext()) {
+		    SFTPPath p = (SFTPPath)i.next();
+		    p.setLocal(new File(this.getLocal(), p.getName()));
+		    p.fillDownloadQueue(queue, session);
+		}
+	    }
+	    else if(isFile())
+		queue.add(this);
+	    else
+		throw new IOException("Cannot determine file type");
+	}
+	catch(SshException e) {
+	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	}
+	catch(IOException e) {
+	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
     }
 
-    public void fillUploadQueue(Queue queue) {
-	//@todo
+    public void fillUploadQueue(Queue queue, Session session) {
+	this.session = (SFTPSession)uploadSession;
+	try {
+	    session.check();
+	    if(this.getLocal().isDirectory()) {
+		session.SFTP.makeDirectory(this.getAbsolute());//@todo do it here rather than in upload() ?
+		File[] files = this.getLocal().listFiles();
+		for(int i = 0; i < files.length; i++) {
+		    SFTPPath p = new SFTPPath(session, this.getAbsolute(), files[i]);
+		    p.fillUploadQueue(queue, session);
+		}
+	    }
+	    else if(this.getLocal().isFile())
+		queue.add(this);
+	    else
+		throw new IOException("Cannot determine file type");
+	}
+	catch(SshException e) {
+	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	}
+	catch(IOException e) {
+	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
     }
     
     public synchronized void download() {
-	log.debug("download");
-	new Thread() {
-	    SFTPSession downloadSession = null;
-	    public void run() {
-		status.fireActiveEvent();
-		try {
-		    downloadSession = (SFTPSession)session.copy();
-		    downloadSession.connect();
-		    if(isDirectory())
-			this.downloadFolder(SFTPPath.this);
-		    else if(isFile())
-			this.downloadFile(SFTPPath.this);
-		    else
-			throw new IOException("Cannot determine file type");
-		}
-		catch(SshException e) {
-		    downloadSession.log("SSH Error: "+e.getMessage(), Message.ERROR);
-		}
-		catch(IOException e) {
-		    downloadSession.log("IO Error: "+e.getMessage(), Message.ERROR);
-		}
+	try {
+	    log.debug("download:"+this.toString());
+	    if(!this.isFile())
+		throw new IOException("Download must be a file.");
+	    status.fireActiveEvent();
+	    session.check();
+	    OutputStream out = new FileOutputStream(file.getLocal(), file.status.isResume());
+	    if(out == null) {
+		throw new IOException("Unable to buffer data");
 	    }
-
-	    private void downloadFile(Path file) throws IOException {
-		OutputStream out = new FileOutputStream(file.getLocal(), file.status.isResume());
-		if(out == null) {
-		    throw new IOException("Unable to buffer data");
-		}
-		SftpFile p = downloadSession.SFTP.openFile(file.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-		file.status.setSize(p.getAttributes().getSize().intValue());
-		downloadSession.log("Opening data stream...", Message.PROGRESS);
-		SftpFileInputStream in = new SftpFileInputStream(p);
-		if(in == null) {
-		    throw new IOException("Unable opening data stream");
-		}
-		downloadSession.log("Downloading "+file.getName()+"...", Message.PROGRESS);
-		file.download(in, out);
+	    SftpFile p = session.SFTP.openFile(file.getAbsolute(), SftpSubsystemClient.OPEN_READ);
+	    file.status.setSize(p.getAttributes().getSize().intValue());
+	    session.log("Opening data stream...", Message.PROGRESS);
+	    SftpFileInputStream in = new SftpFileInputStream(p);
+	    if(in == null) {
+		throw new IOException("Unable opening data stream");
 	    }
-
-	    private void downloadFolder(Path file) throws IOException {
-		log.error("not implemented");
-		downloadSession.log("Not implemented.", Message.ERROR);
-		/*
-		 java.util.List files = file.list(); //@todo
-		 File dir = file.getLocal();
-		 dir.mkdir();
-		 java.util.Iterator i = files.iterator();
-		 while(i.hasNext()) {
-		     Path p = (Path)i.next();
-		     if(p.isDirectory()) {
-			 log.debug("changing directory: "+p.toString());
-			 SFTP.openDirectory(p.getAbsolute());
-		     }
-		     log.debug("getting file:"+p.toString());
-		     this.download(p);
-		 }
-		 SFTP.openDirectory("..");
-		 */
-	    }	    
-	}.start();
+	    session.log("Downloading "+this.getName(), Message.PROGRESS);
+	    file.download(in, out);
+	}
+	catch(SshException e) {
+	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	}
+	catch(IOException e) {
+	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
     }
 
     public void upload() {
-	new Thread() {
-	    SFTPSession uploadSession = null;
-	    public void run() {
-		status.fireActiveEvent();
-		try {
-		    uploadSession = (SFTPSession)session.copy();
-		    uploadSession.connect();
-		    if(SFTPPath.this.getLocal().isDirectory())
-			this.uploadFolder(SFTPPath.this);
-		    else if(SFTPPath.this.getLocal().isFile())
-			this.uploadFile(SFTPPath.this);
-		    else
-			throw new IOException("Cannot determine file type");
-		}
-		catch(SshException e) {
-		    uploadSession.log("SSH Error: "+e.getMessage(), Message.ERROR);
-		}
-		catch(IOException e) {
-		    uploadSession.log("IO Error: "+e.getMessage(), Message.ERROR);
-		}
-	    }
+	try {
+	    log.debug("upload:"+this.toString());
+	    status.fireActiveEvent();
+	    session.check();
 
-	    private void uploadFile(Path file) throws IOException {
-		file.status.setSize((int)file.getLocal().length());
-		java.io.InputStream in = new FileInputStream(file.getLocal());
-		if(in == null) {
-		    throw new IOException("Unable to buffer data");
-		}
-		uploadSession.log("Opening data stream...", Message.PROGRESS);
-		SftpFile remoteFile = uploadSession.SFTP.openFile(file.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
-		FileAttributes attrs = remoteFile.getAttributes();
-		attrs.setPermissions("rw-r-----");
-		uploadSession.SFTP.setAttributes(remoteFile, attrs);
-		SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);
-		if(out == null) {
-		    throw new IOException("Unable opening data stream");
-		}
-		uploadSession.log("Uploading "+file.getName()+"...", Message.PROGRESS);
-		file.upload(out, in);
+	    file.status.setSize((int)file.getLocal().length());
+	    java.io.InputStream in = new FileInputStream(file.getLocal());
+	    if(in == null) {
+		throw new IOException("Unable to buffer data");
 	    }
-
-	    private void uploadFolder(Path file) throws IOException {
-		log.debug("not implemented");
-		uploadSession.log("Not implemented.", Message.ERROR);
-	    }	    
-	}.start();
+	    session.log("Opening data stream...", Message.PROGRESS);
+	    SftpFile remoteFile = session.SFTP.openFile(file.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
+	    FileAttributes attrs = remoteFile.getAttributes();
+	    attrs.setPermissions("rw-r-----");
+	    session.SFTP.setAttributes(remoteFile, attrs);
+	    SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);
+	    if(out == null) {
+		throw new IOException("Unable opening data stream");
+	    }
+	    session.log("Uploading "+file.getName(), Message.PROGRESS);
+	    file.upload(out, in);
+	}
+	catch(SshException e) {
+	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	}
+	catch(IOException e) {
+	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
     }
 }

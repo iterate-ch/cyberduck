@@ -39,6 +39,7 @@ public class CDTransferController implements Observer {
 
     private int kind;
     private Path file;
+    private Queue queue;
 
     // ----------------------------------------------------------
     // Outlets
@@ -139,19 +140,19 @@ public class CDTransferController implements Observer {
 
     public void start() {
 //	file.getDownloadSession().addObserver(this);
-	Queue queue = new Queue(kind);
-	queue.addObserver(this);
+	this.queue = new Queue(kind);
+	this.queue.addObserver(this);
 	switch(kind) {
 	    case Queue.KIND_DOWNLOAD:
 	//@todo check if file exists in download folder
-		file.fillDownloadQueue(queue);
+		file.fillDownloadQueue(queue, file.getSession().copy());
 		break;
 	    case Queue.KIND_UPLOAD:
 	//@todo check if file exists on server
-		file.fillUploadQueue(queue);
+		file.fillUploadQueue(queue, file.getSession().copy());
 		break;
 	}
-	this.progressBar.setMaxValue(queue.size());
+//	this.progressBar.setMaxValue(queue.size());
 	this.window().setTitle(file.getName()+" - "+queue.numberOfElements()+" files");
 	this.window().makeKeyAndOrderFront(null);
 	queue.start();
@@ -167,6 +168,7 @@ public class CDTransferController implements Observer {
 		if(msg.getTitle().equals(Message.DATA)) {
 		    this.progressBar.setIndeterminate(false);
 		    this.progressBar.setDoubleValue((double)status.getCurrent());
+		    this.progressBar.setMaxValue(status.getSize());
 		    this.dataField.setStringValue(msg.getDescription());
 		}
 		else if(msg.getTitle().equals(Message.CLOCK)) {
@@ -177,7 +179,7 @@ public class CDTransferController implements Observer {
 		    this.progressBar.startAnimation(null);
 		    this.stopButton.setEnabled(true);
 		    this.resumeButton.setEnabled(false);
-//		    this.progressBar.setMinValue(0);
+		    this.progressBar.setMinValue(0);
 		}
 		else if(msg.getTitle().equals(Message.STOP)) {
 		    this.progressBar.stopAnimation(null);
@@ -189,10 +191,12 @@ public class CDTransferController implements Observer {
 		    this.resumeButton.setTitle("Reload");
 		    this.stopButton.setEnabled(false);
 		    this.resumeButton.setEnabled(true);
+		    this.progressField.setStringValue("Complete");
 		    if(Queue.KIND_DOWNLOAD == kind) {
-			//path.getLocalTemp().renameTo(path.getLocal());//@todo
+			//@todo temp path name
+			//path.getLocalTemp().renameTo(path.getLocal());
 			if(Preferences.instance().getProperty("connection.download.postprocess").equals("true")) {
-			    //@todo
+			    NSWorkspace.sharedWorkspace().openFile(file.getLocal().toString());
 			}
 		    }
 		}
@@ -215,6 +219,7 @@ public class CDTransferController implements Observer {
 				   msg.getDescription() // message
 				   );
 		    this.stopButtonClicked(null);
+		    this.progressField.setStringValue(msg.getDescription());
 
 		}
 		else if(msg.getTitle().equals(Message.PROGRESS)) {
@@ -235,7 +240,7 @@ public class CDTransferController implements Observer {
     }
 
     public void stopButtonClicked(NSButton sender) {
-	this.file.status.setCanceled(true);
+	this.queue.cancel();
     }
 
     public void showInFinderClicked(NSButton sender) {

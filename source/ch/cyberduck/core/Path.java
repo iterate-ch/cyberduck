@@ -87,20 +87,19 @@ public abstract class Path {// extends Observable {
      */
     public abstract Path getParent();
 
-    /*
-    public Path getPreviousPath() {
-        Cyberduck.DEBUG("Content of path history:"+pathHistory.toString());
-        int size = pathHistory.size();
-        if((size != -1) && (size > 1)) {
-            Path p = (Path)pathHistory.get(size-2);
-            //delete the fetched path - otherwise we produce a loop
-            pathHistory.remove(size-1);
-            pathHistory.remove(size-2);
-            return p;
-        }
-        return this.getCurrentPath();
-    }
-     */
+
+//    public Path getPreviousPath() {
+//        Cyberduck.DEBUG("Content of path history:"+pathHistory.toString());
+//        int size = pathHistory.size();
+//        if((size != -1) && (size > 1)) {
+//            Path p = (Path)pathHistory.get(size-2);
+//            //delete the fetched path - otherwise we produce a loop
+//            pathHistory.remove(size-1);
+//            pathHistory.remove(size-2);
+//            return p;
+//        }
+//        return this.getCurrentPath();
+//    }
     
 
     public List cache() {
@@ -218,60 +217,55 @@ public abstract class Path {// extends Observable {
     /**
 	* @return Returns the number of '/' characters in a path
      */
-    /*
-     public int getPathDepth() {
-	 int depth = 0;
-	 int length = 0;
-        while((length = this.toString().indexOf('/', length + 1)) != -1) {
-            depth++;
-        }
-        return depth;
-    }
-     */
+//     public int getPathDepth() {
+//	 int depth = 0;
+//	 int length = 0;
+//        while((length = this.toString().indexOf('/', length + 1)) != -1) {
+//            depth++;
+//        }
+//        return depth;
+//    }
     
     /*
     * Returns a path relative the parameter
     * @param relative 
     */
+//    public Path getRelativePath(Path relative) {
+//    	int index = this.getAbsolute().indexOf(relative.getAbsolute());
+//    	if(index == -1) {
+//    		throw new IllegalArgumentException("The argument must be part of this path");
+//    	}
+//    	else {
+//    		return new Path(this.getAbsolute().substring(index + relative.getAbsolute().length()));
+//    	}
+//    }
 
-    /*@todo
-    public Path getRelativePath(Path relative) {
-    	int index = this.getAbsolute().indexOf(relative.getAbsolute());
-    	if(index == -1) {
-    		throw new IllegalArgumentException("The argument must be part of this path");
-    	}
-    	else {
-    		return new Path(this.getAbsolute().substring(index + relative.getAbsolute().length()));
-    	}
-    }
-*/
+
     /**
      * @ param depth the '/'
      * @ return a new Path cut to the length of parameter <code>depth</code>
      */
-    /*
-    public Path getPathFragment(int depth) throws IllegalArgumentException {
+//    public Path getPathFragment(int depth) throws IllegalArgumentException {
 //        log.debug("[Path] getPathFragment(" + depth + ")");
-        if(depth > this.getPathDepth())
-            throw new IllegalArgumentException("Path is not that long: " + depth + " > " + this.getPathDepth());
-        if(depth > 0) {
-            int length = 1; //@modification
-            for (int n = 0; n < depth; n++) {
-                if((length = this.toString().indexOf('/', length + 1)) < 0) {
-                    break;
-                }
-            }
-            if(length > 0)
-                return new Path(this.toString().substring(0, length + 1));
-            else {
-                return new Path(this.toString());
-            }
-        }
-        else {
-            return new Path("/");
-        }
-    }
-    */
+//        if(depth > this.getPathDepth())
+//            throw new IllegalArgumentException("Path is not that long: " + depth + " > " + this.getPathDepth());
+//        if(depth > 0) {
+//            int length = 1; //@modification
+//            for (int n = 0; n < depth; n++) {
+//                if((length = this.toString().indexOf('/', length + 1)) < 0) {
+//                    break;
+//                }
+//            }
+//            if(length > 0)
+//                return new Path(this.toString().substring(0, length + 1));
+//            else {
+//                return new Path(this.toString());
+//            }
+//        }
+//        else {
+//            return new Path("/");
+//        }
+//    }
 
     public abstract Session getSession();
 
@@ -279,13 +273,13 @@ public abstract class Path {// extends Observable {
 
     public abstract void upload();
 
-    public abstract void fillDownloadQueue(Queue queue);
+    public abstract void fillDownloadQueue(Queue queue, Session session);
 
-    public abstract void fillUploadQueue(Queue queue);
+    public abstract void fillUploadQueue(Queue queue, Session session);
 
-    public abstract Session getDownloadSession();
+//    public abstract Session getDownloadSession();
 
-    public abstract Session getUploadSession();
+  //  public abstract Session getUploadSession();
 
     // ----------------------------------------------------------
     // Transfer methods
@@ -298,9 +292,7 @@ public abstract class Path {// extends Observable {
      */
     public void upload(java.io.Writer writer, java.io.Reader reader) throws IOException {
         log.debug("upload(" + writer.toString() + ", " + reader.toString());
-	//      this.log("Uploading " + action.getParam() + "... (ASCII)", Message.PROGRESS);
         this.transfer(reader, writer);
-	//        this.log("Upload of '" + action.getParam() + "' complete", Message.PROGRESS);
     }
 
     /**
@@ -310,9 +302,7 @@ public abstract class Path {// extends Observable {
      */
     public void upload(java.io.OutputStream o, java.io.InputStream i) throws IOException {
         log.debug("upload(" + o.toString() + ", " + i.toString());
-	//        this.log("Uploading " + action.getParam() + "... (BINARY)", Message.PROGRESS);
         this.transfer(i, o);
-	//        this.log("Upload of '" + action.getParam() + "' complete", Message.PROGRESS);
     }
 
     /**
@@ -322,7 +312,6 @@ public abstract class Path {// extends Observable {
      */
     public void download(java.io.Reader reader, java.io.Writer writer) throws IOException {
         log.debug("transfer(" + reader.toString() + ", " + writer.toString());
-	//        this.log("Downloading " + bookmark.getServerFilename() + "... (ASCII)", Message.PROGRESS);
         this.transfer(reader, writer);
     }
 
@@ -333,7 +322,6 @@ public abstract class Path {// extends Observable {
      */
     public void download(java.io.InputStream i, java.io.OutputStream o) throws IOException {
         log.debug("transfer(" + i.toString() + ", " + o.toString());
-	//        this.log("Downloading " + bookmark.getServerFilename() + "... (BINARY) ", Message.PROGRESS);
         this.transfer(i, o);
     }
 

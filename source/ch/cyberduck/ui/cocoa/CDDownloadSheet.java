@@ -20,12 +20,15 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.*;
 import ch.cyberduck.core.ftp.*;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
 * @version $Id$
@@ -38,31 +41,13 @@ public class CDDownloadSheet {
 	this.sheet = sheet;
     }
 
-    private NSTextField urlLabel;
-    public void setUrlLabel(NSTextField urlLabel) {
-	this.urlLabel = urlLabel;
+    private NSTextField urlField;
+    public void setUrlField(NSTextField urlField) {
+	this.urlField = urlField;
     }
 
-    private NSPopUpButton protocolPopup;
-    public void setProtocolPopup(NSPopUpButton protocolPopup) {
-	this.protocolPopup = protocolPopup;
-    }
+    private NSArray references = new NSArray();
 
-    private NSTextField hostField;
-    public void setHostField(NSTextField hostField) {
-	this.hostField = hostField;
-    }
-
-    private NSTextField pathField;
-    public void setPathField(NSTextField pathField) {
-	this.pathField = pathField;
-    }
-
-    private NSTextField portField;
-    public void setPortField(NSTextField portField) {
-	this.portField = portField;
-    }
-    
     public CDDownloadSheet() {
         if (false == NSApplication.loadNibNamed("Download", this)) {
             log.fatal("Couldn't load Download.nib");
@@ -76,72 +61,58 @@ public class CDDownloadSheet {
     }
 
     private void init() {
-	NSNotificationCenter.defaultCenter().addObserver(
-						  this,
-						  new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
-						  NSControl.ControlTextDidChangeNotification,
-						  hostField);
-	NSNotificationCenter.defaultCenter().addObserver(
-						  this,
-						  new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
-						  NSControl.ControlTextDidChangeNotification,
-						  pathField);
-	NSNotificationCenter.defaultCenter().addObserver(
-						  this,
-						  new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
-						  NSControl.ControlTextDidChangeNotification,
-						  portField);
-	this.portField.setIntValue(protocolPopup.selectedItem().tag());
+	//
     }
 
     public void finalize() throws Throwable {
+	log.debug("finalize");
 	super.finalize();
-        NSNotificationCenter.defaultCenter().removeObserver(this);
     }
 
-    public void protocolSelectionChanged(Object sender) {
-	NSMenuItem selectedItem = protocolPopup.selectedItem();
-	if(selectedItem.tag() == Session.FTP_PORT)
-	    portField.setIntValue(Session.FTP_PORT);
-	if(selectedItem.tag() == Session.HTTP_PORT)
-	    portField.setIntValue(Session.HTTP_PORT);
-	//@todo HTTPS
-	this.textInputDidChange(null);
-    }
-
-    public void textInputDidChange(NSNotification sender) {
-	NSMenuItem selectedItem = protocolPopup.selectedItem();
-	String protocol = null;
-	if(selectedItem.tag() == Session.FTP_PORT)
-	    protocol = Session.FTP+"://";
-	else if(selectedItem.tag() == Session.HTTP_PORT)
-	    protocol = Session.HTTP+"://";
-	urlLabel.setStringValue(protocol+hostField.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
-    }
-    
     public void closeSheet(NSButton sender) {
 	this.window().close();
 	//@ todo url field
 	switch(sender.tag()) {
 	    case(NSAlertPanel.DefaultReturn):
-		int tag = protocolPopup.selectedItem().tag();
-		Path file = null;
-		Session session = null;
-		switch(tag) {
-		    case(Session.FTP_PORT):
-			session = new FTPSession(new Host(Session.FTP, hostField.stringValue(), Session.FTP_PORT, new CDLoginController(this.window())));
-			file = new FTPPath((FTPSession)session, pathField.stringValue());
-			break;
-		    case(Session.HTTP_PORT):
-			session = new HTTPSession(new Host(Session.HTTP, hostField.stringValue(), Session.HTTP_PORT, new CDLoginController(this.window())));
-			file = new HTTPPath((HTTPSession)session, pathField.stringValue());
-			break;
-		}
+		try {
+		    URL url = new URL(urlField.stringValue());
+		    String protocol = url.getProtocol();
+		    String host = url.getHost();
+		    String file = url.getPath();
+		    Path path = null;
+		    Session session = null;
+		    if(protocol.equals(Session.FTP)) {
+			session = new FTPSession(new Host(Session.FTP, host, url.getPort(), new CDLoginController(this.window())));
+			path = new FTPPath((FTPSession)session, file);
+		    }
+		    else if (protocol.equals(Session.HTTP)) {
+			session = new HTTPSession(new Host(Session.HTTP, host, url.getPort(), new CDLoginController(this.window())));
+			path = new HTTPPath((HTTPSession)session, file);
+		    }
+//@todo HTTPS
+			//@todo SCP
 		    	//@todo keep reference?
-		CDTransferController controller = new CDTransferController(file, Queue.KIND_DOWNLOAD);
-		controller.start();
+		    CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
+		    this.references = references.arrayByAddingObject(controller);
+		    controller.start();
 //		controller.window().makeKeyAndOrderFront(null);
 //		file.download();
+		}
+		catch(MalformedURLException e) {
+		    NSAlertPanel.beginAlertSheet(
+				   "Error", //title
+				   "OK",// defaultbutton
+				   null,//alternative button
+				   null,//other button
+				   this.window(), //docWindow
+				   null, //modalDelegate
+				   null, //didEndSelector
+				   null, // dismiss selector
+				   null, // context
+				   e.getMessage() // message
+				   );
+		    
+		}
 	    case(NSAlertPanel.AlternateReturn):
 		//
 	}

@@ -168,15 +168,16 @@ public class CDBrowserController implements Observer {
 	    if(c.identifier()!=identifier)
 		tableView.setIndicatorImage(null, c);
 	}
-	boolean a = true;
-	if(tableView.indicatorImage(tableColumn).name().equals("NSAscendingSortIndicator")) {
-	    tableView.setIndicatorImage(NSImage.imageNamed("NSDescendingSortIndicator"), tableColumn);
-	    a = false;
-	}
-	else {
-	    tableView.setIndicatorImage(NSImage.imageNamed("NSAscendingSortIndicator"), tableColumn);
-	}
-	final boolean ascending = a;
+	//@todo desscending
+//	boolean a = true;
+//	if(tableView.indicatorImage(tableColumn) != null && tableView.indicatorImage(tableColumn).name().equals("NSAscendingSortIndicator")) {
+//	    tableView.setIndicatorImage(NSImage.imageNamed("NSDescendingSortIndicator"), tableColumn);
+//	    a = false;
+//	}
+//	else {
+//	    tableView.setIndicatorImage(NSImage.imageNamed("NSAscendingSortIndicator"), tableColumn);
+//	}
+	final boolean ascending = true;
 	final int higher = ascending ? 1 : -1 ;
 	final int lower = ascending ? -1 : 1;
 	if(tableColumn.identifier().equals("FILENAME")) {
@@ -364,28 +365,34 @@ public class CDBrowserController implements Observer {
 
     public void deleteButtonClicked(Object sender) {
 	log.debug("deleteButtonClicked");
-	Path path = (Path)browserModel.getEntry(browserTable.selectedRow());
-	NSAlertPanel.beginCriticalAlertSheet(
-					   "Delete", //title
-					   "Delete",// defaultbutton
-					   "Cancel",//alternative button
-					   null,//other button
-					   mainWindow,//window
-					   this, //delegate
-					   new NSSelector
-					   (
-	 "deleteSheetDidEnd",
-	 new Class[]
-	 {
-	     NSWindow.class, int.class, Object.class
-	 }
-	 ),// end selector
-					   null, // dismiss selector
-					   path, // contextInfo
-					   "Really delete the file '"+path.getName()+"'? This cannot be undone." // message
-					   );
-    }
+	NSEnumerator enum = browserTable.selectedRowEnumerator();
+	Path path = null;
+	while(enum.hasMoreElements()) {
+	    int selected = ((Integer)enum.nextElement()).intValue();
+	    path = (Path)browserModel.getEntry(selected);
 
+	    NSAlertPanel.beginCriticalAlertSheet(
+					  "Delete", //title
+					  "Delete",// defaultbutton
+					  "Cancel",//alternative button
+					  null,//other button
+					  mainWindow,//window
+					  this, //delegate
+					  new NSSelector
+					  (
+	"deleteSheetDidEnd",
+	new Class[]
+	{
+	    NSWindow.class, int.class, Object.class
+	}
+	),// end selector
+					  null, // dismiss selector
+					  path, // contextInfo
+					  "Really delete the file '"+path.getName()+"'? This cannot be undone." // message
+					  );
+	}
+    }
+    
     public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
 	log.debug("deleteSheetDidEnd");
 	sheet.orderOut(null);
@@ -407,12 +414,18 @@ public class CDBrowserController implements Observer {
 
     public void downloadButtonClicked(Object sender) {
 	log.debug("downloadButtonClicked");
-	Path path = (Path)browserModel.getEntry(browserTable.selectedRow());
-	//@todo keep reference?
-	CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
-	controller.start();
+	NSEnumerator enum = browserTable.selectedRowEnumerator();
+	Path path = null;
+	while(enum.hasMoreElements()) {
+	    int selected = ((Integer)enum.nextElement()).intValue();
+	    path = (Path)browserModel.getEntry(selected);
+	    //Path path = (Path)browserModel.getEntry(browserTable.selectedRow());
+	    CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
+	    this.references = references.arrayByAddingObject(controller);
+	    controller.start();
 //	controller.window().makeKeyAndOrderFront(null);
 //	path.download();
+	}
     }
 
     public void uploadButtonClicked(Object sender) {
@@ -443,6 +456,7 @@ public class CDBrowserController implements Observer {
 		    }
 		    	//@todo keep reference?
 		    CDTransferController controller = new CDTransferController(path, Queue.KIND_UPLOAD);
+		    this.references = references.arrayByAddingObject(controller);
 		    controller.start();
 //		    controller.window().makeKeyAndOrderFront(null);
 //		    path.upload();
