@@ -1,7 +1,4 @@
 /*
- *  ch.cyberduck.ui.cocoa.CDConnectionDialog.java
- *  Cyberduck
- *
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
  *
@@ -29,6 +26,9 @@ import com.apple.cocoa.application.*;
 
 import org.apache.log4j.Logger;
 
+/**
+* @version $Id$
+ */
 public class CDConnectionSheet extends NSWindow {
 
     private static Logger log = Logger.getLogger(CDConnectionSheet.class);

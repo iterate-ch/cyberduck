@@ -1,7 +1,4 @@
 /*
- *  ch.cyberduck.ui.cocoa.CDListingTableDataSource.java
- *  Cyberduck
- *
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
  *
@@ -37,6 +34,9 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+/**
+* @version $Id$
+ */
 public class CDBrowserTableDataSource extends NSObject {
     private static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 

@@ -1,14 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- *  ch.cyberduck.core.Client.java
- *  Cyberduck
- *
- *  $Header$
- *  $Revision$
- *  $Date$
- *
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -24,6 +17,7 @@ package ch.cyberduck.core;
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
+
 
 import java.io.IOException;
 

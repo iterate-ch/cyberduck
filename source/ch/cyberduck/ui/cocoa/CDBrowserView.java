@@ -1,4 +1,20 @@
-/* CDBrowserView */
+/*
+ *  Copyright (c) 2002 David Kocher. All rights reserved.
+ *  http://icu.unizh.ch/~dkocher/
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  Bug fixes, suggestions and comments should be sent to:
+ *  dkocher@cyberduck.ch
+ */
 
 package ch.cyberduck.ui.cocoa;
 
@@ -15,7 +31,10 @@ import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
 import org.apache.log4j.Logger;
-    
+
+/**
+* @version $Id$
+ */
 public class CDBrowserView extends NSTableView implements Observer, NSDraggingDestination {
     private static Logger log = Logger.getLogger(CDBrowserView.class);
 
@@ -40,6 +59,7 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
     public void awakeFromNib() {
 	this.setDelegate(this);
 	this.setTarget(this);
+        this.setDoubleAction(new NSSelector("doubleClickAction", new Class[] {null}));
 	this.setAutoresizesAllColumnsToFit(true);
 	//By setting the drop row to -1, the entire table is highlighted instead of just a single row.
 	this.setDropRowAndDropOperation(-1, NSTableView.DropOn);
@@ -48,12 +68,24 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 
     }
 
+    public void doubleClickAction(NSObject sender) {
+        CDBrowserTableDataSource browserTableDataSource = (CDBrowserTableDataSource)this.dataSource();
+        Path p = (Path)browserTableDataSource.getEntry(this.clickedRow());
+        p.list();
+    }
+    
+    /*
     public void mouseUp(NSEvent event) {
 	log.debug(event.toString());
 	if(event.clickCount() == 2) { //double click
-	    
+            int clickedRow = this.clickedRow();
+            log.debug(""+clickedRow);
+            CDBrowserTableDataSource browserTableDataSource = (CDBrowserTableDataSource)this.dataSource();
+            Path p = (Path)browserTableDataSource.getEntry(clickedRow);
+            p.list();
 	}
     }
+     */
 
     public Object dataSource() {
 	return super.dataSource();
@@ -74,6 +106,10 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	    }
 	}
     }
+
+    // ----------------------------------------------------------
+    // Delegate methods
+    // ----------------------------------------------------------    
 
     /**	Informs the delegate that aTableView will display the cell at rowIndex in aTableColumn using aCell.
 	* The delegate can modify the display attributes of a cell to alter the appearance of the cell.

@@ -1,7 +1,4 @@
 /*
- *  ch.cyberduck.ui.cocoa.CDTransferTableDataSource.java
- *  Cyberduck
- *
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
  *
@@ -26,6 +23,9 @@ import com.apple.cocoa.application.*;
 
 import org.apache.log4j.Logger;
 
+/**
+* @version $Id$
+ */
 public class CDTransferTableDataSource extends NSObject {//implements NSTableView.DataSource {
 
     private static Logger log = Logger.getLogger(CDTransferTableDataSource.class);

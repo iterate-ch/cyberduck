@@ -1,14 +1,7 @@
 package ch.cyberduck.core.sftp;
 
 /*
- *  ch.cyberduck.connection.sftp.SFTPSession.java
- *  Cyberduck
- *
- *  $Header$
- *  $Revision$
- *  $Date$
- *
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -101,8 +94,13 @@ public class SFTPSession extends Session {
 		    while(i.hasNext()) {
 			SftpFile x = (SftpFile)i.next();
 			if(!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
-			    SFTPFile f = new SFTPFile(x.getAbsolutePath());
-			    f.setSize(x.getAttributes().getSize().intValue());
+                            SFTPFile f = new SFTPFile(x.getAbsolutePath());
+                            if(!Preferences.instance().getProperty("ftp.showHidden").equals("true")) {
+                                if(x.getFilename().charAt(0) == '.') {
+                                    f.setVisible(false);
+                                }
+                            }
+                            f.setSize(x.getAttributes().getSize().intValue());
 			    f.setModified(x.getAttributes().getModifiedTime().longValue());
 			    f.setPermission(new Permission(x.getAttributes().getPermissionsString()));
 //			    f.setOwner(x.getAttributes.getOwner());
@@ -246,6 +244,7 @@ public class SFTPSession extends Session {
             String path = host.getPath().equals(Preferences.instance().getProperty("connection.path.default")) ? SFTP.getDefaultDirectory() : host.getPath();
 	    SFTPFile home = new SFTPFile(path);
 	    home.list();
+            host.status.fireStopEvent();
 	}
         catch (IOException e) {
             this.log(e.getMessage(), Message.ERROR);

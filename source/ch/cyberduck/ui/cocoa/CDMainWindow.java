@@ -1,7 +1,4 @@
 /*
- *  ch.cyberduck.ui.cocoa.CDMainWindow.java
- *  Cyberduck
- *
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
  *
@@ -24,14 +21,11 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
-//import java.util.Observer;
-//import java.util.Observable;
-
-//import ch.cyberduck.core.Status;
-//import ch.cyberduck.ui.ObserverList;
-
 import org.apache.log4j.Logger;
 
+/**
+* @version $Id$
+ */
 public class CDMainWindow extends NSWindow {//implements Observer {
 
     private static Logger log = Logger.getLogger(CDMainWindow.class);
@@ -53,16 +47,6 @@ public class CDMainWindow extends NSWindow {//implements Observer {
 	log.debug("CDMainWindow");
 //	ObserverList.instance().registerObserver((Observer)this);
     }
-
-    /**
-      * @return The string that appears in the title bar of the receiver.
-      */
-    /*
-    public String title() {
-	return "Connected to <host>";
-    }
-     */
-	
 
     public void awakeFromNib() {
 	log.debug("CDMainWindow:awakeFromNib");

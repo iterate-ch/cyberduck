@@ -48,6 +48,9 @@ import com.sshtools.j2ssh.*;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 
+/**
+* @version $Id$
+*/
 public class CDConnectionController extends NSObject implements Observer {
 
     private static Logger log = Logger.getLogger(CDConnectionController.class);

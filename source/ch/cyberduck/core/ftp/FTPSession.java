@@ -1,14 +1,7 @@
 package ch.cyberduck.core.ftp;
 
 /*
- *  ch.cyberduck.core.ftp.FTPSession.java
- *  Cyberduck
- *
- *  $Header$
- *  $Revision$
- *  $Date$
- *
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -54,14 +47,16 @@ public class FTPSession extends Session {
 
 	public Path getParent() {
 	    String abs = this.getAbsolute();
-	    if((parent == null) && !abs.equals("/")) {
+	    if((null == parent) && !abs.equals("/")) {
 		int index = abs.lastIndexOf('/');
 		String dirname = abs;
-		if(index > 0) {
+		if(index > 0)
 		    dirname = abs.substring(0, index);
-		}
-		Path file = new FTPFile(dirname);
+                if(index == 0) //parent is root
+                    dirname = "/";
+		parent = new FTPFile(dirname);
 	    }
+            log.debug("getParent:"+parent);
 	    return parent;
 	}
 	
@@ -134,18 +129,18 @@ public class FTPSession extends Session {
             log.debug("rename");
             try {
                 FTP.chdir(this.getParent().getAbsolute());
-                this.log("Renaming '" + this.getName() + "' to '" + filename + "'...", Message.PROGRESS);
+                FTPSession.this.log("Renaming '" + this.getName() + "' to '" + filename + "'...", Message.PROGRESS);
                 FTP.rename(this.getName(), filename);
                 this.getParent().list();
-                catch(FTPException e) {
-                    FTPSession.this.log(e.getMessage(), Message.ERROR);
-                }
-                catch(IOException e) {
-                    FTPSession.this.log(e.getMessage(), Message.ERROR);
-                }
+            }
+            catch(FTPException e) {
+                FTPSession.this.log(e.getMessage(), Message.ERROR);
+            }
+            catch(IOException e) {
+                FTPSession.this.log(e.getMessage(), Message.ERROR);
             }
         }
-
+        
         public void mkdir() {
             log.debug("mkdir");
             try {
@@ -216,6 +211,7 @@ public class FTPSession extends Session {
             String path = host.getPath().equals(Preferences.instance().getProperty("connection.path.default")) ? FTP.pwd() : host.getPath();
 	    FTPFile home = new FTPFile(path);
 	    home.list();
+            host.status.fireStopEvent();
 	}
 	catch(FTPException e) {
             this.log(e.getMessage(), Message.ERROR);
@@ -580,7 +576,7 @@ public class FTPSession extends Session {
 		    Path p = parseListLine(parent, line);
 		    String filename = p.getName();
 		    if(!(filename.equals(".") || filename.equals(".."))) {
-			if(!showHidden) {
+			if(!Preferences.instance().getProperty("ftp.showHidden").equals("true")) {
 			    if(filename.charAt(0) == '.') {
 				p.setVisible(false);
 			    }

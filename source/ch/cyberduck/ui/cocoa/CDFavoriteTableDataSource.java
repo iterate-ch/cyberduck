@@ -7,6 +7,9 @@ import com.apple.cocoa.application.*;
 
 import org.apache.log4j.Logger;
 
+/**
+* @version $Id$
+ */
 public class CDFavoriteTableDataSource extends NSObject {
     private static Logger log = Logger.getLogger(CDFavoriteTableDataSource.class);
 

@@ -1,7 +1,4 @@
 /*
- *  ch.cyberduck.ui.cocoa.CDInfoWindow.java
- *  Cyberduck
- *
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
  *
@@ -18,6 +15,7 @@
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
+
 package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
@@ -25,6 +23,9 @@ import com.apple.cocoa.application.*;
 
 import org.apache.log4j.Logger;
 
+/**
+* @version $Id$
+ */
 public class CDInfoWindow extends NSPanel {
 
     public Object filenameField; /* IBOutlet */

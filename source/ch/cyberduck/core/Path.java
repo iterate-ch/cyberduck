@@ -1,14 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- *  ch.cyberduck.core.Path.java
- *  Cyberduck
- *
- *  $Header$
- *  $Revision$
- *  $Date$
- *
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -35,6 +28,8 @@ import java.io.Serializable;
 
 import java.util.Observable;
 import java.util.Observer;
+
+import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
 
@@ -141,8 +136,7 @@ public abstract class Path implements Serializable, Transferable {
     public abstract Path getParent();
     
     /**
-	* @return Path[] The children
-     * Return the content of this directory.
+     * @return the content of this directory.
      */
     public abstract List list();
 
@@ -203,6 +197,12 @@ public abstract class Path implements Serializable, Transferable {
 	return this.path;
     }
 
+    /**
+        * @return The local alias of this path
+     */
+    public String getLocal() {
+        return Preferences.instance().getProperty("download.path") + this.getName();
+    }
     
     /**
 	* @return Returns the number of '/' characters in a path

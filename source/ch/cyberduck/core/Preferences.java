@@ -1,14 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- *  ch.cyberduck.Preferences.java
- *  Cyberduck
- *
- *  $Header$
- *  $Revision$
- *  $Date$
- *
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -43,23 +36,25 @@ import org.apache.log4j.Logger;
  * Holding all application preferences. Default values get overwritten when loading
  * the <code>PREFERENCES_FILE</code>.
  * Singleton class.
+ * @version $Id$
  */
-public class Preferences extends Properties {
+public abstract class Preferences {//extends Properties {
 
     private static Logger log = Logger.getLogger(Preferences.class);
 
-    public static File PREFS_DIRECTORY = new File(System.getProperty("user.home"), ".cyberduck");
-    public static final String PREFERENCES_FILE = "cyberduck.preferences";
-//    private static File PREFS_DIRECTORY = null;
+//    public static File PREFS_DIRECTORY = new File(System.getProperty("user.home"), ".cyberduck");
+//    public static final String PREFERENCES_FILE = "cyberduck.preferences";
+
+    //    private static File PREFS_DIRECTORY = null;
 //    private static final String PREFERENCES_FILE = null;
     private static Preferences current = null;
-    private static Dimension screenSize = null;
+//    private static Dimension screenSize = null;
 //    private static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     /**
         * Use #instance instead.
      */
-    private Preferences() {
+    public Preferences() {
         super();
     }
 
@@ -69,12 +64,18 @@ public class Preferences extends Properties {
     public static Preferences instance() {
 	log.debug("instance");
         if(current == null) {
-            PREFS_DIRECTORY.mkdir();
-            current = new Preferences();
+//            PREFS_DIRECTORY.mkdir();
+            String strVendor = System.getProperty("java.vendor");
+            log.debug(strVendor);
+            if(strVendor.indexOf("Apple") != -1)
+                current = new ch.cyberduck.ui.cocoa.CDPreferencesImpl();
+            else
+                current = new ch.cyberduck.ui.swing.PreferencesImpl();
             current.setDefaults();
             current.load();
 
             //initialize SSL
+            /*
             String strVendor = System.getProperty("java.vendor");
             String strVersion = System.getProperty("java.version");
             //Assumes a system version string of the form:
@@ -88,16 +89,11 @@ public class Preferences extends Properties {
                         URL.setURLStreamHandlerFactory((URLStreamHandlerFactory)clsFactory.newInstance());
                 }
                 catch(Exception cfe) { //InstantiationException and ClassNotFoundException
-                    System.err.println("WARNING: Unable to load the Microsoft SSL stream handler.");
+                    log.warn("Unable to load the Microsoft SSL stream handler.");
                 }
                 //If the stream handler factory has
                 //already been successfully set
                 //make sure our flag is set and eat the error
-                /*
-                 catch(Error err) {
-                     m_bStreamHandlerSet = true;
-                 }
-                 */
             }
             //If we are in a normal Java environment,
             //try to use the JSSE handler.
@@ -111,35 +107,30 @@ public class Preferences extends Properties {
                         Security.addProvider((Provider)clsFactory.newInstance());
                 }
                 catch(Exception cfe) {
-                    System.err.println("WARNING: Unable to load the JSSE SSL stream handler.");
+                    log.warn("Unable to load the JSSE SSL stream handler.");
                 }
             }
+             */
         }
         return current;
     }
-    
-    public void setProperty(String property, boolean v) {
-        log.debug("[Preferences] setProperty(" + property + ", " + v + ")");
-        String value = "false";
-        if (v) {
-            value = "true";
-        }
-        this.put(property, value);
-    }
 
-    /*
-    public Object setProperty(String property, String value) {
-//        log.debug("[Preferences] setProperty(" + property + ", " + value + ")");
-        this.put(property, value);
-        return null;
-    }
-     */
-    
-    public void setProperty(String property, int v) {
-        log.debug("[Preferences] setProperty(" + property + ", " + v + ")");
-        String value = String.valueOf(v);
-        this.put(property, value);
-    }
+    public abstract void setProperty(String property, String value);
+
+    public abstract void setProperty(String property, boolean v);
+//        log.debug("setProperty(" + property + ", " + v + ")");
+//        String value = "false";
+//        if (v) {
+//            value = "true";
+//        }
+//        this.put(property, value);
+//    }
+
+    public abstract void setProperty(String property, int v);
+        //log.debug("setProperty(" + property + ", " + v + ")");
+        //String value = String.valueOf(v);
+        //this.put(property, value);
+    //}
 
     /**
      * setting the default prefs values
@@ -181,7 +172,7 @@ public class Preferences extends Properties {
         this.setProperty("files.postprocess", "false");
         
         //BookmarkTable properties
-        this.setProperty("table.save", "true");
+        //this.setProperty("table.save", "true");
         //BookmarkTable column locations
         /*
         this.setProperty("table.column0.position", "0");
@@ -264,57 +255,50 @@ public class Preferences extends Properties {
         //this.setProperty("statuspanel.transcriptmessage", "false");
     }
     
-    private String getXLocation(int componentWidth) {
-        return new Integer((screenSize.width/2) - (componentWidth/2)).toString();
-    }
 
-    private String getYLocation(int componentHeight) {
-        return new Integer((screenSize.height/2) - (componentHeight/2)).toString();
-    }
-
-    public String getProperty(String property) {
-        log.debug("[Preferences] getProperty(" + property + ")");
-        String value = super.getProperty(property);
-        if(value == null)
-            throw new IllegalArgumentException("No property with key '" + property.toString() + "'");
-        return value;
-    }
+    public abstract String getProperty(String property);
+        //log.debug("getProperty(" + property + ")");
+        //String value = super.getProperty(property);
+        //if(value == null)
+        //    throw new IllegalArgumentException("No property with key '" + property.toString() + "'");
+        //return value;
+   // }
         
     /**
      * Save preferences into user home
      */
-    public void store() {
-        log.debug("[Preferences] store()");
-        try {
-            FileOutputStream output = new FileOutputStream(new File(PREFS_DIRECTORY, PREFERENCES_FILE));
-            this.store(output, "Cyberduck properties - YOU SHOULD NOT EDIT THIS FILE");
-            output.close();
-        }
-        catch(IOException e) {
-            System.err.println("[Preferences] Could not save current preferences.\n" + e.getMessage());
-        }
-    }
+    public abstract void store();
+        //log.debug("store()");
+        //try {
+        //    FileOutputStream output = new FileOutputStream(new File(PREFS_DIRECTORY, PREFERENCES_FILE));
+        //    this.store(output, "Cyberduck properties - YOU SHOULD NOT EDIT THIS FILE");
+        //    output.close();
+        //}
+        //catch(IOException e) {
+        //    System.err.println("Could not save current preferences.\n" + e.getMessage());
+        //}
+    //}
 
     /**
      * Overriding the default values with prefs from the last session.
      */
-    public void load() {
-        log.debug("[Preferences] load()");
-        try {
-            File prefs = new File(PREFS_DIRECTORY, PREFERENCES_FILE);
-            if (prefs.exists()) {
-                this.load(new FileInputStream(prefs));
-            }
-            else {
-                System.err.println("[Preferences] Could not load current preferences.");
-            }
-        }
-        catch(IOException e) {
-            System.err.println("[Preferences] Could not load current preferences.\n" + e.getMessage());
-        }
-    }
+    public abstract void load();
+        //log.debug("load()");
+        //try {
+        //    File prefs = new File(PREFS_DIRECTORY, PREFERENCES_FILE);
+        //    if (prefs.exists()) {
+        //        this.load(new FileInputStream(prefs));
+        //    }
+        //    else {
+        //        System.err.println("Could not load current preferences.");
+        //    }
+        //}
+        //catch(IOException e) {
+        //    System.err.println("Could not load current preferences.\n" + e.getMessage());
+        //}
+    //}
 
-    public void list() {
-        this.list(System.out);
-    }
+    public abstract void list();
+    //    this.list(System.out);
+    //}
 }
