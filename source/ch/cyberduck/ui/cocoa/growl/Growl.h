@@ -42,6 +42,14 @@ extern "C" {
 	 */
 	JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notify
 		(JNIEnv *, jobject, jstring, jstring);
+
+	/*
+	 * Class:     ch_cyberduck_ui_cocoa_growl_Growl
+	 * Method:    notify
+	 * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	 */
+	JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage
+		(JNIEnv *, jobject, jstring, jstring, jstring);
 	
 #ifdef __cplusplus
 }
@@ -60,6 +68,8 @@ static id instance;
 
 - (void)launchGrowl;
 - (void)registerGrowl:(void*)context;
-- (void)notifyGrowl:(NSString *)title :(NSString *)description;
+- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImageName:(NSString *) image;
+- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImage:(NSImage *) image;
+- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description;
 
 @end

@@ -40,11 +40,6 @@ public class CDQueueController extends NSObject implements Observer, CDControlle
 
     private static NSMutableArray instances = new NSMutableArray();
 
-    /**
-     * The observer to notify when an upload is complete
-     */
-    private Observer callback;
-
     private NSToolbar toolbar;
 
 	private NSTextField urlField;
@@ -113,6 +108,14 @@ if (returncode == NSAlertPanel.DefaultReturn) {
         }
     }
      */
+	
+	public void windowDidBecomeKey(NSNotification notification) {
+		this.tableViewSelectionChange();
+	}
+
+	public void windowDidBecomeMain(NSNotification notification) {
+		this.tableViewSelectionChange();
+	}
 	
     public boolean windowShouldClose(NSWindow sender) {
         return true;
@@ -221,7 +224,6 @@ if (returncode == NSAlertPanel.DefaultReturn) {
         this.queueTable.sizeToFit();
     }
 	
-	//@todo call this when window opens
 	private void tableViewSelectionChange() {
 		for(int i = 0; i < this.queueModel.size(); i++) {
 			this.queueModel.getController(i).setSelected(false);
@@ -263,8 +265,8 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     public void startItem(Queue queue, boolean resumeRequested) {
         log.info("Starting item:" + queue);
 		queue.addObserver(this);
-//@todo	this.queueTable.selectRow(this.queueModel.indexOf(queue), false);
-//@todo this.queueTable.scrollRowToVisible(this.queueModel.indexOf(queue));
+		int row = this.queueModel.indexOf(queue);
+		this.queueTable.selectRow(row, false); this.queueTable.scrollRowToVisible(row);
 
         if (Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
             this.window().makeKeyAndOrderFront(null);
@@ -347,10 +349,6 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 					}
 					if (Queue.KIND_UPLOAD == queue.kind()) {
 						Growl.instance().notify(NSBundle.localizedString("Upload complete", "Growl Notification"), queue.getRoot().getName());
-						//@todo                            if (callback != null) {
-						//                                log.debug("Telling observable to refresh directory listing");
-						//                                callback.update(null, new Message(Message.REFRESH));
-						//                            }
 					}
 					if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
 						this.queueModel.removeItem(queue);

@@ -276,7 +276,8 @@ img/refresh.tiff svneol=native#unset
 img/reload.tiff svneol=native#unset
 img/remove.tiff svneol=native#unset
 img/removePressed.tiff svneol=native#unset
-img/rendezvous.tiff svneol=native#unset
+img/rendezvous.icns -text
+img/rendezvous16.tiff -text
 img/resume.tiff -text
 img/reveal.tiff -text
 img/run.tiff -text

@@ -55,4 +55,6 @@ public class Growl {
 	public native void launch();
 	
 	public native void notify(String title, String description);
+
+	public native void notifyWithImage(String title, String description, String image);
 }

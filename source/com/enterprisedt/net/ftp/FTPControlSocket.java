@@ -191,6 +191,7 @@ public class FTPControlSocket {
         }
         else { // PASV
             return new FTPPassiveDataSocket(createDataSocketPASV());
+			//@todo fallback to passive if it fails
         }
     }
 

@@ -263,6 +263,16 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 		}
     }
 	
+	public int indexOf(Queue item) {
+		int row = 0;
+		for(Iterator iter = data.iterator(); iter.hasNext(); row++) {
+			CDProgressController c = (CDProgressController)iter.next();
+			if(c.getQueue().equals(item))
+				return row;
+		}
+		return -1;
+	}
+	
     public Queue getItem(int row) {
         if (row < this.size()) {
             return ((CDProgressController)this.data.get(row)).getQueue();

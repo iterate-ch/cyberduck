@@ -102,7 +102,7 @@ public class CDConnectionController extends NSObject implements Observer {
 
     public void setRendezvousPopup(NSPopUpButton rendezvousPopup) {
         this.rendezvousPopup = rendezvousPopup;
-        this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous.tiff"));
+        this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous16.tiff"));
         this.rendezvousPopup.setTarget(this);
         this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionChanged", new Class[]{Object.class}));
         this.rendezvous = new Rendezvous();

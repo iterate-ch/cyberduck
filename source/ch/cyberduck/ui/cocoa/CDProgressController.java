@@ -34,9 +34,7 @@ import org.apache.log4j.Logger;
  */
 public class CDProgressController extends NSObject implements Observer {
     private static Logger log = Logger.getLogger(CDProgressController.class);
-	
-	//@todo contex menu
-	
+		
 	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
 	
     static {

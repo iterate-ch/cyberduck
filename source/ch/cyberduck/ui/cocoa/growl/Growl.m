@@ -52,7 +52,20 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notify(
 																	 jstring title,
 																	 jstring description)
 {
-	[[Growl defaultInstance] notifyGrowl:convertToNSString(env, title) :convertToNSString(env, description)];
+	[[Growl defaultInstance] notifyGrowl:convertToNSString(env, title) 
+						 withDescription:convertToNSString(env, description)];
+}
+
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
+																			  JNIEnv *env, 
+																			  jobject this,
+																			  jstring title,
+																			  jstring description,
+																			  jstring image)
+{
+	[[Growl defaultInstance] notifyGrowl:convertToNSString(env, title) 
+						 withDescription:convertToNSString(env, description)
+						   withImageName:convertToNSString(env, image)];
 }
 
 #define	GROWL_DOWNLOAD_COMPLETE				NSLocalizedString(@"Download complete", @"Growl Notification")
@@ -118,7 +131,12 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notify(
 	registered = YES;
 }
 
-- (void)notifyGrowl:(NSString *)title :(NSString *)description withImage:(NSImage *) image
+- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImageName:(NSString *) image
+{
+	[self notifyGrowl: title withDescription:description withImage:[NSImage imageNamed:image]];
+}
+
+- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImage:(NSImage *) image
 {
 	if(registered) {
 		NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -136,7 +154,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notify(
 	}
 }
 
-- (void)notifyGrowl:(NSString *)title :(NSString *)description
+- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description
 {
 	if(registered) {
 		NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:

@@ -511,20 +511,28 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 	}
 	
 	public void copy(Object sender) {
-		NSMutableArray queueDictionaries = new NSMutableArray();
-		Session session = pathController.workdir().getSession().copy();
-		Queue q = new Queue(Queue.KIND_DOWNLOAD);
-        NSEnumerator enum = browserTable.selectedRowEnumerator();
-        while (enum.hasMoreElements()) {
-            Path path = browserModel.getEntry(((Integer)enum.nextElement()).intValue());
-			q.addRoot(path.copy(session));
-		}
-		queueDictionaries.addObject(q.getAsDictionary());
-		// Writing data for private use when the item gets dragged to the transfer queue.
-		NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-		queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
-		if (queuePboard.setPropertyListForType(queueDictionaries, "QueuePBoardType")) {
-			log.debug("QueuePBoardType data sucessfully written to pasteboard");
+		if(browserTable.selectedRow() != -1) {
+			NSMutableArray queueDictionaries = new NSMutableArray();
+			Session session = pathController.workdir().getSession().copy();
+			Queue q = new Queue(Queue.KIND_DOWNLOAD);
+			NSEnumerator enum = browserTable.selectedRowEnumerator();
+			while (enum.hasMoreElements()) {
+				Path path = this.browserModel.getEntry(((Integer)enum.nextElement()).intValue());
+				q.addRoot(path.copy(session));
+			}
+			queueDictionaries.addObject(q.getAsDictionary());
+			// Writing data for private use when the item gets dragged to the transfer queue.
+			NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+			queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
+			if (queuePboard.setPropertyListForType(queueDictionaries, "QueuePBoardType")) {
+				log.debug("QueuePBoardType data sucessfully written to pasteboard");
+			}
+			Path p = this.browserModel.getEntry(browserTable.selectedRow());
+			NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
+			pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
+			if (!pboard.setStringForType(p.getAbsolute(), NSPasteboard.StringPboardType)) {
+				log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
+			}
 		}
 	}
 	
@@ -648,7 +656,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             browserModel.sort(selectedColumn, browserModel.isSortedAscending());
             browserTable.reloadData();
             toolbar.validateVisibleItems();
-//@todo            window.makeFirstResponder(browserTable);
+			// this.window().makeFirstResponder(browserTable);
         }
         else if (arg instanceof Message) {
             Message msg = (Message)arg;
@@ -671,7 +679,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                 statusIcon.setNeedsDisplay(true);
                 statusLabel.setObjectValue(msg.getContent());
                 statusLabel.display();
-//@todo                window().setDocumentEdited(false);
+				// window().setDocumentEdited(false);
             }
             else if (msg.getTitle().equals(Message.REFRESH)) {
                 refreshButtonClicked(null);
@@ -688,15 +696,14 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 				this.browserModel.clear();
 				this.browserTable.reloadData();
                 toolbar.validateVisibleItems();
-//@todo                window().setDocumentEdited(true);
+				// window().setDocumentEdited(true);
             }
             else if (msg.getTitle().equals(Message.CLOSE)) {
-				//@todo
                 progressIndicator.stopAnimation(this);
                 statusIcon.setImage(null);
                 statusIcon.setNeedsDisplay(true);
                 toolbar.validateVisibleItems();
-//@todo                window().setDocumentEdited(false);
+				// window().setDocumentEdited(false);
             }
             else if (msg.getTitle().equals(Message.START)) {
                 statusIcon.setImage(null);
@@ -898,7 +905,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                 // selected files on the local filesystem
                 NSArray selected = sheet.filenames();
                 java.util.Enumeration enumerator = selected.objectEnumerator();
-                Queue q = new Queue(Queue.KIND_UPLOAD);
+                Queue q = new Queue(Queue.KIND_UPLOAD, (Observer)this);
                 Session session = workdir.getSession().copy();
                 while (enumerator.hasMoreElements()) {
                     Path item = workdir.copy(session);
@@ -906,8 +913,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                     q.addRoot(item);
                 }
 				CDQueueController.instance().addItem(q);
-                CDQueueController.instance().startItem(q);
-//@todo                CDQueueController.instance().startItem(q, (Observer)this);
+				CDQueueController.instance().startItem(q);
                 break;
             case (NSAlertPanel.AlternateReturn):
                 break;
@@ -962,13 +968,13 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 	
 	public void mount(NSScriptCommand command) {
         log.debug("mount:"+command);
-		NSDictionary args = command.evaluatedArguments();
-		Host host = new Host(Session.FTP,//@todo
-						(String)args.objectForKey("Host"),
-						Integer.parseInt((String)args.objectForKey("Port")),
-						new Login((String)args.objectForKey("Host"), (String)args.objectForKey("Username"), (String)args.objectForKey("Password"), false),
-						(String)args.objectForKey("Path"));
-		this.mount(host);
+//		NSDictionary args = command.evaluatedArguments();
+//		Host host = new Host((String)args.objectForKey("Protocol"),
+//							 (String)args.objectForKey("Host"),
+//							 Integer.parseInt((String)args.objectForKey("Port")),
+//							 new Login((String)args.objectForKey("Host"), (String)args.objectForKey("Username"), (String)args.objectForKey("Password"), false),
+//							 (String)args.objectForKey("Path"));
+//		this.mount(host);
 	}
 		
     public void mount(final Host host) {
@@ -1589,7 +1595,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             NSPasteboard infoPboard = info.draggingPasteboard();
             if (infoPboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
                 NSArray filesList = (NSArray)infoPboard.propertyListForType(NSPasteboard.FilenamesPboardType);
-                Queue q = new Queue(Queue.KIND_UPLOAD);
+                Queue q = new Queue(Queue.KIND_UPLOAD, (Observer)CDBrowserController.this);
                 Session session = pathController.workdir().getSession().copy();
                 for (int i = 0; i < filesList.count(); i++) {
                     log.debug(filesList.objectAtIndex(i));
@@ -1608,8 +1614,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                 }
                 if (q.numberOfRoots() > 0) {
                     CDQueueController.instance().addItem(q);
-                    CDQueueController.instance().startItem(q);
-//@todo                    CDQueueController.instance().startItem(q, (Observer)CDBrowserController.this);
+					CDQueueController.instance().startItem(q);
                 }
                 return true;
             }
@@ -1714,7 +1719,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                 Queue q = new Queue(Queue.KIND_DOWNLOAD);
                 for (int i = 0; i < promisedDragPaths.length; i++) {
                     try {
-						//@todo check if the returned path is the trash
                         this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
                                 this.promisedDragPaths[i].getName()));
                         q.addRoot(this.promisedDragPaths[i]);
@@ -1738,27 +1742,26 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 
 		//@todo
 		/*
-		public void scrollTo(String inString) {
-			// This general sample looks for a highlighted column, presuming that is that column we are sorted by, and uses that as the lookup key.
-			NSTableColumn *col = [tableView highlightedTableColumn];
-			if (nil != col) {
-				NSString *key = [col identifier];
-				int i;
-				for ( i = 0 ; i < [oData count] ; i++ ) {
-					NSDictionary *rowDict = [oData objectAtIndex:i];
-					NSString *compareTo = [rowDict objectForKey:key];
-					NSComparisonResult order = [inString caseInsensitiveCompare:compareTo];
-					if (order != NSOrderedDescending) break;
-				}
-				// Make sure we're not overflowing the row count.
-				if (i >= [oData count]) {
-					i = [oData count] - 1;
-				}
-				// Now select row i -- either the one we found, or the last row if not found.
-				[tableView selectRow:i byExtendingSelection:NO];
-				[tableView scrollRowToVisible:i];
-			}
-		}
+		 public void keyDown(NSEvent event) {
+			 if (!event.isARepeat()) {
+				 String chars = event.characters();
+				 //double timestamp = event.timestamp();
+				 Object ds = this.dataSource();
+				 if (ds instanceof CDTableDataSource) {
+					 CDTableDataSource model = (CDTableDataSource)ds;
+					 for (int i = 0; i < model.numberOfRowsInTableView(this); i++) {
+						 NSAttributedString s = (NSAttributedString)model.tableViewObjectValueForLocation(this, this.tableColumnWithIdentifier("FILENAME"), i);
+						 String filename = s.stringReference().string();
+						 if (filename.toLowerCase().startsWith(chars)) {
+							 this.selectRow(i, false);
+							 this.scrollRowToVisible(i);
+							 return;
+						 }
+					 }
+				 }
+			 }
+			 super.keyDown(event);
+		 }
 		 */
 		
         public boolean isSortedAscending() {

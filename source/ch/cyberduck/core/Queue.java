@@ -48,6 +48,16 @@ public class Queue extends Observable implements Observer {
 	
 	private Worker worker;
 
+	/**
+	 * The observer to notify when an upload is complete
+     */
+    private Observer callback;
+	
+    public Queue(int kind, Observer observer) {
+		this(kind);
+		this.callback = observer;
+    }
+
     /**
      * Creating an empty queue containing no items. Items have to be added later
      * using the <code>addRoot</code> method.
@@ -76,6 +86,7 @@ public class Queue extends Observable implements Observer {
                 }
             }
 			/*
+			 @todo
             Object itemsObj = dict.objectForKey("Items");
             if (itemsObj != null) {
                 NSArray items = (NSArray)itemsObj;
@@ -100,6 +111,7 @@ public class Queue extends Observable implements Observer {
         }
         dict.setObjectForKey(r, "Roots");
 		/*
+		 @todo
         NSMutableArray items = new NSMutableArray();
         for (Iterator iter = jobs.iterator(); iter.hasNext();) {
             items.addObject(((Path)iter.next()).getAsDictionary());
@@ -152,6 +164,16 @@ public class Queue extends Observable implements Observer {
             Message msg = (Message)arg;
             if (msg.getTitle().equals(Message.PROGRESS)) {
                 this.status = (String)msg.getContent();
+			}
+			else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+				if (this.isComplete()) {
+					if (Queue.KIND_UPLOAD == this.kind()) {
+						if (callback != null) {
+							log.debug("Telling observable to refresh directory listing");
+							callback.update(null, new Message(Message.REFRESH));
+						}
+					}
+				}
 			}
 		}
 		this.callObservers(arg);
