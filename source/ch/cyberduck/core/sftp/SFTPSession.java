@@ -52,7 +52,7 @@ public class SFTPSession extends Session {
      */
     public SFTPSession(Host h) {
 		super(h);
-		SSH = new SshClient();
+//		SSH = new SshClient();
     }
 	
     public synchronized void close() {
@@ -61,10 +61,12 @@ public class SFTPSession extends Session {
 			if(this.SFTP != null) {
 				this.log("Disconnecting...", Message.PROGRESS);
 				this.SFTP.stop();
+				this.SFTP = null;
 			}
-			if(SSH != null) {
+			if(this.SSH != null) {
 				this.log("Closing SSH Session Channel", Message.PROGRESS);
-				SSH.disconnect();
+				this.SSH.disconnect();
+				this.SSH = null;
 			}
 			this.log("Disconnected", Message.PROGRESS);
 		}
@@ -82,6 +84,7 @@ public class SFTPSession extends Session {
     public synchronized void connect() throws IOException {
 		this.callObservers(new Message(Message.OPEN, "Opening session."));
 		this.log("Opening SSH connection to " + host.getIp()+"...", Message.PROGRESS);
+		SSH = new SshClient();
 		SshConnectionProperties properties = new SshConnectionProperties();
 		properties.setHost(host.getHostname());
 		properties.setPort(host.getPort());

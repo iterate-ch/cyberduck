@@ -47,7 +47,7 @@ public class FTPSession extends Session {
      */
     public FTPSession(Host h) {//, TransferAction action) {
         super(h);
-		this.FTP = new FTPClient();
+//		this.FTP = new FTPClient();
 		//@todo proxy        System.getProperties().put("proxySet", Preferences.instance().getProperty("connection.proxy"));
   //@todo proxy        System.getProperties().put("proxyHost", Preferences.instance().getProperty("connection.proxy.host"));
   //@todo proxy        System.getProperties().put("proxyPort", Preferences.instance().getProperty("connection.proxy.port"));
@@ -56,9 +56,10 @@ public class FTPSession extends Session {
     public synchronized void close() {
 		this.callObservers(new Message(Message.CLOSE, "Closing session."));
 		try {
-			if(FTP != null) {
+			if(this.FTP != null) {
 				this.log("Disconnecting...", Message.PROGRESS);
-				FTP.quit();
+				this.FTP.quit();
+				this.FTP = null;
 			}
 			this.log("Disconnected", Message.PROGRESS);
 		}
@@ -76,11 +77,12 @@ public class FTPSession extends Session {
     public synchronized void connect() throws IOException {
 		this.callObservers(new Message(Message.OPEN, "Opening session."));
 		this.log("Opening FTP connection to " + host.getIp()+"...", Message.PROGRESS);
+		this.FTP = new FTPClient();
 		if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
-			FTP.setConnectMode(FTPConnectMode.ACTIVE);
+			this.FTP.setConnectMode(FTPConnectMode.ACTIVE);
 		}
 		else {
-			FTP.setConnectMode(FTPConnectMode.PASV);
+			this.FTP.setConnectMode(FTPConnectMode.PASV);
 		}
 		//@todo proxy		    if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
   //			FTP.initSOCKS(Preferences.instance().getProperty("connection.proxy.port"), Preferences.instance().getProperty("connection.proxy.host"));
@@ -88,10 +90,10 @@ public class FTPSession extends Session {
   //		    if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
   //			FTP.initSOCKSAuthentication(Preferences.instance().getProperty("connection.proxy.username"), Preferences.instance().getProperty("connection.proxy.password"));
   //		    }
-		FTP.connect(host.getHostname(), host.getPort());
+		this.FTP.connect(host.getHostname(), host.getPort());
 		this.log("FTP connection opened", Message.PROGRESS);
 		this.login();
-		FTP.system();
+		this.FTP.system();
 		this.setConnected(true);
     }
 	
@@ -126,7 +128,7 @@ public class FTPSession extends Session {
 		log.debug("login");
 		try {
 			this.log("Authenticating as " + host.getLogin().getUsername() + "...", Message.PROGRESS);
-			FTP.login(host.getLogin().getUsername(), host.getLogin().getPassword());
+			this.FTP.login(host.getLogin().getUsername(), host.getLogin().getPassword());
 			this.log("Login successfull.", Message.PROGRESS);
 		}
 		catch(FTPException e) {
@@ -143,7 +145,7 @@ public class FTPSession extends Session {
 	
     public Path workdir() {
 		try {
-			return new FTPPath(this, FTP.pwd());
+			return new FTPPath(this, this.FTP.pwd());
 		}
 		catch(FTPException e) {
 			this.log("FTP Error: "+e.getMessage(), Message.ERROR);
@@ -158,7 +160,7 @@ public class FTPSession extends Session {
     public void check() throws IOException {
 		log.debug("check");
 		this.log("Working", Message.START);
-		if(!FTP.isAlive()) {
+		if(!this.FTP.isAlive()) {
 			this.setConnected(false);
 			this.connect();
 			while(true) {
