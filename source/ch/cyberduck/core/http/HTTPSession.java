@@ -88,7 +88,7 @@ public class HTTPSession extends Session {
     public void check() throws IOException {
         log.debug(this.toString() + ":check");
         this.log("Working", Message.START);
-		this.log("Checking connection...", Message.PROGRESS);
+//		this.log("Checking connection...", Message.PROGRESS);
         if (null == HTTP || !HTTP.isAlive()) {
             this.setConnected(false);
             this.connect();

@@ -154,7 +154,7 @@ public class FTPSession extends Session {
     public synchronized void check() throws IOException {
         log.debug(this.toString() + ":check");
         this.log("Working", Message.START);
-		this.log("Checking connection...", Message.PROGRESS);
+//		this.log("Checking connection...", Message.PROGRESS);
         if (null == this.FTP || !this.FTP.isAlive()) {
             this.setConnected(false);
             this.connect();
