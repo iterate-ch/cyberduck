@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.ftp.*;
+import ch.cyberduck.core.sftp.*;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -426,7 +428,7 @@ public class CDQueueController implements Observer, Validator {
 		if (identifier.equals("Resume")) {
 			if (this.queueTable.numberOfSelectedRows() == 1) {
 				Queue queue = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-				return queue.isCanceled() && !(queue.remainingJobs() == 0);
+				return queue.isCanceled() && !(queue.remainingJobs() == 0) && (queue.getRoot() instanceof FTPPath);
 			}
 			return false;
 		}

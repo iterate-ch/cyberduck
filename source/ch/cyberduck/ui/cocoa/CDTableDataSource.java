@@ -61,10 +61,9 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 	}
 
 	public int draggingSourceOperationMaskForLocal(boolean local) {
-//		log.debug("draggingSourceOperationMaskForLocal:"+local);
-		if (local)
-			return NSDraggingInfo.DragOperationNone;
-		else
+//		if (local)
+//			return NSDraggingInfo.DragOperationNone;
+//		else
 			return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
 	}
 }

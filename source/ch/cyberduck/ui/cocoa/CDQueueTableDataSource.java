@@ -63,7 +63,8 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 	public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 		log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
 		if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
-			return NSDraggingInfo.DragOperationGeneric;
+			return NSDraggingInfo.DragOperationCopy;
+//			return NSDraggingInfo.DragOperationGeneric;
 		}
 		NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
 		if (this.queuePboardChangeCount < pboard.changeCount()) {
@@ -71,7 +72,8 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 				log.debug("tableViewValidateDrop:DragOperationGeneric");
 				// means the drag operation can be desided by the table view
 				// the tableview will draw rectangles or lines
-				return NSDraggingInfo.DragOperationGeneric;
+//				return NSDraggingInfo.DragOperationGeneric;
+				return NSDraggingInfo.DragOperationCopy;
 			}
 		}
 		log.debug("tableViewValidateDrop:DragOperationNone");

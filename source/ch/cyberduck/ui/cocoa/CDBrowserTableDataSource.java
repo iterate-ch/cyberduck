@@ -194,20 +194,6 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		return false;
 	}
 
-
-//    public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
-//		log.debug("finishedDraggingImage:operation"+operation);
-//		if(! (NSDraggingInfo.DragOperationNone == operation)) {
-//			if(promisedDragPaths != null) {
-//				for(int i = 0; i < promisedDragPaths.length; i++) {
-//					CDQueueController.instance().addItemAndStart(new Queue(promisedDragPaths[i],
-//																	   Queue.KIND_DOWNLOAD));
-//				}
-//				promisedDragPaths = null;
-//			}
-//		}
-//    }
-
 	/**
 	 @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
 	 * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
