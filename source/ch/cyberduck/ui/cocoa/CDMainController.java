@@ -610,6 +610,7 @@ public class CDMainController extends NSObject {
 
 	public void applicationWillTerminate(NSNotification notification) {
 		log.debug("applicationWillTerminate");
+		NSPasteboard.pasteboardWithName("QueuePBoard").setPropertyListForType(null, "QueuePBoardType");
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 		//stoppping worker thread
 		this.threadWorkerTimer.invalidate();

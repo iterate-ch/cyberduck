@@ -159,6 +159,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 							tableView.selectRow(row, false);
 						}
 						this.queuePboardChangeCount++;
+						pboard.setPropertyListForType(null, "QueuePBoardType");
 						return true;
 					}
 				}

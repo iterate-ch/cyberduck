@@ -2191,6 +2191,7 @@ public class CDBrowserController extends CDController implements Observer {
 								PathFactory.createPath(parent.getSession(), p.getAbsolute()).rename(parent.getAbsolute()+"/"+p.getName());
 							}
 							workdir().list(encoding, true, showHiddenFiles);
+							pboard.setPropertyListForType(null, "QueuePBoardType");
 							return true;
 						}
 					}
