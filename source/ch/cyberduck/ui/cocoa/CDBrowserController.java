@@ -756,8 +756,8 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 
 	public void toggleLogDrawer(Object sender) {
-		logDrawer.toggle(this);
-		Preferences.instance().setProperty("logDrawer.isOpen", logDrawer.state() == NSDrawer.OpenState || logDrawer.state() == NSDrawer.OpeningState);
+		this.logDrawer.toggle(this);
+		Preferences.instance().setProperty("logDrawer.isOpen", this.logDrawer.state() == NSDrawer.OpenState || this.logDrawer.state() == NSDrawer.OpeningState);
 	}
 
 	private NSDrawer bookmarkDrawer; // IBOutlet
@@ -768,8 +768,19 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 
 	public void toggleBookmarkDrawer(Object sender) {
-		bookmarkDrawer.toggle(this);
-		Preferences.instance().setProperty("bookmarkDrawer.isOpen", bookmarkDrawer.state() == NSDrawer.OpenState || bookmarkDrawer.state() == NSDrawer.OpeningState);
+		this.bookmarkDrawer.toggle(this);
+		Preferences.instance().setProperty("bookmarkDrawer.isOpen", this.bookmarkDrawer.state() == NSDrawer.OpenState || this.bookmarkDrawer.state() == NSDrawer.OpeningState);
+		if(this.bookmarkDrawer.state() == NSDrawer.OpenState || this.bookmarkDrawer.state() == NSDrawer.OpeningState) {
+			this.window().makeFirstResponder(this.bookmarkDrawer);
+		}
+		else {
+			if(this.isMounted()) {
+				this.window().makeFirstResponder(this.browserTable);
+			}
+			else {
+				this.window().makeFirstResponder(this.quickConnectPopup);
+			}
+		}
 	}
 
 	// ----------------------------------------------------------

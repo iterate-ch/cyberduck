@@ -20,7 +20,8 @@
 
 @interface CDTableView (Private)
 - (NSTableColumn *)_typeAheadSelectionColumn;
-- (void)passSelectString:(NSTimer *)sender;
+- (void)selectRow;
+- (void)selectRowWithTimer:(NSTimer *)sender;
 @end
 
 @implementation CDTableView
@@ -56,35 +57,37 @@
         }
     }
 	
-	if ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] || (![[NSCharacterSet controlCharacterSet] characterIsMember:key])){
+	if ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] || (![[NSCharacterSet controlCharacterSet] characterIsMember:key])) {
 		[select_string appendString:[event charactersIgnoringModifiers]];
-		[select_timer invalidate];
-		select_timer = [NSTimer scheduledTimerWithTimeInterval:0.4
-														target:self 
-													  selector:@selector(passSelectString:) 
-													  userInfo:nil 
-													   repeats:NO];
+		if([select_string length] == 1) {
+			[self selectRow];
+		}
+		else {
+			[select_timer invalidate];
+			select_timer = [NSTimer scheduledTimerWithTimeInterval:0.5
+															target:self 
+														  selector:@selector(selectRowWithTimer:) 
+														  userInfo:nil 
+														   repeats:NO];
+		}
 	} 
 	else {
 		[super keyDown:event];
 	}
 }
 
-- (void)passSelectString:(NSTimer *)sender
+- (void)selectRow
 {
-	[select_timer invalidate];
-	select_timer = nil;
-	
 	int row = -1;
 	int to_index = 0;
 	int smallest_difference = -1;
 	int counter;
-
+	
 	NSString *compare = [select_string lowercaseString];
 	for (counter = 0; counter < [[self dataSource] numberOfRowsInTableView: self]; counter++) {
 		NSString *object = [[[self dataSource] tableView:self 
-								objectValueForTableColumn:[self _typeAheadSelectionColumn] 
-													  row:counter] lowercaseString];
+							   objectValueForTableColumn:[self _typeAheadSelectionColumn] 
+													 row:counter] lowercaseString];
 		if (to_index < [object length] && to_index < [compare length] + 1) {
 			if (object && [[object substringToIndex:to_index] isEqualToString:[compare substringToIndex:to_index]])	{
 				char one = [compare characterAtIndex:to_index];
@@ -112,11 +115,18 @@
 	if (row != -1) {
 		[self selectRow:row byExtendingSelection:NO];
 		[self scrollRowToVisible:row];
-	}
+	}	
+}
+
+- (void)selectRowWithTimer:(NSTimer *)sender
+{
+	[self selectRow];
+	[select_timer invalidate];
+	select_timer = nil;
 	[select_string setString:@""];
 }
 
-- (NSTableColumn *)_typeAheadSelectionColumn;
+- (NSTableColumn *)_typeAheadSelectionColumn
 {
 	return [[NSTableColumn alloc] initWithIdentifier:@"TYPEAHEAD"];
 }
