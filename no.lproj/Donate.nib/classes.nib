@@ -1,0 +1,13 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {closeDonationSheet = id; }; 
+            CLASS = "ch.cyberduck.ui.cocoa.CDMainController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {donationSheet = NSWindow; neverShowDonationCheckbox = NSButton; }; 
+            SUPERCLASS = "java.lang.Object"; 
+        }
+    ); 
+    IBVersion = 1; 
+}
