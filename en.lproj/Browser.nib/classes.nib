@@ -4,6 +4,7 @@
             ACTIONS = {
                 addBookmarkButtonClicked = id; 
                 deleteButtonClicked = id; 
+                downloadAsButtonClicked = id; 
                 downloadButtonClicked = id; 
                 editBookmarkButtonClicked = id; 
                 editButtonClicked = id; 

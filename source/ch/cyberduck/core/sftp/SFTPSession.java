@@ -173,7 +173,7 @@ public class SFTPSession extends Session {
 				// Try the authentication
 				int result = SSH.authenticate(auth);
 				if (AuthenticationProtocolState.COMPLETE == result) {
-					this.log("Login successfull", Message.PROGRESS);
+					this.log("Login successful", Message.PROGRESS);
 					credentials.addPasswordToKeychain();
 				}
 				else {

@@ -224,7 +224,6 @@ ja.lproj/Update.strings svneol=native#unset
 ko.lproj/Bookmark.nib/keyedobjects.nib -text
 ko.lproj/Bookmark.strings svneol=native#unset
 ko.lproj/Browser.nib/keyedobjects.nib -text
-ko.lproj/Browser.strings svneol=native#unset
 ko.lproj/Connection.nib/keyedobjects.nib -text
 ko.lproj/Connection.strings svneol=native#unset
 ko.lproj/Donate.nib/keyedobjects.nib -text
@@ -238,13 +237,11 @@ ko.lproj/Goto.strings svneol=native#unset
 ko.lproj/Info.nib/keyedobjects.nib -text
 ko.lproj/Info.strings svneol=native#unset
 ko.lproj/InfoPlist.strings svneol=native#unset
-ko.lproj/Localizable.strings svneol=native#unset
 ko.lproj/Login.nib/keyedobjects.nib -text
 ko.lproj/Login.strings svneol=native#unset
 ko.lproj/Main.nib/keyedobjects.nib -text
 ko.lproj/Main.strings svneol=native#unset
 ko.lproj/Preferences.nib/keyedobjects.nib -text
-ko.lproj/Preferences.strings svneol=native#unset
 ko.lproj/Queue.nib/keyedobjects.nib -text
 ko.lproj/Queue.strings svneol=native#unset
 ko.lproj/Update.nib/keyedobjects.nib -text

@@ -320,17 +320,14 @@ public class SFTPPath extends Path {
 		}
 	}
 
-	public void fillQueue(List queue, int kind) {
-		log.debug("fillQueue:" + kind + "," + kind);
+	public Queue getQueue(int kind) {
 		try {
 			this.session.check();
 			switch (kind) {
 				case Queue.KIND_DOWNLOAD:
-					this.fillDownloadQueue(queue);
-					break;
+					return this.getDownloadQueue();
 				case Queue.KIND_UPLOAD:
-					this.fillUploadQueue(queue);
-					break;
+					return this.getUploadQueue();
 			}
 		}
 		catch (SshException e) {
@@ -339,9 +336,14 @@ public class SFTPPath extends Path {
 		catch (IOException e) {
 			session.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
+		return null;
 	}
 
-	private void fillDownloadQueue(List queue) {
+	private Queue getDownloadQueue() throws IOException {
+		return this.getDownloadQueue(new Queue(this, Queue.KIND_DOWNLOAD));
+	}
+	
+	private Queue getDownloadQueue(Queue queue) throws IOException {
 		try {
 			this.session.check();
 			if (isDirectory()) {
@@ -351,12 +353,12 @@ public class SFTPPath extends Path {
 					SFTPPath p = (SFTPPath) i.next();
 					p.setLocal(new Local(this.getLocal(), p.getName()));
 					p.status.setResume(this.status.isResume());
-					p.fillDownloadQueue(queue);
+					p.getDownloadQueue(queue);
 				}
 			}
 			else if (isFile()) {
-				SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-				this.status.setSize(p.getAttributes().getSize().intValue());
+//				SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
+//				this.status.setSize(p.getAttributes().getSize().intValue());
 				queue.add(this);
 			}
 			else
@@ -368,6 +370,7 @@ public class SFTPPath extends Path {
 		catch (IOException e) {
 			this.session.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
+		return queue;
 	}
 
 	public void download() {
@@ -400,15 +403,19 @@ public class SFTPPath extends Path {
 			session.log("Idle", Message.STOP);
 		}
 	}
-
-	public void fillUploadQueue(List queue) throws IOException {
+	
+	private Queue getUploadQueue() throws IOException {
+		return this.getUploadQueue(new Queue(this, Queue.KIND_UPLOAD));
+	}
+	
+	private Queue getUploadQueue(Queue queue) throws IOException {
 		if (this.getLocal().isDirectory()) {
 			this.session.SFTP.makeDirectory(this.getAbsolute());
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
 				Path p = PathFactory.createPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
 				p.status.setResume(this.status.isResume());
-				((SFTPPath)p).fillUploadQueue(queue);
+				((SFTPPath)p).getUploadQueue(queue);
 			}
 		}
 		else if (this.getLocal().isFile()) {
@@ -417,6 +424,7 @@ public class SFTPPath extends Path {
 		}
 		else
 			throw new IOException("Cannot determine file type");
+		return queue;
 	}
 
 	public void upload() {

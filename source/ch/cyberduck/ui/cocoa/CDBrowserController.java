@@ -25,6 +25,12 @@ import java.util.*;
 
 import org.apache.log4j.Logger;
 
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.PatternMatcher;
+import org.apache.oro.text.regex.Perl5Compiler;
+import org.apache.oro.text.regex.Perl5Matcher;
+import org.apache.oro.text.regex.MalformedPatternException;
+
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
@@ -340,10 +346,15 @@ public class CDBrowserController extends NSObject implements Observer {
                     while (i.hasNext()) {
                         next = (Path) i.next();
 						/*
-						 Perl5Matcher matcher_ = new Perl5Matcher();
-						 Pattern pattern = new Perl5Compiler().compile(searchString);
-						 if (matcher.matches(next.getName().toLowerCase(), this.pattern))
-							subset.add(next);
+						try {
+							Perl5Matcher matcher = new Perl5Matcher();
+							Pattern pattern = new Perl5Compiler().compile(searchString);
+							if (matcher.matches(next.getName().toLowerCase(), pattern)) {
+								subset.add(next);
+							}
+						}
+						catch (MalformedPatternException e) {
+							log.error("Unparseable filter string supplied:" + searchString);
 						}
 						 */
                         if(next.getName().toLowerCase().startsWith(searchString.toLowerCase())) {
@@ -745,16 +756,75 @@ public class CDBrowserController extends NSObject implements Observer {
         pathController.workdir().list(true);
     }
 
-	public void downloadButtonClicked(Object sender) {
+	public void downloadAsButtonClicked(Object sender) {
 		if (browserModel.size() > 0 && browserTable.numberOfSelectedRows() > 0) {
-			NSEnumerator enum = browserTable.selectedRowEnumerator();
 			if (this.isMounted()) {
+				NSEnumerator enum = browserTable.selectedRowEnumerator();
 				while (enum.hasMoreElements()) {
 					Session session = pathController.workdir().getSession().copy();
 					Path path = ((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session);
-					Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
+					NSSavePanel panel = NSSavePanel.savePanel();
+					panel.setMessage(NSBundle.localizedString("Download the selected file to...", ""));
+					panel.setNameFieldLabel(NSBundle.localizedString("Download As:", ""));
+					panel.setPrompt(NSBundle.localizedString("Download", ""));
+					panel.setTitle("Download");
+					panel.setCanCreateDirectories(true);
+					panel.beginSheetForDirectory(System.getProperty("user.home"), 
+												 path.getLocal().getName(), 
+												 this.window, 
+												 this, 
+												 new NSSelector("saveAsPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), 
+												 path);
+				}
+			}
+		}
+	}
+
+
+	public void saveAsPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
+		switch (returnCode) {
+			case (NSAlertPanel.DefaultReturn):
+			{
+				NSArray selected = sheet.filenames(); //returning absolute paths
+				String filename;
+				if ((filename = (String) selected.lastObject()) != null) {
+					Path path  = (Path)contextInfo;
+					path.setLocal(new Local(filename));
+					//				Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
+					Queue queue = path.getQueue(Queue.KIND_DOWNLOAD);
 					CDQueuesImpl.instance().addItem(queue);
 					CDQueueController.instance().startItem(queue);
+				}
+				break;
+			}
+			case (NSAlertPanel.AlternateReturn):
+			{
+				break;
+			}
+		}
+	}
+
+	public void downloadButtonClicked(Object sender) {
+		if (browserModel.size() > 0 && browserTable.numberOfSelectedRows() > 0) {
+			if (this.isMounted()) {
+				NSEnumerator enum = browserTable.selectedRowEnumerator();
+				Queue q = new Queue(Queue.KIND_DOWNLOAD);
+				while (enum.hasMoreElements()) {
+					Session session = pathController.workdir().getSession().copy();
+					Path path = ((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session);
+					if(path.isFile()) {
+						q.add(path);
+					}
+					else {
+						//					Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
+						Queue queue = path.getQueue(Queue.KIND_DOWNLOAD);
+						CDQueuesImpl.instance().addItem(queue);
+						CDQueueController.instance().startItem(queue);
+					}
+				}
+				if(q.numberOfJobs() > 0) {
+					CDQueuesImpl.instance().addItem(q);
+					CDQueueController.instance().startItem(q);
 				}
 			}
 		}
@@ -762,7 +832,7 @@ public class CDBrowserController extends NSObject implements Observer {
 
 	public void uploadButtonClicked(Object sender) {
         log.debug("uploadButtonClicked");
-        NSOpenPanel panel = new NSOpenPanel();
+        NSOpenPanel panel = NSOpenPanel.openPanel();
         panel.setCanChooseDirectories(true);
         panel.setCanChooseFiles(true);
         panel.setAllowsMultipleSelection(true);
@@ -1268,7 +1338,8 @@ public class CDBrowserController extends NSObject implements Observer {
                             Path p = PathFactory.createPath(pathController.workdir().getSession().copy(),
                                     pathController.workdir().getAbsolute(),
                                     new Local((String) filesList.objectAtIndex(i)));
-                            Queue queue = new Queue(p, Queue.KIND_UPLOAD);
+//                            Queue queue = new Queue(p, Queue.KIND_UPLOAD);
+							Queue queue = p.getQueue(Queue.KIND_UPLOAD);
                             CDQueuesImpl.instance().addItem(queue);
                             CDQueueController.instance().startItem(queue, (Observer) CDBrowserController.this);
                         }
@@ -1321,7 +1392,8 @@ public class CDBrowserController extends NSObject implements Observer {
                     else {
                         fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
                     }
-                    queueDictionaries.addObject(new Queue(promisedDragPaths[i], Queue.KIND_DOWNLOAD).getAsDictionary());
+                    queueDictionaries.addObject(promisedDragPaths[i].getQueue(Queue.KIND_DOWNLOAD).getAsDictionary());
+//                    queueDictionaries.addObject(new Queue(promisedDragPaths[i], Queue.KIND_DOWNLOAD).getAsDictionary());
                 }
                 // Writing data for private use when the item gets dragged to the transfer queue.
                 NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
@@ -1361,7 +1433,8 @@ public class CDBrowserController extends NSObject implements Observer {
                     try {
                         this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
                                 this.promisedDragPaths[i].getName()));
-                        Queue queue = new Queue(this.promisedDragPaths[i], Queue.KIND_DOWNLOAD);
+//                        Queue queue = new Queue(this.promisedDragPaths[i], Queue.KIND_DOWNLOAD);
+                        Queue queue = this.promisedDragPaths[i].getQueue(Queue.KIND_DOWNLOAD);
                         CDQueuesImpl.instance().addItem(queue);
                         CDQueueController.instance().startItem(queue);
                         promisedDragNames.addObject(this.promisedDragPaths[i].getName());

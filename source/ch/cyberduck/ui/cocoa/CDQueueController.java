@@ -128,7 +128,7 @@ public class CDQueueController extends NSObject implements Observer, Validator {
 
         this.queueTable.sizeToFit();
 
-        // selection properties
+        //selection properties
         this.queueTable.setAllowsMultipleSelection(true);
         this.queueTable.setAllowsEmptySelection(true);
         this.queueTable.setAllowsColumnReordering(false);

@@ -56,6 +56,7 @@ public abstract class Path {
 	public Path copy(Session s) {
 		Path copy = PathFactory.createPath(s, this.getAbsolute());
 		copy.attributes = this.attributes;
+		copy.status.setSize(this.status.getSize());
 		return copy;
 	}
 	
@@ -147,7 +148,8 @@ public abstract class Path {
 			else if (index == 0) //parent is root
 				dirname = "/";
 			else if (index < 0)
-				dirname = this.getSession().workdir().getAbsolute();
+				dirname = "/";
+//				dirname = this.getSession().workdir().getAbsolute();
 			parent = PathFactory.createPath(this.getSession(), dirname);
 		}
 		log.debug("getParent:" + parent);
@@ -210,7 +212,6 @@ public abstract class Path {
 		if (this.attributes.isSymbolicLink())
 			return this.linksToFile();
 		return this.attributes.isFile();
-//		return this.attributes.permission.getMask().charAt(0) == '-';
 	}
 	
 //	public abstract void sync(Local local, boolean recursive, boolean commit, int kind);
@@ -222,13 +223,8 @@ public abstract class Path {
 		if (this.attributes.isSymbolicLink())
 			return this.linksToDirectory();
 		return this.attributes.isDirectory();
-//		return this.attributes.permission.getMask().charAt(0) == 'd';
 	}
 
-//	public boolean isLink() {
-//		return this.attributes.permission.getMask().charAt(0) == 'l';
-//	}
-	
 	private boolean linksToFile() {
 		return this.attributes.isSymbolicLink() && this.getName().indexOf(".") != -1;
 	}
@@ -318,7 +314,7 @@ public abstract class Path {
 
 	public abstract void upload();
 
-	public abstract void fillQueue(List queue, int kind);
+	public abstract Queue getQueue(int kind);
 
 	// ----------------------------------------------------------
 	// Transfer methods

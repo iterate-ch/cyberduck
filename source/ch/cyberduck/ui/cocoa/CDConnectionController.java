@@ -214,7 +214,7 @@ public class CDConnectionController extends NSObject implements Observer {
     public void pkCheckboxSelectionChanged(Object sender) {
         log.debug("pkCheckboxSelectionChanged");
         if (this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
-            NSOpenPanel panel = new NSOpenPanel();
+			NSOpenPanel panel = NSOpenPanel.openPanel();
             panel.setCanChooseDirectories(false);
             panel.setCanChooseFiles(true);
             panel.setAllowsMultipleSelection(false);

@@ -30,6 +30,7 @@ import org.apache.commons.net.ftp.FTPFileEntryParser;
 
 import java.io.*;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
@@ -288,17 +289,14 @@ public class FTPPath extends Path {
 		}
 	}
 	
-	public void fillQueue(List queue, int kind) {
-		log.debug("fillQueue:" + kind + "," + kind);
+	public Queue getQueue(int kind) {
 		try {
 			this.session.check();
 			switch (kind) {
 				case Queue.KIND_DOWNLOAD:
-					this.fillDownloadQueue(queue);
-					break;
+					return this.getDownloadQueue();
 				case Queue.KIND_UPLOAD:
-					this.fillUploadQueue(queue);
-					break;
+					return this.getUploadQueue();
 			}
 		}
 		catch (FTPException e) {
@@ -307,9 +305,14 @@ public class FTPPath extends Path {
 		catch (IOException e) {
 			session.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
+		return null;
 	}
-
-	private void fillDownloadQueue(List queue) throws IOException {
+	
+	private Queue getDownloadQueue() throws IOException {
+		return this.getDownloadQueue(new Queue(this, Queue.KIND_DOWNLOAD));
+	}
+	
+	private Queue getDownloadQueue(Queue queue) throws IOException {
 		if (this.isDirectory()) {
 			List files = this.list(false, true);
 			java.util.Iterator i = files.iterator();
@@ -317,20 +320,21 @@ public class FTPPath extends Path {
 				FTPPath p = (FTPPath) i.next();
 				p.setLocal(new Local(this.getLocal(), p.getName()));
 				p.status.setResume(this.status.isResume());
-				p.fillDownloadQueue(queue);
+				((FTPPath)p).getDownloadQueue(queue);
 			}
 		}
 		else if (this.isFile()) {
-			try {
-				this.status.setSize(this.session.FTP.size(this.getAbsolute()));
-			}
-			catch(FTPException e) {
-				log.error(e.getMessage());
-			}
+//			try {
+//				this.status.setSize(this.session.FTP.size(this.getAbsolute()));
+//			}
+//			catch(FTPException e) {
+//				log.error(e.getMessage());
+//			}
 			queue.add(this);
 		}
 		else
 			throw new IOException("Cannot determine file type");
+		return queue;
 	}
 
 	public void download() {
@@ -390,14 +394,18 @@ public class FTPPath extends Path {
 		}
 	}
 
-	private void fillUploadQueue(List queue) throws IOException {
+	private Queue getUploadQueue() throws IOException {
+		return this.getUploadQueue(new Queue(this, Queue.KIND_UPLOAD));
+	}
+	
+	private Queue getUploadQueue(Queue queue) throws IOException {
 		if (this.getLocal().isDirectory()) {
 			session.FTP.mkdir(this.getAbsolute());
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
 				Path p = PathFactory.createPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
 				p.status.setResume(this.status.isResume());
-				((FTPPath)p).fillUploadQueue(queue);
+				((FTPPath)p).getUploadQueue(queue);
 			}
 		}
 		else if (this.getLocal().isFile()) {
@@ -406,6 +414,7 @@ public class FTPPath extends Path {
 		}
 		else
 			throw new IOException("Cannot determine file type");
+		return queue;
 	}
 
 	public void upload() {

@@ -52,6 +52,9 @@ import org.apache.log4j.Logger;
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.29  2004/03/20 18:16:34  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.28  2004/02/23 23:56:36  dkocher
  *        *** empty log message ***
  *
@@ -753,7 +756,7 @@ public class FTPClient {
 		*/
 	public void abor() throws IOException, FTPException {
 		String reply = control.sendCommand("ABOR");
-		String[] validCodes = {"226", "426"};
+		String[] validCodes = {"225", "226", "426"};
 		lastValidReply = control.validateReply(reply, validCodes);
 		if(reply.substring(0, 3).equals("426"))
 			lastValidReply = control.validateReply(control.readReply(), "226");

@@ -6,6 +6,7 @@
                 backButtonClicked = id; 
                 connectButtonClicked = id; 
                 deleteButtonClicked = id; 
+                downloadAsButtonClicked = id; 
                 downloadButtonClicked = id; 
                 editBookmarkButtonClicked = id; 
                 editButtonClicked = id; 

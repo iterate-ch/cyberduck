@@ -103,11 +103,12 @@ public class VMSFTPEntryParser extends FTPFileEntryParserImpl
      */
     private static final String REGEX =
         "(.*;[0-9]+)\\s*" 
-        + "(\\d+)/\\d+\\s*" 
+        + "(\\d+)\\s*" 
+//        + "(\\d+)/\\d+\\s*" 
         + "(\\d{1,2})-" 
         + MONTHS 
         + "-([0-9]{4})\\s*"
-        + "((?:[01]\\d)|(?:2[0-3])):([012345]\\d):([012345]\\d)\\s*"
+        + "((?:[01]\\d)|(?:2[0-3])):([012345]\\d):?([012345]\\d)?\\s*"
         + "\\[(([0-9$A-Za-z_]+)|([0-9$A-Za-z_]+),([0-9$a-zA-Z_]+))\\]\\s*" 
         + "\\([a-zA-Z]*,[a-zA-Z]*,[a-zA-Z]*,[a-zA-Z]*\\)";
 

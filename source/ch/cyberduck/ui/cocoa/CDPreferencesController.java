@@ -490,7 +490,7 @@ public class CDPreferencesController extends NSObject {
     }
 
     public void downloadPathButtonClicked(NSButton sender) {
-        NSOpenPanel panel = new NSOpenPanel();
+        NSOpenPanel panel = NSOpenPanel.openPanel();
         panel.setCanChooseFiles(false);
         panel.setCanChooseDirectories(true);
         panel.setAllowsMultipleSelection(false);

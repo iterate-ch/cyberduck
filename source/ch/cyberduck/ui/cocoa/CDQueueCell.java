@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRect;
 import com.apple.cocoa.foundation.NSSize;
@@ -104,11 +105,18 @@ public class CDQueueCell extends CDTableCell {
             // drawing path properties
             // local file
             NSGraphics.drawAttributedString(new NSAttributedString(queue.getRoot().getName(),
-                    boldFont),
+																   boldFont),
                     new NSRect(cellPoint.x() + BORDER + SPACE,
                             cellPoint.y() + SPACE,
                             cellSize.width() - BORDER - SPACE,
                             cellSize.height()));
+			// number of files of queue item
+            NSGraphics.drawAttributedString(new NSAttributedString("("+queue.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
+																   tinyFontRight),
+											new NSRect(cellPoint.x() + BORDER + SPACE,
+													   cellPoint.y() + SPACE,
+													   cellSize.width() - BORDER - SPACE,
+													   cellSize.height()));
             // remote url
             NSGraphics.drawAttributedString(new NSAttributedString(queue.getRoot().getHost().getProtocol() + "://" +
                     queue.getRoot().getHost().getHostname() +

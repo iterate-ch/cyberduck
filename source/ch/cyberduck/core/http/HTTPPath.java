@@ -151,14 +151,13 @@ public class HTTPPath extends Path {
 		session.log("Invalid Operation", Message.ERROR);
 	}
 
-	public void fillQueue(List queue, int kind) {
+	public Queue getQueue(int kind) {
 		log.debug("fillQueue:" + kind + "," + kind);
 		try {
 			this.session.check();
 			switch (kind) {
 				case Queue.KIND_DOWNLOAD:
-					this.fillDownloadQueue(queue);
-					break;
+					return this.getDownloadQueue();
 				default:
 					throw new IllegalArgumentException("Upload not supported");
 			}
@@ -166,10 +165,16 @@ public class HTTPPath extends Path {
 		catch (IOException e) {
 			session.log(e.getMessage(), Message.ERROR);
 		}
+		return null;
 	}
 
-	private void fillDownloadQueue(List queue) {
+	private Queue getDownloadQueue() throws IOException {
+		return this.getDownloadQueue(new Queue(this, Queue.KIND_DOWNLOAD));
+	}
+	
+	private Queue getDownloadQueue(Queue queue) throws IOException {
 		queue.add(this);
+		return queue;
 	}
 
 	public void download() {
