@@ -156,7 +156,7 @@ public class CDBrowserController extends CDController implements Observer {
 				this.statusLabel.display();
 				//				ThreadUtilities.instance().invokeLater(new Runnable() {
 				//					public void run() {
-				CDBrowserController.this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
+				this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
 																					(String)msg.getContent(), // message
 																					NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
 																					null, //alternative button
