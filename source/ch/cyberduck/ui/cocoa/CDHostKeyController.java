@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-import com.sshtools.j2ssh.transport.InvalidHostFileException;
+import com.apple.cocoa.foundation.*;
 import com.sshtools.j2ssh.transport.AbstractHostKeyVerification;
+import com.sshtools.j2ssh.transport.InvalidHostFileException;
 import org.apache.log4j.Logger;
 
 /**
@@ -73,7 +73,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 		Thread.sleep(500); //milliseconds
 	    }
 	    catch(InterruptedException e) {
-		e.printStackTrace();
+		log.error(e.getMessage());
 	    }
 	}
     }
@@ -108,7 +108,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 		Thread.sleep(500); //milliseconds
 	    }
 	    catch(InterruptedException e) {
-		e.printStackTrace();
+		log.error(e.getMessage());
 	    }
 	}
     }
@@ -142,7 +142,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 		Thread.sleep(500); //milliseconds
 	    }
 	    catch(InterruptedException e) {
-		e.printStackTrace();
+		log.error(e.getMessage());
 	    }
 	}
     }
@@ -181,7 +181,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 	    done = true;
 	}
 	catch(InvalidHostFileException e) {
-	    e.printStackTrace();
+	    log.error(e.getMessage());
 	}
     }
 
@@ -211,7 +211,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 	    done = true;
 	}
 	catch(InvalidHostFileException e) {
-	    e.printStackTrace();
+	    log.error(e.getMessage());
 	}
     }
 }

@@ -18,12 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
-import com.apple.cocoa.application.*;
-import org.apache.log4j.Logger;
+import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Status;
-import ch.cyberduck.core.Message;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
+import org.apache.log4j.Logger;
+
 import java.util.Observable;
 import java.util.Observer;
 
@@ -32,6 +33,9 @@ import java.util.Observer;
  */
 public class CDTransferController implements Observer {
     private static Logger log = Logger.getLogger(CDTransferController.class);
+
+//  @todo  public static final int KIND_DOWNLOAD = 0;
+  //  public static final int KIND_UPLOAD = 1;
 
     private Path file;
 //@todo open new session for transfer
@@ -87,12 +91,16 @@ public class CDTransferController implements Observer {
     public void setFileIconView(NSImageView fileIconView) {
 	this.fileIconView = fileIconView;
     }
+
+
     
     public CDTransferController(Path file) {
 	super();
 	this.file = file;
 	//register for events
 	file.status.addObserver(this);
+//@todo!!!	file.session.addObserver(this);
+	
         if (false == NSApplication.loadNibNamed("Transfer", this)) {
             log.error("Couldn't load Transfer.nib");
             return;
@@ -174,7 +182,7 @@ public class CDTransferController implements Observer {
     public void upload() {
 	iconView.setImage(NSImage.imageNamed("upload.tiff"));
 	this.window().makeKeyAndOrderFront(null);
-//@todo	this.file.upload();
+	this.file.upload();
     }
 
     public NSWindow window() {

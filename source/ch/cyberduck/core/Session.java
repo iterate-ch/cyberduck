@@ -18,12 +18,11 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.io.*;
-import java.util.Date;
-import ch.cyberduck.core.Preferences;
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.util.Date;
 import java.util.Observable;
-import java.util.Observer;
 
 /**
  * @version $Id$
@@ -108,9 +107,11 @@ public abstract class Session extends Observable {
      */
     public abstract void check() throws IOException;
 
-    public abstract void download(Path download) throws IOException;
+    public abstract Session copy();
+    
+//    public abstract void download(Path download) throws IOException;
 
-    public abstract void upload(java.io.File upload);
+  //  public abstract void upload(java.io.File upload);
     
     /**
      * @return boolean True if the session has not yet been closed. 

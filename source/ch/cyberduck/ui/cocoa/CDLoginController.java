@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
-import com.apple.cocoa.application.*;
-import org.apache.log4j.Logger;
 import ch.cyberduck.core.Login;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
+import org.apache.log4j.Logger;
 
 /**
 * @version $Id$
@@ -98,7 +98,7 @@ public class CDLoginController extends Login {
 		Thread.sleep(500); //milliseconds
 	    }
 	    catch(InterruptedException e) {
-		e.printStackTrace();
+		log.error(e.getMessage());
 	    }
 	}
 	return tryAgain;

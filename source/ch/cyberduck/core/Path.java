@@ -18,24 +18,10 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.text.DateFormat;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Date;
-import java.io.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.Timer;
-import javax.swing.BoundedRangeModel;
-import javax.swing.DefaultBoundedRangeModel;
-import java.util.Observable;
-import java.util.Observer;
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.ui.ObserverList;
 import org.apache.log4j.Logger;
+
+import java.io.*;
+import java.util.List;
 
 /**
  * A path is a remote directory or file.
@@ -44,12 +30,13 @@ import org.apache.log4j.Logger;
 public abstract class Path {// extends Observable {
     private static Logger log = Logger.getLogger(Path.class);
 
-    protected String name = null;
-    protected String path = null;
+    private String name = null;
+    private String path = null;
+    private java.io.File local = null;
     protected Path parent = null;
 
     private List cache = null;
-    
+
     public Status status = new Status();
     public Attributes attributes = new Attributes();
 
@@ -74,6 +61,11 @@ public abstract class Path {// extends Observable {
      */
     public Path(String path) {
         this.setPath(path);
+    }
+
+    public Path(String parent, java.io.File file) {
+        this(parent, file.getName());
+	this.setLocal(file);
     }
 
     /**
@@ -134,10 +126,6 @@ public abstract class Path {// extends Observable {
 
     public abstract void rename(String n);
 
-    public abstract void download();
-
-//    public abstract void upload(java.io.File file);
-
     public abstract void changePermissions(int p);
 
     public abstract void changeOwner(String owner);
@@ -196,12 +184,18 @@ public abstract class Path {// extends Observable {
     public String getAbsoluteEncoded(String path) {
         return java.net.URLEncoder.encode(this.getAbsolute());//, "utf-8");
     }
+
+    public void setLocal(java.io.File file) {
+	this.local = file;
+    }
     
     /**
         * @return The local alias of this path
      */
     public File getLocal() {
-        return new File(Preferences.instance().getProperty("download.path"), this.getName());
+	if(null == this.local)
+	    return new File(Preferences.instance().getProperty("download.path"), this.getName());
+	return this.local;
     }
 
     /**
@@ -273,7 +267,11 @@ public abstract class Path {// extends Observable {
     }
     */
 
-    
+    public abstract Session getSession();
+
+    public abstract void download();
+
+    public abstract void upload();
 
     // ----------------------------------------------------------
     // Transfer methods

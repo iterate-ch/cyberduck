@@ -18,13 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
-import com.apple.cocoa.application.*;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.History;
 import ch.cyberduck.core.Favorites;
-import org.apache.log4j.Logger;
+import ch.cyberduck.core.History;
+import ch.cyberduck.core.Preferences;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 public class CDMainController {
     private static Logger log = Logger.getLogger(CDMainController.class);
@@ -72,7 +72,7 @@ public class CDMainController {
 	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.url")));
 	}
 	catch(java.net.MalformedURLException e) {
-	    e.printStackTrace();
+	    log.error(e.getMessage());
 	}
     }
     
@@ -81,7 +81,7 @@ public class CDMainController {
 	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("donate.url")));
 	}
 	catch(java.net.MalformedURLException e) {
-	    e.printStackTrace();
+	    log.error(e.getMessage());
 	}
     }
 
@@ -90,7 +90,7 @@ public class CDMainController {
 	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail")+"?subject=Cyberduck"));
 	}
 	catch(java.net.MalformedURLException e) {
-	    e.printStackTrace();
+	    log.error(e.getMessage());
 	}
     }
 
@@ -114,7 +114,7 @@ public class CDMainController {
 		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("donate.url")));
 		}
 		catch(java.net.MalformedURLException e) {
-		    e.printStackTrace();
+		    log.error(e.getMessage());
 		}
 	    case(NSAlertPanel.AlternateReturn):
 		//
@@ -132,7 +132,7 @@ public class CDMainController {
 		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("donate.url")));
 		}
 		catch(java.net.MalformedURLException e) {
-		    e.printStackTrace();
+		    log.error(e.getMessage());
 		}
 	    case(NSAlertPanel.AlternateReturn):
 		//
