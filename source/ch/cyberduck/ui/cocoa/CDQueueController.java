@@ -264,7 +264,8 @@ public class CDQueueController extends CDController {
 					ThreadUtilities.instance().invokeLater(new Runnable() {
 						public void run() {
 							toolbar.validateVisibleItems();
-							reloadQueueTable();
+							int row = queueTable.selectedRow();
+							reloadQueueTable(); queueTable.selectRow(row, false);
 						}
 					});
 					o.deleteObserver(this);
