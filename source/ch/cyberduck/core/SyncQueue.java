@@ -80,16 +80,18 @@ public class SyncQueue extends Queue {
 	}
 
 	private void addLocalChilds(List childs, Path p) {
-		if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
-			if(!childs.contains(p)) {
-				childs.add(p);
-			}
-			if(p.attributes.isDirectory()) {
-				File[] files = p.getLocal().listFiles();
-				for(int i = 0; i < files.length; i++) {
-					Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
-					if(!child.getName().equals(".DS_Store")) {
-						this.addLocalChilds(childs, child);
+		if(!this.isCanceled()) {
+			if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
+				if(!childs.contains(p)) {
+					childs.add(p);
+				}
+				if(p.attributes.isDirectory()) {
+					File[] files = p.getLocal().listFiles();
+					for(int i = 0; i < files.length; i++) {
+						Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
+						if(!child.getName().equals(".DS_Store")) {
+							this.addLocalChilds(childs, child);
+						}
 					}
 				}
 			}
@@ -97,16 +99,18 @@ public class SyncQueue extends Queue {
 	}
 
 	private void addRemoteChilds(List childs, Path p) {
-		if(p.getRemote().exists()) {
-			if(!childs.contains(p)) {
-				childs.add(p);
-			}
-			if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
-				p.attributes.setSize(0);
-				for(Iterator i = p.list(false, true).iterator(); i.hasNext();) {
-					Path child = (Path)i.next();
-					child.setLocal(new Local(p.getLocal(), child.getName()));
-					this.addRemoteChilds(childs, child);
+		if(!this.isCanceled()) {
+			if(p.getRemote().exists()) {
+				if(!childs.contains(p)) {
+					childs.add(p);
+				}
+				if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
+					p.attributes.setSize(0);
+					for(Iterator i = p.list(false, true).iterator(); i.hasNext();) {
+						Path child = (Path)i.next();
+						child.setLocal(new Local(p.getLocal(), child.getName()));
+						this.addRemoteChilds(childs, child);
+					}
 				}
 			}
 		}

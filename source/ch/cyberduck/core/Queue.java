@@ -174,7 +174,7 @@ public abstract class Queue extends Observable {
 	
 	public List getChilds() {
 		List childs = new ArrayList();
-		for(Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext();) {
+		for(Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext() && !this.isCanceled();) {
 			this.getChilds(childs, (Path)rootIter.next());
 		}
 		return childs;
