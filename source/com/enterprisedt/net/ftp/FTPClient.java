@@ -125,47 +125,6 @@ public class FTPClient {
         tsFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     }  
     
-	/**
-		*  Constructor. Creates the control
-		*  socket
-		*
-		*  @param   remoteHost  the remote hostname
-		*/
-    public FTPClient(String remoteHost)
-        throws IOException, FTPException {
-			
-			this(remoteHost, FTPControlSocket.CONTROL_PORT, 0);
-		}
-	
-    /**
-		*  Constructor. Creates the control
-		*  socket
-		*
-		*  @param   remoteHost  the remote hostname
-		*  @param   controlPort  port for control stream (-1 for default port)
-	*/
-    public FTPClient(String remoteHost, int controlPort)
-        throws IOException, FTPException {
-			
-			this(remoteHost, controlPort, 0);
-		}
-    
-    
-    /**
-		*  Constructor. Creates the control
-		*  socket
-		*
-		*  @param   remoteHost  the remote hostname
-		*  @param   controlPort  port for control stream (use -1 for the default port)
-	*  @param  timeout       the length of the timeout, in milliseconds
-		*                        (pass in 0 for no timeout)
-		*/
-    public FTPClient(String remoteHost, int controlPort, int timeout)
-		throws IOException, FTPException {
-			
-			this(InetAddress.getByName(remoteHost), controlPort, timeout);
-		}
-	
     /**
 		*  Constructor. Creates the control
 		*  socket
@@ -181,36 +140,7 @@ public class FTPClient {
 			
 			this(InetAddress.getByName(remoteHost), controlPort, timeout, encoding);
 		}
-	
-    /**
-		*  Constructor. Creates the control
-		*  socket
-		*
-		*  @param   remoteAddr  the address of the
-		*                       remote host
-		*/
-    public FTPClient(InetAddress remoteAddr)
-        throws IOException, FTPException {
-			
-			this(remoteAddr, FTPControlSocket.CONTROL_PORT, 0);
-		}
-    
-	
-    /**
-		*  Constructor. Creates the control
-		*  socket. Allows setting of control port (normally
-												   *  set by default to 21).
-	*
-		*  @param   remoteAddr  the address of the
-		*                       remote host
-		*  @param   controlPort  port for control stream
-		*/
-    public FTPClient(InetAddress remoteAddr, int controlPort)
-        throws IOException, FTPException {
-			
-			this(remoteAddr, controlPort, 0);
-		}
-	
+
     /**
 		*  Constructor. Creates the control
 		*  socket. Allows setting of control port (normally
