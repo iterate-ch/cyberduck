@@ -38,7 +38,7 @@ import ch.cyberduck.core.Status;
 public class CDInfoController extends CDController {
 	private static Logger log = Logger.getLogger(CDInfoController.class);
 
-	private static NSMutableArray instances = new NSMutableArray();
+//	private static NSMutableArray instances = new NSMutableArray();
 
 	private List files;
 
@@ -130,7 +130,7 @@ public class CDInfoController extends CDController {
 	public CDInfoController(Path file) {
 		this.files = new ArrayList();
 		this.files.add(file);
-		instances.addObject(this);
+		//instances.addObject(this);
 		if(false == NSApplication.loadNibNamed("Info", this)) {
 			log.fatal("Couldn't load Info.nib");
 		}
@@ -138,7 +138,7 @@ public class CDInfoController extends CDController {
 
 	public CDInfoController(List files) {
 		this.files = files;
-		instances.addObject(this);
+		//instances.addObject(this);
 		if(false == NSApplication.loadNibNamed("Info", this)) {
 			log.fatal("Couldn't load Info.nib");
 		}
@@ -160,10 +160,6 @@ public class CDInfoController extends CDController {
 			cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(cascadedWindowPoint);
 		}
 		this.init();
-		(NSNotificationCenter.defaultCenter()).addObserver(this,
-														   new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
-														   NSControl.ControlTextDidEndEditingNotification,
-														   filenameField);		
 	}
 	
 	private void init() {
@@ -286,6 +282,11 @@ public class CDInfoController extends CDController {
 			//														   new NSSelector("octalInputDidEndEditing", new Class[]{NSNotification.class}),
 			//														   NSControl.ControlTextDidEndEditingNotification,
 			//														   octalField);
+			(NSNotificationCenter.defaultCenter()).addObserver(this,
+															   new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
+															   NSControl.ControlTextDidEndEditingNotification,
+															   filenameField);		
+			
 		}
 	}
 
@@ -306,10 +307,8 @@ public class CDInfoController extends CDController {
 
 	public void windowWillClose(NSNotification notification) {
 		log.debug("windowWillClose");
-		if(!Preferences.instance().getBoolean("browser.info.isInspector")) {
-			NSNotificationCenter.defaultCenter().removeObserver(this);
-			instances.removeObject(this);
-		}
+		//		if(!Preferences.instance().getBoolean("browser.info.isInspector")) {
+		NSNotificationCenter.defaultCenter().removeObserver(this);
 	}
 
 	private int numberOfFiles() {

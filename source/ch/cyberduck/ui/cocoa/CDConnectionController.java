@@ -284,6 +284,8 @@ public class CDConnectionController extends CDController implements Observer {
 
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
+		this.window().setReleasedWhenClosed(true);
+
 		// Notify the updateURLLabel() method if the user types.
 		//ControlTextDidChangeNotification
 		NSNotificationCenter.defaultCenter().addObserver(this,
@@ -372,7 +374,6 @@ public class CDConnectionController extends CDController implements Observer {
 	public void closeSheet(NSButton sender) {
 		this.browserController.endSheet();
 		NSNotificationCenter.defaultCenter().removeObserver(this);
-		// Rendezvous should not eat ressources if there is no need to do so
 		this.rendezvous.deleteObserver(this);
 		this.rendezvous.quit();
 		switch(sender.tag()) {

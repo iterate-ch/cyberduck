@@ -34,6 +34,11 @@ import org.apache.log4j.Logger;
 public abstract class Queue extends Observable {
 	protected static Logger log = Logger.getLogger(Queue.class);
 
+	protected void finalize() throws Throwable {
+		log.debug("------------- finalize");
+		super.finalize();
+	}
+		
 	private Worker worker;
 	private List roots;
 
@@ -126,7 +131,15 @@ public abstract class Queue extends Observable {
 	public Path getRoot() {
 		return (Path)roots.get(0);
 	}
+	
+	public Session getSession() {
+		return this.getRoot().getSession();
+	}
 
+	public Host getHost() {
+		return this.getSession().getHost();
+	}
+		
 	public String getName() {
 		String name = "";
 		for(Iterator iter = this.roots.iterator(); iter.hasNext();) {
@@ -259,6 +272,7 @@ public abstract class Queue extends Observable {
 			this.queue.getRoot().getSession().close();
 			this.queue.callObservers(new Message(Message.QUEUE_STOP));
 			this.jobs = null;
+			Queue.this.worker = null;
 		}
 		
 		protected void cancel() {

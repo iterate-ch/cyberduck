@@ -53,16 +53,25 @@ public class CDProgressController extends NSObject implements Observer {
 	private static final NSDictionary TRUNCATE_TAIL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingTailParagraph},
 	    new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
-
+	protected void finalize() throws Throwable {
+		log.debug("------------- finalize");
+		super.finalize();
+	}
+	
 	private Queue queue;
 
 	public CDProgressController(Queue queue) {
 		this.queue = queue;
-		this.queue.addObserver(this);
-		this.queue.getRoot().getSession().addObserver(this);
+//		this.queue.addObserver(this);
+//		this.queue.getSession().addObserver(this);
 		if(false == NSApplication.loadNibNamed("Progress", this)) {
 			log.fatal("Couldn't load Progress.nib");
 		}
+	}
+	
+	public void init() {
+		this.queue.addObserver(this);
+		this.queue.getSession().addObserver(this);
 	}
 	
 	public void awakeFromNib() {
@@ -134,6 +143,8 @@ public class CDProgressController extends NSObject implements Observer {
 					}
 				}
 				this.progressTimer.invalidate();
+				this.queue.deleteObserver(this);
+				this.queue.getSession().deleteObserver(this);
 			}
 		}
 	}

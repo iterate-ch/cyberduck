@@ -248,10 +248,12 @@ public class CDQueueController extends CDController {
 	}
 
 	public void addItem(Queue queue) {
-		this.queueModel.addItem(queue);
+		int row = this.queueModel.size();
+		this.queueModel.addItem(queue, row);
+		this.queueModel.getController(row).init();
 		this.reloadQueueTable();
-		this.queueTable.selectRow(this.queueModel.size()-1, false);
-		this.queueTable.scrollRowToVisible(this.queueModel.size()-1);
+		this.queueTable.selectRow(row, false);
+		this.queueTable.scrollRowToVisible(row);
 	}
 
 	public void startItem(Queue queue) {
@@ -283,23 +285,10 @@ public class CDQueueController extends CDController {
 		if(Preferences.instance().getBoolean("queue.orderFrontOnTransfer")) {
 			this.window().makeKeyAndOrderFront(null);
 		}
-		queue.getRoot().getHost().getCredentials().setController(new CDLoginController(this));
-		if(queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
-			try {
-				queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(this));
-			}
-			catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
-				//This exception is thrown whenever an exception occurs open or reading from the host file.
-				this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", ""), //title
-				    NSBundle.localizedString("Could not open or read the host file", "")+": "+e.getMessage(), // message
-				    NSBundle.localizedString("OK", ""), // defaultbutton
-				    null, //alternative button
-				    null //other button
-				));
-				queue.getRoot().getSession().close();
-				return;
-			}
+		if(queue.getHost().getProtocol().equals(Session.SFTP)) {
+			queue.getHost().setHostKeyVerificationController(new CDHostKeyController(this));
 		}
+		queue.getHost().setLoginController(new CDLoginController(this));
 		queue.start(resumeRequested);
 	}
 
@@ -441,7 +430,9 @@ public class CDQueueController extends CDController {
 	public void resumeButtonClicked(Object sender) {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		while(enum.hasMoreElements()) {
-			Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
+			int i = ((Integer)enum.nextElement()).intValue();
+			this.queueModel.getController(i).init();
+			Queue queue = this.queueModel.getItem(i);
 			if(!queue.isRunning()) {
 				this.startItem(queue, true);
 			}
@@ -451,7 +442,9 @@ public class CDQueueController extends CDController {
 	public void reloadButtonClicked(Object sender) {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		while(enum.hasMoreElements()) {
-			Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
+			int i = ((Integer)enum.nextElement()).intValue();
+			this.queueModel.getController(i).init();
+			Queue queue = this.queueModel.getItem(i);
 			if(!queue.isRunning()) {
 				this.startItem(queue, false);
 			}

@@ -39,6 +39,11 @@ import ch.cyberduck.core.Preferences;
 public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 	private static Logger log = Logger.getLogger(CDLoginController.class);
 	
+	protected void finalize() throws Throwable {
+		log.debug("------------- finalize:"+this.toString());
+		super.finalize();
+	}
+		
 	private static NSMutableArray instances = new NSMutableArray();
 	
 	private String host;
@@ -50,9 +55,20 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		instances.removeObject(this);
 	}
 	
-	public CDHostKeyController(CDController windowController) throws InvalidHostFileException {
-		super(Preferences.instance().getProperty("ssh.knownhosts"));
+	public CDHostKeyController(CDController windowController) {
 		this.windowController = windowController;
+		try {
+			this.setKnownHostFile(Preferences.instance().getProperty("ssh.knownhosts"));
+		}
+		catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
+			//This exception is thrown whenever an exception occurs open or reading from the host file.
+			this.windowController.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", ""), //title
+															NSBundle.localizedString("Could not open or read the host file", "")+": "+e.getMessage(), // message
+															NSBundle.localizedString("OK", ""), // defaultbutton
+															null, //alternative button
+															null //other button
+															));
+		}
 		instances.addObject(this);
 	}
 	
@@ -111,7 +127,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 	}
 	
 	public void onUnknownHost(final String host,
-	                                       final SshPublicKey publicKey) {
+							  final SshPublicKey publicKey) {
 		log.debug("onUnknownHost");
 		this.host = host;
 		this.publicKey = publicKey;

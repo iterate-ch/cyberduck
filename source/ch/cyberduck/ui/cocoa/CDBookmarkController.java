@@ -128,12 +128,8 @@ public class CDBookmarkController extends CDController {
 
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
-		if(null == cascadedWindowPoint) {
-			cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(this.window().frame().origin());
-		}
-		else {
-			cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(cascadedWindowPoint);
-		}
+		this.window().setReleasedWhenClosed(true);
+		this.cascade();
 		this.window().setTitle(this.host.getNickname());
 		// Live editing of values
 		(NSNotificationCenter.defaultCenter()).addObserver(this,

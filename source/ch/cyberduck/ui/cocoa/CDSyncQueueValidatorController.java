@@ -62,12 +62,14 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
 	public void awakeFromNib() {
 		super.awakeFromNib();
+		
 		this.mirrorRadioCell.setTarget(this);
 		this.mirrorRadioCell.setAction(new NSSelector("mirrorCellClicked", new Class[]{Object.class}));
 		this.uploadRadioCell.setTarget(this);
 		this.uploadRadioCell.setAction(new NSSelector("uploadCellClicked", new Class[]{Object.class}));
 		this.downloadRadioCell.setTarget(this);
 		this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
+		
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("NEW");

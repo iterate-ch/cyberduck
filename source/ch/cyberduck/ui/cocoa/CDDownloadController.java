@@ -54,6 +54,7 @@ public class CDDownloadController extends CDController {
 
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
+		this.window().setReleasedWhenClosed(true);
 		CDQueueController controller = CDQueueController.instance();
 		controller.beginSheet(this.window());
 	}
@@ -91,18 +92,31 @@ public class CDDownloadController extends CDController {
 		catch(java.io.UnsupportedEncodingException e) {
 			log.error(e.getMessage());
 		}
+		catch(IllegalArgumentException e) {
+			NSAlertPanel.beginCriticalAlertSheet("Error", //title
+												 "OK", // defaultbutton
+												 null, //alternative button
+												 null, //other button
+												 this.window(), //docWindow
+												 null, //modalDelegate
+												 null, //didEndSelector
+												 null, // dismiss selector
+												 null, // context
+												 e.getMessage() // message
+												 );
+		}
 		catch(MalformedURLException e) {
 			NSAlertPanel.beginCriticalAlertSheet("Error", //title
-			    "OK", // defaultbutton
-			    null, //alternative button
-			    null, //other button
-			    this.window(), //docWindow
-			    null, //modalDelegate
-			    null, //didEndSelector
-			    null, // dismiss selector
-			    null, // context
-			    e.getMessage() // message
-			);
+												 "OK", // defaultbutton
+												 null, //alternative button
+												 null, //other button
+												 this.window(), //docWindow
+												 null, //modalDelegate
+												 null, //didEndSelector
+												 null, // dismiss selector
+												 null, // context
+												 e.getMessage() // message
+												 );
 		}
 	}
 }

@@ -38,7 +38,7 @@ public class CDLoginController extends CDController implements LoginController {
 	private static NSMutableArray instances = new NSMutableArray();
 
 	public void awakeFromNib() {
-		//
+		this.window().setReleasedWhenClosed(false);
 	}
 	
 	// ----------------------------------------------------------

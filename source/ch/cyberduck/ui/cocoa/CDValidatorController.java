@@ -47,6 +47,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 
 	public void awakeFromNib() {
+		this.window().setReleasedWhenClosed(true);
 		(NSNotificationCenter.defaultCenter()).addObserver(this,
 		    new NSSelector("tableViewSelectionDidChange", new Class[]{NSNotification.class}),
 		    NSTableView.TableViewSelectionDidChangeNotification,
@@ -317,7 +318,11 @@ public abstract class CDValidatorController extends AbstractValidator {
 	
 	protected void fireDataChanged() {
 		if(this.hasPrompt()) {
-			this.fileTableView.reloadData();
+			ThreadUtilities.instance().invokeLater(new Runnable() {
+				public void run() {
+					CDValidatorController.this.fileTableView.reloadData();
+				}
+			});
 		}
 	}
 	

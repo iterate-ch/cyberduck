@@ -51,7 +51,7 @@ public class CDFolderController extends CDController {
 	}
 
 	public void awakeFromNib() {
-		//
+		this.window().setReleasedWhenClosed(true);
 	}
 		
 	public void windowWillClose(NSNotification notification) {

@@ -21,11 +21,12 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
+import ch.cyberduck.ui.LoginController;
+
 import org.apache.log4j.Logger;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 
-public class
-    Host {
+public class Host {
 	private static Logger log = Logger.getLogger(Host.class);
 
 	private String protocol;
@@ -34,8 +35,8 @@ public class
 	private String nickname;
 	private String identification;
 	private String defaultpath = Path.HOME;
-	private transient HostKeyVerification hostKeyVerification;
-	private transient Login login;
+	private HostKeyVerification hostKeyVerification;
+	private Login login;
 
 	public static final String HOSTNAME = "Hostname";
 	public static final String NICKNAME = "Nickname";
@@ -45,6 +46,11 @@ public class
 	public static final String PATH = "Path";
 	public static final String KEYFILE = "Private Key File";
 
+	protected void finalize() throws Throwable {
+		log.debug("------------- finalize");
+		super.finalize();
+	}
+	
 	public Host(NSDictionary dict) {
 		Object protocolObj = dict.objectForKey(Host.PROTOCOL);
 		if(protocolObj != null) {
@@ -179,10 +185,8 @@ public class
 				return Session.FTP;
 			case Session.SSH_PORT:
 				return Session.SFTP;
-			default:
-				throw new IllegalArgumentException("Cannot find protocol for port number "+port);
 		}
-
+		throw new IllegalArgumentException("Cannot find default protocol for port number "+port);
 	}
 
 	private static int getDefaultPort(String protocol) {
@@ -192,7 +196,7 @@ public class
 		else if(protocol.equals(Session.SFTP)) {
 			return Session.SSH_PORT;
 		}
-		throw new IllegalArgumentException("Cannot find port number for protocol "+protocol);
+		throw new IllegalArgumentException("Unsupported protocol: "+protocol);
 	}
 
 	// ----------------------------------------------------------
@@ -267,6 +271,10 @@ public class
 		return this.port;
 	}
 
+	public void setLoginController(LoginController c) {
+		this.getCredentials().setController(c);
+	}
+	
 	//ssh specific
 	public void setHostKeyVerificationController(HostKeyVerification h) {
 		this.hostKeyVerification = h;

@@ -56,6 +56,7 @@ public class CDPreferencesController extends CDController {
 
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
+		this.window().setReleasedWhenClosed(true);
 		this.window().center();
 		this.transfermodeComboboxClicked(this.transfermodeCombobox);
 		{

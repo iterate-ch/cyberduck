@@ -34,7 +34,7 @@ public abstract class CDController {
 	protected static Logger log = Logger.getLogger(CDController.class);
 
 	protected void finalize() throws Throwable {
-		log.debug("------------- finalize");
+		log.debug("------------- finalize:"+this.toString());
 		super.finalize();
 	}
 

@@ -56,13 +56,9 @@ public abstract class AbstractKnownHostsKeyVerification
 	private static String defaultHostFile;
 	private static Log log = LogFactory.getLog(HostKeyVerification.class);
 
-	//private List deniedHosts = new ArrayList();
 	private Map allowedHosts = new HashMap();
 	private String knownhosts;
 	private boolean hostFileWriteable;
-
-	//private boolean expectEndElement = false;
-	//private String currentElement = null;
 
 	/**
 	 * <p/>
@@ -74,8 +70,11 @@ public abstract class AbstractKnownHostsKeyVerification
 	 * @throws InvalidHostFileException if the known_hosts file is invalid
 	 * @since 0.2.0
 	 */
-	public AbstractKnownHostsKeyVerification(String knownhosts)
-	    throws InvalidHostFileException {
+	public AbstractKnownHostsKeyVerification() {
+		super();
+	}
+	
+	public void setKnownHostFile(String knownhosts) throws InvalidHostFileException {
 		InputStream in = null;
 		try {
 			//  If no host file is supplied, or there is not enough permission to load

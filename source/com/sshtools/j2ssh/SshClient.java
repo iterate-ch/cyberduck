@@ -46,7 +46,6 @@ import com.sshtools.j2ssh.net.TransportProvider;
 import com.sshtools.j2ssh.net.TransportProviderFactory;
 import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
-import com.sshtools.j2ssh.transport.ConsoleKnownHostsKeyVerification;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 import com.sshtools.j2ssh.transport.TransportProtocolClient;
 import com.sshtools.j2ssh.transport.TransportProtocolState;
@@ -499,32 +498,6 @@ public class SshClient {
 		}
 	}
 
-	/**
-	 * <p/>
-	 * Connect the client to the server using default connection properties.
-	 * </p>
-	 * <p/>
-	 * <p/>
-	 * This call attempts to connect to the hostname specified on the standard
-	 * SSH port of 22 and uses all the default connection properties. This
-	 * call is the equivilent of calling:
-	 * </p>
-	 * <blockquote><pre>
-	 * SshConnectionProperties properties = new
-	 *                           SshConnectionProperties();
-	 * properties.setHostname("hostname");
-	 * ssh.connect(properties);
-	 * </pre></blockquote>
-	 *
-	 * @param hostname The hostname of the server to connect
-	 * @throws IOException If an IO error occurs during the connect
-	 *                     operation
-	 * @see #connect(com.sshtools.j2ssh.configuration.SshConnectionProperties)
-	 * @since 0.2.0
-	 */
-	public void connect(String hostname) throws IOException {
-		connect(hostname, 22, new ConsoleKnownHostsKeyVerification());
-	}
 
 	/**
 	 * <p/>
@@ -567,34 +540,6 @@ public class SshClient {
 		connect(hostname, 22, hosts);
 	}
 
-	/**
-	 * <p/>
-	 * Connect the client to the server on a specified port with default
-	 * connection properties.
-	 * </p>
-	 * <p/>
-	 * <p/>
-	 * This call attempts to connect to the hostname and port specified. This
-	 * call is the equivilent of calling:
-	 * </p>
-	 * <blockquote></pre>
-	 * SshConnectionProperties properties = new
-	 * SshConnectionProperties();
-	 * properties.setHostname("hostname");
-	 * properties.setPort(10022);
-	 * ssh.connect(properties);
-	 * </pre></blockquote>
-	 *
-	 * @param hostname The hostname of the server to connect
-	 * @param port     The port to connect
-	 * @throws IOException If an IO error occurs during the connect
-	 *                     operation
-	 * @see #connect(com.sshtools.j2ssh.configuration.SshConnectionProperties)
-	 * @since 0.2.0
-	 */
-	public void connect(String hostname, int port) throws IOException {
-		connect(hostname, port, new ConsoleKnownHostsKeyVerification());
-	}
 
 	/**
 	 * <p/>
@@ -638,62 +583,6 @@ public class SshClient {
 		properties.setHost(hostname);
 		properties.setPort(port);
 		connect(properties, hosts);
-	}
-
-	/**
-	 * <p/>
-	 * Connect the client to the server with the specified properties.
-	 * </p>
-	 * <p/>
-	 * <p/>
-	 * This call attempts to connect to using the connection properties
-	 * specified. When this method returns the connection has been
-	 * established, the server's identity been verified and the connection is
-	 * ready for user authentication. To use this method first create a
-	 * properties instance and set the required fields.
-	 * </p>
-	 * <blockquote><pre>
-	 * SshConnectionProperties properties = new
-	 *                         SshConnectionProperties();
-	 * properties.setHostname("hostname");
-	 * properties.setPort(10022);
-	 * properties.setPrefCSEncryption("blowfish-cbc");
-	 * ssh.connect(properties);
-	 * </pre></blockquote>
-	 * <p/>
-	 * <p/>
-	 * Host key verification will be performed using
-	 * <code>ConsoleKnownHostsKeyVerification</code> and so this call is the
-	 * equivilent of calling:
-	 * </p>
-	 * <blockquote><pre>
-	 * ssh.connect("hostname", new ConsoleKnownHostsKeyVerification());
-	 * </pre></blockquote>
-	 * <p/>
-	 * <p/>
-	 * If the key is not matched to any keys already in the
-	 * $HOME/.ssh/known_hosts file, the user will be prompted via the console
-	 * to confirm the identity of the remote server. The user will receive the
-	 * following prompt.
-	 * </p>
-	 * <code> The host shell.sourceforge.net is currently unknown to the system
-	 * The host key fingerprint is: 1024: 4c 68 3 d4 5c 58 a6 1d 9d 17 13 24
-	 * 14 48 ba 99 Do you want to allow this host key? [Yes|No|Always]:
-	 * </code>
-	 * <p/>
-	 * <p/>
-	 * Selecting the "always" option will write the key to the known_hosts
-	 * file.
-	 * </p>
-	 *
-	 * @param properties The connection properties
-	 * @throws IOException If an IO error occurs during the connect
-	 *                     operation
-	 * @since 0.2.0
-	 */
-	public void connect(SshConnectionProperties properties)
-	    throws IOException {
-		connect(properties, new ConsoleKnownHostsKeyVerification());
 	}
 
 	/**

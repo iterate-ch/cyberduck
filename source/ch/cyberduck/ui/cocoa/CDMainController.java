@@ -53,7 +53,7 @@ public class CDMainController extends NSObject {
 		    NSWorkspace.WorkspaceDidWakeNotification,
 		    null);
 
-		this.threadWorkerTimer = new NSTimer(0.2, //seconds
+		this.threadWorkerTimer = new NSTimer(0.1, //seconds
 		    this, //target
 		    new NSSelector("handleThreadWorkerTimerEvent", new Class[]{NSTimer.class}),
 		    null, //userInfo
@@ -506,6 +506,7 @@ public class CDMainController extends NSObject {
 	}
 
 	public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
+		log.debug("applicationShouldHandleReopen");
 		return true;
 	}
 
@@ -604,23 +605,52 @@ public class CDMainController extends NSObject {
 		Preferences.instance().save();
 	}
 
+	public static CDBrowserController newDocument() {
+		log.debug("newDocument");
+		CDBrowserController controller = new CDBrowserController();
+		controller.window().makeKeyAndOrderFront(null);
+		return controller;
+	}
+		
 	// ----------------------------------------------------------
 	// Applescriptability
 	// ----------------------------------------------------------
 	
 	public boolean applicationDelegateHandlesKey(NSApplication application, String key) {
 		log.debug("applicationDelegateHandlesKey:"+key);
+		if(key.equals("orderedBrowsers"))
+			return true;
 		if(key.equals("orderedDocuments"))
 			return true;
 		return false;
 	}
 
-	public static CDBrowserController newDocument() {
-		CDBrowserController controller = new CDBrowserController();
-		controller.window().makeKeyAndOrderFront(null);
-		return controller;
+	public CDBrowserController newDocument(NSScriptCommand command) {
+		return CDMainController.newDocument();
 	}
-		
+	
+	public NSArray orderedBrowsers() {
+		log.debug("orderedBrowsers");
+		NSApplication app = NSApplication.sharedApplication();
+		NSArray orderedWindows = (NSArray)NSKeyValue.valueForKey(app, "orderedWindows");
+		int i, c = orderedWindows.count();
+		NSMutableArray orderedDocs = new NSMutableArray();
+		Object curDelegate;
+		for(i = 0; i < c; i++) {
+			curDelegate = ((NSWindow)orderedWindows.objectAtIndex(i)).delegate();
+			if((curDelegate != null) && (curDelegate instanceof CDBrowserController)) {
+				orderedDocs.addObject(curDelegate);
+			}
+		}
+		log.debug("orderedBrowsers:"+orderedDocs);
+		return orderedDocs;
+	}
+
+	public void insertInOrderedBrowsersAtIndex(CDBrowserController doc, int index) {
+		log.debug("insertInOrderedBrowsersAtIndex"+doc);
+		doc.window().makeKeyAndOrderFront(null);
+	}
+	
 	public NSArray orderedDocuments() {
 		log.debug("orderedDocuments");
 		NSApplication app = NSApplication.sharedApplication();
@@ -634,9 +664,10 @@ public class CDMainController extends NSObject {
 				orderedDocs.addObject(curDelegate);
 			}
 		}
+		log.debug("orderedDocuments:"+orderedDocs);
 		return orderedDocs;
 	}
-
+	
 	public void insertInOrderedDocumentsAtIndex(CDBrowserController doc, int index) {
 		log.debug("insertInOrderedDocumentsAtIndex"+doc);
 		doc.window().makeKeyAndOrderFront(null);

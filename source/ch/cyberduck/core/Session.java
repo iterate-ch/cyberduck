@@ -39,28 +39,16 @@ public abstract class Session extends Observable {
 
 	public static final String SFTP = "sftp";
 	public static final String FTP = "ftp";
-//    public static final String FTPS = "ftps";
 
 	private Transcript transcript;
 
 	private Cache cache = new Cache();
 
 	/**
-	 * Default port for http
-	 */
-	public static final int HTTP_PORT = 80;
-	/**
-	 * Default port for https
-	 */
-	public static final int HTTPS_PORT = 443;
-	/**
 	 * Default port for ftp
 	 */
 	public static final int FTP_PORT = 21;
-	/**
-	 * Default port for ftp-ssl
-	 */
-//    public static final int FTPS_PORT = 990;
+
 	/**
 	 * Default port for ssh
 	 */
@@ -69,7 +57,7 @@ public abstract class Session extends Observable {
 	/**
 	 * Encapsulating all the information of the remote host
 	 */
-	public Host host;
+	protected Host host;
 
 	private List history = null;
 
@@ -77,6 +65,11 @@ public abstract class Session extends Observable {
 
 	private boolean authenticated;
 
+	protected void finalize() throws Throwable {
+		log.debug("------------- finalize");
+		super.finalize();
+	}
+	
 	public Session copy() {
 		return SessionFactory.createSession(this.host);
 	}
@@ -207,13 +200,20 @@ public abstract class Session extends Observable {
 
 	public synchronized void setClosed() {
 		log.debug("setClosed");
-		SessionPool.instance().release(this);
-		this.callObservers(new Message(Message.CLOSE, "Session closed."));
-		this.cache().clear();
 		this.connected = false;
+		this.callObservers(new Message(Message.CLOSE, "Session closed."));
 		if(Preferences.instance().getBoolean("connection.keepalive")) {
 			this.keepAliveTimer.cancel();
 		}
+		this.cache().clear();
+		this.release();
+	}
+	
+	private void release() {
+		this.host.setLoginController(null);
+		this.host.setHostKeyVerificationController(null);
+		SessionPool.instance().release(this);
+		System.gc(); //@todo
 	}
 	
 	private class KeepAliveTask extends TimerTask {

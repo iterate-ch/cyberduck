@@ -134,7 +134,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 	private Object kexLock = new Object();
 
 	// Object to synchronize key changing
-	private Object keyLock = new Object();
+//	private Object keyLock = new Object();
 
 	// The connected socket
 	//private Socket socket;
@@ -339,16 +339,19 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 		}
 		catch(Throwable e) {
 			if(e instanceof IOException) {
+//				sendDisconnect(SshMsgDisconnect.PROTOCOL_VERSION_NOT_SUPPORTED,
+//				    "Application error");
 				state.setLastError((IOException)e);
+				state.setValue(TransportProtocolState.DISCONNECTED);
 			}
-			if(state.getValue() != TransportProtocolState.DISCONNECTED) {
-				log.error("The Transport Protocol thread failed", e);
-				stop();
-			}
+//			if(state.getValue() != TransportProtocolState.DISCONNECTED) {
+//				log.error("The Transport Protocol thread failed", e);
+////				stop();
+//			}
 		}
-		finally {
-			thread = null;
-		}
+//		finally {
+//			thread = null;
+//		}
 		log.info("The Transport Protocol has been stopped");
 	}
 	
@@ -893,7 +896,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 	 *
 	 */
 	protected final void stop() {
-		log.debug("stop-0");
+		log.debug("stop");
 		this.onDisconnect();
 
 		Iterator it = eventHandlers.iterator();
@@ -910,14 +913,12 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 			messageStore.close();
 		}
 
-		log.debug("stop-1");
 		// 05/01/2003 moiz change begin:
 		// all close all the registerd messageStores
 		SshMessageStore ms;
 
 		for(it = messageStores.iterator(); (it != null) && it.hasNext();) {
 			ms = (SshMessageStore)it.next();
-
 			try {
 				ms.close();
 			}
@@ -927,14 +928,12 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 			}
 		}
 
-		log.debug("stop-2");
 		messageStores.clear();
 
 		// 05/01/2003 moizd change end:
 		messageStore = null;
 
 		try {
-			log.debug("stop-3");
 			provider.close();
 		}
 		catch(IOException e) {
@@ -998,8 +997,8 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 	}
 
 	private void negotiateVersion() throws IOException {
-		byte[] buf;
-		int len;
+//			byte[] buf;
+//			int len;
 		String remoteVer = "";
 		log.info("Negotiating protocol version");
 		log.debug("Local identification: "+getLocalId());
@@ -1063,6 +1062,8 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 		// Evaluate the version, we only support 2.0
 		if(!(remoteVersion.equals("2.0") || (remoteVersion.equals("1.99")))) {
 			log.fatal("The remote computer does not support protocol version 2.0");
+//			sendDisconnect(SshMsgDisconnect.PROTOCOL_VERSION_NOT_SUPPORTED,
+//			    "Application error");
 			throw new TransportProtocolException("The protocol version of the remote computer is not supported!");
 		}
 
@@ -1233,7 +1234,6 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 						TransportProtocolEventHandler eventHandler = (TransportProtocolEventHandler)it.next();
 						eventHandler.onSocketTimeout(this);
 					}
-					throw ex; //@todo
 				}
 			}
 

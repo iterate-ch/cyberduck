@@ -35,6 +35,10 @@ public class CDGotoController extends NSObject {
 
 	private static NSMutableArray instances = new NSMutableArray();
 
+	public void awakeFromNib() {
+		this.window().setReleasedWhenClosed(true);
+	}
+		
 	private NSWindow window; // IBOutlet
 
 	public void setWindow(NSWindow window) {

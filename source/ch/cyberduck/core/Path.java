@@ -34,6 +34,11 @@ import org.apache.log4j.Logger;
 public abstract class Path {
 	private static Logger log = Logger.getLogger(Path.class);
 
+	protected void finalize() throws Throwable {
+		log.debug("------------- finalize");
+		super.finalize();
+	}
+		
 	private String path = null;
 	private Local local = null;
 	
