@@ -32,7 +32,7 @@ NSString * const ODBEditorIsEditingString	= @"ODBEditorIsEditingString";
 
 - (BOOL)_launchExternalEditor;
 
-- (NSString *)_tempFileForEditingString:(NSString *)string;
+//- (NSString *)_tempFileForEditingString:(NSString *)string;
 
 - (BOOL)_editFile:(NSString *)path isEditingString:(BOOL)editingStringFlag options:(NSDictionary *)options forClient:(id)client context:(NSDictionary *)context;
 
@@ -212,22 +212,22 @@ static ODBEditor	*_sharedODBEditor;
 	return success;
 }
 
-- (NSString *)_tempFileForEditingString:(NSString *)string
-{
-	static  unsigned sTempFileSequence;
-	
-	NSString	*fileName = nil;
-
-	sTempFileSequence++;
-	
-	fileName = [NSString stringWithFormat: @"ODBEditor-%@-%06d.txt", [[NSBundle mainBundle] bundleIdentifier], sTempFileSequence];
-	fileName = [NSTemporaryDirectory() stringByAppendingPathComponent: fileName];
-
-	if (NO == [string writeToFile: fileName atomically: NO])
-		fileName = nil;
-
-	return fileName;
-}
+//- (NSString *)_tempFileForEditingString:(NSString *)string
+//{
+//	static  unsigned sTempFileSequence;
+//	
+//	NSString	*fileName = nil;
+//
+//	sTempFileSequence++;
+//	
+//	fileName = [NSString stringWithFormat: @"ODBEditor-%@-%06d.txt", [[NSBundle mainBundle] bundleIdentifier], sTempFileSequence];
+//	fileName = [NSTemporaryDirectory() stringByAppendingPathComponent: fileName];
+//
+//	if (NO == [string writeToFile: fileName atomically: NO])
+//		fileName = nil;
+//
+//	return fileName;
+//}
 
 - (BOOL)_editFile:(NSString *)fileName isEditingString:(BOOL)editingStringFlag options:(NSDictionary *)options forClient:(id)client context:(NSDictionary *)context
 {
@@ -298,8 +298,6 @@ static ODBEditor	*_sharedODBEditor;
 
 - (void)handleModifiedFileEvent:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
 {
-	NSLog(@"Got modified file event.");
-
 	NSAppleEventDescriptor  *descriptor = [[event paramDescriptorForKeyword: keyDirectObject] coerceToDescriptorType: typeFileURL];
 	NSString				*urlString = [[[NSString alloc] initWithData: [descriptor data] encoding: NSUTF8StringEncoding] autorelease];
 
@@ -325,8 +323,6 @@ static ODBEditor	*_sharedODBEditor;
 
 - (void)handleClosedFileEvent:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
 {
-	NSLog(@"Got close file event.");
-
 	NSAppleEventDescriptor  *descriptor = [[event paramDescriptorForKeyword: keyDirectObject] coerceToDescriptorType: typeFileURL];
 	NSString				*urlString = [[[NSString alloc] initWithData: [descriptor data] encoding: NSUTF8StringEncoding] autorelease];
 

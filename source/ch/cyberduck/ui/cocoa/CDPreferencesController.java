@@ -30,7 +30,7 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 /**
  * @version $Id$
  */
-public class CDPreferencesController {
+public class CDPreferencesController extends NSObject {
     private static Logger log = Logger.getLogger(CDPreferencesController.class);
 
     private static CDPreferencesController instance;

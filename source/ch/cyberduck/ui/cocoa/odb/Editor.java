@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.odb;
 
 import com.apple.cocoa.foundation.NSAutoreleasePool;
 import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSObject;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
@@ -31,11 +32,9 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
-public class Editor {
+public class Editor extends NSObject {
 	private static Logger log = Logger.getLogger(Editor.class);
-	
-//	private static NSMutableArray instances = new NSMutableArray();
-	
+		
 	private static Editor instance;
 
 	public static Map SUPPORTED_EDITORS = new HashMap();
@@ -48,11 +47,8 @@ public class Editor {
 		SUPPORTED_EDITORS.put("Tex-Edit Plus", "com.transtex.texeditplus");
 	}
 	
-//	private Path file;
-	private Map filesBeingEdited;
-
 	static {
-		// Ensure native keychain library is loaded
+		// Ensure native odb library is loaded
 		try {
 			NSBundle bundle = NSBundle.mainBundle();
 			String lib = bundle.resourcePath() + "/Java/" + "libODBEdit.jnilib";
@@ -64,20 +60,18 @@ public class Editor {
 		}
 	}
 	
+	private Map filesBeingEdited;
+
 	public static Editor instance() {
-		if(null == instance)
+		if(null == instance) {
 			instance = new Editor();
+		}
 		return instance;
 	}
 	
 	private Editor() {
 		this.filesBeingEdited = new HashMap();
 	}
-	
-//	public Editor(Path file) {
-//		this.file = file;
-//      instances.addObject(this);
-//	}
 		
 	public void open(Path file) {
 		file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), file.getName()));
@@ -93,7 +87,6 @@ public class Editor {
 		Path p = (Path)this.filesBeingEdited.get(file);
 		p.getLocal().delete();
 		this.filesBeingEdited.remove(file);
-//        instances.removeObject(this);
 	}
 	
 	public void didModifyFile(String file) {

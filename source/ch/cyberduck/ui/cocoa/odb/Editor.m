@@ -43,7 +43,8 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     return converted;
 }
 
-jstring convertToJString(JNIEnv *env, NSString *nsString) {
+jstring convertToJString(JNIEnv *env, NSString *nsString) 
+{
 	if(nsString == nil) {
 		return NULL;
 	}
@@ -61,7 +62,8 @@ JNIEnv* globalenv = 0;
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 										JNIEnv *env, 
 										jobject this, 
-										jstring path) {
+										jstring path) 
+{
 	
 	// save jni environment for access in other methods
 	globalenv = env;
@@ -69,15 +71,15 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 	editorObject = (*env)->NewGlobalRef(env, this);
 	editorClass = (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, this));
 	
-	NSString *file = convertToNSString(env, path);
-    NS_DURING;
+//	NSString *file = convertToNSString(env, path);
+//    NS_DURING;
 	
-    Editor *editor = [[Editor alloc] init];
-	[editor odbEdit:nil path:file];
+	Editor *editor = [[Editor alloc] init];
+	[editor odbEdit:nil path:convertToNSString(env, path)];
 	
-	NS_HANDLER;
-	NSLog( @"ODBEditor:Failed editing file \"%@\"", file);
-    NS_ENDHANDLER;
+//	NS_HANDLER;
+//	NSLog( @"ODBEditor:Failed editing file \"%@\"", file);
+//    NS_ENDHANDLER;
 }
 
 @implementation Editor
@@ -94,9 +96,9 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
     [[ODBEditor sharedODBEditor] editFile:path options: nil forClient:self context: NULL];
 }
 
--(void)odbEditor:(ODBEditor *)editor didModifyFile:(NSString *)path newFileLocation:(NSString *)newPath  context:(NSDictionary *)context {
-    
-	NSLog( @"Editor:didModifyFile");
+-(void)odbEditor:(ODBEditor *)editor didModifyFile:(NSString *)path newFileLocation:(NSString *)newPath  context:(NSDictionary *)context
+{
+
 	jmethodID didModifyFileMethod = (*globalenv)->GetMethodID(globalenv, editorClass, "didModifyFile", "(Ljava/lang/String;)V");
 	if (didModifyFileMethod == 0) {
 		NSLog( @"Editor -> GetMethodID:didModifyFile failed");
@@ -106,9 +108,8 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 	(*globalenv)->CallVoidMethod(globalenv, editorObject, didModifyFileMethod, convertToJString(globalenv, path));	
 }
 
--(void)odbEditor:(ODBEditor *)editor didClosefile:(NSString *)path context:(NSDictionary *)context {
-    
-	NSLog( @"Editor:didClosefile");
+-(void)odbEditor:(ODBEditor *)editor didClosefile:(NSString *)path context:(NSDictionary *)context 
+{
 	
 	jmethodID didCloseFileMethod = (*globalenv)->GetMethodID(globalenv, editorClass, "didCloseFile", "(Ljava/lang/String;)V");
 	if (didCloseFileMethod == 0) {
@@ -117,7 +118,9 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 	}
 	
 	(*globalenv)->CallVoidMethod(globalenv, editorObject, didCloseFileMethod, convertToJString(globalenv, path));	
-	
+
+	[self release];
+
 //	(*globalenv)->DeleteGlobalRef(globalenv, editorObject); //@todo cannot delete global ref; probably needd by other Editor
 //	(*globalenv)->DeleteGlobalRef(globalenv, editorClass);
 }

@@ -3,11 +3,14 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.2</string>
+	<string>2.3b1</string>
 	<key>file</key>
-	<string>Cyberduck-2.2.dmg</string>
+	<string>Cyberduck-2.3b1.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.3b1
+- External editor support
+
 2.2
 - Supporting folders with sticky/set-uid/set-gid bits (FTP)
 - Updated Dutch localization
