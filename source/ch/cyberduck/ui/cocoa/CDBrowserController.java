@@ -379,6 +379,7 @@ public class CDBrowserController extends NSObject implements Observer {
         this.bookmarkDrawer.open();
         CDBookmarkController controller = new CDBookmarkController(bookmarkTable,
                 CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow()));
+        controller.window().makeKeyAndOrderFront(null);
     }
 
     private NSButton addBookmarkButton; // IBOutlet
@@ -539,7 +540,6 @@ public class CDBrowserController extends NSObject implements Observer {
         if (false == NSApplication.loadNibNamed("Browser", this)) {
             log.fatal("Couldn't load Browser.nib");
         }
-        this.window().makeKeyAndOrderFront(null);
     }
 
     public void awakeFromNib() {
@@ -680,6 +680,7 @@ public class CDBrowserController extends NSObject implements Observer {
             int selected = ((Integer) enum.nextElement()).intValue();
             Path path = browserModel.getEntry(selected);
             CDInfoController controller = new CDInfoController(path);
+			controller.window().makeKeyAndOrderFront(null);
         }
     }
 

@@ -223,19 +223,18 @@ public class CDMainController extends NSObject {
     }
 
     public void preferencesMenuClicked(Object sender) {
-        CDPreferencesController.instance();
+        CDPreferencesController controller = CDPreferencesController.instance();
+        controller.window().makeKeyAndOrderFront(null);
     }
 
-    public CDDownloadController newDownloadMenuClicked(Object sender) {
+    public void newDownloadMenuClicked(Object sender) {
         CDDownloadController controller = new CDDownloadController();
-//		controller.window().makeKeyAndOrderFront(null);
-        return controller;
+		controller.window().makeKeyAndOrderFront(null);
     }
 
-    public CDBrowserController newBrowserMenuClicked(Object sender) {
+    public void newBrowserMenuClicked(Object sender) {
         CDBrowserController controller = new CDBrowserController();
-//		controller.window().makeKeyAndOrderFront(null);
-        return controller;
+		controller.window().makeKeyAndOrderFront(null);
     }
 
     public void showTransferQueueClicked(Object sender) {
@@ -254,7 +253,8 @@ public class CDMainController extends NSObject {
             log.info("Found file: " + f.toString());
             Host host = CDBookmarksImpl.instance().importBookmark(f);
             if (host != null) {
-                CDBrowserController controller = newBrowserMenuClicked(null);
+				CDBrowserController controller = new CDBrowserController();
+				controller.window().makeKeyAndOrderFront(null);
                 controller.mount(host);
                 return true;
             }

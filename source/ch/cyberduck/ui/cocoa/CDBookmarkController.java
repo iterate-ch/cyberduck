@@ -133,7 +133,6 @@ public class CDBookmarkController extends NSObject {
         if (false == NSApplication.loadNibNamed("Bookmark", this)) {
             log.fatal("Couldn't load Bookmark.nib");
         }
-        this.window().makeKeyAndOrderFront(null);
     }
 
     public void awakeFromNib() {

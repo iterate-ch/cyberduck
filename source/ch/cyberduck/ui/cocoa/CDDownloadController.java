@@ -61,7 +61,6 @@ public class CDDownloadController extends NSObject {
         if (false == NSApplication.loadNibNamed("Download", this)) {
             log.fatal("Couldn't load Download.nib");
         }
-        this.window().makeKeyAndOrderFront(null);
     }
 
     public void awakeFromNib() {

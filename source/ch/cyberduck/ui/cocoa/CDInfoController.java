@@ -133,7 +133,6 @@ public class CDInfoController extends NSObject {
         if (false == NSApplication.loadNibNamed("Info", this)) {
             log.fatal("Couldn't load Info.nib");
         }
-        this.window().makeKeyAndOrderFront(null);
     }
 
     public void awakeFromNib() {

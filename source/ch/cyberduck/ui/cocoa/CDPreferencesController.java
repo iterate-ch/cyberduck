@@ -51,7 +51,6 @@ public class CDPreferencesController extends NSObject {
             if (false == NSApplication.loadNibNamed("Preferences", instance)) {
                 log.fatal("Couldn't load Preferences.nib");
             }
-            instance.window().makeKeyAndOrderFront(null);
         }
         return instance;
     }
