@@ -2206,7 +2206,7 @@ public class CDBrowserController extends CDController implements Observer {
 		 *
 		 * @param rows is the list of row numbers that will be participating in the drag.
 		 * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard
-		 *         (data, owner, and so on).
+		 * (data, owner, and so on).
 		 */
 		public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
 			log.debug("tableViewWriteRowsToPasteboard:"+rows);
@@ -2258,6 +2258,11 @@ public class CDBrowserController extends CDController implements Observer {
 			return true;
 		}
 
+		public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
+			log.debug("finishedDraggingImage:"+operation);
+			NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes(null, null);
+		}
+		
 		public int draggingSourceOperationMaskForLocal(boolean local) {
 			log.debug("draggingSourceOperationMaskForLocal:"+local);
 			if(local)
