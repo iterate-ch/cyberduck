@@ -121,6 +121,10 @@ public class FTPClient {
 		tsFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
 
+	protected FTPClient(FTPMessageListener listener) {
+        this.messageListener = listener;
+	}
+
 	/**
 	 * Constructor. Creates the control
 	 * socket
@@ -133,29 +137,10 @@ public class FTPClient {
 	 */
 	public FTPClient(String remoteHost, int controlPort, int timeout, String encoding,
 					 FTPMessageListener listener) throws IOException, FTPException {
-		this(InetAddress.getByName(remoteHost), controlPort, timeout, encoding, listener);
-	}
 
-	/**
-	 * Constructor. Creates the control
-	 * socket. Allows setting of control port (normally
-	 * set by default to 21).
-	 *
-	 * @param remoteAddr  the address of the
-	 *                    remote host
-	 * @param controlPort port for control stream (-1 for default port)
-	 * @param timeout     the length of the timeout, in milliseconds
-	 *                    (pass in 0 for no timeout)
-	 * @param encoding    character encoding used for data
-	 */
-	public FTPClient(InetAddress remoteAddr, int controlPort, int timeout, String encoding,
-					 FTPMessageListener listener) throws IOException, FTPException 
-	{
-		if(controlPort < 0) {
-			controlPort = FTPControlSocket.CONTROL_PORT;
-		}
-		this.messageListener = listener;
-		this.initialize(new FTPControlSocket(remoteAddr, controlPort, timeout, encoding, listener));
+        this(listener);
+		this.control = new FTPControlSocket(InetAddress.getByName(remoteHost),
+                controlPort, timeout, encoding, listener);
 	}
 	
 	/**
@@ -195,15 +180,6 @@ public class FTPClient {
 			return;
 		}
 		this.control.getSocket().close();
-	}
-	
-	/**
-	 * Set the control socket explicitly
-	 *
-	 * @param control control socket reference
-	 */
-	protected void initialize(FTPControlSocket control) {
-		this.control = control;
 	}
 
 	/**
@@ -269,7 +245,7 @@ public class FTPClient {
 		FTPReply reply = control.sendCommand("NOOP");
 		lastValidReply = control.validateReply(reply, "200");
 	}
-
+	
 	/**
 	 * Login into an account on the FTP server. This
 	 * call completes the entire login process
@@ -506,7 +482,6 @@ public class FTPClient {
 	 * Request to the server that the get is set up
 	 *
 	 * @param remoteFile name of remote file
-	 * @modified
 	 */
 	private void initGet(String remoteFile, long resume) throws IOException, FTPException {
 		// set up data channel
@@ -540,7 +515,6 @@ public class FTPClient {
 	/**
 	 * Get as binary file, i.e. straight transfer of data
 	 *
-	 * @param localPath  full path of local file to write to
 	 * @param remoteFile name of remote file
 	 */
 	public java.io.InputStream get(String remoteFile, long resume) throws IOException, FTPException {

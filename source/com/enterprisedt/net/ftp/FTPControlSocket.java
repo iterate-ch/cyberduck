@@ -31,6 +31,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
+import ch.cyberduck.core.Preferences;
+
 /**
  * Supports client-side FTP operations
  *
@@ -38,6 +42,7 @@ import java.util.Vector;
  * @version $Revision$
  */
 public class FTPControlSocket {
+	protected static Logger log = Logger.getLogger(FTPControlSocket.class);
 
 	/**
 	 * Standard FTP end of line sequence
@@ -70,11 +75,18 @@ public class FTPControlSocket {
 	 */
 	protected BufferedReader reader = null;
 
-	/**
-	 * Message listener
-	 */
-	private FTPMessageListener messageListener = null;
+	private String encoding;
 
+    protected String getEncoding() {
+        return this.encoding;
+    }
+
+	protected FTPMessageListener listener = null;
+
+	protected FTPControlSocket() {
+		//todo
+	}
+	
 	/**
 	 * Constructor. Performs TCP connection and
 	 * sets up reader/writer. Allows different control
@@ -84,13 +96,12 @@ public class FTPControlSocket {
 	 * @param controlPort     port for control stream
 	 * @param timeout          the length of the timeout, in milliseconds
 	 * @param encoding        character encoding used for data
-	 * @param messageListener listens for messages
+	 * @param listener listens for messages
 	 */
 	protected FTPControlSocket(InetAddress remoteAddr, int controlPort, int timeout,
-	                           String encoding, FTPMessageListener messageListener)
-	    throws IOException, FTPException {
+	                           String encoding, FTPMessageListener listener) throws IOException, FTPException {
 
-		this(new Socket(remoteAddr, controlPort), timeout, encoding, messageListener);
+		this(new Socket(remoteAddr, controlPort), timeout, encoding, listener);
 	}
 
 	/**
@@ -100,23 +111,24 @@ public class FTPControlSocket {
 	 * @param controlSock     Socket to be used.
 	 * @param timeout         Timeout to be used.
 	 * @param encoding        character encoding used for data
-	 * @param messageListener listens for messages
+	 * @param listener listens for messages
 	 * @throws IOException  Thrown if no connection response could be read from the server.
 	 * @throws FTPException Thrown if the incorrect connection response was sent by the server.
 	 */
 	protected FTPControlSocket(Socket controlSock, int timeout,
-	                           String encoding, FTPMessageListener messageListener)
-	    throws IOException, FTPException {
+	                           String encoding, FTPMessageListener listener) throws IOException, FTPException {
 
+		this.encoding = encoding;
 		this.controlSock = controlSock;
-		this.messageListener = messageListener;
+		this.listener = listener;
 
 		this.setTimeout(timeout);
 		this.initStreams(encoding);
 		this.validateConnection();
 	}
 	
-	protected Socket getSocket() {
+	//@todo
+	public Socket getSocket() {
 		return this.controlSock;
 	}
 
@@ -124,7 +136,7 @@ public class FTPControlSocket {
 	 * Checks that the standard 220 reply is returned
 	 * following the initiated connection
 	 */
-	private void validateConnection()
+	protected void validateConnection()
 	    throws IOException, FTPException {
 
 		FTPReply reply = readReply();
@@ -138,8 +150,7 @@ public class FTPControlSocket {
 	 *
 	 * @param encoding character encoding used for data
 	 */
-	private void initStreams(String encoding)
-	    throws IOException {
+	protected void initStreams(String encoding) throws IOException {
 
 		// input stream
 		InputStream is = controlSock.getInputStream();
@@ -180,8 +191,7 @@ public class FTPControlSocket {
 	 *
 	 * @param millis The length of the timeout, in milliseconds
 	 */
-	public void setTimeout(int millis)
-	    throws IOException {
+	public void setTimeout(int millis) throws IOException {
 
 		if(controlSock == null)
 			throw new IllegalStateException("Failed to set timeout - no control socket");
@@ -192,8 +202,7 @@ public class FTPControlSocket {
 	/**
 	 * Quit this FTP session and clean up.
 	 */
-	public void logout()
-	    throws IOException {
+	public void logout() throws IOException {
 
 		IOException ex = null;
 		try {
@@ -227,8 +236,7 @@ public class FTPControlSocket {
 	 *               in passive mode
 	 * @return connected data socket
 	 */
-	protected FTPDataSocket createDataSocket(FTPConnectMode connectMode)
-	    throws IOException, FTPException {
+	protected FTPDataSocket createDataSocket(FTPConnectMode connectMode) throws IOException, FTPException {
 
 		if(connectMode == FTPConnectMode.ACTIVE) {
 			return this.createDataSocketActive();
@@ -244,7 +252,7 @@ public class FTPControlSocket {
 	 *
 	 * @return not connected data socket
 	 */
-	private FTPDataSocket createDataSocketActive()
+	protected FTPDataSocket createDataSocketActive()
 	    throws IOException, FTPException {
 
 		// use any available port
@@ -254,7 +262,7 @@ public class FTPControlSocket {
 		InetAddress localhost = controlSock.getLocalAddress();
 
 		// send the PORT command to the server
-		setDataPort(localhost, (short)socket.getLocalPort());
+		this.setDataPort(localhost, (short)socket.getLocalPort());
 
 		return socket;
 	}
@@ -293,8 +301,7 @@ public class FTPControlSocket {
 	 * @param host   the local host the server will connect to
 	 * @param portNo the port number to connect to
 	 */
-	private void setDataPort(InetAddress host, short portNo)
-	    throws IOException, FTPException {
+	protected void setDataPort(InetAddress host, short portNo) throws IOException, FTPException {
 
 		byte[] hostBytes = host.getAddress();
 		byte[] portBytes = toByteArray(portNo);
@@ -320,8 +327,7 @@ public class FTPControlSocket {
 	 *
 	 * @return connected data socket
 	 */
-	private FTPDataSocket createDataSocketPASV()
-	    throws IOException, FTPException {
+	protected FTPDataSocket createDataSocketPASV() throws IOException, FTPException {
 
 		// PASSIVE command - tells the server to listen for
 		// a connection attempt rather than initiating it
@@ -358,7 +364,7 @@ public class FTPControlSocket {
 		return new FTPPassiveDataSocket(new Socket(ipAddress, port));
 	}
 
-	private int[] parsePASVResponse(String response) throws FTPException {
+	protected int[] parsePASVResponse(String response) throws FTPException {
 		int startIP = 0;
 		for(int i = 4; i < response.length(); i++) {
 			if(Character.isDigit(response.charAt(i))) {
@@ -398,10 +404,9 @@ public class FTPControlSocket {
 	 * @param command command to send
 	 * @return reply to the supplied command
 	 */
-	public FTPReply sendCommand(String command)
-	    throws IOException {
+	public FTPReply sendCommand(String command) throws IOException {
 
-		writeCommand(command);
+		this.writeCommand(command);
 
 		// and read the result
 		return readReply();
@@ -416,7 +421,7 @@ public class FTPControlSocket {
 	private void writeCommand(String command)
 	    throws IOException {
 
-		log(command, true);
+		this.log(command, true);
 
 		// send it
 		writer.write(command+EOL);
@@ -440,7 +445,7 @@ public class FTPControlSocket {
 		if(line == null || line.length() == 0)
 			throw new IOException("Unexpected null reply received");
 
-		log(line, false);
+		this.log(line, false);
 
 		String replyCode = line.substring(0, 3);
 		StringBuffer reply = new StringBuffer("");
@@ -459,7 +464,7 @@ public class FTPControlSocket {
 				if(line == null)
 					throw new IOException("Unexpected null reply received");
 
-				log(line, false);
+				this.log(line, false);
 
 				if(line.length() > 3 &&
 				    line.substring(0, 3).equals(replyCode) &&
@@ -593,15 +598,13 @@ public class FTPControlSocket {
 	protected void log(String msg, boolean command) {
 		if(msg.startsWith("PASS"))
 			msg = "PASS ********";
-		if(messageListener != null) {
+		if(listener != null) {
 			if(command) {
-				messageListener.logCommand(msg);
+				listener.logCommand(msg);
 			}
 			else {
-				messageListener.logReply(msg);
+				listener.logReply(msg);
 			}
 		}
 	}
 }
-
-

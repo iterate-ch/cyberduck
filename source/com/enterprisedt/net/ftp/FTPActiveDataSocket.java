@@ -52,7 +52,7 @@ public class FTPActiveDataSocket implements FTPDataSocket {
 	 *
 	 * @param sock the server socket to use
 	 */
-	protected FTPActiveDataSocket(ServerSocket sock) {
+	public FTPActiveDataSocket(ServerSocket sock) {
 		this.sock = sock;
 	}
 

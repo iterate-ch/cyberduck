@@ -45,7 +45,7 @@ public class FTPPassiveDataSocket implements FTPDataSocket {
 	 *
 	 * @param sock client socket to use
 	 */
-	protected FTPPassiveDataSocket(Socket sock) {
+	public FTPPassiveDataSocket(Socket sock) {
 		this.sock = sock;
 	}
 
