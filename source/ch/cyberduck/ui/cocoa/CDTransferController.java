@@ -147,8 +147,6 @@ public class CDTransferController implements Observer, Validator {
     }
 
     private void init() {
-	log.debug("init");
-	log.debug(root.toString());
 	this.window().setTitle(root.getName());
 	this.window().display();
 	this.urlField.setAttributedStringValue(new NSAttributedString(host.getURL()+root.getAbsolute()));
@@ -446,7 +444,9 @@ public class CDTransferController implements Observer, Validator {
 	this.stopButton.setEnabled(true);
 	this.resumeButton.setEnabled(false);
 	this.reloadButton.setEnabled(false);
-	this.root.status.setResume(true);
+	for(int i = 0; i < roots.length; i++) {
+	    roots[i].status.setResume(true);
+	}
 	this.transfer();
     }
 
@@ -454,7 +454,9 @@ public class CDTransferController implements Observer, Validator {
 	this.stopButton.setEnabled(true);
 	this.resumeButton.setEnabled(false);
 	this.reloadButton.setEnabled(false);
-	this.root.status.setResume(false);
+	for(int i = 0; i < roots.length; i++) {
+	    roots[i].status.setResume(false);
+	}
 	this.transfer();
     }
 

@@ -154,7 +154,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		    this.leftTimer.start();
 
 		    this.candidate = (Path)elements.next();
-		    log.debug(candidate.toString());
+		    this.candidate.status.setResume(roots[i].status.isResume());
 
 		    this.candidate.status.addObserver(this);
 

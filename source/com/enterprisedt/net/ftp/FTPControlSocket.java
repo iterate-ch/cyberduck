@@ -371,16 +371,17 @@ import java.net.Socket;
       *  return the server's reply
       *
       *  @return  reply to the supplied command
-      */
-     String sendCommand(String command)
-         throws IOException {
-
-    	 Transcript.instance().transcript(command);
-
+	 */
+     String sendCommand(String command) throws IOException {
+	 if(command.indexOf("PASS") != -1)
+	     Transcript.instance().transcript("PASS *********");
+	 else
+	     Transcript.instance().transcript(command);
+	 
          // send it
          writer.write(command + EOL);
          writer.flush();
-
+	 
          // and read the result
          return readReply();
      }
@@ -429,6 +430,7 @@ import java.net.Socket;
                  else { // not the last line
                      reply.append(" ");
                      reply.append(line);
+		     Transcript.instance().transcript(line);
                  }
              } // end while
          } // end if

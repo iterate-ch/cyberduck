@@ -135,8 +135,9 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	    if(p.isFile() || this.numberOfSelectedRows() > 1) {
 		NSEnumerator enum = this.selectedRowEnumerator();
 		List items = new ArrayList();
+		Session session = workdir.getSession().copy();
 		while(enum.hasMoreElements()) {
-		    items.add(browserModel.getEntry(((Integer)enum.nextElement()).intValue()).copy(workdir.getSession()));
+		    items.add(browserModel.getEntry(((Integer)enum.nextElement()).intValue()).copy(session));
 		}
 		CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
 //		CDTransferController controller = new CDTransferController(this.workdir.getSession().copy(), (Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
