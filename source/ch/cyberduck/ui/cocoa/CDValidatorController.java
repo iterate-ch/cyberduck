@@ -149,8 +149,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.load();
         while (this.windowController.window().attachedSheet() != null) {
             try {
-                log.debug("Sleeping...");
-				this.wait();
+                log.debug("Sleeping..."); this.wait();
             }
             catch (InterruptedException e) {
                 log.error(e.getMessage());
@@ -209,7 +208,7 @@ public abstract class CDValidatorController extends AbstractValidator {
     }
 
 	public synchronized boolean validate(Queue q) {
-		boolean loaded = false;
+		boolean visible = false;
 		// for every root get its childs
 		for (Iterator rootIter = q.getRoots().iterator(); rootIter.hasNext(); ) {
 			for(Iterator iter = q.getChilds((Path)rootIter.next()).iterator(); iter.hasNext(); ) {
@@ -220,19 +219,19 @@ public abstract class CDValidatorController extends AbstractValidator {
 				}
 				else {
 					log.info(child.getName()+" in workset.");
-					if(!loaded) {
-						this.prompt(); 
-						loaded = true;
+					if(!visible) {
+						this.prompt(); visible = true;
 					}
 					this.workset.add(child);
 				}
-				this.fireDataChanged();
+				if(visible)
+					this.fireDataChanged();
 			}
 		}
 		if(loaded) {
 			this.statusIndicator.stopAnimation(null);
 			this.setEnabled(true);
-			
+
 			while (this.windowController.window().attachedSheet() != null) {
 				try {
 					log.debug("Sleeping..."); this.wait();
