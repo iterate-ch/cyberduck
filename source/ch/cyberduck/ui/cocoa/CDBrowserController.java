@@ -848,7 +848,7 @@ public class CDBrowserController extends CDController implements Observer {
 		}
 	}
 	
-	public void deleteKeyPerformed(Object sender) { //@todo
+	public void deleteKeyPerformed(Object sender) {
 		log.debug("deleteKeyPerformed:"+sender);
 		if(sender == this.browserTable) {
 			this.deleteFileButtonClicked(sender);
