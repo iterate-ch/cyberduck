@@ -537,7 +537,6 @@ public class CDBrowserController implements Observer {
 
 	public void update(Observable o, Object arg) {
 		log.debug("update:" + o + "," + arg);
-//		if (o instanceof Session) {
 		if (arg instanceof Path) {
 			browserModel.setWorkdir((Path) arg);
 			java.util.List cache = ((Path) arg).cache();
@@ -583,6 +582,7 @@ public class CDBrowserController implements Observer {
 			else if (msg.getTitle().equals(Message.OPEN)) {
 				this.statusIcon.setImage(null);
 				this.statusIcon.setNeedsDisplay(true);
+				CDHistoryImpl.instance().addItem(((Session)o).getHost());
 //					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
 				this.toolbar.validateVisibleItems();
 			}
@@ -820,7 +820,6 @@ public class CDBrowserController implements Observer {
 		}
 		host.getLogin().setController(new CDLoginController(this.window));
 		session.mount();
-		CDHistoryImpl.instance().addItem(host);
 	}
 
 	public boolean isMounted() {

@@ -201,12 +201,14 @@ public class FTPPath extends Path {
 		return new FTPPath(session, this.getAbsolute(), name);
 	}
 
-	public void changePermissions(int permissions, boolean recursive) {
-		log.debug("changePermissions:" + permissions);
+//	public void changePermissions(int permissions, boolean recursive) {
+	public void changePermissions(Permission perm, boolean recursive) {
+//		log.debug("changePermissions:" + permissions);
 		String command = recursive ? "chmod -R" : "chmod";
 		try {
 			session.check();
-			session.FTP.site(command+" "+permissions+" "+this.getAbsolute());
+			session.FTP.site(command+" "+perm.getOctalCode()+" "+this.getAbsolute());
+//			session.FTP.site(command+" "+permissions+" "+this.getAbsolute());
 //			session.FTP.site("chmod "+permissions+" \""+this.getAbsolute()+"\"");
 		}
 		catch (FTPException e) {
@@ -380,7 +382,7 @@ public class FTPPath extends Path {
 				this.upload(out, in);
 				this.session.FTP.validateTransfer();
 				if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
-					this.changePermissions(this.getLocal().getPermission().getOctalCode(), false);
+					this.changePermissions(this.getLocal().getPermission(), false);
 				}
 			}
 			else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
@@ -396,7 +398,7 @@ public class FTPPath extends Path {
 				this.upload(out, in);
 				this.session.FTP.validateTransfer();
 				if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
-					this.changePermissions(this.getLocal().getPermission().getOctalCode(), false);
+					this.changePermissions(this.getLocal().getPermission(), false);
 				}
 			}
 			else {

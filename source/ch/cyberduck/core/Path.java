@@ -194,9 +194,9 @@ public abstract class Path {
 	public abstract void changeGroup(String group, boolean recursive);
 
 	/**
-	 * @param p ocal permissions
+	 * @param recursive Include subdirectories and files
 	 */
-	public abstract void changePermissions(int p, boolean recursive);
+	public abstract void changePermissions(Permission perm, boolean recursive);
 
 	public boolean isFile() {
 		return this.attributes.permission.getMask().charAt(0) == '-';

@@ -37,7 +37,7 @@ public class Attributes extends Observable {
 	private Date modified = new Date();
 	private String owner = null;
 	private String group = null;
-	protected Permission permission;
+	protected Permission permission = new Permission();
 	private boolean visible = true;
 	
 	public Attributes() {

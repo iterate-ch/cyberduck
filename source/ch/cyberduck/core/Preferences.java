@@ -123,8 +123,8 @@ public abstract class Preferences {
 		//Connection
 		//	private int BLOCKSIZE = 65535;
 
-		defaults.put("connection.buffer", "4096");
-		defaults.put("connection.buffer.default", "4096");
+		defaults.put("connection.buffer", "1024");
+		defaults.put("connection.buffer.default", "1024");
 		defaults.put("connection.port.default", "21");
 		defaults.put("connection.protocol.default", "ftp");
 

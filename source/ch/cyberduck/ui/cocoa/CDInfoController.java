@@ -237,7 +237,8 @@ public class CDInfoController {
 		Permission permission = new Permission(p);
 //		file.attributes.setPermission(permission);
 
-		file.changePermissions(permission.getOctalCode(), recursiveCheckbox.state() == NSCell.OnState);
+		file.changePermissions(permission, recursiveCheckbox.state() == NSCell.OnState);
+//		file.changePermissions(permission.getOctalCode(), recursiveCheckbox.state() == NSCell.OnState);
 		permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.getString() + " (" + permission.getOctalCode() + ")");
 	}
 }

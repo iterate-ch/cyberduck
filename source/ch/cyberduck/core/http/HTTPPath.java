@@ -129,7 +129,7 @@ public class HTTPPath extends Path {
 		return null;
 	}
 
-	public void changePermissions(int p, boolean recursive) {
+	public void changePermissions(Permission perm, boolean recursive) {
 		session.log("Invalid Operation", Message.ERROR);
 	}
 

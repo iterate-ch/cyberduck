@@ -274,11 +274,13 @@ public class SFTPPath extends Path {
 		}
 	}
 
-	public void changePermissions(int permissions, boolean recursive) {
+	public void changePermissions(Permission perm, boolean recursive) {
+//	public void changePermissions(int permissions, boolean recursive) {
 		log.debug("changePermissions");
 		try {
 			session.check();
-			session.SFTP.changePermissions(this.getAbsolute(), permissions);
+			session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
+//			session.SFTP.changePermissions(this.getAbsolute(), permissions);
 		}
 		catch (SshException e) {
 			session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -401,9 +403,7 @@ public class SFTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			this.upload(out, in);
-			if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
-				this.changePermissions(this.getLocal().getPermission().getDecimalCode(), false);
-			}
+			this.changePermissions(this.getLocal().getPermission(), false);
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);
