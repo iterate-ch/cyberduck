@@ -22,6 +22,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSCoder;
 
 public class CDTableCell extends NSCell {
 
@@ -33,6 +34,18 @@ public class CDTableCell extends NSCell {
     private static NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT;
     private static NSMutableParagraphStyle PARAGRAPH_STYLE_RIGHT_ALIGNMENT;
 
+	public CDTableCell() {
+		super();
+	}
+	
+	protected CDTableCell(NSCoder decoder, long token) {
+		super(decoder, token);
+	}
+	
+	protected void encodeWithCoder(NSCoder encoder) {
+		super.encodeWithCoder(encoder);
+	}
+	
     static {
         PARAGRAPH_STYLE_LEFT_ALIGNMENT = new NSMutableParagraphStyle();
         PARAGRAPH_STYLE_LEFT_ALIGNMENT.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle());

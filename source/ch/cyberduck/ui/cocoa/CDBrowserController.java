@@ -92,7 +92,7 @@ public class CDBrowserController extends NSObject implements Observer {
         NSSelector setUsesAlternatingRowBackgroundColorsSelector =
                 new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
         if (setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
-            this.browserTable.setUsesAlternatingRowBackgroundColors(CDPreferencesImpl.instance().getProperty("browser.alternatingRows").equals("true"));
+            this.browserTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getProperty("browser.alternatingRows").equals("true"));
         }
         NSSelector setGridStyleMaskSelector =
                 new NSSelector("setGridStyleMask", new Class[]{int.class});
@@ -243,6 +243,7 @@ public class CDBrowserController extends NSObject implements Observer {
         bookmarkColumn.setResizable(true);
         bookmarkColumn.setDataCell(new CDBookmarkCell());
         this.bookmarkTable.addTableColumn(bookmarkColumn);
+		/*
 
         // setting appearance attributes
         this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
@@ -269,6 +270,7 @@ public class CDBrowserController extends NSObject implements Observer {
                 bookmarkTable);
 
         this.bookmarkTable.sizeToFit();
+		 */
     }
 
     public void bookmarkSelectionDidChange(NSNotification notification) {
@@ -332,9 +334,9 @@ public class CDBrowserController extends NSObject implements Observer {
                 searchField);
     }
 
-    public void searchFieldTextDidChange(NSNotification aNotification) {
+    public void searchFieldTextDidChange(NSNotification notification) {
         String searchString = null;
-        NSDictionary userInfo = aNotification.userInfo();
+        NSDictionary userInfo = notification.userInfo();
         if (null != userInfo) {
             Object o = userInfo.allValues().lastObject();
             if (null != o) {
@@ -1367,8 +1369,10 @@ public class CDBrowserController extends NSObject implements Observer {
 							}
 							q.addRoot(p);
                         }
-						CDQueuesImpl.instance().addItem(q);
-						CDQueueController.instance().startItem(q, (Observer) CDBrowserController.this);
+						if(q.numberOfRoots() > 0) {
+							CDQueuesImpl.instance().addItem(q);
+							CDQueueController.instance().startItem(q, (Observer) CDBrowserController.this);
+						}
                         return true;
                     }
 					return false;

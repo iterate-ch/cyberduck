@@ -197,7 +197,6 @@ public class CDInfoController extends NSObject {
 		OFFSET =- 16;
         if (!filenameField.stringValue().equals(file.getName())) {
             file.rename(file.getParent().getAbsolute(), filenameField.stringValue());
-			file.getParent().list(true);
         }
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
@@ -208,7 +207,6 @@ public class CDInfoController extends NSObject {
         log.debug("textInputDidEndEditing");
         if (!filenameField.stringValue().equals(file.getName())) {
             file.rename(file.getParent().getAbsolute(), filenameField.stringValue());
-			file.getParent().list(true);
         }
     }
 

@@ -205,6 +205,7 @@ public class FTPPath extends Path {
 			session.log("Renaming " + this.getName() + " to " + absolute, Message.PROGRESS);
 			session.FTP.rename(this.getName(), absolute);
 			this.setPath(absolute);
+			this.getParent().list(true);
 		}
 		catch (FTPException e) {
 			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -222,7 +223,8 @@ public class FTPPath extends Path {
 		try {
 			session.check();
 			session.log("Make directory " + name, Message.PROGRESS);
-			session.FTP.mkdir(name);
+			session.FTP.mkdir(this.getAbsolute() + "/" + name);
+			this.list(true);
 		}
 		catch (FTPException e) {
 			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -428,8 +430,7 @@ public class FTPPath extends Path {
 			log.debug("upload:"+this.toString());
 			this.session.check();
 			if(!this.getParent().exists()) {
-				this.mkdir(this.getParent().getAbsolute());
-				this.getParent().getParent().list(true);
+				this.getParent().getParent().mkdir(this.getParent().getName());
 			}
 			if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 				this.uploadBinary();

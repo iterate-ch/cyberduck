@@ -74,7 +74,6 @@ public class CDFolderController extends NSObject {
         switch (returncode) {
             case (NSAlertPanel.DefaultReturn):
                 ((Path) contextInfo).mkdir(folderField.stringValue());
-                ((Path) contextInfo).list(true);
                 break;
             case (NSAlertPanel.AlternateReturn):
                 break;

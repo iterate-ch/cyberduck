@@ -30,7 +30,6 @@ import ch.cyberduck.core.Host;
 
 public class CDBookmarkCell extends CDTableCell {
     private Host bookmark;
-//	private static final NSImage image = NSImage.imageNamed("cyberduck-document.icns");
 
     public void setObjectValue(Object bookmark) {
         this.bookmark = (Host) bookmark;

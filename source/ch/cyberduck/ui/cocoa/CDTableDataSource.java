@@ -25,7 +25,7 @@ import com.apple.cocoa.application.NSTableView;
 /**
  * @version $Id$
  */
-public abstract class CDTableDataSource {//implements NSTableView.DataSource {
+public abstract class CDTableDataSource implements NSTableView.DataSource {
 
     public abstract int numberOfRowsInTableView(NSTableView tableView);
 

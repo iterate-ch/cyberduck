@@ -230,6 +230,7 @@ public class SFTPPath extends Path {
 			session.log("Renaming " + this.getName() + " to " + absolute, Message.PROGRESS);
 			session.SFTP.renameFile(this.getAbsolute(), absolute);
 			this.setPath(absolute);
+			this.getParent().list(true);
 		}
 		catch (SshException e) {
 			session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -248,6 +249,7 @@ public class SFTPPath extends Path {
 			session.check();
 			session.log("Make directory " + name, Message.PROGRESS);
 			session.SFTP.makeDirectory(this.getAbsolute() + "/" + name);
+			this.list(true);
 		}
 		catch (SshException e) {
 			session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -374,8 +376,7 @@ public class SFTPPath extends Path {
 			log.debug("upload:"+this.toString());
 			this.session.check();
 			if(!this.getParent().exists()) {
-				this.mkdir(this.getParent().getAbsolute());
-				this.getParent().getParent().list(true);
+				this.getParent().getParent().mkdir(this.getParent().getName());
 			}
 			in = new FileInputStream(this.getLocal());
 			if (in == null) {
