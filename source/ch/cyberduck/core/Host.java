@@ -93,6 +93,7 @@ public class Host {
 							 this.getPort(), 
 							 this.getDefaultPath(),
 							 this.getNickname());
+		copy.login = this.login;
 		return copy;
 	}
 	

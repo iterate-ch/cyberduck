@@ -566,8 +566,8 @@ public class CDBrowserController extends CDController implements Observer {
 		this.editBookmarkButton = editBookmarkButton;
 		this.editBookmarkButton.setImage(NSImage.imageNamed("edit.tiff"));
 		this.editBookmarkButton.setAlternateImage(NSImage.imageNamed("editPressed.tiff"));
-		this.editBookmarkButton.setTarget(this);
 		this.editBookmarkButton.setEnabled(false);
+		this.editBookmarkButton.setTarget(this);
 		this.editBookmarkButton.setAction(new NSSelector("editBookmarkButtonClicked", new Class[]{Object.class}));
 	}
 
@@ -609,12 +609,12 @@ public class CDBrowserController extends CDController implements Observer {
 
 	private NSButton deleteBookmarkButton; // IBOutlet
 
-	public void setRemoveBookmarkButton(NSButton deleteBookmarkButton) {
+	public void setDeleteBookmarkButton(NSButton deleteBookmarkButton) {
 		this.deleteBookmarkButton = deleteBookmarkButton;
 		this.deleteBookmarkButton.setImage(NSImage.imageNamed("remove.tiff"));
 		this.deleteBookmarkButton.setAlternateImage(NSImage.imageNamed("removePressed.tiff"));
-		this.deleteBookmarkButton.setTarget(this);
 		this.deleteBookmarkButton.setEnabled(false);
+		this.deleteBookmarkButton.setTarget(this);
 		this.deleteBookmarkButton.setAction(new NSSelector("deleteBookmarkButtonClicked", new Class[]{Object.class}));
 	}
 
@@ -1675,7 +1675,6 @@ public class CDBrowserController extends CDController implements Observer {
 			"Edit",
 			"Download",
 			"Upload",
-			"Synchronize",
 			NSToolbarItem.FlexibleSpaceItemIdentifier,
 			"Disconnect"
 		});
