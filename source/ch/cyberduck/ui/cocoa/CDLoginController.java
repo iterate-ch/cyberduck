@@ -135,7 +135,7 @@ public class CDLoginController extends LoginController {
      * @see #loginFailure
      */
     public void loginSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	log.info("loginSheetDidEnd");
+	log.debug("loginSheetDidEnd");
 	this.window().orderOut(null);
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):

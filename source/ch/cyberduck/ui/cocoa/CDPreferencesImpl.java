@@ -40,7 +40,7 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
     }
 
     public String getProperty(String property) {
-        log.info("getProperty(" + property + ")");
+        log.debug("getProperty(" + property + ")");
         String value = (String)props.objectForKey(property);
         if(value == null)
             return super.getProperty(property);
@@ -48,12 +48,12 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
     }
 
     public void setProperty(String property, String value) {
-        log.info("setProperty(" + property + ", " + value + ")");
+        log.debug("setProperty(" + property + ", " + value + ")");
         this.props.setObjectForKey(value, property);
     }
 
     public void setProperty(String property, boolean v) {
-        log.info("setProperty(" + property + ", " + v + ")");
+        log.debug("setProperty(" + property + ", " + v + ")");
         String value = "false";
         if (v) {
             value = "true";
@@ -64,13 +64,14 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
     }
 
     public void setProperty(String property, int v) {
-        log.info("setProperty(" + property + ", " + v + ")");
+        log.debug("setProperty(" + property + ", " + v + ")");
         String value = String.valueOf(v);
         this.props.setObjectForKey(value, property);
     }
 
     public void setDefaults() {
 	super.setDefaults();
+	log.debug("setDefaults");
 	this.setProperty("sshtools.home", NSBundle.mainBundle().resourcePath());
 	System.setProperty("sshtools.home", NSBundle.mainBundle().resourcePath());
 //	this.setProperty("sshtools.home", APP_SUPPORT_DIR.toString());

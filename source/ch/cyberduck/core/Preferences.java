@@ -78,6 +78,12 @@ public abstract class Preferences {//extends Properties {
 
 	this.defaults = new Hashtable();
 
+//	defaults.put("logger.level", "DEBUG");
+	defaults.put("logger.level", "INFO");
+//	defaults.put("logger.level", "WARN");
+//	defaults.put("logger.level", "ERROR");
+//	defaults.put("logger.level", "FATAL");
+
 	//	System.out.println("Working directory:"+System.getProperty("user.dir"));
 	defaults.put("version", "2.1");
         defaults.put("uses", "0");
@@ -91,27 +97,22 @@ public abstract class Preferences {//extends Properties {
 	defaults.put("browser.opendefault", "true");
 	defaults.put("browser.showHidden", "false");
 	defaults.put("transfer.close", "false");
-	defaults.put("history.size", "4"); //@todo
+	defaults.put("history.size", "10");
 
-//        defaults.put("laf.default", javax.swing.UIManager.getSystemLookAndFeelClassName());
-        //defaults.put("laf.default", javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
-//        defaults.put("bookmarks.default", "My Bookmarks");
-//        defaults.put("interface.multiplewindow", "false");
-//        defaults.put("interface.error-dialog", "false");
-        //Paths
+	defaults.put("sshtools.home", System.getProperty("user.dir"));
+	System.setProperty("sshtools.home", System.getProperty("user.dir"));
+
+        defaults.put("connection.login.name", System.getProperty("user.name"));
         defaults.put("connection.download.folder", System.getProperty("user.home"));
         defaults.put("connection.download.duplicate.ask", "true");
+  //      defaults.put("connection.duplicate.similar", "false");
+      //  defaults.put("connection.duplicate.resume", "false");
+      //  defaults.put("connection.duplicate.overwrite", "false");
+	
+	//        defaults.put("laf.default", javax.swing.UIManager.getSystemLookAndFeelClassName());
+        //defaults.put("laf.default", javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
 
 
-        // font sizes
-//        String font_small = "10";
-//        String font_normal = "12";
-//        if(System.getProperty("java.vendor").indexOf("Microsoft") != -1) {
-//            font_small = "12";
-//            font_normal = "12";
-//        }
-//        defaults.put("font.small", font_small);
-//        defaults.put("font.normal", font_normal);
         //Sound clips
 //        defaults.put("status.sound.stop", "false");
 //        defaults.put("status.sound.start", "true");
@@ -122,7 +123,6 @@ public abstract class Preferences {//extends Properties {
    //     defaults.put("files.removeCompleted", "false");
         
         //BookmarkTable properties
-        //defaults.put("table.save", "true");
         //BookmarkTable column locations
 
  //       defaults.put("table.column0.position", "0");
@@ -135,22 +135,10 @@ public abstract class Preferences {//extends Properties {
     //    defaults.put("table.column2.width", "15");
       //  defaults.put("table.column3.width", "150");
         
-        //Duplicate files
-    //    defaults.put("duplicate.ask", "true");
-  //      defaults.put("duplicate.similar", "false");
-      //  defaults.put("duplicate.resume", "false");
-      //  defaults.put("duplicate.overwrite", "false");
         
         //Connection
-        //defaults.put("connection.log", "true");
 //        defaults.put("connection.log.file", "cyberduck.connection.log");
-//        defaults.put("connection.buffer", "512");
         defaults.put("connection.buffer", "1024");
-//        defaults.put("connection.buffer", "2048");
-//        defaults.put("connection.buffer", "4096");
-//        defaults.put("connection.buffer", "8192");
-//        defaults.put("connection.buffer", "16384");
-//        defaults.put("connection.log.speech", "false");
         defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
 //        defaults.put("connection.timeout", "2"); // seconds
@@ -163,14 +151,24 @@ public abstract class Preferences {//extends Properties {
       //  defaults.put("connection.proxy.password", "pass");
 
 //        defaults.put("connection.path.default", "~");
-
-        defaults.put("connection.login.name", System.getProperty("user.name"));
         
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");
-        defaults.put("ftp.anonymous.pass", "user@domain.tld");
+        defaults.put("ftp.anonymous.pass", "user@domain.net");
 	defaults.put("ftp.connectmode", "passive");
         defaults.put("ftp.transfermode", "binary");
+
+//@todo	defaults.put("ssh.encryption", "aes128-cbc");
+//@todo	defaults.put("ssh.encryption.authentication", "hmac-md5");
+//@todo	defaults.put("ssh.compression", "zlib");
+//@todo	defaults.put("ssh.authentication", "password");
+	
+//	Supported Encryption Client->Server [aes128-cbc, 3des-cbc, blowfish-cbc, cast128-cbc, arcfour, aes192-cbc, aes256-cbc, rijndael-cbc@lysator.liu.se]
+//	    Supported Encryption Server->Client [aes128-cbc, 3des-cbc, blowfish-cbc, cast128-cbc, arcfour, aes192-cbc, aes256-cbc, rijndael-cbc@lysator.liu.se]
+//	    Supported Mac Client->Server [hmac-md5, hmac-sha1, hmac-ripemd160, hmac-ripemd160@openssh.com, hmac-sha1-96, hmac-md5-96]
+//	    Supported Mac Server->Client [hmac-md5, hmac-sha1, hmac-ripemd160, hmac-ripemd160@openssh.com, hmac-sha1-96, hmac-md5-96]
+	    // [publickey, password, keyboard-interactive]
+
 
 	//listing properties
 //        defaults.put("listing.showType", "true");

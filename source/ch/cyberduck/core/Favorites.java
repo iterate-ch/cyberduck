@@ -24,8 +24,6 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Observable;
-import java.util.Observer;
 
 import ch.cyberduck.core.Host;
 
@@ -35,7 +33,7 @@ import ch.cyberduck.core.Host;
  * @see ch.cyberduck.core.Host
  * @version $Id$
  */
-public abstract class Favorites extends Observable {
+public abstract class Favorites {
     private static Logger log = Logger.getLogger(Favorites.class);
     
     private Map data = new HashMap();
@@ -44,12 +42,6 @@ public abstract class Favorites extends Observable {
 	this.load();
     }
 
-    public void callObservers(Object arg) {
-	log.info(this.countObservers()+" observer(s) known.");
-	this.setChanged();
-	this.notifyObservers(null);
-    }
-    
     /**
 	* Write data to file.
      */
@@ -63,13 +55,11 @@ public abstract class Favorites extends Observable {
     public void addItem(Host h) {
 	log.debug("addItem:"+h);
 	this.data.put(h.getURL(), h);
-	this.callObservers(h);
     }
 
     public void removeItem(String url) {
 	log.debug("removeItem:"+url);
 	this.data.remove(url);
-	this.callObservers(url);
     }
 
     /**

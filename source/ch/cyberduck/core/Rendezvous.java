@@ -99,7 +99,7 @@ public class Rendezvous extends Observable implements com.strangeberry.rendezvou
     public void resolveService(com.strangeberry.rendezvous.Rendezvous rendezvous, String type, String name, com.strangeberry.rendezvous.ServiceInfo info) {
 	if (info != null) {
 	    log.debug("resolveService:"+name+","+type+","+info);
-	    Host h = new Host(info.getName(), info.getPort(), new Login());
+	    Host h = new Host(info.getName()+".local.", info.getPort(), new Login()); //todo fix .local.
 	    this.services.put(h.getURL(), h);
 	    log.debug(info.toString());
 //	    log.debug(rendezvous.getInterface());

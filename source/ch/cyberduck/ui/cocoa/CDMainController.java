@@ -32,8 +32,9 @@ public class CDMainController {
     static {
 	org.apache.log4j.BasicConfigurator.configure();
 	Logger log = Logger.getRootLogger();
+	log.setLevel(Level.toLevel(Preferences.instance().getProperty("logger.level")));
 //	log.setLevel(Level.OFF);
-	log.setLevel(Level.DEBUG);
+//	log.setLevel(Level.DEBUG);
 //	log.setLevel(Level.INFO);
 //	log.setLevel(Level.WARN);
 //	log.setLevel(Level.ERROR);
@@ -173,41 +174,21 @@ public class CDMainController {
 	}
     }
 
-    public void donationSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	log.debug("donationSheetDidEnd");
-	sheet.orderOut(null);
-	switch(returncode) {
-	    case(NSAlertPanel.DefaultReturn):
-		try {
-		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.donate")));
-		}
-		catch(java.net.MalformedURLException e) {
-		    log.error(e.getMessage());
-		}
-	    case(NSAlertPanel.AlternateReturn):
-		//
-	}
-        NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
-    }
-
     public void closeDonationSheet(NSButton sender) {
 	log.debug("closeDonationSheet");
-	/*
 	donationSheet.close();
 	switch(sender.tag()) {
-	    case(NSAlertPanel.DefaultReturn):
+	    case NSAlertPanel.DefaultReturn:
 		try {
 		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.donate")));
 		}
 		catch(java.net.MalformedURLException e) {
 		    log.error(e.getMessage());
 		}
-	    case(NSAlertPanel.AlternateReturn):
+	    case NSAlertPanel.AlternateReturn :
 		//
 	}
         NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
-	 */
-	NSApplication.sharedApplication().endSheet(donationSheet, sender.tag());
     }
 
 
@@ -255,36 +236,30 @@ public class CDMainController {
 	CDFavoritesImpl.instance().save();
 	CDHistoryImpl.instance().save();
 
-	/*
 	if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
 	    if (false == NSApplication.loadNibNamed("Donate", this)) {
 		log.fatal("Couldn't load Donate.nib");
 		return NSApplication.TerminateNow;
 	    }
+	    this.donationSheet.setTitle("Donate after "+Preferences.instance().getProperty("uses")+" uses!");
+	    this.donationSheet.makeKeyAndOrderFront(null);
+
 //	    app.runModalForWindow(donationSheet);
-	    NSApplication.sharedApplication().beginSheet(
-						  donationSheet,//sheet
-						  null, //docwindow
-						  this, //modal delegate
-						  new NSSelector(
-		       "donationSheetDidEnd",
-		       new Class[] { NSWindow.class, int.class, NSWindow.class }
-		       ),// did end selector
-						  null); //contextInfo
+//	    NSApplication.sharedApplication().beginSheet(
+//						  donationSheet,//sheet
+//						  null, //docwindow
+//						  this, //modal delegate
+//						  new NSSelector(
+//		       "donationSheetDidEnd",
+//		       new Class[] { NSWindow.class, int.class, NSWindow.class }
+//		       ),// did end selector
+//						  null); //contextInfo
 	    return NSApplication.TerminateLater;
 	}
-	 */
 	return NSApplication.TerminateNow;
     }
 
     public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
 	return false;
     }
-
-
-//    public boolean validateMenuItem(_NSObsoleteMenuItemProtocol aCell) {
-//        String sel = aCell.action().name();
-//	log.debug("validateMenuItem:"+sel);//
-//    return true;
-//    }    
 }

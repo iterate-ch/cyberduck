@@ -72,8 +72,7 @@ public abstract class Session extends Observable {
     }
 
     public void callObservers(Object arg) {
-        log.info("callObservers:"+arg.toString());
-	log.info(this.countObservers()+" observer(s) known.");
+	log.debug(this.countObservers()+" observer(s) known.");
 	this.setChanged();
 	this.notifyObservers(arg);
     }

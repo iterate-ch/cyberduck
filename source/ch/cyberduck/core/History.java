@@ -24,8 +24,6 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Observable;
-import java.util.Observer;
 
 import ch.cyberduck.core.Host;
 
@@ -35,19 +33,13 @@ import ch.cyberduck.core.Host;
  * @see ch.cyberduck.core.Host
  * @version $Id$
  */
-public abstract class History extends Observable {
+public abstract class History {
     private static Logger log = Logger.getLogger(History.class);
 
     private Map data = new HashMap();
 
     public History() {
 	this.load();
-    }
-
-    public void callObservers(Object arg) {
-	log.info(this.countObservers()+" observer(s) known.");
-	this.setChanged();
-	this.notifyObservers(null);
     }
 
     /**
@@ -63,13 +55,11 @@ public abstract class History extends Observable {
     public void addItem(Host h) {
 	log.debug("addItem:"+h);
 	this.data.put(h.getName(), h);
-	this.callObservers(h);
     }
 
     public void removeItem(String url) {
 	log.debug("removeItem:"+url);
 	this.data.remove(url);
-	this.callObservers(url);
     }
 
     /**

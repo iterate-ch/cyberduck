@@ -47,9 +47,8 @@ public class CDConnectionController {
 
     private static final String FTP_STRING = "FTP (File Transfer)";
     private static final String SFTP_STRING = "SFTP (SSH Secure File Transfer)";
-
     
-        // ----------------------------------------------------------
+    // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
 
@@ -104,7 +103,7 @@ public class CDConnectionController {
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
 	this.protocolPopup = protocolPopup;
 	this.protocolPopup.setTarget(this);
-	this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged()", new Class[] {Object.class}));
+	this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[] {Object.class}));
     }
 
     private NSComboBox hostPopup;
@@ -184,12 +183,6 @@ public class CDConnectionController {
 						  new NSSelector("updateLabel", new Class[]{Object.class}),
 						  NSControl.ControlTextDidChangeNotification,
 						  hostPopup);
-	
-//	NSNotificationCenter.defaultCenter().addObserver(
-//						    this,
-//						    new NSSelector("updateLabel", new Class[]{Object.class}),
-//						    NSControl.ControlTextDidChangeNotification,
-//						    hostField);
 //	NSNotificationCenter.defaultCenter().addObserver(
 //						    this,
 //						    new NSSelector("updateLabel", new Class[]{Object.class}),
@@ -257,11 +250,8 @@ public class CDConnectionController {
 
     public void updateFields(Host selectedItem) {
 	log.debug("updateFields:"+selectedItem);
-//	Host selectedItem = (Host)hostDataSource.comboBoxObjectValueForItemAtIndex(hostPopup, hostPopup.indexOfSelectedItem());
 	this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals("ftp") ? FTP_STRING : SFTP_STRING);
-	//should not be called when usesDataSource is set to YES
-	this.hostPopup.selectItemWithObjectValue(selectedItem.getName());
-//	this.hostField.setStringValue(selectedItem.getName());
+	this.hostPopup.setStringValue(selectedItem.getName());
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
 	this.usernameField.setStringValue(selectedItem.getLogin().getUsername());
     }
@@ -273,7 +263,6 @@ public class CDConnectionController {
 	    protocol = Session.SFTP+"://";
 	else if(selectedItem.tag() == Session.FTP_PORT)
 	    protocol = Session.FTP+"://";
-//	urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostField.stringValue()+":"+portField.stringValue());
 	urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostPopup.stringValue()+":"+portField.stringValue());
     }
 
@@ -294,12 +283,9 @@ public class CDConnectionController {
 		switch(tag) {
 		    case(Session.SSH_PORT):
 			host = new Host(Session.SFTP, hostPopup.stringValue(), Integer.parseInt(portField.stringValue()), new Login(usernameField.stringValue(), passField.stringValue()));
-//			    host = new Host(Session.SFTP, hostField.stringValue(), Integer.parseInt(portField.stringValue()), new Login(usernameField.stringValue(), passField.stringValue()));
-
 			break;
 		    case(Session.FTP_PORT):
 			host = new Host(Session.FTP, hostPopup.stringValue(), Integer.parseInt(portField.stringValue()), new Login(usernameField.stringValue(), passField.stringValue()));
-//			host = new Host(Session.FTP, hostField.stringValue(), Integer.parseInt(portField.stringValue()), new Login(usernameField.stringValue(), passField.stringValue()));
 			break;
 		    default:
 			throw new IllegalArgumentException("No protocol selected.");

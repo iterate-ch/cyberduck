@@ -83,7 +83,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 //  }
 
     public void onHostKeyMismatch(String host, SshPublicKey allowedHostKey, SshPublicKey actualHostKey) {
-	log.info("onHostKeyMismatch");
+	log.debug("onHostKeyMismatch");
 	this.host = host;
 	this.publicKey = actualHostKey;
 	NSAlertPanel.beginCriticalAlertSheet(
@@ -119,7 +119,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 
 
     public void onUnknownHost(String host, SshPublicKey publicKey) {
-	log.info("onUnknownHost");
+	log.debug("onUnknownHost");
 	this.host = host;
 	this.publicKey = publicKey;
 	NSAlertPanel.beginInformationalAlertSheet(
@@ -153,13 +153,13 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 
 
 //    public void deniedHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-//	log.info("deniedHostSheetDidEnd");
+//	log.debug("deniedHostSheetDidEnd");
 //	sheet.orderOut(null);
 //	done = true;
 //  }
 
     public void keyMismatchSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	log.info("keyMismatchSheetDidEnd");
+	log.debug("keyMismatchSheetDidEnd");
 	sheet.orderOut(null);
 	try {
 	    if(returncode == NSAlertPanel.DefaultReturn)
@@ -190,7 +190,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
     }
 
     public void unknownHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	log.info("unknownHostSheetDidEnd");
+	log.debug("unknownHostSheetDidEnd");
 	sheet.orderOut(null);
 	try {
 	    if(returncode == NSAlertPanel.DefaultReturn)

@@ -603,7 +603,7 @@ public class CDBrowserController implements Observer {
 		java.util.Enumeration enumerator = selected.objectEnumerator();
 		while (enumerator.hasMoreElements()) {
 		    filename = (String)enumerator.nextElement();
-		    log.info(filename+" selected to upload");
+		    log.debug(filename+" selected to upload");
 		    Session session = host.getSession().copy();
 		    Path path = null;
 		    Path parent = (Path)pathController.getItem(0);

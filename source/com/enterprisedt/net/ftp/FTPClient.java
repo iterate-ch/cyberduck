@@ -726,7 +726,8 @@ public class FTPClient {
             lastValidReply = control.validateReply(reply, validCodes);
         }
         finally { // ensure we clean up the connection
-            control.logout();
+	    if(null != control)
+		control.logout();
             control = null;
         }
     }
