@@ -42,6 +42,10 @@ public class CDTransferController implements Observer, Validator {
 	NSPoint origin = this.window().frame().origin();
 	this.window().setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
     }
+
+    public NSWindow window() {
+	return this.window;
+    }
     
     private NSTextField urlField;
     public void setUrlField(NSTextField urlField) {
@@ -139,10 +143,12 @@ public class CDTransferController implements Observer, Validator {
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
 	this.init();
+	this.window().makeKeyAndOrderFront(null);
     }
 
     private void init() {
 	this.window().setTitle(root.getName());
+	this.window().display();
 	this.urlField.setAttributedStringValue(new NSAttributedString(host.getURL()+root.getAbsolute()));
 	this.fileField.setAttributedStringValue(new NSAttributedString(root.getLocal().toString()));
 	switch(kind) {
@@ -161,7 +167,6 @@ public class CDTransferController implements Observer, Validator {
 		    fileIconView.setImage(NSImage.imageNamed("folder.tiff"));
 		break;
 	}
-	this.window().makeKeyAndOrderFront(null);
     }
 
     public void update(Observable o, Object arg) {
@@ -187,17 +192,17 @@ public class CDTransferController implements Observer, Validator {
 				  Status.parseDouble(queue.getCurrent()/1024)+" of "+Status.parseDouble(queue.getSize()/1024)+"kB Total), "+
 					      Status.parseDouble(queue.getSpeed()/1024) + "kB/s, "+queue.getTimeLeft()
 		    ));
-		this.fileDataField.display();
+		this.fileDataField.setNeedsDisplay(true);
 	    }
 	    // CLOCK
 	    else if(msg.getTitle().equals(Message.CLOCK)) {
 		this.clockField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
-		this.clockField.display();
+		this.clockField.setNeedsDisplay(true);
 	    }
 	    // PROGRESS
 	    else if(msg.getTitle().equals(Message.PROGRESS)) {
 		this.progressField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
-		this.progressField.display();
+		this.progressField.setNeedsDisplay(true);
 	    }
 	    // START
 	    else if(msg.getTitle().equals(Message.START)) {
@@ -220,7 +225,7 @@ public class CDTransferController implements Observer, Validator {
 	    // COMPLETE
 	    else if(msg.getTitle().equals(Message.COMPLETE)) {
 		this.progressField.setAttributedStringValue(new NSAttributedString("Complete"));
-		this.progressField.display();
+		this.progressField.setNeedsDisplay(true);
 		if(0 == queue.remainingJobs()) {
 		    if(Preferences.instance().getProperty("transfer.close").equals("true")) {
 			this.window.close();
@@ -250,117 +255,45 @@ public class CDTransferController implements Observer, Validator {
 				       );
 		this.queue.cancel();
 		this.progressField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
-		this.progressField.display();
+		this.progressField.setNeedsDisplay(true);
 	    }
 	}
 	else
 	    log.error("Unknown argument of type'"+arg.getClass()+"'");
     }
 
-    public NSWindow window() {
-	return this.window;
-    }
-
-    public void windowWillClose(NSNotification notification) {
-	this.window().setDelegate(null);
-	allDocuments.removeObject(this);
-    }
-    
-    public void resumeButtonClicked(NSButton sender) {
-	this.stopButton.setEnabled(true);
-	this.resumeButton.setEnabled(false);
-	this.reloadButton.setEnabled(false);
-	this.root.status.setResume(true);
-	this.transfer();
-    }
-
-    public void reloadButtonClicked(NSButton sender) {
-	this.stopButton.setEnabled(true);
-	this.resumeButton.setEnabled(false);
-	this.reloadButton.setEnabled(false);
-	this.root.status.setResume(false);
-	this.transfer();
-    }
-    
-    public void stopButtonClicked(NSButton sender) {
-	this.stopButton.setEnabled(false);
-	this.resumeButton.setEnabled(true);
-	this.reloadButton.setEnabled(true);
-	this.queue.cancel();
-    }
-
-    public void showInFinderClicked(NSButton sender) {
-	NSWorkspace.sharedWorkspace().selectFile(root.getLocal().toString(), "");
-    }
-
-    public boolean windowShouldClose(Object sender) {
-	log.debug("windowShouldClose");
-	if(!queue.isStopped()) {
-	    NSAlertPanel.beginCriticalAlertSheet(
-					       "Cancel transfer?", //title
-					       "Stop",// defaultbutton
-					       "Cancel",//alternative button
-					       null,//other button
-					       this.window(),
-					       this, //delegate
-					       new NSSelector
-					       (
-	     "confirmSheetDidEnd",
-	     new Class[]
-	     {
-		 NSWindow.class, int.class, Object.class
-	     }
-	     ),// end selector
-					       null, // dismiss selector
-					       null, // context
-					       "Closing this window will stop the file transfer" // message
-					       );
-	    return false;	    
-	}
-	return true;
-    }
-
-    public void confirmSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo)  {
-	log.debug("confirmSheetDidEnd");
-	sheet.orderOut(null);
-	switch(returncode) {
-	    case NSAlertPanel.DefaultReturn :
-		this.stopButtonClicked(null);
-		this.window().close();
-		break;
-	    case NSAlertPanel.AlternateReturn :
-		break;
-	}
-    }
-
-    private boolean proceed = false;
-    private boolean done = false;
+    private boolean proceed;
+    private boolean done;
 
     /**
 	* @return true if validation suceeded, false if !proceed
      */
     public boolean validate(Path path, int kind) {
 	boolean resume = path.status.isResume();
+	this.done = false;
+	this.proceed = false;
 	log.debug("validate:"+path+","+resume);
 	if(Queue.KIND_DOWNLOAD == kind) {
+	    log.debug("Validating download");
 	    if(resume) {
 		if(path.status.isComplete()) {
-		    NSAlertPanel.beginInformationalAlertSheet(
-						"Error", //title
-						"OK",// defaultbutton
-						null,//alternative button
-						null,//other button
-						this.window(), //docWindow
-						null, //modalDelegate
-						null, //didEndSelector
-						null, // dismiss selector
-						null, // context
-						"Cannot resume an already completed transfer." // message
-						);
-		    this.stopButton.setEnabled(false);
-		    this.resumeButton.setEnabled(true);
-		    this.reloadButton.setEnabled(true);
-		    return false;
+//		    NSAlertPanel.beginInformationalAlertSheet(
+//						"Error", //title
+//						"OK",// defaultbutton
+//						null,//alternative button
+//						null,//other button
+//						this.window(), //docWindow
+//						null, //modalDelegate
+//						null, //didEndSelector
+//						null, // dismiss selector
+//						null, // context
+//						"Cannot resume an already completed transfer." // message
+//						);
+//		    this.stopButton.setEnabled(false);
+//		    this.resumeButton.setEnabled(true);
+//		    this.reloadButton.setEnabled(true);
+//		    return false;
+		    return true;
 		}
 		else if(! path.status.isComplete()) {
 		    path.status.setResume(path.getLocal().exists());
@@ -413,6 +346,7 @@ public class CDTransferController implements Observer, Validator {
 	    }
 	}
 	else if(Queue.KIND_UPLOAD == kind) {
+	    log.debug("Validating upload");
 	    return true;
 	}
 	throw new IllegalArgumentException("Argument must be either UPLOAD or DOWNLOAD");
@@ -421,6 +355,7 @@ public class CDTransferController implements Observer, Validator {
     public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
 	log.debug("validateSheetDidEnd:"+returncode+","+contextInfo);
 	sheet.orderOut(null);
+	this.window().makeKeyAndorderFront(null);
 	Path path = (Path)contextInfo;
 	switch(returncode) {
 	    case NSAlertPanel.DefaultReturn : //Resume
@@ -438,7 +373,7 @@ public class CDTransferController implements Observer, Validator {
 	}
 	this.done = true;
     }
-    
+
     /**
 	* @param resume
      * @return boolean Return false if validation fails. I.e. the file already exists.
@@ -447,6 +382,78 @@ public class CDTransferController implements Observer, Validator {
 	this.queue = new Queue(roots, this.kind, this);
 	this.queue.addObserver(this);
 	this.queue.start();
+    }
+    
+    public void windowWillClose(NSNotification notification) {
+	this.window().setDelegate(null);
+	allDocuments.removeObject(this);
+    }
+    
+    public void resumeButtonClicked(NSButton sender) {
+	this.stopButton.setEnabled(true);
+	this.resumeButton.setEnabled(false);
+	this.reloadButton.setEnabled(false);
+	this.root.status.setResume(true);
+	this.transfer();
+    }
+
+    public void reloadButtonClicked(NSButton sender) {
+	this.stopButton.setEnabled(true);
+	this.resumeButton.setEnabled(false);
+	this.reloadButton.setEnabled(false);
+	this.root.status.setResume(false);
+	this.transfer();
+    }
+    
+    public void stopButtonClicked(NSButton sender) {
+	this.stopButton.setEnabled(false);
+	this.resumeButton.setEnabled(true);
+	this.reloadButton.setEnabled(true);
+	this.queue.cancel();
+    }
+
+    public void showInFinderClicked(NSButton sender) {
+	NSWorkspace.sharedWorkspace().selectFile(root.getLocal().toString(), "");
+    }
+
+    public boolean windowShouldClose(Object sender) {
+	log.debug("windowShouldClose");
+	if(!queue.isStopped()) {
+	    NSAlertPanel.beginCriticalAlertSheet(
+					       "Cancel transfer?", //title
+					       "Stop",// defaultbutton
+					       "Cancel",//alternative button
+					       null,//other button
+					       this.window(),
+					       this, //delegate
+					       new NSSelector
+					       (
+	     "closeSheetDidEnd",
+	     new Class[]
+	     {
+		 NSWindow.class, int.class, Object.class
+	     }
+	     ),// end selector
+					       null, // dismiss selector
+					       null, // context
+					       "Closing this window will stop the file transfer" // message
+					       );
+	    return false;	    
+	}
+	return true;
+    }
+
+    public void closeSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo)  {
+	log.debug("closeSheetDidEnd");
+	sheet.orderOut(null);
+	switch(returncode) {
+	    case NSAlertPanel.DefaultReturn :
+		this.stopButtonClicked(null);
+		this.window().close();
+		break;
+	    case NSAlertPanel.AlternateReturn :
+		break;
+	}
     }
 }
 

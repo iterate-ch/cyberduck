@@ -50,6 +50,11 @@ public class CDMainController {
 	this.donationSheet = donationSheet;
     }
 
+    public NSWindow updateSheet;
+    public void setDonationSheet(NSPanel donationSheet) {
+	this.donationSheet = donationSheet;
+    }
+    
     public void helpMenuClicked(Object sender) {
 	NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().resourcePath(), "Help.rtfd").toString());
     }
@@ -96,6 +101,18 @@ public class CDMainController {
 				     );
 	    }
 	    else {
+//		NSApplication.sharedApplication().beginSheet(
+//					       this.window(), //sheet
+//					       parentWindow,
+//					       this, //modalDelegate
+//					       new NSSelector(
+//			   "updateSheetDidEnd",
+//			   new Class[] { NSWindow.class, int.class, Object.class }
+//			   ),// did end selector
+//					       null); //contextInfo
+//		this.window().makeKeyAndOrderFront(filename);
+//
+//		
 		int selection = NSAlertPanel.runInformationalAlert(
 						     NSBundle.localizedString("New version"), //title
 						     "Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is out of date. The current version is")+" "+latestVersionNumber,
@@ -110,6 +127,18 @@ public class CDMainController {
 	}
 	catch(Exception e) {
 	    log.error(e.getMessage());
+	}
+    }
+
+    public void updateSheetDidEnd(NSWindow sheet, int returncode, Object context) {
+	log.debug("updateSheetDidEnd");
+	sheet.orderOut(null);
+	switch(returncode) {
+	    case(NSAlertPanel.DefaultReturn):
+		NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")+context.toString()));
+		break;
+	    case(NSAlertPanel.AlternateReturn):
+		break;
 	}
     }
 
@@ -152,6 +181,11 @@ public class CDMainController {
 	}
     }
 
+    public void closeUpdateSheet(NSButton sender) {
+	log.debug("closeUpdateSheet");
+	NSApplication.sharedApplication().endSheet(udpateSheet, sender.tag());
+    }
+	
     public void closeDonationSheet(NSButton sender) {
 	log.debug("closeDonationSheet");
 	donationSheet.close();
@@ -205,11 +239,16 @@ public class CDMainController {
 
     public int applicationShouldTerminate (NSApplication app) {
 	log.debug("applicationShouldTerminate");
-//	NSArray windows = app.windows();
+
+	NSArray windows = NSApplication.sharedApplication().windows();
+	if(windows.count() > 0) {
+	    log.debug("Open windows:"+windows);
 //	java.util.Enumeration i = windows.objectEnumerator();
 //	while(i.hasMoreElements()) {
-//	    ((NSWindow)i.nextElement()).performClose(this);
+//	    ((NSWindow)i.nextElement()).performClose(null);
+	    //return NSApplication.TerminateLater
 //	}
+	}
 	Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses"))+1);
         Preferences.instance().save();
 	CDFavoritesImpl.instance().save();

@@ -47,6 +47,10 @@ public class CDConnectionController {
 	this.sheet = sheet;
     }
 
+    public NSWindow window() {
+	return this.sheet;
+    }
+    
     private NSPopUpButton favoritesPopup;
     public void setFavoritesPopup(NSPopUpButton favoritesPopup) {
 	this.favoritesPopup = favoritesPopup;
@@ -132,10 +136,6 @@ public class CDConnectionController {
     private NSTextField urlLabel;
     public void setUrlLabel(NSTextField urlLabel) {
 	this.urlLabel = urlLabel;
-    }
-
-    public NSWindow window() {
-	return this.sheet;
     }
 
     private static NSMutableArray allDocuments = new NSMutableArray();
