@@ -117,7 +117,7 @@ public class CDHistoryImpl extends History { //implements NSComboBox.DataSource 
 	
     public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
 		Host h = (Host)this.values().toArray()[row];
-		return h.getNickname();
+		return h.getHostname();
     }
     
     // ----------------------------------------------------------

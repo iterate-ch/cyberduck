@@ -39,12 +39,12 @@ public class CDFavoriteController {
     // Outlets
     // ----------------------------------------------------------
     
-    private NSWindow window;
+    private NSWindow window; // IBOutlet
     public void setWindow(NSWindow window) {
 		this.window = window;
     }
     
-    private NSPopUpButton protocolPopup;
+    private NSPopUpButton protocolPopup; // IBOutlet
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
 		this.protocolPopup = protocolPopup;
 		this.protocolPopup.setTarget(this);
@@ -164,7 +164,9 @@ public class CDFavoriteController {
     private void updateFields() {
 		this.window.setTitle(this.host.getNickname());
 		this.urlField.setStringValue(this.host.getURL());
+		this.hostField.setStringValue(this.host.getHostname());
 		this.nicknameField.setStringValue(this.host.getNickname());
+		this.pathField.setStringValue(this.host.getDefaultPath());
 		this.usernameField.setStringValue(this.host.getLogin().getUsername());
 		this.protocolPopup.selectItemWithTitle(this.host.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
     }

@@ -299,6 +299,10 @@ public class CDBrowserController implements Observer {
 		}
     }
     
+	// ----------------------------------------------------------
+	// Manage favorites
+	// ----------------------------------------------------------
+	
     public void editFavoriteButtonClicked(Object sender) {
 		int row = favoritesTable.selectedRow();
 		if(row != -1) {

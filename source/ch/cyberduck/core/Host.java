@@ -117,6 +117,10 @@ public class Host {
         log.debug("getDefaultPath:"+defaultpath);
 		return this.defaultpath;
     }
+	
+	public boolean hasReasonableDefaultPath() {
+		return (this.defaultpath != null) && (this.defaultpath != "") && (this.defaultpath != Path.HOME);
+	}
     
     public void closeSession() {
         log.debug("closeSession");
