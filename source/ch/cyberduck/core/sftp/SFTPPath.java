@@ -182,7 +182,6 @@ public class SFTPPath extends Path {
 				session.log("Deleting " + this.getName(), Message.PROGRESS);
 				session.SFTP.removeFile(this.getAbsolute());
 			}
-			//	    this.getParent().list();
 		}
 		catch (SshException e) {
 			session.log("SSH Error: " + e.getMessage(), Message.ERROR);

@@ -56,17 +56,16 @@ public class Codec {
 	}
 	
 	public static String decode(byte[] text, String encoding) {
-		log.debug("decode:" + new String(text).toString() + "," + encoding); //@todo remove
+		log.debug("decode:"+new String(text).toString()+","+encoding); //@todo remove
 		String decoded = null;
 		try {
 			decoded = new String(text, encoding);
-//			decoded = new String(new String(text, encoding).getBytes(), "UTF-8");
 		}
 		catch (java.io.UnsupportedEncodingException e) {
 			log.error(e.getMessage());
 		}
 		finally {
-			log.debug("Decoded: " + decoded); //@todo remove
+			log.debug("Decoded:"+decoded); //@todo remove
 			return decoded;
 		}
 	}
@@ -80,17 +79,16 @@ public class Codec {
 	 * Encodes this String into a sequence of bytes using the named charset, storing the result into a new byte array.
 	 */
 	public static byte[] encode(String text, String encoding) {
-		log.debug("encode:" + text + "," + encoding); //@todo remove
+		log.debug("encode:"+text+","+encoding); //@todo remove
 		byte[] encoded = null;
 		try {
 			encoded = text.getBytes(encoding);
-//			encoded = new String(text.getBytes(encoding)).getBytes("UTF-8");
 		}
 		catch (java.io.UnsupportedEncodingException e) {
 			log.error(e.getMessage());
 		}
 		finally {
-			log.debug("Encoded: " + new String(encoded).toString()); //@todo remove
+			log.debug("Encoded:"+new String(encoded).toString()); //@todo remove
 			return encoded;
 		}
 	}
