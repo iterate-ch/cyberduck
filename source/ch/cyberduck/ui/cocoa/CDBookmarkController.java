@@ -56,7 +56,7 @@ public class CDBookmarkController extends NSObject {
     }
 
     public void windowWillClose(NSNotification notification) {
-        OFFSET = -16;
+        OFFSET =- 16;
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
         BookmarkList.instance().save();
@@ -134,7 +134,7 @@ public class CDBookmarkController extends NSObject {
         this.callback = callback;
         this.host = host;
         instances.addObject(this);
-        OFFSET = +16;
+        OFFSET =+ 16;
         if (false == NSApplication.loadNibNamed("Bookmark", this)) {
             log.fatal("Couldn't load Bookmark.nib");
         }

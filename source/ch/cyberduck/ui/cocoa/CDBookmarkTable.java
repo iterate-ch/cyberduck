@@ -118,10 +118,10 @@ public class CDBookmarkTable extends CDTableView {
             if (h.getNickname().toLowerCase().startsWith(chars)) {
                 this.selectRow(i, false);
                 this.scrollRowToVisible(i);
-                return;
+//                return;
             }
         }
-        this.interpretKeyEvents(new NSArray(event));
-//		super.keyDown(event);
+		super.keyDown(event);
+//        this.interpretKeyEvents(new NSArray(event));
     }
 }

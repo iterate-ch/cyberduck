@@ -130,7 +130,7 @@ public class CDInfoController extends NSObject {
     public CDInfoController(Path file) {
         this.file = file;
         instances.addObject(this);
-        OFFSET = +16;
+        OFFSET =+ 16;
         if (false == NSApplication.loadNibNamed("Info", this)) {
             log.fatal("Couldn't load Info.nib");
         }
@@ -194,10 +194,10 @@ public class CDInfoController extends NSObject {
 
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose");
-        OFFSET = -16;
-        if (!filenameField.stringValue().equals(file.getName())) {
-            file.rename(file.getParent().getAbsolute(), filenameField.stringValue());
-        }
+        OFFSET =- 16;
+//        if (!filenameField.stringValue().equals(file.getName())) {
+//            file.rename(file.getParent().getAbsolute(), filenameField.stringValue());
+//        }
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
     }

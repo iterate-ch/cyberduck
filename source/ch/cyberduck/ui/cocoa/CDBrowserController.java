@@ -420,7 +420,7 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
 
     public CDBrowserController() {
         instances.addObject(this);
-        OFFSET = +16;
+        OFFSET =+ 16;
         if (false == NSApplication.loadNibNamed("Browser", this)) {
             log.fatal("Couldn't load Browser.nib");
         }
@@ -479,7 +479,9 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
                 }
                 this.progressIndicator.stopAnimation(this);
                 this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
+                this.statusIcon.setNeedsDisplay(true);
                 this.statusLabel.setObjectValue(msg.getContent());
+                this.statusLabel.display();
             }
             else if (msg.getTitle().equals(Message.REFRESH)) {
                 this.refreshButtonClicked(null);
@@ -488,20 +490,17 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
             else if (msg.getTitle().equals(Message.PROGRESS)) {
                 this.statusLabel.setObjectValue(msg.getContent());
                 this.statusLabel.display();
-            }
-            else if (msg.getTitle().equals(Message.TRANSCRIPT)) {
-                this.statusLabel.setObjectValue(msg.getContent());
+				//this.statusIcon.setImage(this.isConnected() ? NSImage.imageNamed("online.tiff") : NSImage.imageNamed("offline.tiff"));
+                //this.statusIcon.setNeedsDisplay(true);
             }
             else if (msg.getTitle().equals(Message.OPEN)) {
                 this.statusIcon.setImage(null);
                 this.statusIcon.setNeedsDisplay(true);
 //                CDHistoryImpl.instance().addItem(((Session) o).host);
-//					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
                 this.toolbar.validateVisibleItems();
             }
             else if (msg.getTitle().equals(Message.START)) {
-                //this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
-                this.progressIndicator.startAnimation(this);
+              this.progressIndicator.startAnimation(this);
                 this.statusIcon.setImage(null);
                 this.statusIcon.setNeedsDisplay(true);
                 this.toolbar.validateVisibleItems();
@@ -509,6 +508,9 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
             else if (msg.getTitle().equals(Message.STOP)) {
                 this.progressIndicator.stopAnimation(this);
                 this.statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
+                this.statusLabel.display();
+				//this.statusIcon.setImage(this.isConnected() ? NSImage.imageNamed("online.tiff") : NSImage.imageNamed("offline.tiff"));
+                //this.statusIcon.setNeedsDisplay(true);
                 this.toolbar.validateVisibleItems();
             }
         }
@@ -746,14 +748,17 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
     }
 
     public boolean isMounted() {
-        return pathController.workdir() != null;
+        boolean mounted = pathController.workdir() != null;
+		return mounted;
     }
 
     public boolean isConnected() {
+		boolean connected = false;
         if (this.isMounted()) {
-            return pathController.workdir().getSession().isConnected();
+            connected = pathController.workdir().getSession().isConnected();
         }
-        return false;
+		log.info("Connected:"+connected);
+        return connected;
     }
 
     public void mount(Host host) {
@@ -853,7 +858,7 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
 
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose");
-        OFFSET = -16;
+        OFFSET =- 16;
         if (this.isMounted()) {
             pathController.workdir().getSession().deleteObserver((Observer) this);
             pathController.workdir().getSession().deleteObserver((Observer) pathController);
@@ -928,13 +933,12 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
     // ----------------------------------------------------------
     // Toolbar Delegate
     // ----------------------------------------------------------
-
+	
     public boolean validateToolbarItem(NSToolbarItem item) {
         //	log.debug("validateToolbarItem:"+item.label());
-        backButton.setEnabled(pathController.numberOfItems() > 0);
-        upButton.setEnabled(pathController.numberOfItems() > 0);
-        pathPopup.setEnabled(pathController.numberOfItems() > 0);
-
+        this.backButton.setEnabled(pathController.numberOfItems() > 0);
+        this.upButton.setEnabled(pathController.numberOfItems() > 0);
+        this.pathPopup.setEnabled(pathController.numberOfItems() > 0);
         return this.validateItem(item.itemIdentifier());
     }
 

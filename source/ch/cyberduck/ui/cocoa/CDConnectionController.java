@@ -351,7 +351,7 @@ this.selectionChanged(CDHistoryImpl.instance().getItem(historyPopup.indexOfSelec
             Login l = new Login(hostPopup.stringValue(), usernameField.stringValue(), null);
             String passFromKeychain = l.getPasswordFromKeychain();
             if (passFromKeychain != null && !passFromKeychain.equals("")) {
-                log.info("Password for " + usernameField.stringValue() + " found in Keychain:" + passFromKeychain);
+                log.info("Password for " + usernameField.stringValue() + " found in Keychain");
                 this.passField.setStringValue(passFromKeychain);
             }
             else {

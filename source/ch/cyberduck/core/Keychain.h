@@ -23,9 +23,21 @@
 #include <string.h>
 
 #include <Login.h>
+#include <CoreFoundation/CoreFoundation.h>
 #include <Security/SecBase.h>
 #include <Security/SecKeychain.h>
+#include <Security/SecKeychainItem.h>
 
-char *getPwdFromKeychain(const char *service, const char *account, OSStatus *error);
-void addPwdToKeychain(const char *service, const char *account, const char *password);
+char *getPwdFromKeychain(const char *service, 
+						 const char *account,
+						 SecKeychainItemRef itemRef);//, OSStatus *error);
 
+void addPwdToKeychain(const char *service, 
+					  const char *account, 
+					  const char *password);
+
+void changePwdInKeychain (const char *service, 
+						  const char *account, 
+						  const char *password,
+						  SecKeychainItemRef itemRef);
+	

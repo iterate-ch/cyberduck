@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSAutoreleasePool;
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
@@ -28,12 +27,12 @@ import ch.cyberduck.ui.LoginController;
 public class Login {
     private static Logger log = Logger.getLogger(Login.class);
 
-    private String service;
+    private String serviceName;
     private String user;
     private transient String pass;
     private String privateKeyFile;
     private LoginController controller;
-    private boolean addToKeychain;
+    private boolean shouldBeAddedToKeychain;
 
     static {
         // Ensure native keychain library is loaded
@@ -48,51 +47,55 @@ public class Login {
         }
     }
 
-    public void setUseKeychain(boolean addToKeychain) {
-        this.addToKeychain = addToKeychain;
+    public void setUseKeychain(boolean shouldBeAddedToKeychain) {
+        this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
     }
 
     public boolean usesKeychain() {
-        return this.addToKeychain;
+        return this.shouldBeAddedToKeychain;
     }
 
-    public native String getPasswordFromKeychain(String service, String account);
+    public native String getPasswordFromKeychain(String serviceName, String account);
 
     public String getPasswordFromKeychain() {
-        int pool = NSAutoreleasePool.push();
-        String pass = this.getPasswordFromKeychain(this.service, this.user);
-        NSAutoreleasePool.pop(pool);
-        return pass;
+        return this.getPasswordFromKeychain(this.getServiceName(), this.getUsername());
     }
 
-    public native void addPasswordToKeychain(String service, String account, String password);
-
+    public native void addPasswordToKeychain(String serviceName, String account, String password);
+	
+//	public native void changePasswordInKeychain(String serviceName, String account, String password);
+	
     public void addPasswordToKeychain() {
-        if (this.addToKeychain && !this.isAnonymousLogin()) {
-            int pool = NSAutoreleasePool.push();
-            this.addPasswordToKeychain(this.service, this.user, this.pass);
-            NSAutoreleasePool.pop(pool);
+        if (this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
+			//			if(null == this.getPasswordFromKeychain()) {
+			//				log.info("Adding password to keychain");
+			this.addPasswordToKeychain(this.getServiceName(), this.getUsername(), this.getPassword());
+			//			}
+			//			else {
+			//				log.info("Updating password in keychain");
+			//				this.changePasswordInKeychain(this.getServiceName(), this.getUsername(), this.getPassword());
+			//			}
         }
     }
-
+	
     /**
-     * @param service The service to use when looking up the password in the keychain
+     * @param serviceName The service to use when looking up the password in the keychain
      * @param user    Login with this username
      * @param pass    Passphrase
      */
-    public Login(String service, String user, String pass) {
-        this(service, user, pass, false);
+    public Login(String serviceName, String user, String pass) {
+        this(serviceName, user, pass, false);
     }
 
     /**
-     * @param service       The service to use when looking up the password in the keychain
+     * @param serviceName       The serviceName to use when looking up the password in the keychain
      * @param user          Login with this username
      * @param pass          Passphrase
-     * @param addToKeychain if the credential should be added to the keychain uppon successful login
+     * @param shouldBeAddedToKeychain if the credential should be added to the keychain uppon successful login
      */
-    public Login(String service, String user, String pass, boolean addToKeychain) {
-        this.service = service;
-        this.addToKeychain = addToKeychain;
+    public Login(String serviceName, String user, String pass, boolean shouldBeAddedToKeychain) {
+        this.serviceName = serviceName;
+        this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
         this.init(user, pass);
     }
 
@@ -164,6 +167,9 @@ public class Login {
         return reasonable;
     }
 
+	/**
+		* @return 
+	 */
     public boolean check() {
         if (!this.hasReasonableValues()) {
             if (Preferences.instance().getProperty("connection.login.useKeychain").equals("true")) {
@@ -186,6 +192,7 @@ public class Login {
 
     /**
      * @pre controller != null
+	 * @return 
      */
     public boolean promptUser(String message) {
         return this.controller.promptUser(this, message);
@@ -206,6 +213,10 @@ public class Login {
     public void setPassword(String pass) {
         this.init(this.getUsername(), pass);
     }
+	
+	public String getServiceName() {
+		return this.serviceName;
+	}
 
     public void setController(LoginController lc) {
         this.controller = lc;

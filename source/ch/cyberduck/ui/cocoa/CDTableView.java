@@ -43,6 +43,7 @@ public class CDTableView extends NSTableView {
         super.encodeWithCoder(encoder);
     }
 
+	/*
 	public void moveDown(NSObject sender) {
         int row = this.selectedRow();
         row++;
@@ -53,7 +54,9 @@ public class CDTableView extends NSTableView {
         this.selectRow(row, false);
         this.scrollRowToVisible(row);
     }
+	 */
 	
+	/*
     public void moveUp(NSObject sender) {
         int row = this.selectedRow();
         row--;
@@ -64,25 +67,34 @@ public class CDTableView extends NSTableView {
         this.selectRow(row, false);
         this.scrollRowToVisible(row);
     }
+	 */
 	
+	/*
 	public void scrollPageUp(NSObject sender) {
         // Sheesh, isn't there an easier way?!
         NSRect v = this.visibleRect();
         NSPoint p = new NSPoint(v.origin().x(), v.origin().y() - v.size().height());
         this.scrollPoint(p);
     }
+	 */
 
+	/*
     public void scrollPageDown(NSObject sender) {
         NSRect v = this.visibleRect();
         NSPoint p = new NSPoint(v.origin().x(), v.origin().y() + v.size().height());
         this.scrollPoint(p);
     }
+	 */
 	
+	/*
     public void scrollToBeginningOfDocument(NSObject sender) {
         this.scrollRowToVisible(0);
     }
+	 */
     
+	/*
     public void scrollToEndOfDocument(NSObject sender) {
         this.scrollRowToVisible(this.numberOfRows() - 1);
     }
+	 */
 }
