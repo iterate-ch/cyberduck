@@ -374,9 +374,6 @@ public class FTPPath extends Path {
 			this.download(in, out);
 			if (this.status.isComplete()) {
 				this.session.FTP.validateTransfer();
-				if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-					this.getLocal().setPermission(this.attributes.getPermission());
-				}
 			}
 			if(status.isCanceled()) {
 				this.session.FTP.abor();
@@ -428,9 +425,6 @@ public class FTPPath extends Path {
 			this.download(in, out);
 			if (this.status.isComplete()) {
 				this.session.FTP.validateTransfer();
-				if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-					this.getLocal().setPermission(this.attributes.getPermission());
-				}
 			}
 			if(status.isCanceled()) {
 				this.session.FTP.abor();

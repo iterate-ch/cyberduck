@@ -382,11 +382,6 @@ public class SFTPPath extends Path {
 					throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
 			}
 			this.download(in, out);
-			if (this.status.isComplete()) {
-				if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-					this.getLocal().setPermission(this.attributes.getPermission());
-				}
-			}
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);

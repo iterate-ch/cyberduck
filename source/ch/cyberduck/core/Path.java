@@ -375,6 +375,12 @@ public abstract class Path {
 		this.transfer(reader, writer);
 		if(this.status.isComplete()) {
 			this.getLocal().getTemp().renameTo(this.getLocal());
+			if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
+				Permission p = this.attributes.getPermission();
+				if(p.isUndefined()) {
+					this.getLocal().setPermission(p);
+				}
+			}
 		}
 	}
 
@@ -389,6 +395,12 @@ public abstract class Path {
 		this.transfer(i, o);
 		if(this.status.isComplete()) {
 			this.getLocal().getTemp().renameTo(this.getLocal());
+			if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
+				Permission p = this.attributes.getPermission();
+				if(p.isUndefined()) {
+					this.getLocal().setPermission(p);
+				}
+			}
 		}
 	}
 

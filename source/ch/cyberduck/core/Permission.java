@@ -204,12 +204,13 @@ public class Permission {
 //		log.debug("Permission:"+this.toString());
 	}
 	
-	
+	public boolean isUndefined() {
+		return this.getMask().equals(DEFAULT_MASK);
+	}
 
 	/**
 		* @param access unix access permitions, i.e. -rwxrwxrwx
 	 */
-	
 	public void setMask(String mask) {
 		this.mask = mask;
 	}
