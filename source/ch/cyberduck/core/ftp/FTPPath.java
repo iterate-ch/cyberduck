@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSPathUtilities;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -564,7 +565,9 @@ public class FTPPath extends Path {
 						}
 						catch(FTPException e) {
 							log.warn(e.getMessage());
-							this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
+							if(!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
+								this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
+							}
 						}
 					}
 				}
