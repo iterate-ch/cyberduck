@@ -228,10 +228,10 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			if(p != null) {
 				if(identifier.equals("TYPE")) {
 					if(p.getRemote().exists() && p.getLocal().exists()) {
-						if(p.getLocal().getTimestamp().before(p.getRemote().attributes.getTimestamp())) {
+						if(p.getLocal().getTimestampAsCalendar().before(p.getRemote().attributes.getTimestampAsCalendar())) {
 							return ARROW_DOWN_ICON;
 						}
-						if(p.getLocal().getTimestamp().after(p.getRemote().attributes.getTimestamp())) {
+						if(p.getLocal().getTimestampAsCalendar().after(p.getRemote().attributes.getTimestampAsCalendar())) {
 							return ARROW_UP_ICON;
 						}
 					}

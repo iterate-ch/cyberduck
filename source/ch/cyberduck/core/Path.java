@@ -449,10 +449,12 @@ public abstract class Path {
 	public void sync() {
 		if(this.getRemote().exists() && this.getLocal().exists()) {
 			if(this.attributes.isFile()) {
-				if(this.getLocal().getTimestamp().before(this.attributes.getTimestamp())) {
+                log.info("Remote timestamp:"+this.attributes.getTimestampAsCalendar());
+                log.info("Local timestamp:"+this.getLocal().getTimestampAsCalendar());
+				if(this.getLocal().getTimestampAsCalendar().before(this.attributes.getTimestampAsCalendar())) {
 					this.download();
 				}
-				if(this.getLocal().getTimestamp().after(this.attributes.getTimestamp())) {
+				if(this.getLocal().getTimestampAsCalendar().after(this.attributes.getTimestampAsCalendar())) {
 					this.upload();
 				}
 			}

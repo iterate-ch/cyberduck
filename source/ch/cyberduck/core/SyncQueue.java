@@ -116,10 +116,10 @@ public class SyncQueue extends Queue {
 		for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
 			Path path = ((Path)iter.next());
 			if(path.getRemote().exists() && path.getLocal().exists()) {
-				if(path.getLocal().getTimestamp().before(path.attributes.getTimestamp())) {
+				if(path.getLocal().getTimestampAsCalendar().before(path.attributes.getTimestampAsCalendar())) {
 					this.size += path.getRemote().attributes.getSize();
 				}
-				if(path.getLocal().getTimestamp().after(path.attributes.getTimestamp())) {
+				if(path.getLocal().getTimestampAsCalendar().after(path.attributes.getTimestampAsCalendar())) {
 					this.size += path.getLocal().getSize();
 				}
 			}

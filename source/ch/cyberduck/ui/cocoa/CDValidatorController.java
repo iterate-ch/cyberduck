@@ -332,7 +332,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 			Path p = (Path)this.workList.get(row);
 			if(p.getRemote().exists() && p.getLocal().exists()) {
 				((NSTextFieldCell)cell).setDrawsBackground(true);
-				if(p.getLocal().getTimestamp().before(p.getRemote().attributes.getTimestamp())) {
+				if(p.getLocal().getTimestampAsCalendar().before(p.getRemote().attributes.getTimestampAsCalendar())) {
 					((NSTextFieldCell)cell).setBackgroundColor(LIGHT_GREEN_COLOR);
 				}
 				else {
@@ -344,7 +344,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 			Path p = (Path)this.workList.get(row);
 			if(p.getRemote().exists() && p.getLocal().exists()) {
 				((NSTextFieldCell)cell).setDrawsBackground(true);
-				if(p.getLocal().getTimestamp().after(p.getRemote().attributes.getTimestamp())) {
+				if(p.getLocal().getTimestampAsCalendar().after(p.getRemote().attributes.getTimestampAsCalendar())) {
 					((NSTextFieldCell)cell).setBackgroundColor(LIGHT_GREEN_COLOR);
 				}
 				else {
