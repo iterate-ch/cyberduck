@@ -32,7 +32,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public class CDConnectionController extends CDController implements Observer {
+public class CDConnectionController extends CDController {
 	private static Logger log = Logger.getLogger(CDConnectionController.class);
 
 	private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)", "");
@@ -63,7 +63,15 @@ public class CDConnectionController extends CDController implements Observer {
 
 	private Rendezvous rendezvous;
 	private NSPopUpButton rendezvousPopup;
+	
+	private void addItemToRendezvousPopup(String item) {
+		this.rendezvousPopup.addItem(item);
+	}
 
+	private void removeItemFromRendezvousPopup(String item) {
+		this.rendezvousPopup.removeItemWithTitle(item);
+	}
+	
 	public void setRendezvousPopup(NSPopUpButton rendezvousPopup) {
 		this.rendezvousPopup = rendezvousPopup;
 		this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous16.tiff"));
@@ -71,7 +79,26 @@ public class CDConnectionController extends CDController implements Observer {
 		this.rendezvousPopup.setTarget(this);
 		this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionChanged", new Class[]{Object.class}));
 		this.rendezvous = new Rendezvous();
-		this.rendezvous.addObserver(this);
+		this.rendezvous.addObserver(new Observer() {
+			public void update(final Observable o, final Object arg) {
+				log.debug("update:"+o+","+arg);
+				ThreadUtilities.instance().invokeLater(new Runnable() {
+					public void run() {
+						if(o instanceof Rendezvous) {
+							if(arg instanceof Message) {
+								Message msg = (Message)arg;
+								if(msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
+									addItemToRendezvousPopup((String)msg.getContent());
+								}
+								if(msg.getTitle().equals(Message.RENDEZVOUS_REMOVE)) {
+									removeItemFromRendezvousPopup((String)msg.getContent());
+								}
+							}
+						}
+					}
+				});
+			}
+		});
 		this.rendezvous.init();
 	}
 
@@ -79,29 +106,9 @@ public class CDConnectionController extends CDController implements Observer {
 		this.selectionChanged((Host)rendezvous.getService(rendezvousPopup.titleOfSelectedItem()));
 	}
 
-	public void update(final Observable o, final Object arg) {
-		log.debug("update:"+o+","+arg);
-		ThreadUtilities.instance().invokeLater(new Runnable() {
-			public void run() {
-				if(o instanceof Rendezvous) {
-					if(arg instanceof Message) {
-						Message msg = (Message)arg;
-						if(msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
-							rendezvousPopup.addItem((String)msg.getContent());
-						}
-						if(msg.getTitle().equals(Message.RENDEZVOUS_REMOVE)) {
-							rendezvousPopup.removeItemWithTitle((String)msg.getContent());
-						}
-					}
-				}
-			}
-		});
-	}
-
 	private NSPopUpButton protocolPopup;
 
 	public void setProtocolPopup(NSPopUpButton protocolPopup) {
-		log.debug("setProtocolPopup");
 		this.protocolPopup = protocolPopup;
 		this.protocolPopup.setTarget(this);
 		this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[]{Object.class}));
@@ -118,7 +125,6 @@ public class CDConnectionController extends CDController implements Observer {
 	private Object quickConnectDataSource;
 
 	public void setHostPopup(NSComboBox hostPopup) {
-		log.debug("setHostPopup");
 		this.hostPopup = hostPopup;
 		this.hostPopup.setTarget(this);
 		this.hostPopup.setAction(new NSSelector("hostSelectionChanged", new Class[]{Object.class}));
@@ -374,7 +380,7 @@ public class CDConnectionController extends CDController implements Observer {
 	public void closeSheet(NSButton sender) {
 		this.browserController.endSheet();
 		NSNotificationCenter.defaultCenter().removeObserver(this);
-		this.rendezvous.deleteObserver(this);
+		this.rendezvous.deleteObservers();
 		this.rendezvous.quit();
 		switch(sender.tag()) {
 			case (NSAlertPanel.DefaultReturn):
