@@ -90,7 +90,8 @@ public abstract class Preferences {//extends Properties {
         defaults.put("uses", "0");
 	defaults.put("donate", "true");
 	defaults.put("mail", "mailto:dkocher@cyberduck.ch");
-	defaults.put("website.donate" , "http://www.cyberduck.ch/donate/");
+//	defaults.put("website.donate" , "http://www.cyberduck.ch/donate/");
+	defaults.put("website.donate" , "https://www.paypal.com/xclick/business=dkocher%40cyberduck.ch&item_name=Cyberduck&item_number=Cyberduck");
 	defaults.put("website.xml" , "http://www.cyberduck.ch/versionlist.xml");
 	defaults.put("website.update" , "http://www.cyberduck.ch/Cyberduck.dmg");
 	defaults.put("website.home" , "http://www.cyberduck.ch/");

@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  */
 
 import org.apache.log4j.Logger;
+import java.io.Serializable;
 
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.http.HTTPSession;
@@ -25,14 +26,14 @@ import ch.cyberduck.core.sftp.SFTPSession;
 
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 
-public class Host {
+public class Host implements Serializable {
     private static Logger log = Logger.getLogger(Host.class);
 
-    public Login login;
+    protected transient Login login;
     private String protocol;
     private int port;
     private String name;
-    private HostKeyVerification hostKeyVerification;
+    private transient HostKeyVerification hostKeyVerification;
     private transient Session session;
 
     public Host(String protocol, String name, int port) {

@@ -29,11 +29,11 @@ import java.util.Observable;
  * Keeps track of recently connected hosts
  * @version $Id$
  */
-public abstract class History extends Observable {
+public abstract class History {// extends Observable {
     private static Logger log = Logger.getLogger(History.class);
 
     private static History instance;
-    private List data;
+    protected List data = new ArrayList();;
 
     /*
      * Use #instance instead.
@@ -54,11 +54,11 @@ public abstract class History extends Observable {
         return instance;
     }
 
-    public void callObservers(Object arg) {
-        log.debug("callObservers:"+arg.toString());
-	this.setChanged();
-	this.notifyObservers(arg);
-    }
+//    public void callObservers(Object arg) {
+  //      log.debug("callObservers:"+arg.toString());
+//	this.setChanged();
+//	this.notifyObservers(arg);
+  //  }
     
     /**
 	* Ensure persistency.
@@ -72,7 +72,7 @@ public abstract class History extends Observable {
 
     public void add(Host h) {
 	data.add(h);
-	this.callObservers(h);
+//	this.callObservers(h);
     }
     
     public Host get(String name) {

@@ -88,13 +88,13 @@ public class CDTransferController implements Observer {
 //	this.totalProgressBar.setDoubleValue(0);
     }
 
-    private NSProgressIndicator fileProgressBar;
-    public void setFileProgressBar(NSProgressIndicator fileProgressBar) {
-	this.fileProgressBar = fileProgressBar;
-	this.fileProgressBar.setIndeterminate(true);
-	this.fileProgressBar.setUsesThreadedAnimation(true);
+//    private NSProgressIndicator fileProgressBar;
+//    public void setFileProgressBar(NSProgressIndicator fileProgressBar) {
+//	this.fileProgressBar = fileProgressBar;
+//	this.fileProgressBar.setIndeterminate(true);
+//	this.fileProgressBar.setUsesThreadedAnimation(true);
 //	this.fileProgressBar.setDoubleValue(0);
-    }
+//    }
 
     private NSButton stopButton;
     public void setStopButton(NSButton stopButton) {
@@ -174,10 +174,8 @@ public class CDTransferController implements Observer {
 	this.queue.addObserver(this);
 	this.window().setTitle(file.getName());
 
-//@todo	this.totalProgressBar.setDoubleValue(0);
-
 	this.totalProgressBar.startAnimation(null);
-	this.fileProgressBar.startAnimation(null);
+//	this.fileProgressBar.startAnimation(null);
 
 	this.window().makeKeyAndOrderFront(null);
 	if(this.validate(resume))
@@ -216,16 +214,16 @@ public class CDTransferController implements Observer {
 		if(msg.getTitle().equals(Message.DATA)) {
 		    int currentQueue = queue.getCurrent();
 		    
-		    this.fileProgressBar.setDoubleValue((double)status.getCurrent());
+//		    this.fileProgressBar.setDoubleValue((double)status.getCurrent());
 		    this.totalProgressBar.setDoubleValue((double)currentQueue);
 //		    log.debug("File progress:"+status.getCurrent());
 //		    log.debug("Total progress:"+queue.getCurrent());
 
-		    this.fileProgressBar.setMaxValue(status.getSize());
+//		    this.fileProgressBar.setMaxValue(status.getSize());
 		    this.totalProgressBar.setMaxValue(queue.getSize());
 
 		    this.fileDataField.setStringValue(msg.getDescription());
-		    this.fileDataField.sizeToFit();
+//		    this.fileDataField.sizeToFit();
 		    this.totalDataField.setStringValue(Status.parseDouble(currentQueue/1024)+" of "+Status.parseDouble(queue.getSize()/1024) + " kBytes.");
 		    this.totalDataField.sizeToFit();
 		}
@@ -234,10 +232,10 @@ public class CDTransferController implements Observer {
 		}
 		else if(msg.getTitle().equals(Message.START)) {
 		    this.totalProgressBar.setIndeterminate(false);
-		    this.fileProgressBar.setIndeterminate(false);
+//		    this.fileProgressBar.setIndeterminate(false);
 
 		    this.totalProgressBar.setMinValue(0);
-		    this.fileProgressBar.setMinValue(0);
+//		    this.fileProgressBar.setMinValue(0);
 		    
 		    this.stopButton.setEnabled(true);
 		    this.resumeButton.setEnabled(false);
@@ -249,7 +247,6 @@ public class CDTransferController implements Observer {
 		    this.reloadButton.setEnabled(true);
 		}
 		else if(msg.getTitle().equals(Message.COMPLETE)) {
-//		    this.fileProgressBar.setDoubleValue((double)status.getCurrent());
 //@todo		    if(queue.done()) {
 			this.resumeButton.setEnabled(false);
 			this.reloadButton.setEnabled(true);
@@ -417,7 +414,7 @@ public class CDTransferController implements Observer {
 		break;
 	    case NSAlertPanel.AlternateReturn : //Cancel
 		this.totalProgressBar.stopAnimation(null);
-		this.fileProgressBar.stopAnimation(null);
+//		this.fileProgressBar.stopAnimation(null);
 		break;
 	    case NSAlertPanel.OtherReturn : //Overwrite
 		this.file.status.setResume(false);

@@ -69,6 +69,11 @@ public class FTPPath extends Path {
     public Path getParent() {
 	String abs = this.getAbsolute();
 	if((null == parent)) {// && !abs.equals("/")) {
+//	    String dirname;
+//	    if(this.isRoot())
+//		dirname = "/";
+//	    else
+//		dirname = this.getAbsolute().substring(0, this.getAbsolute().lastIndexOf('/'));
 	    int index = abs.lastIndexOf('/');
 	    String dirname = abs;
 	    if(index > 0)
@@ -79,7 +84,7 @@ public class FTPPath extends Path {
 	}
 	log.debug("getParent:"+parent);
 	return parent;
-	}
+    }
 
     public List list() {
 	return this.list(true);

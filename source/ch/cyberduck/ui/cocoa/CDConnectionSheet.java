@@ -24,6 +24,8 @@ import ch.cyberduck.core.Session;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
+import java.util.Iterator;
+import ch.cyberduck.core.History;
 
 /**
 * @version $Id$
@@ -48,9 +50,9 @@ public class CDConnectionSheet {
 	this.protocolPopup = protocolPopup;
     }
 
-    private NSPopUpButton hostField;
-    public void setHostField(NSPopUpButton hostField) {
-	this.hostField = hostField;
+    private NSPopUpButton hostPopup;
+    public void setHostField(NSPopUpButton hostPopup) {
+	this.hostPopup = hostPopup;
     }
     
 //    private NSTextField pathField;
@@ -105,7 +107,7 @@ public class CDConnectionSheet {
 						    this,
 						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
 						    NSControl.ControlTextDidChangeNotification,
-						    hostField);
+						    hostPopup);
 //	NSNotificationCenter.defaultCenter().addObserver(
 //						    this,
 //						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
@@ -122,10 +124,20 @@ public class CDConnectionSheet {
 						    NSControl.ControlTextDidChangeNotification,
 						    usernameField);
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
+
+	//initalizaing protcol popup
 //	this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{FTP_STRING, SFTP_STRING}));
 	this.protocolPopup.itemWithTitle(FTP_STRING).setTag(Session.FTP_PORT);
 	this.protocolPopup.itemWithTitle(SFTP_STRING).setTag(Session.SSH_PORT);
 	this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals("ftp") ? FTP_STRING : SFTP_STRING);
+
+	//initializing host popup
+	Iterator i = History.instance().iterator();
+	while(i.hasNext()) {
+	    Host h = (Host)i.next();
+	    hostPopup.addItem(h.getName());
+	}
+	
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
 //	this.pathField.setStringValue("~");
     }
@@ -153,7 +165,7 @@ public class CDConnectionSheet {
 	    protocol = Session.SFTP+"://";
 	else if(selectedItem.tag() == Session.FTP_PORT)
 	    protocol = Session.FTP+"://";
-	urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostField.stringValue()+":"+portField.stringValue());
+	urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostPopup.stringValue()+":"+portField.stringValue());
     }
 
     public void closeSheet(NSButton sender) {
@@ -172,7 +184,7 @@ public class CDConnectionSheet {
 		switch(tag) {
 		    case(Session.SSH_PORT):
 			try {
-			    host = new Host(Session.SFTP, hostField.stringValue(), Integer.parseInt(portField.stringValue()), new CDLoginController(browser.window(), usernameField.stringValue(), passField.stringValue()));
+			    host = new Host(Session.SFTP, hostPopup.stringValue(), Integer.parseInt(portField.stringValue()), new CDLoginController(browser.window(), usernameField.stringValue(), passField.stringValue()));
 			    host.setHostKeyVerification(new CDHostKeyController(browser.window()));
 			}
 			    catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
@@ -192,7 +204,7 @@ public class CDConnectionSheet {
 			    }
 			    break;
 		    case(Session.FTP_PORT):
-			host = new Host(Session.FTP, hostField.stringValue(), Integer.parseInt(portField.stringValue()), new CDLoginController(browser.window(), usernameField.stringValue(), passField.stringValue()));
+			host = new Host(Session.FTP, hostPopup.stringValue(), Integer.parseInt(portField.stringValue()), new CDLoginController(browser.window(), usernameField.stringValue(), passField.stringValue()));
 			break;
 		    default:
 			throw new IllegalArgumentException("No protocol selected.");

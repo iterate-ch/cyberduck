@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDFolderSheet {
+public class CDFolderController {
     private static Logger log = Logger.getLogger(CDFolderSheet.class);
 
     private Path parent;
@@ -45,7 +45,7 @@ public class CDFolderSheet {
 	return this.sheet;
     }
 
-    public CDFolderSheet(Path parent) {
+    public CDFolderController(Path parent) {
 	this.parent = parent;
         if (false == NSApplication.loadNibNamed("Folder", this)) {
             log.fatal("Couldn't load Folder.nib");

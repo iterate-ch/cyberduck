@@ -34,8 +34,8 @@ public class CDMainController {
 	org.apache.log4j.BasicConfigurator.configure();
 	Logger log = Logger.getRootLogger();
 //	log.setLevel(Level.OFF);
-//	log.setLevel(Level.DEBUG);
-	log.setLevel(Level.INFO);
+	log.setLevel(Level.DEBUG);
+//	log.setLevel(Level.INFO);
 //	log.setLevel(Level.WARN);
 //	log.setLevel(Level.ERROR);
 //	log.setLevel(Level.FATAL);
@@ -298,12 +298,9 @@ public class CDMainController {
     }
 
 
-    public boolean validateMenuItem(_NSObsoleteMenuItemProtocol aCell) {
-        String sel = aCell.action().name();
-
-        if (sel.equals("infoButtonClicked:")) {
-	    log.debug("validating info menu item");
-        }
-        return true;
-    }    
+//    public boolean validateMenuItem(_NSObsoleteMenuItemProtocol aCell) {
+//        String sel = aCell.action().name();
+//	log.debug("validateMenuItem:"+sel);//
+//    return true;
+//    }    
 }

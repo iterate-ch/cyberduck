@@ -72,13 +72,26 @@ public class CDBrowserController implements Observer {
     private NSTextField quickConnectField; // IBOutlet
     public void setQuickConnectField(NSTextField quickConnectField) {
 	this.quickConnectField = quickConnectField;
+	this.quickConnectField.setTarget(this);
+	this.quickConnectField.setAction(new NSSelector("connectFieldClicked", new Class[] { Object.class } ));
     }
-    
+
+    private NSButton upButton; // IBOutlet
+    public void setUpButton(NSButton upButton) {
+	this.upButton = upButton;
+	this.upButton.setImage(NSImage.imageNamed("up.tiff"));
+    }
+
     private NSPopUpButton pathPopup; // IBOutlet
     public void setPathPopup(NSPopUpButton pathPopup) {
 	this.pathPopup = pathPopup;
     }
 
+    private NSBox pathBox; // IBOutlet
+    public void setPathBox(NSBox pathBox) {
+	this.pathBox = pathBox;
+    }
+    
     private NSDrawer drawer; // IBOutlet
     public void setDrawer(NSDrawer drawer) {
 	this.drawer = drawer;
@@ -108,8 +121,8 @@ public class CDBrowserController implements Observer {
     private CDPathController pathController;
 
     private NSToolbar toolbar;
-    private NSToolbarItem pathItem;
-    private NSToolbarItem quickConnectItem;
+//    private NSToolbarItem pathItem;
+//  private NSToolbarItem quickConnectItem;
 
     /**
      * The host this browser windowis associated with
@@ -143,6 +156,10 @@ public class CDBrowserController implements Observer {
 	browserTable.setAutosaveTableColumns(true);
 
 	pathController = new CDPathController(pathPopup);
+
+	this.pathPopup.setTarget(pathController);
+	this.pathPopup.setAction(new NSSelector("selectionChanged", new Class[] { Object.class } ));
+
 	connectionSheet = new CDConnectionSheet(this);
 
 	this.setupToolbar();
@@ -347,7 +364,6 @@ public class CDBrowserController implements Observer {
 
 		    progressIndicator.startAnimation(this);
 		    mainWindow.setTitle(host.getProtocol()+":"+host.getName());
-		    History.instance().add(host);
 		}
 		else if(msg.getTitle().equals(Message.CLOSE)) {
 		    browserModel.clear();
@@ -397,12 +413,10 @@ public class CDBrowserController implements Observer {
 
     public void infoButtonClicked(Object sender) {
 	log.debug("infoButtonClicked");
-	if(browserTable.selectedRow() != -1) {
-	    Path path = (Path)browserModel.getEntry(browserTable.selectedRow());
-	    CDInfoController controller = new CDInfoController(path);
-	    this.references = references.arrayByAddingObject(controller);
-	    controller.window().makeKeyAndOrderFront(null);
-	}
+	Path path = (Path)browserModel.getEntry(browserTable.selectedRow());
+	CDInfoController controller = new CDInfoController(path);
+	this.references = references.arrayByAddingObject(controller);
+	controller.window().makeKeyAndOrderFront(null);
     }
 
     public void deleteButtonClicked(Object sender) {
@@ -580,6 +594,8 @@ public class CDBrowserController implements Observer {
 	if(this.host != null)
 	    this.unmount();
 	this.host = host;
+	History.instance().add(host);
+
 	Session session = host.getSession();
 	
 	session.addObserver((Observer)this);
@@ -620,7 +636,7 @@ public class CDBrowserController implements Observer {
 	    item.setLabel("New Connection");
 	    item.setPaletteLabel("New Connection");
 	    item.setToolTip("Connect to remote host");
-	    item.setImage(NSImage.imageNamed("server.tiff"));
+	    item.setImage(NSImage.imageNamed("connect.tiff"));
 	    item.setTarget(this);
 	    item.setAction(new NSSelector("connectButtonClicked", new Class[] {Object.class}));
 	}
@@ -628,9 +644,9 @@ public class CDBrowserController implements Observer {
 	    item.setLabel("Path");
 	    item.setPaletteLabel("Path");
 	    item.setToolTip("Change working directory");
-	    item.setView(pathPopup);
-	    item.setMinSize(pathPopup.frame().size());
-	    item.setMaxSize(pathPopup.frame().size());
+	    item.setView(pathBox);
+	    item.setMinSize(pathBox.frame().size());
+	    item.setMaxSize(pathBox.frame().size());
 	}
 	else if (itemIdentifier.equals("Quick Connect")) {
 	    item.setLabel("Quick Connect");
@@ -663,14 +679,6 @@ public class CDBrowserController implements Observer {
 	    item.setImage(NSImage.imageNamed("download.tiff"));
 	    item.setTarget(this);
 	    item.setAction(new NSSelector("downloadButtonClicked", new Class[] {Object.class}));
-	}
-	else if (itemIdentifier.equals("Up")) {
-	    item.setLabel("Up");
-	    item.setPaletteLabel("Up");
-	    item.setToolTip("Show parent directory");
-	    item.setImage(NSImage.imageNamed("up.tiff"));
-	    item.setTarget(this);
-	    item.setAction(new NSSelector("upButtonClicked", new Class[] {Object.class}));
 	}
 	else if (itemIdentifier.equals("Upload")) {
 	    item.setLabel("Upload");
@@ -755,40 +763,37 @@ public class CDBrowserController implements Observer {
     }
 
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Up", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Disconnect", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
+	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Disconnect", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
     }
 
-    public void toolbarWillAddItem(NSNotification notification) {
-	NSToolbarItem addedItem = (NSToolbarItem) notification.userInfo().objectForKey("item");
-	if(addedItem.itemIdentifier().equals("Path")) {
-	    pathItem = addedItem;
-	    pathItem.setTarget(pathController);
-	    pathItem.setAction(new NSSelector("selectionChanged", new Class[] { Object.class } ));
-	}
-	if(addedItem.itemIdentifier().equals("Quick Connect")) {
-	    quickConnectItem = addedItem;
-	    quickConnectItem.setTarget(this);
-	    quickConnectItem.setAction(new NSSelector("connectFieldClicked", new Class[] { Object.class } ));
-	}    
-    }
+//    public void toolbarWillAddItem(NSNotification notification) {
+//	NSToolbarItem addedItem = (NSToolbarItem) notification.userInfo().objectForKey("item");
+//	if(addedItem.itemIdentifier().equals("Path")) {
+//	    pathItem = addedItem;
+//	    pathItem.setTarget(pathController);
+//	    pathItem.setAction(new NSSelector("selectionChanged", new Class[] { Object.class } ));
+//	}
+//	if(addedItem.itemIdentifier().equals("Quick Connect")) {
+//	    quickConnectItem = addedItem;
+//	    quickConnectItem.setTarget(this);
+//	    quickConnectItem.setAction(new NSSelector("connectFieldClicked", new Class[] { Object.class } ));
+//	}    
+  //  }
 
-    public void toolbarDidRemoveItem(NSNotification notif) {
-	NSToolbarItem removedItem = (NSToolbarItem) notif.userInfo().objectForKey("item");
-	if (removedItem == pathItem) {
-	    pathItem = null;
-	}
-	if (removedItem == quickConnectItem) {
-	    quickConnectItem = null;
-	}
-    }
+//    public void toolbarDidRemoveItem(NSNotification notif) {
+//	NSToolbarItem removedItem = (NSToolbarItem) notif.userInfo().objectForKey("item");
+//	if (removedItem == pathItem) {
+//	    pathItem = null;
+//	}
+//	if (removedItem == quickConnectItem) {
+//	    quickConnectItem = null;
+//	}
+  //  }
 
     public boolean validateToolbarItem(NSToolbarItem item) {
-//	log.debug("validateToolbarItem");
+//	log.debug("validateToolbarItem:"+item.label());
 	String label = item.label();
 	if(label.equals("Path")) {
-	    return pathController.numberOfItems() > 0;
-	}
-	else if(label.equals("Up")) {
 	    return pathController.numberOfItems() > 0;
 	}
 	else if(label.equals("Refresh")) {
@@ -860,5 +865,15 @@ public class CDBrowserController implements Observer {
 	    this.unmount();
 	    this.window().close();
 	}
+    }
+
+    public boolean validateMenuItem(_NSObsoleteMenuItemProtocol aCell) {
+        String sel = aCell.action().name();
+//	log.debug("validateMenuItem:"+sel);
+
+        if (sel.equals("infoButtonClicked:")) {
+	    return browserTable.selectedRow() != -1;
+        }
+        return true;
     }
 }

@@ -86,6 +86,11 @@ public class CDPathController implements Observer {
     public void addItem(Path p) {
 	this.items.add(p);
 	combo.addItem(p.getAbsolute());
+	if(p.isRoot())
+	    combo.itemAtIndex(combo.numberOfItems()-1).setImage(NSImage.imageNamed("disk.tiff"));
+	else
+	    combo.itemAtIndex(combo.numberOfItems()-1).setImage(NSImage.imageNamed("folder.tiff"));
+//	combo.sizeToFit();
     }
 
     public Path getItem(int row) {
