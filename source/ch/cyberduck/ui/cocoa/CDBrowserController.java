@@ -251,8 +251,9 @@ public class CDBrowserController extends CDController implements Observer {
 			if(nameObj != null) {
 				path.setLocal(new Local(path.getLocal().getParent(), (String)nameObj));
 			}
-			Queue queue = new DownloadQueue(path);
-			queue.start(false, false);
+			path.download();
+//			Queue queue = new DownloadQueue(path);
+//			queue.start(false, false);
 		}
 		return null;
 	}
@@ -272,8 +273,9 @@ public class CDBrowserController extends CDController implements Observer {
 			if(nameObj != null) {
 				path.setPath(this.workdir().getAbsolute(), (String)nameObj);
 			}
-			Queue queue = new UploadQueue(path);
-			queue.start(false, false);
+			path.upload();
+//			Queue queue = new UploadQueue(path);
+//			queue.start(false, false);
 		}
 		return null;
 	}

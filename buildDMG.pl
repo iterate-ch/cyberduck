@@ -166,6 +166,9 @@ if ($deleteHeaders) {
     $output = `find -E -d "$dest" -regex ".*/(Private)?Headers" -exec rm -rf {} ";"`;
 }
 
+print "> find -E -d \"$dest\" -regex \".*/CVS\" -exec rm -rf {} \";\"\n" if $debug;
+$output = `find -E -d "$dest" -regex ".*/CVS" -exec rm -rf {} ";"`;
+
 # unmount the dmg
 print "> hdiutil detach $dev\n" if $debug;
 $output = `hdiutil detach $dev`;
