@@ -309,8 +309,6 @@ public abstract class Queue extends Observable {
 		}
 	}
 
-	/**
-	 * Stops the currently running thread processing the queue.
 	public void cancel() {
 		this.worker.cancel();
 	}
