@@ -286,9 +286,6 @@ public class TransportProtocolClient extends TransportProtocolCommon {
 				throw new IOException("The operation was interrupted");
 			}
 		}
-		if(state.hasError()) {
-			throw state.getLastError();
-		}
 		if(state.getValue() == TransportProtocolState.DISCONNECTED) {
 			if(state.hasError()) {
 				throw state.getLastError();

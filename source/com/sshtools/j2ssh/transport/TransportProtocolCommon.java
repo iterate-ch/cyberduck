@@ -339,19 +339,13 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 		}
 		catch(Throwable e) {
 			if(e instanceof IOException) {
-//				sendDisconnect(SshMsgDisconnect.PROTOCOL_VERSION_NOT_SUPPORTED,
-//				    "Application error");
 				state.setLastError((IOException)e);
 				state.setValue(TransportProtocolState.DISCONNECTED);
 			}
-//			if(state.getValue() != TransportProtocolState.DISCONNECTED) {
-//				log.error("The Transport Protocol thread failed", e);
-////				stop();
-//			}
 		}
-//		finally {
-//			thread = null;
-//		}
+		finally {
+			thread = null;
+		}
 		log.info("The Transport Protocol has been stopped");
 	}
 	
