@@ -26,9 +26,9 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
-import java.security.NoSuchAlgorithmException;
-
 import com.sshtools.j2ssh.util.Hash;
+
+import java.security.NoSuchAlgorithmException;
 
 
 /**

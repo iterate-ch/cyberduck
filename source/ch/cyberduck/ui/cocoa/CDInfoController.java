@@ -309,6 +309,7 @@ public class CDInfoController extends CDController {
 
 	public void windowWillClose(NSNotification notification) {
 		log.debug("windowWillClose");
+		filenameField.cell().endEditing(filenameField.currentEditor());
 		//		if(!Preferences.instance().getBoolean("browser.info.isInspector")) {
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 	}

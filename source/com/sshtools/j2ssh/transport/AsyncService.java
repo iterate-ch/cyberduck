@@ -1,13 +1,7 @@
 /*
  *  SSHTools - Java SSH2 API
  *
- *  Copyright (C) 2002-2003 Lee David Painter and Contributors.
- *
- *  Contributions made by:
- *
- *  Brett Smith
- *  Richard Pernavas
- *  Erwin Bolwidt
+ *  Copyright (C) 2002 Lee David Painter.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public License
@@ -24,144 +18,152 @@
  *  License document supplied with your distribution for more details.
  *
  */
+
 package com.sshtools.j2ssh.transport;
 
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.SshThread;
-
+//import com.sshtools.j2ssh.SshThread;
 
 /**
- * <p/>
+ * <p>
  * Extends the simple <code>Service</code> class to provide an asyncronous
  * messaging service for the transport protocol.
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
+ *
  * @since 0.2.0
  */
-public abstract class AsyncService extends Service implements Runnable {
-	private static Log log = LogFactory.getLog(Service.class);
+public abstract class AsyncService extends Service implements SshMessageListener /*Runnable*/ {
+  private static Log log = LogFactory.getLog(Service.class);
 
-	/**  */
-	protected SshThread thread;
+  /**  */
+  //protected SshThread thread;
 
-	/**
-	 * <p/>
-	 * Constructs an asyncronous service.
-	 * </p>
-	 *
-	 * @param serviceName the name of the service
-	 * @since 0.2.0
-	 */
-	public AsyncService(String serviceName) {
-		super(serviceName);
-	}
+  /**
+   * <p>
+   * Constructs an asyncronous service.
+   * </p>
+   *
+   * @param serviceName the name of the service
+   *
+   * @since 0.2.0
+   */
+  public AsyncService(String serviceName) {
+    super(serviceName);
+  }
 
-	/**
-	 * <p/>
-	 * Implements the abstract <code>Service</code> method and starts the
-	 * service thread.
-	 * </p>
-	 *
-	 * @throws IOException if an IO error occurs
-	 * @since 0.2.0
-	 */
-	protected void onStart() throws IOException {
-		if(Thread.currentThread() instanceof SshThread) {
-			thread = ((SshThread)Thread.currentThread()).cloneThread(this,
-			    getServiceName());
-		}
-		else {
-			thread = new SshThread(this, getServiceName(), true);
-		}
+  /**
+   * <p>
+   * Implements the abstract <code>Service</code> method and starts the
+   * service thread.
+   * </p>
+   *
+   * @throws IOException if an IO error occurs
+   *
+   * @since 0.2.0
+   */
+ /* protected void onStart() throws IOException {
+   /* if (Thread.currentThread()instanceof SshThread) {
+      thread = ( (SshThread) Thread.currentThread()).cloneThread(this,
+          getServiceName());
+    }
+    else {
+      thread = new SshThread(this, getServiceName(), true);
+    }*/
 
-		log.info("Starting "+getServiceName()+" service thread");
-		thread.start();
-	}
+   /* log.info("Starting " + getServiceName() /*+ " service thread"*///);
+  //  state.setValue(ServiceState.SERVICE_STARTED);
+    //thread.start();
+  //}*/
 
-	/**
-	 * <p/>
-	 * Implements the asyncronous services message loop.
-	 * </p>
-	 *
-	 * @since 0.2.0
-	 */
-	public final void run() {
-		int[] messageFilter = getAsyncMessageFilter();
-		state.setValue(ServiceState.SERVICE_STARTED);
+  /**
+   * <p>
+   * Implements the asyncronous services message loop.
+   * </p>
+   *
+   * @since 0.2.0
+   */
+  /*public final void run() {
+    int[] messageFilter = getAsyncMessageFilter();
 
-		SshMessage msg = null;
+    state.setValue(ServiceState.SERVICE_STARTED);
 
-		while((state.getValue() == ServiceState.SERVICE_STARTED) &&
-		    transport.isConnected()) {
-			try {
-				// Get the next message from the message store
-				msg = messageStore.getMessage(messageFilter);
+    SshMessage msg = null;
 
-				if(state.getValue() == ServiceState.SERVICE_STOPPED) {
-					break;
-				}
+    while (state.getValue() == ServiceState.SERVICE_STARTED
+           && transport.isConnected()) {
+      try {
+        // Get the next message from the message store
+        msg = messageStore.getMessage(messageFilter);
 
-				if(log.isDebugEnabled()) {
-					log.debug("Routing "+msg.getMessageName());
-				}
+        if (state.getValue() == ServiceState.SERVICE_STOPPED) {
+          break;
+        }
 
-				onMessageReceived(msg);
+        if (log.isDebugEnabled()) {
+          log.debug("Routing " + msg.getMessageName());
+        }
 
-				if(log.isDebugEnabled()) {
-					log.debug("Finished processing "+msg.getMessageName());
-				}
-			}
-			catch(MessageStoreEOFException eof) {
-				stop();
-			}
-			catch(Exception ex) {
-				if((state.getValue() != ServiceState.SERVICE_STOPPED) &&
-				    transport.isConnected()) {
-					log.fatal("Service message loop failed!", ex);
-					stop();
-				}
-			}
-		}
+        onMessageReceived(msg);
 
-		onStop();
-		log.info(getServiceName()+" thread is exiting");
-		thread = null;
-	}
+        if (log.isDebugEnabled()) {
+          log.debug("Finished processing " + msg.getMessageName());
+        }
 
-	/**
-	 * <p/>
-	 * The service thread calls this method when the thread is exiting.
-	 * </p>
-	 *
-	 * @since 0.2.0
-	 */
-	protected abstract void onStop();
+      }
+      catch (MessageStoreEOFException eof) {
+        stop();
+      }
+      catch (Exception ex) {
+        if (state.getValue() != ServiceState.SERVICE_STOPPED
+            && transport.isConnected()) {
+          log.fatal("Service message loop failed!", ex);
+          stop();
+        }
+      }
+    }
 
-	/**
-	 * <p/>
-	 * Implement this method by returning the message ids of the asyncrounous
-	 * messages your implementation wants to receive.
-	 * </p>
-	 *
-	 * @return an int array of message ids
-	 * @since 0.2.0
-	 */
-	protected abstract int[] getAsyncMessageFilter();
+    onStop();
+    log.info(getServiceName() + " thread is exiting");
+    thread = null;
+  }*/
 
-	/**
-	 * <p/>
-	 * Called by the service thread when an asyncronous message is received.
-	 * </p>
-	 *
-	 * @param msg the message received
-	 * @throws IOException if an IO error occurs
-	 * @since 0.2.0
-	 */
-	protected abstract void onMessageReceived(SshMessage msg)
-	    throws IOException;
+  /**
+   * <p>
+   * The service thread calls this method when the thread is exiting.
+   * </p>
+   *
+   * @since 0.2.0
+   */
+  //protected abstract void onStop();
+
+  /**
+   * <p>
+   * Implement this method by returning the message ids of the asyncrounous
+   * messages your implementation wants to receive.
+   * </p>
+   *
+   * @return an int array of message ids
+   *
+   * @since 0.2.0
+   */
+  //protected abstract int[] getAsyncMessageFilter();
+
+  /**
+   * <p>
+   * Called by the service thread when an asyncronous message is received.
+   * </p>
+   *
+   * @param msg the message received
+   *
+   * @throws IOException if an IO error occurs
+   *
+   * @since 0.2.0
+   */
+  public abstract void onMessageReceived(SshMessage msg) throws IOException;
 }

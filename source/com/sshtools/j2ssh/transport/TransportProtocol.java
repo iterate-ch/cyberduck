@@ -1,13 +1,7 @@
 /*
  *  SSHTools - Java SSH2 API
  *
- *  Copyright (C) 2002-2003 Lee David Painter and Contributors.
- *
- *  Contributions made by:
- *
- *  Brett Smith
- *  Richard Pernavas
- *  Erwin Bolwidt
+ *  Copyright (C) 2002 Lee David Painter.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public License
@@ -24,60 +18,73 @@
  *  License document supplied with your distribution for more details.
  *
  */
+
 package com.sshtools.j2ssh.transport;
 
 import java.io.IOException;
 
-
 /**
+*
+ *
  * @author $author$
  * @version $Revision$
  */
 public interface TransportProtocol {
 	/**
+	*
+	 *
 	 * @param description
 	 */
 	public void disconnect(String description);
-
+	
 	/**
-	 * @param store
-	 * @throws MessageAlreadyRegisteredException
+	*
 	 *
-	 */
-	public void addMessageStore(SshMessageStore store)
-	    throws MessageAlreadyRegisteredException;
-
-	/**
 	 * @param ms
 	 * @param sender
+	 *
 	 * @throws IOException
 	 */
-	public void sendMessage(SshMessage ms, Object sender)
-	    throws IOException;
-
+	public void sendMessage(SshMessage ms, Object sender) throws IOException;
+	
 	/**
+		*
+	 *
 	 * @param filter
+	 *
 	 * @return
+	 *
 	 * @throws IOException
 	 */
 	public SshMessage readMessage(int[] filter) throws IOException;
-
+	
 	/**
+		*
+	 *
 	 * @return
 	 */
 	public byte[] getSessionIdentifier();
-
+	
 	/**
+		*
+	 *
 	 * @return
 	 */
 	public int getConnectionId();
-
+	
 	public boolean isConnected();
-
+	
+	public SshMessageStore getMessageStore();
 	/**
+		*
+	 *
 	 * @return
 	 */
 	public TransportProtocolState getState();
-
+	
 	public String getUnderlyingProviderDetail();
+	
+	public void addEventHandler(TransportProtocolEventHandler eventHandler);
+	
+	public void addService(Service service);
 }

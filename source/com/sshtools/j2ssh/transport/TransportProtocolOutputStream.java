@@ -26,6 +26,12 @@
  */
 package com.sshtools.j2ssh.transport;
 
+import com.sshtools.j2ssh.configuration.ConfigurationLoader;
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+import com.sshtools.j2ssh.transport.cipher.SshCipher;
+import com.sshtools.j2ssh.transport.compression.SshCompression;
+import com.sshtools.j2ssh.transport.hmac.SshHmac;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -33,15 +39,8 @@ import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.configuration.ConfigurationLoader;
-import com.sshtools.j2ssh.io.ByteArrayWriter;
-import com.sshtools.j2ssh.transport.cipher.SshCipher;
-import com.sshtools.j2ssh.transport.compression.SshCompression;
-import com.sshtools.j2ssh.transport.hmac.SshHmac;
 
-
-class TransportProtocolOutputStream {
-	//implements Runnable {
+public class TransportProtocolOutputStream {
 	private static Log log = LogFactory.getLog(TransportProtocolOutputStream.class);
 	private OutputStream out;
 
@@ -59,22 +58,14 @@ class TransportProtocolOutputStream {
 	 * @param out
 	 * @param transport
 	 * @param algorithms
-	 * @throws TransportProtocolException
 	 */
 	public TransportProtocolOutputStream(/*Socket socket,*/
 	    OutputStream out, TransportProtocolCommon transport,
-	    TransportProtocolAlgorithmSync algorithms)
-	    throws TransportProtocolException {
+	    TransportProtocolAlgorithmSync algorithms) {
 		// try {
-		//this.socket = socket;
-		this.out = out; //socket.getOutputStream();
+		this.out = out;
 		this.transport = transport;
 		this.algorithms = algorithms;
-
-		/* } catch (IOException ioe) {
-		       throw new TransportProtocolException(
-		  "Failed to obtain socket output stream");
-		   }*/
 	}
 
 	/**

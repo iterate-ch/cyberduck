@@ -239,9 +239,9 @@ public abstract class Path {
 	 */
 	public abstract void rename(String newFilename);
 
-	public abstract void changeOwner(String owner, boolean recursive);
+//	public abstract void changeOwner(String owner, boolean recursive);
 	
-	public abstract void changeGroup(String group, boolean recursive);
+//	public abstract void changeGroup(String group, boolean recursive);
 	
 	/**
 	 * @param recursive Include subdirectories and files

@@ -26,10 +26,10 @@
  */
 package com.sshtools.j2ssh.transport;
 
-import java.io.IOException;
-
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
+
+import java.io.IOException;
 
 
 /**

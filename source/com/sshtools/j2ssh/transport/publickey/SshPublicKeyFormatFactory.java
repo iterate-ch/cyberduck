@@ -26,13 +26,12 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
+import com.sshtools.j2ssh.configuration.ConfigurationLoader;
+
 import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.configuration.ConfigurationException;
-import com.sshtools.j2ssh.configuration.ConfigurationLoader;
-import com.sshtools.j2ssh.configuration.SshAPIConfiguration;
 
 
 /**
@@ -50,16 +49,6 @@ public class SshPublicKeyFormatFactory {
 		formats.add(SECSHPublicKeyFormat.class.getName());
 		formats.add(OpenSSHPublicKeyFormat.class.getName());
 		defaultFormat = "SECSH-PublicKey-Base64Encoded";
-
-		try {
-			if(ConfigurationLoader.isConfigurationAvailable(SshAPIConfiguration.class)) {
-				SshAPIConfiguration config = (SshAPIConfiguration)ConfigurationLoader.getConfiguration(SshAPIConfiguration.class);
-				defaultFormat = config.getDefaultPublicKeyFormat();
-				formats.addAll(config.getPublicKeyFormats());
-			}
-		}
-		catch(ConfigurationException ex) {
-		}
 
 		log.debug("Default public key format will be "+defaultFormat);
 

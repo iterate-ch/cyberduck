@@ -26,10 +26,10 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
+import com.sshtools.j2ssh.SshThread;
+
 import java.io.*;
 import java.lang.reflect.Method;
-
-import com.sshtools.j2ssh.SshThread;
 
 
 /*import java.util.logging.FileHandler;

@@ -26,6 +26,13 @@
  */
 package com.sshtools.j2ssh.transport.publickey.dsa;
 
+import com.sshtools.j2ssh.io.ByteArrayReader;
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
+import com.sshtools.j2ssh.transport.publickey.InvalidSshKeySignatureException;
+import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
+import com.sshtools.j2ssh.util.SimpleASNWriter;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -35,12 +42,6 @@ import java.security.spec.DSAPublicKeySpec;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.io.ByteArrayReader;
-import com.sshtools.j2ssh.io.ByteArrayWriter;
-import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
-import com.sshtools.j2ssh.transport.publickey.InvalidSshKeySignatureException;
-import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
-import com.sshtools.j2ssh.util.SimpleASNWriter;
 
 
 /**

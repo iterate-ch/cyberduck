@@ -26,14 +26,14 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+import com.sshtools.j2ssh.util.Base64;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import com.sshtools.j2ssh.io.ByteArrayWriter;
-import com.sshtools.j2ssh.util.Base64;
 
 
 /**

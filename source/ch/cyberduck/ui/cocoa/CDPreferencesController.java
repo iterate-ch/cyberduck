@@ -630,10 +630,10 @@ public class CDPreferencesController extends CDController {
 	private static final String des_cbc = "3des-cbc";
 	private static final String blowfish_cbc = "blowfish-cbc";
 	private static final String twofish256_cbc = "twofish256-cbc";
-	private static final String twofish196_cbc = "twofish196-cbc";
+	private static final String twofish192_cbc = "twofish192-cbc";
 	private static final String twofish128_cbc = "twofish128-cbc";
 	private static final String aes256_cbc = "aes256-cbc";
-	private static final String aes196_cbc = "aes196-cbc";
+	private static final String aes192_cbc = "aes192-cbc";
 	private static final String aes128_cbc = "aes128-cbc";
 	private static final String cast128_cbc = "cast128-cbc";
 
@@ -649,10 +649,10 @@ public class CDPreferencesController extends CDController {
 			des_cbc,
 			blowfish_cbc,
 			twofish256_cbc,
-			twofish196_cbc,
+			twofish192_cbc,
 			twofish128_cbc,
 			aes256_cbc,
-			aes196_cbc,
+			aes192_cbc,
 			aes128_cbc,
 			cast128_cbc
 		}));
@@ -675,10 +675,10 @@ public class CDPreferencesController extends CDController {
 			des_cbc,
 			blowfish_cbc,
 			twofish256_cbc,
-			twofish196_cbc,
+			twofish192_cbc,
 			twofish128_cbc,
 			aes256_cbc,
-			aes196_cbc,
+			aes192_cbc,
 			aes128_cbc,
 			cast128_cbc
 		}));

@@ -26,15 +26,13 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
-import java.io.InputStream;
-import java.net.URL;
+import com.sshtools.j2ssh.configuration.ConfigurationLoader;
+import com.sshtools.j2ssh.openssh.OpenSSHPrivateKeyFormat;
+
 import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.configuration.ConfigurationLoader;
-import com.sshtools.j2ssh.io.IOUtil;
-import com.sshtools.j2ssh.openssh.OpenSSHPrivateKeyFormat;
 
 
 /**
@@ -57,37 +55,6 @@ public class SshPrivateKeyFormatFactory {
 		formats.add(OpenSSHPrivateKeyFormat.class.getName());
 
 		defaultFormat = "SSHTools-PrivateKey-Base64Encoded";
-
-		try {
-			Enumeration enum = ConfigurationLoader.getExtensionClassLoader()
-			    .getResources("j2ssh.privatekey");
-			URL url;
-			Properties properties = new Properties();
-			InputStream in;
-
-			while((enum != null) && enum.hasMoreElements()) {
-				url = (URL)enum.nextElement();
-				in = url.openStream();
-				properties.load(in);
-				IOUtil.closeStream(in);
-
-				int num = 1;
-				String name = "";
-				Class cls;
-
-				while(properties.getProperty("privatekey.name."+
-				    String.valueOf(num)) != null) {
-					name = properties.getProperty("privatekey.name."+
-					    String.valueOf(num));
-					formats.add(properties.getProperty("privatekey.class."+
-					    String.valueOf(num)));
-
-					num++;
-				}
-			}
-		}
-		catch(Throwable t) {
-		}
 
 		SshPrivateKeyFormat f;
 

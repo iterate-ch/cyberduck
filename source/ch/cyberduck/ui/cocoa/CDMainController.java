@@ -470,7 +470,8 @@ public class CDMainController extends NSObject {
 	}
 
 	public void newBrowserMenuClicked(Object sender) {
-		CDMainController.newDocument();
+		CDController c = CDMainController.newDocument();
+		c.cascade();
 	}
 
 	public void showTransferQueueClicked(Object sender) {

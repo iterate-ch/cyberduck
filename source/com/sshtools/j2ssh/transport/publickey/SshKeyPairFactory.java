@@ -26,11 +26,6 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
-import java.io.IOException;
-import java.util.*;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.sshtools.j2ssh.configuration.ConfigurationException;
 import com.sshtools.j2ssh.configuration.ConfigurationLoader;
 import com.sshtools.j2ssh.configuration.ExtensionAlgorithm;
@@ -39,6 +34,12 @@ import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 import com.sshtools.j2ssh.transport.publickey.dsa.SshDssKeyPair;
 import com.sshtools.j2ssh.transport.publickey.rsa.SshRsaKeyPair;
+
+import java.io.IOException;
+import java.util.*;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**

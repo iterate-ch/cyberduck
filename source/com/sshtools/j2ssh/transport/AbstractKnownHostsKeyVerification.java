@@ -26,6 +26,10 @@
  */
 package com.sshtools.j2ssh.transport;
 
+import com.sshtools.j2ssh.transport.publickey.SshKeyPairFactory;
+import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
+import com.sshtools.j2ssh.util.Base64;
+
 import java.io.*;
 import java.security.AccessControlException;
 import java.security.AccessController;
@@ -36,9 +40,6 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.transport.publickey.SshKeyPairFactory;
-import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
-import com.sshtools.j2ssh.util.Base64;
 
 
 /**
@@ -66,14 +67,17 @@ public abstract class AbstractKnownHostsKeyVerification
 	 * known_hosts file.
 	 * </p>
 	 *
-	 * @param knownhosts the path of the known_hosts file
-	 * @throws InvalidHostFileException if the known_hosts file is invalid
 	 * @since 0.2.0
 	 */
 	public AbstractKnownHostsKeyVerification() {
 		super();
 	}
 
+    /**
+     *
+     * @param knownhosts the path of the known_hosts file
+     * @throws InvalidHostFileException if the known_hosts file is invalid
+     */ 
 	public void setKnownHostFile(String knownhosts) throws InvalidHostFileException {
 		InputStream in = null;
 		try {

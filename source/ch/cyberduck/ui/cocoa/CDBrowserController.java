@@ -358,7 +358,6 @@ public class CDBrowserController extends CDController implements Observer {
 		this.bookmarkTable.setDataSource(this.bookmarkModel = CDBookmarkTableDataSource.instance());
 		this.bookmarkTable.setDelegate(this.bookmarkModel);
 		// Configure window
-		this.cascade();
 		this.window().setTitle("Cyberduck "+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		this.window().setInitialFirstResponder(quickConnectPopup);
 		// Drawer states

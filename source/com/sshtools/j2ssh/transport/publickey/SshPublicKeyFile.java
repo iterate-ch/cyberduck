@@ -26,6 +26,8 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
+import com.sshtools.j2ssh.io.ByteArrayReader;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,7 +35,6 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.io.ByteArrayReader;
 
 
 /**

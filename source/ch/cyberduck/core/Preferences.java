@@ -175,8 +175,8 @@ public abstract class Preferences {
 
 		defaults.put("ssh.knownhosts", System.getProperty("user.home")+"/.ssh/known_hosts");
 
-		defaults.put("ssh.CSEncryption", "aes128-cbc"); //client -> server encryption cipher
-		defaults.put("ssh.SCEncryption", "aes128-cbc"); //server -> client encryption cipher
+		defaults.put("ssh.CSEncryption", "blowfish-cbc"); //client -> server encryption cipher
+		defaults.put("ssh.SCEncryption", "blowfish-cbc"); //server -> client encryption cipher
 		defaults.put("ssh.CSAuthentication", "hmac_md5"); //client -> server message authentication
 		defaults.put("ssh.SCAuthentication", "hmac_md5"); //server -> client message authentication
 		defaults.put("ssh.publickey", "ssh-rsa");

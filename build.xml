@@ -186,8 +186,7 @@
 			update="yes"
 			manifest="${build}/MANIFEST.MF">
 			<fileset dir="${build.classes}">
-				<include name="com/sshtools/j2ssh/**/*.class"/>
-				<include name="com/jcraft/jsch/**/*.class"/>
+				<include name="com/sshtools/**/*.class"/>
 			</fileset>
 		</jar>
 		<jar jarfile="${build}/ftp.jar"
