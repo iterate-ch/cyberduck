@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -25,29 +25,24 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Bookmarks;
+import ch.cyberduck.core.BookmarkList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Preferences;
 
 /**
  * @version $Id$
  */
-public class CDBookmarksImpl extends Bookmarks { //implements NSTableView.DataSource {
-    private static Logger log = Logger.getLogger(CDBookmarksImpl.class);
-
-    private static CDBookmarksImpl instance;
+public class CDBookmarkList extends BookmarkList { //implements NSTableView.DataSource {
+    private static Logger log = Logger.getLogger(CDBookmarkList.class);
 
     private static final File BOOKMARKS_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Favorites.plist"));
 
+	public CDBookmarkList() {
+		super();
+	}
+	
     static {
         BOOKMARKS_FILE.getParentFile().mkdir();
-    }
-
-    public static CDBookmarksImpl instance() {
-        if (null == instance) {
-            instance = new CDBookmarksImpl();
-        }
-        return instance;
     }
 
     public void save() {
@@ -78,10 +73,10 @@ public class CDBookmarksImpl extends Bookmarks { //implements NSTableView.DataSo
                 }
 
                 if (collection.writeToURL(f.toURL(), true)) {
-                    log.info("Bookmarks sucessfully saved to :" + f.toString());
+                    log.info("BookmarkList sucessfully saved to :" + f.toString());
                 }
                 else {
-                    log.error("Error saving Bookmarks to :" + f.toString());
+                    log.error("Error saving BookmarkList to :" + f.toString());
                 }
             }
             catch (java.net.MalformedURLException e) {
@@ -100,7 +95,7 @@ public class CDBookmarksImpl extends Bookmarks { //implements NSTableView.DataSo
     public void load(java.io.File f) {
         log.debug("load");
         if (f.exists()) {
-            log.info("Found Bookmarks file: " + f.toString());
+            log.info("Found BookmarkList file: " + f.toString());
             NSData plistData = new NSData(f);
             String[] errorString = new String[]{null};
             Object propertyListFromXMLData =
@@ -112,7 +107,7 @@ public class CDBookmarksImpl extends Bookmarks { //implements NSTableView.DataSo
                 log.error("Problem reading bookmark file: " + errorString[0]);
             }
             else {
-                log.debug("Successfully read Bookmarks: " + propertyListFromXMLData);
+                log.debug("Successfully read BookmarkList: " + propertyListFromXMLData);
             }
             if (propertyListFromXMLData instanceof NSArray) {
                 NSArray entries = (NSArray) propertyListFromXMLData;
@@ -170,11 +165,11 @@ public class CDBookmarksImpl extends Bookmarks { //implements NSTableView.DataSo
                 log.error("Problem writing bookmark file: " + errorString[0]);
             }
             if (collection.writeToURL(file.toURL(), true)) {
-                log.info("Bookmarks sucessfully saved in :" + file.toString());
+                log.info("BookmarkList sucessfully saved in :" + file.toString());
                 NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolutePath());
             }
             else {
-                log.error("Error saving Bookmarks in :" + file.toString());
+                log.error("Error saving BookmarkList in :" + file.toString());
             }
         }
         catch (java.net.MalformedURLException e) {

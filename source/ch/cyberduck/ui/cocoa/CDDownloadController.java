@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -101,7 +101,7 @@ public class CDDownloadController extends NSObject {
                         Path path = PathFactory.createPath(SessionFactory.createSession(host), file);
                         Queue queue = new Queue(Queue.KIND_DOWNLOAD);
                         queue.addRoot(path);
-                        CDQueuesImpl.instance().addItem(queue);
+                        QueueList.instance().addItem(queue);
                         CDQueueController.instance().startItem(queue);
                     }
                     else {

@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa.odb;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -66,14 +66,14 @@ public class Editor extends NSObject {
     private Path file;
 
     public void open(Path f) {
-        this.file = f;
+        this.file = f.copy(f.getSession());
         String parent = NSPathUtilities.temporaryDirectory();
-        String filename = f.getName();
+        String filename = this.file.getName();
         String proposal = filename;
         int no = 0;
         int index = filename.lastIndexOf(".");
         do {
-            f.setLocal(new Local(parent, proposal));
+            this.file.setLocal(new Local(parent, proposal));
             no++;
             if (index != -1) {
                 proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
@@ -82,10 +82,10 @@ public class Editor extends NSObject {
                 proposal = filename + "-" + no;
             }
         }
-        while (f.getLocal().exists());
-        f.download();
-        if (f.status.isComplete()) {
-            this.edit(f.getLocal().getAbsolute());
+        while (this.file.getLocal().exists());
+        this.file.download();
+        if (this.file.status.isComplete()) {
+            this.edit(this.file.getLocal().getAbsolute());
         }
     }
 

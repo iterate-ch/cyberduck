@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Preferences;
 
-public class CDBrowserTable extends NSTableView {
+public class CDBrowserTable extends CDTableView {
     private static Logger log = Logger.getLogger(CDBrowserTable.class);
 
     public CDBrowserTable() {
@@ -36,6 +36,10 @@ public class CDBrowserTable extends NSTableView {
         super(frame);
     }
 
+	protected CDBrowserTable(boolean a, int b) {
+        super(a, b);
+    }
+	
     protected CDBrowserTable(NSCoder decoder, long token) {
         super(decoder, token);
     }
@@ -46,13 +50,13 @@ public class CDBrowserTable extends NSTableView {
 
     public void awakeFromNib() {
         log.debug("awakeFromNib");
-// receive drag events from types
+		// receive drag events from types
         this.registerForDraggedTypes(new NSArray(new Object[]{
             NSPasteboard.FilenamesPboardType,
             "QueuePboardType"}));
-        this.setRowHeight(17f);
 
-// setting appearance attributes
+		// setting appearance attributes
+        this.setRowHeight(17f);
         this.setAutoresizesAllColumnsToFit(true);
         NSSelector setUsesAlternatingRowBackgroundColorsSelector =
                 new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
@@ -153,24 +157,29 @@ public class CDBrowserTable extends NSTableView {
         }
 
         this.sizeToFit();
-// selection properties
+		// selection properties
         this.setAllowsMultipleSelection(true);
         this.setAllowsEmptySelection(true);
         this.setAllowsColumnReordering(true);
     }
-
+	
     public void keyDown(NSEvent event) {
         String chars = event.characters();
         double timestamp = event.timestamp();
-        CDTableDataSource model = ((CDTableDataSource) this.dataSource());
-        for (int i = 0; i < model.numberOfRowsInTableView(this); i++) {
-            String filename = (String) model.tableViewObjectValueForLocation(this, this.tableColumnWithIdentifier("FILENAME"), i);
-            if (filename.toLowerCase().startsWith(chars)) {
-                this.selectRow(i, false);
-                this.scrollRowToVisible(i);
-                return;
-            }
-        }
-        super.keyDown(event);
+		//        CDTableDataSource model = ((CDTableDataSource) this.dataSource());
+		Object ds = this.dataSource();
+		if(ds instanceof CDTableDataSource) {
+			CDTableDataSource model = (CDTableDataSource)ds;
+			for (int i = 0; i < model.numberOfRowsInTableView(this); i++) {
+				String filename = (String) model.tableViewObjectValueForLocation(this, this.tableColumnWithIdentifier("FILENAME"), i);
+				if (filename.toLowerCase().startsWith(chars)) {
+					this.selectRow(i, false);
+					this.scrollRowToVisible(i);
+					return;
+				}
+			}
+		}
+        this.interpretKeyEvents(new NSArray(event));
+//		super.keyDown(event);
     }
 }

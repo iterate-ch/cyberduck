@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
     private NSArray draggedRows; // keep track of which row got dragged
 
     public int numberOfRowsInTableView(NSTableView tableView) {
-        return CDBookmarksImpl.instance().size();
+        return BookmarkList.instance().size();
     }
 
     private static NSImage documentIcon = NSImage.imageNamed("cyberduck-document.icns");
@@ -47,7 +47,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                 return documentIcon;
             }
             if (identifier.equals("BOOKMARK")) {
-                return (Host) CDBookmarksImpl.instance().getItem(row);
+                return (Host) BookmarkList.instance().getItem(row);
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
@@ -65,33 +65,12 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
         if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
             tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
             return NSDraggingInfo.DragOperationCopy;
-            /*
-Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
-log.debug("tableViewValidateDrop:" + o);
-if (o != null) {
-if (o instanceof NSArray) {
-NSArray filesList = (NSArray) o;
-for (int i = 0; i < filesList.count(); i++) {
-String file = (String) filesList.objectAtIndex(i);
-log.debug(file);
-if (file.indexOf(".duck") != -1) {
-                            return NSDraggingInfo.DragOperationCopy;
-//                            return NSDraggingInfo.DragOperationGeneric;
-}
-                        return NSDraggingInfo.DragOperationGeneric;
-//                        return NSDraggingInfo.DragOperationNone;
-}
-}
-}
-return NSDraggingInfo.DragOperationNone;
-             */
         }
         if (draggedRows != null) {
             NSPasteboard bookmarkPboard = NSPasteboard.pasteboardWithName("BookmarkPBoard");
             if (bookmarkPboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")) != null) {
                 tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
                 return NSDraggingInfo.DragOperationMove;
-//                return NSDraggingInfo.DragOperationGeneric;
             }
         }
         return NSDraggingInfo.DragOperationNone;
@@ -116,13 +95,13 @@ return NSDraggingInfo.DragOperationNone;
                     if (o instanceof NSArray) {
                         NSArray filesList = (NSArray) o;
                         Queue q = new Queue(Queue.KIND_UPLOAD);
-                        Host h = CDBookmarksImpl.instance().getItem(row);
+                        Host h = BookmarkList.instance().getItem(row);
                         Session session = SessionFactory.createSession(h);
                         for (int i = 0; i < filesList.count(); i++) {
                             String filename = (String) filesList.objectAtIndex(i);
                             if (filename.indexOf(".duck") != -1) {
-                                CDBookmarksImpl.instance().addItem(CDBookmarksImpl.instance().importBookmark(new java.io.File(filename)), row);
-                                tableView.reloadData();
+                                BookmarkList.instance().addItem(BookmarkList.instance().importBookmark(new java.io.File(filename)), row);
+								tableView.reloadData();
                                 //@todo tableView.selectRow(row, false);
                             }
                             else {
@@ -134,7 +113,7 @@ return NSDraggingInfo.DragOperationNone;
                             }
                         }
                         if (q.numberOfRoots() > 0) {
-                            CDQueuesImpl.instance().addItem(q);
+                            QueueList.instance().addItem(q);
                             CDQueueController.instance().startItem(q);
                         }
                         return true;
@@ -150,19 +129,19 @@ return NSDraggingInfo.DragOperationNone;
                     if (o != null) {
                         if (o instanceof NSArray) {
                             for (int i = 0; i < draggedRows.count(); i++) {
-                                CDBookmarksImpl.instance().removeItem(((Integer) draggedRows.objectAtIndex(i)).intValue());
+                                BookmarkList.instance().removeItem(((Integer) draggedRows.objectAtIndex(i)).intValue());
                                 //							tableView.reloadData();
                             }
                             NSArray elements = (NSArray) o;
                             for (int i = 0; i < elements.count(); i++) {
                                 NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                                if (row != -1 && row < CDBookmarksImpl.instance().size() - 1) {
-                                    CDBookmarksImpl.instance().addItem(new Host(dict), row);
+                                if (row != -1 && row < BookmarkList.instance().size() - 1) {
+                                    BookmarkList.instance().addItem(new Host(dict), row);
                                     tableView.reloadData();
                                     //								tableView.selectRow(row, false);
                                 }
                                 else {
-                                    CDBookmarksImpl.instance().addItem(new Host(dict));
+                                    BookmarkList.instance().addItem(new Host(dict));
                                     tableView.reloadData();
                                     //								tableView.selectRow(tableView.numberOfRows() - 1, false);
                                 }
@@ -206,7 +185,7 @@ return NSDraggingInfo.DragOperationNone;
             NSMutableArray fileTypes = new NSMutableArray();
             NSMutableArray bookmarkDictionaries = new NSMutableArray();
             for (int i = 0; i < rows.count(); i++) {
-                promisedDragBookmarks[i] = (Host) CDBookmarksImpl.instance().getItem(((Integer) rows.objectAtIndex(i)).intValue());
+                promisedDragBookmarks[i] = (Host) BookmarkList.instance().getItem(((Integer) rows.objectAtIndex(i)).intValue());
                 fileTypes.addObject("duck");
                 bookmarkDictionaries.addObject(promisedDragBookmarks[i].getAsDictionary());
             }
@@ -243,7 +222,7 @@ return NSDraggingInfo.DragOperationNone;
             try {
                 promisedDragBookmarksFiles[i] = new java.io.File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"),
                         promisedDragBookmarks[i].getNickname() + ".duck");
-                CDBookmarksImpl.instance().exportBookmark(promisedDragBookmarks[i], promisedDragBookmarksFiles[i]);
+                BookmarkList.instance().exportBookmark(promisedDragBookmarks[i], promisedDragBookmarksFiles[i]);
                 promisedDragNames.addObject(promisedDragBookmarks[i].getNickname());
             }
             catch (java.io.UnsupportedEncodingException e) {

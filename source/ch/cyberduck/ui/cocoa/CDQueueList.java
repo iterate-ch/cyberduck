@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -26,27 +26,18 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Queues;
+import ch.cyberduck.core.QueueList;
 
 /**
  * @version $Id$
  */
-public class CDQueuesImpl extends Queues { //implements NSTableView.DataSource {
-    private static Logger log = Logger.getLogger(CDQueuesImpl.class);
-
-    private static CDQueuesImpl instance;
+public class CDQueueList extends QueueList { //implements NSTableView.DataSource {
+    private static Logger log = Logger.getLogger(CDQueueList.class);
 
     private static final File QUEUE_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Queue.plist"));
 
     static {
         QUEUE_FILE.getParentFile().mkdir();
-    }
-
-    public static CDQueuesImpl instance() {
-        if (null == instance) {
-            instance = new CDQueuesImpl();
-        }
-        return instance;
     }
 
     public void save() {

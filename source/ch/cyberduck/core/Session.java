@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -95,8 +95,33 @@ public abstract class Session extends Observable {
     /**
      * Connect to the remote host and mount the home directory
      */
-    public abstract void mount();
-
+    public synchronized void mount() {
+        this.log("Mounting " + host.getHostname() + "...", Message.PROGRESS);
+        new Thread() {
+            public void run() {
+                try {
+                    Session.this.check();
+                    Path home;
+                    if (host.hasReasonableDefaultPath()) {
+                        if (host.getDefaultPath().charAt(0) != '/') {
+                            home = PathFactory.createPath(Session.this, Session.this.workdir().getAbsolute(), host.getDefaultPath());
+                        }
+                        else {
+                            home = PathFactory.createPath(Session.this, host.getDefaultPath());
+                        }
+                    }
+                    else {
+                        home = Session.this.workdir();
+                    }
+                    home.list(true);
+                }
+                catch (IOException e) {
+                    Session.this.log("IO Error: " + e.getMessage(), Message.ERROR);
+                }
+            }
+        }.start();
+    }
+	
     /**
      * Close the connecion to the remote host.
      * The protocol specific implementation has to  be coded in the subclasses.

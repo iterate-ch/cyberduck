@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -109,8 +109,8 @@ this.defaultHostCombobox.removeAllItems();
 this.defaultHostCombobox.setTarget(this);
 this.defaultHostCombobox.setAction(new NSSelector("defaultHostComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.defaultHostCombobox.addItem(NSBundle.localizedString("Empty Browser", ""));
-        for(int i = 0; i < CDBookmarksImpl.instance().size(); i++) {
-            Host  h = CDBookmarksImpl.instance().getItem(i);
+        for(int i = 0; i < BookmarkList.instance().size(); i++) {
+            Host  h = BookmarkList.instance().getItem(i);
             this.defaultHostCombobox.addItem(h.getNickname());
             this.defaultHosts.put();
         }

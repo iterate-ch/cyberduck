@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -84,6 +84,8 @@ public abstract class Preferences {
         defaults.put("website.update.xml", "http://update.cyberduck.ch/versionlist.xml");
         defaults.put("website.update", "http://cyberduck.ch/");
         defaults.put("website.home", "http://cyberduck.ch/");
+		
+		defaults.put("update.check", "true");
 
         defaults.put("bookmarkDrawer.isOpen", "false");
         defaults.put("logDrawer.isOpen", "false");

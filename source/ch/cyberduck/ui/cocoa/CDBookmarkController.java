@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.BookmarkList;
 import ch.cyberduck.core.Session;
 
 /**
@@ -58,7 +59,7 @@ public class CDBookmarkController extends NSObject {
         OFFSET = -16;
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
-        CDBookmarksImpl.instance().save();
+        BookmarkList.instance().save();
     }
 
     private NSPopUpButton protocolPopup; // IBOutlet

@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -132,7 +132,7 @@ public class CDBrowserController extends NSObject implements Observer {
     public void bookmarkTableRowDoubleClicked(Object sender) {
         log.debug("bookmarkTableRowDoubleClicked");
         if (this.bookmarkTable.selectedRow() != -1) {
-            Host host = (Host) CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow());
+            Host host = (Host) BookmarkList.instance().getItem(bookmarkTable.selectedRow());
             this.window().setTitle(host.getProtocol() + ":" + host.getHostname());
             this.mount(host);
         }
@@ -152,7 +152,7 @@ public class CDBrowserController extends NSObject implements Observer {
     public void quickConnectSelectionChanged(Object sender) {
         log.debug("quickConnectSelectionChanged");
         String input = ((NSControl) sender).stringValue();
-        for (Iterator iter = CDBookmarksImpl.instance().iterator(); iter.hasNext();) {
+        for (Iterator iter = BookmarkList.instance().iterator(); iter.hasNext();) {
             Host h = (Host) iter.next();
             if (h.getHostname().equals(input)) {
                 this.mount(h);
@@ -258,7 +258,7 @@ public class CDBrowserController extends NSObject implements Observer {
     public void editBookmarkButtonClicked(Object sender) {
         this.bookmarkDrawer.open();
         CDBookmarkController controller = new CDBookmarkController(bookmarkTable,
-                CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow()));
+                BookmarkList.instance().getItem(bookmarkTable.selectedRow()));
         controller.window().makeKeyAndOrderFront(null);
     }
 
@@ -286,10 +286,10 @@ public class CDBrowserController extends NSObject implements Observer {
         else {
             item = new Host("", new Login("", null, null));
         }
-        CDBookmarksImpl.instance().addItem(item);
+        BookmarkList.instance().addItem(item);
         this.bookmarkTable.reloadData();
-        this.bookmarkTable.selectRow(CDBookmarksImpl.instance().indexOf(item), false);
-        this.bookmarkTable.scrollRowToVisible(CDBookmarksImpl.instance().indexOf(item));
+        this.bookmarkTable.selectRow(BookmarkList.instance().indexOf(item), false);
+        this.bookmarkTable.scrollRowToVisible(BookmarkList.instance().indexOf(item));
         CDBookmarkController controller = new CDBookmarkController(bookmarkTable, item);
     }
 
@@ -312,7 +312,7 @@ public class CDBrowserController extends NSObject implements Observer {
                 NSBundle.localizedString("Cancel", null),
                 null)) {
             case NSAlertPanel.DefaultReturn:
-                CDBookmarksImpl.instance().removeItem(bookmarkTable.selectedRow());
+                BookmarkList.instance().removeItem(bookmarkTable.selectedRow());
                 this.bookmarkTable.reloadData();
                 break;
             case NSAlertPanel.AlternateReturn:
@@ -452,6 +452,7 @@ public class CDBrowserController extends NSObject implements Observer {
             browserModel.sort(selectedColumn, browserModel.isSortedAscending());
             browserTable.reloadData();
             this.toolbar.validateVisibleItems();
+			this.window.makeFirstResponder(browserTable);
         }
         else if (arg instanceof Message) {
             Message msg = (Message) arg;
@@ -644,7 +645,7 @@ public class CDBrowserController extends NSObject implements Observer {
                         path.setLocal(new Local(filename));
                         Queue queue = new Queue(Queue.KIND_DOWNLOAD);
                         queue.addRoot(path);
-                        CDQueuesImpl.instance().addItem(queue);
+                        QueueList.instance().addItem(queue);
                         CDQueueController.instance().startItem(queue);
                     }
                     break;
@@ -666,7 +667,7 @@ public class CDBrowserController extends NSObject implements Observer {
                     Path path = ((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session);
                     q.addRoot(path);
                 }
-                CDQueuesImpl.instance().addItem(q);
+                QueueList.instance().addItem(q);
                 CDQueueController.instance().startItem(q);
             }
         }
@@ -697,7 +698,7 @@ public class CDBrowserController extends NSObject implements Observer {
                     //                    Queue queue = new Queue(item, Queue.KIND_UPLOAD);
                     q.addRoot(item);
                 }
-                CDQueuesImpl.instance().addItem(q);
+                QueueList.instance().addItem(q);
                 CDQueueController.instance().startItem(q, (Observer) this);
                 break;
             case (NSAlertPanel.AlternateReturn):
@@ -857,7 +858,9 @@ public class CDBrowserController extends NSObject implements Observer {
     }
 
     public boolean validateMenuItem(_NSObsoleteMenuItemProtocol cell) {
-        return this.validateItem(cell.action().name());
+        boolean v = this.validateItem(cell.action().name());
+		log.debug("validateMenuItem:"+cell.action().name()+"->"+v);
+		return v;
     }
 
     private boolean validateItem(String identifier) {
@@ -1193,7 +1196,7 @@ public class CDBrowserController extends NSObject implements Observer {
                             q.addRoot(p);
                         }
                         if (q.numberOfRoots() > 0) {
-                            CDQueuesImpl.instance().addItem(q);
+                            QueueList.instance().addItem(q);
                             CDQueueController.instance().startItem(q, (Observer) CDBrowserController.this);
                         }
                         return true;
@@ -1322,7 +1325,7 @@ public class CDBrowserController extends NSObject implements Observer {
                     }
                 }
                 if (q.numberOfRoots() > 0) {
-                    CDQueuesImpl.instance().addItem(q);
+                    QueueList.instance().addItem(q);
                     CDQueueController.instance().startItem(q);
                 }
                 this.promisedDragPaths = null;

@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -87,6 +87,7 @@ public class Queue extends Observable implements Observer { //Thread {
      * The this has been canceled from processing for any reason
      */
     private boolean running;
+    private boolean canceled;
 
     /*
      * 	current speed (bytes/second)
@@ -191,8 +192,6 @@ public class Queue extends Observable implements Observer { //Thread {
             Message msg = (Message) arg;
             if (msg.getTitle().equals(Message.DATA)) {
                 this.callObservers(arg);
-                //this.currentJob.getLocal().setIcon();
-                //100*this.currentJob.status.getCurrent()/this.currentJob.status.getTotal()
             }
             else if (msg.getTitle().equals(Message.PROGRESS)) {
                 this.status = (String) msg.getContent();
@@ -221,6 +220,7 @@ public class Queue extends Observable implements Observer { //Thread {
 
                 Queue.this.elapsedTimer.start();
                 Queue.this.running = true;
+                Queue.this.canceled = false;
                 Queue.this.callObservers(new Message(Message.QUEUE_START, Queue.this));
 
                 Queue.this.getRoot().getSession().addObserver(Queue.this);
@@ -248,12 +248,12 @@ public class Queue extends Observable implements Observer { //Thread {
                     Queue.this.run((Path) iter.next());
                 }
 
+                Queue.this.getRoot().getSession().close();
+                Queue.this.getRoot().getSession().deleteObserver(Queue.this);
+
                 Queue.this.running = false;
                 Queue.this.elapsedTimer.stop();
                 Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
-
-                Queue.this.getRoot().getSession().close();
-                Queue.this.getRoot().getSession().deleteObserver(Queue.this);
 
                 Queue.this.deleteObserver(observer);
             }
@@ -289,12 +289,12 @@ public class Queue extends Observable implements Observer { //Thread {
      * @pre The thread must be running
      */
     public void cancel() {
-        if (this.isRunning()) {
-            this.running = false;
-            for (Iterator iter = jobs.iterator(); iter.hasNext();) {
-                ((Path) iter.next()).status.setCanceled(true);
-            }
-        }
+		//this.currentJob.status.setCanceled(true);
+		for (Iterator iter = jobs.iterator(); iter.hasNext();) {
+			((Path) iter.next()).status.setCanceled(true);
+		}
+		this.canceled = true;
+		//            this.running = false;
     }
 
     /**
@@ -309,8 +309,9 @@ public class Queue extends Observable implements Observer { //Thread {
      *         either becasuse the transfers have all been completed or
      *         been cancled by the user.
      */
-    public boolean isCanceled() {
-        return !this.isRunning();
+    private boolean isCanceled() {
+		return this.canceled;
+//        return !this.isRunning();
     }
 
     public int numberOfRoots() {

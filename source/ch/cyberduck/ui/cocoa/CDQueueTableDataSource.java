@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -40,17 +40,17 @@ public class CDQueueTableDataSource extends CDTableDataSource {
     private int queuePboardChangeCount = NSPasteboard.pasteboardWithName("QueuePBoard").changeCount();
 
     public int numberOfRowsInTableView(NSTableView tableView) {
-        return CDQueuesImpl.instance().size();
+        return QueueList.instance().size();
     }
 
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
         if (row < numberOfRowsInTableView(tableView)) {
             String identifier = (String) tableColumn.identifier();
             if (identifier.equals("DATA")) {
-                return CDQueuesImpl.instance().getItem(row);
+                return QueueList.instance().getItem(row);
             }
             if (identifier.equals("PROGRESS")) {
-                return CDQueuesImpl.instance().getItem(row);
+                return QueueList.instance().getItem(row);
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
@@ -104,14 +104,10 @@ public class CDQueueTableDataSource extends CDTableDataSource {
                         Queue q = new Queue(Queue.KIND_DOWNLOAD);
                         q.addRoot(p);
                         if (row != -1) {
-                            CDQueuesImpl.instance().addItem(q, row);
-                            tableView.reloadData();
-                            tableView.selectRow(row, false);
+                            QueueList.instance().addItem(q, row);
                         }
                         else {
-                            CDQueuesImpl.instance().addItem(q);
-                            tableView.reloadData();
-                            tableView.selectRow(tableView.numberOfRows() - 1, false);
+                            QueueList.instance().addItem(q);
                         }
                         CDQueueController.instance().startItem(q);
                         return true;
@@ -138,12 +134,12 @@ public class CDQueueTableDataSource extends CDTableDataSource {
                     for (int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                         if (row != -1) {
-                            CDQueuesImpl.instance().addItem(new Queue(dict), row);
+                            QueueList.instance().addItem(new Queue(dict), row);
                             tableView.reloadData();
                             tableView.selectRow(row, false);
                         }
                         else {
-                            CDQueuesImpl.instance().addItem(new Queue(dict));
+                            QueueList.instance().addItem(new Queue(dict));
                             tableView.reloadData();
                             tableView.selectRow(tableView.numberOfRows() - 1, false);
                         }

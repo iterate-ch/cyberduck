@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.BookmarkList;
 import ch.cyberduck.core.Preferences;
 
 public class CDMainController extends NSObject {
@@ -57,7 +58,27 @@ public class CDMainController extends NSObject {
     public void setDonationSheet(NSWindow donationSheet) {
         this.donationSheet = donationSheet;
     }
-
+	
+	private NSButton autoUpdateCheckbox;
+	
+    public void setAutoUpdateCheckbox(NSButton autoUpdateCheckbox) {
+        this.autoUpdateCheckbox = autoUpdateCheckbox;
+        this.autoUpdateCheckbox.setTarget(this);
+        this.autoUpdateCheckbox.setAction(new NSSelector("autoUpdateCheckboxClicked", new Class[]{NSButton.class}));
+        this.autoUpdateCheckbox.setState(Preferences.instance().getProperty("update.check").equals("true") ? NSCell.OnState : NSCell.OffState);
+    }
+	
+    public void autoUpdateCheckboxClicked(NSButton sender) {
+        switch (sender.state()) {
+            case NSCell.OnState:
+                Preferences.instance().setProperty("update.check", true);
+                break;
+            case NSCell.OffState:
+                Preferences.instance().setProperty("update.check", false);
+                break;
+        }
+    }
+	
     public NSWindow updateSheet; // IBOutlet
 
     public void setUpdateSheet(NSWindow updateSheet) {
@@ -88,7 +109,7 @@ public class CDMainController extends NSObject {
         private Map items = new HashMap();
 
         public int numberOfItemsInMenu(NSMenu menu) {
-            return CDBookmarksImpl.instance().size() + 4; //index 0-3 are static menu items
+            return BookmarkList.instance().size() + 4; //index 0-3 are static menu items
         }
 
         /**
@@ -102,7 +123,7 @@ public class CDMainController extends NSObject {
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
 //			log.debug("menuUpdateItemAtIndex"+index);
             if (index > 3) {
-                Host h = CDBookmarksImpl.instance().getItem(index - 4);
+                Host h = BookmarkList.instance().getItem(index - 4);
                 item.setTitle(h.getNickname());
                 item.setTarget(this);
                 item.setAction(new NSSelector("bookmarkMenuClicked", new Class[]{Object.class}));
@@ -300,7 +321,7 @@ public class CDMainController extends NSObject {
         File f = new File(filename);
         if (f.exists()) {
             log.info("Found file: " + f.toString());
-            Host host = CDBookmarksImpl.instance().importBookmark(f);
+            Host host = BookmarkList.instance().importBookmark(f);
             if (host != null) {
                 CDBrowserController controller = new CDBrowserController();
                 controller.window().makeKeyAndOrderFront(null);
@@ -361,6 +382,9 @@ public class CDMainController extends NSObject {
                 this.donationSheet.makeKeyAndOrderFront(null);
             }
         }
+        if (Preferences.instance().getProperty("update.check").equals("true")) {
+			this.updateMenuClicked(null);
+		}
     }
 
     public boolean applicationShouldTerminate(NSApplication app) {

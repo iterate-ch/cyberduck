@@ -1,7 +1,7 @@
 package ch.cyberduck.core.ftp;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -92,38 +92,6 @@ public class FTPSession extends Session {
             this.host.setIdentification(this.FTP.system());
         }
         this.setConnected(true);
-    }
-
-
-    public synchronized void mount() {
-        this.log("Mounting " + host.getHostname() + "...", Message.PROGRESS);
-        new Thread() {
-            public void run() {
-                try {
-//					connect();
-                    check();
-                    Path home;
-                    if (host.hasReasonableDefaultPath()) {
-                        if (host.getDefaultPath().charAt(0) != '/') {
-                            home = PathFactory.createPath(FTPSession.this, ((FTPPath) FTPSession.this.workdir()).getAbsolute(), host.getDefaultPath());
-                        }
-                        else {
-                            home = PathFactory.createPath(FTPSession.this, host.getDefaultPath());
-                        }
-                    }
-                    else {
-                        home = (FTPPath) FTPSession.this.workdir();
-                    }
-                    home.list(true);
-                }
-                catch (FTPException e) {
-                    FTPSession.this.log("FTP Error: " + e.getMessage(), Message.ERROR);
-                }
-                catch (IOException e) {
-                    FTPSession.this.log("IO Error: " + e.getMessage(), Message.ERROR);
-                }
-            }
-        }.start();
     }
 
     private synchronized void login() throws IOException {

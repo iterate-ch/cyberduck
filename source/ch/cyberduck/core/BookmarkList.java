@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -27,20 +27,28 @@ import org.apache.log4j.Logger;
 
 /**
  * Keeps track of user bookmarks
- * The hosts are stored in a hashmap where host.getURL() is the key
  *
  * @version $Id$
  * @see ch.cyberduck.core.Host
  */
-public abstract class Bookmarks {
-    private static Logger log = Logger.getLogger(Bookmarks.class);
+public abstract class BookmarkList {
+    private static Logger log = Logger.getLogger(BookmarkList.class);
+
+	private static BookmarkList instance;
 
     protected List data = new ArrayList();
 
-    public Bookmarks() {
+    public BookmarkList() {
         this.load();
     }
 
+	public static BookmarkList instance() {
+        if (null == instance) {
+            instance = new ch.cyberduck.ui.cocoa.CDBookmarkList();
+        }
+        return instance;
+    }
+	
     public abstract void save();
 
     public abstract void load();
@@ -55,28 +63,31 @@ public abstract class Bookmarks {
 
     public void addItem(Host item) {
         this.data.add(item);
-        this.save();
+		//this.save();
     }
 
     public void addItem(Host item, int row) {
         this.data.add(row, item);
-        this.save();
+        //this.save();
     }
 
     public void removeItem(int index) {
         this.data.remove(index);
-        this.save();
+        //this.save();
     }
 
     public void removeItem(Host item) {
         this.removeItem(this.data.lastIndexOf(item));
     }
 
-    public Host getItem(int index) {
+    public Host getItem(int row) {
 //		log.debug("getItem:"+index);
-        Host result = (Host) this.data.get(index);
+		Host result = null;
+        if (row < this.size()) {
+			result = (Host) this.data.get(row);
+		}
         if (null == result) {
-            throw new IllegalArgumentException("No host with index " + index + " in Bookmarks.");
+            throw new IllegalArgumentException("No host with index " + row + " in BookmarkList.");
         }
         return result;
     }

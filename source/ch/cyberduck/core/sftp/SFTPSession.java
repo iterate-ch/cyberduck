@@ -1,7 +1,7 @@
 package ch.cyberduck.core.sftp;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -122,37 +122,6 @@ public class SFTPSession extends Session {
         this.SFTP = SSH.openSftpChannel();
         this.log("SFTP subsystem ready", Message.PROGRESS);
         this.setConnected(true);
-    }
-
-    public synchronized void mount() {
-        this.log("Mounting " + host.getHostname() + "...", Message.PROGRESS);
-        new Thread() {
-            public void run() {
-                try {
-                    //					connect();
-                    check();
-                    Path home;
-                    if (host.hasReasonableDefaultPath()) {
-                        if (host.getDefaultPath().charAt(0) != '/') {
-                            home = PathFactory.createPath(SFTPSession.this, ((SFTPPath) SFTPSession.this.workdir()).getAbsolute(), host.getDefaultPath());
-                        }
-                        else {
-                            home = PathFactory.createPath(SFTPSession.this, host.getDefaultPath());
-                        }
-                    }
-                    else {
-                        home = (SFTPPath) SFTPSession.this.workdir();
-                    }
-                    home.list(true);
-                }
-                catch (SshException e) {
-                    SFTPSession.this.log("SSH Error: " + e.getMessage(), Message.ERROR);
-                }
-                catch (IOException e) {
-                    SFTPSession.this.log("IO Error: " + e.getMessage(), Message.ERROR);
-                }
-            }
-        }.start();
     }
 
     private synchronized void login() throws IOException {

@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -26,10 +26,11 @@ import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
 
+import ch.cyberduck.core.BookmarkList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Preferences;
 
-public class CDBookmarkTable extends NSTableView {
+public class CDBookmarkTable extends CDTableView {
     private static Logger log = Logger.getLogger(CDBookmarkTable.class);
 
     public CDBookmarkTable() {
@@ -40,6 +41,10 @@ public class CDBookmarkTable extends NSTableView {
         super(frame);
     }
 
+	protected CDBookmarkTable(boolean a, int b) {
+        super(a, b);
+    }
+	
     protected CDBookmarkTable(NSCoder decoder, long token) {
         super(decoder, token);
     }
@@ -47,6 +52,11 @@ public class CDBookmarkTable extends NSTableView {
     protected void encodeWithCoder(NSCoder encoder) {
         super.encodeWithCoder(encoder);
     }
+	
+	public void reloadData() {
+		super.reloadData();
+		BookmarkList.instance().save();
+	}
 
     public void awakeFromNib() {
         log.debug("awakeFromNib");
@@ -111,6 +121,7 @@ public class CDBookmarkTable extends NSTableView {
                 return;
             }
         }
-        super.keyDown(event);
+        this.interpretKeyEvents(new NSArray(event));
+//		super.keyDown(event);
     }
 }

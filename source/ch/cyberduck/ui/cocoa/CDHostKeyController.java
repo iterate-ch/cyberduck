@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,6 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
     public CDHostKeyController(NSWindow parentWindow) throws InvalidHostFileException {
         super(Preferences.instance().getProperty("ssh.knownhosts"));
         this.parentWindow = parentWindow;
-        this.parentWindow.setDelegate(this);
         instances.addObject(this);
     }
 

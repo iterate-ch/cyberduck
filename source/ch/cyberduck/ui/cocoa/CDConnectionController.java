@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -83,7 +83,7 @@ this.selectionChanged(CDHistoryImpl.instance().getItem(historyPopup.indexOfSelec
     public void setBookmarksPopup(NSPopUpButton bookmarksPopup) {
         this.bookmarksPopup = bookmarksPopup;
         this.bookmarksPopup.setImage(NSImage.imageNamed("bookmarks.tiff"));
-        Iterator i = CDBookmarksImpl.instance().iterator();
+        Iterator i = BookmarkList.instance().iterator();
         while (i.hasNext()) {
             bookmarksPopup.addItem(i.next().toString());
         }
@@ -93,7 +93,7 @@ this.selectionChanged(CDHistoryImpl.instance().getItem(historyPopup.indexOfSelec
 
     public void bookmarksSelectionChanged(Object sender) {
         log.debug("bookmarksSelectionChanged");
-        this.selectionChanged(CDBookmarksImpl.instance().getItem(bookmarksPopup.indexOfSelectedItem()));
+        this.selectionChanged(BookmarkList.instance().getItem(bookmarksPopup.indexOfSelectedItem()));
     }
 
     private Rendezvous rendezvous;

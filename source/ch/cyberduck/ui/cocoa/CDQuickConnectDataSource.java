@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSComboBox;
 
+import ch.cyberduck.core.BookmarkList;
+
 /**
  * @version $Id$
  */
@@ -31,13 +33,13 @@ public class CDQuickConnectDataSource { //implements NSComboBox.DataSource, NSTa
 
     public int numberOfItemsInComboBox(NSComboBox combo) {
 //        return CDHistoryImpl.instance().size();
-        return CDBookmarksImpl.instance().size();
+        return BookmarkList.instance().size();
     }
 
     public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
 //        Host h = (Host) CDHistoryImpl.instance().values().toArray()[row];
 //        return h.getHostname();
-        return CDBookmarksImpl.instance().getItem(row).getHostname();
+        return BookmarkList.instance().getItem(row).getHostname();
     }
 
     // ----------------------------------------------------------
@@ -47,7 +49,7 @@ public class CDQuickConnectDataSource { //implements NSComboBox.DataSource, NSTa
     /*
 public int numberOfRowsInTableView(NSTableView tableView) {
 //        return CDHistoryImpl.instance().values().size();
-        return CDBookmarksImpl.instance().size();
+        return BookmarkList.instance().size();
 }
 
 //getValue()
@@ -55,7 +57,7 @@ public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColu
 if (row < this.numberOfRowsInTableView(tableView)) {
 String identifier = (String) tableColumn.identifier();
 if (identifier.equals("URL")) {
-Host h = (Host) CDBookmarksImpl.instance().getItem(row);
+Host h = (Host) BookmarkList.instance().getItem(row);
 //                Host h = (Host) CDHistoryImpl.instance().getItem(row);
 return h.getHostname();
 }
