@@ -72,9 +72,10 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
             NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Certificate", ""), //title
                     NSBundle.localizedString("There is a problem with the client certificate. Reason:", "") + e.getMessage()
                     + "\n" + cert,
-                    NSBundle.localizedString("Disconnect", ""), // defaultbutton
                     NSBundle.localizedString("Continue", ""), //alternate button
-                    NSBundle.localizedString("Always", "")); // other button
+                    NSBundle.localizedString("Disconnect", ""), // defaultbutton
+                    null);
+                    //NSBundle.localizedString("Always", "")); // other button
             this.windowController.beginSheet(sheet,
                     this, //delegate
                     new NSSelector
@@ -94,10 +95,10 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
     public void clientCertificateAlertSheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
         if (returncode == NSAlertPanel.DefaultReturn) {
-            this.allowClientCertificate = false;
+            this.allowClientCertificate = true;
         }
         if (returncode == NSAlertPanel.AlternateReturn) {
-            this.allowClientCertificate = true;
+            this.allowClientCertificate = false;
         }
         if (returncode == NSAlertPanel.OtherReturn) {
             this.allowClientCertificate = true;
@@ -127,9 +128,10 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
             NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Certificate", ""), //title
                     NSBundle.localizedString("There is a problem with the client certificate. Reason:", "") + e.getMessage()
                     + "\n" + cert,
-                    NSBundle.localizedString("Disconnect", ""), // defaultbutton
                     NSBundle.localizedString("Continue", ""), //alternate button
-                    NSBundle.localizedString("Always", "")); // other button
+                    NSBundle.localizedString("Disconnect", ""), // defaultbutton
+                    null);
+                    //NSBundle.localizedString("Always", "")); // other button
             this.windowController.beginSheet(sheet,
                     this, //delegate
                     new NSSelector
@@ -149,10 +151,10 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
     public void serverCertificateAlertSheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
         if (returncode == NSAlertPanel.DefaultReturn) {
-            this.allowServerCertificate = false;
+            this.allowServerCertificate = true;
         }
         if (returncode == NSAlertPanel.AlternateReturn) {
-            this.allowServerCertificate = true;
+            this.allowServerCertificate = false;
         }
         if (returncode == NSAlertPanel.OtherReturn) {
             this.allowServerCertificate = true;

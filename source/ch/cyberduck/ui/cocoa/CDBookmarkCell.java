@@ -28,6 +28,7 @@ import ch.cyberduck.core.Host;
  * @version $Id$
  */
 public class CDBookmarkCell extends CDTableCell {
+    
 	private Host bookmark;
 
 	public CDBookmarkCell() {

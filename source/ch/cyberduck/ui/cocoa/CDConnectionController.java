@@ -38,10 +38,6 @@ import ch.cyberduck.core.Collection;
 public class CDConnectionController extends CDController {
 	private static Logger log = Logger.getLogger(CDConnectionController.class);
 
-	private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer Protocol)", "");
-	private static final String FTP_SSL_STRING = NSBundle.localizedString("FTP-SSL (FTP over TLS/SSL)", "");
-	private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
-
 	// ----------------------------------------------------------
 	// Outlets
 	// ----------------------------------------------------------
@@ -151,28 +147,29 @@ public class CDConnectionController extends CDController {
 		this.protocolPopup = protocolPopup;
 		this.protocolPopup.setEnabled(true);
 		this.protocolPopup.removeAllItems();
-		this.protocolPopup.addItemsWithTitles(new NSArray(new String[] {FTP_STRING, FTP_SSL_STRING, SFTP_STRING}));
-		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalent("f");
-		this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-		this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalent("s");
+		this.protocolPopup.addItemsWithTitles(new NSArray(new String[] {Session.FTP_STRING, Session.FTP_SSL_STRING, Session.SFTP_STRING}));
+		this.protocolPopup.itemWithTitle(Session.FTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+		this.protocolPopup.itemWithTitle(Session.FTP_STRING).setKeyEquivalent("f");
+		this.protocolPopup.itemWithTitle(Session.SFTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+		this.protocolPopup.itemWithTitle(Session.SFTP_STRING).setKeyEquivalent("s");
 		this.protocolPopup.setTarget(this);
 		this.protocolPopup.setAction(new NSSelector("protocolSelectionDidChange", new Class[]{Object.class}));
 	}
 
 	public void protocolSelectionDidChange(Object sender) {
 		log.debug("protocolSelectionDidChange:"+sender);
-		if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
-			this.portField.setIntValue(Session.SSH_PORT);
-		}
-		if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
+		if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
 			this.portField.setIntValue(Session.FTP_PORT);
 		}
-		if(protocolPopup.selectedItem().title().equals(FTP_SSL_STRING)) {
+		if(protocolPopup.selectedItem().title().equals(Session.FTP_SSL_STRING)) {
 			this.portField.setIntValue(Session.FTP_PORT);
 		}
-		this.connectmodePopup.setEnabled(protocolPopup.selectedItem().title().equals(FTP_STRING) || protocolPopup.selectedItem().title().equals(FTP_SSL_STRING));
-		this.pkCheckbox.setEnabled(protocolPopup.selectedItem().title().equals(SFTP_STRING));
+        if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
+            this.portField.setIntValue(Session.SSH_PORT);
+        }
+		this.connectmodePopup.setEnabled(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)
+                || protocolPopup.selectedItem().title().equals(Session.FTP_SSL_STRING));
+		this.pkCheckbox.setEnabled(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING));
 		this.updateURLLabel(sender);
 	}
 
@@ -208,11 +205,11 @@ public class CDConnectionController extends CDController {
 			Host h = Host.parse(hostPopup.stringValue());
 			this.hostPopup.setStringValue(h.getHostname());
 			if(h.getProtocol().equals(Session.FTP))
-				this.protocolPopup.selectItemWithTitle(FTP_STRING);
+				this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
 			if(h.getProtocol().equals(Session.FTP_SSL))
-				this.protocolPopup.selectItemWithTitle(FTP_SSL_STRING);
+				this.protocolPopup.selectItemWithTitle(Session.FTP_SSL_STRING);
 			if(h.getProtocol().equals(Session.SFTP))
-				this.protocolPopup.selectItemWithTitle(SFTP_STRING);
+				this.protocolPopup.selectItemWithTitle(Session.SFTP_STRING);
 			this.portField.setStringValue(String.valueOf(h.getPort()));
 			this.usernameField.setStringValue(h.getCredentials().getUsername());
 			this.pathField.setStringValue(h.getDefaultPath());
@@ -438,14 +435,14 @@ public class CDConnectionController extends CDController {
 														 usernameField);
 		
 		this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
-		this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
-		if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
+		this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP) ? Session.FTP_STRING : Session.SFTP_STRING);
+		if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
 			this.portField.setIntValue(Session.SSH_PORT);
 		}
-		if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
+		if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
 			this.portField.setIntValue(Session.FTP_PORT);
 		}
-        if(protocolPopup.selectedItem().title().equals(FTP_SSL_STRING)) {
+        if(protocolPopup.selectedItem().title().equals(Session.FTP_SSL_STRING)) {
             this.portField.setIntValue(Session.FTP_PORT);
         }
 		this.connectmodePopup.setEnabled(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP));
@@ -460,13 +457,13 @@ public class CDConnectionController extends CDController {
 		if(hostPopup.stringValue() != null && !hostPopup.stringValue().equals("") &&
 		    usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
 			String protocol = null;
-			if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
+			if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
 				protocol = Session.SFTP;
 			}
-			else if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
+			else if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
 				protocol = Session.FTP;
 			}
-            else if(protocolPopup.selectedItem().title().equals(FTP_SSL_STRING)) {
+            else if(protocolPopup.selectedItem().title().equals(Session.FTP_SSL_STRING)) {
                 protocol = Session.FTP_SSL;
             }
 			else {
@@ -493,18 +490,20 @@ public class CDConnectionController extends CDController {
 	}
 
 	private void bookmarkSelectionDidChange(Host selectedItem) {
-		this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
-		this.hostPopup.setStringValue(selectedItem.getHostname());
-		this.pathField.setStringValue(selectedItem.getDefaultPath());
-		if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
-			this.portField.setIntValue(Session.SSH_PORT);
-		}
-		if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
-			this.portField.setIntValue(Session.FTP_PORT);
-		}
-        if(protocolPopup.selectedItem().title().equals(FTP_SSL_STRING)) {
+        if(selectedItem.getProtocol().equals(Session.FTP)) {
+            this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
             this.portField.setIntValue(Session.FTP_PORT);
         }
+        if(selectedItem.getProtocol().equals(Session.FTP_SSL)) {
+            this.protocolPopup.selectItemWithTitle(Session.FTP_SSL_STRING);
+            this.portField.setIntValue(Session.FTP_PORT);
+        }
+        if(selectedItem.getProtocol().equals(Session.SFTP)) {
+            this.protocolPopup.selectItemWithTitle(Session.SFTP_STRING);
+            this.portField.setIntValue(Session.SSH_PORT);
+        }
+		this.hostPopup.setStringValue(selectedItem.getHostname());
+		this.pathField.setStringValue(selectedItem.getDefaultPath());
 		this.usernameField.setStringValue(selectedItem.getCredentials().getUsername());
 		this.connectmodePopup.setEnabled(selectedItem.getProtocol().equals(Session.FTP));
 		this.pkCheckbox.setEnabled(selectedItem.getProtocol().equals(Session.SFTP));
@@ -521,13 +520,13 @@ public class CDConnectionController extends CDController {
 
 	private void updateURLLabel(Object sender) {
 		String protocol = null;
-		if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
+		if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
 			protocol = Session.SFTP+"://";
 		}
-		if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
+		if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
 			protocol = Session.FTP+"://";
 		}
-		if(protocolPopup.selectedItem().title().equals(FTP_SSL_STRING)) {
+		if(protocolPopup.selectedItem().title().equals(Session.FTP_SSL_STRING)) {
 			protocol = Session.FTP_SSL+"://";
 		}
 		urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostPopup.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
@@ -540,7 +539,7 @@ public class CDConnectionController extends CDController {
 		switch(sender.tag()) {
 			case (NSAlertPanel.DefaultReturn):
 				Host host = null;
-				if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
+				if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
 					// SFTP has been selected as the protocol to connect with
 					host = new Host(Session.SFTP,
 									hostPopup.stringValue(),
@@ -551,7 +550,7 @@ public class CDConnectionController extends CDController {
 						host.getCredentials().setPrivateKeyFile(pkLabel.stringValue());
 					}
 				}
-				else if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
+				else if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
 					// FTP has been selected as the protocol to connect with
 					host = new Host(Session.FTP,
 									hostPopup.stringValue(),
@@ -565,7 +564,7 @@ public class CDConnectionController extends CDController {
 						host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
 					}
 				}
-				else if(protocolPopup.selectedItem().title().equals(FTP_SSL_STRING)) {
+				else if(protocolPopup.selectedItem().title().equals(Session.FTP_SSL_STRING)) {
 					// FTP has been selected as the protocol to connect with
 					host = new Host(Session.FTP_SSL,
 									hostPopup.stringValue(),

@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSFileWrapper;
 
 import java.io.File;
 import java.util.Calendar;
@@ -51,17 +52,17 @@ public class Local extends File {
 	
 	public Local(File parent, String name) {
 		super(NSPathUtilities.stringByExpandingTildeInPath(parent.getAbsolutePath()), name);
-//		this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
+        //this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
 
 	public Local(String parent, String name) {
 		super(NSPathUtilities.stringByExpandingTildeInPath(parent), name);
-//		this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
+        //this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
 
 	public Local(String path) {
 		super(NSPathUtilities.stringByExpandingTildeInPath(path));
-//		this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
+        //this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
 
 	public String getAbsolute() {

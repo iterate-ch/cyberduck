@@ -779,11 +779,11 @@ public class CDBrowserController extends CDController implements Observer {
         this.browserOutlineView.setTarget(this);
         this.browserOutlineView.setDoubleAction(new NSSelector("browserRowDoubleClicked", new Class[]{Object.class}));
         // receive drag events from types
-        this.browserOutlineView.registerForDraggedTypes(new NSArray(new Object[]{
-            "QueuePboardType",
-            NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
-            NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as QueuePboardType
-        ));
+//        this.browserOutlineView.registerForDraggedTypes(new NSArray(new Object[]{
+//            "QueuePboardType",
+//            NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
+//            NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as QueuePboardType
+//        ));
 
         // setting appearance attributes
         this.browserOutlineView.setRowHeight(17f);
