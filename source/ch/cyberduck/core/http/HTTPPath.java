@@ -107,12 +107,9 @@ public class HTTPPath extends Path {
 	session.log("Invalid Operation", Message.ERROR);
     }
 
-    public void fillQueue(Queue queue, Session session, int kind) {
-//	    Queue queue = new Queue(this, kind);
-//	List queue = new ArrayList();
+    public void fillQueue(List queue, Session session, int kind) {
 	try {
 	    this.session = (HTTPSession)session;
-//	    this.session = (HTTPSession)this.getSession().copy();
 	    this.session.check();
 	    switch(kind) {
 		case Queue.KIND_DOWNLOAD:
@@ -127,7 +124,7 @@ public class HTTPPath extends Path {
 	}
     }
 
-    private void fillDownloadQueue(Queue queue) {
+    private void fillDownloadQueue(List queue) {
 	queue.add(this);
     }
 

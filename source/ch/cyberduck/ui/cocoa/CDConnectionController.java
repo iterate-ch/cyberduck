@@ -79,13 +79,17 @@ public class CDConnectionController {
 	    if(o instanceof Rendezvous) {
 		if(arg instanceof Message) {
 		    Message msg = (Message)arg;
-		    Map s = ((Rendezvous)o).getServices();
-		    Iterator i = s.values().iterator();
-		    //this.clear(rendezvousPopup);
-		    while(i.hasNext())
-			rendezvousPopup.addItem(((Host)i.next()).getURL());
+		    rendezvousPopup.addItem(((Host)msg.getContent()).getURL());
+//		    Map s = ((Rendezvous)o).getServices();
+//		    Iterator i = s.values().iterator();
+//		    while(i.hasNext())
+//			rendezvousPopup.addItem(((Host)i.next()).getURL());
 		}
+		else
+		    log.error("Unknown argument of type'"+arg.getClass()+"'");
 	    }
+	    else
+		log.error("Unknown argument of type'"+arg.getClass()+"'");
 	}
     }
 

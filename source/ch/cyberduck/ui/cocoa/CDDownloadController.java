@@ -102,7 +102,7 @@ public class CDDownloadController {
 		    }
 //		    controller.setPath(path);
 		    CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
-		    controller.transfer(path.status.isResume());
+		    controller.transfer();
 		}
 		catch(MalformedURLException e) {
 		    NSAlertPanel.beginCriticalAlertSheet(

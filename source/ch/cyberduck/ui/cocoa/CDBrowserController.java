@@ -43,8 +43,6 @@ public class CDBrowserController implements Observer {
 	this.mainWindow = mainWindow;
     }
 
-//    private CDBrowserTableDataSource browserModel;
-//    private CDBrowserTableDelegate browserDelegate;
     private NSTableView browserTable; // IBOutlet
     public void setBrowserTable(NSTableView browserTable) {
 	this.browserTable = browserTable;
@@ -140,6 +138,7 @@ public class CDBrowserController implements Observer {
     private NSTextField statusLabel; // IBOutlet
     public void setStatusLabel(NSTextField statusLabel) {
 	this.statusLabel = statusLabel;
+	statusLabel.setAttributedStringValue(new NSAttributedString((NSBundle.localizedString("Idle"))));
     }
 
     /**
@@ -148,7 +147,6 @@ public class CDBrowserController implements Observer {
      */
     private static NSMutableArray allDocuments = new NSMutableArray();
     
-//    private CDConnectionSheet connectionSheet;
     private CDPathController pathController;
 //    private CDFavoritesController favoritesController;
     
@@ -176,6 +174,7 @@ public class CDBrowserController implements Observer {
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
 	NSPoint origin = this.window().frame().origin();
+	this.window().setTitle("Cyberduck "+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 	this.window().setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 	pathController = new CDPathController(pathPopup);
 //	favoritesController = new CDFavoritesController(favoritesTable);
@@ -298,11 +297,11 @@ public class CDBrowserController implements Observer {
 		}
 		else if(msg.getTitle().equals(Message.STOP)) {
 		    progressIndicator.stopAnimation(this);
-		    statusLabel.setAttributedStringValue(new NSAttributedString(("Idle")));
+		    statusLabel.setAttributedStringValue(new NSAttributedString((NSBundle.localizedString("Idle"))));
 		    //@todo enable toolbar
 		}
 	    }
-	    if(arg instanceof Path) {
+	    else if(arg instanceof Path) {
 		java.util.List cache = ((Path)arg).cache();
 		java.util.Iterator i = cache.iterator();
 //		log.debug("List size:"+cache.size());
@@ -312,8 +311,12 @@ public class CDBrowserController implements Observer {
 		    browserModel.addEntry((Path)i.next());
 		}
 		browserTable.reloadData();
-	    }	    
+	    }
+	    else
+		log.error("Unknown argument of type'"+arg.getClass()+"'");
 	}
+	else
+	    log.error("Unknown argument of type'"+arg.getClass()+"'");
     }
     
 
@@ -332,15 +335,6 @@ public class CDBrowserController implements Observer {
 	}
     }
 
-
-//    public void keyDown(NSEvent e) {
-//	log.debug(e.toString());
-//    }
-//
-//    public void keyUp(NSEvent e) {
-//	log.debug(e.toString());
-//    }
-    
     // ----------------------------------------------------------
     // Selector methods for the toolbar items
     // ----------------------------------------------------------
@@ -454,16 +448,15 @@ public class CDBrowserController implements Observer {
     public void downloadButtonClicked(Object sender) {
 	log.debug("downloadButtonClicked");
 	NSEnumerator enum = browserTable.selectedRowEnumerator();
-	Path path = null;
 	CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
+	List items = new ArrayList();
 	while(enum.hasMoreElements()) {
-	    int selected = ((Integer)enum.nextElement()).intValue();
-	    path = (Path)browserModel.getEntry(selected);
-	    CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
-	    controller.transfer(path.status.isResume());
+	    items.add(browserModel.getEntry(((Integer)enum.nextElement()).intValue()));
 	}
+	CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
+	controller.transfer();
     }
-
+    
     public void uploadButtonClicked(Object sender) {
 	log.debug("uploadButtonClicked");
 	NSOpenPanel panel = new NSOpenPanel();
@@ -477,24 +470,18 @@ public class CDBrowserController implements Observer {
 	sheet.orderOut(null);
 	switch(returnCode) {
 	    case(NSPanel.OKButton): {
+		Path parent = (Path)pathController.getItem(0);
+		// selected files on the local filesystem
 		NSArray selected = sheet.filenames();
-		String filename;
 		java.util.Enumeration enumerator = selected.objectEnumerator();
+		List items = new ArrayList();
 		while (enumerator.hasMoreElements()) {
-		    filename = (String)enumerator.nextElement();
-		    log.debug(filename+" selected to upload");
-		    Session session = host.getSession().copy();
-		    Path path = null;
-		    Path parent = (Path)pathController.getItem(0);
-		    if(session instanceof ch.cyberduck.core.ftp.FTPSession) {
-			path = new FTPPath((FTPSession)session, parent.getAbsolute(), new java.io.File(filename));
-		    }
-		    else if(session instanceof ch.cyberduck.core.sftp.SFTPSession) {
-			path = new SFTPPath((SFTPSession)session, parent.getAbsolute(), new java.io.File(filename));
-		    }
-		    CDTransferController controller = new CDTransferController(path, Queue.KIND_UPLOAD);
-		    controller.transfer(path.status.isResume());
+		    Path item = parent.copy();
+		    item.setPath(parent.getAbsolute(), new java.io.File((String)enumerator.nextElement()));
+		    items.add(item);
 		}
+		CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_UPLOAD);
+		controller.transfer();
 		break;
 	    }
 	    case(NSPanel.CancelButton): {

@@ -28,9 +28,8 @@ import java.util.Hashtable;
  * Singleton class.
  * @version $Id$
  */
-public abstract class Preferences {//extends Properties {
+public abstract class Preferences {
     private static Logger log = Logger.getLogger(Preferences.class);
-//    private static java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
     
     private static Preferences current = null;
     private Hashtable defaults;
@@ -47,6 +46,9 @@ public abstract class Preferences {//extends Properties {
 //		current = new ch.cyberduck.ui.swing.PreferencesImpl();
 	    current.setDefaults();
             current.load();
+//	System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", Preferences.instance().getProperty("http.wire.logging"));
+//	System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", Preferences.instance().getProperty("http.logging"));
+//	System.setProperty("rendezvous.debug", Preferences.instance().getProperty("rendezvous.logging"));
 	}
         return current;
     }
@@ -82,6 +84,9 @@ public abstract class Preferences {//extends Properties {
 	defaults.put("logging", "WARN");
 //	defaults.put("logging", "ERROR");
 //	defaults.put("logging", "FATAL");
+	defaults.put("http.logging", "WARN");
+	defaults.put("http.wire.logging", "WARN");
+	defaults.put("rendezvous.logging", "0");
 
 	defaults.put("version", "2.1");
         defaults.put("uses", "0");

@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDLoginController extends LoginController {
+public class CDLoginController implements LoginController {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
     // ----------------------------------------------------------

@@ -33,8 +33,6 @@ public class CDMainController {
 	org.apache.log4j.BasicConfigurator.configure();
 	Logger log = Logger.getRootLogger();
 	log.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
-//	System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "info");
-//	System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
 //	log.setLevel(Level.OFF);
 //	log.setLevel(Level.DEBUG);
 //	log.setLevel(Level.INFO);
@@ -69,9 +67,9 @@ public class CDMainController {
 	    NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.update.xml")));
 	    if(null == data) {
 		NSAlertPanel.runCriticalAlert(
-				     "Error", //title
-				     "There was a problem checking for an update. Please try again later.",
-				     "OK",// defaultbutton
+				     NSBundle.localizedString("Error"), //title
+				     NSBundle.localizedString("There was a problem checking for an update. Please try again later."),
+				     NSBundle.localizedString("OK"),// defaultbutton
 				     null,//alternative button
 				     null//other button
 				     );
@@ -80,7 +78,7 @@ public class CDMainController {
 	    log.debug(data.length() +" bytes.");
 	    NSDictionary entries = (NSDictionary)NSPropertyListSerialization.propertyListFromXMLData(data);
 	    if(null == entries)
-		log.error("Version info could not be retrieved.");
+		log.error(NSBundle.localizedString("Version info could not be retrieved."));
 	    else
 		log.info(entries.toString());
 
@@ -90,8 +88,8 @@ public class CDMainController {
 
 	    if(currentVersionNumber.equals(latestVersionNumber)) {
 		NSAlertPanel.runInformationalAlert(
-				     "No update", //title
-				     "No newer version available. Cyberduck "+currentVersionNumber+" is up to date.",
+				     NSBundle.localizedString("No update"), //title
+				     NSBundle.localizedString("No newer version available.")+" Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is up to date."),
 				     "OK",// defaultbutton
 				     null,//alternative button
 				     null//other button
@@ -99,10 +97,10 @@ public class CDMainController {
 	    }
 	    else {
 		int selection = NSAlertPanel.runInformationalAlert(
-						     "New version", //title
-						     "Cyberduck "+currentVersionNumber+" is out of date. The current version is "+latestVersionNumber,
-						     "Download",// defaultbutton
-						     "Later",//alternative button
+						     NSBundle.localizedString("New version"), //title
+						     "Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is out of date. The current version is")+" "+latestVersionNumber,
+						     NSBundle.localizedString("Download"),// defaultbutton
+						     NSBundle.localizedString("Later"),//alternative button
 						     null//other button
 						     );
 		if(NSAlertPanel.DefaultReturn == selection) {
@@ -135,8 +133,7 @@ public class CDMainController {
 
     public void feedbackMenuClicked(Object sender) {
 	try {
-	    NSBundle bundle = NSBundle.bundleForClass(this.getClass());
-	    String currentVersionNumber = (String)bundle.objectForInfoDictionaryKey("CFBundleVersion");
+	    String currentVersionNumber = (String)NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion");
 	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail")+"?subject=Cyberduck-"+currentVersionNumber));
 	}
 	catch(java.net.MalformedURLException e) {

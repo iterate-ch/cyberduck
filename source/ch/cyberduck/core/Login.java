@@ -58,6 +58,8 @@ public class Login {
 	    this.pass = pass;
     }
 
+//    public abstract boolean loginFailure(String explanation);
+
     public String getUsername() {
 	return this.user;
     }

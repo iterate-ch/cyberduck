@@ -75,8 +75,10 @@ public class FTPPath extends Path {
 	    String dirname = abs;
 	    if(index > 0)
 		dirname = abs.substring(0, index);
-	    if(index == 0) //parent is root
+	    else if(index == 0) //parent is root
 		dirname = "/";
+//	    else if(index < 0)
+//		dirname = ;
 	    parent = new FTPPath(session, dirname);
 	}
 	log.debug("getParent:"+parent);
@@ -138,7 +140,6 @@ public class FTPPath extends Path {
 		session.log("Deleting "+this.getName(), Message.PROGRESS);
 		session.FTP.delete(this.getName());
 	    }
-// performance bottleneck when used recursivy this.getParent().list();
 	}
 	catch(FTPException e) {
 	    session.log("FTP Error: "+e.getMessage(), Message.ERROR);
@@ -239,7 +240,7 @@ public class FTPPath extends Path {
 	return this.session;
     }
 
-    public void fillQueue(Queue queue, Session session, int kind) {
+    public void fillQueue(List queue, Session session, int kind) {
 	try {
 	    this.session = (FTPSession)session;
 	    this.session.check();
@@ -260,7 +261,7 @@ public class FTPPath extends Path {
 	}
     }
 
-    private void fillDownloadQueue(Queue queue)  throws IOException {
+    private void fillDownloadQueue(List queue)  throws IOException {
 	    if(this.isDirectory()) {
 		List files = this.list(false, true);
 		java.util.Iterator i = files.iterator();
@@ -338,10 +339,7 @@ public class FTPPath extends Path {
 	}
     }
 
-    private void fillUploadQueue(Queue queue) throws IOException {
-//	this.session = (FTPSession)uploadSession;
-//	try {
-//	    session.check();
+    private void fillUploadQueue(List queue) throws IOException {
 	if(this.getLocal().isDirectory()) {
 	    session.FTP.mkdir(this.getAbsolute());//@todo do it here rather than in upload() ?
 	    File[] files = this.getLocal().listFiles();
@@ -356,13 +354,6 @@ public class FTPPath extends Path {
 	}
 	else
 	    throw new IOException("Cannot determine file type");
-//	}
-//	catch(FTPException e) {
-//	    this.session.log("FTP Error: "+e.getMessage(), Message.ERROR);
-//	}
-//	catch(IOException e) {
-//	    this.session.log("IO Error: "+e.getMessage(), Message.ERROR);
-//	}
     }
 
     public void upload() {

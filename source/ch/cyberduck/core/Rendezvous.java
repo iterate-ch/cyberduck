@@ -39,7 +39,6 @@ public class Rendezvous extends Observable implements com.strangeberry.rendezvou
     private Rendezvous() {
 	log.debug("Rendezvous");
 	this.services = new HashMap();
-//	System.getProperties().put("rendezvous.debug", "1");
     }
 
     public void init() {
@@ -74,9 +73,9 @@ public class Rendezvous extends Observable implements com.strangeberry.rendezvou
 	return services.get(key);
     }
 
-    public Map getServices() {
-	return this.services;
-    }
+//    public Map getServices() {
+//	return this.services;
+//  }
 
     /**
 	* This method is called when rendezvous discovers a service
@@ -102,7 +101,7 @@ public class Rendezvous extends Observable implements com.strangeberry.rendezvou
 	    log.debug(info.toString());
 //	    log.debug(rendezvous.getInterface());
 	    //todo this.callObservers(new Message(Message.RENDEZVOUS, host));
-	    this.callObservers(new Message(Message.RENDEZVOUS, "Rendezvous service resolved: "+name));
+	    this.callObservers(new Message(Message.RENDEZVOUS, h));
 	}
 	else {
 	    log.error("Failed to resolve "+name+" with type "+type);

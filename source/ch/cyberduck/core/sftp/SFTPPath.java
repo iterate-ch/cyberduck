@@ -259,12 +259,9 @@ public class SFTPPath extends Path {
 	return this.session;
     }
 
-    public void fillQueue(Queue queue, Session session, int kind) {
-//	List queue = new ArrayList();
+    public void fillQueue(List queue, Session session, int kind) {
 	try {
-//	    Queue queue = new Queue(this, kind);
 	    this.session = (SFTPSession)session;
-//	    this.session = (SFTPSession)this.getSession().copy();
 	    this.session.check();
 	    switch(kind) {
 		case Queue.KIND_DOWNLOAD:
@@ -284,8 +281,7 @@ public class SFTPPath extends Path {
     }
     
 
-    private void fillDownloadQueue(Queue queue) {
-//	this.session = (SFTPSession)downloadSession;
+    private void fillDownloadQueue(List queue) {
 	try {
 	    this.session.check();
 	    if(isDirectory()) {
@@ -346,8 +342,7 @@ public class SFTPPath extends Path {
 	}
     }
 
-    public void fillUploadQueue(Queue queue) throws IOException {
-//	this.session = (SFTPSession)uploadSession;
+    public void fillUploadQueue(List queue) throws IOException {
 	    this.session.check();
 	    if(this.getLocal().isDirectory()) {
 		this.session.SFTP.makeDirectory(this.getAbsolute());//@todo do it here rather than in upload() ?

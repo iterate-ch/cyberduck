@@ -18,7 +18,7 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
-public abstract class LoginController {
+public interface LoginController {
 
     /**
     * Call this to allow the user to reenter the new login credentials.
@@ -26,5 +26,5 @@ public abstract class LoginController {
      * @return true If we whould try again with new login
      * @param explanation Any additional information why the login failed.
      */
-    public abstract boolean loginFailure(String explanation);
+    public boolean loginFailure(String explanation);
 }

@@ -70,7 +70,11 @@ public abstract class Path {// extends Observable {
      * @param file The associated local file
      */
     public Path(String parent, java.io.File file) {
-        this(parent, file.getName());
+	this.setPath(parent, file);
+    }
+
+    public void setPath(String parent, java.io.File file) {
+	this.setPath(parent, file.getName());
 	this.setLocal(file);
     }
 
@@ -299,7 +303,7 @@ public abstract class Path {// extends Observable {
 
     public abstract void upload();
 
-    public abstract void fillQueue(Queue queue, Session session, int kind);
+    public abstract void fillQueue(List queue, Session session, int kind);
 
 
     // ----------------------------------------------------------

@@ -1,12 +1,32 @@
 package ch.cyberduck.ui.cocoa;
 
+/*
+ *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  Bug fixes, suggestions and comments should be sent to:
+ *  dkocher@cyberduck.ch
+ */
+
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
 import java.util.*;
 import ch.cyberduck.core.*;
 
-
+/**
+* @version $Id$
+ */
 public class CDBrowserTable extends NSTableView {
     private static Logger log = Logger.getLogger(CDBrowserTable.class);
     
@@ -44,10 +64,6 @@ public class CDBrowserTable extends NSTableView {
 	this.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
     }
 
-    public void keyUp(NSEvent e) {
-	log.debug(e);
-    }
-
         // ----------------------------------------------------------
     // Drag methods
     // ----------------------------------------------------------
@@ -56,7 +72,7 @@ public class CDBrowserTable extends NSTableView {
 	log.debug("finishedDraggingImage:"+operation);
 	if(promisedDragPath != null) {
 	    CDTransferController controller = new CDTransferController(promisedDragPath, Queue.KIND_DOWNLOAD);
-	    controller.transfer(promisedDragPath.status.isResume());
+	    controller.transfer();
 	    promisedDragPath = null;
 	}
     }
@@ -85,6 +101,8 @@ public class CDBrowserTable extends NSTableView {
      */
     public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
 	log.debug("namesOfPromisedFilesDroppedAtDestination:"+dropDestination);
+		    //@todo multiple files
+
 	this.promisedDragPath = (Path)browserModel.getEntry(this.selectedRow());
 	promisedDragPath.setLocal(new java.io.File(dropDestination.getPath(), promisedDragPath.getName()));
 	return new NSArray(new String[]{promisedDragPath.getName()});
@@ -306,27 +324,25 @@ public class CDBrowserTable extends NSTableView {
 	    log.debug("tableViewAcceptDrop:"+row+","+operation);
 	// Get the drag-n-drop pasteboard
 	    NSPasteboard pasteboard = info.draggingPasteboard();
-	// What type of data are we going to allow to be dragged?  The pasteboard
- // might contain different formats
+	// What type of data are we going to allow to be dragged?  The pasteboard might contain different formats
 	    NSArray formats = new NSArray(NSPasteboard.FilenamesPboardType);
 	    
 	// find the best match of the types we'll accept and what's actually on the pasteboard
 	// In the file format type that we're working with, get all data on the pasteboard
 	    NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
 	    int i = 0;
-	    for(i = 0; i < filesList.count(); i++) {
+	    for(; i < filesList.count(); i++) {
 		log.debug(filesList.objectAtIndex(i));
 		String filename = (String)filesList.objectAtIndex(i);
-//		    Session session = host.getSession().copy();
 		
 		    //TODO TODO TODO TODO TODO
 //		    Path parent = (Path)pathController.getItem(0);
 //		    Path path = parent.copy();
 //		    path.setLocal(new java.io.File(filename));
 		    //TODO TODO TODO TODO TODO
-				
+		
 		    //TODO TODO TODO TODO TODO
-		    //CDTransferController controller = new CDTransferController(host, path, Queue.KIND_UPLOAD);
+		    //CDTransferController controller = new CDTransferController(path, Queue.KIND_UPLOAD);
 		    //controller.transfer(path.status.isResume());
 		    //TODO TODO TODO TODO TODO
 	    }
@@ -352,6 +368,7 @@ public class CDBrowserTable extends NSTableView {
 	    log.debug("tableViewWriteRowsToPasteboard:"+rows);
 	    Path p = (Path)this.getEntry(((Integer)rows.objectAtIndex(rows.count()-1)).intValue());
 
+	    //@todo multiple files
 	    NSEvent event = NSApplication.sharedApplication().currentEvent();
 	    NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
 	    NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
