@@ -166,6 +166,9 @@ if ($deleteHeaders) {
     $output = `find -E -d "$dest" -regex ".*/(Private)?Headers" -exec rm -rf {} ";"`;
 }
 
+print "Deleting CVS files and directories...\n";
+$output = `rm -rf $dest/AppleScript\ Samples/CVS`
+
 # unmount the dmg
 print "> hdiutil detach $dev\n" if $debug;
 $output = `hdiutil detach $dev`;

@@ -155,7 +155,7 @@
     <first-group selected-file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBrowserController.java">
       <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBrowserController.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="176" column="0" selection-start="6020" selection-end="6020" vertical-scroll-proportion="0.09541985">
+          <state line="229" column="4" selection-start="7745" selection-end="7745" vertical-scroll-proportion="0.79770994">
             <folding />
           </state>
         </provider>
@@ -531,7 +531,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBrowserController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="176" column="0" selection-start="6020" selection-end="6020" vertical-scroll-proportion="0.09541985">
+        <state line="229" column="4" selection-start="7745" selection-end="7745" vertical-scroll-proportion="0.79770994">
           <folding />
         </state>
       </provider>
