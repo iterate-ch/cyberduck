@@ -16,7 +16,7 @@
 
 #!/bin/bash
 
-usage ( ) {
+usage() {
 	echo "Usage: initLocalization.sh <language>"
 	echo "       language must be Japanese, French, Spanish, ..."
 	echo "       as the base language, English is assumed"
