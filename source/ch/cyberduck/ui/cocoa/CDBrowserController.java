@@ -337,7 +337,6 @@ public class CDBrowserController extends NSObject implements Controller, Observe
                 return;
             }
         }
-        //        Host host = CDHistoryImpl.instance().getItem(input);
         int index;
         Host host = null;
         if ((index = input.indexOf('@')) != -1) {
