@@ -215,11 +215,11 @@ public class CDPreferencesController {
     public void protocolComboClicked(NSPopUpButton sender) {
 	if(sender.selectedItem().title().equals(PROTOCOL_FTP)) {
 	    Preferences.instance().setProperty("connection.protocol.default", Session.FTP);
-	    Preferences.instance().setProperty("connection.port.default", Session.SSH_PORT);
+	    Preferences.instance().setProperty("connection.port.default", Session.FTP_PORT);
 	}
 	else {
 	    Preferences.instance().setProperty("connection.protocol.default", Session.SFTP);
-	    Preferences.instance().setProperty("connection.port.default", Session.FTP_PORT);
+	    Preferences.instance().setProperty("connection.port.default", Session.SSH_PORT);
 	}
     }
 }

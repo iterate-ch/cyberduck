@@ -403,16 +403,19 @@ public class FTPSession extends Session {
     }
 
     private void downloadFolder(Path file) throws IOException {
+	FTP.chdir(file.getAbsolute());
 	java.util.List files = new FTPParser().parseList(file.getAbsolute(), FTP.dir());
 	File dir = file.getLocal();
 	dir.mkdir();
 	java.util.Iterator i = files.iterator();
 	while(i.hasNext()) {
 	    Path p = (Path)i.next();
+	    /*
 	    if(p.isDirectory()) {
 		log.debug("changing directory: "+p.toString());
 		FTP.chdir(p.getAbsolute());
 	    }
+	     */
 	    log.debug("getting file:"+p.toString());
 	    this.download(p);
 	}
