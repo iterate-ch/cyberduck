@@ -61,7 +61,7 @@ public class Rendezvous extends Observable implements ServiceListener {
                 }
                 catch (IOException e) {
                     log.error(e.getMessage());
-                    e.printStackTrace();
+					Rendezvous.this.quit();
                 }
             }
         }.start();

@@ -92,6 +92,26 @@
 	</target>
 
 
+	<target name="release" depends="build">
+		<zip destfile="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip">
+			<fileset dir="${build}" includes="${app.name}.app/**"/>
+		</zip>
+		<tar destfile="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.tar">
+			<tarfileset dir="${build}" includes="${app.name}.app/**"/>
+		</tar>
+		<gzip destfile="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.tar.gz"
+				src="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.tar"/>
+				
+		<!--
+		<dmg destfile="${build}/${app-name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg" name="Cyberduck ${cyberduck.version.major}.${cyberduck.version.minor}" compressed="true" srcdir="${build}">
+			<dmgfileset dir="${build}">
+				<includes="${app-name}.app/**"/>
+			</dmgfileset>
+		</dmg>
+		-->
+	</target>
+
+
 	<target name="build" depends="archive" description="Compile, jar and copy to application bundle"> 
 		<copy todir="${app.java}">
 			<fileset dir="${build}">
@@ -111,6 +131,7 @@
 		<antcall target="copy-language-ressources"/>
 		<antcall target="repace-tokens"/>
 	</target>
+	
 	
 	<target name="copy-language-ressources">
 		<copy todir="${app.java}">

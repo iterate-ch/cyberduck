@@ -39,6 +39,16 @@ public class CDMainController extends NSObject {
     private static final File VERSION_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Version.plist"));
 
     public void awakeFromNib() {
+		NSNotificationCenter.defaultCenter().addObserver(this,
+														 new NSSelector("applicationShouldSleep", new Class[]{Object.class}),
+														 NSWorkspace.WorkspaceWillSleepNotification,
+														 null);
+
+		NSNotificationCenter.defaultCenter().addObserver(this,
+														 new NSSelector("applicationShouldWake", new Class[]{Object.class}),
+														 NSWorkspace.WorkspaceDidWakeNotification,
+														 null);
+		
         //@todo performance tests
         this.threadWorkerTimer = new NSTimer(0.2, this, new NSSelector("handleThreadWorkerTimerEvent", new Class[]{NSTimer.class}), null, true);
         NSRunLoop.currentRunLoop().addTimerForMode(this.threadWorkerTimer, NSRunLoop.DefaultRunLoopMode);
@@ -136,7 +146,8 @@ public class CDMainController extends NSObject {
     private NSMenu rendezvousMenu;
     private NSObject bookmarkMenuDelegate;
     private NSObject rendezvousMenuDelegate;
-
+	private Rendezvous rendezvous;
+	
     public void setBookmarkMenu(NSMenu bookmarkMenu) {
         this.bookmarkMenu = bookmarkMenu;
 		this.rendezvousMenu = new NSMenu();
@@ -145,7 +156,10 @@ public class CDMainController extends NSObject {
                 new NSSelector("setDelegate", new Class[]{Object.class});
         if (setDelegateSelector.implementedByClass(NSMenu.class)) {
             this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
-            this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate());
+            this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = 
+											new RendezvousMenuDelegate(this.rendezvous = new Rendezvous()
+																	   )
+											);
         }
 		this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle("Rendezvous"));
 //		this.bookmarkMenu.itemWithTitle("Rendezvous").setEnabled(true);
@@ -203,13 +217,12 @@ public class CDMainController extends NSObject {
 
 	private class RendezvousMenuDelegate extends NSObject implements Observer {
         private Map items = new HashMap();
-		private Rendezvous rendezvous;
 		
-		public RendezvousMenuDelegate() {
+		public RendezvousMenuDelegate(Rendezvous rendezvous) {
 			super();
-			this.rendezvous = new Rendezvous();
-			this.rendezvous.addObserver(this);
-			this.rendezvous.init();
+//			this.rendezvous = new Rendezvous();
+			rendezvous.addObserver(this);
+			rendezvous.init();
 		}
 		
 		public void update(final Observable o, final Object arg) {
@@ -273,10 +286,10 @@ public class CDMainController extends NSObject {
             controller.mount((Host)items.get(sender.title()));
         }
 		
-		protected void finalize() throws Throwable {
-			this.rendezvous.quit();
-			super.finalize();
-		}
+//		protected void finalize() throws Throwable {
+//			this.rendezvous.quit();
+//			super.finalize();
+//		}
     }
 	
     public void helpMenuClicked(Object sender) {
@@ -547,14 +560,26 @@ public class CDMainController extends NSObject {
         if (Preferences.instance().getProperty("update.check").equals("true")) {
             this.checkForUpdate(false);
         }
+		this.rendezvous.init();
     }
 
+	public void applicationShouldSleep(Object o) {
+        log.debug("applicationShouldSleep");
+		this.rendezvous.quit();
+	}
+	
+	public void applicationShouldWake(Object o) {
+        log.debug("applicationShouldWake");
+		this.rendezvous.init();
+	}
+	
     public int applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
 		return this.checkForMountedBrowsers(app);
     }
 	
 	public void applicationWillTerminate(NSNotification notification) {
+		this.rendezvous.quit();
         //Writing version info
         this.saveVersionInfo();
         //Writing usage info
