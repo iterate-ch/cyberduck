@@ -43,8 +43,8 @@ public abstract class Queue extends Observable {
 	private List roots = new ArrayList();
 	private List jobs;
 	
-	protected long size;
-	private long current;
+	protected long size = -1;
+	private long current = 0;
 	private long speed;
 	
 	private Validator validator;
@@ -250,7 +250,6 @@ public abstract class Queue extends Observable {
 	
 	private void finish() {
 		this.running = false;
-//		this.jobs = null;
 		this.progress.stop();
 		this.getRoot().getSession().close();
 		this.callObservers(new Message(Message.QUEUE_STOP));
@@ -284,7 +283,8 @@ public abstract class Queue extends Observable {
 	}
 	
 	public boolean isComplete() {
-		return !(this.getSize() == 0 && this.getCurrent() == 0) && (this.getSize() == this.getCurrent());
+		return this.getSize() == this.getCurrent();
+//		return !(this.getSize() == 0 && this.getCurrent() == 0) && (this.getSize() == this.getCurrent());
 	}
 	
 	public long getSize() {
@@ -292,9 +292,6 @@ public abstract class Queue extends Observable {
 	}
 	
 	public String getSizeAsString() {
-		if(0 == this.getSize()) {
-			return NSBundle.localizedString("Unknown size", "");
-		}
 		return Status.getSizeAsString(this.getSize());
 	}
 	
