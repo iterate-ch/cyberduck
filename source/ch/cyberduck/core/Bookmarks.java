@@ -49,7 +49,6 @@ public abstract class Bookmarks {
     }
 	
 	private Host getFromDictionary(NSDictionary dict) {
-		log.debug(dict);
 		return new Host(
 				  (String)dict.objectForKey(Bookmarks.PROTOCOL), 
 				  (String)dict.objectForKey(Bookmarks.NICKNAME),
@@ -61,15 +60,14 @@ public abstract class Bookmarks {
 	}
 	
 	private NSDictionary getAsDictionary(Host bookmark) {
-		NSMutableDictionary element = new NSMutableDictionary();
-		element.setObjectForKey(bookmark.getNickname(), Bookmarks.NICKNAME);
-		element.setObjectForKey(bookmark.getHostname(), Bookmarks.HOSTNAME);
-		element.setObjectForKey(bookmark.getPort()+"", Bookmarks.PORT);
-		element.setObjectForKey(bookmark.getProtocol(), Bookmarks.PROTOCOL);
-		element.setObjectForKey(bookmark.getLogin().getUsername(), Bookmarks.USERNAME);
-		element.setObjectForKey(bookmark.getDefaultPath(), Bookmarks.PATH);
-		log.debug(element);
-		return element;
+		NSMutableDictionary dict = new NSMutableDictionary();
+		dict.setObjectForKey(bookmark.getNickname(), Bookmarks.NICKNAME);
+		dict.setObjectForKey(bookmark.getHostname(), Bookmarks.HOSTNAME);
+		dict.setObjectForKey(bookmark.getPort()+"", Bookmarks.PORT);
+		dict.setObjectForKey(bookmark.getProtocol(), Bookmarks.PROTOCOL);
+		dict.setObjectForKey(bookmark.getLogin().getUsername(), Bookmarks.USERNAME);
+		dict.setObjectForKey(bookmark.getDefaultPath(), Bookmarks.PATH);
+		return dict;
 	}
 	
 	public Host importBookmark(java.io.File file) {
@@ -89,8 +87,6 @@ public abstract class Bookmarks {
 			log.info("Importing bookmark "+bookmark+" to "+file);
 			NSMutableData collection = new NSMutableData();
 			collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(this.getAsDictionary(bookmark)));
-			// data is written to a backup location, and then, assuming no errors occur, 
-   // the backup location is renamed to the specified name
 			if(collection.writeToURL(file.toURL(), true))
 				log.info("Bookmarks sucessfully saved in :"+file.toString());
 			else

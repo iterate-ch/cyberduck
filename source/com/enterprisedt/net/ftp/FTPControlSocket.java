@@ -90,8 +90,7 @@ import ch.cyberduck.core.Transcript;
       *   @param   remoteHost   Remote hostname
       *   @param   controlPort  port for control stream
       */
-     public FTPControlSocket(String remoteHost, int controlPort)
-         throws IOException, FTPException {
+     public FTPControlSocket(String remoteHost, int controlPort) throws IOException, FTPException {
 
          controlSock = new Socket(remoteHost, controlPort);
          initStreams();
@@ -115,8 +114,7 @@ import ch.cyberduck.core.Transcript;
       *  Obtain the reader/writer streams for this
       *  connection
       */
-     private void initStreams()
-         throws IOException {
+     private void initStreams() throws IOException {
 
          // input stream
          InputStream is = controlSock.getInputStream();
@@ -396,9 +394,7 @@ import ch.cyberduck.core.Transcript;
       *
       *  @return  reply string
       */
-     String readReply()
-         throws IOException {
-
+     String readReply() throws IOException {
          String firstLine = reader.readLine();
          if (firstLine == null || firstLine.length() == 0)
              throw new IOException("Unexpected null reply received");
@@ -418,9 +414,9 @@ import ch.cyberduck.core.Transcript;
                  String line = reader.readLine();
                  if (line == null)
                      throw new IOException("Unexpected null reply received");
-
-		 Transcript.instance().transcript(line);
-
+				 
+				 Transcript.instance().transcript(line);
+				 
                  if (line.length() > 3 &&
                      line.substring(0, 3).equals(replyCode) &&
                      line.charAt(3) == ' ') {

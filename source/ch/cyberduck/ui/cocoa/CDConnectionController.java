@@ -229,7 +229,7 @@ public class CDConnectionController implements Observer {
 			protocol = Session.SFTP+"://";
 		else if(selectedItem.tag() == Session.FTP_PORT)
 			protocol = Session.FTP+"://";
-		urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostPopup.stringValue()+":"+portField.stringValue());
+		urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostPopup.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
     }
 	
     public void closeSheet(NSButton sender) {

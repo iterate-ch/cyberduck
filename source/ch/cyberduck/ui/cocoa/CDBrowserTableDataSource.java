@@ -75,8 +75,17 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
 				return NSImage.imageNamed("folder.tiff");
 			return NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
 		}
-		if(identifier.equals("FILENAME"))
+		if(identifier.equals("FILENAME")) {
+//			try {
+//				log.debug("***as is: "+p.getName());
+//				log.debug("***unicode>unicode: "+new String(p.getName().getBytes("UTF-8"), "UTF-8").toString());
+//				return new String(p.getName().getBytes("UTF-8"), "UTF-8").toString();
+//			}
+//			catch(java.io.UnsupportedEncodingException e) {
+//				log.error(e.getMessage());	
+//			}
 			return p.getName();
+		}
 		else if(identifier.equals("SIZE"))
 			return p.status.getSizeAsString();
 		else if(identifier.equals("MODIFIED"))
@@ -347,7 +356,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
 			if(selectedColumn != null)
 				tableView.setIndicatorImage(null, selectedColumn);
 			this.selectedColumn = tableColumn;
-			tableView.setHighlightedTableColumn(tableColumn);
+//			tableView.setHighlightedTableColumn(tableColumn);
 		}
 		tableView.setIndicatorImage(this.sortAscending ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), tableColumn);
 		this.sort(tableColumn, sortAscending);
@@ -362,11 +371,12 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
 		this.data.clear();
 	}
 	
-	public void addEntry(Path entry, int row) {
-		this.data.add(row, entry);
-	}
+//	public void addEntry(Path entry, int row) {
+//		this.data.add(row, entry);
+//	}
 	
 	public void addEntry(Path entry) {
+		log.debug(entry);
 		if(entry.attributes.isVisible())
 			this.data.add(entry);
 	}

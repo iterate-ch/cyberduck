@@ -232,6 +232,44 @@ public class SFTPPath extends Path {
 		return new SFTPPath(session, this.getAbsolute(), name);
     }
 	
+	//	public void changeOwner(int uid) {
+ //		log.debug("changeOwner:"+uid);
+ //		try {
+ //			session.check();
+ //			FileAttributes attrs = sftp.getAttributes(this.getAbsolute());
+ //			attrs.setUID(new UnsignedInteger32(uid));
+ //			session.SFTP.setAttributes(actual, attrs);
+ //		}
+ //		catch(SshException e) {
+ //			session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+ //		}
+ //		catch(IOException e) {
+ //			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+ //		}
+ //		finally {
+ //			session.log("Idle", Message.STOP);
+ //		}
+ //	}
+
+	//	public void changeGroup(int gid) {
+//		log.debug("changeGroup:"+gid);
+//		try {
+//			session.check();
+//			FileAttributes attrs = sftp.getAttributes(this.getAbsolute());
+//			attrs.setGID(new UnsignedInteger32(gid));
+//			session.SFTP.setAttributes(actual, attrs);
+//		}
+//		catch(SshException e) {
+//			session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+//		}
+//		catch(IOException e) {
+//			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+//		}
+//		finally {
+//			session.log("Idle", Message.STOP);
+//		}
+//	}
+	
     public void changePermissions(int permissions) {
 		log.debug("changePermissions");
 		try {
@@ -362,11 +400,11 @@ public class SFTPPath extends Path {
 			
 			com.apple.cocoa.foundation.NSDictionary localAttributes = com.apple.cocoa.foundation.NSPathUtilities.fileAttributes(this.getLocal().getAbsolutePath(), true);
 			int localPermissions = ((Integer)localAttributes.objectForKey(com.apple.cocoa.foundation.NSPathUtilities.FilePosixPermissions)).intValue();
-			log.debug("***Local file permissions:"+localPermissions);
-			log.debug("Integer.parseInt(localPermissions, 8):"+Integer.parseInt(""+localPermissions, 8));
-			log.debug("Integer.parseInt(localPermissions, 8) ^ 0777):"+(Integer.parseInt(""+localPermissions, 8) ^ 0777));
+			log.info("***Local file permissions:"+localPermissions);
+//			session.SFTP.changePermissions(this.getAbsolute(), new Permission(localPermissions).toString());
+//			log.debug("Integer.parseInt(localPermissions, 8):"+Integer.parseInt(""+localPermissions, 8));
+//			log.debug("Integer.parseInt(localPermissions, 8) ^ 0777):"+(Integer.parseInt(""+localPermissions, 8) ^ 0777));
 			
-				
    			remoteAttributes.setPermissions("rw-r--r--"); //todo
    			this.session.SFTP.setAttributes(remoteFile, remoteAttributes);
 			SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);

@@ -114,14 +114,13 @@ public class Host {
     }
 	
     public String getDefaultPath() {
-        log.debug("getDefaultPath:"+defaultpath);
 		return this.defaultpath;
     }
 	
 	public boolean hasReasonableDefaultPath() {
-		boolean reasonable = this.defaultpath != null && !this.defaultpath.equals("") && !this.defaultpath.equals(Path.HOME);
-        log.debug("hasReasonableDefaultPath:"+reasonable+"("+defaultpath+")");
-		return reasonable;
+		return this.defaultpath != null && !this.defaultpath.equals("") && !this.defaultpath.equals(Path.HOME);
+//        log.debug("hasReasonableDefaultPath:"+reasonable+"("+defaultpath+")");
+//		return reasonable;
 	}
     
     public void closeSession() {
@@ -184,7 +183,7 @@ public class Host {
     }
     
     public void setNickname(String nickname) {
-		log.debug("setNickname:"+nickname);
+//		log.debug("setNickname:"+nickname);
         this.nickname = nickname != null ? nickname : this.getLogin().getUsername()+"@"+this.getHostname();
     }
 	
@@ -193,7 +192,7 @@ public class Host {
     }
 	
     public void setHostname(String hostname) {
-		log.debug("setHostname:"+hostname);
+//		log.debug("setHostname:"+hostname);
 		this.hostname = hostname;
     }
 	

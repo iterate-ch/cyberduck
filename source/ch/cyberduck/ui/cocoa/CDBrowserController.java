@@ -81,11 +81,21 @@ public class CDBrowserController implements Observer {
 		this.bookmarkTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
 //		this.bookmarkTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
 		this.bookmarkTable.tableColumnWithIdentifier("FAVORITE").setDataCell(new CDBookmarkCell());
-		this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableViewDidClickTableRow", new Class[] {Object.class}));
+		this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkRowClicked", new Class[] {Object.class}));
+		(NSNotificationCenter.defaultCenter()).addObserver(
+													 this,
+													 new NSSelector("bookmarkSelectionDidChange", new Class[]{NSNotification.class}),
+													 NSTableView.TableViewSelectionDidChangeNotification,
+													 bookmarkTable);
     }
 	
-	public void bookmarkTableViewDidClickTableRow(Object sender) {
-		log.debug("bookmarkTableViewDidClickTableRow");
+	public void bookmarkSelectionDidChange(NSNotification notification) {
+		editBookmarkButton.setEnabled(bookmarkTable.numberOfSelectedRows() == 1);
+		removeBookmarkButton.setEnabled(bookmarkTable.numberOfSelectedRows() == 1);
+	}
+	
+	public void bookmarkRowClicked(Object sender) {
+		log.debug("bookmarkRowClicked");
 		if(bookmarkTable.clickedRow() != -1) { //table header clicked
 			Host host = (Host)CDBookmarksImpl.instance().values().toArray()[bookmarkTable.clickedRow()];
 			this.mount(host);
@@ -116,6 +126,10 @@ public class CDBrowserController implements Observer {
 		this.mount(host);
     }
 	
+	// ----------------------------------------------------------
+	// Manage Bookmarks
+	// ----------------------------------------------------------
+	
     private NSButton showBookmarkButton; // IBOutlet
     public void setShowBookmarkButton(NSButton showBookmarkButton) {
 		this.showBookmarkButton = showBookmarkButton;
@@ -131,7 +145,15 @@ public class CDBrowserController implements Observer {
 		this.editBookmarkButton.setImage(NSImage.imageNamed("edit.tiff"));
 		this.editBookmarkButton.setAlternateImage(NSImage.imageNamed("editPressed.tiff"));
 		this.editBookmarkButton.setTarget(this);
+		this.editBookmarkButton.setEnabled(false);
 		this.editBookmarkButton.setAction(new NSSelector("editBookmarkButtonClicked", new Class[] {Object.class}));
+    }
+	
+	public void editBookmarkButtonClicked(Object sender) {
+		int row = bookmarkTable.selectedRow();
+		Host item = CDBookmarksImpl.instance().getItem(CDBookmarksImpl.instance().values().toArray()[row].toString());
+		CDBookmarkController controller = new CDBookmarkController(item);
+		controller.window().makeKeyAndOrderFront(null);
     }
 	
     private NSButton addBookmarkButton; // IBOutlet
@@ -143,16 +165,41 @@ public class CDBrowserController implements Observer {
 		this.addBookmarkButton.setAction(new NSSelector("addBookmarkButtonClicked", new Class[] {Object.class}));
     }
 	
+	public void addBookmarkButtonClicked(Object sender) {
+		if(this.host != null) {
+			CDBookmarksImpl.instance().addItem(host);
+			this.bookmarkTable.reloadData();
+		}
+		else {
+			Host h = new Host("", new Login());
+			CDBookmarksImpl.instance().addItem(h);
+			this.bookmarkTable.reloadData();
+			//			this.bookmarkTable.selectRow(CDBookmarksImpl.instance().indexOf(h), true);
+   //			this.editBookmarkButtonClicked(null);
+		}
+    }
+	
     private NSButton removeBookmarkButton; // IBOutlet
     public void setRemoveBookmarkButton(NSButton removeBookmarkButton) {
 		this.removeBookmarkButton = removeBookmarkButton;
 		this.removeBookmarkButton.setImage(NSImage.imageNamed("remove.tiff"));
 		this.removeBookmarkButton.setAlternateImage(NSImage.imageNamed("removePressed.tiff"));
 		this.removeBookmarkButton.setTarget(this);
+		this.removeBookmarkButton.setEnabled(false);
 		this.removeBookmarkButton.setAction(new NSSelector("removeBookmarkButtonClicked", new Class[] {Object.class}));
     }
-    
-    private NSButton upButton; // IBOutlet
+    			
+    public void removeBookmarkButtonClicked(Object sender) {
+		int row = bookmarkTable.selectedRow();
+		CDBookmarksImpl.instance().removeItem(CDBookmarksImpl.instance().values().toArray()[row].toString());
+		this.bookmarkTable.reloadData();
+    }
+
+	// ----------------------------------------------------------
+	// Browser navigation
+	// ----------------------------------------------------------
+	
+	private NSButton upButton; // IBOutlet
     public void setUpButton(NSButton upButton) {
 		this.upButton = upButton;
 		this.upButton.setImage(NSImage.imageNamed("up.tiff"));
@@ -425,7 +472,6 @@ public class CDBrowserController implements Observer {
 					progressIndicator.startAnimation(this);
 					browserModel.clear();
 					browserTable.reloadData();
-					
 					mainWindow.setTitle(host.getProtocol()+":"+host.getHostname());
 				}
 				else if(msg.getTitle().equals(Message.CLOSE)) {
@@ -444,41 +490,6 @@ public class CDBrowserController implements Observer {
 					//@todo enable toolbar
 				}
 			}
-		}
-    }
-    
-	// ----------------------------------------------------------
-	// Manage Bookmarks
-	// ----------------------------------------------------------
-	
-    public void editBookmarkButtonClicked(Object sender) {
-		int row = bookmarkTable.selectedRow();
-		if(row != -1) { //todo disable button instead
-			Host item = CDBookmarksImpl.instance().getItem(CDBookmarksImpl.instance().values().toArray()[row].toString());
-			CDBookmarkController controller = new CDBookmarkController(item);
-			controller.window().makeKeyAndOrderFront(null);
-		}
-    }
-	
-    public void addBookmarkButtonClicked(Object sender) {
-		if(this.host != null) {
-			CDBookmarksImpl.instance().addItem(host);
-			this.bookmarkTable.reloadData();
-		}
-		else {
-			Host h = new Host("", new Login());
-			CDBookmarksImpl.instance().addItem(h);
-			this.bookmarkTable.reloadData();
-//			this.bookmarkTable.selectRow(CDBookmarksImpl.instance().indexOf(h), true);
-//			this.editBookmarkButtonClicked(null);
-		}
-    }
-	
-    public void removeBookmarkButtonClicked(Object sender) {
-		int row = bookmarkTable.selectedRow();
-		if(row != -1) { //todo disable button instead
-			CDBookmarksImpl.instance().removeItem(CDBookmarksImpl.instance().values().toArray()[row].toString());
-			this.bookmarkTable.reloadData();
 		}
     }
 	
@@ -733,6 +744,7 @@ public class CDBrowserController implements Observer {
 			this.host.getSession().deleteObserver((Observer)pathController);
 			this.host.closeSession();
 		}
+		this.mounted = false;
     }
         
 	
