@@ -92,29 +92,12 @@ public class FTPPath extends Path {
 		return copy;
 	}
 
-	public Path getParent() {
-		String abs = this.getAbsolute();
-		if ((null == parent)) {
-			int index = abs.lastIndexOf('/');
-			String dirname = abs;
-			if (index > 0)
-				dirname = abs.substring(0, index);
-			else if (index == 0) //parent is root
-				dirname = "/";
-			else if (index < 0)
-				dirname = session.workdir().getAbsolute();
-			parent = new FTPPath(session, dirname);
-		}
-		log.debug("getParent:" + parent);
-		return parent;
-	}
-
-	public List list() {
-		return this.list(true, Preferences.instance().getProperty("browser.showHidden").equals("true"));
-	}
-
 	public Session getSession() {
 		return this.session;
+	}
+	
+	public List list() {
+		return this.list(true, Preferences.instance().getProperty("browser.showHidden").equals("true"));
 	}
 
 	public List list(boolean notifyobservers, boolean showHidden) {
@@ -184,7 +167,7 @@ public class FTPPath extends Path {
 		log.debug("rename:" + filename);
 		try {
 			session.check();
-			session.FTP.chdir(this.getParent().getAbsolute());
+			session.FTP.chdir(this.getAbsolute());
 			session.log("Renaming " + this.getName() + " to " + filename, Message.PROGRESS);
 			session.FTP.rename(this.getName(), filename);
 			this.setPath(this.getParent().getAbsolute(), filename);
@@ -410,7 +393,9 @@ public class FTPPath extends Path {
 				}
 				this.upload(out, in);
 				this.session.FTP.validateTransfer();
-				this.changePermissions(this.getLocal().getPermission().getOctalCode(), false);
+				if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
+					this.changePermissions(this.getLocal().getPermission().getOctalCode(), false);
+				}
 			}
 			else {
 				throw new FTPException("Transfer mode not set");

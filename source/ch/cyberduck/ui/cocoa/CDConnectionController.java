@@ -101,9 +101,9 @@ public class CDConnectionController implements Observer {
 		this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous.tiff"));
 		this.rendezvousPopup.setTarget(this);
 		this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionChanged", new Class[]{Object.class}));
-		this.rendezvous = new Rendezvous();
-		this.rendezvous.addObserver(this);
-		this.rendezvous.init();
+//		this.rendezvous = new Rendezvous();
+//		this.rendezvous.addObserver(this);
+//		this.rendezvous.init();
 	}
 
 	public void rendezvousSelectionChanged(Object sender) {
@@ -198,7 +198,7 @@ public class CDConnectionController implements Observer {
 	public void setKeychainCheckbox(NSButton keychainCheckbox) {
 		this.keychainCheckbox = keychainCheckbox;
 		this.keychainCheckbox.setState(NSCell.OffState);
-//		this.keychainCheckbox.setState(Preferences.instance().getProperty("connection.login.useKeychain").equals("true") ? NSCell.OnState : NSCell.OffState);
+		this.keychainCheckbox.setState(Preferences.instance().getProperty("connection.login.useKeychain").equals("true") ? NSCell.OnState : NSCell.OffState);
 	}
 
 	private NSButton pkCheckbox;
@@ -319,6 +319,10 @@ public class CDConnectionController implements Observer {
 		this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.portField.setIntValue(protocolPopup.selectedItem().tag());
 		this.pkCheckbox.setEnabled(Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP));
+		
+		this.rendezvous = new Rendezvous();
+		this.rendezvous.addObserver(this);
+//@todo		this.rendezvous.init();		
 	}
 
 	public void getPasswordFromKeychain(Object sender) {

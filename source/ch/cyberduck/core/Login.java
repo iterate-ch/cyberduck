@@ -135,19 +135,19 @@ public class Login {
 	}
 
 	public boolean hasReasonableValues() {
-		log.debug("hasReasonableValues:" + this.toString());
+		boolean reasonable = false;
 		if (this.usesPublicKeyAuthentication())
-			return true;
+			reasonable = true;
 		if (this.user != null && this.pass != null) {
 			// anonymous login is ok
 			if (this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name")) && this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass")))
-				return true;
+				reasonable = true;
 			// if both name and pass are custom it is ok
 			if (!(this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"))) && !(this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass"))))
-				return true;
+				reasonable = true;
 		}
-		// all other cases we don't like
-		return false;
+		log.debug("hasReasonableValues:"+reasonable);
+		return reasonable;
 	}
 
 	/**
@@ -170,12 +170,14 @@ public class Login {
 			if (Preferences.instance().getProperty("connection.login.useKeychain").equals("true")) {
 				log.info("Searching keychain for password...");
 				String passFromKeychain = this.getPasswordFromKeychain();
-				if (null == passFromKeychain) {
+				if (null == passFromKeychain || passFromKeychain.equals("")) {
 					this.promptUser("The username or password does not seem reasonable.");
 				}
 				else
 					this.pass = passFromKeychain;
 			}
+			else
+				this.promptUser("The username or password does not seem reasonable.");
 		}
 		return this.pass;
 	}

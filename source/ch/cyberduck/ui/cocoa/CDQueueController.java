@@ -45,9 +45,9 @@ public class CDQueueController implements Observer, Validator {
 	public static CDQueueController instance() {
 		if (null == instance) {
 			instance = new CDQueueController();
-		}
-		if (false == NSApplication.loadNibNamed("Queue", instance)) {
-			log.fatal("Couldn't load Queue.nib");
+			if (false == NSApplication.loadNibNamed("Queue", instance)) {
+				log.fatal("Couldn't load Queue.nib");
+			}
 		}
 		return instance;
 	}
@@ -57,7 +57,6 @@ public class CDQueueController implements Observer, Validator {
 	}
 
 	public void windowWillClose(NSNotification notification) {
-		this.window().setDelegate(null);
 		instances.removeObject(this);
 	}
 
@@ -302,7 +301,8 @@ public class CDQueueController implements Observer, Validator {
 			Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
 			if (item.isEmpty())
 				this.revealButtonClicked(sender);
-			this.resumeButtonClicked(sender);
+			else
+				this.resumeButtonClicked(sender);
 		}
 	}
 
@@ -478,8 +478,8 @@ public class CDQueueController implements Observer, Validator {
 				log.debug("resume:false");
 				if (path.getLocal().exists()) {
 					log.debug("local path exists:true");
-					if (Preferences.instance().getProperty("download.duplicate").equals("ask")) {
-						log.debug("download.duplicate:ask");
+					if (Preferences.instance().getProperty("queue.download.duplicate").equals("ask")) {
+						log.debug("queue.download.duplicate:ask");
 						NSAlertPanel.beginCriticalAlertSheet(
 						    NSBundle.localizedString("File exists", ""), //title
 						    NSBundle.localizedString("Resume", ""), // defaultbutton
@@ -497,7 +497,8 @@ public class CDQueueController implements Observer, Validator {
 						        ), // end selector
 						    null, // dismiss selector
 						    path, // context
-						    NSBundle.localizedString("The file", "") + " " + Codec.decode(path.getName()) + " " + NSBundle.localizedString("alredy exists in", "") + " " + path.getLocal().getParent() // message
+															 NSBundle.localizedString("The file", "") + " " + path.getName() + " " + NSBundle.localizedString("alredy exists in", "") + " " + path.getLocal().getParent() // message
+//						    NSBundle.localizedString("The file", "") + " " + Codec.decode(path.getName()) + " " + NSBundle.localizedString("alredy exists in", "") + " " + path.getLocal().getParent() // message
 						);
 						while (!done) {
 							try {
@@ -511,8 +512,8 @@ public class CDQueueController implements Observer, Validator {
 						log.debug("return:" + proceed);
 						return proceed;
 					}
-					else if (Preferences.instance().getProperty("download.duplicate").equals("similar")) {
-						log.debug("download.duplicate:similar");
+					else if (Preferences.instance().getProperty("queue.download.duplicate").equals("similar")) {
+						log.debug("queue.download.duplicate:similar");
 						path.status.setResume(false);
 						String proposal = null;
 						String parent = path.getLocal().getParent();
@@ -530,14 +531,14 @@ public class CDQueueController implements Observer, Validator {
 						log.debug("return:true");
 						return true;
 					}
-					else if (Preferences.instance().getProperty("download.duplicate").equals("resume")) {
-						log.debug("download.duplicate:resume");
+					else if (Preferences.instance().getProperty("queue.download.duplicate").equals("resume")) {
+						log.debug("queue.download.duplicate:resume");
 						path.status.setResume(true);
 						log.debug("return:true");
 						return true;
 					}
-					else if (Preferences.instance().getProperty("download.duplicate").equals("overwrite")) {
-						log.debug("download.duplicate:overwrite");
+					else if (Preferences.instance().getProperty("queue.download.duplicate").equals("overwrite")) {
+						log.debug("queue.download.duplicate:overwrite");
 						path.status.setResume(false);
 						log.debug("return:true");
 						return true;
@@ -577,16 +578,16 @@ public class CDQueueController implements Observer, Validator {
 		this.done = true;
 	}
 
-	public void closeSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-		log.debug("closeSheetDidEnd");
-		sheet.orderOut(null);
-		switch (returncode) {
-			case NSAlertPanel.DefaultReturn:
-				this.stopButtonClicked(null);
-				this.window().close();
-				break;
-			case NSAlertPanel.AlternateReturn:
-				break;
-		}
-	}
+//	public void closeSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+//		log.debug("closeSheetDidEnd");
+//		sheet.orderOut(null);
+//		switch (returncode) {
+//			case NSAlertPanel.DefaultReturn:
+//				this.stopButtonClicked(null);
+//				this.window().close();
+//				break;
+//			case NSAlertPanel.AlternateReturn:
+//				break;
+//		}
+//	}
 }

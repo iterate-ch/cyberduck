@@ -122,53 +122,26 @@ public abstract class Path {
 			this.path = p;
 	}
 
-	/*
-	public void setPath(String p) {
-		log.debug("setPath:"+p);
-		String name = p;
-		try {
-			String encoding = Preferences.instance().getProperty("browser.encoding");
-			log.info("Assuming remote encoding:"+encoding);
-			name = new String(p.getBytes(), encoding).toString();
-//			name = new String(p.getBytes("utf-8"), "utf-8").toString();
-			log.debug("setPath:(decoded)"+name);
-		}
-		catch(java.io.UnsupportedEncodingException e) {
-			log.error(e.getMessage());
-		}
-		finally {
-			if(name.length() > 1 && name.charAt(name.length()-1) == '/')
-				this.path = name.substring(0, name.length()-1);
-			else
-				this.path = name;
-		}
-	}
-	 */
-
-	/**
-	 * @param pathname The absolute path of the file
-	 */
-	/*
-	public void setPath(String p) {
-		log.debug("setPath:"+p);
-		NSData data = new NSData(p.getBytes());
-		NSStringReference ref = new NSStringReference(data, NSStringReference.UTF8StringEncoding);
-
-		String name = ref.string();
-		log.debug("setPath:(decoded)"+name);
-
-		if(name.length() > 1 && name.charAt(name.length()-1) == '/')
-			this.path = name.substring(0, name.length()-1);
-		else
-			this.path = name;
-    }
-	*/
-
 	/**
 	 * @return My parent directory
 	 */
-	public abstract Path getParent();
-
+	public Path getParent() {
+		String abs = this.getAbsolute();
+		if ((null == parent)) {
+			int index = abs.lastIndexOf('/');
+			String dirname = abs;
+			if (index > 0)
+				dirname = abs.substring(0, index);
+			else if (index == 0) //parent is root
+				dirname = "/";
+			else if (index < 0)
+				dirname = this.getSession().workdir().getAbsolute();
+			parent = PathFactory.createPath(this.getSession(), dirname);
+		}
+		log.debug("getParent:" + parent);
+		return parent;
+	}
+	
 	/**
 	 * @throws NullPointerException if session is not initialized
 	 */
@@ -208,11 +181,6 @@ public abstract class Path {
 	public abstract Path mkdir(String folder);
 
 	//    public abstract int size();
-
-	/**
-	 * Create a new emtpy file on the remote host
-	 */
-	//    public abstract void touch(String file);
 
 	public abstract void rename(String n);
 
@@ -272,23 +240,8 @@ public abstract class Path {
 		String name = (index > 0) ? abs.substring(index + 1) : abs.substring(1);
 		index = name.lastIndexOf('?');
 		name = (index > 0) ? name.substring(index + 1) : name;
-		return name;
+		return name; 
 	}
-
-//	public String getDecodedName() {
-//		String filename = this.getName();
-//		try {
-//			String encoding = Preferences.instance().getProperty("browser.encoding");
-//			log.info("Assuminging remote encoding:"+encoding);
-//			filename = new String(filename.getBytes(), encoding).toString();
-//		}
-//		catch(java.io.UnsupportedEncodingException e) {
-//			log.error(e.getMessage());
-//		}
-//		finally {
-//			return filename;
-//		}
-//	}
 
 	/**
 	 * @return the absolute path name
@@ -309,12 +262,12 @@ public abstract class Path {
 	public Local getLocal() {
 		//default value if not set explicitly, i.e. with drag and drop
 		if (null == this.local)
-			return new Local(Preferences.instance().getProperty("connection.download.folder"), this.getName());
+			return new Local(Preferences.instance().getProperty("queue.download.folder"), this.getName());
 		return this.local;
 	}
 
 	/**
-	 * @return the extensdion if any
+	 * @return the extension if any
 	 */
 	public String getExtension() {
 		String name = this.getName();
@@ -421,8 +374,10 @@ public abstract class Path {
 	 * @param o The stream to write to
 	 */
 	private void transfer(java.io.InputStream i, java.io.OutputStream o) throws IOException {
-		BufferedInputStream in = new BufferedInputStream(new DataInputStream(i));
-		BufferedOutputStream out = new BufferedOutputStream(new DataOutputStream(o));
+		BufferedInputStream in = new BufferedInputStream(i);
+		BufferedOutputStream out = new BufferedOutputStream(o);
+//		BufferedInputStream in = new BufferedInputStream(new DataInputStream(i));
+//		BufferedOutputStream out = new BufferedOutputStream(new DataOutputStream(o));
 
 		this.status.reset();
 

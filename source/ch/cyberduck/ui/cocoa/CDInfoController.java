@@ -128,7 +128,7 @@ public class CDInfoController {
 		log.debug("CDInfoController:" + file);
 		this.file = file;
 		instances.addObject(this);
-		if (false == NSApplication.loadNibNamed("Info", this)) {
+		if(false == NSApplication.loadNibNamed("Info", this)) {
 			log.fatal("Couldn't load Info.nib");
 			return;
 		}
@@ -139,8 +139,10 @@ public class CDInfoController {
 		NSPoint origin = this.window.frame().origin();
 		this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 
-		this.filenameField.setStringValue(Codec.decode(file.getName()));
-		this.pathField.setStringValue(Codec.decode(file.getParent().getAbsolute()));
+		this.filenameField.setStringValue(file.getName());
+//		this.filenameField.setStringValue(Codec.decode(file.getName()));
+		this.pathField.setStringValue(file.getParent().getAbsolute());
+//		this.pathField.setStringValue(Codec.decode(file.getParent().getAbsolute()));
 		this.groupField.setStringValue(file.attributes.getGroup());
 		this.kindField.setStringValue(file.getKind());
 		this.modifiedField.setStringValue(file.attributes.getModified());
@@ -164,10 +166,10 @@ public class CDInfoController {
 
 		permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.getString() + " (" + permission.getOctalCode() + ")");
 
-		if (file.isFile()) {
+		if(file.isFile()) {
 			this.iconImageView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
 		}
-		if (file.isDirectory())
+		if(file.isDirectory())
 			this.iconImageView.setImage(NSImage.imageNamed("folder.icns"));
 
 		(NSNotificationCenter.defaultCenter()).addObserver(
@@ -188,9 +190,8 @@ public class CDInfoController {
 	}
 
 	public void windowWillClose(NSNotification notification) {
-		if (!filenameField.stringValue().equals(Codec.decode(file.getName()))) {
-			String newName = filenameField.stringValue();
-			file.rename(Codec.encode(newName));
+		if(!filenameField.stringValue().equals(file.getName())) {
+			file.rename(filenameField.stringValue());
 		}
 		this.window().setDelegate(null);
 		NSNotificationCenter.defaultCenter().removeObserver(this);
@@ -200,22 +201,22 @@ public class CDInfoController {
 
 	public void filenameInputDidEndEditing(NSNotification sender) {
 		log.debug("textInputDidEndEditing");
-		if (!filenameField.stringValue().equals(Codec.decode(file.getName()))) {
-			file.rename(Codec.encode(filenameField.stringValue()));
+		if(!filenameField.stringValue().equals(file.getName())) {
+			file.rename(filenameField.stringValue());
 		}
 	}
 
 	public void ownerInputDidEndEditing(NSNotification sender) {
 		log.debug("ownerInputDidEndEditing");
-		if (!ownerField.stringValue().equals(Codec.decode(file.attributes.getOwner()))) {
-			file.changeOwner(Codec.encode(ownerField.stringValue()), recursiveCheckbox.state() == NSCell.OnState);
+		if(!ownerField.stringValue().equals(file.attributes.getOwner())) {
+			file.changeOwner(ownerField.stringValue(), recursiveCheckbox.state() == NSCell.OnState);
 		}
 	}
 
 	public void groupInputDidEndEditing(NSNotification sender) {
 		log.debug("groupInputDidEndEditing");
-		if (!groupField.stringValue().equals(Codec.decode(file.attributes.getGroup()))) {
-			file.changeGroup(Codec.encode(groupField.stringValue()), recursiveCheckbox.state() == NSCell.OnState);
+		if(!groupField.stringValue().equals(file.attributes.getGroup())) {
+			file.changeGroup(groupField.stringValue(), recursiveCheckbox.state() == NSCell.OnState);
 		}
 	}
 	

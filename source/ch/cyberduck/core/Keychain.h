@@ -17,11 +17,12 @@
  *  dkocher@cyberduck.ch
  */
 
-#include <Security/SecBase.h>
 #include <syslog.h>
 #include <errno.h>
-#include <Security/SecKeychain.h>
 #include <Login.h>
+#include <Security/SecBase.h>
+#include <Security/SecKeychain.h>
+//#include <CoreFoundation/CFString.h>
 
 char *getpwdfromkeychain( const char *service, const char *account, OSStatus *error );
 void addpwdtokeychain( const char *service, const char *account, const char *password );

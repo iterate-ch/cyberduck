@@ -53,14 +53,13 @@ public class CDPreferencesController {
 	// ----------------------------------------------------------
 
 	private NSPopUpButton encodingCombobox;
-
+	
 	public void setEncodingCombobox(NSPopUpButton encodingCombobox) {
 		this.encodingCombobox = encodingCombobox;
 		this.encodingCombobox.setTarget(this);
 		this.encodingCombobox.setAction(new NSSelector("encodingComboboxClicked", new Class[]{NSPopUpButton.class}));
 		this.encodingCombobox.removeAllItems();
 		java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
-		log.debug("Available charsets:" + charsets.values());
 		String[] items = new String[charsets.size()];
 		java.util.Iterator iterator = charsets.values().iterator();
 		int i = 0;
@@ -69,14 +68,13 @@ public class CDPreferencesController {
 			i++;
 		}
 		this.encodingCombobox.addItemsWithTitles(
-		    new NSArray(items));
-		this.encodingCombobox.setTitle(Preferences.instance().getProperty("browser.encoding"));
+													  new NSArray(items));
+		this.encodingCombobox.setTitle(Preferences.instance().getProperty("browser.charset.encoding"));
 	}
-
+	
 	public void encodingComboboxClicked(NSPopUpButton sender) {
-		Preferences.instance().setProperty("browser.encoding", sender.titleOfSelectedItem());
+		Preferences.instance().setProperty("browser.charset.encoding", sender.titleOfSelectedItem());
 	}
-
 
 	private NSButton horizontalLinesCheckbox; //IBOutlet
 
@@ -479,7 +477,7 @@ public class CDPreferencesController {
 
 	public void setDownloadPathField(NSTextField downloadPathField) {
 		this.downloadPathField = downloadPathField;
-		this.downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
+		this.downloadPathField.setStringValue(Preferences.instance().getProperty("queue.download.folder"));
 		NSNotificationCenter.defaultCenter().addObserver(
 		    this,
 		    new NSSelector("downloadPathFieldDidChange", new Class[]{NSNotification.class}),
@@ -488,7 +486,7 @@ public class CDPreferencesController {
 	}
 
 	public void downloadPathFieldDidChange(NSNotification sender) {
-		Preferences.instance().setProperty("connection.download.folder", this.downloadPathField.stringValue());
+		Preferences.instance().setProperty("queue.download.folder", this.downloadPathField.stringValue());
 	}
 
 	private NSTextField loginField; //IBOutlet
@@ -615,25 +613,25 @@ public class CDPreferencesController {
 		this.duplicateCombobox.setAction(new NSSelector("duplicateComboboxClicked", new Class[]{NSPopUpButton.class}));
 		this.duplicateCombobox.removeAllItems();
 		this.duplicateCombobox.addItemsWithTitles(new NSArray(new String[]{ASK_ME_WHAT_TO_DO, OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
-		if (Preferences.instance().getProperty("download.duplicate").equals("ask"))
+		if (Preferences.instance().getProperty("queue.download.duplicate").equals("ask"))
 			this.duplicateCombobox.setTitle(ASK_ME_WHAT_TO_DO);
-		if (Preferences.instance().getProperty("download.duplicate").equals("overwrite"))
+		if (Preferences.instance().getProperty("queue.download.duplicate").equals("overwrite"))
 			this.duplicateCombobox.setTitle(OVERWRITE_EXISTING_FILE);
-		else if (Preferences.instance().getProperty("download.duplicate").equals("resume"))
+		else if (Preferences.instance().getProperty("queue.download.duplicate").equals("resume"))
 			this.duplicateCombobox.setTitle(TRY_TO_RESUME_TRANSFER);
-		else if (Preferences.instance().getProperty("download.duplicate").equals("similar"))
+		else if (Preferences.instance().getProperty("queue.download.duplicate").equals("similar"))
 			this.duplicateCombobox.setTitle(USE_A_SIMILAR_NAME);
 	}
 
 	public void duplicateComboboxClicked(NSPopUpButton sender) {
 		if (sender.selectedItem().title().equals(ASK_ME_WHAT_TO_DO))
-			Preferences.instance().setProperty("download.duplicate", "ask");
+			Preferences.instance().setProperty("queue.download.duplicate", "ask");
 		if (sender.selectedItem().title().equals(OVERWRITE_EXISTING_FILE))
-			Preferences.instance().setProperty("download.duplicate", "overwrite");
+			Preferences.instance().setProperty("queue.download.duplicate", "overwrite");
 		else if (sender.selectedItem().title().equals(TRY_TO_RESUME_TRANSFER))
-			Preferences.instance().setProperty("download.duplicate", "resume");
+			Preferences.instance().setProperty("queue.download.duplicate", "resume");
 		else if (sender.selectedItem().title().equals(USE_A_SIMILAR_NAME))
-			Preferences.instance().setProperty("download.duplicate", "similar");
+			Preferences.instance().setProperty("queue.download.duplicate", "similar");
 	}
 
 	private NSPopUpButton transfermodeCombobox; //IBOutlet
@@ -707,7 +705,6 @@ public class CDPreferencesController {
 
 	public void setWindow(NSWindow window) {
 		this.window = window;
-		this.window.setDelegate(this);
 	}
 	
 	private static NSMutableArray instances = new NSMutableArray();
@@ -715,9 +712,9 @@ public class CDPreferencesController {
 	public static CDPreferencesController instance() {
 		if (null == instance) {
 			instance = new CDPreferencesController();
-		}
-		if (false == NSApplication.loadNibNamed("Preferences", instance)) {
-			log.fatal("Couldn't load Preferences.nib");
+			if (false == NSApplication.loadNibNamed("Preferences", instance)) {
+				log.fatal("Couldn't load Preferences.nib");
+			}
 		}
 		return instance;
 	}
@@ -736,7 +733,6 @@ public class CDPreferencesController {
 	}
 
 	public void windowWillClose(NSNotification notification) {
-		this.window().setDelegate(null);
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 		instances.removeObject(this);
 	}
@@ -748,8 +744,8 @@ public class CDPreferencesController {
 					NSArray selected = sheet.filenames();
 					String filename;
 					if ((filename = (String) selected.lastObject()) != null) {
-						Preferences.instance().setProperty("connection.download.folder", filename);
-						this.downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
+						Preferences.instance().setProperty("queue.download.folder", filename);
+						this.downloadPathField.setStringValue(Preferences.instance().getProperty("queue.download.folder"));
 					}
 					break;
 				}

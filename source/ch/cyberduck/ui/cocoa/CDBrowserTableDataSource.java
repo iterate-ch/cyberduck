@@ -74,7 +74,8 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			return icon;
 		}
 		if (identifier.equals("FILENAME")) {
-			return Codec.decode(p.getName());
+			return p.getName();
+//			return Codec.decode(p.getName());
 		}
 		else if (identifier.equals("SIZE"))
 			return Status.getSizeAsString(p.status.getSize());
@@ -224,12 +225,12 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			NSMutableArray promisedDragNames = new NSMutableArray();
 			for (int i = 0; i < promisedDragPaths.length; i++) {
 				try {
-					//@todo url decoding still needed?
-					this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"), Codec.decode(this.promisedDragPaths[i].getName())));
+					this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"), 
+																 this.promisedDragPaths[i].getName()));
 					CDQueueController.instance().addItem(
 					    new Queue(this.promisedDragPaths[i], Queue.KIND_DOWNLOAD),
 					    true);
-					promisedDragNames.addObject(Codec.decode(this.promisedDragPaths[i].getName()));
+					promisedDragNames.addObject(this.promisedDragPaths[i].getName());
 				}
 				catch (java.io.UnsupportedEncodingException e) {
 					log.error(e.getMessage());

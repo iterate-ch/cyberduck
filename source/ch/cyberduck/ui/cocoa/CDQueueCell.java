@@ -86,22 +86,24 @@ public class CDQueueCell extends CDTableCell {
 
 		fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE, cellPoint.y() + 32 + SPACE), NSImage.CompositeSourceOver);
 		arrowIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE * 2, cellPoint.y() + 32 + SPACE * 2), NSImage.CompositeSourceOver);
-
+		
 		// drawing path properties
 		// local file
 		NSGraphics.drawAttributedString(
-		    new NSAttributedString(Codec.decode(Codec.decode(queue.getRoot().getName())),
-		        boldFont),
-		    new NSRect(cellPoint.x() + BORDER + SPACE,
-		        cellPoint.y() + SPACE,
-		        cellSize.width() - BORDER - SPACE,
-		        cellSize.height())
+			//		    new NSAttributedString(Codec.decode(queue.getRoot().getName())),
+			new NSAttributedString(queue.getRoot().getName(),
+								   boldFont),
+			new NSRect(cellPoint.x() + BORDER + SPACE,
+					   cellPoint.y() + SPACE,
+					   cellSize.width() - BORDER - SPACE,
+					   cellSize.height())
 		);
 		// remote url
 		NSGraphics.drawAttributedString(
 		    new NSAttributedString(queue.getRoot().getHost().getProtocol()+"://"+
 								   queue.getRoot().getHost().getHostname() + 
-								   Codec.decode(queue.getRoot().getAbsolute()),
+								   queue.getRoot().getAbsolute(),
+//								   Codec.decode(queue.getRoot().getAbsolute()),
 		        tinyFont),
 		    new NSRect(cellPoint.x() + BORDER + SPACE,
 		        cellPoint.y() + 20,

@@ -128,6 +128,7 @@ public class SFTPSession extends Session {
 	}
 
 	public synchronized void mount() {
+		this.log("Mounting " + host.getHostname() + "...", Message.PROGRESS);
 		new Thread() {
 			public void run() {
 				try {

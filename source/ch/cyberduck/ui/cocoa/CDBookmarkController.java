@@ -45,7 +45,6 @@ public class CDBookmarkController {
 
 	public void setWindow(NSWindow window) {
 		this.window = window;
-		this.window.setDelegate(this);
 	}
 
 	private NSPopUpButton protocolPopup; // IBOutlet
@@ -144,12 +143,6 @@ public class CDBookmarkController {
 		    NSControl.ControlTextDidChangeNotification,
 		    usernameField);
 		this.updateFields();
-	}
-
-	public void windowWillClose(NSNotification notification) {
-		this.window().setDelegate(null);
-		NSNotificationCenter.defaultCenter().removeObserver(this);
-		instances.removeObject(this);
 	}
 
 	private NSTextField pkLabel;
@@ -253,5 +246,10 @@ public class CDBookmarkController {
 
 	public NSWindow window() {
 		return this.window;
+	}
+	
+	public void windowWillClose(NSNotification notification) {
+		NSNotificationCenter.defaultCenter().removeObserver(this);
+		instances.removeObject(this);
 	}
 }

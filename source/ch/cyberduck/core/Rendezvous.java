@@ -50,7 +50,9 @@ public class Rendezvous extends Observable implements ServiceListener {
 	public void init() {
 		log.debug("init");
 		try {
+			log.debug(">> new jmDNS");
 			this.jmDNS = new JmDNS();
+			log.debug("<< new jmDNS");
 			for (int i = 0; i < serviceTypes.length; i++) {
 				log.info("Adding Rendezvous service listener for " + serviceTypes[i]);
 				this.jmDNS.addServiceListener(serviceTypes[i], this);
@@ -59,7 +61,6 @@ public class Rendezvous extends Observable implements ServiceListener {
 		catch (IOException e) {
 			log.error(e.getMessage());
 		}
-		log.debug("init-done");
 	}
 
 	public void quit() {

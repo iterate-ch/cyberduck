@@ -78,7 +78,7 @@ public class CDFolderController {
 		sheet.orderOut(null);
 		switch (returncode) {
 			case (NSAlertPanel.DefaultReturn):
-				((Path) contextInfo).mkdir(Codec.encode(folderField.stringValue()));
+				((Path) contextInfo).mkdir(folderField.stringValue());
 				break;
 			case (NSAlertPanel.AlternateReturn):
 				break;

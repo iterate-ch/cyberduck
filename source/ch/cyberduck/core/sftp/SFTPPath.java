@@ -88,23 +88,6 @@ public class SFTPPath extends Path {
 		return copy;
 	}
 
-	public Path getParent() {
-		String abs = this.getAbsolute();
-		if ((null == parent)) {
-			int index = abs.lastIndexOf('/');
-			String dirname = abs;
-			if (index > 0)
-				dirname = abs.substring(0, index);
-			else if (index == 0) //parent is root
-				dirname = "/";
-			else if (index < 0)
-				dirname = session.workdir().getAbsolute();
-			parent = new SFTPPath(session, dirname);
-		}
-		log.debug("getParent:" + parent);
-		return parent;
-	}
-
 	public Session getSession() {
 		return this.session;
 	}
@@ -419,7 +402,9 @@ public class SFTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			this.upload(out, in);
-			this.changePermissions(this.getLocal().getPermission().getDecimalCode(), false);
+			if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
+				this.changePermissions(this.getLocal().getPermission().getDecimalCode(), false);
+			}
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);

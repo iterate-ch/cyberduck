@@ -107,8 +107,8 @@ public abstract class Preferences {
 		defaults.put("browser.horizontalLines", "true");
 		defaults.put("browser.openByDefault", "true");
 		defaults.put("browser.showHidden", "false");
-		defaults.put("browser.encoding", "UTF-8");
-		defaults.put("browser.decoding", "UTF-8");
+//		defaults.put("browser.charset.decoding", "UTF-8");
+		defaults.put("browser.charset.encoding", "ISO-8859-1");
 
 		defaults.put("history.size", "10");
 		defaults.put("history.save", "true");
@@ -119,11 +119,12 @@ public abstract class Preferences {
 		defaults.put("queue.save", "true");
 		defaults.put("queue.removeItemWhenComplete", "false");
 		defaults.put("queue.postProcessItemWhenComplete", "false");
+		defaults.put("queue.download.folder", System.getProperty("user.home"));
+		defaults.put("queue.download.duplicate", "ask");
+		defaults.put("queue.upload.changePermissions", "true");
 
 		defaults.put("connection.login.name", System.getProperty("user.name"));
 		defaults.put("connection.login.useKeychain", "true");
-		defaults.put("connection.download.folder", System.getProperty("user.home"));
-		defaults.put("download.duplicate", "ask");
 
 		//defaults.put("files.encode", "true");
 		//Connection
@@ -133,7 +134,6 @@ public abstract class Preferences {
 		defaults.put("connection.buffer.default", "4096");
 		defaults.put("connection.port.default", "21");
 		defaults.put("connection.protocol.default", "ftp");
-		//        defaults.put("connection.path.default", "~");
 
 		//ftp properties
 		defaults.put("ftp.anonymous.name", "anonymous");
