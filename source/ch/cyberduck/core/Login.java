@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.LoginController;
 
+import com.apple.cocoa.foundation.NSAutoreleasePool;
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
@@ -55,7 +56,10 @@ public class Login {
 
 	public String getPasswordFromKeychain() {
 //		log.debug("getPasswordFromKeychain:" + this.toString());
-		return this.getPasswordFromKeychain(this.service, this.user);
+		int pool = NSAutoreleasePool.push();
+		String pass = this.getPasswordFromKeychain(this.service, this.user);
+		NSAutoreleasePool.pop(pool);
+		return pass;
 	}
 
 	//void addpwdtokeychain( const char *service, const char *account, const char *password );
@@ -64,7 +68,9 @@ public class Login {
 	public void addPasswordToKeychain() {
 //		log.debug("addPasswordToKeychain:" + this.toString());
 		if(this.addToKeychain) {
+			int pool = NSAutoreleasePool.push();
 			this.addPasswordToKeychain(this.service, this.user, this.pass);
+			NSAutoreleasePool.pop(pool);
 		}
 	}
 

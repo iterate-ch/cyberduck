@@ -1176,8 +1176,7 @@ public class CDBrowserController implements Observer {
                     return p.attributes.getOwner();
                 }
                 else if (identifier.equals("PERMISSIONS")) {
-					return p.attributes.getPermission().getMask();
-//                    return p.attributes.getPermission().toString();
+                    return p.attributes.getPermission().toString();
                 }
                 throw new IllegalArgumentException("Unknown identifier: " + identifier);
             }

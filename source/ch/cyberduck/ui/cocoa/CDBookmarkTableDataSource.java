@@ -31,18 +31,20 @@ import ch.cyberduck.core.Host;
 public class CDBookmarkTableDataSource extends CDTableDataSource {
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
-    private NSArray draggedRows;	// keep track of which row got dragged
+    private NSArray draggedRows; // keep track of which row got dragged
 
     public int numberOfRowsInTableView(NSTableView tableView) {
         return CDBookmarksImpl.instance().size();
     }
+	
+	private static NSImage documentIcon = NSImage.imageNamed("cyberduck-document.icns");
 
     //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
         if (row < this.numberOfRowsInTableView(tableView)) {
             String identifier = (String) tableColumn.identifier();
             if (identifier.equals("ICON")) {
-                return NSImage.imageNamed("cyberduck-document.icns");
+                return documentIcon;
             }
             if (identifier.equals("BOOKMARK")) {
                 return (Host) CDBookmarksImpl.instance().getItem(row);
