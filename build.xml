@@ -40,6 +40,10 @@
 	<property name="resources" value="${home}/resources"/>
 	<property name="doc" value="${home}/doc"/>
 
+	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+	    <classpath refid="build.classpath"/>
+	</taskdef>
+
     <path id="test.classpath">
         <path refid="build.classpath"/>
         <pathelement location="${build.classes}"/>
@@ -55,7 +59,7 @@
 		<fileset dir="${lib}">
 			<include name="*.jar"/>
 		</fileset>
-	</path>
+    </path>
 
 	<!-- mac os x properties-->
 	<property name="app.name" value="Cyberduck"/>
@@ -93,13 +97,14 @@
 		<exec executable="buildDMG.pl" spawn="false">
 		    <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor} -buildDir ${build} -compressionLevel 9 -volSize 15 ${build}/${app.name}.app ${app.name}\ FAQ.rtfd ${app.name}\ Website.webloc Donate.webloc English.lproj/License.txt Credits.html"/>
 		</exec>
-<!--
+	</target>
+
+	<target name="scp">
 		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"
 		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/" 
 		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
 		       passphrase="">
 		</scp>
--->
 	</target>
 
 	<target name="build" depends="archive" description="Compile, jar and copy to application bundle"> 

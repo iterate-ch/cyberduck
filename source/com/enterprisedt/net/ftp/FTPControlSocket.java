@@ -243,7 +243,7 @@ public class FTPControlSocket {
 	 *               in passive mode
 	 * @return connected data socket
 	 */
-	private FTPDataSocket createDataSocket(FTPConnectMode connectMode)
+	protected FTPDataSocket createDataSocket(FTPConnectMode connectMode)
 	    throws IOException, FTPException {
 
 		if(connectMode == FTPConnectMode.ACTIVE) {
@@ -444,7 +444,7 @@ public class FTPControlSocket {
 	 *
 	 * @return structured reply object
 	 */
-	private FTPReply readReply()
+	protected FTPReply readReply()
 	    throws IOException {
 
 		String line = reader.readLine();
@@ -505,7 +505,7 @@ public class FTPControlSocket {
 	 * @param reply             the entire reply string we received
 	 * @param expectedReplyCode the reply we expected to receive
 	 */
-	private FTPReply validateReply(String reply, String expectedReplyCode)
+	protected FTPReply validateReply(String reply, String expectedReplyCode)
 	    throws FTPException {
 
 		FTPReply replyObj = new FTPReply(reply);
