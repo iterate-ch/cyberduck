@@ -8,19 +8,17 @@
 	<string>Cyberduck-2.1beta2.dmg.gz</string>
 	<key>comment</key>
         <string>Changelog:
-- Files and foldes can now be dragged to the Finder to download them.
 - Localization support
+- Files and foldes can now be dragged to the Finder to download them.
 - Windows do now no more stack exactly on the top of prior one.
 - There are now equivalent menu actions for the toolbar items.
 - Modification dates and time are now displayed correctly.
-- Browser columns are now sortable in both directions.
 - The modification date column is now sorted correctly.
+- Browser columns are now sortable in both directions.
 - When deleting multiple files and directores, the file list will now only get updated at the end because of performance.
 - If multiples have been selected to transfer, Cyberduck now puts them in the same queue and opens only one connection to the server.
 - There is a new command 'Go to folder' for changing the working directory quickly.
 - Smaller bug fixes.
-
-
         </string>
     </dict>
 </plist>

@@ -386,13 +386,16 @@ public class CDBrowserController implements Observer {
 	switch(returnCode) {
 	    case(NSAlertPanel.DefaultReturn):
 		Vector files = (Vector)contextInfo;
-		Iterator i = files.iterator();
-		while(i.hasNext()) {
-		    Path p = (Path)i.next();
-		    p.delete();
+		if(files.size() > 0) {
+		    Iterator i = files.iterator();
+		    Path p = null;
+		    while(i.hasNext()) {
+			p = (Path)i.next();
+			p.delete();
+		    }
 		    p.getParent().list();
 		}
-		break;
+		    break;
 	    case(NSAlertPanel.AlternateReturn):
 		break;
 	}

@@ -97,10 +97,15 @@ public abstract class Preferences {
 	defaults.put("website.update.xml" , "http://update.cyberduck.ch/versionlist.xml");
 	defaults.put("website.update" , "http://cyberduck.ch/");
 	defaults.put("website.home" , "http://cyberduck.ch/");
+
 	defaults.put("browser.opendefault", "true");
 	defaults.put("browser.showHidden", "false");
 	defaults.put("transfer.close", "false");
+	
 	defaults.put("history.size", "10");
+	defaults.put("history.save", "true");
+
+	defaults.put("favorites.save", "true");
 
         defaults.put("connection.login.name", System.getProperty("user.name"));
         defaults.put("connection.download.folder", System.getProperty("user.home"));
@@ -108,7 +113,7 @@ public abstract class Preferences {
 //	defaults.put("download.duplicate.similar", "false");
 //	defaults.put("download.duplicate.resume", "false");
 //	defaults.put("download.duplicate.overwrite", "false");
-	defaults.put("download.duplicate", "ask");
+	defaults.put("download.duplicate", "similar");
 	
         //defaults.put("files.encode", "true");
 	defaults.put("connection.download.postprocess", "false");

@@ -54,31 +54,33 @@ public class CDHistoryImpl extends History { //implements NSComboBox.DataSource 
     }
 
     public void save() {
-	log.debug("save");
-	try {
-	    Iterator i = super.getIterator();
+	if(Preferences.instance().getProperty("history.save").equals("true")) {
+	    log.debug("save");
+	    try {
+		Iterator i = super.getIterator();
 
-	    NSMutableArray data = new NSMutableArray();
-	    int no = 0;
-	    int size = Integer.parseInt(Preferences.instance().getProperty("history.size"));
-	    while(i.hasNext() && no < size) {
-		data.addObject(((Host)i.next()).getURL());
-		no++;
-	    }
-	    NSMutableData collection = new NSMutableData();
-	    collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(data));
-	    
+		NSMutableArray data = new NSMutableArray();
+		int no = 0;
+		int size = Integer.parseInt(Preferences.instance().getProperty("history.size"));
+		while(i.hasNext() && no < size) {
+		    data.addObject(((Host)i.next()).getURL());
+		    no++;
+		}
+		NSMutableData collection = new NSMutableData();
+		collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(data));
+		
 	    // data is written to a backup location, and then, assuming no errors occur, the backup location is renamed to the specified name
-	    if(collection.writeToURL(HISTORY_FILE.toURL(), true))
-		log.info("History sucessfully saved in :"+ HISTORY_FILE.toString());
-	    else
-		log.error("Error saving History in :"+ HISTORY_FILE.toString());
-	}
-	catch(java.net.MalformedURLException e) {
-	    log.error(e.getMessage());
+		if(collection.writeToURL(HISTORY_FILE.toURL(), true))
+		    log.info("History sucessfully saved in :"+ HISTORY_FILE.toString());
+		else
+		    log.error("Error saving History in :"+ HISTORY_FILE.toString());
+	    }
+	    catch(java.net.MalformedURLException e) {
+		log.error(e.getMessage());
+	    }
 	}
     }
-
+    
     public void load() {
 	log.debug("load");
 	if(HISTORY_FILE.exists()) {

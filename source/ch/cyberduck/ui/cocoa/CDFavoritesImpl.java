@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Favorites;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Host;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -54,24 +55,26 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
 
     public void save() {
 	log.debug("save");
-	try {
-	    Iterator i = super.getIterator();
+	if(Preferences.instance().getProperty("favorites.save").equals("true")) {
+	    try {
+		Iterator i = super.getIterator();
 
-	    NSMutableArray data = new NSMutableArray();
-	    while(i.hasNext()) {
-		data.addObject(((Host)i.next()).getURL());
-	    }
-	    NSMutableData collection = new NSMutableData();
-	    collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(data));
-
+		NSMutableArray data = new NSMutableArray();
+		while(i.hasNext()) {
+		    data.addObject(((Host)i.next()).getURL());
+		}
+		NSMutableData collection = new NSMutableData();
+		collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(data));
+		
 	    // data is written to a backup location, and then, assuming no errors occur, the backup location is renamed to the specified name
-	    if(collection.writeToURL(FAVORTIES_FILE.toURL(), true))
-		log.info("Favorites sucessfully saved in :"+FAVORTIES_FILE.toString());
-	    else
-		log.error("Error saving Favorites in :"+FAVORTIES_FILE.toString());
-	}
-	catch(java.net.MalformedURLException e) {
-	    log.error(e.getMessage());
+		if(collection.writeToURL(FAVORTIES_FILE.toURL(), true))
+		    log.info("Favorites sucessfully saved in :"+FAVORTIES_FILE.toString());
+		else
+		    log.error("Error saving Favorites in :"+FAVORTIES_FILE.toString());
+	    }
+	    catch(java.net.MalformedURLException e) {
+		log.error(e.getMessage());
+	    }
 	}
     }
 

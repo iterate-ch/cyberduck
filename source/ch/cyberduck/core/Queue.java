@@ -130,21 +130,17 @@ public class Queue extends Observable implements Observer { //Thread {
 	this.callObservers((Message)arg);
     }
 
-//    private void prepare() {
-//	for(int i = 0; i < roots.length; i ++) {
-//	    roots[i].fillQueue(jobs[i], session, kind);
-//	}
-//  }
-
     private void process() {
 	log.debug("process");
 
 	for(int i = 0; i < roots.length; i ++) {
 	    jobs[i] = new ArrayList();
-	    log.debug("Filling queue of root element "+roots[i]);
-	    roots[i].fillQueue(jobs[i], kind);
+	    if(this.validator.validate(roots[i], kind)) {
+		log.debug("Filling queue of root element "+roots[i]);
+		roots[i].fillQueue(jobs[i], kind);
+	    }
 	}
-	
+
 	for(int i = 0; i < roots.length; i ++) {
 	    //Iterating over all the files in the queue
 	    this.callObservers(roots[i]);
@@ -157,24 +153,24 @@ public class Queue extends Observable implements Observer { //Thread {
 		this.candidate.status.addObserver(this);
 
 		this.callObservers(new Message(Message.PROGRESS, KIND_DOWNLOAD == kind ? "Downloading "+candidate.getName()+" ("+(this.processedJobs()+1)+" of "+(this.numberOfJobs())+")" : "Uploading "+candidate.getName()+" ("+(this.processedJobs())+" of "+(this.numberOfJobs())+")"));
-
-		if(this.validator.validate(candidate, kind)) {
-		    log.debug("Validation sucessfull");
-		    switch(kind) {
-			case KIND_DOWNLOAD:
-			    candidate.download();
-			    break;
-			case KIND_UPLOAD:
-			    candidate.upload();
-			    break;
-		    }
-		    if(candidate.status.isComplete()) {
-			this.processedJobs++;
-			current += candidate.status.getCurrent();
-		    }
-		}
-		this.candidate.status.deleteObserver(this);
 		
+//		if(this.validator.validate(candidate, kind)) {
+		log.debug("Validation sucessfull");
+		switch(kind) {
+		    case KIND_DOWNLOAD:
+			candidate.download();
+			break;
+		    case KIND_UPLOAD:
+			candidate.upload();
+			break;
+		}
+		if(candidate.status.isComplete()) {
+		    this.processedJobs++;
+		    current += candidate.status.getCurrent();
+		}
+//		}
+		this.candidate.status.deleteObserver(this);
+
 		this.progressTimer.stop();
 		this.leftTimer.stop();
 	    }

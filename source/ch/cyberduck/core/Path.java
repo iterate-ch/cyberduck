@@ -98,7 +98,6 @@ public abstract class Path {
 	* @param pathname The absolute path of the file
      */
     public void setPath(String pathname) {
-//	log.debug("setPath:"+pathname);
         this.path = pathname;
     }
 

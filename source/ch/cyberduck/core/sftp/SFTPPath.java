@@ -109,7 +109,7 @@ public class SFTPPath extends Path {
 //		log.debug(x.getAbsolutePath());
 
 		if(!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
-		    SFTPPath p = new SFTPPath(session, SFTPPath.this.getAbsolute(), x.getFilename());
+		    SFTPPath p = new SFTPPath(session, this.getAbsolute(), x.getFilename());
 		    if(p.getName().charAt(0) == '.' && !showHidden) {
 			p.attributes.setVisible(false);
 		    }

@@ -90,7 +90,6 @@ public class CDBrowserTable extends NSTableView implements Observer {
     }
 
     public boolean performKeyEquivalent(NSEvent e) {
-	log.debug(e);
 	if(e.modifierFlags() == NSEvent.CommandKeyMask) {
 	//left arrow key
 //60871 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.4 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=123
@@ -99,6 +98,7 @@ public class CDBrowserTable extends NSTableView implements Observer {
 //	61063 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.6 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=126
 //	61063 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - character:?
 	    if(e.keyCode() == 126) {
+		log.debug(e);
 		if(this.workdir != null) {
 		    this.workdir.getParent().list();
 		    return true;
@@ -108,6 +108,7 @@ public class CDBrowserTable extends NSTableView implements Observer {
 //	61254 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.7 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=125
 //	61255 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - character:?
 	    if(e.keyCode() == 125) {
+		log.debug(e);
 		this.browserTableViewDidClickTableRow(e);
 		return true;
 	    }

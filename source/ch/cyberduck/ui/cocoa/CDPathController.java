@@ -63,11 +63,7 @@ public class CDPathController implements Observer {
 		    this.addItem(p);
 		}
 	    }
-	    else
-		log.error("Unknown argument of type'"+arg.getClass()+"'");
 	}
-	else
-	    log.error("Unknown argument of type'"+arg.getClass()+"'");
     }
 
 //    public void clear() {

@@ -317,52 +317,55 @@ public class CDTransferController implements Observer, Validator {
 		log.debug("resume:false");
 		if(path.getLocal().exists()) {
 		    log.debug("local path exists:true");
-		    if(Preferences.instance().getProperty("download.duplicate").equals("ask")) {
-			log.debug("download.duplicate:ask");
-			NSAlertPanel.beginCriticalAlertSheet(
-					NSBundle.localizedString("File exists"), //title
-					NSBundle.localizedString("Resume"),// defaultbutton
-					NSBundle.localizedString("Cancel"),//alternative button
-					NSBundle.localizedString("Overwrite"),//other button
-					this.window(),
-					this, //delegate
-					new NSSelector
-					(
-      "validateSheetDidEnd",
-      new Class[]
-      {
-	  NSWindow.class, int.class, Object.class
-      }
-      ),// end selector
-					null, // dismiss selector
-					path, // context
-					NSBundle.localizedString("The file")+" "+path.getName()+" "+NSBundle.localizedString("alredy exists in")+" "+path.getLocal().getParent()+"." // message
-					);
-			while(!done) {
-			    try {
-				log.debug("Sleeping...");
-				Thread.sleep(500); //milliseconds
-			    }
-			    catch(InterruptedException e) {
-				log.error(e.getMessage());
-			    }
-			}
-			log.debug("return:"+proceed);
-			return proceed;
-		    }
-		    else if(Preferences.instance().getProperty("download.duplicate").equals("similar")) {
+//		    if(Preferences.instance().getProperty("download.duplicate").equals("ask")) {
+//			log.debug("download.duplicate:ask");
+//			NSAlertPanel.beginCriticalAlertSheet(
+//					NSBundle.localizedString("File exists"), //title
+//					NSBundle.localizedString("Resume"),// defaultbutton
+//					NSBundle.localizedString("Cancel"),//alternative button
+//					NSBundle.localizedString("Overwrite"),//other button
+//					this.window(),
+//					this, //delegate
+//					new NSSelector
+//					(
+//    "validateSheetDidEnd",
+//      new Class[]
+//      {
+//	  NSWindow.class, int.class, Object.class
+//      }
+//      ),// end selector
+//					null, // dismiss selector
+//					path, // context
+//					NSBundle.localizedString("The file")+" "+path.getName()+" "+NSBundle.localizedString("alredy exists in")+" "+path.getLocal().getParent()+"." // message
+//					);
+//			while(!done) {
+//			    try {
+//				log.debug("Sleeping...");
+//				Thread.sleep(500); //milliseconds
+//			    }
+//			    catch(InterruptedException e) {
+//				log.error(e.getMessage());
+//			    }
+//			}
+//			log.debug("return:"+proceed);
+//			return proceed;
+//		    }
+		    if(Preferences.instance().getProperty("download.duplicate").equals("similar")) {
 			log.debug("download.duplicate:similar");
 			path.status.setResume(false);
-			String fn = null;
-			String filename = path.getLocal().getAbsolutePath();
+			String proposal = null;
+			String parent = path.getLocal().getParent();
+			String filename = path.getLocal().getName();
 			int no = 1;
 			int index = filename.lastIndexOf(".");
-			do {
-			    fn = filename.substring(0, index) + "_" + no + filename.substring(index);
-			    path.setLocal(new java.io.File(fn));
+			while(path.getLocal().exists()) {
+			    if(index != -1)
+				proposal = filename.substring(0, index)+"-"+no+filename.substring(index);
+			    else
+				proposal = filename+"-"+no;
+			    path.setLocal(new java.io.File(parent, proposal));
 			    no++;
 			}
-			while(path.getLocal().exists());
 			this.init();
 			log.debug("return:true");
 			return true;

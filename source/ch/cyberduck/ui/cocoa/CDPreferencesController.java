@@ -41,7 +41,7 @@ public class CDPreferencesController {
     private static final String PROTOCOL_FTP = NSBundle.localizedString("FTP");
     private static final String PROTOCOL_SFTP = NSBundle.localizedString("SFTP");
 
-    private static final String ASK_ME_WHAT_TO_DO = NSBundle.localizedString("Ask me what to do");
+//    private static final String ASK_ME_WHAT_TO_DO = NSBundle.localizedString("Ask me what to do");
     private static final String OVERWRITE_EXISTING_FILE = NSBundle.localizedString("Overwrite existing file");
     private static final String TRY_TO_RESUME_TRANSFER = NSBundle.localizedString("Try to resume transfer");
     private static final String USE_A_SIMILAR_NAME = NSBundle.localizedString("Use similar name");
@@ -245,10 +245,10 @@ public class CDPreferencesController {
 	this.duplicateCombo.setTarget(this);
 	this.duplicateCombo.setAction(new NSSelector("duplicateComboClicked", new Class[] {NSPopUpButton.class}));
 	this.duplicateCombo.removeAllItems();	
-	this.duplicateCombo.addItemsWithTitles(new NSArray(new String[]{ASK_ME_WHAT_TO_DO, OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
-	if(Preferences.instance().getProperty("download.duplicate").equals("ask"))
-	    this.duplicateCombo.setTitle(ASK_ME_WHAT_TO_DO);
-	else if(Preferences.instance().getProperty("download.duplicate").equals("overwrite"))
+	this.duplicateCombo.addItemsWithTitles(new NSArray(new String[]{OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
+//	if(Preferences.instance().getProperty("download.duplicate").equals("ask"))
+//	    this.duplicateCombo.setTitle(ASK_ME_WHAT_TO_DO);
+	if(Preferences.instance().getProperty("download.duplicate").equals("overwrite"))
 	    this.duplicateCombo.setTitle(OVERWRITE_EXISTING_FILE);
 	else if(Preferences.instance().getProperty("download.duplicate").equals("resume"))
 	    this.duplicateCombo.setTitle(TRY_TO_RESUME_TRANSFER);
@@ -257,9 +257,9 @@ public class CDPreferencesController {
     }
 
     public void duplicateComboClicked(NSPopUpButton sender) {
-	if(sender.selectedItem().title().equals(ASK_ME_WHAT_TO_DO))
-	    Preferences.instance().setProperty("download.duplicate", "ask");
-	else if(sender.selectedItem().title().equals(OVERWRITE_EXISTING_FILE))
+//	if(sender.selectedItem().title().equals(ASK_ME_WHAT_TO_DO))
+//	    Preferences.instance().setProperty("download.duplicate", "ask");
+	if(sender.selectedItem().title().equals(OVERWRITE_EXISTING_FILE))
 	    Preferences.instance().setProperty("download.duplicate", "overwrite");
 	else if(sender.selectedItem().title().equals(TRY_TO_RESUME_TRANSFER))
 	    Preferences.instance().setProperty("download.duplicate", "resume");
