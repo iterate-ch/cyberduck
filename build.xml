@@ -66,7 +66,12 @@
 	<property name="app.java" value="${app.resources}/Java"/>
 
 	<target name="init" depends="manifest">
-		<tstamp/>
+	  <tstamp>
+		  <format   property="touch.time" 
+					pattern="dd/MM/yyyy hh:mm aa"
+					timezone="GMT+1"
+					locale="en"/>
+	  </tstamp>
 		<echo message="ant version:   ${ant.version}"/>
 		<echo message="java version:  ${ant.java.version}"/>
 		<echo message=""/>
@@ -151,8 +156,25 @@
 			dir="${app.contents}"
 			token="*version*"
 			value="${cyberduck.version.major}.${cyberduck.version.minor}"
-			summary="true">
-			<include name="*.plist"/>
+			summary="true"
+			encoding="UTF-8">
+			<include name="Info.plist"/>
+		</replace>
+		<replace
+			dir="${app.resources}"
+			token="*version*"
+			value="${cyberduck.version.major}.${cyberduck.version.minor}"
+			summary="true"
+			encoding="UTF-16">
+			<include name="*.lproj/InfoPlist.strings"/>
+		</replace>
+		<replace
+			dir="${app.resources}"
+			token="*date*"
+			value="${touch.time}"
+			summary="true"
+			encoding="UTF-16">
+			<include name="*.lproj/InfoPlist.strings"/>
 		</replace>
 	</target>
 
