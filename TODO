@@ -14,6 +14,8 @@
 [OPEN] SSH Agent Authentication
 [OPEN] Kerberos (GSSAPI) Authentication
 [OPEN] Column View in browser window
+[OPEN] Grouping bookmarks
+
 [DONE] Outline View in browser window
 [DONE] Set character encoding per bookmark
 [DONE] History of recently connected hosts in connection dialog
