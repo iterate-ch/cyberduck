@@ -350,7 +350,7 @@ public class SFTPPath extends Path {
 			session.log("Idle", Message.STOP);
 		}
 		catch(SshException e) {
-			session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+			session.log("SSH Error: ("+this.getName()+") "+e.getMessage(), Message.ERROR);
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
@@ -437,7 +437,7 @@ public class SFTPPath extends Path {
 			session.log("Idle", Message.STOP);
 		}
 		catch(SshException e) {
-			session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+			session.log("SSH Error: ("+this.getName()+") "+e.getMessage(), Message.ERROR);
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);

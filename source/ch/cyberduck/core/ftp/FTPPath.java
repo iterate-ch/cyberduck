@@ -354,7 +354,7 @@ public class FTPPath extends Path {
 			session.log("Idle", Message.STOP);
 		}
 		catch(FTPException e) {
-			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+			session.log("FTP Error: ("+this.getName()+") "+e.getMessage(), Message.ERROR);
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
@@ -550,7 +550,7 @@ public class FTPPath extends Path {
 			session.log("Idle", Message.STOP);
 		}
 		catch(FTPException e) {
-			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+			session.log("FTP Error: ("+this.getName()+") "+e.getMessage(), Message.ERROR);
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
