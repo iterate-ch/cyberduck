@@ -1,0 +1,49 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                addBookmarkButtonClicked = id; 
+                backButtonClicked = id; 
+                connectButtonClicked = id; 
+                copyURLButtonClicked = id; 
+                deleteButtonClicked = id; 
+                downloadAsButtonClicked = id; 
+                downloadButtonClicked = id; 
+                editBookmarkButtonClicked = id; 
+                editButtonClicked = id; 
+                folderButtonClicked = id; 
+                gotoButtonClicked = id; 
+                infoButtonClicked = id; 
+                insideButtonClicked = id; 
+                refreshButtonClicked = id; 
+                removeBookmarkButtonClicked = id; 
+                showTransferQueueClicked = id; 
+                toggleBookmarkDrawer = id; 
+                toggleLogDrawer = id; 
+                upButtonClicked = id; 
+            }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {
+                donateMenuClicked = id; 
+                faqMenuClicked = id; 
+                feedbackMenuClicked = id; 
+                helpMenuClicked = id; 
+                licenseMenuClicked = id; 
+                newBrowserMenuClicked = id; 
+                newDownloadMenuClicked = id; 
+                preferencesMenuClicked = id; 
+                updateMenuClicked = id; 
+                websiteMenuClicked = id; 
+            }; 
+            CLASS = "ch.cyberduck.ui.cocoa.CDMainController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {bookmarkMenu = NSMenu; dockMenu = NSMenu; }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}

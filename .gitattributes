@@ -16,6 +16,35 @@ Cyberduck[!!-~]FAQ.rtfd/cyberduck-application.icns -text
 /Cyberduck[!!-~]Website.webloc -text svneol=unset#application/octet-stream
 /Cyberduck.scriptTerminology -text svneol=unset#application/octet-stream
 /Donate.webloc -text svneol=unset#application/octet-stream
+cs.lproj/Bookmark.nib/keyedobjects.nib -text
+cs.lproj/Bookmark.strings svneol=native#unset
+cs.lproj/Browser.nib/keyedobjects.nib -text
+cs.lproj/Browser.strings svneol=native#unset
+cs.lproj/Connection.nib/keyedobjects.nib -text
+cs.lproj/Connection.strings svneol=native#unset
+cs.lproj/Donate.nib/keyedobjects.nib -text
+cs.lproj/Donate.strings svneol=native#unset
+cs.lproj/Download.nib/keyedobjects.nib -text
+cs.lproj/Download.strings svneol=native#unset
+cs.lproj/Folder.nib/keyedobjects.nib -text
+cs.lproj/Folder.strings svneol=native#unset
+cs.lproj/Goto.nib/keyedobjects.nib -text
+cs.lproj/Goto.strings svneol=native#unset
+cs.lproj/Info.nib/keyedobjects.nib -text
+cs.lproj/Info.strings svneol=native#unset
+cs.lproj/Localizable.strings svneol=native#unset
+cs.lproj/Login.nib/keyedobjects.nib -text
+cs.lproj/Login.strings svneol=native#unset
+cs.lproj/Main.nib/keyedobjects.nib -text
+cs.lproj/Main.strings svneol=native#unset
+cs.lproj/Preferences.nib/keyedobjects.nib -text
+cs.lproj/Preferences.strings svneol=native#unset
+cs.lproj/Queue.nib/keyedobjects.nib -text
+cs.lproj/Queue.strings svneol=native#unset
+cs.lproj/Update.nib/keyedobjects.nib -text
+cs.lproj/Update.strings svneol=native#unset
+cs.lproj/Validator.nib/keyedobjects.nib -text
+cs.lproj/Validator.strings svneol=native#unset
 /cyberduck-application.icns svneol=native#unset
 /cyberduck-application.psd -text
 /cyberduck-application.tif -text
