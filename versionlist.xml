@@ -3,20 +3,27 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.4b1</string>
+	<string>2.4b2</string>
 	<key>file</key>
-	<string>Cyberduck-2.4b1.dmg</string>
+	<string>Cyberduck-2.4b2.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.4b2
+- [Feature] Allow the selection of files in the browser by typing more than just the first character of the filename
+- [Feature] A bookmark in the drawer can be selected by typing its hostname
+- [Bugfix] Opening an URL linking to a file opens a browser window
+- [Bugfix] Changing the username of a newly created bookmark of a connected server might affect an existing bookmark of the same server but with a different username.
+- [Bugfix] Don't write PASS to transcript (FTP)
+
 2.4b1
 - [Feature] Synchronization of files
 - [Feature] Create new files on server
 - [Feature] Support for Novell Netware file listings (FTP)
 - [Feature] Growl notification support (see http://growl.info)
 - [Feature] Limit number of concurrent connections to a remote host 
-- [Feature] Move remote files with copy & paste
+- [Feature] Move remote files with copy and paste
 - [Feature] Select a file in the browser by typing its first character
-- [Feature] Put remote files into the transfer queue with copy & paste
+- [Feature] Put remote files into the transfer queue with copy and paste
 - [Feature] Apply permissions recursively
 - [Feature] Option to apply default permissions to transferred files in Preferences
 - [Feature] Option to preserve modification date on download in Preferences
