@@ -258,7 +258,7 @@ public class CDQueueController extends CDController {
 		this.startItem(queue, false);
 	}
 
-	private void startItem(Queue queue, boolean resumeRequested) {
+	private void startItem(final Queue queue, final boolean resumeRequested) {
 		queue.addObserver(new java.util.Observer() {
 			public void update(final java.util.Observable o, final Object arg) {
 				Message msg = (Message)arg;
@@ -286,9 +286,13 @@ public class CDQueueController extends CDController {
 			queue.getHost().setHostKeyVerificationController(new CDHostKeyController(this));
 		}
 		queue.getHost().setLoginController(new CDLoginController(this));
-		queue.start(resumeRequested);
+		new Thread() {
+			public void run() {
+				queue.start(resumeRequested);
+			}
+		}.start();
 	}
-
+	
 	public boolean isVisible() {
 		return this.window() != null && this.window().isVisible();
 	}

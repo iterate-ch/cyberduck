@@ -21,21 +21,21 @@
 			<dict>
 				<key>Attributes</key>
 				<dict>
-					<key>workdir</key>
+					<key>WorkingDirectory</key>
 					<dict>
 						<key>Description</key>
 						<string>The current working directory.</string>
 						<key>Name</key>
 						<string>working directory</string>
 					</dict>
-					<key>encoding</key>
+					<key>Encoding</key>
 					<dict>
 						<key>Description</key>
 						<string>The character set to decode filenames.</string>
 						<key>Name</key>
 						<string>encoding</string>
 					</dict>
-					<key>show hidden</key>
+					<key>ShowHiddenFiles</key>
 					<dict>
 						<key>Description</key>
 						<string>Show hidden files.</string>
@@ -94,7 +94,7 @@
 						<key>Description</key>
 						<string>The initial path to change to after connection is made.</string>
 						<key>Name</key>
-						<string>with initial path</string>
+						<string>with initial directory</string>
 					</dict>
 					<key>Password</key>
 					<dict>
@@ -125,13 +125,6 @@
 				<string>Create a new folder.</string>
 				<key>Name</key>
 				<string>create folder</string>
-			</dict>
-			<key>DeleteFile</key>
-			<dict>
-				<key>Description</key>
-				<string>Delete file.</string>
-				<key>Name</key>
-				<string>delete file</string>
 				<key>Arguments</key>
 				<dict>
 					<key>Path</key>
@@ -143,12 +136,12 @@
 					</dict>
 				</dict>
 			</dict>
-			<key>EditFile</key>
+			<key>DeleteFile</key>
 			<dict>
 				<key>Description</key>
-				<string>Edit file.</string>
+				<string>Delete file.</string>
 				<key>Name</key>
-				<string>edit file</string>
+				<string>delete</string>
 				<key>Arguments</key>
 				<dict>
 					<key>Path</key>
@@ -156,7 +149,7 @@
 						<key>Description</key>
 						<string>The filename.</string>
 						<key>Name</key>
-						<string>with name</string>
+						<string>file</string>
 					</dict>
 				</dict>
 			</dict>
@@ -180,7 +173,21 @@
 						<key>Description</key>
 						<string>The filename.</string>
 						<key>Name</key>
-						<string>with name</string>
+						<string>file</string>
+					</dict>
+					<key>Local</key>
+					<dict>
+						<key>Description</key>
+						<string>The download directory.</string>
+						<key>Name</key>
+						<string>to</string>
+					</dict>
+					<key>Name</key>
+					<dict>
+						<key>Description</key>
+						<string>The name to save the file as.</string>
+						<key>Name</key>
+						<string>as</string>
 					</dict>
 				</dict>
 			</dict>
@@ -197,7 +204,21 @@
 						<key>Description</key>
 						<string>The filename.</string>
 						<key>Name</key>
-						<string>with name</string>
+						<string>file</string>
+					</dict>
+					<key>Remote</key>
+					<dict>
+						<key>Description</key>
+						<string>The upload directory.</string>
+						<key>Name</key>
+						<string>to</string>
+					</dict>
+					<key>Name</key>
+					<dict>
+						<key>Description</key>
+						<string>The name to save the file as.</string>
+						<key>Name</key>
+						<string>as</string>
 					</dict>
 				</dict>
 			</dict>
@@ -206,7 +227,7 @@
 				<key>Description</key>
 				<string>Go to Folder.</string>
 				<key>Name</key>
-				<string>go to</string>
+				<string>change directory</string>
 				<key>Arguments</key>
 				<dict>
 					<key>Path</key>
@@ -214,7 +235,7 @@
 						<key>Description</key>
 						<string>The filename.</string>
 						<key>Name</key>
-						<string>with name</string>
+						<string>to</string>
 					</dict>
 				</dict>
 			</dict>
@@ -231,7 +252,7 @@
 						<key>Description</key>
 						<string>The filename.</string>
 						<key>Name</key>
-						<string>with name</string>
+						<string>directory</string>
 					</dict>
 				</dict>
 			</dict>

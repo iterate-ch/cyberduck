@@ -28,6 +28,14 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
  */
 public class DownloadQueue extends Queue {
 
+	public DownloadQueue() {
+		super();
+	}
+	
+	public DownloadQueue(Path root) {
+		super(root);
+	}
+	
 	public NSMutableDictionary getAsDictionary() {
 		NSMutableDictionary dict = super.getAsDictionary();
 		dict.setObjectForKey(Queue.KIND_DOWNLOAD+"", "Kind");

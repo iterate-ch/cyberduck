@@ -37,7 +37,7 @@
 				<string>NSCoreSuite.NSDocument</string>
 				<key>Attributes</key>
 				<dict>
-					<key>workdir</key>
+					<key>WorkingDirectory</key>
 					<dict>
 						<key>AppleEventCode</key>
 						<string>WoRy</string>
@@ -46,7 +46,7 @@
 						<key>Type</key>
 						<string>NSString</string>
 					</dict>
-					<key>encoding</key>
+					<key>Encoding</key>
 					<dict>
 						<key>AppleEventCode</key>
 						<string>EnCd</string>
@@ -55,14 +55,14 @@
 						<key>Type</key>
 						<string>NSString</string>
 					</dict>
-					<key>show hidden</key>
+					<key>ShowHiddenFiles</key>
 					<dict>
 						<key>AppleEventCode</key>
 						<string>ShHd</string>
 						<key>ReadOnly</key>
 						<string>No</string>
 						<key>Type</key>
-						<string>NSString</string>
+						<string>NSBoolean</string>
 					</dict>
 				</dict>
 				<key>SupportedCommands</key>
@@ -79,8 +79,6 @@
 					<string>handleGotoScriptCommand:</string>
 					<key>CreateFolder</key>
 					<string>handleCreateFolderScriptCommand:</string>
-					<key>EditFile</key>
-					<string>handleEditFileScriptCommand:</string>
 					<key>DeleteFile</key>
 					<string>handleDeleteScriptCommand:</string>
 					<key>Download</key>
@@ -109,15 +107,6 @@
 				<string>NSScriptCommand</string>
 				<key>Arguments</key>
 				<dict>
-					<key>Protocol</key>
-					<dict>
-						<key>AppleEventCode</key>
-						<string>PrCl</string>
-						<key>Optional</key>
-						<string>No</string>
-						<key>Type</key>
-						<string>NSString&lt;Protocols&gt;</string>
-					</dict>
 					<key>Host</key>
 					<dict>
 						<key>AppleEventCode</key>
@@ -126,6 +115,15 @@
 						<string>No</string>
 						<key>Type</key>
 						<string>NSString</string>
+					</dict>
+					<key>Protocol</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PrCl</string>
+						<key>Optional</key>
+						<string>Yes</string>
+						<key>Type</key>
+						<string>NSString&lt;Protocols&gt;</string>
 					</dict>
 					<key>Port</key>
 					<dict>
@@ -210,25 +208,6 @@
 					</dict>
 				</dict>
 			</dict>
-			<key>EditFile</key>
-			<dict>
-				<key>AppleEventCode</key>
-				<string>EdIt</string>
-				<key>CommandClass</key>
-				<string>NSScriptCommand</string>
-				<key>Arguments</key>
-				<dict>
-					<key>Path</key>
-					<dict>
-						<key>AppleEventCode</key>
-						<string>PaTh</string>
-						<key>Optional</key>
-						<string>No</string>
-						<key>Type</key>
-						<string>NSString</string>
-					</dict>
-				</dict>
-			</dict>
 			<key>Download</key>
 			<dict>
 				<key>AppleEventCode</key>
@@ -243,6 +222,24 @@
 						<string>PaTh</string>
 						<key>Optional</key>
 						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+					<key>Local</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>LoAl</string>
+						<key>Optional</key>
+						<string>Yes</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+					<key>Name</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>NaMe</string>
+						<key>Optional</key>
+						<string>Yes</string>
 						<key>Type</key>
 						<string>NSString</string>
 					</dict>
@@ -262,6 +259,24 @@
 						<string>PaTh</string>
 						<key>Optional</key>
 						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+					<key>Remote</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>ReTe</string>
+						<key>Optional</key>
+						<string>Yes</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+					<key>Name</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>NaMe</string>
+						<key>Optional</key>
+						<string>Yes</string>
 						<key>Type</key>
 						<string>NSString</string>
 					</dict>

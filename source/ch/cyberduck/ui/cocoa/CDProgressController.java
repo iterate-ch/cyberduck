@@ -27,7 +27,6 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.growl.Growl;
 
 /**
  * @version $Id$
@@ -120,23 +119,10 @@ public class CDProgressController extends NSObject implements Observer {
 				this.progressBar.setIndeterminate(false);
 				if(queue.isComplete() && !queue.isCanceled()) {
 					if(queue instanceof DownloadQueue) {
-						Growl.instance().notify(NSBundle.localizedString("Download complete",
-						    "Growl Notification"),
-						    queue.getName());
 						if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
 							boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
-							log.debug("Success opening file:"+success);
+							log.info("Success opening file:"+success);
 						}
-					}
-					if(queue instanceof UploadQueue) {
-						Growl.instance().notify(NSBundle.localizedString("Upload complete",
-						    "Growl Notification"),
-						    queue.getName());
-					}
-					if(queue instanceof SyncQueue) {
-						Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
-						    "Growl Notification"),
-						    queue.getName());
 					}
 					if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
 						CDQueueController.instance().removeItem(queue);

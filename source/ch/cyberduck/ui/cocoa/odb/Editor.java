@@ -103,8 +103,6 @@ public class Editor {
 	public void didModifyFile() {
 		log.debug("didModifyFile:"+this.file);
 		this.file.upload();
-		Growl.instance().notify(NSBundle.localizedString("Upload complete", "Growl Notification"),
-		    file.getName());
 		this.file.getParent().list(true);
 	}
 }

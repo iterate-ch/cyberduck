@@ -40,7 +40,7 @@ public class ThreadUtilities {
 		}
 		return instance;
 	}
-
+	
 	public synchronized void invokeLater(Runnable thread) {
 		//log.debug("invokeLater:"+thread);
 		this.queue.add(thread);

@@ -16,6 +16,8 @@ Cyberduck[!!-~]FAQ.rtfd/Pasted[!!-~]Graphic.tiff -text
 Cyberduck[!!-~]FAQ.rtfd/cyberduck-application.icns -text
 /Cyberduck[!!-~]Website.webloc -text svneol=unset#application/octet-stream
 /Donate.webloc -text svneol=unset#application/octet-stream
+/List[!!-~]Sample.scpt -text
+/Open[!!-~]URL[!!-~]Sample.scpt -text
 /Sample.scpt svneol=native#unset
 cs.lproj/Bookmark.nib/keyedobjects.nib -text
 cs.lproj/Bookmark.strings svneol=native#unset

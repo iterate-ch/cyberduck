@@ -38,6 +38,10 @@ public class UploadQueue extends Queue {
 		//
 	}
 
+	public UploadQueue(Path root) {
+		super(root);
+	}
+	
 	public UploadQueue(Path root, Observer callback) {
 		this.callback = callback;
 		this.addRoot(root);

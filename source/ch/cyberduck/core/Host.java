@@ -105,24 +105,14 @@ public class Host {
 		return copy;
 	}
 
-//	private Host(String url) throws java.net.MalformedURLException {
-//		try {
-//			this.protocol = url.substring(0, url.indexOf("://"));
-//			this.hostname = url.substring(url.indexOf("@")+1, url.lastIndexOf(":"));
-//			this.port = Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length()));
-//			this.setCredentials(url.substring(url.indexOf("://")+3, url.lastIndexOf("@")), null);
-//			this.nickname = this.getCredentials().getUsername()+"@"+this.getHostname();
-//		}
-//		catch(NumberFormatException e) {
-//			log.error(e.getMessage());
-//			throw new java.net.MalformedURLException("Not a valid URL: "+url);
-//		}
-//		catch(IndexOutOfBoundsException e) {
-//			log.error(e.getMessage());
-//			throw new java.net.MalformedURLException("Not a valid URL: "+url);
-//		}
-//		log.debug(this.toString());
-//	}
+	/**
+	 * New host with the default protocol
+	 *
+	 * @param hostname The hostname of the server
+	 */
+	public Host(String hostname) {
+		this(Preferences.instance().getProperty("connection.protocol.default"), hostname);
+	}
 
 	/**
 	 * New host with the default protocol for this port
@@ -139,10 +129,9 @@ public class Host {
 	}
 
 	/**
-	 * @param protocol The protocol to use, must be either Session.HTTP, Session.FTP or Session.SFTP
+	 * @param protocol The protocol to use, must be either Session.FTP or Session.SFTP
 	 * @param hostname The hostname of the server
 	 * @param port     The port number to connect to
-	 * @param login    The login credentials to use
 	 */
 	public Host(String protocol, String hostname, int port) {
 		this(protocol, hostname, port, null);

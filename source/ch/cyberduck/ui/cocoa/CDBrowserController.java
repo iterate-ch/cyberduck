@@ -37,6 +37,15 @@ public class CDBrowserController extends CDController implements Observer {
 
 	private static final File HISTORY_FOLDER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
 
+	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
+	
+	static {
+		lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
+	}
+
+	private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
+																							  new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+	
 	static {
 		HISTORY_FOLDER.mkdirs();
 	}
@@ -64,17 +73,68 @@ public class CDBrowserController extends CDController implements Observer {
 		return null;
 	}
 		
-	public Object handleMountScriptCommand(NSScriptCommand command) {
-		log.debug("handleMountScriptCommand:"+command);
-		NSDictionary args = command.evaluatedArguments();
-		Host host = new Host((String)args.objectForKey("Protocol"),
-							 (String)args.objectForKey("Host"));
-		host.setCredentials((String)args.objectForKey("Username"), null);
-		this.mount(host);
+	public String getWorkingDirectory() {
+		if(this.isMounted()) {
+			return this.workdir().getAbsolute();
+		}
 		return null;
 	}
 	
+	public Object handleMountScriptCommand(NSScriptCommand command) {
+		log.debug("handleMountScriptCommand:"+command);
+		NSDictionary args = command.evaluatedArguments();
+		Host host = null;
+		Object portObj = args.objectForKey("Port");
+		if(portObj != null) {
+			Object protocolObj = args.objectForKey("Protocol");
+			if(protocolObj != null) {
+				host = new Host((String)args.objectForKey("Protocol"),
+								(String)args.objectForKey("Host"),
+								Integer.parseInt((String)args.objectForKey("Port")));
+			}
+			else {
+				host = new Host((String)args.objectForKey("Host"),
+								Integer.parseInt((String)args.objectForKey("Port")));
+			}
+		}		
+		else {
+			Object protocolObj = args.objectForKey("Protocol");
+			if(protocolObj != null) {
+				host = new Host((String)args.objectForKey("Protocol"),
+								(String)args.objectForKey("Host"));
+			}
+			else {
+				host = new Host((String)args.objectForKey("Host"));
+			}
+		}
+		Object pathObj = args.objectForKey("InitialPath");
+		if(pathObj != null) {
+			host.setDefaultPath((String)args.objectForKey("InitialPath"));
+		}
+		Object userObj = args.objectForKey("Username");
+		if(userObj != null) {
+			host.setCredentials((String)args.objectForKey("Username"), (String)args.objectForKey("Password"));
+		}
+		this.mount(host);
+		while(!this.isMounted()) {
+			try {
+				Thread.sleep(500);
+			}
+			catch(InterruptedException e) {
+				log.error(e.getMessage());
+			}
+		}
+		return null;
+	}
+	
+	public Object handleDisconnectScriptCommand(NSScriptCommand command) {
+		log.debug("handleDisconnectScriptCommand:"+command);
+		this.unmount();
+		return null;
+	}
+
 	public Object handleListScriptCommand(NSScriptCommand command) {
+		log.debug("handleListScriptCommand:"+command);
 		if(this.isMounted()) {
 			NSDictionary args = command.evaluatedArguments();
 			Path path = PathFactory.createPath(this.workdir().getSession(), 
@@ -89,12 +149,8 @@ public class CDBrowserController extends CDController implements Observer {
 		return null;
 	}
 	
-	public Object handleDisconnectScriptCommand(NSScriptCommand command) {
-		this.unmount();
-		return null;
-	}
-	
 	public Object handleCreateFolderScriptCommand(NSScriptCommand command) {
+		log.debug("handleCreateFolderScriptCommand:"+command);
 		if(this.isMounted()) {
 			NSDictionary args = command.evaluatedArguments();
 			Path path = PathFactory.createPath(this.workdir().getSession(), 
@@ -106,19 +162,8 @@ public class CDBrowserController extends CDController implements Observer {
 		return null;
 	}
 		
-	public Object handleEditFileScriptCommand(NSScriptCommand command) {
-		if(this.isMounted()) {
-			NSDictionary args = command.evaluatedArguments();
-			Path path = PathFactory.createPath(this.workdir().getSession(), 
-												this.workdir().getAbsolute(), 
-												(String)args.objectForKey("Path"));
-			Editor editor = new Editor();
-			editor.open(path);
-		}
-		return null;
-	}
-	
 	public Object handleDeleteScriptCommand(NSScriptCommand command) {
+		log.debug("handleDeleteScriptCommand:"+command);
 		if(this.isMounted()) {
 			NSDictionary args = command.evaluatedArguments();
 			Path path = PathFactory.createPath(this.workdir().getSession(), 
@@ -130,6 +175,7 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 	
 	public Object handleRefreshScriptCommand(NSScriptCommand command) {
+		log.debug("handleRefreshScriptCommand:"+command);
 		if(this.isMounted()) {
 			this.reloadButtonClicked(null);
 		}
@@ -137,6 +183,7 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 	
 	public Object handleGotoScriptCommand(NSScriptCommand command) {
+		log.debug("handleGotoScriptCommand:"+command);
 		if(this.isMounted()) {
 			NSDictionary args = command.evaluatedArguments();
 			Path path = PathFactory.createPath(this.workdir().getSession(), 
@@ -148,23 +195,43 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 
 	public Object handleDownloadScriptCommand(NSScriptCommand command) {
+		log.debug("handleDownloadScriptCommand:"+command);
 		if(this.isMounted()) {
 			NSDictionary args = command.evaluatedArguments();
 			Path path = PathFactory.createPath(this.workdir().getSession(), 
 											   this.workdir().getAbsolute(), 
 											   (String)args.objectForKey("Path"));
-			path.download();
+			Object localObj = args.objectForKey("Local");
+			if(localObj != null) {
+				path.setLocal(new Local((String)localObj, path.getName()));
+			}
+			Object nameObj = args.objectForKey("Name");
+			if(nameObj != null) {
+				path.setLocal(new Local(path.getLocal().getParent(), (String)nameObj));
+			}
+			Queue queue = new DownloadQueue(path);
+			queue.start(false);
 		}
 		return null;
 	}
 
 	public Object handleUploadScriptCommand(NSScriptCommand command) {
+		log.debug("handleUploadScriptCommand:"+command);
 		if(this.isMounted()) {
 			NSDictionary args = command.evaluatedArguments();
 			Path path = PathFactory.createPath(this.workdir().getSession(), 
 											   this.workdir().getAbsolute(), 
 											   new Local((String)args.objectForKey("Path")));
-			path.upload();
+			Object remoteObj = args.objectForKey("Remote");
+			if(remoteObj != null) {
+				path.setPath((String)remoteObj, path.getName());
+			}
+			Object nameObj = args.objectForKey("Name");
+			if(nameObj != null) {
+				path.setPath(this.workdir().getAbsolute(), (String)nameObj);
+			}
+			Queue queue = new UploadQueue(path);
+			queue.start(false);
 		}
 		return null;
 	}
@@ -278,8 +345,9 @@ public class CDBrowserController extends CDController implements Observer {
 				this.progressIndicator.stopAnimation(this);
 				this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
 				this.statusIcon.setNeedsDisplay(true);
-				this.statusLabel.setObjectValue(msg.getContent());
-				this.statusLabel.display();
+				this.statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
+																			  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+//				this.statusLabel.display();
 				this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
 				    (String)msg.getContent(), // message
 				    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
@@ -288,8 +356,9 @@ public class CDBrowserController extends CDController implements Observer {
 				));
 			}
 			else if(msg.getTitle().equals(Message.PROGRESS)) {
-				this.statusLabel.setObjectValue(msg.getContent());
-				this.statusLabel.display();
+				this.statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
+																				 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+//				this.statusLabel.display();
 			}
 			else if(msg.getTitle().equals(Message.REFRESH)) {
 				this.reloadButtonClicked(null);
@@ -330,8 +399,9 @@ public class CDBrowserController extends CDController implements Observer {
 			}
 			else if(msg.getTitle().equals(Message.STOP)) {
 				this.progressIndicator.stopAnimation(this);
-				this.statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
-				this.statusLabel.display();
+				this.statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
+																				 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+//				this.statusLabel.display();
 				ThreadUtilities.instance().invokeLater(new Runnable() {
 					public void run() {
 						CDBrowserController.this.toolbar.validateVisibleItems();
@@ -853,19 +923,27 @@ public class CDBrowserController extends CDController implements Observer {
 		this.encodingPopup.addItemsWithTitles(new NSArray(items));
 		this.encodingPopup.setTitle(Preferences.instance().getProperty("browser.charset.encoding"));
 	}
+	
+	public String getEncoding() {
+		return this.encoding;
+	}
+	
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+		log.info("Encoding changed to:"+this.encoding);
+		this.encodingPopup.setTitle(this.encoding);
+		if(this.isMounted()) {
+			this.workdir().getSession().close();
+			this.reloadButtonClicked(null);
+		}
+	}
 
 	public void encodingButtonClicked(Object sender) {
 		if(sender instanceof NSMenuItem) {
-			this.encoding = ((NSMenuItem)sender).title();
-			this.encodingPopup.setTitle(this.encoding);
+			this.setEncoding(((NSMenuItem)sender).title());
 		}
 		if(sender instanceof NSPopUpButton) {
-			this.encoding = encodingPopup.titleOfSelectedItem();
-		}
-		log.info("Encoding changed to:"+this.encoding);
-		if(this.isMounted()) {
-			this.workdir().getSession().close();
-			this.reloadButtonClicked(sender);
+			setEncoding(encodingPopup.titleOfSelectedItem());
 		}
 	}
 	
@@ -929,7 +1007,8 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void setStatusLabel(NSTextField statusLabel) {
 		this.statusLabel = statusLabel;
-		this.statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
+		this.statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
+																		 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 	}
 
 	private NSTextField infoLabel; // IBOutlet
@@ -1260,14 +1339,25 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 
 	private boolean showHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
+	
+	public boolean showHIddenFiles() {
+		return this.showHiddenFiles;
+	}
+	
+	public void setShowHiddenFiles(boolean showHiddenFiles) {
+		log.debug("setShowHiddenFiles:"+showHiddenFiles);
+		this.showHiddenFiles = showHiddenFiles;
+	}
 
 	public void showHiddenFilesClicked(Object sender) {
 		if(sender instanceof NSMenuItem) {
 			NSMenuItem item = (NSMenuItem)sender;
-			this.showHiddenFiles = item.state() == NSCell.OnState ? false : true;
+			this.setShowHiddenFiles(item.state() == NSCell.OnState ? false : true);
 			item.setState(this.showHiddenFiles ? NSCell.OnState : NSCell.OffState);
 			this.browserTable.deselectAll(null);
-			this.workdir().list(this.encoding, true, this.showHiddenFiles);
+			if(this.isMounted()) {
+				this.workdir().list(this.encoding, true, this.showHiddenFiles);
+			}
 		}
 	}
 
@@ -1345,11 +1435,11 @@ public class CDBrowserController extends CDController implements Observer {
 		}
 	}
 
-	public Path workdir() {
+	private Path workdir() {
 		return this.workdir;
 	}
 
-	public void mount(Host host) {
+	public Session mount(Host host) {
 		log.debug("mount:"+host);
 		if(this.unmount(new NSSelector("mountSheetDidEnd",
 		    new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
@@ -1364,19 +1454,21 @@ public class CDBrowserController extends CDController implements Observer {
 
 			final Session session = SessionFactory.createSession(host);
 			session.addObserver((Observer)this);
-
+			
 			if(session instanceof ch.cyberduck.core.sftp.SFTPSession) {
 				host.setHostKeyVerificationController(new CDHostKeyController(this));
 			}
 			host.setLoginController(new CDLoginController(this));
-			//			new Thread() {
-			//				public void run() {
-			session.mount();
-			//				}
-			//			}.start();
+			new Thread() {
+				public void run() {
+					session.mount();
+				}
+			}.start();
+			return session;
 		}
+		return null;
 	}
-
+	
 	public void mountSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
 		this.unmountSheetDidEnd(sheet, returncode, contextInfo);
 		if(returncode == NSAlertPanel.DefaultReturn) {
@@ -1384,7 +1476,7 @@ public class CDBrowserController extends CDController implements Observer {
 		}
 	}
 
-	public void unmount() {
+	private void unmount() {
 		if(this.isMounted()) {
 			this.workdir().getSession().close();
 			TranscriptFactory.removeImpl(this.workdir().getSession().getHost().getHostname());
@@ -1559,7 +1651,7 @@ public class CDBrowserController extends CDController implements Observer {
 			item.setState(this.showHiddenFiles ? NSCell.OnState : NSCell.OffState);
 		}
 		if(item.action().name().equals("encodingButtonClicked:")) {
-			item.setState(this.encoding.equals(item.title()) ? NSCell.OnState : NSCell.OffState);
+			item.setState(this.encoding.equalsIgnoreCase(item.title()) ? NSCell.OnState : NSCell.OffState);
 		}
 		return this.validateItem(item.action().name());
 	}
@@ -1575,7 +1667,10 @@ public class CDBrowserController extends CDController implements Observer {
 			    && pboard.propertyListForType("QueuePBoardType") != null;
 		}
 		if(identifier.equals("showHiddenFilesClicked:")) {
-			return this.isMounted();
+			return true;
+		}
+		if(identifier.equals("encodingButtonClicked:")) {
+			return true;
 		}
 		if(identifier.equals("addBookmarkButtonClicked:")) {
 			return true;
