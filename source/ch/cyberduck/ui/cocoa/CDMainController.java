@@ -24,7 +24,9 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
-import ch.cyberduck.ui.CDBrowserTableDataSource;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
 
 import org.apache.log4j.Logger;
 
@@ -32,7 +34,10 @@ public class CDMainController extends NSObject {
 
     public NSPanel infoPanel;
     public NSWindow mainWindow;
-    public NSTableView browserView;
+    public NSWindow preferencesWindow;
+    public NSWindow donationSheet;
+    public NSTableView browserTable;
+    public NSWindow infoWindow; /* IBOutlet */
     public NSWindow connectionSheet; /* IBOutlet */
     public NSTextField quickConnectField; /* IBOutlet */
     public NSPopUpButton pathPopUpButton; /* IBOutlet */
@@ -44,8 +49,8 @@ public class CDMainController extends NSObject {
 
     public CDMainController() {
 	super();
-	org.apache.log4j.BasicConfigurator.configure();
 	log.debug("CDMainController");
+	org.apache.log4j.BasicConfigurator.configure();
     }
 
     
@@ -54,52 +59,62 @@ public class CDMainController extends NSObject {
     // Selector methods for the toolbar items
     // ----------------------------------------------------------
 
-    poublic void infoButtonPressed() {
+    public void infoButtonPressed(NSObject sender) {
 	log.debug("infoButtonPressed");
-	//infoPanel.show();
+	infoWindow.orderFront(this);
     }
     
-    public void deleteButtonPressed() {
+    public void deleteButtonPressed(NSObject sender) {
 	log.debug("deleteButtonPressed");
     }
 
-    public void refreshButtonPressed() {
+    public void refreshButtonPressed(NSObject sender) {
 	log.debug("refreshButtonPressed");
 	CDBrowserTableDataSource source = (CDBrowserTableDataSource)browserTable.dataSource();
-	Path p = source.get(browserTable.selectedRow());
+	Path p = (Path)source.getEntry(browserTable.selectedRow());
 	p.list();
 	
     }
 
-    public void downloadButtonPressed() {
+    public void downloadButtonPressed(NSObject sender) {
 	log.debug("downloadButtonPressed");
 	CDBrowserTableDataSource source = (CDBrowserTableDataSource)browserTable.dataSource();
-	Path p = source.get(browserTable.selectedRow());
+	Path p = (Path)source.getEntry(browserTable.selectedRow());
 //	p.download();
     }
 
-    public void uploadButtonPressed() {
+    public void uploadButtonPressed(NSObject sender) {
 	log.debug("uploadButtonPressed");
 	// @todo drag and drop
     }
 
-    public void drawerButtonPressed(NSObject sender) {
-	log.debug("drawerButtonPressed");
-	drawer.toggle(this);
+    public void backButtonPressed(NSObject sender) {
+	log.debug("backButtonPressed");
+	//
     }
 
-    public void openConnectionSheet(NSObject sender) {
-	this.makeFirstResponder(connectionSheet);
+    public void drawerButtonPressed(NSObject sender) {
+	log.debug("drawerButtonPressed");
+	drawer.toggle(mainWindow);
+    }
+
+    public void connectButtonPressed(NSObject sender) {
+	mainWindow.makeFirstResponder(connectionSheet);
 	//NSApplication.beginSheet( NSWindow sheet, NSWindow docWindow, Object modalDelegate, NSSelector didEndSelector, Object contextInfo)
 	NSApplication.sharedApplication().beginSheet(
-					      connectionSheet,
-					      this,
-					      this,
+					      connectionSheet,//sheet
+					      mainWindow, //docwindow
+					      this, //delegate
 					      new NSSelector(
 			  "connectionSheetDidEnd",
 			  new Class[] { NSWindow.class, int.class, NSWindow.class }
 			  ),// did end selector
 					      null); //contextInfo
+    }
+    
+    public void preferencesButtonPressed(NSObject sender) {
+        NSApplication.loadNibNamed("Preferences", this);
+        preferencesWindow.orderFront(this);
     }
 
     public void connectionSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
@@ -108,6 +123,8 @@ public class CDMainController extends NSObject {
     
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
+
+	this.drawer.open();
 	// ----------------------------------------------------------
  // Toolbar
  // ----------------------------------------------------------
@@ -115,9 +132,9 @@ public class CDMainController extends NSObject {
 	NSToolbar toolbar = new NSToolbar("mainToolbar");
 	this.toolbarItems = new NSMutableDictionary();
 
-	this.addToolbarItem(toolbarItems, "New Connection", "New Connection", "New Connection", "Connect to host", this, new NSSelector("openConnectionSheet", new Class[] {null}), NSImage.imageNamed("server.tiff"));
+	this.addToolbarItem(toolbarItems, "New Connection", "New Connection", "New Connection", "Connect to host", this, new NSSelector("connectButtonPressed", new Class[] {null}), NSImage.imageNamed("server.tiff"));
 
-	this.addToolbarItem(toolbarItems, "Back", "Back", "Back", "Show parent directory", this, new NSSelector("back", new Class[] {null}), NSImage.imageNamed("back.tiff"));
+	this.addToolbarItem(toolbarItems, "Back", "Back", "Back", "Show parent directory", this, new NSSelector("backButtonPressed", new Class[] {null}), NSImage.imageNamed("back.tiff"));
 
 	//    private void addToolbarItem(NSMutableDictionary toolbarItems, String identifier, String label, String paletteLabel, String toolTip, Object target, NSSelector action, NSImage image) {
 
@@ -135,7 +152,7 @@ public class CDMainController extends NSObject {
 
 	this.addToolbarItem(toolbarItems, "Refresh", "Refresh", "Refresh", "Refresh directory listing", this, new NSSelector("refreshButtonPressed", new Class[] {null}), NSImage.imageNamed("refresh.tiff"));
 
-	this.addToolbarItem(toolbarItems, "Download", "Download", "Download", "Download file", this, new NSSelector("download", new Class[] {null}), NSImage.imageNamed("download.tiff"));
+	this.addToolbarItem(toolbarItems, "Download", "Download", "Download", "Download file", this, new NSSelector("downloadButtonPressed", new Class[] {null}), NSImage.imageNamed("download.tiff"));
 
 	this.addToolbarItem(toolbarItems, "Upload", "Upload", "Upload", "Upload file", this, new NSSelector("uploadButtonPressed", new Class[] {null}), NSImage.imageNamed("upload.tiff"));
 
@@ -194,6 +211,19 @@ public class CDMainController extends NSObject {
     
     public int applicationShouldTerminate(NSObject sender) {
 	log.debug("applicationShouldTerminate");
+        NSApplication.loadNibNamed("Donate", this);
+        if(Preferences.instance().getProperty("cyberduck.donate").equals("true")) {
+            NSApplication.sharedApplication().beginSheet(
+                                                donationSheet,//sheet
+                                                mainWindow, //docwindow
+                                                this, //delegate
+                                                new NSSelector(
+                            "donationSheetDidEnd",
+                            new Class[] { NSWindow.class, int.class, NSWindow.class }
+                            ),// did end selector
+                                                null); //contextInfo
+            return NSApplication.TerminateLater;
+        }
         return NSApplication.TerminateNow;
     }
 
@@ -202,7 +232,17 @@ public class CDMainController extends NSObject {
 	return true;
     }
     
-    public void donate(NSObject sender) {
+    public void donationSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+	sheet.close();
+        NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
+    }
+    
+    public void closeDonationSheet(NSObject sender) {
+	NSApplication.sharedApplication().endSheet(donationSheet, NSAlertPanel.AlternateReturn);
+    }
+    
+    public void donateButtonPressed(NSObject sender) {
+        this.closeDonationSheet(this);
 	log.debug("donate");
 	try {
 	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL("http://www.cyberduck.ch/donate/"));

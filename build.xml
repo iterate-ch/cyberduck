@@ -31,7 +31,6 @@
 	<!-- set global properties for this build -->
 	<property name="home" value="." />
 	<property name="build" value="${home}/build" />
-	<property name="dist" value="${home}/dist" />
 	<property name="img" value="${home}/img" />
 	<property name="lib" value="${home}/lib" />
 	<property name="source" value="${home}/source" />
@@ -58,7 +57,6 @@
 		<echo message="   project home:		${home}"/>
 		<echo message="   project build:  	${build}"/>
 		<echo message="   project source:	${source}"/>
-		<echo message="   project dist:		${dist}"/>
 		<echo message="   project classpath:    ${classpath}"/>
 		<echo message="   ---------------------------------------------------------------"/>
 		<echo message=""/>
@@ -78,7 +76,6 @@
 		<echo message="Building ${app.name}..."/>
 		<mkdir dir="${classes}" />
 		<mkdir dir="${build}" />
-		<mkdir dir="${dist}" />
 		<mkdir dir="${doc}" />
 	</target>
 
