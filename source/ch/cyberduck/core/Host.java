@@ -189,6 +189,9 @@ public class Host {
 		if(protocol.equals(Session.FTP)) {
 			username = Preferences.instance().getProperty("ftp.anonymous.name");
 		}
+		else if(protocol.equals(Session.FTPS)) {
+			username = Preferences.instance().getProperty("connection.login.name");
+		}
 		else if(protocol.equals(Session.SFTP)) {
 			username = Preferences.instance().getProperty("connection.login.name");
 		}

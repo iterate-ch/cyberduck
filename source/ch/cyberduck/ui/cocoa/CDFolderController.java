@@ -29,6 +29,8 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.HiddenFilesFilter;
+import ch.cyberduck.core.NullFilter;
 
 /**
  * @version $Id$
@@ -102,7 +104,11 @@ public class CDFolderController extends CDController {
 	public Path create(Path workdir, String filename) {
 		Path folder = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
 		folder.mkdir(false);
-		List l = workdir.list(true);
+		List l = null;
+		if(filename.charAt(0) == '.')
+			l = workdir.list(true, new NullFilter());
+		else 
+			l = workdir.list(true, new HiddenFilesFilter());
 		if(l.contains(folder))
 			return (Path)l.get(l.indexOf(folder));
 		return null;

@@ -106,9 +106,8 @@ public class CDBrowserCell extends NSBrowserCell {
 	protected static final float HEIGHT = 17f;
 	
 	public void drawWithFrameInView(NSRect cellFrame, NSView controlView) {
-		cellFrame = new NSRect(cellFrame.x(), cellFrame.y(), 
-							   cellFrame.width(), CDBrowserCell.HEIGHT);
-		super.drawWithFrameInView(cellFrame, controlView);
+		super.drawWithFrameInView(new NSRect(cellFrame.x(), cellFrame.y(), 
+											 cellFrame.width(), CDBrowserCell.HEIGHT), controlView);
 	}
 	
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
@@ -130,7 +129,7 @@ public class CDBrowserCell extends NSBrowserCell {
 				// use highlightColorInView instead of [NSColor selectedControlColor] since NSBrowserCell slightly dims all cells except those in the right most column.
 				// The return value from highlightColorInView will return the appropriate one for you. 
 				this.highlightColorWithFrameInView(cellFrame, controlView).set();
-			} 
+			}
 			else {
 				NSColor.controlBackgroundColor().set();
 			}
@@ -150,4 +149,9 @@ public class CDBrowserCell extends NSBrowserCell {
 		}
 		else super.drawInteriorWithFrameInView(cellFrame, controlView);
 	}
+	
+	public NSSize cellSizeForBounds(NSRect cellFrame) {
+			return new NSSize(this.icon() != null ? cellFrame.width()+this.icon().size().width()+4 : super.cellSizeForBounds(cellFrame).width(), 
+							  HEIGHT);
+	}	
 }

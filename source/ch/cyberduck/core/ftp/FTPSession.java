@@ -44,15 +44,14 @@ public class FTPSession extends Session {
 
 	private static class Factory extends SessionFactory {
 		protected Session create(Host h) {
-			FTPSession s = new FTPSession(h);
-			return s;
+			return new FTPSession(h);
 		}
 	}
 
 	protected FTPClient FTP;
 	protected FTPFileEntryParser parser;
 
-	private FTPSession(Host h) {
+	protected FTPSession(Host h) {
 		super(h);
 	}
 
@@ -130,7 +129,7 @@ public class FTPSession extends Session {
 		this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.host.getIdentification());
 	}
 
-	private synchronized void login() throws IOException {
+	protected synchronized void login() throws IOException {
 		log.debug("login");
 		Login credentials = host.getCredentials();
 		if(credentials.check()) {

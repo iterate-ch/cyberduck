@@ -39,6 +39,7 @@ public class CDConnectionController extends CDController {
 	private static Logger log = Logger.getLogger(CDConnectionController.class);
 
 	private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)", "");
+	private static final String FTPS_STRING = NSBundle.localizedString("FTPS (FTP over TLS/SSL)", "");
 	private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
 
 	// ----------------------------------------------------------
@@ -150,7 +151,7 @@ public class CDConnectionController extends CDController {
 		this.protocolPopup = protocolPopup;
 		this.protocolPopup.setEnabled(true);
 		this.protocolPopup.removeAllItems();
-		this.protocolPopup.addItemsWithTitles(new NSArray(new String[] {FTP_STRING, SFTP_STRING}));
+		this.protocolPopup.addItemsWithTitles(new NSArray(new String[] {FTP_STRING, FTPS_STRING, SFTP_STRING}));
 		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
 		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalent("f");
 		this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
@@ -167,7 +168,10 @@ public class CDConnectionController extends CDController {
 		if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
 			this.portField.setIntValue(Session.FTP_PORT);
 		}
-		this.connectmodePopup.setEnabled(protocolPopup.selectedItem().title().equals(FTP_STRING));
+		if(protocolPopup.selectedItem().title().equals(FTPS_STRING)) {
+			this.portField.setIntValue(Session.FTP_PORT);
+		}
+		this.connectmodePopup.setEnabled(protocolPopup.selectedItem().title().equals(FTP_STRING) || protocolPopup.selectedItem().title().equals(FTPS_STRING));
 		this.pkCheckbox.setEnabled(protocolPopup.selectedItem().title().equals(SFTP_STRING));
 		this.updateURLLabel(sender);
 	}
@@ -203,7 +207,12 @@ public class CDConnectionController extends CDController {
 		try {
 			Host h = Host.parse(hostPopup.stringValue());
 			this.hostPopup.setStringValue(h.getHostname());
-			this.protocolPopup.selectItemWithTitle(h.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
+			if(h.getProtocol().equals(Session.FTP))
+				this.protocolPopup.selectItemWithTitle(FTP_STRING);
+			if(h.getProtocol().equals(Session.FTPS))
+				this.protocolPopup.selectItemWithTitle(FTPS_STRING);
+			if(h.getProtocol().equals(Session.SFTP))
+				this.protocolPopup.selectItemWithTitle(SFTP_STRING);
 			this.portField.setStringValue(String.valueOf(h.getPort()));
 			this.usernameField.setStringValue(h.getCredentials().getUsername());
 			this.pathField.setStringValue(h.getDefaultPath());
@@ -509,6 +518,9 @@ public class CDConnectionController extends CDController {
 		if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
 			protocol = Session.FTP+"://";
 		}
+		if(protocolPopup.selectedItem().title().equals(FTPS_STRING)) {
+			protocol = Session.FTPS+"://";
+		}
 		urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostPopup.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
 	}
 	
@@ -533,6 +545,20 @@ public class CDConnectionController extends CDController {
 				else if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
 					// FTP has been selected as the protocol to connect with
 					host = new Host(Session.FTP,
+									hostPopup.stringValue(),
+									Integer.parseInt(portField.stringValue()),
+									pathField.stringValue());
+					host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
+					if(connectmodePopup.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
+						host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
+					}
+					if(connectmodePopup.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
+						host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
+					}
+				}
+				else if(protocolPopup.selectedItem().title().equals(FTPS_STRING)) {
+					// FTP has been selected as the protocol to connect with
+					host = new Host(Session.FTPS,
 									hostPopup.stringValue(),
 									Integer.parseInt(portField.stringValue()),
 									pathField.stringValue());

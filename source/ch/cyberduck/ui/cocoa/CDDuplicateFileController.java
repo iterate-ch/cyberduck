@@ -26,6 +26,8 @@ import java.util.List;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.HiddenFilesFilter;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
@@ -84,7 +86,11 @@ public class CDDuplicateFileController extends CDFileController {
 		p.download();
 		p.setPath(workdir.getAbsolute(), filename);
 		p.upload();
-		List l = workdir.list(true);
+		List l = null;
+		if(filename.charAt(0) == '.')
+			l = workdir.list(true, new NullFilter());
+		else 
+			l = workdir.list(true, new HiddenFilesFilter());
 		if(l.contains(p))
 			return (Path)l.get(l.indexOf(p));
 		return null;

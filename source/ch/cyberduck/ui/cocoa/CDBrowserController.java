@@ -421,6 +421,7 @@ public class CDBrowserController extends CDController implements Observer {
 			case OUTLINE_VIEW: {
 				this.browserOutlineView.reloadData();
 				if(this.isMounted()) {
+					this.browserOutlineView.reloadItemAndChildren(this.workdir(), true);
 					this.infoLabel.setStringValue(this.browserOutlineView.numberOfRows() + " " +
 												  NSBundle.localizedString("files", ""));
 				}
@@ -931,6 +932,7 @@ public class CDBrowserController extends CDController implements Observer {
 			while (enum.hasMoreElements()) {
 				this.browserOutlineView.removeTableColumn((NSTableColumn) enum.nextElement());
 			}
+			this.browserOutlineView.setOutlineTableColumn(null);
 		}
 		{
 			java.util.Enumeration enum = this.browserListView.tableColumns().objectEnumerator();
@@ -2104,6 +2106,12 @@ public class CDBrowserController extends CDController implements Observer {
         if (item.action().name().equals("encodingButtonClicked:")) {
             item.setState(this.encoding.equalsIgnoreCase(item.title()) ? NSCell.OnState : NSCell.OffState);
         }
+        if (item.action().name().equals("browserSwitchClicked:")) {
+			if(item.tag() == Preferences.instance().getInteger("browser.view"))
+				item.setState(NSCell.OnState);
+			else
+				item.setState(NSCell.OffState);
+        }
         return this.validateItem(item.action().name());
     }
 
@@ -2259,6 +2267,17 @@ public class CDBrowserController extends CDController implements Observer {
             item.setLabel(NSBundle.localizedString("Action", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Action", "Toolbar item"));
             item.setView(actionPopupButton);
+            NSMenuItem toolMenu = new NSMenuItem();
+			toolMenu.setTitle(NSBundle.localizedString("Action", "Toolbar item"));
+            NSMenu toolSubmenu = new NSMenu();
+			for(int i = 1; i < actionPopupButton.menu().numberOfItems(); i++) {
+				NSMenuItem template = actionPopupButton.menu().itemAtIndex(i);
+				toolSubmenu.addItem(new NSMenuItem(template.title(),
+												   template.action(),
+												   template.keyEquivalent()));
+			}
+            toolMenu.setSubmenu(toolSubmenu);
+            item.setMenuFormRepresentation(toolMenu);
             item.setMinSize(actionPopupButton.frame().size());
             item.setMaxSize(actionPopupButton.frame().size());
             return item;

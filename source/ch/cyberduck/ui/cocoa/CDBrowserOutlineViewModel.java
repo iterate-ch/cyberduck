@@ -210,18 +210,16 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 				NSArray elements = (NSArray)pboard.propertyListForType("QueuePBoardType");
 				for(int i = 0; i < elements.count(); i++) {
 					NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-					Path parent = item;
-					if(parent.attributes.isDirectory()) {
+					Path selected = item.copy(controller.workdir().getSession());
+					if(selected.attributes.isDirectory()) {
 						Queue q = Queue.createQueue(dict);
 						for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-							Path p = (Path)iter.next();
-							p.rename(parent.getAbsolute()+"/"+p.getName());
+                            Path p = (Path) iter.next();
+							PathFactory.createPath(selected.getSession(), p.getAbsolute()).rename(selected.getAbsolute()+"/"+p.getName());
 						}
-						//parent.invalidate(); //todo
-						//outlineView.reloadData();
-						return true;
 					}
 				}
+				return true;
 			}
 		}
 		return false;

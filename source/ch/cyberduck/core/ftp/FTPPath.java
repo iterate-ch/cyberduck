@@ -77,17 +77,17 @@ public class FTPPath extends Path {
 	 * @param parent  The parent directory relative to this file
 	 * @param name    The filename of this path
 	 */
-	private FTPPath(FTPSession s, String parent, String name) {
+	protected FTPPath(FTPSession s, String parent, String name) {
 		super(parent, name);
 		this.session = s;
 	}
 
-	private FTPPath(FTPSession s, String path) {
+	protected FTPPath(FTPSession s, String path) {
 		super(path);
 		this.session = s;
 	}
 
-	private FTPPath(FTPSession s) {
+	protected FTPPath(FTPSession s) {
 		super();
 		this.session = s;
 	}
@@ -97,12 +97,12 @@ public class FTPPath extends Path {
 	 * @param parent  The parent directory relative to this file
 	 * @param file    The corresponding local file to the remote path
 	 */
-	private FTPPath(FTPSession s, String parent, Local file) {
+	protected FTPPath(FTPSession s, String parent, Local file) {
 		super(parent, file);
 		this.session = s;
 	}
 
-	private FTPPath(FTPSession s, NSDictionary dict) {
+	protected FTPPath(FTPSession s, NSDictionary dict) {
 		super(dict);
 		this.session = s;
 	}
