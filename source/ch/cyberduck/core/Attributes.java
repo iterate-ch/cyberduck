@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.*;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.Date;
 import java.util.Observable;
 
@@ -98,7 +99,7 @@ public class Attributes extends Observable {
 	}
 
 	public Calendar getTimestampAsCalendar() {
-		Calendar c = Calendar.getInstance();
+		Calendar c = Calendar.getInstance(TimeZone.getTimeZone(Preferences.instance().getProperty("queue.sync.remote.timezone")));
 		if(this.getTimestamp() != null) {
 			c.setTime(this.getTimestamp());
 		}

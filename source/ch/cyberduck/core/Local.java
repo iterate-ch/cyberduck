@@ -22,6 +22,7 @@ import com.apple.cocoa.foundation.*;
 
 import java.io.File;
 import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
@@ -130,7 +131,7 @@ public class Local extends File {
 	}
 
 	public Calendar getTimestampAsCalendar() {
-		Calendar c = Calendar.getInstance();
+		Calendar c = Calendar.getInstance(TimeZone.getTimeZone(Preferences.instance().getProperty("queue.sync.remote.timezone")));
 		c.setTime(this.getTimestamp());
 		if(Preferences.instance().getBoolean("queue.sync.ignore.millisecond"))
 			c.clear(Calendar.MILLISECOND);
