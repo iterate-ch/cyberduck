@@ -484,7 +484,7 @@ public class FTPClient {
      *  @return  the current type of the transfer,
      *           i.e. BINARY or ASCII
      */
-    public FTPTransferType getType() {
+    public FTPTransferType getTransferType() {
         return transferType;
     }
 
@@ -494,7 +494,7 @@ public class FTPClient {
      *  @param  type  the transfer type to
      *                set the server to
      */
-    public void setType(FTPTransferType type) throws IOException, FTPException {
+    public void setTransferType(FTPTransferType type) throws IOException, FTPException {
 
         // determine the character to send
         String typeStr = FTPTransferType.ASCII_CHAR;

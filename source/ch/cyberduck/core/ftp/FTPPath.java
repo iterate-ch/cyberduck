@@ -101,7 +101,7 @@ public class FTPPath extends Path {
 	session.addPathToHistory(this);
 	try {
 	    session.check();
-	    session.FTP.setType(FTPTransferType.ASCII);
+	    session.FTP.setTransferType(FTPTransferType.ASCII);
 	    session.FTP.chdir(FTPPath.this.getAbsolute());
 	    this.setCache(new FTPParser().parseList(this.getAbsolute(), session.FTP.dir(), showHidden));
 	    if(notifyobservers) {
@@ -291,7 +291,7 @@ public class FTPPath extends Path {
 	    this.session.check();
 	    if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 //		this.session.log("Setting transfer mode to BINARY", Message.PROGRESS);
-		this.session.FTP.setType(FTPTransferType.BINARY);
+		this.session.FTP.setTransferType(FTPTransferType.BINARY);
 		this.getLocal().getParentFile().mkdirs();
 		OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
 		if(out == null) {
@@ -310,7 +310,7 @@ public class FTPPath extends Path {
 	    }
 	    else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 //		this.session.log("Setting transfer type to ASCII", Message.PROGRESS);
-		this.session.FTP.setType(FTPTransferType.ASCII);
+		this.session.FTP.setTransferType(FTPTransferType.ASCII);
 		this.getLocal().getParentFile().mkdir();
 		java.io.Writer out = new FileWriter(this.getLocal(), this.status.isResume());
 		if(out == null) {
@@ -366,7 +366,7 @@ public class FTPPath extends Path {
 	    this.session.check();
 	    if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 //		this.session.log("Setting transfer mode to BINARY.", Message.PROGRESS);
-		this.session.FTP.setType(FTPTransferType.BINARY);
+		this.session.FTP.setTransferType(FTPTransferType.BINARY);
 
 		java.io.InputStream in = new FileInputStream(this.getLocal());
 		if(in == null) {
@@ -385,7 +385,7 @@ public class FTPPath extends Path {
 	    }
 	    else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 //		this.session.log("Setting transfer type to ASCII.", Message.PROGRESS);
-		this.session.FTP.setType(FTPTransferType.ASCII);
+		this.session.FTP.setTransferType(FTPTransferType.ASCII);
 
 		java.io.Reader in = new FileReader(this.getLocal());
 		if(in == null) {

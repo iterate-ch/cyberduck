@@ -46,18 +46,18 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
 	try {
 	    URL url = new URL(arg);
 	    Host h = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()));
-	    String file = url.getFile();
-	    if(file.length() > 1) {
-		Path p = new FTPPath((FTPSession)h.getSession(), file);
-		log.debug("Assuming download");
-		CDTransferController controller = new CDTransferController(p, Queue.KIND_DOWNLOAD);
-		controller.transfer();
-	    }
-	    else {
+//	    String file = url.getFile();
+//	    if(file.length() > 1) {
+//		Path p = new FTPPath((FTPSession)h.getSession(), file);
+//		log.debug("Assuming download");
+//		CDTransferController controller = new CDTransferController(p, Queue.KIND_DOWNLOAD);
+//		controller.transfer();
+//	    }
+//	    else {
 		log.debug("Assuming browser");
 		CDBrowserController controller = new CDBrowserController();
 		controller.mount(h);
-	    }
+//	    }
 	}
 	catch(java.net.MalformedURLException e) {
 	    log.error(e.getMessage());
