@@ -54,12 +54,6 @@ public class FTPClient {
     public static String cvsId = "@(#)$Id$";
     
     /**
-		* Default encoding used for control data
-		*/
-    final private static String DEFAULT_ENCODING 
-		= Preferences.instance().getProperty("browser.charset.encoding");
-    
-    /**
 		* SOCKS port property name
 		*/
     final private static String SOCKS_PORT = "socksProxyPort";
@@ -217,24 +211,6 @@ public class FTPClient {
 			this(remoteAddr, controlPort, 0);
 		}
 	
-    /**
-		*  Constructor. Creates the control
-		*  socket. Allows setting of control port (normally
-												   *  set by default to 21).
-	*
-		*  @param   remoteAddr    the address of the
-		*                          remote host
-		*  @param   controlPort   port for control stream (-1 for default port)
-	*  @param  timeout        the length of the timeout, in milliseconds 
-		*                         (pass in 0 for no timeout)
-		*/
-    public FTPClient(InetAddress remoteAddr, int controlPort, int timeout)
-        throws IOException, FTPException {
-			if (controlPort < 0)
-				controlPort = FTPControlSocket.CONTROL_PORT;
-			initialize(new FTPControlSocket(remoteAddr, controlPort, timeout, DEFAULT_ENCODING, null));
-		}
-    
     /**
 		*  Constructor. Creates the control
 		*  socket. Allows setting of control port (normally
