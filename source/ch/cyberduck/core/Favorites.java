@@ -28,29 +28,30 @@ import java.util.Observable;
 import org.apache.log4j.Logger;
 
 /**
- * Keeps track of recently connected hosts
+* Keeps track of recently connected hosts
  * @version $Id$
  */
-public abstract class History extends Observable {
+public abstract class Favorites extends Observable {
     private static Logger log = Logger.getLogger(History.class);
 
-    private static History instance;
+    private static Favorites instance;
     private List data;
 
     /*
      * Use #instance instead.
      */
-    public History() {
+    public Favorites() {
 	this.data = new ArrayList();
     }
 
-    public static History instance() {
+    public static Favorites instance() {
         if(null == instance) {
             String strVendor = System.getProperty("java.vendor");
             if(strVendor.indexOf("Apple") != -1)
-                instance = new ch.cyberduck.ui.cocoa.CDHistoryImpl();
+                instance = new ch.cyberduck.ui.cocoa.CDFavoritesImpl();
             else
-                instance = new ch.cyberduck.ui.swing.HistoryImpl();
+//@todo                instance = new ch.cyberduck.ui.swing.FavoritesImpl();
+            instance.setDefaults();
             instance.load();
 	}
         return instance;
@@ -61,7 +62,7 @@ public abstract class History extends Observable {
 	this.setChanged();
 	this.notifyObservers(arg);
     }
-    
+
     /**
 	* Ensure persistency.
      */
@@ -76,7 +77,7 @@ public abstract class History extends Observable {
 	data.add(h);
 	this.callObservers(h);
     }
-    
+
     public Host get(String name) {
 	Iterator i = data.iterator();
 	Host h;
@@ -85,11 +86,15 @@ public abstract class History extends Observable {
 	    if(h.getName().equals(name))
 		return h;
 	}
-	throw new IllegalArgumentException("Host "+name+" not found in History.");
+	throw new IllegalArgumentException("Host "+name+" not found in Favorites.");
     }
 
     public Iterator iterator() {
 	return data.iterator();
+    }
+
+    public void setDefaults() {
+	//@todo add any default hosts?
     }
 
     public List getData() {

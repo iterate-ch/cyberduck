@@ -23,6 +23,7 @@ import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
 import java.util.List;
 import java.util.ArrayList;
+import ch.cyberduck.core.Host;
 
 /**
 * @version $Id$
@@ -47,6 +48,11 @@ public class CDFavoritesTableDataSource extends NSObject {
     }
 
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
+	Host h = (Host)data.get(row);
+	String identifier = (String)tableColumn.identifier();
+	if(identifier.equals("HOSTNAME")) {
+	    return h.getName();
+	}
 	return null;
     }
 

@@ -131,7 +131,7 @@ public class CDConnectionController extends NSObject implements Observer {
 	if(sender instanceof NSMenuItem) {
 	    log.debug("New connection from \"Recent Connections\"");
 	    NSMenuItem item = (NSMenuItem)sender;
-	    Host h = History.instance().getHost(item.title());
+	    Host h = History.instance().get(item.title());
 	    h.openSession();
 	    return;
 	}
@@ -237,7 +237,7 @@ public class CDConnectionController extends NSObject implements Observer {
 		}
 		if(msg.getTitle().equals(Message.OPEN)) {
 		    progressIndicator.startAnimation(this);
-		    History.instance().addHost(host);
+		    History.instance().add(host);
 		}
 		if(msg.getTitle().equals(Message.CONNECTED)) {
 		    progressIndicator.stopAnimation(this);

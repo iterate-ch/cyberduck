@@ -21,6 +21,8 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.History;
+import ch.cyberduck.core.Favorites;
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
@@ -360,7 +362,9 @@ public class CDMainController extends NSObject {
     public int applicationShouldTerminate(NSObject sender) {
 	log.debug("applicationShouldTerminate");
 	Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses"))+1);
-        Preferences.instance().store();
+        Preferences.instance().save();
+	History.instance().save();
+	Favorites.instance().save();
         NSApplication.loadNibNamed("Donate", this);
 //        if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
         if(Preferences.instance().getProperty("donate").equals("true")) {

@@ -139,8 +139,12 @@ public class CDBrowserTableDataSource extends NSObject {
 	* (data, owner, and so on).
 	*@param rows is the list of row numbers that will be participating in the drag.
 	*/
-    public  boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
+    public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
+	if(rows.count() > 1)
+	    return false;
+//	Path p = this.getEntry(rows.objectAtIndex(rows.count()-1));
 	return true;
+	
     }
 
 	

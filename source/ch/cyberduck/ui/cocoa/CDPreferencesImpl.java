@@ -71,7 +71,7 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
 	defaults = NSUserDefaults.standardUserDefaults();
     }
 
-    public void store() {
+    public void save() {
 	// Saves any modifications to the persistent domains and updates all persistent domains that were not modified to
 	// what is on disk. Returns false if it could not save data to disk. Because synchronize is automatically invoked at
 	// periodic intervals, use this method only if you cannot wait for the automatic synchronization (for example, if your

@@ -258,9 +258,9 @@ public abstract class Preferences {//extends Properties {
     public abstract String getProperty(String property);
         
     /**
-     * Save preferences; ensure perisistency
+     * Store preferences; ensure perisistency
      */
-    public abstract void store();
+    public abstract void save();
 
     /**
      * Overriding the default values with prefs from the last session.

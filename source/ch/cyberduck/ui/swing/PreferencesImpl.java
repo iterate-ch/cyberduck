@@ -86,7 +86,7 @@ public class PreferencesImpl extends Preferences { //PreferencesImplSwing
         }
     }
 
-    public void store() {
+    public void save() {
         log.debug("store()");
         try {
             FileOutputStream output = new FileOutputStream(new File(PREFS_DIRECTORY, PREFERENCES_FILE));

@@ -23,16 +23,16 @@ import com.apple.cocoa.application.*;
 import java.util.List;
 import java.util.Iterator;
 import org.apache.log4j.Logger;
-import ch.cyberduck.core.History;
+import ch.cyberduck.core.Favorites;
 import ch.cyberduck.core.Host;
 
 /**
 * @version $Id$
  */
-public class CDHistoryImpl extends History {
-    private static Logger log = Logger.getLogger(CDHistoryImpl.class);
+public class CDFavoritesImpl extends Favorites {
+    private static Logger log = Logger.getLogger(CDFavoritesImpl.class);
 
-    private static final String KEY = "history";
+    private static final String KEY = "favorites";
 
     public void save() {
 	log.debug("save");
