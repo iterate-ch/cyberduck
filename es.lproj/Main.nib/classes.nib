@@ -8,6 +8,7 @@
                 deleteButtonClicked = id; 
                 downloadButtonClicked = id; 
                 editBookmarkButtonClicked = id; 
+                editButtonClicked = id; 
                 folderButtonClicked = id; 
                 gotoButtonClicked = id; 
                 infoButtonClicked = id; 

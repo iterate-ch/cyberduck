@@ -43,6 +43,9 @@
 /* NSMenuItem : <title:New Folder> (oid:958) */
 "New Folder" = "Nieuwe map";
 
+/* NSMenuItem : <title:Open in Editor> (oid:1052) */
+"Open in Editor" = "Open in Editor";
+
 /* NSMenu : <title:OtherViews> (oid:925) */
 "OtherViews" = "OtherViews";
 
