@@ -18,6 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.sshtools.j2ssh.transport.AbstractKnownHostsKeyVerification;
+import com.sshtools.j2ssh.transport.InvalidHostFileException;
+import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
+
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSBundle;
@@ -26,9 +30,6 @@ import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
-import com.sshtools.j2ssh.transport.AbstractKnownHostsKeyVerification;
-import com.sshtools.j2ssh.transport.InvalidHostFileException;
-import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 
 import ch.cyberduck.core.Preferences;
 

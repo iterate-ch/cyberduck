@@ -18,19 +18,20 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.apple.cocoa.foundation.NSDictionary;
-
-import org.apache.log4j.Logger;
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.sftp.SftpFile;
 import com.sshtools.j2ssh.sftp.SftpFileInputStream;
 import com.sshtools.j2ssh.sftp.SftpFileOutputStream;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
+
+import com.apple.cocoa.foundation.NSDictionary;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
 

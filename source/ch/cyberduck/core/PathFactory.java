@@ -18,10 +18,10 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSDictionary;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.apple.cocoa.foundation.NSDictionary;
 
 public abstract class PathFactory {
 

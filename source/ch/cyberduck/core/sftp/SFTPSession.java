@@ -18,9 +18,6 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import java.io.IOException;
-
-import org.apache.log4j.Logger;
 import com.sshtools.j2ssh.SshClient;
 import com.sshtools.j2ssh.SshEventAdapter;
 import com.sshtools.j2ssh.SshException;
@@ -29,6 +26,10 @@ import com.sshtools.j2ssh.configuration.SshConnectionProperties;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import com.sshtools.j2ssh.transport.TransportProtocol;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
+
+import java.io.IOException;
+
+import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
 

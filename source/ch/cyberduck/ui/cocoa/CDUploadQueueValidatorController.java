@@ -18,9 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.ArrayList;
-
 import com.apple.cocoa.application.NSApplication;
+
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 

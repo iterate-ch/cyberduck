@@ -18,13 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.List;
-
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSPathUtilities;
+
+import java.util.List;
 
 import org.apache.log4j.Logger;
 

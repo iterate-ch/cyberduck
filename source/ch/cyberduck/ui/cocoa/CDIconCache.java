@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.HashMap;
-
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSWorkspace;
+
+import java.util.HashMap;
 
 /**
  * @version $Id$

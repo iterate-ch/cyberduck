@@ -18,16 +18,16 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.io.*;
-import java.util.List;
-
-import ch.cyberduck.ui.cocoa.growl.Growl;
-
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
+import java.io.*;
+import java.util.List;
+
 import org.apache.log4j.Logger;
+
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 /**
  * A path is a remote directory or file.

@@ -18,14 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;

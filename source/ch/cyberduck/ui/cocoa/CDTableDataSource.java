@@ -19,9 +19,9 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.NSDraggingInfo;
+import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.application.NSImage;
 
 import java.util.ArrayList;
 

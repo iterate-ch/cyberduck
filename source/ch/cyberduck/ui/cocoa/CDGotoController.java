@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 

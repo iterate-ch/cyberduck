@@ -18,19 +18,19 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSDictionary;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.apple.cocoa.foundation.NSDictionary;
-
+import com.enterprisedt.net.ftp.FTPException;
+import com.enterprisedt.net.ftp.FTPTransferType;
 import org.apache.commons.net.io.FromNetASCIIInputStream;
 import org.apache.commons.net.io.FromNetASCIIOutputStream;
 import org.apache.commons.net.io.ToNetASCIIInputStream;
 import org.apache.commons.net.io.ToNetASCIIOutputStream;
 import org.apache.log4j.Logger;
-import com.enterprisedt.net.ftp.FTPException;
-import com.enterprisedt.net.ftp.FTPTransferType;
 
 import ch.cyberduck.core.*;
 

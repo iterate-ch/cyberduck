@@ -18,11 +18,11 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.*;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Observable;
-
-import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 

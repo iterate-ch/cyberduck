@@ -18,12 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
+
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
-
-import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 

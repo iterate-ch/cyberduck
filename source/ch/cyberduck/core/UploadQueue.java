@@ -18,11 +18,11 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSMutableDictionary;
+
 import java.io.File;
 import java.util.List;
 import java.util.Observer;
-
-import com.apple.cocoa.foundation.NSMutableDictionary;
 
 /**
  * @version $Id$

@@ -18,9 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.HashMap;
-
 import com.apple.cocoa.foundation.NSBundle;
+
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 

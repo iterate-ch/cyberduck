@@ -18,18 +18,17 @@ package ch.cyberduck.ui.cocoa.odb;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSPathUtilities;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.ui.cocoa.growl.Growl;
 
 public class Editor {
 	private static Logger log = Logger.getLogger(Editor.class);

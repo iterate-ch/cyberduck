@@ -18,15 +18,18 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.List;
-import java.util.Iterator;
-
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractValidator;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Status;
 
 /**
  * @version $Id$

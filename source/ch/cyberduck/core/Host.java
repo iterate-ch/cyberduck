@@ -18,13 +18,14 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.net.MalformedURLException;
+import com.sshtools.j2ssh.transport.HostKeyVerification;
 
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
+import java.net.MalformedURLException;
+
 import org.apache.log4j.Logger;
-import com.sshtools.j2ssh.transport.HostKeyVerification;
 
 import ch.cyberduck.ui.LoginController;
 

@@ -20,13 +20,13 @@ package ch.cyberduck.core.ftp;
 
 import java.io.IOException;
 
-import org.apache.commons.net.ftp.FTPFileEntryParser;
-import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
-import org.apache.log4j.Logger;
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
+import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
+import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
 

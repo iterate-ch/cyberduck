@@ -88,15 +88,6 @@ public abstract class CDController {
 		if(!supressSheets) {
 			log.debug("waitForSheetEnd");
 			synchronized(this) {
-				//			if(!Thread.currentThread().getName().equals("Session")) {
-				//				log.info("Asked to display sheet on main thread; spawn new thread to prevent lock");
-				//				new Thread("Session") {
-				//					public void run() {
-				//						CDController.this.waitForSheetEnd();
-				//					}
-				//				}.start();
-				//				//@todo block
-				//			}
 				while(this.hasSheet()) {
 					try {
 						log.debug("Sleeping:waitForSheetEnd...");
@@ -147,15 +138,12 @@ public abstract class CDController {
 		if(!supressSheets) {
 			log.debug("beginSheet:"+sheet);
 			synchronized(this) {
-				//			if(!Thread.currentThread().getName().equals("Session")) {
-				//				log.info("Asked to display sheet on main thread; spawn new thread to prevent lock");
-				//				new Thread("Session") {
-				//					public void run() {
-				//						CDController.this.beginSheet(sheet, delegate, endSelector, contextInfo);
-				//					}
-				//				}.start();
-				//				this.waitForSheetDisplay(sheet);
-				//			}
+                if(!Thread.currentThread().getName().equals("Session") && this.hasSheet()) {
+                    log.warn("Cannot display sheet because the window is already displaying a sheet running on the main thread");
+                    log.info("Displaying dialog instead of sheet");
+                    sheet.makeKeyAndOrderFront(this);
+                    return;
+                }
 				this.waitForSheetEnd();
 				this.window().makeKeyAndOrderFront(null);
 				NSApplication.sharedApplication().beginSheet(sheet, //sheet
