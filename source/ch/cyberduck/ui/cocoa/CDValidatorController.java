@@ -23,18 +23,16 @@ import com.apple.cocoa.foundation.*;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.AbstractValidator;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Status;
+import ch.cyberduck.core.*;
 
 /**
  * @version $Id$
  */
-public abstract class CDValidatorController extends AbstractValidator {
+public abstract class CDValidatorController extends CDController implements Validator {
 	private static Logger log = Logger.getLogger(CDValidatorController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -48,21 +46,42 @@ public abstract class CDValidatorController extends AbstractValidator {
 	protected static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
 																								new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 	
-	protected CDController windowController;
+	protected CDWindowController windowController;
 
-	public CDValidatorController(CDController windowController) {
+	public CDValidatorController(CDWindowController windowController) {
 		this.windowController = windowController;
 		this.load();
 		instances.addObject(this);
 	}
 
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(true);
 		(NSNotificationCenter.defaultCenter()).addObserver(this,
 		    new NSSelector("tableViewSelectionDidChange", new Class[]{NSNotification.class}),
 		    NSTableView.TableViewSelectionDidChangeNotification,
 		    this.fileTableView);
 	}
+
+    protected List validatedList = new ArrayList();
+    protected List workList = new ArrayList();
+    protected List promptList = new ArrayList();
+
+    /**
+     * The user canceled this request, no further validation should be taken
+     */
+    private boolean canceled = false;
+
+    public boolean isCanceled() {
+        return this.canceled;
+    }
+
+    protected void setCanceled(boolean c) {
+        this.canceled = c;
+    }
+
+    protected abstract boolean isExisting(Path p);
 
 	public boolean validate(List files, boolean resumeRequested) {
 		for(Iterator iter = files.iterator(); iter.hasNext() && !this.isCanceled();) {
@@ -83,6 +102,68 @@ public abstract class CDValidatorController extends AbstractValidator {
 		return !this.isCanceled();
 	}
 
+    protected boolean validate(Path p, boolean resume) {
+        if(p.attributes.isFile()) {
+            p.reset();
+            if(Preferences.instance().getBoolean("queue.transformer.useTransformer")) {
+                p.setPath(p.getParent().getAbsolute(), NameTransformer.instance().transform(p.getName()));
+            }
+            return this.validateFile(p, resume);
+        }
+        if(p.attributes.isDirectory()) {
+            return this.validateDirectory(p);
+        }
+        throw new IllegalArgumentException(p.getName()+" is neither file nor directory");
+    }
+
+
+    protected abstract boolean validateDirectory(Path path);
+
+    protected boolean validateFile(Path path, boolean resumeRequested) {
+        if(resumeRequested) { // resume existing files independant of settings in preferences
+            path.status.setResume(this.isExisting(path));
+            return true;
+        }
+        // When overwriting file anyway we don't have to check if the file already exists
+        if(Preferences.instance().getProperty("queue.fileExists").equals("overwrite")) {
+            log.info("Apply validation rule to overwrite file "+path.getName());
+            path.status.setResume(false);
+            return true;
+        }
+        if(this.isExisting(path)) {
+            if(Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
+                log.debug("Apply validation rule to resume:"+path.getName());
+                path.status.setResume(true);
+                return true;
+            }
+            if(Preferences.instance().getProperty("queue.fileExists").equals("similar")) {
+                log.debug("Apply validation rule to apply similar name:"+path.getName());
+                path.status.setResume(false);
+                this.adjustFilename(path);
+                log.info("Changed local name to "+path.getName());
+                return true;
+            }
+            if(Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
+                log.debug("Apply validation rule to ask:"+path.getName());
+                this.prompt(path);
+                return false;
+            }
+            throw new IllegalArgumentException("No rules set to validate transfers");
+        }
+        else {
+            path.status.setResume(false);
+            return true;
+        }
+    }
+
+    public List getValidated() {
+        return this.validatedList;
+    }
+
+    protected void adjustFilename(Path path) {
+        //        
+    }
+
 	protected abstract void load();
 
 	protected boolean hasPrompt = false;
@@ -102,10 +183,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.fireDataChanged();
 	}
 
-	protected void adjustFilename(Path path) {
-		//
-	}
-	
 	// ----------------------------------------------------------
 	// Outlets
 	// ----------------------------------------------------------
@@ -316,7 +393,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 	
 	protected void fireDataChanged() {
 		if(this.hasPrompt()) {
-			ThreadUtilities.instance().invokeLater(new Runnable() {
+			this.invoke(new Runnable() {
 				public void run() {
 					CDValidatorController.this.fileTableView.reloadData();
 				}

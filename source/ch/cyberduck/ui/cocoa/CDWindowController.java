@@ -30,14 +30,14 @@ public abstract class CDWindowController extends CDController {
 	protected static Logger log = Logger.getLogger(CDWindowController.class);
 
 	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
-	
+
 	static {
 		lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
 	}
-	
+
 	protected static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
 																	  new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-	
+
 	private NSWindow window; // IBOutlet
 
 	public void setWindow(NSWindow window) {

@@ -33,7 +33,7 @@ import ch.cyberduck.core.Status;
 /**
  * @version $Id$
  */
-public class CDInfoController extends CDController {
+public class CDInfoController extends CDWindowController {
 	private static Logger log = Logger.getLogger(CDInfoController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -142,6 +142,8 @@ public class CDInfoController extends CDController {
 	private static NSPoint cascadedWindowPoint;
 
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(false);
 		if(null == cascadedWindowPoint) {
 			cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(this.window().frame().origin());

@@ -37,12 +37,19 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Rendezvous;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
-public class CDMainController extends NSObject {
+public class CDMainController extends CDController {
 	private static Logger log = Logger.getLogger(CDMainController.class);
 
 	private static final File VERSION_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Version.plist"));
 
+    static {
+        BasicConfigurator.configure();
+        Logger.getRootLogger().setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
+    }
+
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		NSNotificationCenter.defaultCenter().addObserver(this,
 		    new NSSelector("applicationShouldSleep", new Class[]{Object.class}),
 		    NSWorkspace.WorkspaceWillSleepNotification,
@@ -52,28 +59,6 @@ public class CDMainController extends NSObject {
 		    new NSSelector("applicationShouldWake", new Class[]{Object.class}),
 		    NSWorkspace.WorkspaceDidWakeNotification,
 		    null);
-
-		this.threadWorkerTimer = new NSTimer(0.1, //seconds
-		    this, //target
-		    new NSSelector("handleThreadWorkerTimerEvent", new Class[]{NSTimer.class}),
-		    null, //userInfo
-		    true); //repeating
-		NSRunLoop.currentRunLoop().addTimerForMode(this.threadWorkerTimer, NSRunLoop.DefaultRunLoopMode);
-	}
-
-	// If we want the equivalent to SwingUtilities.invokeLater() for Cocoa, we have to fend for ourselves, it seems.
-	private NSTimer threadWorkerTimer;
-
-	private void handleThreadWorkerTimerEvent(NSTimer t) {
-		Runnable item;
-		while((item = ThreadUtilities.instance().next()) != null) {
-			item.run();
-		}
-	}
-
-	static {
-		BasicConfigurator.configure();
-		Logger.getRootLogger().setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 	}
 
 	// ----------------------------------------------------------
@@ -220,7 +205,7 @@ public class CDMainController extends NSObject {
 
 		public void update(final Observable o, final Object arg) {
 			log.debug("update:"+o+","+arg);
-			ThreadUtilities.instance().invokeLater(new Runnable() {
+            invoke(new Runnable() {
 				public void run() {
 					if(o instanceof Rendezvous) {
 						if(arg instanceof Message) {
@@ -303,7 +288,7 @@ public class CDMainController extends NSObject {
 	}
 	
 	public void checkForUpdate(final boolean verbose) {
-		ThreadUtilities.instance().invokeLater(new Runnable() {
+		this.invoke(new Runnable() {
 			public void run() {
 				// An autorelease pool is used to manage Foundation’s autorelease mechanism for
 				// Objective-C objects. NSAutoreleasePool provides Java applications access to
@@ -479,7 +464,7 @@ public class CDMainController extends NSObject {
 	}
 
 	public void newBrowserMenuClicked(Object sender) {
-		CDController c = this.newDocument(true);
+		CDWindowController c = this.newDocument(true);
 	}
 
 	public void showTransferQueueClicked(Object sender) {
@@ -610,8 +595,6 @@ public class CDMainController extends NSObject {
 
 	public void applicationWillTerminate(NSNotification notification) {
 		NSNotificationCenter.defaultCenter().removeObserver(this);
-		//stoppping worker thread
-		this.threadWorkerTimer.invalidate();
 		//Terminating rendezvous discovery
 		this.rendezvous.quit();
 		//Writing version info

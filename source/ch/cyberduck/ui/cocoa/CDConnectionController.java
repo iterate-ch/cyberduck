@@ -33,7 +33,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public class CDConnectionController extends CDController {
+public class CDConnectionController extends CDWindowController {
 	private static Logger log = Logger.getLogger(CDConnectionController.class);
 
 	private static final File HISTORY_FOLDER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
@@ -115,7 +115,7 @@ public class CDConnectionController extends CDController {
 		this.rendezvous.addObserver(this.observer = new Observer() {
 			public void update(final Observable o, final Object arg) {
 				log.debug("update:"+o+","+arg);
-				ThreadUtilities.instance().invokeLater(new Runnable() {
+				invoke(new Runnable() {
 					public void run() {
 						if(o instanceof Rendezvous) {
 							if(arg instanceof Message) {
@@ -355,7 +355,8 @@ public class CDConnectionController extends CDController {
 	}
 
 	public void awakeFromNib() {
-		log.debug("awakeFromNib");
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(true);
 		
 		// Notify the updateURLLabel() method if the user types.

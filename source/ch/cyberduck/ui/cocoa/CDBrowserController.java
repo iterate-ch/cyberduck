@@ -33,7 +33,7 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 /**
  * @version $Id$
  */
-public class CDBrowserController extends CDController implements Observer {
+public class CDBrowserController extends CDWindowController implements Observer {
 	private static Logger log = Logger.getLogger(CDBrowserController.class);
 
 	private static final File HISTORY_FOLDER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
@@ -345,7 +345,8 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 
 	public void awakeFromNib() {
-		log.debug("awakeFromNib");
+        super.awakeFromNib();
+
 		// Configure table views
 		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
 		this.browserTable.setDelegate(this.browserModel);
@@ -370,7 +371,7 @@ public class CDBrowserController extends CDController implements Observer {
 		if(arg instanceof Path) {
 			this.workdir = (Path)arg;
 			this.browserModel.setData(this.workdir.getSession().cache().get(this.workdir.getAbsolute()));
-			ThreadUtilities.instance().invokeLater(new Runnable() {
+			this.invoke(new Runnable() {
 				public void run() {
 					CDBrowserController.this.pathPopupItems.clear();
 					CDBrowserController.this.pathPopupButton.removeAllItems();
@@ -390,7 +391,7 @@ public class CDBrowserController extends CDController implements Observer {
 			this.browserModel.sort(selectedColumn, this.browserModel.isSortedAscending());
 			this.browserTable.reloadData();
 			this.window().makeFirstResponder(this.browserTable);
-//			ThreadUtilities.instance().invokeLater(new Runnable() {
+//			this.invoke(new Runnable() {
 //				public void run() {
 //					CDBrowserController.this.toolbar.validateVisibleItems();
 //				}
@@ -431,7 +432,7 @@ public class CDBrowserController extends CDController implements Observer {
 				this.browserTable.reloadData();
 				this.pathPopupItems.clear();
 				this.pathPopupButton.removeAllItems();
-				ThreadUtilities.instance().invokeLater(new Runnable() {
+				this.invoke(new Runnable() {
 					public void run() {
 						toolbar.validateVisibleItems();
 					}
@@ -441,7 +442,7 @@ public class CDBrowserController extends CDController implements Observer {
 				this.progressIndicator.stopAnimation(this);
 				this.statusIcon.setImage(null);
 				this.statusIcon.setNeedsDisplay(true);
-				ThreadUtilities.instance().invokeLater(new Runnable() {
+				this.invoke(new Runnable() {
 					public void run() {
 						toolbar.validateVisibleItems();
 					}
@@ -451,7 +452,7 @@ public class CDBrowserController extends CDController implements Observer {
 				this.statusIcon.setImage(null);
 				this.statusIcon.display();
 				this.progressIndicator.startAnimation(this);
-				ThreadUtilities.instance().invokeLater(new Runnable() {
+				this.invoke(new Runnable() {
 					public void run() {
 						CDBrowserController.this.toolbar.validateVisibleItems();
 					}
@@ -462,7 +463,7 @@ public class CDBrowserController extends CDController implements Observer {
 				this.statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
 																				 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 				this.statusLabel.display();
-				ThreadUtilities.instance().invokeLater(new Runnable() {
+				this.invoke(new Runnable() {
 					public void run() {
 						CDBrowserController.this.toolbar.validateVisibleItems();
 					}

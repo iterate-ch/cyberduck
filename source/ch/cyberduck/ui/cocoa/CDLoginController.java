@@ -32,12 +32,14 @@ import ch.cyberduck.ui.LoginController;
 /**
  * @version $Id$
  */
-public class CDLoginController extends CDController implements LoginController {
+public class CDLoginController extends CDWindowController implements LoginController {
 	private static Logger log = Logger.getLogger(CDLoginController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
 
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(false);
 	}
 	
@@ -92,9 +94,9 @@ public class CDLoginController extends CDController implements LoginController {
 		this.keychainCheckbox.setState(NSCell.OffState);
 	}
 
-	private CDController windowController;
+	private CDWindowController windowController;
 
-	public CDLoginController(CDController windowController) {
+	public CDLoginController(CDWindowController windowController) {
 		instances.addObject(this);
 		this.windowController = windowController;
 		if(false == NSApplication.loadNibNamed("Login", this)) {

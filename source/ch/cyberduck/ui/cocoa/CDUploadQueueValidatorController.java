@@ -45,7 +45,7 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 		}
 	}
 
-	private CDUploadQueueValidatorController(CDController windowController) {
+	private CDUploadQueueValidatorController(CDWindowController windowController) {
 		super(windowController);
 	}
 
