@@ -745,7 +745,7 @@ public class CDBrowserController extends CDController implements Observer {
 	public void bookmarkSelectionDidChange(NSNotification notification) {
 		log.debug("bookmarkSelectionDidChange");
 		editBookmarkButton.setEnabled(bookmarkTable.numberOfSelectedRows() == 1);
-		deleteBookmarkButton.setEnabled(bookmarkTable.numberOfSelectedRows() == 1);
+		deleteBookmarkButton.setEnabled(bookmarkTable.selectedRow() != 1);
 	}
 
 	public void bookmarkTableRowDoubleClicked(Object sender) {
@@ -906,18 +906,26 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void deleteBookmarkButtonClicked(Object sender) {
 		this.bookmarkDrawer.open();
-		switch(NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", ""),
-		    NSBundle.localizedString("Do you want to delete the selected bookmark?", "")+" ["+((Host)bookmarkModel.get(bookmarkTable.selectedRow())).getNickname()+"]",
-		    NSBundle.localizedString("Delete", ""),
-		    NSBundle.localizedString("Cancel", ""),
-		    null)) {
-			case NSAlertPanel.DefaultReturn:
-				bookmarkModel.remove(bookmarkTable.selectedRow());
-				this.bookmarkTable.reloadData();
-				break;
-			case NSAlertPanel.AlternateReturn:
-				break;
+		NSEnumerator enum = bookmarkTable.selectedRowEnumerator();
+		int j = 0;
+		while(enum.hasMoreElements()) {
+			int i = ((Integer)enum.nextElement()).intValue();
+			Host host = (Host)this.bookmarkModel.get(i-j);
+			switch(NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", ""),
+												 NSBundle.localizedString("Do you want to delete the selected bookmark?", "")
+												 +" ["+host.getNickname()+"]",
+												 NSBundle.localizedString("Delete", ""),
+												 NSBundle.localizedString("Cancel", ""),
+												 null)) {
+				case NSAlertPanel.DefaultReturn:
+					bookmarkModel.remove(i-j);
+					j++;
+					break;
+				case NSAlertPanel.AlternateReturn:
+					break;
+			}
 		}
+		this.bookmarkTable.reloadData();
 	}
 
 	// ----------------------------------------------------------
@@ -1750,7 +1758,7 @@ public class CDBrowserController extends CDController implements Observer {
 			return true;
 		}
 		if(identifier.equals("deleteBookmarkButtonClicked:")) {
-			return bookmarkTable.numberOfSelectedRows() == 1;
+			return bookmarkTable.selectedRow() != -1;
 		}
 		if(identifier.equals("editBookmarkButtonClicked:")) {
 			return bookmarkTable.numberOfSelectedRows() == 1;

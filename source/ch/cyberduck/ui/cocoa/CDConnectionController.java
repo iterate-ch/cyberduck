@@ -436,7 +436,6 @@ public class CDConnectionController extends CDController {
 		this.rendezvous.quit();
 		switch(sender.tag()) {
 			case (NSAlertPanel.DefaultReturn):
-			{
 				Host host = null;
 				if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
 					// SFTP has been selected as the protocol to connect with
@@ -462,11 +461,8 @@ public class CDConnectionController extends CDController {
 				}
 				browserController.mount(host);
 				break;
-			}
 			case (NSAlertPanel.AlternateReturn):
-			{
 				break;
-			}
 		}
 	}
 }

@@ -159,7 +159,7 @@ public abstract class Queue extends Observable {
 	}
 	
 	/**
-		* Notify all observers
+	 * Notify all observers
 	 *
 	 * @param arg The message to send to the observers
 	 * @see ch.cyberduck.core.Message

@@ -224,9 +224,6 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 			if(errorString[0] != null) {
 				log.error("Problem reading queue file: "+errorString[0]);
 			}
-//            else {
-//                log.debug("Successfully read Queue: " + propertyListFromXMLData);
-//            }
 			if(propertyListFromXMLData instanceof NSArray) {
 				NSArray entries = (NSArray)propertyListFromXMLData;
 				java.util.Enumeration i = entries.objectEnumerator();
@@ -252,14 +249,19 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 	}
 
 	public void remove(Queue item) {
-		for(Iterator i = this.iterator(); i.hasNext();) {
-			CDProgressController c = (CDProgressController)i.next();
+		for(int i = 0; i < this.size(); i++) {
+			CDProgressController c = this.getController(i);
 			if(c.getQueue().equals(item)) {
-				i.remove();
+				super.remove(i);
 			}
 		}
 	}
 
+    /**
+     * Get the queue at index row
+     * @param row
+     * @return The @see ch.cyberduck.core.Queue object at this index
+     */
 	public Object get(int row) {
 		if(row < this.size()) {
 			return ((CDProgressController)super.get(row)).getQueue();
@@ -267,6 +269,11 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 		return null;
 	}
 
+    /**
+     * Get the progress controller at index row
+     * @param row
+     * @return the @see ch.cyberduck.ui.cocoa.CDProgressController at this index
+     */
 	public CDProgressController getController(int row) {
 		if(row < this.size()) {
 			return (CDProgressController)super.get(row);

@@ -153,6 +153,9 @@ public class Host {
 			throw new MalformedURLException("No hostname given");
 		int begin = 0;
 		int cut = 0;
+		if(input.indexOf("://", begin) == -1 || input.indexOf('@', begin) == -1) {
+			throw new MalformedURLException("No protocol or user delimiter");
+		}
 		String protocol = Preferences.instance().getProperty("connection.protocol.default");
 		if(input.indexOf("://", begin) != -1) {
 			cut = input.indexOf("://", begin);
@@ -174,8 +177,7 @@ public class Host {
 			username = input.substring(begin, cut);
 			begin += username.length()+1;
 		}
-		String hostname = null;
-		hostname = input.substring(begin, input.length());
+		String hostname = input.substring(begin, input.length());
 		String path = null;
 		int port = getDefaultPort(protocol);
 		if(input.indexOf(':', begin) != -1) {
