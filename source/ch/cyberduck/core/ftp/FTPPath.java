@@ -351,7 +351,6 @@ public class FTPPath extends Path {
 			this.session.check();
 			if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 				this.session.FTP.setTransferType(FTPTransferType.BINARY);
-				
 				java.io.InputStream in = new FileInputStream(this.getLocal());
 				if(in == null) {
 					throw new IOException("Unable to buffer data");
@@ -366,7 +365,6 @@ public class FTPPath extends Path {
 			}
 			else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 				this.session.FTP.setTransferType(FTPTransferType.ASCII);
-				
 				java.io.Reader in = new FileReader(this.getLocal());
 				if(in == null) {
 					throw new IOException("Unable to buffer data");
@@ -378,7 +376,6 @@ public class FTPPath extends Path {
 				this.upload(out, in);
 				this.session.FTP.validateTransfer();
 				this.changePermissions(this.getLocal().getPermission().getOctalCode());
-//				this.changePermissions(Integer.parseInt(Integer.toOctalString(this.getLocalPermissions())));
 			}
 			else {
 				throw new FTPException("Transfer mode not set");

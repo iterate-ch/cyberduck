@@ -359,7 +359,6 @@ public class SFTPPath extends Path {
     }
 	
     public void fillUploadQueue(List queue) throws IOException {
-		this.session.check();
 		if(this.getLocal().isDirectory()) {
 			this.session.SFTP.makeDirectory(this.getAbsolute());//@todo do it here rather than in upload() ?
 			File[] files = this.getLocal().listFiles();
@@ -385,12 +384,12 @@ public class SFTPPath extends Path {
 				throw new IOException("Unable to buffer data");
 			}
 			SftpFile remoteFile = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
-			this.changePermissions(this.getLocal().getPermission().getDecimalCode());
 			SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);
 			if(out == null) {
 				throw new IOException("Unable opening data stream");
 			}
 			this.upload(out, in);
+			this.changePermissions(this.getLocal().getPermission().getDecimalCode());
 		}
 		catch(SshException e) {
 			this.session.log("SSH Error: "+e.getMessage(), Message.ERROR);
