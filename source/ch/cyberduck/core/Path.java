@@ -73,9 +73,12 @@ public abstract class Path {
 	this.setPath(parent, file);
     }
 
-    public abstract Path copy();
-    
-    public abstract Path copy(Session s);
+    /**
+	* Copies the current path with its attributes but without the status information
+     * @param session The session this path will use to fullfill its tasks
+	* @return A copy of me with a new session
+     */
+    public abstract Path copy(Session session);
 
     public void setPath(String parent, java.io.File file) {
 	this.setPath(parent, file.getName());

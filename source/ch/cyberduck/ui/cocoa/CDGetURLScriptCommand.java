@@ -50,7 +50,7 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
 	    if(file.length() > 1) {
 		Path p = new FTPPath((FTPSession)h.getSession(), file);
 		log.debug("Assuming download");
-		CDTransferController controller = new CDTransferController(p.getSession(), p, Queue.KIND_DOWNLOAD);
+		CDTransferController controller = new CDTransferController(p, Queue.KIND_DOWNLOAD);
 		controller.transfer();
 	    }
 	    else {

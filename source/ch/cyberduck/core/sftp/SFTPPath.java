@@ -42,7 +42,7 @@ public class SFTPPath extends Path {
     private static Logger log = Logger.getLogger(SFTPPath.class);
 
     private SFTPSession session;
-	
+
     public SFTPPath(SFTPSession session, String parent, String name) {
 	super(parent, name);
 	this.session = session;
@@ -58,15 +58,10 @@ public class SFTPPath extends Path {
 	this.session = session;
     }
 
-    public Path copy() {
-	return this.copy(this.session);
-    }
-    
     public Path copy(Session s) {
-	SFTPPath copy = new SFTPPath((SFTPSession)s, this.getAbsolute());
-	copy.setLocal(this.getLocal());
+	SFTPPath copy = new SFTPPath((SFTPSession)s, this.getParent().getAbsolute(), this.getLocal());
 	copy.attributes = this.attributes;
-	copy.status = this.status;
+//	copy.status = this.status;
 	return copy;
     }
     
@@ -83,6 +78,10 @@ public class SFTPPath extends Path {
 	}
 	log.debug("getParent:"+parent);
 	return parent;
+    }
+
+    public Session getSession() {
+	return this.session;
     }
     
     public List list() {
@@ -116,7 +115,7 @@ public class SFTPPath extends Path {
 		    else {
 			p.attributes.setOwner(x.getAttributes().getUID().toString());
 			p.attributes.setGroup(x.getAttributes().getGID().toString());
-			p.status.setSize(x.getAttributes().getSize().intValue());
+			p.status.setSize(x.getAttributes().getSize().longValue());
 			p.attributes.setModified(Long.parseLong(x.getAttributes().getModifiedTime().toString())*1000L);
 			p.attributes.setMode(x.getAttributes().getPermissionsString());
 			p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
@@ -263,14 +262,9 @@ public class SFTPPath extends Path {
 	}
     }
 
-    public Session getSession() {
-	return this.session;
-    }
-
     public void fillQueue(List queue, int kind) {
-//    public void fillQueue(List queue, Session session, int kind) {
+	log.debug("fillQueue:"+kind+","+kind);
 	try {
-//	    this.session = (SFTPSession)session;
 	    this.session.check();
 	    switch(kind) {
 		case Queue.KIND_DOWNLOAD:
@@ -304,7 +298,7 @@ public class SFTPPath extends Path {
 	    }
 	    else if(isFile()) {
 		SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-		this.status.setSize(p.getAttributes().getSize().intValue());
+		this.status.setSize(p.getAttributes().getSize().longValue());
 		queue.add(this);
 	    }
 	    else
@@ -362,7 +356,7 @@ public class SFTPPath extends Path {
 		}
 	    }
 	    else if(this.getLocal().isFile()) {
-		this.status.setSize((int)this.getLocal().length());
+		this.status.setSize(this.getLocal().length());
 		queue.add(this);
 	    }
 	    else

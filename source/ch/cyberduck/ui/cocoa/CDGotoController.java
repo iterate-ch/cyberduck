@@ -73,7 +73,7 @@ public class CDGotoController {
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
 		Path current = (Path)contextInfo;
-		Path go = current.copy();
+		Path go = current.copy(current.getSession());
 		String name = this.folderField.stringValue();
 		if(name.charAt(0) != '/')
 		    go.setPath(current.getAbsolute(), name);

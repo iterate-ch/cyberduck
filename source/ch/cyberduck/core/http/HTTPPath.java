@@ -51,15 +51,15 @@ public class HTTPPath extends Path {
 	this.session = session;
     }
 
-    public Path copy() {
-	return this.copy(this.session);
-    }
-    
+    public HTTPPath(HTTPSession session, String parent, java.io.File file) {
+	super(parent, file);
+	this.session = session;
+    }    
+
     public Path copy(Session s) {
-	HTTPPath copy = new HTTPPath((HTTPSession)s, this.getAbsolute());
-	copy.setLocal(this.getLocal());
+	HTTPPath copy = new HTTPPath((HTTPSession)s, this.getParent().getAbsolute(), this.getLocal());
 	copy.attributes = this.attributes;
-	copy.status = this.status;
+//	copy.status = this.status;
 	return copy;
     }
     
@@ -116,9 +116,8 @@ public class HTTPPath extends Path {
     }
 
     public void fillQueue(List queue, int kind) {
-//    public void fillQueue(List queue, Session session, int kind) {
+	log.debug("fillQueue:"+kind+","+kind);
 	try {
-//	    this.session = (HTTPSession)session;
 	    this.session.check();
 	    switch(kind) {
 		case Queue.KIND_DOWNLOAD:
@@ -211,7 +210,7 @@ public class HTTPPath extends Path {
 	    Header lengthHeader = GET.getResponseHeader("Content-Length");
 	    if(lengthHeader != null) {
 		try {
-		    this.status.setSize(Integer.parseInt(lengthHeader.getValue()));
+		    this.status.setSize(Long.parseLong(lengthHeader.getValue()));
 		}
 		catch(NumberFormatException e) {
 		    this.status.setSize(-1);
@@ -221,7 +220,7 @@ public class HTTPPath extends Path {
 	    if(rangeHeader != null) {
 		try {
 		    String r = rangeHeader.getValue();
-		    int l = Integer.parseInt(r.substring(v.indexOf('/') + 1));
+		    long l = Long.parseLong(r.substring(v.indexOf('/') + 1));
 		    this.status.setSize(l);
 		}
 		catch(NumberFormatException e) {

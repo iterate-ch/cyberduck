@@ -112,17 +112,11 @@ public class CDTransferController implements Observer, Validator {
     private Path root;
     private Host host;
     private Queue queue;
-    private Session session;
 
-    public CDTransferController(Session session, Path[] items, int kind) {
+    public CDTransferController(Path[] roots, int kind) {
 	allDocuments.addObject(this);
-	this.session = session;
 	this.kind = kind;
-	this.roots = new Path[items.length];
-	// copy all paths with new session
-	for(int i = 0; i < roots.length; i++) {
-	    roots[i]  = items[i].copy(session);
-	}
+	this.roots = roots;
 	this.queue = new Queue(roots, this.kind, this);
 	this.queue.addObserver(this);
 	this.root = roots[0];
@@ -137,8 +131,8 @@ public class CDTransferController implements Observer, Validator {
     /**
 	* @param kind Tag specifiying if it is a download or upload.
      */
-    public CDTransferController(Session session, Path root, int kind) {
-	this(session, new Path[]{root}, kind);
+    public CDTransferController(Path root, int kind) {
+	this(new Path[]{root}, kind);
     }
 
     /**
@@ -153,8 +147,9 @@ public class CDTransferController implements Observer, Validator {
     }
 
     private void init() {
+	log.debug("init");
+	log.debug(root.toString());
 	this.window().setTitle(root.getName());
-//	this.window().setTitle(root.getName()+" ("+(queue.processedJobs()+1)+" of "+queue.numberOfJobs());
 	this.window().display();
 	this.urlField.setAttributedStringValue(new NSAttributedString(host.getURL()+root.getAbsolute()));
 	this.fileField.setAttributedStringValue(new NSAttributedString(root.getLocal().toString()));
@@ -180,7 +175,7 @@ public class CDTransferController implements Observer, Validator {
 //	log.debug("update:"+o+","+arg);
 	if(arg instanceof Path) {
 	    log.debug("New root element:"+arg);
-	    this.root = (Path)root;
+	    this.root = (Path)arg;
 	    this.init();
 	}
 	else if(arg instanceof Message) {
@@ -194,12 +189,13 @@ public class CDTransferController implements Observer, Validator {
 		this.totalProgressBar.setMaxValue(queue.getSize());
 
 		this.fileDataField.setAttributedStringValue(new NSAttributedString(
-				Status.parseDouble(status.getCurrent()/1024)+
-				" "+NSBundle.localizedString("of")+" "+Status.parseDouble(status.getSize()/1024)+"kB ("+
-				Status.parseDouble(queue.getCurrent()/1024)+" of "+
-				Status.parseDouble(queue.getSize()/1024)+"kB "+NSBundle.localizedString("Total")+"), "+
-				Status.parseDouble(queue.getSpeed()/1024) + "kB/s, "+queue.getTimeLeft()
-		    ));
+								     (status.getCurrent()/1024)+
+								     " "+NSBundle.localizedString("of")+
+								     " "+(status.getSize()/1024)+"kB ("+
+								     (queue.getCurrent()/1024)+" of "+
+								     (queue.getSize()/1024)+"kB "+NSBundle.localizedString("Total")+"), "+
+								     Status.parseLong(queue.getSpeed()/1024) + "kB/s, "+queue.getTimeLeft()
+								     ));
 		this.fileDataField.setNeedsDisplay(true);
 	    }
 	    // CLOCK
@@ -214,6 +210,7 @@ public class CDTransferController implements Observer, Validator {
 	    }
 	    // START
 	    else if(msg.getTitle().equals(Message.START)) {
+		log.debug("START");
 		this.totalProgressBar.setIndeterminate(true);
 		this.totalProgressBar.startAnimation(null);
 
@@ -233,6 +230,7 @@ public class CDTransferController implements Observer, Validator {
 	    }	    
 	    // STOP
 	    else if(msg.getTitle().equals(Message.STOP)) {
+		log.debug("STOP");
 		this.totalProgressBar.stopAnimation(null);
 
 //		this.progressField.setAttributedStringValue(new NSAttributedString("Idle"));
@@ -242,6 +240,7 @@ public class CDTransferController implements Observer, Validator {
 	    }
 	    // COMPLETE
 	    else if(msg.getTitle().equals(Message.COMPLETE)) {
+		log.debug("COMPLETE");
 		this.progressField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Complete")));
 		this.progressField.setNeedsDisplay(true);
 		if(0 == queue.remainingJobs()) {
@@ -402,6 +401,7 @@ public class CDTransferController implements Observer, Validator {
 	}
 	else if(Queue.KIND_UPLOAD == kind) {
 	    log.debug("Validating upload");
+	    path.status.setResume(false);
 	    log.debug("return:true");
 	    return true;
 	}
@@ -434,7 +434,7 @@ public class CDTransferController implements Observer, Validator {
      * @return boolean Return false if validation fails. I.e. the file already exists.
      */
     public void transfer() {
-	this.queue.start(session);
+	this.queue.start();
     }
     
     public void windowWillClose(NSNotification notification) {
@@ -457,8 +457,9 @@ public class CDTransferController implements Observer, Validator {
 	this.root.status.setResume(false);
 	this.transfer();
     }
-    
+
     public void stopButtonClicked(NSButton sender) {
+	this.totalProgressBar.stopAnimation(null);
 	this.stopButton.setEnabled(false);
 	this.resumeButton.setEnabled(true);
 	this.reloadButton.setEnabled(true);

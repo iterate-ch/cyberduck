@@ -59,15 +59,10 @@ public class FTPPath extends Path {
 	this.session = session;
     }
 
-    public Path copy() {
-	return this.copy(this.session);
-    }
-
     public Path copy(Session s) {
-	FTPPath copy = new FTPPath((FTPSession)s, this.getAbsolute());
-	copy.setLocal(this.getLocal());
+	FTPPath copy = new FTPPath((FTPSession)s, this.getParent().getAbsolute(), this.getLocal());
 	copy.attributes = this.attributes;
-	copy.status = this.status;
+//	copy.status = this.status;
 	return copy;
     }
     
@@ -97,6 +92,10 @@ public class FTPPath extends Path {
 	return this.list(true, Preferences.instance().getProperty("browser.showHidden").equals("true"));
     }
 
+    public Session getSession() {
+	return this.session;
+    }
+    
     public List list(boolean notifyobservers, boolean showHidden) {
 	session.log("Listing "+this.getAbsolute(), Message.PROGRESS);
 	session.addPathToHistory(this);
@@ -244,14 +243,9 @@ public class FTPPath extends Path {
 //	}
 //  }
 
-    public Session getSession() {
-	return this.session;
-    }
-
     public void fillQueue(List queue, int kind) {
-//    public void fillQueue(List queue, Session session, int kind) {
+	log.debug("fillQueue:"+kind+","+kind);
 	try {
-//	    this.session = (FTPSession)session;
 	    this.session.check();
 	    switch(kind) {
 		case Queue.KIND_DOWNLOAD:
@@ -281,7 +275,7 @@ public class FTPPath extends Path {
 	    }
 	}
 	else if(this.isFile()) {
-	    this.status.setSize((int)this.session.FTP.size(this.getAbsolute()));
+	    this.status.setSize(this.session.FTP.size(this.getAbsolute()));
 	    queue.add(this);
 	}
 	else
@@ -358,7 +352,7 @@ public class FTPPath extends Path {
 	    }
 	}
 	else if(this.getLocal().isFile()) {
-	    this.status.setSize((int)this.getLocal().length());
+	    this.status.setSize(this.getLocal().length());
 	    queue.add(this);
 	}
 	else
@@ -380,7 +374,8 @@ public class FTPPath extends Path {
 		}
 
 //		this.session.log("Opening data stream...", Message.PROGRESS);
-		java.io.OutputStream out = this.session.FTP.putBinary(this.getAbsolute(), this.status.isResume());
+		java.io.OutputStream out = this.session.FTP.putBinary(this.getAbsolute(), false);
+//		java.io.OutputStream out = this.session.FTP.putBinary(this.getAbsolute(), this.status.isResume());
 		if(out == null) {
 		    throw new IOException("Unable opening data stream");
 		}
@@ -398,7 +393,8 @@ public class FTPPath extends Path {
 		}
 
 //		this.session.log("Opening data stream...", Message.PROGRESS);
-		java.io.Writer out = this.session.FTP.putASCII(this.getAbsolute(), this.status.isResume());
+		java.io.Writer out = this.session.FTP.putASCII(this.getAbsolute(), false);
+//		java.io.Writer out = this.session.FTP.putASCII(this.getAbsolute(), this.status.isResume());
 		if(out == null) {
 		    throw new IOException("Unable opening data stream");
 		}
@@ -600,7 +596,7 @@ public class FTPPath extends Path {
 		p.attributes.setModified(date);
 		p.attributes.setMode(access);
 		p.attributes.setPermission(new Permission(access));
-		p.status.setSize(Integer.parseInt(size));
+		p.status.setSize(Long.parseLong(size));
 
 //		 if(isLink(line)) {
 //		    // the following lines are the most ugly. I just don't know how I can be sure

@@ -104,7 +104,7 @@ public class CDDownloadController {
 //			session = new HTTPSession(host = new Host(Session.HTTP, hostname, url.getPort(), new Login()));
 			path = new HTTPPath((HTTPSession)session, file);
 		    }
-		    CDTransferController controller = new CDTransferController(session, path, Queue.KIND_DOWNLOAD);
+		    CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
 		    controller.transfer();
 		}
 		catch(MalformedURLException e) {

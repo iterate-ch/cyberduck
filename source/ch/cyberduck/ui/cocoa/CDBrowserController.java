@@ -410,11 +410,13 @@ public class CDBrowserController implements Observer {
 	log.debug("downloadButtonClicked");
 	CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
 	NSEnumerator enum = browserTable.selectedRowEnumerator();
+	Session session = browserTable.workdir().getSession().copy();
 	List items = new ArrayList();
 	while(enum.hasMoreElements()) {
-	    items.add(browserModel.getEntry(((Integer)enum.nextElement()).intValue()));
+	    items.add(browserModel.getEntry(((Integer)enum.nextElement()).intValue()).copy(session));
 	}
-	CDTransferController controller = new CDTransferController(browserTable.workdir().getSession().copy(), (Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
+	CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
+//	CDTransferController controller = new CDTransferController(browserTable.workdir().getSession().copy(), (Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
 	controller.transfer();
     }
     
@@ -437,12 +439,14 @@ public class CDBrowserController implements Observer {
 		NSArray selected = sheet.filenames();
 		java.util.Enumeration enumerator = selected.objectEnumerator();
 		List items = new ArrayList();
+		Session session = parent.getSession().copy();
 		while (enumerator.hasMoreElements()) {
-		    Path item = parent.copy();
+		    Path item = parent.copy(session);
 		    item.setPath(parent.getAbsolute(), new java.io.File((String)enumerator.nextElement()));
 		    items.add(item);
 		}
-		CDTransferController controller = new CDTransferController(browserTable.workdir().getSession().copy(), (Path[])items.toArray(new Path[]{}), Queue.KIND_UPLOAD);
+		CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_UPLOAD);
+//		CDTransferController controller = new CDTransferController(parent.getSession().copy(), (Path[])items.toArray(new Path[]{}), Queue.KIND_UPLOAD);
 		controller.transfer();
 		break;
 	    }
@@ -780,13 +784,13 @@ public class CDBrowserController implements Observer {
 	    return this.isMounted() && browserTable.selectedRow() != -1;
         }
         if (sel.equals("folderButtonClicked:")) {
-	    return this.isMounted() && browserTable.selectedRow() != -1;
+	    return this.isMounted();
         }
         if (sel.equals("deleteButtonClicked:")) {
 	    return this.isMounted() && browserTable.selectedRow() != -1;
         }
         if (sel.equals("refreshButtonClicked:")) {
-	    return this.isMounted() && browserTable.selectedRow() != -1;
+	    return this.isMounted();
         }
         return true;
     }

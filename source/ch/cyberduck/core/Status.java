@@ -90,9 +90,9 @@ public class Status extends Observable implements Serializable {
 	return size;
     }
 
-    private static final int KILO = 1024; //2^10
-    private static final int MEGA = 1048576; // 2^20
-    private static final int GIGA = 1073741824; // 2^30
+    private static final long KILO = 1024; //2^10
+    private static final long MEGA = 1048576; // 2^20
+    private static final long GIGA = 1073741824; // 2^30
 
     /**
 	* @return The size of the file
@@ -102,13 +102,13 @@ public class Status extends Observable implements Serializable {
 	    return size + " B";
 	}
 	else if(size < MEGA) {
-	    return new Double(size/KILO).intValue() + " KB";
+	    return new Long(size/KILO).intValue() + " KB";
 	}
 	else if(size < GIGA) {
-	    return new Double(size/MEGA).intValue() + " MB";
+	    return new Long(size/MEGA).intValue() + " MB";
 	}
 	else {
-	    return new Double(size/GIGA).intValue() + " GB";
+	    return new Long(size/GIGA).intValue() + " GB";
 	}
     }
     
@@ -130,55 +130,38 @@ public class Status extends Observable implements Serializable {
     public boolean isCanceled() {
 	return canceled;
     }
-
-
-//    public BoundedRangeModel getProgressModel() {
-//	DefaultBoundedRangeModel m = null;
-//	try {
-//	    if(this.getSize() < 0) {
-//		m = new DefaultBoundedRangeModel(0, 0, 0, 100);
-//	    }
-//	    m = new DefaultBoundedRangeModel(this.getCurrent(), 0, 0, this.getSize());
-//	}
-//	catch(IllegalArgumentException e) {
-//	    m = new DefaultBoundedRangeModel(0, 0, 0, 100);
-//	}
-//	return m;
-  //  }
-
+    
     public long getCurrent() {
-	return current;
+//	log.debug("getCurrent:"+current);
+	return this.current;
     }
 
     /**
 	* @param current The currently transfered bytes
      */
     public void setCurrent(long current) {
-	//        log.debug("setCurrent(" + c + ")");
 	this.current = current;
 	this.callObservers(new Message(Message.DATA, this));
 //	this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of " + Status.parseDouble(this.getSize()/1024) + " kBytes."));
     }
 
-
-    public static double parseDouble(double d) {
-        //log.debug("Status.parseDouble(" + d + ")");
-        String s = Double.toString(d);
+    public static long parseLong(long d) {
+      //log.debug("Status.parseDouble(" + d + ")");
+	String s = Long.toString(d);
         if(s.indexOf(".") != -1) {
-            int l = s.substring(s.indexOf(".")).length();
+	    int l = s.substring(s.indexOf(".")).length();
             if(l > 3) {
-                return Double.parseDouble(s.substring(0, s.indexOf('.') + 3));
-            }
-            else {
-                return Double.parseDouble(s.substring(0, s.indexOf('.') + l));
-            }
-        }
-        else {
-            return d;
-        }
+		return Long.parseLong(s.substring(0, s.indexOf('.') + 3));
+	    }
+	    else {
+		return Long.parseLong(s.substring(0, s.indexOf('.') + l));
+	    }
+	}
+	else {
+	    return d;
+	}
     }
     
-
     public void setResume(boolean resume) {
 	this.resume = resume;
 	if(!resume)
@@ -188,7 +171,6 @@ public class Status extends Observable implements Serializable {
     public boolean isResume() {
 	return this.resume;
     }
-
 
     public void reset() {
 	this.complete = false;

@@ -23,6 +23,8 @@ import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
 import java.util.*;
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.ftp.*;
+import ch.cyberduck.core.sftp.*;
 
 /**
 * @version $Id$
@@ -134,9 +136,10 @@ public class CDBrowserTable extends NSTableView implements Observer {
 		NSEnumerator enum = this.selectedRowEnumerator();
 		List items = new ArrayList();
 		while(enum.hasMoreElements()) {
-		    items.add(browserModel.getEntry(((Integer)enum.nextElement()).intValue()));
+		    items.add(browserModel.getEntry(((Integer)enum.nextElement()).intValue()).copy(workdir.getSession()));
 		}
-		CDTransferController controller = new CDTransferController(this.workdir.getSession().copy(), (Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
+		CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
+//		CDTransferController controller = new CDTransferController(this.workdir.getSession().copy(), (Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
 		controller.transfer();
 	    }
 	    if(p.isDirectory())
@@ -152,7 +155,8 @@ public class CDBrowserTable extends NSTableView implements Observer {
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
 	log.debug("finishedDraggingImage:"+operation);
 	if(promisedDragPaths != null) {
-	    CDTransferController controller = new CDTransferController(this.workdir.getSession().copy(), promisedDragPaths, Queue.KIND_DOWNLOAD);
+	    CDTransferController controller = new CDTransferController(promisedDragPaths, Queue.KIND_DOWNLOAD);
+//	    CDTransferController controller = new CDTransferController(this.workdir.getSession().copy(), promisedDragPaths, Queue.KIND_DOWNLOAD);
 	    controller.transfer();
 	    promisedDragPaths = null;
 	}
@@ -188,8 +192,9 @@ public class CDBrowserTable extends NSTableView implements Observer {
 
 	NSEnumerator enum = this.selectedRowEnumerator();
 	int i = 0;
+	Session session = workdir.getSession().copy();
 	while(enum.hasMoreElements()) {
-	    promisedDragPaths[i] = (Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue());
+	    promisedDragPaths[i] = browserModel.getEntry(((Integer)enum.nextElement()).intValue()).copy(session);
 	    promisedDragPaths[i].setLocal(new java.io.File(dropDestination.getPath(), promisedDragPaths[i].getName()));
 	    promisedDragNames.addObject(promisedDragPaths[i].getName());
 	    i++;
@@ -423,13 +428,19 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	// In the file format type that we're working with, get all data on the pasteboard
 	    NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
 	    Path[] roots = new Path[filesList.count()];
+	    Session session = workdir().getSession().copy();
 	    for(int i = 0; i < filesList.count(); i++) {
 		log.debug(filesList.objectAtIndex(i));
-		roots[i] = ((CDBrowserTable)tableView).workdir.copy();
-		roots[i].setPath(roots[i].getAbsolute(), new java.io.File((String)filesList.objectAtIndex(i)));
+		if(workdir instanceof FTPPath)
+		    roots[i] = new FTPPath((FTPSession)session, workdir.getAbsolute(), new java.io.File((String)filesList.objectAtIndex(i)));
+		if(workdir instanceof SFTPPath)
+		    roots[i] = new SFTPPath((SFTPSession)session, workdir.getAbsolute(), new java.io.File((String)filesList.objectAtIndex(i)));
+//		roots[i] = ((CDBrowserTable)tableView).workdir.copy();
+//		roots[i].setPath(roots[i].getAbsolute(), new java.io.File((String)filesList.objectAtIndex(i)));
 	    }
+	    CDTransferController controller = new CDTransferController(roots, Queue.KIND_UPLOAD);
 
-	    CDTransferController controller = new CDTransferController(workdir().getSession().copy(), roots, Queue.KIND_UPLOAD);
+//	    CDTransferController controller = new CDTransferController(workdir().getSession().copy(), roots, Queue.KIND_UPLOAD);
 	    controller.transfer();
 	    
 //	    tableView.reloadData();
@@ -503,8 +514,8 @@ public class CDBrowserTable extends NSTableView implements Observer {
 		this.data.add(entry);
 	}
 
-	public Object getEntry(int row) {
-	    return this.data.get(row);
+	public Path getEntry(int row) {
+	    return (Path)this.data.get(row);
 	}
 
 	public void removeEntry(Path o) {
