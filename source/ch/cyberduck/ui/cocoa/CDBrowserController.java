@@ -796,8 +796,7 @@ public class CDBrowserController extends NSObject implements Observer {
 				if ((filename = sheet.filename()) != null) {
 					Path path  = (Path)contextInfo;
 					path.setLocal(new Local(filename));
-					//				Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
-					Queue queue = path.getQueue(Queue.KIND_DOWNLOAD);
+					Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
 					CDQueuesImpl.instance().addItem(queue);
 					CDQueueController.instance().startItem(queue);
 				}
@@ -818,15 +817,7 @@ public class CDBrowserController extends NSObject implements Observer {
 				while (enum.hasMoreElements()) {
 					Session session = pathController.workdir().getSession().copy();
 					Path path = ((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session);
-					if(path.isFile()) {
-						q.add(path);
-					}
-					else {
-						// Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
-						Queue queue = path.getQueue(Queue.KIND_DOWNLOAD);
-						CDQueuesImpl.instance().addItem(queue);
-						CDQueueController.instance().startItem(queue);
-					}
+					q.add(path);
 				}
 				if(q.numberOfJobs() > 0) {
 					CDQueuesImpl.instance().addItem(q);
@@ -1340,16 +1331,18 @@ public class CDBrowserController extends NSObject implements Observer {
                 if (o != null) {
                     if (o instanceof NSArray) {
                         NSArray filesList = (NSArray) o;
+						Queue q = new Queue(Queue.KIND_UPLOAD);
                         for (int i = 0; i < filesList.count(); i++) {
                             log.debug(filesList.objectAtIndex(i));
                             Path p = PathFactory.createPath(pathController.workdir().getSession().copy(),
                                     pathController.workdir().getAbsolute(),
                                     new Local((String) filesList.objectAtIndex(i)));
-//                            Queue queue = new Queue(p, Queue.KIND_UPLOAD);
-							Queue queue = p.getQueue(Queue.KIND_UPLOAD);
-                            CDQueuesImpl.instance().addItem(queue);
-                            CDQueueController.instance().startItem(queue, (Observer) CDBrowserController.this);
+							q.add(p);
                         }
+						if(q.numberOfJobs() > 0) {
+							CDQueuesImpl.instance().addItem(q);
+							CDQueueController.instance().startItem(q);
+						}
                         return true;
                     }
                 }
@@ -1399,8 +1392,7 @@ public class CDBrowserController extends NSObject implements Observer {
                     else {
                         fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
                     }
-                    queueDictionaries.addObject(promisedDragPaths[i].getQueue(Queue.KIND_DOWNLOAD).getAsDictionary());
-//                    queueDictionaries.addObject(new Queue(promisedDragPaths[i], Queue.KIND_DOWNLOAD).getAsDictionary());
+                    queueDictionaries.addObject(new Queue(promisedDragPaths[i], Queue.KIND_DOWNLOAD).getAsDictionary());
                 }
                 // Writing data for private use when the item gets dragged to the transfer queue.
                 NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
@@ -1440,8 +1432,7 @@ public class CDBrowserController extends NSObject implements Observer {
                     try {
                         this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
                                 this.promisedDragPaths[i].getName()));
-//                        Queue queue = new Queue(this.promisedDragPaths[i], Queue.KIND_DOWNLOAD);
-                        Queue queue = this.promisedDragPaths[i].getQueue(Queue.KIND_DOWNLOAD);
+                        Queue queue = new Queue(this.promisedDragPaths[i], Queue.KIND_DOWNLOAD);
                         CDQueuesImpl.instance().addItem(queue);
                         CDQueueController.instance().startItem(queue);
                         promisedDragNames.addObject(this.promisedDragPaths[i].getName());

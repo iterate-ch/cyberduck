@@ -320,7 +320,7 @@ public class SFTPPath extends Path {
 		}
 	}
 
-	public Queue getQueue(int kind) {
+	public List getChilds(int kind) {
 		try {
 			switch (kind) {
 				case Queue.KIND_DOWNLOAD:
@@ -338,11 +338,11 @@ public class SFTPPath extends Path {
 		return null;
 	}
 
-	private Queue getDownloadQueue() throws IOException {
-		return this.getDownloadQueue(new Queue(this, Queue.KIND_DOWNLOAD));
+	private List getDownloadQueue() throws IOException {
+		return this.getDownloadQueue(new ArrayList());
 	}
 	
-	private Queue getDownloadQueue(Queue queue) throws IOException {
+	private List getDownloadQueue(List queue) throws IOException {
 		try {
 			if (isDirectory()) {
 				this.session.check();
@@ -404,11 +404,11 @@ public class SFTPPath extends Path {
 		}
 	}
 	
-	private Queue getUploadQueue() throws IOException {
-		return this.getUploadQueue(new Queue(this, Queue.KIND_UPLOAD));
+	private List getUploadQueue() throws IOException {
+		return this.getUploadQueue(new ArrayList());
 	}
 	
-	private Queue getUploadQueue(Queue queue) throws IOException {
+	private List getUploadQueue(List queue) throws IOException {
 		if (this.getLocal().isDirectory()) {
 			this.session.check();
 			this.session.SFTP.makeDirectory(this.getAbsolute());

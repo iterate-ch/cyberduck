@@ -320,7 +320,10 @@ public abstract class Path {
 
 	public abstract void upload();
 
-	public abstract Queue getQueue(int kind);
+	/**
+		* @return All childs if this file denotes a directory and/or the file itself.
+	 */
+	public abstract List getChilds(int kind);
 
 	// ----------------------------------------------------------
 	// Transfer methods

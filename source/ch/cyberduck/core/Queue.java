@@ -108,11 +108,22 @@ public class Queue extends Observable implements Observer { //Thread {
 	private long speed;
 
 	private long timeLeft = -1;
-	private long current = 0;
-	private long size = 0;
+//	private long current = 0;
+//	private long size = 0;
 
 	private String status = "";
 	private String error = "";
+
+	/**
+		* @param root Usually the parent directory of serveral files
+	 * @param kind Either <code>KIND_DOWNLOAD</code> or <code>KIND_UPLOAD</code>
+	 */
+	public Queue(Path root, int kind) {
+		this.root = root;
+		this.kind = kind;
+		this.add(root);
+		this.init();
+	}
 	
 	/**
 		* The root will be determined by runtime as the currently processed job
@@ -122,16 +133,6 @@ public class Queue extends Observable implements Observer { //Thread {
 		this(null, kind);
 	}
 	
-	/**
-		* @param root Usually the parent directory of serveral files
-	 * @param kind Either <code>KIND_DOWNLOAD</code> or <code>KIND_UPLOAD</code>
-	 */
-	public Queue(Path root, int kind) {
-		this.root = root;
-		this.kind = kind;
-		this.init();
-	}
-
 	public Queue(NSDictionary dict) {
 		Host host = new Host((NSDictionary) dict.objectForKey("Host"));
 		Session s = SessionFactory.createSession(host);
@@ -178,8 +179,9 @@ public class Queue extends Observable implements Observer { //Thread {
 	 * @param item The path to be added in the queue
 	 */
 	public void add(Path item) {
-		this.jobs.add(item); //adding the item to the queue
-		this.size += item.status.getSize(); //incrementing the total size of the queue
+		for (Iterator iter = item.getChilds(this.kind).iterator() ; iter.hasNext() ;) {
+			this.jobs.add((Path)iter.next());
+		}
 	}
 
 	/**
@@ -374,10 +376,10 @@ public class Queue extends Observable implements Observer { //Thread {
 		for (Iterator iter = jobs.iterator() ; iter.hasNext() ;) {
 			value += ((Path) iter.next()).status.getSize();
 		}
-		if (value > 0)
-			this.size = value;
+//		if (value > 0)
+//			this.size = value;
 //		log.debug(this.toString()+">calculateTotalSize:"+this.size);
-		return this.size;
+		return value;
 	}
 
 	public String getSizeAsString() {
@@ -396,10 +398,10 @@ public class Queue extends Observable implements Observer { //Thread {
 		for (Iterator iter = jobs.iterator() ; iter.hasNext() ;) {
 			value += ((Path)iter.next()).status.getCurrent();
 		}
-		if (value > 0)
-			this.current = value;
+//		if (value > 0)
+//			this.current = value;
 //		log.debug(this.toString()+">calculateCurrentSize:"+this.size);
-		return this.current;
+		return value;
 	}
 
 	public String getCurrentAsString() {

@@ -151,7 +151,7 @@ public class HTTPPath extends Path {
 		session.log("Invalid Operation", Message.ERROR);
 	}
 
-	public Queue getQueue(int kind) {
+	public List getChilds(int kind) {
 		log.debug("fillQueue:" + kind + "," + kind);
 		try {
 			switch (kind) {
@@ -167,11 +167,11 @@ public class HTTPPath extends Path {
 		return null;
 	}
 
-	private Queue getDownloadQueue() throws IOException {
-		return this.getDownloadQueue(new Queue(this, Queue.KIND_DOWNLOAD));
+	private List getDownloadQueue() throws IOException {
+		return this.getDownloadQueue(new ArrayList());
 	}
 	
-	private Queue getDownloadQueue(Queue queue) throws IOException {
+	private List getDownloadQueue(List queue) throws IOException {
 		queue.add(this);
 		return queue;
 	}
