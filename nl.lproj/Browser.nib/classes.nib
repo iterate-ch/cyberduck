@@ -23,6 +23,7 @@
                 browserTable = NSTableView; 
                 editBookmarkButton = NSButton; 
                 logDrawer = NSDrawer; 
+                logView = NSTextView; 
                 pathPopup = NSPopUpButton; 
                 progressIndicator = NSProgressIndicator; 
                 quickConnectPopup = NSComboBox; 
@@ -34,12 +35,6 @@
                 upButton = NSButton; 
                 window = NSWindow; 
             }; 
-            SUPERCLASS = "java.lang.Object"; 
-        }, 
-        {
-            CLASS = "ch.cyberduck.ui.cocoa.CDTranscriptImpl"; 
-            LANGUAGE = Java; 
-            OUTLETS = {textView = NSTextView; }; 
             SUPERCLASS = "java.lang.Object"; 
         }
     ); 
