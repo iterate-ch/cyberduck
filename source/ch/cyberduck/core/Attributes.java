@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  */
 
 import java.util.Observable;
+import java.util.Date;
+import java.text.DateFormat;
 import org.apache.log4j.Logger;
 
 /**
@@ -54,42 +56,6 @@ public class Attributes extends Observable {
      }
      */
 
-    /**
-	* @ param size the size of file in bytes.
-     */
-    public void setSize(int size) {
-	//	log.debug("setSize:"+size);
-	this.size = size;
-    }
-
-    /**
-	* @ return length the size of file in bytes.
-     */
-    public int getSize() {
-	return size;
-    }
-
-    private static final int KILO = 1024; //2^10
-    private static final int MEGA = 1048576; // 2^20
-    private static final int GIGA = 1073741824; // 2^30
-
-    /**
-	* @return The size of the file
-     */
-    public String getSizeAsString() {
-	if(size < KILO) {
-	    return size + " B";
-	}
-	else if(size < MEGA) {
-	    return new Double(size/KILO).intValue() + " KB";
-	}
-	else if(size < GIGA) {
-	    return new Double(size/MEGA).intValue() + " MB";
-	}
-	else {
-	    return new Double(size/GIGA).intValue() + " GB";
-	}
-    }
 
     /**
 	* Set the modfication returned by ftp directory listings
@@ -142,15 +108,5 @@ public class Attributes extends Observable {
 
     public String getGroup() {
 	return this.group;
-    }
-
-    public String getKind() {
-	if(Path.this.isFile())
-	    return "File";
-	if(Path.this.isDirectory())
-	    return "Folder";
-	if(Path.this.isLink())
-	    return "Link";
-	return "Unknown";
     }
 }

@@ -100,12 +100,12 @@ public abstract class Session {//extends Thread {
     
     public void log(String message, String title) {
 //        log.debug("[Session] log("+message+","+type+")");
-
         if(title.equals(Message.TRANSCRIPT)) {
             Transcript.instance().transcript(message);
         }
-	else
-	    host.status.setMessage(message, title);
+	else {
+	    host.callObservers(new Message(title, message));
+	}
 
 	
 /*        if(type.equals(Status.LOG)) {

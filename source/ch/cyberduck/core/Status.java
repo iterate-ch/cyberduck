@@ -98,9 +98,9 @@ public class Status extends Observable implements Serializable {
      * bytes.
      */
     public Status () {
-        calendar.set(Calendar.HOUR, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
+//        calendar.set(Calendar.HOUR, 0);
+//        calendar.set(Calendar.MINUTE, 0);
+//      calendar.set(Calendar.SECOND, 0);
 
 	ObserverList.instance().registerObservable(this);
 
@@ -122,27 +122,25 @@ public class Status extends Observable implements Serializable {
      */
     public void callObservers(Message arg) {
         log.debug("callObservers:"+arg.toString());
-	log.debug(this.countObservers()+" known.");
+	log.debug(this.countObservers()+" observers known.");
+        long start = System.currentTimeMillis();
  //        long start = System.currentTimeMillis();
         this.setChanged();
 	//@todo        if(this.isSelected())
 	this.notifyObservers(arg);
+        long end = System.currentTimeMillis();
+	log.debug((end - start)/1000 + " seconds");
     }
 
-    public void setMessage(String message, String title) {
+//    public void setMessage(String message, String title) {
 //	log.debug("setMessage("+message+","+title);
-	Message msg = new Message(title, message);
-	if(title.equals(Message.PROGRESS)) {
-//	    this.progressmessage = message;
-	    msg = new Message(Message.PROGRESS, message);
-//	    msg = new Message(Message.PROGRESS, timemessage+" "+message);
-	}
+//	Message msg = new Message(title, message);
 //	if(title.equals(Message.TIME)) {
 //	    this.timemessage = message;
 //	    msg = new Message(Message.PROGRESS, message+" "+progressmessage);
 //	}
-        this.callObservers(msg);
-    }
+//        this.callObservers(msg);
+  //  }
 
 //  public String parseTime(int t) {
 //    if(t > 9) {
@@ -180,7 +178,7 @@ public class Status extends Observable implements Serializable {
     
     private void setStopped(boolean b) {
         this.stopped = b;
-	this.setMessage("Idle", Message.PROGRESS);
+	this.callObservers(new Message("Idle", Message.PROGRESS));
     }
     public boolean isStopped() {
         return this.stopped;
@@ -240,15 +238,13 @@ public class Status extends Observable implements Serializable {
 	this.callObservers(new Message(Message.COMPLETE));
     }
 
-
-
     public BoundedRangeModel getProgressModel() {
 	DefaultBoundedRangeModel m = null;
 	try {
-	    if(attributes.getSize() < 0) {
+	    if(this.getSize() < 0) {
 		m = new DefaultBoundedRangeModel(0, 0, 0, 100);
 	    }
-	    m = new DefaultBoundedRangeModel(this.getCurrent(), 0, 0, attributes.getSize());
+	    m = new DefaultBoundedRangeModel(this.getCurrent(), 0, 0, this.getSize());
 	}
 	catch(IllegalArgumentException e) {
 	    m = new DefaultBoundedRangeModel(0, 0, 0, 100);
@@ -269,23 +265,60 @@ public class Status extends Observable implements Serializable {
 
 	Message msg = null;
 	if(this.getSpeed() <= 0 && this.getOverall() <= 0) {
-	    msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of " + this.parseDouble(attributes.getSize()/1024) + " kBytes.");
+	    msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of " + this.parseDouble(this.getSize()/1024) + " kBytes.");
 	}
 	else {
 	    if(this.getOverall() <= 0) {
 		msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of "
-		    + this.parseDouble(attributes.getSize()/1024) + " kBytes. Current: " +
+		    + this.parseDouble(this.getSize()/1024) + " kBytes. Current: " +
 		    + this.parseDouble(this.getSpeed()/1024) + "kB/s. ");// + this.getTimeLeftMessage();
 	    }
 	    else {
 		msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of "
-		    + this.parseDouble(attributes.getSize()/1024) + " kBytes. Current: "
+		    + this.parseDouble(this.getSize()/1024) + " kBytes. Current: "
 		    + this.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
 		    + this.parseDouble(this.getOverall()/1024) + " kB/s. ");// + this.getTimeLeftMessage();
 	    }
 	}
 	this.callObservers(msg);
     }
+
+    /**
+	* @ param size the size of file in bytes.
+     */
+    public void setSize(int size) {
+	//	log.debug("setSize:"+size);
+	this.size = size;
+    }
+
+    /**
+	* @ return length the size of file in bytes.
+     */
+    public int getSize() {
+	return size;
+    }
+
+    private static final int KILO = 1024; //2^10
+    private static final int MEGA = 1048576; // 2^20
+    private static final int GIGA = 1073741824; // 2^30
+
+    /**
+	* @return The size of the file
+     */
+    public String getSizeAsString() {
+	if(size < KILO) {
+	    return size + " B";
+	}
+	else if(size < MEGA) {
+	    return new Double(size/KILO).intValue() + " KB";
+	}
+	else if(size < GIGA) {
+	    return new Double(size/MEGA).intValue() + " MB";
+	}
+	else {
+	    return new Double(size/GIGA).intValue() + " GB";
+	}
+    }    
 
     /**
 	* @return double current bytes/second
@@ -316,7 +349,6 @@ public class Status extends Observable implements Serializable {
 
 
     public void reset() {
-	super.reset();
 	this.speed = 0;
 	this.overall = 0;
 	if(overallSpeedTimer == null) {
@@ -492,4 +524,4 @@ public class Status extends Observable implements Serializable {
      */
 
 
-} 
+}

@@ -109,7 +109,7 @@ public class SFTPSession extends Session {
 				    else {
 					p.attributes.setOwner(x.getAttributes().getUID().toString());
 					p.attributes.setGroup(x.getAttributes().getGID().toString());
-					p.attributes.setSize(x.getAttributes().getSize().intValue());
+					p.status.setSize(x.getAttributes().getSize().intValue());
 					p.attributes.setModified(x.getAttributes().getModifiedTime().longValue());
 					p.attributes.setMode(x.getAttributes().getPermissionsString());
 					p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
@@ -260,7 +260,7 @@ public class SFTPSession extends Session {
 			throw new IOException("Unable to buffer data");
 		    }
 		    SftpFile file = SFTP.openFile(SFTPFile.this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-		    SFTPFile.this.attributes.setSize(file.getAttributes().getSize().intValue());
+		    SFTPFile.this.status.setSize(file.getAttributes().getSize().intValue());
 		    SFTPSession.this.log("Opening data stream...", Message.PROGRESS);
 		    SftpFileInputStream in = new SftpFileInputStream(file);
 		    if(in == null) {
@@ -363,13 +363,13 @@ public class SFTPSession extends Session {
 	catch(IOException e) {
 	    SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
-	host.status.fireStopEvent();
+///	host.status.fireStopEvent();
     }
 
     public void connect() {
 	new Thread() {
 	    public void run() {
-		host.status.fireActiveEvent();
+//		host.status.fireActiveEvent();
 		SFTPSession.this.log("Opening SSH connection to " + host.getIp()+"...", Message.PROGRESS);
 		try {
 /*@todo
@@ -404,9 +404,9 @@ public class SFTPSession extends Session {
 		catch(IOException e) {
 		    SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 		}
-		finally {
-		    host.status.fireStopEvent();
-		}
+//		finally {
+//		    host.status.fireStopEvent();
+//		}
 	    }
 	}.start();
     }

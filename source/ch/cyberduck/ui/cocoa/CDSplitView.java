@@ -72,12 +72,8 @@ public class CDSplitView extends NSSplitView {
 
     public boolean splitViewCanCollapseSubview( NSSplitView sender, NSView subview) {
 	log.debug("splitViewCanCollapseSubview");
-	return true;
+	return subview.equals(transferView);
     }
-//	return false;
-	//	return transferView.numberOfRows() == 0;
-//	return (subview == transferView);
-//    }
 
     //	Returns the thickness of the divider. You can subclass NSSplitView and override this method to change the divider's size, if necessary.
 //    public float dividerThickness()

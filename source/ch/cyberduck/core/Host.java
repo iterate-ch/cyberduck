@@ -56,32 +56,18 @@ public class Host extends Observable {
 	this(protocol, name, port, null, login);
     }
 
-//    public void addObserver(Observer o) {
-//	this.status.addObserver(o);
-//	super.addObserver(o);
-  //  }
-
     public void callObservers(Object arg) {
         log.debug("callObservers:"+arg.toString());
+	log.debug(this.countObservers()+" observers known.");
         long start = System.currentTimeMillis();
 	this.setChanged();
 //	if(arg instanceof Path)
 	    //@todothis.workdir = (Path)arg;
 	this.notifyObservers(arg);
         long end = System.currentTimeMillis();
-	log.debug((end - start) + " ms");
+	log.debug((end - start)/1000 + " seconds");
     }
     
-    public void deleteObserver(Observer o) {
-	this.status.deleteObserver(o);
-	super.deleteObserver(o);
-    }
-
-    public void deleteObservers() {
-	this.status.deleteObservers();
-	super.deleteObservers();
-    }
-
 
     public Session openSession() {//throws IOException {
         log.debug("openSession");

@@ -151,6 +151,17 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
 	return this.attributes.getMode().charAt(0) == 'l';
     }
 
+    public String getKind() {
+	if(this.isFile())
+	    return "File";
+	if(this.isDirectory())
+	    return "Folder";
+	if(this.isLink())
+	    return "Link";
+	return "Unknown";
+    }
+    
+
     /* bad code
     public boolean isFile() {
         String path = this.toString();
@@ -415,7 +426,7 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
      */
     private void eof(boolean complete) {
         if(complete) {
-            this.status.setCurrent(this.attributes.getSize());
+            this.status.setCurrent(this.status.getSize());
 
             //if(action.toString().equals(TransferAction.GET)) {
             //    bookmark.getLocalTempPath().renameTo(bookmark.getLocalPath());

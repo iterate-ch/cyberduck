@@ -124,10 +124,10 @@ public class CDInfoWindow extends NSPanel implements Observer {
 		    this.selectedPath = (Path)o;
 		    this.filenameField.setStringValue(selectedPath.getName());
 		    this.groupField.setStringValue(selectedPath.attributes.getGroup());
-		    this.kindField.setStringValue(selectedPath.attributes.getKind());
+		    this.kindField.setStringValue(selectedPath.getKind());
 		    this.modifiedField.setStringValue(selectedPath.attributes.getModified());
 		    this.ownerField.setStringValue(selectedPath.attributes.getOwner());
-		    this.sizeField.setStringValue(selectedPath.attributes.getSizeAsString());
+		    this.sizeField.setStringValue(selectedPath.status.getSizeAsString());
 
 		    Permission permission = selectedPath.attributes.getPermission();
 		    boolean[] ownerPerm = permission.getOwnerPermissions();

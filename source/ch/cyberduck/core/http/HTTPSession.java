@@ -163,25 +163,25 @@ public class HTTPSession extends Session {
 			Header transferEncodingHeader = GET.getResponseHeader("Bookmark-Encoding");
 			if(lengthHeader != null) {
 			    try {
-				HTTPFile.this.attributes.setSize(Integer.parseInt(lengthHeader.getValue()));
+				HTTPFile.this.status.setSize(Integer.parseInt(lengthHeader.getValue()));
 			    }
 			    catch(NumberFormatException e) {
-				HTTPFile.this.attributes.setSize(-1);
+				HTTPFile.this.status.setSize(-1);
 			    }
 			}
 			if(rangeHeader != null) {
 			    try {
 				String r = rangeHeader.getValue();
 				int l = Integer.parseInt(r.substring(v.indexOf('/') + 1));
-				HTTPFile.this.attributes.setSize(l);
+				HTTPFile.this.status.setSize(l);
 			    }
 			    catch(NumberFormatException e) {
-				HTTPFile.this.attributes.setSize(-1);
+				HTTPFile.this.status.setSize(-1);
 			    }
 			}
 			else if(null != transferEncodingHeader) {
 			    if("chunked".equalsIgnoreCase(transferEncodingHeader.getValue())) {
-				HTTPFile.this.attributes.setSize(-1);
+				HTTPFile.this.status.setSize(-1);
 			    }
 			}
 
@@ -239,7 +239,7 @@ public class HTTPSession extends Session {
 	catch(IOException e) {
 	    e.printStackTrace();
 	}
-	host.status.fireStopEvent();
+//	host.status.fireStopEvent();
     }
 
     public void check() throws IOException {
@@ -251,7 +251,7 @@ public class HTTPSession extends Session {
     public void connect() {
 	new Thread() {
 	    public void run() {
-		host.status.fireActiveEvent();
+//		host.status.fireActiveEvent();
 		HTTPSession.this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
 //		if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
 //		    HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
@@ -262,7 +262,7 @@ public class HTTPSession extends Session {
 		HTTPSession.this.log("HTTP connection opened", Message.PROGRESS);
 		HTTPFile p = new HTTPFile(host.getWorkdir());
 		p.download();
-		host.status.fireStopEvent();
+//		host.status.fireStopEvent();
 	    }
 	}.start();
     }

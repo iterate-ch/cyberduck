@@ -96,25 +96,6 @@ public class CDHostView extends NSTableView implements Observer {
 	}
     }
 
-    // ----------------------------------------------------------
-    // Overwritten NSResponder methods
-    // ----------------------------------------------------------
-
-    /**
-* Informs the receiver that the user has released a key event specified by theEvent. NSResponder's
-     * implementation simply passes this message to the next responder.
-     */
-    /*
-    public void keyUp(NSEvent event) {
-	log.debug("keyUp:"+event.toString());
-	short key = event.keyCode();
-	if(event.keyCode() == 51) { //@todo
-	    Host host = (Host)model.getEntry(this.selectedRow());
-	    host.closeSession();
-	    host.deleteObservers();
-	}
-    }
-    */
 
 //    public void reloadData() {
 //	super.reloadData();
@@ -159,9 +140,9 @@ public class CDHostView extends NSTableView implements Observer {
 
 	public void selectionChanged(NSObject sender) {
 	    log.debug("selectionChanged");
-	    //	    if(e.type() == NSEvent.LeftMouseDown) {
-     //		log.debug("NSEvent.LeftMouseDown");
-     //	    }
+	    Host host = (Host)model.getEntry(CDHostView.this.selectedRow());
+	    host.closeSession();
+	    host.deleteObservers();
 	}
     }
     

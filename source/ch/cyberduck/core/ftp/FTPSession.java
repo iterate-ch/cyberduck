@@ -207,7 +207,7 @@ public class FTPSession extends Session {
 		    if(TRANSFERTYPE.equals("binary")) {
 			FTPSession.this.log("Setting transfer mode to BINARY", Message.PROGRESS);
 			FTP.setType(FTPTransferType.BINARY);
-			FTPFile.this.attributes.setSize((int)(FTP.size(FTPFile.this.getName())));
+			FTPFile.this.status.setSize((int)(FTP.size(FTPFile.this.getName())));
 			OutputStream out = new FileOutputStream(FTPFile.this.getLocal(), FTPFile.this.status.isResume());
 			if(out == null) {
 			    throw new IOException("Unable to buffer data");
@@ -224,7 +224,7 @@ public class FTPSession extends Session {
 		    else if(TRANSFERTYPE.equals("ascii")) {
 			FTPSession.this.log("Setting transfer type to ASCII", Message.PROGRESS);
 			FTP.setType(FTPTransferType.ASCII);
-			FTPFile.this.attributes.setSize((int)(FTP.size(FTPFile.this.getName())));
+			FTPFile.this.status.setSize((int)(FTP.size(FTPFile.this.getName())));
 			java.io.Writer out = new FileWriter(FTPFile.this.getLocal(), FTPFile.this.status.isResume());
 			if(out == null) {
 			    throw new IOException("Unable to buffer data");
@@ -287,7 +287,7 @@ public class FTPSession extends Session {
 		}
 
 		private void uploadFile() throws IOException {
-		    FTPFile.this.attributes.setSize((int)FTPFile.this.getLocal().length());
+		    FTPFile.this.status.setSize((int)FTPFile.this.getLocal().length());
 		    if(TRANSFERTYPE.equals(FTPTransferType.BINARY)) {
 			FTPSession.this.log("Setting transfer mode to BINARY.", Message.PROGRESS);
 			FTP.setType(FTPTransferType.BINARY);
@@ -384,13 +384,13 @@ public class FTPSession extends Session {
 	catch(IOException e) {
 	    FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
-	host.status.fireStopEvent();
+//	host.status.fireStopEvent();
     }
 
     public void connect() {
 	new Thread() {
 	    public void run() {
-		host.status.fireActiveEvent();
+//		host.status.fireActiveEvent();
 		FTPSession.this.log("Opening FTP connection to " + host.getIp()+"...", Message.PROGRESS);
 		try {
 		    if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
@@ -420,9 +420,9 @@ public class FTPSession extends Session {
 		catch(IOException e) {
 		    FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 		}
-		finally {
-		    host.status.fireStopEvent();
-		}
+//		finally {
+//		    host.status.fireStopEvent();
+//		}
 	    }
 	}.start();
     }
@@ -558,7 +558,7 @@ public class FTPSession extends Session {
 		    p.attributes.setModified(date);
 		    p.attributes.setMode(access);
 		    p.attributes.setPermission(new Permission(access));
-		    p.attributes.setSize(size);
+		    p.status.setSize(size);
 		    return p;
 	    }
 	    catch(NumberFormatException e) {
@@ -643,7 +643,7 @@ public class FTPSession extends Session {
 		p.attributes.setModified(date);
 		p.attributes.setMode(access);
 		p.attributes.setPermission(new Permission(access));
-		p.attributes.setSize(Integer.parseInt(size));
+		p.status.setSize(Integer.parseInt(size));
 
 		if(isLink(line)) {
 		    // the following lines are the most ugly. I just don't know how I can be sure

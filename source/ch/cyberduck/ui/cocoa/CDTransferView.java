@@ -99,7 +99,7 @@ public class CDTransferView extends NSTableView implements Observer {
 
     public void update(Observable o, Object arg) {
 	log.debug("update:"+o+","+arg);
-	if(o instanceof Path.FileStatus) {
+	if(o instanceof Status) {
 //	    log.debug("instanceof Status:"+o.toString());
 	    if(arg instanceof Message) {
 //		log.debug("instanceof Message:"+arg.toString());
