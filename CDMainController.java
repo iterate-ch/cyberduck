@@ -33,6 +33,10 @@ public class CDMainController extends NSObject {
 	log.debug("CDMainController");
     }
 
+    public void awakeFromNib() {
+	org.apache.log4j.BasicConfigurator.configure();
+    }
+
 /*
     public int applicationShouldTerminate(NSObject sender) {
         return NSApplication.TerminateNow;

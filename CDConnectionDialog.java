@@ -84,7 +84,7 @@ public class CDConnectionDialog extends NSWindow {
 	NSMenuItem selectedItem = protocolPopup.selectedItem();
 	log.debug("protocol selection changed");
 	if(selectedItem.tag() == SFTP_TAG)
-	    portField.setIntValue(22); //TODO: use constant
+	    portField.setIntValue(22); //todo: use constant
 	if(selectedItem.tag() == FTP_TAG)
 	    portField.setIntValue(21);
     }

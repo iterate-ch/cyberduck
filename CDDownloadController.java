@@ -14,6 +14,10 @@ public class CDDownloadController extends NSObject {
 	log.debug("CDDownloadController");
     }
 
+    public void awakeFromNib() {
+	org.apache.log4j.BasicConfigurator.configure();
+    }    
+
     public void download() {
 	log.debug("CDDownloadController:download");
     }

@@ -55,13 +55,8 @@ public class CDConnectionController extends NSObject {
     public NSTextView logTextView; /* IBOutlet */
     public NSProgressIndicator progressIndicator; /* IBOutlet */
     public NSTextField statusLabel; /* IBOutlet */
-    public CDBrowserTableDataSource browserTableDataSource; /* IBOutlet */
-
-    private String host;
-    private String username;
-    private String pass;
-    private int port;
-    private String protocol;
+    public NSTableView browserTable;  /* IBOutlet */
+    public NSView connectedListView; /* IBOutlet */
 
     private CDConnectionController controller = this;
     
@@ -72,24 +67,29 @@ public class CDConnectionController extends NSObject {
 
     public void awakeFromNib() {
 	org.apache.log4j.BasicConfigurator.configure();
+
 //	log.addAppender(statusLabel);
     }
 
 
     public void connect(NSObject sender) {
 	log.debug("CDConnectionController:connect");
-	Path b = new Path();
+	Host host = null;
+    //	Path b = new Path();
 	//	if(sender instanceof NSMenu
 	//NSMenuItem item = menu.getSelectedItem()
 	//host = item.
 	if(sender instanceof NSTextField) {
-	    this.hostField.setStringValue(((NSControl)sender).stringValue());
+	    host = new Host(Host.SFTP, ((NSControl)sender).stringValue(), 22, null, null);
 	}
 	if(sender instanceof NSButton) {
 	    NSApplication.sharedApplication().endSheet(connectionSheet, NSAlertPanel.AlternateReturn);
+	    host = new Host(Host.SFTP, hostField.stringValue(), 22, usernameField.stringValue(), passwordField.stringValue());
 	}
-	mainWindow.setTitle(hostField.stringValue());
-	Thread session = new Session();
+	mainWindow.setTitle(host.getHostname());
+	connectedListView.addSubview(new CDConnectedItemView(host));
+	connectedListView.setNeedsDisplay(true);
+	Thread session = new Session(host);
 	session.start();
 	
 
@@ -114,8 +114,12 @@ public class CDConnectionController extends NSObject {
 	log.debug("CDConnectionController:disconnect");
     }
 
-    
     private class Session extends Thread {
+	private Host host;
+	
+	public Session(Host host) {
+	    this.host = host;
+	}
 	public void run() {
 	    try {
 		SshClient SSH = new SshClient();
@@ -130,6 +134,7 @@ public class CDConnectionController extends NSObject {
 		    session.startSubsystem(SFTP);
 		    SftpFile workingDirectory = SFTP.openDirectory(".");
 		    java.util.List children = new java.util.ArrayList();
+		    CDBrowserTableDataSource browserTableDataSource = (CDBrowserTableDataSource)browserTable.dataSource();
 		    int read = 1;
 		    while(read > 0) {
 			read = SFTP.listChildren(workingDirectory, children);
@@ -138,7 +143,7 @@ public class CDConnectionController extends NSObject {
 		    browserTableDataSource.clear();
 		    while(i.hasNext()) {
 			browserTableDataSource.addEntry(i.next());
-///			browserTable.reloadData();
+			browserTable.reloadData();
 		    }
 
 		}
@@ -159,17 +164,17 @@ public class CDConnectionController extends NSObject {
 		e.printStackTrace();
 	    }	    
 	}
+
+	public void loginSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+	    sheet.close();
+	}	
     }
 
     public void closeLoginSheet(NSObject sender) {
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 	NSApplication.sharedApplication().endSheet(loginSheet, NSAlertPanel.AlternateReturn);
     }
-    
-    public void loginSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	sheet.close();
-    }
-    
+        
     private class CDHostKeyVerification extends HostKeyVerification {
 	private String host;
 	private String fingerprint;

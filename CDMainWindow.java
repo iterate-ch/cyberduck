@@ -30,7 +30,6 @@ import com.apple.cocoa.application.*;
 
 import org.apache.log4j.Logger;
 
-
 public class CDMainWindow extends NSWindow {//implements Observer {
 
     private static Logger log = Logger.getLogger(CDMainWindow.class);
@@ -39,9 +38,6 @@ public class CDMainWindow extends NSWindow {//implements Observer {
     public NSWindow connectionSheet; /* IBOutlet */
     public NSTextField quickConnectField; /* IBOutlet */
     public NSDrawer drawer; /* IBOutlet */
-    public NSTableView browserView; /* IBOutlet */
-    public NSTableView connectedView; /* IBOutlet */
-    public NSTableView transferView; /* IBOutlet */
 
     private NSMutableDictionary toolbarItems;
 
@@ -53,13 +49,13 @@ public class CDMainWindow extends NSWindow {//implements Observer {
 
     public CDMainWindow(NSRect contentRect, int styleMask, int backingType, boolean defer) {
 	super(contentRect, styleMask, backingType, defer);
-	log.debug("CDFavoritePopUpButton");
+	log.debug("CDMainWindow");
 //	ObserverList.instance().registerObserver((Observer)this);
     }
 
     public CDMainWindow(NSRect contentRect, int styleMask, int bufferingType, boolean defer, NSScreen aScreen) {
 	super(contentRect, styleMask, bufferingType, defer, aScreen);
-	log.debug("CDFavoritePopUpButton");
+	log.debug("CDMainWindow");
 //	ObserverList.instance().registerObserver((Observer)this);
     }
 
