@@ -10,7 +10,11 @@ public class CDConnectedView extends NSTableView {
     public CDConnectedView(NSCoder decoder, long token) {
 	super(decoder, token);
     }
-    
+
+    public void encodeWithCoder(NSCoder encoder) {
+	super.encodeWithCoder(encoder);
+    }    
+        
     public CDConnectedView() {
 	super();
     }
@@ -19,8 +23,4 @@ public class CDConnectedView extends NSTableView {
 	super(frame);
     }
 
-    public void encodeWithCoder(NSCoder encoder) {
-	super.encodeWithCoder(encoder);
-    }
-    
 }

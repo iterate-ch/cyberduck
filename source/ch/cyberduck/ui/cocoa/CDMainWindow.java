@@ -41,6 +41,8 @@ public class CDMainWindow extends NSWindow {//implements Observer {
     public NSTextField quickConnectField; /* IBOutlet */
     public NSDrawer drawer; /* IBOutlet */
 
+//    public NSTextField statusLabel; /* IBOutlet */
+
     private NSMutableDictionary toolbarItems;
 
     public CDMainWindow() {
@@ -71,6 +73,7 @@ public class CDMainWindow extends NSWindow {//implements Observer {
 
     public void awakeFromNib() {
 	log.debug("CDMainWindow:awakeFromNib");
+
 /*
 	NSArray columns = connectedView.tableColumns();
 	NSTableColumn c = columns.objectAtIndex(columns.count()-1);
@@ -114,7 +117,7 @@ public class CDMainWindow extends NSWindow {//implements Observer {
 
 	this.addToolbarItem(toolbarItems, "Get Info", "Get Info", "Get Info", "Show file permissions", this, new NSSelector("showInfo", new Class[] {null}), NSImage.imageNamed("info.tiff"));
 
-	this.addToolbarItem(toolbarItems, "Show Transcript", "Show Transcript", "Show Transcript", "Show connection transcript", this, new NSSelector("showTranscriptDrawer", new Class[] {null}), NSImage.imageNamed("transcript.tiff"));
+	this.addToolbarItem(toolbarItems, "Toggle Drawer", "Toggle Drawer", "Toggle Drawer", "Show connection transcript", this, new NSSelector("showTranscriptDrawer", new Class[] {null}), NSImage.imageNamed("transcript.tiff"));
 
 	this.addToolbarItem(toolbarItems, "Delete", "Delete", "Delete", "Delete file", this, new NSSelector("deleteFile", new Class[] {null}), NSImage.imageNamed("delete.tiff"));
 
@@ -143,11 +146,11 @@ public class CDMainWindow extends NSWindow {//implements Observer {
     }
 
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Back", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Show Transcript"});
+	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Back", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer"});
     }
 
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Back", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Show Transcript", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
+	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Back", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
     }
 
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {

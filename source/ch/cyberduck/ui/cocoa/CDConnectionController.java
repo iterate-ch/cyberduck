@@ -64,8 +64,6 @@ public class CDConnectionController extends NSObject {
     public NSTextView logTextView; /* IBOutlet */
     public NSProgressIndicator progressIndicator; /* IBOutlet */
     
-    public NSTextField statusLabel; /* IBOutlet */
-
     public NSTableView browserTable;  /* IBOutlet */
 
     //public NSView connectedListView; /* IBOutlet */

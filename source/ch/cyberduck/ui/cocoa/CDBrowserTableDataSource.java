@@ -37,7 +37,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-public class CDBrowserTableDataSource extends NSObject {//implements Observer {//implements NSTableView.DataSource {
+public class CDBrowserTableDataSource extends NSObject {
     private static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 
     private List data;
@@ -48,15 +48,6 @@ public class CDBrowserTableDataSource extends NSObject {//implements Observer {/
 	log.debug("CDBrowserTableDataSource");
     }
 
-    public void tableViewSelectionDidChange(NSNotification notification) {
-	log.debug("tableViewSelectionDidChange");
-//	NSTableView table = (NSTableView)notification.object(); // Returns the object associated with the receiver. This is often the object that posted this notification
-    }
-
-    public void awakeFromNib() {
-	//
-    }
-
     public int numberOfRowsInTableView(NSTableView tableView) {
 	return data.size();
     }
@@ -65,12 +56,13 @@ public class CDBrowserTableDataSource extends NSObject {//implements Observer {/
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
         String identifier = (String)tableColumn.identifier();
         Path p = (Path)data.get(row);
-	if(identifier.equals("TYPE")) {
+/*	if(identifier.equals("TYPE")) {
 	    if(p.isFile())
 		return NSImage.imageNamed("file.tiff");
 	    if(p.isDirectory())
 		return NSImage.imageNamed("folder.tiff");
 	}
+	*/
 	if(identifier.equals("FILENAME"))
 	    return p.getName();
 	if(identifier.equals("SIZE"))
@@ -81,7 +73,8 @@ public class CDBrowserTableDataSource extends NSObject {//implements Observer {/
 	    return p.getOwner();
 	if(identifier.equals("PERMISSION"))
 	    return p.getPermission().toString();
-	throw new IllegalArgumentException("Unknown identifier: "+identifier);
+	return null;
+//	throw new IllegalArgumentException("Unknown identifier: "+identifier);
     }
 
     //setValue()
@@ -90,14 +83,6 @@ public class CDBrowserTableDataSource extends NSObject {//implements Observer {/
 	p.rename((String)value);
     }
     
-    //	Returns true to permit aTableView to edit the cell at rowIndex in aTableColumn, false to deny permission. The delegate can implemen this method to disallow editing of specific cells.
-    public boolean tableViewShouldEditLocation( NSTableView view, NSTableColumn tableColumn, int row) {
-        String identifier = (String)tableColumn.identifier();
-	if(identifier.equals("FILENAME"))
-	    return true;
-	return false;
-    }
-
     public void clear() {
 	this.data.clear();
     }
@@ -123,36 +108,4 @@ public class CDBrowserTableDataSource extends NSObject {//implements Observer {/
     public void setEntries(List data) {
 	this.data = data;
     }
-
-    /*
-    public void update(Observable o, Object arg) {
-	log.debug("CDListingTableDataSource:update");
-	if(o instanceof Bookmark) {
-	    if(arg.equals(Bookmark.LIST)) {
-		Bookmark bookmark = (Bookmark)o;
-                java.util.Iterator iterator = bookmark.getListing().iterator();
-                int i = 0;
-                Path p = null;
-		this.files.removeAllObjects();
-                while(iterator.hasNext()) {
-                    p = (Path)iterator.next();
-                    if(p.isVisible()) {
-                        this.files.insertObjectAtIndex(p, i);
-                        i++;
-                    }
-                }
-		//update path select combobox
-                //Path cwd = selected.getCurrentPath();
-		//int depth = cwd.getPathDepth();
-		//for(int i = 0; i <= depth; i++) {
-		//    this.files.addObject(cwd.getPathFragment(i));
-		//}
-	    }
-	    else
-		throw new IllegalArgumentException("Unknown observable argument: "+arg);
-	}
-	else
-	    throw new IllegalArgumentException("Unknown observable: "+o);
-    }
-     */
 }

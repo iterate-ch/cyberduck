@@ -12,20 +12,31 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Layout;
 
+import ch.cyberduck.core.Session;
+
 public class CDStatusLabel extends NSTextField implements Appender {
 
     private static Logger log = Logger.getLogger(CDStatusLabel.class);
     private String name;
+
+    public void awakeFromNib() {
+	log.debug("awakeFromNib");
+	this.setStringValue("I am displaying log messages.");
+	Logger.getLogger(Session.class).addAppender(this);
+    }
     
     public CDStatusLabel() {
+	log.debug("CDStatusLabel");
 	super();
     }
 
     public CDStatusLabel(NSCoder decoder, long token) {
+	log.debug("CDStatusLabel");
 	super(decoder, token);
     }
     
     public CDStatusLabel(NSRect frameRect) {
+	log.debug("CDStatusLabel");
 	super(frameRect);
     }
 
@@ -34,10 +45,12 @@ public class CDStatusLabel extends NSTextField implements Appender {
     }
     
     public String getName() {
+	log.debug("getName");
 	return this.name;
     }
 
     public void setName(String name) {
+	log.debug("setName");
 	this.name = name;
     }
     
@@ -79,6 +92,7 @@ public class CDStatusLabel extends NSTextField implements Appender {
     }
     
     public void doAppend(LoggingEvent event) {
+	log.debug("doAppend");
 	if(event.getLevel().equals(Level.INFO))
 	    this.setStringValue(event.getRenderedMessage());
     }

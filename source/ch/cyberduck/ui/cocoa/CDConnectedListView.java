@@ -17,10 +17,6 @@ public class CDConnectedListView extends CDListView {
     public CDConnectedListView() {
 	super();
 	log.debug("CDConnectedListView");
-	Host h = new Host(Session.SFTP, "host.domain.tld", 22, "dkocher", "topsecret");
-	NSView item = new CDConnectedItemView(h);
-	this.addSubview(item);
-	this.setNeedsDisplay(item.frame());
     }
 
     public CDConnectedListView(NSRect frameRect) {
@@ -30,7 +26,7 @@ public class CDConnectedListView extends CDListView {
 
     public void awakeFromNib() {
 	log.debug("CDConnectedListView:awakeFromNib");
-	Host h = new Host(Session.SFTP, "host.domain.tld", 22, "dkocher", "topsecret");
+	Host h = new Host(Session.SFTP, "host.domain.tld", 22, null);
 	NSView item = new CDConnectedItemView(h);
  	this.addSubview(item);
 	this.setNeedsDisplay(item.frame());

@@ -33,9 +33,8 @@ public class CDBrowserView extends NSTableView implements Observer {
 
     public void mouseUp(NSEvent event) {
 	log.debug(event.toString());
-	if(event.clickCount() == 2) {
-	    // Double click
-	    log.debug("I got double click!");
+	if(event.clickCount() == 2) { //double click
+	    
 	}
     }
     
@@ -56,5 +55,50 @@ public class CDBrowserView extends NSTableView implements Observer {
 	    }
 	    //this.reloadData();
 //	}
+    }
+
+    /**	Informs the delegate that aTableView will display the cell at rowIndex in aTableColumn using aCell.
+	* The delegate can modify the display attributes of a cell to alter the appearance of the cell.
+	* Because aCell is reused for every row in aTableColumn, the delegate must set the display attributes both when drawing special cells and when drawing normal cells.
+	*/
+    public void tableViewWillDisplayCell(NSTableView browserTable, Object c, NSTableColumn tableColumn, int row) {
+	String identifier = (String)tableColumn.identifier();
+	CDBrowserTableDataSource ds = (CDBrowserTableDataSource)this.dataSource();
+	log.debug(ds.toString());
+        Path p = (Path)ds.tableViewObjectValueForLocation(browserTable, tableColumn, row);
+	NSTextFieldCell cell = (NSTextFieldCell)c;
+	cell.setDrawsBackground(true);
+	if (row%2 == 0) {
+	    cell.setBackgroundColor(NSColor.blueColor());
+	}
+	if(identifier.equals("TYPE")) {
+	    if(p.isFile())
+	       cell.setImage(NSImage.imageNamed("file.tiff"));
+	    if(p.isDirectory())
+		cell.setImage(NSImage.imageNamed("folder.tiff"));
+	}
+    }
+
+    /**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
+	* The delegate can implement this method to disallow selection of particular rows.
+	*/
+    public  boolean tableViewShouldSelectRow( NSTableView aTableView, int rowIndex) {
+	return true;
+    }
+
+	
+    /**	Returns true to permit aTableView to edit the cell at rowIndex in aTableColumn, false to deny permission.
+	*The delegate can implemen this method to disallow editing of specific cells.
+	*/
+    public boolean tableViewShouldEditLocation( NSTableView view, NSTableColumn tableColumn, int row) {
+        String identifier = (String)tableColumn.identifier();
+	if(identifier.equals("FILENAME"))
+	    return true;
+	return false;
+    }
+
+    public void tableViewSelectionDidChange(NSNotification notification) {
+	log.debug("tableViewSelectionDidChange");
+	//	NSTableView table = (NSTableView)notification.object(); // Returns the object associated with the receiver. This is often the object that posted this notification
     }
 }
