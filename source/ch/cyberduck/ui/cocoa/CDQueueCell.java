@@ -78,10 +78,10 @@ public class CDQueueCell extends CDTableCell {
             if (queue.numberOfRoots() == 1) {
                 switch (queue.kind()) {
                     case Queue.KIND_DOWNLOAD:
-                        if (queue.getRoot().isFile()) {
+                        if (queue.getRoot().attributes.isFile()) {
                             fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
                         }
-                        else if (queue.getRoot().isDirectory()) {
+                        else if (queue.getRoot().attributes.isDirectory()) {
                             fileIcon = folderIcon;
                         }
                         break;

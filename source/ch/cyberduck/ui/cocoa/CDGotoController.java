@@ -69,7 +69,7 @@ public class CDGotoController extends NSObject {
 
     public void goButtonClicked(Object sender) {
         if (folderField.stringValue().length() == 0) {
-            //			folderField.setStringValue(this.file.getName());
+            // folderField.setStringValue(this.file.getName());
         }
         else {
             // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
@@ -101,5 +101,4 @@ public class CDGotoController extends NSObject {
                 break;
         }
     }
-
 }

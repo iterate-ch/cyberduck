@@ -166,11 +166,11 @@ public class CDInfoController extends NSObject {
         permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
 
         NSImage fileIcon = null;
-        if (this.file.isFile()) {
+        if (this.file.attributes.isFile()) {
             fileIcon = CDIconCache.instance().get(this.file.getExtension());
             fileIcon.setSize(new NSSize(32f, 32f));
         }
-        if (this.file.isDirectory()) {
+        if (this.file.attributes.isDirectory()) {
             fileIcon = NSImage.imageNamed("folder32.tiff");
         }
         this.iconImageView.setImage(fileIcon);
@@ -204,7 +204,6 @@ public class CDInfoController extends NSObject {
         log.debug("textInputDidEndEditing");
         if (!filenameField.stringValue().equals(this.file.getName())) {
             if (filenameField.stringValue().indexOf('/') == -1) {
-                //this.file.getParent().cwdir();
                 this.file.rename(this.file.getParent().getAbsolute() + "/" + filenameField.stringValue());
                 // refresh the file listing so that the observers (if any) get notified of the change
                 this.file.getParent().list(true);

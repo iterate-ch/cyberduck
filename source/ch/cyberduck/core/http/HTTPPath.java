@@ -138,7 +138,7 @@ public class HTTPPath extends Path {
         try {
             log.debug("download:" + this.toString());
             session.check();
-			if(this.isDirectory()) {
+			if(this.attributes.isDirectory()) {
 				this.getLocal().mkdirs();
 			}
 			else {
@@ -234,12 +234,12 @@ public class HTTPPath extends Path {
             else {
                 session.log("HTTP Error: " + e.getReplyCode() + " " + e.getMessage(), Message.ERROR);
             }
+			session.log("Idle", Message.STOP);
         }
         catch (IOException e) {
             session.log(e.getMessage(), Message.ERROR);
         }
         finally {
-            session.log("Idle", Message.STOP);
             try {
                 if (in != null) {
                     in.close();

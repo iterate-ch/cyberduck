@@ -142,8 +142,8 @@ public class FTPPath extends Path {
                         }
                     }
                 }
-
                 this.setCache(files);
+                session.log("Idle", Message.STOP);
             }
             catch (FTPException e) {
                 session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -151,28 +151,14 @@ public class FTPPath extends Path {
             catch (IOException e) {
                 session.log("IO Error: " + e.getMessage(), Message.ERROR);
             }
-            finally {
-                session.log("Idle", Message.STOP);
-            }
         }
-        session.callObservers(this);
+		session.callObservers(this);
         return files;
     }
 
-    public synchronized void cwdir() {
-        try {
-            session.check();
-            session.FTP.chdir(this.getAbsolute());
-        }
-        catch (FTPException e) {
-            session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            session.log("Idle", Message.STOP);
-        }
+    public synchronized void cwdir() throws IOException {
+		session.check();
+		session.FTP.chdir(this.getAbsolute());
     }
 
     public synchronized void mkdir(boolean recursive) {
@@ -188,15 +174,13 @@ public class FTPPath extends Path {
             session.FTP.mkdir(this.getAbsolute());
 			this.setCache(new ArrayList());
             //this.getParent().invalidate();
+			session.log("Idle", Message.STOP);
         }
         catch (FTPException e) {
 			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
         }
         catch (IOException e) {
             session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            session.log("Idle", Message.STOP);
         }
     }
 
@@ -207,6 +191,7 @@ public class FTPPath extends Path {
             session.log("Renaming " + this.getName() + " to " + filename, Message.PROGRESS);
             session.FTP.rename(this.getAbsolute(), filename);
             this.setPath(filename);
+			session.log("Idle", Message.STOP);
         }
         catch (FTPException e) {
             session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -214,30 +199,33 @@ public class FTPPath extends Path {
         catch (IOException e) {
             session.log("IO Error: " + e.getMessage(), Message.ERROR);
         }
-        finally {
-            session.log("Idle", Message.STOP);
-        }
     }
 
     public synchronized void delete() {
         log.debug("delete:" + this.toString());
         try {
             session.check();
-            if (this.isFile()) {
+            if (this.attributes.isFile()) {
                 session.log("Deleting " + this.getName(), Message.PROGRESS);
                 session.FTP.delete(this.getName());
             }
-            else if (this.isDirectory()) {
+            else if (this.attributes.isDirectory()) {
                 session.FTP.chdir(this.getAbsolute());
                 List files = this.list(true, true);
                 java.util.Iterator iterator = files.iterator();
                 Path file = null;
                 while (iterator.hasNext()) {
                     file = (Path)iterator.next();
-                    if (file.isDirectory()) {
-                        file.delete();
+                    if (file.attributes.isDirectory()) {
+						if(file.attributes.isSymbolicLink()) {
+							session.log("Deleting " + this.getName(), Message.PROGRESS);
+							session.FTP.delete(file.getName());
+						}
+						else {
+							file.delete();
+						}
                     }
-                    if (file.isFile()) {
+                    if (file.attributes.isFile()) {
                         session.log("Deleting " + this.getName(), Message.PROGRESS);
                         session.FTP.delete(file.getName());
                     }
@@ -247,15 +235,13 @@ public class FTPPath extends Path {
                 session.FTP.rmdir(this.getName());
             }
             this.getParent().invalidate();
+			session.log("Idle", Message.STOP);
         }
         catch (FTPException e) {
             session.log("FTP Error: " + e.getMessage(), Message.ERROR);
         }
         catch (IOException e) {
             session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            session.log("Idle", Message.STOP);
         }
     }
 
@@ -265,6 +251,7 @@ public class FTPPath extends Path {
         try {
             session.check();
             session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
+			session.log("Idle", Message.STOP);
         }
         catch (FTPException e) {
             session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -272,15 +259,12 @@ public class FTPPath extends Path {
         catch (IOException e) {
             session.log("IO Error: " + e.getMessage(), Message.ERROR);
         }
-        finally {
-            session.log("Idle", Message.STOP);
-        }
     }
 
     public synchronized void download() {
         try {
             log.debug("download:" + this.toString());
-			if(!this.isDirectory()) {
+			if(!this.attributes.isDirectory()) {
 				session.check();
 				if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
 					if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
@@ -309,15 +293,13 @@ public class FTPPath extends Path {
 					this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
 				}
 			}
+			session.log("Idle", Message.STOP);
         }
         catch (FTPException e) {
             session.log("FTP Error: " + e.getMessage(), Message.ERROR);
         }
         catch (IOException e) {
             session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            session.log("Idle", Message.STOP);
         }
     }
 
@@ -361,9 +343,9 @@ public class FTPPath extends Path {
                 }
                 session.FTP.abor();
             }
+			session.log("Idle", Message.STOP);
         }
         finally {
-            session.log("Idle", Message.STOP);
             try {
                 if (in != null) {
                     in.close();
@@ -435,9 +417,9 @@ public class FTPPath extends Path {
                 }
                 session.FTP.abor();
             }
+			session.log("Idle", Message.STOP);
         }
         finally {
-            session.log("Idle", Message.STOP);
             try {
                 if (in != null) {
                     in.close();
@@ -458,7 +440,7 @@ public class FTPPath extends Path {
     public synchronized void upload() {
         log.debug("upload:" + this.toString());
         try {
-			if(!this.isDirectory()) {
+			if(!this.attributes.isDirectory()) {
 				session.check();
 				if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
 					if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
@@ -484,15 +466,13 @@ public class FTPPath extends Path {
 					}
 				}
 			}
+			session.log("Idle", Message.STOP);
         }
         catch (FTPException e) {
             session.log("FTP Error: " + e.getMessage(), Message.ERROR);
         }
         catch (IOException e) {
             session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            session.log("Idle", Message.STOP);
         }
     }
 
@@ -536,9 +516,9 @@ public class FTPPath extends Path {
                 }
                 session.FTP.abor();
             }
+			session.log("Idle", Message.STOP);
         }
         finally {
-            session.log("Idle", Message.STOP);
             try {
                 if (in != null) {
                     in.close();
@@ -597,9 +577,9 @@ public class FTPPath extends Path {
                 }
                 session.FTP.abor();
             }
+			session.log("Idle", Message.STOP);
         }
         finally {
-            session.log("Idle", Message.STOP);
             try {
                 if (in != null) {
                     in.close();

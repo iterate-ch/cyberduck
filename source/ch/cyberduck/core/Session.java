@@ -204,6 +204,7 @@ public abstract class Session extends Observable {
     }
 
     public void log(String message, String title) {
+		log.debug("["+title+"] "+message);
         if (title.equals(Message.TRANSCRIPT)) {
             this.transcript.log(message);
         }

@@ -22,6 +22,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
 
+import com.enterprisedt.net.ftp.FTPException;
+
 /**
  * Implementation FTPFileEntryParser and FTPFileListParser for standard
  * Unix Systems.
@@ -193,10 +195,28 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
                         f.setPath(parent.getAbsolute(), name);
                     }
                     else {
-                        //Path orig = PathFactory.createPath(parent.getSession(), parent.getAbsolute(), name.substring(end+4));
                         f.setPath(parent.getAbsolute(), name.substring(0, end));
-                        //f.setLink(name.substring(end + 4));
-                    }
+					}
+					try {
+						f.cwdir();
+						f.attributes.setType(Path.SYMBOLIC_LINK_TYPE & Path.DIRECTORY_TYPE);
+						parent.cwdir(); //@todo obsolete?
+					}
+					catch(java.io.IOException e) {
+						f.attributes.setType(Path.SYMBOLIC_LINK_TYPE & Path.FILE_TYPE);
+					}
+					//						String link = name.substring(end + 4);
+					//						if(link.charAt(0) == '/') {
+					//							Path linkedPath = PathFactory.createPath(parent.getSession(), 
+					//																	 name.substring(end + 4));
+					//							f.setLinkedPath(linkedPath);
+					//						}
+					//						else {
+					//							Path linkedPath = PathFactory.createPath(parent.getSession(), 
+					//																	 parent.getAbsolute(), 
+					//																	 name.substring(end + 4));
+					//							f.setLinkedPath(linkedPath);
+					//						}
                 }
                 else {
                     f.setPath(parent.getAbsolute(), name);

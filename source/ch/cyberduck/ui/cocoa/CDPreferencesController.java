@@ -220,6 +220,130 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
         }
     }
 
+	private NSButton proxyAuthenticationCheckbox; //IBOutlet
+	
+	public void setProxyAuthenticationCheckbox(NSButton proxyAuthenticationCheckbox) {
+        this.proxyAuthenticationCheckbox = proxyAuthenticationCheckbox;
+        this.proxyAuthenticationCheckbox.setTarget(this);
+        this.proxyAuthenticationCheckbox.setAction(new NSSelector("proxyAuthenticationCheckboxClicked", new Class[]{NSButton.class}));
+        this.proxyAuthenticationCheckbox.setState(Preferences.instance().getProperty("connection.proxy.useAuthentication").equals("true") ? NSCell.OnState : NSCell.OffState);
+		this.proxyAuthenticationCheckbox.setEnabled(Preferences.instance().getProperty("connection.proxy.useProxy").equals("true"));
+    }
+	
+    public void proxyAuthenticationCheckboxClicked(NSButton sender) {
+        switch (sender.state()) {
+            case NSCell.OnState:
+                Preferences.instance().setProperty("connection.proxy.useAuthentication", true);
+				this.proxyUsernameField.setEnabled(Preferences.instance().getProperty("connection.proxy.useProxy").equals("true"));
+				this.proxyPasswordField.setEnabled(Preferences.instance().getProperty("connection.proxy.useProxy").equals("true"));
+                break;
+            case NSCell.OffState:
+                Preferences.instance().setProperty("connection.proxy.useAuthentication", false);
+				this.proxyUsernameField.setEnabled(false);
+				this.proxyPasswordField.setEnabled(false);
+                break;
+        }
+    }
+	
+	private NSButton proxyCheckbox; //IBOutlet
+
+	public void setProxyCheckbox(NSButton proxyCheckbox) {
+        this.proxyCheckbox = proxyCheckbox;
+        this.proxyCheckbox.setTarget(this);
+        this.proxyCheckbox.setAction(new NSSelector("proxyCheckboxClicked", new Class[]{NSButton.class}));
+        this.proxyCheckbox.setState(Preferences.instance().getProperty("connection.proxy.useProxy").equals("true") ? NSCell.OnState : NSCell.OffState);
+    }
+	
+    public void proxyCheckboxClicked(NSButton sender) {
+        log.debug("proxyCheckboxClicked");
+        switch (sender.state()) {
+            case NSCell.OnState:
+                Preferences.instance().setProperty("connection.proxy.useProxy", true);
+				this.proxyAuthenticationCheckbox.setEnabled(true);
+				this.proxyHostField.setEnabled(true);
+				this.proxyPortField.setEnabled(true);
+				this.proxyUsernameField.setEnabled(Preferences.instance().getProperty("connection.proxy.useAuthentication").equals("true"));
+				this.proxyPasswordField.setEnabled(Preferences.instance().getProperty("connection.proxy.useAuthentication").equals("true"));
+                break;
+            case NSCell.OffState:
+                Preferences.instance().setProperty("connection.proxy.useProxy", false);
+				this.proxyAuthenticationCheckbox.setEnabled(false);
+				this.proxyHostField.setEnabled(false);
+				this.proxyPortField.setEnabled(false);
+				this.proxyUsernameField.setEnabled(false);
+				this.proxyPasswordField.setEnabled(false);
+                break;
+        }
+    }
+	
+	private NSTextField proxyHostField; //IBOutlet
+	
+    public void setProxyHostField(NSTextField proxyHostField) {
+        this.proxyHostField = proxyHostField;
+        this.proxyHostField.setStringValue(Preferences.instance().getProperty("connection.proxy.host"));
+        NSNotificationCenter.defaultCenter().addObserver(this,
+														 new NSSelector("proxyHostFieldDidChange", new Class[]{NSNotification.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 this.proxyHostField);
+		this.proxyHostField.setEnabled(Preferences.instance().getProperty("connection.proxy.useProxy").equals("true"));
+    }
+	
+    public void proxyHostFieldDidChange(NSNotification sender) {
+        Preferences.instance().setProperty("connection.proxy.host", this.proxyHostField.stringValue());
+    }
+
+	private NSTextField proxyPortField; //IBOutlet
+	
+    public void setProxyPortField(NSTextField proxyPortField) {
+        this.proxyPortField = proxyPortField;
+        this.proxyPortField.setStringValue(Preferences.instance().getProperty("connection.proxy.port"));
+        NSNotificationCenter.defaultCenter().addObserver(this,
+														 new NSSelector("proxyPortFieldDidChange", new Class[]{NSNotification.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 this.proxyPortField);
+		this.proxyHostField.setEnabled(Preferences.instance().getProperty("connection.proxy.useProxy").equals("true"));
+    }
+	
+    public void proxyPortFieldDidChange(NSNotification sender) {
+        Preferences.instance().setProperty("connection.proxy.port", this.proxyPortField.stringValue());
+    }
+
+	private NSTextField proxyUsernameField; //IBOutlet
+	
+    public void setProxyUsernameField(NSTextField proxyUsernameField) {
+        this.proxyUsernameField = proxyUsernameField;
+        this.proxyUsernameField.setStringValue(Preferences.instance().getProperty("connection.proxy.username"));
+        NSNotificationCenter.defaultCenter().addObserver(this,
+														 new NSSelector("proxyUsernameFieldDidChange", new Class[]{NSNotification.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 this.proxyUsernameField);
+		this.proxyHostField.setEnabled(Preferences.instance().getProperty("connection.proxy.useProxy").equals("true") &&
+									   Preferences.instance().getProperty("connection.proxy.useAuthentication").equals("true")
+									   );
+    }
+	
+    public void proxyUsernameFieldDidChange(NSNotification sender) {
+        Preferences.instance().setProperty("connection.proxy.username", this.proxyUsernameField.stringValue());
+    }
+
+	private NSTextField proxyPasswordField; //IBOutlet
+	
+    public void setProxyPasswordField(NSTextField proxyPasswordField) {
+        this.proxyPasswordField = proxyPasswordField;
+        this.proxyPasswordField.setStringValue(Preferences.instance().getProperty("connection.proxy.password"));
+        NSNotificationCenter.defaultCenter().addObserver(this,
+														 new NSSelector("proxyPasswordFieldDidChange", new Class[]{NSNotification.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 this.proxyPasswordField);
+		this.proxyHostField.setEnabled(Preferences.instance().getProperty("connection.proxy.useProxy").equals("true") &&
+									   Preferences.instance().getProperty("connection.proxy.useAuthentication").equals("true")
+									   );
+    }
+	
+    public void proxyPasswordFieldDidChange(NSNotification sender) {
+        Preferences.instance().setProperty("connection.proxy.password", this.proxyPasswordField.stringValue());
+    }
+	
     private NSButton systCheckbox; //IBOutlet
 
     public void setSystCheckbox(NSButton systCheckbox) {
@@ -667,26 +791,26 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
     }
 
     /*
-private NSTextField historyField; //IBOutlet
-
-public void setHistoryField(NSTextField historyField) {
-this.historyField = historyField;
-this.historyField.setStringValue(Preferences.instance().getProperty("history.size"));
-NSNotificationCenter.defaultCenter().addObserver(this,
-new NSSelector("historyFieldDidChange", new Class[]{NSNotification.class}),
-NSControl.ControlTextDidEndEditingNotification,
-this.historyField);
-}
-
-public void historyFieldDidChange(NSNotification sender) {
-if (this.historyField.stringValue() != null && !this.historyField.stringValue().equals("")) {
-int size = Integer.parseInt(this.historyField.stringValue());
-Preferences.instance().setProperty("history.size", size);
-while (CDHistoryImpl.instance().size() > size) {
-CDHistoryImpl.instance().removeItem(CDHistoryImpl.instance().size() - 1);
-}
-}
-}
+	 private NSTextField historyField; //IBOutlet
+	 
+	 public void setHistoryField(NSTextField historyField) {
+		 this.historyField = historyField;
+		 this.historyField.setStringValue(Preferences.instance().getProperty("history.size"));
+		 NSNotificationCenter.defaultCenter().addObserver(this,
+														  new NSSelector("historyFieldDidChange", new Class[]{NSNotification.class}),
+														  NSControl.ControlTextDidEndEditingNotification,
+														  this.historyField);
+	 }
+	 
+	 public void historyFieldDidChange(NSNotification sender) {
+		 if (this.historyField.stringValue() != null && !this.historyField.stringValue().equals("")) {
+			 int size = Integer.parseInt(this.historyField.stringValue());
+			 Preferences.instance().setProperty("history.size", size);
+			 while (CDHistoryImpl.instance().size() > size) {
+				 CDHistoryImpl.instance().removeItem(CDHistoryImpl.instance().size() - 1);
+			 }
+		 }
+	 }
      */
 
     private NSTextField downloadPathField; //IBOutlet

@@ -51,10 +51,10 @@ public abstract class Validator {
     public boolean validate(Path path) {
         log.debug("validate:" + path);
         if (!this.isCanceled) {
-			if(path.isDirectory()) {
+			if(path.attributes.isDirectory()) {
 				return this.validateDirectory(path);
 			}
-			if(path.isFile()) {
+			if(path.attributes.isFile()) {
 				return this.validateFile(path);
 			}
         }

@@ -43,7 +43,7 @@ public class Status extends Observable implements Serializable {
     /**
      * The file length
      */
-    private long size = 0;
+    private long size = -1;
     /**
      * The number of transfered bytes. Must be less or equals size.
      */
@@ -112,6 +112,9 @@ public class Status extends Observable implements Serializable {
      * @return The size of the file
      */
     public static String getSizeAsString(long size) {
+		if (-1 == size) {
+			return "Unknown size";
+		}
         if (size < KILO) {
             return size + "B";
         }

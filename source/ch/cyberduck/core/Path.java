@@ -36,10 +36,9 @@ import org.apache.log4j.Logger;
 public abstract class Path {
     private static Logger log = Logger.getLogger(Path.class);
 
-//	private String name = null;
     private String path = null;
     private Local local = null;
-//    protected Path parent = null;
+//	private Path linkedPath = null;
     public Status status = new Status();
     public Attributes attributes = new Attributes();
 
@@ -149,8 +148,11 @@ public abstract class Path {
     public void setPath(String p) {
         log.debug("setPath:" + p);
         this.path = p;
-        //this.parent = null;
     }
+	
+//	public void setLinkedPath(Path linkedPath) {
+//		this.linkedPath = linkedPath;
+//	}
 
     /**
      * @return My parent directory
@@ -182,10 +184,6 @@ public abstract class Path {
         return this.getSession().cache().get(this.getAbsolute());
     }
 
-    public void invalidate() {
-        this.getSession().cache().remove(this.getAbsolute());
-    }
-
     protected void setCache(List files) {
 //		Path parent = this.getParent();
 //		parent.setName("..");
@@ -194,6 +192,10 @@ public abstract class Path {
         this.getSession().cache().put(this.getAbsolute(), files);
     }
 
+	public void invalidate() {
+        this.getSession().cache().remove(this.getAbsolute());
+    }
+		
     /**
      * Request a file listing from the server. Has to be a directory
      */
@@ -212,7 +214,7 @@ public abstract class Path {
     /**
      * Changes the session's working directory to this path
      */
-    public abstract void cwdir();
+    public abstract void cwdir() throws IOException;
 
     /**
      * @param recursive Create intermediate directories as required.  If this option is
@@ -238,34 +240,44 @@ public abstract class Path {
 		return this.getParent().list(false, true).contains(this);
     }
 
+	//	public abstract void sync(Local local, boolean recursive, boolean commit, int kind);
+
+	/*
     public boolean isFile() {
         if (this.attributes.isSymbolicLink()) {
             return this.linksToFile();
         }
         return this.attributes.isFile();
     }
+	 */
 	
-//	public abstract void sync(Local local, boolean recursive, boolean commit, int kind);
-
     /**
      * @return true if is directory or a symbolic link that everyone can execute
      */
+	/*
     public boolean isDirectory() {
         if (this.attributes.isSymbolicLink()) {
             return this.linksToDirectory();
         }
         return this.attributes.isDirectory();
     }
+		 */
 
     // hack
+	/*
     private boolean linksToFile() {
-        return this.attributes.isSymbolicLink() && this.getName().indexOf(".") != -1;
+        return this.attributes.isSymbolicLink() && this.linkedPath.attributes.isFile();
+//        return this.attributes.isSymbolicLink() && this.getName().indexOf(".") != -1;
     }
+	 */
 
     // hack
+	/*
     private boolean linksToDirectory() {
-        return !this.linksToFile() && this.attributes.permission.getOwnerPermissions()[Permission.EXECUTE];
+        return this.attributes.isSymbolicLink() && this.linkedPath.attributes.isDirectory();
+//        return !this.linksToFile() && this.attributes.permission.getOwnerPermissions()[Permission.EXECUTE];
     }
+	 */
 
     /**
      * @return The file type
@@ -371,7 +383,7 @@ public abstract class Path {
     private List getDownloadQueue(List queue) {
 		log.debug("Adding "+this.toString()+" to download queue.");
 		queue.add(this);
-        if (this.isDirectory()) {
+        if (this.attributes.isDirectory()) {
 			this.status.setSize(0);
             for (Iterator i = this.list(false, true).iterator(); i.hasNext();) {
                 Path p = (Path)i.next();

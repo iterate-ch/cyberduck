@@ -280,7 +280,6 @@ public class FTPClient {
      * @modified
      */
     private void initGet(String remoteFile, long resume) throws IOException, FTPException {
-
         // set up data channel
         data = control.createDataSocket(connectMode);
         data.setTimeout(timeout);
@@ -346,6 +345,7 @@ public class FTPClient {
         return data.getInputStream();
     }
 
+	
     /**
      * Run a site-specific command on the
      * server. Support for commands is dependent
@@ -374,6 +374,7 @@ public class FTPClient {
         }
     }
 
+	
     /**
      * List current directory's contents as an array of strings of
      * filenames.
@@ -384,6 +385,7 @@ public class FTPClient {
         return dir(null, true);
     }
 
+	
     /**
      * List a directory's contents as an array of strings of filenames.
      *
@@ -479,6 +481,7 @@ public class FTPClient {
         return result;
     }
 
+	
     /**
      * Gets the latest valid reply from the server
      *
@@ -488,6 +491,7 @@ public class FTPClient {
         return lastValidReply;
     }
 
+	
     /**
      * Get the current transfer type
      *
@@ -498,6 +502,7 @@ public class FTPClient {
         return transferType;
     }
 
+	
     /**
      * Set the transfer type
      *
@@ -519,31 +524,39 @@ public class FTPClient {
         transferType = type;
     }
 
+	
     /**
      * Wrapper for the command <code>size [fileName]</code>.  If the file does
      * not exist, we return -1;
      */
-    public long size(String remoteFile) throws IOException, FTPException {
-        String reply = control.sendCommand("SIZE " + remoteFile);
-        lastValidReply = control.validateReply(reply, "213");
-
-        // parse the reply string .
-        String replyText = lastValidReply.getReplyText();
-        try {
-            return Long.parseLong(replyText);
-        }
-        catch (NumberFormatException ex) {
-            if (replyText.indexOf(' ') != -1) {
-                try {
-                    return Long.parseLong(replyText.substring(0, replyText.indexOf(' ')));
-                }
-                catch (NumberFormatException e) {
-                }
-            }
-            throw new FTPException("Failed to parse reply: " + replyText);
-        }
+    public long size(String remoteFile) throws IOException {//, FTPException{
+		try {
+			String reply = control.sendCommand("SIZE " + remoteFile);
+			lastValidReply = control.validateReply(reply, "213");
+			
+			// parse the reply string .
+			String replyText = lastValidReply.getReplyText();
+			try {
+				return Long.parseLong(replyText);
+			}
+			catch (NumberFormatException ex) {
+				if (replyText.indexOf(' ') != -1) {
+					try {
+						return Long.parseLong(replyText.substring(0, replyText.indexOf(' ')));
+					}
+					catch (NumberFormatException e) {
+					}
+				}
+				throw new FTPException("Failed to parse reply: " + replyText);
+			}
+		}
+		catch(FTPException e) {
+			log.error(e.getMessage());
+			return -1;
+		}
     }
-
+	
+	
     /**
      * Delete the specified remote file
      *

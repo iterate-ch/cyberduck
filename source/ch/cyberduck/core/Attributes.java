@@ -90,10 +90,12 @@ public class Attributes extends Observable {
     }
 
     public void setType(int type) {
+		log.debug("setType:"+type);
         this.type = type;
     }
 
     public int getType() {
+		log.debug("getType:"+this.type);
         return this.type;
     }
 
@@ -106,7 +108,9 @@ public class Attributes extends Observable {
     }
 
     public boolean isSymbolicLink() {
-        return (this.type == Path.SYMBOLIC_LINK_TYPE);
+        return (this.type == (Path.SYMBOLIC_LINK_TYPE & Path.FILE_TYPE) || 
+				this.type == (Path.SYMBOLIC_LINK_TYPE & Path.DIRECTORY_TYPE)
+				);
     }
 	
 //    public boolean isUnknown() {

@@ -169,6 +169,10 @@ public class CDBrowserController extends NSObject implements Observer {
             c.setResizable(true);
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
+			//@todo put into prefs
+			log.info("Using date formatter with scheme "+NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString));
+			c.dataCell().setFormatter(new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), 
+																   true));
             this.browserTable.addTableColumn(c);
         }
         if (Preferences.instance().getProperty("browser.columnOwner").equals("true")) {
@@ -208,7 +212,7 @@ public class CDBrowserController extends NSObject implements Observer {
         searchField.setStringValue("");
         if (browserModel.numberOfRowsInTableView(browserTable) > 0 && browserTable.numberOfSelectedRows() > 0) {
             Path p = (Path)browserModel.getEntry(browserTable.selectedRow()); //last row selected
-            if (p.isFile() || browserTable.numberOfSelectedRows() > 1) {
+            if (p.attributes.isFile() || browserTable.numberOfSelectedRows() > 1) {
 				if(Preferences.instance().getProperty("browser.doubleClickOnFile").equals("edit")) {
 					this.editButtonClicked(sender);
 				}
@@ -216,7 +220,7 @@ public class CDBrowserController extends NSObject implements Observer {
 					this.downloadButtonClicked(sender);
 				}
             }
-            if (p.isDirectory()) {
+            if (p.attributes.isDirectory()) {
                 p.list();
             }
         }
@@ -482,6 +486,20 @@ public class CDBrowserController extends NSObject implements Observer {
                 break;
         }
     }
+	
+	public void copyURLButtonClicked(Object sender) {
+        log.debug("copyURLButtonClicked");
+		Host h = pathController.workdir().getSession().getHost();
+		NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
+		pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
+		if(!pboard.setStringForType(h.getURL(), NSPasteboard.StringPboardType)) {
+			log.error("Error writing URL to NSPasteboard.StringPboardType.");
+		}
+		pboard.declareTypes(new NSArray(NSPasteboard.URLPboardType), null);
+		if(!pboard.setStringForType(h.getURL(), NSPasteboard.URLPboardType)) {
+			log.error("Error writing URL to NSPasteboard.URLPboardType.");
+		}
+	}
 	
     // ----------------------------------------------------------
     // Browser navigation
@@ -1140,6 +1158,9 @@ public class CDBrowserController extends NSObject implements Observer {
         if (identifier.equals("backButtonClicked:")) {
             return this.isMounted();
         }
+        if (identifier.equals("copyURLButtonClicked:")) {
+            return this.isMounted();
+        }
         if (identifier.equals("Disconnect")) {
             return this.isMounted() && pathController.workdir().getSession().isConnected();
         }
@@ -1369,7 +1390,9 @@ public class CDBrowserController extends NSObject implements Observer {
                     return new NSAttributedString(Status.getSizeAsString(p.status.getSize()), TABLE_CELL_PARAGRAPH_DICTIONARY);
                 }
                 else if (identifier.equals("MODIFIED")) {
-                    return new NSAttributedString(p.attributes.getTimestampAsString(), TABLE_CELL_PARAGRAPH_DICTIONARY);
+//					return new NSGregorianDate();
+                	return new NSGregorianDate((double)p.attributes.getTimestamp().getTime()/1000,
+                								NSDate.DateFor1970);
                 }
                 else if (identifier.equals("OWNER")) {
                     return new NSAttributedString(p.attributes.getOwner(), TABLE_CELL_PARAGRAPH_DICTIONARY);
@@ -1397,7 +1420,7 @@ public class CDBrowserController extends NSObject implements Observer {
                 if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
                     if (row != -1 && row < tableView.numberOfRows()) {
                         Path selected = this.getEntry(row);
-                        if (selected.isDirectory()) {
+                        if (selected.attributes.isDirectory()) {
                             tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
                             return NSDraggingInfo.DragOperationCopy;
                         }
@@ -1409,7 +1432,7 @@ public class CDBrowserController extends NSObject implements Observer {
                 if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
                     if (row != -1 && row < tableView.numberOfRows()) {
                         Path selected = this.getEntry(row);
-                        if (selected.isDirectory()) {
+                        if (selected.attributes.isDirectory()) {
                             tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
                             return NSDraggingInfo.DragOperationMove;
                         }
@@ -1455,7 +1478,7 @@ public class CDBrowserController extends NSObject implements Observer {
 					for (int i = 0; i < elements.count(); i++) {
 						NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
 						Path parent = this.getEntry(row);
-						if (parent.isDirectory()) {
+						if (parent.attributes.isDirectory()) {
 							Queue q = new Queue(dict);
 							List files = q.getRoots();
 							for (Iterator iter = files.iterator(); iter.hasNext();) {
@@ -1499,7 +1522,7 @@ public class CDBrowserController extends NSObject implements Observer {
                 Session session = pathController.workdir().getSession().copy();
                 for (int i = 0; i < rows.count(); i++) {
                     promisedDragPaths[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue()).copy(session);
-                    if (promisedDragPaths[i].isFile()) {
+                    if (promisedDragPaths[i].attributes.isFile()) {
 						// fileTypes.addObject(NSPathUtilities.FileTypeRegular);
                         if (promisedDragPaths[i].getExtension() != null) {
                             fileTypes.addObject(promisedDragPaths[i].getExtension());
@@ -1508,7 +1531,7 @@ public class CDBrowserController extends NSObject implements Observer {
                             fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
                         }
                     }
-                    else if (promisedDragPaths[i].isDirectory()) {
+                    else if (promisedDragPaths[i].attributes.isDirectory()) {
 						// fileTypes.addObject(NSPathUtilities.FileTypeDirectory);
                         fileTypes.addObject("'fldr'");
                     }
@@ -1592,13 +1615,13 @@ public class CDBrowserController extends NSObject implements Observer {
                             public int compare(Object o1, Object o2) {
                                 Path p1 = (Path)o1;
                                 Path p2 = (Path)o2;
-                                if (p1.isDirectory() && p2.isDirectory()) {
+                                if (p1.attributes.isDirectory() && p2.attributes.isDirectory()) {
                                     return 0;
                                 }
-                                if (p1.isFile() && p2.isFile()) {
+                                if (p1.attributes.isFile() && p2.attributes.isFile()) {
                                     return 0;
                                 }
-                                if (p1.isFile()) {
+                                if (p1.attributes.isFile()) {
                                     return higher;
                                 }
                                 return lower;

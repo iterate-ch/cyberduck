@@ -131,6 +131,13 @@ public abstract class Preferences {
         defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
 
+		defaults.put("connection.proxy.useProxy", "false");
+		defaults.put("connection.proxy.host", "");
+		defaults.put("connection.proxy.port", "1080");
+		defaults.put("connection.proxy.useAuthentication", "false");
+		defaults.put("connection.proxy.username", System.getProperty("user.name"));
+		defaults.put("connection.proxy.password", "");
+
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");
         defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
