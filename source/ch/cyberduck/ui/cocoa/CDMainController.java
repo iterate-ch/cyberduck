@@ -196,7 +196,7 @@ public class CDMainController extends NSObject {
 				Host h = (Host)CDBookmarkTableDataSource.instance().get(index-6);
 				item.setTitle(h.getNickname());
 				item.setTarget(this);
-//				item.setImage(documentIcon);
+                item.setImage(NSImage.imageNamed("document16.tiff"));
 				item.setAction(new NSSelector("bookmarkMenuClicked", new Class[]{Object.class}));
 				items.put(item, h);
 			}

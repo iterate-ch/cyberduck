@@ -104,7 +104,7 @@ public abstract class Preferences {
 		defaults.put("browser.showHidden", "false");
 		defaults.put("browser.charset.encoding", "ISO-8859-1");
 		defaults.put("browser.doubleclick.edit", "false");
-		defaults.put("browser.info.isInspector", "false");
+		defaults.put("browser.info.isInspector", "true");
 
 		defaults.put("editor.name", "SubEthaEdit");
 		defaults.put("editor.bundleIdentifier", "de.codingmonkeys.SubEthaEdit");

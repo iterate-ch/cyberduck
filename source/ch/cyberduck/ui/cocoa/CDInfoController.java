@@ -322,7 +322,7 @@ public class CDInfoController extends CDController {
 
 	public void windowWillClose(NSNotification notification) {
 		log.debug("windowWillClose");
-		filenameField.cell().endEditing(filenameField.currentEditor());
+		this.filenameField.cell().endEditing(filenameField.currentEditor());
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 	}
 
@@ -332,18 +332,14 @@ public class CDInfoController extends CDController {
 	
 	public void filenameInputDidEndEditing(NSNotification sender) {
 		final Path file = (Path)this.files.get(0);
-		if(!filenameField.stringValue().equals(file.getName())) {
-			if(filenameField.stringValue().indexOf('/') == -1) {
-				new Thread() {
-					public void run() {
-						file.rename(file.getParent().getAbsolute()+"/"+filenameField.stringValue());
-						// refresh the file listing so that the observers (if any) get notified of the change
-						file.getParent().list(true);
-					}
-				}.start();
+		if(!this.filenameField.stringValue().equals(file.getName())) {
+			if(this.filenameField.stringValue().indexOf('/') == -1) {
+				file.rename(file.getParent().getAbsolute()+"/"+this.filenameField.stringValue());
+				// refresh the file listing so that the observers (if any) get notified of the change
+				file.getParent().list(true);
 			}
 			else if(filenameField.stringValue().length() == 0) {
-				filenameField.setStringValue(file.getName());
+				this.filenameField.setStringValue(file.getName());
 			}
 			else {
 				NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
@@ -405,17 +401,13 @@ public class CDInfoController extends CDController {
 		p[Permission.OTHER][Permission.EXECUTE] = (otherx.state() == NSCell.OnState);
 
 		final Permission permission = this.getPermissionFromSelection();
-		new Thread() {
-			public void run() {
-				// send the changes to the remote host
-				Path f = null;
-				for(Iterator i = files.iterator(); i.hasNext();) {
-					f = (Path)i.next();
-					f.changePermissions(permission, recursiveCheckbox.state() == NSCell.OnState);
-				}
-				// refresh the file listing so that the observers (if any) get notified of the change
-				f.getParent().list(true);
-			}
-		}.start();
+		// send the changes to the remote host
+		Path f = null;
+		for(Iterator i = files.iterator(); i.hasNext();) {
+			f = (Path)i.next();
+			f.changePermissions(permission, this.recursiveCheckbox.state() == NSCell.OnState);
+		}
+		// refresh the file listing so that the observers (if any) get notified of the change
+		f.getParent().list(true);
 	}
 }

@@ -2,7 +2,6 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {permissionsSelectionChanged = id; }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDInfoController"; 
             LANGUAGE = Java; 
             OUTLETS = {

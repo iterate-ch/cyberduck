@@ -35,7 +35,7 @@ import ch.cyberduck.core.Preferences;
 
 /**
  * @version $Id$
- *          Concrete Coccoa implementation of a SSH HostKeyVerification
+ * Concrete Coccoa implementation of a SSH HostKeyVerification
  */
 public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 	private static Logger log = Logger.getLogger(CDLoginController.class);

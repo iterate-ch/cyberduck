@@ -266,6 +266,7 @@ img/connect.tiff svneol=native#unset
 img/deleteFile.tiff -text
 img/disconnect.tiff svneol=native#unset
 img/disk.tiff svneol=native#unset
+img/document16.tiff -text
 img/download0.icns -text
 img/download0.psd -text
 img/download0.tiff -text
