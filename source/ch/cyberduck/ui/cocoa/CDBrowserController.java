@@ -230,6 +230,8 @@ public class CDBrowserController extends CDController implements Observer {
 		// selection properties
 		this.browserTable.setAllowsMultipleSelection(true);
 		this.browserTable.setAllowsEmptySelection(true);
+		this.browserTable.setAllowsColumnResizing(true);
+		this.browserTable.setAllowsColumnSelection(false);
 		this.browserTable.setAllowsColumnReordering(true);
 		this._updateBrowserTableColumns();
 	}
@@ -420,6 +422,8 @@ public class CDBrowserController extends CDController implements Observer {
 		// selection properties
 		this.bookmarkTable.setAllowsMultipleSelection(false);
 		this.bookmarkTable.setAllowsEmptySelection(true);
+		this.bookmarkTable.setAllowsColumnResizing(false);
+		this.bookmarkTable.setAllowsColumnSelection(false);
 		this.bookmarkTable.setAllowsColumnReordering(false);
 		this.bookmarkTable.sizeToFit();
 

@@ -748,9 +748,15 @@ public class CDPreferencesController extends NSObject {
 	}
 
 	public void concurrentConnectionsFieldDidChange(NSNotification sender) {
-		Preferences.instance().setProperty("connection.pool.max", this.concurrentConnectionsField.stringValue());
-		synchronized(this) {
-			SessionPool.instance().notify();
+		try {
+			int max = Integer.parseInt(this.concurrentConnectionsField.stringValue());
+			Preferences.instance().setProperty("connection.pool.max", max);
+			synchronized(SessionPool.instance()) {
+				SessionPool.instance().notify();
+			}
+		}
+		catch(NumberFormatException e) {
+			log.error(e.getMessage());
 		}
 	}
 
@@ -766,7 +772,13 @@ public class CDPreferencesController extends NSObject {
 	}
 
 	public void concurrentConnectionsTimeoutFieldDidChange(NSNotification sender) {
-		Preferences.instance().setProperty("connection.pool.timeout", this.concurrentConnectionsTimeoutField.stringValue());
+		try {
+			int timeout = Integer.parseInt(this.concurrentConnectionsTimeoutField.stringValue());
+			Preferences.instance().setProperty("connection.pool.timeout", timeout);
+		}
+		catch(NumberFormatException e) {
+			log.error(e.getMessage());
+		}
 	}
 
 	private NSTextField bufferField; //IBOutlet

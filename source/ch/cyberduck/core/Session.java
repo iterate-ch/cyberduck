@@ -119,6 +119,7 @@ public abstract class Session extends Observable {
 					}
 					else {
 						home = Session.this.workdir();
+						//host.setDefaultPath(home);
 					}
 					home.list(true);
 					Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl Notification"),

@@ -290,8 +290,10 @@ public abstract class Queue extends Observable {
 		}
 		
 		protected void cancel() {
-			for(Iterator iter = jobs.iterator(); iter.hasNext();) {
-				((Path)iter.next()).status.setCanceled(true);
+			if(this.isInitialized()) {
+				for(Iterator iter = this.jobs.iterator(); iter.hasNext();) {
+					((Path)iter.next()).status.setCanceled(true);
+				}
 			}
 			this.canceled = true;
 		}

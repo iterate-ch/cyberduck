@@ -220,6 +220,8 @@ public abstract class CDValidatorController extends AbstractValidator {
 		// selection properties
 		this.fileTableView.setAllowsMultipleSelection(true);
 		this.fileTableView.setAllowsEmptySelection(true);
+		this.fileTableView.setAllowsColumnResizing(true);
+		this.fileTableView.setAllowsColumnSelection(false);
 		this.fileTableView.setAllowsColumnReordering(true);
 		this.fileTableView.sizeToFit();
 	}
