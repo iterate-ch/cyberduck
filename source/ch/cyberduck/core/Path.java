@@ -95,8 +95,11 @@ public abstract class Path {
     /**
 	* @param pathname The absolute path of the file
      */
-    public void setPath(String pathname) {
-        this.path = pathname;
+    public void setPath(String name) {
+        if(name.length() > 1 && name.charAt(name.length()-1) == '/')
+	    this.path = name.substring(0, name.length()-1);
+	else
+	    this.path = name;
     }
 
     /**
@@ -344,20 +347,20 @@ public abstract class Path {
         // do the retrieving
         int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
         byte[] chunk = new byte[chunksize];
-        long amount = 0;
+        int amount = 0;
         long current = this.status.getCurrent();
 //        boolean complete = false;
 
         // read from socket (bytes) & write to file in chunks
         while (!status.isComplete() && !status.isCanceled()) {
+	    // Reads up to len bytes of data from the input stream into  an array of bytes.  An attempt is made to read as many as  len bytes, but a smaller number may be read, possibly  zero. The number of bytes actually read is returned as an integer. 
             amount = in.read(chunk, 0, chunksize);
             if(amount == -1) {
 		this.status.setComplete(true);
-//                complete = true;
             }
             else {
                 this.status.setCurrent(current += amount);
-                out.write(chunk, 0, (int)amount);
+                out.write(chunk, 0, amount);
             }
         }
 //	this.status.setComplete(complete);

@@ -84,8 +84,6 @@ public abstract class Preferences {
 	defaults.put("logging", "WARN");
 //	defaults.put("logging", "ERROR");
 //	defaults.put("logging", "FATAL");
-	defaults.put("http.logging", "WARN");
-	defaults.put("http.wire.logging", "WARN");
 	defaults.put("rendezvous.logging", "0");
 
 	defaults.put("version", "2.1");
@@ -114,15 +112,15 @@ public abstract class Preferences {
         //defaults.put("files.encode", "true");
 	defaults.put("connection.download.postprocess", "false");
         //Connection
-        defaults.put("connection.buffer", "1024");
-	defaults.put("connection.buffer.default", "1024");
+        defaults.put("connection.buffer", "32768");
+	defaults.put("connection.buffer.default", "32768");
 	defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
 //        defaults.put("connection.path.default", "~");
         
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");
-        defaults.put("ftp.anonymous.pass", "user@domain.net");
+        defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
 	defaults.put("ftp.connectmode", "passive");
         defaults.put("ftp.transfermode", "binary");
 

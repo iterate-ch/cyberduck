@@ -32,6 +32,27 @@ public class Login {
 	this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
     }
 
+    /**
+	* New instance with default values. Anonymous login.
+     * @param controller The controller to handle failed logins attempts
+     */
+    public Login(LoginController controller) {
+	this();
+	this.controller = controller;
+    }
+
+    /**
+	* @param l the login credentials
+     * @param controller The controller to handle failed logins attempts
+     */
+    public Login(String l, LoginController controller) {
+	this(l);
+	this.controller = controller;
+    }
+
+    /**
+	* @param l the login credentials
+     */
     public Login(String l) {
 	if(l != null) {
 	    if(l.indexOf(':') != -1) {
@@ -49,9 +70,22 @@ public class Login {
 	}
     }
 
+    public boolean hasReasonableValues() {
+	if(this.user != null && this.pass != null) {
+	    // anonymous login is ok
+	    if(this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name")) && this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass")))
+		return  true;
+	    // if both name and pass are custom it is ok
+	    if(! (this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"))) && ! (this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass"))))
+		return  true;
+	}
+	// all other cases we don't like
+	return false;
+    }
+
     /**
 	* @param user Login with this username
-	* @param pass Passphrase
+     * @param pass Passphrase
      */
     public Login(String user, String pass) {
 	if(null == user || user.equals(""))

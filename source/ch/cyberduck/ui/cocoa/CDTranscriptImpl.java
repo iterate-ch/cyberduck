@@ -55,9 +55,10 @@ public class CDTranscriptImpl implements Transcripter {
 	 * before aRange if the range's length is 0. If the range's location is 0, the formatting
 	 * attributes of the first character in the receiver are used.
 	 */
-	int l = textView.string().length();
-	this.textView.replaceCharactersInRange(new NSRange(l, 0), message+"\n");
-	this.textView.scrollRangeToVisible(new NSRange(l, message.length()-1));
+	NSRange range = new NSRange(textView.string().length(), 0);
+	this.textView.replaceCharactersInRange(range, message+"\n");
+	this.textView.scrollRangeToVisible(range);
+//	this.textView.scrollRangeToVisible(new NSRange(textView.string().length(), message.length()-1));
 
     }
 

@@ -47,6 +47,7 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
 	    URL url = new URL(arg);
 	    if(url.getProtocol().equals(Session.FTP)) {
 		String file = url.getFile();
+		log.debug("File:"+file);
 		Host h = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()));
 		if(file.length() > 1) {
 		    Path p = new FTPPath((FTPSession)h.getSession(), file);

@@ -74,12 +74,27 @@ public class CDPreferencesController {
 
     public void defaultBufferButtonClicked(NSButton sender) {
 	Preferences.instance().setProperty("connection.buffer", Preferences.instance().getProperty("connection.buffer.default"));
+	try {
+	    int bytes = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
+	    int kbit = bytes/1024*8;
+	    this.bufferField.setStringValue(""+kbit);
+	}
+	catch(NumberFormatException e) {
+	    log.error(e.getMessage());
+	}
     }
 
     private NSTextField bufferField;
     public void setBufferField(NSTextField bufferField) {
 	this.bufferField = bufferField;
-	this.bufferField.setStringValue(Preferences.instance().getProperty("connection.buffer"));
+	try {
+	    int bytes = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
+	    int kbit = bytes/1024*8;
+	    this.bufferField.setStringValue(""+kbit);
+	}
+	catch(NumberFormatException e) {
+	    log.error(e.getMessage());
+	}
 	NSNotificationCenter.defaultCenter().addObserver(
 						  this,
 						  new NSSelector("bufferFieldDidChange", new Class[]{NSNotification.class}),
@@ -89,8 +104,8 @@ public class CDPreferencesController {
 
     public void bufferFieldDidChange(NSNotification sender) {
 	try {
-	    Integer.parseInt(this.bufferField.stringValue());
-	    Preferences.instance().setProperty("connection.buffer", this.bufferField.stringValue());
+	    int kbit = Integer.parseInt(this.bufferField.stringValue());
+	    Preferences.instance().setProperty("connection.buffer", (int)kbit/8*1024); //Bytes
 	}
 	catch(NumberFormatException e) {
 	    log.error(e.getMessage());

@@ -54,6 +54,7 @@ public class CDBrowserController implements Observer {
 	this.favoritesTable = favoritesTable;
 	this.favoritesTable.setDataSource(CDFavoritesImpl.instance());
 	this.favoritesTable.setDelegate(favoritesDelegate = new CDFavoritesTableDelegate());
+//	this.favoritesTable.tableColumnWithIdentifier("URL").setDataCell(new NSButtonCell());
 	this.favoritesTable.setTarget(this);
 	this.favoritesTable.setDrawsGrid(false);
 	this.favoritesTable.setAutoresizesAllColumnsToFit(true);
@@ -211,7 +212,6 @@ public class CDBrowserController implements Observer {
 	    *The delegate can implemen this method to disallow editing of specific cells.
 	    */
 	public boolean tableViewShouldEditLocation( NSTableView view, NSTableColumn tableColumn, int row) {
-//@todo	    return true;
 	    return false;
 	}
     }
@@ -533,9 +533,12 @@ public class CDBrowserController implements Observer {
 				       );
 	    }
 	}
-	
-	this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
-    
+
+	Login login = this.host.getLogin();
+	login.setController(new CDLoginController(this.window(), host.getLogin()));
+//	if(!login.hasReasonableValues()) {
+//            login.getController().loginFailure("Enter your login name and password:");
+//	}
 	this.host.getSession().mount();
 	CDHistoryImpl.instance().addItem(host);
 	this.isMounting = false;

@@ -193,7 +193,6 @@ public class HTTPPath extends Path {
 //	    if(!HttpStatus.isSuccessfulResponse(response)) {
 //		throw new HttpException(HttpStatus.getStatusText(response), response);
 //	    }
-
 	    if(this.status.isResume()) {
 		if(GET.getStatusCode() != HttpStatus.SC_PARTIAL_CONTENT) {
 		    session.log("Resumption not possible.", Message.PROGRESS);
@@ -205,7 +204,6 @@ public class HTTPPath extends Path {
 		    session.log("Resume at " + this.status.getCurrent() + ".", Message.PROGRESS);
 		}
 	    }
-
 	    Header lengthHeader = GET.getResponseHeader("Content-Length");
 	    if(lengthHeader != null) {
 		try {
@@ -233,7 +231,6 @@ public class HTTPPath extends Path {
 //		}
 //	    }
 //	    this.status.setSize(GET.getRequestContentLength());
-
 
 	    OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
 	    if(out == null) {

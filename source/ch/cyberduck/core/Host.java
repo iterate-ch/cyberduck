@@ -51,11 +51,11 @@ public class Host {
 	}
 	catch(NumberFormatException e) {
 	    log.error(e.getMessage());
-	    throw new java.net.MalformedURLException("Not a valid URL"+url);
+	    throw new java.net.MalformedURLException("Not a valid URL: "+url);
 	}
 	catch(IndexOutOfBoundsException e) {
 	    log.error(e.getMessage());
-	    throw new java.net.MalformedURLException("Not a valid URL"+url);
+	    throw new java.net.MalformedURLException("Not a valid URL: "+url);
 	}
     }
 

@@ -139,11 +139,14 @@
 		</fileset>
 	    </copy>
 	    
-	    <replace 
-		file="${app.contents}/Info.plist" 
+	    <replace
+		dir="${app.contents}"
 		token="*version*" 
 		value="${cyberduck.version.major}.${cyberduck.version.minor}"
-		summary="true"/>
+		summary="true">
+		<include name="**/*.strings"/>
+		<include name="**/*.plist"/>
+	    </replace>
 	</target>
 
 <!--

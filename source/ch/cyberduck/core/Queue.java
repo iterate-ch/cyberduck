@@ -422,7 +422,7 @@ private void init() {
 					 );
      */
 
-    this.progressTimer = new Timer(500,
+    this.progressTimer = new Timer(1000,
 					new ActionListener() {
 					    int i = 0;
 					    long current;
@@ -430,22 +430,22 @@ private void init() {
 					    long[] speeds = new long[8];
 					    public void actionPerformed(ActionEvent e) {
 						long diff = 0;
-						current = candidate.status.getCurrent();
+						current = candidate.status.getCurrent(); // Bytes
 						if(current <= 0) {
 						    setSpeed(0);
 						}
 						else {
-						    speeds[i] = (current - last)*(2); i++; last = current;
-						    if(i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
+						    speeds[i] = (current - last); // Bytes per second
+						    i++; last = current;
+//						    speeds[i] = (current - last)*2; i++; last = current;
+						    if(i == 4) { // wir wollen immer den schnitt der letzten vier sekunden
 							i = 0;
 						    }
-
 						    for (int k = 0; k < speeds.length; k++) {
 							diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
 						    }
-						    
-					       //                        log.debug("currentSpeed " + diff/speeds.length/1024 + " KBytes/sec");
-						    Queue.this.setSpeed((diff/speeds.length));
+						    Queue.this.setSpeed((diff/speeds.length)); //Bytes per second
+						    //Queue.this.setSpeed((diff/speeds.length/1024)) //kBytes per second
 						}
 
 					    }
@@ -457,7 +457,6 @@ private void init() {
 					public void actionPerformed(ActionEvent e) {
 					    if(getSpeed() > 0)
 						Queue.this.setTimeLeft((int)((Queue.this.getSize() - candidate.status.getCurrent())/getSpeed()));
-//						Queue.this.setTimeLeft((int)((candidate.status.getSize() - candidate.status.getCurrent())/getSpeed()));
 					    else
 						Queue.this.setTimeLeft(-1);
 					}

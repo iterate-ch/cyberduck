@@ -449,6 +449,7 @@ public class CDBrowserTable extends NSTableView implements Observer {
 		    promisedDragPaths = null;
 		}
 	    }
+	    CDBrowserTable.this.deselectAll(null);
 	}
 
 	public boolean ignoreModifierKeysWhileDragging() {

@@ -80,7 +80,7 @@ public class CDLoginController implements LoginController {
     }
 
     public void windowWillClose(NSNotification notification) {
-//	this.window().setDelegate(null);
+	this.window().setDelegate(null);
 	allDocuments.removeObject(this);
     }
 

@@ -37,7 +37,7 @@ public class CDDownloadController {
     private static Logger log = Logger.getLogger(CDDownloadController.class);
 
     private NSWindow window;
-    public void setwindow(NSWindow window) {
+    public void setWindow(NSWindow window) {
 	this.window = window;
     }
 
@@ -71,25 +71,30 @@ public class CDDownloadController {
 	allDocuments.removeObject(this);
     }
     
-    public void closewindow(NSButton sender) {
+    public void closeWindow(NSButton sender) {
 	switch(sender.tag()) {
 	    case(NSAlertPanel.DefaultReturn):
 		URL url = null;
 		try {
 		    url = new URL(urlField.stringValue());
 		    this.window().orderOut(null);
-		    Path path = null;
-		    String file = url.getQuery() == null ? url.getPath() : url.getFile();
-		    Host host = new Host(urlField.stringValue());
+		    Host host = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()));
+//		    Host host = new Host(urlField.stringValue()); //todo (protocol, host, port,
 		    Session session = host.getSession();
-		    if(host.getProtocol().equals(Session.FTP)) {
-			path = new FTPPath((FTPSession)session, file);
+		    Path path = null;
+		    String file = url.getFile();
+		    if(file.length() > 1) {
+			if(host.getProtocol().equals(Session.FTP)) {
+			    path = new FTPPath((FTPSession)session, file);
+			}
+			else if(host.getProtocol().equals(Session.HTTP)) {
+			    path = new HTTPPath((HTTPSession)session, file);
+			}
+			CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
+			controller.transfer();
 		    }
-		    else if(host.getProtocol().equals(Session.HTTP)) {
-			path = new HTTPPath((HTTPSession)session, file);
-		    }
-		    CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
-		    controller.transfer();
+		    else
+			throw new MalformedURLException("URL must contain reference to a file");
 		}
 		catch(MalformedURLException e) {
 		    NSAlertPanel.beginCriticalAlertSheet(
