@@ -43,6 +43,7 @@ public class Editor {
         SUPPORTED_EDITORS.put("BBEdit Lite", "com.barebones.bbeditlite");
         SUPPORTED_EDITORS.put("TextWrangler", "com.barebones.textwrangler");
 //		SUPPORTED_EDITORS.put("PageSpinner", "com.optima.PageSpinner");
+        SUPPORTED_EDITORS.put("TextMate", "com.macromates.textmate");
         SUPPORTED_EDITORS.put("Tex-Edit Plus", "com.transtex.texeditplus");
     }
 

@@ -13,12 +13,14 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] Norwegian Localization
 - [Feature] Updated toolbar icons
 - [Feature] Added BBedit Lite to the list of supported editors
+- [Feature] Added TextMate to the list of supported editors
 - [Feature] Move remote files with copy & paste
 - [Feature] Put remote files into the transfer queue with copy & paste
 - [Feature] Provide a proxy-icon for the connection in the title bar. The icon can then be dragged to the Bookmark drawer or to the Finder as a .duck file.
 - [Bugfix] Bookmark drawer icon has no text-only equivalent
 - [Bugfix] Tabbing between browser and filter box
 - [Bugfix] Quick Connect Field has initial focus
+- [Feature] Filter field is now a standard search field
 - [Bugfix] HTTP download broken
 - [Feature] Read bookmarks from "/Library/Application Support/Cyberduck/"
  instead of the individual user bookmarks file if available
