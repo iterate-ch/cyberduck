@@ -34,6 +34,9 @@ for nibfile in `ls $language.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; 
 
     rm -rf $language.lproj/$nibfile.bak
     mv $language.lproj/$nibfile $language.lproj/$nibfile.bak
+    # force update
+#    nibtool --write $language.lproj/$nibfile --dictionary $language.lproj/$nib.strings English.lproj/$nibfile
+    # incremental update
     nibtool --write $language.lproj/$nibfile --incremental $language.lproj/$nibfile.bak --dictionary $language.lproj/$nib.strings English.lproj/$nibfile
     cp -R $language.lproj/$nibfile.bak/CVS $language.lproj/$nibfile/CVS
 done

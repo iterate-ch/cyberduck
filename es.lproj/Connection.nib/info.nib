@@ -8,6 +8,10 @@
 	<string>349.0</string>
 	<key>IBLockedObjects</key>
 	<array/>
+	<key>IBOpenObjects</key>
+	<array>
+		<integer>22</integer>
+	</array>
 	<key>IBSystem Version</key>
 	<string>7D24</string>
 </dict>

@@ -60,7 +60,8 @@ public class CDTranscriptImpl implements Transcripter {
 		 */
 		NSRange range = new NSRange(textView.string().length(), 0);
 		this.textView.replaceCharactersInRange(range, message + "\n");
-		this.textView.scrollRangeToVisible(range);
+		if(range.length() > 0)
+			this.textView.scrollRangeToVisible(range);
 	}
 
 	public void clearLogButtonClicked(Object sender) {
