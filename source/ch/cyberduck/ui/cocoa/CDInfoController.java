@@ -262,5 +262,7 @@ public class CDInfoController extends NSObject {
         // send the changes to the remote host
         this.file.changePermissions(permission, recursiveCheckbox.state() == NSCell.OnState);
         permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
+		// refresh the file listing so that the observers (if any) get notified of the change
+		this.file.getParent().list(true);
     }
 }

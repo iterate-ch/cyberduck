@@ -207,7 +207,6 @@ public class FTPPath extends Path {
             session.log("Renaming " + this.getName() + " to " + filename, Message.PROGRESS);
             session.FTP.rename(this.getAbsolute(), filename);
             this.setPath(filename);
-            this.getParent().invalidate();
         }
         catch (FTPException e) {
             session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -265,7 +264,6 @@ public class FTPPath extends Path {
         String command = "chmod";
         try {
             session.check();
-            //@todo support recursion
             session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
         }
         catch (FTPException e) {

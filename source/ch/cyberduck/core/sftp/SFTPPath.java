@@ -232,8 +232,6 @@ public class SFTPPath extends Path {
             session.log("Renaming " + this.getName() + " to " + filename, Message.PROGRESS);
             session.SFTP.renameFile(this.getAbsolute(), filename);
             this.setPath(filename);
-//			this.setPath(this.getParent().getAbsolute(), filename);
-            this.getParent().invalidate();
         }
         catch (SshException e) {
             session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -289,7 +287,6 @@ public class SFTPPath extends Path {
         log.debug("changePermissions");
         try {
             session.check();
-            //@todo support recursion
             session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
         }
         catch (SshException e) {
