@@ -703,28 +703,27 @@ public class CDPreferencesController {
 		}
 	}
 
-
 	private NSWindow window; //IBOutlet
 
 	public void setWindow(NSWindow window) {
 		this.window = window;
 		this.window.setDelegate(this);
 	}
-
+	
 	private static NSMutableArray instances = new NSMutableArray();
-
-//	public static CDPreferencesController instance() {
-//		if (null == instance) {
-//			instance = new CDPreferencesController();
-//		}
-//		return instance;
-//	}
-
-	public CDPreferencesController() {
-		instances.addObject(this);
+	
+	public static CDPreferencesController instance() {
+		if (null == instance) {
+			instance = new CDPreferencesController();
+		}
 		if (false == NSApplication.loadNibNamed("Preferences", instance)) {
 			log.fatal("Couldn't load Preferences.nib");
 		}
+		return instance;
+	}
+	
+	private CDPreferencesController() {
+		instances.addObject(this);
 	}
 
 	public void awakeFromNib() {

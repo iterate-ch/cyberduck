@@ -46,14 +46,14 @@ public class CDQueueController implements Observer, Validator {
 		if (null == instance) {
 			instance = new CDQueueController();
 		}
+		if (false == NSApplication.loadNibNamed("Queue", instance)) {
+			log.fatal("Couldn't load Queue.nib");
+		}
 		return instance;
 	}
 
 	private CDQueueController() {
 		instances.addObject(this);
-		if (false == NSApplication.loadNibNamed("Queue", this)) {
-			log.fatal("Couldn't load Queue.nib");
-		}
 	}
 
 	public void windowWillClose(NSNotification notification) {
@@ -182,13 +182,13 @@ public class CDQueueController implements Observer, Validator {
 //					log.debug("Queue table visible, redrawing cells");
 					int row = CDQueuesImpl.instance().indexOf((Queue) observable);
 					
-					NSCell queueCell = this.queueTable.tableColumnWithIdentifier("DATA").dataCell();
+//					NSCell queueCell = this.queueTable.tableColumnWithIdentifier("DATA").dataCell();
 					NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
-					queueCell.drawInteriorWithFrameInView(queueRect, this.queueTable);
+//					queueCell.drawInteriorWithFrameInView(queueRect, this.queueTable);
 
-					NSCell progressCell = this.queueTable.tableColumnWithIdentifier("PROGRESS").dataCell();
+//					NSCell progressCell = this.queueTable.tableColumnWithIdentifier("PROGRESS").dataCell();
 					NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
-					progressCell.drawInteriorWithFrameInView(progressRect, this.queueTable);
+//					progressCell.drawInteriorWithFrameInView(progressRect, this.queueTable);
 
 					this.queueTable.setNeedsDisplay(queueRect.rectByUnioningRect(progressRect));
 				}

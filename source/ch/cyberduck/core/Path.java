@@ -216,10 +216,14 @@ public abstract class Path {
 
 	public abstract void rename(String n);
 
+	public abstract void changeOwner(String owner, boolean recursive);
+
+	public abstract void changeGroup(String group, boolean recursive);
+
 	/**
 	 * @param p ocal permissions
 	 */
-	public abstract void changePermissions(int p);
+	public abstract void changePermissions(int p, boolean recursive);
 
 	public boolean isFile() {
 		return this.attributes.getMode().charAt(0) == '-';

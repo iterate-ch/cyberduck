@@ -129,15 +129,15 @@ public class HTTPPath extends Path {
 		return null;
 	}
 
-	public void changePermissions(int p) {
+	public void changePermissions(int p, boolean recursive) {
 		session.log("Invalid Operation", Message.ERROR);
 	}
 
-	public void changeOwner(String owner) {
+	public void changeOwner(String owner, boolean recursive) {
 		session.log("Invalid Operation", Message.ERROR);
 	}
 
-	public void changeGroup(String group) {
+	public void changeGroup(String group, boolean recursive) {
 		session.log("Invalid Operation", Message.ERROR);
 	}
 

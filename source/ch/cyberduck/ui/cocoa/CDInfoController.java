@@ -94,6 +94,13 @@ public class CDInfoController {
 	public void setPermissionsBox(NSBox permissionsBox) {
 		this.permissionsBox = permissionsBox;
 	}
+	
+	private NSButton recursiveCheckbox;
+	
+	public void setRecursiveCheckbox(NSButton recursiveCheckbox) {
+		this.recursiveCheckbox = recursiveCheckbox;
+		this.recursiveCheckbox.setState(NSCell.OffState);
+	}
 
 	public NSButton ownerr; // IBOutlet
 	public NSButton ownerw; // IBOutlet
@@ -133,7 +140,7 @@ public class CDInfoController {
 		this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 
 		this.filenameField.setStringValue(Codec.decode(file.getName()));
-		this.pathField.setStringValue(file.getParent().getAbsolute());
+		this.pathField.setStringValue(Codec.decode(file.getParent().getAbsolute()));
 		this.groupField.setStringValue(file.attributes.getGroup());
 		this.kindField.setStringValue(file.getKind());
 		this.modifiedField.setStringValue(file.attributes.getModified());
@@ -194,11 +201,24 @@ public class CDInfoController {
 	public void filenameInputDidEndEditing(NSNotification sender) {
 		log.debug("textInputDidEndEditing");
 		if (!filenameField.stringValue().equals(Codec.decode(file.getName()))) {
-			String newName = filenameField.stringValue();
-			file.rename(Codec.encode(newName));
+			file.rename(Codec.encode(filenameField.stringValue()));
 		}
 	}
 
+	public void ownerInputDidEndEditing(NSNotification sender) {
+		log.debug("ownerInputDidEndEditing");
+		if (!ownerField.stringValue().equals(Codec.decode(file.attributes.getOwner()))) {
+			file.changeOwner(Codec.encode(ownerField.stringValue()), recursiveCheckbox.state() == NSCell.OnState);
+		}
+	}
+
+	public void groupInputDidEndEditing(NSNotification sender) {
+		log.debug("groupInputDidEndEditing");
+		if (!groupField.stringValue().equals(Codec.decode(file.attributes.getGroup()))) {
+			file.changeGroup(Codec.encode(groupField.stringValue()), recursiveCheckbox.state() == NSCell.OnState);
+		}
+	}
+	
 	public void permissionsSelectionChanged(Object sender) {
 		log.debug("permissionsSelectionChanged");
 		boolean[][] p = new boolean[3][3];
@@ -215,9 +235,9 @@ public class CDInfoController {
 		p[Permission.OTHER][Permission.EXECUTE] = (otherx.state() == NSCell.OnState);
 
 		Permission permission = new Permission(p);
-		file.attributes.setPermission(permission);
+//		file.attributes.setPermission(permission);
 
-		file.changePermissions(permission.getOctalCode());
+		file.changePermissions(permission.getOctalCode(), recursiveCheckbox.state() == NSCell.OnState);
 		permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.getString() + " (" + permission.getOctalCode() + ")");
 	}
 

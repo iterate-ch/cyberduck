@@ -24,9 +24,11 @@ import com.apple.cocoa.foundation.NSDictionary;
 
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.sftp.SftpFile;
+import com.sshtools.j2ssh.sftp.FileAttributes;
 import com.sshtools.j2ssh.sftp.SftpFileInputStream;
 import com.sshtools.j2ssh.sftp.SftpFileOutputStream;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
+import com.sshtools.j2ssh.io.UnsignedInteger32;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -249,46 +251,48 @@ public class SFTPPath extends Path {
 		}
 		return new SFTPPath(session, this.getAbsolute(), name);
 	}
+	
+	public void changeOwner(String uid, boolean recursive) {
+		//@todo assert uid is a number
+		log.debug("changeOwner:"+uid);
+		try {
+			session.check();
+			FileAttributes attrs = session.SFTP.getAttributes(this.getAbsolute());
+			attrs.setUID(new UnsignedInteger32(uid));
+			session.SFTP.setAttributes(this.getAbsolute(), attrs);
+		}
+		catch(SshException e) {
+			session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+		finally {
+			session.log("Idle", Message.STOP);
+		}
+	}
+	
+	public void changeGroup(String gid, boolean recursive) {
+		//@todo assert gid is a number
+		log.debug("changeGroup:"+gid);
+		try {
+			session.check();
+			FileAttributes attrs = session.SFTP.getAttributes(this.getAbsolute());
+			attrs.setGID(new UnsignedInteger32(gid));
+			session.SFTP.setAttributes(this.getAbsolute(), attrs);
+		}
+		catch(SshException e) {
+			session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+		finally {
+			session.log("Idle", Message.STOP);
+		}
+	}
 
-	//	public void changeOwner(int uid) {
-	//		log.debug("changeOwner:"+uid);
-	//		try {
-	//			session.check();
-	//			FileAttributes attrs = sftp.getAttributes(this.getAbsolute());
-	//			attrs.setUID(new UnsignedInteger32(uid));
-	//			session.SFTP.setAttributes(actual, attrs);
-	//		}
-	//		catch(SshException e) {
-	//			session.log("SSH Error: "+e.getMessage(), Message.ERROR);
-	//		}
-	//		catch(IOException e) {
-	//			session.log("IO Error: "+e.getMessage(), Message.ERROR);
-	//		}
-	//		finally {
-	//			session.log("Idle", Message.STOP);
-	//		}
-	//	}
-
-	//	public void changeGroup(int gid) {
-//		log.debug("changeGroup:"+gid);
-//		try {
-//			session.check();
-//			FileAttributes attrs = sftp.getAttributes(this.getAbsolute());
-//			attrs.setGID(new UnsignedInteger32(gid));
-//			session.SFTP.setAttributes(actual, attrs);
-//		}
-//		catch(SshException e) {
-//			session.log("SSH Error: "+e.getMessage(), Message.ERROR);
-//		}
-//		catch(IOException e) {
-//			session.log("IO Error: "+e.getMessage(), Message.ERROR);
-//		}
-//		finally {
-//			session.log("Idle", Message.STOP);
-//		}
-//	}
-
-	public void changePermissions(int permissions) {
+	public void changePermissions(int permissions, boolean recursive) {
 		log.debug("changePermissions");
 		try {
 			session.check();
@@ -415,7 +419,7 @@ public class SFTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			this.upload(out, in);
-			this.changePermissions(this.getLocal().getPermission().getDecimalCode());
+			this.changePermissions(this.getLocal().getPermission().getDecimalCode(), false);
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);

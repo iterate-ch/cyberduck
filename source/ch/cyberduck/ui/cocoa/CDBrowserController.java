@@ -644,9 +644,14 @@ public class CDBrowserController implements Observer {
 
 	public void infoButtonClicked(Object sender) {
 		log.debug("infoButtonClicked");
-		Path path = (Path) browserModel.getEntry(browserTable.selectedRow());
-		CDInfoController controller = new CDInfoController(path);
-		controller.window().makeKeyAndOrderFront(null);
+		NSEnumerator enum = browserTable.selectedRowEnumerator();
+		while (enum.hasMoreElements()) {
+			int selected = ((Integer) enum.nextElement()).intValue();
+			Path path = browserModel.getEntry(selected);
+			//			Path path = browserModel.getEntry(browserTable.selectedRow());
+			CDInfoController controller = new CDInfoController(path);
+			controller.window().makeKeyAndOrderFront(null);
+		}
 	}
 
 	public void deleteButtonClicked(Object sender) {

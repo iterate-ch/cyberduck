@@ -228,8 +228,7 @@ public class CDMainController {
 	}
 
 	public void preferencesMenuClicked(Object sender) {
-//		CDPreferencesController.instance().window().makeKeyAndOrderFront(null);
-		new CDPreferencesController().window().makeKeyAndOrderFront(null);
+		CDPreferencesController.instance().window().makeKeyAndOrderFront(null);
 	}
 
 	public CDDownloadController newDownloadMenuClicked(Object sender) {

@@ -218,11 +218,12 @@ public class FTPPath extends Path {
 		return new FTPPath(session, this.getAbsolute(), name);
 	}
 
-	public void changePermissions(int permissions) {
+	public void changePermissions(int permissions, boolean recursive) {
 		log.debug("changePermissions:" + permissions);
+		String command = recursive ? "chmod -R" : "chmod";
 		try {
 			session.check();
-			session.FTP.site("chmod " + permissions + " " + this.getAbsolute());
+			session.FTP.site(command+" "+permissions+" "+this.getAbsolute());
 //			session.FTP.site("chmod "+permissions+" \""+this.getAbsolute()+"\"");
 		}
 		catch (FTPException e) {
@@ -236,34 +237,42 @@ public class FTPPath extends Path {
 		}
 	}
 
-	//  public void changeOwner(String owner) {
-	//	log.debug("changeOwner");
-	//	try {
-	//	    session.check();
-	//	    session.FTP.site("chown "+owner+" "+this.getAbsolute());
-	//	}
-	//	catch(FTPException e) {
-	//	    session.log("FTP Error: "+e.getMessage(), Message.ERROR);
-	//	}
-	//	catch(IOException e) {
-	//	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
-	//	}
-	//    }
-
-	//    public void changeGroup(String group) {
-	//	log.debug("changeGroup");
-	//	try {
-	//	    session.check();
-	//	    session.FTP.site("chown :"+group+" "+this.getAbsolute());
-	//	}
-	//	catch(FTPException e) {
-	//	    session.log("FTP Error: "+e.getMessage(), Message.ERROR);
-	//	}
-	//	catch(IOException e) {
-	//	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
-	//	}
-	//  }
-
+	public void changeOwner(String owner, boolean recursive) {
+		log.debug("changeOwner");
+		String command = recursive ? "chown -R" : "chown";
+		try {
+			session.check();
+			session.FTP.site(command+" "+owner+" "+this.getAbsolute());
+		}
+		catch(FTPException e) {
+			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+		finally {
+			session.log("Idle", Message.STOP);
+		}
+	}
+	
+	public void changeGroup(String group, boolean recursive) {
+		log.debug("changeGroup");
+		String command = recursive ? "chgrp -R" : "chgrp";
+		try {
+			session.check();
+			session.FTP.site(command+" "+group+" "+this.getAbsolute());
+		}
+		catch(FTPException e) {
+			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+		finally {
+			session.log("Idle", Message.STOP);
+		}
+	}
+	
 	public void fillQueue(List queue, int kind) {
 		log.debug("fillQueue:" + kind + "," + kind);
 		try {
@@ -387,7 +396,7 @@ public class FTPPath extends Path {
 				}
 				this.upload(out, in);
 				this.session.FTP.validateTransfer();
-				this.changePermissions(this.getLocal().getPermission().getOctalCode());
+				this.changePermissions(this.getLocal().getPermission().getOctalCode(), false);
 			}
 			else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 				this.session.FTP.setTransferType(FTPTransferType.ASCII);
@@ -401,7 +410,7 @@ public class FTPPath extends Path {
 				}
 				this.upload(out, in);
 				this.session.FTP.validateTransfer();
-				this.changePermissions(this.getLocal().getPermission().getOctalCode());
+				this.changePermissions(this.getLocal().getPermission().getOctalCode(), false);
 			}
 			else {
 				throw new FTPException("Transfer mode not set");
