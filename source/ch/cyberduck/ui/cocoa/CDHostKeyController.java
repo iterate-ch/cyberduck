@@ -41,15 +41,10 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
     private NSWindow mainWindow;
 
     public CDHostKeyController(NSWindow mainWindow) throws InvalidHostFileException {
-	super(CDPreferencesImpl.instance().getProperty("sshtools.home"));
+	super(System.getProperty("user.home")+"/.ssh/known_hosts");
+//	super(CDPreferencesImpl.instance().getProperty("sshtools.home"));
 	this.mainWindow = mainWindow;
     }
-
-//    public CDHostKeyController(NSWindow mainWindow, String hostFile) throws InvalidHostFileException {
-//	super(hostFile);
-//	this.mainWindow = mainWindow;
-  //  }
-    
 
 //    public void onDeniedHost(String hostname) {
 //	log.info("onDeniedHost");
@@ -123,7 +118,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 	this.host = host;
 	this.publicKey = publicKey;
 	NSAlertPanel.beginInformationalAlertSheet(
-					   "Unknown host", //title
+					   "Unknown host key", //title
 					   "Allow",// defaultbutton
 					   "Deny",//alternative button
 					   isHostFileWriteable() ? "Always" : null,//other button

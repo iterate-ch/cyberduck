@@ -83,11 +83,13 @@
 		    <include name="*.jar" />
 		</fileset>
 	    </copy>
+	    <!--
 	    <copy todir="${app.config}">
 		<fileset dir="${config}">
 		    <include name="*.xml"/>
 		</fileset>
 	    </copy>
+	    -->
 	</target>
 
 	<target name="all-modules" depends="core,ftp,http,cocoa,swing"></target>

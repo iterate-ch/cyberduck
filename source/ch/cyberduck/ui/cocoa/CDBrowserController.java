@@ -63,7 +63,7 @@ public class CDBrowserController implements Observer {
     public void setBrowserTable(NSTableView browserTable) {
 	this.browserTable = browserTable;
 	this.browserTable.setDataSource(browserModel = new CDBrowserTableDataSource());
-	this.browserTable.setDelegate(this);
+	this.browserTable.setDelegate(new BrowserTableDelegate());
 	this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
 	this.browserTable.setTarget(this);
 	this.browserTable.setDrawsGrid(false);
@@ -77,7 +77,7 @@ public class CDBrowserController implements Observer {
     public void setFavoritesTable(NSTableView favoritesTable) {
 	this.favoritesTable = favoritesTable;
 	this.favoritesTable.setDataSource(CDFavoritesImpl.instance());
-//	this.favoritesTable.setDelegate(this);
+//@todo	this.favoritesTable.setDelegate(new FavoritesTableDelegate());
 	this.favoritesTable.setTarget(this);
 	this.favoritesTable.setDrawsGrid(false);
 	this.favoritesTable.setAutoresizesAllColumnsToFit(true);
@@ -234,10 +234,6 @@ public class CDBrowserController implements Observer {
 	    this.mount(host);
 	}
     }
-    
-    // ----------------------------------------------------------
-    // BrowserTable delegate methods
-    // ----------------------------------------------------------
 
     public void browserTableViewDidClickTableRow(Object sender) {
 	log.debug("browserTableViewDidClickTableRow");
@@ -251,139 +247,185 @@ public class CDBrowserController implements Observer {
 	}
     }
 
-    public void tableViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
-	log.debug("tableViewDidClickTableColumn");
-	String identifier = (String)tableColumn.identifier();
-	NSArray columns = tableView.tableColumns();
-	java.util.Enumeration enumerator = columns.objectEnumerator();
-	while (enumerator.hasMoreElements()) {
-	    NSTableColumn c = (NSTableColumn)enumerator.nextElement();
-	    if(c.identifier()!=identifier)
-		tableView.setIndicatorImage(null, c);
-	}
+    private static final NSColor TABLE_CELL_SHADED_COLOR = NSColor.colorWithCalibratedRGB(0.929f, 0.953f, 0.996f, 1.0f);
+
+    // ----------------------------------------------------------
+    // BrowserTable delegate methods
+    // ----------------------------------------------------------
+
+    private class BrowserTableDelegate {
+
+	public void tableViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
+	    log.debug("tableViewDidClickTableColumn");
+	    String identifier = (String)tableColumn.identifier();
+	    NSArray columns = tableView.tableColumns();
+	    java.util.Enumeration enumerator = columns.objectEnumerator();
+	    while (enumerator.hasMoreElements()) {
+		NSTableColumn c = (NSTableColumn)enumerator.nextElement();
+		if(c.identifier()!=identifier)
+		    tableView.setIndicatorImage(null, c);
+	    }
 	//@todo desscending
 //	if(tableView.indicatorImage(tableColumn) != null && tableView.indicatorImage(tableColumn).name().equals("NSAscendingSortIndicator")) {
 //	    tableView.setIndicatorImage(NSImage.imageNamed("NSDescendingSortIndicator"), tableColumn);
 //	    a = false;
 //	}
 //	else {
-	tableView.setIndicatorImage(NSImage.imageNamed("NSAscendingSortIndicator"), tableColumn);
+	    tableView.setIndicatorImage(NSImage.imageNamed("NSAscendingSortIndicator"), tableColumn);
 //	}
-	final boolean ascending = true;
-	final int higher = ascending ? 1 : -1 ;
-	final int lower = ascending ? -1 : 1;
-	if(tableColumn.identifier().equals("TYPE")) {
-	    Collections.sort(browserModel.list(),
-		      new Comparator() {
-			  public int compare(Object o1, Object o2) {
-			      Path p1 = (Path) o1;
-			      Path p2 = (Path) o2;
-			      if(p1.isDirectory() && p2.isDirectory())
-				  return 0;
-			      if(p1.isFile() && p2.isFile())
-				  return 0;
-			      if(p1.isFile())
-				  return higher;
-			      return lower;
-			  }
-		      }
-		      );
+	    final boolean ascending = true;
+	    final int higher = ascending ? 1 : -1 ;
+	    final int lower = ascending ? -1 : 1;
+	    if(tableColumn.identifier().equals("TYPE")) {
+		Collections.sort(browserModel.list(),
+		   new Comparator() {
+		       public int compare(Object o1, Object o2) {
+			   Path p1 = (Path) o1;
+			   Path p2 = (Path) o2;
+			   if(p1.isDirectory() && p2.isDirectory())
+			       return 0;
+			   if(p1.isFile() && p2.isFile())
+			       return 0;
+			   if(p1.isFile())
+			       return higher;
+			   return lower;
+		       }
+		   }
+		   );
+	    }
+	    else if(tableColumn.identifier().equals("FILENAME")) {
+		Collections.sort(browserModel.list(),
+		   new Comparator() {
+		       public int compare(Object o1, Object o2) {
+			   Path p1 = (Path)o1;
+			   Path p2 = (Path)o2;
+			   if(ascending) {
+			       return p1.getName().compareToIgnoreCase(p2.getName());
+			   }
+			   else {
+			       return -p1.getName().compareToIgnoreCase(p2.getName());
+			   }
+		       }
+		   }
+		   );
+	    }
+	    else if(tableColumn.identifier().equals("SIZE")) {
+		Collections.sort(browserModel.list(),
+		   new Comparator() {
+		       public int compare(Object o1, Object o2) {
+			   int p1 = ((Path)o1).status.getSize();
+			   int p2 = ((Path)o2).status.getSize();
+			   if (p1 > p2) {
+			       return lower;
+			   }
+			   else if (p1 < p2) {
+			       return higher;
+			   }
+			   else if (p1 == p2) {
+			       return 0;
+			   }
+			   return 0;
+		       }
+		   }
+		   );
+	    }
+	    else if(tableColumn.identifier().equals("MODIFIED")) {
+		Collections.sort(browserModel.list(),
+		   new Comparator() {
+		       public int compare(Object o1, Object o2) {
+			   Path p1 = (Path) o1;
+			   Path p2 = (Path) o2;
+			   return p1.attributes.getModified().compareToIgnoreCase(p2.attributes.getModified());
+		       }
+		   }
+		   );
+	    }
+	    else if(tableColumn.identifier().equals("OWNER")) {
+		Collections.sort(browserModel.list(),
+		   new Comparator() {
+		       public int compare(Object o1, Object o2) {
+			   Path p1 = (Path) o1;
+			   Path p2 = (Path) o2;
+			   return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
+		       }
+		   }
+		   );
+	    }
+	    browserTable.reloadData();
 	}
-	else if(tableColumn.identifier().equals("FILENAME")) {
-	    Collections.sort(browserModel.list(),
-		      new Comparator() {
-			  public int compare(Object o1, Object o2) {
-			      Path p1 = (Path)o1;
-			      Path p2 = (Path)o2;
-			      if(ascending) {
-				  return p1.getName().compareToIgnoreCase(p2.getName());
-			      }
-			      else {
-				  return -p1.getName().compareToIgnoreCase(p2.getName());
-			      }
-			  }
-		      }
-		      );
-	}
-	else if(tableColumn.identifier().equals("SIZE")) {
-	    Collections.sort(browserModel.list(),
-				new Comparator() {
-				    public int compare(Object o1, Object o2) {
-					int p1 = ((Path)o1).status.getSize();
-					int p2 = ((Path)o2).status.getSize();
-					if (p1 > p2) {
-					    return lower;
-					}
-					else if (p1 < p2) {
-					    return higher;
-					}
-					else if (p1 == p2) {
-					    return 0;
-					}
-					return 0;
-				    }
-				}
-				);
-	}
-	else if(tableColumn.identifier().equals("MODIFIED")) {
-	    Collections.sort(browserModel.list(),
-		      new Comparator() {
-			  public int compare(Object o1, Object o2) {
-			      Path p1 = (Path) o1;
-			      Path p2 = (Path) o2;
-			      return p1.attributes.getModified().compareToIgnoreCase(p2.attributes.getModified());
-			  }
-		      }
-		      );
-	}
-	else if(tableColumn.identifier().equals("OWNER")) {
-	    Collections.sort(browserModel.list(),
-		      new Comparator() {
-			  public int compare(Object o1, Object o2) {
-			      Path p1 = (Path) o1;
-			      Path p2 = (Path) o2;
-			      return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
-			  }
-		      }
-		      );
-	}
-	browserTable.reloadData();
-    }
 
-
-    private static final NSColor TABLE_CELL_SHADED_COLOR = NSColor.colorWithCalibratedRGB(0.929f, 0.953f, 0.996f, 1.0f);
-
-    public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
-	if(cell instanceof NSTextFieldCell) {
-	    if (! (view == null || cell == null || column == null)) {
-		if (row % 2 == 0) {
-		    ((NSTextFieldCell)cell).setDrawsBackground(true);
-		    ((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
+	public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
+	    if(cell instanceof NSTextFieldCell) {
+		if (! (view == null || cell == null || column == null)) {
+		    if (row % 2 == 0) {
+			((NSTextFieldCell)cell).setDrawsBackground(true);
+			((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
+		    }
+		    else
+			((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
 		}
-		else
-		    ((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
 	    }
 	}
-    }
 
-    /**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
-	* The delegate can implement this method to disallow selection of particular rows.
-	*/
-    public  boolean tableViewShouldSelectRow( NSTableView aTableView, int rowIndex) {
-	return true;
-    }
+	/**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
+	    * The delegate can implement this method to disallow selection of particular rows.
+	    */
+	public  boolean tableViewShouldSelectRow( NSTableView aTableView, int rowIndex) {
+	    return true;
+	}
 
 
-    /**	Returns true to permit aTableView to edit the cell at rowIndex in aTableColumn, false to deny permission.
-	*The delegate can implemen this method to disallow editing of specific cells.
-	*/
-    public boolean tableViewShouldEditLocation( NSTableView view, NSTableColumn tableColumn, int row) {
-        String identifier = (String)tableColumn.identifier();
+	/**	Returns true to permit aTableView to edit the cell at rowIndex in aTableColumn, false to deny permission.
+	    *The delegate can implemen this method to disallow editing of specific cells.
+	    */
+	public boolean tableViewShouldEditLocation( NSTableView view, NSTableColumn tableColumn, int row) {
+//        String identifier = (String)tableColumn.identifier();
 //	if(identifier.equals("FILENAME"))
 //	    return true;
-	return false;
+	    return false;
+	}
     }
 
+
+    // ----------------------------------------------------------
+    // FavoritesTable delegate methods
+    // ----------------------------------------------------------
+
+    private class FavoritesTableDelegate {
+
+	public void tableViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
+	    log.debug("tableViewDidClickTableColumn");
+	}
+
+	public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
+	    if(cell instanceof NSTextFieldCell) {
+		if (! (view == null || cell == null || column == null)) {
+		    if (row % 2 == 0) {
+			((NSTextFieldCell)cell).setDrawsBackground(true);
+			((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
+		    }
+		    else
+			((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
+		}
+	    }
+	}
+
+	/**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
+	    * The delegate can implement this method to disallow selection of particular rows.
+	    */
+	public  boolean tableViewShouldSelectRow( NSTableView aTableView, int rowIndex) {
+	    return true;
+	}
+
+
+	/**	Returns true to permit aTableView to edit the cell at rowIndex in aTableColumn, false to deny permission.
+	    *The delegate can implemen this method to disallow editing of specific cells.
+	    */
+	public boolean tableViewShouldEditLocation( NSTableView view, NSTableColumn tableColumn, int row) {
+	    return true;
+	}
+    }
+    
 
     // ----------------------------------------------------------
     // 

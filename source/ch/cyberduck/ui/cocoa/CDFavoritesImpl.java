@@ -114,6 +114,5 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
 	log.debug("tableViewSetObjectValueForLocation:"+row);
 	Host h = (Host)this.values().toArray()[row];
 	h.setURL((String)value);
-	this.addItem(h);
     }
 }
