@@ -34,29 +34,29 @@ import java.util.EventListener;
  * @version $Revision$
  */
 public interface ForwardingConfigurationListener extends EventListener {
-    /**
-     * @param channel
-     */
-    public void opened(ForwardingConfiguration forward,
-                       ForwardingChannel channel);
+	/**
+	 * @param channel
+	 */
+	public void opened(ForwardingConfiguration forward,
+	                   ForwardingChannel channel);
 
-    /**
-     * @param channel
-     */
-    public void closed(ForwardingConfiguration forward,
-                       ForwardingChannel channel);
+	/**
+	 * @param channel
+	 */
+	public void closed(ForwardingConfiguration forward,
+	                   ForwardingChannel channel);
 
-    /**
-     * @param channel
-     * @param bytes
-     */
-    public void dataReceived(ForwardingConfiguration forward,
-                             ForwardingChannel channel, int bytes);
+	/**
+	 * @param channel
+	 * @param bytes
+	 */
+	public void dataReceived(ForwardingConfiguration forward,
+	                         ForwardingChannel channel, int bytes);
 
-    /**
-     * @param channel
-     * @param bytes
-     */
-    public void dataSent(ForwardingConfiguration forward,
-                         ForwardingChannel channel, int bytes);
+	/**
+	 * @param channel
+	 * @param bytes
+	 */
+	public void dataSent(ForwardingConfiguration forward,
+	                     ForwardingChannel channel, int bytes);
 }

@@ -32,11 +32,11 @@ package com.sshtools.j2ssh.connection;
  * @version $Revision$
  */
 public interface GlobalRequestHandler {
-    /**
-     * @param requestName
-     * @param requestData
-     * @return
-     */
-    public GlobalRequestResponse processGlobalRequest(String requestName,
-                                                      byte[] requestData);
+	/**
+	 * @param requestName
+	 * @param requestData
+	 * @return
+	 */
+	public GlobalRequestResponse processGlobalRequest(String requestName,
+	                                                  byte[] requestData);
 }

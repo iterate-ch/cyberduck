@@ -37,82 +37,82 @@ import com.sshtools.j2ssh.io.UnsignedInteger64;
  * @version $Revision$
  */
 public class SftpFileInputStream extends InputStream {
-    private SftpFile file;
-    private UnsignedInteger64 position = new UnsignedInteger64("0");
+	private SftpFile file;
+	private UnsignedInteger64 position = new UnsignedInteger64("0");
 
-    /**
-     * Creates a new SftpFileInputStream object.
-     *
-     * @param file
-     * @throws IOException
-     */
-    public SftpFileInputStream(SftpFile file) throws IOException {
-        if (file.getHandle() == null) {
-            throw new IOException("The file does not have a valid handle!");
-        }
+	/**
+	 * Creates a new SftpFileInputStream object.
+	 *
+	 * @param file
+	 * @throws IOException
+	 */
+	public SftpFileInputStream(SftpFile file) throws IOException {
+		if(file.getHandle() == null) {
+			throw new IOException("The file does not have a valid handle!");
+		}
 
-        if (file.getSFTPSubsystem() == null) {
-            throw new IOException("The file is not attached to an SFTP subsystem!");
-        }
+		if(file.getSFTPSubsystem() == null) {
+			throw new IOException("The file is not attached to an SFTP subsystem!");
+		}
 
-        this.file = file;
-    }
+		this.file = file;
+	}
 
-    /**
-     * @param buffer
-     * @param offset
-     * @param len
-     * @return
-     * @throws IOException
-     */
-    public int read(byte[] buffer, int offset, int len)
-            throws IOException {
-        int read = file.getSFTPSubsystem().readFile(file.getHandle(), position,
-                buffer, offset, len);
+	/**
+	 * @param buffer
+	 * @param offset
+	 * @param len
+	 * @return
+	 * @throws IOException
+	 */
+	public int read(byte[] buffer, int offset, int len)
+	    throws IOException {
+		int read = file.getSFTPSubsystem().readFile(file.getHandle(), position,
+		    buffer, offset, len);
 
-        if (read > 0) {
-            position = UnsignedInteger64.add(position, read);
-        }
+		if(read > 0) {
+			position = UnsignedInteger64.add(position, read);
+		}
 
-        return read;
-    }
+		return read;
+	}
 
-    /**
-     * @return
-     * @throws java.io.IOException
-     */
-    public int read() throws java.io.IOException {
-        byte[] buffer = new byte[1];
-        int read = file.getSFTPSubsystem().readFile(file.getHandle(), position,
-                buffer, 0, 1);
-        position = UnsignedInteger64.add(position, read);
+	/**
+	 * @return
+	 * @throws java.io.IOException
+	 */
+	public int read() throws java.io.IOException {
+		byte[] buffer = new byte[1];
+		int read = file.getSFTPSubsystem().readFile(file.getHandle(), position,
+		    buffer, 0, 1);
+		position = UnsignedInteger64.add(position, read);
 
-        return buffer[0] & 0xFF;
-    }
+		return buffer[0] & 0xFF;
+	}
 
-    /*
-     * The skip method of InputStream creates a  byte array and then repeatedly reads into
-     * it until n bytes have been read or the end of the stream has been reached.
-     * Subclasses are  encouraged to provide a more efficient implementation of this method.
-     */
-    public long skip(long n) {
-        position = position.add(position, (int)n);
-        return n;
-    }
+	/*
+	 * The skip method of InputStream creates a  byte array and then repeatedly reads into
+	 * it until n bytes have been read or the end of the stream has been reached.
+	 * Subclasses are  encouraged to provide a more efficient implementation of this method.
+	 */
+	public long skip(long n) {
+		position = position.add(position, (int)n);
+		return n;
+	}
 
-    /**
-     * @throws IOException
-     */
-    public void close() throws IOException {
-        file.close();
-    }
+	/**
+	 * @throws IOException
+	 */
+	public void close() throws IOException {
+		file.close();
+	}
 
-    /**
-     * @throws IOException
-     */
-    protected void finalize() throws IOException {
-        if (file.getHandle() != null) {
-            close();
-        }
-    }
+	/**
+	 * @throws IOException
+	 */
+	protected void finalize() throws IOException {
+		if(file.getHandle() != null) {
+			close();
+		}
+	}
 }

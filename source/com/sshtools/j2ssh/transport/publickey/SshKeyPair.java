@@ -32,80 +32,80 @@ package com.sshtools.j2ssh.transport.publickey;
  * @version $Revision$
  */
 public abstract class SshKeyPair {
-    private SshPrivateKey prv;
-    private SshPublicKey pub;
+	private SshPrivateKey prv;
+	private SshPublicKey pub;
 
-    /**
-     * Creates a new SshKeyPair object.
-     */
-    public SshKeyPair() {
-    }
+	/**
+	 * Creates a new SshKeyPair object.
+	 */
+	public SshKeyPair() {
+	}
 
-    /**
-     * @param bits
-     */
-    public abstract void generate(int bits);
+	/**
+	 * @param bits
+	 */
+	public abstract void generate(int bits);
 
-    /**
-     * @param key
-     */
-    public void setPrivateKey(SshPrivateKey key) {
-        this.prv = key;
-        this.pub = key.getPublicKey();
-    }
+	/**
+	 * @param key
+	 */
+	public void setPrivateKey(SshPrivateKey key) {
+		this.prv = key;
+		this.pub = key.getPublicKey();
+	}
 
-    /**
-     * @param encoded
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public SshPrivateKey setPrivateKey(byte[] encoded)
-            throws InvalidSshKeyException {
-        setPrivateKey(decodePrivateKey(encoded));
+	/**
+	 * @param encoded
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public SshPrivateKey setPrivateKey(byte[] encoded)
+	    throws InvalidSshKeyException {
+		setPrivateKey(decodePrivateKey(encoded));
 
-        return this.prv;
-    }
+		return this.prv;
+	}
 
-    /**
-     * @return
-     */
-    public SshPrivateKey getPrivateKey() {
-        return prv;
-    }
+	/**
+	 * @return
+	 */
+	public SshPrivateKey getPrivateKey() {
+		return prv;
+	}
 
-    /**
-     * @param encoded
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public SshPublicKey setPublicKey(byte[] encoded)
-            throws InvalidSshKeyException {
-        this.pub = decodePublicKey(encoded);
-        this.prv = null;
+	/**
+	 * @param encoded
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public SshPublicKey setPublicKey(byte[] encoded)
+	    throws InvalidSshKeyException {
+		this.pub = decodePublicKey(encoded);
+		this.prv = null;
 
-        return this.pub;
-    }
+		return this.pub;
+	}
 
-    /**
-     * @return
-     */
-    public SshPublicKey getPublicKey() {
-        return pub;
-    }
+	/**
+	 * @return
+	 */
+	public SshPublicKey getPublicKey() {
+		return pub;
+	}
 
-    /**
-     * @param encoded
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public abstract SshPrivateKey decodePrivateKey(byte[] encoded)
-            throws InvalidSshKeyException;
+	/**
+	 * @param encoded
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public abstract SshPrivateKey decodePrivateKey(byte[] encoded)
+	    throws InvalidSshKeyException;
 
-    /**
-     * @param encoded
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public abstract SshPublicKey decodePublicKey(byte[] encoded)
-            throws InvalidSshKeyException;
+	/**
+	 * @param encoded
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public abstract SshPublicKey decodePublicKey(byte[] encoded)
+	    throws InvalidSshKeyException;
 }

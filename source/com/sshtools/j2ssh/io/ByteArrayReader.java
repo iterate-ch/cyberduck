@@ -37,117 +37,117 @@ import ch.cyberduck.core.Codec;
  * @version $Revision$
  */
 public class ByteArrayReader extends ByteArrayInputStream {
-	
+
 	private String encoding;
-	
-    /**
-     * Creates a new ByteArrayReader object.
-     *
-     * @param data
-     */
-    public ByteArrayReader(byte[] data) {
-        super(data);
-    }
+
+	/**
+	 * Creates a new ByteArrayReader object.
+	 *
+	 * @param data
+	 */
+	public ByteArrayReader(byte[] data) {
+		super(data);
+	}
 
 	public ByteArrayReader(byte[] data, String encoding) {
-        super(data);
+		super(data);
 		this.encoding = encoding;
-    }
-	
-    /**
-     * @param data
-     * @param start
-     * @return
-     */
-    public static long readInt(byte[] data, int start) {
-        long ret = (((long)(data[start] & 0xFF) << 24) & 0xFFFFFFFF) |
-                ((data[start + 1] & 0xFF) << 16) | ((data[start + 2] & 0xFF) << 8) |
-                ((data[start + 3] & 0xFF) << 0);
+	}
 
-        return ret;
-    }
+	/**
+	 * @param data
+	 * @param start
+	 * @return
+	 */
+	public static long readInt(byte[] data, int start) {
+		long ret = (((long)(data[start] & 0xFF)<<24) & 0xFFFFFFFF) |
+		    ((data[start+1] & 0xFF)<<16) | ((data[start+2] & 0xFF)<<8) |
+		    ((data[start+3] & 0xFF)<<0);
 
-    /**
-     * @return
-     * @throws IOException
-     */
-    public long readInt() throws IOException {
-        byte[] raw = new byte[4];
-        read(raw);
+		return ret;
+	}
 
-        long ret = (((long)(raw[0] & 0xFF) << 24) & 0xFFFFFFFF) |
-                ((raw[1] & 0xFF) << 16) | ((raw[2] & 0xFF) << 8) | (raw[3] & 0xFF);
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	public long readInt() throws IOException {
+		byte[] raw = new byte[4];
+		read(raw);
 
-        return ret;
-    }
+		long ret = (((long)(raw[0] & 0xFF)<<24) & 0xFFFFFFFF) |
+		    ((raw[1] & 0xFF)<<16) | ((raw[2] & 0xFF)<<8) | (raw[3] & 0xFF);
 
-    /**
-     * @return
-     * @throws IOException
-     */
-    public UnsignedInteger32 readUINT32() throws IOException {
-        return new UnsignedInteger32(readInt());
-    }
+		return ret;
+	}
 
-    /**
-     * @return
-     * @throws IOException
-     */
-    public UnsignedInteger64 readUINT64() throws IOException {
-        byte[] raw = new byte[8];
-        read(raw);
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	public UnsignedInteger32 readUINT32() throws IOException {
+		return new UnsignedInteger32(readInt());
+	}
 
-        return new UnsignedInteger64(raw);
-    }
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	public UnsignedInteger64 readUINT64() throws IOException {
+		byte[] raw = new byte[8];
+		read(raw);
 
-    /**
-     * @return
-     * @throws IOException
-     */
-    public BigInteger readBigInteger() throws IOException {
-        int len = (int)readInt();
-        byte[] raw = new byte[len];
-        read(raw);
+		return new UnsignedInteger64(raw);
+	}
 
-        return new BigInteger(raw);
-    }
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	public BigInteger readBigInteger() throws IOException {
+		int len = (int)readInt();
+		byte[] raw = new byte[len];
+		read(raw);
 
-    /**
-     * @return
-     * @throws IOException
-     */
-    public byte[] readBinaryString() throws IOException {
-        long len = readInt();
-        byte[] raw = new byte[(int)len];
-        read(raw);
+		return new BigInteger(raw);
+	}
 
-        return raw;
-    }
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	public byte[] readBinaryString() throws IOException {
+		long len = readInt();
+		byte[] raw = new byte[(int)len];
+		read(raw);
 
-    /**
-     * @param data
-     * @param start
-     * @return
-     */
-    public static String readString(byte[] data, int start) {
-        int len = (int)readInt(data, start);
-        byte[] chars = new byte[(int)len];
-        System.arraycopy(data, start + 4, chars, 0, len);
+		return raw;
+	}
+
+	/**
+	 * @param data
+	 * @param start
+	 * @return
+	 */
+	public static String readString(byte[] data, int start) {
+		int len = (int)readInt(data, start);
+		byte[] chars = new byte[(int)len];
+		System.arraycopy(data, start+4, chars, 0, len);
 
 		return Codec.decode(chars);
 //        return new String(chars);
-    }
+	}
 
-    /**
-     * @return
-     * @throws IOException
-     */
-    public String readString() throws IOException {
-        long len = readInt();
-        byte[] raw = new byte[(int)len];
-        read(raw);
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	public String readString() throws IOException {
+		long len = readInt();
+		byte[] raw = new byte[(int)len];
+		read(raw);
 
 		return Codec.decode(raw);
 //        return new String(raw);
-    }
+	}
 }

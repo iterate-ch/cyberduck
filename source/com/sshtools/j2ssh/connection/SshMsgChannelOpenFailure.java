@@ -39,115 +39,115 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class SshMsgChannelOpenFailure extends SshMessage {
-    /**  */
-    protected final static int SSH_MSG_CHANNEL_OPEN_FAILURE = 92;
+	/**  */
+	protected final static int SSH_MSG_CHANNEL_OPEN_FAILURE = 92;
 
-    /**  */
-    protected final static long SSH_OPEN_ADMINISTRATIVELY_PROHIBITED = 1;
+	/**  */
+	protected final static long SSH_OPEN_ADMINISTRATIVELY_PROHIBITED = 1;
 
-    /**  */
-    protected final static long SSH_OPEN_CONNECT_FAILED = 2;
+	/**  */
+	protected final static long SSH_OPEN_CONNECT_FAILED = 2;
 
-    /**  */
-    protected final static long SSH_OPEN_UNKNOWN_CHANNEL_TYPE = 3;
+	/**  */
+	protected final static long SSH_OPEN_UNKNOWN_CHANNEL_TYPE = 3;
 
-    /**  */
-    protected final static long SSH_OPEN_RESOURCE_SHORTAGE = 4;
-    private String additional;
-    private String languageTag;
-    private long reasonCode;
-    private long recipientChannel;
+	/**  */
+	protected final static long SSH_OPEN_RESOURCE_SHORTAGE = 4;
+	private String additional;
+	private String languageTag;
+	private long reasonCode;
+	private long recipientChannel;
 
-    /**
-     * Creates a new SshMsgChannelOpenFailure object.
-     *
-     * @param recipientChannel
-     * @param reasonCode
-     * @param additional
-     * @param languageTag
-     */
-    public SshMsgChannelOpenFailure(long recipientChannel, long reasonCode,
-                                    String additional, String languageTag) {
-        super(SSH_MSG_CHANNEL_OPEN_FAILURE);
-        this.recipientChannel = recipientChannel;
-        this.reasonCode = reasonCode;
-        this.additional = additional;
-        this.languageTag = languageTag;
-    }
+	/**
+	 * Creates a new SshMsgChannelOpenFailure object.
+	 *
+	 * @param recipientChannel
+	 * @param reasonCode
+	 * @param additional
+	 * @param languageTag
+	 */
+	public SshMsgChannelOpenFailure(long recipientChannel, long reasonCode,
+	                                String additional, String languageTag) {
+		super(SSH_MSG_CHANNEL_OPEN_FAILURE);
+		this.recipientChannel = recipientChannel;
+		this.reasonCode = reasonCode;
+		this.additional = additional;
+		this.languageTag = languageTag;
+	}
 
-    /**
-     * Creates a new SshMsgChannelOpenFailure object.
-     */
-    public SshMsgChannelOpenFailure() {
-        super(SSH_MSG_CHANNEL_OPEN_FAILURE);
-    }
+	/**
+	 * Creates a new SshMsgChannelOpenFailure object.
+	 */
+	public SshMsgChannelOpenFailure() {
+		super(SSH_MSG_CHANNEL_OPEN_FAILURE);
+	}
 
-    /**
-     * @return
-     */
-    public String getAdditionalText() {
-        return additional;
-    }
+	/**
+	 * @return
+	 */
+	public String getAdditionalText() {
+		return additional;
+	}
 
-    /**
-     * @return
-     */
-    public String getLanguageTag() {
-        return languageTag;
-    }
+	/**
+	 * @return
+	 */
+	public String getLanguageTag() {
+		return languageTag;
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_MSG_CHANNEL_OPEN_FAILURE";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_MSG_CHANNEL_OPEN_FAILURE";
+	}
 
-    /**
-     * @return
-     */
-    public long getReasonCode() {
-        return reasonCode;
-    }
+	/**
+	 * @return
+	 */
+	public long getReasonCode() {
+		return reasonCode;
+	}
 
-    /**
-     * @return
-     */
-    public long getRecipientChannel() {
-        return recipientChannel;
-    }
+	/**
+	 * @return
+	 */
+	public long getRecipientChannel() {
+		return recipientChannel;
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     */
-    protected void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException {
-        try {
-            baw.writeInt(recipientChannel);
-            baw.writeInt(reasonCode);
-            baw.writeString(additional);
-            baw.writeString(languageTag);
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 */
+	protected void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException {
+		try {
+			baw.writeInt(recipientChannel);
+			baw.writeInt(reasonCode);
+			baw.writeString(additional);
+			baw.writeString(languageTag);
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     */
-    protected void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException {
-        try {
-            recipientChannel = bar.readInt();
-            reasonCode = bar.readInt();
-            additional = bar.readString();
-            languageTag = bar.readString();
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 */
+	protected void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException {
+		try {
+			recipientChannel = bar.readInt();
+			reasonCode = bar.readInt();
+			additional = bar.readString();
+			languageTag = bar.readString();
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 }

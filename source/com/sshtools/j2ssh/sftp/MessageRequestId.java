@@ -30,8 +30,8 @@ import com.sshtools.j2ssh.io.UnsignedInteger32;
 
 
 interface MessageRequestId {
-    /**
-     * @return
-     */
-    public UnsignedInteger32 getId();
+	/**
+	 * @return
+	 */
+	public UnsignedInteger32 getId();
 }

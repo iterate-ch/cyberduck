@@ -32,15 +32,15 @@ package com.sshtools.j2ssh.session;
  * @version $Revision$
  */
 public interface SignalListener {
-    /**
-     * @param signal
-     */
-    public void onSignal(String signal);
+	/**
+	 * @param signal
+	 */
+	public void onSignal(String signal);
 
-    /**
-     * @param signal
-     * @param coredump
-     * @param message
-     */
-    public void onExitSignal(String signal, boolean coredump, String message);
+	/**
+	 * @param signal
+	 * @param coredump
+	 * @param message
+	 */
+	public void onExitSignal(String signal, boolean coredump, String message);
 }

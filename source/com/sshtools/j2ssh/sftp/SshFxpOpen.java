@@ -39,106 +39,106 @@ import com.sshtools.j2ssh.transport.InvalidMessageException;
  * @version $Revision$
  */
 public class SshFxpOpen extends SubsystemMessage implements MessageRequestId {
-    /**  */
-    public static final int SSH_FXP_OPEN = 3;
+	/**  */
+	public static final int SSH_FXP_OPEN = 3;
 
-    /**  */
-    public static final int FXF_READ = 0x00000001;
+	/**  */
+	public static final int FXF_READ = 0x00000001;
 
-    /**  */
-    public static final int FXF_WRITE = 0x00000002;
+	/**  */
+	public static final int FXF_WRITE = 0x00000002;
 
-    /**  */
-    public static final int FXF_APPEND = 0x00000004;
+	/**  */
+	public static final int FXF_APPEND = 0x00000004;
 
-    /**  */
-    public static final int FXF_CREAT = 0x00000008;
+	/**  */
+	public static final int FXF_CREAT = 0x00000008;
 
-    /**  */
-    public static final int FXF_TRUNC = 0x00000010;
+	/**  */
+	public static final int FXF_TRUNC = 0x00000010;
 
-    /**  */
-    public static final int FXF_EXCL = 0x00000020;
-    private UnsignedInteger32 id;
-    private String filename;
-    private UnsignedInteger32 pflags;
-    private FileAttributes attrs;
+	/**  */
+	public static final int FXF_EXCL = 0x00000020;
+	private UnsignedInteger32 id;
+	private String filename;
+	private UnsignedInteger32 pflags;
+	private FileAttributes attrs;
 
-    //public static final int FXF_TEXT = 0x00000040;
-    public SshFxpOpen(UnsignedInteger32 id, String filename,
-                      UnsignedInteger32 pflags, FileAttributes attrs) {
-        super(SSH_FXP_OPEN);
-        this.id = id;
-        this.filename = filename;
-        this.pflags = pflags;
-        this.attrs = attrs;
-    }
+	//public static final int FXF_TEXT = 0x00000040;
+	public SshFxpOpen(UnsignedInteger32 id, String filename,
+	                  UnsignedInteger32 pflags, FileAttributes attrs) {
+		super(SSH_FXP_OPEN);
+		this.id = id;
+		this.filename = filename;
+		this.pflags = pflags;
+		this.attrs = attrs;
+	}
 
-    /**
-     * Creates a new SshFxpOpen object.
-     */
-    public SshFxpOpen() {
-        super(SSH_FXP_OPEN);
-    }
+	/**
+	 * Creates a new SshFxpOpen object.
+	 */
+	public SshFxpOpen() {
+		super(SSH_FXP_OPEN);
+	}
 
-    /**
-     * @return
-     */
-    public UnsignedInteger32 getId() {
-        return id;
-    }
+	/**
+	 * @return
+	 */
+	public UnsignedInteger32 getId() {
+		return id;
+	}
 
-    /**
-     * @return
-     */
-    public String getFilename() {
-        return filename;
-    }
+	/**
+	 * @return
+	 */
+	public String getFilename() {
+		return filename;
+	}
 
-    /**
-     * @return
-     */
-    public UnsignedInteger32 getPflags() {
-        return pflags;
-    }
+	/**
+	 * @return
+	 */
+	public UnsignedInteger32 getPflags() {
+		return pflags;
+	}
 
-    /**
-     * @return
-     */
-    public FileAttributes getAttributes() {
-        return attrs;
-    }
+	/**
+	 * @return
+	 */
+	public FileAttributes getAttributes() {
+		return attrs;
+	}
 
-    /**
-     * @param bar
-     * @throws IOException
-     * @throws InvalidMessageException
-     */
-    public void constructMessage(ByteArrayReader bar)
-            throws IOException, InvalidMessageException {
-        id = bar.readUINT32();
-        filename = bar.readString();
-        pflags = bar.readUINT32();
-        attrs = new FileAttributes(bar);
-    }
+	/**
+	 * @param bar
+	 * @throws IOException
+	 * @throws InvalidMessageException
+	 */
+	public void constructMessage(ByteArrayReader bar)
+	    throws IOException, InvalidMessageException {
+		id = bar.readUINT32();
+		filename = bar.readString();
+		pflags = bar.readUINT32();
+		attrs = new FileAttributes(bar);
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_FXP_OPEN";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_FXP_OPEN";
+	}
 
-    /**
-     * @param baw
-     * @throws IOException
-     * @throws InvalidMessageException
-     */
-    public void constructByteArray(ByteArrayWriter baw)
-            throws IOException, InvalidMessageException {
-        baw.writeUINT32(id);
-        baw.writeString(filename);
-        baw.writeUINT32(pflags);
-        baw.writeBinaryString(attrs.toByteArray());
-    }
+	/**
+	 * @param baw
+	 * @throws IOException
+	 * @throws InvalidMessageException
+	 */
+	public void constructByteArray(ByteArrayWriter baw)
+	    throws IOException, InvalidMessageException {
+		baw.writeUINT32(id);
+		baw.writeString(filename);
+		baw.writeUINT32(pflags);
+		baw.writeBinaryString(attrs.toByteArray());
+	}
 }

@@ -34,12 +34,12 @@ import com.sshtools.j2ssh.SshException;
  * @version $Revision$
  */
 public class TransportProtocolException extends SshException {
-    /**
-     * Creates a new TransportProtocolException object.
-     *
-     * @param msg
-     */
-    public TransportProtocolException(String msg) {
-        super(msg);
-    }
+	/**
+	 * Creates a new TransportProtocolException object.
+	 *
+	 * @param msg
+	 */
+	public TransportProtocolException(String msg) {
+		super(msg);
+	}
 }

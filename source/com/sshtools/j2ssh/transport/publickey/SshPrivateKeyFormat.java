@@ -32,44 +32,44 @@ package com.sshtools.j2ssh.transport.publickey;
  * @version $Revision$
  */
 public interface SshPrivateKeyFormat {
-    /**
-     * @param formattedKey
-     * @return
-     */
-    public boolean isPassphraseProtected(byte[] formattedKey);
+	/**
+	 * @param formattedKey
+	 * @return
+	 */
+	public boolean isPassphraseProtected(byte[] formattedKey);
 
-    /**
-     * @param formattedKey
-     * @return
-     */
-    public boolean isFormatted(byte[] formattedKey);
+	/**
+	 * @param formattedKey
+	 * @return
+	 */
+	public boolean isFormatted(byte[] formattedKey);
 
-    /**
-     * @param formattedKey
-     * @param passphrase
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public byte[] decryptKeyblob(byte[] formattedKey, String passphrase)
-            throws InvalidSshKeyException;
+	/**
+	 * @param formattedKey
+	 * @param passphrase
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public byte[] decryptKeyblob(byte[] formattedKey, String passphrase)
+	    throws InvalidSshKeyException;
 
-    /**
-     * @param keyblob
-     * @param passphrase
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public byte[] encryptKeyblob(byte[] keyblob, String passphrase)
-            throws InvalidSshKeyException;
+	/**
+	 * @param keyblob
+	 * @param passphrase
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public byte[] encryptKeyblob(byte[] keyblob, String passphrase)
+	    throws InvalidSshKeyException;
 
-    /**
-     * @param algorithm
-     * @return
-     */
-    public boolean supportsAlgorithm(String algorithm);
+	/**
+	 * @param algorithm
+	 * @return
+	 */
+	public boolean supportsAlgorithm(String algorithm);
 
-    /**
-     * @return
-     */
-    public String getFormatType();
+	/**
+	 * @return
+	 */
+	public String getFormatType();
 }

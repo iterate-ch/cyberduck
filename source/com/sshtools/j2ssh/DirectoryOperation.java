@@ -35,140 +35,140 @@ import com.sshtools.j2ssh.sftp.SftpFile;
 
 
 public class DirectoryOperation {
-    Vector unchangedFiles = new Vector();
-    Vector newFiles = new Vector();
-    Vector updatedFiles = new Vector();
-    Vector deletedFiles = new Vector();
-    Vector recursedDirectories = new Vector();
+	Vector unchangedFiles = new Vector();
+	Vector newFiles = new Vector();
+	Vector updatedFiles = new Vector();
+	Vector deletedFiles = new Vector();
+	Vector recursedDirectories = new Vector();
 
-    public DirectoryOperation() {
-    }
+	public DirectoryOperation() {
+	}
 
-    protected void addNewFile(File f) {
-        newFiles.add(f);
-    }
+	protected void addNewFile(File f) {
+		newFiles.add(f);
+	}
 
-    protected void addUpdatedFile(File f) {
-        updatedFiles.add(f);
-    }
+	protected void addUpdatedFile(File f) {
+		updatedFiles.add(f);
+	}
 
-    protected void addDeletedFile(File f) {
-        deletedFiles.add(f);
-    }
+	protected void addDeletedFile(File f) {
+		deletedFiles.add(f);
+	}
 
-    protected void addUnchangedFile(File f) {
-        unchangedFiles.add(f);
-    }
+	protected void addUnchangedFile(File f) {
+		unchangedFiles.add(f);
+	}
 
-    protected void addNewFile(SftpFile f) {
-        newFiles.add(f);
-    }
+	protected void addNewFile(SftpFile f) {
+		newFiles.add(f);
+	}
 
-    protected void addUpdatedFile(SftpFile f) {
-        updatedFiles.add(f);
-    }
+	protected void addUpdatedFile(SftpFile f) {
+		updatedFiles.add(f);
+	}
 
-    protected void addDeletedFile(SftpFile f) {
-        deletedFiles.add(f);
-    }
+	protected void addDeletedFile(SftpFile f) {
+		deletedFiles.add(f);
+	}
 
-    protected void addUnchangedFile(SftpFile f) {
-        unchangedFiles.add(f);
-    }
+	protected void addUnchangedFile(SftpFile f) {
+		unchangedFiles.add(f);
+	}
 
-    public List getNewFiles() {
-        return newFiles;
-    }
+	public List getNewFiles() {
+		return newFiles;
+	}
 
-    public List getUpdatedFiles() {
-        return updatedFiles;
-    }
+	public List getUpdatedFiles() {
+		return updatedFiles;
+	}
 
-    public List getUnchangedFiles() {
-        return unchangedFiles;
-    }
+	public List getUnchangedFiles() {
+		return unchangedFiles;
+	}
 
-    public List getDeletedFiles() {
-        return deletedFiles;
-    }
+	public List getDeletedFiles() {
+		return deletedFiles;
+	}
 
-    public boolean containsFile(File f) {
-        return unchangedFiles.contains(f) || newFiles.contains(f) ||
-                updatedFiles.contains(f) || deletedFiles.contains(f) ||
-                recursedDirectories.contains(f);
-    }
+	public boolean containsFile(File f) {
+		return unchangedFiles.contains(f) || newFiles.contains(f) ||
+		    updatedFiles.contains(f) || deletedFiles.contains(f) ||
+		    recursedDirectories.contains(f);
+	}
 
-    public boolean containsFile(SftpFile f) {
-        return unchangedFiles.contains(f) || newFiles.contains(f) ||
-                updatedFiles.contains(f) || deletedFiles.contains(f) ||
-                recursedDirectories.contains(f.getAbsolutePath());
-    }
+	public boolean containsFile(SftpFile f) {
+		return unchangedFiles.contains(f) || newFiles.contains(f) ||
+		    updatedFiles.contains(f) || deletedFiles.contains(f) ||
+		    recursedDirectories.contains(f.getAbsolutePath());
+	}
 
-    public void addDirectoryOperation(DirectoryOperation op, File f) {
-        updatedFiles.addAll(op.getUpdatedFiles());
-        newFiles.addAll(op.getNewFiles());
-        unchangedFiles.addAll(op.getUnchangedFiles());
-        deletedFiles.addAll(op.getDeletedFiles());
-        recursedDirectories.add(f);
-    }
+	public void addDirectoryOperation(DirectoryOperation op, File f) {
+		updatedFiles.addAll(op.getUpdatedFiles());
+		newFiles.addAll(op.getNewFiles());
+		unchangedFiles.addAll(op.getUnchangedFiles());
+		deletedFiles.addAll(op.getDeletedFiles());
+		recursedDirectories.add(f);
+	}
 
-    public int getFileCount() {
-        return newFiles.size() + updatedFiles.size();
-    }
+	public int getFileCount() {
+		return newFiles.size()+updatedFiles.size();
+	}
 
-    public void addDirectoryOperation(DirectoryOperation op, String file) {
-        updatedFiles.addAll(op.getUpdatedFiles());
-        newFiles.addAll(op.getNewFiles());
-        unchangedFiles.addAll(op.getUnchangedFiles());
-        deletedFiles.addAll(op.getDeletedFiles());
-        recursedDirectories.add(file);
-    }
+	public void addDirectoryOperation(DirectoryOperation op, String file) {
+		updatedFiles.addAll(op.getUpdatedFiles());
+		newFiles.addAll(op.getNewFiles());
+		unchangedFiles.addAll(op.getUnchangedFiles());
+		deletedFiles.addAll(op.getDeletedFiles());
+		recursedDirectories.add(file);
+	}
 
-    public long getTransferSize() {
-        Object obj;
-        long size = 0;
-        SftpFile sftpfile;
-        File file;
+	public long getTransferSize() {
+		Object obj;
+		long size = 0;
+		SftpFile sftpfile;
+		File file;
 
-        for (Iterator i = newFiles.iterator(); i.hasNext();) {
-            obj = i.next();
+		for(Iterator i = newFiles.iterator(); i.hasNext();) {
+			obj = i.next();
 
-            if (obj instanceof File) {
-                file = (File)obj;
+			if(obj instanceof File) {
+				file = (File)obj;
 
-                if (file.isFile()) {
-                    size += file.length();
-                }
-            }
-            else if (obj instanceof SftpFile) {
-                sftpfile = (SftpFile)obj;
+				if(file.isFile()) {
+					size += file.length();
+				}
+			}
+			else if(obj instanceof SftpFile) {
+				sftpfile = (SftpFile)obj;
 
-                if (sftpfile.isFile()) {
-                    size += sftpfile.getAttributes().getSize().longValue();
-                }
-            }
-        }
+				if(sftpfile.isFile()) {
+					size += sftpfile.getAttributes().getSize().longValue();
+				}
+			}
+		}
 
-        for (Iterator i = updatedFiles.iterator(); i.hasNext();) {
-            obj = i.next();
+		for(Iterator i = updatedFiles.iterator(); i.hasNext();) {
+			obj = i.next();
 
-            if (obj instanceof File) {
-                file = (File)obj;
+			if(obj instanceof File) {
+				file = (File)obj;
 
-                if (file.isFile()) {
-                    size += file.length();
-                }
-            }
-            else if (obj instanceof SftpFile) {
-                sftpfile = (SftpFile)obj;
+				if(file.isFile()) {
+					size += file.length();
+				}
+			}
+			else if(obj instanceof SftpFile) {
+				sftpfile = (SftpFile)obj;
 
-                if (sftpfile.isFile()) {
-                    size += sftpfile.getAttributes().getSize().longValue();
-                }
-            }
-        }
+				if(sftpfile.isFile()) {
+					size += sftpfile.getAttributes().getSize().longValue();
+				}
+			}
+		}
 
-        // Add a value for deleted files??
-        return size;
-    }
+		// Add a value for deleted files??
+		return size;
+	}
 }

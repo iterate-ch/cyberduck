@@ -32,26 +32,26 @@ package com.sshtools.j2ssh.util;
  * @version $Revision$
  */
 public class OpenClosedState extends State {
-    /**  */
-    public static final int OPEN = 1;
+	/**  */
+	public static final int OPEN = 1;
 
-    /**  */
-    public static final int CLOSED = 2;
+	/**  */
+	public static final int CLOSED = 2;
 
-    /**
-     * Creates a new OpenClosedState object.
-     *
-     * @param initial
-     */
-    public OpenClosedState(int initial) {
-        super(initial);
-    }
+	/**
+	 * Creates a new OpenClosedState object.
+	 *
+	 * @param initial
+	 */
+	public OpenClosedState(int initial) {
+		super(initial);
+	}
 
-    /**
-     * @param state
-     * @return
-     */
-    public boolean isValidState(int state) {
-        return (state == OPEN) || (state == CLOSED);
-    }
+	/**
+	 * @param state
+	 * @return
+	 */
+	public boolean isValidState(int state) {
+		return (state == OPEN) || (state == CLOSED);
+	}
 }

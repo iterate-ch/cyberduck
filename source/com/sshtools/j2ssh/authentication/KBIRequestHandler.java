@@ -33,10 +33,10 @@ import java.io.IOException;
  * @version $Revision$
  */
 public interface KBIRequestHandler {
-    /**
-     * @param name
-     * @param instruction
-     * @param prompts
-     */
-    public void showPrompts(String name, String instruction, KBIPrompt[] prompts) throws IOException;
+	/**
+	 * @param name
+	 * @param instruction
+	 * @param prompts
+	 */
+	public void showPrompts(String name, String instruction, KBIPrompt[] prompts) throws IOException;
 }

@@ -36,88 +36,88 @@ import com.sshtools.j2ssh.subsystem.SubsystemMessage;
  * @version $Revision$
  */
 public class SshFxpRename extends SubsystemMessage implements MessageRequestId {
-    /**  */
-    public static final int SSH_FXP_RENAME = 18;
-    private UnsignedInteger32 id;
-    String oldpath;
-    String newpath;
+	/**  */
+	public static final int SSH_FXP_RENAME = 18;
+	private UnsignedInteger32 id;
+	String oldpath;
+	String newpath;
 
-    /**
-     * Creates a new SshFxpRename object.
-     */
-    public SshFxpRename() {
-        super(SSH_FXP_RENAME);
-    }
+	/**
+	 * Creates a new SshFxpRename object.
+	 */
+	public SshFxpRename() {
+		super(SSH_FXP_RENAME);
+	}
 
-    /**
-     * Creates a new SshFxpRename object.
-     *
-     * @param id
-     * @param oldpath
-     * @param newpath
-     */
-    public SshFxpRename(UnsignedInteger32 id, String oldpath, String newpath) {
-        super(SSH_FXP_RENAME);
-        this.id = id;
-        this.oldpath = oldpath;
-        this.newpath = newpath;
-    }
+	/**
+	 * Creates a new SshFxpRename object.
+	 *
+	 * @param id
+	 * @param oldpath
+	 * @param newpath
+	 */
+	public SshFxpRename(UnsignedInteger32 id, String oldpath, String newpath) {
+		super(SSH_FXP_RENAME);
+		this.id = id;
+		this.oldpath = oldpath;
+		this.newpath = newpath;
+	}
 
-    /**
-     * @return
-     */
-    public UnsignedInteger32 getId() {
-        return id;
-    }
+	/**
+	 * @return
+	 */
+	public UnsignedInteger32 getId() {
+		return id;
+	}
 
-    /**
-     * @return
-     */
-    public String getOldPath() {
-        return oldpath;
-    }
+	/**
+	 * @return
+	 */
+	public String getOldPath() {
+		return oldpath;
+	}
 
-    /**
-     * @return
-     */
-    public String getNewPath() {
-        return newpath;
-    }
+	/**
+	 * @return
+	 */
+	public String getNewPath() {
+		return newpath;
+	}
 
-    /**
-     * @param bar
-     * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
-     *                             DOCUMENT
-     *                             ME!
-     */
-    public void constructMessage(ByteArrayReader bar)
-            throws java.io.IOException,
-            com.sshtools.j2ssh.transport.InvalidMessageException {
-        id = bar.readUINT32();
-        oldpath = bar.readString();
-        newpath = bar.readString();
-    }
+	/**
+	 * @param bar
+	 * @throws java.io.IOException
+	 * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+	 *                             DOCUMENT
+	 *                             ME!
+	 */
+	public void constructMessage(ByteArrayReader bar)
+	    throws java.io.IOException,
+	    com.sshtools.j2ssh.transport.InvalidMessageException {
+		id = bar.readUINT32();
+		oldpath = bar.readString();
+		newpath = bar.readString();
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_FXP_RENAME";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_FXP_RENAME";
+	}
 
-    /**
-     * @param baw
-     * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
-     *                             DOCUMENT
-     *                             ME!
-     */
-    public void constructByteArray(ByteArrayWriter baw)
-            throws java.io.IOException,
-            com.sshtools.j2ssh.transport.InvalidMessageException {
-        baw.writeUINT32(id);
-				baw.writeString(oldpath);
-        baw.writeString(newpath);
-    }
+	/**
+	 * @param baw
+	 * @throws java.io.IOException
+	 * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+	 *                             DOCUMENT
+	 *                             ME!
+	 */
+	public void constructByteArray(ByteArrayWriter baw)
+	    throws java.io.IOException,
+	    com.sshtools.j2ssh.transport.InvalidMessageException {
+		baw.writeUINT32(id);
+		baw.writeString(oldpath);
+		baw.writeString(newpath);
+	}
 }

@@ -41,139 +41,139 @@ import com.sshtools.j2ssh.util.SimpleASNWriter;
  * @version $Revision$
  */
 public class DSAKeyInfo implements KeyInfo {
-    private BigInteger p;
-    private BigInteger q;
-    private BigInteger g;
-    private BigInteger x;
-    private BigInteger y;
+	private BigInteger p;
+	private BigInteger q;
+	private BigInteger g;
+	private BigInteger x;
+	private BigInteger y;
 
-    /**
-     * Creates a new DSAKeyInfo object.
-     *
-     * @param p
-     * @param q
-     * @param g
-     * @param x
-     * @param y
-     */
-    public DSAKeyInfo(BigInteger p, BigInteger q, BigInteger g, BigInteger x,
-                      BigInteger y) {
-        this.p = p;
-        this.q = q;
-        this.g = g;
-        this.x = x;
-        this.y = y;
-    }
+	/**
+	 * Creates a new DSAKeyInfo object.
+	 *
+	 * @param p
+	 * @param q
+	 * @param g
+	 * @param x
+	 * @param y
+	 */
+	public DSAKeyInfo(BigInteger p, BigInteger q, BigInteger g, BigInteger x,
+	                  BigInteger y) {
+		this.p = p;
+		this.q = q;
+		this.g = g;
+		this.x = x;
+		this.y = y;
+	}
 
-    /**
-     * @return
-     */
-    public BigInteger getG() {
-        return g;
-    }
+	/**
+	 * @return
+	 */
+	public BigInteger getG() {
+		return g;
+	}
 
-    /**
-     * @return
-     */
-    public BigInteger getP() {
-        return p;
-    }
+	/**
+	 * @return
+	 */
+	public BigInteger getP() {
+		return p;
+	}
 
-    /**
-     * @return
-     */
-    public BigInteger getQ() {
-        return q;
-    }
+	/**
+	 * @return
+	 */
+	public BigInteger getQ() {
+		return q;
+	}
 
-    /**
-     * @return
-     */
-    public BigInteger getX() {
-        return x;
-    }
+	/**
+	 * @return
+	 */
+	public BigInteger getX() {
+		return x;
+	}
 
-    /**
-     * @return
-     */
-    public BigInteger getY() {
-        return y;
-    }
+	/**
+	 * @return
+	 */
+	public BigInteger getY() {
+		return y;
+	}
 
-    /**
-     * @return
-     */
-    public KeySpec getPrivateKeySpec() {
-        return new DSAPrivateKeySpec(x, p, q, g);
-    }
+	/**
+	 * @return
+	 */
+	public KeySpec getPrivateKeySpec() {
+		return new DSAPrivateKeySpec(x, p, q, g);
+	}
 
-    /**
-     * @return
-     */
-    public KeySpec getPublicKeySpec() {
-        return new DSAPublicKeySpec(y, p, q, g);
-    }
+	/**
+	 * @return
+	 */
+	public KeySpec getPublicKeySpec() {
+		return new DSAPublicKeySpec(y, p, q, g);
+	}
 
-    /**
-     * @param asn
-     * @return
-     * @throws IOException
-     */
-    public static DSAKeyInfo getDSAKeyInfo(SimpleASNReader asn)
-            throws IOException {
-        asn.assertByte(0x30); // SEQUENCE
+	/**
+	 * @param asn
+	 * @return
+	 * @throws IOException
+	 */
+	public static DSAKeyInfo getDSAKeyInfo(SimpleASNReader asn)
+	    throws IOException {
+		asn.assertByte(0x30); // SEQUENCE
 
-        int length = asn.getLength();
-        asn.assertByte(0x02); // INTEGER (version)
+		int length = asn.getLength();
+		asn.assertByte(0x02); // INTEGER (version)
 
-        byte[] version = asn.getData();
-        asn.assertByte(0x02); // INTEGER (p)
+		byte[] version = asn.getData();
+		asn.assertByte(0x02); // INTEGER (p)
 
-        byte[] paramP = asn.getData();
-        asn.assertByte(0x02); // INTEGER (q)
+		byte[] paramP = asn.getData();
+		asn.assertByte(0x02); // INTEGER (q)
 
-        byte[] paramQ = asn.getData();
-        asn.assertByte(0x02); // INTEGER (g)
+		byte[] paramQ = asn.getData();
+		asn.assertByte(0x02); // INTEGER (g)
 
-        byte[] paramG = asn.getData();
-        asn.assertByte(0x02); // INTEGER (y)
+		byte[] paramG = asn.getData();
+		asn.assertByte(0x02); // INTEGER (y)
 
-        byte[] paramY = asn.getData();
-        asn.assertByte(0x02); // INTEGER (x)
+		byte[] paramY = asn.getData();
+		asn.assertByte(0x02); // INTEGER (x)
 
-        byte[] paramX = asn.getData();
+		byte[] paramX = asn.getData();
 
-        return new DSAKeyInfo(new BigInteger(paramP), new BigInteger(paramQ),
-                new BigInteger(paramG), new BigInteger(paramX),
-                new BigInteger(paramY));
-    }
+		return new DSAKeyInfo(new BigInteger(paramP), new BigInteger(paramQ),
+		    new BigInteger(paramG), new BigInteger(paramX),
+		    new BigInteger(paramY));
+	}
 
-    /**
-     * @param asn
-     * @param keyInfo
-     */
-    public static void writeDSAKeyInfo(SimpleASNWriter asn, DSAKeyInfo keyInfo) {
-        // Write to a substream temporarily.
-        // This code needs to know the length of the substream before it can write the data from
-        // the substream to the main stream.
-        SimpleASNWriter asn2 = new SimpleASNWriter();
-        asn2.writeByte(0x02); // INTEGER (version)
+	/**
+	 * @param asn
+	 * @param keyInfo
+	 */
+	public static void writeDSAKeyInfo(SimpleASNWriter asn, DSAKeyInfo keyInfo) {
+		// Write to a substream temporarily.
+		// This code needs to know the length of the substream before it can write the data from
+		// the substream to the main stream.
+		SimpleASNWriter asn2 = new SimpleASNWriter();
+		asn2.writeByte(0x02); // INTEGER (version)
 
-        byte[] version = new byte[1];
-        asn2.writeData(version);
-        asn2.writeByte(0x02); // INTEGER (p)
-        asn2.writeData(keyInfo.getP().toByteArray());
-        asn2.writeByte(0x02); // INTEGER (q)
-        asn2.writeData(keyInfo.getQ().toByteArray());
-        asn2.writeByte(0x02); // INTEGER (g)
-        asn2.writeData(keyInfo.getG().toByteArray());
-        asn2.writeByte(0x02); // INTEGER (y)
-        asn2.writeData(keyInfo.getY().toByteArray());
-        asn2.writeByte(0x02); // INTEGER (x)
-        asn2.writeData(keyInfo.getX().toByteArray());
+		byte[] version = new byte[1];
+		asn2.writeData(version);
+		asn2.writeByte(0x02); // INTEGER (p)
+		asn2.writeData(keyInfo.getP().toByteArray());
+		asn2.writeByte(0x02); // INTEGER (q)
+		asn2.writeData(keyInfo.getQ().toByteArray());
+		asn2.writeByte(0x02); // INTEGER (g)
+		asn2.writeData(keyInfo.getG().toByteArray());
+		asn2.writeByte(0x02); // INTEGER (y)
+		asn2.writeData(keyInfo.getY().toByteArray());
+		asn2.writeByte(0x02); // INTEGER (x)
+		asn2.writeData(keyInfo.getX().toByteArray());
 
-        byte[] dsaKeyEncoded = asn2.toByteArray();
-        asn.writeByte(0x30); // SEQUENCE
-        asn.writeData(dsaKeyEncoded);
-    }
+		byte[] dsaKeyEncoded = asn2.toByteArray();
+		asn.writeByte(0x30); // SEQUENCE
+		asn.writeData(dsaKeyEncoded);
+	}
 }

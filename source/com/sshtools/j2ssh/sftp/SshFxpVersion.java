@@ -43,91 +43,91 @@ import com.sshtools.j2ssh.transport.InvalidMessageException;
  * @version $Revision$
  */
 public class SshFxpVersion extends SubsystemMessage {
-    /**  */
-    public static final int SSH_FXP_VERSION = 2;
-    private UnsignedInteger32 version;
-    private Map extended = null;
+	/**  */
+	public static final int SSH_FXP_VERSION = 2;
+	private UnsignedInteger32 version;
+	private Map extended = null;
 
-    /**
-     * Creates a new SshFxpVersion object.
-     */
-    public SshFxpVersion() {
-        super(SSH_FXP_VERSION);
-    }
+	/**
+	 * Creates a new SshFxpVersion object.
+	 */
+	public SshFxpVersion() {
+		super(SSH_FXP_VERSION);
+	}
 
-    /**
-     * Creates a new SshFxpVersion object.
-     *
-     * @param version
-     * @param extended
-     */
-    public SshFxpVersion(UnsignedInteger32 version, Map extended) {
-        super(SSH_FXP_VERSION);
-        this.version = version;
-        this.extended = extended;
-    }
+	/**
+	 * Creates a new SshFxpVersion object.
+	 *
+	 * @param version
+	 * @param extended
+	 */
+	public SshFxpVersion(UnsignedInteger32 version, Map extended) {
+		super(SSH_FXP_VERSION);
+		this.version = version;
+		this.extended = extended;
+	}
 
-    /**
-     * @return
-     */
-    public UnsignedInteger32 getVersion() {
-        return version;
-    }
+	/**
+	 * @return
+	 */
+	public UnsignedInteger32 getVersion() {
+		return version;
+	}
 
-    /**
-     * @return
-     */
-    public Map getExtended() {
-        return extended;
-    }
+	/**
+	 * @return
+	 */
+	public Map getExtended() {
+		return extended;
+	}
 
-    /**
-     * @param bar
-     * @throws IOException
-     * @throws InvalidMessageException
-     */
-    public void constructMessage(ByteArrayReader bar)
-            throws IOException, InvalidMessageException {
-        version = bar.readUINT32();
-        extended = new HashMap();
+	/**
+	 * @param bar
+	 * @throws IOException
+	 * @throws InvalidMessageException
+	 */
+	public void constructMessage(ByteArrayReader bar)
+	    throws IOException, InvalidMessageException {
+		version = bar.readUINT32();
+		extended = new HashMap();
 
-        String key;
-        String value;
+		String key;
+		String value;
 
-        while (bar.available() > 0) {
-            key = bar.readString();
-            value = bar.readString();
-            extended.put(key, value);
-        }
-    }
+		while(bar.available() > 0) {
+			key = bar.readString();
+			value = bar.readString();
+			extended.put(key, value);
+		}
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_FXP_INIT";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_FXP_INIT";
+	}
 
-    /**
-     * @param baw
-     * @throws IOException
-     * @throws InvalidMessageException
-     */
-    public void constructByteArray(ByteArrayWriter baw)
-            throws IOException, InvalidMessageException {
-        baw.writeUINT32(version);
+	/**
+	 * @param baw
+	 * @throws IOException
+	 * @throws InvalidMessageException
+	 */
+	public void constructByteArray(ByteArrayWriter baw)
+	    throws IOException, InvalidMessageException {
+		baw.writeUINT32(version);
 
-        if (extended != null) {
-            if (extended.size() > 0) {
-                Iterator it = extended.entrySet().iterator();
-                Map.Entry entry;
+		if(extended != null) {
+			if(extended.size() > 0) {
+				Iterator it = extended.entrySet().iterator();
+				Map.Entry entry;
 
-                while (it.hasNext()) {
-                    entry = (Map.Entry)it.next();
-                    baw.writeString((String)entry.getKey());
-                    baw.writeString((String)entry.getValue());
-                }
-            }
-        }
-    }
+				while(it.hasNext()) {
+					entry = (Map.Entry)it.next();
+					baw.writeString((String)entry.getKey());
+					baw.writeString((String)entry.getValue());
+				}
+			}
+		}
+	}
 }

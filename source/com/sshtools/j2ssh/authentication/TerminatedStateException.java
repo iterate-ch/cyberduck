@@ -32,21 +32,21 @@ package com.sshtools.j2ssh.authentication;
  * @version $Revision$
  */
 public class TerminatedStateException extends Exception {
-    private int state;
+	private int state;
 
-    /**
-     * Creates a new TerminatedStateException object.
-     *
-     * @param state
-     */
-    public TerminatedStateException(int state) {
-        this.state = state;
-    }
+	/**
+	 * Creates a new TerminatedStateException object.
+	 *
+	 * @param state
+	 */
+	public TerminatedStateException(int state) {
+		this.state = state;
+	}
 
-    /**
-     * @return
-     */
-    public int getState() {
-        return state;
-    }
+	/**
+	 * @return
+	 */
+	public int getState() {
+		return state;
+	}
 }

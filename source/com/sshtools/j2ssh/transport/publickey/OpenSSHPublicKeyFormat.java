@@ -35,117 +35,117 @@ import com.sshtools.j2ssh.util.Base64;
  * @version $Revision$
  */
 public class OpenSSHPublicKeyFormat implements SshPublicKeyFormat {
-    String comment = null;
+	String comment = null;
 
-    /**
-     * Creates a new OpenSSHPublicKeyFormat object.
-     *
-     * @param comment
-     */
-    public OpenSSHPublicKeyFormat(String comment) {
-        setComment(comment);
-    }
+	/**
+	 * Creates a new OpenSSHPublicKeyFormat object.
+	 *
+	 * @param comment
+	 */
+	public OpenSSHPublicKeyFormat(String comment) {
+		setComment(comment);
+	}
 
-    /**
-     * Creates a new OpenSSHPublicKeyFormat object.
-     */
-    public OpenSSHPublicKeyFormat() {
-    }
+	/**
+	 * Creates a new OpenSSHPublicKeyFormat object.
+	 */
+	public OpenSSHPublicKeyFormat() {
+	}
 
-    /**
-     * @param comment
-     */
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+	/**
+	 * @param comment
+	 */
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
 
-    /**
-     * @return
-     */
-    public String getComment() {
-        return comment;
-    }
+	/**
+	 * @return
+	 */
+	public String getComment() {
+		return comment;
+	}
 
-    /**
-     * @return
-     */
-    public String getFormatType() {
-        return "OpenSSH-PublicKey";
-    }
+	/**
+	 * @return
+	 */
+	public String getFormatType() {
+		return "OpenSSH-PublicKey";
+	}
 
-    /**
-     * @param formattedKey
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public byte[] getKeyBlob(byte[] formattedKey) throws InvalidSshKeyException {
-        String temp = new String(formattedKey);
+	/**
+	 * @param formattedKey
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public byte[] getKeyBlob(byte[] formattedKey) throws InvalidSshKeyException {
+		String temp = new String(formattedKey);
 
-        // Get the algorithm name end index
-        int i = temp.indexOf(" ");
+		// Get the algorithm name end index
+		int i = temp.indexOf(" ");
 
-        if (i > 0) {
-            String algorithm = temp.substring(0, i);
+		if(i > 0) {
+			String algorithm = temp.substring(0, i);
 
-            if (supportsAlgorithm(algorithm)) {
-                // Get the keyblob end index
-                int i2 = temp.indexOf(" ", i + 1);
+			if(supportsAlgorithm(algorithm)) {
+				// Get the keyblob end index
+				int i2 = temp.indexOf(" ", i+1);
 
-                if (i2 > i) {
-                    String encoded = temp.substring(i + 1, i2);
+				if(i2 > i) {
+					String encoded = temp.substring(i+1, i2);
 
-                    if (temp.length() > i2) {
-                        comment = temp.substring(i2 + 1).trim();
-                    }
+					if(temp.length() > i2) {
+						comment = temp.substring(i2+1).trim();
+					}
 
-                    return Base64.decode(encoded);
-                }
-            }
-        }
+					return Base64.decode(encoded);
+				}
+			}
+		}
 
-        throw new InvalidSshKeyException("Failed to read OpenSSH key format");
-    }
+		throw new InvalidSshKeyException("Failed to read OpenSSH key format");
+	}
 
-    /**
-     * @param keyblob
-     * @return
-     */
-    public byte[] formatKey(byte[] keyblob) {
-        String algorithm = ByteArrayReader.readString(keyblob, 0);
-        String formatted = algorithm + " " + Base64.encodeBytes(keyblob, true);
+	/**
+	 * @param keyblob
+	 * @return
+	 */
+	public byte[] formatKey(byte[] keyblob) {
+		String algorithm = ByteArrayReader.readString(keyblob, 0);
+		String formatted = algorithm+" "+Base64.encodeBytes(keyblob, true);
 
-        if (comment != null) {
-            formatted += (" " + comment);
-        }
+		if(comment != null) {
+			formatted += (" "+comment);
+		}
 
-        return formatted.getBytes();
-    }
+		return formatted.getBytes();
+	}
 
-    /**
-     * @param formattedKey
-     * @return
-     */
-    public boolean isFormatted(byte[] formattedKey) {
-        String test = new String(formattedKey).trim();
+	/**
+	 * @param formattedKey
+	 * @return
+	 */
+	public boolean isFormatted(byte[] formattedKey) {
+		String test = new String(formattedKey).trim();
 
-        if (test.startsWith("ssh-dss") || test.startsWith("ssh-rsa")) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+		if(test.startsWith("ssh-dss") || test.startsWith("ssh-rsa")) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 
-    /**
-     * @param algorithm
-     * @return
-     */
-    public boolean supportsAlgorithm(String algorithm) {
-        if (algorithm.equals("ssh-dss") || algorithm.equals("ssh-rsa")) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+	/**
+	 * @param algorithm
+	 * @return
+	 */
+	public boolean supportsAlgorithm(String algorithm) {
+		if(algorithm.equals("ssh-dss") || algorithm.equals("ssh-rsa")) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }

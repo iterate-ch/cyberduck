@@ -41,19 +41,19 @@ import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
  * @since 0.2.0
  */
 public class IgnoreHostKeyVerification implements HostKeyVerification {
-    /**
-     * <p/>
-     * Simply returns <code>true</code> to all requests.
-     * </p>
-     *
-     * @param host the name of the host
-     * @param pk   the hosts public key
-     * @return <code>true</code>
-     * @throws TransportProtocolException if an error occurs
-     * @since 0.2.0
-     */
-    public boolean verifyHost(String host, SshPublicKey pk)
-            throws TransportProtocolException {
-        return true;
-    }
+	/**
+	 * <p/>
+	 * Simply returns <code>true</code> to all requests.
+	 * </p>
+	 *
+	 * @param host the name of the host
+	 * @param pk   the hosts public key
+	 * @return <code>true</code>
+	 * @throws TransportProtocolException if an error occurs
+	 * @since 0.2.0
+	 */
+	public boolean verifyHost(String host, SshPublicKey pk)
+	    throws TransportProtocolException {
+		return true;
+	}
 }

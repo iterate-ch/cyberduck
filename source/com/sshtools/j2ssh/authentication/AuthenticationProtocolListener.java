@@ -48,8 +48,8 @@ package com.sshtools.j2ssh.authentication;
  * @version $Id$
  */
 public interface AuthenticationProtocolListener {
-    /**
-     *
-     */
-    public void onAuthenticationComplete();
+	/**
+	 *
+	 */
+	public void onAuthenticationComplete();
 }

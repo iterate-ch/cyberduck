@@ -43,98 +43,98 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class SshMsgUserAuthFailure extends SshMessage {
-    /**  */
-    protected final static int SSH_MSG_USERAUTH_FAILURE = 51;
-    private List auths;
-    private boolean partialSuccess;
+	/**  */
+	protected final static int SSH_MSG_USERAUTH_FAILURE = 51;
+	private List auths;
+	private boolean partialSuccess;
 
-    /**
-     * Creates a new SshMsgUserAuthFailure object.
-     */
-    public SshMsgUserAuthFailure() {
-        super(SSH_MSG_USERAUTH_FAILURE);
-    }
+	/**
+	 * Creates a new SshMsgUserAuthFailure object.
+	 */
+	public SshMsgUserAuthFailure() {
+		super(SSH_MSG_USERAUTH_FAILURE);
+	}
 
-    /**
-     * Creates a new SshMsgUserAuthFailure object.
-     *
-     * @param auths
-     * @param partialSuccess
-     * @throws InvalidMessageException
-     */
-    public SshMsgUserAuthFailure(String auths, boolean partialSuccess)
-            throws InvalidMessageException {
-        super(SSH_MSG_USERAUTH_FAILURE);
-        loadListFromDelimString(auths);
-        this.partialSuccess = partialSuccess;
-    }
+	/**
+	 * Creates a new SshMsgUserAuthFailure object.
+	 *
+	 * @param auths
+	 * @param partialSuccess
+	 * @throws InvalidMessageException
+	 */
+	public SshMsgUserAuthFailure(String auths, boolean partialSuccess)
+	    throws InvalidMessageException {
+		super(SSH_MSG_USERAUTH_FAILURE);
+		loadListFromDelimString(auths);
+		this.partialSuccess = partialSuccess;
+	}
 
-    /**
-     * @return
-     */
-    public List getAvailableAuthentications() {
-        return auths;
-    }
+	/**
+	 * @return
+	 */
+	public List getAvailableAuthentications() {
+		return auths;
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_MSG_USERAUTH_FAILURE";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_MSG_USERAUTH_FAILURE";
+	}
 
-    /**
-     * @return
-     */
-    public boolean getPartialSuccess() {
-        return partialSuccess;
-    }
+	/**
+	 * @return
+	 */
+	public boolean getPartialSuccess() {
+		return partialSuccess;
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     */
-    protected void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException {
-        try {
-            String authMethods = null;
-            Iterator it = auths.iterator();
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 */
+	protected void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException {
+		try {
+			String authMethods = null;
+			Iterator it = auths.iterator();
 
-            while (it.hasNext()) {
-                authMethods = ((authMethods == null) ? "" : (authMethods + ",")) +
-                        (String)it.next();
-            }
+			while(it.hasNext()) {
+				authMethods = ((authMethods == null) ? "" : (authMethods+","))+
+				    (String)it.next();
+			}
 
-            baw.writeString(authMethods);
-            baw.write((partialSuccess ? 1 : 0));
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+			baw.writeString(authMethods);
+			baw.write((partialSuccess ? 1 : 0));
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     */
-    protected void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException {
-        try {
-            String auths = bar.readString();
-            partialSuccess = ((bar.read() != 0) ? true : false);
-            loadListFromDelimString(auths);
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 */
+	protected void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException {
+		try {
+			String auths = bar.readString();
+			partialSuccess = ((bar.read() != 0) ? true : false);
+			loadListFromDelimString(auths);
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 
-    private void loadListFromDelimString(String list) {
-        StringTokenizer tok = new StringTokenizer(list, ",");
-        auths = new ArrayList();
+	private void loadListFromDelimString(String list) {
+		StringTokenizer tok = new StringTokenizer(list, ",");
+		auths = new ArrayList();
 
-        while (tok.hasMoreElements()) {
-            auths.add(tok.nextElement());
-        }
-    }
+		while(tok.hasMoreElements()) {
+			auths.add(tok.nextElement());
+		}
+	}
 }

@@ -37,46 +37,46 @@ import com.sshtools.j2ssh.configuration.SshConnectionProperties;
  * @version $Revision$
  */
 public class TransportProviderFactory {
-    /**
-     * @param properties
-     * @param socketTimeout
-     * @return
-     * @throws UnknownHostException
-     * @throws IOException
-     */
-    public static TransportProvider connectTransportProvider(SshConnectionProperties properties /*, int connectTimeout*/,
-                                                             int socketTimeout) throws UnknownHostException, IOException {
-        if (properties.getTransportProvider() == SshConnectionProperties.USE_HTTP_PROXY) {
-            return HttpProxySocketProvider.connectViaProxy(properties.getHost(),
-                    properties.getPort(), properties.getProxyHost(),
-                    properties.getProxyPort(), properties.getProxyUsername(),
-                    properties.getProxyPassword(), "J2SSH");
-        }
-        else if (properties.getTransportProvider() == SshConnectionProperties.USE_SOCKS4_PROXY) {
-            return SocksProxySocket.connectViaSocks4Proxy(properties.getHost(),
-                    properties.getPort(), properties.getProxyHost(),
-                    properties.getProxyPort(), properties.getProxyUsername());
-        }
-        else if (properties.getTransportProvider() == SshConnectionProperties.USE_SOCKS5_PROXY) {
-            return SocksProxySocket.connectViaSocks5Proxy(properties.getHost(),
-                    properties.getPort(), properties.getProxyHost(),
-                    properties.getProxyPort(), properties.getProxyUsername(),
-                    properties.getProxyPassword());
-        }
-        else {
-            // No proxy just attempt a standard socket connection
+	/**
+	 * @param properties
+	 * @param socketTimeout
+	 * @return
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
+	public static TransportProvider connectTransportProvider(SshConnectionProperties properties /*, int connectTimeout*/,
+	                                                         int socketTimeout) throws UnknownHostException, IOException {
+		if(properties.getTransportProvider() == SshConnectionProperties.USE_HTTP_PROXY) {
+			return HttpProxySocketProvider.connectViaProxy(properties.getHost(),
+			    properties.getPort(), properties.getProxyHost(),
+			    properties.getProxyPort(), properties.getProxyUsername(),
+			    properties.getProxyPassword(), "J2SSH");
+		}
+		else if(properties.getTransportProvider() == SshConnectionProperties.USE_SOCKS4_PROXY) {
+			return SocksProxySocket.connectViaSocks4Proxy(properties.getHost(),
+			    properties.getPort(), properties.getProxyHost(),
+			    properties.getProxyPort(), properties.getProxyUsername());
+		}
+		else if(properties.getTransportProvider() == SshConnectionProperties.USE_SOCKS5_PROXY) {
+			return SocksProxySocket.connectViaSocks5Proxy(properties.getHost(),
+			    properties.getPort(), properties.getProxyHost(),
+			    properties.getProxyPort(), properties.getProxyUsername(),
+			    properties.getProxyPassword());
+		}
+		else {
+			// No proxy just attempt a standard socket connection
 
-            /*SocketTransportProvider socket = new SocketTransportProvider();
-             socket.setSoTimeout(socketTimeout);
-             socket.connect(new InetSocketAddress(properties.getHost(),
-                                     properties.getPort()),
-               connectTimeout);*/
-            SocketTransportProvider socket = new SocketTransportProvider(properties.getHost(),
-                    properties.getPort());
-            socket.setTcpNoDelay(true);
-            socket.setSoTimeout(socketTimeout);
+			/*SocketTransportProvider socket = new SocketTransportProvider();
+			 socket.setSoTimeout(socketTimeout);
+			 socket.connect(new InetSocketAddress(properties.getHost(),
+			                         properties.getPort()),
+			   connectTimeout);*/
+			SocketTransportProvider socket = new SocketTransportProvider(properties.getHost(),
+			    properties.getPort());
+			socket.setTcpNoDelay(true);
+			socket.setSoTimeout(socketTimeout);
 
-            return socket;
-        }
-    }
+			return socket;
+		}
+	}
 }

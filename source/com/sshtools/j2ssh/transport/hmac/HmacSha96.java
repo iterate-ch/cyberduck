@@ -32,31 +32,31 @@ package com.sshtools.j2ssh.transport.hmac;
  * @version $Revision$
  */
 public class HmacSha96 extends HmacSha {
-    /**
-     * Creates a new HmacSha96 object.
-     */
-    public HmacSha96() {
-    }
+	/**
+	 * Creates a new HmacSha96 object.
+	 */
+	public HmacSha96() {
+	}
 
-    /**
-     * @return
-     */
-    public int getMacLength() {
-        return 12;
-    }
+	/**
+	 * @return
+	 */
+	public int getMacLength() {
+		return 12;
+	}
 
-    /**
-     * @param sequenceNo
-     * @param data
-     * @param offset
-     * @param len
-     * @return
-     */
-    public byte[] generate(long sequenceNo, byte[] data, int offset, int len) {
-        byte[] generated = super.generate(sequenceNo, data, offset, len);
-        byte[] result = new byte[getMacLength()];
-        System.arraycopy(generated, 0, result, 0, getMacLength());
+	/**
+	 * @param sequenceNo
+	 * @param data
+	 * @param offset
+	 * @param len
+	 * @return
+	 */
+	public byte[] generate(long sequenceNo, byte[] data, int offset, int len) {
+		byte[] generated = super.generate(sequenceNo, data, offset, len);
+		byte[] result = new byte[getMacLength()];
+		System.arraycopy(generated, 0, result, 0, getMacLength());
 
-        return result;
-    }
+		return result;
+	}
 }

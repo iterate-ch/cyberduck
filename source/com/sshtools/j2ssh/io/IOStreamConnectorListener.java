@@ -34,9 +34,9 @@ import java.util.EventListener;
  * @version $Revision$
  */
 public interface IOStreamConnectorListener extends EventListener {
-    /**
-     * @param data
-     * @param count
-     */
-    public void data(byte[] data, int count);
+	/**
+	 * @param data
+	 * @param count
+	 */
+	public void data(byte[] data, int count);
 }

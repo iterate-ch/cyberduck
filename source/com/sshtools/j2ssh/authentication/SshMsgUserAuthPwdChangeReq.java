@@ -37,78 +37,78 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class SshMsgUserAuthPwdChangeReq extends SshMessage {
-    /**  */
-    public static final int SSH_MSG_USERAUTH_PWD_CHANGEREQ = 60;
-    private String prompt;
-    private String language;
+	/**  */
+	public static final int SSH_MSG_USERAUTH_PWD_CHANGEREQ = 60;
+	private String prompt;
+	private String language;
 
-    /**
-     * Creates a new SshMsgUserAuthPwdChangeReq object.
-     */
-    public SshMsgUserAuthPwdChangeReq() {
-        super(SSH_MSG_USERAUTH_PWD_CHANGEREQ);
-    }
+	/**
+	 * Creates a new SshMsgUserAuthPwdChangeReq object.
+	 */
+	public SshMsgUserAuthPwdChangeReq() {
+		super(SSH_MSG_USERAUTH_PWD_CHANGEREQ);
+	}
 
-    /**
-     * Creates a new SshMsgUserAuthPwdChangeReq object.
-     *
-     * @param prompt
-     * @param language
-     */
-    public SshMsgUserAuthPwdChangeReq(String prompt, String language) {
-        super(SSH_MSG_USERAUTH_PWD_CHANGEREQ);
-        this.prompt = prompt;
-        this.language = language;
-    }
+	/**
+	 * Creates a new SshMsgUserAuthPwdChangeReq object.
+	 *
+	 * @param prompt
+	 * @param language
+	 */
+	public SshMsgUserAuthPwdChangeReq(String prompt, String language) {
+		super(SSH_MSG_USERAUTH_PWD_CHANGEREQ);
+		this.prompt = prompt;
+		this.language = language;
+	}
 
-    /**
-     * @return
-     */
-    public String getPrompt() {
-        return prompt;
-    }
+	/**
+	 * @return
+	 */
+	public String getPrompt() {
+		return prompt;
+	}
 
-    /**
-     * @return
-     */
-    public String getLanguage() {
-        return language;
-    }
+	/**
+	 * @return
+	 */
+	public String getLanguage() {
+		return language;
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_MSG_USERAUTH_PWD_CHANGEREQ";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_MSG_USERAUTH_PWD_CHANGEREQ";
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     */
-    protected void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException {
-        try {
-            baw.writeString(prompt);
-            baw.writeString(language);
-        }
-        catch (Exception ex) {
-            throw new InvalidMessageException(ex.getMessage());
-        }
-    }
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 */
+	protected void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException {
+		try {
+			baw.writeString(prompt);
+			baw.writeString(language);
+		}
+		catch(Exception ex) {
+			throw new InvalidMessageException(ex.getMessage());
+		}
+	}
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     */
-    protected void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException {
-        try {
-            prompt = bar.readString();
-            language = bar.readString();
-        }
-        catch (Exception ex) {
-            throw new InvalidMessageException(ex.getMessage());
-        }
-    }
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 */
+	protected void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException {
+		try {
+			prompt = bar.readString();
+			language = bar.readString();
+		}
+		catch(Exception ex) {
+			throw new InvalidMessageException(ex.getMessage());
+		}
+	}
 }

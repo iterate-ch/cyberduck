@@ -39,78 +39,78 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class SshMsgChannelWindowAdjust extends SshMessage {
-    /**  */
-    protected final static int SSH_MSG_CHANNEL_WINDOW_ADJUST = 93;
-    private long bytesToAdd;
-    private long recipientChannel;
+	/**  */
+	protected final static int SSH_MSG_CHANNEL_WINDOW_ADJUST = 93;
+	private long bytesToAdd;
+	private long recipientChannel;
 
-    /**
-     * Creates a new SshMsgChannelWindowAdjust object.
-     *
-     * @param recipientChannel
-     * @param bytesToAdd
-     */
-    public SshMsgChannelWindowAdjust(long recipientChannel, long bytesToAdd) {
-        super(SSH_MSG_CHANNEL_WINDOW_ADJUST);
-        this.recipientChannel = recipientChannel;
-        this.bytesToAdd = bytesToAdd;
-    }
+	/**
+	 * Creates a new SshMsgChannelWindowAdjust object.
+	 *
+	 * @param recipientChannel
+	 * @param bytesToAdd
+	 */
+	public SshMsgChannelWindowAdjust(long recipientChannel, long bytesToAdd) {
+		super(SSH_MSG_CHANNEL_WINDOW_ADJUST);
+		this.recipientChannel = recipientChannel;
+		this.bytesToAdd = bytesToAdd;
+	}
 
-    /**
-     * Creates a new SshMsgChannelWindowAdjust object.
-     */
-    public SshMsgChannelWindowAdjust() {
-        super(SSH_MSG_CHANNEL_WINDOW_ADJUST);
-    }
+	/**
+	 * Creates a new SshMsgChannelWindowAdjust object.
+	 */
+	public SshMsgChannelWindowAdjust() {
+		super(SSH_MSG_CHANNEL_WINDOW_ADJUST);
+	}
 
-    /**
-     * @return
-     */
-    public long getBytesToAdd() {
-        return bytesToAdd;
-    }
+	/**
+	 * @return
+	 */
+	public long getBytesToAdd() {
+		return bytesToAdd;
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_MSG_CHANNEL_WINDOW_ADJUST";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_MSG_CHANNEL_WINDOW_ADJUST";
+	}
 
-    /**
-     * @return
-     */
-    public long getRecipientChannel() {
-        return recipientChannel;
-    }
+	/**
+	 * @return
+	 */
+	public long getRecipientChannel() {
+		return recipientChannel;
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     */
-    protected void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException {
-        try {
-            baw.writeInt(recipientChannel);
-            baw.writeInt(bytesToAdd);
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 */
+	protected void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException {
+		try {
+			baw.writeInt(recipientChannel);
+			baw.writeInt(bytesToAdd);
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     */
-    protected void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException {
-        try {
-            recipientChannel = bar.readInt();
-            bytesToAdd = bar.readInt();
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 */
+	protected void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException {
+		try {
+			recipientChannel = bar.readInt();
+			bytesToAdd = bar.readInt();
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 }

@@ -32,36 +32,36 @@ package com.sshtools.j2ssh.transport.publickey;
  * @version $Revision$
  */
 public abstract class SshPrivateKey {
-    /**
-     * Creates a new SshPrivateKey object.
-     */
-    public SshPrivateKey() {
-    }
+	/**
+	 * Creates a new SshPrivateKey object.
+	 */
+	public SshPrivateKey() {
+	}
 
-    /**
-     * @return
-     */
-    public abstract String getAlgorithmName();
+	/**
+	 * @return
+	 */
+	public abstract String getAlgorithmName();
 
-    /**
-     * @return
-     */
-    public abstract int getBitLength();
+	/**
+	 * @return
+	 */
+	public abstract int getBitLength();
 
-    /**
-     * @return
-     */
-    public abstract byte[] getEncoded();
+	/**
+	 * @return
+	 */
+	public abstract byte[] getEncoded();
 
-    /**
-     * @return
-     */
-    public abstract SshPublicKey getPublicKey();
+	/**
+	 * @return
+	 */
+	public abstract SshPublicKey getPublicKey();
 
-    /**
-     * @param data
-     * @return
-     */
-    public abstract byte[] generateSignature(byte[] data)
-            throws InvalidSshKeySignatureException;
+	/**
+	 * @param data
+	 * @return
+	 */
+	public abstract byte[] generateSignature(byte[] data)
+	    throws InvalidSshKeySignatureException;
 }

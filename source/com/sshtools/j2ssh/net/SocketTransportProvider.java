@@ -35,26 +35,26 @@ import java.net.Socket;
  * @version $Revision$
  */
 public class SocketTransportProvider extends Socket implements TransportProvider {
-    /**
-     * Creates a new SocketTransportProvider object.
-     *
-     * @param host
-     * @param port
-     * @throws IOException
-     */
-    protected SocketTransportProvider(String host, int port)
-            throws IOException {
-        super(host, port);
-    }
+	/**
+	 * Creates a new SocketTransportProvider object.
+	 *
+	 * @param host
+	 * @param port
+	 * @throws IOException
+	 */
+	protected SocketTransportProvider(String host, int port)
+	    throws IOException {
+		super(host, port);
+	}
 
-    /**
-     * @return
-     */
-    public String getProviderDetail() {
-        return toString(); //getRemoteSocketAddress().toString();
-    }
+	/**
+	 * @return
+	 */
+	public String getProviderDetail() {
+		return toString(); //getRemoteSocketAddress().toString();
+	}
 
-    /*public boolean isConnected() {
-       return true;
-     }*/
+	/*public boolean isConnected() {
+	   return true;
+	 }*/
 }

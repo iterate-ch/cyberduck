@@ -37,15 +37,15 @@ package com.sshtools.j2ssh;
  * @since 0.2.0
  */
 public class SshRuntimeException extends RuntimeException {
-    /**
-     * <p/>
-     * Constructs a runtime exception.
-     * </p>
-     *
-     * @param msg the error message
-     * @since 0.2.0
-     */
-    public SshRuntimeException(String msg) {
-        super(msg);
-    }
+	/**
+	 * <p/>
+	 * Constructs a runtime exception.
+	 * </p>
+	 *
+	 * @param msg the error message
+	 * @since 0.2.0
+	 */
+	public SshRuntimeException(String msg) {
+		super(msg);
+	}
 }

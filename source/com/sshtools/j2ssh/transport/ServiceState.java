@@ -39,41 +39,41 @@ import com.sshtools.j2ssh.util.State;
  * @since 0.2.0
  */
 public class ServiceState extends State {
-    /**
-     * The service is unitialized
-     */
-    public final static int SERVICE_UNINITIALIZED = 1;
+	/**
+	 * The service is unitialized
+	 */
+	public final static int SERVICE_UNINITIALIZED = 1;
 
-    /**
-     * The service has started and can send/recieve messages
-     */
-    public final static int SERVICE_STARTED = 2;
+	/**
+	 * The service has started and can send/recieve messages
+	 */
+	public final static int SERVICE_STARTED = 2;
 
-    /**
-     * The service has stopped and no messages can be sent or received
-     */
-    public final static int SERVICE_STOPPED = 3;
+	/**
+	 * The service has stopped and no messages can be sent or received
+	 */
+	public final static int SERVICE_STOPPED = 3;
 
-    /**
-     * <p/>
-     * Constructs the state instance
-     * </p>
-     */
-    public ServiceState() {
-        super(SERVICE_UNINITIALIZED);
-    }
+	/**
+	 * <p/>
+	 * Constructs the state instance
+	 * </p>
+	 */
+	public ServiceState() {
+		super(SERVICE_UNINITIALIZED);
+	}
 
-    /**
-     * <p/>
-     * Evaluates whether the state is valid.
-     * </p>
-     *
-     * @param state
-     * @return
-     * @since 0.2.0
-     */
-    public boolean isValidState(int state) {
-        return ((state == SERVICE_UNINITIALIZED) || (state == SERVICE_STARTED) ||
-                (state == SERVICE_STOPPED));
-    }
+	/**
+	 * <p/>
+	 * Evaluates whether the state is valid.
+	 * </p>
+	 *
+	 * @param state
+	 * @return
+	 * @since 0.2.0
+	 */
+	public boolean isValidState(int state) {
+		return ((state == SERVICE_UNINITIALIZED) || (state == SERVICE_STARTED) ||
+		    (state == SERVICE_STOPPED));
+	}
 }

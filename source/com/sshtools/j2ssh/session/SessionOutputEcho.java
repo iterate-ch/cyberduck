@@ -48,8 +48,8 @@ package com.sshtools.j2ssh.session;
  * @version $Id$
  */
 public interface SessionOutputEcho {
-    /**
-     * @param msg
-     */
-    public void echo(String msg);
+	/**
+	 * @param msg
+	 */
+	public void echo(String msg);
 }

@@ -37,12 +37,12 @@ package com.sshtools.j2ssh.transport;
  * @since 0.2.0
  */
 public class MessageNotAvailableException extends Exception {
-    /**
-     * <p/>
-     * Constructs the excpetion.
-     * </p>
-     */
-    public MessageNotAvailableException() {
-        super("The message is not available");
-    }
+	/**
+	 * <p/>
+	 * Constructs the excpetion.
+	 * </p>
+	 */
+	public MessageNotAvailableException() {
+		super("The message is not available");
+	}
 }

@@ -37,5 +37,5 @@ package com.sshtools.j2ssh.transport;
  * @version $Id$
  */
 public interface SshMessageListener {
-    public void messageReceived(SshMessage msg);
+	public void messageReceived(SshMessage msg);
 }

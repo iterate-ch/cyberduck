@@ -32,9 +32,9 @@ package com.sshtools.j2ssh.authentication;
  * @version $Revision$
  */
 public interface PasswordChangePrompt {
-    /**
-     * @param prompt
-     * @return
-     */
-    public String changePassword(String prompt);
+	/**
+	 * @param prompt
+	 * @return
+	 */
+	public String changePassword(String prompt);
 }

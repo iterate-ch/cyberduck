@@ -37,36 +37,36 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class SshMsgRequestFailure extends SshMessage {
-    /**  */
-    public final static int SSH_MSG_REQUEST_FAILURE = 82;
+	/**  */
+	public final static int SSH_MSG_REQUEST_FAILURE = 82;
 
-    /**
-     * Creates a new SshMsgRequestFailure object.
-     */
-    public SshMsgRequestFailure() {
-        super(SSH_MSG_REQUEST_FAILURE);
-    }
+	/**
+	 * Creates a new SshMsgRequestFailure object.
+	 */
+	public SshMsgRequestFailure() {
+		super(SSH_MSG_REQUEST_FAILURE);
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_MSG_REQUEST_FAILURE";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_MSG_REQUEST_FAILURE";
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     */
-    protected void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException {
-    }
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 */
+	protected void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException {
+	}
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     */
-    protected void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException {
-    }
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 */
+	protected void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException {
+	}
 }

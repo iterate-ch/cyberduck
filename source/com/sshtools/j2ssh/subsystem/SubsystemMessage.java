@@ -38,79 +38,79 @@ import com.sshtools.j2ssh.transport.InvalidMessageException;
  * @version $Revision$
  */
 public abstract class SubsystemMessage {
-    private int type;
+	private int type;
 
-    /**
-     * Creates a new SubsystemMessage object.
-     *
-     * @param type
-     */
-    public SubsystemMessage(int type) {
-        this.type = type;
-    }
+	/**
+	 * Creates a new SubsystemMessage object.
+	 *
+	 * @param type
+	 */
+	public SubsystemMessage(int type) {
+		this.type = type;
+	}
 
-    /**
-     * @return
-     */
-    public abstract String getMessageName();
+	/**
+	 * @return
+	 */
+	public abstract String getMessageName();
 
-    /**
-     * @return
-     */
-    public int getMessageType() {
-        return type;
-    }
+	/**
+	 * @return
+	 */
+	public int getMessageType() {
+		return type;
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     * @throws IOException
-     */
-    public abstract void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException, IOException;
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 * @throws IOException
+	 */
+	public abstract void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException, IOException;
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     * @throws IOException
-     */
-    public abstract void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException, IOException;
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 * @throws IOException
+	 */
+	public abstract void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException, IOException;
 
-    /**
-     * @param data
-     * @throws InvalidMessageException
-     */
-    public void fromByteArray(byte[] data, String encoding) throws InvalidMessageException {
-        try {
-            ByteArrayReader bar = new ByteArrayReader(data, encoding);
-            if (bar.available() > 0) {
-                type = bar.read();
-                constructMessage(bar);
-            }
-            else {
-                throw new InvalidMessageException("Not enough message data to complete the message");
-            }
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("The message data cannot be read!");
-        }
-    }
+	/**
+	 * @param data
+	 * @throws InvalidMessageException
+	 */
+	public void fromByteArray(byte[] data, String encoding) throws InvalidMessageException {
+		try {
+			ByteArrayReader bar = new ByteArrayReader(data, encoding);
+			if(bar.available() > 0) {
+				type = bar.read();
+				constructMessage(bar);
+			}
+			else {
+				throw new InvalidMessageException("Not enough message data to complete the message");
+			}
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("The message data cannot be read!");
+		}
+	}
 
-    /**
-     * @return
-     * @throws InvalidMessageException
-     */
-    public byte[] toByteArray(String encoding) throws InvalidMessageException {
-        try {
-            ByteArrayWriter baw = new ByteArrayWriter(encoding);
-            baw.write(type);
-            this.constructByteArray(baw);
+	/**
+	 * @return
+	 * @throws InvalidMessageException
+	 */
+	public byte[] toByteArray(String encoding) throws InvalidMessageException {
+		try {
+			ByteArrayWriter baw = new ByteArrayWriter(encoding);
+			baw.write(type);
+			this.constructByteArray(baw);
 
-            return baw.toByteArray();
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("The message data cannot be written!");
-        }
-    }
+			return baw.toByteArray();
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("The message data cannot be written!");
+		}
+	}
 }

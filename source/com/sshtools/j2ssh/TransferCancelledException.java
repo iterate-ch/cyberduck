@@ -50,10 +50,10 @@ import java.io.IOException;
  * @version $Id$
  */
 public class TransferCancelledException extends IOException {
-    /**
-     * Creates a new TransferCancelledException object.
-     */
-    public TransferCancelledException() {
-        super();
-    }
+	/**
+	 * Creates a new TransferCancelledException object.
+	 */
+	public TransferCancelledException() {
+		super();
+	}
 }

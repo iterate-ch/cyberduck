@@ -32,18 +32,18 @@ package com.sshtools.j2ssh.authentication;
  * @version $Revision$
  */
 public class AuthenticationProtocolState {
-    /**  */
-    public final static int READY = 1;
+	/**  */
+	public final static int READY = 1;
 
-    /**  */
-    public final static int FAILED = 2;
+	/**  */
+	public final static int FAILED = 2;
 
-    /**  */
-    public final static int PARTIAL = 3;
+	/**  */
+	public final static int PARTIAL = 3;
 
-    /**  */
-    public final static int COMPLETE = 4;
+	/**  */
+	public final static int COMPLETE = 4;
 
-    /**  */
-    public final static int CANCELLED = 5;
+	/**  */
+	public final static int CANCELLED = 5;
 }

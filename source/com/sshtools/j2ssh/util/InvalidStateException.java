@@ -32,12 +32,12 @@ package com.sshtools.j2ssh.util;
  * @version $Revision$
  */
 public class InvalidStateException extends RuntimeException {
-    /**
-     * Creates a new InvalidStateException object.
-     *
-     * @param msg
-     */
-    public InvalidStateException(String msg) {
-        super(msg);
-    }
+	/**
+	 * Creates a new InvalidStateException object.
+	 *
+	 * @param msg
+	 */
+	public InvalidStateException(String msg) {
+		super(msg);
+	}
 }

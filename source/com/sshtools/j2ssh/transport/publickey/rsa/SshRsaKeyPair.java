@@ -44,53 +44,53 @@ import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
  * @version $Revision$
  */
 public class SshRsaKeyPair extends SshKeyPair {
-    private RSAPrivateKey prvKey;
-    private RSAPublicKey pubKey;
+	private RSAPrivateKey prvKey;
+	private RSAPublicKey pubKey;
 
-    /**
-     * Creates a new SshRsaKeyPair object.
-     */
-    public SshRsaKeyPair() {
-    }
+	/**
+	 * Creates a new SshRsaKeyPair object.
+	 */
+	public SshRsaKeyPair() {
+	}
 
-    /**
-     * @param encoded
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public SshPrivateKey decodePrivateKey(byte[] encoded)
-            throws InvalidSshKeyException {
-        return new SshRsaPrivateKey(encoded);
-    }
+	/**
+	 * @param encoded
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public SshPrivateKey decodePrivateKey(byte[] encoded)
+	    throws InvalidSshKeyException {
+		return new SshRsaPrivateKey(encoded);
+	}
 
-    /**
-     * @param encoded
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public SshPublicKey decodePublicKey(byte[] encoded)
-            throws InvalidSshKeyException {
-        return new SshRsaPublicKey(encoded);
-    }
+	/**
+	 * @param encoded
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public SshPublicKey decodePublicKey(byte[] encoded)
+	    throws InvalidSshKeyException {
+		return new SshRsaPublicKey(encoded);
+	}
 
-    /**
-     * @param bits
-     */
-    public void generate(int bits) {
-        try {
-            // Initialize the generator
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-            keyGen.initialize(bits, ConfigurationLoader.getRND());
+	/**
+	 * @param bits
+	 */
+	public void generate(int bits) {
+		try {
+			// Initialize the generator
+			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+			keyGen.initialize(bits, ConfigurationLoader.getRND());
 
-            KeyPair pair = keyGen.generateKeyPair();
+			KeyPair pair = keyGen.generateKeyPair();
 
-            // Get the keys and set
-            setPrivateKey(new SshRsaPrivateKey((RSAPrivateKey)pair.getPrivate(),
-                    (RSAPublicKey)pair.getPublic()));
-        }
-        catch (NoSuchAlgorithmException nsae) {
-            prvKey = null;
-            pubKey = null;
-        }
-    }
+			// Get the keys and set
+			setPrivateKey(new SshRsaPrivateKey((RSAPrivateKey)pair.getPrivate(),
+			    (RSAPublicKey)pair.getPublic()));
+		}
+		catch(NoSuchAlgorithmException nsae) {
+			prvKey = null;
+			pubKey = null;
+		}
+	}
 }

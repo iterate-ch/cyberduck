@@ -39,66 +39,66 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class SshMsgChannelSuccess extends SshMessage {
-    /**  */
-    protected final static int SSH_MSG_CHANNEL_SUCCESS = 99;
-    private long channelId;
+	/**  */
+	protected final static int SSH_MSG_CHANNEL_SUCCESS = 99;
+	private long channelId;
 
-    /**
-     * Creates a new SshMsgChannelSuccess object.
-     *
-     * @param recipientChannelId
-     */
-    public SshMsgChannelSuccess(long recipientChannelId) {
-        super(SSH_MSG_CHANNEL_SUCCESS);
-        channelId = recipientChannelId;
-    }
+	/**
+	 * Creates a new SshMsgChannelSuccess object.
+	 *
+	 * @param recipientChannelId
+	 */
+	public SshMsgChannelSuccess(long recipientChannelId) {
+		super(SSH_MSG_CHANNEL_SUCCESS);
+		channelId = recipientChannelId;
+	}
 
-    /**
-     * Creates a new SshMsgChannelSuccess object.
-     */
-    public SshMsgChannelSuccess() {
-        super(SSH_MSG_CHANNEL_SUCCESS);
-    }
+	/**
+	 * Creates a new SshMsgChannelSuccess object.
+	 */
+	public SshMsgChannelSuccess() {
+		super(SSH_MSG_CHANNEL_SUCCESS);
+	}
 
-    /**
-     * @return
-     */
-    public long getChannelId() {
-        return channelId;
-    }
+	/**
+	 * @return
+	 */
+	public long getChannelId() {
+		return channelId;
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_MSG_CHANNEL_SUCCESS";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_MSG_CHANNEL_SUCCESS";
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     */
-    protected void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException {
-        try {
-            baw.writeInt(channelId);
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 */
+	protected void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException {
+		try {
+			baw.writeInt(channelId);
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     */
-    protected void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException {
-        try {
-            channelId = bar.readInt();
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 */
+	protected void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException {
+		try {
+			channelId = bar.readInt();
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 }

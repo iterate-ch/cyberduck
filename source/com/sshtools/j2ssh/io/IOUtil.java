@@ -34,147 +34,147 @@ import java.io.*;
  * @version $Revision$
  */
 public class IOUtil {
-    /**
-     * @param in
-     * @return
-     */
-    public static boolean closeStream(InputStream in) {
-        try {
-            if (in != null) {
-                in.close();
-            }
+	/**
+	 * @param in
+	 * @return
+	 */
+	public static boolean closeStream(InputStream in) {
+		try {
+			if(in != null) {
+				in.close();
+			}
 
-            return true;
-        }
-        catch (IOException ioe) {
-            return false;
-        }
-    }
+			return true;
+		}
+		catch(IOException ioe) {
+			return false;
+		}
+	}
 
-    /**
-     * @param out
-     * @return
-     */
-    public static boolean closeStream(OutputStream out) {
-        try {
-            if (out != null) {
-                out.close();
-            }
+	/**
+	 * @param out
+	 * @return
+	 */
+	public static boolean closeStream(OutputStream out) {
+		try {
+			if(out != null) {
+				out.close();
+			}
 
-            return true;
-        }
-        catch (IOException ioe) {
-            return false;
-        }
-    }
+			return true;
+		}
+		catch(IOException ioe) {
+			return false;
+		}
+	}
 
-    public static boolean delTree(File file) {
-        if (file.isFile()) {
-            return file.delete();
-        }
-        else {
-            File[] list = file.listFiles();
+	public static boolean delTree(File file) {
+		if(file.isFile()) {
+			return file.delete();
+		}
+		else {
+			File[] list = file.listFiles();
 
-            for (int i = 0; i < list.length; i++) {
-                if (!delTree(list[i])) {
-                    return false;
-                }
-            }
-        }
+			for(int i = 0; i < list.length; i++) {
+				if(!delTree(list[i])) {
+					return false;
+				}
+			}
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    public static void recurseDeleteDirectory(File dir) {
-        File[] files = dir.listFiles(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isDirectory();
-            }
-        });
+	public static void recurseDeleteDirectory(File dir) {
+		File[] files = dir.listFiles(new FileFilter() {
+			public boolean accept(File file) {
+				return file.isDirectory();
+			}
+		});
 
-        if (files == null) {
-            return; // Directory could not be read
-        }
+		if(files == null) {
+			return; // Directory could not be read
+		}
 
-        for (int i = 0; i < files.length; i++) {
-            recurseDeleteDirectory(files[i]);
-            files[i].delete();
-        }
+		for(int i = 0; i < files.length; i++) {
+			recurseDeleteDirectory(files[i]);
+			files[i].delete();
+		}
 
-        files = dir.listFiles(new FileFilter() {
-            public boolean accept(File file) {
-                return !file.isDirectory();
-            }
-        });
+		files = dir.listFiles(new FileFilter() {
+			public boolean accept(File file) {
+				return !file.isDirectory();
+			}
+		});
 
-        for (int i = 0; i < files.length; i++) {
-            files[i].delete();
-        }
+		for(int i = 0; i < files.length; i++) {
+			files[i].delete();
+		}
 
-        dir.delete();
-    }
+		dir.delete();
+	}
 
-    public static void copyFile(File from, File to) throws IOException {
-        if (from.isDirectory()) {
-            if (!to.exists()) {
-                to.mkdir();
-            }
+	public static void copyFile(File from, File to) throws IOException {
+		if(from.isDirectory()) {
+			if(!to.exists()) {
+				to.mkdir();
+			}
 
-            File[] children = from.listFiles();
+			File[] children = from.listFiles();
 
-            for (int i = 0; i < children.length; i++) {
-                if (children[i].getName().equals(".") ||
-                        children[i].getName().equals("..")) {
-                    continue;
-                }
+			for(int i = 0; i < children.length; i++) {
+				if(children[i].getName().equals(".") ||
+				    children[i].getName().equals("..")) {
+					continue;
+				}
 
-                if (children[i].isDirectory()) {
-                    File f = new File(to, children[i].getName());
-                    copyFile(children[i], f);
-                }
-                else {
-                    copyFile(children[i], to);
-                }
-            }
-        }
-        else if (from.isFile() && (to.isDirectory() || to.isFile())) {
-            if (to.isDirectory()) {
-                to = new File(to, from.getName());
-            }
+				if(children[i].isDirectory()) {
+					File f = new File(to, children[i].getName());
+					copyFile(children[i], f);
+				}
+				else {
+					copyFile(children[i], to);
+				}
+			}
+		}
+		else if(from.isFile() && (to.isDirectory() || to.isFile())) {
+			if(to.isDirectory()) {
+				to = new File(to, from.getName());
+			}
 
-            FileInputStream in = new FileInputStream(from);
-            FileOutputStream out = new FileOutputStream(to);
-            byte[] buf = new byte[32678];
-            int read;
+			FileInputStream in = new FileInputStream(from);
+			FileOutputStream out = new FileOutputStream(to);
+			byte[] buf = new byte[32678];
+			int read;
 
-            while ((read = in.read(buf)) > -1) {
-                out.write(buf, 0, read);
-            }
+			while((read = in.read(buf)) > -1) {
+				out.write(buf, 0, read);
+			}
 
-            closeStream(in);
-            closeStream(out);
-        }
-    }
+			closeStream(in);
+			closeStream(out);
+		}
+	}
 
-    public static void transfer(InputStream in, OutputStream out)
-            throws IOException {
-        try {
-            long bytesSoFar = 0;
-            byte[] buffer = new byte[65535];
-            int read;
+	public static void transfer(InputStream in, OutputStream out)
+	    throws IOException {
+		try {
+			long bytesSoFar = 0;
+			byte[] buffer = new byte[65535];
+			int read;
 
-            while ((read = in.read(buffer)) > -1) {
-                if (read > 0) {
-                    out.write(buffer, 0, read);
+			while((read = in.read(buffer)) > -1) {
+				if(read > 0) {
+					out.write(buffer, 0, read);
 
-                    //out.flush();
-                    bytesSoFar += read;
-                }
-            }
-        }
-        finally {
-            closeStream(in);
-            closeStream(out);
-        }
-    }
+					//out.flush();
+					bytesSoFar += read;
+				}
+			}
+		}
+		finally {
+			closeStream(in);
+			closeStream(out);
+		}
+	}
 }

@@ -38,15 +38,15 @@ package com.sshtools.j2ssh.transport;
  * @since 0.2.0
  */
 public class InvalidMessageException extends TransportProtocolException {
-    /**
-     * <p/>
-     * Constructs the message.
-     * </p>
-     *
-     * @param msg the error description
-     * @since 0.2.0
-     */
-    public InvalidMessageException(String msg) {
-        super(msg);
-    }
+	/**
+	 * <p/>
+	 * Constructs the message.
+	 * </p>
+	 *
+	 * @param msg the error description
+	 * @since 0.2.0
+	 */
+	public InvalidMessageException(String msg) {
+		super(msg);
+	}
 }

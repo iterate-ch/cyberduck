@@ -34,129 +34,129 @@ import java.io.Serializable;
  * @version $Revision$
  */
 public class UnsignedInteger32 extends Number implements Serializable {
-    final static long serialVersionUID = 200;
+	final static long serialVersionUID = 200;
 
-    /**  */
-    public final static long MAX_VALUE = 0xffffffffL;
+	/**  */
+	public final static long MAX_VALUE = 0xffffffffL;
 
-    /**  */
-    public final static long MIN_VALUE = 0;
-    private Long value;
+	/**  */
+	public final static long MIN_VALUE = 0;
+	private Long value;
 
-    /**
-     * Creates a new UnsignedInteger32 object.
-     *
-     * @param a
-     * @throws NumberFormatException
-     */
-    public UnsignedInteger32(long a) {
-        if ((a < MIN_VALUE) || (a > MAX_VALUE)) {
-            throw new NumberFormatException();
-        }
+	/**
+	 * Creates a new UnsignedInteger32 object.
+	 *
+	 * @param a
+	 * @throws NumberFormatException
+	 */
+	public UnsignedInteger32(long a) {
+		if((a < MIN_VALUE) || (a > MAX_VALUE)) {
+			throw new NumberFormatException();
+		}
 
-        value = new Long(a);
-    }
+		value = new Long(a);
+	}
 
-    /**
-     * Creates a new UnsignedInteger32 object.
-     *
-     * @param a
-     * @throws NumberFormatException
-     */
-    public UnsignedInteger32(String a) throws NumberFormatException {
-        Long temp = new Long(a);
-        long longValue = temp.longValue();
+	/**
+	 * Creates a new UnsignedInteger32 object.
+	 *
+	 * @param a
+	 * @throws NumberFormatException
+	 */
+	public UnsignedInteger32(String a) throws NumberFormatException {
+		Long temp = new Long(a);
+		long longValue = temp.longValue();
 
-        if ((longValue < MIN_VALUE) || (longValue > MAX_VALUE)) {
-            throw new NumberFormatException();
-        }
+		if((longValue < MIN_VALUE) || (longValue > MAX_VALUE)) {
+			throw new NumberFormatException();
+		}
 
-        value = new Long(longValue);
-    }
+		value = new Long(longValue);
+	}
 
-    /**
-     * @return
-     */
-    public byte byteValue() {
-        return value.byteValue();
-    }
+	/**
+	 * @return
+	 */
+	public byte byteValue() {
+		return value.byteValue();
+	}
 
-    /**
-     * @return
-     */
-    public short shortValue() {
-        return value.shortValue();
-    }
+	/**
+	 * @return
+	 */
+	public short shortValue() {
+		return value.shortValue();
+	}
 
-    /**
-     * @return
-     */
-    public int intValue() {
-        return value.intValue();
-    }
+	/**
+	 * @return
+	 */
+	public int intValue() {
+		return value.intValue();
+	}
 
-    /**
-     * @return
-     */
-    public long longValue() {
-        return value.longValue();
-    }
+	/**
+	 * @return
+	 */
+	public long longValue() {
+		return value.longValue();
+	}
 
-    /**
-     * @return
-     */
-    public float floatValue() {
-        return value.floatValue();
-    }
+	/**
+	 * @return
+	 */
+	public float floatValue() {
+		return value.floatValue();
+	}
 
-    /**
-     * @return
-     */
-    public double doubleValue() {
-        return value.doubleValue();
-    }
+	/**
+	 * @return
+	 */
+	public double doubleValue() {
+		return value.doubleValue();
+	}
 
-    /**
-     * @return
-     */
-    public String toString() {
-        return value.toString();
-    }
+	/**
+	 * @return
+	 */
+	public String toString() {
+		return value.toString();
+	}
 
-    /**
-     * @return
-     */
-    public int hashCode() {
-        return value.hashCode();
-    }
+	/**
+	 * @return
+	 */
+	public int hashCode() {
+		return value.hashCode();
+	}
 
-    /**
-     * @param o
-     * @return
-     */
-    public boolean equals(Object o) {
-        if (!(o instanceof UnsignedInteger32)) {
-            return false;
-        }
+	/**
+	 * @param o
+	 * @return
+	 */
+	public boolean equals(Object o) {
+		if(!(o instanceof UnsignedInteger32)) {
+			return false;
+		}
 
-        return (((UnsignedInteger32)o).value.equals(this.value));
-    }
+		return (((UnsignedInteger32)o).value.equals(this.value));
+	}
 
-    /**
-     * @param x
-     * @param y
-     * @return
-     */
-    public static UnsignedInteger32 add(UnsignedInteger32 x, UnsignedInteger32 y) {
-        return new UnsignedInteger32(x.longValue() + y.longValue());
-    }
+	/**
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public static UnsignedInteger32 add(UnsignedInteger32 x, UnsignedInteger32 y) {
+		return new UnsignedInteger32(x.longValue()+y.longValue());
+	}
 
-    /**
-     * @param x
-     * @param y
-     * @return
-     */
-    public static UnsignedInteger32 add(UnsignedInteger32 x, int y) {
-        return new UnsignedInteger32(x.longValue() + y);
-    }
+	/**
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public static UnsignedInteger32 add(UnsignedInteger32 x, int y) {
+		return new UnsignedInteger32(x.longValue()+y);
+	}
 }

@@ -34,7 +34,7 @@ import java.security.spec.KeySpec;
  * @version $Revision$
  */
 public interface KeyInfo {
-    KeySpec getPrivateKeySpec();
+	KeySpec getPrivateKeySpec();
 
-    KeySpec getPublicKeySpec();
+	KeySpec getPublicKeySpec();
 }

@@ -39,103 +39,103 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class SshMsgChannelExtendedData extends SshMessage {
-    /**  */
-    public final static int SSH_MSG_CHANNEL_EXTENDED_DATA = 95;
+	/**  */
+	public final static int SSH_MSG_CHANNEL_EXTENDED_DATA = 95;
 
-    /**  */
-    public final static int SSH_EXTENDED_DATA_STDERR = 1;
-    private byte[] channelData;
-    private int dataTypeCode;
-    private long recipientChannel;
+	/**  */
+	public final static int SSH_EXTENDED_DATA_STDERR = 1;
+	private byte[] channelData;
+	private int dataTypeCode;
+	private long recipientChannel;
 
-    /**
-     * Creates a new SshMsgChannelExtendedData object.
-     *
-     * @param recipientChannel
-     * @param dataTypeCode
-     * @param channelData
-     */
-    public SshMsgChannelExtendedData(long recipientChannel, int dataTypeCode,
-                                     byte[] channelData) {
-        super(SSH_MSG_CHANNEL_EXTENDED_DATA);
-        this.recipientChannel = recipientChannel;
-        this.dataTypeCode = dataTypeCode;
-        this.channelData = channelData;
-    }
+	/**
+	 * Creates a new SshMsgChannelExtendedData object.
+	 *
+	 * @param recipientChannel
+	 * @param dataTypeCode
+	 * @param channelData
+	 */
+	public SshMsgChannelExtendedData(long recipientChannel, int dataTypeCode,
+	                                 byte[] channelData) {
+		super(SSH_MSG_CHANNEL_EXTENDED_DATA);
+		this.recipientChannel = recipientChannel;
+		this.dataTypeCode = dataTypeCode;
+		this.channelData = channelData;
+	}
 
-    /**
-     * Creates a new SshMsgChannelExtendedData object.
-     */
-    public SshMsgChannelExtendedData() {
-        super(SSH_MSG_CHANNEL_EXTENDED_DATA);
-    }
+	/**
+	 * Creates a new SshMsgChannelExtendedData object.
+	 */
+	public SshMsgChannelExtendedData() {
+		super(SSH_MSG_CHANNEL_EXTENDED_DATA);
+	}
 
-    /**
-     * @return
-     */
-    public byte[] getChannelData() {
-        return channelData;
-    }
+	/**
+	 * @return
+	 */
+	public byte[] getChannelData() {
+		return channelData;
+	}
 
-    /**
-     * @return
-     */
-    public int getDataTypeCode() {
-        return dataTypeCode;
-    }
+	/**
+	 * @return
+	 */
+	public int getDataTypeCode() {
+		return dataTypeCode;
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_MSG_CHANNEL_EXTENDED_DATA";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_MSG_CHANNEL_EXTENDED_DATA";
+	}
 
-    /**
-     * @return
-     */
-    public long getRecipientChannel() {
-        return recipientChannel;
-    }
+	/**
+	 * @return
+	 */
+	public long getRecipientChannel() {
+		return recipientChannel;
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     */
-    protected void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException {
-        try {
-            baw.writeInt(recipientChannel);
-            baw.writeInt(dataTypeCode);
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 */
+	protected void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException {
+		try {
+			baw.writeInt(recipientChannel);
+			baw.writeInt(dataTypeCode);
 
-            if (channelData != null) {
-                baw.writeBinaryString(channelData);
-            }
-            else {
-                baw.writeString("");
-            }
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+			if(channelData != null) {
+				baw.writeBinaryString(channelData);
+			}
+			else {
+				baw.writeString("");
+			}
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     */
-    protected void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException {
-        try {
-            recipientChannel = bar.readInt();
-            dataTypeCode = (int)bar.readInt();
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 */
+	protected void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException {
+		try {
+			recipientChannel = bar.readInt();
+			dataTypeCode = (int)bar.readInt();
 
-            if (bar.available() > 0) {
-                channelData = bar.readBinaryString();
-            }
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+			if(bar.available() > 0) {
+				channelData = bar.readBinaryString();
+			}
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 }

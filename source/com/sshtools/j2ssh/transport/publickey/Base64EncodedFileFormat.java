@@ -41,192 +41,192 @@ import com.sshtools.j2ssh.util.Base64;
  * @version $Revision$
  */
 public abstract class Base64EncodedFileFormat implements SshKeyFormatConversion {
-    /**  */
-    protected String begin;
+	/**  */
+	protected String begin;
 
-    /**  */
-    protected String end;
-    private Map headers = new HashMap();
-    private int MAX_LINE_LENGTH = 70;
+	/**  */
+	protected String end;
+	private Map headers = new HashMap();
+	private int MAX_LINE_LENGTH = 70;
 
-    /**
-     * Creates a new Base64EncodedFileFormat object.
-     *
-     * @param begin
-     * @param end
-     */
-    protected Base64EncodedFileFormat(String begin, String end) {
-        this.begin = begin;
-        this.end = end;
-    }
+	/**
+	 * Creates a new Base64EncodedFileFormat object.
+	 *
+	 * @param begin
+	 * @param end
+	 */
+	protected Base64EncodedFileFormat(String begin, String end) {
+		this.begin = begin;
+		this.end = end;
+	}
 
-    /**
-     * @return
-     */
-    public String getFormatType() {
-        return "Base64Encoded";
-    }
+	/**
+	 * @return
+	 */
+	public String getFormatType() {
+		return "Base64Encoded";
+	}
 
-    /**
-     * @param formattedKey
-     * @return
-     */
-    public boolean isFormatted(byte[] formattedKey) {
-        String test = new String(formattedKey);
+	/**
+	 * @param formattedKey
+	 * @return
+	 */
+	public boolean isFormatted(byte[] formattedKey) {
+		String test = new String(formattedKey);
 
-        if ((test.indexOf(begin) >= 0) && (test.indexOf(end) > 0)) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+		if((test.indexOf(begin) >= 0) && (test.indexOf(end) > 0)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 
-    /**
-     * @param headerTag
-     * @param headerValue
-     */
-    public void setHeaderValue(String headerTag, String headerValue) {
-        headers.put(headerTag, headerValue);
-    }
+	/**
+	 * @param headerTag
+	 * @param headerValue
+	 */
+	public void setHeaderValue(String headerTag, String headerValue) {
+		headers.put(headerTag, headerValue);
+	}
 
-    /**
-     * @param headerTag
-     * @return
-     */
-    public String getHeaderValue(String headerTag) {
-        return (String)headers.get(headerTag);
-    }
+	/**
+	 * @param headerTag
+	 * @return
+	 */
+	public String getHeaderValue(String headerTag) {
+		return (String)headers.get(headerTag);
+	}
 
-    /**
-     * @param formattedKey
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public byte[] getKeyBlob(byte[] formattedKey) throws InvalidSshKeyException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(formattedKey)));
-        String line;
-        String headerTag;
-        String headerValue;
-        String blob = "";
-        int index;
+	/**
+	 * @param formattedKey
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public byte[] getKeyBlob(byte[] formattedKey) throws InvalidSshKeyException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(formattedKey)));
+		String line;
+		String headerTag;
+		String headerValue;
+		String blob = "";
+		int index;
 
-        try {
-            // Read in the lines looking for the start
-            while (true) {
-                line = reader.readLine();
+		try {
+			// Read in the lines looking for the start
+			while(true) {
+				line = reader.readLine();
 
-                if (line == null) {
-                    throw new InvalidSshKeyException("Incorrect file format!");
-                }
+				if(line == null) {
+					throw new InvalidSshKeyException("Incorrect file format!");
+				}
 
-                if (line.endsWith(begin)) {
-                    break;
-                }
-            }
+				if(line.endsWith(begin)) {
+					break;
+				}
+			}
 
-            // Read the headers
-            while (true) {
-                line = reader.readLine();
+			// Read the headers
+			while(true) {
+				line = reader.readLine();
 
-                if (line == null) {
-                    throw new InvalidSshKeyException("Incorrect file format!");
-                }
+				if(line == null) {
+					throw new InvalidSshKeyException("Incorrect file format!");
+				}
 
-                index = line.indexOf(": ");
+				index = line.indexOf(": ");
 
-                if (index > 0) {
-                    while (line.endsWith("\\")) {
-                        line = line.substring(0, line.length() - 1);
+				if(index > 0) {
+					while(line.endsWith("\\")) {
+						line = line.substring(0, line.length()-1);
 
-                        String tmp = reader.readLine();
+						String tmp = reader.readLine();
 
-                        if (tmp == null) {
-                            throw new InvalidSshKeyException("Incorrect file format!");
-                        }
+						if(tmp == null) {
+							throw new InvalidSshKeyException("Incorrect file format!");
+						}
 
-                        line += tmp;
-                    }
+						line += tmp;
+					}
 
-                    // Record the header
-                    headerTag = line.substring(0, index);
-                    headerValue = line.substring(index + 2);
-                    headers.put(headerTag, headerValue);
-                }
-                else {
-                    break;
-                }
-            }
+					// Record the header
+					headerTag = line.substring(0, index);
+					headerValue = line.substring(index+2);
+					headers.put(headerTag, headerValue);
+				}
+				else {
+					break;
+				}
+			}
 
-            // This is now the public key blob Base64 encoded
-            ByteArrayWriter baw = new ByteArrayWriter();
+			// This is now the public key blob Base64 encoded
+			ByteArrayWriter baw = new ByteArrayWriter();
 
-            while (true) {
-                blob += line;
-                line = reader.readLine();
+			while(true) {
+				blob += line;
+				line = reader.readLine();
 
-                if (line == null) {
-                    throw new InvalidSshKeyException("Invalid file format!");
-                }
+				if(line == null) {
+					throw new InvalidSshKeyException("Invalid file format!");
+				}
 
-                if (line.endsWith(end)) {
-                    break;
-                }
-            }
+				if(line.endsWith(end)) {
+					break;
+				}
+			}
 
-            // Convert the blob to some useful data
-            return Base64.decode(blob);
-        }
-        catch (IOException ioe) {
-            throw new InvalidSshKeyException();
-        }
-    }
+			// Convert the blob to some useful data
+			return Base64.decode(blob);
+		}
+		catch(IOException ioe) {
+			throw new InvalidSshKeyException();
+		}
+	}
 
-    /**
-     * @param keyblob
-     * @return
-     */
-    public byte[] formatKey(byte[] keyblob) {
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            String headerTag;
-            String headerValue;
-            String line;
-            out.write(begin.getBytes());
-            out.write('\n');
+	/**
+	 * @param keyblob
+	 * @return
+	 */
+	public byte[] formatKey(byte[] keyblob) {
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			String headerTag;
+			String headerValue;
+			String line;
+			out.write(begin.getBytes());
+			out.write('\n');
 
-            int pos;
-            Set tags = headers.keySet();
-            Iterator it = tags.iterator();
+			int pos;
+			Set tags = headers.keySet();
+			Iterator it = tags.iterator();
 
-            while (it.hasNext()) {
-                headerTag = (String)it.next();
-                headerValue = (String)headers.get(headerTag);
+			while(it.hasNext()) {
+				headerTag = (String)it.next();
+				headerValue = (String)headers.get(headerTag);
 
-                String header = headerTag + ": " + headerValue;
-                pos = 0;
+				String header = headerTag+": "+headerValue;
+				pos = 0;
 
-                while (pos < header.length()) {
-                    line = header.substring(pos,
-                            (((pos + MAX_LINE_LENGTH) < header.length())
-                            ? (pos + MAX_LINE_LENGTH) : header.length())) +
-                            (((pos + MAX_LINE_LENGTH) < header.length()) ? "\\" : "");
-                    out.write(line.getBytes());
-                    out.write('\n');
-                    pos += MAX_LINE_LENGTH;
-                }
-            }
+				while(pos < header.length()) {
+					line = header.substring(pos,
+					    (((pos+MAX_LINE_LENGTH) < header.length())
+					     ? (pos+MAX_LINE_LENGTH) : header.length()))+
+					    (((pos+MAX_LINE_LENGTH) < header.length()) ? "\\" : "");
+					out.write(line.getBytes());
+					out.write('\n');
+					pos += MAX_LINE_LENGTH;
+				}
+			}
 
-            String encoded = Base64.encodeBytes(keyblob, false);
-            out.write(encoded.getBytes());
-            out.write('\n');
-            out.write(end.getBytes());
-            out.write('\n');
+			String encoded = Base64.encodeBytes(keyblob, false);
+			out.write(encoded.getBytes());
+			out.write('\n');
+			out.write(end.getBytes());
+			out.write('\n');
 
-            return out.toByteArray();
-        }
-        catch (IOException ioe) {
-            return null;
-        }
-    }
+			return out.toByteArray();
+		}
+		catch(IOException ioe) {
+			return null;
+		}
+	}
 }

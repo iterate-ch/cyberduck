@@ -30,9 +30,6 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import ch.cyberduck.core.Transcript;
-import ch.cyberduck.core.TranscriptFactory;
 import com.sshtools.j2ssh.connection.Channel;
 import com.sshtools.j2ssh.connection.SshMsgChannelData;
 import com.sshtools.j2ssh.connection.SshMsgChannelExtendedData;
@@ -41,150 +38,153 @@ import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.DynamicBuffer;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 
+import ch.cyberduck.core.Transcript;
+import ch.cyberduck.core.TranscriptFactory;
+
 public abstract class SubsystemChannel extends Channel {
-    private static Log log = LogFactory.getLog(SubsystemChannel.class);
-    Integer exitCode = null;
-    String name;
-    protected SubsystemMessageStore messageStore;
-    DynamicBuffer buffer = new DynamicBuffer();
-    int nextMessageLength = -1;
+	private static Log log = LogFactory.getLog(SubsystemChannel.class);
+	Integer exitCode = null;
+	String name;
+	protected SubsystemMessageStore messageStore;
+	DynamicBuffer buffer = new DynamicBuffer();
+	int nextMessageLength = -1;
 	private String encoding;
-    private Transcript transcript;
+	private Transcript transcript;
 
-    public SubsystemChannel(String name, String encoding) {
+	public SubsystemChannel(String name, String encoding) {
 		this(name, new SubsystemMessageStore(encoding), encoding);
-    }
+	}
 
-    public SubsystemChannel(String name, SubsystemMessageStore messageStore, String encoding) {
-        this.name = name;
-        this.messageStore = messageStore;
+	public SubsystemChannel(String name, SubsystemMessageStore messageStore, String encoding) {
+		this.name = name;
+		this.messageStore = messageStore;
 		this.encoding = encoding;
-        this.transcript = TranscriptFactory.getImpl(name); //@nice get proper logger
-    }
+		this.transcript = TranscriptFactory.getImpl(name); //@nice get proper logger
+	}
 
-    public String getChannelType() {
-        return "session";
-    }
+	public String getChannelType() {
+		return "session";
+	}
 
-    protected void sendMessage(SubsystemMessage msg) throws InvalidMessageException, IOException {
-        transcript.log("> " + msg.getMessageName());
-        if (log.isDebugEnabled()) {
-            log.debug("Sending " + msg.getMessageName() + " subsystem message");
-        }
+	protected void sendMessage(SubsystemMessage msg) throws InvalidMessageException, IOException {
+		transcript.log("> "+msg.getMessageName());
+		if(log.isDebugEnabled()) {
+			log.debug("Sending "+msg.getMessageName()+" subsystem message");
+		}
 
-        byte[] msgdata = msg.toByteArray(encoding);
+		byte[] msgdata = msg.toByteArray(encoding);
 
-        // Write the message length
-        sendChannelData(ByteArrayWriter.encodeInt(msgdata.length));
+		// Write the message length
+		sendChannelData(ByteArrayWriter.encodeInt(msgdata.length));
 
-        // Write the message data
-        sendChannelData(msgdata);
-    }
+		// Write the message data
+		sendChannelData(msgdata);
+	}
 
-    protected void onChannelRequest(String requestType, boolean wantReply,
-                                    byte[] requestData) throws java.io.IOException {
-        log.debug("Channel Request received: " + requestType);
+	protected void onChannelRequest(String requestType, boolean wantReply,
+	                                byte[] requestData) throws java.io.IOException {
+		log.debug("Channel Request received: "+requestType);
 
-        if (requestType.equals("exit-status")) {
-            exitCode = new Integer((int)ByteArrayReader.readInt(requestData, 0));
-            log.debug("Exit code of " + exitCode.toString() + " received");
-        }
-        else if (requestType.equals("exit-signal")) {
-            ByteArrayReader bar = new ByteArrayReader(requestData);
-            String signal = bar.readString();
-            boolean coredump = bar.read() != 0;
-            String message = bar.readString();
-            String language = bar.readString();
-            log.debug("Exit signal " + signal + " received");
-            log.debug("Signal message: " + message);
-            log.debug("Core dumped: " + String.valueOf(coredump));
+		if(requestType.equals("exit-status")) {
+			exitCode = new Integer((int)ByteArrayReader.readInt(requestData, 0));
+			log.debug("Exit code of "+exitCode.toString()+" received");
+		}
+		else if(requestType.equals("exit-signal")) {
+			ByteArrayReader bar = new ByteArrayReader(requestData);
+			String signal = bar.readString();
+			boolean coredump = bar.read() != 0;
+			String message = bar.readString();
+			String language = bar.readString();
+			log.debug("Exit signal "+signal+" received");
+			log.debug("Signal message: "+message);
+			log.debug("Core dumped: "+String.valueOf(coredump));
 
-            /*if (signalListener != null) {
-              signalListener.onExitSignal(signal, coredump, message);
-                       }*/
-        }
-        else if (requestType.equals("xon-xoff")) {
-            /*if (requestData.length >= 1) {
-              localFlowControl = (requestData[0] != 0);
-                       }*/
-        }
-        else if (requestType.equals("signal")) {
-            String signal = ByteArrayReader.readString(requestData, 0);
-            log.debug("Signal " + signal + " received");
+			/*if (signalListener != null) {
+			  signalListener.onExitSignal(signal, coredump, message);
+			           }*/
+		}
+		else if(requestType.equals("xon-xoff")) {
+			/*if (requestData.length >= 1) {
+			  localFlowControl = (requestData[0] != 0);
+			           }*/
+		}
+		else if(requestType.equals("signal")) {
+			String signal = ByteArrayReader.readString(requestData, 0);
+			log.debug("Signal "+signal+" received");
 
-            /*if (signalListener != null) {
-              signalListener.onSignal(signal);
-                       }*/
-        }
-        else {
-            if (wantReply) {
-                connection.sendChannelRequestFailure(this);
-            }
-        }
-    }
+			/*if (signalListener != null) {
+			  signalListener.onSignal(signal);
+			           }*/
+		}
+		else {
+			if(wantReply) {
+				connection.sendChannelRequestFailure(this);
+			}
+		}
+	}
 
-    protected void onChannelExtData(SshMsgChannelExtendedData msg)
-            throws java.io.IOException {
-    }
+	protected void onChannelExtData(SshMsgChannelExtendedData msg)
+	    throws java.io.IOException {
+	}
 
-    protected void onChannelData(SshMsgChannelData msg)
-            throws java.io.IOException {
-        // Write the data to a temporary buffer that may also contain data
-        // that has not been processed
-        buffer.getOutputStream().write(msg.getChannelData());
+	protected void onChannelData(SshMsgChannelData msg)
+	    throws java.io.IOException {
+		// Write the data to a temporary buffer that may also contain data
+		// that has not been processed
+		buffer.getOutputStream().write(msg.getChannelData());
 
-        int read;
-        byte[] tmp = new byte[4];
-        byte[] msgdata;
+		int read;
+		byte[] tmp = new byte[4];
+		byte[] msgdata;
 
-        // Now process any outstanding messages
-        while (buffer.getInputStream().available() > 4) {
-            if (nextMessageLength == -1) {
-                read = 0;
+		// Now process any outstanding messages
+		while(buffer.getInputStream().available() > 4) {
+			if(nextMessageLength == -1) {
+				read = 0;
 
-                while ((read += buffer.getInputStream().read(tmp)) < 4) {
-                    ;
-                }
+				while((read += buffer.getInputStream().read(tmp)) < 4) {
+					;
+				}
 
-                nextMessageLength = (int)ByteArrayReader.readInt(tmp, 0);
-            }
+				nextMessageLength = (int)ByteArrayReader.readInt(tmp, 0);
+			}
 
-            if (buffer.getInputStream().available() >= nextMessageLength) {
-                msgdata = new byte[nextMessageLength];
-                buffer.getInputStream().read(msgdata);
-                messageStore.addMessage(msgdata);
-                nextMessageLength = -1;
-            }
-            else {
-                break;
-            }
-        }
-    }
+			if(buffer.getInputStream().available() >= nextMessageLength) {
+				msgdata = new byte[nextMessageLength];
+				buffer.getInputStream().read(msgdata);
+				messageStore.addMessage(msgdata);
+				nextMessageLength = -1;
+			}
+			else {
+				break;
+			}
+		}
+	}
 
-    protected void onChannelEOF() throws java.io.IOException {
-    }
+	protected void onChannelEOF() throws java.io.IOException {
+	}
 
-    protected void onChannelClose() throws java.io.IOException {
-    }
+	protected void onChannelClose() throws java.io.IOException {
+	}
 
-    public byte[] getChannelOpenData() {
-        return null;
-    }
+	public byte[] getChannelOpenData() {
+		return null;
+	}
 
-    protected void onChannelOpen() throws java.io.IOException {
-    }
+	protected void onChannelOpen() throws java.io.IOException {
+	}
 
-    public boolean startSubsystem() throws IOException {
-        log.info("Starting " + name + " subsystem");
+	public boolean startSubsystem() throws IOException {
+		log.info("Starting "+name+" subsystem");
 
-        ByteArrayWriter baw = new ByteArrayWriter();
-        baw.writeString(name);
+		ByteArrayWriter baw = new ByteArrayWriter();
+		baw.writeString(name);
 
-        return connection.sendChannelRequest(this, "subsystem", true,
-                baw.toByteArray());
-    }
+		return connection.sendChannelRequest(this, "subsystem", true,
+		    baw.toByteArray());
+	}
 
-    public byte[] getChannelConfirmationData() {
-        return null;
-    }
+	public byte[] getChannelConfirmationData() {
+		return null;
+	}
 }

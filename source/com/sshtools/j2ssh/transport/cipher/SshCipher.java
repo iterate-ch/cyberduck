@@ -34,42 +34,42 @@ import com.sshtools.j2ssh.transport.AlgorithmOperationException;
  * @version $Revision$
  */
 public abstract class SshCipher {
-    /**  */
-    public static final int ENCRYPT_MODE = 0;
+	/**  */
+	public static final int ENCRYPT_MODE = 0;
 
-    /**  */
-    public static final int DECRYPT_MODE = 1;
+	/**  */
+	public static final int DECRYPT_MODE = 1;
 
-    /**
-     * @return
-     */
-    public abstract int getBlockSize();
+	/**
+	 * @return
+	 */
+	public abstract int getBlockSize();
 
-    /**
-     * @param mode
-     * @param iv
-     * @param keydata
-     * @throws AlgorithmOperationException
-     */
-    public abstract void init(int mode, byte[] iv, byte[] keydata)
-            throws AlgorithmOperationException;
+	/**
+	 * @param mode
+	 * @param iv
+	 * @param keydata
+	 * @throws AlgorithmOperationException
+	 */
+	public abstract void init(int mode, byte[] iv, byte[] keydata)
+	    throws AlgorithmOperationException;
 
-    /**
-     * @param data
-     * @return
-     * @throws AlgorithmOperationException
-     */
-    public byte[] transform(byte[] data) throws AlgorithmOperationException {
-        return transform(data, 0, data.length);
-    }
+	/**
+	 * @param data
+	 * @return
+	 * @throws AlgorithmOperationException
+	 */
+	public byte[] transform(byte[] data) throws AlgorithmOperationException {
+		return transform(data, 0, data.length);
+	}
 
-    /**
-     * @param data
-     * @param offset
-     * @param len
-     * @return
-     * @throws AlgorithmOperationException
-     */
-    public abstract byte[] transform(byte[] data, int offset, int len)
-            throws AlgorithmOperationException;
+	/**
+	 * @param data
+	 * @param offset
+	 * @param len
+	 * @return
+	 * @throws AlgorithmOperationException
+	 */
+	public abstract byte[] transform(byte[] data, int offset, int len)
+	    throws AlgorithmOperationException;
 }

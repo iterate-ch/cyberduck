@@ -32,7 +32,6 @@ import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.sshtools.j2ssh.SshThread;
 import com.sshtools.j2ssh.connection.ChannelState;
 import com.sshtools.j2ssh.io.ByteArrayReader;
@@ -47,171 +46,171 @@ import com.sshtools.j2ssh.util.StartStopState;
  * @version $Revision$
  */
 public abstract class SubsystemClient implements Runnable {
-    private static Log log = LogFactory.getLog(SubsystemClient.class);
-    private InputStream in;
-    private OutputStream out;
-    private Thread thread;
-    private String name;
+	private static Log log = LogFactory.getLog(SubsystemClient.class);
+	private InputStream in;
+	private OutputStream out;
+	private Thread thread;
+	private String name;
 	private String encoding;
-    private StartStopState state = new StartStopState(StartStopState.STOPPED);
+	private StartStopState state = new StartStopState(StartStopState.STOPPED);
 
-    /**  */
-    protected SubsystemMessageStore messageStore;
+	/**  */
+	protected SubsystemMessageStore messageStore;
 
-    /**  */
-    protected SessionChannelClient session;
+	/**  */
+	protected SessionChannelClient session;
 
-    /**
-     * Creates a new SubsystemClient object.
-     *
-     * @param name
-     */
-    public SubsystemClient(String name, String encoding) {
-        this(name, new SubsystemMessageStore(encoding), encoding);
-    }
-	
-    public SubsystemClient(String name, SubsystemMessageStore messageStore, String encoding) {
-        this.name = name;
-        this.messageStore = messageStore;
+	/**
+	 * Creates a new SubsystemClient object.
+	 *
+	 * @param name
+	 */
+	public SubsystemClient(String name, String encoding) {
+		this(name, new SubsystemMessageStore(encoding), encoding);
+	}
+
+	public SubsystemClient(String name, SubsystemMessageStore messageStore, String encoding) {
+		this.name = name;
+		this.messageStore = messageStore;
 		this.encoding = encoding;
-    }
-	
-    /**
-     * @return
-     */
-    public boolean isClosed() {
-        return state.getValue() == StartStopState.STOPPED;
-    }
+	}
 
-    /**
-     * @param session
-     */
-    public void setSessionChannel(SessionChannelClient session) {
-        this.session = session;
-        this.in = session.getInputStream();
-        this.out = session.getOutputStream();
-        session.setName(name);
-    }
+	/**
+	 * @return
+	 */
+	public boolean isClosed() {
+		return state.getValue() == StartStopState.STOPPED;
+	}
 
-    /**
-     * @return
-     */
-    public SessionChannelClient getSessionChannel() {
-        return this.session;
-    }
+	/**
+	 * @param session
+	 */
+	public void setSessionChannel(SessionChannelClient session) {
+		this.session = session;
+		this.in = session.getInputStream();
+		this.out = session.getOutputStream();
+		session.setName(name);
+	}
 
-    /**
-     * @return
-     * @throws IOException
-     */
-    public boolean start() throws IOException {
-        thread = new SshThread(this, name + " subsystem", true);
+	/**
+	 * @return
+	 */
+	public SessionChannelClient getSessionChannel() {
+		return this.session;
+	}
 
-        if (session == null) {
-            throw new IOException("No valid session is attached to the subsystem!");
-        }
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	public boolean start() throws IOException {
+		thread = new SshThread(this, name+" subsystem", true);
 
-        if (session.getState().getValue() != ChannelState.CHANNEL_OPEN) {
-            throw new IOException("The session is not open!");
-        }
+		if(session == null) {
+			throw new IOException("No valid session is attached to the subsystem!");
+		}
 
-        thread.start();
+		if(session.getState().getValue() != ChannelState.CHANNEL_OPEN) {
+			throw new IOException("The session is not open!");
+		}
 
-        return onStart();
-    }
+		thread.start();
 
-    /**
-     * @return
-     * @throws IOException
-     */
-    protected abstract boolean onStart() throws IOException;
+		return onStart();
+	}
 
-    /**
-     * @return
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	protected abstract boolean onStart() throws IOException;
 
-    /**
-     * @param msg
-     * @throws InvalidMessageException
-     * @throws IOException
-     */
-    protected void sendMessage(SubsystemMessage msg) throws InvalidMessageException, IOException {
+	/**
+	 * @return
+	 */
+	public String getName() {
+		return name;
+	}
 
-        if (log.isDebugEnabled()) {
-            log.debug("Sending " + msg.getMessageName() + " subsystem message");
-        }
+	/**
+	 * @param msg
+	 * @throws InvalidMessageException
+	 * @throws IOException
+	 */
+	protected void sendMessage(SubsystemMessage msg) throws InvalidMessageException, IOException {
 
-        byte[] msgdata = msg.toByteArray(this.encoding);
+		if(log.isDebugEnabled()) {
+			log.debug("Sending "+msg.getMessageName()+" subsystem message");
+		}
 
-        // Write the message length
-        out.write(ByteArrayWriter.encodeInt(msgdata.length));
+		byte[] msgdata = msg.toByteArray(this.encoding);
 
-        // Write the message data
-        out.write(msgdata);
-    }
+		// Write the message length
+		out.write(ByteArrayWriter.encodeInt(msgdata.length));
 
-    /**
-     *
-     */
-    public void run() {
-        int read;
-        int len;
-        int pos;
-        byte[] buffer = new byte[4];
-        byte[] msg;
-        state.setValue(StartStopState.STARTED);
+		// Write the message data
+		out.write(msgdata);
+	}
 
-        try {
-            // read the first four bytes of data to determine the susbsytem
-            // message length
-            while ((state.getValue() == StartStopState.STARTED) &&
-                    (session.getState().getValue() == ChannelState.CHANNEL_OPEN)) {
-                read = in.read(buffer);
+	/**
+	 *
+	 */
+	public void run() {
+		int read;
+		int len;
+		int pos;
+		byte[] buffer = new byte[4];
+		byte[] msg;
+		state.setValue(StartStopState.STARTED);
 
-                if (read > 0) {
-                    len = (int)ByteArrayReader.readInt(buffer, 0);
-                    msg = new byte[len];
-                    pos = 0;
+		try {
+			// read the first four bytes of data to determine the susbsytem
+			// message length
+			while((state.getValue() == StartStopState.STARTED) &&
+			    (session.getState().getValue() == ChannelState.CHANNEL_OPEN)) {
+				read = in.read(buffer);
 
-                    while (pos < len) {
-                        read = in.read(msg, pos, msg.length - pos);
+				if(read > 0) {
+					len = (int)ByteArrayReader.readInt(buffer, 0);
+					msg = new byte[len];
+					pos = 0;
 
-                        if (read > 0) {
-                            pos += read;
-                        }
-                        else if (read == -1) {
-                            break;
-                        }
-                    }
+					while(pos < len) {
+						read = in.read(msg, pos, msg.length-pos);
 
-                    messageStore.addMessage(msg);
-                    msg = null;
-                }
-                else if (read == -1) {
-                    break;
-                }
-            }
-        }
-        catch (IOException ioe) {
-            log.fatal("Subsystem message loop failed!", ioe);
-        }
-        finally {
-            state.setValue(StartStopState.STOPPED);
-        }
+						if(read > 0) {
+							pos += read;
+						}
+						else if(read == -1) {
+							break;
+						}
+					}
 
-        thread = null;
-    }
+					messageStore.addMessage(msg);
+					msg = null;
+				}
+				else if(read == -1) {
+					break;
+				}
+			}
+		}
+		catch(IOException ioe) {
+			log.fatal("Subsystem message loop failed!", ioe);
+		}
+		finally {
+			state.setValue(StartStopState.STOPPED);
+		}
 
-    /**
-     * @throws IOException
-     */
-    public void stop() throws IOException {
-        state.setValue(StartStopState.STOPPED);
-        in.close();
-        out.close();
-        session.close();
-    }
+		thread = null;
+	}
+
+	/**
+	 * @throws IOException
+	 */
+	public void stop() throws IOException {
+		state.setValue(StartStopState.STOPPED);
+		in.close();
+		out.close();
+		session.close();
+	}
 }

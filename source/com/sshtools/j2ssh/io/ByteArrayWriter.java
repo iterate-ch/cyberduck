@@ -37,136 +37,136 @@ import ch.cyberduck.core.Codec;
  * @version $Revision$
  */
 public class ByteArrayWriter extends ByteArrayOutputStream {
-	
+
 	private String encoding;
-	
-    public ByteArrayWriter() {
+
+	public ByteArrayWriter() {
 		//
-    }
+	}
 
-    public ByteArrayWriter(String encoding) {
+	public ByteArrayWriter(String encoding) {
 		this.encoding = encoding;
-    }
+	}
 
-    /**
-     * @param bi
-     * @throws IOException
-     */
-    public void writeBigInteger(BigInteger bi) throws IOException {
-        byte[] raw = bi.toByteArray();
-        writeInt(raw.length);
-        write(raw);
-    }
+	/**
+	 * @param bi
+	 * @throws IOException
+	 */
+	public void writeBigInteger(BigInteger bi) throws IOException {
+		byte[] raw = bi.toByteArray();
+		writeInt(raw.length);
+		write(raw);
+	}
 
-    /**
-     * @param b
-     * @throws IOException
-     */
-    public void writeBoolean(boolean b) throws IOException {
-        write(b ? 1 : 0);
-    }
+	/**
+	 * @param b
+	 * @throws IOException
+	 */
+	public void writeBoolean(boolean b) throws IOException {
+		write(b ? 1 : 0);
+	}
 
-    /**
-     * @param data
-     * @throws IOException
-     */
-    public void writeBinaryString(byte[] data) throws IOException {
-        writeInt(data.length);
-        write(data);
-    }
+	/**
+	 * @param data
+	 * @throws IOException
+	 */
+	public void writeBinaryString(byte[] data) throws IOException {
+		writeInt(data.length);
+		write(data);
+	}
 
-    /**
-     * @param i
-     * @throws IOException
-     */
-    public void writeInt(long i) throws IOException {
-        byte[] raw = new byte[4];
-        raw[0] = (byte)(i >> 24);
-        raw[1] = (byte)(i >> 16);
-        raw[2] = (byte)(i >> 8);
-        raw[3] = (byte)(i);
-        write(raw);
-    }
+	/**
+	 * @param i
+	 * @throws IOException
+	 */
+	public void writeInt(long i) throws IOException {
+		byte[] raw = new byte[4];
+		raw[0] = (byte)(i>> 24);
+		raw[1] = (byte)(i>> 16);
+		raw[2] = (byte)(i>> 8);
+		raw[3] = (byte)(i);
+		write(raw);
+	}
 
-    /**
-     * @param i
-     * @throws IOException
-     */
-    public void writeInt(int i) throws IOException {
-        byte[] raw = new byte[4];
-        raw[0] = (byte)(i >> 24);
-        raw[1] = (byte)(i >> 16);
-        raw[2] = (byte)(i >> 8);
-        raw[3] = (byte)(i);
-        write(raw);
-    }
+	/**
+	 * @param i
+	 * @throws IOException
+	 */
+	public void writeInt(int i) throws IOException {
+		byte[] raw = new byte[4];
+		raw[0] = (byte)(i>> 24);
+		raw[1] = (byte)(i>> 16);
+		raw[2] = (byte)(i>> 8);
+		raw[3] = (byte)(i);
+		write(raw);
+	}
 
-    /**
-     * @param i
-     * @return
-     */
-    public static byte[] encodeInt(int i) {
-        byte[] raw = new byte[4];
-        raw[0] = (byte)(i >> 24);
-        raw[1] = (byte)(i >> 16);
-        raw[2] = (byte)(i >> 8);
-        raw[3] = (byte)(i);
+	/**
+	 * @param i
+	 * @return
+	 */
+	public static byte[] encodeInt(int i) {
+		byte[] raw = new byte[4];
+		raw[0] = (byte)(i>> 24);
+		raw[1] = (byte)(i>> 16);
+		raw[2] = (byte)(i>> 8);
+		raw[3] = (byte)(i);
 
-        return raw;
-    }
+		return raw;
+	}
 
-    /**
-     * @param value
-     * @throws IOException
-     */
-    public void writeUINT32(UnsignedInteger32 value) throws IOException {
-        writeInt(value.longValue());
-    }
+	/**
+	 * @param value
+	 * @throws IOException
+	 */
+	public void writeUINT32(UnsignedInteger32 value) throws IOException {
+		writeInt(value.longValue());
+	}
 
-    /**
-     * @param value
-     * @throws IOException
-     */
-    public void writeUINT64(UnsignedInteger64 value) throws IOException {
-        byte[] raw = new byte[8];
-        byte[] bi = value.bigIntValue().toByteArray();
-        System.arraycopy(bi, 0, raw, raw.length - bi.length, bi.length);
+	/**
+	 * @param value
+	 * @throws IOException
+	 */
+	public void writeUINT64(UnsignedInteger64 value) throws IOException {
+		byte[] raw = new byte[8];
+		byte[] bi = value.bigIntValue().toByteArray();
+		System.arraycopy(bi, 0, raw, raw.length-bi.length, bi.length);
 
-        // Pad the raw data
-        write(raw);
-    }
+		// Pad the raw data
+		write(raw);
+	}
 
-    /**
-     * @param array
-     * @param pos
-     * @param value
-     * @throws IOException
-     */
-    public static void writeIntToArray(byte[] array, int pos, int value)
-            throws IOException {
-        if ((array.length - pos) < 4) {
-            throw new IOException("Not enough data in array to write integer at position " +
-                    String.valueOf(pos));
-        }
+	/**
+	 * @param array
+	 * @param pos
+	 * @param value
+	 * @throws IOException
+	 */
+	public static void writeIntToArray(byte[] array, int pos, int value)
+	    throws IOException {
+		if((array.length-pos) < 4) {
+			throw new IOException("Not enough data in array to write integer at position "+
+			    String.valueOf(pos));
+		}
 
-        array[pos] = (byte)(value >> 24);
-        array[pos + 1] = (byte)(value >> 16);
-        array[pos + 2] = (byte)(value >> 8);
-        array[pos + 3] = (byte)(value);
-    }
+		array[pos] = (byte)(value>> 24);
+		array[pos+1] = (byte)(value>> 16);
+		array[pos+2] = (byte)(value>> 8);
+		array[pos+3] = (byte)(value);
+	}
 
-    /**
-     * @param str
-     * @throws IOException
-     */
-    public void writeString(String s) throws IOException {
-        if (s == null) {
-            writeInt(0);
-        }
-        else {
+	/**
+	 * @param str
+	 * @throws IOException
+	 */
+	public void writeString(String s) throws IOException {
+		if(s == null) {
+			writeInt(0);
+		}
+		else {
 			byte[] b = Codec.encode(s, encoding);
-            writeInt(b.length);
+			writeInt(b.length);
 			write(b);
-        }
-    }
+		}
+	}
 }

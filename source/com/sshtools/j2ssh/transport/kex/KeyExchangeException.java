@@ -34,12 +34,12 @@ import com.sshtools.j2ssh.transport.TransportProtocolException;
  * @version $Revision$
  */
 public class KeyExchangeException extends TransportProtocolException {
-    /**
-     * Creates a new KeyExchangeException object.
-     *
-     * @param msg
-     */
-    public KeyExchangeException(String msg) {
-        super(msg);
-    }
+	/**
+	 * Creates a new KeyExchangeException object.
+	 *
+	 * @param msg
+	 */
+	public KeyExchangeException(String msg) {
+		super(msg);
+	}
 }

@@ -39,70 +39,70 @@ import com.sshtools.j2ssh.transport.InvalidMessageException;
  * @version $Revision$
  */
 public class SubsystemOutputStream extends OutputStream {
-    // Temporary storage buffer to build up a message
-    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    SubsystemMessageStore messageStore;
-    int messageStart = 0;
+	// Temporary storage buffer to build up a message
+	ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+	SubsystemMessageStore messageStore;
+	int messageStart = 0;
 
-    /**
-     * Creates a new SubsystemOutputStream object.
-     *
-     * @param messageStore
-     */
-    public SubsystemOutputStream(SubsystemMessageStore messageStore) {
-        super();
-        this.messageStore = messageStore;
-    }
+	/**
+	 * Creates a new SubsystemOutputStream object.
+	 *
+	 * @param messageStore
+	 */
+	public SubsystemOutputStream(SubsystemMessageStore messageStore) {
+		super();
+		this.messageStore = messageStore;
+	}
 
-    /**
-     * @param b
-     * @param off
-     * @param len
-     * @throws IOException
-     */
-    public void write(byte[] b, int off, int len) throws IOException {
-        // Write the data
-        super.write(b, off, len);
-        processMessage();
-    }
+	/**
+	 * @param b
+	 * @param off
+	 * @param len
+	 * @throws IOException
+	 */
+	public void write(byte[] b, int off, int len) throws IOException {
+		// Write the data
+		super.write(b, off, len);
+		processMessage();
+	}
 
-    /**
-     * @param b
-     * @throws IOException
-     */
-    public void write(int b) throws IOException {
-        buffer.write(b);
-    }
+	/**
+	 * @param b
+	 * @throws IOException
+	 */
+	public void write(int b) throws IOException {
+		buffer.write(b);
+	}
 
-    private void processMessage() throws IOException {
-        // Now try to process a message
-        if (buffer.size() > (messageStart + 4)) {
-            int messageLength = (int)ByteArrayReader.readInt(buffer.toByteArray(),
-                    messageStart);
+	private void processMessage() throws IOException {
+		// Now try to process a message
+		if(buffer.size() > (messageStart+4)) {
+			int messageLength = (int)ByteArrayReader.readInt(buffer.toByteArray(),
+			    messageStart);
 
-            if (messageLength <= (buffer.size() - 4)) {
-                byte[] msgdata = new byte[messageLength];
+			if(messageLength <= (buffer.size()-4)) {
+				byte[] msgdata = new byte[messageLength];
 
-                // Process a message
-                System.arraycopy(buffer.toByteArray(), messageStart + 4,
-                        msgdata, 0, messageLength);
+				// Process a message
+				System.arraycopy(buffer.toByteArray(), messageStart+4,
+				    msgdata, 0, messageLength);
 
-                try {
-                    messageStore.addMessage(msgdata);
-                }
-                catch (InvalidMessageException ime) {
-                    throw new IOException("An invalid message was encountered in the outputstream: " +
-                            ime.getMessage());
-                }
+				try {
+					messageStore.addMessage(msgdata);
+				}
+				catch(InvalidMessageException ime) {
+					throw new IOException("An invalid message was encountered in the outputstream: "+
+					    ime.getMessage());
+				}
 
-                if (messageLength == (buffer.size() - 4)) {
-                    buffer.reset();
-                    messageStart = 0;
-                }
-                else {
-                    messageStart = messageLength + 4;
-                }
-            }
-        }
-    }
+				if(messageLength == (buffer.size()-4)) {
+					buffer.reset();
+					messageStart = 0;
+				}
+				else {
+					messageStart = messageLength+4;
+				}
+			}
+		}
+	}
 }

@@ -34,12 +34,12 @@ import java.io.IOException;
  * @version $Revision$
  */
 public class ForwardingConfigurationException extends IOException {
-    /**
-     * Creates a new ForwardingConfigurationException object.
-     *
-     * @param msg
-     */
-    public ForwardingConfigurationException(String msg) {
-        super(msg);
-    }
+	/**
+	 * Creates a new ForwardingConfigurationException object.
+	 *
+	 * @param msg
+	 */
+	public ForwardingConfigurationException(String msg) {
+		super(msg);
+	}
 }

@@ -37,89 +37,89 @@ import com.sshtools.j2ssh.subsystem.SubsystemMessage;
  * @version $Revision$
  */
 public class SshFxpFSetStat extends SubsystemMessage implements MessageRequestId {
-    /**  */
-    public static final int SSH_FXP_FSETSTAT = 10;
-    private UnsignedInteger32 id;
-    private byte[] handle;
-    private FileAttributes attrs;
+	/**  */
+	public static final int SSH_FXP_FSETSTAT = 10;
+	private UnsignedInteger32 id;
+	private byte[] handle;
+	private FileAttributes attrs;
 
-    /**
-     * Creates a new SshFxpFSetStat object.
-     */
-    public SshFxpFSetStat() {
-        super(SSH_FXP_FSETSTAT);
-    }
+	/**
+	 * Creates a new SshFxpFSetStat object.
+	 */
+	public SshFxpFSetStat() {
+		super(SSH_FXP_FSETSTAT);
+	}
 
-    /**
-     * Creates a new SshFxpFSetStat object.
-     *
-     * @param id
-     * @param handle
-     * @param attrs
-     */
-    public SshFxpFSetStat(UnsignedInteger32 id, byte[] handle,
-                          FileAttributes attrs) {
-        super(SSH_FXP_FSETSTAT);
-        this.id = id;
-        this.handle = handle;
-        this.attrs = attrs;
-    }
+	/**
+	 * Creates a new SshFxpFSetStat object.
+	 *
+	 * @param id
+	 * @param handle
+	 * @param attrs
+	 */
+	public SshFxpFSetStat(UnsignedInteger32 id, byte[] handle,
+	                      FileAttributes attrs) {
+		super(SSH_FXP_FSETSTAT);
+		this.id = id;
+		this.handle = handle;
+		this.attrs = attrs;
+	}
 
-    /**
-     * @return
-     */
-    public UnsignedInteger32 getId() {
-        return id;
-    }
+	/**
+	 * @return
+	 */
+	public UnsignedInteger32 getId() {
+		return id;
+	}
 
-    /**
-     * @return
-     */
-    public byte[] getHandle() {
-        return handle;
-    }
+	/**
+	 * @return
+	 */
+	public byte[] getHandle() {
+		return handle;
+	}
 
-    /**
-     * @return
-     */
-    public FileAttributes getAttributes() {
-        return attrs;
-    }
+	/**
+	 * @return
+	 */
+	public FileAttributes getAttributes() {
+		return attrs;
+	}
 
-    /**
-     * @param bar
-     * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
-     *                             DOCUMENT
-     *                             ME!
-     */
-    public void constructMessage(ByteArrayReader bar)
-            throws java.io.IOException,
-            com.sshtools.j2ssh.transport.InvalidMessageException {
-        id = bar.readUINT32();
-        handle = bar.readBinaryString();
-        attrs = new FileAttributes(bar);
-    }
+	/**
+	 * @param bar
+	 * @throws java.io.IOException
+	 * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+	 *                             DOCUMENT
+	 *                             ME!
+	 */
+	public void constructMessage(ByteArrayReader bar)
+	    throws java.io.IOException,
+	    com.sshtools.j2ssh.transport.InvalidMessageException {
+		id = bar.readUINT32();
+		handle = bar.readBinaryString();
+		attrs = new FileAttributes(bar);
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_FXP_FSETSTAT";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_FXP_FSETSTAT";
+	}
 
-    /**
-     * @param baw
-     * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
-     *                             DOCUMENT
-     *                             ME!
-     */
-    public void constructByteArray(ByteArrayWriter baw)
-            throws java.io.IOException,
-            com.sshtools.j2ssh.transport.InvalidMessageException {
-        baw.writeUINT32(id);
-        baw.writeBinaryString(handle);
-        baw.write(attrs.toByteArray());
-    }
+	/**
+	 * @param baw
+	 * @throws java.io.IOException
+	 * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+	 *                             DOCUMENT
+	 *                             ME!
+	 */
+	public void constructByteArray(ByteArrayWriter baw)
+	    throws java.io.IOException,
+	    com.sshtools.j2ssh.transport.InvalidMessageException {
+		baw.writeUINT32(id);
+		baw.writeBinaryString(handle);
+		baw.write(attrs.toByteArray());
+	}
 }

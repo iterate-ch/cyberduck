@@ -44,45 +44,45 @@ import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
  * @version $Revision$
  */
 public class SshDssKeyPair extends SshKeyPair {
-    /**
-     * @param encoded
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public SshPrivateKey decodePrivateKey(byte[] encoded)
-            throws InvalidSshKeyException {
-        return new SshDssPrivateKey(encoded);
-    }
+	/**
+	 * @param encoded
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public SshPrivateKey decodePrivateKey(byte[] encoded)
+	    throws InvalidSshKeyException {
+		return new SshDssPrivateKey(encoded);
+	}
 
-    /**
-     * @param encoded
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public SshPublicKey decodePublicKey(byte[] encoded)
-            throws InvalidSshKeyException {
-        return new SshDssPublicKey(encoded);
-    }
+	/**
+	 * @param encoded
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public SshPublicKey decodePublicKey(byte[] encoded)
+	    throws InvalidSshKeyException {
+		return new SshDssPublicKey(encoded);
+	}
 
-    /**
-     * @param bits
-     */
-    public void generate(int bits) {
-        try {
-            // Initialize the generator
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA");
-            keyGen.initialize(bits, ConfigurationLoader.getRND());
+	/**
+	 * @param bits
+	 */
+	public void generate(int bits) {
+		try {
+			// Initialize the generator
+			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA");
+			keyGen.initialize(bits, ConfigurationLoader.getRND());
 
-            KeyPair pair = keyGen.generateKeyPair();
+			KeyPair pair = keyGen.generateKeyPair();
 
-            // Get the keys
-            DSAPrivateKey prvKey = (DSAPrivateKey)pair.getPrivate();
-            DSAPublicKey pubKey = (DSAPublicKey)pair.getPublic();
+			// Get the keys
+			DSAPrivateKey prvKey = (DSAPrivateKey)pair.getPrivate();
+			DSAPublicKey pubKey = (DSAPublicKey)pair.getPublic();
 
-            // Set the private key (the public is automatically generated)
-            setPrivateKey(new SshDssPrivateKey(prvKey));
-        }
-        catch (NoSuchAlgorithmException nsae) {
-        }
-    }
+			// Set the private key (the public is automatically generated)
+			setPrivateKey(new SshDssPrivateKey(prvKey));
+		}
+		catch(NoSuchAlgorithmException nsae) {
+		}
+	}
 }

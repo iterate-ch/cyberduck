@@ -34,31 +34,31 @@ import com.sshtools.j2ssh.util.State;
  * @version $Revision$
  */
 public class IOStreamConnectorState extends State {
-    /**  */
-    public final static int BOF = 1;
+	/**  */
+	public final static int BOF = 1;
 
-    /**  */
-    public final static int CONNECTED = 2;
+	/**  */
+	public final static int CONNECTED = 2;
 
-    /**  */
-    public final static int EOF = 3;
+	/**  */
+	public final static int EOF = 3;
 
-    /**  */
-    public final static int CLOSED = 4;
+	/**  */
+	public final static int CLOSED = 4;
 
-    /**
-     * Creates a new IOStreamConnectorState object.
-     */
-    public IOStreamConnectorState() {
-        super(BOF);
-    }
+	/**
+	 * Creates a new IOStreamConnectorState object.
+	 */
+	public IOStreamConnectorState() {
+		super(BOF);
+	}
 
-    /**
-     * @param state
-     * @return
-     */
-    public boolean isValidState(int state) {
-        return ((state == BOF) || (state == CONNECTED) || (state == EOF) ||
-                (state == CLOSED));
-    }
+	/**
+	 * @param state
+	 * @return
+	 */
+	public boolean isValidState(int state) {
+		return ((state == BOF) || (state == CONNECTED) || (state == EOF) ||
+		    (state == CLOSED));
+	}
 }

@@ -34,27 +34,27 @@ import com.sshtools.j2ssh.util.Base64;
  * @version $Revision$
  */
 public class HttpRequest extends HttpHeader {
-    /**
-     * Creates a new HttpRequest object.
-     */
-    public HttpRequest() {
-        super();
-    }
+	/**
+	 * Creates a new HttpRequest object.
+	 */
+	public HttpRequest() {
+		super();
+	}
 
-    /**
-     * @param begin
-     */
-    public void setHeaderBegin(String begin) {
-        this.begin = begin;
-    }
+	/**
+	 * @param begin
+	 */
+	public void setHeaderBegin(String begin) {
+		this.begin = begin;
+	}
 
-    /**
-     * @param username
-     * @param password
-     */
-    public void setBasicAuthentication(String username, String password) {
-        String str = username + ":" + password;
-        setHeaderField("Proxy-Authorization",
-                "Basic " + Base64.encodeBytes(str.getBytes(), true));
-    }
+	/**
+	 * @param username
+	 * @param password
+	 */
+	public void setBasicAuthentication(String username, String password) {
+		String str = username+":"+password;
+		setHeaderField("Proxy-Authorization",
+		    "Basic "+Base64.encodeBytes(str.getBytes(), true));
+	}
 }

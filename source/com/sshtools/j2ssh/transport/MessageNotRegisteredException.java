@@ -39,31 +39,31 @@ import com.sshtools.j2ssh.SshException;
  * @since 0.2.0
  */
 public class MessageNotRegisteredException extends SshException {
-    /**
-     * <p/>
-     * Constructs the exception.
-     * </p>
-     *
-     * @param messageId the id of the message not registered
-     * @since 0.2.0
-     */
-    public MessageNotRegisteredException(Integer messageId) {
-        super("Message Id " + messageId.toString() +
-                " is not currently registered");
-    }
+	/**
+	 * <p/>
+	 * Constructs the exception.
+	 * </p>
+	 *
+	 * @param messageId the id of the message not registered
+	 * @since 0.2.0
+	 */
+	public MessageNotRegisteredException(Integer messageId) {
+		super("Message Id "+messageId.toString()+
+		    " is not currently registered");
+	}
 
-    /**
-     * <p/>
-     * Consructs the exception.
-     * </p>
-     *
-     * @param messageId the id of the message not registered
-     * @param store     the message store
-     * @since 0.2.0
-     */
-    public MessageNotRegisteredException(Integer messageId,
-                                         SshMessageStore store) {
-        super("Message Id " + messageId.toString() +
-                " is not registered to the message store specified");
-    }
+	/**
+	 * <p/>
+	 * Consructs the exception.
+	 * </p>
+	 *
+	 * @param messageId the id of the message not registered
+	 * @param store     the message store
+	 * @since 0.2.0
+	 */
+	public MessageNotRegisteredException(Integer messageId,
+	                                     SshMessageStore store) {
+		super("Message Id "+messageId.toString()+
+		    " is not registered to the message store specified");
+	}
 }

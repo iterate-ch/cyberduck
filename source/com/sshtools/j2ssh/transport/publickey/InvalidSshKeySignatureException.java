@@ -34,19 +34,19 @@ import com.sshtools.j2ssh.transport.TransportProtocolException;
  * @version $Revision$
  */
 public class InvalidSshKeySignatureException extends TransportProtocolException {
-    /**
-     * Creates a new InvalidSshKeySignatureException object.
-     */
-    public InvalidSshKeySignatureException() {
-        super("The signature is invalid");
-    }
+	/**
+	 * Creates a new InvalidSshKeySignatureException object.
+	 */
+	public InvalidSshKeySignatureException() {
+		super("The signature is invalid");
+	}
 
-    /**
-     * Creates a new InvalidSshKeySignatureException object.
-     *
-     * @param t
-     */
-    public InvalidSshKeySignatureException(Throwable t) {
-        super(t.getMessage());
-    }
+	/**
+	 * Creates a new InvalidSshKeySignatureException object.
+	 *
+	 * @param t
+	 */
+	public InvalidSshKeySignatureException(Throwable t) {
+		super(t.getMessage());
+	}
 }

@@ -32,39 +32,39 @@ package com.sshtools.j2ssh.forwarding;
  * @version $Revision$
  */
 public interface ForwardingChannel {
-    /**  */
-    public final static String X11_FORWARDING_CHANNEL = "x11";
+	/**  */
+	public final static String X11_FORWARDING_CHANNEL = "x11";
 
-    /**  */
-    public final static String LOCAL_FORWARDING_CHANNEL = "direct-tcpip";
+	/**  */
+	public final static String LOCAL_FORWARDING_CHANNEL = "direct-tcpip";
 
-    /**  */
-    public final static String REMOTE_FORWARDING_CHANNEL = "forwarded-tcpip";
+	/**  */
+	public final static String REMOTE_FORWARDING_CHANNEL = "forwarded-tcpip";
 
-    /**
-     * @return
-     */
-    public String getChannelType();
+	/**
+	 * @return
+	 */
+	public String getChannelType();
 
-    /**
-     * @return
-     */
-    public String getOriginatingHost();
+	/**
+	 * @return
+	 */
+	public String getOriginatingHost();
 
-    /**
-     * @return
-     */
-    public int getOriginatingPort();
+	/**
+	 * @return
+	 */
+	public int getOriginatingPort();
 
-    /**
-     * @return
-     */
-    public String getHostToConnectOrBind();
+	/**
+	 * @return
+	 */
+	public String getHostToConnectOrBind();
 
-    /**
-     * @return
-     */
-    public int getPortToConnectOrBind();
+	/**
+	 * @return
+	 */
+	public int getPortToConnectOrBind();
 
-    public String getName();
+	public String getName();
 }

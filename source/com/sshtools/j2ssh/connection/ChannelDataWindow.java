@@ -35,63 +35,63 @@ import org.apache.commons.logging.LogFactory;
  * @version $Revision$
  */
 public class ChannelDataWindow {
-    private static Log log = LogFactory.getLog(ChannelDataWindow.class);
-    long windowSpace = 0;
+	private static Log log = LogFactory.getLog(ChannelDataWindow.class);
+	long windowSpace = 0;
 
-    /**
-     * Creates a new ChannelDataWindow object.
-     */
-    public ChannelDataWindow() {
-    }
+	/**
+	 * Creates a new ChannelDataWindow object.
+	 */
+	public ChannelDataWindow() {
+	}
 
-    /**
-     * @return
-     */
-    public synchronized long getWindowSpace() {
-        return windowSpace;
-    }
+	/**
+	 * @return
+	 */
+	public synchronized long getWindowSpace() {
+		return windowSpace;
+	}
 
-    /**
-     * @param count
-     * @return
-     */
-    public synchronized long consumeWindowSpace(int count) {
-        if (windowSpace < count) {
-            waitForWindowSpace(count);
-        }
+	/**
+	 * @param count
+	 * @return
+	 */
+	public synchronized long consumeWindowSpace(int count) {
+		if(windowSpace < count) {
+			waitForWindowSpace(count);
+		}
 
-        windowSpace -= count;
+		windowSpace -= count;
 
-        return windowSpace;
-    }
+		return windowSpace;
+	}
 
-    /**
-     * @param count
-     */
-    public synchronized void increaseWindowSpace(long count) {
-        if (log.isDebugEnabled()) {
-            log.debug("Increasing window space by " + String.valueOf(count));
-        }
+	/**
+	 * @param count
+	 */
+	public synchronized void increaseWindowSpace(long count) {
+		if(log.isDebugEnabled()) {
+			log.debug("Increasing window space by "+String.valueOf(count));
+		}
 
-        windowSpace += count;
-        notifyAll();
-    }
+		windowSpace += count;
+		notifyAll();
+	}
 
-    /**
-     * @param minimum
-     */
-    public synchronized void waitForWindowSpace(int minimum) {
-        if (log.isDebugEnabled()) {
-            log.debug("Waiting for " + String.valueOf(minimum) +
-                    " bytes of window space");
-        }
+	/**
+	 * @param minimum
+	 */
+	public synchronized void waitForWindowSpace(int minimum) {
+		if(log.isDebugEnabled()) {
+			log.debug("Waiting for "+String.valueOf(minimum)+
+			    " bytes of window space");
+		}
 
-        while (windowSpace < minimum) {
-            try {
-                wait(50);
-            }
-            catch (InterruptedException e) {
-            }
-        }
-    }
+		while(windowSpace < minimum) {
+			try {
+				wait(50);
+			}
+			catch(InterruptedException e) {
+			}
+		}
+	}
 }

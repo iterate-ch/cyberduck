@@ -57,199 +57,199 @@ import org.apache.commons.logging.LogFactory;
  * @since 0.2.0
  */
 public abstract class Service {
-    private static Log log = LogFactory.getLog(Service.class);
+	private static Log log = LogFactory.getLog(Service.class);
 
-    /**
-     * Service start mode passed into <code>init</code> method when the service
-     * is operating in client mode. i.e its requesting a service to be started
-     * on the remote server and requires a SSH_MSG_SERVICE_ACCEPT message.
-     */
-    public final static int REQUESTING_SERVICE = 1;
+	/**
+	 * Service start mode passed into <code>init</code> method when the service
+	 * is operating in client mode. i.e its requesting a service to be started
+	 * on the remote server and requires a SSH_MSG_SERVICE_ACCEPT message.
+	 */
+	public final static int REQUESTING_SERVICE = 1;
 
-    /**
-     * Serivce start mode passed into <code>init</code> method when the service
-     * is operating in server mode. i.e a client is requesting a service to be
-     * started on the local computer and requires the SSH_MSG_SERVICE_ACCEPT
-     * message to be sent.
-     */
-    public final static int ACCEPTING_SERVICE = 2;
+	/**
+	 * Serivce start mode passed into <code>init</code> method when the service
+	 * is operating in server mode. i.e a client is requesting a service to be
+	 * started on the local computer and requires the SSH_MSG_SERVICE_ACCEPT
+	 * message to be sent.
+	 */
+	public final static int ACCEPTING_SERVICE = 2;
 
-    /**
-     * The message store registered with the transport protocol to receive the
-     * service's message.
-     */
-    protected SshMessageStore messageStore = new SshMessageStore();
+	/**
+	 * The message store registered with the transport protocol to receive the
+	 * service's message.
+	 */
+	protected SshMessageStore messageStore = new SshMessageStore();
 
-    /**
-     * The underlying transport protocol
-     */
-    protected TransportProtocol transport;
+	/**
+	 * The underlying transport protocol
+	 */
+	protected TransportProtocol transport;
 
-    /**
-     * This instances start mode
-     */
-    protected Integer startMode = null;
+	/**
+	 * This instances start mode
+	 */
+	protected Integer startMode = null;
 
-    /**
-     * The current state of the service
-     */
-    protected ServiceState state = new ServiceState();
+	/**
+	 * The current state of the service
+	 */
+	protected ServiceState state = new ServiceState();
 
-    /**
-     * The name of the service
-     */
-    private String serviceName;
+	/**
+	 * The name of the service
+	 */
+	private String serviceName;
 
-    /**
-     * <p/>
-     * Constructs the service.
-     * </p>
-     *
-     * @param serviceName the name of the service
-     * @since 0.2.0
-     */
-    public Service(String serviceName) {
-        this.serviceName = serviceName;
-    }
+	/**
+	 * <p/>
+	 * Constructs the service.
+	 * </p>
+	 *
+	 * @param serviceName the name of the service
+	 * @since 0.2.0
+	 */
+	public Service(String serviceName) {
+		this.serviceName = serviceName;
+	}
 
-    /**
-     * <p/>
-     * Returns the service name.
-     * </p>
-     *
-     * @return the serivce name
-     * @since 0.2.0
-     */
-    public final String getServiceName() {
-        return serviceName;
-    }
+	/**
+	 * <p/>
+	 * Returns the service name.
+	 * </p>
+	 *
+	 * @return the serivce name
+	 * @since 0.2.0
+	 */
+	public final String getServiceName() {
+		return serviceName;
+	}
 
-    /**
-     * <p/>
-     * Starts the service.
-     * </p>
-     *
-     * @throws IOException if an IO error occurs
-     * @since 0.2.0
-     */
-    public final void start() throws IOException {
-        if (startMode == null) {
-            throw new IOException("Service must be initialized first!");
-        }
+	/**
+	 * <p/>
+	 * Starts the service.
+	 * </p>
+	 *
+	 * @throws IOException if an IO error occurs
+	 * @since 0.2.0
+	 */
+	public final void start() throws IOException {
+		if(startMode == null) {
+			throw new IOException("Service must be initialized first!");
+		}
 
-        // If were accepted (i.e. client) we will call onServiceAccept()
-        if (startMode.intValue() == REQUESTING_SERVICE) {
-            log.info(serviceName + " has been accepted");
-            onServiceAccept();
-        }
-        else {
-            // We've recevied a request instead
-            log.info(serviceName + " has been requested");
-            onServiceRequest();
-        }
+		// If were accepted (i.e. client) we will call onServiceAccept()
+		if(startMode.intValue() == REQUESTING_SERVICE) {
+			log.info(serviceName+" has been accepted");
+			onServiceAccept();
+		}
+		else {
+			// We've recevied a request instead
+			log.info(serviceName+" has been requested");
+			onServiceRequest();
+		}
 
-        onStart();
-        state.setValue(ServiceState.SERVICE_STARTED);
-    }
+		onStart();
+		state.setValue(ServiceState.SERVICE_STARTED);
+	}
 
-    /**
-     * <p/>
-     * Called when the service is started.
-     * </p>
-     *
-     * @throws IOException if an IO error occurs
-     * @since 0.2.0
-     */
-    protected abstract void onStart() throws IOException;
+	/**
+	 * <p/>
+	 * Called when the service is started.
+	 * </p>
+	 *
+	 * @throws IOException if an IO error occurs
+	 * @since 0.2.0
+	 */
+	protected abstract void onStart() throws IOException;
 
-    /**
-     * <p/>
-     * Returns the state of the service.
-     * </p>
-     *
-     * @return the state of the service
-     * @see ServiceState
-     * @since 0.2.0
-     */
-    public ServiceState getState() {
-        return state;
-    }
+	/**
+	 * <p/>
+	 * Returns the state of the service.
+	 * </p>
+	 *
+	 * @return the state of the service
+	 * @see ServiceState
+	 * @since 0.2.0
+	 */
+	public ServiceState getState() {
+		return state;
+	}
 
-    /**
-     * <p/>
-     * Initialize the service.
-     * </p>
-     *
-     * @param startMode the mode of the service
-     * @param transport the underlying transport protocol
-     * @throws IOException if an IO error occurs
-     * @since 0.2.0
-     */
-    public void init(int startMode, TransportProtocol transport)
-            throws IOException {
-        if ((startMode != REQUESTING_SERVICE) &&
-                (startMode != ACCEPTING_SERVICE)) {
-            throw new IOException("Invalid start mode!");
-        }
+	/**
+	 * <p/>
+	 * Initialize the service.
+	 * </p>
+	 *
+	 * @param startMode the mode of the service
+	 * @param transport the underlying transport protocol
+	 * @throws IOException if an IO error occurs
+	 * @since 0.2.0
+	 */
+	public void init(int startMode, TransportProtocol transport)
+	    throws IOException {
+		if((startMode != REQUESTING_SERVICE) &&
+		    (startMode != ACCEPTING_SERVICE)) {
+			throw new IOException("Invalid start mode!");
+		}
 
-        this.transport = transport;
-        this.startMode = new Integer(startMode);
+		this.transport = transport;
+		this.startMode = new Integer(startMode);
 
-        //this.nativeSettings = nativeSettings;
-        onServiceInit(startMode);
-        transport.addMessageStore(messageStore);
-    }
+		//this.nativeSettings = nativeSettings;
+		onServiceInit(startMode);
+		transport.addMessageStore(messageStore);
+	}
 
-    /**
-     * <p/>
-     * Stops the service.
-     * </p>
-     *
-     * @since 0.2.0
-     */
-    public final void stop() {
-        messageStore.close();
-        state.setValue(ServiceState.SERVICE_STOPPED);
-    }
+	/**
+	 * <p/>
+	 * Stops the service.
+	 * </p>
+	 *
+	 * @since 0.2.0
+	 */
+	public final void stop() {
+		messageStore.close();
+		state.setValue(ServiceState.SERVICE_STOPPED);
+	}
 
-    /**
-     * <p/>
-     * Called when the service is accepted by the remote server.
-     * </p>
-     *
-     * @throws IOException
-     * @since 0.2.0
-     */
-    protected abstract void onServiceAccept() throws IOException;
+	/**
+	 * <p/>
+	 * Called when the service is accepted by the remote server.
+	 * </p>
+	 *
+	 * @throws IOException
+	 * @since 0.2.0
+	 */
+	protected abstract void onServiceAccept() throws IOException;
 
-    /**
-     * <p/>
-     * Called when the service is intialized.
-     * </p>
-     *
-     * @param startMode the mode of the service
-     * @throws IOException if an IO error occurs
-     * @since 0.2.0
-     */
-    protected abstract void onServiceInit(int startMode)
-            throws IOException;
+	/**
+	 * <p/>
+	 * Called when the service is intialized.
+	 * </p>
+	 *
+	 * @param startMode the mode of the service
+	 * @throws IOException if an IO error occurs
+	 * @since 0.2.0
+	 */
+	protected abstract void onServiceInit(int startMode)
+	    throws IOException;
 
-    /**
-     * @throws IOException
-     */
-    protected abstract void onServiceRequest() throws IOException;
+	/**
+	 * @throws IOException
+	 */
+	protected abstract void onServiceRequest() throws IOException;
 
-    /**
-     * <p/>
-     * Sends the SSH_MSG_SERVICE_ACCEPT message to the client to indicate that
-     * the local computer is accepting the remote computers service request.
-     * </p>
-     *
-     * @throws IOException if an IO error occurs
-     * @since 0.2.0
-     */
-    protected void sendServiceAccept() throws IOException {
-        SshMsgServiceAccept msg = new SshMsgServiceAccept(serviceName);
-        transport.sendMessage(msg, this);
-    }
+	/**
+	 * <p/>
+	 * Sends the SSH_MSG_SERVICE_ACCEPT message to the client to indicate that
+	 * the local computer is accepting the remote computers service request.
+	 * </p>
+	 *
+	 * @throws IOException if an IO error occurs
+	 * @since 0.2.0
+	 */
+	protected void sendServiceAccept() throws IOException {
+		SshMsgServiceAccept msg = new SshMsgServiceAccept(serviceName);
+		transport.sendMessage(msg, this);
+	}
 }

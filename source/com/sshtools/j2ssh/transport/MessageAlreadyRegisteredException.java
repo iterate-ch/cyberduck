@@ -39,15 +39,15 @@ import com.sshtools.j2ssh.SshException;
  * @since 0.2.0
  */
 public class MessageAlreadyRegisteredException extends SshException {
-    /**
-     * <p/>
-     * Constructs the exception.
-     * </p>
-     *
-     * @param messageId the id of the message already registered
-     * @since 0.2.0
-     */
-    public MessageAlreadyRegisteredException(Integer messageId) {
-        super("Message Id " + messageId.toString() + " is already registered");
-    }
+	/**
+	 * <p/>
+	 * Constructs the exception.
+	 * </p>
+	 *
+	 * @param messageId the id of the message already registered
+	 * @since 0.2.0
+	 */
+	public MessageAlreadyRegisteredException(Integer messageId) {
+		super("Message Id "+messageId.toString()+" is already registered");
+	}
 }

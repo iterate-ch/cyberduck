@@ -45,159 +45,159 @@ import com.sshtools.j2ssh.util.Base64;
  * @version $Revision$
  */
 public class PEMReader extends PEM {
-    private LineNumberReader reader;
-    private String type;
-    private Map header;
-    private byte[] payload;
+	private LineNumberReader reader;
+	private String type;
+	private Map header;
+	private byte[] payload;
 
-    /**
-     * Creates a new PEMReader object.
-     *
-     * @param r
-     * @throws IOException
-     */
-    public PEMReader(Reader r) throws IOException {
-        reader = new LineNumberReader(r);
-        read();
-    }
+	/**
+	 * Creates a new PEMReader object.
+	 *
+	 * @param r
+	 * @throws IOException
+	 */
+	public PEMReader(Reader r) throws IOException {
+		reader = new LineNumberReader(r);
+		read();
+	}
 
-    private void read() throws IOException {
-        String line;
+	private void read() throws IOException {
+		String line;
 
-        while ((line = reader.readLine()) != null) {
-            if (line.startsWith(PEM_BOUNDARY) && line.endsWith(PEM_BOUNDARY)) {
-                if (line.startsWith(PEM_BEGIN)) {
-                    type = line.substring(PEM_BEGIN.length(),
-                            line.length() - PEM_BOUNDARY.length());
+		while((line = reader.readLine()) != null) {
+			if(line.startsWith(PEM_BOUNDARY) && line.endsWith(PEM_BOUNDARY)) {
+				if(line.startsWith(PEM_BEGIN)) {
+					type = line.substring(PEM_BEGIN.length(),
+					    line.length()-PEM_BOUNDARY.length());
 
-                    break;
-                }
-                else {
-                    throw new IOException("Invalid PEM boundary at line " +
-                            reader.getLineNumber() + ": " + line);
-                }
-            }
-        }
+					break;
+				}
+				else {
+					throw new IOException("Invalid PEM boundary at line "+
+					    reader.getLineNumber()+": "+line);
+				}
+			}
+		}
 
-        header = new HashMap();
+		header = new HashMap();
 
-        while ((line = reader.readLine()) != null) {
-            int colon = line.indexOf(':');
+		while((line = reader.readLine()) != null) {
+			int colon = line.indexOf(':');
 
-            if (colon == -1) {
-                break;
-            }
+			if(colon == -1) {
+				break;
+			}
 
-            String key = line.substring(0, colon).trim();
+			String key = line.substring(0, colon).trim();
 
-            if (line.endsWith("\\")) {
-                String v = line.substring(colon + 1, line.length() - 1).trim();
+			if(line.endsWith("\\")) {
+				String v = line.substring(colon+1, line.length()-1).trim();
 
-                // multi-line value
-                StringBuffer value = new StringBuffer(v);
+				// multi-line value
+				StringBuffer value = new StringBuffer(v);
 
-                while ((line = reader.readLine()) != null) {
-                    if (line.endsWith("\\")) {
-                        value.append(" ").append(line.substring(0,
-                                line.length() - 1).trim());
-                    }
-                    else {
-                        value.append(" ").append(line.trim());
+				while((line = reader.readLine()) != null) {
+					if(line.endsWith("\\")) {
+						value.append(" ").append(line.substring(0,
+						    line.length()-1).trim());
+					}
+					else {
+						value.append(" ").append(line.trim());
 
-                        break;
-                    }
-                }
-            }
-            else {
-                String value = line.substring(colon + 1).trim();
-                header.put(key, value);
-            }
-        }
+						break;
+					}
+				}
+			}
+			else {
+				String value = line.substring(colon+1).trim();
+				header.put(key, value);
+			}
+		}
 
-        // first line that is not part of the header
-        // could be an empty line, but if there is no header and the body begins straight after the -----
-        // then this line contains data
-        if (line == null) {
-            throw new IOException("The key format is invalid! OpenSSH formatted keys must begin with -----BEGIN RSA or -----BEGIN DSA");
-        }
+		// first line that is not part of the header
+		// could be an empty line, but if there is no header and the body begins straight after the -----
+		// then this line contains data
+		if(line == null) {
+			throw new IOException("The key format is invalid! OpenSSH formatted keys must begin with -----BEGIN RSA or -----BEGIN DSA");
+		}
 
-        StringBuffer body = new StringBuffer(line);
+		StringBuffer body = new StringBuffer(line);
 
-        while ((line = reader.readLine()) != null) {
-            if (line.startsWith(PEM_BOUNDARY) && line.endsWith(PEM_BOUNDARY)) {
-                if (line.startsWith(PEM_END + type)) {
-                    break;
-                }
-                else {
-                    throw new IOException("Invalid PEM end boundary at line " +
-                            reader.getLineNumber() + ": " + line);
-                }
-            }
+		while((line = reader.readLine()) != null) {
+			if(line.startsWith(PEM_BOUNDARY) && line.endsWith(PEM_BOUNDARY)) {
+				if(line.startsWith(PEM_END+type)) {
+					break;
+				}
+				else {
+					throw new IOException("Invalid PEM end boundary at line "+
+					    reader.getLineNumber()+": "+line);
+				}
+			}
 
-            body.append(line);
-        }
+			body.append(line);
+		}
 
-        payload = Base64.decode(body.toString());
-    }
+		payload = Base64.decode(body.toString());
+	}
 
-    /**
-     * @return
-     */
-    public Map getHeader() {
-        return header;
-    }
+	/**
+	 * @return
+	 */
+	public Map getHeader() {
+		return header;
+	}
 
-    /**
-     * @return
-     */
-    public byte[] getPayload() {
-        return payload;
-    }
+	/**
+	 * @return
+	 */
+	public byte[] getPayload() {
+		return payload;
+	}
 
-    /**
-     * @return
-     */
-    public String getType() {
-        return type;
-    }
+	/**
+	 * @return
+	 */
+	public String getType() {
+		return type;
+	}
 
-    /**
-     * @param passphrase
-     * @return
-     * @throws GeneralSecurityException
-     * @throws NoSuchAlgorithmException
-     */
-    public byte[] decryptPayload(String passphrase)
-            throws GeneralSecurityException {
-        String dekInfo = (String)header.get("DEK-Info");
+	/**
+	 * @param passphrase
+	 * @return
+	 * @throws GeneralSecurityException
+	 * @throws NoSuchAlgorithmException
+	 */
+	public byte[] decryptPayload(String passphrase)
+	    throws GeneralSecurityException {
+		String dekInfo = (String)header.get("DEK-Info");
 
-        if (dekInfo != null) {
-            int comma = dekInfo.indexOf(',');
-            String keyAlgorithm = dekInfo.substring(0, comma);
+		if(dekInfo != null) {
+			int comma = dekInfo.indexOf(',');
+			String keyAlgorithm = dekInfo.substring(0, comma);
 
-            if (!"DES-EDE3-CBC".equals(keyAlgorithm)) {
-                throw new NoSuchAlgorithmException("Unsupported passphrase algorithm: " + keyAlgorithm);
-            }
+			if(!"DES-EDE3-CBC".equals(keyAlgorithm)) {
+				throw new NoSuchAlgorithmException("Unsupported passphrase algorithm: "+keyAlgorithm);
+			}
 
-            String ivString = dekInfo.substring(comma + 1);
-            byte[] iv = new byte[ivString.length() / 2];
+			String ivString = dekInfo.substring(comma+1);
+			byte[] iv = new byte[ivString.length()/2];
 
-            for (int i = 0; i < ivString.length(); i += 2) {
-                iv[i / 2] = (byte)Integer.parseInt(ivString.substring(i, i +
-                        2), 16);
-            }
+			for(int i = 0; i < ivString.length(); i += 2) {
+				iv[i/2] = (byte)Integer.parseInt(ivString.substring(i, i+
+				    2), 16);
+			}
 
-            Cipher cipher = Cipher.getInstance("DESede/CBC/NoPadding");
-            SecretKey key = getKeyFromPassphrase(passphrase, iv, 24);
-            cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
+			Cipher cipher = Cipher.getInstance("DESede/CBC/NoPadding");
+			SecretKey key = getKeyFromPassphrase(passphrase, iv, 24);
+			cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
 
-            byte[] plain = new byte[payload.length];
-            cipher.update(payload, 0, payload.length, plain, 0);
+			byte[] plain = new byte[payload.length];
+			cipher.update(payload, 0, payload.length, plain, 0);
 
-            return plain;
-        }
-        else {
-            return payload;
-        }
-    }
+			return plain;
+		}
+		else {
+			return payload;
+		}
+	}
 }

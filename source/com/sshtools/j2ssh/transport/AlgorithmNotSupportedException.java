@@ -38,15 +38,15 @@ package com.sshtools.j2ssh.transport;
  * @since 0.2.0
  */
 public class AlgorithmNotSupportedException extends TransportProtocolException {
-    /**
-     * <p/>
-     * Constructs the exception.
-     * </p>
-     *
-     * @param msg the error message
-     * @since 0.2.0
-     */
-    public AlgorithmNotSupportedException(String msg) {
-        super(msg);
-    }
+	/**
+	 * <p/>
+	 * Constructs the exception.
+	 * </p>
+	 *
+	 * @param msg the error message
+	 * @since 0.2.0
+	 */
+	public AlgorithmNotSupportedException(String msg) {
+		super(msg);
+	}
 }

@@ -36,88 +36,88 @@ import com.sshtools.j2ssh.subsystem.SubsystemMessage;
  * @version $Revision$
  */
 public class SshFxpMkdir extends SubsystemMessage implements MessageRequestId {
-    /**  */
-    public static final int SSH_FXP_MKDIR = 14;
-    private UnsignedInteger32 id;
-    private String path;
-    private FileAttributes attrs;
+	/**  */
+	public static final int SSH_FXP_MKDIR = 14;
+	private UnsignedInteger32 id;
+	private String path;
+	private FileAttributes attrs;
 
-    /**
-     * Creates a new SshFxpMkdir object.
-     */
-    public SshFxpMkdir() {
-        super(SSH_FXP_MKDIR);
-    }
+	/**
+	 * Creates a new SshFxpMkdir object.
+	 */
+	public SshFxpMkdir() {
+		super(SSH_FXP_MKDIR);
+	}
 
-    /**
-     * Creates a new SshFxpMkdir object.
-     *
-     * @param id
-     * @param path
-     * @param attrs
-     */
-    public SshFxpMkdir(UnsignedInteger32 id, String path, FileAttributes attrs) {
-        super(SSH_FXP_MKDIR);
-        this.id = id;
-        this.path = path;
-        this.attrs = attrs;
-    }
+	/**
+	 * Creates a new SshFxpMkdir object.
+	 *
+	 * @param id
+	 * @param path
+	 * @param attrs
+	 */
+	public SshFxpMkdir(UnsignedInteger32 id, String path, FileAttributes attrs) {
+		super(SSH_FXP_MKDIR);
+		this.id = id;
+		this.path = path;
+		this.attrs = attrs;
+	}
 
-    /**
-     * @return
-     */
-    public UnsignedInteger32 getId() {
-        return id;
-    }
+	/**
+	 * @return
+	 */
+	public UnsignedInteger32 getId() {
+		return id;
+	}
 
-    /**
-     * @return
-     */
-    public String getPath() {
-        return path;
-    }
+	/**
+	 * @return
+	 */
+	public String getPath() {
+		return path;
+	}
 
-    /**
-     * @return
-     */
-    public FileAttributes getAttributes() {
-        return attrs;
-    }
+	/**
+	 * @return
+	 */
+	public FileAttributes getAttributes() {
+		return attrs;
+	}
 
-    /**
-     * @param bar
-     * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
-     *                             DOCUMENT
-     *                             ME!
-     */
-    public void constructMessage(ByteArrayReader bar)
-            throws java.io.IOException,
-            com.sshtools.j2ssh.transport.InvalidMessageException {
-        id = bar.readUINT32();
-        path = bar.readString();
-        attrs = new FileAttributes(bar);
-    }
+	/**
+	 * @param bar
+	 * @throws java.io.IOException
+	 * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+	 *                             DOCUMENT
+	 *                             ME!
+	 */
+	public void constructMessage(ByteArrayReader bar)
+	    throws java.io.IOException,
+	    com.sshtools.j2ssh.transport.InvalidMessageException {
+		id = bar.readUINT32();
+		path = bar.readString();
+		attrs = new FileAttributes(bar);
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_FXP_MKDIR";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_FXP_MKDIR";
+	}
 
-    /**
-     * @param baw
-     * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
-     *                             DOCUMENT
-     *                             ME!
-     */
-    public void constructByteArray(ByteArrayWriter baw)
-            throws java.io.IOException,
-            com.sshtools.j2ssh.transport.InvalidMessageException {
-        baw.writeUINT32(id);
-        baw.writeString(path);
-        baw.write(attrs.toByteArray());
-    }
+	/**
+	 * @param baw
+	 * @throws java.io.IOException
+	 * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+	 *                             DOCUMENT
+	 *                             ME!
+	 */
+	public void constructByteArray(ByteArrayWriter baw)
+	    throws java.io.IOException,
+	    com.sshtools.j2ssh.transport.InvalidMessageException {
+		baw.writeUINT32(id);
+		baw.writeString(path);
+		baw.write(attrs.toByteArray());
+	}
 }

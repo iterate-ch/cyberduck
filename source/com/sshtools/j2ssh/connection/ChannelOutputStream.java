@@ -38,113 +38,113 @@ import org.apache.commons.logging.LogFactory;
  * @version $Revision$
  */
 public class ChannelOutputStream extends OutputStream {
-    private static Log log = LogFactory.getLog(ChannelOutputStream.class);
-    private Channel channel;
-    private boolean isClosed = false;
-    private Integer type = null;
+	private static Log log = LogFactory.getLog(ChannelOutputStream.class);
+	private Channel channel;
+	private boolean isClosed = false;
+	private Integer type = null;
 
-    /**
-     * Creates a new ChannelOutputStream object.
-     *
-     * @param channel
-     * @param type
-     */
-    public ChannelOutputStream(Channel channel, Integer type) {
-        this.channel = channel;
-        this.type = type;
-    }
+	/**
+	 * Creates a new ChannelOutputStream object.
+	 *
+	 * @param channel
+	 * @param type
+	 */
+	public ChannelOutputStream(Channel channel, Integer type) {
+		this.channel = channel;
+		this.type = type;
+	}
 
-    /**
-     * Creates a new ChannelOutputStream object.
-     *
-     * @param channel
-     */
-    public ChannelOutputStream(Channel channel) {
-        this(channel, null);
-    }
+	/**
+	 * Creates a new ChannelOutputStream object.
+	 *
+	 * @param channel
+	 */
+	public ChannelOutputStream(Channel channel) {
+		this(channel, null);
+	}
 
-    /**
-     * @return
-     */
-    public boolean isClosed() {
-        return isClosed;
-    }
+	/**
+	 * @return
+	 */
+	public boolean isClosed() {
+		return isClosed;
+	}
 
-    /**
-     * @throws IOException
-     */
-    public void close() throws IOException {
-        log.info("Closing ChannelOutputStream");
-        isClosed = true;
+	/**
+	 * @throws IOException
+	 */
+	public void close() throws IOException {
+		log.info("Closing ChannelOutputStream");
+		isClosed = true;
 
-        // Send an EOF if the channel is not closed
-        if (!channel.isClosed()) {
-            channel.connection.sendChannelEOF(channel);
-        }
-    }
+		// Send an EOF if the channel is not closed
+		if(!channel.isClosed()) {
+			channel.connection.sendChannelEOF(channel);
+		}
+	}
 
-    /**
-     * @param b
-     * @param off
-     * @param len
-     * @throws IOException
-     */
-    public void write(byte[] b, int off, int len) throws IOException {
-        if (isClosed) {
-            throw new IOException("The ChannelOutputStream is closed!");
-        }
+	/**
+	 * @param b
+	 * @param off
+	 * @param len
+	 * @throws IOException
+	 */
+	public void write(byte[] b, int off, int len) throws IOException {
+		if(isClosed) {
+			throw new IOException("The ChannelOutputStream is closed!");
+		}
 
-        byte[] data = null;
+		byte[] data = null;
 
-        if ((off > 0) || (len < b.length)) {
-            data = new byte[len];
-            System.arraycopy(b, off, data, 0, len);
-        }
-        else {
-            data = b;
-        }
+		if((off > 0) || (len < b.length)) {
+			data = new byte[len];
+			System.arraycopy(b, off, data, 0, len);
+		}
+		else {
+			data = b;
+		}
 
-        sendChannelData(data);
-    }
+		sendChannelData(data);
+	}
 
-    /**
-     * @param b
-     * @throws IOException
-     */
-    public void write(int b) throws IOException {
-        if (isClosed) {
-            throw new IOException("The ChannelOutputStream is closed!");
-        }
+	/**
+	 * @param b
+	 * @throws IOException
+	 */
+	public void write(int b) throws IOException {
+		if(isClosed) {
+			throw new IOException("The ChannelOutputStream is closed!");
+		}
 
-        byte[] data = new byte[1];
-        data[0] = (byte)b;
-        sendChannelData(data);
-    }
+		byte[] data = new byte[1];
+		data[0] = (byte)b;
+		sendChannelData(data);
+	}
 
-    private void sendChannelData(byte[] data) throws IOException {
-        channel.sendChannelData(data);
+	private void sendChannelData(byte[] data) throws IOException {
+		channel.sendChannelData(data);
 
-        /* int sent = 0;
-            int block;
-            int remaining;
-            long max;
-            byte[] buffer;
-            ChannelDataWindow window = channel.getRemoteWindow();
-            while (sent < data.length) {
-                remaining = data.length - sent;
-                max = ((window.getWindowSpace() < channel.getRemotePacketSize())
-           && window.getWindowSpace() > 0)
-           ? window.getWindowSpace() : channel.getRemotePacketSize();
-                block = (max < remaining) ? (int) max : remaining;
-                channel.remoteWindow.consumeWindowSpace(block);
-                buffer = new byte[block];
-                System.arraycopy(data, sent, buffer, 0, block);
-                if (type != null) {
-           channel.sendChannelExtData(type.intValue(), buffer);
-                } else {
-           channel.sendChannelData(buffer);
-                }
-                sent += block;
-            }*/
-    }
+		/* int sent = 0;
+		    int block;
+		    int remaining;
+		    long max;
+		    byte[] buffer;
+		    ChannelDataWindow window = channel.getRemoteWindow();
+		    while (sent < data.length) {
+		        remaining = data.length - sent;
+		        max = ((window.getWindowSpace() < channel.getRemotePacketSize())
+		   && window.getWindowSpace() > 0)
+		   ? window.getWindowSpace() : channel.getRemotePacketSize();
+		        block = (max < remaining) ? (int) max : remaining;
+		        channel.remoteWindow.consumeWindowSpace(block);
+		        buffer = new byte[block];
+		        System.arraycopy(data, sent, buffer, 0, block);
+		        if (type != null) {
+		   channel.sendChannelExtData(type.intValue(), buffer);
+		        } else {
+		   channel.sendChannelData(buffer);
+		        }
+		        sent += block;
+		    }*/
+	}
 }

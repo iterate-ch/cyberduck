@@ -30,60 +30,60 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import ch.cyberduck.core.Transcript;
-import ch.cyberduck.core.TranscriptFactory;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.subsystem.SubsystemMessageStore;
 import com.sshtools.j2ssh.util.OpenClosedState;
 
+import ch.cyberduck.core.Transcript;
+import ch.cyberduck.core.TranscriptFactory;
+
 class SftpMessageStore extends SubsystemMessageStore {
-    /**  */
-    public static Log log = LogFactory.getLog(SftpMessageStore.class);
+	/**  */
+	public static Log log = LogFactory.getLog(SftpMessageStore.class);
 
-    private Transcript transcript;
+	private Transcript transcript;
 
-    /**
-     * Creates a new SftpMessageStore object.
-     */
-    public SftpMessageStore(String encoding) {
+	/**
+	 * Creates a new SftpMessageStore object.
+	 */
+	public SftpMessageStore(String encoding) {
 		super(encoding);
-        this.transcript = TranscriptFactory.getImpl(this.toString()); //@nice get proper logger
-    }
+		this.transcript = TranscriptFactory.getImpl(this.toString()); //@nice get proper logger
+	}
 
-    /**
-     * @param requestId
-     * @return
-     * @throws InterruptedException
-     */
-    public synchronized SubsystemMessage getMessage(UnsignedInteger32 requestId)
-            throws InterruptedException {
-        Iterator it;
-        SubsystemMessage msg;
+	/**
+	 * @param requestId
+	 * @return
+	 * @throws InterruptedException
+	 */
+	public synchronized SubsystemMessage getMessage(UnsignedInteger32 requestId)
+	    throws InterruptedException {
+		Iterator it;
+		SubsystemMessage msg;
 
-        // If there are no messages available then wait untill there are.
-        while (getState().getValue() == OpenClosedState.OPEN) {
-            if (messages.size() > 0) {
-                it = messages.iterator();
+		// If there are no messages available then wait untill there are.
+		while(getState().getValue() == OpenClosedState.OPEN) {
+			if(messages.size() > 0) {
+				it = messages.iterator();
 
-                while (it.hasNext()) {
-                    msg = (SubsystemMessage)it.next();
+				while(it.hasNext()) {
+					msg = (SubsystemMessage)it.next();
 
-                    if (msg instanceof MessageRequestId) {
-                        if (((MessageRequestId)msg).getId().equals(requestId)) {
-                            messages.remove(msg);
-                            this.transcript.log("< " + msg.getMessageName());
-                            return msg;
-                        }
-                    }
-                }
-            }
+					if(msg instanceof MessageRequestId) {
+						if(((MessageRequestId)msg).getId().equals(requestId)) {
+							messages.remove(msg);
+							this.transcript.log("< "+msg.getMessageName());
+							return msg;
+						}
+					}
+				}
+			}
 
-            log.debug("Waiting for new messages");
-            wait(5000);
-        }
+			log.debug("Waiting for new messages");
+			wait(5000);
+		}
 
-        return null;
-    }
+		return null;
+	}
 }

@@ -32,29 +32,29 @@ package com.sshtools.j2ssh.util;
  * @version $Revision$
  */
 public class StartStopState extends State {
-    /**  */
-    public static final int STARTED = 1;
+	/**  */
+	public static final int STARTED = 1;
 
-    /**  */
-    public static final int STOPPED = 2;
+	/**  */
+	public static final int STOPPED = 2;
 
-    /**  */
-    public static final int FAILED = 3;
+	/**  */
+	public static final int FAILED = 3;
 
-    /**
-     * Creates a new StartStopState object.
-     *
-     * @param initial
-     */
-    public StartStopState(int initial) {
-        super(initial);
-    }
+	/**
+	 * Creates a new StartStopState object.
+	 *
+	 * @param initial
+	 */
+	public StartStopState(int initial) {
+		super(initial);
+	}
 
-    /**
-     * @param state
-     * @return
-     */
-    public boolean isValidState(int state) {
-        return (state == STARTED) || (state == STOPPED) || (state == FAILED);
-    }
+	/**
+	 * @param state
+	 * @return
+	 */
+	public boolean isValidState(int state) {
+		return (state == STARTED) || (state == STOPPED) || (state == FAILED);
+	}
 }

@@ -48,41 +48,41 @@ package com.sshtools.j2ssh.connection;
  * @version $Id$
  */
 public abstract class ChannelEventAdapter implements ChannelEventListener {
-    /**
-     * Creates a new ChannelEventAdapter object.
-     */
-    public ChannelEventAdapter() {
-    }
+	/**
+	 * Creates a new ChannelEventAdapter object.
+	 */
+	public ChannelEventAdapter() {
+	}
 
-    /**
-     * @param channel
-     */
-    public void onChannelOpen(Channel channel) {
-    }
+	/**
+	 * @param channel
+	 */
+	public void onChannelOpen(Channel channel) {
+	}
 
-    /**
-     * @param channel
-     */
-    public void onChannelEOF(Channel channel) {
-    }
+	/**
+	 * @param channel
+	 */
+	public void onChannelEOF(Channel channel) {
+	}
 
-    /**
-     * @param channel
-     */
-    public void onChannelClose(Channel channel) {
-    }
+	/**
+	 * @param channel
+	 */
+	public void onChannelClose(Channel channel) {
+	}
 
-    /**
-     * @param channel
-     * @param data
-     */
-    public void onDataReceived(Channel channel, byte[] data) {
-    }
+	/**
+	 * @param channel
+	 * @param data
+	 */
+	public void onDataReceived(Channel channel, byte[] data) {
+	}
 
-    /**
-     * @param channel
-     * @param data
-     */
-    public void onDataSent(Channel channel, byte[] data) {
-    }
+	/**
+	 * @param channel
+	 * @param data
+	 */
+	public void onDataSent(Channel channel, byte[] data) {
+	}
 }

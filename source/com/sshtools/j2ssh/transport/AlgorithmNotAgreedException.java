@@ -38,17 +38,17 @@ package com.sshtools.j2ssh.transport;
  * @since 0.2.0
  */
 public class AlgorithmNotAgreedException extends TransportProtocolException {
-    /**
-     * <p/>
-     * Constructs the exception.
-     * </p>
-     * <p/>
-     * <p></p>
-     *
-     * @param msg the error message
-     * @since 0.2.0
-     */
-    public AlgorithmNotAgreedException(String msg) {
-        super(msg);
-    }
+	/**
+	 * <p/>
+	 * Constructs the exception.
+	 * </p>
+	 * <p/>
+	 * <p></p>
+	 *
+	 * @param msg the error message
+	 * @since 0.2.0
+	 */
+	public AlgorithmNotAgreedException(String msg) {
+		super(msg);
+	}
 }

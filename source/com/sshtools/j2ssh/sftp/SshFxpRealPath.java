@@ -36,76 +36,76 @@ import com.sshtools.j2ssh.subsystem.SubsystemMessage;
  * @version $Revision$
  */
 public class SshFxpRealPath extends SubsystemMessage implements MessageRequestId {
-    /**  */
-    public static final int SSH_FXP_REALPATH = 16;
-    private UnsignedInteger32 id;
-    private String path;
+	/**  */
+	public static final int SSH_FXP_REALPATH = 16;
+	private UnsignedInteger32 id;
+	private String path;
 
-    /**
-     * Creates a new SshFxpRealPath object.
-     */
-    public SshFxpRealPath() {
-        super(SSH_FXP_REALPATH);
-    }
+	/**
+	 * Creates a new SshFxpRealPath object.
+	 */
+	public SshFxpRealPath() {
+		super(SSH_FXP_REALPATH);
+	}
 
-    /**
-     * Creates a new SshFxpRealPath object.
-     *
-     * @param id
-     * @param path
-     */
-    public SshFxpRealPath(UnsignedInteger32 id, String path) {
-        super(SSH_FXP_REALPATH);
-        this.id = id;
-        this.path = path;
-    }
+	/**
+	 * Creates a new SshFxpRealPath object.
+	 *
+	 * @param id
+	 * @param path
+	 */
+	public SshFxpRealPath(UnsignedInteger32 id, String path) {
+		super(SSH_FXP_REALPATH);
+		this.id = id;
+		this.path = path;
+	}
 
-    /**
-     * @return
-     */
-    public UnsignedInteger32 getId() {
-        return id;
-    }
+	/**
+	 * @return
+	 */
+	public UnsignedInteger32 getId() {
+		return id;
+	}
 
-    /**
-     * @return
-     */
-    public String getPath() {
-        return path;
-    }
+	/**
+	 * @return
+	 */
+	public String getPath() {
+		return path;
+	}
 
-    /**
-     * @param bar
-     * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
-     *                             DOCUMENT
-     *                             ME!
-     */
-    public void constructMessage(ByteArrayReader bar)
-            throws java.io.IOException,
-            com.sshtools.j2ssh.transport.InvalidMessageException {
-        id = bar.readUINT32();
+	/**
+	 * @param bar
+	 * @throws java.io.IOException
+	 * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+	 *                             DOCUMENT
+	 *                             ME!
+	 */
+	public void constructMessage(ByteArrayReader bar)
+	    throws java.io.IOException,
+	    com.sshtools.j2ssh.transport.InvalidMessageException {
+		id = bar.readUINT32();
 		path = bar.readString();
-    }
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_FXP_READPATH";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_FXP_READPATH";
+	}
 
-    /**
-     * @param baw
-     * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
-     *                             DOCUMENT
-     *                             ME!
-     */
-    public void constructByteArray(ByteArrayWriter baw)
-            throws java.io.IOException,
-            com.sshtools.j2ssh.transport.InvalidMessageException {
-        baw.writeUINT32(id);
-        baw.writeString(path);
-    }
+	/**
+	 * @param baw
+	 * @throws java.io.IOException
+	 * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+	 *                             DOCUMENT
+	 *                             ME!
+	 */
+	public void constructByteArray(ByteArrayWriter baw)
+	    throws java.io.IOException,
+	    com.sshtools.j2ssh.transport.InvalidMessageException {
+		baw.writeUINT32(id);
+		baw.writeString(path);
+	}
 }

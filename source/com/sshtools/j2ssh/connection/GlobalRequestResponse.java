@@ -32,38 +32,38 @@ package com.sshtools.j2ssh.connection;
  * @version $Revision$
  */
 public class GlobalRequestResponse {
-    //public static final GlobalRequestResponse REQUEST_FAILED = new GlobalRequestResponse(false);
-    //public static final GlobalRequestResponse REQUEST_SUCCEEDED = new GlobalRequestResponse(true);
-    private byte[] responseData = null;
-    private boolean succeeded;
+	//public static final GlobalRequestResponse REQUEST_FAILED = new GlobalRequestResponse(false);
+	//public static final GlobalRequestResponse REQUEST_SUCCEEDED = new GlobalRequestResponse(true);
+	private byte[] responseData = null;
+	private boolean succeeded;
 
-    /**
-     * Creates a new GlobalRequestResponse object.
-     *
-     * @param succeeded
-     */
-    public GlobalRequestResponse(boolean succeeded) {
-        this.succeeded = succeeded;
-    }
+	/**
+	 * Creates a new GlobalRequestResponse object.
+	 *
+	 * @param succeeded
+	 */
+	public GlobalRequestResponse(boolean succeeded) {
+		this.succeeded = succeeded;
+	}
 
-    /**
-     * @param responseData
-     */
-    public void setResponseData(byte[] responseData) {
-        this.responseData = responseData;
-    }
+	/**
+	 * @param responseData
+	 */
+	public void setResponseData(byte[] responseData) {
+		this.responseData = responseData;
+	}
 
-    /**
-     * @return
-     */
-    public byte[] getResponseData() {
-        return responseData;
-    }
+	/**
+	 * @return
+	 */
+	public byte[] getResponseData() {
+		return responseData;
+	}
 
-    /**
-     * @return
-     */
-    public boolean hasSucceeded() {
-        return succeeded;
-    }
+	/**
+	 * @return
+	 */
+	public boolean hasSucceeded() {
+		return succeeded;
+	}
 }

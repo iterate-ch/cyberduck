@@ -32,7 +32,7 @@ package com.sshtools.j2ssh.connection;
  * @version $Revision$
  */
 public interface ChannelFactory {
-    //public List getChannelType();
-    public Channel createChannel(String channelType, byte[] requestData)
-            throws InvalidChannelException;
+	//public List getChannelType();
+	public Channel createChannel(String channelType, byte[] requestData)
+	    throws InvalidChannelException;
 }

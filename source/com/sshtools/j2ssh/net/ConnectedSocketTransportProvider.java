@@ -37,43 +37,43 @@ import java.net.Socket;
  * @version $Revision$
  */
 public class ConnectedSocketTransportProvider implements TransportProvider {
-    Socket socket;
+	Socket socket;
 
-    /**
-     * Creates a new ConnectedSocketTransportProvider object.
-     *
-     * @param socket
-     */
-    public ConnectedSocketTransportProvider(Socket socket) {
-        this.socket = socket;
-    }
+	/**
+	 * Creates a new ConnectedSocketTransportProvider object.
+	 *
+	 * @param socket
+	 */
+	public ConnectedSocketTransportProvider(Socket socket) {
+		this.socket = socket;
+	}
 
-    /**
-     * @throws IOException
-     */
-    public void close() throws IOException {
-        socket.close();
-    }
+	/**
+	 * @throws IOException
+	 */
+	public void close() throws IOException {
+		socket.close();
+	}
 
-    /*public boolean isConnected() {
-       return true; //socket.isConnected();
-     }*/
-    public InputStream getInputStream() throws IOException {
-        return socket.getInputStream();
-    }
+	/*public boolean isConnected() {
+	   return true; //socket.isConnected();
+	 }*/
+	public InputStream getInputStream() throws IOException {
+		return socket.getInputStream();
+	}
 
-    /**
-     * @return
-     * @throws IOException
-     */
-    public OutputStream getOutputStream() throws IOException {
-        return socket.getOutputStream();
-    }
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	public OutputStream getOutputStream() throws IOException {
+		return socket.getOutputStream();
+	}
 
-    /**
-     * @return
-     */
-    public String getProviderDetail() {
-        return socket.toString(); //getRemoteSocketAddress().toString();
-    }
+	/**
+	 * @return
+	 */
+	public String getProviderDetail() {
+		return socket.toString(); //getRemoteSocketAddress().toString();
+	}
 }

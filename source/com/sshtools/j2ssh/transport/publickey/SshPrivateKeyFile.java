@@ -33,7 +33,6 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 
@@ -43,182 +42,182 @@ import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
  * @version $Revision$
  */
 public class SshPrivateKeyFile {
-    private static Log log = LogFactory.getLog(SshPrivateKeyFile.class);
-    private SshPrivateKeyFormat format;
-    private byte[] keyblob;
+	private static Log log = LogFactory.getLog(SshPrivateKeyFile.class);
+	private SshPrivateKeyFormat format;
+	private byte[] keyblob;
 
-    /**
-     * Creates a new SshPrivateKeyFile object.
-     *
-     * @param keyblob
-     * @param format
-     */
-    protected SshPrivateKeyFile(byte[] keyblob, SshPrivateKeyFormat format) {
-        this.keyblob = keyblob;
-        this.format = format;
-    }
+	/**
+	 * Creates a new SshPrivateKeyFile object.
+	 *
+	 * @param keyblob
+	 * @param format
+	 */
+	protected SshPrivateKeyFile(byte[] keyblob, SshPrivateKeyFormat format) {
+		this.keyblob = keyblob;
+		this.format = format;
+	}
 
-    /**
-     * @return
-     */
-    public byte[] getBytes() {
-        return keyblob;
-    }
+	/**
+	 * @return
+	 */
+	public byte[] getBytes() {
+		return keyblob;
+	}
 
-    /**
-     * @param passphrase
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public byte[] getKeyBlob(String passphrase) throws InvalidSshKeyException {
-        return format.decryptKeyblob(keyblob, passphrase);
-    }
+	/**
+	 * @param passphrase
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public byte[] getKeyBlob(String passphrase) throws InvalidSshKeyException {
+		return format.decryptKeyblob(keyblob, passphrase);
+	}
 
-    /**
-     * @param oldPassphrase
-     * @param newPassphrase
-     * @throws InvalidSshKeyException
-     */
-    public void changePassphrase(String oldPassphrase, String newPassphrase)
-            throws InvalidSshKeyException {
-        byte[] raw = format.decryptKeyblob(keyblob, oldPassphrase);
-        keyblob = format.encryptKeyblob(raw, newPassphrase);
-    }
+	/**
+	 * @param oldPassphrase
+	 * @param newPassphrase
+	 * @throws InvalidSshKeyException
+	 */
+	public void changePassphrase(String oldPassphrase, String newPassphrase)
+	    throws InvalidSshKeyException {
+		byte[] raw = format.decryptKeyblob(keyblob, oldPassphrase);
+		keyblob = format.encryptKeyblob(raw, newPassphrase);
+	}
 
-    /**
-     * @param formattedKey
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public static SshPrivateKeyFile parse(byte[] formattedKey)
-            throws InvalidSshKeyException {
-        if (formattedKey == null) {
-            throw new InvalidSshKeyException("Key data is null");
-        }
+	/**
+	 * @param formattedKey
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public static SshPrivateKeyFile parse(byte[] formattedKey)
+	    throws InvalidSshKeyException {
+		if(formattedKey == null) {
+			throw new InvalidSshKeyException("Key data is null");
+		}
 
-        log.info("Parsing private key file");
+		log.info("Parsing private key file");
 
-        // Try the default private key format
-        SshPrivateKeyFormat format;
-        format = SshPrivateKeyFormatFactory.newInstance(SshPrivateKeyFormatFactory.getDefaultFormatType());
+		// Try the default private key format
+		SshPrivateKeyFormat format;
+		format = SshPrivateKeyFormatFactory.newInstance(SshPrivateKeyFormatFactory.getDefaultFormatType());
 
-        boolean valid = format.isFormatted(formattedKey);
+		boolean valid = format.isFormatted(formattedKey);
 
-        if (!valid) {
-            log.info("Private key is not in the default format, attempting parse with other supported formats");
+		if(!valid) {
+			log.info("Private key is not in the default format, attempting parse with other supported formats");
 
-            Iterator it = SshPrivateKeyFormatFactory.getSupportedFormats()
-                    .iterator();
-            String ft;
+			Iterator it = SshPrivateKeyFormatFactory.getSupportedFormats()
+			    .iterator();
+			String ft;
 
-            while (it.hasNext() && !valid) {
-                ft = (String)it.next();
-                log.debug("Attempting " + ft);
-                format = SshPrivateKeyFormatFactory.newInstance(ft);
-                valid = format.isFormatted(formattedKey);
-            }
-        }
+			while(it.hasNext() && !valid) {
+				ft = (String)it.next();
+				log.debug("Attempting "+ft);
+				format = SshPrivateKeyFormatFactory.newInstance(ft);
+				valid = format.isFormatted(formattedKey);
+			}
+		}
 
-        if (valid) {
-            return new SshPrivateKeyFile(formattedKey, format);
-        }
-        else {
-            throw new InvalidSshKeyException("The key format is not a supported format");
-        }
-    }
+		if(valid) {
+			return new SshPrivateKeyFile(formattedKey, format);
+		}
+		else {
+			throw new InvalidSshKeyException("The key format is not a supported format");
+		}
+	}
 
-    /**
-     * @param keyfile
-     * @return
-     * @throws InvalidSshKeyException
-     * @throws IOException
-     */
-    public static SshPrivateKeyFile parse(File keyfile)
-            throws InvalidSshKeyException, IOException {
-        FileInputStream in = new FileInputStream(keyfile);
-        byte[] data = null;
+	/**
+	 * @param keyfile
+	 * @return
+	 * @throws InvalidSshKeyException
+	 * @throws IOException
+	 */
+	public static SshPrivateKeyFile parse(File keyfile)
+	    throws InvalidSshKeyException, IOException {
+		FileInputStream in = new FileInputStream(keyfile);
+		byte[] data = null;
 
-        try {
-            data = new byte[in.available()];
-            in.read(data);
-        }
-        finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            }
-            catch (IOException ex) {
-            }
-        }
+		try {
+			data = new byte[in.available()];
+			in.read(data);
+		}
+		finally {
+			try {
+				if(in != null) {
+					in.close();
+				}
+			}
+			catch(IOException ex) {
+			}
+		}
 
-        return parse(data);
-    }
+		return parse(data);
+	}
 
-    /**
-     * @return
-     */
-    public boolean isPassphraseProtected() {
-        return format.isPassphraseProtected(keyblob);
-    }
+	/**
+	 * @return
+	 */
+	public boolean isPassphraseProtected() {
+		return format.isPassphraseProtected(keyblob);
+	}
 
-    /*public void changePassphrase(String oldPassphrase, String newPassphrase)
-     throws InvalidSshKeyException {
-     keyblob = format.changePassphrase(keyblob, oldPassphrase, newPassphrase);
-      }*/
-    public static SshPrivateKeyFile create(SshPrivateKey key,
-                                           String passphrase, SshPrivateKeyFormat format)
-            throws InvalidSshKeyException {
-        byte[] keyblob = format.encryptKeyblob(key.getEncoded(), passphrase);
+	/*public void changePassphrase(String oldPassphrase, String newPassphrase)
+	 throws InvalidSshKeyException {
+	 keyblob = format.changePassphrase(keyblob, oldPassphrase, newPassphrase);
+	  }*/
+	public static SshPrivateKeyFile create(SshPrivateKey key,
+	                                       String passphrase, SshPrivateKeyFormat format)
+	    throws InvalidSshKeyException {
+		byte[] keyblob = format.encryptKeyblob(key.getEncoded(), passphrase);
 
-        return new SshPrivateKeyFile(keyblob, format);
-    }
+		return new SshPrivateKeyFile(keyblob, format);
+	}
 
-    /**
-     * @param newFormat
-     * @param passphrase
-     * @throws InvalidSshKeyException
-     */
-    public void setFormat(SshPrivateKeyFormat newFormat, String passphrase)
-            throws InvalidSshKeyException {
-        byte[] raw = this.format.decryptKeyblob(keyblob, passphrase);
-        format = newFormat;
-        keyblob = format.encryptKeyblob(raw, passphrase);
-    }
+	/**
+	 * @param newFormat
+	 * @param passphrase
+	 * @throws InvalidSshKeyException
+	 */
+	public void setFormat(SshPrivateKeyFormat newFormat, String passphrase)
+	    throws InvalidSshKeyException {
+		byte[] raw = this.format.decryptKeyblob(keyblob, passphrase);
+		format = newFormat;
+		keyblob = format.encryptKeyblob(raw, passphrase);
+	}
 
-    /**
-     * @return
-     */
-    public SshPrivateKeyFormat getFormat() {
-        return format;
-    }
+	/**
+	 * @return
+	 */
+	public SshPrivateKeyFormat getFormat() {
+		return format;
+	}
 
-    /**
-     * @param passphrase
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public SshPrivateKey toPrivateKey(String passphrase)
-            throws InvalidSshKeyException {
-        try {
-            byte[] raw = format.decryptKeyblob(keyblob, passphrase);
-            SshKeyPair pair = SshKeyPairFactory.newInstance(getAlgorithm(raw));
+	/**
+	 * @param passphrase
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public SshPrivateKey toPrivateKey(String passphrase)
+	    throws InvalidSshKeyException {
+		try {
+			byte[] raw = format.decryptKeyblob(keyblob, passphrase);
+			SshKeyPair pair = SshKeyPairFactory.newInstance(getAlgorithm(raw));
 
-            return pair.decodePrivateKey(raw);
-        }
-        catch (AlgorithmNotSupportedException anse) {
-            throw new InvalidSshKeyException("The public key algorithm for this private key is not supported");
-        }
-    }
+			return pair.decodePrivateKey(raw);
+		}
+		catch(AlgorithmNotSupportedException anse) {
+			throw new InvalidSshKeyException("The public key algorithm for this private key is not supported");
+		}
+	}
 
-    /**
-     * @return
-     */
-    public String toString() {
-        return new String(keyblob);
-    }
+	/**
+	 * @return
+	 */
+	public String toString() {
+		return new String(keyblob);
+	}
 
-    private String getAlgorithm(byte[] raw) {
-        return ByteArrayReader.readString(raw, 0);
-    }
+	private String getAlgorithm(byte[] raw) {
+		return ByteArrayReader.readString(raw, 0);
+	}
 }

@@ -36,89 +36,89 @@ import com.sshtools.j2ssh.subsystem.SubsystemMessage;
  * @version $Revision$
  */
 public class SshFxpSymlink extends SubsystemMessage implements MessageRequestId {
-    /**  */
-    public static final int SSH_FXP_SYMLINK = 20;
-    private UnsignedInteger32 id;
-    private String linkpath;
-    private String targetpath;
+	/**  */
+	public static final int SSH_FXP_SYMLINK = 20;
+	private UnsignedInteger32 id;
+	private String linkpath;
+	private String targetpath;
 
-    /**
-     * Creates a new SshFxpSymlink object.
-     */
-    public SshFxpSymlink() {
-        super(SSH_FXP_SYMLINK);
-    }
+	/**
+	 * Creates a new SshFxpSymlink object.
+	 */
+	public SshFxpSymlink() {
+		super(SSH_FXP_SYMLINK);
+	}
 
-    /**
-     * Creates a new SshFxpSymlink object.
-     *
-     * @param id
-     * @param targetpath
-     * @param linkpath
-     */
-    public SshFxpSymlink(UnsignedInteger32 id, String targetpath,
-                         String linkpath) {
-        super(SSH_FXP_SYMLINK);
-        this.id = id;
-        this.linkpath = linkpath;
-        this.targetpath = targetpath;
-    }
+	/**
+	 * Creates a new SshFxpSymlink object.
+	 *
+	 * @param id
+	 * @param targetpath
+	 * @param linkpath
+	 */
+	public SshFxpSymlink(UnsignedInteger32 id, String targetpath,
+	                     String linkpath) {
+		super(SSH_FXP_SYMLINK);
+		this.id = id;
+		this.linkpath = linkpath;
+		this.targetpath = targetpath;
+	}
 
-    /**
-     * @return
-     */
-    public UnsignedInteger32 getId() {
-        return id;
-    }
+	/**
+	 * @return
+	 */
+	public UnsignedInteger32 getId() {
+		return id;
+	}
 
-    /**
-     * @return
-     */
-    public String getLinkPath() {
-        return linkpath;
-    }
+	/**
+	 * @return
+	 */
+	public String getLinkPath() {
+		return linkpath;
+	}
 
-    /**
-     * @return
-     */
-    public String getTargetPath() {
-        return targetpath;
-    }
+	/**
+	 * @return
+	 */
+	public String getTargetPath() {
+		return targetpath;
+	}
 
-    /**
-     * @param bar
-     * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
-     *                             DOCUMENT
-     *                             ME!
-     */
-    public void constructMessage(ByteArrayReader bar)
-            throws java.io.IOException,
-            com.sshtools.j2ssh.transport.InvalidMessageException {
-        id = bar.readUINT32();
-        linkpath = bar.readString();
-        targetpath = bar.readString();
-    }
+	/**
+	 * @param bar
+	 * @throws java.io.IOException
+	 * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+	 *                             DOCUMENT
+	 *                             ME!
+	 */
+	public void constructMessage(ByteArrayReader bar)
+	    throws java.io.IOException,
+	    com.sshtools.j2ssh.transport.InvalidMessageException {
+		id = bar.readUINT32();
+		linkpath = bar.readString();
+		targetpath = bar.readString();
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_FXP_SYMLINK";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_FXP_SYMLINK";
+	}
 
-    /**
-     * @param baw
-     * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
-     *                             DOCUMENT
-     *                             ME!
-     */
-    public void constructByteArray(ByteArrayWriter baw)
-            throws java.io.IOException,
-            com.sshtools.j2ssh.transport.InvalidMessageException {
-        baw.writeUINT32(id);
-                baw.writeString(linkpath);
-        baw.writeString(targetpath);
-    }
+	/**
+	 * @param baw
+	 * @throws java.io.IOException
+	 * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+	 *                             DOCUMENT
+	 *                             ME!
+	 */
+	public void constructByteArray(ByteArrayWriter baw)
+	    throws java.io.IOException,
+	    com.sshtools.j2ssh.transport.InvalidMessageException {
+		baw.writeUINT32(id);
+		baw.writeString(linkpath);
+		baw.writeString(targetpath);
+	}
 }

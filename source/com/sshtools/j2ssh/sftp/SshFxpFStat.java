@@ -37,76 +37,76 @@ import com.sshtools.j2ssh.subsystem.SubsystemMessage;
  * @version $Revision$
  */
 public class SshFxpFStat extends SubsystemMessage implements MessageRequestId {
-    /**  */
-    public static final int SSH_FXP_FSTAT = 8;
-    private UnsignedInteger32 id;
-    private byte[] handle;
+	/**  */
+	public static final int SSH_FXP_FSTAT = 8;
+	private UnsignedInteger32 id;
+	private byte[] handle;
 
-    /**
-     * Creates a new SshFxpFStat object.
-     */
-    public SshFxpFStat() {
-        super(SSH_FXP_FSTAT);
-    }
+	/**
+	 * Creates a new SshFxpFStat object.
+	 */
+	public SshFxpFStat() {
+		super(SSH_FXP_FSTAT);
+	}
 
-    /**
-     * Creates a new SshFxpFStat object.
-     *
-     * @param id
-     * @param handle
-     */
-    public SshFxpFStat(UnsignedInteger32 id, byte[] handle) {
-        super(SSH_FXP_FSTAT);
-        this.id = id;
-        this.handle = handle;
-    }
+	/**
+	 * Creates a new SshFxpFStat object.
+	 *
+	 * @param id
+	 * @param handle
+	 */
+	public SshFxpFStat(UnsignedInteger32 id, byte[] handle) {
+		super(SSH_FXP_FSTAT);
+		this.id = id;
+		this.handle = handle;
+	}
 
-    /**
-     * @param bar
-     * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
-     *                             DOCUMENT
-     *                             ME!
-     */
-    public void constructMessage(ByteArrayReader bar)
-            throws java.io.IOException,
-            com.sshtools.j2ssh.transport.InvalidMessageException {
-        id = bar.readUINT32();
-        handle = bar.readBinaryString();
-    }
+	/**
+	 * @param bar
+	 * @throws java.io.IOException
+	 * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+	 *                             DOCUMENT
+	 *                             ME!
+	 */
+	public void constructMessage(ByteArrayReader bar)
+	    throws java.io.IOException,
+	    com.sshtools.j2ssh.transport.InvalidMessageException {
+		id = bar.readUINT32();
+		handle = bar.readBinaryString();
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_FXP_FSTAT";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_FXP_FSTAT";
+	}
 
-    /**
-     * @return
-     */
-    public UnsignedInteger32 getId() {
-        return id;
-    }
+	/**
+	 * @return
+	 */
+	public UnsignedInteger32 getId() {
+		return id;
+	}
 
-    /**
-     * @return
-     */
-    public byte[] getHandle() {
-        return handle;
-    }
+	/**
+	 * @return
+	 */
+	public byte[] getHandle() {
+		return handle;
+	}
 
-    /**
-     * @param baw
-     * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
-     *                             DOCUMENT
-     *                             ME!
-     */
-    public void constructByteArray(ByteArrayWriter baw)
-            throws java.io.IOException,
-            com.sshtools.j2ssh.transport.InvalidMessageException {
-        baw.writeUINT32(id);
-        baw.writeBinaryString(handle);
-    }
+	/**
+	 * @param baw
+	 * @throws java.io.IOException
+	 * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+	 *                             DOCUMENT
+	 *                             ME!
+	 */
+	public void constructByteArray(ByteArrayWriter baw)
+	    throws java.io.IOException,
+	    com.sshtools.j2ssh.transport.InvalidMessageException {
+		baw.writeUINT32(id);
+		baw.writeBinaryString(handle);
+	}
 }

@@ -34,50 +34,50 @@ import java.io.IOException;
  * @version $Revision$
  */
 public interface TransportProtocol {
-    /**
-     * @param description
-     */
-    public void disconnect(String description);
+	/**
+	 * @param description
+	 */
+	public void disconnect(String description);
 
-    /**
-     * @param store
-     * @throws MessageAlreadyRegisteredException
-     *
-     */
-    public void addMessageStore(SshMessageStore store)
-            throws MessageAlreadyRegisteredException;
+	/**
+	 * @param store
+	 * @throws MessageAlreadyRegisteredException
+	 *
+	 */
+	public void addMessageStore(SshMessageStore store)
+	    throws MessageAlreadyRegisteredException;
 
-    /**
-     * @param ms
-     * @param sender
-     * @throws IOException
-     */
-    public void sendMessage(SshMessage ms, Object sender)
-            throws IOException;
+	/**
+	 * @param ms
+	 * @param sender
+	 * @throws IOException
+	 */
+	public void sendMessage(SshMessage ms, Object sender)
+	    throws IOException;
 
-    /**
-     * @param filter
-     * @return
-     * @throws IOException
-     */
-    public SshMessage readMessage(int[] filter) throws IOException;
+	/**
+	 * @param filter
+	 * @return
+	 * @throws IOException
+	 */
+	public SshMessage readMessage(int[] filter) throws IOException;
 
-    /**
-     * @return
-     */
-    public byte[] getSessionIdentifier();
+	/**
+	 * @return
+	 */
+	public byte[] getSessionIdentifier();
 
-    /**
-     * @return
-     */
-    public int getConnectionId();
+	/**
+	 * @return
+	 */
+	public int getConnectionId();
 
-    public boolean isConnected();
+	public boolean isConnected();
 
-    /**
-     * @return
-     */
-    public TransportProtocolState getState();
+	/**
+	 * @return
+	 */
+	public TransportProtocolState getState();
 
-    public String getUnderlyingProviderDetail();
+	public String getUnderlyingProviderDetail();
 }

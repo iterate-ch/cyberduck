@@ -36,76 +36,76 @@ import com.sshtools.j2ssh.subsystem.SubsystemMessage;
  * @version $Revision$
  */
 public class SshFxpRemove extends SubsystemMessage implements MessageRequestId {
-    /**  */
-    public static final int SSH_FXP_REMOVE = 13;
-    private UnsignedInteger32 id;
-    private String filename;
+	/**  */
+	public static final int SSH_FXP_REMOVE = 13;
+	private UnsignedInteger32 id;
+	private String filename;
 
-    /**
-     * Creates a new SshFxpRemove object.
-     */
-    public SshFxpRemove() {
-        super(SSH_FXP_REMOVE);
-    }
+	/**
+	 * Creates a new SshFxpRemove object.
+	 */
+	public SshFxpRemove() {
+		super(SSH_FXP_REMOVE);
+	}
 
-    /**
-     * Creates a new SshFxpRemove object.
-     *
-     * @param id
-     * @param filename
-     */
-    public SshFxpRemove(UnsignedInteger32 id, String filename) {
-        super(SSH_FXP_REMOVE);
-        this.id = id;
-        this.filename = filename;
-    }
+	/**
+	 * Creates a new SshFxpRemove object.
+	 *
+	 * @param id
+	 * @param filename
+	 */
+	public SshFxpRemove(UnsignedInteger32 id, String filename) {
+		super(SSH_FXP_REMOVE);
+		this.id = id;
+		this.filename = filename;
+	}
 
-    /**
-     * @return
-     */
-    public UnsignedInteger32 getId() {
-        return id;
-    }
+	/**
+	 * @return
+	 */
+	public UnsignedInteger32 getId() {
+		return id;
+	}
 
-    /**
-     * @return
-     */
-    public String getFilename() {
-        return filename;
-    }
+	/**
+	 * @return
+	 */
+	public String getFilename() {
+		return filename;
+	}
 
-    /**
-     * @param bar
-     * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
-     *                             DOCUMENT
-     *                             ME!
-     */
-    public void constructMessage(ByteArrayReader bar)
-            throws java.io.IOException,
-            com.sshtools.j2ssh.transport.InvalidMessageException {
-        id = bar.readUINT32();
-        filename = bar.readString();
-    }
+	/**
+	 * @param bar
+	 * @throws java.io.IOException
+	 * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+	 *                             DOCUMENT
+	 *                             ME!
+	 */
+	public void constructMessage(ByteArrayReader bar)
+	    throws java.io.IOException,
+	    com.sshtools.j2ssh.transport.InvalidMessageException {
+		id = bar.readUINT32();
+		filename = bar.readString();
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_FXP_REMOVE";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_FXP_REMOVE";
+	}
 
-    /**
-     * @param baw
-     * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
-     *                             DOCUMENT
-     *                             ME!
-     */
-    public void constructByteArray(ByteArrayWriter baw)
-            throws java.io.IOException,
-            com.sshtools.j2ssh.transport.InvalidMessageException {
-				baw.writeUINT32(id);
-				baw.writeString(filename);
-    }
+	/**
+	 * @param baw
+	 * @throws java.io.IOException
+	 * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+	 *                             DOCUMENT
+	 *                             ME!
+	 */
+	public void constructByteArray(ByteArrayWriter baw)
+	    throws java.io.IOException,
+	    com.sshtools.j2ssh.transport.InvalidMessageException {
+		baw.writeUINT32(id);
+		baw.writeString(filename);
+	}
 }

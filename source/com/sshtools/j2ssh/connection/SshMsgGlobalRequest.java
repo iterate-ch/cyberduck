@@ -39,98 +39,98 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class SshMsgGlobalRequest extends SshMessage {
-    /**  */
-    protected final static int SSH_MSG_GLOBAL_REQUEST = 80;
-    private String requestName;
-    private byte[] requestData;
-    private boolean wantReply;
+	/**  */
+	protected final static int SSH_MSG_GLOBAL_REQUEST = 80;
+	private String requestName;
+	private byte[] requestData;
+	private boolean wantReply;
 
-    /**
-     * Creates a new SshMsgGlobalRequest object.
-     *
-     * @param requestName
-     * @param wantReply
-     * @param requestData
-     */
-    public SshMsgGlobalRequest(String requestName, boolean wantReply,
-                               byte[] requestData) {
-        super(SSH_MSG_GLOBAL_REQUEST);
-        this.requestName = requestName;
-        this.wantReply = wantReply;
-        this.requestData = requestData;
-    }
+	/**
+	 * Creates a new SshMsgGlobalRequest object.
+	 *
+	 * @param requestName
+	 * @param wantReply
+	 * @param requestData
+	 */
+	public SshMsgGlobalRequest(String requestName, boolean wantReply,
+	                           byte[] requestData) {
+		super(SSH_MSG_GLOBAL_REQUEST);
+		this.requestName = requestName;
+		this.wantReply = wantReply;
+		this.requestData = requestData;
+	}
 
-    /**
-     * Creates a new SshMsgGlobalRequest object.
-     */
-    public SshMsgGlobalRequest() {
-        super(SSH_MSG_GLOBAL_REQUEST);
-    }
+	/**
+	 * Creates a new SshMsgGlobalRequest object.
+	 */
+	public SshMsgGlobalRequest() {
+		super(SSH_MSG_GLOBAL_REQUEST);
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_MSG_GLOBAL_REQUEST";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_MSG_GLOBAL_REQUEST";
+	}
 
-    /**
-     * @return
-     */
-    public byte[] getRequestData() {
-        return requestData;
-    }
+	/**
+	 * @return
+	 */
+	public byte[] getRequestData() {
+		return requestData;
+	}
 
-    /**
-     * @return
-     */
-    public String getRequestName() {
-        return requestName;
-    }
+	/**
+	 * @return
+	 */
+	public String getRequestName() {
+		return requestName;
+	}
 
-    /**
-     * @return
-     */
-    public boolean getWantReply() {
-        return wantReply;
-    }
+	/**
+	 * @return
+	 */
+	public boolean getWantReply() {
+		return wantReply;
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     */
-    protected void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException {
-        try {
-            baw.writeString(requestName);
-            baw.write((wantReply ? 1 : 0));
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 */
+	protected void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException {
+		try {
+			baw.writeString(requestName);
+			baw.write((wantReply ? 1 : 0));
 
-            if (requestData != null) {
-                baw.write(requestData);
-            }
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+			if(requestData != null) {
+				baw.write(requestData);
+			}
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     */
-    protected void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException {
-        try {
-            requestName = bar.readString();
-            wantReply = ((bar.read() == 0) ? false : true);
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 */
+	protected void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException {
+		try {
+			requestName = bar.readString();
+			wantReply = ((bar.read() == 0) ? false : true);
 
-            if (bar.available() > 0) {
-                requestData = new byte[bar.available()];
-                bar.read(requestData);
-            }
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+			if(bar.available() > 0) {
+				requestData = new byte[bar.available()];
+				bar.read(requestData);
+			}
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 }

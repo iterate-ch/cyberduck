@@ -37,66 +37,66 @@ import com.sshtools.j2ssh.io.ByteArrayWriter;
  * @version $Revision$
  */
 public class SshMsgIgnore extends SshMessage {
-    /**  */
-    protected final static int SSH_MSG_IGNORE = 2;
-    private String data;
+	/**  */
+	protected final static int SSH_MSG_IGNORE = 2;
+	private String data;
 
-    /**
-     * Creates a new SshMsgIgnore object.
-     *
-     * @param data
-     */
-    public SshMsgIgnore(String data) {
-        super(SSH_MSG_IGNORE);
-        this.data = data;
-    }
+	/**
+	 * Creates a new SshMsgIgnore object.
+	 *
+	 * @param data
+	 */
+	public SshMsgIgnore(String data) {
+		super(SSH_MSG_IGNORE);
+		this.data = data;
+	}
 
-    /**
-     * Creates a new SshMsgIgnore object.
-     */
-    public SshMsgIgnore() {
-        super(SSH_MSG_IGNORE);
-    }
+	/**
+	 * Creates a new SshMsgIgnore object.
+	 */
+	public SshMsgIgnore() {
+		super(SSH_MSG_IGNORE);
+	}
 
-    /**
-     * @return
-     */
-    public String getData() {
-        return data;
-    }
+	/**
+	 * @return
+	 */
+	public String getData() {
+		return data;
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_MSG_IGNORE";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_MSG_IGNORE";
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     */
-    protected void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException {
-        try {
-            baw.writeString(data);
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Error occurred writing message data: " + ioe.getMessage());
-        }
-    }
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 */
+	protected void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException {
+		try {
+			baw.writeString(data);
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Error occurred writing message data: "+ioe.getMessage());
+		}
+	}
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     */
-    protected void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException {
-        try {
-            data = bar.readString();
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Error occurred reading message data: " + ioe.getMessage());
-        }
-    }
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 */
+	protected void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException {
+		try {
+			data = bar.readString();
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Error occurred reading message data: "+ioe.getMessage());
+		}
+	}
 }

@@ -47,126 +47,126 @@ import com.sshtools.j2ssh.util.Base64;
  * @version $Revision$
  */
 public class PEMWriter extends PEM {
-    private String type;
-    private Map header = new HashMap();
-    private byte[] payload;
+	private String type;
+	private Map header = new HashMap();
+	private byte[] payload;
 
-    /**
-     * Creates a new PEMWriter object.
-     */
-    public PEMWriter() {
-    }
+	/**
+	 * Creates a new PEMWriter object.
+	 */
+	public PEMWriter() {
+	}
 
-    /**
-     * @param w
-     * @throws IOException
-     */
-    public void write(Writer w) throws IOException {
-        PrintWriter writer = new PrintWriter(w, true);
-        writer.println(PEM_BEGIN + type + PEM_BOUNDARY);
+	/**
+	 * @param w
+	 * @throws IOException
+	 */
+	public void write(Writer w) throws IOException {
+		PrintWriter writer = new PrintWriter(w, true);
+		writer.println(PEM_BEGIN+type+PEM_BOUNDARY);
 
-        if (!header.isEmpty()) {
-            for (Iterator i = header.keySet().iterator(); i.hasNext();) {
-                String key = (String)i.next();
-                String value = (String)header.get(key);
-                writer.print(key + ": ");
+		if(!header.isEmpty()) {
+			for(Iterator i = header.keySet().iterator(); i.hasNext();) {
+				String key = (String)i.next();
+				String value = (String)header.get(key);
+				writer.print(key+": ");
 
-                if ((key.length() + value.length() + 2) > MAX_LINE_LENGTH) {
-                    int offset = Math.max(MAX_LINE_LENGTH - key.length() - 2, 0);
-                    writer.println(value.substring(0, offset) + "\\");
+				if((key.length()+value.length()+2) > MAX_LINE_LENGTH) {
+					int offset = Math.max(MAX_LINE_LENGTH-key.length()-2, 0);
+					writer.println(value.substring(0, offset)+"\\");
 
-                    for (; offset < value.length();
-                         offset += MAX_LINE_LENGTH) {
-                        if ((offset + MAX_LINE_LENGTH) >= value.length()) {
-                            writer.println(value.substring(offset));
-                        }
-                        else {
-                            writer.println(value.substring(offset,
-                                    offset + MAX_LINE_LENGTH) + "\\");
-                        }
-                    }
-                }
-                else {
-                    writer.println(value);
-                }
-            }
+					for(; offset < value.length();
+					    offset += MAX_LINE_LENGTH) {
+						if((offset+MAX_LINE_LENGTH) >= value.length()) {
+							writer.println(value.substring(offset));
+						}
+						else {
+							writer.println(value.substring(offset,
+							    offset+MAX_LINE_LENGTH)+"\\");
+						}
+					}
+				}
+				else {
+					writer.println(value);
+				}
+			}
 
-            writer.println();
-        }
+			writer.println();
+		}
 
-        writer.println(Base64.encodeBytes(payload, false));
-        writer.println(PEM_END + type + PEM_BOUNDARY);
-    }
+		writer.println(Base64.encodeBytes(payload, false));
+		writer.println(PEM_END+type+PEM_BOUNDARY);
+	}
 
-    /**
-     * @param payload
-     * @param passphrase
-     * @throws GeneralSecurityException
-     */
-    public void encryptPayload(byte[] payload, String passphrase)
-            throws GeneralSecurityException {
-        if ((passphrase == null) || (passphrase.length() == 0)) {
-            // Simple case: no passphrase means no encryption of the private key
-            setPayload(payload);
+	/**
+	 * @param payload
+	 * @param passphrase
+	 * @throws GeneralSecurityException
+	 */
+	public void encryptPayload(byte[] payload, String passphrase)
+	    throws GeneralSecurityException {
+		if((passphrase == null) || (passphrase.length() == 0)) {
+			// Simple case: no passphrase means no encryption of the private key
+			setPayload(payload);
 
-            return;
-        }
+			return;
+		}
 
-        SecureRandom rnd = ConfigurationLoader.getRND();
-        byte[] iv = new byte[8];
-        rnd.nextBytes(iv);
+		SecureRandom rnd = ConfigurationLoader.getRND();
+		byte[] iv = new byte[8];
+		rnd.nextBytes(iv);
 
-        StringBuffer ivString = new StringBuffer(16);
+		StringBuffer ivString = new StringBuffer(16);
 
-        for (int i = 0; i < iv.length; i++) {
-            ivString.append(HEX_CHARS[(iv[i] & 0xff) >> 4]);
-            ivString.append(HEX_CHARS[iv[i] & 0x0f]);
-        }
+		for(int i = 0; i < iv.length; i++) {
+			ivString.append(HEX_CHARS[(iv[i] & 0xff)>> 4]);
+			ivString.append(HEX_CHARS[iv[i] & 0x0f]);
+		}
 
-        header.put("DEK-Info", "DES-EDE3-CBC," + ivString);
-        header.put("Proc-Type", "4,ENCRYPTED");
+		header.put("DEK-Info", "DES-EDE3-CBC,"+ivString);
+		header.put("Proc-Type", "4,ENCRYPTED");
 
-        Cipher cipher = Cipher.getInstance("DESede/CBC/NoPadding");
-        SecretKey key = getKeyFromPassphrase(passphrase, iv, 24);
-        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
+		Cipher cipher = Cipher.getInstance("DESede/CBC/NoPadding");
+		SecretKey key = getKeyFromPassphrase(passphrase, iv, 24);
+		cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
 
-        byte[] encrypted = new byte[payload.length];
-        cipher.update(payload, 0, payload.length, encrypted, 0);
-        setPayload(encrypted);
-    }
+		byte[] encrypted = new byte[payload.length];
+		cipher.update(payload, 0, payload.length, encrypted, 0);
+		setPayload(encrypted);
+	}
 
-    /**
-     * @return
-     */
-    public Map getHeader() {
-        return header;
-    }
+	/**
+	 * @return
+	 */
+	public Map getHeader() {
+		return header;
+	}
 
-    /**
-     * @return
-     */
-    public byte[] getPayload() {
-        return payload;
-    }
+	/**
+	 * @return
+	 */
+	public byte[] getPayload() {
+		return payload;
+	}
 
-    /**
-     * @return
-     */
-    public String getType() {
-        return type;
-    }
+	/**
+	 * @return
+	 */
+	public String getType() {
+		return type;
+	}
 
-    /**
-     * @param bs
-     */
-    public void setPayload(byte[] bs) {
-        payload = bs;
-    }
+	/**
+	 * @param bs
+	 */
+	public void setPayload(byte[] bs) {
+		payload = bs;
+	}
 
-    /**
-     * @param string
-     */
-    public void setType(String string) {
-        type = string;
-    }
+	/**
+	 * @param string
+	 */
+	public void setType(String string) {
+		type = string;
+	}
 }

@@ -32,43 +32,43 @@ package com.sshtools.j2ssh.transport.publickey;
  * @version $Revision$
  */
 public interface SshPublicKeyFormat {
-    /**
-     * @param comment
-     */
-    public void setComment(String comment);
+	/**
+	 * @param comment
+	 */
+	public void setComment(String comment);
 
-    /**
-     * @return
-     */
-    public String getComment();
+	/**
+	 * @return
+	 */
+	public String getComment();
 
-    /**
-     * @param algorithm
-     * @return
-     */
-    public boolean supportsAlgorithm(String algorithm);
+	/**
+	 * @param algorithm
+	 * @return
+	 */
+	public boolean supportsAlgorithm(String algorithm);
 
-    /**
-     * @param keyblob
-     * @return
-     */
-    public byte[] formatKey(byte[] keyblob);
+	/**
+	 * @param keyblob
+	 * @return
+	 */
+	public byte[] formatKey(byte[] keyblob);
 
-    /**
-     * @param formattedKey
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public byte[] getKeyBlob(byte[] formattedKey) throws InvalidSshKeyException;
+	/**
+	 * @param formattedKey
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public byte[] getKeyBlob(byte[] formattedKey) throws InvalidSshKeyException;
 
-    /**
-     * @return
-     */
-    public String getFormatType();
+	/**
+	 * @return
+	 */
+	public String getFormatType();
 
-    /**
-     * @param formattedKey
-     * @return
-     */
-    public boolean isFormatted(byte[] formattedKey);
+	/**
+	 * @param formattedKey
+	 * @return
+	 */
+	public boolean isFormatted(byte[] formattedKey);
 }

@@ -37,66 +37,66 @@ import com.sshtools.j2ssh.io.ByteArrayWriter;
  * @version $Revision$
  */
 public class SshMsgServiceRequest extends SshMessage {
-    /**  */
-    public final static int SSH_MSG_SERVICE_REQUEST = 5;
-    private String serviceName;
+	/**  */
+	public final static int SSH_MSG_SERVICE_REQUEST = 5;
+	private String serviceName;
 
-    /**
-     * Creates a new SshMsgServiceRequest object.
-     *
-     * @param serviceName
-     */
-    public SshMsgServiceRequest(String serviceName) {
-        super(SSH_MSG_SERVICE_REQUEST);
-        this.serviceName = serviceName;
-    }
+	/**
+	 * Creates a new SshMsgServiceRequest object.
+	 *
+	 * @param serviceName
+	 */
+	public SshMsgServiceRequest(String serviceName) {
+		super(SSH_MSG_SERVICE_REQUEST);
+		this.serviceName = serviceName;
+	}
 
-    /**
-     * Creates a new SshMsgServiceRequest object.
-     */
-    public SshMsgServiceRequest() {
-        super(SSH_MSG_SERVICE_REQUEST);
-    }
+	/**
+	 * Creates a new SshMsgServiceRequest object.
+	 */
+	public SshMsgServiceRequest() {
+		super(SSH_MSG_SERVICE_REQUEST);
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_MSG_SERVICE_REQUEST";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_MSG_SERVICE_REQUEST";
+	}
 
-    /**
-     * @return
-     */
-    public String getServiceName() {
-        return serviceName;
-    }
+	/**
+	 * @return
+	 */
+	public String getServiceName() {
+		return serviceName;
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     */
-    protected void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException {
-        try {
-            baw.writeString(serviceName);
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Error writing message data");
-        }
-    }
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 */
+	protected void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException {
+		try {
+			baw.writeString(serviceName);
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Error writing message data");
+		}
+	}
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     */
-    protected void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException {
-        try {
-            serviceName = bar.readString();
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Error reading message data");
-        }
-    }
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 */
+	protected void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException {
+		try {
+			serviceName = bar.readString();
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Error reading message data");
+		}
+	}
 }

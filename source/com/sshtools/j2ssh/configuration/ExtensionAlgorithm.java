@@ -32,40 +32,40 @@ package com.sshtools.j2ssh.configuration;
  * @version $Revision$
  */
 public class ExtensionAlgorithm {
-    private String name;
-    private String implClass;
+	private String name;
+	private String implClass;
 
-    /**
-     * Creates a new ExtensionAlgorithm object.
-     */
-    public ExtensionAlgorithm() {
-    }
+	/**
+	 * Creates a new ExtensionAlgorithm object.
+	 */
+	public ExtensionAlgorithm() {
+	}
 
-    /**
-     * @return
-     */
-    public String getAlgorithmName() {
-        return name;
-    }
+	/**
+	 * @return
+	 */
+	public String getAlgorithmName() {
+		return name;
+	}
 
-    /**
-     * @return
-     */
-    public String getImplementationClass() {
-        return implClass;
-    }
+	/**
+	 * @return
+	 */
+	public String getImplementationClass() {
+		return implClass;
+	}
 
-    /**
-     * @param name
-     */
-    public void setAlgorithmName(String name) {
-        this.name = name;
-    }
+	/**
+	 * @param name
+	 */
+	public void setAlgorithmName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * @param implClass
-     */
-    public void setImplementationClass(String implClass) {
-        this.implClass = implClass;
-    }
+	/**
+	 * @param implClass
+	 */
+	public void setImplementationClass(String implClass) {
+		this.implClass = implClass;
+	}
 }

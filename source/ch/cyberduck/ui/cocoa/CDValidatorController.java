@@ -227,7 +227,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 			c.setMaxWidth(500f);
 			c.setResizable(true);
 			c.setEditable(false);
-			c.setDataCell(new CDTextCell());
+			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.fileTableView.addTableColumn(c);
 		}
@@ -239,7 +239,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 			c.setWidth(180f);
 			c.setMaxWidth(500f);
 			c.setResizable(true);
-			c.setDataCell(new CDTextCell());
+			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.fileTableView.addTableColumn(c);
 		}
@@ -251,7 +251,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 			c.setWidth(180f);
 			c.setMaxWidth(500f);
 			c.setResizable(true);
-			c.setDataCell(new CDTextCell());
+			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.fileTableView.addTableColumn(c);
 		}
@@ -384,24 +384,24 @@ public abstract class CDValidatorController extends AbstractValidator implements
 		if(identifier.equals("REMOTE")) {
 			Path p = (Path)this.workList.get(row);
 			if(p.getRemote().exists() && p.getLocal().exists()) {
-				((CDTextCell)cell).setDrawsBackground(true);
+				((NSTextFieldCell)cell).setDrawsBackground(true);
 				if(p.getLocal().getTimestamp().before(p.getRemote().attributes.getTimestamp())) {
-					((CDTextCell)cell).setBackgroundColor(LIGHT_GREEN_COLOR);
+					((NSTextFieldCell)cell).setBackgroundColor(LIGHT_GREEN_COLOR);
 				}
 				else {
-					((CDTextCell)cell).setBackgroundColor(LIGHT_RED_COLOR);
+					((NSTextFieldCell)cell).setBackgroundColor(LIGHT_RED_COLOR);
 				}
 			}
 		}
 		if(identifier.equals("LOCAL")) {
 			Path p = (Path)this.workList.get(row);
 			if(p.getRemote().exists() && p.getLocal().exists()) {
-				((CDTextCell)cell).setDrawsBackground(true);
+				((NSTextFieldCell)cell).setDrawsBackground(true);
 				if(p.getLocal().getTimestamp().after(p.getRemote().attributes.getTimestamp())) {
-					((CDTextCell)cell).setBackgroundColor(LIGHT_GREEN_COLOR);
+					((NSTextFieldCell)cell).setBackgroundColor(LIGHT_GREEN_COLOR);
 				}
 				else {
-					((CDTextCell)cell).setBackgroundColor(LIGHT_RED_COLOR);
+					((NSTextFieldCell)cell).setBackgroundColor(LIGHT_RED_COLOR);
 				}
 			}
 		}

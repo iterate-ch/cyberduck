@@ -40,98 +40,98 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class SshMsgKexDhReply extends SshMessage {
-    /**  */
-    protected final static int SSH_MSG_KEXDH_REPLY = 31;
+	/**  */
+	protected final static int SSH_MSG_KEXDH_REPLY = 31;
 
-    // The diffie hellman f value
-    private BigInteger f;
+	// The diffie hellman f value
+	private BigInteger f;
 
-    // The host key data
-    private byte[] hostKey;
+	// The host key data
+	private byte[] hostKey;
 
-    // The signature
-    private byte[] signature;
+	// The signature
+	private byte[] signature;
 
-    /**
-     * Creates a new SshMsgKexDhReply object.
-     *
-     * @param hostKey
-     * @param f
-     * @param signature
-     */
-    public SshMsgKexDhReply(byte[] hostKey, BigInteger f, byte[] signature) {
-        super(SSH_MSG_KEXDH_REPLY);
-        this.hostKey = hostKey;
-        this.f = f;
-        this.signature = signature;
-    }
+	/**
+	 * Creates a new SshMsgKexDhReply object.
+	 *
+	 * @param hostKey
+	 * @param f
+	 * @param signature
+	 */
+	public SshMsgKexDhReply(byte[] hostKey, BigInteger f, byte[] signature) {
+		super(SSH_MSG_KEXDH_REPLY);
+		this.hostKey = hostKey;
+		this.f = f;
+		this.signature = signature;
+	}
 
-    /**
-     * Creates a new SshMsgKexDhReply object.
-     */
-    public SshMsgKexDhReply() {
-        super(SSH_MSG_KEXDH_REPLY);
-    }
+	/**
+	 * Creates a new SshMsgKexDhReply object.
+	 */
+	public SshMsgKexDhReply() {
+		super(SSH_MSG_KEXDH_REPLY);
+	}
 
-    /**
-     * @return
-     */
-    public BigInteger getF() {
-        return f;
-    }
+	/**
+	 * @return
+	 */
+	public BigInteger getF() {
+		return f;
+	}
 
-    /**
-     * @return
-     */
-    public byte[] getHostKey() {
-        return hostKey;
-    }
+	/**
+	 * @return
+	 */
+	public byte[] getHostKey() {
+		return hostKey;
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_MSG_KEXDH_REPLY";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_MSG_KEXDH_REPLY";
+	}
 
-    /**
-     * @return
-     */
-    public byte[] getSignature() {
-        return signature;
-    }
+	/**
+	 * @return
+	 */
+	public byte[] getSignature() {
+		return signature;
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     */
-    protected void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException {
-        try {
-            baw.writeBinaryString(hostKey);
-            baw.writeBigInteger(f);
-            baw.writeBinaryString(signature);
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Error writing message data: " +
-                    ioe.getMessage());
-        }
-    }
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 */
+	protected void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException {
+		try {
+			baw.writeBinaryString(hostKey);
+			baw.writeBigInteger(f);
+			baw.writeBinaryString(signature);
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Error writing message data: "+
+			    ioe.getMessage());
+		}
+	}
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     */
-    protected void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException {
-        try {
-            hostKey = bar.readBinaryString();
-            f = bar.readBigInteger();
-            signature = bar.readBinaryString();
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Error reading message data: " +
-                    ioe.getMessage());
-        }
-    }
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 */
+	protected void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException {
+		try {
+			hostKey = bar.readBinaryString();
+			f = bar.readBigInteger();
+			signature = bar.readBinaryString();
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Error reading message data: "+
+			    ioe.getMessage());
+		}
+	}
 }

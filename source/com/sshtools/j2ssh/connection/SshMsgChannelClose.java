@@ -39,68 +39,68 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class SshMsgChannelClose extends SshMessage {
-    /**  */
-    protected final static int SSH_MSG_CHANNEL_CLOSE = 97;
+	/**  */
+	protected final static int SSH_MSG_CHANNEL_CLOSE = 97;
 
-    // The recipient channel id
-    private long recipientChannel;
+	// The recipient channel id
+	private long recipientChannel;
 
-    /**
-     * Creates a new SshMsgChannelClose object.
-     *
-     * @param recipientChannel
-     */
-    public SshMsgChannelClose(long recipientChannel) {
-        super(SSH_MSG_CHANNEL_CLOSE);
-        this.recipientChannel = recipientChannel;
-    }
+	/**
+	 * Creates a new SshMsgChannelClose object.
+	 *
+	 * @param recipientChannel
+	 */
+	public SshMsgChannelClose(long recipientChannel) {
+		super(SSH_MSG_CHANNEL_CLOSE);
+		this.recipientChannel = recipientChannel;
+	}
 
-    /**
-     * Creates a new SshMsgChannelClose object.
-     */
-    public SshMsgChannelClose() {
-        super(SSH_MSG_CHANNEL_CLOSE);
-    }
+	/**
+	 * Creates a new SshMsgChannelClose object.
+	 */
+	public SshMsgChannelClose() {
+		super(SSH_MSG_CHANNEL_CLOSE);
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_MSG_CHANNEL_CLOSE";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_MSG_CHANNEL_CLOSE";
+	}
 
-    /**
-     * @return
-     */
-    public long getRecipientChannel() {
-        return recipientChannel;
-    }
+	/**
+	 * @return
+	 */
+	public long getRecipientChannel() {
+		return recipientChannel;
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     */
-    protected void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException {
-        try {
-            baw.writeInt(recipientChannel);
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 */
+	protected void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException {
+		try {
+			baw.writeInt(recipientChannel);
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     */
-    protected void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException {
-        try {
-            recipientChannel = bar.readInt();
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 */
+	protected void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException {
+		try {
+			recipientChannel = bar.readInt();
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 }

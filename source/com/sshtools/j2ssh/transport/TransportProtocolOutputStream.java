@@ -33,7 +33,6 @@ import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.sshtools.j2ssh.configuration.ConfigurationLoader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.cipher.SshCipher;
@@ -42,149 +41,149 @@ import com.sshtools.j2ssh.transport.hmac.SshHmac;
 
 
 class TransportProtocolOutputStream {
-    //implements Runnable {
-    private static Log log = LogFactory.getLog(TransportProtocolOutputStream.class);
-    private OutputStream out;
+	//implements Runnable {
+	private static Log log = LogFactory.getLog(TransportProtocolOutputStream.class);
+	private OutputStream out;
 
-    //private Socket socket;
-    private TransportProtocolAlgorithmSync algorithms;
-    private TransportProtocolCommon transport;
-    private long sequenceNo = 0;
-    private long sequenceWrapLimit = BigInteger.valueOf(2).pow(32).longValue();
-    private Random rnd = ConfigurationLoader.getRND();
-    private long bytesTransfered = 0;
+	//private Socket socket;
+	private TransportProtocolAlgorithmSync algorithms;
+	private TransportProtocolCommon transport;
+	private long sequenceNo = 0;
+	private long sequenceWrapLimit = BigInteger.valueOf(2).pow(32).longValue();
+	private Random rnd = ConfigurationLoader.getRND();
+	private long bytesTransfered = 0;
 
-    /**
-     * Creates a new TransportProtocolOutputStream object.
-     *
-     * @param out
-     * @param transport
-     * @param algorithms
-     * @throws TransportProtocolException
-     */
-    public TransportProtocolOutputStream(/*Socket socket,*/
-            OutputStream out, TransportProtocolCommon transport,
-            TransportProtocolAlgorithmSync algorithms)
-            throws TransportProtocolException {
-        // try {
-        //this.socket = socket;
-        this.out = out; //socket.getOutputStream();
-        this.transport = transport;
-        this.algorithms = algorithms;
+	/**
+	 * Creates a new TransportProtocolOutputStream object.
+	 *
+	 * @param out
+	 * @param transport
+	 * @param algorithms
+	 * @throws TransportProtocolException
+	 */
+	public TransportProtocolOutputStream(/*Socket socket,*/
+	    OutputStream out, TransportProtocolCommon transport,
+	    TransportProtocolAlgorithmSync algorithms)
+	    throws TransportProtocolException {
+		// try {
+		//this.socket = socket;
+		this.out = out; //socket.getOutputStream();
+		this.transport = transport;
+		this.algorithms = algorithms;
 
-        /* } catch (IOException ioe) {
-               throw new TransportProtocolException(
-          "Failed to obtain socket output stream");
-           }*/
-    }
+		/* } catch (IOException ioe) {
+		       throw new TransportProtocolException(
+		  "Failed to obtain socket output stream");
+		   }*/
+	}
 
-    /**
-     * @return
-     */
-    protected long getNumBytesTransfered() {
-        return bytesTransfered;
-    }
+	/**
+	 * @return
+	 */
+	protected long getNumBytesTransfered() {
+		return bytesTransfered;
+	}
 
-    /**
-     * @param msg
-     * @throws TransportProtocolException
-     */
-    protected synchronized void sendMessage(SshMessage msg)
-            throws TransportProtocolException {
-        try {
-            // Get the algorithm objects
-            algorithms.lock();
+	/**
+	 * @param msg
+	 * @throws TransportProtocolException
+	 */
+	protected synchronized void sendMessage(SshMessage msg)
+	    throws TransportProtocolException {
+		try {
+			// Get the algorithm objects
+			algorithms.lock();
 
-            SshCipher cipher = algorithms.getCipher();
-            SshHmac hmac = algorithms.getHmac();
-            SshCompression compression = algorithms.getCompression();
+			SshCipher cipher = algorithms.getCipher();
+			SshHmac hmac = algorithms.getHmac();
+			SshCompression compression = algorithms.getCompression();
 
-            // Write the data into a byte array
-            ByteArrayWriter message = new ByteArrayWriter();
+			// Write the data into a byte array
+			ByteArrayWriter message = new ByteArrayWriter();
 
-            // Get the message payload data
-            byte[] msgdata = msg.toByteArray();
+			// Get the message payload data
+			byte[] msgdata = msg.toByteArray();
 
-            //int payload = msgdata.length;
-            int padding = 4;
-            int cipherlen = 8;
+			//int payload = msgdata.length;
+			int padding = 4;
+			int cipherlen = 8;
 
-            // Determine the cipher length
-            if (cipher != null) {
-                cipherlen = cipher.getBlockSize();
-            }
+			// Determine the cipher length
+			if(cipher != null) {
+				cipherlen = cipher.getBlockSize();
+			}
 
-            // Compress the payload if necersary
-            if (compression != null) {
-                msgdata = compression.compress(msgdata, 0, msgdata.length);
-            }
+			// Compress the payload if necersary
+			if(compression != null) {
+				msgdata = compression.compress(msgdata, 0, msgdata.length);
+			}
 
-            //Determine the padding length
-            padding += ((cipherlen -
-                    ((msgdata.length + 5 + padding) % cipherlen)) % cipherlen);
+			//Determine the padding length
+			padding += ((cipherlen-
+			    ((msgdata.length+5+padding)%cipherlen))%cipherlen);
 
-            // Write the packet length field
-            message.writeInt(msgdata.length + 1 + padding);
+			// Write the packet length field
+			message.writeInt(msgdata.length+1+padding);
 
-            // Write the padding length
-            message.write(padding);
+			// Write the padding length
+			message.write(padding);
 
-            // Write the message payload
-            message.write(msgdata, 0, msgdata.length);
+			// Write the message payload
+			message.write(msgdata, 0, msgdata.length);
 
-            // Create some random data for the padding
-            byte[] pad = new byte[padding];
-            rnd.nextBytes(pad);
+			// Create some random data for the padding
+			byte[] pad = new byte[padding];
+			rnd.nextBytes(pad);
 
-            // Write the padding
-            message.write(pad);
+			// Write the padding
+			message.write(pad);
 
-            // Get the unencrypted packet data
-            byte[] packet = message.toByteArray();
-            byte[] mac = null;
+			// Get the unencrypted packet data
+			byte[] packet = message.toByteArray();
+			byte[] mac = null;
 
-            // Generate the MAC
-            if (hmac != null) {
-                mac = hmac.generate(sequenceNo, packet, 0, packet.length);
-            }
+			// Generate the MAC
+			if(hmac != null) {
+				mac = hmac.generate(sequenceNo, packet, 0, packet.length);
+			}
 
-            // Perfrom encrpytion
-            if (cipher != null) {
-                packet = cipher.transform(packet);
-            }
+			// Perfrom encrpytion
+			if(cipher != null) {
+				packet = cipher.transform(packet);
+			}
 
-            // Reset the message
-            message.reset();
+			// Reset the message
+			message.reset();
 
-            // Write the packet data
-            message.write(packet);
+			// Write the packet data
+			message.write(packet);
 
-            // Combine the packet and MAC
-            if (mac != null) {
-                message.write(mac);
-            }
+			// Combine the packet and MAC
+			if(mac != null) {
+				message.write(mac);
+			}
 
-            bytesTransfered += message.size();
+			bytesTransfered += message.size();
 
-            // Send!
-            out.write(message.toByteArray());
+			// Send!
+			out.write(message.toByteArray());
 
-            out.flush();
-            algorithms.release();
+			out.flush();
+			algorithms.release();
 
-            // Increment the sequence no
-            if (sequenceNo < sequenceWrapLimit) {
-                sequenceNo++;
-            }
-            else {
-                sequenceNo = 0;
-            }
-        }
-        catch (IOException ioe) {
-            if (transport.getState().getValue() != TransportProtocolState.DISCONNECTED) {
-                throw new TransportProtocolException("IO Error on socket: " +
-                        ioe.getMessage());
-            }
-        }
-    }
+			// Increment the sequence no
+			if(sequenceNo < sequenceWrapLimit) {
+				sequenceNo++;
+			}
+			else {
+				sequenceNo = 0;
+			}
+		}
+		catch(IOException ioe) {
+			if(transport.getState().getValue() != TransportProtocolState.DISCONNECTED) {
+				throw new TransportProtocolException("IO Error on socket: "+
+				    ioe.getMessage());
+			}
+		}
+	}
 }

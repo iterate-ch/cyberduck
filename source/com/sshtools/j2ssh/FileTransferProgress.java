@@ -48,24 +48,24 @@ package com.sshtools.j2ssh;
  * @version $Id$
  */
 public interface FileTransferProgress {
-    /**
-     * @param bytesTotal
-     * @param remoteFile
-     */
-    public void started(long bytesTotal, String remoteFile);
+	/**
+	 * @param bytesTotal
+	 * @param remoteFile
+	 */
+	public void started(long bytesTotal, String remoteFile);
 
-    /**
-     * @return
-     */
-    public boolean isCancelled();
+	/**
+	 * @return
+	 */
+	public boolean isCancelled();
 
-    /**
-     * @param bytesSoFar
-     */
-    public void progressed(long bytesSoFar);
+	/**
+	 * @param bytesSoFar
+	 */
+	public void progressed(long bytesSoFar);
 
-    /**
-     *
-     */
-    public void completed();
+	/**
+	 *
+	 */
+	public void completed();
 }

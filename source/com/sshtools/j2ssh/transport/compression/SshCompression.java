@@ -32,20 +32,20 @@ package com.sshtools.j2ssh.transport.compression;
  * @version $Revision$
  */
 public interface SshCompression {
-    static public final int INFLATER = 0;
-    static public final int DEFLATER = 1;
+	static public final int INFLATER = 0;
+	static public final int DEFLATER = 1;
 
-    public void init(int type, int level);
+	public void init(int type, int level);
 
-    /**
-     * @param data
-     * @return
-     */
-    public byte[] compress(byte[] data, int start, int len);
+	/**
+	 * @param data
+	 * @return
+	 */
+	public byte[] compress(byte[] data, int start, int len);
 
-    /**
-     * @param data
-     * @return
-     */
-    public byte[] uncompress(byte[] data, int start, int len);
+	/**
+	 * @param data
+	 * @return
+	 */
+	public byte[] uncompress(byte[] data, int start, int len);
 }

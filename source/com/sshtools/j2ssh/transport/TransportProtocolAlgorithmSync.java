@@ -28,7 +28,6 @@ package com.sshtools.j2ssh.transport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.sshtools.j2ssh.transport.cipher.SshCipher;
 import com.sshtools.j2ssh.transport.compression.SshCompression;
 import com.sshtools.j2ssh.transport.hmac.SshHmac;
@@ -39,80 +38,80 @@ import com.sshtools.j2ssh.transport.hmac.SshHmac;
  * @version $Revision$
  */
 public class TransportProtocolAlgorithmSync {
-    private static Log log = LogFactory.getLog(TransportProtocolAlgorithmSync.class);
-    private SshCipher cipher = null;
-    private SshCompression compression = null;
-    private SshHmac hmac = null;
-    private boolean isLocked = false;
+	private static Log log = LogFactory.getLog(TransportProtocolAlgorithmSync.class);
+	private SshCipher cipher = null;
+	private SshCompression compression = null;
+	private SshHmac hmac = null;
+	private boolean isLocked = false;
 
-    /**
-     * Creates a new TransportProtocolAlgorithmSync object.
-     */
-    public TransportProtocolAlgorithmSync() {
-    }
+	/**
+	 * Creates a new TransportProtocolAlgorithmSync object.
+	 */
+	public TransportProtocolAlgorithmSync() {
+	}
 
-    /**
-     * @param cipher
-     */
-    public synchronized void setCipher(SshCipher cipher) {
-        this.cipher = cipher;
-    }
+	/**
+	 * @param cipher
+	 */
+	public synchronized void setCipher(SshCipher cipher) {
+		this.cipher = cipher;
+	}
 
-    /**
-     * @return
-     */
-    public synchronized SshCipher getCipher() {
-        return cipher;
-    }
+	/**
+	 * @return
+	 */
+	public synchronized SshCipher getCipher() {
+		return cipher;
+	}
 
-    /**
-     * @param compression
-     */
-    public synchronized void setCompression(SshCompression compression) {
-        this.compression = compression;
-    }
+	/**
+	 * @param compression
+	 */
+	public synchronized void setCompression(SshCompression compression) {
+		this.compression = compression;
+	}
 
-    /**
-     * @return
-     */
-    public synchronized SshCompression getCompression() {
-        return compression;
-    }
+	/**
+	 * @return
+	 */
+	public synchronized SshCompression getCompression() {
+		return compression;
+	}
 
-    /**
-     * @param hmac
-     */
-    public synchronized void setHmac(SshHmac hmac) {
-        this.hmac = hmac;
-    }
+	/**
+	 * @param hmac
+	 */
+	public synchronized void setHmac(SshHmac hmac) {
+		this.hmac = hmac;
+	}
 
-    /**
-     * @return
-     */
-    public synchronized SshHmac getHmac() {
-        return hmac;
-    }
+	/**
+	 * @return
+	 */
+	public synchronized SshHmac getHmac() {
+		return hmac;
+	}
 
-    /**
-     *
-     */
-    public synchronized void lock() {
-        while (isLocked) {
-            try {
-                wait(50);
-            }
-            catch (InterruptedException e) {
-            }
-        }
+	/**
+	 *
+	 */
+	public synchronized void lock() {
+		while(isLocked) {
+			try {
+				wait(50);
+			}
+			catch(InterruptedException e) {
+			}
+		}
 
-        isLocked = true;
-    }
+		isLocked = true;
+	}
 
-    /**
-     *
-     */
-    public synchronized void release() {
-        isLocked = false;
-        notifyAll();
-    }
+	/**
+	 *
+	 */
+	public synchronized void release() {
+		isLocked = false;
+		notifyAll();
+	}
 }

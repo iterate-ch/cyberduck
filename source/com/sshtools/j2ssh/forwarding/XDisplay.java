@@ -32,144 +32,144 @@ package com.sshtools.j2ssh.forwarding;
  * @version $Revision$
  */
 public class XDisplay {
-    private String host;
-    private int display;
-    private int screen;
-    private int portOffset;
+	private String host;
+	private int display;
+	private int screen;
+	private int portOffset;
 
-    /**
-     * Creates a new XDisplay object.
-     *
-     * @param string
-     */
-    public XDisplay(String string) {
-        this(string, 6000);
-    }
+	/**
+	 * Creates a new XDisplay object.
+	 *
+	 * @param string
+	 */
+	public XDisplay(String string) {
+		this(string, 6000);
+	}
 
-    /**
-     * Creates a new XDisplay object.
-     *
-     * @param string
-     * @param portOffset
-     */
-    public XDisplay(String string, int portOffset) {
-        setString(string);
-        setPortOffset(portOffset);
-    }
+	/**
+	 * Creates a new XDisplay object.
+	 *
+	 * @param string
+	 * @param portOffset
+	 */
+	public XDisplay(String string, int portOffset) {
+		setString(string);
+		setPortOffset(portOffset);
+	}
 
-    /**
-     * @param portOffset
-     */
-    public void setPortOffset(int portOffset) {
-        this.portOffset = portOffset;
-    }
+	/**
+	 * @param portOffset
+	 */
+	public void setPortOffset(int portOffset) {
+		this.portOffset = portOffset;
+	}
 
-    /**
-     * @return
-     */
-    public int getPortOffset() {
-        return portOffset;
-    }
+	/**
+	 * @return
+	 */
+	public int getPortOffset() {
+		return portOffset;
+	}
 
-    /**
-     * @param string
-     */
-    public void setString(String string) {
-        int idx = string.indexOf(':');
+	/**
+	 * @param string
+	 */
+	public void setString(String string) {
+		int idx = string.indexOf(':');
 
-        if (idx == -1) {
-            display = 0;
-            host = string;
-        }
-        else {
-            host = string.substring(0, idx);
+		if(idx == -1) {
+			display = 0;
+			host = string;
+		}
+		else {
+			host = string.substring(0, idx);
 
-            String s = string.substring(idx + 1);
-            idx = s.indexOf(".");
+			String s = string.substring(idx+1);
+			idx = s.indexOf(".");
 
-            if (idx == -1) {
-                screen = 0;
+			if(idx == -1) {
+				screen = 0;
 
-                try {
-                    display = Integer.parseInt(s);
-                }
-                catch (NumberFormatException nfe) {
-                    display = 0;
-                }
-            }
-            else {
-                try {
-                    display = Integer.parseInt(s.substring(0, idx));
-                }
-                catch (NumberFormatException nfe) {
-                    display = 0;
-                }
+				try {
+					display = Integer.parseInt(s);
+				}
+				catch(NumberFormatException nfe) {
+					display = 0;
+				}
+			}
+			else {
+				try {
+					display = Integer.parseInt(s.substring(0, idx));
+				}
+				catch(NumberFormatException nfe) {
+					display = 0;
+				}
 
-                try {
-                    screen = Integer.parseInt(s.substring(idx + 1));
-                }
-                catch (NumberFormatException nfe) {
-                    screen = 0;
-                }
-            }
-        }
-    }
+				try {
+					screen = Integer.parseInt(s.substring(idx+1));
+				}
+				catch(NumberFormatException nfe) {
+					screen = 0;
+				}
+			}
+		}
+	}
 
-    /**
-     * @return
-     */
-    public int getPort() {
-        return (getDisplay() < getPortOffset())
-                ? (getDisplay() + getPortOffset()) : getDisplay();
-    }
+	/**
+	 * @return
+	 */
+	public int getPort() {
+		return (getDisplay() < getPortOffset())
+		       ? (getDisplay()+getPortOffset()) : getDisplay();
+	}
 
-    /**
-     * @return
-     */
-    public int getScreen() {
-        return screen;
-    }
+	/**
+	 * @return
+	 */
+	public int getScreen() {
+		return screen;
+	}
 
-    /**
-     * @param host
-     */
-    public void setHost(String host) {
-        this.host = host;
-    }
+	/**
+	 * @param host
+	 */
+	public void setHost(String host) {
+		this.host = host;
+	}
 
-    /**
-     * @param display
-     */
-    public void setDisplay(int display) {
-        this.display = display;
-    }
+	/**
+	 * @param display
+	 */
+	public void setDisplay(int display) {
+		this.display = display;
+	}
 
-    /**
-     * @param screen
-     */
-    public void setScreen(int screen) {
-        this.screen = screen;
-    }
+	/**
+	 * @param screen
+	 */
+	public void setScreen(int screen) {
+		this.screen = screen;
+	}
 
-    /**
-     * @return
-     */
-    public String getHost() {
-        return host;
-    }
+	/**
+	 * @return
+	 */
+	public String getHost() {
+		return host;
+	}
 
-    /**
-     * @return
-     */
-    public int getDisplay() {
-        return display;
-    }
+	/**
+	 * @return
+	 */
+	public int getDisplay() {
+		return display;
+	}
 
-    /**
-     * @return
-     */
-    public String toString() {
-        return getHost() + ":" + getDisplay() +
-                ((getScreen() == 0) ? "" : ("." + getScreen()));
-    }
+	/**
+	 * @return
+	 */
+	public String toString() {
+		return getHost()+":"+getDisplay()+
+		    ((getScreen() == 0) ? "" : ("."+getScreen()));
+	}
 }

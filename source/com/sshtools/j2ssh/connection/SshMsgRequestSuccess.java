@@ -39,71 +39,71 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class SshMsgRequestSuccess extends SshMessage {
-    /**  */
-    protected final static int SSH_MSG_REQUEST_SUCCESS = 81;
-    private byte[] requestData;
+	/**  */
+	protected final static int SSH_MSG_REQUEST_SUCCESS = 81;
+	private byte[] requestData;
 
-    /**
-     * Creates a new SshMsgRequestSuccess object.
-     *
-     * @param requestData
-     */
-    public SshMsgRequestSuccess(byte[] requestData) {
-        super(SSH_MSG_REQUEST_SUCCESS);
-        this.requestData = requestData;
-    }
+	/**
+	 * Creates a new SshMsgRequestSuccess object.
+	 *
+	 * @param requestData
+	 */
+	public SshMsgRequestSuccess(byte[] requestData) {
+		super(SSH_MSG_REQUEST_SUCCESS);
+		this.requestData = requestData;
+	}
 
-    /**
-     * Creates a new SshMsgRequestSuccess object.
-     */
-    public SshMsgRequestSuccess() {
-        super(SSH_MSG_REQUEST_SUCCESS);
-    }
+	/**
+	 * Creates a new SshMsgRequestSuccess object.
+	 */
+	public SshMsgRequestSuccess() {
+		super(SSH_MSG_REQUEST_SUCCESS);
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_MSG_REQUEST_SUCCESS";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_MSG_REQUEST_SUCCESS";
+	}
 
-    /**
-     * @return
-     */
-    public byte[] getRequestData() {
-        return requestData;
-    }
+	/**
+	 * @return
+	 */
+	public byte[] getRequestData() {
+		return requestData;
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     */
-    protected void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException {
-        try {
-            if (requestData != null) {
-                baw.write(requestData);
-            }
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 */
+	protected void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException {
+		try {
+			if(requestData != null) {
+				baw.write(requestData);
+			}
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     */
-    protected void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException {
-        try {
-            if (bar.available() > 0) {
-                requestData = new byte[bar.available()];
-                bar.read(requestData);
-            }
-        }
-        catch (IOException ioe) {
-            throw new InvalidMessageException("Invalid message data");
-        }
-    }
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 */
+	protected void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException {
+		try {
+			if(bar.available() > 0) {
+				requestData = new byte[bar.available()];
+				bar.read(requestData);
+			}
+		}
+		catch(IOException ioe) {
+			throw new InvalidMessageException("Invalid message data");
+		}
+	}
 }

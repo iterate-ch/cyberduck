@@ -36,73 +36,73 @@ import com.sshtools.j2ssh.util.Hash;
  * @version $Revision$
  */
 public abstract class SshPublicKey {
-    /**
-     * @return
-     */
-    public abstract String getAlgorithmName();
+	/**
+	 * @return
+	 */
+	public abstract String getAlgorithmName();
 
-    /**
-     * @return
-     */
-    public abstract int getBitLength();
+	/**
+	 * @return
+	 */
+	public abstract int getBitLength();
 
-    /**
-     * @return
-     */
-    public abstract byte[] getEncoded();
+	/**
+	 * @return
+	 */
+	public abstract byte[] getEncoded();
 
-    /**
-     * @return
-     */
-    public String getFingerprint() {
-        try {
-            Hash md5 = new Hash("MD5");
-            md5.putBytes(getEncoded());
+	/**
+	 * @return
+	 */
+	public String getFingerprint() {
+		try {
+			Hash md5 = new Hash("MD5");
+			md5.putBytes(getEncoded());
 
-            byte[] digest = md5.doFinal();
-            int bits = getBitLength();
-            bits = (((bits % 8) != 0) ? (bits += (bits % 8)) : bits);
+			byte[] digest = md5.doFinal();
+			int bits = getBitLength();
+			bits = (((bits%8) != 0) ? (bits += (bits%8)) : bits);
 
-            String ret = String.valueOf(bits);
+			String ret = String.valueOf(bits);
 
-            for (int i = 0; i < digest.length; i++) {
-                ret += (((i == 0) ? ":" : "") + " " +
-                        Integer.toHexString(digest[i] & 0xFF));
-            }
+			for(int i = 0; i < digest.length; i++) {
+				ret += (((i == 0) ? ":" : "")+" "+
+				    Integer.toHexString(digest[i] & 0xFF));
+			}
 
-            return ret;
-        }
-        catch (NoSuchAlgorithmException nsae) {
-            return null;
-        }
-    }
+			return ret;
+		}
+		catch(NoSuchAlgorithmException nsae) {
+			return null;
+		}
+	}
 
-    /**
-     * @param obj
-     * @return
-     */
-    public boolean equals(Object obj) {
-        if (obj instanceof SshPublicKey) {
-            return (getFingerprint().compareTo(((SshPublicKey)obj).getFingerprint()) == 0);
-        }
+	/**
+	 * @param obj
+	 * @return
+	 */
+	public boolean equals(Object obj) {
+		if(obj instanceof SshPublicKey) {
+			return (getFingerprint().compareTo(((SshPublicKey)obj).getFingerprint()) == 0);
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    /**
-     * @return
-     */
-    public int hashCode() {
-        return getFingerprint().hashCode();
-    }
+	/**
+	 * @return
+	 */
+	public int hashCode() {
+		return getFingerprint().hashCode();
+	}
 
-    /**
-     * @param signature
-     * @param exchangeHash
-     * @return
-     * @throws InvalidSshKeySignatureException
-     *
-     */
-    public abstract boolean verifySignature(byte[] signature,
-                                            byte[] exchangeHash) throws InvalidSshKeySignatureException;
+	/**
+	 * @param signature
+	 * @param exchangeHash
+	 * @return
+	 * @throws InvalidSshKeySignatureException
+	 *
+	 */
+	public abstract boolean verifySignature(byte[] signature,
+	                                        byte[] exchangeHash) throws InvalidSshKeySignatureException;
 }

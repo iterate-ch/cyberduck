@@ -34,12 +34,12 @@ import java.io.IOException;
  * @version $Revision$
  */
 public class InvalidChannelException extends IOException {
-    /**
-     * Creates a new InvalidChannelException object.
-     *
-     * @param msg
-     */
-    public InvalidChannelException(String msg) {
-        super(msg);
-    }
+	/**
+	 * Creates a new InvalidChannelException object.
+	 *
+	 * @param msg
+	 */
+	public InvalidChannelException(String msg) {
+		super(msg);
+	}
 }

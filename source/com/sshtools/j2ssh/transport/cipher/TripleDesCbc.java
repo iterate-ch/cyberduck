@@ -46,72 +46,72 @@ import com.sshtools.j2ssh.transport.AlgorithmOperationException;
  * @version $Revision$
  */
 public class TripleDesCbc extends SshCipher {
-    /**  */
-    protected static String algorithmName = "3des-cbc";
-    Cipher cipher;
+	/**  */
+	protected static String algorithmName = "3des-cbc";
+	Cipher cipher;
 
-    /**
-     * Creates a new TripleDesCbc object.
-     */
-    public TripleDesCbc() {
-    }
+	/**
+	 * Creates a new TripleDesCbc object.
+	 */
+	public TripleDesCbc() {
+	}
 
-    /**
-     * @return
-     */
-    public int getBlockSize() {
-        return cipher.getBlockSize();
-    }
+	/**
+	 * @return
+	 */
+	public int getBlockSize() {
+		return cipher.getBlockSize();
+	}
 
-    /**
-     * @param mode
-     * @param iv
-     * @param keydata
-     * @throws AlgorithmOperationException
-     */
-    public void init(int mode, byte[] iv, byte[] keydata)
-            throws AlgorithmOperationException {
-        try {
-            KeySpec keyspec;
-            Key key;
+	/**
+	 * @param mode
+	 * @param iv
+	 * @param keydata
+	 * @throws AlgorithmOperationException
+	 */
+	public void init(int mode, byte[] iv, byte[] keydata)
+	    throws AlgorithmOperationException {
+		try {
+			KeySpec keyspec;
+			Key key;
 
-            // Create the cipher according to its algorithm
-            cipher = Cipher.getInstance("DESede/CBC/NoPadding");
+			// Create the cipher according to its algorithm
+			cipher = Cipher.getInstance("DESede/CBC/NoPadding");
 
-            byte[] actualKey = new byte[24];
-            System.arraycopy(keydata, 0, actualKey, 0, 24);
-            keyspec = new DESedeKeySpec(actualKey);
-            key = SecretKeyFactory.getInstance("DESede").generateSecret(keyspec);
-            cipher.init(((mode == ENCRYPT_MODE) ? Cipher.ENCRYPT_MODE
-                    : Cipher.DECRYPT_MODE), key,
-                    new IvParameterSpec(iv, 0, cipher.getBlockSize()));
-        }
-        catch (NoSuchPaddingException nspe) {
-            throw new AlgorithmOperationException("Padding not supported");
-        }
-        catch (NoSuchAlgorithmException nsae) {
-            throw new AlgorithmOperationException("Algorithm not supported");
-        }
-        catch (InvalidKeyException ike) {
-            throw new AlgorithmOperationException("Invalid encryption key");
-        }
-        catch (InvalidKeySpecException ispe) {
-            throw new AlgorithmOperationException("Invalid encryption key specification");
-        }
-        catch (InvalidAlgorithmParameterException ape) {
-            throw new AlgorithmOperationException("Invalid algorithm parameter");
-        }
-    }
+			byte[] actualKey = new byte[24];
+			System.arraycopy(keydata, 0, actualKey, 0, 24);
+			keyspec = new DESedeKeySpec(actualKey);
+			key = SecretKeyFactory.getInstance("DESede").generateSecret(keyspec);
+			cipher.init(((mode == ENCRYPT_MODE) ? Cipher.ENCRYPT_MODE
+			             : Cipher.DECRYPT_MODE), key,
+			    new IvParameterSpec(iv, 0, cipher.getBlockSize()));
+		}
+		catch(NoSuchPaddingException nspe) {
+			throw new AlgorithmOperationException("Padding not supported");
+		}
+		catch(NoSuchAlgorithmException nsae) {
+			throw new AlgorithmOperationException("Algorithm not supported");
+		}
+		catch(InvalidKeyException ike) {
+			throw new AlgorithmOperationException("Invalid encryption key");
+		}
+		catch(InvalidKeySpecException ispe) {
+			throw new AlgorithmOperationException("Invalid encryption key specification");
+		}
+		catch(InvalidAlgorithmParameterException ape) {
+			throw new AlgorithmOperationException("Invalid algorithm parameter");
+		}
+	}
 
-    /**
-     * @param data
-     * @param offset
-     * @param len
-     * @return
-     * @throws AlgorithmOperationException
-     */
-    public byte[] transform(byte[] data, int offset, int len)
-            throws AlgorithmOperationException {
-        return cipher.update(data, offset, len);
-    }
+	/**
+	 * @param data
+	 * @param offset
+	 * @param len
+	 * @return
+	 * @throws AlgorithmOperationException
+	 */
+	public byte[] transform(byte[] data, int offset, int len)
+	    throws AlgorithmOperationException {
+		return cipher.update(data, offset, len);
+	}
 }

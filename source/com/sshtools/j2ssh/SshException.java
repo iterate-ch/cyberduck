@@ -40,27 +40,27 @@ import java.io.IOException;
  * @since 0.2.0
  */
 public class SshException extends IOException {
-    /**
-     * <p/>
-     * Constructs an exception.
-     * </p>
-     *
-     * @param msg The error message
-     * @since 0.2.0
-     */
-    public SshException(String msg) {
-        super(msg);
-    }
+	/**
+	 * <p/>
+	 * Constructs an exception.
+	 * </p>
+	 *
+	 * @param msg The error message
+	 * @since 0.2.0
+	 */
+	public SshException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * <p/>
-     * Constructs an exception.
-     * </p>
-     *
-     * @param cause The cause of the exception
-     * @since 0.2.1
-     */
-    public SshException(Throwable cause) {
-        super(cause.getMessage());
-    }
+	/**
+	 * <p/>
+	 * Constructs an exception.
+	 * </p>
+	 *
+	 * @param cause The cause of the exception
+	 * @since 0.2.1
+	 */
+	public SshException(Throwable cause) {
+		super(cause.getMessage());
+	}
 }

@@ -33,7 +33,6 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.sshtools.j2ssh.connection.Channel;
 import com.sshtools.j2ssh.connection.ChannelEventListener;
 import com.sshtools.j2ssh.util.StartStopState;
@@ -44,336 +43,336 @@ import com.sshtools.j2ssh.util.StartStopState;
  * @version $Revision$
  */
 public class ForwardingConfiguration {
-    private static Log log = LogFactory.getLog(ForwardingConfiguration.class);
+	private static Log log = LogFactory.getLog(ForwardingConfiguration.class);
 
-    /**  */
-    protected StartStopState state = new StartStopState(StartStopState.STOPPED);
+	/**  */
+	protected StartStopState state = new StartStopState(StartStopState.STOPPED);
 
-    /**  */
-    protected String addressToBind;
+	/**  */
+	protected String addressToBind;
 
-    /**  */
-    protected String hostToConnect;
+	/**  */
+	protected String hostToConnect;
 
-    /**  */
-    protected String name;
+	/**  */
+	protected String name;
 
-    /**  */
-    protected int portToBind;
+	/**  */
+	protected int portToBind;
 
-    /**  */
-    protected int portToConnect;
+	/**  */
+	protected int portToConnect;
 
-    /**  */
-    protected ForwardingConfigurationMonitor monitor = new ForwardingConfigurationMonitor();
+	/**  */
+	protected ForwardingConfigurationMonitor monitor = new ForwardingConfigurationMonitor();
 
-    /**  */
-    protected EventListenerList listenerList = new EventListenerList();
-    private List activeForwardings = new Vector();
+	/**  */
+	protected EventListenerList listenerList = new EventListenerList();
+	private List activeForwardings = new Vector();
 
-    /**
-     * Creates a new ForwardingConfiguration object.
-     *
-     * @param name
-     * @param addressToBind
-     * @param portToBind
-     * @param hostToConnect
-     * @param portToConnect
-     */
-    public ForwardingConfiguration(String name, String addressToBind,
-                                   int portToBind, String hostToConnect, int portToConnect) {
-        this.addressToBind = addressToBind;
-        this.portToBind = portToBind;
-        this.name = name;
-        this.hostToConnect = hostToConnect;
-        this.portToConnect = portToConnect;
-    }
+	/**
+	 * Creates a new ForwardingConfiguration object.
+	 *
+	 * @param name
+	 * @param addressToBind
+	 * @param portToBind
+	 * @param hostToConnect
+	 * @param portToConnect
+	 */
+	public ForwardingConfiguration(String name, String addressToBind,
+	                               int portToBind, String hostToConnect, int portToConnect) {
+		this.addressToBind = addressToBind;
+		this.portToBind = portToBind;
+		this.name = name;
+		this.hostToConnect = hostToConnect;
+		this.portToConnect = portToConnect;
+	}
 
-    /**
-     * Creates a new ForwardingConfiguration object.
-     *
-     * @param addressToBind
-     * @param portToBind
-     */
-    public ForwardingConfiguration(String addressToBind, int portToBind) {
-        this(addressToBind + ":" + String.valueOf(portToBind), addressToBind,
-                portToBind, "[Specified by connecting computer]", -1);
-    }
+	/**
+	 * Creates a new ForwardingConfiguration object.
+	 *
+	 * @param addressToBind
+	 * @param portToBind
+	 */
+	public ForwardingConfiguration(String addressToBind, int portToBind) {
+		this(addressToBind+":"+String.valueOf(portToBind), addressToBind,
+		    portToBind, "[Specified by connecting computer]", -1);
+	}
 
-    /**
-     * @param l
-     */
-    public void addForwardingConfigurationListener(ForwardingConfigurationListener l) {
-        listenerList.add(ForwardingConfigurationListener.class, l);
-    }
+	/**
+	 * @param l
+	 */
+	public void addForwardingConfigurationListener(ForwardingConfigurationListener l) {
+		listenerList.add(ForwardingConfigurationListener.class, l);
+	}
 
-    /**
-     * @param l
-     */
-    public void removeForwardingConfigurationListener(ForwardingConfigurationListener l) {
-        listenerList.remove(ForwardingConfigurationListener.class, l);
-    }
+	/**
+	 * @param l
+	 */
+	public void removeForwardingConfigurationListener(ForwardingConfigurationListener l) {
+		listenerList.remove(ForwardingConfigurationListener.class, l);
+	}
 
-    /**
-     * @return
-     */
-    public List getActiveForwardingSocketChannels() {
-        return activeForwardings;
-    }
+	/**
+	 * @return
+	 */
+	public List getActiveForwardingSocketChannels() {
+		return activeForwardings;
+	}
 
-    public boolean isForwarding() {
-        return state.getValue() == StartStopState.STARTED;
-    }
+	public boolean isForwarding() {
+		return state.getValue() == StartStopState.STARTED;
+	}
 
-    /**
-     * @return
-     */
-    public String getAddressToBind() {
-        return addressToBind;
-    }
+	/**
+	 * @return
+	 */
+	public String getAddressToBind() {
+		return addressToBind;
+	}
 
-    /**
-     * @return
-     */
-    public String getHostToConnect() {
-        return hostToConnect;
-    }
+	/**
+	 * @return
+	 */
+	public String getHostToConnect() {
+		return hostToConnect;
+	}
 
-    /**
-     * @return
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * @return
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * @return
-     */
-    public int getPortToBind() {
-        return portToBind;
-    }
+	/**
+	 * @return
+	 */
+	public int getPortToBind() {
+		return portToBind;
+	}
 
-    /**
-     * @return
-     */
-    public int getPortToConnect() {
-        return portToConnect;
-    }
+	/**
+	 * @return
+	 */
+	public int getPortToConnect() {
+		return portToConnect;
+	}
 
-    /**
-     * @return
-     */
-    public StartStopState getState() {
-        return state;
-    }
+	/**
+	 * @return
+	 */
+	public StartStopState getState() {
+		return state;
+	}
 
-    /**
-     * @throws IOException
-     */
-    public void start() throws IOException {
-        state.setValue(StartStopState.STARTED);
-    }
+	/**
+	 * @throws IOException
+	 */
+	public void start() throws IOException {
+		state.setValue(StartStopState.STARTED);
+	}
 
-    /**
-     *
-     */
-    public void stop() {
-        state.setValue(StartStopState.STOPPED);
-    }
+	/**
+	 *
+	 */
+	public void stop() {
+		state.setValue(StartStopState.STOPPED);
+	}
 
-    /**
-     * @param type
-     * @param hostToConnect
-     * @param portToConnect
-     * @param originatingHost
-     * @param originatingPort
-     * @return
-     * @throws ForwardingConfigurationException
-     *
-     */
-    public ForwardingSocketChannel createForwardingSocketChannel(String type,
-                                                                 String hostToConnect, int portToConnect, String originatingHost,
-                                                                 int originatingPort) throws ForwardingConfigurationException {
-        if (state.getValue() == StartStopState.STOPPED) {
-            throw new ForwardingConfigurationException("The forwarding has been stopped");
-        }
+	/**
+	 * @param type
+	 * @param hostToConnect
+	 * @param portToConnect
+	 * @param originatingHost
+	 * @param originatingPort
+	 * @return
+	 * @throws ForwardingConfigurationException
+	 *
+	 */
+	public ForwardingSocketChannel createForwardingSocketChannel(String type,
+	                                                             String hostToConnect, int portToConnect, String originatingHost,
+	                                                             int originatingPort) throws ForwardingConfigurationException {
+		if(state.getValue() == StartStopState.STOPPED) {
+			throw new ForwardingConfigurationException("The forwarding has been stopped");
+		}
 
-        if (!type.equals(ForwardingChannel.LOCAL_FORWARDING_CHANNEL) &&
-                !type.equals(ForwardingChannel.REMOTE_FORWARDING_CHANNEL) &&
-                !type.equals(ForwardingChannel.X11_FORWARDING_CHANNEL)) {
-            throw new ForwardingConfigurationException("The channel type must either be " +
-                    "ForwardingSocketChannel.LOCAL_FORWARDING_CHANNEL_TYPE or " +
-                    "ForwardingSocketChannel.REMOTE_FORWARDING_CHANNEL_TYPE");
-        }
+		if(!type.equals(ForwardingChannel.LOCAL_FORWARDING_CHANNEL) &&
+		    !type.equals(ForwardingChannel.REMOTE_FORWARDING_CHANNEL) &&
+		    !type.equals(ForwardingChannel.X11_FORWARDING_CHANNEL)) {
+			throw new ForwardingConfigurationException("The channel type must either be "+
+			    "ForwardingSocketChannel.LOCAL_FORWARDING_CHANNEL_TYPE or "+
+			    "ForwardingSocketChannel.REMOTE_FORWARDING_CHANNEL_TYPE");
+		}
 
-        ForwardingSocketChannel channel;
+		ForwardingSocketChannel channel;
 
-        if (type.equals(ForwardingChannel.LOCAL_FORWARDING_CHANNEL)) {
-            channel = new ForwardingSocketChannel(type, name, hostToConnect,
-                    portToConnect, originatingHost, originatingPort);
-        }
-        else {
-            channel = new ForwardingSocketChannel(type, name,
-                    getAddressToBind(), getPortToBind(), originatingHost,
-                    originatingPort);
-        }
+		if(type.equals(ForwardingChannel.LOCAL_FORWARDING_CHANNEL)) {
+			channel = new ForwardingSocketChannel(type, name, hostToConnect,
+			    portToConnect, originatingHost, originatingPort);
+		}
+		else {
+			channel = new ForwardingSocketChannel(type, name,
+			    getAddressToBind(), getPortToBind(), originatingHost,
+			    originatingPort);
+		}
 
-        channel.addEventListener(monitor);
+		channel.addEventListener(monitor);
 
-        return channel;
-    }
+		return channel;
+	}
 
-    /**
-     * @param type
-     * @param hostToConnect
-     * @param portToConnect
-     * @param originatingHost
-     * @param originatingPort
-     * @return
-     * @throws ForwardingConfigurationException
-     *
-     */
-    public ForwardingIOChannel createForwardingIOChannel(String type,
-                                                         String hostToConnect, int portToConnect, String originatingHost,
-                                                         int originatingPort) throws ForwardingConfigurationException {
-        if (state.getValue() == StartStopState.STOPPED) {
-            throw new ForwardingConfigurationException("The forwarding has been stopped");
-        }
+	/**
+	 * @param type
+	 * @param hostToConnect
+	 * @param portToConnect
+	 * @param originatingHost
+	 * @param originatingPort
+	 * @return
+	 * @throws ForwardingConfigurationException
+	 *
+	 */
+	public ForwardingIOChannel createForwardingIOChannel(String type,
+	                                                     String hostToConnect, int portToConnect, String originatingHost,
+	                                                     int originatingPort) throws ForwardingConfigurationException {
+		if(state.getValue() == StartStopState.STOPPED) {
+			throw new ForwardingConfigurationException("The forwarding has been stopped");
+		}
 
-        if (!type.equals(ForwardingChannel.LOCAL_FORWARDING_CHANNEL) &&
-                !type.equals(ForwardingChannel.REMOTE_FORWARDING_CHANNEL) &&
-                !type.equals(ForwardingChannel.X11_FORWARDING_CHANNEL)) {
-            throw new ForwardingConfigurationException("The channel type must either be " +
-                    "ForwardingSocketChannel.LOCAL_FORWARDING_CHANNEL_TYPE or " +
-                    "ForwardingSocketChannel.REMOTE_FORWARDING_CHANNEL_TYPE");
-        }
+		if(!type.equals(ForwardingChannel.LOCAL_FORWARDING_CHANNEL) &&
+		    !type.equals(ForwardingChannel.REMOTE_FORWARDING_CHANNEL) &&
+		    !type.equals(ForwardingChannel.X11_FORWARDING_CHANNEL)) {
+			throw new ForwardingConfigurationException("The channel type must either be "+
+			    "ForwardingSocketChannel.LOCAL_FORWARDING_CHANNEL_TYPE or "+
+			    "ForwardingSocketChannel.REMOTE_FORWARDING_CHANNEL_TYPE");
+		}
 
-        ForwardingIOChannel channel;
+		ForwardingIOChannel channel;
 
-        if (type.equals(ForwardingChannel.LOCAL_FORWARDING_CHANNEL)) {
-            channel = new ForwardingIOChannel(type, name, getHostToConnect(),
-                    getPortToConnect(), originatingHost, originatingPort);
-        }
-        else {
-            channel = new ForwardingIOChannel(type, name, getAddressToBind(),
-                    getPortToBind(), originatingHost, originatingPort);
-        }
+		if(type.equals(ForwardingChannel.LOCAL_FORWARDING_CHANNEL)) {
+			channel = new ForwardingIOChannel(type, name, getHostToConnect(),
+			    getPortToConnect(), originatingHost, originatingPort);
+		}
+		else {
+			channel = new ForwardingIOChannel(type, name, getAddressToBind(),
+			    getPortToBind(), originatingHost, originatingPort);
+		}
 
-        channel.addEventListener(monitor);
+		channel.addEventListener(monitor);
 
-        return channel;
-    }
+		return channel;
+	}
 
-    /**
-     * @param type
-     * @param hostToConnect
-     * @param portToConnect
-     * @param originatingHost
-     * @param originatingPort
-     * @return
-     * @throws ForwardingConfigurationException
-     *
-     */
-    public ForwardingBindingChannel createForwardingBindingChannel(String type, String hostToConnect, int portToConnect,
-                                                                   String originatingHost, int originatingPort)
-            throws ForwardingConfigurationException {
-        if (state.getValue() == StartStopState.STOPPED) {
-            throw new ForwardingConfigurationException("The forwarding has been stopped");
-        }
+	/**
+	 * @param type
+	 * @param hostToConnect
+	 * @param portToConnect
+	 * @param originatingHost
+	 * @param originatingPort
+	 * @return
+	 * @throws ForwardingConfigurationException
+	 *
+	 */
+	public ForwardingBindingChannel createForwardingBindingChannel(String type, String hostToConnect, int portToConnect,
+	                                                               String originatingHost, int originatingPort)
+	    throws ForwardingConfigurationException {
+		if(state.getValue() == StartStopState.STOPPED) {
+			throw new ForwardingConfigurationException("The forwarding has been stopped");
+		}
 
-        if (!type.equals(ForwardingChannel.LOCAL_FORWARDING_CHANNEL) &&
-                !type.equals(ForwardingChannel.REMOTE_FORWARDING_CHANNEL) &&
-                !type.equals(ForwardingChannel.X11_FORWARDING_CHANNEL)) {
-            throw new ForwardingConfigurationException("The channel type must either be " +
-                    "ForwardingSocketChannel.LOCAL_FORWARDING_CHANNEL_TYPE or " +
-                    "ForwardingSocketChannel.REMOTE_FORWARDING_CHANNEL_TYPE");
-        }
+		if(!type.equals(ForwardingChannel.LOCAL_FORWARDING_CHANNEL) &&
+		    !type.equals(ForwardingChannel.REMOTE_FORWARDING_CHANNEL) &&
+		    !type.equals(ForwardingChannel.X11_FORWARDING_CHANNEL)) {
+			throw new ForwardingConfigurationException("The channel type must either be "+
+			    "ForwardingSocketChannel.LOCAL_FORWARDING_CHANNEL_TYPE or "+
+			    "ForwardingSocketChannel.REMOTE_FORWARDING_CHANNEL_TYPE");
+		}
 
-        ForwardingBindingChannel channel;
+		ForwardingBindingChannel channel;
 
-        if (type.equals(ForwardingChannel.LOCAL_FORWARDING_CHANNEL)) {
-            channel = new ForwardingBindingChannel(type, name,
-                    getHostToConnect(), getPortToConnect(), originatingHost,
-                    originatingPort);
-        }
-        else {
-            channel = new ForwardingBindingChannel(type, name,
-                    getAddressToBind(), getPortToBind(), originatingHost,
-                    originatingPort);
-        }
+		if(type.equals(ForwardingChannel.LOCAL_FORWARDING_CHANNEL)) {
+			channel = new ForwardingBindingChannel(type, name,
+			    getHostToConnect(), getPortToConnect(), originatingHost,
+			    originatingPort);
+		}
+		else {
+			channel = new ForwardingBindingChannel(type, name,
+			    getAddressToBind(), getPortToBind(), originatingHost,
+			    originatingPort);
+		}
 
-        channel.addEventListener(monitor);
+		channel.addEventListener(monitor);
 
-        return channel;
-    }
+		return channel;
+	}
 
-    public class ForwardingConfigurationMonitor implements ChannelEventListener {
-        public void onChannelOpen(Channel channel) {
-            if (log.isDebugEnabled()) {
-                ForwardingChannel fch = (ForwardingChannel)channel;
-                log.debug("Opening forwarding channel from " +
-                        fch.getOriginatingHost() + ":" +
-                        String.valueOf(fch.getOriginatingPort()));
-            }
+	public class ForwardingConfigurationMonitor implements ChannelEventListener {
+		public void onChannelOpen(Channel channel) {
+			if(log.isDebugEnabled()) {
+				ForwardingChannel fch = (ForwardingChannel)channel;
+				log.debug("Opening forwarding channel from "+
+				    fch.getOriginatingHost()+":"+
+				    String.valueOf(fch.getOriginatingPort()));
+			}
 
-            // Add channel to the active forwardings
-            activeForwardings.add(channel);
+			// Add channel to the active forwardings
+			activeForwardings.add(channel);
 
-            ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[])listenerList.getListeners(ForwardingConfigurationListener.class);
+			ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[])listenerList.getListeners(ForwardingConfigurationListener.class);
 
-            for (int i = (l.length - 1); i >= 0; i--) {
-                l[i].opened(ForwardingConfiguration.this,
-                        (ForwardingSocketChannel)channel);
-            }
-        }
+			for(int i = (l.length-1); i >= 0; i--) {
+				l[i].opened(ForwardingConfiguration.this,
+				    (ForwardingSocketChannel)channel);
+			}
+		}
 
-        public void onChannelEOF(Channel channel) {
-            // Close the OutputStream to force the channel to close
+		public void onChannelEOF(Channel channel) {
+			// Close the OutputStream to force the channel to close
 
-            /* try {
-               //channel.getOutputStream().close();
-               //channel.getInputStream().close();
-               channel.close();
-             }
-             catch (IOException ex) {
-             }*/
-        }
+			/* try {
+			   //channel.getOutputStream().close();
+			   //channel.getInputStream().close();
+			   channel.close();
+			 }
+			 catch (IOException ex) {
+			 }*/
+		}
 
-        public void onChannelClose(Channel channel) {
-            if (log.isDebugEnabled()) {
-                ForwardingChannel fch = (ForwardingChannel)channel;
-                log.debug("Closing forwarding channel from " +
-                        fch.getOriginatingHost() + ":" +
-                        String.valueOf(fch.getOriginatingPort()));
-            }
+		public void onChannelClose(Channel channel) {
+			if(log.isDebugEnabled()) {
+				ForwardingChannel fch = (ForwardingChannel)channel;
+				log.debug("Closing forwarding channel from "+
+				    fch.getOriginatingHost()+":"+
+				    String.valueOf(fch.getOriginatingPort()));
+			}
 
-            // Remove channel from the active forwardings
-            activeForwardings.remove(channel);
+			// Remove channel from the active forwardings
+			activeForwardings.remove(channel);
 
-            ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[])listenerList.getListeners(ForwardingConfigurationListener.class);
+			ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[])listenerList.getListeners(ForwardingConfigurationListener.class);
 
-            for (int i = (l.length - 1); i >= 0; i--) {
-                l[i].closed(ForwardingConfiguration.this,
-                        (ForwardingSocketChannel)channel);
-            }
-        }
+			for(int i = (l.length-1); i >= 0; i--) {
+				l[i].closed(ForwardingConfiguration.this,
+				    (ForwardingSocketChannel)channel);
+			}
+		}
 
-        public void onDataReceived(Channel channel, byte[] data) {
-            ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[])listenerList.getListeners(ForwardingConfigurationListener.class);
+		public void onDataReceived(Channel channel, byte[] data) {
+			ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[])listenerList.getListeners(ForwardingConfigurationListener.class);
 
-            for (int i = (l.length - 1); i >= 0; i--) {
-                l[i].dataReceived(ForwardingConfiguration.this,
-                        (ForwardingSocketChannel)channel, data.length);
-            }
-        }
+			for(int i = (l.length-1); i >= 0; i--) {
+				l[i].dataReceived(ForwardingConfiguration.this,
+				    (ForwardingSocketChannel)channel, data.length);
+			}
+		}
 
-        public void onDataSent(Channel channel, byte[] data) {
-            ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[])listenerList.getListeners(ForwardingConfigurationListener.class);
+		public void onDataSent(Channel channel, byte[] data) {
+			ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[])listenerList.getListeners(ForwardingConfigurationListener.class);
 
-            for (int i = (l.length - 1); i >= 0; i--) {
-                l[i].dataSent(ForwardingConfiguration.this,
-                        (ForwardingSocketChannel)channel, data.length);
-            }
-        }
-    }
+			for(int i = (l.length-1); i >= 0; i--) {
+				l[i].dataSent(ForwardingConfiguration.this,
+				    (ForwardingSocketChannel)channel, data.length);
+			}
+		}
+	}
 }

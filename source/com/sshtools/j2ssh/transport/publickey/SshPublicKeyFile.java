@@ -33,7 +33,6 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.sshtools.j2ssh.io.ByteArrayReader;
 
 
@@ -42,165 +41,165 @@ import com.sshtools.j2ssh.io.ByteArrayReader;
  * @version $Revision$
  */
 public class SshPublicKeyFile {
-    private static Log log = LogFactory.getLog(SshPublicKeyFile.class);
-    private SshPublicKeyFormat format;
-    private byte[] keyblob;
-    private String comment;
+	private static Log log = LogFactory.getLog(SshPublicKeyFile.class);
+	private SshPublicKeyFormat format;
+	private byte[] keyblob;
+	private String comment;
 
-    /**
-     * Creates a new SshPublicKeyFile object.
-     *
-     * @param keyblob
-     * @param format
-     */
-    protected SshPublicKeyFile(byte[] keyblob, SshPublicKeyFormat format) {
-        this.keyblob = keyblob;
-        this.format = format;
-    }
+	/**
+	 * Creates a new SshPublicKeyFile object.
+	 *
+	 * @param keyblob
+	 * @param format
+	 */
+	protected SshPublicKeyFile(byte[] keyblob, SshPublicKeyFormat format) {
+		this.keyblob = keyblob;
+		this.format = format;
+	}
 
-    /**
-     * @return
-     */
-    public byte[] getBytes() {
-        return format.formatKey(keyblob);
-    }
+	/**
+	 * @return
+	 */
+	public byte[] getBytes() {
+		return format.formatKey(keyblob);
+	}
 
-    /**
-     * @return
-     */
-    public String getComment() {
-        return comment;
-    }
+	/**
+	 * @return
+	 */
+	public String getComment() {
+		return comment;
+	}
 
-    /**
-     * @param comment
-     */
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+	/**
+	 * @param comment
+	 */
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
 
-    /**
-     * @return
-     */
-    public byte[] getKeyBlob() {
-        return keyblob;
-    }
+	/**
+	 * @return
+	 */
+	public byte[] getKeyBlob() {
+		return keyblob;
+	}
 
-    /**
-     * @param key
-     * @param format
-     * @return
-     */
-    public static SshPublicKeyFile create(SshPublicKey key,
-                                          SshPublicKeyFormat format) {
-        SshPublicKeyFile file = new SshPublicKeyFile(key.getEncoded(), format);
-        file.setComment(format.getComment());
+	/**
+	 * @param key
+	 * @param format
+	 * @return
+	 */
+	public static SshPublicKeyFile create(SshPublicKey key,
+	                                      SshPublicKeyFormat format) {
+		SshPublicKeyFile file = new SshPublicKeyFile(key.getEncoded(), format);
+		file.setComment(format.getComment());
 
-        return file;
-    }
+		return file;
+	}
 
-    /**
-     * @param keyfile
-     * @return
-     * @throws InvalidSshKeyException
-     * @throws IOException
-     */
-    public static SshPublicKeyFile parse(File keyfile)
-            throws InvalidSshKeyException, IOException {
-        FileInputStream in = new FileInputStream(keyfile);
-        byte[] data = new byte[in.available()];
-        in.read(data);
-        in.close();
+	/**
+	 * @param keyfile
+	 * @return
+	 * @throws InvalidSshKeyException
+	 * @throws IOException
+	 */
+	public static SshPublicKeyFile parse(File keyfile)
+	    throws InvalidSshKeyException, IOException {
+		FileInputStream in = new FileInputStream(keyfile);
+		byte[] data = new byte[in.available()];
+		in.read(data);
+		in.close();
 
-        return parse(data);
-    }
+		return parse(data);
+	}
 
-    /**
-     * @param formattedKey
-     * @return
-     * @throws InvalidSshKeyException
-     */
-    public static SshPublicKeyFile parse(byte[] formattedKey)
-            throws InvalidSshKeyException {
-        log.info("Parsing public key file");
+	/**
+	 * @param formattedKey
+	 * @return
+	 * @throws InvalidSshKeyException
+	 */
+	public static SshPublicKeyFile parse(byte[] formattedKey)
+	    throws InvalidSshKeyException {
+		log.info("Parsing public key file");
 
-        // Try the default private key format
-        SshPublicKeyFormat format;
-        format = SshPublicKeyFormatFactory.newInstance(SshPublicKeyFormatFactory.getDefaultFormatType());
+		// Try the default private key format
+		SshPublicKeyFormat format;
+		format = SshPublicKeyFormatFactory.newInstance(SshPublicKeyFormatFactory.getDefaultFormatType());
 
-        boolean valid = format.isFormatted(formattedKey);
+		boolean valid = format.isFormatted(formattedKey);
 
-        if (!valid) {
-            log.info("Public key is not in the default format, attempting parse with other supported formats");
+		if(!valid) {
+			log.info("Public key is not in the default format, attempting parse with other supported formats");
 
-            Iterator it = SshPublicKeyFormatFactory.getSupportedFormats()
-                    .iterator();
-            String ft;
+			Iterator it = SshPublicKeyFormatFactory.getSupportedFormats()
+			    .iterator();
+			String ft;
 
-            while (it.hasNext() && !valid) {
-                ft = (String)it.next();
-                log.debug("Attempting " + ft);
-                format = SshPublicKeyFormatFactory.newInstance(ft);
-                valid = format.isFormatted(formattedKey);
-            }
-        }
+			while(it.hasNext() && !valid) {
+				ft = (String)it.next();
+				log.debug("Attempting "+ft);
+				format = SshPublicKeyFormatFactory.newInstance(ft);
+				valid = format.isFormatted(formattedKey);
+			}
+		}
 
-        if (valid) {
-            SshPublicKeyFile file = new SshPublicKeyFile(format.getKeyBlob(formattedKey), format);
-            file.setComment(format.getComment());
+		if(valid) {
+			SshPublicKeyFile file = new SshPublicKeyFile(format.getKeyBlob(formattedKey), format);
+			file.setComment(format.getComment());
 
-            return file;
-        }
-        else {
-            throw new InvalidSshKeyException("The key format is not a supported format");
-        }
-    }
+			return file;
+		}
+		else {
+			throw new InvalidSshKeyException("The key format is not a supported format");
+		}
+	}
 
-    /**
-     * @return
-     */
-    public String getAlgorithm() {
-        return ByteArrayReader.readString(keyblob, 0);
-    }
+	/**
+	 * @return
+	 */
+	public String getAlgorithm() {
+		return ByteArrayReader.readString(keyblob, 0);
+	}
 
-    /**
-     * @param newFormat
-     * @throws InvalidSshKeyException
-     */
-    public void setFormat(SshPublicKeyFormat newFormat)
-            throws InvalidSshKeyException {
-        if (newFormat.supportsAlgorithm(getAlgorithm())) {
-            newFormat.setComment(format.getComment());
-            this.format = newFormat;
-        }
-        else {
-            throw new InvalidSshKeyException("The format does not support the public key algorithm");
-        }
-    }
+	/**
+	 * @param newFormat
+	 * @throws InvalidSshKeyException
+	 */
+	public void setFormat(SshPublicKeyFormat newFormat)
+	    throws InvalidSshKeyException {
+		if(newFormat.supportsAlgorithm(getAlgorithm())) {
+			newFormat.setComment(format.getComment());
+			this.format = newFormat;
+		}
+		else {
+			throw new InvalidSshKeyException("The format does not support the public key algorithm");
+		}
+	}
 
-    /**
-     * @return
-     */
-    public SshPublicKeyFormat getFormat() {
-        return format;
-    }
+	/**
+	 * @return
+	 */
+	public SshPublicKeyFormat getFormat() {
+		return format;
+	}
 
-    /**
-     * @return
-     * @throws IOException
-     */
-    public SshPublicKey toPublicKey() throws IOException {
-        ByteArrayReader bar = new ByteArrayReader(keyblob);
-        String type = bar.readString();
-        SshKeyPair pair = SshKeyPairFactory.newInstance(type);
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	public SshPublicKey toPublicKey() throws IOException {
+		ByteArrayReader bar = new ByteArrayReader(keyblob);
+		String type = bar.readString();
+		SshKeyPair pair = SshKeyPairFactory.newInstance(type);
 
-        return pair.decodePublicKey(keyblob);
-    }
+		return pair.decodePublicKey(keyblob);
+	}
 
-    /**
-     * @return
-     */
-    public String toString() {
-        return new String(format.formatKey(keyblob));
-    }
+	/**
+	 * @return
+	 */
+	public String toString() {
+		return new String(format.formatKey(keyblob));
+	}
 }

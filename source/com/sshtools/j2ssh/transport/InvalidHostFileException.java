@@ -37,15 +37,15 @@ package com.sshtools.j2ssh.transport;
  * @since 0.2.0
  */
 public class InvalidHostFileException extends TransportProtocolException {
-    /**
-     * <p/>
-     * Contructs the exception.
-     * </p>
-     *
-     * @param msg the error message
-     * @since 0.2.0
-     */
-    public InvalidHostFileException(String msg) {
-        super(msg);
-    }
+	/**
+	 * <p/>
+	 * Contructs the exception.
+	 * </p>
+	 *
+	 * @param msg the error message
+	 * @since 0.2.0
+	 */
+	public InvalidHostFileException(String msg) {
+		super(msg);
+	}
 }

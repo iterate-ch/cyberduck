@@ -35,36 +35,36 @@ import com.sshtools.j2ssh.io.ByteArrayWriter;
  * @version $Revision$
  */
 public class SshMsgNewKeys extends SshMessage {
-    /**  */
-    protected final static int SSH_MSG_NEWKEYS = 21;
+	/**  */
+	protected final static int SSH_MSG_NEWKEYS = 21;
 
-    /**
-     * Creates a new SshMsgNewKeys object.
-     */
-    public SshMsgNewKeys() {
-        super(SSH_MSG_NEWKEYS);
-    }
+	/**
+	 * Creates a new SshMsgNewKeys object.
+	 */
+	public SshMsgNewKeys() {
+		super(SSH_MSG_NEWKEYS);
+	}
 
-    /**
-     * @return
-     */
-    public String getMessageName() {
-        return "SSH_MSG_NEWKEYS";
-    }
+	/**
+	 * @return
+	 */
+	public String getMessageName() {
+		return "SSH_MSG_NEWKEYS";
+	}
 
-    /**
-     * @param baw
-     * @throws InvalidMessageException
-     */
-    protected void constructByteArray(ByteArrayWriter baw)
-            throws InvalidMessageException {
-    }
+	/**
+	 * @param baw
+	 * @throws InvalidMessageException
+	 */
+	protected void constructByteArray(ByteArrayWriter baw)
+	    throws InvalidMessageException {
+	}
 
-    /**
-     * @param bar
-     * @throws InvalidMessageException
-     */
-    protected void constructMessage(ByteArrayReader bar)
-            throws InvalidMessageException {
-    }
+	/**
+	 * @param bar
+	 * @throws InvalidMessageException
+	 */
+	protected void constructMessage(ByteArrayReader bar)
+	    throws InvalidMessageException {
+	}
 }
