@@ -44,10 +44,43 @@ public class CDSyncValidatorController extends CDValidatorController {
 		this.fileTableView.setDelegate(this);
 		this.fileTableView.setDataSource(this);
 		this.fileTableView.sizeToFit();
+        this.mirrorRadioCell.setTarget(this);
+        this.mirrorRadioCell.setAction(new NSSelector("mirrorCellClicked", new Class[]{Object.class}));
         this.uploadRadioCell.setTarget(this);
-        this.uploadRadioCell.setAction(new NSSelector("reloadData", new Class[]{}));
+        this.uploadRadioCell.setAction(new NSSelector("uploadCellClicked", new Class[]{Object.class}));
         this.downloadRadioCell.setTarget(this);
-        this.downloadRadioCell.setAction(new NSSelector("reloadData", new Class[]{}));
+        this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
+	}
+	
+	public void mirrorCellClicked(Object sender) {
+		this.workset = new ArrayList();
+		for(Iterator i = this.candidates.iterator(); i.hasNext(); ) {
+			Path p = (Path)i.next();
+			log.debug("> add");
+			this.workset.add(p);
+		}
+	}
+
+	public void downloadCellClicked(Object sender) {
+		this.workset = new ArrayList();
+		for(Iterator i = this.candidates.iterator(); i.hasNext(); ) {
+			Path p = (Path)i.next();
+			if(p.remote.exists()) {
+				log.debug("> add");
+				this.workset.add(p);
+			}
+		}
+	}
+
+	public void uploadCellClicked(Object sender) {
+		this.workset = new ArrayList();
+		for(Iterator i = this.candidates.iterator(); i.hasNext(); ) {
+			Path p = (Path)i.next();
+			if(p.local.exists()) {
+				log.debug("> add");
+				this.workset.add(p);
+			}
+		}
 	}
 	
 	// ----------------------------------------------------------
@@ -135,21 +168,6 @@ public class CDSyncValidatorController extends CDValidatorController {
 	public void reloadData() {
 		log.debug("reloadData");
 		this.fileTableView.deselectAll(null);
-		this.workset = new ArrayList();
-		for(Iterator i = this.candidates.iterator(); i.hasNext(); ) {
-			Path p = (Path)i.next();
-			if(mirrorRadioCell.state() == NSCell.OnState) {
-				this.workset.add(p);
-			}
-			else if(downloadRadioCell.state() == NSCell.OnState) {
-				if(p.remote.exists())
-					this.workset.add(p);
-			}
-			else if(uploadRadioCell.state() == NSCell.OnState) {
-				if(p.local.exists())
-					this.workset.add(p);
-			}
-		}
 		log.debug("Working set: "+this.workset);
 		this.fileTableView.reloadData();
 	}
@@ -176,7 +194,10 @@ public class CDSyncValidatorController extends CDValidatorController {
 	
 	protected boolean validateFile(Path p) {
 		this.reloadData(); //@todo should be after return statement
-		return !p.modificationDate().equals(p.getLocal().getTimestamp());
+		if(p.remote.exists() && p.local.exists()) {
+			return !p.modificationDate().equals(p.getLocal().getTimestamp());
+		}
+		return true; // Include if mirroring
 	}
 	
 	protected boolean validateDirectory(Path path) {
@@ -241,8 +262,8 @@ public class CDSyncValidatorController extends CDValidatorController {
 						this.localTimestampField.setAttributedStringValue(new NSAttributedString(localeTS, TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 					}
 					else {
-						this.localField.setStringValue("");
-						this.localTimestampField.setStringValue("");
+						this.localField.setStringValue("-");
+						this.localTimestampField.setStringValue("-");
 					}
 					if(p.remote.exists()) {
 						this.urlField.setAttributedStringValue(new NSAttributedString(p.getHost().getURL()+p.getAbsolute(), 
@@ -254,8 +275,8 @@ public class CDSyncValidatorController extends CDValidatorController {
 						this.remoteTimestampField.setAttributedStringValue(new NSAttributedString(remoteTS, TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 					}
 					else {
-						this.urlField.setStringValue("");
-						this.remoteTimestampField.setStringValue("");
+						this.urlField.setStringValue("-");
+						this.remoteTimestampField.setStringValue("-");
 					}
 				}
 				catch(NSFormatter.FormattingException e) {
