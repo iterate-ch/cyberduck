@@ -106,7 +106,7 @@ public class UnixFTPEntryParser extends FTPFileEntryParserImpl {
     private static final String REGEX =
             "([bcdlf-])"
             + "(((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-])))\\s+"
-            + "(\\d+)\\s+"
+            + "(\\d+)?\\s*"
             + "(\\S+)\\s+"
             + "(?:(\\S+)\\s+)?"
             + "(\\d+)\\s+"
