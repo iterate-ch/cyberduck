@@ -12,21 +12,21 @@
     <sourcePath>
       <root type="composite">
         <root type="jdk" rootType="sourcePath" name="java version &quot;1.4.1_01&quot;" />
-        <root type="library" rootType="sourcePath" name="cocoa" />
         <root type="simple" url="file://$PROJECT_DIR$/lib/ext/j2ssh-0.2.2/examples" />
         <root type="simple" url="file://$PROJECT_DIR$/lib/ext/j2ssh-0.2.2/src" />
         <root type="simple" url="file://$PROJECT_DIR$/lib/ext/j2ssh-0.2.3/examples" />
         <root type="simple" url="file://$PROJECT_DIR$/lib/ext/j2ssh-0.2.3/src" />
         <root type="simple" url="file://$PROJECT_DIR$/source" />
         <root type="library" rootType="sourcePath" name="lib" />
+        <root type="library" rootType="sourcePath" name="cocoa" />
       </root>
     </sourcePath>
     <classPath>
       <root type="composite">
         <root type="jdk" rootType="classPath" name="java version &quot;1.4.1_01&quot;" />
         <root type="output" />
-        <root type="library" rootType="classPath" name="cocoa" />
         <root type="library" rootType="classPath" name="lib" />
+        <root type="library" rootType="classPath" name="cocoa" />
       </root>
     </classPath>
     <excludePath>
@@ -37,8 +37,8 @@
     <javadocPath>
       <root type="composite">
         <root type="jdk" rootType="javadocPath" name="java version &quot;1.4.1_01&quot;" />
-        <root type="library" rootType="javadocPath" name="cocoa" />
         <root type="library" rootType="javadocPath" name="lib" />
+        <root type="library" rootType="javadocPath" name="cocoa" />
       </root>
     </javadocPath>
     <assert_keyword enabled="no" />
