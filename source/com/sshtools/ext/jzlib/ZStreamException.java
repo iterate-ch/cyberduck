@@ -34,10 +34,11 @@ Copyright (c) 2000,2001,2002,2003 ymnk, JCraft,Inc. All rights reserved.
 package com.sshtools.ext.jzlib;
 
 public class ZStreamException extends java.io.IOException {
-	public ZStreamException() {
-		super();
-	}
-	public ZStreamException(String s) {
-		super(s);
-	}
+    public ZStreamException() {
+        super();
+    }
+
+    public ZStreamException(String s) {
+        super(s);
+    }
 }
