@@ -635,6 +635,7 @@ public class CDBrowserController extends NSObject implements Observer {
                 statusIcon.setNeedsDisplay(true);
                 statusLabel.setObjectValue(msg.getContent());
                 statusLabel.display();
+                window().setDocumentEdited(false);
             }
             else if (msg.getTitle().equals(Message.REFRESH)) {
                 refreshButtonClicked(null);
