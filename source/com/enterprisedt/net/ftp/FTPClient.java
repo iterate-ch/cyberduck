@@ -25,6 +25,7 @@
 
 package com.enterprisedt.net.ftp;
 
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Transcript;
 
 import java.io.IOException;
@@ -443,7 +444,9 @@ public class FTPClient {
 		String replyCode = lastValidReply.getReplyCode();
 		if (!replyCode.equals("450") && !replyCode.equals("550")) {
 			// get an character input stream to read data from .
-			LineNumberReader in = new LineNumberReader(new InputStreamReader(data.getInputStream()));
+			LineNumberReader in = new LineNumberReader(
+													   new InputStreamReader(data.getInputStream(),
+																			 Preferences.instance().getProperty("browser.charset.encoding")));
 
 			// read a line at a time
 			Vector lines = new Vector();

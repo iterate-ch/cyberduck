@@ -25,6 +25,7 @@
 
 package com.enterprisedt.net.ftp;
 
+import ch.cyberduck.core.Codec;
 import ch.cyberduck.core.Transcript;
 
 import java.io.*;
@@ -92,7 +93,6 @@ public class FTPControlSocket {
 	 *   following the initiated connection
 	 */
 	private void validateConnection() throws IOException, FTPException {
-
 		String reply = readReply();
 		validateReply(reply, "220");
 	}
@@ -105,9 +105,10 @@ public class FTPControlSocket {
 	private void initStreams() throws IOException {
 		// input stream
 		InputStream is = controlSock.getInputStream();
-		//		reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-		// reader = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
-		reader = new BufferedReader(new InputStreamReader(is, "ISO-8859-1"));
+		// remote encoding is supposed to be ASCII
+		// this reader is only used for return messages and not for data or file listings,
+		// therefore ASCII is enough
+		reader = new BufferedReader(new InputStreamReader(is, "US-ASCII"));
 
 		// output stream
 		OutputStream os = controlSock.getOutputStream();
@@ -343,7 +344,9 @@ public class FTPControlSocket {
 	 *
 	 *  @return  reply to the supplied command
 	 */
-	String sendCommand(String command) throws IOException {
+	String sendCommand(String c) throws IOException {
+		String command = new String(Codec.encode(c));
+		
 		if (command.indexOf("PASS") != -1)
 			Transcript.instance().transcript("PASS *********");
 		else
