@@ -27,6 +27,7 @@
                 bookmarkTable = NSTableView; 
                 browserTable = NSTableView; 
                 editBookmarkButton = NSButton; 
+                infoLabel = NSTextField; 
                 logDrawer = NSDrawer; 
                 logView = NSTextView; 
                 pathPopup = NSPopUpButton; 
