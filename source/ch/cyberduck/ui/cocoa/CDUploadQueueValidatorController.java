@@ -34,7 +34,7 @@ import ch.cyberduck.core.ValidatorFactory;
  * @version $Id$
  */
 public class CDUploadQueueValidatorController extends CDValidatorController {
-	protected static Logger log = Logger.getLogger(CDUploadQueueValidatorController.class);
+	private static Logger log = Logger.getLogger(CDUploadQueueValidatorController.class);
 
 	static {
 		ValidatorFactory.addFactory(UploadQueue.class, new Factory());
@@ -42,12 +42,12 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 
 	private static class Factory extends ValidatorFactory {
 		protected Validator create() {
-			return new CDUploadQueueValidatorController();
+			return new CDUploadQueueValidatorController(CDQueueController.instance());
 		}
 	}
 
-	private CDUploadQueueValidatorController() {
-		super();
+	private CDUploadQueueValidatorController(CDController windowController) {
+		super(windowController);
 	}
 
 	protected void load() {
@@ -55,13 +55,6 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 			log.fatal("Couldn't load Validator.nib");
 		}
 		this.setEnabled(false);
-	}
-
-	public List getResult() {
-		List result = new ArrayList();
-		result.addAll(this.validated); //Include the files where there is no conflict
-		result.addAll(this.workset); //Include the files that have been manually validated
-		return result;
 	}
 
 	protected boolean isExisting(Path p) {

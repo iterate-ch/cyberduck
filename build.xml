@@ -123,6 +123,7 @@
 	
 
 	<target name="repace-tokens">
+		<echo message="Replacing version string with ${cyberduck.version.major}.${cyberduck.version.minor}..."/>
 		<replace
 			dir="${app.contents}"
 			token="*version*"
@@ -139,6 +140,7 @@
 			encoding="UTF-16">
 			<include name="*.lproj/InfoPlist.strings"/>
 		</replace>
+		<echo message="Replacing build date with ${touch.time}..."/>
 		<replace
 			dir="${app.resources}"
 			token="*date*"

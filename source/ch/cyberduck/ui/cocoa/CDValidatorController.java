@@ -34,11 +34,14 @@ import ch.cyberduck.core.*;
  * @version $Id$
  */
 public abstract class CDValidatorController extends AbstractValidator implements Observer {
-	protected static Logger log = Logger.getLogger(CDValidatorController.class);
+	private static Logger log = Logger.getLogger(CDValidatorController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
 
-	public CDValidatorController() {
+	protected CDController windowController;
+
+	public CDValidatorController(CDController windowController) {
+		this.windowController = windowController;
 		instances.addObject(this);
 	}
 
@@ -62,9 +65,10 @@ public abstract class CDValidatorController extends AbstractValidator implements
 		q.getRoot().getSession().addObserver(this);
 		for(Iterator iter = q.getChilds().iterator(); iter.hasNext() && !this.isCanceled(); ) {
 			Path child = (Path)iter.next();
-			log.debug("Validating:"+child);
+			log.info("Validating:"+child);
 			if(this.validate(child, q.isResumeRequested())) {
-				this.validated.add(child);
+				log.info("Adding "+child+" to final set.");				
+				this.validatedList.add(child);
 			}
 			if(this.visible) {
 				this.fireDataChanged();
@@ -75,7 +79,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 			this.statusIndicator.stopAnimation(null);
 			this.setEnabled(true);
 			this.fileTableView.sizeToFit();
-			CDQueueController.instance().waitForSheet();
+			this.windowController.waitForSheet();
 		}
 	}
 
@@ -126,11 +130,12 @@ public abstract class CDValidatorController extends AbstractValidator implements
 	protected void prompt(Path p) {
 		if(!this.visible) {
 			this.load();
-			CDQueueController.instance().beginSheet(this.window());
+			this.windowController.beginSheet(this.window());
 			this.statusIndicator.startAnimation(null);
 			this.visible = true;
 		}
-		this.workset.add(p);
+		this.promptList.add(p);
+		this.workList.add(p);
 	}
 	
 	protected void adjustFilename(Path path) {
@@ -310,44 +315,42 @@ public abstract class CDValidatorController extends AbstractValidator implements
 
 	protected void reloadTable() {
 		this.fileTableView.reloadData();
-		this.infoLabel.setStringValue(this.workset.size()+" "+NSBundle.localizedString("files", ""));
+		this.infoLabel.setStringValue(this.workList.size()+" "+NSBundle.localizedString("files", ""));
 	}
 
 	public void windowWillClose(NSNotification notification) {
 		instances.removeObject(this);
 	}
 
-	protected void fireDataChanged() {
-		this.reloadTable();
-	}
-
 	public void resumeActionFired(NSButton sender) {
-		for(Iterator i = this.workset.iterator(); i.hasNext();) {
+		for(Iterator i = this.workList.iterator(); i.hasNext();) {
 			((Path)i.next()).status.setResume(true);
 		}
+		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
 		this.setCanceled(false);
-		CDQueueController.instance().endSheet();
+		this.windowController.endSheet();
 	}
 
 	public void overwriteActionFired(NSButton sender) {
-		for(Iterator i = this.workset.iterator(); i.hasNext();) {
+		for(Iterator i = this.workList.iterator(); i.hasNext();) {
 			((Path)i.next()).status.setResume(false);
 		}
+		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
 		this.setCanceled(false);
-		CDQueueController.instance().endSheet();
+		this.windowController.endSheet();
 	}
 
 	public void skipActionFired(NSButton sender) {
-		this.workset.clear();
+		this.workList.clear();
 		this.setCanceled(false);
-		CDQueueController.instance().endSheet();
+		this.windowController.endSheet();
 	}
 
 	public void cancelActionFired(NSButton sender) {
-		this.validated.clear();
-		this.workset.clear();
+		this.validatedList.clear();
+		this.workList.clear();
 		this.setCanceled(true);
-		CDQueueController.instance().endSheet();
+		this.windowController.endSheet();
 	}
 
 	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
@@ -363,9 +366,13 @@ public abstract class CDValidatorController extends AbstractValidator implements
 	// NSTableView.DataSource
 	// ----------------------------------------------------------
 	
+	protected void fireDataChanged() {
+		this.reloadTable();
+	}
+		
 	public void tableViewSelectionDidChange(NSNotification notification) {
 		if(this.fileTableView.selectedRow() != -1) {
-			Path p = (Path)this.workset.get(this.fileTableView.selectedRow());
+			Path p = (Path)this.workList.get(this.fileTableView.selectedRow());
 			if(p != null) {
 				if(p.getLocal().exists()) {
 					this.localField.setAttributedStringValue(new NSAttributedString(p.getLocal().getAbsolute(),
@@ -394,7 +401,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 		if(row < this.numberOfRowsInTableView(tableView)) {
 			String identifier = (String)tableColumn.identifier();
-			Path p = (Path)this.workset.get(row);
+			Path p = (Path)this.workList.get(row);
 			if(p != null) {
 				if(identifier.equals("FILENAME")) {
 					return new NSAttributedString(p.getRemote().getName(),
@@ -414,10 +421,12 @@ public abstract class CDValidatorController extends AbstractValidator implements
 				if(identifier.equals("REMOTE")) {
 					if(p.getRemote().exists()) {
 						if(p.attributes.isFile()) {
-							return new NSAttributedString(Status.getSizeAsString(p.getSize())+", "+p.attributes.getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+							return new NSAttributedString(Status.getSizeAsString(p.getSize())+", "+p.attributes.getTimestampAsShortString(), 
+														  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 						}
 						if(p.attributes.isDirectory()) {
-							return new NSAttributedString(p.attributes.getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+							return new NSAttributedString(p.attributes.getTimestampAsShortString(), 
+														  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 						}
 					}
 					return null;
@@ -425,10 +434,12 @@ public abstract class CDValidatorController extends AbstractValidator implements
 				if(identifier.equals("LOCAL")) {
 					if(p.getLocal().exists()) {
 						if(p.attributes.isFile()) {
-							return new NSAttributedString(Status.getSizeAsString(p.getLocal().getSize())+", "+p.getLocal().getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+							return new NSAttributedString(Status.getSizeAsString(p.getLocal().getSize())+", "+p.getLocal().getTimestampAsShortString(), 
+														  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 						}
 						if(p.attributes.isDirectory()) {
-							return new NSAttributedString(p.getLocal().getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+							return new NSAttributedString(p.getLocal().getTimestampAsShortString(), 
+														  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 						}
 					}
 					return null;
@@ -455,6 +466,6 @@ public abstract class CDValidatorController extends AbstractValidator implements
 	}
 
 	public int numberOfRowsInTableView(NSTableView tableView) {
-		return this.workset.size();
+		return this.workList.size();
 	}
 }

@@ -236,8 +236,8 @@ public abstract class Queue extends Observable {
 			this.init();
 			this.validator.validate(this.queue);
 			if(!this.validator.isCanceled()) {
-				if(this.validator.getResult().size() > 0) {
-					this.jobs = this.validator.getResult();
+				if(this.validator.getValidated().size() > 0) {
+					this.jobs = this.validator.getValidated();
 					this.queue.reset();
 					for(Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
 						((Path)iter.next()).status.reset();

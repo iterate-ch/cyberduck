@@ -107,8 +107,6 @@ public class CDLoginController extends CDController implements LoginController {
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 	}
 
-//	private boolean tryAgain = false;
-
 	private Login login;
 	
 	public Login promptUser(Login login, final String message) {

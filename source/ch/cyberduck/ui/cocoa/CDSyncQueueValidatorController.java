@@ -37,7 +37,7 @@ import ch.cyberduck.core.ValidatorFactory;
  * @version $Id$
  */
 public class CDSyncQueueValidatorController extends CDValidatorController {
-	protected static Logger log = Logger.getLogger(CDSyncQueueValidatorController.class);
+	private static Logger log = Logger.getLogger(CDSyncQueueValidatorController.class);
 
 	static {
 		ValidatorFactory.addFactory(SyncQueue.class, new Factory());
@@ -45,12 +45,12 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
 	private static class Factory extends ValidatorFactory {
 		protected Validator create() {
-			return new CDSyncQueueValidatorController();
+			return new CDSyncQueueValidatorController(CDQueueController.instance());
 		}
 	}
 
-	private CDSyncQueueValidatorController() {
-		super();
+	private CDSyncQueueValidatorController(CDController windowController) {
+		super(windowController);
 	}
 
 	protected void load() {
@@ -117,12 +117,11 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		else {
 			//List the directory in the validation window that the user sees it will get created
 			p.setSize(0);
-			this.prompt(p);
 			if(!p.getRemote().exists()) {
 				p.getSession().cache().put(p.getAbsolute(), new ArrayList());
 			}
+			return true;
 		}
-		return false;
 	}
 	
 	protected boolean isExisting(Path p) {
@@ -136,10 +135,10 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
 	public void mirrorCellClicked(Object sender) {
 		if(this.mirrorRadioCell.state() == NSCell.OnState) {
-			this.validated = new ArrayList();
-			for(Iterator i = this.workset.iterator(); i.hasNext();) {
+			this.workList = new ArrayList();
+			for(Iterator i = this.promptList.iterator(); i.hasNext();) {
 				Path p = (Path)i.next();
-				this.validated.add(p);
+				this.workList.add(p);
 			}
 			this.reloadTable();
 		}
@@ -147,11 +146,11 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
 	public void downloadCellClicked(Object sender) {
 		if(this.downloadRadioCell.state() == NSCell.OnState) {
-			this.validated = new ArrayList();
-			for(Iterator i = this.workset.iterator(); i.hasNext();) {
+			this.workList = new ArrayList();
+			for(Iterator i = this.promptList.iterator(); i.hasNext();) {
 				Path p = (Path)i.next();
 				if(p.getRemote().exists()) {
-					this.validated.add(p);
+					this.workList.add(p);
 				}
 			}
 			this.reloadTable();
@@ -160,30 +159,15 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
 	public void uploadCellClicked(Object sender) {
 		if(this.uploadRadioCell.state() == NSCell.OnState) {
-			this.validated = new ArrayList();
-			for(Iterator i = this.workset.iterator(); i.hasNext();) {
+			this.workList = new ArrayList();
+			for(Iterator i = this.promptList.iterator(); i.hasNext();) {
 				Path p = (Path)i.next();
 				if(p.getLocal().exists()) {
-					this.validated.add(p);
+					this.workList.add(p);
 				}
 			}
 			this.reloadTable();
 		}
-	}
-
-	protected void reloadTable() {
-		this.fileTableView.reloadData();
-		this.infoLabel.setStringValue(this.validated.size()+" "+NSBundle.localizedString("files", ""));
-	}
-	
-	protected void fireDataChanged() {
-		this.mirrorCellClicked(null);
-		this.downloadCellClicked(null);
-		this.uploadCellClicked(null);
-	}
-
-	public List getResult() {
-		return this.validated;
 	}
 
 	// ----------------------------------------------------------
@@ -218,26 +202,29 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	}
 
 	public void syncActionFired(NSButton sender) {
+		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
 		this.setCanceled(false);
-		CDQueueController.instance().endSheet();
+		this.windowController.endSheet();
 	}
 	
 	// ----------------------------------------------------------
 	// NSTableView.DataSource
 	// ----------------------------------------------------------
 	
+	protected void fireDataChanged() {
+		this.mirrorCellClicked(null);
+		this.downloadCellClicked(null);
+		this.uploadCellClicked(null);
+	}
+		
 	private static final NSImage ARROW_UP_ICON = NSImage.imageNamed("arrowUp16.tiff");
 	private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDown16.tiff");
 	private static final NSImage PLUS_ICON = NSImage.imageNamed("plus.tiff");
 
-	public int numberOfRowsInTableView(NSTableView tableView) {
-		return this.validated.size();
-	}
-	
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 		if(row < this.numberOfRowsInTableView(tableView)) {
 			String identifier = (String)tableColumn.identifier();
-			Path p = (Path)this.validated.get(row);
+			Path p = (Path)this.workList.get(row);
 			if(p != null) {
 				if(identifier.equals("TYPE")) {
 					if(p.getRemote().exists() && p.getLocal().exists()) {

@@ -27,7 +27,7 @@ public interface Validator {
 
 	public void validate(Queue q);
 	
-	public List getResult();
+	public List getValidated();
 	
 	public boolean isCanceled();
 }

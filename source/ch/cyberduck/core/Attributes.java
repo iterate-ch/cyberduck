@@ -21,6 +21,8 @@ package ch.cyberduck.core;
 import java.util.Date;
 import java.util.Observable;
 
+import org.apache.log4j.Logger;
+
 import com.apple.cocoa.foundation.*;
 
 /**
@@ -29,6 +31,8 @@ import com.apple.cocoa.foundation.*;
  * @version $Id$
  */
 public class Attributes extends Observable {
+	private static Logger log = Logger.getLogger(Attributes.class);
+
 	private Date modified = null;
 	private String owner = "Unknown";
 	private String group = "Unknown";
@@ -56,7 +60,7 @@ public class Attributes extends Observable {
 	 * Set the modfication returned by ftp directory listings
 	 */
 	public void setTimestamp(long m) {
-		this.modified = new Date(m);
+		this.setTimestamp(new Date(m));
 	}
 
 	public void setTimestamp(Date d) {

@@ -26,6 +26,10 @@ import java.util.List;
  */
 public abstract class AbstractValidator implements Validator {
 
+	protected List validatedList = new ArrayList();
+	protected List workList = new ArrayList();
+	protected List promptList = new ArrayList();
+		
 	/**
 	 * The user canceled this request, no further validation should be taken
 	 */
@@ -40,9 +44,6 @@ public abstract class AbstractValidator implements Validator {
 	}
 
 	protected abstract boolean isExisting(Path p);
-
-	protected List validated = new ArrayList();
-	protected List workset = new ArrayList();
 
 	protected abstract void prompt(Path p);
 
@@ -64,5 +65,9 @@ public abstract class AbstractValidator implements Validator {
 
 	protected abstract boolean validateDirectory(Path path);
 
+	public List getValidated() {
+		return this.validatedList;
+	}
+		
 	protected abstract void adjustFilename(Path path);
 }

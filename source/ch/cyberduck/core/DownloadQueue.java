@@ -34,17 +34,17 @@ public class DownloadQueue extends Queue {
 		return dict;
 	}
 
-	protected List getChilds(List list, Path p) {
-		list.add(p);
+	protected List getChilds(List childs, Path p) {
+		childs.add(p);
 		if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
 			p.setSize(0);
 			for(Iterator i = p.list(false, true).iterator(); i.hasNext();) {
 				Path child = (Path)i.next();
 				child.setLocal(new Local(p.getLocal(), child.getName()));
-				this.getChilds(list, child);
+				this.getChilds(childs, child);
 			}
 		}
-		return list;
+		return childs;
 	}
 
 	protected void reset() {

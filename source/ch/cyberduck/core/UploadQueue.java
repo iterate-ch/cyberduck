@@ -68,8 +68,8 @@ public class UploadQueue extends Queue {
 	}
 	
 	protected List getChilds(List childs, Path p) {
+		childs.add(p);
 		if(p.attributes.isDirectory()) {
-			childs.add(p);
 			File[] files = p.getLocal().listFiles();
 			for(int i = 0; i < files.length; i++) {
 				Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
@@ -78,9 +78,6 @@ public class UploadQueue extends Queue {
 					this.getChilds(childs, child);
 				}
 			}
-		}
-		if(p.attributes.isFile()) {
-			childs.add(p);
 		}
 		return childs;
 	}

@@ -31,7 +31,7 @@ import ch.cyberduck.core.*;
  * @version $Id$
  */
 public class CDDownloadQueueValidatorController extends CDValidatorController {
-	protected static Logger log = Logger.getLogger(CDDownloadQueueValidatorController.class);
+	private static Logger log = Logger.getLogger(CDDownloadQueueValidatorController.class);
 
 	static {
 		ValidatorFactory.addFactory(DownloadQueue.class, new Factory());
@@ -39,12 +39,12 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
 
 	private static class Factory extends ValidatorFactory {
 		protected Validator create() {
-			return new CDDownloadQueueValidatorController();
+			return new CDDownloadQueueValidatorController(CDQueueController.instance());
 		}
 	}
 
-	private CDDownloadQueueValidatorController() {
-		super();
+	private CDDownloadQueueValidatorController(CDController windowController) {
+		super(windowController);
 	}
 
 	protected void load() {
@@ -56,8 +56,8 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
 
 	public List getResult() {
 		List result = new ArrayList();
-		result.addAll(this.validated);
-		result.addAll(this.workset);
+		result.addAll(this.validatedList);
+		result.addAll(this.workList);
 		return result;
 	}
 

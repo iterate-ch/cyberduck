@@ -26,6 +26,8 @@ usage() {
 init() {
     echo "Extracting strings from Java source files (genstrings)..."
     genstrings -j -q -o English.lproj source/ch/cyberduck/ui/cocoa/*.java
+    echo "Extracting strings from Obj-C source files (genstrings)..."
+    genstrings -a -q -o English.lproj source/ch/cyberduck/ui/cocoa/**/*.m
 }
 
 update() {
