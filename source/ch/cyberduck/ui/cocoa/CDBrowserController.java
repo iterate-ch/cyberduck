@@ -709,7 +709,7 @@ public class CDBrowserController extends NSObject implements Observer {
         NSApplication.sharedApplication().beginSheet(controller.window(), //sheet
                 this.window(), //docwindow
                 controller, //modal delegate
-                new NSSelector("newfolderSheetDidEnd",
+                new NSSelector("newFolderSheetDidEnd",
                         new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
                 pathController.workdir()); //contextInfo
     }

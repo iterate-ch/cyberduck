@@ -91,8 +91,8 @@ public class CDFolderController extends NSObject {
         NSApplication.sharedApplication().endSheet(this.window, ((NSButton)sender).tag());
     }
 
-    public void newfolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-        log.debug("newfolderSheetDidEnd");
+    public void newFolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
+        log.debug("newFolderSheetDidEnd");
         sheet.orderOut(null);
         switch (returncode) {
             case (NSAlertPanel.DefaultReturn):
