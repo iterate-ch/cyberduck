@@ -20,6 +20,8 @@
 - [Feature] Copy the URL of a remote site
 - [Bugfix] Use date formatting rules set in the System Preferences
 - [Featuer] Preference item to set the action when double-clicking files (Download or edit)
+- [Bugfix] Remembering the position of the browser window
+- [Bugfix] Compatibility with servers not supporting the SIZE command (FTP)
 
 2.3.1
 - [Feature] Chinese (Simplified) Localization

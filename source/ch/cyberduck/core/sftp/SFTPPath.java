@@ -322,10 +322,13 @@ public class SFTPPath extends Path {
 					}
 				}
 				this.download(in, out);
-				if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-					Permission perm = this.attributes.getPermission();
-					if (!perm.isUndefined()) {
-						this.getLocal().setPermission(perm);
+				if (this.status.isComplete()) {
+					log.info("Updating permissions");
+					if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
+						Permission perm = this.attributes.getPermission();
+						if (!perm.isUndefined()) {
+							this.getLocal().setPermission(perm);
+						}
 					}
 				}
 				if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {

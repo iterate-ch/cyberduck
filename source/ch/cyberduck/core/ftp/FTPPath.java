@@ -285,10 +285,13 @@ public class FTPPath extends Path {
 				else {
 					throw new FTPException("Transfer type not set");
 				}
-				if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-					Permission perm = this.attributes.getPermission();
-					if (!perm.isUndefined()) {
-						this.getLocal().setPermission(perm);
+				if (this.status.isComplete()) {
+					log.info("Updating permissions");
+					if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
+						Permission perm = this.attributes.getPermission();
+						if (!perm.isUndefined()) {
+							this.getLocal().setPermission(perm);
+						}
 					}
 				}
 				if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
@@ -310,7 +313,10 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
-            this.status.setSize(session.FTP.size(this.getAbsolute()));
+			long size = session.FTP.size(this.getAbsolute());
+			if(size != -1) {
+				this.status.setSize(size);
+			}
             if (this.status.isResume()) {
                 this.status.setCurrent(this.getLocal().getTemp().length());
             }
@@ -334,7 +340,7 @@ public class FTPPath extends Path {
                 }
                 session.FTP.validateTransfer();
             }
-            if (status.isCanceled()) {
+            if (this.status.isCanceled()) {
                 if (in != null) {
                     in.close();
                     in = null;
@@ -380,7 +386,10 @@ public class FTPPath extends Path {
         }
         try {
             session.FTP.setTransferType(FTPTransferType.ASCII);
-            this.status.setSize(session.FTP.size(this.getAbsolute()));
+			long size = session.FTP.size(this.getAbsolute());
+			if(size != -1) {
+				this.status.setSize(size);
+			}
             if (this.status.isResume()) {
                 this.status.setCurrent(this.getLocal().getTemp().length());
             }
@@ -408,7 +417,7 @@ public class FTPPath extends Path {
                 }
                 session.FTP.validateTransfer();
             }
-            if (status.isCanceled()) {
+            if (this.status.isCanceled()) {
                 if (in != null) {
                     in.close();
                     in = null;

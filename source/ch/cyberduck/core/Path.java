@@ -44,7 +44,6 @@ public abstract class Path {
     public static final int FILE_TYPE = 1;
     public static final int DIRECTORY_TYPE = 2;
     public static final int SYMBOLIC_LINK_TYPE = 4;
-//  public static final int UNKNOWN_TYPE = 3;
 
     public static final String HOME = "~";
 

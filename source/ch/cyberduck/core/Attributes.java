@@ -51,12 +51,17 @@ public class Attributes extends Observable {
         if (typeObj != null) {
             this.type = Integer.parseInt((String)typeObj);
         }
+        Object permObj = dict.objectForKey("Permission");
+        if (permObj != null) {
+            this.permission = new Permission((NSDictionary)permObj);
+        }
     }
 
     public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
-        dict.setObjectForKey(this.type + "", "Type");
-        return dict;
+        dict.setObjectForKey(this.type+"", "Type");
+		dict.setObjectForKey(this.permission.getAsDictionary(), "Permission");
+		return dict;
     }
 
     /**
@@ -111,10 +116,6 @@ public class Attributes extends Observable {
         return (this.type & Path.SYMBOLIC_LINK_TYPE) == (Path.SYMBOLIC_LINK_TYPE);
     }
 	
-//    public boolean isUnknown() {
-//  	return (this.type & Path.UNKNOWN_TYPE) == (Path.UNKNOWN_TYPE);
-//    }
-
     public void setOwner(String o) {
         this.owner = o;
     }

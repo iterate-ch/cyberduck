@@ -36,10 +36,6 @@ public class LoginTest extends TestCase {
 									"dkocher", 
 									"changeme");
 			assertTrue(login.hasReasonableValues());
-			//		login.setUsername(null);
-			//		assertFalse(login.hasReasonableValues());
-			//		login.setPassword(null);
-			//		assertFalse(login.hasReasonableValues());
 		}
 		catch(java.lang.UnsatisfiedLinkError e) {}
 	}
@@ -47,8 +43,8 @@ public class LoginTest extends TestCase {
 	public void testLoginWithoutUsername() {
 		try {
 			Login login = new Login("example.net",
-									null, //login should insert default username
-									"changeme");
+									null,
+									Preferences.instance().getProperty("ftp.anonymous.pass"));
 			assertTrue(login.hasReasonableValues());
 		}
 		catch(java.lang.UnsatisfiedLinkError e) {}
