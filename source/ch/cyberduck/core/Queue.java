@@ -25,6 +25,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 
+import ch.cyberduck.ui.cocoa.CDQueueController;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -35,7 +37,7 @@ import org.apache.log4j.Logger;
  *
  * @version $Id$
  */
-public class Queue extends Observable implements Observer { //Thread {
+public class Queue implements Observer { //Thread {
     private static Logger log = Logger.getLogger(Queue.class);
 
     /**
@@ -176,24 +178,27 @@ public class Queue extends Observable implements Observer { //Thread {
         return this.kind;
     }
 
-    public void callObservers(Object arg) {
-        this.setChanged();
-        this.notifyObservers(arg);
-    }
+//    public void callObservers(Object arg) {
+//        this.setChanged();
+//        this.notifyObservers(arg);
+//    }
 
     public void update(Observable o, Object arg) {
         if (arg instanceof Message) {
             Message msg = (Message)arg;
             if (msg.getTitle().equals(Message.DATA)) {
-                this.callObservers(arg);
+				CDQueueController.instance().update(this, arg);
+//                this.callObservers(arg);
             }
             else if (msg.getTitle().equals(Message.PROGRESS)) {
                 this.status = (String)msg.getContent();
-                this.callObservers(arg);
+				CDQueueController.instance().update(this, arg);
+//                this.callObservers(arg);
             }
             else if (msg.getTitle().equals(Message.ERROR)) {
-                this.error = " : " + (String)msg.getContent();
-                this.callObservers(arg);
+                this.error = " : "+(String)msg.getContent();
+				CDQueueController.instance().update(this, arg);
+//                this.callObservers(arg);
             }
         }
     }
@@ -202,9 +207,9 @@ public class Queue extends Observable implements Observer { //Thread {
      * Process the queue. All files will be downloaded or uploaded rerspectively.
      *
      * @param validator A callback class where the user can decide what to do if
-     *                  the file already exists at the download location
+     * the file already exists at the download location
      */
-    public synchronized void start(final Validator validator, final Observer observer) {
+    public synchronized void start(final Validator validator) {
         log.debug("start");
         this.error = "";
         this.jobs.clear();
@@ -212,12 +217,13 @@ public class Queue extends Observable implements Observer { //Thread {
             public void run() {
                 int mypool = NSAutoreleasePool.push();
 
-                Queue.this.addObserver(observer);
+//                Queue.this.addObserver(observer);
 
                 Queue.this.elapsedTimer.start();
                 Queue.this.running = true;
                 Queue.this.canceled = false;
-                Queue.this.callObservers(new Message(Message.QUEUE_START, Queue.this));
+				CDQueueController.instance().update(Queue.this, new Message(Message.QUEUE_START));
+//                Queue.this.callObservers(new Message(Message.QUEUE_START, Queue.this));
 
                 Queue.this.getRoot().getSession().addObserver(Queue.this);
                 Queue.this.getRoot().getSession().cache().clear();
@@ -266,9 +272,10 @@ public class Queue extends Observable implements Observer { //Thread {
 
                 Queue.this.running = false;
                 Queue.this.elapsedTimer.stop();
-                Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
+				CDQueueController.instance().update(Queue.this, new Message(Message.QUEUE_STOP));
+//                Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
 
-                Queue.this.deleteObserver(observer);
+//                Queue.this.deleteObserver(observer);
 
                 NSAutoreleasePool.pop(mypool);
             }
@@ -472,7 +479,8 @@ public class Queue extends Observable implements Observer { //Thread {
                                 calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), seconds);
                             }
                         }
-                        Queue.this.callObservers(new Message(Message.PROGRESS));
+						CDQueueController.instance().update(Queue.this, new Message(Message.PROGRESS));
+//                        Queue.this.callObservers(new Message(Message.PROGRESS));
                     }
                 });
 

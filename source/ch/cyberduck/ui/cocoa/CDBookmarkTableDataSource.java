@@ -160,7 +160,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			NSEvent event = NSApplication.sharedApplication().currentEvent();
 			NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
 			NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
-			tableView.dragPromisedFilesOfTypes(new NSArray("duck"), imageRect, this, false, event);
+			tableView.dragPromisedFilesOfTypes(new NSArray("duck"), imageRect, this, true, event);
         }
         // we return false because we don't want the table to draw the drag image
         return false;

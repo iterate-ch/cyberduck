@@ -106,10 +106,10 @@ public class CDValidatorController extends Validator {
                 public void run() {
                     resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
 					Path remote = path;
-					List cache = path.getParent().cache();
-					int i = cache.indexOf(path);
+					List list = path.getParent().list(); //List cache = path.getParent().cache();
+					int i = list.indexOf(path);
 					if(i != -1) {
-						remote = (Path)cache.get(i);
+						remote = (Path)list.get(i);
 					}
                     String alertText =
                             NSBundle.localizedString("Local", "") + ":\n"
@@ -127,13 +127,13 @@ public class CDValidatorController extends Validator {
                     img.setSize(new NSSize(64f, 64f));
                     iconView.setImage(img);
                     CDQueueController.instance().window().makeKeyAndOrderFront(null);
-                    NSApplication.sharedApplication().beginSheet(window(), //sheet
+                    NSApplication.sharedApplication().beginSheet(window, //sheet
                             CDQueueController.instance().window(),
                             CDValidatorController.this, //modalDelegate
                             new NSSelector("validateSheetDidEnd",
                                     new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
                             path); //contextInfo
-                    window().makeKeyAndOrderFront(null);
+                    window.makeKeyAndOrderFront(null);
                 }
             });
         }

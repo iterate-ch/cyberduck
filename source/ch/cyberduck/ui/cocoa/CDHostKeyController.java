@@ -59,6 +59,11 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 
     public void onHostKeyMismatch(final String host, final SshPublicKey allowedHostKey, final SshPublicKey actualHostKey) {
         log.debug("onHostKeyMismatch");
+		if(null == parentWindow || null == parentWindow.getDelegate()) {
+			log.error("Parent window or its delegate is null; cannot begin sheet!");
+			this.allowHost(host, publicKey, false);
+			return;
+		}
         this.host = host;
         this.publicKey = actualHostKey;
         ThreadUtilities.instance().invokeLater(new Runnable() {
@@ -99,6 +104,11 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
         log.debug("onUnknownHost");
         this.host = host;
         this.publicKey = publicKey;
+		if(null == parentWindow || null == parentWindow.getDelegate()) {
+			log.error("Parent window or its delegate is null; cannot begin sheet!");
+			this.allowHost(host, publicKey, false);
+			return;
+		}
         ThreadUtilities.instance().invokeLater(new Runnable() {
             public void run() {
                 NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Unknown host key for", "") + " " + host, //title
@@ -134,7 +144,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
         sheet.orderOut(null);
         try {
             if (returncode == NSAlertPanel.DefaultReturn) {
-                allowHost(host, publicKey, false);
+                this.allowHost(host, publicKey, false);
             }
             if (returncode == NSAlertPanel.AlternateReturn) {
                 NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Invalid host key", ""), //title
@@ -151,7 +161,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
                 log.info("Cannot continue without a valid host key");
             }
             if (returncode == NSAlertPanel.OtherReturn) {
-                allowHost(host, publicKey, true); // always allow host
+                this.allowHost(host, publicKey, true); // always allow host
             }
             done = true;
         }
@@ -165,7 +175,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
         sheet.orderOut(null);
         try {
             if (returncode == NSAlertPanel.DefaultReturn) {
-                allowHost(host, publicKey, false); // allow host
+                this.allowHost(host, publicKey, false); // allow host
             }
             if (returncode == NSAlertPanel.AlternateReturn) {
                 NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Invalid host key", ""), //title
@@ -182,7 +192,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
                 log.info("Cannot continue without a valid host key");
             }
             if (returncode == NSAlertPanel.OtherReturn) {
-                allowHost(host, publicKey, true); // always allow host
+                this.allowHost(host, publicKey, true); // always allow host
             }
             done = true;
         }

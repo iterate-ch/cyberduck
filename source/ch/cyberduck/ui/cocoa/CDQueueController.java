@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
 
-public class CDQueueController extends NSObject implements Observer {
+public class CDQueueController extends NSObject {
     private static Logger log = Logger.getLogger(CDQueueController.class);
 
     private static CDQueueController instance;
@@ -43,8 +43,11 @@ public class CDQueueController extends NSObject implements Observer {
 
     private NSToolbar toolbar;
 	
+    private CDQueueController() {
+        instances.addObject(this);
+    }
+
     public static CDQueueController instance() {
-        log.debug("instance");
         if (null == instance) {
             instance = new CDQueueController();
             if (false == NSApplication.loadNibNamed("Queue", instance)) {
@@ -53,12 +56,7 @@ public class CDQueueController extends NSObject implements Observer {
         }
         return instance;
     }
-
-    private CDQueueController() {
-        instances.addObject(this);
-    }
-
-
+	
 	/*
 	 public int checkForRunningTransfers() {
 		Iterator iter = CDQueueList.instance().iterator();
@@ -82,7 +80,6 @@ public class CDQueueController extends NSObject implements Observer {
 		}
 		return NSApplication.TerminateNow;
 	}
-	 */
 	
 	public void checkForRunningTransfersSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
@@ -94,6 +91,8 @@ public class CDQueueController extends NSObject implements Observer {
 			NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
 		}
 	}
+	 */
+
 	
     public boolean windowShouldClose(NSWindow sender) {
         log.debug("windowShouldClose" + sender);
@@ -102,9 +101,9 @@ public class CDQueueController extends NSObject implements Observer {
 
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose:" + notification);
-//        QueueList.instance().save();
-        instances.removeObject(this);
-        instance = null;
+		//@todo this controller may still be the observer of a queue item
+		instances.removeObject(this);
+		instance = null;
     }
 
     private NSWindow window; // IBOutlet
@@ -196,6 +195,7 @@ public class CDQueueController extends NSObject implements Observer {
             this.window().makeKeyAndOrderFront(null);
         }
 
+		//@todo reference to this.window() may become invalid
         queue.getRoot().getHost().getLogin().setController(new CDLoginController(this.window()));
         if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
             try {
@@ -217,17 +217,17 @@ public class CDQueueController extends NSObject implements Observer {
                 );
             }
         }
-        queue.start(new CDValidatorController(queue.kind(), resumeRequested), this);
+        queue.start(new CDValidatorController(queue.kind(), resumeRequested));
     }
 
-    public void update(Observable observable, Object arg) {
+    public void update(Queue observable, Object arg) {
 //		log.debug("update:"+observable+","+arg);
         if (arg instanceof Message) {
             Message msg = (Message)arg;
             if (msg.getTitle().equals(Message.PROGRESS) || msg.getTitle().equals(Message.ERROR)) {
                 if (this.window().isVisible()) {
                     if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
-                        int row = QueueList.instance().indexOf((Queue)observable);
+                        int row = QueueList.instance().indexOf(observable);
                         NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
                         this.queueTable.setNeedsDisplay(queueRect);
                     }
@@ -236,7 +236,7 @@ public class CDQueueController extends NSObject implements Observer {
             else if (msg.getTitle().equals(Message.DATA)) {
                 if (this.window().isVisible()) {
                     if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
-                        int row = QueueList.instance().indexOf((Queue)observable);
+                        int row = QueueList.instance().indexOf(observable);
                         NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
                         this.queueTable.setNeedsDisplay(progressRect);
                     }
@@ -259,7 +259,7 @@ public class CDQueueController extends NSObject implements Observer {
                     if (Queue.KIND_UPLOAD == queue.kind()) {
                         if (callback != null) {
                             log.debug("Telling observable to refresh directory listing");
-                            callback.update(observable, new Message(Message.REFRESH));
+                            callback.update(null, new Message(Message.REFRESH));
                         }
                     }
                     if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {

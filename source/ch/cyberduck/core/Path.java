@@ -235,7 +235,7 @@ public abstract class Path {
         if (this.isRoot()) {
             return true;
         }
-		return /*this.getParent().exists() &&*/ this.getParent().list(false, true).contains(this);
+		return this.getParent().list(false, true).contains(this);
     }
 
     public boolean isFile() {
