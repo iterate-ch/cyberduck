@@ -286,7 +286,7 @@
     <option name="HIDE_WARNINGS" value="false" />
   </component>
   <component name="FileEditorManager" split-orientation="horizontal" split-proportion="0.5">
-    <first-group selected-file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser/NTFTPEntryParser.java">
+    <first-group selected-file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Queue.java">
       <entry file="file://$PROJECT_DIR$/Changelog.txt" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
           <state line="5" column="5" selection-start="175" selection-end="175" vertical-scroll-proportion="0.07782101">
@@ -294,45 +294,38 @@
           </state>
         </provider>
       </entry>
-      <entry file="file://$PROJECT_DIR$/Credits.html" pinned="false">
-        <provider selected="true" editor-type-id="text-editor">
-          <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-            <folding />
-          </state>
-        </provider>
-      </entry>
       <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Attributes.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="43" column="16" selection-start="1406" selection-end="1406" vertical-scroll-proportion="0.15776081">
+          <state line="43" column="16" selection-start="1406" selection-end="1406" vertical-scroll-proportion="0.1608301">
             <folding>
-              <marker date="1077463285000" expanded="true" signature="2148:2173" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="2605:2629" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="3132:3157" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="3082:3104" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="2653:2677" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="2176:2231" placeholder="/**...*/" />
-              <marker date="1077463285000" expanded="true" signature="2710:2768" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="2076:2111" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="3191:3213" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="2477:2504" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="2541:2571" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="1776:1970" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="937:1063" placeholder="/**...*/" />
-              <marker date="1077463285000" expanded="true" signature="1974:2041" placeholder="/**...*/" />
-              <marker date="1077463285000" expanded="true" signature="1394:1409" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="2796:2849" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="2406:2434" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="2270:2376" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="1449:1732" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="2888:2950" placeholder="{...}" />
-              <marker date="1077463285000" expanded="true" signature="3241:3266" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="2148:2173" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="2605:2629" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="3132:3157" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="3082:3104" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="2653:2677" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="2176:2231" placeholder="/**...*/" />
+              <marker date="1077465023000" expanded="true" signature="2710:2768" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="2076:2111" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="3191:3213" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="2477:2504" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="2541:2571" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="1776:1970" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="937:1063" placeholder="/**...*/" />
+              <marker date="1077465023000" expanded="true" signature="1974:2041" placeholder="/**...*/" />
+              <marker date="1077465023000" expanded="true" signature="1394:1409" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="2796:2849" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="2406:2434" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="2270:2376" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="1449:1732" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="2888:2950" placeholder="{...}" />
+              <marker date="1077465023000" expanded="true" signature="3241:3266" placeholder="{...}" />
             </folding>
           </state>
         </provider>
       </entry>
       <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Bookmarks.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="31" column="22" selection-start="1061" selection-end="1061" vertical-scroll-proportion="0.33333334">
+          <state line="31" column="22" selection-start="1061" selection-end="1061" vertical-scroll-proportion="0.33981842">
             <folding />
           </state>
         </provider>
@@ -346,14 +339,14 @@
       </entry>
       <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/History.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="18" column="3" selection-start="716" selection-end="716" vertical-scroll-proportion="0.27480915">
+          <state line="18" column="3" selection-start="716" selection-end="716" vertical-scroll-proportion="0.28015563">
             <folding />
           </state>
         </provider>
       </entry>
       <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/DefaultFTPFileListParser.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="79" column="19" selection-start="3692" selection-end="3692" vertical-scroll-proportion="0.8167939">
+          <state line="79" column="19" selection-start="3692" selection-end="3692" vertical-scroll-proportion="0.8326848">
             <folding />
           </state>
         </provider>
@@ -367,7 +360,21 @@
       </entry>
       <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser/NTFTPEntryParser.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="9" column="69" selection-start="389" selection-end="1169" vertical-scroll-proportion="0.13740458">
+          <state line="9" column="69" selection-start="389" selection-end="1169" vertical-scroll-proportion="0.14007781">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Queues.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="30" column="22" selection-start="958" selection-end="958" vertical-scroll-proportion="0.33981842">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Queue.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="130" column="23" selection-start="3810" selection-end="3810" vertical-scroll-proportion="0.58236057">
             <folding />
           </state>
         </provider>
@@ -541,17 +548,17 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1050" y="234" width="1280" height="960" extended-state="0" />
-    <editor active="true" />
+    <frame x="0" y="22" width="1280" height="960" extended-state="6" />
+    <editor active="false" />
     <layout>
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="7" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.28003246" order="0" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.20779221" order="0" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.3298611" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="sliding" type="sliding" visible="false" weight="0.33" order="8" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
+      <window_info id="Ant Build" active="true" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.25" order="1" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
       <window_info id="CVS File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
@@ -631,6 +638,12 @@
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
     <option name="FILTER_TARGETS" value="false" />
+    <buildFile url="file://$PROJECT_DIR$/build.xml">
+      <runInBackground value="false" />
+      <viewClosedWhenNoErrors value="false" />
+      <treeView value="true" />
+      <verbose value="true" />
+    </buildFile>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Credits.html">
@@ -649,43 +662,43 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Attributes.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="16" selection-start="1406" selection-end="1406" vertical-scroll-proportion="0.15776081">
+        <state line="43" column="16" selection-start="1406" selection-end="1406" vertical-scroll-proportion="0.1608301">
           <folding>
-            <marker date="1077463285000" expanded="true" signature="2148:2173" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="2605:2629" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="3132:3157" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="3082:3104" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="2653:2677" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="2176:2231" placeholder="/**...*/" />
-            <marker date="1077463285000" expanded="true" signature="2710:2768" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="2076:2111" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="3191:3213" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="2477:2504" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="2541:2571" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="1776:1970" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="937:1063" placeholder="/**...*/" />
-            <marker date="1077463285000" expanded="true" signature="1974:2041" placeholder="/**...*/" />
-            <marker date="1077463285000" expanded="true" signature="1394:1409" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="2796:2849" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="2406:2434" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="2270:2376" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="1449:1732" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="2888:2950" placeholder="{...}" />
-            <marker date="1077463285000" expanded="true" signature="3241:3266" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="2148:2173" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="2605:2629" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="3132:3157" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="3082:3104" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="2653:2677" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="2176:2231" placeholder="/**...*/" />
+            <marker date="1077465023000" expanded="true" signature="2710:2768" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="2076:2111" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="3191:3213" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="2477:2504" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="2541:2571" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="1776:1970" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="937:1063" placeholder="/**...*/" />
+            <marker date="1077465023000" expanded="true" signature="1974:2041" placeholder="/**...*/" />
+            <marker date="1077465023000" expanded="true" signature="1394:1409" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="2796:2849" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="2406:2434" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="2270:2376" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="1449:1732" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="2888:2950" placeholder="{...}" />
+            <marker date="1077465023000" expanded="true" signature="3241:3266" placeholder="{...}" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Bookmarks.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="22" selection-start="1061" selection-end="1061" vertical-scroll-proportion="0.33333334">
+        <state line="31" column="22" selection-start="1061" selection-end="1061" vertical-scroll-proportion="0.33981842">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/History.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="3" selection-start="716" selection-end="716" vertical-scroll-proportion="0.27480915">
+        <state line="18" column="3" selection-start="716" selection-end="716" vertical-scroll-proportion="0.28015563">
           <folding />
         </state>
       </provider>
@@ -699,14 +712,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/DefaultFTPFileListParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="79" column="19" selection-start="3692" selection-end="3692" vertical-scroll-proportion="0.8167939">
+        <state line="79" column="19" selection-start="3692" selection-end="3692" vertical-scroll-proportion="0.8326848">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser/NTFTPEntryParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="69" selection-start="389" selection-end="1169" vertical-scroll-proportion="0.13740458">
+        <state line="9" column="69" selection-start="389" selection-end="1169" vertical-scroll-proportion="0.14007781">
           <folding />
         </state>
       </provider>
@@ -714,6 +727,20 @@
     <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser/FTPFileEntryParserFactory.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="60" column="17" selection-start="2848" selection-end="2848" vertical-scroll-proportion="0.66412216">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Queue.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="130" column="23" selection-start="3810" selection-end="3810" vertical-scroll-proportion="0.58236057">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Queues.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="22" selection-start="958" selection-end="958" vertical-scroll-proportion="0.33981842">
           <folding />
         </state>
       </provider>

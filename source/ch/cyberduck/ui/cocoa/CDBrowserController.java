@@ -48,6 +48,15 @@ public class CDBrowserController implements Observer {
         return this.window;
     }
 
+	public static CDBrowserController controllerForWindow(NSWindow window) {
+        Object delegate = window.delegate();
+        if (delegate != null && delegate instanceof CDBrowserController) {
+            return (CDBrowserController) delegate;
+        } else {
+            return null;
+        }
+    }
+	
     private NSTextView logView;
 //	private CDTranscriptImpl transcriptView;
 

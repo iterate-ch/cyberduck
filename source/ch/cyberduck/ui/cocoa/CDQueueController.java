@@ -35,7 +35,7 @@ public class CDQueueController implements Observer, Validator {
     private static CDQueueController instance;
 
     /**
-     * The observer to notify when a upload is complete
+     * The observer to notify when an upload is complete
      */
     private Observer callback;
 
@@ -212,30 +212,9 @@ public class CDQueueController implements Observer, Validator {
                     }
                 }
             }
-            else if (msg.getTitle().equals(Message.START)) {
-                log.debug("************START***********");
-                this.toolbar.validateVisibleItems();
-            }
-            else if (msg.getTitle().equals(Message.STOP)) {
-                log.debug("************STOP***********");
-                this.toolbar.validateVisibleItems();
-            }
             else if (msg.getTitle().equals(Message.ERROR)) {
                 this.toolbar.validateVisibleItems();
             }
-//				NSAlertPanel.beginCriticalAlertSheet(
-//				    NSBundle.localizedString("Error", ""), //title
-//				    NSBundle.localizedString("OK", ""), // defaultbutton
-//				    null, //alternative button
-//				    null, //other button
-//				    this.window, //docWindow
-//				    null, //modalDelegate
-//				    null, //didEndSelector
-//				    null, // dismiss selector
-//				    null, // context
-//				    (String) msg.getContent() // message
-//				);
-//			}
         }
     }
 

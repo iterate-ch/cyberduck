@@ -223,7 +223,6 @@ public class CDMainController {
             case NSAlertPanel.AlternateReturn:
                 break;
         }
-        NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
     }
 
     public void preferencesMenuClicked(Object sender) {
@@ -292,23 +291,73 @@ public class CDMainController {
         if (Preferences.instance().getProperty("queue.openByDefault").equals("true")) {
             this.showTransferQueueClicked(null);
         }
+		int uses = Integer.parseInt(Preferences.instance().getProperty("uses"));
+        if (uses > 5 && Preferences.instance().getProperty("donate").equals("true")) {
+            if (false == NSApplication.loadNibNamed("Donate", this)) {
+                log.fatal("Couldn't load Donate.nib");
+            }
+			else {
+				this.donationSheet.setTitle(this.donationSheet.title()+" ("+uses+")");
+				this.donationSheet.center();
+				this.donationSheet.makeKeyAndOrderFront(null);
+			}
+        }
     }
 
-    public int applicationShouldTerminate(NSApplication app) {
+    public boolean applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
-//		NSArray windows = NSApplication.sharedApplication().windows();
-//		if(windows.count() > 0) {
-//			log.debug("Open windows:"+windows);
-//			java.util.Enumeration i = windows.objectEnumerator();
-//			while(i.hasMoreElements()) {
-//				NSWindow window = (NSWindow)i.nextElement();
-//				if(window.isVisible())
-//					window.performClose(null);
-//			}
-//			return NSApplication.TerminateLater;
-//		}
-        /*
+		
+		NSArray windows = app.windows();
+        int count = windows.count();
+        boolean needsConfirm = false;
+		
+        // Determine if there are any open connections
+        while (!needsConfirm && (0 != count--)) {
+            NSWindow window = (NSWindow) windows.objectAtIndex(count);
+            CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+            if (null != controller) {
+                if (controller.isConnected())
+                    needsConfirm = true;
+            }
+        }
+		
+        if(needsConfirm) {
+            int choice = NSAlertPanel.runAlert(
+											   NSBundle.localizedString("Quit", ""),
+											   NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
+											   NSBundle.localizedString("Review...", ""), //default
+											   NSBundle.localizedString("Quit Anyway", 
+																		""), //alternate
+											   NSBundle.localizedString("Cancel", 
+																		"Cancel")); //other
+			
+            if (choice == NSAlertPanel.OtherReturn) {
+                // Cancel
+                return false;
+            } 
+			else if (choice != NSAlertPanel.AlternateReturn) {
+                // Review unsaved; Quit Anyway falls through
+                count = windows.count();
+                while (0 != count--) {
+                    NSWindow window = (NSWindow) windows.objectAtIndex(count);
+                    CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+                    if (null != controller) {
+                        window.makeKeyAndOrderFront(null);
+                        if (false == controller.windowShouldClose(window))
+                            return false;
+                    }
+                }
+            }
+        }
+		
          // Writing version info
+		//this.saveVersionInfo();
+		
+        Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
+		return true;
+    }
+	
+	private void saveVersionInfo() {
         try {
             NSMutableArray list = new NSMutableArray();
             NSMutableDictionary dict = new NSMutableDictionary();
@@ -322,31 +371,17 @@ public class CDMainController {
                                                                                    errorString)
                                   );
             if (errorString[0] != null)
-                log.error("Problem writing bookmark file: " + errorString[0]);
-
+                log.error("Problem writing version file: " + errorString[0]);
+			
             if (collection.writeToURL(VERSION_FILE.toURL(), true))
-                log.info("Bookmarks sucessfully saved to :" + VERSION_FILE.toString());
+                log.info("Version file sucessfully saved to :" + VERSION_FILE.toString());
             else
-                log.error("Error saving Bookmarks to :" + VERSION_FILE.toString());
+                log.error("Error saving version file to :" + VERSION_FILE.toString());
         }
         catch (java.net.MalformedURLException e) {
             log.error(e.getMessage());
         }
-         */
-
-        Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
-
-        if (Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
-            if (false == NSApplication.loadNibNamed("Donate", this)) {
-                log.fatal("Couldn't load Donate.nib");
-                return NSApplication.TerminateNow;
-            }
-            this.donationSheet.center();
-            this.donationSheet.makeKeyAndOrderFront(null);
-            return NSApplication.TerminateLater;
-        }
-        return NSApplication.TerminateNow;
-    }
+	}
 
     public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
         return false;
