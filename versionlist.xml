@@ -17,7 +17,8 @@
 - A confirmation dialog is displayed before deleting a bookmark
 - A confirmation dialog is displayed when connecting to a new site in a browser still connected to another host
 - Transcript messages are only shown in the corresponding browser
-- Fixed a bug which caused the browser window to be 'frozen' after an upload 
+- Fixed a bug which caused the browser window to be 'frozen' after an upload
+- Option to adjust the 'LIST' command sent using FTP
 
 2.2b4
 - Fixed a bug that with some FTP servers the permissions could not be modified
