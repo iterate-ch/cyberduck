@@ -80,12 +80,12 @@ public class CDFolderController extends CDController {
 			//
 		}
 		else {
-			NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+			this.endSheet(this.window(), sender.tag());
 		}
 	}
 
 	public void cancelButtonClicked(NSButton sender) {
-		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+		this.endSheet(this.window(), sender.tag());
 	}
 
 	public void newFolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {

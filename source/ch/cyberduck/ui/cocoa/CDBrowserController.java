@@ -36,7 +36,9 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 public class CDBrowserController extends CDController implements Observer {
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
-    private static final File HISTORY_FOLDER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
+    private static final File HISTORY_FOLDER = new File(
+            NSPathUtilities.stringByExpandingTildeInPath(
+                    "~/Library/Application Support/Cyberduck/History"));
 
     static {
         HISTORY_FOLDER.mkdirs();
@@ -630,12 +632,15 @@ public class CDBrowserController extends CDController implements Observer {
                 this.statusLabel.setAttributedStringValue(new NSAttributedString((String) msg.getContent(),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                 this.statusLabel.display();
-                this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                NSApplication.sharedApplication().beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
                         (String) msg.getContent(), // message
                         NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
                         null, //alternative button
                         null //other button
-                ));
+                ),
+                this.window(),
+                        null,
+                null);
             }
             else if (msg.getTitle().equals(Message.PROGRESS)) {
                 this.statusLabel.setAttributedStringValue(new NSAttributedString((String) msg.getContent(),
@@ -1587,20 +1592,21 @@ public class CDBrowserController extends CDController implements Observer {
             }
         }
         if (files.size() > 0) {
-            this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Delete", "Alert sheet title"), //title
+            NSApplication.sharedApplication().beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Delete", "Alert sheet title"), //title
                     alertText.toString(),
                     NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
                     NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
                     null //other button
             ),
-                    this,
+                    this.window(),
+                    files,
                     new NSSelector
                             ("deleteSheetDidEnd",
                                     new Class[]
                                     {
                                         NSWindow.class, int.class, Object.class
-                                    }), // end selector
-                    files);
+                                    })
+            );// end selector
         }
     }
 
@@ -1954,12 +1960,13 @@ public class CDBrowserController extends CDController implements Observer {
         log.debug("unmount");
         if (this.isConnected()) {
             if (Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.workdir().getSession().getHost().getHostname(), //title
+                NSApplication.sharedApplication().beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.workdir().getSession().getHost().getHostname(), //title
                         NSBundle.localizedString("The connection will be closed.", "Alert sheet text"), // message
                         NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
                         NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
                         null //other button
                 ),
+                        this.window(),
                         this,
                         selector,
                         context);

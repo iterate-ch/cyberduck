@@ -73,12 +73,12 @@ public abstract class CDFileController extends CDController {
 			//
 		}
 		else {
-			NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+			this.endSheet(this.window(), sender.tag());
 		}
 	}
 
 	public void cancelButtonClicked(NSButton sender) {
-		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+		this.endSheet(this.window(), sender.tag());
 	}
 
 	public void editButtonClicked(NSButton sender) {

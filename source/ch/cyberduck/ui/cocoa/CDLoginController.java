@@ -113,6 +113,7 @@ public class CDLoginController extends CDController implements LoginController {
 		this.login = login;
 		this.textField.setStringValue(message);
 		this.userField.setStringValue(login.getUsername());
+        this.passField.setStringValue("");
 		this.windowController.beginSheet(this.window(),
 										 this,
 										 new NSSelector

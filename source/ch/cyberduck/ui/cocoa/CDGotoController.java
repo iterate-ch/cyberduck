@@ -96,12 +96,12 @@ public class CDGotoController extends CDController {
 		}
 		else {
 			// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-			NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
+			this.endSheet(this.window(), ((NSButton)sender).tag());
 		}
 	}
 
 	public void cancelButtonClicked(Object sender) {
-		NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
+		this.endSheet(this.window(), ((NSButton)sender).tag());
 	}
 
 	public void gotoSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {

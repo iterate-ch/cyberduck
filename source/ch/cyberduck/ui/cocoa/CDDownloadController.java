@@ -66,7 +66,7 @@ public class CDDownloadController extends CDController {
 
 	public void cancelButtonClicked(Object sender) {
 		log.debug("cancelButtonClicked");
-		NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
+		this.endSheet(this.window(), ((NSButton)sender).tag());
 	}
 
 	public void downloadButtonClicked(Object sender) {
@@ -91,7 +91,7 @@ public class CDDownloadController extends CDController {
 			else {
 				throw new MalformedURLException("URL must contain reference to a file");
 			}
-			NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
+			this.endSheet(this.window(), ((NSButton)sender).tag());
 		}
 		catch(MalformedURLException e) {
 			NSAlertPanel.beginCriticalAlertSheet("Error", //title

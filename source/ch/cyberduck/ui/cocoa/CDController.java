@@ -18,10 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSMutableParagraphStyle;
-import com.apple.cocoa.application.NSParagraphStyle;
-import com.apple.cocoa.application.NSWindow;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
@@ -81,6 +78,10 @@ public abstract class CDController {
 
     public void endSheet(NSWindow sheet, int tag) {
         log.debug("endSheet");
+        if(modalSession != null) {
+            NSApplication.sharedApplication().endModalSession(modalSession);
+            modalSession = null;
+        }
         NSApplication.sharedApplication().endSheet(sheet, tag);
         sheet.orderOut(null);
         synchronized(this) {
@@ -93,6 +94,9 @@ public abstract class CDController {
         synchronized(this) {
             while(this.hasSheet()) {
                 try {
+                    if(Thread.currentThread().getName().equals("main")) {
+                        return;
+                    }
                     log.debug("Sleeping:waitForSheetEnd...");
                     this.wait();
                     log.debug("Awakened:waitForSheetEnd");
@@ -109,6 +113,9 @@ public abstract class CDController {
         synchronized(this) {
             while(this.window().attachedSheet() != sheet) {
                 try {
+                    if(Thread.currentThread().getName().equals("main")) {
+                        return;
+                    }
                     log.debug("Sleeping:waitForSheetDisplay...");
                     this.wait();
                     log.debug("Awakened:waitForSheetDisplay");
@@ -133,33 +140,37 @@ public abstract class CDController {
                         })); // end selector);
     }
 
-	public void beginSheet(NSWindow sheet, NSSelector endSelector) {
-		this.beginSheet(sheet, endSelector, null);
-	}
+    public void beginSheet(NSWindow sheet, NSSelector endSelector) {
+        this.beginSheet(sheet, endSelector, null);
+    }
 
-	public void beginSheet(NSWindow sheet, NSSelector endSelector, Object contextInfo) {
-		this.beginSheet(sheet, this, endSelector, contextInfo);
-	}
-	
-	public void beginSheet(final NSWindow sheet, final Object delegate, final NSSelector endSelector, final Object contextInfo) {
+    public void beginSheet(NSWindow sheet, NSSelector endSelector, Object contextInfo) {
+        this.beginSheet(sheet, this, endSelector, contextInfo);
+    }
+
+    public void beginSheet(final NSWindow sheet, final Object delegate, final NSSelector endSelector, final Object contextInfo) {
         log.debug("beginSheet:"+sheet);
         synchronized(this) {
-            if(!Thread.currentThread().getName().equals("Session") && this.hasSheet()) {
-                log.warn("Cannot display sheet because the sheet is already displaying a sheet running on the main thread");
-                //sheet.makeKeyAndOrderFront(this);
-                return;
-            }
             this.waitForSheetEnd();
-            this.window().makeKeyAndOrderFront(null);
-            NSApplication.sharedApplication().beginSheet(sheet, //sheet
+            NSApplication app = NSApplication.sharedApplication();
+            app.beginSheet(sheet, //sheet
                     this.window(),
                     delegate, //modalDelegate
                     endSelector, // did end selector
                     contextInfo); //contextInfo
-            this.window().makeKeyAndOrderFront(null);
+            sheet.makeKeyAndOrderFront(null);
+            if(Thread.currentThread().getName().equals("main")) {
+                log.warn("Waiting on main thread; will run modal!");
+                modalSession = NSApplication.sharedApplication().beginModalSessionForWindow(sheet);
+                while(this.hasSheet()) {
+                    app.runModalSession(modalSession);
+                }
+            }
             this.notifyAll();
         }
     }
+
+    private NSModalSession modalSession = null;
 
 	public boolean hasSheet() {
 		return this.window().attachedSheet() != null;

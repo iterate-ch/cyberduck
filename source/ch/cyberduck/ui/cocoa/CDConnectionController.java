@@ -534,7 +534,7 @@ public class CDConnectionController extends CDController {
 	}
 	
 	public void closeSheet(NSButton sender) {
-		this.browserController.endSheet(this.window(), sender.tag());
+		this.endSheet(this.window(), sender.tag());
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 		this.rendezvous.deleteObserver(this.observer);
 		switch(sender.tag()) {
