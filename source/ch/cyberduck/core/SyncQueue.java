@@ -39,9 +39,13 @@ public class SyncQueue extends Queue {
 		//
 	}
 
+	public SyncQueue(Path root) {
+		super(root);
+	}
+		
 	public SyncQueue(Path root, Observer callback) {
+		super(root);
 		this.callback = callback;
-		this.addRoot(root);
 	}
 
 	public SyncQueue(java.util.Observer callback) {

@@ -49,17 +49,17 @@ public class Local extends File {
 //	}
 	
 	public Local(File parent, String name) {
-		super(parent, name);
+		super(NSPathUtilities.stringByExpandingTildeInPath(parent.getAbsolutePath()), name);
 //		this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
 
 	public Local(String parent, String name) {
-		super(parent, name);
+		super(NSPathUtilities.stringByExpandingTildeInPath(parent), name);
 //		this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
 
 	public Local(String path) {
-		super(path);
+		super(NSPathUtilities.stringByExpandingTildeInPath(path));
 //		this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
 

@@ -191,7 +191,7 @@ public abstract class Queue extends Observable {
 	/**
 		* Process the queue. All files will be downloaded/uploaded/synced rerspectively.
 	 */
-	public void start(boolean resumeRequested, boolean shouldValidate) {
+	public void process(boolean resumeRequested, boolean shouldValidate) {
 		if(this.init(resumeRequested, shouldValidate)) {
 			this.reset();
 			for(Iterator iter = this.getJobs().iterator(); iter.hasNext() && !this.isCanceled();) {

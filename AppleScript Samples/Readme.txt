@@ -25,11 +25,15 @@ Every file dropped onto this folder will then be uploaded to the server specifie
 
 - Edit Sample.scpt
 
-Shows how to check for the existance of a file, create new folders and files and opening a file for editing.
+Shows how to check for the existance of a file, create new folders and files and opening a file for editing with the external editor.
 
 - List Sample.scpt
 
 Recursively lists a folder content on the server and prompts for each file found to download.
+
+- Sync Sample.scpt
+
+
 
 - Open URL Sample.scpt
 

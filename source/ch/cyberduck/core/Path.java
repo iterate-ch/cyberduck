@@ -52,7 +52,7 @@ public abstract class Path {
 	/**
 	 * Deep copies the current path with its attributes but without the status information
 	 *
-	 * @param session The session this path will use to fullfill its tasks
+	 * @param s The session this path will use to fullfill its tasks
 	 * @return A copy of me with a new session
 	 */
 	public Path copy(Session s) {
@@ -93,7 +93,7 @@ public abstract class Path {
 	/**
 	 * A remote path where nothing is known about a local equivalent.
 	 *
-	 * @param path the absolute directory
+	 * @param parent the absolute directory
 	 * @param name the file relative to param path
 	 */
 	protected Path(String parent, String name) {
@@ -115,7 +115,7 @@ public abstract class Path {
 	 * The remote filename will be extracted from the local file.
 	 *
 	 * @param parent The absolute path to the parent directory on the remote host
-	 * @param file   The associated local file
+	 * @param local   The associated local file
 	 */
 	protected Path(String parent, Local local) {
 		this.setPath(parent, local);
@@ -464,8 +464,7 @@ public abstract class Path {
 	}
 
 	public boolean exists() {
-		boolean exists = this.getParent().list(false, true).contains(this);
-        return exists;
+		return this.getParent().list(false, true, false).contains(this);
 	}
 
 	public boolean equals(Object other) {

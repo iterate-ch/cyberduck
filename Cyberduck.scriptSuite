@@ -87,6 +87,8 @@
 					<string>handleEditScriptCommand:</string>
 					<key>DeleteFile</key>
 					<string>handleDeleteScriptCommand:</string>
+					<key>Sync</key>
+					<string>handleSyncScriptCommand:</string>
 					<key>Exists</key>
 					<string>handleExistsScriptCommand:</string>
 					<key>Download</key>
@@ -313,6 +315,34 @@
 						<string>NaMe</string>
 						<key>Optional</key>
 						<string>Yes</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>Sync</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>SyNc</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PaTh</string>
+						<key>Optional</key>
+						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+					<key>Local</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>LoAl</string>
+						<key>Optional</key>
+						<string>No</string>
 						<key>Type</key>
 						<string>NSString</string>
 					</dict>

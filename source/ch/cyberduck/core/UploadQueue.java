@@ -43,8 +43,8 @@ public class UploadQueue extends Queue {
 	}
 	
 	public UploadQueue(Path root, Observer callback) {
+		super(root);
 		this.callback = callback;
-		this.addRoot(root);
 	}
 
 	public UploadQueue(java.util.Observer callback) {

@@ -236,6 +236,19 @@ public class CDBrowserController extends CDController implements Observer {
 		return null;
 	}
 	
+	public Object handleSyncScriptCommand(NSScriptCommand command) {
+		log.debug("handleSyncScriptCommand:"+command);
+		if(this.isMounted()) {
+			NSDictionary args = command.evaluatedArguments();
+			Path path = PathFactory.createPath(this.workdir().getSession(), 
+											   (String)args.objectForKey("Path"));
+			path.setLocal(new Local((String)args.objectForKey("Local")));
+			Queue queue = new SyncQueue(path);
+			queue.process(false, false);
+		}
+		return null;
+	}
+	
 	public Object handleDownloadScriptCommand(NSScriptCommand command) {
 		log.debug("handleDownloadScriptCommand:"+command);
 		if(this.isMounted()) {
@@ -253,7 +266,7 @@ public class CDBrowserController extends CDController implements Observer {
 			}
 			path.download();
 //			Queue queue = new DownloadQueue(path);
-//			queue.start(false, false);
+//			queue.processs(false, false);
 		}
 		return null;
 	}
@@ -275,7 +288,7 @@ public class CDBrowserController extends CDController implements Observer {
 			}
 			path.upload();
 //			Queue queue = new UploadQueue(path);
-//			queue.start(false, false);
+//			queue.processs(false, false);
 		}
 		return null;
 	}
