@@ -100,18 +100,22 @@ public class CDTransferController implements Observer {
 
     private void init() {
 	this.fileIconView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
-	this.urlField.setStringValue(file.getAbsolute());
+	this.urlField.setStringValue(file.getAbsolute()); //@todo url
+	this.fileField.setStringValue(file.getLocal().toString());
+	this.window().setTitle(file.getName());
 	this.progressBar.setMinValue(0);
 	this.progressBar.setMaxValue(file.status.getSize());
 	
-	//@todo
+	//@todo anything else?
     }
 
     public void update(Observable o, Object arg) {
+	log.debug("update:"+o+","+arg);
 	if(o instanceof Status) {
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.DATA)) {
+		    this.progressBar.setDoubleValue((double)file.status.getCurrent());
 		    this.progressField.setStringValue(msg.getDescription());
 		    return;
 		}
@@ -120,19 +124,33 @@ public class CDTransferController implements Observer {
 		    return;
 		}
 		if(msg.getTitle().equals(Message.ERROR)) {
-
+		    NSAlertPanel.beginAlertSheet(
+				   "Error", //title
+				   "OK",// defaultbutton
+				   null,//alternative button
+				   null,//other button
+				   this.window(), //docWindow
+				   null, //modalDelegate
+				   null, //didEndSelector
+				   null, // dismiss selector
+				   null, // context
+				   msg.getDescription() // message
+				   );
 		    return;
 		}
 		if(msg.getTitle().equals(Message.START)) {
-
+//		    this.progressBar.startAnimation(this);
 		    return;
 		}
 		if(msg.getTitle().equals(Message.STOP)) {
-
+//		    this.progressBar.stopAnimation(this);
+		    this.stopButton.setEnabled(false);
+		    this.resumeButton.setEnabled(true);
 		    return;
 		}
 		if(msg.getTitle().equals(Message.COMPLETE)) {
-
+		    this.progressBar.setDoubleValue((double)file.status.getCurrent());
+		    this.resumeButton.setTitle("Reload");
 		    return;
 		}
 	    }
@@ -141,11 +159,13 @@ public class CDTransferController implements Observer {
 
     public void download() {
 	iconView.setImage(NSImage.imageNamed("download.tiff"));
+	this.window().makeKeyAndOrderFront(null);
 	this.file.download();
     }
 
     public void upload() {
 	iconView.setImage(NSImage.imageNamed("upload.tiff"));
+	this.window().makeKeyAndOrderFront(null);
 //@todo	this.file.upload();
     }
 
@@ -153,14 +173,16 @@ public class CDTransferController implements Observer {
 	return this.window;
     }
 
-    public void resumeButtonClicked(NSObject sender) {
+    public void resumeButtonClicked(Object sender) {
 	this.stopButton.setEnabled(true);
 	this.resumeButton.setEnabled(false);
+	this.file.download();
     }
 
-    public void stopButtonClicked(NSObject sender) {
+    public void stopButtonClicked(Object sender) {
 	this.stopButton.setEnabled(false);
 	this.resumeButton.setEnabled(true);
+	this.file.status.setCanceled(true);
     }
 }
 

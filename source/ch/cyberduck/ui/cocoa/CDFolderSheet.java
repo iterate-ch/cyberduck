@@ -47,21 +47,20 @@ public class CDFolderSheet {
 
     public CDFolderSheet(Path parent) {
 	this.parent = parent;
-	this.init();
+        if (false == NSApplication.loadNibNamed("Folder", this)) {
+            log.error("Couldn't load Folder.nib");
+            return;
+        }
     }
 
-    private void init() {
-	NSApplication.loadNibNamed("Folder", this);
-    }
-    
-    public void closeSheet(NSObject sender) {
+    public void closeSheet(Object sender) {
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 	NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
     }
 
     public void newfolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
         log.debug("newfolderSheetDidEnd");
-	sheet.orderOut(this);
+	sheet.orderOut(null);
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
 //		Path parent = (Path)pathComboBox.getItem(pathComboBox.numberOfItems()-1);

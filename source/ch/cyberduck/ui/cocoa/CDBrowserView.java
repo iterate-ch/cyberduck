@@ -37,15 +37,16 @@ import org.apache.log4j.Logger;
 public class CDBrowserView extends NSTableView implements Observer {//, NSDraggingDestination {
     private static Logger log = Logger.getLogger(CDBrowserView.class);
 
-    private static final float STRIPE_RED = (float)(237.0/255.0);
-    private static final float STRIPE_GREEN = (float)(243.0/255.0);
-    private static final float STRIPE_BLUE = (float)(254.0/255.0);
+//    private static final float STRIPE_RED = (float)(237.0/255.0);
+  //  private static final float STRIPE_GREEN = (float)(243.0/255.0);
+   // private static final float STRIPE_BLUE = (float)(254.0/255.0);
+    private static final NSColor TABLE_CELL_SHADED_COLOR = NSColor.colorWithCalibratedRGB(0.929f, 0.953f, 0.996f, 1.0f);
 
-    private NSColor sStripeColor = null;
+//    private NSColor sStripeColor = null;
 
-    private CDBrowserTableDataSource model;//= new CDBrowserTableDataSource();
+    private CDBrowserTableDataSource model = new CDBrowserTableDataSource();
 
-	protected CDBrowserView() {
+    protected CDBrowserView() {
 	super();
 	log.debug("CDBrowserView");
     }
@@ -65,10 +66,10 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	log.debug("encodeWithCoder");
     }
 
-//    public Object dataSource() {
+    public Object dataSource() {
 //	log.debug("dataSource");
-//	return this.model;
-//    }
+	return this.model;
+    }
     
     /**
 	* Gets called multiple times if this class is references from multiple nib files
@@ -76,11 +77,11 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
 
-	this.setDataSource(model = new CDBrowserTableDataSource());
+	this.setDataSource(model);
 	
 //	ObserverList.instance().registerObserver(this);
 	// Registering for File Drops
-	this.registerForDraggedTypes(new NSArray(new Object[] {NSPasteboard.FileContentsPboardType}));
+	this.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
 
 	this.setDelegate(this);
 	this.setTarget(this);
@@ -88,7 +89,7 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	this.setAutoresizesAllColumnsToFit(true);
 
 	//	this.setIntercellSpacing(NSSize.ZeroSize);
-        this.setDoubleAction(new NSSelector("doubleClickAction", new Class[] {null}));
+        this.setDoubleAction(new NSSelector("doubleClickAction", new Class[] {Object.class}));
 	//By setting the drop row to -1, the entire table is highlighted instead of just a single row.
 	//this.setDropRowAndDropOperation(-1, NSTableView.DropOn);
 	if(this.tableColumnWithIdentifier("TYPE") != null)
@@ -97,11 +98,17 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 //	this.setIndicatorImage(this._defaultTableHeaderSortImage(), this.tableColumnWithIdentifier("FILENAME"));
     }
 
-    public void doubleClickAction(NSObject sender) {
+    public void finalize() {
+	this.setDelegate(null);
+    }    
+
+    public void doubleClickAction(Object sender) {
 	log.debug("doubleClickAction");
         Path p = (Path)model.getEntry(this.clickedRow());
-	if(p.isFile())
-	    p.download();
+	if(p.isFile()) {
+	    CDTransferController controller = new CDTransferController(p);
+	    controller.download();
+	}
 	if(p.isDirectory())
 	    p.list();
     }
@@ -121,8 +128,8 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 		Message msg = (Message)arg;
 		// A new session has been opened.
 		if(msg.getTitle().equals(Message.OPEN)) {
-//	@todo?	    model.clear();
-//		    this.reloadData();
+		    model.clear();
+		    this.reloadData();
 		}
 		// The host's session has been closed.
 		if(msg.getTitle().equals(Message.CLOSE)) {
@@ -137,12 +144,12 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	    if(arg instanceof Path) {
 		List cache = ((Path)arg).cache();
 		java.util.Iterator i = cache.iterator();
-		log.debug("List size:"+cache.size());
+//		log.debug("List size:"+cache.size());
 		model.clear();
 		while(i.hasNext()) {
 		    model.addEntry(i.next());
-		    this.reloadData();
 		}
+		this.reloadData();
 	    }
 	}
     }
@@ -151,22 +158,42 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	log.debug("reloadData");
 	super.reloadData();
 	this.setNeedsDisplay(true);
-//	this.display();
     }
     
     // ----------------------------------------------------------
     // Drawing methods
     // ----------------------------------------------------------
 
-    public void highlightSelectionInClipRect(NSRect rect) {
-	this.drawStripesInRect(rect);
-	super.highlightSelectionInClipRect(rect);
+    /**
+        Draws the alternating shaded light blue lines in the
+     NSTableView
+     **/
+    public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row)
+    {
+        if (! (view == null || cell == null || column == null))
+        {
+            if (row % 2 == 0)
+            {
+                ((NSTextFieldCell)cell).setDrawsBackground(true);
+                ((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
+            }
+            else
+                ((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
+        }
     }
+
+    /*
+    public void highlightSelectionInClipRect(NSRect rect) {
+	super.highlightSelectionInClipRect(rect);
+	this.drawStripesInRect(rect);
+    }
+     */
 
     /**
 	* This method does the actual blue stripe drawing, filling in every other row of the table
      * with a blue background so you can follow the rows easier with your eyes.
      */
+    /*
     public void drawStripesInRect(NSRect clipRect) {
 	int fullRowHeight = (int)(this.rowHeight() + this.intercellSpacing().height());
 	int clipBottom = (int)clipRect.maxY();
@@ -186,6 +213,7 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	    stripeRect = new NSRect(stripeRect.x(), (float)(stripeRect.y()+fullRowHeight*2.0), stripeRect.width(), stripeRect.height());
 	}
     }
+     */
 
     // ----------------------------------------------------------
     // Delegate methods
@@ -208,6 +236,7 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 //	    return true;
 	return false;
     }
+}
 
     // ----------------------------------------------------------
     // Overwritten NSResponder methods
@@ -271,5 +300,3 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	}
     }
  */
-
-}

@@ -28,7 +28,7 @@ import ch.cyberduck.core.Host;
 /**
 * @version $Id$
  */
-public class CDFavoritesTableDataSource extends NSObject {
+public class CDFavoritesTableDataSource {
     private static Logger log = Logger.getLogger(CDHostTableDataSource.class);
 
     private List data;

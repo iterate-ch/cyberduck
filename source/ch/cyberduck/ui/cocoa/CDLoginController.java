@@ -53,16 +53,19 @@ public class CDLoginController extends Login {
 	this.sheet = sheet;
     }
 
+    private CDBrowserController controller;
 
-    public CDLoginController(String user, String pass) {
+    public CDLoginController(CDBrowserController controller, String user, String pass) {
 	super(user, pass);
+	this.controller = controller;
     }
 
-    public CDLoginController() {
+    public CDLoginController(CDBrowserController controller) {
 	super();
+	this.controller = controller;
     }
     
-    public void closeSheet(NSObject sender) {
+    public void closeSheet(Object sender) {
 	log.debug("closeSheet");
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 	NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
@@ -72,23 +75,24 @@ public class CDLoginController extends Login {
 	return this.sheet;
     }
 
-    
 
     private boolean done;
     private boolean tryAgain;
+
     public boolean loginFailure(String message) {
 	log.info("Authentication failed");
 	NSApplication.loadNibNamed("Login", this);
 	this.textField.setStringValue(message);
 	NSApplication.sharedApplication().beginSheet(
 					      this.window(), //sheet
-					      null, //docWindow //@todo attach to mainwindow
+					      controller.window(),
 					      this, //modalDelegate
 					      new NSSelector(
 			  "loginSheetDidEnd",
 			  new Class[] { NSWindow.class, int.class, NSWindow.class }
 			  ),// did end selector
 					      null); //contextInfo
+	this.window().makeKeyAndOrderFront(null);
 	while(!done) {
 	    try {
 		Thread.sleep(500); //milliseconds
@@ -106,6 +110,7 @@ public class CDLoginController extends Login {
      */
     public void loginSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	log.info("loginSheetDidEnd");
+	this.window().orderOut(null);
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
 		tryAgain = true;
@@ -117,6 +122,5 @@ public class CDLoginController extends Login {
 		break;
 	}
 	done = true;
-	this.window().close();
     }
 }

@@ -24,16 +24,17 @@ import ch.cyberduck.core.Transcript;
 import ch.cyberduck.core.Transcripter;
 import org.apache.log4j.Logger;
 
-
 /**
 * @version $Id$
  */
-public class CDTranscriptImpl extends NSObject implements Transcripter {
-    //@todo extends Object
+public class CDTranscriptImpl implements Transcripter {
     private static Logger log = Logger.getLogger(CDTranscriptImpl.class);
 
-    public NSTextView textView;
-
+    private NSTextView textView;
+    public void setTextView(NSTextView textView) {
+	this.textView = textView;
+    }
+    
     public CDTranscriptImpl() {
 	super();
 	log.debug("CDTranscriptImpl");

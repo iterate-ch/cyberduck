@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDBrowserTableDataSource {
+public class CDBrowserTableDataSource implements NSTableView.DataSource {
     private static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 
     private List data;
@@ -45,16 +45,15 @@ public class CDBrowserTableDataSource {
 
     //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
+//	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
         String identifier = (String)tableColumn.identifier();
         Path p = (Path)data.get(row);
 	if(identifier.equals("TYPE")) {
-	    if(p.isFile()) {
-//		log.debug(p.getExtension());
-		return NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
-	    }
-	    if(p.isDirectory())
+//	    tableView.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
+	    if(p.isDirectory()) {
 		return NSImage.imageNamed("folder.tiff");
+	    }
+	    return NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
 	}
 	if(identifier.equals("FILENAME"))
 	    return p.getName();
@@ -66,8 +65,7 @@ public class CDBrowserTableDataSource {
 	    return p.attributes.getOwner();
 	if(identifier.equals("PERMISSION"))
 	    return p.attributes.getPermission().toString();
-	return null;
-//	throw new IllegalArgumentException("Unknown identifier: "+identifier);
+	throw new IllegalArgumentException("Unknown identifier: "+identifier);
     }
 
     //setValue()
@@ -155,12 +153,12 @@ public class CDBrowserTableDataSource {
     }
 
     public void addEntry(Object entry, int row) {
-	log.debug("addEntry:"+entry);
+//	log.debug("addEntry:"+entry);
 	this.data.add(row, entry);
     }
 
     public void addEntry(Object entry) {
-	log.debug("addEntry:"+entry);
+//	log.debug("addEntry:"+entry);
 	this.data.add(entry);
     }
     

@@ -20,8 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-import com.sshtools.j2ssh.transport.InvalidHostFileException;
-import com.sshtools.j2ssh.transport.AbstractHostKeyVerification;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Preferences;
@@ -30,17 +28,21 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDConnectionSheet {//extends NSPanel {
+public class CDConnectionSheet {
     private static Logger log = Logger.getLogger(CDConnectionSheet.class);
 
+    private CDBrowserController controller;
     // ----------------------------------------------------------
     // Constructors
     // ----------------------------------------------------------
 
-    public CDConnectionSheet() {
-	super();
+    public CDConnectionSheet(CDBrowserController controller) {
+	this.controller = controller;
 	log.debug("CDConnectionSheet");
-	NSApplication.loadNibNamed("Connection", this);
+        if (false == NSApplication.loadNibNamed("Connection", this)) {
+            log.error("Couldn't load Connection.nib");
+            return;
+        }
     }
     
     // ----------------------------------------------------------
@@ -96,22 +98,22 @@ public class CDConnectionSheet {//extends NSPanel {
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
 	// Notify the textInputDidChange() method if the user types.
-	(NSNotificationCenter.defaultCenter()).addObserver(
+	NSNotificationCenter.defaultCenter().addObserver(
 						    this,
 						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
 						    NSControl.ControlTextDidChangeNotification,
 						    hostField);
-	(NSNotificationCenter.defaultCenter()).addObserver(
+	NSNotificationCenter.defaultCenter().addObserver(
 						    this,
 						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
 						    NSControl.ControlTextDidChangeNotification,
 						    pathField);
-	(NSNotificationCenter.defaultCenter()).addObserver(
+	NSNotificationCenter.defaultCenter().addObserver(
 						    this,
 						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
 						    NSControl.ControlTextDidChangeNotification,
 						    portField);
-	(NSNotificationCenter.defaultCenter()).addObserver(
+	NSNotificationCenter.defaultCenter().addObserver(
 						    this,
 						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
 						    NSControl.ControlTextDidChangeNotification,
@@ -123,8 +125,14 @@ public class CDConnectionSheet {//extends NSPanel {
 	this.pathField.setStringValue("~");
     }
 
+    public void finalize() throws Throwable {
+	super.finalize();
+	log.debug("finalize");
+        NSNotificationCenter.defaultCenter().removeObserver(this);
+    }
+
     
-    public void protocolSelectionChanged(NSObject sender) {
+    public void protocolSelectionChanged(Object sender) {
 	log.debug("protocolSelectionChanged");
 	NSMenuItem selectedItem = protocolPopup.selectedItem();
 	if(selectedItem.tag() == Session.SSH_PORT)
@@ -137,12 +145,12 @@ public class CDConnectionSheet {//extends NSPanel {
     }
 
     public void textInputDidChange(NSNotification sender) {
-	log.debug("textInputDidChange");
+//	log.debug("textInputDidChange");
 	urlLabel.setStringValue(usernameField.stringValue()+"@"+hostField.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
     }
 
 
-    public void closeSheet(NSObject sender) {
+    public void closeSheet(Object sender) {
 	log.debug("closeSheet");
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 	NSApplication.sharedApplication().endSheet(hostField.window(), ((NSButton)sender).tag());
@@ -150,7 +158,7 @@ public class CDConnectionSheet {//extends NSPanel {
 
     public void connectionSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	log.debug("connectionSheetDidEnd");
-	sheet.orderOut(this);
+	sheet.orderOut(null);
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
 		int tag = protocolPopup.selectedItem().tag();
@@ -175,232 +183,32 @@ public class CDConnectionSheet {//extends NSPanel {
       //		    break;
 		}
 
-		Host host = new Host(protocol, hostField.stringValue(), port, pathField.stringValue(), new CDLoginController(usernameField.stringValue(), passField.stringValue()));
+		Host host = new Host(protocol, hostField.stringValue(), port, pathField.stringValue(), new CDLoginController(controller, usernameField.stringValue(), passField.stringValue()));
 
 		if(host.getProtocol().equals(Session.SFTP)) {
 		    try {
-			host.setHostKeyVerification(new CDHostKeyVerification());
+			host.setHostKeyVerification(new CDHostKeyController(controller.window()));
 		    }
-		    catch(InvalidHostFileException e) {
+		    catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
 		//This exception is thrown whenever an exception occurs open or reading from the host file.
 			NSAlertPanel.beginAlertSheet(
 				"Error", //title
 				"OK",// defaultbutton
 				null,//alternative button
 				null,//other button
-				null,//@todo mainWindow, //docWindow
+				controller.window(), //docWindow
 				null, //modalDelegate
 				null, //didEndSelector
 				null, // dismiss selector
 				null, // context
 				"Could not open or read the host file: "+e.getMessage() // message
 				);
-		//@todo run alert sheet?
-			log.error(e.getMessage());
 		    }
 		}
+		    controller.openConnection(host);
 		    
-//@todo		host.addObserver(this);
-		CDConnectionController controller = new CDConnectionController(host);
-		controller.connect();
-
 	case(NSAlertPanel.AlternateReturn):
 		//
 	}
     }
-
-
-
-
-        // ----------------------------------------------------------
-    // CDHostKeyVerification
-    // ----------------------------------------------------------
-
-    /**
-	* Concrete Coccoa implementation of a SSH HostKeyVerification
-     */
-    private class CDHostKeyVerification extends AbstractHostKeyVerification {
-	private String host;
-	private String fingerprint;
-
-	private boolean done;
-
-	public CDHostKeyVerification() throws InvalidHostFileException {
-	    super();
-	    log.debug("CDHostKeyVerification");
-	}
-
-	public CDHostKeyVerification(String hostFile) throws InvalidHostFileException {
-	    super(hostFile);
-	}
-
-	public void onDeniedHost(String hostname) {
-	    log.debug("onDeniedHost");
-	    NSAlertPanel.beginInformationalAlertSheet(
-					       "Access denied", //title
-					       "OK",// defaultbutton
-					       null,//alternative button
-					       null,//other button
-					       null,//@todomainWindow,
-					       this, //delegate
-					       new NSSelector
-					       (
-	     "deniedHostSheetDidEnd",
-	     new Class[]
-	     {
-		 NSWindow.class, int.class, NSWindow.class
-	     }
-	     ),// end selector
-					       null, // dismiss selector
-					       this, // context
-					       "Access to the host " + hostname + " is denied from this system" // message
-					       );
-	    while(!this.done) {
-		try {
-		    Thread.sleep(500); //milliseconds
-		}
-		catch(InterruptedException e) {
-		    e.printStackTrace();
-		}
-	    }
-	}
-
-	public void onHostKeyMismatch(String host, String fingerprint, String actualHostKey) {
-	    log.debug("onHostKeyMismatch");
-	    this.host = host;
-	    this.fingerprint = fingerprint;
-	    NSAlertPanel.beginInformationalAlertSheet(
-					       "Host key mismatch", //title
-					       "Allow",// defaultbutton
-					       "Deny",//alternative button
-					       isHostFileWriteable() ? "Always" : null,//other button
-					       null,//@todo mainWindow,
-					       this, //delegate
-					       new NSSelector
-					       (
-	     "keyMismatchSheetDidEnd",
-	     new Class[]
-	     {
-		 NSWindow.class, int.class, NSWindow.class
-	     }
-	     ),// end selector
-					       null, // dismiss selector
-					       this, // context
-					       "The host key supplied by " + host + " is: "
-					       + actualHostKey +
-					       "The current allowed key for " + host + " is: "
-					       + fingerprint +"\nDo you want to allow the host access?");
-	    while(!this.done) {
-		try {
-		    Thread.sleep(500); //milliseconds
-		}
-		catch(InterruptedException e) {
-		    e.printStackTrace();
-		}
-	    }
-	}
-
-
-	public void onUnknownHost(String host, String fingerprint) {
-	    log.debug("onUnknownHost");
-	    this.host = host;
-	    this.fingerprint = fingerprint;
-	    NSAlertPanel.beginInformationalAlertSheet(
-					       "Unknown host", //title
-					       "Allow",// defaultbutton
-					       "Deny",//alternative button
-					       isHostFileWriteable() ? "Always" : null,//other button
-					       null,//@todo mainWindow,//window
-					       this, //delegate
-					       new NSSelector
-					       (
-	     "unknownHostSheetDidEnd",
-	     new Class[]
-	     {
-		 NSWindow.class, int.class, NSWindow.class
-	     }
-	     ),// end selector
-					       null, // dismiss selector
-					       this, // context
-					       "The host " + host
-					       + " is currently unknown to the system. The host key fingerprint is: " + fingerprint+".");
-	    while(!this.done) {
-		try {
-		    Thread.sleep(500); //milliseconds
-		}
-		catch(InterruptedException e) {
-		    e.printStackTrace();
-		}
-	    }
-	}
-
-
-	public void deniedHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	    log.debug("deniedHostSheetDidEnd");
-	    sheet.orderOut(this);
-	    done = true;
-	}
-
-	public void keyMismatchSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	    log.debug("keyMismatchSheetDidEnd");
-	    sheet.orderOut(this);
-	    try {
-		if(returncode == NSAlertPanel.DefaultReturn)
-		    allowHost(host, fingerprint, false);
-		if(returncode == NSAlertPanel.AlternateReturn) {
-		    NSAlertPanel.beginInformationalAlertSheet(
-						"Invalid host key", //title
-						"OK",// defaultbutton
-						null,//alternative button
-						null,//other button
-						null,//@todo mainWindow,
-						this, //delegate
-						null,// end selector
-						null, // dismiss selector
-						this, // context
-						"Cannot continue without a valid host key." // message
-						);
-		    log.info("Cannot continue without a valid host key");
-		}
-		if(returncode == NSAlertPanel.OtherReturn) {
-		    //
-		}
-		done = true;
-	    }
-	    catch(InvalidHostFileException e) {
-		e.printStackTrace();
-	    }
-	}
-
-	public void unknownHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	    log.debug("unknownHostSheetDidEnd");
-	    sheet.orderOut(this);
-	    try {
-		if(returncode == NSAlertPanel.DefaultReturn)
-		    allowHost(host, fingerprint, false); // allow host
-		if(returncode == NSAlertPanel.AlternateReturn) {
-		    NSAlertPanel.beginInformationalAlertSheet(
-						"Invalid host key", //title
-						"OK",// defaultbutton
-						null,//alternative button
-						null,//other button
-						null,//@todo mainWindow,
-						this, //delegate
-						null,// end selector
-						null, // dismiss selector
-						this, // context
-						"Cannot continue without a valid host key." // message
-						);
-		    log.info("Cannot continue without a valid host key");
-		}
-		if(returncode == NSAlertPanel.OtherReturn)
-		    allowHost(host, fingerprint, true); // always allow host
-		done = true;
-	    }
-	    catch(InvalidHostFileException e) {
-		e.printStackTrace();
-	    }
-	}
-    }
-
 }

@@ -28,10 +28,13 @@ import org.apache.log4j.Logger;
 public class CDMainController {
     private static Logger log = Logger.getLogger(CDMainController.class);
 
-
     public void awakeFromNib() {
-
+	CDBrowserController controller = new CDBrowserController();
+	controller.window().makeKeyAndOrderFront(null);
+	controller.connectButtonPressed(this);
     }
+
+    private NSArray references = new NSArray();
     
     // ----------------------------------------------------------
     // Outlets
@@ -43,7 +46,7 @@ public class CDMainController {
     }
 
 
-    public void donateMenuPressed(NSObject sender) {
+    public void donateMenuPressed(Object sender) {
 	try {
 	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("donate.url")));
 	}
@@ -55,7 +58,7 @@ public class CDMainController {
 
     public void donationSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	log.debug("donationSheetDidEnd");
-	sheet.orderOut(this);
+	sheet.orderOut(null);
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
 		try {
@@ -70,27 +73,39 @@ public class CDMainController {
         NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
     }
 
-    public void closeDonationSheet(NSObject sender) {
+    public void closeDonationSheet(Object sender) {
 	log.debug("closeDonationSheet");
 	NSApplication.sharedApplication().endSheet(donationSheet, NSAlertPanel.AlternateReturn);
     }
 
 
-    public void preferencesMenuPressed(NSObject sender) {
-	CDPreferencesController controller = new CDPreferencesController();
+    public void preferencesMenuPressed(Object sender) {
+	CDPreferencesController controller = CDPreferencesController.instance();
 	controller.window().makeKeyAndOrderFront(null);
     }
 
-    public void newBrowserMenuPressed(NSObject sender) {
+    public void newDownloadMenuPressed(Object sender) {
+	/*
+	CDDownloadController controller = new CDDownloadController();
+	controller.window().setMenu(null);
+	controller.window().center();
+	controller.window().makeKeyAndOrderFront(null);
+	 */
+	
+    }
+
+    public void newBrowserMenuPressed(Object sender) {
 	CDBrowserController controller = new CDBrowserController();
+	this.references = references.arrayByAddingObject(controller);
+//	controller.window().setMenu(null);
+//	controller.window().center();
 	controller.window().makeKeyAndOrderFront(null);
     }
 
     
-// ----------------------------------------------------------
+    // ----------------------------------------------------------
     // Application delegate methods
     // ----------------------------------------------------------
-
 
     public void applicationDidFinishLaunching (NSNotification notification) {
         // To get service requests to go to the controller...
@@ -105,36 +120,38 @@ public class CDMainController {
 
     public int applicationShouldTerminate (NSApplication app) {
 	log.debug("applicationShouldTerminate");
-	NSArray windows = app.windows();
-	java.util.Enumeration i = windows.objectEnumerator();
-	while(i.hasMoreElements()) {
-	    ((NSWindow)i.nextElement()).performClose(this);
-	}
+//	NSArray windows = app.windows();
+//	java.util.Enumeration i = windows.objectEnumerator();
+//	while(i.hasMoreElements()) {
+//	    ((NSWindow)i.nextElement()).performClose(this);
+//	}
 	Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses"))+1);
         Preferences.instance().save();
 	History.instance().save();
 	Favorites.instance().save();
 	
-        NSApplication.loadNibNamed("Donate", this);
-        if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 &&
-	   Preferences.instance().getProperty("donate").equals("true")) {
-	    if(Preferences.instance().getProperty("donate").equals("true")) {
-		NSApplication.sharedApplication().beginSheet(
-					       donationSheet,//sheet
-					       null, //docwindow
-					       this, //delegate
-					       new NSSelector(
-			   "donationSheetDidEnd",
-			   new Class[] { NSWindow.class, int.class, NSWindow.class }
-			   ),// did end selector
-					       null); //contextInfo
-		return NSApplication.TerminateLater;
+//        if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
+	if(Preferences.instance().getProperty("donate").equals("true")) {
+	    if (false == NSApplication.loadNibNamed("Donate", this)) {
+		log.error("Couldn't load Donate.nib");
+		return NSApplication.TerminateNow;
 	    }
+	    //@todo don't use sheet
+	    NSApplication.sharedApplication().beginSheet(
+						  donationSheet,//sheet
+						  null, //docwindow
+						  this, //delegate
+						  new NSSelector(
+		       "donationSheetDidEnd",
+		       new Class[] { NSWindow.class, int.class, NSWindow.class }
+		       ),// did end selector
+						  null); //contextInfo
+	    return NSApplication.TerminateLater;
 	}
 	return NSApplication.TerminateNow;
-    }
+}
 
-    public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
+public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
 	return false;
     }
 }

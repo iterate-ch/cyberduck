@@ -39,7 +39,6 @@ public class Transcript {
     }
     
     public static Transcript instance() {
-	log.debug("instance");
         if(null == instance) {
 	    instance = new Transcript();
 	}

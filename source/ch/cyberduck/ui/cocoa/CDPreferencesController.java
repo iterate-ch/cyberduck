@@ -28,6 +28,8 @@ import org.apache.log4j.Logger;
 public class CDPreferencesController {
     private static Logger log = Logger.getLogger(CDPreferencesController.class);
 
+    private static CDPreferencesController instance;
+    
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
@@ -62,11 +64,18 @@ public class CDPreferencesController {
 	this.window = window;
     }
 
-    public CDPreferencesController() {
+    private CDPreferencesController() {
         if (false == NSApplication.loadNibNamed("Preferences", this)) {
             log.error("Couldn't load Preferences.nib");
             return;
         }
+    }
+
+    public static CDPreferencesController instance() {
+	if(null == instance) {
+	    instance = new CDPreferencesController();
+	}
+	return instance;
     }
 
     public NSWindow window() {

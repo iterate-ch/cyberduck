@@ -95,8 +95,7 @@ public class CDInfoController {//implements Observer {
     // ----------------------------------------------------------
     
     public CDInfoController(Path file) {
-	super();
-	log.debug("CDInfoController");
+	log.debug("CDInfoController:"+file);
 	this.file = file;
         if (false == NSApplication.loadNibNamed("Info", this)) {
             log.error("Couldn't load Info.nib");
@@ -196,7 +195,7 @@ public class CDInfoController {//implements Observer {
 	    file.rename(filenameField.stringValue());
     }
 
-    public void permissionsSelectionChanged(NSObject sender) {
+    public void permissionsSelectionChanged(Object sender) {
 	log.debug("permissionsSelectionChanged");
         boolean[][] p = new boolean[3][3];
 	p[Permission.OWNER][Permission.READ] = ownerr.state() == NSCell.OnState;

@@ -48,10 +48,10 @@ public class CDBrowserController implements Observer {
     // Outlets
     // ----------------------------------------------------------
     
-    private CDMainWindow mainWindow; // IBOutlet
-    public void setMainWindow(CDMainWindow mainWindow) {
+    private NSWindow mainWindow; // IBOutlet
+    public void setMainWindow(NSWindow mainWindow) {
 	this.mainWindow = mainWindow;
-	this.mainWindow.setDelegate(this);
+//	this.mainWindow.setDelegate(this);
     }
 
     private CDBrowserView browserTable; // IBOutlet
@@ -64,9 +64,9 @@ public class CDBrowserController implements Observer {
 	this.quickConnectField = quickConnectField;
     }
     
-    private CDPathComboBox pathComboBox; // IBOutlet
-    public void setPathComboBox(CDPathComboBox pathComboBox) {
-	this.pathComboBox = pathComboBox;
+    private NSPopUpButton pathPopup; // IBOutlet
+    public void setPathPopup(NSPopUpButton pathPopup) {
+	this.pathPopup = pathPopup;
     }
 
     private NSDrawer drawer; // IBOutlet
@@ -84,26 +84,51 @@ public class CDBrowserController implements Observer {
 	this.statusLabel = statusLabel;
     }
 
-    private NSMutableDictionary toolbarItems;
+//    private NSMutableDictionary toolbarItems;
+
+    private CDConnectionSheet connectionSheet;
+    private CDPathController pathController;
+
+    private NSToolbarItem pathItem;
+    private NSToolbarItem quickConnectItem;
+
+    /**
+     * The host this browser windowis associated with
+     */
+    private Host host;
 
     // ----------------------------------------------------------
     // Constructor
     // ----------------------------------------------------------
     
     public CDBrowserController() {
-	super();
 	log.debug("CDBrowserController");
         if (false == NSApplication.loadNibNamed("Browser", this)) {
             log.error("Couldn't load Browser.nib");
             return;
         }
     }
+    
+    public void finalize() throws Throwable {
+	super.finalize();
+	log.debug("finalize");
+//	toolbar.setDelegate(null);
+	host.deleteObserver((Observer)this);
+	host.deleteObserver((Observer)browserTable);
+	host.deleteObserver((Observer)pathController);
+    }
 
     public NSWindow window() {
 	return this.mainWindow;
     }
 
+
+    public String windowNibName() {
+        return "Browser";
+    }
+    
     public void update(Observable o, Object arg) {
+	log.debug("update:"+o+","+arg);
 	if(o instanceof Host) {
 	    if(arg instanceof Message) {
 		Host host = (Host)o;
@@ -122,6 +147,8 @@ public class CDBrowserController implements Observer {
 				   null, // context
 				   msg.getDescription() // message
 				   );
+		    progressIndicator.stopAnimation(this);
+		    statusLabel.setStringValue("Error: "+msg.getDescription());
 		}
 		// update status label
 		if(msg.getTitle().equals(Message.PROGRESS)) {
@@ -129,13 +156,11 @@ public class CDBrowserController implements Observer {
 		}
 		if(msg.getTitle().equals(Message.OPEN)) {
 		    progressIndicator.startAnimation(this);
+		    mainWindow.setTitle(host.getName());
 		    History.instance().add(host);
 		}
 		if(msg.getTitle().equals(Message.CONNECTED)) {
 		    progressIndicator.stopAnimation(this);
-		}
-		if(msg.getTitle().equals(Message.SELECTION)) {
-		    mainWindow.setTitle(host.getName());
 		}
 	    }
 	}
@@ -146,13 +171,13 @@ public class CDBrowserController implements Observer {
     // Selector methods for the toolbar items
     // ----------------------------------------------------------
 
-    public void toggleDrawer(NSObject sender) {
+    public void toggleDrawer(Object sender) {
 	drawer.toggle(this);
     }
     
-    public void folderButtonPressed(NSObject sender) {
+    public void folderButtonPressed(Object sender) {
         log.debug("folderButtonPressed");
-	CDFolderSheet sheet = new CDFolderSheet((Path)pathComboBox.getItem(pathComboBox.numberOfItems()-1));
+	CDFolderSheet sheet = new CDFolderSheet((Path)pathController.getItem(pathController.numberOfItems()-1));
 	NSApplication.sharedApplication().beginSheet(
 					      sheet.window(),//sheet
 					      mainWindow, //docwindow
@@ -165,14 +190,14 @@ public class CDBrowserController implements Observer {
     }
 
 
-    public void infoButtonPressed(NSObject sender) {
+    public void infoButtonPressed(Object sender) {
 	log.debug("infoButtonPressed");
 	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
 	CDInfoController controller = new CDInfoController(path);
-	controller.window().makeKeyAndOrderFront(this);
+	controller.window().makeKeyAndOrderFront(null);
     }
 
-    public void deleteButtonPressed(NSObject sender) {
+    public void deleteButtonPressed(Object sender) {
 	log.debug("deleteButtonPressed");
 	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
 	NSAlertPanel.beginInformationalAlertSheet(
@@ -198,7 +223,7 @@ public class CDBrowserController implements Observer {
 
     public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
 	log.debug("deleteSheetDidEnd");
-	sheet.orderOut(this);
+	sheet.orderOut(null);
 	switch(returnCode) {
 	    case(NSAlertPanel.DefaultReturn):
 		Path path = (Path)contextInfo;
@@ -208,91 +233,228 @@ public class CDBrowserController implements Observer {
 	}
     }
 
-    public void refreshButtonPressed(NSObject sender) {
+    public void refreshButtonPressed(Object sender) {
 	log.debug("refreshButtonPressed");
-	Path p = (Path)pathComboBox.getItem(0);
+	Path p = (Path)pathController.getItem(0);
 	p.list(true);
     }
 
-    public void downloadButtonPressed(NSObject sender) {
+    public void downloadButtonPressed(Object sender) {
 	log.debug("downloadButtonPressed");
 	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
 	CDTransferController controller = new CDTransferController(path);
 	controller.download();
     }
 
-    public void uploadButtonPressed(NSObject sender) {
-	log.debug("uploadButtonPressed");
+    public void uploadButtonPressed(Object sender) {
 	// @todo drag and drop
-//	CDTransferController controller = new CDTransferController(path);
-//	controller.upload();
+	log.debug("uploadButtonPressed");
+	NSOpenPanel panel = new NSOpenPanel();
+	panel.setCanChooseFiles(true);
+	panel.setAllowsMultipleSelection(false);
+	panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, mainWindow, this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }
 
-    /*
-    public void backButtonPressed(NSObject sender) {
+    public void openPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
+	sheet.orderOut(null);
+	switch(returnCode) {
+	    case(NSPanel.OKButton): {
+		NSArray selected = sheet.filenames();
+		String filename;
+		if((filename = (String)selected.lastObject()) != null) {
+//		    Path path = (Path)pathController.getItem(pathController.numberOfItems()-1);
+//		    path.upload(new java.io.File(filename));
+		}
+		return;
+	    }
+	    case(NSPanel.CancelButton): {
+		return;
+	    }
+	}
+    }
+	
+    public void backButtonPressed(Object sender) {
 	log.debug("backButtonPressed");
 	//@todoHistory
     }
-     */
 
-     public void upButtonPressed(NSObject sender) {
+     public void upButtonPressed(Object sender) {
 	 log.debug("upButtonPressed");
-	 Path p = (Path)pathComboBox.getItem(0);
+	 Path p = (Path)pathController.getItem(0);
 	 p.getParent().list();
      }
     
-    public void drawerButtonPressed(NSObject sender) {
+    public void drawerButtonPressed(Object sender) {
 	log.debug("drawerButtonPressed");
 	drawer.toggle(mainWindow);
     }
 
-    public void connectFieldPressed(NSObject sender) {
+    public void connectFieldPressed(Object sender) {
 	log.debug("connectFieldPressed");
-	Host host = new Host(((NSControl)sender).stringValue(), new CDLoginController());
-	host.addObserver(this);
-	host.addObserver(browserTable);
-	host.addObserver(pathComboBox);
-	CDConnectionController controller = new CDConnectionController(host);
-	controller.connect();
+	Host host = new Host(((NSControl)sender).stringValue(), new CDLoginController(this));
+	this.openConnection(host);
     }
 
-    public void connectButtonPressed(NSObject sender) {
+    public void connectButtonPressed(Object sender) {
 	log.debug("connectButtonPressed");
-	CDConnectionSheet sheet = new CDConnectionSheet();
 	NSApplication.sharedApplication().beginSheet(
-					      sheet.window(),//sheet
+					      connectionSheet.window(),//sheet
 					      mainWindow, //docwindow
-					      sheet, //modal delegate
+					      connectionSheet, //modal delegate
 					      new NSSelector(
 		      "connectionSheetDidEnd",
 		      new Class[] { NSWindow.class, int.class, NSWindow.class }
 		      ),// did end selector
 					      null); //contextInfo
     }
+
+    public void openConnection(Host host) {
+	this.host = host;
+	host.addObserver((Observer)this);
+	host.addObserver((Observer)browserTable);
+	host.addObserver((Observer)pathController);
+//@todo ?	CDConnectionController controller = new CDConnectionController(host);
+	host.openSession();
+    }
+
+    public void closeConnection(Host host) {
+	host.deleteObservers();
+	host.closeSession();
+    }
+
     
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
+
+	this.pathController = new CDPathController(pathPopup);
+	this.connectionSheet = new CDConnectionSheet(this);
+
+	this.setupToolbar();
+    }
+
+    // ----------------------------------------------------------
+    // Toolbar
+    // ----------------------------------------------------------
+
+    private void setupToolbar() {
+	NSToolbar toolbar = new NSToolbar("Cyberduck Toolbar");
+	toolbar.setDelegate(this);
+	toolbar.setAllowsUserCustomization(true);
+	toolbar.setAutosavesConfiguration(true);
+	toolbar.setDisplayMode(NSToolbar.NSToolbarDisplayModeIconAndLabel);
+//	this.toolbarItems = new NSMutableDictionary();
+
+	mainWindow.setToolbar(toolbar);
+    }
+
+    
+    // ----------------------------------------------------------
+    // Toolbar delegate methods
+    // ----------------------------------------------------------
+
+    public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
+//    return (NSToolbarItem)toolbarItems.objectForKey(itemIdentifier);
+
+	NSToolbarItem item = new NSToolbarItem(itemIdentifier);
+
+	if (itemIdentifier.equals("New Connection")) {
+	    item.setLabel("New Connection");
+	    item.setPaletteLabel("New Connection");
+	    item.setToolTip("Connect to remote host");
+	    item.setImage(NSImage.imageNamed("server.tiff"));
+	    item.setTarget(this);
+	    item.setAction(new NSSelector("connectButtonPressed", new Class[] {Object.class}));
+	}
+	else if (itemIdentifier.equals("Path")) {
+	    item.setLabel("Path");
+	    item.setPaletteLabel("Path");
+	    item.setToolTip("Change working directory");
+	    item.setView(pathPopup);
+	    item.setMinSize(pathPopup.frame().size());
+	    item.setMaxSize(pathPopup.frame().size());
+	}
+	else if (itemIdentifier.equals("Quick Connect")) {
+	    item.setLabel("Quick Connect");
+	    item.setPaletteLabel("Quick Connect");
+	    item.setToolTip("Connect to host");
+	    item.setView(quickConnectField);
+	    item.setMinSize(quickConnectField.frame().size());
+	    item.setMaxSize(quickConnectField.frame().size());
+	}
+	else if (itemIdentifier.equals("Back")) {
+	    item.setLabel("Back");
+	    item.setPaletteLabel("Back");
+	    item.setToolTip("Show previous directory");
+	    item.setImage(NSImage.imageNamed("back.tiff"));
+	    item.setTarget(this);
+	    item.setAction(new NSSelector("backButtonPressed", new Class[] {Object.class}));
+	}
+	else if (itemIdentifier.equals("Refresh")) {
+	    item.setLabel("Refresh");
+	    item.setPaletteLabel("Refresh");
+	    item.setToolTip("Refresh directory listing");
+	    item.setImage(NSImage.imageNamed("refresh.tiff"));
+	    item.setTarget(this);
+	    item.setAction(new NSSelector("refreshButtonPressed", new Class[] {Object.class}));
+	}
+	else if (itemIdentifier.equals("Download")) {
+	    item.setLabel("Download");
+	    item.setPaletteLabel("Download");
+	    item.setToolTip("Download file");
+	    item.setImage(NSImage.imageNamed("download.tiff"));
+	    item.setTarget(this);
+	    item.setAction(new NSSelector("downloadButtonPressed", new Class[] {Object.class}));
+	}
+	else if (itemIdentifier.equals("Upload")) {
+	    item.setLabel("Upload");
+	    item.setPaletteLabel("Upload");
+	    item.setToolTip("Upload file");
+	    item.setImage(NSImage.imageNamed("upload.tiff"));
+	    item.setTarget(this);
+	    item.setAction(new NSSelector("uploadButtonPressed", new Class[] {Object.class}));
+	}
+	else if (itemIdentifier.equals("Get Info")) {
+	    item.setLabel("Get Info");
+	    item.setPaletteLabel("Get Info");
+	    item.setToolTip("Show file attributes");
+	    item.setImage(NSImage.imageNamed("info.tiff"));
+	    item.setTarget(this);
+	    item.setAction(new NSSelector("infoButtonPressed", new Class[] {Object.class}));
+	}
+	else if (itemIdentifier.equals("Delete")) {
+	    item.setLabel("Delete");
+	    item.setPaletteLabel("Delete");
+	    item.setToolTip("Delete file");
+	    item.setImage(NSImage.imageNamed("delete.tiff"));
+	    item.setTarget(this);
+	    item.setAction(new NSSelector("deleteButtonPressed", new Class[] {Object.class}));
+	}
+	else if (itemIdentifier.equals("New Folder")) {
+	    item.setLabel("New Folder");
+	    item.setPaletteLabel("New Folder");
+	    item.setToolTip("Create New Folder");
+	    item.setImage(NSImage.imageNamed("newfolder.icns"));
+	    item.setTarget(this);
+	    item.setAction(new NSSelector("folderButtonPressed", new Class[] {Object.class}));
+	}
+	else {
+	    // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
+	    // Returning null will inform the toolbar this kind of item is not supported.
+	    item = null;
+	}
+	return item;
 	
-	this.drawer.open();
-	// ----------------------------------------------------------
- // Toolbar
- // ----------------------------------------------------------
+	/*
+	this.addToolbarItem(toolbarItems, "New Connection", "New Connection", "New Connection", "Connect to host", this, new NSSelector("connectButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("server.tiff"));
+	
+//	this.addToolbarItem(toolbarItems, "Back", "Back", "Back", "Go back", this, new NSSelector("backButtonPressed", new Class[] {null}), NSImage.imageNamed("back.tiff"));
 
-	NSToolbar toolbar = new NSToolbar("mainToolbar");
-	this.toolbarItems = new NSMutableDictionary();
-
-	this.addToolbarItem(toolbarItems, "New Connection", "New Connection", "New Connection", "Connect to host", this, new NSSelector("connectButtonPressed", new Class[] {null}), NSImage.imageNamed("server.tiff"));
-
-//	this.addToolbarItem(toolbarItems, "Back", "Back", "Back", "Show parent directory", this, new NSSelector("backButtonPressed", new Class[] {null}), NSImage.imageNamed("back.tiff"));
-
-	//    private void addToolbarItem(NSMutableDictionary toolbarItems, String identifier, String label, String paletteLabel, String toolTip, Object target, NSSelector action, NSImage image) {
-
-	this.addToolbarItem(toolbarItems, "Path", "Path", "Path", "Change working directory", this, null, null);
-	NSToolbarItem pathComboBoxItem = (NSToolbarItem)toolbarItems.objectForKey("Path");
-	pathComboBoxItem.setView(pathComboBox);
-	pathComboBoxItem.setMinSize(pathComboBox.frame().size());
-	pathComboBoxItem.setMaxSize(pathComboBox.frame().size());
-//	pathComboBoxItem.setMaxSize(new NSSize(170, pathComboBox.frame().height()));
+	this.addToolbarItem(toolbarItems, "Path", "Path", "Path", "Change working directory", pathController, null, null);
+	NSToolbarItem pathItem = (NSToolbarItem)toolbarItems.objectForKey("Path");
+	pathItem.setView(pathPopup);
+	pathItem.setMinSize(pathPopup.frame().size());
+	pathItem.setMaxSize(pathPopup.frame().size());
+//	pathItem.setMaxSize(new NSSize(170, pathController.frame().height()));
 
 	this.addToolbarItem(toolbarItems, "Quick Connect", "Quick Connect", "Quick Connect", "Connect to host", this, null, null);
 	NSToolbarItem quickConnectItem = (NSToolbarItem)toolbarItems.objectForKey("Quick Connect");
@@ -300,31 +462,24 @@ public class CDBrowserController implements Observer {
 	quickConnectItem.setMinSize(quickConnectField.frame().size());
 	quickConnectItem.setMaxSize(quickConnectField.frame().size());
 
-	this.addToolbarItem(toolbarItems, "Refresh", "Refresh", "Refresh", "Refresh directory listing", this, new NSSelector("refreshButtonPressed", new Class[] {null}), NSImage.imageNamed("refresh.tiff"));
+	this.addToolbarItem(toolbarItems, "Refresh", "Refresh", "Refresh", "Refresh directory listing", this, new NSSelector("refreshButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("refresh.tiff"));
 
-	this.addToolbarItem(toolbarItems, "Download", "Download", "Download", "Download file", this, new NSSelector("downloadButtonPressed", new Class[] {null}), NSImage.imageNamed("download.tiff"));
+	this.addToolbarItem(toolbarItems, "Download", "Download", "Download", "Download file", this, new NSSelector("downloadButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("download.tiff"));
 
-	this.addToolbarItem(toolbarItems, "Upload", "Upload", "Upload", "Upload file", this, new NSSelector("uploadButtonPressed", new Class[] {null}), NSImage.imageNamed("upload.tiff"));
+	this.addToolbarItem(toolbarItems, "Upload", "Upload", "Upload", "Upload file", this, new NSSelector("uploadButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("upload.tiff"));
 
-	this.addToolbarItem(toolbarItems, "New Folder", "New Folder", "New Folder", "Create New Folder", this, new NSSelector("folderButtonPressed", new Class[] {null}), NSImage.imageNamed("newfolder.icns"));
+	this.addToolbarItem(toolbarItems, "New Folder", "New Folder", "New Folder", "Create New Folder", this, new NSSelector("folderButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("newfolder.icns"));
 
-	this.addToolbarItem(toolbarItems, "Get Info", "Get Info", "Get Info", "Show file permissions", this, new NSSelector("infoButtonPressed", new Class[] {null}), NSImage.imageNamed("info.tiff"));
+	this.addToolbarItem(toolbarItems, "Get Info", "Get Info", "Get Info", "Show file permissions", this, new NSSelector("infoButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("info.tiff"));
 
-	this.addToolbarItem(toolbarItems, "Toggle Drawer", "Toggle Drawer", "Toggle Drawer", "Show connection transcript", this, new NSSelector("drawerButtonPressed", new Class[] {NSObject.class}), NSImage.imageNamed("transcript.tiff"));
+	this.addToolbarItem(toolbarItems, "Toggle Drawer", "Toggle Drawer", "Toggle Drawer", "Show connection transcript", this, new NSSelector("drawerButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("transcript.tiff"));
 
-	this.addToolbarItem(toolbarItems, "Delete", "Delete", "Delete", "Delete file", this, new NSSelector("deleteButtonPressed", new Class[] {null}), NSImage.imageNamed("delete.tiff"));
-
-	toolbar.setDelegate(this);
-	toolbar.setAllowsUserCustomization(true);
-	toolbar.setAutosavesConfiguration(true);
-	mainWindow.setToolbar(toolbar);
+	this.addToolbarItem(toolbarItems, "Delete", "Delete", "Delete", "Delete file", this, new NSSelector("deleteButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("delete.tiff"));
+	 */
     }
 
 
-    // ----------------------------------------------------------
-    // Toolbar delegate methods
-    // ----------------------------------------------------------
-
+	/*
     private void addToolbarItem(NSMutableDictionary toolbarItems, String identifier, String label, String paletteLabel, String toolTip, Object target, NSSelector action, NSImage image) {
 	NSToolbarItem item = new NSToolbarItem(identifier);
 	item.setLabel(label);
@@ -337,7 +492,9 @@ public class CDBrowserController implements Observer {
 
 	toolbarItems.setObjectForKey(item, identifier);
     }
+	 */
 
+	 
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
 	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Refresh", "Download", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer"});
     }
@@ -346,40 +503,60 @@ public class CDBrowserController implements Observer {
 	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Refresh", "Download", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
     }
 
-    public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
-	return (NSToolbarItem)toolbarItems.objectForKey(itemIdentifier);
+    public void toolbarWillAddItem(NSNotification notification) {
+	NSToolbarItem addedItem = (NSToolbarItem) notification.userInfo().objectForKey("item");
+	if(addedItem.itemIdentifier().equals("Path")) {
+	    pathItem = addedItem;
+	    pathItem.setTarget(pathController);
+	    pathItem.setAction(new NSSelector("selectionChanged", new Class[] { Object.class } ));
+	}
+	if(addedItem.itemIdentifier().equals("Quick Connect")) {
+	    quickConnectItem = addedItem;
+	    quickConnectItem.setTarget(this);
+	    quickConnectItem.setAction(new NSSelector("connectFieldPressed", new Class[] { Object.class } ));
+	}    
+    }
+
+    public void toolbarDidRemoveItem(NSNotification notif) {
+	NSToolbarItem removedItem = (NSToolbarItem) notif.userInfo().objectForKey("item");
+	if (removedItem == pathItem) {
+	    pathItem = null;
+	}
+	if (removedItem == quickConnectItem) {
+	    quickConnectItem = null;
+	}
     }
 
     public boolean validateToolbarItem(NSToolbarItem item) {
 //	log.debug("validateToolbarItem");
 	String label = item.label();
 	if(label.equals("Path")) {
-	    return pathComboBox.numberOfItems() > 0;
+	    return pathController.numberOfItems() > 0;
 	}
-	if(label.equals("Refresh")) {
-	    return pathComboBox.numberOfItems() > 0;
+	else if(label.equals("Refresh")) {
+	    return pathController.numberOfItems() > 0;
 	}
-	if(label.equals("Download")) {
+	else if(label.equals("Download")) {
 	    return browserTable.selectedRow() != -1;
 	}
-	if(label.equals("Delete")) {
+	else if(label.equals("Delete")) {
 	    return browserTable.selectedRow() != -1;
 	}
-	if(label.equals("New Folder")) {
-	    return pathComboBox.numberOfItems() > 0;
+	else if(label.equals("New Folder")) {
+	    return pathController.numberOfItems() > 0;
 	}
-	if(label.equals("Get Info")) {
+	else if(label.equals("Get Info")) {
 	    return browserTable.selectedRow() != -1;
 	}
 	return true;
     }
-
+}
 
 
     // ----------------------------------------------------------
     // Window delegate methods
     // ----------------------------------------------------------
-
+/*
     public boolean windowShouldClose(NSWindow sender) {
 	NSAlertPanel.beginAlertSheet(
 			      "Really close?", //title
@@ -410,201 +587,8 @@ public class CDBrowserController implements Observer {
 
     public void closeSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	// if multi window app only close the one window with main.close()
-	sheet.orderOut(this);
+	sheet.orderOut(null);
 	if(returncode == NSAlertPanel.DefaultReturn)
 	    NSApplication.sharedApplication().terminate(this);
     }
-
-
-    
-    // ----------------------------------------------------------
-    // CDHostKeyVerification
-    // ----------------------------------------------------------
-
-    /**
-	* Concrete Coccoa implementation of a SSH HostKeyVerification
-     */
-    private class CDHostKeyVerification extends AbstractHostKeyVerification {
-	private String host;
-	private String fingerprint;
-
-	private boolean done;
-
-	public CDHostKeyVerification() throws InvalidHostFileException {
-	    super();
-	    log.debug("CDHostKeyVerification");
-	}
-
-	public CDHostKeyVerification(String hostFile) throws InvalidHostFileException {
-	    super(hostFile);
-	}
-
-	public void onDeniedHost(String hostname) {
-	    log.debug("onDeniedHost");
-	    NSAlertPanel.beginInformationalAlertSheet(
-					       "Access denied", //title
-					       "OK",// defaultbutton
-					       null,//alternative button
-					       null,//other button
-					       null,//@todomainWindow,
-					       this, //delegate
-					       new NSSelector
-					       (
-	     "deniedHostSheetDidEnd",
-	     new Class[]
-	     {
-		 NSWindow.class, int.class, NSWindow.class
-	     }
-	     ),// end selector
-					       null, // dismiss selector
-					       this, // context
-					       "Access to the host " + hostname + " is denied from this system" // message
-					       );
-	    while(!this.done) {
-		try {
-		    Thread.sleep(500); //milliseconds
-		}
-		catch(InterruptedException e) {
-		    e.printStackTrace();
-		}
-	    }
-	}
-
-	public void onHostKeyMismatch(String host, String fingerprint, String actualHostKey) {
-	    log.debug("onHostKeyMismatch");
-	    this.host = host;
-	    this.fingerprint = fingerprint;
-	    NSAlertPanel.beginInformationalAlertSheet(
-					       "Host key mismatch", //title
-					       "Allow",// defaultbutton
-					       "Deny",//alternative button
-					       isHostFileWriteable() ? "Always" : null,//other button
-					       null,//@todo mainWindow,
-					       this, //delegate
-					       new NSSelector
-					       (
-	     "keyMismatchSheetDidEnd",
-	     new Class[]
-	     {
-		 NSWindow.class, int.class, NSWindow.class
-	     }
-	     ),// end selector
-					       null, // dismiss selector
-					       this, // context
-					       "The host key supplied by " + host + " is: "
-					       + actualHostKey +
-					       "The current allowed key for " + host + " is: "
-					       + fingerprint +"\nDo you want to allow the host access?");
-	    while(!this.done) {
-		try {
-		    Thread.sleep(500); //milliseconds
-		}
-		catch(InterruptedException e) {
-		    e.printStackTrace();
-		}
-	    }
-	}
-
-
-	public void onUnknownHost(String host, String fingerprint) {
-	    log.debug("onUnknownHost");
-	    this.host = host;
-	    this.fingerprint = fingerprint;
-	    NSAlertPanel.beginInformationalAlertSheet(
-					       "Unknown host", //title
-					       "Allow",// defaultbutton
-					       "Deny",//alternative button
-					       isHostFileWriteable() ? "Always" : null,//other button
-					       null,//@todo mainWindow,//window
-					       this, //delegate
-					       new NSSelector
-					       (
-	     "unknownHostSheetDidEnd",
-	     new Class[]
-	     {
-		 NSWindow.class, int.class, NSWindow.class
-	     }
-	     ),// end selector
-					       null, // dismiss selector
-					       this, // context
-					       "The host " + host
-					       + " is currently unknown to the system. The host key fingerprint is: " + fingerprint+".");
-	    while(!this.done) {
-		try {
-		    Thread.sleep(500); //milliseconds
-		}
-		catch(InterruptedException e) {
-		    e.printStackTrace();
-		}
-	    }
-	}
-
-
-	public void deniedHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	    log.debug("deniedHostSheetDidEnd");
-	    sheet.orderOut(this);
-	    done = true;
-	}
-
-	public void keyMismatchSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	    log.debug("keyMismatchSheetDidEnd");
-	    sheet.orderOut(this);
-	    try {
-		if(returncode == NSAlertPanel.DefaultReturn)
-		    allowHost(host, fingerprint, false);
-		if(returncode == NSAlertPanel.AlternateReturn) {
-		    NSAlertPanel.beginInformationalAlertSheet(
-						"Invalid host key", //title
-						"OK",// defaultbutton
-						null,//alternative button
-						null,//other button
-						null,//@todo mainWindow,
-						this, //delegate
-						null,// end selector
-						null, // dismiss selector
-						this, // context
-						"Cannot continue without a valid host key." // message
-						);
-		    log.info("Cannot continue without a valid host key");
-		}
-		if(returncode == NSAlertPanel.OtherReturn) {
-		    //
-		}
-		done = true;
-	    }
-	    catch(InvalidHostFileException e) {
-		e.printStackTrace();
-	    }
-	}
-
-	public void unknownHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	    log.debug("unknownHostSheetDidEnd");
-	    sheet.orderOut(this);
-	    try {
-		if(returncode == NSAlertPanel.DefaultReturn)
-		    allowHost(host, fingerprint, false); // allow host
-		if(returncode == NSAlertPanel.AlternateReturn) {
-		    NSAlertPanel.beginInformationalAlertSheet(
-						"Invalid host key", //title
-						"OK",// defaultbutton
-						null,//alternative button
-						null,//other button
-						null,//@todo mainWindow,
-						this, //delegate
-						null,// end selector
-						null, // dismiss selector
-						this, // context
-						"Cannot continue without a valid host key." // message
-						);
-		    log.info("Cannot continue without a valid host key");
-		}
-		if(returncode == NSAlertPanel.OtherReturn)
-		    allowHost(host, fingerprint, true); // always allow host
-		done = true;
-	    }
-	    catch(InvalidHostFileException e) {
-		e.printStackTrace();
-	    }
-	}
-    }    
-}
+*/

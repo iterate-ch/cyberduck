@@ -62,14 +62,9 @@ public class Host extends Observable {
 
     public void callObservers(Object arg) {
         log.debug("callObservers:"+arg.toString());
-	log.debug(this.countObservers()+" observers known.");
-        long start = System.currentTimeMillis();
+	log.debug(this.countObservers()+" observer(s) known.");
 	this.setChanged();
-//	if(arg instanceof Path)
-	    //@todothis.workdir = (Path)arg;
 	this.notifyObservers(arg);
-        long end = System.currentTimeMillis();
-	log.debug((end - start) + " ms");
     }
     
 
@@ -90,7 +85,7 @@ public class Host extends Observable {
 	    }
 	}
         this.session.connect();
-	this.callObservers(new Message(Message.OPEN));
+	this.callObservers(new Message(Message.OPEN, "Session opened."));
     }
     
     public boolean hasValidSession() {
@@ -103,7 +98,7 @@ public class Host extends Observable {
 	    this.session.close();
 	    this.session = null;
 	}
-	this.callObservers(new Message(Message.CLOSE));
+	this.callObservers(new Message(Message.CLOSE, "Session closed"));
     }
 
     public void recycle() {
@@ -115,6 +110,19 @@ public class Host extends Observable {
 //    public boolean isConnected() {
 //	return this.getSession().isConnected();
   //  }    
+  
+  
+    public void download(Path file) {
+    
+    }
+    
+    public void upload(java.io.File file) {
+    
+    }
+
+    // ----------------------------------------------------------
+    // Accessor methods
+    // ----------------------------------------------------------
 
     public Login getLogin() {
 	return this.login;

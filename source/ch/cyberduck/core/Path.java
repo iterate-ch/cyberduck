@@ -80,7 +80,7 @@ public abstract class Path {// extends Observable {
 	* @param pathname The absolute path of the file
      */
     public void setPath(String pathname) {
-	log.debug("setPath:"+pathname);
+//	log.debug("setPath:"+pathname);
 //	if(pathname.charAt(pathname.length()-1) == '/')
 //	    pathname = pathname.substring(0, pathname.length()-2);
         this.path = pathname.trim();

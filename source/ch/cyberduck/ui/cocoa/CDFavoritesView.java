@@ -65,6 +65,9 @@ public class CDFavoritesView extends NSTableView implements Observer {
 	Favorites.instance().addObserver(this);
     }
 
+    public void finalize() {
+	this.setDelegate(null);
+    }
 
     public void update(Observable o, Object arg) {
 	if(o instanceof Favorites) {
@@ -146,7 +149,7 @@ public class CDFavoritesView extends NSTableView implements Observer {
 		log.debug("CDImageCell");
 	    }
 
-	    public void cellClicked(NSObject sender) {
+	    public void cellClicked(Object sender) {
 		log.debug("cellClicked");
 		Host host = (Host)model.getEntry(selectedRow());
 		host.openSession();
