@@ -21,43 +21,69 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Bug fixes, suggestions and comments should be sent to bruce@enterprisedt.com
+ *
+ *  Change Log:
+ *
+ *        $Log$
+ *        Revision 1.7  2004/11/02 12:26:27  dkocher
+ *        *** empty log message ***
+ *
+ *        Revision 1.5  2004/07/23 08:28:54  bruceb
+ *        made public cvsId
+ *
+ *        Revision 1.4  2002/11/19 22:01:25  bruceb
+ *        changes for 1.2
+ *
+ *        Revision 1.3  2001/10/09 20:54:08  bruceb
+ *        No change
+ *
+ *        Revision 1.1  2001/10/05 14:42:04  bruceb
+ *        moved from old project
+ *
+ *
  */
 
 package com.enterprisedt.net.ftp;
 
 /**
- * Enumerates the transfer types possible. We
- * support only the two common types, ASCII and
- * Image (often called binary).
+ *  Enumerates the transfer types possible. We
+ *  support only the two common types, ASCII and
+ *  Image (often called binary).
  *
- * @author Bruce Blackshaw
- * @version $Revision$
+ *  @author             Bruce Blackshaw
+ *  @version        $Revision$
+ *
  */
-public class FTPTransferType {
+ public class FTPTransferType {
 
-    /**
-     * Represents ASCII transfer type
-     */
-    public static FTPTransferType ASCII = new FTPTransferType();
+     /**
+      *  Revision control id
+      */
+     public static String cvsId = "@(#)$Id$";
 
-    /**
-     * Represents Image (or binary) transfer type
-     */
-    public static FTPTransferType BINARY = new FTPTransferType();
+     /**
+      *   Represents ASCII transfer type
+      */
+     public static FTPTransferType ASCII = new FTPTransferType();
 
-    /**
-     * The char sent to the server to set ASCII
-     */
-    static String ASCII_CHAR = "A";
+     /**
+      *   Represents Image (or binary) transfer type
+      */
+     public static FTPTransferType BINARY = new FTPTransferType();
 
-    /**
-     * The char sent to the server to set BINARY
-     */
-    static String BINARY_CHAR = "I";
+     /**
+      *   The char sent to the server to set ASCII
+      */
+     static String ASCII_CHAR = "A";
 
-    /**
-     * Private so no-one else can instantiate this class
-     */
-    private FTPTransferType() {
-    }
-}
+     /**
+      *   The char sent to the server to set BINARY
+      */
+     static String BINARY_CHAR = "I";
+
+     /**
+      *  Private so no-one else can instantiate this class
+      */
+     private FTPTransferType() {
+     }
+ }

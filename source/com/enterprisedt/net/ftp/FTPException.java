@@ -21,6 +21,25 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Bug fixes, suggestions and comments should be sent to bruce@enterprisedt.com
+ *
+ *  Change Log:
+ *
+ *    $Log$
+ *    Revision 1.10  2004/11/02 12:26:27  dkocher
+ *    *** empty log message ***
+ *
+ *    Revision 1.5  2004/07/23 08:27:43  bruceb
+ *    new constructor
+ *
+ *    Revision 1.4  2002/11/19 22:01:25  bruceb
+ *    changes for 1.2
+ *
+ *    Revision 1.3  2001/10/09 20:54:08  bruceb
+ *    No change
+ *
+ *    Revision 1.1  2001/10/05 14:42:04  bruceb
+ *    moved from old project
+ *
  */
 
 package com.enterprisedt.net.ftp;
@@ -28,135 +47,79 @@ package com.enterprisedt.net.ftp;
 import java.io.IOException;
 
 /**
- * FTP specific exceptions
+ *  FTP specific exceptions
  *
- * @author Bruce Blackshaw
- * @version $Revision$
+ *  @author     Bruce Blackshaw
+ *  @version    $Revision$
+ *
  */
-public class FTPException extends IOException {
+ public class FTPException extends IOException {
 
     /**
-     * Integer reply code
+     *  Revision control id
      */
-    private int reply = -1;
+    public static String cvsId = "@(#)$Id$";
+
 
     /**
-     * Constructor. Delegates to super.
+     *  Integer reply code
+     */
+    private int replyCode = -1;
+
+    /**
+     *   Constructor. Delegates to super.
      *
-     * @param msg Message that the user will be
-     *            able to retrieve
+     *   @param   msg   Message that the user will be
+     *                  able to retrieve
      */
     public FTPException(String msg) {
         super(msg);
     }
 
     /**
-     * Constructor. Permits setting of reply code
+     *  Constructor. Permits setting of reply code
      *
-     * @param msg   message that the user will be
-     *              able to retrieve
-     * @param reply string form of reply code
+     *   @param   msg        message that the user will be
+     *                       able to retrieve
+     *   @param   replyCode  string form of reply code
      */
-    public FTPException(String msg, String reply) {
+    public FTPException(String msg, String replyCode) {
 
         super(msg);
 
         // extract reply code if possible
         try {
-            this.reply = Integer.parseInt(reply);
+            this.replyCode = Integer.parseInt(replyCode);
         }
         catch (NumberFormatException ex) {
-            this.reply = -1;
+            this.replyCode = -1;
         }
     }
-
-
+    
     /**
-     * Get the reply code if it exists
+     *  Constructor. Permits setting of reply code
      *
-     * @return reply if it exists, -1 otherwise
+     *   @param   reply     reply object
+     */
+    public FTPException(FTPReply reply) {
+
+        super(reply.getReplyText());
+
+        // extract reply code if possible
+        try {
+            this.replyCode = Integer.parseInt(reply.getReplyCode());
+        }
+        catch (NumberFormatException ex) {
+            this.replyCode = -1;
+        }
+    }    
+    
+    /**
+     *   Get the reply code if it exists
+     *
+     *   @return  reply if it exists, -1 otherwise
      */
     public int getReplyCode() {
-        return reply;
-    }
-
-    /**
-     * Determine if a reply code is a positive preliminary response.  All
-     * codes beginning with a 1 are positive preliminary responses.
-     * Postitive preliminary responses are used to indicate tentative success.
-     * No further commands can be issued to the FTP server after a positive
-     * preliminary response until a follow up response is received from the
-     * server.
-     * <p/>
-     *
-     * @param reply The reply code to test.
-     * @return True if a reply code is a postive preliminary response, false
-     *         if not.
-     */
-    public boolean isPositivePreliminary() {
-        return (reply >= 100 && reply < 200);
-    }
-
-    /**
-     * Determine if a reply code is a positive completion response.  All
-     * codes beginning with a 2 are positive completion responses.
-     * The FTP server will send a positive completion response on the final
-     * successful completion of a command.
-     * <p/>
-     *
-     * @param reply The reply code to test.
-     * @return True if a reply code is a postive completion response, false
-     *         if not.
-     */
-    public boolean isPositiveCompletion() {
-        return (reply >= 200 && reply < 300);
-    }
-
-    /**
-     * Determine if a reply code is a positive intermediate response.  All
-     * codes beginning with a 3 are positive intermediate responses.
-     * The FTP server will send a positive intermediate response on the
-     * successful completion of one part of a multi-part sequence of
-     * commands.  For example, after a successful USER command, a positive
-     * intermediate response will be sent to indicate that the server is
-     * ready for the PASS command.
-     * <p/>
-     *
-     * @param reply The reply code to test.
-     * @return True if a reply code is a postive intermediate response, false
-     *         if not.
-     */
-    public boolean isPositiveIntermediate() {
-        return (reply >= 300 && reply < 400);
-    }
-
-    /**
-     * Determine if a reply code is a negative transient response.  All
-     * codes beginning with a 4 are negative transient responses.
-     * The FTP server will send a negative transient response on the
-     * failure of a command that can be reattempted with success.
-     * <p/>
-     *
-     * @param reply The reply code to test.
-     * @return True if a reply code is a negative transient response, false
-     *         if not.
-     */
-    public boolean isNegativeTransient() {
-        return (reply >= 400 && reply < 500);
-    }
-
-    /**
-     * Determine if a reply code is a negative permanent response.  All
-     * codes beginning with a 5 are negative permanent responses.
-     * The FTP server will send a negative permanent response on the
-     * failure of a command that cannot be reattempted with success.
-     * <p/>
-     *
-     * @param reply The reply code to test.
-     * @return True if a reply code is a negative permanent response, false
-     *         if not.
-     */
-    public boolean isNegativePermanent() {
-        return (reply >= 500 && reply < 600);
+        return replyCode;
     }
 }

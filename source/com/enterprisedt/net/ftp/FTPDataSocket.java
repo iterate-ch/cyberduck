@@ -21,6 +21,31 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Bug fixes, suggestions and comments should be sent to bruce@enterprisedt.com
+ *
+ *  Change Log:
+ *
+ *        $Log$
+ *        Revision 1.9  2004/11/02 12:26:27  dkocher
+ *        *** empty log message ***
+ *
+ *        Revision 1.6  2003/11/15 11:23:55  bruceb
+ *        changes required for ssl subclasses
+ *
+ *        Revision 1.4  2003/11/02 21:50:14  bruceb
+ *        changed FTPDataSocket to an interface
+ *
+ *        Revision 1.3  2003/05/31 14:53:44  bruceb
+ *        1.2.2 changes
+ *
+ *        Revision 1.2  2002/11/19 22:01:25  bruceb
+ *        changes for 1.2
+ *
+ *        Revision 1.1  2001/10/09 20:53:46  bruceb
+ *        Active mode changes
+ *
+ *        Revision 1.1  2001/10/05 14:42:03  bruceb
+ *        moved from old project
+ *
  */
 
 package com.enterprisedt.net.ftp;
@@ -30,40 +55,53 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Interface for data socket classes, whether active or passive
+ *  Interface for data socket classes, whether active or passive
  *
- * @author Bruce Blackshaw
- * @version $Revision$
+ *  @author      Bruce Blackshaw
+ *  @version     $Revision$
  */
 public interface FTPDataSocket {
 
     /**
-     * Set the TCP timeout on the underlying control socket.
-     * <p/>
-     * If a timeout is set, then any operation which
-     * takes longer than the timeout value will be
-     * killed with a java.io.InterruptedException.
-     *
-     * @param millis The length of the timeout, in milliseconds
+     *  Revision control id
      */
-    void setTimeout(int millis) throws IOException;
+    public static String cvsId = "@(#)$Id$";
 
     /**
-     * Get the appropriate output stream for writing to
+     *   Set the TCP timeout on the underlying control socket.
      *
-     * @return output stream for underlying socket.
+     *   If a timeout is set, then any operation which
+     *   takes longer than the timeout value will be
+     *   killed with a java.io.InterruptedException.
+     *
+     *   @param millis The length of the timeout, in milliseconds
      */
-    OutputStream getOutputStream() throws IOException;
+    public void setTimeout(int millis) throws IOException;
+    
+    /**
+     * Returns the local port to which this socket is bound. 
+     * 
+     * @return the local port number to which this socket is bound
+     */
+    public int getLocalPort();
 
     /**
-     * Get the appropriate input stream for reading from
+     *  Get the appropriate output stream for writing to
      *
-     * @return input stream for underlying socket.
+     *  @return  output stream for underlying socket.
      */
-    InputStream getInputStream() throws IOException;
+    public OutputStream getOutputStream() throws IOException;
 
     /**
-     * Closes underlying socket(s)
+     *  Get the appropriate input stream for reading from
+     *
+     *  @return  input stream for underlying socket.
      */
-    void close() throws IOException;
+    public InputStream getInputStream() throws IOException;
+
+     /**
+      *  Closes underlying socket(s)
+      */
+    public void close() throws IOException;
 }
+
