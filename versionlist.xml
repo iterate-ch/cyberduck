@@ -9,6 +9,7 @@
 	<key>comment</key>
         <string>Changelog:
 2.4b3
+- [Localize] Russian Localization
 - [Feature] Preliminary AppleScript support (see .scpt script samples)
 - [Feature] Quick Connect field and hostname field in connection dialog accept URLs as input
 - [Feature] Reordering bookmarks using drag and drop

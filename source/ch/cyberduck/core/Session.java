@@ -200,8 +200,6 @@ public abstract class Session extends Observable {
 	}
 
 	private void release() {
-//		this.host.setLoginController(null);
-//		this.host.setHostKeyVerificationController(null);
 		SessionPool.instance().release(this);
 	}
 

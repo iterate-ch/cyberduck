@@ -886,6 +886,7 @@ public class CDBrowserController extends CDController implements Observer {
 		this.bookmarkTable.selectRow(bookmarkModel.lastIndexOf(item), false);
 		this.bookmarkTable.scrollRowToVisible(bookmarkModel.lastIndexOf(item));
 		CDBookmarkController controller = new CDBookmarkController(bookmarkTable, item);
+		controller.window().makeKeyAndOrderFront(null);
 	}
 
 	private NSButton deleteBookmarkButton; // IBOutlet

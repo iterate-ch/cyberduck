@@ -100,6 +100,7 @@ de.lproj/Update.strings svneol=native#unset
 de.lproj/Validator.nib/keyedobjects.nib -text
 de.lproj/Validator.strings svneol=native#unset
 en.lproj/Bookmark.nib/keyedobjects.nib -text
+en.lproj/Bookmark.strings svneol=native#unset
 en.lproj/Browser.nib/keyedobjects.nib -text
 en.lproj/Browser.strings svneol=native#unset
 en.lproj/Connection.nib/keyedobjects.nib -text

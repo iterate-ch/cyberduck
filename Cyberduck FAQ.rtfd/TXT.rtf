@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica-Oblique;
 \f3\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;}
-\vieww18760\viewh18660\viewkind0
+\vieww12040\viewh13540\viewkind0
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\fs24 \cf0      {{\NeXTGraphic cyberduck-application.icns \width2560 \height2560
@@ -98,13 +98,30 @@
 \f0 \cf0 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b \cf0 	The server does only allow one single connection; I can't transfer any files!\
+\f1\b \cf0 \'a5	The server does only allow one single connection; I can't transfer any files!\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0 \cf0 	Limit the maximum number of simultaneous to a server to one in the 'Advanced' tab in the Preferences. In addition, to force the browser connection to close upon transferring a file, open a Terminal.app window and type: \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f3 \cf0 		defaults write ch.sudo.cyberduck connection.pool.force true\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \
+\'a5	The connection to the server frequently times out; I want it to stay it alive if at all possible!\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	You can force Cyberduck to send a no operation command at a given time interval. Open a Terminal.app window and type: \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f3 \cf0 		defaults write ch.sudo.cyberduck connection.keepalive true\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 	
+\f0\b0 The default time interval a is set to 30 seconds. To adjust it (in milliseconds), type: \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f3 \cf0 		defaults write ch.sudo.cyberduck connection.keepalive.interval 30000\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 \
@@ -276,24 +293,20 @@
 	Select the file to rename and choose 'Info (\'f0-I)' from the 'File' menu or press the 'Get Info' toolbar button. Simply enter the new name in the very top field. The field must loose focus (e.g. by hitting <Enter> or <Tab> to commit the filename change.\
 \
 	{{\NeXTGraphic Pasted Graphic 14.tiff \width6000 \height1520
-}¬}\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+}¬}
+\f0\fs24 \
+\
 
-\f0\fs24 \cf0 \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 	How do I change the permissions on a particular file?
+\f1\b 	How do I change the permissions on a particular file?
 \f0\b0 \
 	Select the file in the browser and choose 'Info (\'f0-I)' from the 'File' menu. You can also select multiple files at once.\
 \
 	{{\NeXTGraphic Pasted Graphic 13.tiff \width6020 \height3140
-}¬}\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+}¬}
+\f0\fs24 \
+\
 
-\f0\fs24 \cf0 \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 \'a5	SYNCHRONIZATION\
+\f1\b \'a5	SYNCHRONIZATION\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0 \cf0 	Files can be synchronized by selecting the directory to synchronize in the browser and select 'Synchronize (\'f0-S)' from the 'File' menu or the toolbar button in the browser.\
