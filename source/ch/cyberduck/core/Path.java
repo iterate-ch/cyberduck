@@ -88,6 +88,7 @@ public abstract class Path {
      * @param name The relative filename
      */
     public void setPath(String parent, String name) {
+		log.debug("setPath:"+parent+","+name);
         if(parent.charAt(parent.length()-1) == '/')
             this.setPath(parent + name);
         else

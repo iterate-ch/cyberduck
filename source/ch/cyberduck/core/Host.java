@@ -119,7 +119,9 @@ public class Host {
     }
 	
 	public boolean hasReasonableDefaultPath() {
-		return (this.defaultpath != null) && (this.defaultpath != "") && (this.defaultpath != Path.HOME);
+		boolean v = (this.defaultpath != null) && (this.defaultpath != "") && (this.defaultpath != Path.HOME);
+        log.debug("hasReasonableDefaultPath:"+v+"("+defaultpath+")");
+		return v;
 	}
     
     public void closeSession() {
@@ -239,6 +241,6 @@ public class Host {
 	 @return The URL of the remote host including user login hostname and port
      */
     public String getURL() {
-		return this.getProtocol()+"://"+this.getLogin().getUsername()+"@"+this.getHostname()+":"+this.getPort();
+		return this.getProtocol()+"://"+this.getLogin().getUsername()+"@"+this.getHostname()+":"+this.getPort()+"/"+this.getDefaultPath();
     }
 }

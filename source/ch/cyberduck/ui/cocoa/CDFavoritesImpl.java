@@ -148,7 +148,7 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 	String identifier = (String)tableColumn.identifier();
-	if(identifier.equals("URL")) {
+	if(identifier.equals("FAVORITE")) {
 	    Host h = (Host)this.values().toArray()[row];
 	     /*
 	    NSDictionary attributes = new NSDictionary(new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName}, new Object[]{NSFont.fontWithNameAndSize("Monaco", 10), NSColor.greenColor()});

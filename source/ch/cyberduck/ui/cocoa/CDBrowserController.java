@@ -39,48 +39,81 @@ public class CDBrowserController implements Observer {
     public void setMainWindow(NSWindow mainWindow) {
 		this.mainWindow = mainWindow;
     }
-	
-    private CDBrowserTable browserTable; // IBOutlet
-    public void setBrowserTable(CDBrowserTable browserTable) {
+		
+    private CDBrowserTableDataSource browserModel;
+    private NSTableView browserTable; // IBOutlet
+    public void setBrowserTable(NSTableView browserTable) {
 		this.browserTable = browserTable;
+		this.browserTable.setTarget(this);
+		this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
+		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
+//		this.browserTable.setDelegate(new CDTableDelegate());
+		this.browserTable.setDoubleAction(new NSSelector("browserTableViewDidClickTableRow", new Class[] {Object.class}));
+//		NSMutableArray sortDescriptors = new NSMutableArray();
+//		sortDescriptors.addObject(new NSSortDescriptor(
+//											   "FILENAME", 
+//											   true, 
+//											   new NSSelector("sortByFilenames", new Class[] {Object.class})
+//											   )
+//						  );
+//		this.browserTable.setSortDescriptors(sortDescriptors);
+		
+		this.browserTable.tableColumnWithIdentifier("FILENAME").setSortDescriptorPrototype(
+																					 new NSSortDescriptor(
+										   "FILENAME", 
+										   true, 
+										   new NSSelector("sortByFilenames", new Class[] {NSTableView.class, Object.class}))
+																					 );
     }
+		
+	public void sortByFilenames(NSTableView table, Object o) {
+		log.debug("sortByFilenames:"+o);
+	}
 	
     private NSTableView favoritesTable; // IBOutlet
-    private CDFavoritesTableDelegate favoritesDelegate;
     public void setFavoritesTable(NSTableView favoritesTable) {
 		this.favoritesTable = favoritesTable;
 		this.favoritesTable.setDataSource(CDFavoritesImpl.instance());
-		this.favoritesTable.setDelegate(favoritesDelegate = new CDFavoritesTableDelegate());
+//		this.favoritesTable.setDelegate(new CDTableDelegate());
 		this.favoritesTable.setTarget(this);
-		this.favoritesTable.setDrawsGrid(false);
-		this.favoritesTable.setAutoresizesAllColumnsToFit(true);
+//		this.favoritesTable.tableColumnWithIdentifier("FAVORITE").setDataCell(new NSSegmentedCell());
+		//		this.favoritesTable.setDrawsGrid(false);
+  //		this.favoritesTable.setAutoresizesAllColumnsToFit(true);
 		this.favoritesTable.setDoubleAction(new NSSelector("favoritesTableViewDidClickTableRow", new Class[] {Object.class}));
-		this.favoritesTable.setAutosaveTableColumns(true);
+		//		this.favoritesTable.setAutosaveTableColumns(true);
     }
     
-    private NSComboBox quickConnectPopup;
+    private NSComboBox quickConnectPopup; // IBOutlet
     public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
 		this.quickConnectPopup = quickConnectPopup;
 		this.quickConnectPopup.setTarget(this);
 		this.quickConnectPopup.setAction(new NSSelector("quickConnectSelectionChanged", new Class[] {Object.class}));
 		this.quickConnectPopup.setUsesDataSource(true);
-//		this.quickConnectPopup.setDataSource(new QuickConnectDatasource());
 		this.quickConnectPopup.setDataSource(CDHistoryImpl.instance());
     }
 	
-//	private class QuickConnectDatasource implements NSComboBox.DataSource {
-//		private History history = CDHistoryImpl.instance();
-//		private Favorites favorites = CDFavoritesImpl.instance();
-//		
-//		public int numberOfItemsInComboBox(NSComboBox combo) {
-//			return history.values().size() + favorites.values().size();
-//		}
-//		
-//		public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-//			return null;
-//		}		
-//	}
+	//	private class QuickConnectDatasource implements NSComboBox.DataSource {
+ //		private History history = CDHistoryImpl.instance();
+ //		private Favorites favorites = CDFavoritesImpl.instance();
+ //		
+ //		public int numberOfItemsInComboBox(NSComboBox combo) {
+ //			return history.values().size() + favorites.values().size();
+ //		}
+ //		
+ //		public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
+ //			return null;
+ //		}		
+ //	}
     
+    private NSButton showFavoriteButton; // IBOutlet
+    public void setShowFavoriteButton(NSButton showFavoriteButton) {
+		this.showFavoriteButton = showFavoriteButton;
+		this.showFavoriteButton.setImage(NSImage.imageNamed("drawer.tiff"));
+		this.showFavoriteButton.setAlternateImage(NSImage.imageNamed("drawerPressed.tiff"));
+		this.showFavoriteButton.setTarget(this);
+		this.showFavoriteButton.setAction(new NSSelector("toggleFavoritesDrawer", new Class[] {Object.class}));
+    }
+
     private NSButton editFavoriteButton; // IBOutlet
     public void setEditFavoriteButton(NSButton editFavoriteButton) {
 		this.editFavoriteButton = editFavoriteButton;
@@ -187,9 +220,27 @@ public class CDBrowserController implements Observer {
 		this.window().setTitle("Cyberduck "+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		this.window().setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 		pathController = new CDPathController(pathPopup);
-		//	favoritesController = new CDFavoritesController(favoritesTable);
 		this.setupToolbar();
 		this.window().makeFirstResponder(quickConnectPopup);
+    }
+	
+	public void browserTableViewDidClickTableRow(Object sender) {
+		log.debug("browserTableViewDidClickTableRow");
+		if(browserTable.numberOfSelectedRows() > 0) {
+			Path p = (Path)browserModel.getEntry(browserTable.selectedRow()); //last row selected 
+			if(p.isFile() || browserTable.numberOfSelectedRows() > 1) {
+				NSEnumerator enum = browserTable.selectedRowEnumerator();
+				List items = new ArrayList();
+				Session session = browserModel.workdir().getSession().copy();
+				while(enum.hasMoreElements()) {
+					items.add(browserModel.getEntry(((Integer)enum.nextElement()).intValue()).copy(session));
+				}
+				CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
+				controller.transfer();
+			}
+			if(p.isDirectory())
+				p.list();
+		}
     }
 	
     public void favoritesTableViewDidClickTableRow(Object sender) {
@@ -197,42 +248,6 @@ public class CDBrowserController implements Observer {
 		if(favoritesTable.clickedRow() != -1) { //table header clicked
 			Host host = (Host)CDFavoritesImpl.instance().values().toArray()[favoritesTable.clickedRow()];
 			this.mount(host);
-		}
-    }
-	
-	//    private static final NSColor TABLE_CELL_SHADED_COLOR = NSColor.colorWithCalibratedRGB(0.929f, 0.953f, 0.996f, 1.0f);
-    
-    // ----------------------------------------------------------
-    // FavoritesTable delegate methods
-    // ----------------------------------------------------------
-	
-    private class CDFavoritesTableDelegate {
-		//	public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
-  //	    if(cell instanceof NSTextFieldCell) {
-  //		if (! (view == null || cell == null || column == null)) {
-  //		    if (row % 2 == 0) {
-  //			((NSTextFieldCell)cell).setDrawsBackground(true);
-  //			((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
-  //		    }
-  //		    else
-  //			((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
-  //		}
-  //	    }
-  //	}
-		
-		/**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
-		* The delegate can implement this method to disallow selection of particular rows.
-		*/
-		public  boolean tableViewShouldSelectRow( NSTableView aTableView, int rowIndex) {
-			return true;
-		}
-		
-		
-		/**	Returns true to permit aTableView to edit the cell at rowIndex in aTableColumn, false to deny permission.
-		*The delegate can implemen this method to disallow editing of specific cells.
-		*/
-		public boolean tableViewShouldEditLocation( NSTableView view, NSTableColumn tableColumn, int row) {
-			return false;
 		}
     }
 	
@@ -247,6 +262,17 @@ public class CDBrowserController implements Observer {
     public void update(Observable o, Object arg) {
 		log.debug("update:"+o+","+arg);
 		if(o instanceof Session) {
+			if(arg instanceof Path) {
+				browserModel.setWorkdir((Path)arg);
+				java.util.List cache = ((Path)arg).cache();
+				java.util.Iterator i = cache.iterator();
+				//		log.debug("List size:"+cache.size());
+				browserModel.clear();
+				while(i.hasNext()) {
+					browserModel.addEntry((Path)i.next());
+				}
+				browserTable.reloadData();
+			}
 			if(arg instanceof Message) {
 				Message msg = (Message)arg;
 				if(msg.getTitle().equals(Message.ERROR)) {
@@ -275,7 +301,7 @@ public class CDBrowserController implements Observer {
 				}
 				else if(msg.getTitle().equals(Message.OPEN)) {
 					progressIndicator.startAnimation(this);
-					CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
+//					CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
 					
 					browserModel.clear();
 					browserTable.reloadData();
@@ -341,7 +367,7 @@ public class CDBrowserController implements Observer {
 	
     public void gotoButtonClicked(Object sender) {
         log.debug("folderButtonClicked");
-		CDGotoController controller = new CDGotoController(browserTable.workdir());
+		CDGotoController controller = new CDGotoController(browserModel.workdir());
 		NSApplication.sharedApplication().beginSheet(
 											   controller.window(),//sheet
 											   mainWindow, //docwindow
@@ -350,7 +376,7 @@ public class CDBrowserController implements Observer {
 							 "gotoSheetDidEnd",
 							 new Class[] { NSPanel.class, int.class, Object.class }
 							 ),// did end selector
-											   browserTable.workdir()); //contextInfo
+											   browserModel.workdir()); //contextInfo
     }
     
     public void folderButtonClicked(Object sender) {
@@ -364,13 +390,13 @@ public class CDBrowserController implements Observer {
 							 "newfolderSheetDidEnd",
 							 new Class[] { NSPanel.class, int.class, Object.class }
 							 ),// did end selector
-											   browserTable.workdir()); //contextInfo
+											   browserModel.workdir()); //contextInfo
     }
 	
 	
     public void infoButtonClicked(Object sender) {
 		log.debug("infoButtonClicked");
-		CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
+//		CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
 		Path path = (Path)browserModel.getEntry(browserTable.selectedRow());
 		CDInfoController controller = new CDInfoController(path);
 		controller.window().makeKeyAndOrderFront(null);
@@ -381,7 +407,7 @@ public class CDBrowserController implements Observer {
 		NSEnumerator enum = browserTable.selectedRowEnumerator();
 		Vector files = new Vector();
 		StringBuffer alertText = new StringBuffer(NSBundle.localizedString("Really delete the following files? This cannot be undone."));
-		CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
+//		CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
 		while(enum.hasMoreElements()) {
 			int selected = ((Integer)enum.nextElement()).intValue();
 			Path p = (Path)browserModel.getEntry(selected);
@@ -433,14 +459,14 @@ public class CDBrowserController implements Observer {
 	
     public void refreshButtonClicked(Object sender) {
 		log.debug("refreshButtonClicked");
-		browserTable.workdir().list();
+		browserModel.workdir().list();
     }
 	
     public void downloadButtonClicked(Object sender) {
 		log.debug("downloadButtonClicked");
-		CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
+//		CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
 		NSEnumerator enum = browserTable.selectedRowEnumerator();
-		Session session = browserTable.workdir().getSession().copy();
+		Session session = browserModel.workdir().getSession().copy();
 		List items = new ArrayList();
 		while(enum.hasMoreElements()) {
 			items.add(browserModel.getEntry(((Integer)enum.nextElement()).intValue()).copy(session));
@@ -463,7 +489,7 @@ public class CDBrowserController implements Observer {
 		switch(returnCode) {
 			case(NSPanel.OKButton): {
 				//		Path parent = (Path)pathController.getItem(0);
-				Path parent = browserTable.workdir();
+				Path parent = browserModel.workdir();
 				// selected files on the local filesystem
 				NSArray selected = sheet.filenames();
 				java.util.Enumeration enumerator = selected.objectEnumerator();
@@ -491,7 +517,7 @@ public class CDBrowserController implements Observer {
 	
 	public void upButtonClicked(Object sender) {
 		log.debug("upButtonClicked");
-		browserTable.workdir().getParent().list();
+		browserModel.workdir().getParent().list();
 	}
     
     public void drawerButtonClicked(Object sender) {
@@ -542,7 +568,7 @@ public class CDBrowserController implements Observer {
 		this.unmount();
 		this.host = host;
 		this.host.getSession().addObserver((Observer)this);
-		this.host.getSession().addObserver((Observer)browserTable);
+//		this.host.getSession().addObserver((Observer)browserTable);
 		this.host.getSession().addObserver((Observer)pathController);
 		
 		if(this.host.getProtocol().equals(Session.SFTP)) {
@@ -622,6 +648,14 @@ public class CDBrowserController implements Observer {
 			item.setTarget(this);
 			item.setAction(new NSSelector("connectButtonClicked", new Class[] {Object.class}));
 		}
+		else if (itemIdentifier.equals(NSBundle.localizedString("Favorites"))) {
+//			item.setLabel(NSBundle.localizedString("Favorites"));
+//			item.setPaletteLabel(NSBundle.localizedString("Favorites"));
+			item.setToolTip(NSBundle.localizedString("Toggle Favorites Drawer"));
+			item.setView(showFavoriteButton);
+			item.setMinSize(showFavoriteButton.frame().size());
+			item.setMaxSize(showFavoriteButton.frame().size());
+		}
 		else if (itemIdentifier.equals(NSBundle.localizedString("Quick Connect"))) {
 			item.setLabel(NSBundle.localizedString("Quick Connect"));
 			item.setPaletteLabel(NSBundle.localizedString("Quick Connect"));
@@ -696,11 +730,11 @@ public class CDBrowserController implements Observer {
 	
 	
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-		return new NSArray(new Object[] {NSBundle.localizedString("New Connection"), NSToolbarItem.SeparatorItemIdentifier, NSBundle.localizedString("Quick Connect"), NSBundle.localizedString("Refresh"), NSBundle.localizedString("Get Info"), NSToolbarItem.FlexibleSpaceItemIdentifier, NSBundle.localizedString("Download"), NSBundle.localizedString("Upload")});
+		return new NSArray(new Object[] {NSBundle.localizedString("New Connection"), NSToolbarItem.SeparatorItemIdentifier, NSBundle.localizedString("Quick Connect"), NSBundle.localizedString("Refresh"), NSBundle.localizedString("Get Info"), NSToolbarItem.FlexibleSpaceItemIdentifier, NSBundle.localizedString("Download"), NSBundle.localizedString("Upload"), NSBundle.localizedString("Disconnect")});
     }
 	
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
-		return new NSArray(new Object[] {NSBundle.localizedString("New Connection"), NSBundle.localizedString("Quick Connect"), NSBundle.localizedString("Refresh"), NSBundle.localizedString("Download"), NSBundle.localizedString("Upload"), NSBundle.localizedString("Delete"), NSBundle.localizedString("New Folder"), NSBundle.localizedString("Get Info"), NSBundle.localizedString("Disconnect"), NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier, NSToolbarItem.SeparatorItemIdentifier, NSToolbarItem.FlexibleSpaceItemIdentifier, });
+		return new NSArray(new Object[] {NSBundle.localizedString("New Connection"), NSBundle.localizedString("Favorites"), NSBundle.localizedString("Quick Connect"), NSBundle.localizedString("Refresh"), NSBundle.localizedString("Download"), NSBundle.localizedString("Upload"), NSBundle.localizedString("Delete"), NSBundle.localizedString("New Folder"), NSBundle.localizedString("Get Info"), NSBundle.localizedString("Disconnect"), NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier, NSToolbarItem.SeparatorItemIdentifier, NSToolbarItem.FlexibleSpaceItemIdentifier, });
     }
 	
     // ----------------------------------------------------------

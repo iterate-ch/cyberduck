@@ -18,6 +18,8 @@ img/delete.tiff svneol=native#unset
 img/disconnect.tiff svneol=native#unset
 img/disk.tiff svneol=native#unset
 img/download.tiff svneol=native#unset
+img/drawer.tiff -text
+img/drawerPressed.tiff -text
 img/edit.tiff -text
 img/editPressed.tiff -text
 img/favorites.tiff svneol=native#unset
