@@ -53,7 +53,7 @@ import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
  * @version $Revision$
  */
 public class AgentAuthenticationClient extends SshAuthenticationClient {
-    private static Log log = LogFactory.getLog(PublicKeyAuthenticationClient.class);
+    private static Log log = LogFactory.getLog(AgentAuthenticationClient.class);
 
     /**  */
     protected SshAgentClient agent;

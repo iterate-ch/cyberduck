@@ -283,6 +283,14 @@ public class CDQueueController extends NSObject implements Observer {
             item.setAction(new NSSelector("revealButtonClicked", new Class[]{Object.class}));
             return item;
         }
+        if (itemIdentifier.equals("Open")) {
+            item.setLabel(NSBundle.localizedString("Open", ""));
+            item.setPaletteLabel(NSBundle.localizedString("Open with default application", ""));
+            item.setImage(NSImage.imageNamed("open.tiff"));
+            item.setTarget(this);
+            item.setAction(new NSSelector("openButtonClicked", new Class[]{Object.class}));
+            return item;
+        }
         if (itemIdentifier.equals("Remove")) {
             item.setLabel(NSBundle.localizedString("Remove", ""));
             item.setPaletteLabel(NSBundle.localizedString("Remove", ""));
@@ -346,11 +354,50 @@ public class CDQueueController extends NSObject implements Observer {
         }
     }
 
+    public void openButtonClicked(Object sender) {
+        if (this.queueTable.selectedRow() != -1) {
+            Queue item = QueueList.instance().getItem(this.queueTable.selectedRow());
+            Path f = item.getRoot();
+            String file = item.getRoot().getLocal().toString();
+            if (!NSWorkspace.sharedWorkspace().openFile(file)) {
+                if (item.isComplete()) {
+                    NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Could not open the file", ""), //title
+														 NSBundle.localizedString("OK", ""), // defaultbutton
+														 null, //alternative button
+														 null, //other button
+														 this.window(), //docWindow
+														 null, //modalDelegate
+														 null, //didEndSelector
+														 null, // dismiss selector
+														 null, // context
+														 NSBundle.localizedString("Could not open the file", "") + " \""
+														 + file
+														 + "\". " + NSBundle.localizedString("It moved since you downloaded it.", "") // message
+														 );
+                }
+                else {
+                    NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Could not open the file", ""), //title
+														 NSBundle.localizedString("OK", ""), // defaultbutton
+														 null, //alternative button
+														 null, //other button
+														 this.window(), //docWindow
+														 null, //modalDelegate
+														 null, //didEndSelector
+														 null, // dismiss selector
+														 null, // context
+														 NSBundle.localizedString("Could not open the file", "") + " \""
+														 + file
+														 + "\". " + NSBundle.localizedString("The file has not yet been downloaded.", "") // message
+														 );
+                }
+            }
+        }
+    }
+
     public void revealButtonClicked(Object sender) {
         if (this.queueTable.selectedRow() != -1) {
             Queue item = QueueList.instance().getItem(this.queueTable.selectedRow());
             Path f = item.getRoot();
-//			String file = f.status.isComplete() ? item.getRoot().getLocal().toString() : item.getRoot().getLocal().getTemp().toString();
             String file = item.getRoot().getLocal().toString();
             if (!NSWorkspace.sharedWorkspace().selectFile(file, "")) {
                 if (item.isComplete()) {
@@ -433,6 +480,7 @@ public class CDQueueController extends NSObject implements Observer {
             "Remove",
             "Clear",
             "Show",
+			//"Open",
             NSToolbarItem.CustomizeToolbarItemIdentifier,
             NSToolbarItem.SpaceItemIdentifier,
             NSToolbarItem.SeparatorItemIdentifier,

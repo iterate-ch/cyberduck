@@ -54,6 +54,9 @@ public abstract class Validator {
             log.info("Canceled " + path.getName() + " - no further validation needed");
             return false;
         }
+		if(path.isDirectory()) {
+			return true; // directory won't need validation, will get created if missing otherwise ignored
+		}
         if (resumeRequested) {
             boolean fileExists = Queue.KIND_DOWNLOAD == kind ? path.getLocal().getTemp().exists() : path.exists();
             log.info("File " + path.getName() + " exists:" + fileExists);
@@ -67,7 +70,7 @@ public abstract class Validator {
                 path.status.setResume(false);
                 return true;
             }
-            boolean fileExists = Queue.KIND_DOWNLOAD == kind ? path.getLocal().getTemp().exists() : path.exists();
+            boolean fileExists = (Queue.KIND_DOWNLOAD == kind) ? path.getLocal().getTemp().exists() : path.exists();
             log.info("File " + path.getName() + " exists:" + fileExists);
             if (fileExists) {
                 if (Preferences.instance().getProperty("queue.fileExists").equals("resume")) {

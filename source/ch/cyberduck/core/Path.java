@@ -216,8 +216,7 @@ public abstract class Path {
 
     /**
      * @param recursive Create intermediate directories as required.  If this option is
-     *                  not specified, the full path prefix of each operand must already
-     *                  exist
+     * not specified, the full path prefix of each operand must already exist
      */
     public abstract void mkdir(boolean recursive);
 
@@ -235,7 +234,7 @@ public abstract class Path {
         if (this.isRoot()) {
             return true;
         }
-        return this.getParent().exists() && this.getParent().list(false, true).contains(this);
+        return /*this.getParent().exists() &&*/ this.getParent().list(false, true).contains(this);
     }
 
     public boolean isFile() {
@@ -369,15 +368,14 @@ public abstract class Path {
      *         names, but only plain files.
      */
     private List getDownloadQueue(List queue) {
+		log.debug("Adding "+this.toString()+" to download queue.");
+		queue.add(this);
         if (this.isDirectory()) {
             for (Iterator i = this.list(false, true).iterator(); i.hasNext();) {
                 Path p = (Path)i.next();
                 p.setLocal(new Local(this.getLocal(), p.getName()));
                 p.getDownloadQueue(queue);
             }
-        }
-        else if (this.isFile()) {
-            queue.add(this);
         }
         return queue;
     }
@@ -388,7 +386,10 @@ public abstract class Path {
      *         Does not return any directory names, but only plain files.
      */
     private List getUploadQueue(List queue) {
+		log.debug("Adding "+this.toString()+" to upload queue.");
+		queue.add(this);
         if (this.getLocal().isDirectory()) {
+			this.attributes.setType(Path.DIRECTORY_TYPE);
             File[] files = this.getLocal().listFiles();
             for (int i = 0; i < files.length; i++) {
                 Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), new Local(files[i].getAbsolutePath()));
@@ -399,8 +400,9 @@ public abstract class Path {
             }
         }
         else if (this.getLocal().isFile()) {
+			this.attributes.setType(Path.FILE_TYPE);
+			//this.attributes.setTimestamp(this.getLocal().lastModified());
             this.status.setSize(this.getLocal().length()); //setting the file size to the known size of the local file
-            queue.add(this);
         }
         return queue;
     }

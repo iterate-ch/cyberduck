@@ -101,7 +101,7 @@ public class Status extends Observable implements Serializable {
      * @return length the size of file in bytes.
      */
     public long getSize() {
-        return size;
+        return this.size;
     }
 
     private static final long KILO = 1024; //2^10

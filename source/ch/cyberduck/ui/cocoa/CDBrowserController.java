@@ -209,7 +209,12 @@ public class CDBrowserController extends NSObject implements Observer {
         if (browserModel.numberOfRowsInTableView(browserTable) > 0 && browserTable.numberOfSelectedRows() > 0) {
             Path p = (Path)browserModel.getEntry(browserTable.selectedRow()); //last row selected
             if (p.isFile() || browserTable.numberOfSelectedRows() > 1) {
-                this.downloadButtonClicked(sender);
+				if(Preferences.instance().getProperty("browser.doubleClickOnFile").equals("edit")) {
+					this.editButtonClicked(sender);
+				}
+				else {
+					this.downloadButtonClicked(sender);
+				}
             }
             if (p.isDirectory()) {
                 p.list();
@@ -1367,61 +1372,51 @@ public class CDBrowserController extends NSObject implements Observer {
             log.debug("tableViewAcceptDrop:row:" + row + ",operation:" + operation);
             NSPasteboard infoPboard = info.draggingPasteboard();
             if (infoPboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-                Object o = infoPboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
-                log.debug("tableViewAcceptDrop:" + o);
-                if (o != null) {
-                    if (o instanceof NSArray) {
-                        NSArray filesList = (NSArray)o;
-                        Queue q = new Queue(Queue.KIND_UPLOAD);
-                        Session session = pathController.workdir().getSession().copy();
-                        for (int i = 0; i < filesList.count(); i++) {
-                            log.debug(filesList.objectAtIndex(i));
-                            Path p = null;
-                            if (row != -1) {
-                                p = PathFactory.createPath(session,
-                                        this.getEntry(row).getAbsolute(),
-                                        new Local((String)filesList.objectAtIndex(i)));
-                            }
-                            else {
-                                p = PathFactory.createPath(session,
-                                        pathController.workdir().getAbsolute(),
-                                        new Local((String)filesList.objectAtIndex(i)));
-                            }
-                            q.addRoot(p);
-                        }
-                        if (q.numberOfRoots() > 0) {
-                            QueueList.instance().addItem(q);
-                            CDQueueController.instance().startItem(q, (Observer)CDBrowserController.this);
-                        }
-                        return true;
-                    }
-                }
+                NSArray filesList = (NSArray)infoPboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
+				Queue q = new Queue(Queue.KIND_UPLOAD);
+				Session session = pathController.workdir().getSession().copy();
+				for (int i = 0; i < filesList.count(); i++) {
+					log.debug(filesList.objectAtIndex(i));
+					Path p = null;
+					if (row != -1) {
+						p = PathFactory.createPath(session,
+												   this.getEntry(row).getAbsolute(),
+												   new Local((String)filesList.objectAtIndex(i)));
+					}
+					else {
+						p = PathFactory.createPath(session,
+												   pathController.workdir().getAbsolute(),
+												   new Local((String)filesList.objectAtIndex(i)));
+					}
+					q.addRoot(p);
+				}
+				if (q.numberOfRoots() > 0) {
+					QueueList.instance().addItem(q);
+					CDQueueController.instance().startItem(q, (Observer)CDBrowserController.this);
+				}
+				return true;
             }
             else if (row != -1 && row < tableView.numberOfRows()) {
                 NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
                 log.debug("availableTypeFromArray:QueuePBoardType: " + pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
                 if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-                    Object o = pboard.propertyListForType("QueuePBoardType");// get the data from pasteboard
-                    log.debug("tableViewAcceptDrop:" + o);
-                    if (o != null) {
-                        NSArray elements = (NSArray)o;
-                        for (int i = 0; i < elements.count(); i++) {
-                            NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-                            Path parent = this.getEntry(row);
-                            if (parent.isDirectory()) {
-                                Queue q = new Queue(dict);
-                                List files = q.getRoots();
-                                for (Iterator iter = files.iterator(); iter.hasNext();) {
-                                    Path p = (Path)iter.next();
-                                    PathFactory.createPath(parent.getSession(), p.getAbsolute()).rename(parent.getAbsolute() + "/" + p.getName());
-                                }
-                                tableView.deselectAll(null);
-                                pathController.workdir().list(true);
-                                return true;
-                            }
-                        }
-                    }
-                }
+                    NSArray elements = (NSArray)pboard.propertyListForType("QueuePBoardType");// get the data from pasteboard
+					for (int i = 0; i < elements.count(); i++) {
+						NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
+						Path parent = this.getEntry(row);
+						if (parent.isDirectory()) {
+							Queue q = new Queue(dict);
+							List files = q.getRoots();
+							for (Iterator iter = files.iterator(); iter.hasNext();) {
+								Path p = (Path)iter.next();
+								PathFactory.createPath(parent.getSession(), p.getAbsolute()).rename(parent.getAbsolute() + "/" + p.getName());
+							}
+							tableView.deselectAll(null);
+							pathController.workdir().list(true);
+							return true;
+						}
+					}
+				}
             }
             return false;
         }
@@ -1444,17 +1439,17 @@ public class CDBrowserController extends NSObject implements Observer {
             log.debug("tableViewWriteRowsToPasteboard:" + rows);
             if (rows.count() > 0) {
                 this.promisedDragPaths = new Path[rows.count()];
-// The fileTypes argument is the list of fileTypes being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
+				// The fileTypes argument is the list of fileTypes being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
                 NSMutableArray fileTypes = new NSMutableArray();
                 NSMutableArray queueDictionaries = new NSMutableArray();
-// declare our dragged type in the paste board
+				// declare our dragged type in the paste board
                 pboard.declareTypes(new NSArray(NSPasteboard.FilesPromisePboardType), null);
                 Queue q = new Queue(Queue.KIND_DOWNLOAD);
                 Session session = pathController.workdir().getSession().copy();
                 for (int i = 0; i < rows.count(); i++) {
                     promisedDragPaths[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue()).copy(session);
                     if (promisedDragPaths[i].isFile()) {
-//					fileTypes.addObject(NSPathUtilities.FileTypeRegular);
+						// fileTypes.addObject(NSPathUtilities.FileTypeRegular);
                         if (promisedDragPaths[i].getExtension() != null) {
                             fileTypes.addObject(promisedDragPaths[i].getExtension());
                         }
@@ -1463,7 +1458,7 @@ public class CDBrowserController extends NSObject implements Observer {
                         }
                     }
                     else if (promisedDragPaths[i].isDirectory()) {
-//					fileTypes.addObject(NSPathUtilities.FileTypeDirectory);
+						// fileTypes.addObject(NSPathUtilities.FileTypeDirectory);
                         fileTypes.addObject("'fldr'");
                     }
                     else {
@@ -1472,28 +1467,25 @@ public class CDBrowserController extends NSObject implements Observer {
                     q.addRoot(promisedDragPaths[i]);
                 }
                 queueDictionaries.addObject(q.getAsDictionary());
-// Writing data for private use when the item gets dragged to the transfer queue.
+				// Writing data for private use when the item gets dragged to the transfer queue.
                 NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
                 queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
                 if (queuePboard.setPropertyListForType(queueDictionaries, "QueuePBoardType")) {
                     log.debug("QueuePBoardType data sucessfully written to pasteboard");
                 }
-                else {
-                    log.error("Could not write QueuePBoardType data to pasteboard");
-                }
-
+				
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
                 NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
                 NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
-
+				
                 tableView.dragPromisedFilesOfTypes(fileTypes, imageRect, this, true, event);
             }
-// we return false because we don't want the table to draw the drag image
+			// we return false because we don't want the table to draw the drag image
             return false;
         }
-
+		
         /**
-         * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
+			* @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
          *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
          *         Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
          *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
@@ -1501,17 +1493,14 @@ public class CDBrowserController extends NSObject implements Observer {
          */
         public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
             log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
-            if (null == dropDestination) {
-                return null; //return paths for interapplication communication
-            }
-            else {
-                NSMutableArray promisedDragNames = new NSMutableArray();
+			NSMutableArray promisedDragNames = new NSMutableArray();
+			if(null != dropDestination) {
                 Queue q = new Queue(Queue.KIND_DOWNLOAD);
                 for (int i = 0; i < promisedDragPaths.length; i++) {
                     try {
                         //@todo check if the returned path is the trash
                         this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
-                                this.promisedDragPaths[i].getName()));
+																	 this.promisedDragPaths[i].getName()));
                         q.addRoot(this.promisedDragPaths[i]);
                         promisedDragNames.addObject(this.promisedDragPaths[i].getName());
                     }
@@ -1523,9 +1512,9 @@ public class CDBrowserController extends NSObject implements Observer {
                     QueueList.instance().addItem(q);
                     CDQueueController.instance().startItem(q);
                 }
-                this.promisedDragPaths = null;
-                return promisedDragNames;
+//                this.promisedDragPaths = null;
             }
+			return promisedDragNames;
         }
 
 // ----------------------------------------------------------

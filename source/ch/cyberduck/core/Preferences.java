@@ -102,6 +102,7 @@ public abstract class Preferences {
         defaults.put("browser.openByDefault", "true");
         defaults.put("browser.showHidden", "false");
         defaults.put("browser.charset.encoding", "UTF-8");
+        defaults.put("browser.doubleClickOnFile", "download"); //"edit"
 
         defaults.put("editor.name", "SubEthaEdit");
         defaults.put("editor.bundleIdentifier", "de.codingmonkeys.SubEthaEdit");

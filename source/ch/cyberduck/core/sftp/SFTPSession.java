@@ -23,8 +23,10 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
+
 import com.sshtools.j2ssh.SshClient;
 import com.sshtools.j2ssh.SshException;
+import com.sshtools.j2ssh.agent.*;
 import com.sshtools.j2ssh.authentication.*;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
@@ -121,6 +123,14 @@ public class SFTPSession extends Session {
         this.setConnected(true);
     }
 
+	private int loginUsingAgentAuthentication(final Login credentials) throws IOException {
+        log.info("Trying ssh-agent authentication...");
+        AgentAuthenticationClient agent = new AgentAuthenticationClient();
+        agent.setUsername(credentials.getUsername());
+//		agent.setAgent(new SshAgentClient(false, "sftp", SSH.));
+        // Try the authentication
+        return SSH.authenticate(agent);
+	}
 
     private int loginUsingKBIAuthentication(final Login credentials) throws IOException {
         log.info("Trying Keyboard Interactive (PAM) authentication...");
@@ -197,8 +207,11 @@ public class SFTPSession extends Session {
                 }
             }
             else {
-                if (AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
-                        AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
+//                if (AuthenticationProtocolState.COMPLETE == this.loginUsingAgentAuthentication(credentials) ||
+				if(
+					AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
+					AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) 
+				{
                     this.log("Login successful", Message.PROGRESS);
                     credentials.addPasswordToKeychain();
                     return;

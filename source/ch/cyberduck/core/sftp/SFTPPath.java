@@ -308,35 +308,40 @@ public class SFTPPath extends Path {
         try {
             log.debug("download:" + this.toString());
             session.check();
-            this.getLocal().getParentFile().mkdirs();
-            out = new FileOutputStream(this.getLocal().getTemp(), this.status.isResume());
-            if (out == null) {
-                throw new IOException("Unable to buffer data");
-            }
-            SftpFile p = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-            this.status.setSize(p.getAttributes().getSize().intValue());
-            in = new SftpFileInputStream(p);
-            if (in == null) {
-                throw new IOException("Unable opening data stream");
-            }
-            if (this.status.isResume()) {
-                this.status.setCurrent(this.getLocal().getTemp().length());
-                long skipped = in.skip(this.status.getCurrent());
-                log.info("Skipping " + skipped + " bytes");
-                if (skipped < this.status.getCurrent()) {
-                    throw new IOException("Resume failed: Skipped " + skipped + " bytes instead of " + this.status.getCurrent());
-                }
-            }
-            this.download(in, out);
-            if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-                Permission perm = this.attributes.getPermission();
-                if (!perm.isUndefined()) {
-                    this.getLocal().setPermission(perm);
-                }
-            }
-            if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
-                this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
-            }
+//            this.getLocal().getParentFile().mkdirs();
+			if(this.isDirectory()) {
+				this.getLocal().mkdirs();
+			}
+			else {
+				out = new FileOutputStream(this.getLocal().getTemp(), this.status.isResume());
+				if (out == null) {
+					throw new IOException("Unable to buffer data");
+				}
+				SftpFile p = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
+				this.status.setSize(p.getAttributes().getSize().intValue());
+				in = new SftpFileInputStream(p);
+				if (in == null) {
+					throw new IOException("Unable opening data stream");
+				}
+				if (this.status.isResume()) {
+					this.status.setCurrent(this.getLocal().getTemp().length());
+					long skipped = in.skip(this.status.getCurrent());
+					log.info("Skipping " + skipped + " bytes");
+					if (skipped < this.status.getCurrent()) {
+						throw new IOException("Resume failed: Skipped " + skipped + " bytes instead of " + this.status.getCurrent());
+					}
+				}
+				this.download(in, out);
+				if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
+					Permission perm = this.attributes.getPermission();
+					if (!perm.isUndefined()) {
+						this.getLocal().setPermission(perm);
+					}
+				}
+				if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
+					this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+				}
+			}
         }
         catch (SshException e) {
             session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -369,46 +374,53 @@ public class SFTPPath extends Path {
         try {
             log.debug("upload:" + this.toString());
             session.check();
-            if (!this.getParent().exists()) {
-                PathFactory.createPath(session, this.getParent().getParent().getAbsolute(), this.getParent().getName()).mkdir(true);
-            }
-            in = new FileInputStream(this.getLocal());
-            if (in == null) {
-                throw new IOException("Unable to buffer data");
-            }
-            SftpFile p = null;
-            if (this.status.isResume()) {
-                p = session.SFTP.openFile(this.getAbsolute(),
-                        SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
-                        SftpSubsystemClient.OPEN_APPEND); //File open flag, forces all writes to append data at the end of the file.
-            }
-            else {
-                p = session.SFTP.openFile(this.getAbsolute(),
-                        SftpSubsystemClient.OPEN_CREATE | //File open flag, if specified a new file will be created if one does not already exist.
-                        SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
-                        SftpSubsystemClient.OPEN_TRUNCATE); //File open flag, forces an existing file with the same name to be truncated to zero length when creating a file by specifying OPEN_CREATE.
-            }
-            if (this.status.isResume()) {
-                this.status.setCurrent(p.getAttributes().getSize().intValue());
-            }
-            out = new SftpFileOutputStream(p);
-            if (out == null) {
-                throw new IOException("Unable opening data stream");
-            }
-            if (this.status.isResume()) {
-                long skipped = out.skip(this.status.getCurrent());
-                log.info("Skipping " + skipped + " bytes");
-                if (skipped < this.status.getCurrent()) {
-                    throw new IOException("Resume failed: Skipped " + skipped + " bytes instead of " + this.status.getCurrent());
-                }
-            }
-            this.upload(out, in);
-            if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
-                Permission perm = this.getLocal().getPermission();
-                if (!perm.isUndefined()) {
-                    this.changePermissions(perm, false);
-                }
-            }
+			//            if (!this.getParent().exists()) {
+			//                PathFactory.createPath(session, this.getParent().getParent().getAbsolute(), this.getParent().getName()).mkdir(true);
+			//            }
+			if(this.isDirectory()) {
+				if (!this.exists()) {
+					this.mkdir(false);
+				}
+			}
+			else {
+				in = new FileInputStream(this.getLocal());
+				if (in == null) {
+					throw new IOException("Unable to buffer data");
+				}
+				SftpFile p = null;
+				if (this.status.isResume()) {
+					p = session.SFTP.openFile(this.getAbsolute(),
+											  SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
+											  SftpSubsystemClient.OPEN_APPEND); //File open flag, forces all writes to append data at the end of the file.
+				}
+				else {
+					p = session.SFTP.openFile(this.getAbsolute(),
+											  SftpSubsystemClient.OPEN_CREATE | //File open flag, if specified a new file will be created if one does not already exist.
+											  SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
+											  SftpSubsystemClient.OPEN_TRUNCATE); //File open flag, forces an existing file with the same name to be truncated to zero length when creating a file by specifying OPEN_CREATE.
+				}
+				if (this.status.isResume()) {
+					this.status.setCurrent(p.getAttributes().getSize().intValue());
+				}
+				out = new SftpFileOutputStream(p);
+				if (out == null) {
+					throw new IOException("Unable opening data stream");
+				}
+				if (this.status.isResume()) {
+					long skipped = out.skip(this.status.getCurrent());
+					log.info("Skipping " + skipped + " bytes");
+					if (skipped < this.status.getCurrent()) {
+						throw new IOException("Resume failed: Skipped " + skipped + " bytes instead of " + this.status.getCurrent());
+					}
+				}
+				this.upload(out, in);
+				if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
+					Permission perm = this.getLocal().getPermission();
+					if (!perm.isUndefined()) {
+						this.changePermissions(perm, false);
+					}
+				}
+			}
         }
         catch (SshException e) {
             session.log("SSH Error: " + e.getMessage(), Message.ERROR);

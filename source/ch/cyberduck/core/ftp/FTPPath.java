@@ -205,7 +205,6 @@ public class FTPPath extends Path {
             session.log("Renaming " + this.getName() + " to " + filename, Message.PROGRESS);
             session.FTP.rename(this.getAbsolute(), filename);
             this.setPath(filename);
-//			this.setPath(this.getParent().getAbsolute(), filename);
             this.getParent().invalidate();
         }
         catch (FTPException e) {
@@ -282,33 +281,38 @@ public class FTPPath extends Path {
         try {
             log.debug("download:" + this.toString());
             session.check();
-            this.getLocal().getParentFile().mkdirs();
-            if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-                if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
-                    this.downloadASCII();
-                }
-                else {
-                    this.downloadBinary();
-                }
-            }
-            else if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
-                this.downloadBinary();
-            }
-            else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
-                this.downloadASCII();
-            }
-            else {
-                throw new FTPException("Transfer type not set");
-            }
-            if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-                Permission perm = this.attributes.getPermission();
-                if (!perm.isUndefined()) {
-                    this.getLocal().setPermission(perm);
-                }
-            }
-            if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
-                this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
-            }
+			if(this.isDirectory()) {
+				this.getLocal().mkdirs();
+			}
+			//            this.getLocal().getParentFile().mkdirs();
+			else {
+				if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+					if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
+						this.downloadASCII();
+					}
+					else {
+						this.downloadBinary();
+					}
+				}
+				else if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+					this.downloadBinary();
+				}
+				else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+					this.downloadASCII();
+				}
+				else {
+					throw new FTPException("Transfer type not set");
+				}
+				if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
+					Permission perm = this.attributes.getPermission();
+					if (!perm.isUndefined()) {
+						this.getLocal().setPermission(perm);
+					}
+				}
+				if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
+					this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+				}
+			}
         }
         catch (FTPException e) {
             session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -459,32 +463,39 @@ public class FTPPath extends Path {
         log.debug("upload:" + this.toString());
         try {
             session.check();
-            if (!this.getParent().exists()) {
-                PathFactory.createPath(session, this.getParent().getParent().getAbsolute(), this.getParent().getName()).mkdir(true);
-            }
-            if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-                if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
-                    this.uploadASCII();
-                }
-                else {
-                    this.uploadBinary();
-                }
-            }
-            else if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
-                this.uploadBinary();
-            }
-            else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
-                this.uploadASCII();
-            }
-            else {
-                throw new FTPException("Transfer mode not set");
-            }
-            if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
-                Permission perm = this.getLocal().getPermission();
-                if (!perm.isUndefined()) {
-                    this.changePermissions(perm, false);
-                }
-            }
+//            if (!this.getParent().exists()) {
+//                PathFactory.createPath(session, this.getParent().getParent().getAbsolute(), this.getParent().getName()).mkdir(true);
+//            }
+			if(this.isDirectory()) {
+				if (!this.exists()) {
+					this.mkdir(false);
+				}
+			}
+			else {
+				if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+					if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
+						this.uploadASCII();
+					}
+					else {
+						this.uploadBinary();
+					}
+				}
+				else if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+					this.uploadBinary();
+				}
+				else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+					this.uploadASCII();
+				}
+				else {
+					throw new FTPException("Transfer mode not set");
+				}
+				if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
+					Permission perm = this.getLocal().getPermission();
+					if (!perm.isUndefined()) {
+						this.changePermissions(perm, false);
+					}
+				}
+			}
         }
         catch (FTPException e) {
             session.log("FTP Error: " + e.getMessage(), Message.ERROR);

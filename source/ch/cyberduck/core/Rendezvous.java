@@ -83,9 +83,9 @@ public class Rendezvous extends Observable implements ServiceListener {
         this.notifyObservers(arg);
     }
 
-    public Object getService(String key) {
+    public Host getService(String key) {
         log.debug("getService:" + key);
-        return services.get(key);
+        return (Host)services.get(key);
     }
 
     /**
@@ -106,16 +106,19 @@ public class Rendezvous extends Observable implements ServiceListener {
      * port, and path properties found in the ServiceInfo record.
      */
     public void resolveService(JmDNS jmDNS, String type, String name, ServiceInfo info) {
+		log.debug("resolveService:" + name + "," + type + "," + info);
         if (info != null) {
-            log.debug("resolveService:" + name + "," + type + "," + info);
             log.info("Rendezvous Service Name:" + info.getName());
             log.info("Rendezvous Server Name:" + info.getServer());
 
             //Host(String hostname, int port, Login login, String nickname)
             Host h = new Host(info.getServer(),
                     info.getPort(),
-                    new Login(info.getServer(), null, null));
-
+                    new Login(info.getServer(), Preferences.instance().getProperty("connection.login.name"), null));
+			if(h.getProtocol().equals(Session.FTP)) {
+				h.setLogin(new Login(info.getServer(), null, null)); //use anonymous login for FTP
+			}
+			
             String identifier = info.getServer() + " (" + Host.getDefaultProtocol(info.getPort()).toUpperCase() + ")";
             //@todo dont't rely on standard port numbers
 			

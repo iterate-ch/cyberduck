@@ -87,7 +87,7 @@ public class Login {
      * @param pass        Passphrase
      */
     public Login(String serviceName, String user, String pass) {
-        this(serviceName, user, pass, false);
+        this(serviceName, user, pass, Preferences.instance().getProperty("connection.login.useKeychain").equals("true"));
     }
 
     /**

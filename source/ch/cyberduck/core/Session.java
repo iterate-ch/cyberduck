@@ -173,13 +173,20 @@ public abstract class Session extends Observable {
     }
 
     public void addPathToHistory(Path p) {
-        this.history.add(p);
+		if(history.size() > 0) {
+			if(!p.equals(history.get(history.size()-1))) {
+				this.history.add(p);
+			}
+		}
+		else {
+			this.history.add(p);
+		}
     }
 
     public Path getPreviousPath() {
         log.info("Content of path history:" + history.toString());
         int size = history.size();
-        if ((size != -1) && (size > 1)) {
+        if (size > 1) {
             Path p = (Path)history.get(size - 2);
             //delete the fetched path - otherwise we produce a loop
             history.remove(size - 1);

@@ -22,6 +22,8 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import java.io.File;
+import java.util.Observer;
+import java.util.Observable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +31,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.BookmarkList;
+import ch.cyberduck.core.Rendezvous;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Preferences;
 
 public class CDMainController extends NSObject {
@@ -132,22 +136,38 @@ public class CDMainController extends NSObject {
     }
 
     private NSMenu bookmarkMenu;
+    private NSMenu rendezvousMenu;
     private NSObject bookmarkMenuDelegate;
+    private NSObject rendezvousMenuDelegate;
 
     public void setBookmarkMenu(NSMenu bookmarkMenu) {
         this.bookmarkMenu = bookmarkMenu;
+		this.rendezvousMenu = new NSMenu();
+		this.rendezvousMenu.setAutoenablesItems(false);
         NSSelector setDelegateSelector =
                 new NSSelector("setDelegate", new Class[]{Object.class});
         if (setDelegateSelector.implementedByClass(NSMenu.class)) {
             this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
+            this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate());
         }
+		this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle("Rendezvous"));
+//		this.bookmarkMenu.itemWithTitle("Rendezvous").setEnabled(true);
     }
+
+//    private static NSImage documentIcon = NSImage.imageNamed("cyberduck-document.icns");
+//	static {
+//		documentIcon.setSize(new NSSize(16f, 16f));
+//	}
 
     private class BookmarkMenuDelegate extends NSObject {
         private Map items = new HashMap();
 
+		public BookmarkMenuDelegate() {
+			super();
+		}
+
         public int numberOfItemsInMenu(NSMenu menu) {
-            return BookmarkList.instance().size() + 4; //index 0-3 are static menu items
+            return BookmarkList.instance().size() + 6; //index 0-3 are static menu items, 4 is sepeartor, 5 is Rendezvous with submenu, 6 is sepearator
         }
 
         /**
@@ -160,10 +180,16 @@ public class CDMainController extends NSObject {
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
 //			log.debug("menuUpdateItemAtIndex"+index);
-            if (index > 3) {
-                Host h = BookmarkList.instance().getItem(index - 4);
+			if(index == 4) {
+				item.setEnabled(true);
+				item.setImage(NSImage.imageNamed("rendezvous"));
+//				item.setSubmenu(rendezvousMenu);
+			}
+            if(index > 5) {
+                Host h = BookmarkList.instance().getItem(index - 6);
                 item.setTitle(h.getNickname());
                 item.setTarget(this);
+//				item.setImage(documentIcon);
                 item.setAction(new NSSelector("bookmarkMenuClicked", new Class[]{Object.class}));
                 items.put(item, h);
             }
@@ -178,6 +204,74 @@ public class CDMainController extends NSObject {
         }
     }
 
+	private class RendezvousMenuDelegate extends NSObject implements Observer {
+        private Map items = new HashMap();
+		private Rendezvous rendezvous;
+		
+		public RendezvousMenuDelegate() {
+			super();
+			this.rendezvous = new Rendezvous();
+			this.rendezvous.addObserver(this);
+			this.rendezvous.init();
+		}
+		
+		public void update(final Observable o, final Object arg) {
+			log.debug("update:" + o + "," + arg);
+			ThreadUtilities.instance().invokeLater(new Runnable() {
+				public void run() {
+					if (o instanceof Rendezvous) {
+						if (arg instanceof Message) {
+							Message msg = (Message)arg;
+							Host host = rendezvous.getService((String)msg.getContent());
+							if (msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
+								items.put((String)msg.getContent(),
+										  host
+										  );
+							}
+							if (msg.getTitle().equals(Message.RENDEZVOUS_REMOVE)) {
+								items.remove((String)msg.getContent());
+							}
+						}
+					}
+				}
+			});
+		}
+		
+		public int numberOfItemsInMenu(NSMenu menu) {
+			log.debug("numberOfItemsInMenu"+menu);
+            return items.size();
+        }
+		
+        /**
+			* Called to let you update a menu item before it is displayed. If your
+         * numberOfItemsInMenu delegate method returns a positive value,
+         * then your menuUpdateItemAtIndex method is called for each item in the menu.
+         * You can then update the menu title, image, and so forth for the menu item.
+         * Return true to continue the process. If you return false, your menuUpdateItemAtIndex
+         * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
+         */
+        public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
+			log.debug("menuUpdateItemAtIndex:"+index);
+			Host h = (Host)items.values().toArray()[index];
+			sender.setTitle(h.getNickname());
+			sender.setTarget(this);
+			sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
+            return true;
+        }
+		
+        public void rendezvousMenuClicked(NSMenuItem sender) {
+            log.debug("rendezvousMenuClicked:" + sender);
+            CDBrowserController controller = new CDBrowserController();
+            controller.window().makeKeyAndOrderFront(null);
+            controller.mount((Host)items.get(sender.title()));
+        }
+		
+		protected void finalize() throws Throwable {
+			this.rendezvous.quit();
+			super.finalize();
+		}
+    }
+	
     public void helpMenuClicked(Object sender) {
         NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().pathForResource("Help", "rtfd")).toString());
     }
@@ -519,11 +613,11 @@ public class CDMainController extends NSObject {
                     NSBundle.localizedString("Cancel", "")); //other
 
             if (choice == NSAlertPanel.OtherReturn) {
-// Cancel
+				// Cancel
                 return false;
             }
             else if (choice != NSAlertPanel.AlternateReturn) {
-// Review unsaved; Quit Anyway falls through
+				// Review unsaved; Quit Anyway falls through
                 count = windows.count();
                 while (0 != count--) {
                     NSWindow window = (NSWindow)windows.objectAtIndex(count);

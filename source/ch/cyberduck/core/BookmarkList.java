@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 /**
  * Keeps track of user bookmarks
  *
@@ -30,6 +32,8 @@ import java.util.List;
  * @see ch.cyberduck.core.Host
  */
 public abstract class BookmarkList {
+    private static Logger log = Logger.getLogger(BookmarkList.class);
+
     private static BookmarkList instance;
 
     protected List data = new ArrayList();
@@ -80,6 +84,7 @@ public abstract class BookmarkList {
         if (row < this.size()) {
             result = (Host)this.data.get(row);
         }
+		log.debug("getItem:"+row+":"+result);
         return result;
     }
 

@@ -8,9 +8,13 @@
 	<string>Cyberduck-2.3.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.3.1
+- Chinese (Simplified) Localization
+- Fixed a bug causing bookmarks to get lost uppon moving items in the bookmark drawer
+
 2.3
 - Finnish Localization
-- Fixed a bug causing bookmarks to get lost uppon moving items in the bookmark drawer
+- Supporting Keyboard Interactive (PAM) Authentication (SSH)
 - Fixed a bug which caused not all available Rendezvous services to get listed
 - Removed 'Type ahead' feature of the browser (responsible for frequent crashes)
 

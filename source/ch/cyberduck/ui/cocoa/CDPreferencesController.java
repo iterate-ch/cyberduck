@@ -754,6 +754,26 @@ CDHistoryImpl.instance().removeItem(CDHistoryImpl.instance().size() - 1);
         }
     }
 
+	private NSButton doubleClickCheckbox; //IBOutlet
+	
+    public void setDoubleClickCheckbox(NSButton doubleClickCheckbox) {
+        this.doubleClickCheckbox = doubleClickCheckbox;
+        this.doubleClickCheckbox.setTarget(this);
+        this.doubleClickCheckbox.setAction(new NSSelector("doubleClickCheckboxClicked", new Class[]{NSButton.class}));
+        this.doubleClickCheckbox.setState(Preferences.instance().getProperty("browser.doubleClickOnFile").equals("true") ? NSCell.OnState : NSCell.OffState);
+    }
+	
+    public void doubleClickCheckboxClicked(NSButton sender) {
+        switch (sender.state()) {
+            case NSCell.OnState:
+                Preferences.instance().setProperty("browser.doubleClickOnFile", "edit");
+                break;
+            case NSCell.OffState:
+                Preferences.instance().setProperty("browser.doubleClickOnFile", "download");
+                break;
+        }
+    }
+	
     private NSButton showHiddenCheckbox; //IBOutlet
 
     public void setShowHiddenCheckbox(NSButton showHiddenCheckbox) {
@@ -1013,4 +1033,24 @@ CDHistoryImpl.instance().removeItem(CDHistoryImpl.instance().size() - 1);
             Preferences.instance().setProperty("connection.port.default", Session.SSH_PORT);
         }
     }
+	
+	private NSButton autoUpdateCheckbox;
+	
+    public void setAutoUpdateCheckbox(NSButton autoUpdateCheckbox) {
+        this.autoUpdateCheckbox = autoUpdateCheckbox;
+        this.autoUpdateCheckbox.setTarget(this);
+        this.autoUpdateCheckbox.setAction(new NSSelector("autoUpdateCheckboxClicked", new Class[]{NSButton.class}));
+        this.autoUpdateCheckbox.setState(Preferences.instance().getProperty("update.check").equals("true") ? NSCell.OnState : NSCell.OffState);
+    }
+	
+    public void autoUpdateCheckboxClicked(NSButton sender) {
+        switch (sender.state()) {
+            case NSCell.OnState:
+                Preferences.instance().setProperty("update.check", true);
+                break;
+            case NSCell.OffState:
+                Preferences.instance().setProperty("update.check", false);
+                break;
+        }
+    }	
 }
