@@ -202,7 +202,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	public void syncActionFired(NSButton sender) {
 		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
 		this.setCanceled(false);
-		this.windowController.endSheet();
+		this.windowController.endSheet(this.window(), sender.tag());
 	}
 	
 	// ----------------------------------------------------------

@@ -86,7 +86,7 @@ public class CDGotoController extends CDController {
 		}
 	}
 	
-	public Path gotoFolder(Path workdir, String filename) {
+	protected Path gotoFolder(Path workdir, String filename) {
 		Path dir = workdir.copy(workdir.getSession());
 		if(filename.charAt(0) != '/') {
 			dir.setPath(workdir.getAbsolute(), filename);

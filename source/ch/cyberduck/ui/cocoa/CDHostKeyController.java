@@ -38,12 +38,7 @@ import ch.cyberduck.core.Preferences;
  * Concrete Coccoa implementation of a SSH HostKeyVerification
  */
 public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
-	private static Logger log = Logger.getLogger(CDLoginController.class);
-
-	protected void finalize() throws Throwable {
-		log.debug("------------- finalize:"+this.toString());
-		super.finalize();
-	}
+	private static Logger log = Logger.getLogger(CDHostKeyController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
 
@@ -89,7 +84,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		this.windowController.beginSheet(sheet,
 		    this, //delegate
 		    new NSSelector
-		        ("keyMismatchSheetDidClose",
+		        ("keyMismatchSheetDidEnd",
 		            new Class[]
 		            {
 			            NSWindow.class, int.class, Object.class
@@ -98,21 +93,15 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		this.windowController.waitForSheetEnd();
 	}
 
-	public void keyMismatchSheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
-		log.debug("keyMismatchSheetDidClose");
-		sheet.orderOut(null);
+	public void keyMismatchSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+		log.debug("keyMismatchSheetDidEnd");
+        sheet.orderOut(null);
 		try {
 			if(returncode == NSAlertPanel.DefaultReturn) {
 				this.allowHost(host, publicKey, false);
 			}
 			if(returncode == NSAlertPanel.AlternateReturn) {
-				this.windowController.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Invalid host key", "Alert sheet title"), //title
-				    NSBundle.localizedString("Cannot continue without a valid host key.", ""),
-				    NSBundle.localizedString("OK", ""), // defaultbutton
-				    null, //alternative button
-				    null //other button
-				));
-				log.info("Cannot continue without a valid host key");
+                log.info("Cannot continue without a valid host key");
 			}
 			if(returncode == NSAlertPanel.OtherReturn) {
 				this.allowHost(host, publicKey, true); // always allow host
@@ -121,9 +110,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		catch(InvalidHostFileException e) {
 			log.error(e.getMessage());
 		}
-		synchronized(this.windowController) {
-			this.windowController.notifyAll();
-		}
+        this.windowController.endSheet(sheet, returncode);
 	}
 
 	public void onUnknownHost(final String host,
@@ -140,7 +127,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		this.windowController.beginSheet(sheet,
 		    this, //delegate
 		    new NSSelector
-		        ("unknownHostSheetDidClose",
+		        ("unknownHostSheetDidEnd",
 		            new Class[]
 		            {
 			            NSWindow.class, int.class, Object.class
@@ -149,20 +136,14 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		this.windowController.waitForSheetEnd();
 	}
 
-	public void unknownHostSheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
-		log.debug("unknownHostSheetDidClose");
-		sheet.orderOut(null);
+	public void unknownHostSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+		log.debug("unknownHostSheetDidEnd");
+        sheet.orderOut(null);
 		try {
 			if(returncode == NSAlertPanel.DefaultReturn) {
 				this.allowHost(host, publicKey, false); // allow host
 			}
 			if(returncode == NSAlertPanel.AlternateReturn) {
-				this.windowController.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Invalid host key", ""), //title
-				    NSBundle.localizedString("Cannot continue without a valid host key.", ""), // message
-				    NSBundle.localizedString("OK", ""), // defaultbutton
-				    null, //alternative button
-				    null //other button
-				));
 				log.info("Cannot continue without a valid host key");
 			}
 			if(returncode == NSAlertPanel.OtherReturn) {
@@ -172,8 +153,6 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		catch(InvalidHostFileException e) {
 			log.error(e.getMessage());
 		}
-		synchronized(this.windowController) {
-			this.windowController.notifyAll();
-		}
+        this.windowController.endSheet(sheet, returncode);
 	}
 }

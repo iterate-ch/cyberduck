@@ -113,19 +113,32 @@ public class CDLoginController extends CDController implements LoginController {
 		this.login = login;
 		this.textField.setStringValue(message);
 		this.userField.setStringValue(login.getUsername());
-		this.windowController.beginSheet(window());
+        this.windowController.beginSheet(this.window(),
+                                         this,
+                                         new NSSelector
+                                         ("loginSheetDidEnd",
+                                          new Class[]
+                                          {
+                                              NSWindow.class, int.class, Object.class
+                                          }), // end selector
+                                         null);
 	    this.windowController.waitForSheetEnd();
 		return this.login;
 	}
 
-	public void closeSheet(NSButton sender) {
+    public void closeSheet(NSButton sender) {
+        this.windowController.endSheet(this.window(), sender.tag());
+    }
+
+	public void loginSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+        sheet.orderOut(null);
 		if(null == userField.objectValue() || userField.objectValue().equals("")) {
 			log.warn("Value of username textfield is null");
 		}
 		if(null == passField.objectValue() || passField.objectValue().equals("")) {
 			log.warn("Value of password textfield is null");
 		}
-		switch(sender.tag()) {
+		switch(returncode) {
 			case (NSAlertPanel.DefaultReturn):
 				log.info("Updating login credentials...");
 				this.login.setTryAgain(true);
@@ -138,6 +151,5 @@ public class CDLoginController extends CDController implements LoginController {
 				this.login.setTryAgain(false);
 				break;
 		}
-		this.windowController.endSheet();
 	}
 }

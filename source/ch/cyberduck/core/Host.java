@@ -49,11 +49,6 @@ public class Host {
 	public static final String PATH = "Path";
 	public static final String KEYFILE = "Private Key File";
 
-	protected void finalize() throws Throwable {
-		log.debug("------------- finalize");
-		super.finalize();
-	}
-
 	public Host(NSDictionary dict) {
 		Object protocolObj = dict.objectForKey(Host.PROTOCOL);
 		if(protocolObj != null) {

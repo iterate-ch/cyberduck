@@ -95,7 +95,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 		if(!this.hasPrompt()) {
             this.windowController.beginSheet(this.window());
             this.statusIndicator.startAnimation(null);
-			this.windowController.waitForSheetDisplay(this.window());
 			this.hasPrompt = true;
 		}
 		this.promptList.add(p);
@@ -286,7 +285,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 		}
 		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
 		this.setCanceled(false);
-		this.windowController.endSheet();
+		this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	public void overwriteActionFired(NSButton sender) {
@@ -295,20 +294,20 @@ public abstract class CDValidatorController extends AbstractValidator {
 		}
 		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
 		this.setCanceled(false);
-		this.windowController.endSheet();
+        this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	public void skipActionFired(NSButton sender) {
 		this.workList.clear();
 		this.setCanceled(false);
-		this.windowController.endSheet();
+        this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	public void cancelActionFired(NSButton sender) {
 		this.validatedList.clear();
 		this.workList.clear();
 		this.setCanceled(true);
-		this.windowController.endSheet();
+        this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	// ----------------------------------------------------------

@@ -469,13 +469,16 @@ public class CDConnectionController extends CDController {
 		}
 		urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostPopup.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
 	}
-	
-	public void closeSheet(NSButton sender) {
-		this.browserController.endSheet();
-		NSNotificationCenter.defaultCenter().removeObserver(this);
-		this.rendezvous.deleteObserver(this.observer);
-//		this.rendezvous.quit();
-		switch(sender.tag()) {
+
+    public void closeSheet(NSButton sender) {
+        this.endSheet(this.window(), sender.tag());
+    }
+
+    public void connectionSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+        sheet.orderOut(null);
+        NSNotificationCenter.defaultCenter().removeObserver(this);
+        this.rendezvous.deleteObserver(this.observer);
+        switch(returncode) {
 			case (NSAlertPanel.DefaultReturn):
 				Host host = null;
 				if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
