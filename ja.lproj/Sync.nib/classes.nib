@@ -1,0 +1,23 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {cancelActionFired = id; syncActionFired = id; }; 
+            CLASS = "ch.sudo.cyberduck.ui.cocoa.CDSyncValidatorController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {
+                createFilesCheckbox = NSButton; 
+                downloadRadioCell = NSButtonCell; 
+                fileTableView = NSTableView; 
+                localField = NSTextField; 
+                statusIndicator = NSProgressIndicator; 
+                syncButton = NSButton; 
+                uploadRadioCell = NSButtonCell; 
+                urlField = NSTextField; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}

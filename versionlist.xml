@@ -3,12 +3,12 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.3.3</string>
+	<string>2.4b1</string>
 	<key>file</key>
-	<string>Cyberduck-2.3.3.dmg</string>
+	<string>Cyberduck-2.4b1.dmg</string>
 	<key>comment</key>
         <string>Changelog:
-2.4
+2.4b1
 - [Feature] Synchronization
 - [Feature] Refactored transfer queue
 - [Feature] Growl notification support (see http://growl.info)

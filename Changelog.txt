@@ -22,6 +22,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Bugfix] HTTP download broken
 - [Feature] Read bookmarks from "/Library/Application Support/Cyberduck/"
  instead of the individual user bookmarks file if available
+- [Feature] Updated FTP core (FTP)
 
 2.3.3
 - [Bugfix] Correctly parsing symbolic links

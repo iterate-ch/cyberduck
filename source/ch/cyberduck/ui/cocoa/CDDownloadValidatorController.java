@@ -21,30 +21,51 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.NSApplication;
 
 import ch.cyberduck.core.Validator;
-import ch.cyberduck.core.DownloadValidator;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 
 /**
 * @version $Id$
  */
-public class CDDownloadValidatorController extends CDValidatorController implements Validator {
+public class CDDownloadValidatorController extends CDValidatorController {
 
-    public CDDownloadValidatorController(CDController windowController, boolean resume) {
-        super(windowController);
+    public CDDownloadValidatorController(CDController windowController, boolean resumeRequested) {
+        super(windowController, resumeRequested);
         if (false == NSApplication.loadNibNamed("Validator", this)) {
             log.fatal("Couldn't load Validator.nib");
         }
-		this.validator = new DownloadValidator(resume);
     }
 	
-	public boolean validate(Path p) {
-        if (!this.isCanceled()) {
-			if(this.validator.validate(p)) {
-				return true;
-			}
-			return this.prompt(p);
-        }
-        log.info("Canceled " + p.getName() + " - no further validation needed");
+	protected boolean validateDirectory(Path path) {
+        // directory won't need validation, will get created if missing otherwise ignored
+		path.local.mkdirs();
+		if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
+			path.getLocal().setLastModified(path.attributes.getTimestamp().getTime());
+		}
         return false;
-	}	
+    }
+		
+	protected boolean exists(Path p) {
+		return p.remote.exists();
+	}
+	
+	protected void proposeFilename(Path path) {
+        String parent = path.getLocal().getParent();
+        String filename = path.getLocal().getName();
+        String proposal = filename;
+        int no = 0;
+        int index = filename.lastIndexOf(".");
+        do {
+            path.setLocal(new Local(parent, proposal));
+            no++;
+            if (index != -1) {
+                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
+            }
+            else {
+                proposal = filename + "-" + no;
+            }
+        }
+        while (path.local.exists());
+    }	
 }

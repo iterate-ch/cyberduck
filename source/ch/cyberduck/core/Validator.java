@@ -23,9 +23,9 @@ package ch.cyberduck.core;
  */
 public interface Validator {
 	
-//    public boolean prompt(Path path);
+    public boolean prompt(Path path);
 	
-	public void start();
+	public boolean start();
 	
 	public boolean stop();
 	

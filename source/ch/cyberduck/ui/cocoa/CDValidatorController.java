@@ -27,19 +27,20 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Status;
-import ch.cyberduck.core.Validator;
+import ch.cyberduck.core.AbstractValidator;
 
 /**
  * @version $Id$
  */
-public abstract class CDValidatorController implements Validator {
+public abstract class CDValidatorController extends AbstractValidator {
     protected static Logger log = Logger.getLogger(CDValidatorController.class);
 
     private static NSMutableArray instances = new NSMutableArray();
 
     protected CDController windowController;
 
-    public CDValidatorController(CDController windowController) {
+    public CDValidatorController(CDController windowController, boolean resumeRequested) {
+		super(resumeRequested);
         this.windowController = windowController;
         instances.addObject(this);
     }
@@ -87,21 +88,6 @@ public abstract class CDValidatorController implements Validator {
         instances.removeObject(this);
     }
 
-	protected Validator validator;
-
-	/**
-		* The user canceled this request, no further validation should be taken
-     */
-    private boolean isCanceled = false;
-	
-	public boolean isCanceled() {
-		return this.isCanceled;
-	}
-	
-	public void setCanceled(boolean c) {
-		this.isCanceled = c;
-	}
-	
     /*
      * Use the same settings for all succeeding items to check
      */
@@ -114,17 +100,14 @@ public abstract class CDValidatorController implements Validator {
      * The resume button has been selected
      */
     private boolean resumeChoosen = false;
-
-	public void start() {
-		// subclasses can override
-	}
-	
-	public boolean stop() {
-		// subclasses can override
+		
+	public boolean start() {
 		return true;
 	}
 	
-	public abstract boolean validate(Path p);
+	public boolean stop() {
+		return true;
+	}
 		
     public boolean prompt(final Path path) {
         while (windowController.window().attachedSheet() != null) {
@@ -183,6 +166,10 @@ public abstract class CDValidatorController implements Validator {
         log.info("File " + path.getName() + " will be included:" + include);
         return include;
     }
+	
+	protected void proposeFilename(Path path) {
+//		return path.local.getName();
+	}
 
     public void resumeActionFired(NSButton sender) {
         log.debug("resumeActionFired");

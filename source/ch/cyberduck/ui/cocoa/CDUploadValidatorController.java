@@ -21,30 +21,48 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.NSApplication;
 
 import ch.cyberduck.core.Validator;
-import ch.cyberduck.core.UploadValidator;
 import ch.cyberduck.core.Path;
 
 /**
 * @version $Id$
  */
-public class CDUploadValidatorController extends CDValidatorController implements Validator {
+public class CDUploadValidatorController extends CDValidatorController {
 	
-    public CDUploadValidatorController(CDController windowController, boolean resume) {
-        super(windowController);
+    public CDUploadValidatorController(CDController windowController, boolean resumeRequested) {
+        super(windowController, resumeRequested);
         if (false == NSApplication.loadNibNamed("Validator", this)) {
             log.fatal("Couldn't load Validator.nib");
         }
-		this.validator = new UploadValidator(resume);
     }
 	
-	public boolean validate(Path p) {
-        if (!this.isCanceled()) {
-			if(this.validator.validate(p)) {
-				return true;
-			}
-			return this.prompt(p);
-        }
-        log.info("Canceled " + p.getName() + " - no further validation needed");
+	protected boolean validateDirectory(Path path) {
+        // directory won't need validation, will get created if missing otherwise ignored
+		if (!path.remote.exists()) {
+			path.mkdir(false);
+		}
         return false;
-	}	
+    }
+	
+	protected boolean exists(Path p) {
+		return p.local.exists();
+	}
+	
+	protected void proposeFilename(Path path) {
+        String parent = path.getParent().getAbsolute();
+        String filename = path.getName();
+        String proposal = filename;
+        int no = 0;
+        int index = filename.lastIndexOf(".");
+        do {
+            path.setPath(parent, proposal);
+            no++;
+            if (index != -1) {
+                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
+            }
+            else {
+                proposal = filename + "-" + no;
+            }
+        }
+        while (path.remote.exists());
+    }	
 }

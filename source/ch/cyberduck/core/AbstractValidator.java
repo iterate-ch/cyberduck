@@ -30,25 +30,40 @@ public abstract class AbstractValidator implements Validator {
 		this.resumeRequested = resumeRequested;
 	}
 	
-	public void start() {
-		// subclasses can override
+	/**
+		* The user canceled this request, no further validation should be taken
+     */
+    private boolean isCanceled = false;
+	
+	public boolean isCanceled() {
+		return this.isCanceled;
 	}
-
-	public boolean stop() {
-		// subclasses can override
-		return true;
+	
+	public void setCanceled(boolean c) {
+		this.isCanceled = c;
 	}
+		
+	public abstract boolean start();
 
-	public boolean validate(Path path) {
-        log.debug("validate:" + path);
-		if (path.attributes.isDirectory()) {
-			return this.validateDirectory(path);
+	public abstract boolean stop();
+	
+	public abstract boolean prompt(Path p);
+	
+	protected abstract boolean exists(Path p);
+	
+	public boolean validate(Path p) {
+        if (!this.isCanceled()) {
+			if (p.attributes.isDirectory()) {
+				return this.validateDirectory(p);
+			}
+			if (p.attributes.isFile()) {
+				return this.validateFile(p);
+				
+			}
 		}
-		if (path.attributes.isFile()) {
-			return this.validateFile(path);
-		}
+		log.info("Canceled " + p.getName() + " - no further validation needed");
 		return false;
-    }
+	}
 	
 	protected boolean validateFile(Path path) {
         if (this.isResumeRequested()) {
@@ -80,9 +95,9 @@ public abstract class AbstractValidator implements Validator {
 			}
 			else {//if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
                 log.debug("Prompting user on " + path.getName());
-				return false;
+				return this.prompt(path);
             }
-			}
+		}
         else {//if (!fileExists) {
             path.status.setResume(false);
             return true;
@@ -94,8 +109,6 @@ public abstract class AbstractValidator implements Validator {
 	}
 	
 	protected abstract void proposeFilename(Path path);
-
-	protected abstract boolean exists(Path path);
 	
     /**
      * The user requested to resume this transfer

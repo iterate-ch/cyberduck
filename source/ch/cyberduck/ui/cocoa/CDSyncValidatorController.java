@@ -22,7 +22,6 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.Validator;
-import ch.cyberduck.core.SyncValidator;
 import ch.cyberduck.core.Path;
 
 import java.util.List;
@@ -31,14 +30,13 @@ import java.util.ArrayList;
 /**
 * @version $Id$
  */
-public class CDSyncValidatorController extends CDValidatorController implements Validator {
+public class CDSyncValidatorController extends CDValidatorController {
 
-    public CDSyncValidatorController(CDController windowController, boolean resume) {
-        super(windowController);
+    public CDSyncValidatorController(CDController windowController, boolean resumeRequested) {
+        super(windowController, false);
         if (false == NSApplication.loadNibNamed("Sync", this)) {
             log.fatal("Couldn't load Sync.nib");
         }
-		this.validator = new SyncValidator();
     }
 	
 	public void awakeFromNib() {
@@ -124,32 +122,27 @@ public class CDSyncValidatorController extends CDValidatorController implements 
 	private List remoteCandidates = new ArrayList();
 	private List localCandidates = new ArrayList();
 
-	public boolean validate(Path p) {
-		log.debug("validate:"+p);
-        if (!this.isCanceled()) {
-			if(p.remote.exists()) {
-				if(this.validator.validate(p)) {
-					this.remoteCandidates.add(p);
-					this.reloadData();
-					return true;
-				}
-			}
-			if(p.local.exists()) {
-				if(this.validator.validate(p)) {
-					this.localCandidates.add(p);
-					this.reloadData();
-					return true;
-				}
-			}
-			return false;
-        }
-        log.info("Canceled " + p.getName() + " - no further validation needed");
-        return false;
+	protected boolean validateDirectory(Path path) {
+		return false;
 	}
 	
-	public void start() {
-		this.prompt(null);
+	protected boolean validateFile(Path p) {
+		if(!p.modificationDate().equals(p.getLocal().getTimestamp())) {
+			if(p.remote.exists()) {
+				this.remoteCandidates.add(p);
+			}
+			if(p.local.exists()) {
+				this.localCandidates.add(p);
+			}
+			this.reloadData();
+			return true;
+		}
+		return false;
+	}
+		
+	public boolean start() {
 		this.statusIndicator.startAnimation(null);
+		return this.prompt(null);
 	}
 	
 	public boolean stop() {
@@ -188,6 +181,11 @@ public class CDSyncValidatorController extends CDValidatorController implements 
 		windowController.window().makeKeyAndOrderFront(null);
 		return true;
 	}
+	
+	protected boolean exists(Path p) {
+		return p.remote.exists() || p.local.exists();
+	}
+	
 	
     private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
 	
@@ -236,7 +234,6 @@ public class CDSyncValidatorController extends CDValidatorController implements 
 	
 	private static final NSImage arrowUpIcon = NSImage.imageNamed("up.tiff");
     private static final NSImage arrowDownIcon = NSImage.imageNamed("down.tiff");
-    private static final NSImage folderIcon = NSImage.imageNamed("folder16.tiff");
 	
 	static {
 		arrowUpIcon.setSize(new NSSize(16f, 16f));	
@@ -264,14 +261,9 @@ public class CDSyncValidatorController extends CDValidatorController implements 
 					return NSImage.imageNamed("notfound.tiff"); // illegal argument
 				}
 				if (identifier.equals("ICON")) {
-					if (p.attributes.isFile()) {
-						NSImage icon = CDIconCache.instance().get(p.getExtension());
-						icon.setSize(new NSSize(16f, 16f));
-						return icon;
-					}
-					if (p.attributes.isDirectory()) {
-						return folderIcon;
-					}
+					NSImage icon = CDIconCache.instance().get(p.getExtension());
+					icon.setSize(new NSSize(16f, 16f));
+					return icon;
 				}
 				if (identifier.equals("NAME")) {
 					return p.getName();

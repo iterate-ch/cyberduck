@@ -61,6 +61,8 @@ public class CDIconCell extends CDTableCell {
     static {
         arrowUpIcon.setSize(new NSSize(32f, 32f));
         arrowDownIcon.setSize(new NSSize(32f, 32f));
+        syncIcon.setSize(new NSSize(32f, 32f));
+        notFoundIcon.setSize(new NSSize(32f, 32f));
     }
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
@@ -112,7 +114,6 @@ public class CDIconCell extends CDTableCell {
 			else if(queue instanceof SyncQueue) {
 				fileIcon = syncIcon;
 			}
-			
 			if (fileIcon != null) {
 				fileIcon.setScalesWhenResized(true);
 				fileIcon.setSize(new NSSize(32f, 32f));

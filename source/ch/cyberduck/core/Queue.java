@@ -229,18 +229,19 @@ public abstract class Queue extends Observable implements Observer {
 									  }
 								  }
 								  );
-		this.validator.start();
-		for (Iterator i = this.getRoots().iterator(); i.hasNext() && !this.worker.isCanceled(); ) {
-			Path p = (Path)i.next();
-			log.debug("Iterating over childs of " + p);
-			Iterator childs = this.getChilds(new ArrayList(), p).iterator();
-			while (childs.hasNext() && !worker.isCanceled()) {
-				Path child = (Path)childs.next();
-				log.debug("Validating " + child.toString());
-				if (this.validator.validate(child)) {
-					child.status.reset();
-					this.size += child.status.getSize();
-					this.addJob(child);
+		if(this.validator.start()) {
+			for (Iterator i = this.getRoots().iterator(); i.hasNext() && !this.worker.isCanceled(); ) {
+				Path p = (Path)i.next();
+				log.debug("Iterating over childs of " + p);
+				Iterator childs = this.getChilds(new ArrayList(), p).iterator();
+				while (childs.hasNext() && !worker.isCanceled()) {
+					Path child = (Path)childs.next();
+					log.debug("Validating " + child.toString());
+					if (this.validator.validate(child)) {
+						child.status.reset();
+						this.size += child.status.getSize();
+						this.addJob(child);
+					}
 				}
 			}
 		}
