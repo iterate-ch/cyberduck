@@ -79,7 +79,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(J
 			syslog(LOG_ERR, "Authorization failed.");
 			return(NULL);
 		case errSecNoDefaultKeychain:
-		syslog(LOG_INFO, "No default Keychain!");
+			syslog(LOG_INFO, "No default Keychain!");
 			return(NULL);
 		default:
 			syslog(LOG_ERR, "Unknown error");

@@ -548,7 +548,11 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
                 this.statusIcon.setNeedsDisplay(true);
 //                CDHistoryImpl.instance().addItem(((Session) o).host);
                 this.toolbar.validateVisibleItems();
+				this.window().setDocumentEdited(true); //@todo
             }
+            else if (msg.getTitle().equals(Message.CLOSE)) {
+				this.window().setDocumentEdited(false);
+			}
             else if (msg.getTitle().equals(Message.START)) {
               this.progressIndicator.startAnimation(this);
                 this.statusIcon.setImage(null);
@@ -994,7 +998,6 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
 
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
         NSToolbarItem item = new NSToolbarItem(itemIdentifier);
-
         if (itemIdentifier.equals("New Connection")) {
             item.setLabel(NSBundle.localizedString("New Connection", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("New Connection", "Toolbar item"));
@@ -1002,53 +1005,60 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
             item.setImage(NSImage.imageNamed("connect.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("connectButtonClicked", new Class[]{Object.class}));
+			return item;
         }
-        else if (itemIdentifier.equals("Bookmarks")) {
+        if (itemIdentifier.equals("Bookmarks")) {
             item.setView(showBookmarkButton);
             item.setMinSize(showBookmarkButton.frame().size());
             item.setMaxSize(showBookmarkButton.frame().size());
+			return item;
         }
-        else if (itemIdentifier.equals("Quick Connect")) {
+        if (itemIdentifier.equals("Quick Connect")) {
             item.setLabel(NSBundle.localizedString("Quick Connect", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Quick Connect", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Connect to server", "Toolbar item tooltip"));
             item.setView(quickConnectPopup);
             item.setMinSize(quickConnectPopup.frame().size());
             item.setMaxSize(quickConnectPopup.frame().size());
+			return item;
         }
-        else if (itemIdentifier.equals("Refresh")) {
+        if (itemIdentifier.equals("Refresh")) {
             item.setLabel(NSBundle.localizedString("Refresh", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Refresh", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Refresh directory listing", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("refresh.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("refreshButtonClicked", new Class[]{Object.class}));
+			return item;
         }
-        else if (itemIdentifier.equals("Download")) {
+        if (itemIdentifier.equals("Download")) {
             item.setLabel(NSBundle.localizedString("Download", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Download", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Download file", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("downloadFile.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("downloadButtonClicked", new Class[]{Object.class}));
+			return item;
         }
-        else if (itemIdentifier.equals("Upload")) {
+        if (itemIdentifier.equals("Upload")) {
             item.setLabel(NSBundle.localizedString("Upload", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Upload", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Upload local file to the remote host", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("uploadFile.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("uploadButtonClicked", new Class[]{Object.class}));
+			return item;
         }
-        else if (itemIdentifier.equals("Get Info")) {
+        if (itemIdentifier.equals("Get Info")) {
             item.setLabel(NSBundle.localizedString("Get Info", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Get Info", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Show file attributes", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("info.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("infoButtonClicked", new Class[]{Object.class}));
+			return item;
         }
-        else if (itemIdentifier.equals("Edit")) {
+        if (itemIdentifier.equals("Edit")) {
             item.setLabel(NSBundle.localizedString("Edit", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Edit", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Edit file in external editor", "Toolbar item tooltip"));
@@ -1062,37 +1072,38 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
             }
             item.setTarget(this);
             item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));
+			return item;
         }
-        else if (itemIdentifier.equals("Delete")) {
+        if (itemIdentifier.equals("Delete")) {
             item.setLabel(NSBundle.localizedString("Delete", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Delete", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Delete file", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("deleteFile.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("deleteButtonClicked", new Class[]{Object.class}));
+			return item;
         }
-        else if (itemIdentifier.equals("New Folder")) {
+        if (itemIdentifier.equals("New Folder")) {
             item.setLabel(NSBundle.localizedString("New Folder", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("New Folder", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Create New Folder", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("newfolder.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("folderButtonClicked", new Class[]{Object.class}));
+			return item;
         }
-        else if (itemIdentifier.equals("Disconnect")) {
+        if (itemIdentifier.equals("Disconnect")) {
             item.setLabel(NSBundle.localizedString("Disconnect", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Disconnect", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Disconnect from server", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("eject.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("disconnectButtonClicked", new Class[]{Object.class}));
+			return item;
         }
-        else {
-            // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
-            // Returning null will inform the toolbar this kind of item is not supported.
-            item = null;
-        }
-        return item;
+		// itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
+		// Returning null will inform the toolbar this kind of item is not supported.
+        return null;
     }
 
 

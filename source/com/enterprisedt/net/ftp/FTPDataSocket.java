@@ -21,34 +21,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Bug fixes, suggestions and comments should be sent to bruce@enterprisedt.com
- *
- *  Change Log:
- *
- *        $Log$
- *        Revision 1.6  2004/04/07 20:26:17  dkocher
- *        *** empty log message ***
- *
- *        Revision 1.5  2003/12/28 00:42:51  dkocher
- *        *** empty log message ***
- *
- *        Revision 1.4  2003/12/15 23:14:04  dkocher
- *        *** empty log message ***
- *
- *        Revision 1.4  2003/11/02 21:50:14  bruceb
- *        changed FTPDataSocket to an interface
- *
- *        Revision 1.3  2003/05/31 14:53:44  bruceb
- *        1.2.2 changes
- *
- *        Revision 1.2  2002/11/19 22:01:25  bruceb
- *        changes for 1.2
- *
- *        Revision 1.1  2001/10/09 20:53:46  bruceb
- *        Active mode changes
- *
- *        Revision 1.1  2001/10/05 14:42:03  bruceb
- *        moved from old project
- *
  */
 
 package com.enterprisedt.net.ftp;

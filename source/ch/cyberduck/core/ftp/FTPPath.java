@@ -25,8 +25,7 @@ import java.util.List;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
-import org.apache.commons.net.io.FromNetASCIIOutputStream;
-import org.apache.commons.net.io.ToNetASCIIInputStream;
+import org.apache.commons.net.io.*;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
@@ -39,6 +38,10 @@ import com.enterprisedt.net.ftp.FTPTransferType;
 public class FTPPath extends Path {
     private static Logger log = Logger.getLogger(FTPPath.class);
 
+	private static final String DOS_LINE_SEPARATOR = "\r\n";
+    private static final String MAC_LINE_SEPARATOR = "\r";
+    private static final String UNIX_LINE_SEPARATOR = "\n";
+	
     static {
         PathFactory.addFactory(Session.FTP, new Factory());
     }
@@ -315,7 +318,7 @@ public class FTPPath extends Path {
             if (out == null) {
                 throw new IOException("Unable to buffer data");
             }
-            in = this.session.FTP.getBinary(this.getAbsolute(), this.status.isResume() ? this.getLocal().getTemp().length() : 0);
+            in = this.session.FTP.get(this.getAbsolute(), this.status.isResume() ? this.getLocal().getTemp().length() : 0);
             if (in == null) {
                 throw new IOException("Unable opening data stream");
             }
@@ -362,6 +365,16 @@ public class FTPPath extends Path {
     private void downloadASCII() throws IOException {
         InputStream in = null;
         OutputStream out = null;
+		String lineSeparator = System.getProperty("line.separator"); //default value
+		if (Preferences.instance().getProperty("ftp.line.separator").equals("unix")) {
+			lineSeparator = UNIX_LINE_SEPARATOR;
+		}
+		else if (Preferences.instance().getProperty("ftp.line.separator").equals("mac")) {
+			lineSeparator = MAC_LINE_SEPARATOR;
+		}
+		else if (Preferences.instance().getProperty("ftp.line.separator").equals("win")) {
+			lineSeparator = DOS_LINE_SEPARATOR;
+		}
         try {
             this.session.FTP.setTransferType(FTPTransferType.ASCII);
             this.status.setSize(this.session.FTP.size(this.getAbsolute()));
@@ -369,11 +382,17 @@ public class FTPPath extends Path {
                 this.status.setCurrent(this.getLocal().getTemp().length());
             }
             this.getLocal().getParentFile().mkdirs();
-            out = new FromNetASCIIOutputStream(new FileOutputStream(this.getLocal().getTemp(), this.status.isResume()));
+            out = new FromNetASCIIOutputStream(new FileOutputStream(this.getLocal().getTemp(), 
+																	this.status.isResume()),
+											   lineSeparator
+											   );
             if (out == null) {
                 throw new IOException("Unable to buffer data");
             }
-            in = this.session.FTP.getASCII(this.getAbsolute(), this.status.isResume() ? this.getLocal().getTemp().length() : 0);
+            in = new FromNetASCIIInputStream(this.session.FTP.get(this.getAbsolute(), 
+																	   this.status.isResume() ? this.getLocal().getTemp().length() : 0
+																	   ),
+											 lineSeparator);
             if (in == null) {
                 throw new IOException("Unable opening data stream");
             }
@@ -466,7 +485,7 @@ public class FTPPath extends Path {
             if (in == null) {
                 throw new IOException("Unable to buffer data");
             }
-            out = this.session.FTP.putBinary(this.getAbsolute(), this.status.isResume());
+            out = this.session.FTP.put(this.getAbsolute(), this.status.isResume());
             if (out == null) {
                 throw new IOException("Unable opening data stream");
             }
@@ -520,11 +539,13 @@ public class FTPPath extends Path {
                 this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
             }
             in = new ToNetASCIIInputStream(new FileInputStream(this.getLocal()));
-            //			in = new FileReader(this.getLocal());
             if (in == null) {
                 throw new IOException("Unable to buffer data");
             }
-            out = this.session.FTP.putASCII(this.getAbsolute(), this.status.isResume());
+            out = new ToNetASCIIOutputStream(this.session.FTP.put(this.getAbsolute(), 
+																  this.status.isResume()
+																  )
+											 );
             if (out == null) {
                 throw new IOException("Unable opening data stream");
             }

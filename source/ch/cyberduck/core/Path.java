@@ -189,6 +189,7 @@ public abstract class Path {
 
     /**
      * @return My directory listing
+     * @throws NullPointerException if session is not initialized
      */
     public List cache() {
         return this.getSession().cache().get(this.getAbsolute());
@@ -270,10 +271,12 @@ public abstract class Path {
         return this.attributes.isDirectory();
     }
 
+	// hack
     private boolean linksToFile() {
         return this.attributes.isSymbolicLink() && this.getName().indexOf(".") != -1;
     }
 
+	// hack
     private boolean linksToDirectory() {
         return !this.linksToFile() && this.attributes.permission.getOwnerPermissions()[Permission.EXECUTE];
     }
@@ -309,12 +312,6 @@ public abstract class Path {
 		String abs = this.getAbsolute();
 		int index = abs.lastIndexOf('/');
 		return (index > 0) ? abs.substring(index + 1) : abs.substring(1);
-		/*
-		 String name = (index > 0) ? abs.substring(index + 1) : abs.substring(1);
-		 index = name.lastIndexOf('?');
-		 name = (index > 0) ? name.substring(index + 1) : name;
-		 return name;
-		 */
 		//		}
 		//		return this.name;
 	}

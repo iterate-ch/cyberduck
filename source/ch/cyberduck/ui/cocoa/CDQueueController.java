@@ -45,9 +45,9 @@ public class CDQueueController extends NSObject implements Observer {
         log.debug("instance");
         if (null == instance) {
             instance = new CDQueueController();
-            if (false == NSApplication.loadNibNamed("Queue", instance)) {
-                log.fatal("Couldn't load Queue.nib");
-            }
+			if (false == NSApplication.loadNibNamed("Queue", instance)) {
+				log.fatal("Couldn't load Queue.nib");
+			}
         }
         return instance;
     }
@@ -56,7 +56,13 @@ public class CDQueueController extends NSObject implements Observer {
 		//
     }
 
+	public boolean windowShouldClose(NSWindow sender) {
+		log.debug("windowShouldClose"+sender);
+		return true;
+	}
+
     public void windowWillClose(NSNotification notification) {
+		log.debug("windowWillClose:"+notification);
         QueueList.instance().save();
         instance = null;
     }
@@ -171,7 +177,7 @@ public class CDQueueController extends NSObject implements Observer {
                 );
             }
         }
-        queue.start(new CDValidatorController(queue.kind(), resumeRequested), this);
+        queue.start(new CDValidatorController(queue.kind(), resumeRequested, this.window()), this);
     }
 
     public void update(Observable observable, Object arg) {
@@ -248,6 +254,7 @@ public class CDQueueController extends NSObject implements Observer {
             item.setImage(NSImage.imageNamed("stop.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("stopButtonClicked", new Class[]{Object.class}));
+			return item;
         }
         if (itemIdentifier.equals("Resume")) {
             item.setLabel(NSBundle.localizedString("Resume", ""));
@@ -255,6 +262,7 @@ public class CDQueueController extends NSObject implements Observer {
             item.setImage(NSImage.imageNamed("resume.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("resumeButtonClicked", new Class[]{Object.class}));
+			return item;
         }
         if (itemIdentifier.equals("Reload")) {
             item.setLabel(NSBundle.localizedString("Reload", ""));
@@ -262,6 +270,7 @@ public class CDQueueController extends NSObject implements Observer {
             item.setImage(NSImage.imageNamed("reload.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("reloadButtonClicked", new Class[]{Object.class}));
+			return item;
         }
         if (itemIdentifier.equals("Show")) {
             item.setLabel(NSBundle.localizedString("Show", ""));
@@ -269,6 +278,7 @@ public class CDQueueController extends NSObject implements Observer {
             item.setImage(NSImage.imageNamed("reveal.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("revealButtonClicked", new Class[]{Object.class}));
+			return item;
         }
         if (itemIdentifier.equals("Remove")) {
             item.setLabel(NSBundle.localizedString("Remove", ""));
@@ -276,6 +286,7 @@ public class CDQueueController extends NSObject implements Observer {
             item.setImage(NSImage.imageNamed("clean.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("removeButtonClicked", new Class[]{Object.class}));
+			return item;
         }
         if (itemIdentifier.equals("Clear")) {
             item.setLabel(NSBundle.localizedString("Clear", ""));
@@ -283,8 +294,11 @@ public class CDQueueController extends NSObject implements Observer {
             item.setImage(NSImage.imageNamed("cleanAll.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("clearButtonClicked", new Class[]{Object.class}));
+			return item;
         }
-        return item;
+		// itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
+		// Returning null will inform the toolbar this kind of item is not supported.
+        return null;
     }
 
     public void queueTableRowDoubleClicked(Object sender) {

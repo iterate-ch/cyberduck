@@ -6,7 +6,7 @@
             CLASS = "ch.cyberduck.ui.cocoa.CDDownloadController"; 
             LANGUAGE = Java; 
             OUTLETS = {urlField = NSTextField; window = NSWindow; }; 
-            SUPERCLASS = "java.lang.Object"; 
+            SUPERCLASS = NSObject; 
         }
     ); 
     IBVersion = 1; 

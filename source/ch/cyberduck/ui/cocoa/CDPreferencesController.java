@@ -35,8 +35,6 @@ public class CDPreferencesController extends NSObject {
 
     private static CDPreferencesController instance;
 
-    private static NSMutableArray instances = new NSMutableArray();
-
     private NSWindow window; //IBOutlet
 
     public void setWindow(NSWindow window) {
@@ -48,16 +46,15 @@ public class CDPreferencesController extends NSObject {
         log.debug("instance");
         if (null == instance) {
             instance = new CDPreferencesController();
-            if (false == NSApplication.loadNibNamed("Preferences", instance)) {
-                log.fatal("Couldn't load Preferences.nib");
-            }
+			if (false == NSApplication.loadNibNamed("Preferences", instance)) {
+				log.fatal("Couldn't load Preferences.nib");
+			}
         }
         return instance;
     }
 
     private CDPreferencesController() {
-        log.debug("CDPreferencesController");
-        instances.addObject(this);
+		//
     }
 
     public void awakeFromNib() {
@@ -70,9 +67,12 @@ public class CDPreferencesController extends NSObject {
         return this.window;
     }
 
+	public boolean windowShouldClose(NSWindow sender) {
+		return true;
+	}
+	
     public void windowWillClose(NSNotification notification) {
         NSNotificationCenter.defaultCenter().removeObserver(this);
-        instances.removeObject(this);
         instance = null;
     }
 

@@ -35,8 +35,11 @@ public class CDValidatorController extends Validator {
 
     private static NSMutableArray instances = new NSMutableArray();
 
-    public CDValidatorController(int kind, boolean resume) {
+	private NSWindow parentWindow;
+	
+    public CDValidatorController(int kind, boolean resume, NSWindow parentWindow) {
         super(kind, resume);
+		this.parentWindow = parentWindow;
         instances.addObject(this);
     }
 
@@ -117,11 +120,12 @@ public class CDValidatorController extends Validator {
             img.setSize(new NSSize(64f, 64f));
             this.iconView.setImage(img);
             NSApplication.sharedApplication().beginSheet(this.window(), //sheet
-                    CDQueueController.instance().window(),
-                    this, //modalDelegate
-                    new NSSelector("validateSheetDidEnd",
-                            new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
-                    path); //contextInfo
+														 this.parentWindow,
+														 //CDQueueController.instance().window(),
+														 this, //modalDelegate
+														 new NSSelector("validateSheetDidEnd",
+																		new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
+														 path); //contextInfo
             this.window().makeKeyAndOrderFront(null);
         }
         // Waiting for user to make choice

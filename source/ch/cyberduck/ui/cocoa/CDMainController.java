@@ -167,6 +167,10 @@ public class CDMainController extends NSObject {
     }
 
     public void updateMenuClicked(Object sender) {
+		this.checkForUpdate(true);
+	}
+	
+	public void checkForUpdate(final boolean verbose) {
         new Thread() {
             public void run() {
                 try {
@@ -175,28 +179,33 @@ public class CDMainController extends NSObject {
 
                     NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.update.xml")));
                     if (null == data) {
-                        NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                                NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text"),
-                                NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
-                                null, //alternative button
-                                null//other button
-                        );
+						if(verbose) {
+							NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Error", "Alert sheet title"), //title
+														  NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text"),
+														  NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
+														  null, //alternative button
+														  null//other button
+														  );
+						}
                         return;
                     }
                     String[] errorString = new String[]{null};
                     Object propertyListFromXMLData =
                             NSPropertyListSerialization.propertyListFromData(data,
-                                    NSPropertyListSerialization.PropertyListImmutable,
-                                    new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                                    errorString);
+																			 NSPropertyListSerialization.PropertyListImmutable,
+																			 new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+																			 errorString);
                     if (errorString[0] != null || null == propertyListFromXMLData) {
                         log.error("Version info could not be retrieved: " + errorString[0]);
-                        NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                                NSBundle.localizedString("Update check failed. Version info could not be retrieved", "Alert sheet text") + ": " + errorString[0],
-                                "OK", // defaultbutton
-                                null, //alternative button
-                                null//other button
-                        );
+						if(verbose) {
+							NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Error", "Alert sheet title"), //title
+														  NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text")+" ("+errorString[0]+")",
+														  //													  NSBundle.localizedString("Update check failed. Version info could not be retrieved", "Alert sheet text") + ": " + errorString[0],
+														  NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
+														  null, //alternative button
+														  null//other button
+														  );
+						}
                     }
                     else {
                         log.info(propertyListFromXMLData.toString());
@@ -207,14 +216,17 @@ public class CDMainController extends NSObject {
                         String comment = (String) entries.objectForKey("comment");
 
                         if (currentVersionNumber.equals(latestVersionNumber)) {
-                            NSAlertPanel.runInformationalAlert(NSBundle.localizedString("No update", "Alert sheet title"), //title
-                                    NSBundle.localizedString("No newer version available.", "Alert sheet text") + " Cyberduck " + currentVersionNumber + " " + NSBundle.localizedString("is up to date.", "Alert sheet text"),
-                                    "OK", // defaultbutton
-                                    null, //alternative button
-                                    null//other button
-                            );
+							if(verbose) {
+								NSAlertPanel.runInformationalAlert(NSBundle.localizedString("No update", "Alert sheet title"), //title
+																   NSBundle.localizedString("No newer version available.", "Alert sheet text") + " Cyberduck " + currentVersionNumber + " " + NSBundle.localizedString("is up to date.", "Alert sheet text"),
+																   "OK", // defaultbutton
+																   null, //alternative button
+																   null//other button
+																   );
+							}
                         }
                         else {
+							// Update available, show update dialog
                             if (false == NSApplication.loadNibNamed("Update", CDMainController.this)) {
                                 log.fatal("Couldn't load Update.nib");
                                 return;
@@ -232,7 +244,7 @@ public class CDMainController extends NSObject {
             }
         }.start();
     }
-
+	
     public void websiteMenuClicked(Object sender) {
         try {
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.home")));
@@ -343,6 +355,21 @@ public class CDMainController extends NSObject {
         return false;
     }
 
+	public boolean applicationOpenTempFile(NSApplication app, String filename) {
+        log.debug("applicationOpenTempFile:" + filename);
+        return this.applicationOpenFile(app, filename);
+    }
+	
+    public boolean applicationOpenUntitledFile(NSApplication app) {
+        log.debug("applicationOpenUntitledFile");
+		if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
+			CDBrowserController controller = new CDBrowserController();
+			controller.window().makeKeyAndOrderFront(null);
+			return controller != null;
+		}
+		return false;
+    }
+	
     public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
         log.info("applicationShouldHandleReopen:" + visibleWindowsFound);
         NSArray windows = NSApplication.sharedApplication().windows();
@@ -361,10 +388,10 @@ public class CDMainController extends NSObject {
 
     public void applicationDidFinishLaunching(NSNotification notification) {
         log.info("Available localizations:" + NSBundle.mainBundle().localizations());
-        if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
-            CDBrowserController controller = new CDBrowserController();
-            controller.window().makeKeyAndOrderFront(null);
-        }
+//        if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
+//            CDBrowserController controller = new CDBrowserController();
+//            controller.window().makeKeyAndOrderFront(null);
+//        }
         if (Preferences.instance().getProperty("queue.openByDefault").equals("true")) {
             this.showTransferQueueClicked(null);
         }
@@ -384,7 +411,7 @@ public class CDMainController extends NSObject {
             }
         }
         if (Preferences.instance().getProperty("update.check").equals("true")) {
-			this.updateMenuClicked(null);
+			this.checkForUpdate(false);
 		}
     }
 
@@ -394,10 +421,45 @@ public class CDMainController extends NSObject {
         this.saveVersionInfo();
         //Writing usage info
         Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
-//		return this.checkForMountedBrowsers(app);
-        return true;
+		return this.checkForMountedBrowsers(app);
+//        return true;
     }
+	
+    // ----------------------------------------------------------
+    // AppleScript support
+    // ----------------------------------------------------------
 
+	public boolean applicationDelegateHandlesKey(NSApplication application, String key) {
+        log.debug("applicationDelegateHandlesKey:"+key);
+        if (key.equals("orderedDocuments")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+	
+	public NSArray orderedDocuments() {
+        log.debug("orderedDocuments");
+        NSApplication app = NSApplication.sharedApplication();
+        NSArray orderedWindows = (NSArray)NSKeyValue.valueForKey(app, "orderedWindows");
+        int i, c = orderedWindows.count();
+        NSMutableArray orderedDocs = new NSMutableArray();
+        Object curDelegate;
+        for (i = 0; i < c; i++) {
+            curDelegate = ((NSWindow)orderedWindows.objectAtIndex(i)).delegate();
+            if ((curDelegate != null) && (curDelegate instanceof CDBrowserController)) {
+                orderedDocs.addObject(curDelegate);
+            }
+        }
+        return orderedDocs;
+    }
+	
+	// @todo
+	public void insertInOrderedDocumentsAtIndex(CDBrowserController doc, int index) {
+        log.debug("insertInOrderedDocumentsAtIndex"+doc);
+        doc.window().makeKeyAndOrderFront(null);
+    }
+	
     private boolean checkForMountedBrowsers(NSApplication app) {
         NSArray windows = app.windows();
         int count = windows.count();

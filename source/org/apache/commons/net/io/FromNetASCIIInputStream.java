@@ -36,19 +36,15 @@ import ch.cyberduck.core.Preferences;
  */
 
 public final class FromNetASCIIInputStream extends PushbackInputStream {
-    static boolean _noConversionRequired;
-    static String _lineSeparator;
-    static byte[] _lineSeparatorBytes;
-
-    private static final String DOS_LINE_SEPARATOR = "\r\n";
-    private static final String MAC_LINE_SEPARATOR = "\r";
-    private static final String UNIX_LINE_SEPARATOR = "\n";
-
+//    static boolean _noConversionRequired;
+//    static String _lineSeparator;
+//    static byte[] _lineSeparatorBytes;
+    private boolean _noConversionRequired;
+    private String _lineSeparator;
+    private byte[] _lineSeparatorBytes;
+	
+	/*
     static {
-		init();
-	}
-		
-	public static void init() {
         _lineSeparator = System.getProperty("line.separator"); //default value
         if (Preferences.instance().getProperty("ftp.line.separator").equals("unix")) {
             _lineSeparator = UNIX_LINE_SEPARATOR;
@@ -62,6 +58,7 @@ public final class FromNetASCIIInputStream extends PushbackInputStream {
         _noConversionRequired = _lineSeparator.equals("\r\n");
         _lineSeparatorBytes = _lineSeparator.getBytes();
     }
+	 */
 
     private int __length = 0;
 
@@ -76,7 +73,8 @@ public final class FromNetASCIIInputStream extends PushbackInputStream {
      *         system line separator, false if they are the same.
      *         *
      */
-    public static final boolean isConversionRequired() {
+    public final boolean isConversionRequired() {
+//    public static final boolean isConversionRequired() {
         return !_noConversionRequired;
     }
 
@@ -85,8 +83,12 @@ public final class FromNetASCIIInputStream extends PushbackInputStream {
      * InputStream.
      * *
      */
-    public FromNetASCIIInputStream(InputStream input) {
-        super(input, _lineSeparatorBytes.length + 1);
+    public FromNetASCIIInputStream(InputStream input, String lineSeparator) {
+        super(input, lineSeparator.getBytes().length + 1);
+//        super(input, _lineSeparatorBytes.length + 1);
+		_lineSeparator = lineSeparator;
+        _lineSeparatorBytes = lineSeparator.getBytes();
+        _noConversionRequired = lineSeparator.equals("\r\n");
     }
 
 

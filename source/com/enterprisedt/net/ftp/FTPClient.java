@@ -31,8 +31,6 @@ import java.io.LineNumberReader;
 import java.util.Properties;
 import java.util.Vector;
 
-import org.apache.commons.net.io.FromNetASCIIInputStream;
-import org.apache.commons.net.io.ToNetASCIIOutputStream;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Preferences;
@@ -45,61 +43,10 @@ import ch.cyberduck.core.TranscriptFactory;
  *
  * @author Bruce Blackshaw
  * @version $Revision$
- *          <p/>
- *          Change Log:
- *          <p/>
- *          $Log$
- *          Revision 1.39  2004/04/10 16:55:57  dkocher
- *          *** empty log message ***
- *
- *          Revision 1.38  2004/04/07 20:26:17  dkocher
- *          *** empty log message ***
- *
- *          Revision 1.37  2004/04/05 23:08:02  dkocher
- *          *** empty log message ***
- *          <p/>
- *          Revision 1.36  2004/04/05 00:10:55  dkocher
- *          *** empty log message ***
- *          <p/>
- *          Revision 1.35  2004/04/04 19:39:58  dkocher
- *          *** empty log message ***
- *          <p/>
- *          Revision 1.34  2004/04/04 01:03:04  dkocher
- *          *** empty log message ***
- *          <p/>
- *          Revision 1.33  2004/04/03 23:36:33  dkocher
- *          *** empty log message ***
- *          <p/>
- *          Revision 1.32  2004/03/30 18:58:05  dkocher
- *          *** empty log message ***
- *          <p/>
- *          Revision 1.31  2004/03/24 16:28:09  dkocher
- *          *** empty log message ***
- *          <p/>
- *          Revision 1.30  2004/03/21 15:40:23  dkocher
- *          *** empty log message ***
- *          <p/>
- *          Revision 1.29  2004/03/20 18:16:34  dkocher
- *          *** empty log message ***
- *          <p/>
- *          Revision 1.28  2004/02/23 23:56:36  dkocher
- *          *** empty log message ***
- *          <p/>
- *          Revision 1.27  2004/02/21 21:39:30  dkocher
- *          *** empty log message ***
- *          <p/>
- *          Revision 1.26  2004/02/21 12:12:27  dkocher
- *          *** empty log message ***
  */
 public class FTPClient {
     private static Logger log = Logger.getLogger(FTPClient.class);
-
-    /**
-     *  Format to interpret MTDM timestamp
-     */
-//	private SimpleDateFormat tsFormat =
-//	    new SimpleDateFormat("yyyyMMddHHmmss");
-
+	
     /**
      * Socket responsible for controlling
      * the connection
@@ -138,7 +85,6 @@ public class FTPClient {
 
     public FTPClient() {
         super();
-//		tsFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
     /**
@@ -151,7 +97,6 @@ public class FTPClient {
     public void connect(String remoteHost, int controlPort) throws IOException, FTPException {
         control = new FTPControlSocket(remoteHost, controlPort);
         transcript = TranscriptFactory.getImpl(remoteHost);
-//		this.setTimeout(5000);
     }
 
     /**
@@ -192,11 +137,6 @@ public class FTPClient {
         if (lastValidReply.getReplyCode().equals("331")) {
             this.password(password);
         }
-
-        //        String response = control.sendCommand("USER " + user);
-        //      lastValidReply = control.validateReply(response, "331");
-        //        response = control.sendCommand("PASS " + password);
-        //        lastValidReply = control.validateReply(response, "230");
     }
 
 
@@ -363,27 +303,21 @@ public class FTPClient {
      * Put as ASCII, i.e. read a line at a time and write
      * inserting the correct FTP separator
      *
-     * @param localPath  full path of local file to read from
      * @param remoteFile name of remote file we are writing to
      * @param append     true if appending, false otherwise
      */
-//	public java.io.Writer putASCII(String remoteFile, boolean append) throws IOException, FTPException {
-//		this.initPut(remoteFile, append);
-//		return new OutputStreamWriter(data.getOutputStream());
-//	}
-    public java.io.OutputStream putASCII(String remoteFile, boolean append) throws IOException, FTPException {
-        this.initPut(remoteFile, append);
-        return new ToNetASCIIOutputStream(data.getOutputStream());
-    }
+//    public java.io.OutputStream putASCII(String remoteFile, boolean append) throws IOException, FTPException {
+//        this.initPut(remoteFile, append);
+//        return new ToNetASCIIOutputStream(data.getOutputStream());
+//    }
 
     /**
      * Put as binary, i.e. read and write raw bytes
      *
-     * @param localPath  full path of local file to read from
      * @param remoteFile name of remote file we are writing to
      * @param append     true if appending, false otherwise
      */
-    public java.io.OutputStream putBinary(String remoteFile, boolean append) throws IOException, FTPException {
+    public java.io.OutputStream put(String remoteFile, boolean append) throws IOException, FTPException {
         this.initPut(remoteFile, append);
         return data.getOutputStream();
     }
@@ -395,15 +329,10 @@ public class FTPClient {
      * @param localPath  full path of local file to write to
      * @param remoteFile name of remote file
      */
-//	public java.io.Reader getASCII(String remoteFile, long resume) throws IOException, FTPException {
-//		this.initGet(remoteFile, resume);
-//		return new InputStreamReader(data.getInputStream());
-//	}
-    public java.io.InputStream getASCII(String remoteFile, long resume) throws IOException, FTPException {
-        this.initGet(remoteFile, resume);
-		FromNetASCIIInputStream.init();
-        return new FromNetASCIIInputStream(data.getInputStream());
-    }
+//    public java.io.InputStream getASCII(String remoteFile, long resume) throws IOException, FTPException {
+//        this.initGet(remoteFile, resume);
+//        return new FromNetASCIIInputStream(data.getInputStream(), lineSeparator);
+//    }
 
     /**
      * Get as binary file, i.e. straight transfer of data
@@ -411,7 +340,7 @@ public class FTPClient {
      * @param localPath  full path of local file to write to
      * @param remoteFile name of remote file
      */
-    public java.io.InputStream getBinary(String remoteFile, long resume) throws IOException, FTPException {
+    public java.io.InputStream get(String remoteFile, long resume) throws IOException, FTPException {
         this.initGet(remoteFile, resume);
         return data.getInputStream();
     }

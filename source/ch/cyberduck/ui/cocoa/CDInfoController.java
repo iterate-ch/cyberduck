@@ -192,6 +192,10 @@ public class CDInfoController extends NSObject {
 		//				groupField);
 	}
 	
+	public boolean windowShouldClose(NSWindow sender) {
+		return true;
+	}
+	
 	public void windowWillClose(NSNotification notification) {
 		log.debug("windowWillClose");
 		OFFSET =- 16;

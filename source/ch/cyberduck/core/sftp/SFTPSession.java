@@ -59,7 +59,7 @@ public class SFTPSession extends Session {
     }
 
     public synchronized void close() {
-//		this.callObservers(new Message(Message.CLOSE, "Closing session."));
+		this.callObservers(new Message(Message.CLOSE, "Closing session."));
         try {
             if (this.SFTP != null) {
                 this.log("Disconnecting...", Message.PROGRESS);
