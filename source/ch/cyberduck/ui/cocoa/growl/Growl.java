@@ -40,7 +40,7 @@ public class Growl {
 	private static Growl instance;
 		
 	private Growl() {
-		//
+		this.register();
 	}
 	
 	public static Growl instance() {
@@ -51,7 +51,9 @@ public class Growl {
 	}
 	
 	public native void launch();
-	
+
+	public native void register();
+
 	public native void notify(String title, String description);
 
 	public native void notifyWithImage(String title, String description, String image);

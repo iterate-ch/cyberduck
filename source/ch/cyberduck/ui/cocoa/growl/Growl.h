@@ -27,6 +27,7 @@ extern "C" {
 	/* Inaccessible static: log */
 	/* Inaccessible static: instance */
 	/* Inaccessible static: class_00024ch_00024cyberduck_00024ui_00024cocoa_00024growl_00024Growl */
+
 	/*
 	 * Class:     ch_cyberduck_ui_cocoa_growl_Growl
 	 * Method:    launch
@@ -34,6 +35,14 @@ extern "C" {
 	 */
 	JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_launch
 	(JNIEnv *, jobject);
+
+	/*
+	 * Class:     ch_cyberduck_ui_cocoa_growl_Growl
+	 * Method:    register
+	 * Signature: ()V
+	 */
+	JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_register
+		(JNIEnv *, jobject);
 	
 	/*
 	 * Class:     ch_cyberduck_ui_cocoa_growl_Growl
@@ -45,7 +54,7 @@ extern "C" {
 
 	/*
 	 * Class:     ch_cyberduck_ui_cocoa_growl_Growl
-	 * Method:    notify
+	 * Method:    notifyWithImage
 	 * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	 */
 	JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage
@@ -67,7 +76,8 @@ static id instance;
 + (id)defaultInstance;
 
 - (void)launchGrowl;
-- (void)registerGrowl:(void*)context;
+- (void)registerGrowl;
+- (void)registerGrowlWithContext:(void*)context;
 - (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImageName:(NSString *) image;
 - (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImage:(NSImage *) image;
 - (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description;

@@ -47,6 +47,15 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_launch(
 	[pool release];
 }
 
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_register(
+																	 JNIEnv *env, 
+																	 jobject this)
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	[[Growl defaultInstance] registerGrowl];
+	[pool release];
+}
+
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notify(
 																	 JNIEnv *env, 
 																	 jobject this,
@@ -100,12 +109,17 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 	if(NSClassFromString(@"GrowlAppBridge") != nil) 
 	{ 
 		[NSClassFromString(@"GrowlAppBridge") launchGrowlIfInstalledNotifyingTarget:self
-																		   selector:@selector(registerGrowl:) 
+																		   selector:@selector(registerGrowl:)
 																			context:nil];
 	}
 }
 
-- (void)registerGrowl:(void*)context
+- (void)registerGrowl
+{
+	[self registerGrowlWithContext: nil];
+}
+
+- (void)registerGrowlWithContext:(void*)context
 {
 	if(!registered) {
 		NSArray *allNotifications = [NSArray arrayWithObjects:
