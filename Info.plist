@@ -67,7 +67,6 @@
 		<string>cocoa.jar</string>
 		<string>ftp.jar</string>
 		<string>logging.jar</string>
-		<string>http.jar</string>
 		<string>jmdns.jar</string>
 		<string>log4j.jar</string>
 		<string>oro.jar</string>
