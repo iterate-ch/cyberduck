@@ -156,7 +156,7 @@ public class CDBrowserController implements Observer {
 				   msg.getDescription() // message
 				   );
 		    progressIndicator.stopAnimation(this);
-		    statusLabel.setStringValue("Error: "+msg.getDescription());
+		    statusLabel.setStringValue(msg.getDescription());
 		}
 		// update status label
 		if(msg.getTitle().equals(Message.PROGRESS)) {

@@ -63,7 +63,6 @@ public abstract class Session extends Observable {
     public Session(Host h) {//, TransferAction action) {//, boolean secure) {
 	log.debug("Session("+h+")");
 	this.host = h;
-		this.log(System.getProperty("line.separator"), Message.TRANSCRIPT);
         this.log("-------" + new Date().toString(), Message.TRANSCRIPT);
         this.log("-------" + host.getIp(), Message.TRANSCRIPT);
     }
@@ -80,7 +79,7 @@ public abstract class Session extends Observable {
      * The protocol specific implementation has to  be coded in the subclasses.
      * @see Host
      */
-    public abstract void connect();
+    public abstract void connect() throws IOException;
 
     /**
 	* Connect to the remote host and mount the home directory
@@ -96,7 +95,7 @@ public abstract class Session extends Observable {
     /**
 	* @return The current working directory (pwd)
      */
-    public abstract Path workdir() throws IOException ;
+    public abstract Path workdir() throws IOException;
     /**
 	* Assert that the connection to the remote host is still alive. Open connection if needed.
      * @throws IOException The connection to the remote host failed.
@@ -104,7 +103,7 @@ public abstract class Session extends Observable {
      */
     public abstract void check() throws IOException;
 
-    public abstract void download(Path download);
+    public abstract void download(Path download) throws IOException;
 
     public abstract void upload(java.io.File upload);
     

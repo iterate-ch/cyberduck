@@ -57,7 +57,7 @@ public class CDTranscriptImpl implements Transcripter {
 	 */
 	int l = textView.string().length();
 	textView.replaceCharactersInRange(new NSRange(l, 0), message+"\n");
-	textView.scrollRangeToVisible(new NSRange(l, message.length()-1));
+	textView.scrollRangeToVisible(new NSRange(l, message.length()-1)); //@todo message.length()
 
     }
 

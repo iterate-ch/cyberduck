@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 public class FTPSession extends Session {
     private static Logger log = Logger.getLogger(Session.class);
     
-    private static final String TRANSFERTYPE = Preferences.instance().getProperty("connection.transfertype.default");
+    private static final String TRANSFERTYPE = Preferences.instance().getProperty("ftp.transfermode");
 
     class FTPFile extends Path {
 
@@ -210,15 +210,23 @@ public class FTPSession extends Session {
 		FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	    }
 	}
-	
+
         public synchronized void download() {
             log.debug("download");
 	    new Thread() {
 		public void run() {
-		    FTPSession downloadSession = new FTPSession(host);
-		    downloadSession.connect();
-		    downloadSession.download(FTPFile.this);
-		    
+		    FTPSession downloadSession = null;
+		    try {
+			downloadSession = new FTPSession(host);
+			downloadSession.connect();
+			downloadSession.download(FTPFile.this);
+		    }
+		    catch(FTPException e) {
+			downloadSession.log("FTP Error: "+e.getMessage(), Message.ERROR);
+		    }
+		    catch(IOException e) {
+			downloadSession.log("IO Error: "+e.getMessage(), Message.ERROR);
+		    }		    
 		}
 	    }.start();
 	}
@@ -285,35 +293,27 @@ public class FTPSession extends Session {
 	}
     }
 
-    public synchronized void connect() {
+    public synchronized void connect() throws IOException {
 //		host.status.fireActiveEvent();
 	this.callObservers(new Message(Message.OPEN, "Opening session."));
 	this.log("Opening FTP connection to " + host.getIp()+"...", Message.PROGRESS);
-	try {
-	    if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
-		FTP.setConnectMode(FTPConnectMode.ACTIVE);
-	    }
-	    else {
-		FTP.setConnectMode(FTPConnectMode.PASV);
-	    }
+	if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
+	    FTP.setConnectMode(FTPConnectMode.ACTIVE);
+	}
+	else {
+	    FTP.setConnectMode(FTPConnectMode.PASV);
+	}
 //@todo proxy		    if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
 //			FTP.initSOCKS(Preferences.instance().getProperty("connection.proxy.port"), Preferences.instance().getProperty("connection.proxy.host"));
 //		    }
 //		    if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
 //			FTP.initSOCKSAuthentication(Preferences.instance().getProperty("connection.proxy.username"), Preferences.instance().getProperty("connection.proxy.password"));
 //		    }
-	    FTP.connect(host.getName(), host.getPort());
-	    this.setConnected(true);
-	    this.log("FTP connection opened", Message.PROGRESS);
-	    this.login();
-	    FTP.system();
-	}
-	catch(FTPException e) {
-	    this.log("FTP Error: "+e.getMessage(), Message.ERROR);
-	}
-	catch(IOException e) {
-	    this.log("IO Error: "+e.getMessage(), Message.ERROR);
-	}
+	FTP.connect(host.getName(), host.getPort());
+	this.log("FTP connection opened", Message.PROGRESS);
+	this.login();
+	FTP.system();
+	this.setConnected(true);
     }
 
 
@@ -358,21 +358,13 @@ public class FTPSession extends Session {
 	return new FTPFile(FTP.pwd());
     }
 
-    public void download(Path file) {
+    public void download(Path file) throws IOException {
 	log.debug("download:"+file.getName());
-	try {
-	    file.status.fireActiveEvent();
-	    if(file.isDirectory())
-		this.downloadFolder(file);
-	    if(file.isFile())
-		this.downloadFile(file);
-	}
-	catch(FTPException e) {
-	    this.log("FTP Error: "+e.getMessage(), Message.ERROR);
-	}
-	catch(IOException e) {
-	    this.log("IO Error: "+e.getMessage(), Message.ERROR);
-	}
+	file.status.fireActiveEvent();
+	if(file.isDirectory())
+	    this.downloadFolder(file);
+	if(file.isFile())
+	    this.downloadFile(file);
     }
 
     private void downloadFile(Path file) throws IOException {

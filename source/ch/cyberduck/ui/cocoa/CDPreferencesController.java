@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
+import ch.cyberduck.core.Preferences;
 
 /**
 * @version $Id$
@@ -34,14 +35,9 @@ public class CDPreferencesController {
     // Outlets
     // ----------------------------------------------------------
 
-    private NSTextField usernameField;
-    public void setUsernameField(NSTextField usernameField) {
-	this.usernameField = usernameField;
-    }
-
-    private NSTextField passField;
-    public void setPassField(NSTextField passField) {
-	this.passField = passField;
+    private NSTextField anonymousField;
+    public void setAnonymousField(NSTextField anonymousField) {
+	this.anonymousField = anonymousField;
     }
 
     private NSTextField downloadPathField;
@@ -59,14 +55,19 @@ public class CDPreferencesController {
 	this.showHiddenCheckbox = showHiddenCheckbox;
     }
 
-    private NSPopUpButton transfermodeCombobox;
-    public void setTransfermodeCombobox(NSPopUpButton transfermodeCombobox) {
-	this.transfermodeCombobox = transfermodeCombobox;
+    private NSPopUpButton transfermodeCombo;
+    public void setTransfermodeCombo(NSPopUpButton transfermodeCombo) {
+	this.transfermodeCombo = transfermodeCombo;
     }
 
-    private NSPopUpButton protocolCombobox;
-    public void setProtocolCombobox(NSPopUpButton protocolCombobox) {
-	this.protocolCombobox = protocolCombobox;
+    private NSPopUpButton connectmodeCombo;
+    public void setConnectmodeCombo(NSPopUpButton connectmodeCombo) {
+	this.connectmodeCombo = connectmodeCombo;
+    }
+    
+    private NSPopUpButton protocolCombo;
+    public void setProtocolCombo(NSPopUpButton protocolCombo) {
+	this.protocolCombo = protocolCombo;
     }
 
     private NSWindow window;
@@ -74,27 +75,38 @@ public class CDPreferencesController {
 	this.window = window;
     }
 
-    private CDPreferencesController() {
-        if (false == NSApplication.loadNibNamed("Preferences", this)) {
+
+    public static CDPreferencesController instance() {
+	if(null == instance) {
+	    instance = new CDPreferencesController();
+	}
+        if (false == NSApplication.loadNibNamed("Preferences", instance)) {
             log.error("Couldn't load Preferences.nib");
-            return;
         }
-	this.init();
+	instance.init();
+	return instance;
+    }
+    
+    private CDPreferencesController() {
+//
     }
 
     private void init() {
-	usernameField.setStringValue(Preferences.instance().getProperty("connection.login.anonymous.name"));
-	passField.setStringValue(Preferences.instance().getProperty("connection.login.anonymous.pass"));
+	//setting values
+	anonymousField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.pass"));
+	downloadPathField.setStringValue(Preferences.instance().getProperty("download.path"));
+	
+	transfermodeCombo.selectItemWithTitle(Preferences.instance().getProperty("ftp.transfermode"));
+	connectmodeCombo.selectItemWithTitle(Preferences.instance().getProperty("ftp.connectmode"));
+	protocolCombo.selectItemWithTitle(Preferences.instance().getProperty("connection.protocol.default"));
+
+
+	
 	NSNotificationCenter.defaultCenter().addObserver(
 						  this,
 						  new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
 						  NSControl.ControlTextDidChangeNotification,
-						  usernameField);
-	NSNotificationCenter.defaultCenter().addObserver(
-						  this,
-						  new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
-						  NSControl.ControlTextDidChangeNotification,
-						  passField);
+						  anonymousField);
 	NSNotificationCenter.defaultCenter().addObserver(
 						  this,
 						  new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
@@ -103,13 +115,11 @@ public class CDPreferencesController {
 	
     }
 
-    public static CDPreferencesController instance() {
-	if(null == instance) {
-	    instance = new CDPreferencesController();
-	}
-	return instance;
-    }
 
+    public void textInputDidChange(NSNotification sender) {
+
+    }
+    
     public NSWindow window() {
 	return this.window;
     }

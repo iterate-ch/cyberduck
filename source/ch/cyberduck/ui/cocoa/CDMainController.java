@@ -75,7 +75,8 @@ public class CDMainController {
 
     public void closeDonationSheet(Object sender) {
 	log.debug("closeDonationSheet");
-	NSApplication.sharedApplication().endSheet(donationSheet, NSAlertPanel.AlternateReturn);
+	donationSheet.close();
+//	NSApplication.sharedApplication().endSheet(donationSheet, NSAlertPanel.AlternateReturn);
     }
 
 
@@ -124,14 +125,15 @@ public class CDMainController {
         Preferences.instance().save();
 	History.instance().save();
 	Favorites.instance().save();
-	
-//        if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
-	if(Preferences.instance().getProperty("donate").equals("true")) {
+
+	if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
 	    if (false == NSApplication.loadNibNamed("Donate", this)) {
 		log.error("Couldn't load Donate.nib");
 		return NSApplication.TerminateNow;
 	    }
-	    //@todo don't use sheet
+	    app.runModalForWindow(donationSheet);
+	    
+	   /*
 	    NSApplication.sharedApplication().beginSheet(
 						  donationSheet,//sheet
 						  null, //docwindow
@@ -141,6 +143,7 @@ public class CDMainController {
 		       new Class[] { NSWindow.class, int.class, NSWindow.class }
 		       ),// did end selector
 						  null); //contextInfo
+	    */
 	    return NSApplication.TerminateLater;
 	}
 	return NSApplication.TerminateNow;

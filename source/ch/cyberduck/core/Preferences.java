@@ -87,7 +87,7 @@ public abstract class Preferences {//extends Properties {
 	//	System.out.println("Working directory:"+System.getProperty("user.dir"));
 	defaults.put("version", "2.1");
         defaults.put("uses", "0");
-	defaults.put("donate", "false");
+	defaults.put("donate", "true");
 	defaults.put("donate.url" , "http://www.cyberduck.ch/donate/");
         
 	System.setProperty("sshtools.home", System.getProperty("user.dir"));
@@ -147,7 +147,6 @@ public abstract class Preferences {//extends Properties {
 //        defaults.put("connection.log.speech", "false");
         defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
-        defaults.put("connection.transfertype.default", "binary");
 //        defaults.put("connection.timeout", "2"); // seconds
   //      defaults.put("connection.timeout.default", "2"); // seconds
 //        defaults.put("connection.proxy", "false");
@@ -160,11 +159,12 @@ public abstract class Preferences {//extends Properties {
 //        defaults.put("connection.path.default", "~");
 
         defaults.put("connection.login.name", System.getProperty("user.name"));
-        defaults.put("connection.login.anonymous.name", "anonymous");
-        defaults.put("connection.login.anonymous.pass", "user@domain.tld");
         
         //ftp properties
-	defaults.put("ftp.connectmode", "passive");
+        defaults.put("ftp.anonymous.name", "anonymous");
+        defaults.put("ftp.anonymous.pass", "user@domain.tld");
+	defaults.put("ftp.connectmode", "Passive");
+        defaults.put("ftp.transfermode", "Binary");
 
 	//listing properties
         defaults.put("listing.showHidden", "false");

@@ -116,6 +116,8 @@ public class CDBrowserTableDataSource implements NSTableView.DataSource {
 	int i = 0;
 	for(i = 0; i < filesList.count(); i++) {
 	    log.debug(filesList.objectAtIndex(i));
+	    
+	    
 	    //data.addEntry(fileseList.objectAtIndex(i), row+i);
 	}
 	tableView.reloadData();

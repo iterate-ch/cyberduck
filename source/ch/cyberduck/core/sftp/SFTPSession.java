@@ -242,11 +242,19 @@ public class SFTPSession extends Session {
 	public synchronized void download() {
             log.debug("download");
 	    new Thread() {
+		SFTPSession downloadSession = null;
 		public void run() {
-		    SFTPSession downloadSession = new SFTPSession(host);
-		    downloadSession.connect();
-		    downloadSession.download(SFTPFile.this);
-
+		    try {
+			downloadSession = new SFTPSession(host);
+			downloadSession.connect();
+			downloadSession.download(SFTPFile.this);
+		    }
+		    catch(SshException e) {
+			downloadSession.log("SSH Error: "+e.getMessage(), Message.ERROR);
+		    }
+		    catch(IOException e) {
+			downloadSession.log("IO Error: "+e.getMessage(), Message.ERROR);
+		    }
 		}
 	    }.start();
 	}
@@ -290,47 +298,39 @@ public class SFTPSession extends Session {
 	}
     }
 
-    public synchronized void connect() {
+    public synchronized void connect() throws IOException {
 //		host.status.fireActiveEvent();
 	this.callObservers(new Message(Message.OPEN, "Opening session."));
 	this.log("Opening SSH connection to " + host.getIp()+"...", Message.PROGRESS);
-	try {
-	    SshConnectionProperties properties = new SshConnectionProperties();
-	    properties.setHost(host.getName());
-	    properties.setPort(host.getPort());
-	    
+	SshConnectionProperties properties = new SshConnectionProperties();
+	properties.setHost(host.getName());
+	properties.setPort(host.getPort());
+	
 		    // Sets the prefered client->server encryption cipher
 //		    properties.setPrefCSEncryption("blowfish-cbc");
 		    // Sets the preffered server->client encryption cipher
 //		    properties.setPrefSCEncryption("3des-cbc");
-	    
+	
 		    // Sets the preffered client->server message authenticaiton
 //		    properties.setPrefCSMac("hmac-sha1");
 		    // Sets the preffered server->client message authentication
 //		    properties.setPrefSCMac("hmac-md5");
 
-	    SSH.connect(properties, host.getHostKeyVerification());
-	    this.setConnected(true);
-	    this.log("SSH connection opened", Message.PROGRESS);
-	    this.log(SSH.getServerId(), Message.TRANSCRIPT);
+	SSH.connect(properties, host.getHostKeyVerification());
+	this.log("SSH connection opened", Message.PROGRESS);
+	this.log(SSH.getServerId(), Message.TRANSCRIPT);
 
-	    log.debug(SSH.getAvailableAuthMethods(host.login.getUsername()));
+	log.debug(SSH.getAvailableAuthMethods(host.login.getUsername()));
 
-	    this.login();
-	    this.log("Opening SSH session channel", Message.PROGRESS);
+	this.login();
+	this.log("Opening SSH session channel", Message.PROGRESS);
 		    // The connection is authenticated we can now do some real work!
-	    channel = SSH.openSessionChannel();
-	    this.log("Starting SFTP subsystem", Message.PROGRESS);
-	    SFTP = new SftpSubsystemClient();
-	    channel.startSubsystem(SFTP);
-	    this.log("SFTP subsystem ready.", Message.PROGRESS);
-	}
-	catch(SshException e) {
-	    this.log("SSH Error: "+e.getMessage(), Message.ERROR);
-	}
-	catch(IOException e) {
-	    this.log("IO Error: "+e.getMessage(), Message.ERROR);
-	}
+	channel = SSH.openSessionChannel();
+	this.log("Starting SFTP subsystem", Message.PROGRESS);
+	SFTP = new SftpSubsystemClient();
+	channel.startSubsystem(SFTP);
+	this.log("SFTP subsystem ready.", Message.PROGRESS);
+	this.setConnected(true);
     }
 
     public synchronized void mount() {
@@ -340,6 +340,9 @@ public class SFTPSession extends Session {
 		    connect();
 		    SFTPFile home = (SFTPFile)SFTPSession.this.workdir();
 		    home.list();
+		}
+		catch(SshException e) {
+		    SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
 		}
 		catch(IOException e) {
 		    SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
@@ -396,21 +399,13 @@ public class SFTPSession extends Session {
 	return new SFTPFile(SFTP.getDefaultDirectory());
     }
 
-    public void download(Path file) {
+    public void download(Path file) throws IOException {
 	log.debug("download:"+file.getName());
-	try {
-	    file.status.fireActiveEvent();
-	    if(file.isDirectory())
-		this.downloadFolder(file);
-	    if(file.isFile())
-		this.downloadFile(file);
-	}
-	catch(SshException e) {
-	    SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
-	}
-	catch(IOException e) {
-	    SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
-	}
+	file.status.fireActiveEvent();
+	if(file.isDirectory())
+	    this.downloadFolder(file);
+	if(file.isFile())
+	    this.downloadFile(file);
     }
 
     private void downloadFile(Path file) throws IOException {

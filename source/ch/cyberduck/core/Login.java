@@ -24,8 +24,8 @@ public abstract class Login {
 	* New instance with default values. Anonymous login.
      */
     public Login() {
-	this.user = Preferences.instance().getProperty("connection.login.anonymous.name");
-	this.pass = Preferences.instance().getProperty("connection.login.anonymous.pass");
+	this.user = Preferences.instance().getProperty("ftp.anonymous.name");
+	this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
     }
 
     /**
@@ -34,11 +34,11 @@ public abstract class Login {
      */
     public Login(String user, String pass) {
 	if(null == user || user.equals(""))
-	    this.user = Preferences.instance().getProperty("connection.login.anonymous.name");
+	    this.user = Preferences.instance().getProperty("ftp.anonymous.name");
 	else
 	    this.user = user;
 	if(null == pass || pass.equals(""))
-	    this.pass = Preferences.instance().getProperty("connection.login.anonymous.pass");
+	    this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 	else
 	    this.pass = pass;
     }

@@ -40,17 +40,16 @@ public class Transcript {
     
     public static Transcript instance() {
         if(null == instance) {
+	    //@todo return a transcript dependant of hostinfo
 	    instance = new Transcript();
 	}
         return instance;
      }
 
     /**
-	* Must be overwritten by the subclass if it has a view widget
+	* Must be overwritten by the subclass to return the view widget
      */
-    public Object getView() {
-	return null;
-    }
+//    public abstract Object getView();
 
     /**
     * @param l Add this Transripter to the list of listeners

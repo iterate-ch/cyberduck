@@ -80,11 +80,11 @@ public class PreferencesImpl extends Preferences { //PreferencesImplSwing
                 props.load(new FileInputStream(prefs));
             }
             else {
-                log.error("Could not load current preferences.");
+                log.error("Could not load current preferences");
             }
         }
         catch(IOException e) {
-            log.error("Could not load current preferences.\n" + e.getMessage());
+            log.error("Could not load current preferences: " + e.getMessage());
         }
     }
 
@@ -96,7 +96,7 @@ public class PreferencesImpl extends Preferences { //PreferencesImplSwing
             output.close();
         }
         catch(IOException e) {
-            log.error("Could not save current preferences.\n" + e.getMessage());
+            log.error("Could not save current preferences: " + e.getMessage());
         }
     }    
 }
