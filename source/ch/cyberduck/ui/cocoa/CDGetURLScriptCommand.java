@@ -59,7 +59,6 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
                     return null;
                 }
             }
-            log.debug("Assume browsing");
             CDBrowserController controller = new CDBrowserController();
             controller.mount(h);
         }

@@ -6,53 +6,16 @@
 		<string>CYCK</string>
 		<key>Classes</key>
 		<dict>
-			<key>Browser</key>
-			<dict>
-				<key>AppleEventCode</key>
-				<string>docu</string>
-				<key>Superclass</key>
-				<string>NSCoreSuite.NSDocument</string>
-				<key>SupportedCommands</key>
-				<dict>
-					<key>Cyberduck.Connect</key>
-					<string>handleConnectScriptCommand</string>
-				</dict>
-			</dict>
-			<key>NSApplication</key>
+			<key>Cyberduck</key>
 			<dict>
 				<key>AppleEventCode</key>
 				<string>capp</string>
 				<key>Superclass</key>
 				<string>NSCoreSuite.NSApplication</string>
-				<key>SupportedCommands</key>
-				<dict>
-					<key>Upload</key>
-					<string>handleUploadScriptCommand</string>
-					<key>Download</key>
-					<string>handleDownloadScriptCommand</string>
-				</dict>
 			</dict>
 		</dict>
 		<key>Commands</key>
 		<dict>
-			<key>Connect</key>
-			<dict>
-				<key>AppleEventClassCode</key>
-				<string>CYCK</string>
-				<key>AppleEventCode</key>
-				<string>Conn</string>
-				<key>CommandClass</key>
-				<string>ch.cyberduck.ui.cocoa.CDGetURLScriptCommand</string>
-			</dict>
-			<key>Upload</key>
-			<dict>
-				<key>AppleEventClassCode</key>
-				<string>CYCK</string>
-				<key>AppleEventCode</key>
-				<string>Upld</string>
-				<key>CommandClass</key>
-				<string>ch.cyberduck.ui.cocoa.CDGetURLScriptCommand</string>
-			</dict>
 			<key>GetURL</key>
 			<dict>
 				<key>AppleEventClassCode</key>

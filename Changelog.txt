@@ -21,6 +21,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - Toolbar button to remove all completed items from the queue
 - Convert line endings when downloading in ASCII mode (FTP)
 - Auto transfer mode (FTP)
+- Dock menu item to open new browser
 - Bug fixes
 
 2.3b1

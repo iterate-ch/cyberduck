@@ -31,7 +31,7 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 /**
  * @version $Id$
  */
-public class CDBrowserController extends NSDocument implements Observer { //@todo
+public class CDBrowserController extends NSObject implements Observer { //@todo
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
     /**
