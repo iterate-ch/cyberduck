@@ -4,16 +4,14 @@ http://cyberduck.ch/
 Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
-2.5
-- [Feature] Set character encoding per bookmark
+2.4.1
 - [Feature] History of recently connected hosts in connection dialog
 - [Feature] History of recently connected hosts in bookmark menu
-- [Feature] Link to forum in Help menu
 - [Feature] Selecting remote server timezone in synchronization dialog
+- [Feature] Set character encoding per bookmark
 - [Feature] Set FTP connect mode per bookmark (FTP)
 - [Feature] Show folders in working directory (and autocomplete) in 'Go to Folder' dialog
 - [Feature] Preferences previously only avilable using the 'defaults' command
-- [Feature] Updated to use Growl 0.6
 - [Feature] Manually exclude files in synchronization dialog
 - [Feature] Apply button in File Info dialog
 - [Feature] Duplicate files on server
