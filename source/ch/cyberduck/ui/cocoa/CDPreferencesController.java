@@ -361,7 +361,7 @@ public class CDPreferencesController {
 		this.closeTransferCheckbox = closeTransferCheckbox;
 		this.closeTransferCheckbox.setTarget(this);
 		this.closeTransferCheckbox.setAction(new NSSelector("closeTransferCheckboxClicked", new Class[] {NSButton.class}));
-		closeTransferCheckbox.setState(Preferences.instance().getProperty("transfer.close").equals("true") ? NSCell.OnState : NSCell.OffState);
+		this.closeTransferCheckbox.setState(Preferences.instance().getProperty("transfer.close").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
 	
     public void closeTransferCheckboxClicked(NSButton sender) {
@@ -380,6 +380,7 @@ public class CDPreferencesController {
 		this.processCheckbox = processCheckbox;
 		this.processCheckbox.setTarget(this);
 		this.processCheckbox.setAction(new NSSelector("processCheckboxClicked", new Class[] {NSButton.class}));
+		this.processCheckbox.setState(Preferences.instance().getProperty("connection.download.postprocess").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
 	
     public void processCheckboxClicked(NSButton sender) {

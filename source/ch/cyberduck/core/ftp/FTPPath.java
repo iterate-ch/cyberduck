@@ -196,7 +196,8 @@ public class FTPPath extends Path {
 		log.debug("changePermissions:"+permissions);
 		try {
 			session.check();
-			session.FTP.site("chmod "+permissions+" \""+this.getAbsolute()+"\"");
+			session.FTP.site("chmod "+permissions+" "+this.getAbsolute());
+//			session.FTP.site("chmod "+permissions+" \""+this.getAbsolute()+"\"");
 		}
 		catch(FTPException e) {
 			session.log("FTP Error: "+e.getMessage(), Message.ERROR);

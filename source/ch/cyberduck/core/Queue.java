@@ -225,7 +225,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		* @return Number of remaining items to be processed in the queue.
      */
     public int remainingJobs() {
-//		log.debug("remainingJobs:");
+		log.debug("remainingJobs:");
 		return this.numberOfJobs() - this.processedJobs();
     }
 	

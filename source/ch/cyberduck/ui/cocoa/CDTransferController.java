@@ -185,7 +185,6 @@ public class CDTransferController implements Observer, Validator {
 					this.totalProgressBar.setMinValue(0);
 					this.totalProgressBar.setDoubleValue((double)queue.getCurrent());
 					this.totalProgressBar.setMaxValue(queue.getSize());
-					
 				}
 				else {
 					this.totalProgressBar.setIndeterminate(true);
@@ -235,6 +234,7 @@ public class CDTransferController implements Observer, Validator {
 			else if(msg.getTitle().equals(Message.STOP)) {
 				log.debug("STOP");
 				this.totalProgressBar.stopAnimation(null);
+				this.totalProgressBar.setIndeterminate(false);
 				if(0 == queue.remainingJobs()) {
 					this.stopButton.setEnabled(false);
 					this.resumeButton.setEnabled(true);
@@ -274,7 +274,7 @@ public class CDTransferController implements Observer, Validator {
 										 (String)msg.getContent() // message
 										 );
 				this.queue.cancel();
-				this.totalProgressBar.stopAnimation(null);
+//				this.totalProgressBar.stopAnimation(null);
 				this.stopButton.setEnabled(false);
 				this.resumeButton.setEnabled(true);
 				this.reloadButton.setEnabled(true);
@@ -466,7 +466,7 @@ public class CDTransferController implements Observer, Validator {
     }
 	
     public void stopButtonClicked(NSButton sender) {
-		this.totalProgressBar.stopAnimation(null);
+//		this.totalProgressBar.stopAnimation(null);
 		this.stopButton.setEnabled(false);
 		this.resumeButton.setEnabled(true);
 		this.reloadButton.setEnabled(true);
