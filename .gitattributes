@@ -226,9 +226,11 @@ img/add.tiff svneol=native#unset
 img/addPressed.tiff svneol=native#unset
 img/alert.tiff -text
 img/arrowDown.tiff -text
+img/arrowDown16.tiff -text
+img/arrowLeft.tiff -text
+img/arrowLeft16.tiff -text
 img/arrowUp.tiff -text
-img/back.tiff svneol=native#unset
-img/back32.tiff -text
+img/arrowUp16.tiff -text
 img/bookmarks.tiff svneol=native#unset
 img/cancel.tiff -text
 img/clean.tiff -text
@@ -237,7 +239,6 @@ img/connect.tiff svneol=native#unset
 img/deleteFile.tiff -text
 img/disconnect.tiff svneol=native#unset
 img/disk.tiff svneol=native#unset
-img/down.tiff -text
 img/download0.icns -text
 img/download0.psd -text
 img/download0.tiff -text
@@ -297,7 +298,6 @@ img/run.tiff -text
 img/stop.tiff svneol=native#unset
 img/symlink.tiff -text
 img/sync32.tiff -text
-img/up.tiff svneol=native#unset
 img/uploadFile.tiff -text
 it.lproj/Bookmark.nib/keyedobjects.nib -text
 it.lproj/Bookmark.strings svneol=native#unset
