@@ -193,12 +193,33 @@ public class FTPPath extends Path {
 		}
 	}
 	
+	private void setTransferType() throws IOException {
+		if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+			if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
+				session.FTP.setTransferType(FTPTransferType.ASCII);
+			}
+			else {
+				session.FTP.setTransferType(FTPTransferType.BINARY);
+			}
+		}
+		else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+			session.FTP.setTransferType(FTPTransferType.BINARY);
+		}
+		else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+			session.FTP.setTransferType(FTPTransferType.ASCII);
+		}
+		else {
+			throw new FTPException("Transfer type not set");
+		}
+	}
+	
 	public void reset() {
 		if(this.exists()) {
 			try {
-				session.check();
-				//@todo session.FTP.setTransferType(FTPTransferType.BINARY);
+				session.log("Getting timestamp of "+this.getName(), Message.PROGRESS);
 				this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()));
+				session.log("Getting size of "+this.getName(), Message.PROGRESS);
+				this.setTransferType();
 				this.attributes.setSize(session.FTP.size(this.getAbsolute()));
 			}
 			catch(FTPException e) {
@@ -290,23 +311,7 @@ public class FTPPath extends Path {
 			log.debug("download:"+this.toString());
 			session.check();
 			if(this.attributes.isFile()) {
-				if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-					if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
-						this.downloadASCII();
-					}
-					else {
-						this.downloadBinary();
-					}
-				}
-				else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
-					this.downloadBinary();
-				}
-				else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
-					this.downloadASCII();
-				}
-				else {
-					throw new FTPException("Transfer type not set");
-				}
+				this.setTransferType();
 				if(this.status.isComplete()) {
 					log.info("Updating permissions");
 					if(Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {

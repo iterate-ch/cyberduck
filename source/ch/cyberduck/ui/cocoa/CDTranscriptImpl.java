@@ -22,12 +22,15 @@ import com.apple.cocoa.application.NSFont;
 import com.apple.cocoa.application.NSTextView;
 import com.apple.cocoa.foundation.NSRange;
 
+import org.apache.log4j.Logger;
+
 import ch.cyberduck.core.Transcript;
 
 /**
  * @version $Id$
  */
 public class CDTranscriptImpl implements Transcript {
+	private static Logger log = Logger.getLogger(CDTranscriptImpl.class);
 
 	private NSTextView textView;
 
@@ -45,6 +48,7 @@ public class CDTranscriptImpl implements Transcript {
 	private static final NSFont fixedWidthFont = NSFont.userFixedPitchFontOfSize(9.0f);
 
 	public void log(final String message) {
+		log.info(message);
 // Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
 // formatting attributes of the first character of the text it replaces, or of the character immediately
 // before aRange if the range's length is 0. If the range's location is 0, the formatting

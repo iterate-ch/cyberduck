@@ -73,7 +73,7 @@ public class CDMainController extends NSObject {
 
 	static {
 		BasicConfigurator.configure();
-		Logger.getLogger("ch.cyberduck").setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
+		Logger.getRootLogger().setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 	}
 
 	// ----------------------------------------------------------

@@ -39,7 +39,7 @@ public class Editor {
 	static {
 		SUPPORTED_EDITORS.put("SubEthaEdit", "de.codingmonkeys.SubEthaEdit");
 		SUPPORTED_EDITORS.put("BBEdit", "com.barebones.bbedit");
-		SUPPORTED_EDITORS.put("BBEdit Lite", "com.barebones.bbeditlite");
+//		SUPPORTED_EDITORS.put("BBEdit Lite", "com.barebones.bbeditlite");
 		SUPPORTED_EDITORS.put("TextWrangler", "com.barebones.textwrangler");
 //		SUPPORTED_EDITORS.put("PageSpinner", "com.optima.PageSpinner");
 		SUPPORTED_EDITORS.put("TextMate", "com.macromates.textmate");
