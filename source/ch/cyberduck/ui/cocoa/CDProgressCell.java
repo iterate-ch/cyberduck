@@ -67,7 +67,7 @@ public class CDProgressCell extends CDTableCell {
 															   queue.getCurrentAsString()
 															   +" of "+
 															   queue.getSizeAsString(),
-															   tinyFont),
+															   normalFont),
 										new NSRect(cellPoint.x()+SPACE, 
 												   cellPoint.y()+cellSize.height()/2-PROGRESS_HEIGHT/2-10-SPACE, 
 												   cellSize.width()-SPACE, 

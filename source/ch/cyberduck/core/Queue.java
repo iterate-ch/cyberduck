@@ -450,7 +450,7 @@ public class Queue extends Observable implements Observer { //Thread {
      */
     public String getSpeedAsString() {
 		if(this.isRunning())
-			return Status.getSizeAsString(this.getSpeed());
+			return Status.getSizeAsString(this.getSpeed())+"/sec";
 		return "";
 //		String speed = Status.getSizeAsString(this.getSpeed());
 //		if(null == speed)

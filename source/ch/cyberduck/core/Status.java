@@ -112,9 +112,9 @@ public class Status extends Observable implements Serializable {
     public void setComplete(boolean complete) {
         this.complete = complete;
 		if(complete) {
+			this.setCurrent(this.getSize());
 			this.callObservers(new Message(Message.PROGRESS, "Complete"));
 //			this.callObservers(new Message(Message.COMPLETE));
-			this.setCurrent(this.getSize());
 		}
 		else
 			this.callObservers(new Message(Message.PROGRESS, "Incomplete"));
