@@ -93,7 +93,9 @@ public class CDProgressController extends NSObject implements Observer {
 			}
 			else if(msg.getTitle().equals(Message.QUEUE_START)) {
 				log.debug("------------- QUEUE_START");
+				this.progressBar.setIndeterminate(true);
 				this.progressBar.startAnimation(null);
+				this.progressBar.setNeedsDisplay(true);
 				this.errorText = new StringBuffer();
 				this.alertIcon.setHidden(true);
 				this.progressTimer = new NSTimer(0.5, //seconds
@@ -138,8 +140,8 @@ public class CDProgressController extends NSObject implements Observer {
 		
 	private void updateProgressbar() {
 		if(queue.isInitialized()) {
-			this.progressBar.setIndeterminate(false);
 			if(queue.getSize() != -1) {
+				this.progressBar.setIndeterminate(false);
 				double progressValue = queue.getCurrent()/queue.getSize();
 				this.progressBar.setMinValue(0);
 				this.progressBar.setMaxValue(queue.getSize());
@@ -227,9 +229,7 @@ public class CDProgressController extends NSObject implements Observer {
 
 	public void setProgressBar(NSProgressIndicator progressBar) {
 		this.progressBar = progressBar;
-		this.progressBar.setIndeterminate(false);
 		this.progressBar.setDisplayedWhenStopped(false);
-		this.progressBar.setControlTint(NSProgressIndicator.GraphiteControlTint);
 		this.progressBar.setControlTint(NSProgressIndicator.BlueControlTint);
 		this.progressBar.setControlSize(NSProgressIndicator.SmallControlSize);
 		this.progressBar.setStyle(NSProgressIndicator.ProgressIndicatorBarStyle);

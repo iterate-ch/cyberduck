@@ -240,6 +240,7 @@ public abstract class Queue extends Observable {
 									  }
 								  });
 		this.progress.start();
+		this.jobs = null;
 		this.callObservers(new Message(Message.QUEUE_START));
 		if(shouldValidate) {
 			List childs = this.getChilds();
