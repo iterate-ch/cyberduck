@@ -121,40 +121,6 @@ static ODBEditor	*_sharedODBEditor;
 	return _editorBundleIdentifier;
 }
 
-//- (void)abortEditingFile:(NSString *)path
-//{
-//	if (nil == [_filesBeingEdited objectForKey: path])
-//		NSLog(@"ODBEditor: No active editing session for \"%@\"", path);
-//	
-//	[_filesBeingEdited removeObjectForKey: path];
-//}
-
-//- (void)abortAllEditingSessionsForClient:(id)client
-//{
-//	BOOL			found = NO;
-//	NSEnumerator	*enumerator = [_filesBeingEdited objectEnumerator];
-//	NSMutableArray  *keysToRemove = [NSMutableArray array];
-//	NSDictionary	*dictionary = nil;
-//	
-//	while (nil != (dictionary = [enumerator nextObject]))
-//	{
-//		id  iterClient = [[dictionary objectForKey: ODBEditorNonRetainedClient] nonretainedObjectValue];
-//		
-//		if (iterClient == client)
-//		{
-//			found = YES;
-//			[keysToRemove addObject: [dictionary objectForKey: ODBEditorFileName]];
-//		}
-//	}
-//
-//	[_filesBeingEdited removeObjectsForKeys: keysToRemove];
-//	
-//	if (! found)
-//	{
-//		NSLog(@"ODBEditor: No active editing session for \"%@\"", client);
-//	}
-//}
-
 - (BOOL)editFile:(NSString *)path options:(NSDictionary *)options forClient:(id)client context:(void *)context
 {
 	return [self _editFile: path isEditingString: NO options: options forClient: client context: context];
