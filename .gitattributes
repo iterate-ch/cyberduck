@@ -247,6 +247,7 @@ lib/logging.jar -text
 nl.lproj/Bookmark.nib/keyedobjects.nib -text
 nl.lproj/Bookmark.strings svneol=native#unset
 nl.lproj/Browser.strings svneol=native#unset
+nl.lproj/Connection.nib/keyedobjects.nib -text
 nl.lproj/Connection.strings svneol=native#unset
 nl.lproj/Donate.nib/keyedobjects.nib -text
 nl.lproj/Donate.strings svneol=native#unset
@@ -260,6 +261,7 @@ nl.lproj/Info.nib/keyedobjects.nib -text
 nl.lproj/Info.strings svneol=native#unset
 nl.lproj/InfoPlist.strings -text
 nl.lproj/Localizable.strings -text
+nl.lproj/Login.nib/keyedobjects.nib -text
 nl.lproj/Login.strings svneol=native#unset
 nl.lproj/Main.nib/keyedobjects.nib -text
 nl.lproj/Main.strings svneol=native#unset

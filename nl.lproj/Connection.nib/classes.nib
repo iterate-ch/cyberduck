@@ -1,0 +1,28 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {closeSheet = id; }; 
+            CLASS = "ch.cyberduck.ui.cocoa.CDConnectionSheet"; 
+            LANGUAGE = Java; 
+            OUTLETS = {
+                bookmarksPopup = NSPopUpButton; 
+                historyPopup = NSPopUpButton; 
+                hostPopup = NSComboBox; 
+                keychainCheckbox = NSButton; 
+                passField = NSSecureTextField; 
+                pathField = NSTextField; 
+                pkCheckbox = NSButton; 
+                pkLabel = NSTextField; 
+                portField = NSTextField; 
+                protocolPopup = NSPopUpButton; 
+                rendezvousPopup = NSPopUpButton; 
+                urlLabel = NSTextField; 
+                usernameField = NSTextField; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = "java.lang.Object"; 
+        }
+    ); 
+    IBVersion = 1; 
+}
