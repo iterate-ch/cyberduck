@@ -1,0 +1,50 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            CLASS = "ch.cyberduck.ui.cocoa.CDPreferencesController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {
+                alternatingRowBackgroundCheckbox = NSButton; 
+                anonymousField = NSTextField; 
+                bringQueueToFrontCheckbox = NSButton; 
+                bufferField = NSTextField; 
+                chmodDownloadCheckbox = NSButton; 
+                chmodUploadCheckbox = NSButton; 
+                columnModificationCheckbox = NSButton; 
+                columnOwnerCheckbox = NSButton; 
+                columnPermissionsCheckbox = NSButton; 
+                columnSizeCheckbox = NSButton; 
+                connectmodeCombobox = NSPopUpButton; 
+                csAuthenticationCombobox = NSPopUpButton; 
+                csEncryptionCombobox = NSPopUpButton; 
+                defaultBufferButton = NSButton; 
+                downloadPathButton = NSButton; 
+                downloadPathField = NSTextField; 
+                duplicateCombobox = NSPopUpButton; 
+                editorCombobox = NSPopUpButton; 
+                encodingCombobox = NSPopUpButton; 
+                extensionsField = NSTextField; 
+                horizontalLinesCheckbox = NSButton; 
+                keychainCheckbox = NSButton; 
+                lineEndingCombobox = NSPopUpButton; 
+                listCheckbox = NSButton; 
+                loginField = NSTextField; 
+                newBrowserCheckbox = NSButton; 
+                processCheckbox = NSButton; 
+                protocolCombobox = NSPopUpButton; 
+                publickeyCombobox = NSPopUpButton; 
+                removeFromQueueCheckbox = NSButton; 
+                scAuthenticationCombobox = NSPopUpButton; 
+                scEncryptionCombobox = NSPopUpButton; 
+                showHiddenCheckbox = NSButton; 
+                systCheckbox = NSButton; 
+                transfermodeCombobox = NSPopUpButton; 
+                verticalLinesCheckbox = NSButton; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}
