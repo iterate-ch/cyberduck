@@ -425,11 +425,6 @@ public class CDBrowserController implements Observer {
     // 
     // ----------------------------------------------------------
     
-    public void finalize() throws Throwable {
-	super.finalize();
-	log.debug("finalize");
-    }
-
     public NSWindow window() {
 	return this.mainWindow;
     }
@@ -451,19 +446,19 @@ public class CDBrowserController implements Observer {
 				   null, //didEndSelector
 				   null, // dismiss selector
 				   null, // context
-				   msg.getDescription() // message
+				   (String)msg.getContent() // message
 				   );
 		    progressIndicator.stopAnimation(this);
-		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
+		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getContent()));
 		}
 		
 		// update status label
 		else if(msg.getTitle().equals(Message.PROGRESS)) {
-		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
+		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getContent()));
 		    statusLabel.display();
 		}
 		else if(msg.getTitle().equals(Message.TRANSCRIPT)) {
-		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
+		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getContent()));
 		}
 		
 		else if(msg.getTitle().equals(Message.OPEN)) {
@@ -700,7 +695,7 @@ public class CDBrowserController implements Observer {
 					      controller, //modal delegate
 					      new NSSelector(
 		      "connectionSheetDidEnd",
-		      new Class[] { NSWindow.class, int.class, NSWindow.class }
+		      new Class[] { NSWindow.class, int.class, Object.class }
 		      ),// did end selector
 					      null); //contextInfo
     }
@@ -965,7 +960,7 @@ public class CDBrowserController implements Observer {
 	   "closeSheetDidEnd",
 	   new Class[]
 	   {
-	       NSWindow.class, int.class, NSWindow.class
+	       NSWindow.class, int.class, Object.class
 	   }
 	   ),// end selector
 			       null, // dismiss selector
@@ -989,7 +984,7 @@ public class CDBrowserController implements Observer {
     // IB action methods
     // ----------------------------------------------------------
 
-    public void closeSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+    public void closeSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
 	// if multi window app only close the one window with main.close()
 	sheet.orderOut(null);
 	if(returncode == NSAlertPanel.DefaultReturn) {
