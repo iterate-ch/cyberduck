@@ -34,6 +34,7 @@ public class CDMainController extends NSObject {
 
     public CDTransferController transferController;
     public NSPanel infoPanel;
+    public NSPanel newfolderSheet;
     public NSWindow mainWindow;
     public NSWindow preferencesWindow;
     public NSWindow donationSheet;
@@ -62,7 +63,16 @@ public class CDMainController extends NSObject {
 
     public void folderButtonPressed(NSObject sender) {
         log.debug("folderButtonPressed");
-//        NSApplication.loadNibNamed("Folder", this);
+        NSApplication.loadNibNamed("Folder", this);
+	NSApplication.sharedApplication().beginSheet(
+					      newfolderSheet,//sheet
+					      mainWindow, //docwindow
+					      this, //delegate
+					      new NSSelector(
+			  "newfolderSheetDidEnd",
+			  new Class[] { NSWindow.class, int.class, NSWindow.class }
+			  ),// did end selector
+					      null); //contextInfo
     }
     
     public void infoButtonPressed(NSObject sender) {
@@ -94,10 +104,12 @@ public class CDMainController extends NSObject {
 	// @todo drag and drop
     }
 
+    /*
     public void backButtonPressed(NSObject sender) {
 	log.debug("backButtonPressed");
 	//
     }
+     */
 
     public void drawerButtonPressed(NSObject sender) {
 	log.debug("drawerButtonPressed");
@@ -140,7 +152,7 @@ public class CDMainController extends NSObject {
 
 	this.addToolbarItem(toolbarItems, "New Connection", "New Connection", "New Connection", "Connect to host", this, new NSSelector("connectButtonPressed", new Class[] {null}), NSImage.imageNamed("server.tiff"));
 
-	this.addToolbarItem(toolbarItems, "Back", "Back", "Back", "Show parent directory", this, new NSSelector("backButtonPressed", new Class[] {null}), NSImage.imageNamed("back.tiff"));
+//	this.addToolbarItem(toolbarItems, "Back", "Back", "Back", "Show parent directory", this, new NSSelector("backButtonPressed", new Class[] {null}), NSImage.imageNamed("back.tiff"));
 
 	//    private void addToolbarItem(NSMutableDictionary toolbarItems, String identifier, String label, String paletteLabel, String toolTip, Object target, NSSelector action, NSImage image) {
 
@@ -148,7 +160,7 @@ public class CDMainController extends NSObject {
 	NSToolbarItem pathPopUpButtonItem = (NSToolbarItem)toolbarItems.objectForKey("Path");
 	pathPopUpButtonItem.setView(pathPopUpButton);
 	pathPopUpButtonItem.setMinSize(pathPopUpButton.frame().size());
-	//	pathPopUpButtonItem.setMaxSize(pathPopUpButton.frame().size());
+	pathPopUpButtonItem.setMaxSize(new NSSize(170, pathPopUpButton.frame().height()));
 
 	this.addToolbarItem(toolbarItems, "Quick Connect", "Quick Connect", "Quick Connect", "Connect to host", this, null, null);
 	NSToolbarItem quickConnectItem = (NSToolbarItem)toolbarItems.objectForKey("Quick Connect");
@@ -162,7 +174,7 @@ public class CDMainController extends NSObject {
 
 	this.addToolbarItem(toolbarItems, "Upload", "Upload", "Upload", "Upload file", this, new NSSelector("uploadButtonPressed", new Class[] {null}), NSImage.imageNamed("upload.tiff"));
 
-	this.addToolbarItem(toolbarItems, "New Folder", "New Folder", "New Folder", "Create New Folder", this, new NSSelector("folderButtonPressed", new Class[] {null}), NSImage.imageNamed("folder.tiff"));
+	this.addToolbarItem(toolbarItems, "New Folder", "New Folder", "New Folder", "Create New Folder", this, new NSSelector("folderButtonPressed", new Class[] {null}), NSImage.imageNamed("newfolder.icns"));
 
 	this.addToolbarItem(toolbarItems, "Get Info", "Get Info", "Get Info", "Show file permissions", this, new NSSelector("infoButtonPressed", new Class[] {null}), NSImage.imageNamed("info.tiff"));
 
@@ -195,11 +207,11 @@ public class CDMainController extends NSObject {
     }
 
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Back", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer"});
+	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Refresh", "Download", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer"});
     }
 
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Back", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
+	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
     }
 
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {

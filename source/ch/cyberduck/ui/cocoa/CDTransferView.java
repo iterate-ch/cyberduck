@@ -1,3 +1,5 @@
+package ch.cyberduck.ui.cocoa;
+
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
@@ -15,8 +17,6 @@
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
-
-package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
@@ -51,10 +51,15 @@ public class CDTransferView extends NSTableView {
 	this.setTarget(this);
         this.setDoubleAction(new NSSelector("doubleClickAction", new Class[] {null}));
 	this.setAutoresizesAllColumnsToFit(true);
-    }
+/*
+	NSArray columns = this.tableColumns();
+	log.debug("Size columns:"+columns.count());
+	NSTableColumn progressColumn = (NSTableColumn)columns.objectAtIndex(2);
+	progressColumn.setDataCell(new CDProgressCell());
 
-    public Object dataSource() {
-	return super.dataSource();
+	//	log.debug("Index PROGRESS:"+columnWithIdentifier("PROGRESS"));
+ */
+//	this.tableColumnWithIdentifier("PROGRESS").setDataCell(new CDProgressCell());
     }
 
     public void update(Observable o, Object arg) {
@@ -83,5 +88,32 @@ public class CDTransferView extends NSTableView {
 
     public void tableViewSelectionDidChange(NSNotification notification) {
 	log.debug("tableViewSelectionDidChange");
+	//
     }
+
+    public void tableViewWillDisplayCell(NSTableView browserTable, Object cell, NSTableColumn tableColumn, int row) {
+	log.debug("tableViewWillDisplayCell");
+	//
+    }    
+
+    class CDProgressCell extends NSCell {
+	NSProgressIndicator progressBar;
+
+	public CDProgressCell() {
+	    super();
+	}
+
+	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
+	    if (null == progressBar) {
+		progressBar = new NSProgressIndicator(cellFrame);
+		progressBar.setControlSize(NSCell.SmallControlSize);
+		progressBar.setIndeterminate(false);
+		progressBar.setDoubleValue(0.0);
+		controlView.addSubview(progressBar);
+	    }
+	    progressBar.setFrame(cellFrame);
+	    progressBar.displayRect(cellFrame);
+	}
+    }
+    
 }

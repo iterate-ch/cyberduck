@@ -49,7 +49,7 @@ public class Log {
         FileWriter fw = null;
         BufferedWriter bw = null;
         try {
-            File prefFile = new File(Preferences.PREFS_DIRECTORY, Preferences.instance().getProperty("connection.log.file"));
+            File prefFile = new File(System.getProperty("user.dir"), Preferences.instance().getProperty("connection.log.file"));
             bw = new BufferedWriter(fw = new FileWriter(prefFile.toString(), true));
             String logtext = buffer.toString();
             if (logtext != null) {
@@ -83,7 +83,7 @@ public class Log {
     public static String open() {
         log.debug("[Log] open()");
 	StringBuffer logtext = new StringBuffer();
-	File path = new File(Preferences.PREFS_DIRECTORY, Preferences.instance().getProperty("connection.log.file"));
+	File path = new File(System.getProperty("user.dir"), Preferences.instance().getProperty("connection.log.file"));
 	if(path.exists()) {
             try {
                 FileReader fr = new FileReader(path);
@@ -109,7 +109,7 @@ public class Log {
     public static void delete() {
         log.debug("[Log] delete()");
         try {
-	    File path = new File(Preferences.PREFS_DIRECTORY, Preferences.instance().getProperty("connection.log.file"));
+	    File path = new File(System.getProperty("user.dir"), Preferences.instance().getProperty("connection.log.file"));
 	    if (path.exists())
 		path.delete();
         }

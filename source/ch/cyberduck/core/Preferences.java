@@ -62,7 +62,6 @@ public abstract class Preferences {//extends Properties {
      * @return The singleton instance of me.
      */
     public static Preferences instance() {
-	log.debug("instance");
         if(current == null) {
 //            PREFS_DIRECTORY.mkdir();
             String strVendor = System.getProperty("java.vendor");
@@ -141,7 +140,7 @@ public abstract class Preferences {//extends Properties {
 	//	System.out.println("Working directory:"+System.getProperty("user.dir"));
 	this.setProperty("cyberduck.version", "2.1");
         this.setProperty("cyberduck.uses", "0");
-	this.setProperty("cyberduck.donate", "true");
+	this.setProperty("cyberduck.donate", "false");
         
 	System.setProperty("sshtools.home", System.getProperty("user.dir"));
 	System.setProperty("sshtools.config", System.getProperty("user.dir"));
@@ -199,7 +198,7 @@ public abstract class Preferences {//extends Properties {
         this.setProperty("connection.log.speech", "false");
         this.setProperty("connection.port.default", "21");
         this.setProperty("connection.protocol.default", "ftp");
-//        this.setProperty("connection.transfertype.default", "binary");
+        this.setProperty("connection.transfertype.default", "binary");
         this.setProperty("connection.timeout", "2"); // seconds
         this.setProperty("connection.timeout.default", "2"); // seconds
         this.setProperty("connection.proxy", "false");
@@ -217,8 +216,9 @@ public abstract class Preferences {//extends Properties {
         
         //ftp properties
         this.setProperty("ftp.showHidden", "false");
-        this.setProperty("ftp.active", "true");
-        this.setProperty("ftp.passive", "false");
+	this.setProperty("ftp.connectmode", "passive");
+//        this.setProperty("ftp.active", "true");
+//        this.setProperty("ftp.passive", "false");
         this.setProperty("ftp.listing.showType", "true");
         this.setProperty("ftp.listing.showFilenames", "true");
         this.setProperty("ftp.listing.showSize", "true");

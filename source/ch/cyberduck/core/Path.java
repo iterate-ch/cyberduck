@@ -77,7 +77,6 @@ public abstract class Path implements Serializable, Transferable {
      * @param name the file relative to param path
      */
     public Path(String path, String name) {
-        log.debug("[Path] Path(" + path+","+name+")");
         if(path.charAt(path.length() -1) == '/')
             this.init(path + name);
         else
@@ -145,6 +144,10 @@ public abstract class Path implements Serializable, Transferable {
     public abstract void mkdir();
 
     public abstract void rename(String n);
+
+    public abstract void download();
+
+    public abstract void upload();
     
     /**
 	* Overwrite this is in the implementation to determine the file type uppon the
@@ -153,6 +156,8 @@ public abstract class Path implements Serializable, Transferable {
      * but seems to be a file because there isn't a '/' at
      * the end of the path.
      */
+    public abstract boolean isFile();
+    /*
     public boolean isFile() {
         String path = this.toString();
         if(path.lastIndexOf('/') == path.length() - 1) {
@@ -160,6 +165,7 @@ public abstract class Path implements Serializable, Transferable {
         }
         return true;
     }
+     */
 
     /**
 	* Overwrite this is in the implementation to determine the file type uppon the
@@ -167,6 +173,8 @@ public abstract class Path implements Serializable, Transferable {
      * @return true  even if the directory doesn't exist on the local filesystem
      * but seems to be a directory because it ends with '/'
      */
+    public abstract boolean isDirectory();
+    /*
     public boolean isDirectory() {
 //        log.debug("[Path] isDirectory()");
         String path = this.toString();
@@ -175,6 +183,7 @@ public abstract class Path implements Serializable, Transferable {
         }
         return false;
     }
+     */
 
     /**
      * @return The filename if the path is a file
@@ -193,7 +202,7 @@ public abstract class Path implements Serializable, Transferable {
      * @return the absolute path name
      */
     public String getAbsolute() {
-	log.debug("getAbsolute:"+this.path);
+	//log.debug("getAbsolute:"+this.path);
 	return this.path;
     }
 
@@ -202,6 +211,14 @@ public abstract class Path implements Serializable, Transferable {
      */
     public String getLocal() {
         return Preferences.instance().getProperty("download.path") + this.getName();
+    }
+
+    public String getExtension() {
+	String name = this.getName();
+	int index = name.lastIndexOf(".");
+	if(index != -1)
+	    return name.substring(index, name.length());
+	return "txt";
     }
     
     /**
@@ -274,7 +291,7 @@ public abstract class Path implements Serializable, Transferable {
      * @param size The size of the file
      */
     public void setSize(int size) {
-	log.debug("setSize:"+size);
+//	log.debug("setSize:"+size);
         this.size = size;
     }
 

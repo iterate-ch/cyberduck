@@ -44,17 +44,17 @@ public class CDSplitView extends NSSplitView {
     }
 
     public boolean splitViewCanCollapseSubview( NSSplitView sender, NSView subview) {
-	log.debug("CDSplitView:splitViewCanCollapseSubview");
+	log.debug("splitViewCanCollapseSubview");
 	return true;
     }
     
     public boolean canCollapseSubview(NSView subview) {
-	log.debug("CDSplitView:canCollapseSubview");
+	log.debug("canCollapseSubview");
 	return (subview == transferView);
     }
 
     public void awakeFromNib() {
-	log.debug("CDSplitView:awakeFromNib");
+	log.debug("awakeFromNib");
 	this.setDelegate(this);
 	this.setVertical(false);
 	this.addSubview(browserView);

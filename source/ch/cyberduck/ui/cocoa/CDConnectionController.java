@@ -23,20 +23,15 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-
 import java.io.IOException;
-
 import java.util.Observer;
 import java.util.Observable;
-
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.http.*;
 import ch.cyberduck.core.sftp.*;
 import ch.cyberduck.core.ftp.*;
-
 import ch.cyberduck.ui.cocoa.CDPathPopUpButton;
 import ch.cyberduck.ui.cocoa.CDStatusLabel;
-
 import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.transport.InvalidHostFileException;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
@@ -44,7 +39,6 @@ import com.sshtools.j2ssh.authentication.PasswordAuthentication;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
 import com.sshtools.j2ssh.sftp.*;
 import com.sshtools.j2ssh.*;
-
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 
@@ -59,6 +53,8 @@ public class CDConnectionController extends NSObject implements Observer {
     public NSWindow connectionSheet;
     public NSWindow loginSheet;
 
+    public NSObject logController;
+
     public NSPopUpButton pathPopUpButton;
     public NSTextField statusLabel;
     public NSTextField pathField;
@@ -70,11 +66,8 @@ public class CDConnectionController extends NSObject implements Observer {
     public NSTextView logView;
     public NSProgressIndicator progressIndicator;
     
-    public NSTableView browserTable; 
-
-    //public NSView connectedListView;
-
-    private CDConnectionController controller = this;
+    public NSTableView browserTable;
+    public NSTableView hostTable;
     
     public CDConnectionController() {
 	super();
@@ -113,26 +106,6 @@ public class CDConnectionController extends NSObject implements Observer {
                     case(Session.SSH_PORT):
                         protocol = Session.SFTP;
                         port = Session.SSH_PORT;
-                        try {
-                            host.setHostKeyVerification(new CDHostKeyVerification());
-                        }
-                        catch(InvalidHostFileException e) {
-                            //This exception is thrown whenever an exception occurs open or reading from the host file.
-                            NSAlertPanel.beginAlertSheet(
-                                                            "Error", //title
-                                                            "OK",// defaultbutton
-                                                            null,//alternative button
-                                                            null,//other button
-                                                            mainWindow, //docWindow
-                                                            null, //modalDelegate
-                                                            null, //didEndSelector
-                                                            null, // dismiss selector
-                                                            null, // context
-                                                            "Could not open or read the host file: "+e.getMessage() // message
-                                                            );
-                            //@todo run alert sheet?
-                            log.error(e.getMessage());
-                        }
                         break;
                     case(Session.FTP_PORT):
                         protocol = Session.FTP;
@@ -152,18 +125,43 @@ public class CDConnectionController extends NSObject implements Observer {
 	    log.debug(protocol+","+hostField.stringValue()+","+usernameField.stringValue()+","+passwordField.stringValue());
             
             host = new Host(protocol, server, port, path, login);
+	    //@todo add to hostcontroller
 	    host.status.fireActiveEvent();
 	    mainWindow.setTitle(host.getName());
 
 	    host.addObserver((CDBrowserView)browserTable);
+	    host.addObserver((CDHostView)hostTable);
 	    host.addObserver((CDPathPopUpButton)pathPopUpButton);
+	    host.status.addObserver((CDLogController)logController);
+//	    host.status.addObserver((CDLogView)logView);
 	    host.status.addObserver((CDStatusLabel)statusLabel);
-	    host.status.addObserver((CDLogView)logView);
 	    host.status.addObserver((CDProgressWheel)progressIndicator);
 	    host.status.addObserver(this);
 	    
 	    Session session = host.getSession();
 
+	    if(protocol.equals(Session.SFTP)) {
+		try {
+		    host.setHostKeyVerification(new CDHostKeyVerification());
+		}
+		catch(InvalidHostFileException e) {
+		    //This exception is thrown whenever an exception occurs open or reading from the host file.
+		    NSAlertPanel.beginAlertSheet(
+				   "Error", //title
+				   "OK",// defaultbutton
+				   null,//alternative button
+				   null,//other button
+				   mainWindow, //docWindow
+				   null, //modalDelegate
+				   null, //didEndSelector
+				   null, // dismiss selector
+				   null, // context
+				   "Could not open or read the host file: "+e.getMessage() // message
+				   );
+		    //@todo run alert sheet?
+		    log.error(e.getMessage());
+		}		
+	    }
             session.start();
 //	}
 //	catch(IOException e) {

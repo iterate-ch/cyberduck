@@ -18,37 +18,33 @@
 
 package ch.cyberduck.ui.cocoa;
 
+import java.util.List;
+import java.util.ArrayList;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-
 import org.apache.log4j.Logger;
 
 /**
 * @version $Id$
  */
 public class CDTransferTableDataSource extends NSObject {//implements NSTableView.DataSource {
-
     private static Logger log = Logger.getLogger(CDTransferTableDataSource.class);
-    private NSMutableArray files;
+
+    private List data;
 
     public CDTransferTableDataSource() {
 	super();
+	this.data = new ArrayList();
 	log.debug("CDTransferTableDataSource");
     }
 
-    public void awakeFromNib() {
-	this.setEntries(new NSMutableArray());
-    }
-
     public int numberOfRowsInTableView(NSTableView tableView) {
-	if(null == files)
-	    return 0;
-	return files.count();
+	return data.size();
     }
 
     //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-	log.debug("CDTransferTableDataSource.tableViewObjectValueForLocation("+row+")");
+	log.debug("tableViewObjectValueForLocation:"+row);
         String identifier = (String)tableColumn.identifier();
 	if(identifier.equals("TYPE")) {
 	    //if.isDownload() return down.tiff
@@ -64,33 +60,17 @@ public class CDTransferTableDataSource extends NSObject {//implements NSTableVie
     
     //setValue()
     public void tableViewSetObjectValueForLocation(NSTableView tableView, Object object, NSTableColumn tableColumn, int row) {
-	log.debug("CDTransferTableDataSource.tableViewSetObjectValueForLocation() not implemented.");
+	log.debug("tableViewSetObjectValueForLocation");
     }
 
-    
-    public void addEntry(Object entry, int row) {
-	this.files.insertObjectAtIndex(entry, row);
-    }
-
-    
     public void addEntry(Object entry) {
-	log.debug("CDTransferTableDataSource.addEntry("+entry+")");
-	this.files.addObject(entry);
+	log.debug("addEntry("+entry+")");
+	this.data.add(entry);
     }
 
     
     public Object getEntry(int row) {
-	log.debug("CDTransferTableDataSource.getEntry("+row+")");
-	return this.files.objectAtIndex(row);
-    }
-
-    
-    public NSArray getEntries() {
-	return this.files;
-    }
-
-    
-    public void setEntries(NSMutableArray files) {
-	this.files = files;
+	log.debug("getEntry("+row+")");
+	return this.data.get(row);
     }
 }

@@ -43,15 +43,16 @@ public class CDTransferController extends NSObject {
     }
 
     public void awakeFromNib() {
-        //
+//        transferTable.tableColumnWithIdentifier("PROGRESS").setDataCell(new CDProgressCell());
     }    
 
     public void download(Path p) {
 	log.debug("download");
+        p.download();
     }
 
     public void upload(Path p) {
 	log.debug("upload");
-
+        p.upload();
     }
 }

@@ -72,9 +72,13 @@ public abstract class Session extends Thread {
         System.getProperties().put("proxyPort", Preferences.instance().getProperty("connection.proxy.port"));
 
 	//@todo        this.log = new Log();
-//        this.log("-------" + new Date().toString(), Status.LOG);
-//        this.log("-------" + bookmark.getAddressAsString(), Status.LOG);
-//        this.log("-------" + host.getName(), Status.LOG);
+        this.log("-------" + new Date().toString(), Message.TRANSCRIPT);
+        this.log("-------" + host.getName(), Message.TRANSCRIPT);
+        this.log("-------" + host.getName(), Message.TRANSCRIPT);
+    }
+
+    abstract class Runner extends Thread {
+	public abstract void run();
     }
 
     /**
@@ -85,10 +89,6 @@ public abstract class Session extends Thread {
     public abstract void run();
 
     public abstract void close();
-
-    //public abstract void connect();
-
-    //public abstract boolean login();
 
     /**
      * ascii upload
@@ -143,19 +143,17 @@ public abstract class Session extends Thread {
     private void transfer(java.io.Reader reader, java.io.Writer writer) throws IOException {
         LineNumberReader in = new LineNumberReader(reader);
         BufferedWriter out = new BufferedWriter(writer);
-//        int current = bookmark.status.getCurrent();
-	//@todo
-        int current = 0;
+        int current = host.status.getCurrent();
         boolean complete = false;
         // read/write a line at a time
         String line = null;
-        while (!complete) { //@todo && !bookmark.status.isCancled()) {
+        while (!complete && !host.status.isCancled()) {
             line = in.readLine();
             if(line == null) {
                 complete = true;
             }
             else {
-//@todo                bookmark.status.setCurrent(current += line.getBytes().length);
+                host.status.setCurrent(current += line.getBytes().length);
                 out.write(line, 0, line.length());
                 out.newLine();
             }
@@ -183,18 +181,17 @@ public abstract class Session extends Thread {
         int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
         byte[] chunk = new byte[chunksize];
         int amount = 0;
-        int current = 0;
-//@todo        int current = bookmark.status.getCurrent();
+        int current = host.status.getCurrent();
         boolean complete = false;
 
         // read from socket (bytes) & write to file in chunks
-        while (!complete) {//@todo && !bookmark.status.isCancled()) {
+        while (!complete && !host.status.isCancled()) {
             amount = in.read(chunk, 0, chunksize);
             if(amount == -1) {
                 complete = true;
             }
             else {
-//@todo                bookmark.status.setCurrent(current += amount);
+                host.status.setCurrent(current += amount);
                 out.write(chunk, 0, amount);
             }
         }
@@ -213,23 +210,24 @@ public abstract class Session extends Thread {
      * Do some cleanup if transfer has been completed
      */
     private void eof(boolean complete) {
-//        if(complete) {
-//@todo            bookmark.status.setCurrent(bookmark.status.getLength());
-//            if(action.toString().equals(TransferAction.GET)) {
-//@todo                bookmark.getLocalTempPath().renameTo(bookmark.getLocalPath());
-//                if(Preferences.instance().getProperty("files.postprocess").equals("true")) {
-//@todo                    bookmark.open();
-//                }
-    //        }
-//            this.log("Complete" , Message.PROGRESS);
-//@todo            bookmark.status.fireCompleteEvent();
-  //      }
-    //    else {
-//            this.log("Incomplete", Message.PROGRESS);
-            //@todo bookmark.status.fireStopEvent();
-//        }
+        if(complete) {
+            host.status.setCurrent(host.status.getLength());
+            
+            //if(action.toString().equals(TransferAction.GET)) {
+            //    bookmark.getLocalTempPath().renameTo(bookmark.getLocalPath());
+            //    if(Preferences.instance().getProperty("files.postprocess").equals("true")) {
+            //        bookmark.open();
+            //    }
+           // }
+            this.log("Complete" , Message.PROGRESS);
+            host.status.fireCompleteEvent();
+        }
+        else {
+            this.log("Incomplete", Message.PROGRESS);
+            host.status.fireStopEvent();
+        }
     }
-
+    
     /**
         * Can be called within the <code>run()</code> to check if the thread should die.
      */
@@ -286,12 +284,14 @@ public abstract class Session extends Thread {
         }
 	 */
     }
-
+}
+/*
     public void saveLog() {
 //        if(Preferences.instance().getProperty("connection.log").equals("true")) {
 //@todo            log.save();
     }
 }
+*/
 
 /*
 import java.util.*;

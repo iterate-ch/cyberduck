@@ -69,8 +69,8 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	//By setting the drop row to -1, the entire table is highlighted instead of just a single row.
 
 	//this.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-	
-//	this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());;
+
+//	this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
 
 	//	this.setIndicatorImage(NSImage.imageNamed("file.tiff"), this.tableColumnWithIdentifier("FILENAME"))
 
@@ -96,10 +96,6 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
     }
      */
 
-    public Object dataSource() {
-	return super.dataSource();
-    }
-    
     public void update(Observable o, Object arg) {
 	log.debug("update");
 	if(o instanceof Host) {
@@ -116,6 +112,12 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	}
     }
 
+    public Path getWorkingPath() {
+	//@todo
+	return null;
+    }
+    
+
     // ----------------------------------------------------------
     // Delegate methods
     // ----------------------------------------------------------    
@@ -125,7 +127,7 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	* Because aCell is reused for every row in aTableColumn, the delegate must set the display attributes both when drawing special cells and when drawing normal cells.
 	*/
     public void tableViewWillDisplayCell(NSTableView browserTable, Object cell, NSTableColumn tableColumn, int row) {
-	log.debug("tableViewWillDisplayCell:"+row);
+//	log.debug("tableViewWillDisplayCell:"+row);
 	String identifier = (String)tableColumn.identifier();
 //	CDBrowserTableDataSource ds = (CDBrowserTableDataSource)browserTable.dataSource();
 	if(identifier.equals("TYPE"))
@@ -142,14 +144,17 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 //		typeColumn.setDataCell(new NSImageCell(NSImage.imageNamed("folder.tiff")));
 	//}
 	//else {
-	/*
+
+
+/*
+	if(cell instanceof NSTextFieldCell) {
 	    NSTextFieldCell textCell = (NSTextFieldCell)cell;
-	    if (row % 2 == 0) {
+	    if ((row % 2) == 0) {
 		textCell.setDrawsBackground(true);
 		textCell.setBackgroundColor(NSColor.lightGrayColor());
 	    }
-	 */
-	//}
+	}
+ */
     }
 
     /**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
@@ -165,8 +170,8 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	*/
     public boolean tableViewShouldEditLocation( NSTableView view, NSTableColumn tableColumn, int row) {
         String identifier = (String)tableColumn.identifier();
-	if(identifier.equals("FILENAME"))
-	    return true;
+//	if(identifier.equals("FILENAME"))
+//	    return true;
 	return false;
     }
 

@@ -34,6 +34,9 @@ public class Message implements java.io.Serializable {
     public static final String DATA = "DATA";
     public static final String TIME = "TIME";
 
+    public static final String OPEN = "OPEN";
+    public static final String CLOSE = "CLOSE";
+
     public static final String ACTIVE = new String ("ACTIVE");
     public static final String STOP = new String ("STOP");
     public static final String COMPLETE = new String ("COMPLETE");

@@ -44,7 +44,7 @@ public class CDBrowserTableDataSource extends NSObject {
 
     public CDBrowserTableDataSource() {
 	super();
-	this.setEntries(new ArrayList());
+	this.data = new ArrayList();
 	log.debug("CDBrowserTableDataSource");
     }
 
@@ -54,15 +54,17 @@ public class CDBrowserTableDataSource extends NSObject {
 
     //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
+//	log.debug("tableViewObjectValueForLocation");
         String identifier = (String)tableColumn.identifier();
         Path p = (Path)data.get(row);
-/*	if(identifier.equals("TYPE")) {
-	    if(p.isFile())
-		return NSImage.imageNamed("file.tiff");
+	if(identifier.equals("TYPE")) {
+	    if(p.isFile()) {
+//		log.debug(p.getExtension());
+		return NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
+	    }
 	    if(p.isDirectory())
 		return NSImage.imageNamed("folder.tiff");
 	}
-	*/
 	if(identifier.equals("FILENAME"))
 	    return p.getName();
 	if(identifier.equals("SIZE"))
@@ -82,7 +84,7 @@ public class CDBrowserTableDataSource extends NSObject {
         Path p = (Path)data.get(row);
 	p.rename((String)value);
     }
-    
+
     public void clear() {
 	this.data.clear();
     }
@@ -92,20 +94,12 @@ public class CDBrowserTableDataSource extends NSObject {
     }
 
     public void addEntry(Object entry) {
-	log.debug("CDListingTableDataSource.addEntry("+entry+")");
+	log.debug("addEntry("+entry+")");
 	this.data.add(entry);
     }
     
     public Object getEntry(int row) {
-	log.debug("CDListingTableDataSource.getEntry("+row+")");
+	log.debug("getEntry("+row+")");
 	return this.data.get(row);
-    }
-
-    public List getEntries() {
-	return this.data;
-    }
-
-    public void setEntries(List data) {
-	this.data = data;
     }
 }

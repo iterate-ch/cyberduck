@@ -114,17 +114,23 @@ public class SFTPSession extends Session {
 		    host.callObservers(files);
 		    host.callObservers(this);
 //		}
-	    }	    
+	    }
+	    catch(SshException e) {
+		SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	    }
 	    catch(IOException e) {
-		SFTPSession.this.log(e.getMessage(), Message.ERROR);
+		SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	    }
 	    finally {
 		if(workingDirectory != null) {
 		    try {
 			workingDirectory.close();
 		    }
+		    catch(SshException e) {
+			SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+		    }
 		    catch(IOException e) {
-			e.printStackTrace();
+			SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 		    }
 		}
 	    }
@@ -154,8 +160,11 @@ public class SFTPSession extends Session {
 		    SFTP.removeFile(this.getAbsolute());
 		}
 	    }
+	    catch(SshException e) {
+		SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	    }
 	    catch(IOException e) {
-		SFTPSession.this.log(e.getMessage(), Message.ERROR);
+		SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	    }
 	}
 
@@ -170,18 +179,24 @@ public class SFTPSession extends Session {
 		SFTP.makeDirectory(this.getAbsolute());
 		this.getParent().list();
 	    }
+	    catch(SshException e) {
+		SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	    }
 	    catch(IOException e) {
-		SFTPSession.this.log(e.getMessage(), Message.ERROR);
+		SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	    }
 	}
 
-	public boolean isfile() {
+	public boolean isFile() {
 	    try {
 		SftpFile workingDirectory = SFTP.openDirectory(this.getAbsolute());
 		return workingDirectory.isFile();
 	    }
+	    catch(SshException e) {
+		SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	    }
 	    catch(IOException e) {
-		SFTPSession.this.log(e.getMessage(), Message.ERROR);
+		SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	    }
 	    return false;
 	}
@@ -191,11 +206,22 @@ public class SFTPSession extends Session {
 		SftpFile workingDirectory = SFTP.openDirectory(this.getAbsolute());
 		return workingDirectory.isDirectory();
 	    }
+	    catch(SshException e) {
+		SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	    }
 	    catch(IOException e) {
-		SFTPSession.this.log(e.getMessage(), Message.ERROR);
+		SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	    }
 	    return false;
 	}
+
+        public void download() {
+
+        }
+
+        public void upload() {
+
+        }
     }
 
     private SftpSubsystemClient SFTP;
@@ -225,17 +251,21 @@ public class SFTPSession extends Session {
 	    }
 	    this.log("Disconnected", Message.PROGRESS);
 	}
+	catch(SshException e) {
+	    SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	}
 	catch(IOException e) {
-	    e.printStackTrace();
+	    SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
 	host.status.fireStopEvent();
     }
 
 
     public void run() {
+	host.status.fireActiveEvent();
+	this.log("Opening SSH connection to " + host.getIp()+"...", Message.PROGRESS);
 	try {
 	    //if(!SSH.isConnected()) {
-	    this.log("Opening SSH connection to " + host.getIp()+"...", Message.PROGRESS);
 	    // Make a client connection
 //	    this.log("Initializing SSH connection", Message.PROGRESS);
 	    // Connect to the host
@@ -246,13 +276,14 @@ public class SFTPSession extends Session {
 	    home.list();
             host.status.fireStopEvent();
 	}
-        catch (IOException e) {
-            this.log(e.getMessage(), Message.ERROR);
-//            this.log("Incomplete", Message.PROGRESS);
-	    this.close();
-        }
+	catch(SshException e) {
+	    SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	}
+	catch(IOException e) {
+	    SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
         finally {
-            this.saveLog();
+//            this.saveLog();
 //            this.bookmark.status.ignoreEvents(false);
   //          this.bookmark.status.fireStopEvent();
         }
@@ -283,8 +314,10 @@ public class SFTPSession extends Session {
 	    this.log("Login failed", Message.PROGRESS);
 	    if(host.getLogin().loginFailure())
 		this.login();
-	    else
-		this.close();
+	    else {
+		this.log("Login failed", Message.ERROR);
+		//this.close();
+	    }
 	}
     }
 }

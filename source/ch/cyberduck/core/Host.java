@@ -63,27 +63,39 @@ public class Host extends Observable {
     }
 
     public void callObservers(Object arg) {
+//        log.debug("callObservers:"+arg.toString());
 	this.setChanged();
 	this.notifyObservers(arg);
     }
 
-//    public Session getSession(TransferAction action) throws IOException {
+    //    public Session getSession(TransferAction action) throws IOException {
     public Session getSession() {//throws IOException {
         log.debug("getSession");
-//        if(this.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
-//            return new HTTPSession(this);
-//        }
-        if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
-            return new HTTPSession(this);
-        }
-	if(this.getProtocol().equalsIgnoreCase(Session.FTP)) {
-            return new FTPSession(this);//, action);
-        }
-        if(this.getProtocol().equalsIgnoreCase(Session.SFTP)) {
-            return new SFTPSession(this);//, action);
-        }
-        return null;
-//        throw new IOException("Unknown protocol '" + protocol + " '.");
+	this.callObservers(Message.OPEN);
+	if(null == session) {
+	    if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
+		return new HTTPSession(this);
+	    }
+	    //        if(this.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
+     //            return new HTTPSession(this);
+     //        }
+	    if(this.getProtocol().equalsIgnoreCase(Session.FTP)) {
+		return new FTPSession(this);
+	    }
+	    if(this.getProtocol().equalsIgnoreCase(Session.SFTP)) {
+		return new SFTPSession(this);
+	    }
+	    return null;
+	}
+        return session;
+    }
+
+    public void closeSession() {
+	this.callObservers(Message.CLOSE);
+	if(null == session) {
+	    this.session.close();
+	    this.session = null;
+	}
     }
 
     public Login getLogin() {

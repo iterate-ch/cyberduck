@@ -23,6 +23,8 @@ import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
 import java.util.Observer;
 import java.util.Observable;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Message;
 
 public class CDHostView extends NSTableView implements Observer {
 
@@ -48,13 +50,6 @@ public class CDHostView extends NSTableView implements Observer {
 	log.debug("awakeFromNib");
 	this.setDelegate(this);
 //	this.tableColumnWithIdentifier("HOST").setDataCell(new CDHostCell());;
-    }
-
-    public void update(Observable o, Object arg) {
-	if(o instanceof Host) {
-	    Message msg = (Message)arg;
-	    if(msg.getTitle().equals(Message.PROGRESS)) {
-	}
     }
 
     // ----------------------------------------------------------
@@ -98,12 +93,25 @@ public class CDHostView extends NSTableView implements Observer {
     // ----------------------------------------------------------
     // Observer interface
     // ----------------------------------------------------------
-    
+
     public void update(Observable o, Object arg) {
-	//
+	if(o instanceof Host) {
+	    if(arg instanceof Message) {
+		Message msg = (Message)arg;
+		if(msg.getTitle().equals(Message.OPEN)) {
+		    CDHostTableDataSource ds = (CDHostTableDataSource)this.dataSource();
+		    ds.addEntry(o);
+		    this.reloadData();
+		}
+		if(msg.getTitle().equals(Message.CLOSE)) {
+		    CDHostTableDataSource ds = (CDHostTableDataSource)this.dataSource();
+		    ds.removeEntry(o);
+		    this.reloadData();
+		}
+	    }
+	}
     }
-
-
+    
     // ----------------------------------------------------------
     // Cell class
     // ----------------------------------------------------------

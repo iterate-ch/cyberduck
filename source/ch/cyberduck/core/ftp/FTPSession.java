@@ -37,6 +37,8 @@ public class FTPSession extends Session {
     private static Logger log = Logger.getLogger(Session.class);
 
     class FTPFile extends Path {
+	private String transfertype = Preferences.instance().getProperty("connection.transfertype.default");
+
 	public FTPFile(String parent, String name) {
 	    super(parent, name);
 	}
@@ -63,8 +65,9 @@ public class FTPSession extends Session {
 	public List list() {
 	    log.debug("list");
 	    List files = null;
+	    FTPSession.this.log("Listing "+this.getName(), Message.PROGRESS);
 	    try {
-		FTP.setType(FTPTransferType.ASCII);
+		//FTP.setType(FTPTransferType.ASCII);
 //		Path currentDirectory;
 //		if(directory.getAbsolute().equals("/") && bookmark.getCurrentPath().getAbsolute().equals("/")) {
 //		    String cwd = FTP.pwd();
@@ -86,10 +89,10 @@ public class FTPSession extends Session {
 		host.callObservers(files);
 	    }
 	    catch(FTPException e) {
-		FTPSession.this.log(e.getMessage(), Message.ERROR);
+		FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
 	    }
 	    catch(IOException e) {
-		FTPSession.this.log(e.getMessage(), Message.ERROR);
+		FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	    }
 	    return files;
 	}
@@ -118,10 +121,10 @@ public class FTPSession extends Session {
 		}
 	    }
 	    catch(FTPException e) {
-		FTPSession.this.log(e.getMessage(), Message.ERROR);
+		FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
 	    }
 	    catch(IOException e) {
-		FTPSession.this.log(e.getMessage(), Message.ERROR);
+		FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	    }
 	}
 
@@ -133,12 +136,12 @@ public class FTPSession extends Session {
                 FTP.rename(this.getName(), filename);
                 this.getParent().list();
             }
-            catch(FTPException e) {
-                FTPSession.this.log(e.getMessage(), Message.ERROR);
-            }
-            catch(IOException e) {
-                FTPSession.this.log(e.getMessage(), Message.ERROR);
-            }
+	    catch(FTPException e) {
+		FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
+	    }
+	    catch(IOException e) {
+		FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+	    }
         }
         
         public void mkdir() {
@@ -146,12 +149,76 @@ public class FTPSession extends Session {
             try {
                 FTP.mkdir(this.getName());
             }
-            catch(FTPException e) {
-                FTPSession.this.log(e.getMessage(), Message.ERROR);
-            }
-            catch(IOException e) {
-		FTPSession.this.log(e.getMessage(), Message.ERROR);
+	    catch(FTPException e) {
+		FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
 	    }
+	    catch(IOException e) {
+		FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+	    }
+	}
+
+        public void download() {
+	    /*
+            host.status.fireActiveEvent();
+            if(this.getTransferType().equals(FTPTransferType.BINARY)) {
+                //this.log("Setting transfer mode to BINARY", Message.PROGRESS);
+                FTP.setType(FTPTransferType.BINARY);
+                host.status.setLength((int)(FTP.size(this.getName())));
+                OutputStream out = new FileOutputStream(this.getLocal(), host.status.isResume());
+                if(out == null) {
+                    FTPSession.this.log("Unable to buffer data", Message.ERROR);
+                }
+                FTPSession.this.log("Opening data stream...", Message.PROGRESS);
+                //	    public void get(OutputStream destStream, String remoteFile)
+                java.io.InputStream in = FTP.getBinary(file, host.status.isResume() ? host.status.getCurrent() : 0);
+                if(in == null) {
+                    FTPSession.this.log("Unable opening data stream", Message.ERROR);
+                }
+                FTPSession.this.log("Downloading "+file+"...", Message.PROGRESS);
+                FTPSession.this.download(in, out);
+                FTP.validateTransfer();
+            }
+            else if(this.getTransferType().equals(FTPTransferType.ASCII)) {
+                //this.log("Setting transfer type to ASCII", Message.PROGRESS);
+                FTP.setType(FTPTransferType.ASCII);
+                this.status.setLength((int)(FTP.size(file)));
+                java.io.Writer out = new FileWriter(local.toString(), bookmark.status.isResume());
+                if(out == null) {
+                    FTPSession.this.log("Unable to buffer data", Message.ERROR);
+                }
+                FTPSession.this.log("Opening data stream...", Message.PROGRESS);
+                java.io.Reader in = FTP.getASCII(file, bookmark.status.isResume() ? bookmark.status.getCurrent() : 0);
+                if(in == null) {
+                    FTPSession.this.log("Unable opening data stream", Message.ERROR);
+                }
+                FTPSession.this.log("Downloading "+file+"...", Message.PROGRESS);
+                FTPSession.this.download(in, out);
+                FTP.validateTransfer();
+            }
+            else {
+                FTPSession.this.log("Transfer type not set", Message.ERROR);
+            }
+	    */
+        }
+
+        public void upload() {
+            //
+        }
+
+        public void setTransferType(String t) {
+            this.transfertype = t;
+        }
+
+        public String getTransferType() {
+            return this.transfertype;
+        }
+	
+	public boolean isFile() {
+	    return this.getMode().charAt(0) == '-';
+	}
+
+	public boolean isDirectory() {
+	    return this.getMode().charAt(0) == 'd';
 	}
     }
     
@@ -169,6 +236,14 @@ public class FTPSession extends Session {
 	this.FTP = new FTPClient();
     }
 
+    public void recycle() {
+	//
+    }    
+
+    class Runner extends Thread {
+	//@todo
+    }
+
     public void close() {
 	try {
 	    if(FTP != null) {
@@ -178,23 +253,24 @@ public class FTPSession extends Session {
 	    this.log("Disconnected", Message.PROGRESS);
 	}
 	catch(FTPException e) {
-	    e.printStackTrace();
+	    FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
 	}
 	catch(IOException e) {
-	    e.printStackTrace();
+	    FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
 	host.status.fireStopEvent();
     }
 
     public void run() {
+	host.status.fireActiveEvent();
+	this.log("Opening FTP connection to " + host.getIp()+"...", Message.PROGRESS);
 	//            if(!FTP.isAlive()) {
 	try {
-	    this.log("Opening FTP connection to " + host.getIp()+"...", Message.PROGRESS);
 
-	    if(Preferences.instance().getProperty("ftp.active").equals("true")) {
+	    if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
 		FTP.setConnectMode(FTPConnectMode.ACTIVE);
 	    }
-	    else if(Preferences.instance().getProperty("ftp.passive").equals("true")) {
+	    else {
 		FTP.setConnectMode(FTPConnectMode.PASV);
 	    }
 	    if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
@@ -214,14 +290,10 @@ public class FTPSession extends Session {
             host.status.fireStopEvent();
 	}
 	catch(FTPException e) {
-            this.log(e.getMessage(), Message.ERROR);
-	    //            this.log("Incomplete", Message.PROGRESS);
-	    this.close();
+	    FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
 	}
 	catch(IOException e) {
-            this.log(e.getMessage(), Message.ERROR);
-	    //            this.log("Incomplete", Message.PROGRESS);
-	    this.close();
+	    FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
     }
 
@@ -238,7 +310,6 @@ public class FTPSession extends Session {
             }
 	    else {
 		this.log(e.getMessage(), Message.ERROR);
-		this.close();
 	    }
 	}
     }

@@ -4,39 +4,67 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-
 import org.apache.log4j.Logger;
+import java.util.List;
+import java.util.ArrayList;
+import ch.cyberduck.core.Host;
 
 /**
 * @version $Id$
  */
 public class CDHostTableDataSource extends NSObject {
-    private static Logger log = Logger.getLogger(CDFavoriteTableDataSource.class);
+    private static Logger log = Logger.getLogger(CDHostTableDataSource.class);
 
-    private NSMutableArray data;
+    private List data;
 
-    public CDFavoriteTableDataSource() {
+    public CDHostTableDataSource() {
 	super();
-	this.data = new NSMutableArray();
-	log.debug("CDFavoriteTableDataSource");
+	this.data = new ArrayList();
+	log.debug("CDHostTableDataSource");
     }
 
     public void awakeFromNib() {
-	log.debug("CDFavoriteTableDataSource:awakeFromNib");
+	log.debug("awakeFromNib");
+	//@todo 
+	this.addEntry(new Host("ftp", "hostname", 21, null));
     }
 
     public int numberOfRowsInTableView(NSTableView tableView) {
 //	log.debug("CDFavoriteTableDataSource:numberOfRowsInTableView");
-	return data.count();
+	return data.size();
     }
 
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-	log.debug("CDFavoriteTableDataSource:tableViewObjectValueForLocation");
-        String identifier = (String)tableColumn.identifier();
-	throw new IllegalArgumentException("Unknown identifier: "+identifier);
+	log.debug("tableViewObjectValueForLocation");
+	Host h = (Host)data.get(row);
+	return h.getName();	
     }
 
     public void tableViewSetObjectValueForLocation(NSTableView tableView, Object object, NSTableColumn tableColumn, int row) {
-	log.debug("CDFavoriteTableDataSource:tableViewSetObjectValueForLocation() not implemented.");
+	log.debug("tableViewSetObjectValueForLocation");
+    }
+
+    public void clear() {
+	this.data.clear();
+    }
+
+    public void addEntry(Object entry) {
+	log.debug("addEntry("+entry+")");
+	this.data.add(entry);
+    }
+
+    public Object getEntry(int row) {
+	log.debug("getEntry("+row+")");
+	return this.data.get(row);
+    }
+
+    public void removeEntry(Object o) {
+	data.remove(data.indexOf(o));
+    }
+    
+    public void removeEntry(int row) {
+//	Host h = (Host)data.get(row);
+//	h.closeSession();
+	data.remove(row);
     }
 }

@@ -63,7 +63,8 @@ public class CDPathPopUpButton extends NSPopUpButton implements Observer {
     }
 
     public void selectionChanged(NSObject sender) {
-	Path p = (Path)items.get(this.indexOfSelectedItem());
+	log.debug("index selected item:"+indexOfSelectedItem());
+	Path p = (Path)items.get(this.indexOfSelectedItem()-1);
 	p.list();
     }
 

@@ -241,8 +241,6 @@ public class Status extends Observable implements Serializable {
 	}
 	
         this.callObservers(msg);
-	//@todo remove
-	this.callObservers(new Message(Message.TRANSCRIPT, message));
     }
 
     // @todo replace this with messageMap.get(type);
