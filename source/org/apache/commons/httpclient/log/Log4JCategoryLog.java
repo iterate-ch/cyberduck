@@ -62,7 +62,7 @@
 
 package org.apache.commons.httpclient.log;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 
 /**
@@ -70,7 +70,7 @@ import org.apache.log4j.Priority;
  * @version $Id$
  */
 public class Log4JCategoryLog  implements Log {
-    Category _category = null;
+    Logger _category = null;
 
     public Log4JCategoryLog(String name) {
         _category = Category.getInstance(name);
@@ -130,22 +130,22 @@ public class Log4JCategoryLog  implements Log {
     public final void setLevel(int level) {
         switch(level) {
             case Log.DEBUG:
-                _category.setPriority(Priority.DEBUG);
+                _category.setLevel(Level.DEBUG);
                 break;
             case Log.INFO:
-                _category.setPriority(Priority.INFO);
+                _category.setLevel(Level.INFO);
                 break;
             case Log.WARN:
-                _category.setPriority(Priority.WARN);
+                _category.setLevel(Level.WARN);
                 break;
             case Log.ERROR:
-                _category.setPriority(Priority.ERROR);
+                _category.setLevel(Level.ERROR);
                 break;
             case Log.FATAL:
-                _category.setPriority(Priority.FATAL);
+                _category.setLevel(Level.FATAL);
                 break;
             default:
-                _category.setPriority(Priority.toPriority(level));
+                _category.setLevel(Level.toPriority(level));
                 break;
         }
     }

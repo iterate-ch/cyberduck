@@ -25,6 +25,9 @@
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.3  2003/04/01 22:06:58  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.2  2003/03/21 14:14:43  dkocher
  *        No log message.
  *
@@ -159,9 +162,7 @@ public class FTPClient {
      *
      *   @param millis The length of the timeout, in milliseconds
      */
-    public void setTimeout(int millis)
-        throws IOException {
-
+    public void setTimeout(int millis) throws IOException {
 	log.debug("setTimeout");
 
         this.timeout = millis;
@@ -548,9 +549,11 @@ public class FTPClient {
      *  @param  on  true if you wish to have responses to
      *              stdout, false otherwise
      */
+    /*
     public void debugResponses(boolean on) {
         control.debugResponses(on);
     }
+     */
 
      /**
       *  Set the logging stream, replacing
@@ -711,7 +714,7 @@ public class FTPClient {
         // listed in quotes, if we can find it. Otherwise
         // just return the whole reply string
         String text = lastValidReply.getReplyText();
-        int start = text.indexOf('"');
+        int start = text.indexOf('"')+1;
         int end = text.lastIndexOf('"');                
         if (start >= 0 && end > start)
             return text.substring(start, end);

@@ -272,6 +272,10 @@ public class GetMethod extends HttpMethodBase {
         return "GET";
     }
 
+    public String getAcceptHeader() {
+	return "*/*";
+    }
+
 
    // override recycle to reset redirects default
    public void recycle() {

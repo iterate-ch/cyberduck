@@ -25,6 +25,9 @@
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.4  2003/04/01 22:06:58  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.3  2003/03/28 00:00:28  dkocher
  *        No log message.
  *
@@ -93,7 +96,7 @@ import org.apache.log4j.Logger;
       *   Controls if responses sent back by the
       *   server are sent to assigned output stream
       */
-     private boolean debugResponses = false;
+//     private boolean debugResponses = false;
 
      /**
       *  Output stream debug is written to, 
@@ -566,9 +569,9 @@ import org.apache.log4j.Logger;
       *  @param  on  true if you wish to have responses to
       *              stdout, false otherwise
       */
-     void debugResponses(boolean on) {
-         debugResponses = on;
-     }
+ //    void debugResponses(boolean on) {
+//         debugResponses = on;
+  //   }
 
      /**
       *  Set the logging stream, replacing
@@ -581,4 +584,4 @@ import org.apache.log4j.Logger;
 //     }
  }
 
-
+//
