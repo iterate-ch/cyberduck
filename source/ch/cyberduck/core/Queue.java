@@ -18,14 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.ftp.FTPPath;
-import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.http.HTTPPath;
-import ch.cyberduck.core.http.HTTPSession;
-import ch.cyberduck.core.sftp.SFTPPath;
-import ch.cyberduck.core.sftp.SFTPSession;
-
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableArray;
@@ -35,6 +27,7 @@ import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -117,34 +110,17 @@ public class Queue extends Observable implements Observer { //Thread {
 	}
 
 	public Queue(NSDictionary dict) {
-		Host host = new Host((NSDictionary)dict.objectForKey("Host"));
-		NSArray elements = (NSArray)dict.objectForKey("Roots");
+		Host host = new Host((NSDictionary) dict.objectForKey("Host"));
+		NSArray elements = (NSArray) dict.objectForKey("Roots");
 		log.debug("-");
 		for (int i = 0; i < elements.count(); i++) {
-			log.debug("--");
-			//@todo Path Factory Pattern
-			if (host.getProtocol().equalsIgnoreCase(Session.HTTP)) {
-				this.root = new HTTPPath((HTTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
-			}
-			//  if(host.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
-			//			this.root = new HTTPSPath((HTTPSSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
-			//        }
-			else if (host.getProtocol().equalsIgnoreCase(Session.FTP)) {
-				NSDictionary o = (NSDictionary)elements.objectAtIndex(i);
-				log.debug("---"+o);
-				this.root = new FTPPath((FTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
-			}
-			else if (host.getProtocol().equalsIgnoreCase(Session.SFTP)) {
-				this.root = new SFTPPath((SFTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
-			}
-			else {
-				log.error("Unknown protocol");
-			}
+			// only one root for now - can be extended in a later version
+			this.root = PathFactory.createPath(SessionFactory.createSession(host), (NSDictionary) elements.objectAtIndex(i));
 		}
-		this.kind = Integer.parseInt((String)dict.objectForKey("Kind"));
-		this.status = (String)dict.objectForKey("Status");
-		this.size = Integer.parseInt((String)dict.objectForKey("Size"));
-		this.current = Integer.parseInt((String)dict.objectForKey("Current"));
+		this.kind = Integer.parseInt((String) dict.objectForKey("Kind"));
+		this.status = (String) dict.objectForKey("Status");
+		this.size = Integer.parseInt((String) dict.objectForKey("Size"));
+		this.current = Integer.parseInt((String) dict.objectForKey("Current"));
 		this.init();
 	}
 
@@ -190,7 +166,7 @@ public class Queue extends Observable implements Observer { //Thread {
 				this.progressTimer.start();
 				this.leftTimer.start();
 
-				this.currentJob = (Path)elements.next();
+				this.currentJob = (Path) elements.next();
 				this.currentJob.status.setResume(root.status.isResume());
 				this.currentJob.status.addObserver(this);
 

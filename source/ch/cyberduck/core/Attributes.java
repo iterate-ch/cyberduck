@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Observable;
+
 import org.apache.log4j.Logger;
 
 /**

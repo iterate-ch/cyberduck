@@ -19,10 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.ftp.FTPPath;
-import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.sftp.SFTPPath;
-import ch.cyberduck.core.sftp.SFTPSession;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -31,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -77,7 +74,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			return icon;
 		}
 		if (identifier.equals("FILENAME")) {
-			return Codec.encode(p.getName());
+			return Codec.decode(p.getName());
 		}
 		else if (identifier.equals("SIZE"))
 			return Status.getSizeAsString(p.status.getSize());
@@ -125,16 +122,13 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 				if (o instanceof NSArray) {
 					NSArray filesList = (NSArray) o;
 					for (int i = 0; i < filesList.count(); i++) {
-						Session session = this.workdir().getSession().copy();
 						log.debug(filesList.objectAtIndex(i));
-						Path p = null;
-						if (this.workdir() instanceof FTPPath)
-							p = new FTPPath((FTPSession) session, this.workdir().getAbsolute(), new Local((String) filesList.objectAtIndex(i)));
-						if (this.workdir() instanceof SFTPPath)
-							p = new SFTPPath((SFTPSession) session, this.workdir().getAbsolute(), new Local((String) filesList.objectAtIndex(i)));
+						Path p = PathFactory.createPath(this.workdir().getSession().copy(),
+						    this.workdir().getAbsolute(),
+						    new Local((String) filesList.objectAtIndex(i)));
 						CDQueueController.instance().addItem(
-															 new Queue(p,Queue.KIND_UPLOAD), 
-															 true);
+						    new Queue(p, Queue.KIND_UPLOAD),
+						    true);
 					}
 					return true;
 				}
@@ -163,8 +157,6 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			NSMutableArray fileTypes = new NSMutableArray();
 			NSMutableArray queueDictionaries = new NSMutableArray();
 			// declare our dragged type in the paste board
-//			pboard.declareTypes(new NSArray(new Object[]{"QueuePBoardType",
-//												NSPasteboard.FilesPromisePboardType}), null);
 			pboard.declareTypes(new NSArray(NSPasteboard.FilesPromisePboardType), null);
 			for (int i = 0; i < rows.count(); i++) {
 				Session session = this.workdir().getSession().copy();
@@ -184,11 +176,6 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 					fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
 				queueDictionaries.addObject(new Queue(promisedDragPaths[i], Queue.KIND_DOWNLOAD).getAsDictionary());
 			}
-//			if(pboard.setPropertyListForType(fileTypes, NSPasteboard.FilesPromisePboardType))
-//				log.debug("FilesPromisePboardType data sucessfully written to pasteboard");
-//			else
-//				log.error("Could not write FilenamesPboardType data to pasteboard");
-
 			// Writing data for private use when the item gets dragged to the transfer queue.
 			NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
 			queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
@@ -238,11 +225,11 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			for (int i = 0; i < promisedDragPaths.length; i++) {
 				try {
 					//@todo url decoding still needed?
-					this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), Codec.encode(this.promisedDragPaths[i].getName())));
+					this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"), Codec.decode(this.promisedDragPaths[i].getName())));
 					CDQueueController.instance().addItem(
-														 new Queue(this.promisedDragPaths[i], Queue.KIND_DOWNLOAD), 
-														 true);
-					promisedDragNames.addObject(Codec.encode(this.promisedDragPaths[i].getName()));
+					    new Queue(this.promisedDragPaths[i], Queue.KIND_DOWNLOAD),
+					    true);
+					promisedDragNames.addObject(Codec.decode(this.promisedDragPaths[i].getName()));
 				}
 				catch (java.io.UnsupportedEncodingException e) {
 					log.error(e.getMessage());

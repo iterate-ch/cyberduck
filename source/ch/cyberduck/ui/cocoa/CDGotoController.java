@@ -36,6 +36,7 @@ public class CDGotoController {
 
 	public void setSheet(NSWindow sheet) {
 		this.sheet = sheet;
+		this.sheet.setDelegate(this);
 	}
 
 	private NSTextField folderField; // IBOutlet
@@ -51,11 +52,11 @@ public class CDGotoController {
 
 	private Path current;
 
-	private static NSMutableArray allDocuments = new NSMutableArray();
+	private static NSMutableArray instances = new NSMutableArray();
 
 	public CDGotoController(Path current) {
 		this.current = current;
-		allDocuments.addObject(this);
+		instances.addObject(this);
 		if (false == NSApplication.loadNibNamed("Goto", this)) {
 			log.fatal("Couldn't load Goto.nib");
 			return;
@@ -64,7 +65,7 @@ public class CDGotoController {
 
 	public void windowWillClose(NSNotification notification) {
 		this.window().setDelegate(null);
-		allDocuments.removeObject(this);
+		instances.removeObject(this);
 	}
 
 	public void closeSheet(Object sender) {

@@ -57,38 +57,30 @@ public class CDLoginController implements LoginController {
 	}
 
 	private NSButton keychainCheckbox;
-	
+
 	public void setKeychainCheckbox(NSButton keychainCheckbox) {
 		this.keychainCheckbox = keychainCheckbox;
 		this.keychainCheckbox.setState(NSCell.OffState);
-		//		this.keychainCheckbox.setState(Preferences.instance().getProperty("connection.login.useKeychain").equals("true") ? NSCell.OnState : NSCell.OffState);
+		//this.keychainCheckbox.setState(Preferences.instance().getProperty("connection.login.useKeychain").equals("true") ? NSCell.OnState : NSCell.OffState);
 	}
-	
+
 	private NSWindow sheet; // IBOutlet
 
 	public void setSheet(NSWindow sheet) {
 		this.sheet = sheet;
+		this.sheet.setDelegate(this);
 	}
 
 	private NSWindow parentWindow;
 
-	private static NSMutableArray allDocuments = new NSMutableArray();
-
-//	private Login login;
+	private static NSMutableArray instances = new NSMutableArray();
 
 	public CDLoginController(NSWindow parentWindow) {
-//		login = login;
 		this.parentWindow = parentWindow;
-		allDocuments.addObject(this);
+		instances.addObject(this);
 		if (false == NSApplication.loadNibNamed("Login", this)) {
 			log.fatal("Couldn't load Login.nib");
 		}
-	}
-
-	public void closeSheet(NSButton sender) {
-		log.debug("closeSheet");
-		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
 	}
 
 	public NSWindow window() {
@@ -97,7 +89,7 @@ public class CDLoginController implements LoginController {
 
 	public void windowWillClose(NSNotification notification) {
 		this.window().setDelegate(null);
-		allDocuments.removeObject(this);
+		instances.removeObject(this);
 	}
 
 	private boolean done;
@@ -107,7 +99,7 @@ public class CDLoginController implements LoginController {
 	 * @return True if the user has choosen to try again with new credentials
 	 */
 	public boolean loginFailure(Login login, String message) {
-		log.info("Authentication failed");
+		log.debug("Authentication failed:" + login.toString());
 		this.done = false;
 		this.textField.setStringValue(message);
 		this.userField.setStringValue(login.getUsername());
@@ -132,21 +124,29 @@ public class CDLoginController implements LoginController {
 		}
 		return tryAgain;
 	}
-	
+
+	public void closeSheet(NSButton sender) {
+		log.debug("closeSheet");
+		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
+		this.userField.abortEditing();
+		this.passField.abortEditing();
+		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+	}
+
 	/**
-		* Selector method from
+	 * Selector method from
 	 * @see #loginFailure
 	 */
 	public void loginSheetDidEnd(NSWindow sheet, int returncode, Object context) {
-		log.debug("loginSheetDidEnd");
 		this.window().orderOut(null);
-		Login login = (Login)context;
+		Login login = (Login) context;
+		log.debug("loginSheetDidEnd:" + login.toString());
 		switch (returncode) {
 			case (NSAlertPanel.DefaultReturn):
 				this.tryAgain = true;
 				login.setUsername(userField.stringValue());
 				login.setPassword(passField.stringValue());
-				if(keychainCheckbox.state() == NSCell.OnState) {
+				if (keychainCheckbox.state() == NSCell.OnState) {
 					login.addPasswordToKeychain();
 				}
 				break;

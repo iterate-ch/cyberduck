@@ -44,6 +44,7 @@ public class CDInfoController {
 
 	public void setWindow(NSWindow window) {
 		this.window = window;
+		this.window.setDelegate(this);
 	}
 
 	private NSTextField filenameField; // IBOutlet
@@ -110,7 +111,7 @@ public class CDInfoController {
 		this.iconImageView = iconImageView;
 	}
 
-	private static NSMutableArray allDocuments = new NSMutableArray();
+	private static NSMutableArray instances = new NSMutableArray();
 
 	// ----------------------------------------------------------
 	// Constructors
@@ -119,12 +120,11 @@ public class CDInfoController {
 	public CDInfoController(Path file) {
 		log.debug("CDInfoController:" + file);
 		this.file = file;
-		allDocuments.addObject(this);
+		instances.addObject(this);
 		if (false == NSApplication.loadNibNamed("Info", this)) {
 			log.fatal("Couldn't load Info.nib");
 			return;
 		}
-		//	this.init();
 	}
 
 	public void awakeFromNib() {
@@ -132,7 +132,7 @@ public class CDInfoController {
 		NSPoint origin = this.window.frame().origin();
 		this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 
-		this.filenameField.setStringValue(Codec.encode(file.getName()));
+		this.filenameField.setStringValue(Codec.decode(file.getName()));
 		this.pathField.setStringValue(file.getParent().getAbsolute());
 		this.groupField.setStringValue(file.attributes.getGroup());
 		this.kindField.setStringValue(file.getKind());
@@ -181,21 +181,21 @@ public class CDInfoController {
 	}
 
 	public void windowWillClose(NSNotification notification) {
-		if (!filenameField.stringValue().equals(Codec.encode(file.getName()))) {
+		if (!filenameField.stringValue().equals(Codec.decode(file.getName()))) {
 			String newName = filenameField.stringValue();
-			file.rename(newName);
+			file.rename(Codec.encode(newName));
 		}
 		this.window().setDelegate(null);
 		NSNotificationCenter.defaultCenter().removeObserver(this);
-		allDocuments.removeObject(this);
+		instances.removeObject(this);
 	}
 
 
 	public void filenameInputDidEndEditing(NSNotification sender) {
 		log.debug("textInputDidEndEditing");
-		if (!filenameField.stringValue().equals(Codec.encode(file.getName()))) {
+		if (!filenameField.stringValue().equals(Codec.decode(file.getName()))) {
 			String newName = filenameField.stringValue();
-			file.rename(newName);
+			file.rename(Codec.encode(newName));
 		}
 	}
 

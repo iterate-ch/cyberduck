@@ -26,6 +26,7 @@ import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.*;
 
 import java.io.File;
+
 import org.apache.log4j.Logger;
 
 /**

@@ -27,6 +27,7 @@ import com.enterprisedt.net.ftp.FTPTransferType;
 
 import java.io.*;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -34,6 +35,24 @@ import org.apache.log4j.Logger;
  */
 public class FTPPath extends Path {
 	private static Logger log = Logger.getLogger(FTPPath.class);
+
+	static {
+		PathFactory.addFactory(Session.FTP, new Factory());
+	}
+
+	private static class Factory extends PathFactory {
+		protected Path create(Session session, String path) {
+			return new FTPPath((FTPSession) session, path);
+		}
+
+		protected Path create(Session session, String path, Local file) {
+			return new FTPPath((FTPSession) session, path, file);
+		}
+
+		protected Path create(Session session, NSDictionary dict) {
+			return new FTPPath((FTPSession) session, dict);
+		}
+	}
 
 	private FTPSession session;
 

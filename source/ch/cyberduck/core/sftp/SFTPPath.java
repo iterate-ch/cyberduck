@@ -31,6 +31,7 @@ import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -38,6 +39,24 @@ import org.apache.log4j.Logger;
  */
 public class SFTPPath extends Path {
 	private static Logger log = Logger.getLogger(SFTPPath.class);
+
+	static {
+		PathFactory.addFactory(Session.SFTP, new Factory());
+	}
+
+	private static class Factory extends PathFactory {
+		protected Path create(Session session, String path) {
+			return new SFTPPath((SFTPSession) session, path);
+		}
+
+		protected Path create(Session session, String path, Local file) {
+			return new SFTPPath((SFTPSession) session, path, file);
+		}
+
+		protected Path create(Session session, NSDictionary dict) {
+			return new SFTPPath((SFTPSession) session, dict);
+		}
+	}
 
 	private SFTPSession session;
 

@@ -508,14 +508,14 @@ public class CDPreferencesController {
 	}
 
 	private NSButton keychainCheckbox; //IBOutlet
-	
+
 	public void setKeychainCheckbox(NSButton keychainCheckbox) {
 		this.keychainCheckbox = keychainCheckbox;
 		this.keychainCheckbox.setTarget(this);
 		this.keychainCheckbox.setAction(new NSSelector("keychainCheckboxClicked", new Class[]{NSButton.class}));
 		this.keychainCheckbox.setState(Preferences.instance().getProperty("connection.login.useKeychain").equals("true") ? NSCell.OnState : NSCell.OffState);
 	}
-	
+
 	public void keychainCheckboxClicked(NSButton sender) {
 		switch (sender.state()) {
 			case NSCell.OnState:
@@ -526,7 +526,7 @@ public class CDPreferencesController {
 				break;
 		}
 	}
-	
+
 	private NSButton showHiddenCheckbox; //IBOutlet
 
 	public void setShowHiddenCheckbox(NSButton showHiddenCheckbox) {
@@ -708,27 +708,27 @@ public class CDPreferencesController {
 
 	public void setWindow(NSWindow window) {
 		this.window = window;
+		this.window.setDelegate(this);
 	}
 
+	private static NSMutableArray instances = new NSMutableArray();
 
-	private static NSMutableArray allDocuments = new NSMutableArray();
+//	public static CDPreferencesController instance() {
+//		if (null == instance) {
+//			instance = new CDPreferencesController();
+//		}
+//		return instance;
+//	}
 
-	public static CDPreferencesController instance() {
-		if (null == instance) {
-			instance = new CDPreferencesController();
-			allDocuments.addObject(instance);
-		}
+	public CDPreferencesController() {
+		instances.addObject(this);
 		if (false == NSApplication.loadNibNamed("Preferences", instance)) {
 			log.fatal("Couldn't load Preferences.nib");
 		}
-		return instance;
-	}
-
-	private CDPreferencesController() {
-		allDocuments.addObject(this);
 	}
 
 	public void awakeFromNib() {
+		log.debug("awakeFromNib");
 		this.window.center();
 	}
 
@@ -739,7 +739,7 @@ public class CDPreferencesController {
 	public void windowWillClose(NSNotification notification) {
 		this.window().setDelegate(null);
 		NSNotificationCenter.defaultCenter().removeObserver(this);
-		allDocuments.removeObject(this);
+		instances.removeObject(this);
 	}
 
 	public void openPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {

@@ -62,10 +62,9 @@ public class CDTranscriptImpl implements Transcripter {
 		 */
 		NSRange range = new NSRange(textView.string().length(), 0);
 		this.textView.replaceCharactersInRange(range, message + "\n");
-		//@todo scroll to transcript
-		NSClipView clip = (NSClipView)this.textView.superview();
-		clip.scrollToPoint(clip.constrainScrollPoint(new NSPoint(0f, this.textView.bounds().height()+100f)));
-		
+		NSClipView clip = (NSClipView) this.textView.superview();
+		clip.scrollToPoint(clip.constrainScrollPoint(new NSPoint(0f, this.textView.bounds().height() + 100f)));
+
 		//	this.textView.scrollRangeToVisible(range);
 		//	this.textView.scrollRangeToVisible(new NSRange(textView.string().length(), message.length()-1));
 

@@ -2,40 +2,71 @@
 <project version="3" relativePaths="false">
   <component name="FileEditorManager">
     <history>
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Validator.java" line="24" column="17" vertical-scroll-proportion="0.38145694" horizontal-scroll-proportion="0.14637147" />
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Bookmarks.java" line="33" column="22" vertical-scroll-proportion="0.36953643" horizontal-scroll-proportion="0.191067" />
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Host.java" line="26" column="0" vertical-scroll-proportion="0.29403973" horizontal-scroll-proportion="0.0">
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Validator.java" line="24" column="17" vertical-scroll-proportion="0.58299595" horizontal-scroll-proportion="0.18307692" />
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Host.java" line="26" column="0" vertical-scroll-proportion="0.22133334" horizontal-scroll-proportion="0.0">
         <folding>
           <element signature="imports" expanded="true" />
         </folding>
       </source-position-entry>
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Permission.java" line="27" column="13" vertical-scroll-proportion="0.27019867" horizontal-scroll-proportion="0.11290322" />
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Preferences.java" line="29" column="22" vertical-scroll-proportion="0.25827813" horizontal-scroll-proportion="0.191067" />
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDPathController.java" line="20" column="30" vertical-scroll-proportion="0.1986755" horizontal-scroll-proportion="0.2605459">
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Permission.java" line="28" column="13" vertical-scroll-proportion="0.20133333" horizontal-scroll-proportion="0.123978205" />
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Preferences.java" line="30" column="22" vertical-scroll-proportion="0.58704454" horizontal-scroll-proportion="0.20980926" />
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDPathController.java" line="20" column="30" vertical-scroll-proportion="0.45748988" horizontal-scroll-proportion="0.28610355">
         <folding>
           <element signature="imports" expanded="true" />
         </folding>
       </source-position-entry>
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Attributes.java" line="29" column="13" vertical-scroll-proportion="0.33774835" horizontal-scroll-proportion="0.11290322" />
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBookmarkController.java" line="16" column="28" vertical-scroll-proportion="0.1615894" horizontal-scroll-proportion="0.24317618" />
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Attributes.java" line="30" column="13" vertical-scroll-proportion="0.8582996" horizontal-scroll-proportion="0.123978205" />
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBookmarkController.java" line="16" column="28" vertical-scroll-proportion="0.41700405" horizontal-scroll-proportion="0.26702997" />
       <source-position-entry url="file://$PROJECT_DIR$/Changelog.txt" line="0" column="0" vertical-scroll-proportion="0.0" horizontal-scroll-proportion="0.0" />
-      <source-position-entry url="file://$PROJECT_DIR$/build.xml" line="73" column="0" vertical-scroll-proportion="0.27019867" horizontal-scroll-proportion="0.0" />
+      <source-position-entry url="file://$PROJECT_DIR$/build.xml" line="73" column="0" vertical-scroll-proportion="0.6234818" horizontal-scroll-proportion="0.0" />
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Bookmarks.java" line="33" column="22" vertical-scroll-proportion="0.9068826" horizontal-scroll-proportion="0.20980926">
+        <folding>
+          <element signature="imports" expanded="true" />
+        </folding>
+      </source-position-entry>
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBookmarkCell.java" line="30" column="13" vertical-scroll-proportion="1.1417004" horizontal-scroll-proportion="0.12280702">
+        <folding>
+          <element signature="imports" expanded="true" />
+        </folding>
+      </source-position-entry>
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/SessionFactory.java" line="23" column="22" vertical-scroll-proportion="1.1174089" horizontal-scroll-proportion="0.20782726">
+        <folding>
+          <element signature="imports" expanded="true" />
+        </folding>
+      </source-position-entry>
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/PathFactory.java" line="25" column="22" vertical-scroll-proportion="1.1578947" horizontal-scroll-proportion="0.20782726">
+        <folding>
+          <element signature="imports" expanded="true" />
+        </folding>
+      </source-position-entry>
     </history>
     <open-files>
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Attributes.java" line="29" column="13" vertical-scroll-proportion="0.33774835" horizontal-scroll-proportion="0.11290322" />
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBookmarkController.java" line="16" column="28" vertical-scroll-proportion="0.1615894" horizontal-scroll-proportion="0.24317618" />
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Attributes.java" line="30" column="13" vertical-scroll-proportion="0.8582996" horizontal-scroll-proportion="0.123978205" />
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBookmarkController.java" line="16" column="28" vertical-scroll-proportion="0.41700405" horizontal-scroll-proportion="0.26702997" />
       <source-position-entry url="file://$PROJECT_DIR$/Changelog.txt" line="0" column="0" vertical-scroll-proportion="0.0" horizontal-scroll-proportion="0.0" />
-      <source-position-entry url="file://$PROJECT_DIR$/build.xml" line="73" column="0" vertical-scroll-proportion="0.27019867" horizontal-scroll-proportion="0.0" selected="true" />
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Bookmarks.java" line="33" column="22" vertical-scroll-proportion="0.36953643" horizontal-scroll-proportion="0.191067" />
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Validator.java" line="24" column="17" vertical-scroll-proportion="0.38145694" horizontal-scroll-proportion="0.14637147" />
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Host.java" line="26" column="0" vertical-scroll-proportion="0.29403973" horizontal-scroll-proportion="0.0">
+      <source-position-entry url="file://$PROJECT_DIR$/build.xml" line="73" column="0" vertical-scroll-proportion="0.6234818" horizontal-scroll-proportion="0.0" />
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Bookmarks.java" line="33" column="22" vertical-scroll-proportion="0.9068826" horizontal-scroll-proportion="0.20980926">
         <folding>
           <element signature="imports" expanded="true" />
         </folding>
       </source-position-entry>
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Permission.java" line="27" column="13" vertical-scroll-proportion="0.27019867" horizontal-scroll-proportion="0.11290322" />
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Preferences.java" line="29" column="22" vertical-scroll-proportion="0.25827813" horizontal-scroll-proportion="0.191067" />
-      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDPathController.java" line="20" column="30" vertical-scroll-proportion="0.1986755" horizontal-scroll-proportion="0.2605459">
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBookmarkCell.java" line="30" column="13" vertical-scroll-proportion="1.1417004" horizontal-scroll-proportion="0.12280702">
+        <folding>
+          <element signature="imports" expanded="true" />
+        </folding>
+      </source-position-entry>
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/SessionFactory.java" line="23" column="22" vertical-scroll-proportion="1.1174089" horizontal-scroll-proportion="0.20782726">
+        <folding>
+          <element signature="imports" expanded="true" />
+        </folding>
+      </source-position-entry>
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/PathFactory.java" line="25" column="22" vertical-scroll-proportion="1.1578947" horizontal-scroll-proportion="0.20782726" selected="true">
+        <folding>
+          <element signature="imports" expanded="true" />
+        </folding>
+      </source-position-entry>
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/core/Preferences.java" line="30" column="22" vertical-scroll-proportion="0.58704454" horizontal-scroll-proportion="0.20980926" />
+      <source-position-entry url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDPathController.java" line="20" column="30" vertical-scroll-proportion="0.45748988" horizontal-scroll-proportion="0.28610355">
         <folding>
           <element signature="imports" expanded="true" />
         </folding>
@@ -43,16 +74,16 @@
     </open-files>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1241" height="946" extended-state="0" />
-    <editor active="true" />
+    <frame x="15" y="24" width="1280" height="961" extended-state="0" />
+    <editor active="false" />
     <layout>
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="5" />
+      <window_info id="Cvs" active="true" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.5900474" order="5" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="7" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.4" order="0" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.24771404" order="0" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.32930756" order="0" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="3" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="1" />
@@ -204,7 +235,7 @@
     </Diff>
     <Add>
       <option name="ADD_AS_BINARY" value="false" />
-      <option name="LOG_MESSAGE" value="" />
+      <option name="LOG_MESSAGE" value="JNI Header file" />
     </Add>
     <Status>
       <option name="NON_RECURSIVE" value="false" />
@@ -234,9 +265,9 @@
       <option name="NON_RECURSIVE" value="false" />
       <option name="FORCE_RECURSIVE" value="false" />
     </Editors>
-    <option name="CLIENT_PATH" value="/sw/bin/cvs" />
+    <option name="CLIENT_PATH" value="/usr/bin/cvs" />
     <option name="EXTERNAL_DIFF_PATH" value="" />
-    <option name="USE_EXTERNAL_DIFF" value="false" />
+    <option name="USE_EXTERNAL_DIFF" value="true" />
     <option name="WORKING_FILES_READONLY" value="false" />
     <option name="COMPRESSION_LEVEL" value="0" />
     <option name="ADDITIONAL_OPTIONS" value="" />
@@ -259,19 +290,20 @@
   </component>
   <component name="CvsVcs">
     <expanded_paths>
-      <path value="$PROJECT_DIR$" />
+      <path value="$PROJECT_DIR$/source/ch/cyberduck/ui" />
+      <path value="$PROJECT_DIR$/source/ch/cyberduck/core" />
     </expanded_paths>
   </component>
   <component name="ProjectViewSettings">
     <navigator currentView="ProjectPane" flattenPackages="false" showMembers="false" showStructure="false" autoscrollToSource="false" splitterProportion="0.5" />
     <view id="ProjectPane">
+      <expanded_node type="directory" url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa" />
       <expanded_node type="directory" url="file://$PROJECT_DIR$/source/ch/cyberduck/ui" />
       <expanded_node type="directory" url="file://$PROJECT_DIR$" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/source/ch/cyberduck" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/source/ch/cyberduck/core" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/source" />
       <expanded_node type="directory" url="file://$PROJECT_DIR$/source/ch" />
+      <expanded_node type="directory" url="file://$PROJECT_DIR$/source/ch/cyberduck/core" />
+      <expanded_node type="directory" url="file://$PROJECT_DIR$/source/ch/cyberduck" />
+      <expanded_node type="directory" url="file://$PROJECT_DIR$/source" />
     </view>
     <view id="SourcepathPane" />
     <view id="ClasspathPane" />

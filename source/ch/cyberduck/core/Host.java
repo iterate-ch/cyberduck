@@ -47,18 +47,18 @@ public class Host {
 	public static final String USERNAME = "Username";
 	public static final String PATH = "Path";
 	public static final String KEYFILE = "Private Key File";
-	
+
 	public Host(NSDictionary dict) {
-		this((String)dict.objectForKey(Host.PROTOCOL),
-			 (String)dict.objectForKey(Host.HOSTNAME),
-			 Integer.parseInt((String)dict.objectForKey(Host.PORT)),
-			 new Login((String)dict.objectForKey(Host.HOSTNAME), (String)dict.objectForKey(Host.USERNAME)),
-			 (String)dict.objectForKey(Host.PATH),
-			 (String)dict.objectForKey(Host.NICKNAME)
-			 );
-		this.getLogin().setPrivateKeyFile((String)dict.objectForKey(Host.KEYFILE));
+		this((String) dict.objectForKey(Host.PROTOCOL),
+		    (String) dict.objectForKey(Host.HOSTNAME),
+		    Integer.parseInt((String) dict.objectForKey(Host.PORT)),
+		    new Login((String) dict.objectForKey(Host.HOSTNAME), (String) dict.objectForKey(Host.USERNAME)),
+		    (String) dict.objectForKey(Host.PATH),
+		    (String) dict.objectForKey(Host.NICKNAME)
+		);
+		this.getLogin().setPrivateKeyFile((String) dict.objectForKey(Host.KEYFILE));
 	}
-	
+
 	public NSDictionary getAsDictionary() {
 		NSMutableDictionary dict = new NSMutableDictionary();
 		dict.setObjectForKey(this.getProtocol(), Host.PROTOCOL);
@@ -71,7 +71,7 @@ public class Host {
 			dict.setObjectForKey(this.getLogin().getPrivateKeyFile(), Host.KEYFILE);
 		return dict;
 	}
-		
+
 	/**
 	 * For internal use only.
 	 * @deprecated
@@ -97,8 +97,8 @@ public class Host {
 	}
 
 	/**
-		* New host with the default protocol and port
-		* @param hostname The hostname of the server
+	 * New host with the default protocol and port
+	 * @param hostname The hostname of the server
 	 * @param  login The login credentials to use
 	 */
 	public Host(String hostname, Login login) {
@@ -106,8 +106,8 @@ public class Host {
 	}
 
 	/**
-		* New host with the default protocol for this port
-		* @param hostname The hostname of the server
+	 * New host with the default protocol for this port
+	 * @param hostname The hostname of the server
 	 * @param  login The login credentials to use
 	 */
 	public Host(String hostname, int port, Login login) {
@@ -117,7 +117,7 @@ public class Host {
 //	public Host(String protocol, String hostname, int port, String path, String nickname)
 
 	/**
-		* @param protocol The protocol to use, must be either Session.HTTP, Session.FTP or Session.SFTP
+	 * @param protocol The protocol to use, must be either Session.HTTP, Session.FTP or Session.SFTP
 	 * @param hostname The hostname of the server
 	 * @param port The port number to connect to
 	 * @param  login The login credentials to use

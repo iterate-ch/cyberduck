@@ -19,18 +19,15 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.ftp.FTPPath;
-import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.http.HTTPPath;
-import ch.cyberduck.core.http.HTTPSession;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSSelector;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -43,6 +40,11 @@ public class CDDownloadController {
 
 	public void setWindow(NSWindow window) {
 		this.window = window;
+		this.window.setDelegate(this);
+	}
+
+	public NSWindow window() {
+		return this.window;
 	}
 
 	private NSTextField urlField;
@@ -51,33 +53,44 @@ public class CDDownloadController {
 		this.urlField = urlField;
 	}
 
-	private static NSMutableArray allDocuments = new NSMutableArray();
+	private static NSMutableArray instances = new NSMutableArray();
 
 	public CDDownloadController() {
-		allDocuments.addObject(this);
+		instances.addObject(this);
 		if (false == NSApplication.loadNibNamed("Download", this)) {
 			log.fatal("Couldn't load Download.nib");
 			return;
 		}
 	}
 
-	public NSWindow window() {
-		return this.window;
-	}
-
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
-		NSPoint origin = this.window.frame().origin();
-		this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
+		CDQueueController.instance().window().makeKeyAndOrderFront(null);
+		NSApplication.sharedApplication().beginSheet(
+		    this.window(), //sheet
+		    CDQueueController.instance().window(),
+		    this, //modalDelegate
+		    new NSSelector(
+		        "downloadSheetDidEnd",
+		        new Class[]{NSWindow.class, int.class, Object.class}
+		    ), // did end selector
+		    null); //contextInfo
 	}
 
 	public void windowWillClose(NSNotification notification) {
 		this.window().setDelegate(null);
-		allDocuments.removeObject(this);
+		instances.removeObject(this);
 	}
 
-	public void closeWindow(NSButton sender) {
-		switch (sender.tag()) {
+	public void closeSheet(Object sender) {
+		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
+		NSApplication.sharedApplication().endSheet(this.window(), ((NSButton) sender).tag());
+	}
+
+	public void downloadSheetDidEnd(NSWindow sheet, int returncode, Object context) {
+		log.debug("loginSheetDidEnd");
+		this.window().orderOut(null);
+		switch (returncode) {
 			case (NSAlertPanel.DefaultReturn):
 				URL url = null;
 				try {
@@ -87,18 +100,20 @@ public class CDDownloadController {
 					Path path = null;
 					String file = url.getFile();
 					if (file.length() > 1) {
-						if (host.getProtocol().equals(Session.FTP)) {
-							path = new FTPPath((FTPSession) session, file);
-						}
-						else if (host.getProtocol().equals(Session.HTTP)) {
-							path = new HTTPPath((HTTPSession) session, file);
-						}
+						path = PathFactory.createPath(SessionFactory.createSession(host), file);
+//						if (host.getProtocol().equals(Session.FTP)) {
+//							path = new FTPPath((FTPSession) session, file);
+//						}
+//						else if (host.getProtocol().equals(Session.HTTP)) {
+//							path = new HTTPPath((HTTPSession) session, file);
+//						}
 						this.window().orderOut(null);
 						CDQueueController.instance().addItem(new Queue(path,
 						    Queue.KIND_DOWNLOAD), true);
 					}
-					else
+					else {
 						throw new MalformedURLException("URL must contain reference to a file");
+					}
 				}
 				catch (MalformedURLException e) {
 					NSAlertPanel.beginCriticalAlertSheet(
@@ -117,7 +132,6 @@ public class CDDownloadController {
 				}
 				break;
 			case (NSAlertPanel.AlternateReturn):
-				this.window().orderOut(null);
 				break;
 		}
 	}

@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Codec;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -80,7 +82,7 @@ public class CDPathController implements Observer {
 
 	public void addItem(Path p) {
 		this.items.add(p);
-		this.combo.addItem(p.getAbsolute());
+		this.combo.addItem(Codec.decode(p.getAbsolute()));
 		if (p.isRoot())
 			this.combo.itemAtIndex(this.combo.numberOfItems() - 1).setImage(NSImage.imageNamed("disk.tiff"));
 		else

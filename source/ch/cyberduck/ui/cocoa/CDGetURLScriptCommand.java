@@ -18,13 +18,12 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.ftp.FTPPath;
-import ch.cyberduck.core.ftp.FTPSession;
 
 import com.apple.cocoa.foundation.NSScriptCommand;
 import com.apple.cocoa.foundation.NSScriptCommandDescription;
 
 import java.net.URL;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -43,27 +42,27 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
 		log.debug("Received URL from Apple Event: " + arg);
 		try {
 			URL url = new URL(arg);
-			if (url.getProtocol().equals(Session.FTP)) {
-				String file = url.getFile();
-				log.debug("File:" + file);
-				Host h = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()), url.getPath());
-				if (file.length() > 1) {
-					Path p = new FTPPath((FTPSession) h.createSession(), file);
-					// we assume a file has an extension
-					if (null != p.getExtension()) {
-						log.debug("Assuming download");
-						CDQueueController.instance().addItem(new Queue(p,
-						    Queue.KIND_DOWNLOAD), true);
-						return null;
-					}
+			//			if (url.getProtocol().equals(Session.FTP)) {
+			String file = url.getFile();
+			log.debug("File:" + file);
+			Host h = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()), url.getPath());
+			if (file.length() > 1) {
+				Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
+				// we assume a file has an extension
+				if (null != p.getExtension()) {
+					log.debug("Assuming download");
+					CDQueueController.instance().addItem(new Queue(p,
+					    Queue.KIND_DOWNLOAD), true);
+					return null;
 				}
-				log.debug("Assuming file listing");
-				CDBrowserController controller = new CDBrowserController();
-				controller.mount(h);
 			}
-			else {
-				log.error("Can only receiver FTP URL events for now.");
-			}
+			log.debug("Assuming file listing");
+			CDBrowserController controller = new CDBrowserController();
+			controller.mount(h);
+			//			}
+			//			else {
+			//				log.error("Can only receiver FTP URL events for now.");
+			//			}
 		}
 		catch (java.net.MalformedURLException e) {
 			log.error(e.getMessage());

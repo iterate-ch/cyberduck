@@ -31,6 +31,7 @@ import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 
 import java.io.IOException;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -38,8 +39,17 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class SFTPSession extends Session {
-
 	private static Logger log = Logger.getLogger(Session.class);
+
+	static {
+		SessionFactory.addFactory(Session.SFTP, new Factory());
+	}
+
+	private static class Factory extends SessionFactory {
+		protected Session create(Host h) {
+			return new SFTPSession(h);
+		}
+	}
 
 	protected SftpSubsystemClient SFTP;
 	private SshClient SSH;

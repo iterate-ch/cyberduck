@@ -24,50 +24,53 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class Codec {
-	private static Logger log = Logger.getLogger(Path.class);
+	private static Logger log = Logger.getLogger(Codec.class);
 
 	private Codec() {
+	}
+
+	public static String decode(String text) {
+		return Codec.decode(text, Preferences.instance().getProperty("browser.decoding"));
+	}
+
+	/**
+	 * Constructs a new String by decoding the specified array of bytes using the specified charset.
+	 * The length of the new String is a function of the charset, and hence may not be equal to the length of the byte array.
+	 */
+	public static String decode(String text, String encoding) {
+		log.debug("decode:" + text + "," + encoding);
+		String decoded = text;
+		try {
+			decoded = new String(text.getBytes(), encoding);
+		}
+		catch (java.io.UnsupportedEncodingException e) {
+			log.error(e.getMessage());
+		}
+		finally {
+			log.debug("Decoded: " + decoded);
+			return decoded;
+		}
 	}
 
 	public static String encode(String text) {
 		return Codec.encode(text, Preferences.instance().getProperty("browser.encoding"));
 	}
 
+	/**
+	 * Encodes this String into a sequence of bytes using the named charset, storing the result into a new byte array.
+	 */
 	public static String encode(String text, String encoding) {
+		log.debug("encode:" + text + "," + encoding);
 		String encoded = text;
 		try {
-//			log.info("Assuminging remote encoding:"+encoding);
-//		 String roundTrip = new String(text.getBytes("UTF-8"), "UTF-8");
-			encoded = new String(text.getBytes(), encoding);
+			encoded = new String(text.getBytes(encoding));
 		}
 		catch (java.io.UnsupportedEncodingException e) {
 			log.error(e.getMessage());
 		}
 		finally {
+			log.debug("Encoded: " + encoded);
 			return encoded;
 		}
 	}
-
-	public static String decode(String text) {
-		//@todo
-		return text;
-	}
-	
-	
-	/*
-	 try {
-		 byte[] utf8Bytes = original.getBytes("UTF8");
-		 byte[] defaultBytes = original.getBytes();
-		 
-		 String roundTrip = new String(utf8Bytes, "UTF8");
-		 System.out.println("roundTrip = " + roundTrip);
-		 
-		 System.out.println();
-		 printBytes(utf8Bytes, "utf8Bytes");
-		 System.out.println();
-		 printBytes(defaultBytes, "defaultBytes");
-	 } catch (UnsupportedEncodingException e) {
-		 e.printStackTrace();
-	 }
-	 */
 }

@@ -70,9 +70,9 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		        ), // end selector
 		    null, // dismiss selector
 		    null, // context
-		    NSBundle.localizedString("The host key supplied is", "") + ": "
+		    NSBundle.localizedString("The host key supplied is ", "") + ": "
 		    + actualHostKey.getFingerprint() +
-		    "\n" + NSBundle.localizedString("The current allowed key for this host is", "") + ": "
+		    "\n" + NSBundle.localizedString("The current allowed key for this host is ", "") + ": "
 		    + allowedHostKey.getFingerprint() + "\n" + NSBundle.localizedString("Do you want to allow the host access?", ""));
 		while (!this.done) {
 			try {
@@ -91,7 +91,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		this.host = host;
 		this.publicKey = publicKey;
 		NSAlertPanel.beginInformationalAlertSheet(
-		    NSBundle.localizedString("Unknown host key for", "") + host, //title
+		    NSBundle.localizedString("Unknown host key for ", "") + host, //title
 		    NSBundle.localizedString("Allow", ""), // defaultbutton
 		    NSBundle.localizedString("Deny", ""), //alternative button
 		    isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null, //other button

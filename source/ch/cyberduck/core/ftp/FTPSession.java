@@ -25,6 +25,7 @@ import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPException;
 
 import java.io.IOException;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -33,6 +34,16 @@ import org.apache.log4j.Logger;
  */
 public class FTPSession extends Session {
 	private static Logger log = Logger.getLogger(Session.class);
+
+	static {
+		SessionFactory.addFactory(Session.FTP, new Factory());
+	}
+
+	private static class Factory extends SessionFactory {
+		protected Session create(Host h) {
+			return new FTPSession(h);
+		}
+	}
 
 	protected FTPClient FTP;
 

@@ -20,10 +20,12 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Preferences;
 
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSUserDefaults;
 
 import java.io.File;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -75,7 +77,7 @@ public class CDPreferencesImpl extends Preferences {
 
 	public void setDefaults() {
 		super.setDefaults();
-		this.setProperty("http.agent", "Cyberduck/"+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
+		this.setProperty("http.agent", "Cyberduck/" + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 	}
 
 	/**

@@ -25,6 +25,7 @@ import ch.cyberduck.core.Queues;
 import com.apple.cocoa.foundation.*;
 
 import java.io.File;
+
 import org.apache.log4j.Logger;
 
 /**

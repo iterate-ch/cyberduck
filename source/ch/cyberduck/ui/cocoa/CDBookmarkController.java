@@ -45,6 +45,7 @@ public class CDBookmarkController {
 
 	public void setWindow(NSWindow window) {
 		this.window = window;
+		this.window.setDelegate(this);
 	}
 
 	private NSPopUpButton protocolPopup; // IBOutlet
@@ -101,7 +102,7 @@ public class CDBookmarkController {
 		this.usernameField = usernameField;
 	}
 
-	private static NSMutableArray allDocuments = new NSMutableArray();
+	private static NSMutableArray instances = new NSMutableArray();
 
 	// ----------------------------------------------------------
 	// Constructors
@@ -110,7 +111,7 @@ public class CDBookmarkController {
 	public CDBookmarkController(Host bookmark) {
 		log.debug("CDBookmarkController:" + bookmark);
 		this.host = bookmark;
-		allDocuments.addObject(this);
+		instances.addObject(this);
 		if (false == NSApplication.loadNibNamed("Bookmark", this)) {
 			log.fatal("Couldn't load Bookmark.nib");
 			return;
@@ -148,7 +149,7 @@ public class CDBookmarkController {
 	public void windowWillClose(NSNotification notification) {
 		this.window().setDelegate(null);
 		NSNotificationCenter.defaultCenter().removeObserver(this);
-		allDocuments.removeObject(this);
+		instances.removeObject(this);
 	}
 
 	private NSTextField pkLabel;
@@ -238,7 +239,7 @@ public class CDBookmarkController {
 		this.nicknameField.setStringValue(this.host.getNickname());
 		this.pathField.setStringValue(this.host.getDefaultPath());
 		this.usernameField.setStringValue(this.host.getLogin().getUsername());
-		this.protocolPopup.selectItemWithTitle(this.host.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
+		this.protocolPopup.setTitle(this.host.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Session.SFTP));
 		if (this.host.getLogin().usesPublicKeyAuthentication()) {
 			this.pkCheckbox.setState(NSCell.OnState);

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -34,8 +35,8 @@ public class Rendezvous extends Observable implements ServiceListener {
 	private static Logger log = Logger.getLogger(Rendezvous.class);
 
 	private static final String[] serviceTypes = new String[]{
-		"_sftp._tcp.local.", 
-		"_ftp._tcp.local.", 
+		"_sftp._tcp.local.",
+		"_ftp._tcp.local.",
 		"_ssh._tcp.local."};
 
 	private Map services;
@@ -49,8 +50,8 @@ public class Rendezvous extends Observable implements ServiceListener {
 	public void init() {
 		log.debug("init");
 		try {
+			this.jmDNS = new JmDNS();
 			for (int i = 0; i < serviceTypes.length; i++) {
-				this.jmDNS = new JmDNS();
 				log.info("Adding Rendezvous service listener for " + serviceTypes[i]);
 				this.jmDNS.addServiceListener(serviceTypes[i], this);
 			}
@@ -58,21 +59,14 @@ public class Rendezvous extends Observable implements ServiceListener {
 		catch (IOException e) {
 			log.error(e.getMessage());
 		}
+		log.debug("init-done");
 	}
 
 	public void quit() {
 		log.info("Removing Rendezvous service listener");
-		if(this.jmDNS != null)
+		if (this.jmDNS != null)
 			this.jmDNS.removeServiceListener(this);
 	}
-
-//    public static Rendezvous instance() {
-//		log.debug("instance");
-//		if(null == instance) {
-//			instance = new Rendezvous();
-//		}
-//		return instance;
-//    }
 
 	public void callObservers(Message arg) {
 		log.debug("callObservers:" + arg);
@@ -113,8 +107,6 @@ public class Rendezvous extends Observable implements ServiceListener {
 			String identifier = info.getServer() + " (" + Host.getDefaultProtocol(info.getPort()).toUpperCase() + ")";
 
 			this.services.put(identifier, h);
-//			this.services.put(h.getURL(), h);
-//			log.debug(info.toString());
 			this.callObservers(new Message(Message.RENDEZVOUS_ADD, identifier));
 		}
 		else {
@@ -128,8 +120,10 @@ public class Rendezvous extends Observable implements ServiceListener {
 	public void removeService(JmDNS jmDNS, String type, String name) {
 		log.debug("removeService:" + name);
 		ServiceInfo info = jmDNS.getServiceInfo(type, name);
-		String identifier = info.getServer() + " (" + Host.getDefaultProtocol(info.getPort()).toUpperCase() + ")";
-		this.services.remove(identifier);
-		this.callObservers(new Message(Message.RENDEZVOUS_REMOVE, identifier));
+		if (info != null) {
+			String identifier = info.getServer() + " (" + Host.getDefaultProtocol(info.getPort()).toUpperCase() + ")";
+			this.services.remove(identifier);
+			this.callObservers(new Message(Message.RENDEZVOUS_REMOVE, identifier));
+		}
 	}
 }

@@ -35,7 +35,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(J
 										 accountChar, 
 										 &error )) == NULL ) {
 		if ( error == errSecItemNotFound ) {
-			syslog( LOG_INFO, "keychain item not found" );
+			syslog( LOG_INFO, "Keychain item not found" );
 		} else {
 			syslog( LOG_INFO, "Attempting to retrieve password from keychain return error %d", error );
 		}
@@ -79,15 +79,15 @@ char *getpwdfromkeychain(const char *service,
 		case 0:
 			break;
 		case errSecItemNotFound:
-			syslog( LOG_INFO, "keychain item not found" );
+			syslog( LOG_INFO, "Keychain item not found" );
 			free( password );
 			return( NULL );
 		case errSecAuthFailed:
-			syslog( LOG_ERR, "authorization failed." );
+			syslog( LOG_ERR, "Authorization failed." );
 			free( password );
 			return( NULL );
 		case errSecNoDefaultKeychain:
-        syslog( LOG_INFO, "No default keychain!" );
+        syslog( LOG_INFO, "No default Keychain!" );
 			free( password );
 			return( NULL );
 		case errSecBufferTooSmall:

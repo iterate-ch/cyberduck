@@ -21,33 +21,41 @@ package ch.cyberduck.core;
 import ch.cyberduck.ui.LoginController;
 
 import com.apple.cocoa.foundation.NSBundle;
+
 import org.apache.log4j.Logger;
 
 public class Login {
 	private static Logger log = Logger.getLogger(Login.class);
 
 	static {
-        // Ensure native keychain library is loaded
+		// Ensure native keychain library is loaded
 //        System.loadLibrary("Keychain");
-		NSBundle bundle = NSBundle.mainBundle();
-		String lib = bundle.resourcePath()+"/Java/"+"libKeychain.jnilib";
-		System.load(lib);
-    }
-	
+		try {
+			NSBundle bundle = NSBundle.mainBundle();
+			String lib = bundle.resourcePath() + "/Java/" + "libKeychain.jnilib";
+			System.load(lib);
+		}
+		catch (UnsatisfiedLinkError e) {
+			log.error("Could not load the Keychain library:" + e.getMessage());
+		}
+	}
+
 	//char *getpwdfromkeychain( const char *service, const char *account, OSStatus *error );
-    native String getPasswordFromKeychain(String service, String account);
-	
+	native String getPasswordFromKeychain(String service, String account);
+
 	public String getPasswordFromKeychain() {
+		log.debug("getPasswordFromKeychain:" + this.toString());
 		return this.getPasswordFromKeychain(this.service, this.user);
 	}
-	
+
 	//void addpwdtokeychain( const char *service, const char *account, const char *password );
 	native void addPasswordToKeychain(String service, String account, String password);
-	
+
 	public void addPasswordToKeychain() {
+		log.debug("addPasswordToKeychain:" + this.toString());
 		this.addPasswordToKeychain(this.service, this.user, this.pass);
 	}
-	
+
 	private String service;
 	private String user;
 	private transient String pass;
@@ -59,13 +67,14 @@ public class Login {
 	 * @param service The service to use when looking up the password in the keychain
 	 */
 	public Login(String service) {
-		this.service = service;
-		this.user = Preferences.instance().getProperty("ftp.anonymous.name");
-		this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+		this(service,
+		    Preferences.instance().getProperty("ftp.anonymous.name"),
+		    Preferences.instance().getProperty("ftp.anonymous.pass"),
+		    false);
 	}
 
 	/**
-		* @param service The service to use when looking up the password in the keychain
+	 * @param service The service to use when looking up the password in the keychain
 	 * @param user Login with this username
 	 * @param pass Passphrase
 	 */
@@ -83,12 +92,12 @@ public class Login {
 			this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 		else
 			this.pass = pass;
-		if(addToKeychain)
+		if (addToKeychain)
 			this.addPasswordToKeychain();
 	}
 
 	/**
-		* @param service The service to use when looking up the password in the keychain
+	 * @param service The service to use when looking up the password in the keychain
 	 * @param l the login credentials
 	 */
 	public Login(String service, String l) {
@@ -126,6 +135,7 @@ public class Login {
 	}
 
 	public boolean hasReasonableValues() {
+		log.debug("hasReasonableValues:" + this.toString());
 		if (this.usesPublicKeyAuthentication())
 			return true;
 		if (this.user != null && this.pass != null) {
@@ -139,7 +149,10 @@ public class Login {
 		// all other cases we don't like
 		return false;
 	}
-	
+
+	/**
+	 * @pre controller != null
+	 */
 	public boolean promptUser(String message) {
 		return controller.loginFailure(this, message);
 	}
@@ -151,29 +164,27 @@ public class Login {
 	public void setUsername(String user) {
 		this.user = user;
 	}
-	
+
 	public String getPassword() {
-		if(!this.hasReasonableValues()) {
-			if(Preferences.instance().getProperty("connection.login.useKeychain").equals("true")) {
+		if (!this.hasReasonableValues()) {
+			if (Preferences.instance().getProperty("connection.login.useKeychain").equals("true")) {
 				log.info("Searching keychain for password...");
-				this.pass = this.getPasswordFromKeychain();
-				if(null == this.pass) {
-					this.promptUser("The username or password is not reasonable.");
+				String passFromKeychain = this.getPasswordFromKeychain();
+				if (null == passFromKeychain) {
+					this.promptUser("The username or password does not seem reasonable.");
 				}
+				else
+					this.pass = passFromKeychain;
 			}
 		}
 		return this.pass;
 	}
-	
+
 	public void setPassword(String pass) {
 		this.pass = pass;
 	}
 
 	public void setController(LoginController lc) {
 		this.controller = lc;
-	}
-
-	public String toString() {
-		return this.getUsername() + ":" + this.getPassword();
 	}
 }

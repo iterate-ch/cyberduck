@@ -63,6 +63,7 @@
 package org.apache.commons.httpclient.methods;
 
 import java.io.IOException;
+
 import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethodBase;

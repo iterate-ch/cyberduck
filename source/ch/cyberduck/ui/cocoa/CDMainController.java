@@ -25,6 +25,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import java.io.File;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -227,8 +228,8 @@ public class CDMainController {
 	}
 
 	public void preferencesMenuClicked(Object sender) {
-		CDPreferencesController controller = CDPreferencesController.instance();
-		controller.window().makeKeyAndOrderFront(null);
+//		CDPreferencesController.instance().window().makeKeyAndOrderFront(null);
+		new CDPreferencesController().window().makeKeyAndOrderFront(null);
 	}
 
 	public CDDownloadController newDownloadMenuClicked(Object sender) {

@@ -26,6 +26,7 @@ import com.apple.cocoa.foundation.*;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -45,6 +46,7 @@ public class CDConnectionController implements Observer {
 
 	public void setSheet(NSWindow sheet) {
 		this.sheet = sheet;
+		this.sheet.setDelegate(this);
 	}
 
 	public NSWindow window() {
@@ -192,13 +194,13 @@ public class CDConnectionController implements Observer {
 	}
 
 	private NSButton keychainCheckbox;
-	
+
 	public void setKeychainCheckbox(NSButton keychainCheckbox) {
 		this.keychainCheckbox = keychainCheckbox;
 		this.keychainCheckbox.setState(NSCell.OffState);
 //		this.keychainCheckbox.setState(Preferences.instance().getProperty("connection.login.useKeychain").equals("true") ? NSCell.OnState : NSCell.OffState);
 	}
-		
+
 	private NSButton pkCheckbox;
 
 	public void setPkCheckbox(NSButton pkCheckbox) {
@@ -252,7 +254,7 @@ public class CDConnectionController implements Observer {
 		this.urlLabel = urlLabel;
 	}
 
-	private static NSMutableArray allDocuments = new NSMutableArray();
+	private static NSMutableArray instances = new NSMutableArray();
 
 	private CDBrowserController browser;
 
@@ -262,19 +264,18 @@ public class CDConnectionController implements Observer {
 
 	public CDConnectionController(CDBrowserController browser) {
 		this.browser = browser;
-		allDocuments.addObject(this);
+		instances.addObject(this);
 		log.debug("CDConnectionController");
 		if (false == NSApplication.loadNibNamed("Connection", this)) {
 			log.fatal("Couldn't load Connection.nib");
 			return;
 		}
-		//	this.init();
 	}
 
 	public void windowWillClose(NSNotification notification) {
 		this.window().setDelegate(null);
 		NSNotificationCenter.defaultCenter().removeObserver(this);
-		allDocuments.removeObject(this);
+		instances.removeObject(this);
 	}
 
 
@@ -283,57 +284,57 @@ public class CDConnectionController implements Observer {
 		// Notify the updateURLLabel() method if the user types.
 		//ControlTextDidChangeNotification
 		NSNotificationCenter.defaultCenter().addObserver(
-														 this,
-														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
-														 NSControl.ControlTextDidChangeNotification,
-														 hostPopup);
+		    this,
+		    new NSSelector("updateURLLabel", new Class[]{Object.class}),
+		    NSControl.ControlTextDidChangeNotification,
+		    hostPopup);
 		NSNotificationCenter.defaultCenter().addObserver(
-														 this,
-														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
-														 NSControl.ControlTextDidChangeNotification,
-														 pathField);
+		    this,
+		    new NSSelector("updateURLLabel", new Class[]{Object.class}),
+		    NSControl.ControlTextDidChangeNotification,
+		    pathField);
 		NSNotificationCenter.defaultCenter().addObserver(
-														 this,
-														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
-														 NSControl.ControlTextDidChangeNotification,
-														 portField);
+		    this,
+		    new NSSelector("updateURLLabel", new Class[]{Object.class}),
+		    NSControl.ControlTextDidChangeNotification,
+		    portField);
 		NSNotificationCenter.defaultCenter().addObserver(
-														 this,
-														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
-														 NSControl.ControlTextDidChangeNotification,
-														 usernameField);
+		    this,
+		    new NSSelector("updateURLLabel", new Class[]{Object.class}),
+		    NSControl.ControlTextDidChangeNotification,
+		    usernameField);
 		//NSControlTextDidEndEditingNotification
 		NSNotificationCenter.defaultCenter().addObserver(
-														 this,
-														 new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
-														 NSControl.ControlTextDidEndEditingNotification,
-														 hostPopup);
+		    this,
+		    new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
+		    NSControl.ControlTextDidEndEditingNotification,
+		    hostPopup);
 		NSNotificationCenter.defaultCenter().addObserver(
-														 this,
-														 new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
-														 NSControl.ControlTextDidEndEditingNotification,
-														 usernameField);
-		
+		    this,
+		    new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
+		    NSControl.ControlTextDidEndEditingNotification,
+		    usernameField);
+
 		this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
 		this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.portField.setIntValue(protocolPopup.selectedItem().tag());
 		this.pkCheckbox.setEnabled(Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP));
 	}
-	
+
 	public void getPasswordFromKeychain(Object sender) {
-		if(hostPopup.stringValue() != null && 
-		   hostPopup.stringValue() != "" && 
-		   usernameField.stringValue() != null && 
-		   usernameField.stringValue() != "") {
+		if (hostPopup.stringValue() != null &&
+		    !hostPopup.stringValue().equals("") &&
+		    usernameField.stringValue() != null &&
+		    !usernameField.stringValue().equals("")) {
 			Login l = new Login(hostPopup.stringValue(), usernameField.stringValue());
 			String passFromKeychain = l.getPasswordFromKeychain();
-			if(passFromKeychain != null) {
-				log.info("Password for "+usernameField.stringValue()+" found in Keychain");
+			if (passFromKeychain != null && !passFromKeychain.equals("")) {
+				log.info("****Password for " + usernameField.stringValue() + " found in Keychain:" + passFromKeychain);
 				this.passField.setStringValue(passFromKeychain);
 			}
 			else {
 //				this.passField.setStringValue("");
-				log.info("Password for "+usernameField.stringValue()+" NOT found in Keychain");
+				log.info("Password for " + usernameField.stringValue() + " NOT found in Keychain");
 			}
 		}
 	}

@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.io.*;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -47,11 +48,11 @@ public abstract class Path {
 
 	public Path(NSDictionary dict) {
 		log.debug("Path");
-		this.setPath((String)dict.objectForKey("Remote"));
-		this.setLocal(new Local((String)dict.objectForKey("Local")));
+		this.setPath((String) dict.objectForKey("Remote"));
+		this.setLocal(new Local((String) dict.objectForKey("Local")));
 		//this.setStatus(new Status((NSDictionary)dict.objectForKey("Status")));
 	}
-	
+
 	public NSDictionary getAsDictionary() {
 		NSMutableDictionary dict = new NSMutableDictionary();
 		dict.setObjectForKey(this.getAbsolute(), "Remote");
@@ -59,7 +60,7 @@ public abstract class Path {
 		//dict.setObjectForkey(this.status.getAsDictionary(), "Status");
 		return dict;
 	}
-	
+
 	/**
 	 * A remote path where nothing is known about a local equivalent.
 	 * @param path the absolute directory

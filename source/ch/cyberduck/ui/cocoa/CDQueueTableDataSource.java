@@ -18,12 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Queues;
+import ch.cyberduck.core.*;
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.application.NSDraggingInfo;
+import com.apple.cocoa.application.NSPasteboard;
+import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSTableView;
 import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSDictionary;
+
+import java.net.URL;
 
 import org.apache.log4j.Logger;
 
@@ -33,6 +37,8 @@ import org.apache.log4j.Logger;
 public class CDQueueTableDataSource extends CDTableDataSource {
 	private static Logger log = Logger.getLogger(CDQueueTableDataSource.class);
 
+	private int queuePboardChangeCount = NSPasteboard.pasteboardWithName("QueuePBoard").changeCount();
+
 	public int numberOfRowsInTableView(NSTableView tableView) {
 		return CDQueuesImpl.instance().size();
 	}
@@ -41,7 +47,6 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 //		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 		String identifier = (String) tableColumn.identifier();
-		Queue item = CDQueuesImpl.instance().getItem(row);
 		if (identifier.equals("DATA")) {
 			return CDQueuesImpl.instance().getItem(row);
 		}
@@ -57,12 +62,17 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 
 	public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 		log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
-		NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-		if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-			log.debug("tableViewValidateDrop:DragOperationGeneric");
-			// means the drag operation can be desided by the table view
-			// the tableview will draw rectangles or lines
+		if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
 			return NSDraggingInfo.DragOperationGeneric;
+		}
+		NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+		if (this.queuePboardChangeCount < pboard.changeCount()) {
+			if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+				log.debug("tableViewValidateDrop:DragOperationGeneric");
+				// means the drag operation can be desided by the table view
+				// the tableview will draw rectangles or lines
+				return NSDraggingInfo.DragOperationGeneric;
+			}
 		}
 		log.debug("tableViewValidateDrop:DragOperationNone");
 		return NSDraggingInfo.DragOperationNone;
@@ -77,29 +87,55 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 	 */
 	public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 		log.debug("tableViewAcceptDrop:row:" + row + ",operation:" + operation);
+		if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
+			String droppedText = info.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
+			if (droppedText != null) {
+				log.info("NSPasteboard.StringPboardType:" + droppedText);
+				try {
+					URL url = new URL(droppedText);
+					String file = url.getFile();
+					if (file.length() > 1) {
+						Host h = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()));
+						Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
+						// we assume a file has an extension
+						if (null != p.getExtension()) {
+							CDQueueController.instance().addItem(new Queue(p,
+							    Queue.KIND_DOWNLOAD), true);
+							return true;
+						}
+					}
+				}
+				catch (java.net.MalformedURLException e) {
+					log.error(e.getMessage());
+				}
+			}
+		}
 		// we are only interested in our private pasteboard with a description of the queue
 		// encoded in as a xml.
 		NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-		log.debug("availableTypeFromArray:QueuePBoardType: " + pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
-		if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-			Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
-			log.debug("tableViewAcceptDrop:" + o);
-			if (o != null) {
-				NSArray elements = (NSArray) o;
-				for (int i = 0; i < elements.count(); i++) {
-					NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-					if (row != -1) {
-						CDQueuesImpl.instance().addItem(new Queue(dict), row);
-						tableView.selectRow(row, false);
+		if (this.queuePboardChangeCount < pboard.changeCount()) {
+			log.debug("availableTypeFromArray:QueuePBoardType: " + pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
+			if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+				Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
+				log.debug("tableViewAcceptDrop:" + o);
+				if (o != null) {
+					NSArray elements = (NSArray) o;
+					for (int i = 0; i < elements.count(); i++) {
+						NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+						if (row != -1) {
+							CDQueuesImpl.instance().addItem(new Queue(dict), row);
+							tableView.selectRow(row, false);
+						}
+						else {
+							CDQueuesImpl.instance().addItem(new Queue(dict));
+							tableView.selectRow(tableView.numberOfRows() - 1, false);
+						}
+						tableView.reloadData();
 					}
-					else {
-						CDQueuesImpl.instance().addItem(new Queue(dict));
-						tableView.selectRow(tableView.numberOfRows() - 1, false);
-					}
-					tableView.reloadData();
+					this.queuePboardChangeCount++;
+					//doesn't work?				pboard.setPropertyListForType(null, "QueuePBoardType");
+					return true;
 				}
-				//@todo clean pboard
-				return true;
 			}
 		}
 		return false;

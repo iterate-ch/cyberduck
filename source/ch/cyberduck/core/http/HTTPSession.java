@@ -18,12 +18,10 @@ package ch.cyberduck.core.http;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 
 import java.io.IOException;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.log4j.Logger;
 
@@ -33,6 +31,16 @@ import org.apache.log4j.Logger;
  */
 public class HTTPSession extends Session {
 	private static Logger log = Logger.getLogger(Session.class);
+
+	static {
+		SessionFactory.addFactory(Session.HTTP, new Factory());
+	}
+
+	private static class Factory extends SessionFactory {
+		protected Session create(Host h) {
+			return new HTTPSession(h);
+		}
+	}
 
 	protected HttpClient HTTP;
 	//    protected HttpConnection HTTP;

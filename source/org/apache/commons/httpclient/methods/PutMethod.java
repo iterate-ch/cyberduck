@@ -64,6 +64,7 @@ package org.apache.commons.httpclient.methods;
 
 import java.io.*;
 import java.net.URL;
+
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.log.Log;
 import org.apache.commons.httpclient.log.LogSource;

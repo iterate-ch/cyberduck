@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import java.util.Hashtable;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -107,6 +108,7 @@ public abstract class Preferences {
 		defaults.put("browser.openByDefault", "true");
 		defaults.put("browser.showHidden", "false");
 		defaults.put("browser.encoding", "UTF-8");
+		defaults.put("browser.decoding", "UTF-8");
 
 		defaults.put("history.size", "10");
 		defaults.put("history.save", "true");

@@ -52,7 +52,7 @@
 	<property name="app.contents" value="${app.bundle}/Contents"/>
 	<property name="app.resources" value="${app.contents}/Resources"/>
 	<property name="app.classes" value="${home}/${build}/intermediates/${app.name}.build/JavaClasses"/>
-	<property name="app.jar" value="${app.resources}/Java"/>
+	<property name="app.java" value="${app.resources}/Java"/>
 
 	<target name="init" depends="manifest">
 		<tstamp/>
@@ -74,24 +74,62 @@
 
 
 	<target name="build" depends="archive" description="Compile, jar and copy to application bundle"> 
-		<copy todir="${app.jar}">
+		<copy todir="${app.java}">
 			<fileset dir="${build}">
 				<include name="*.jar"/>
 			</fileset>
 		</copy>
-		<copy todir="${app.jar}">
+		<copy todir="${app.java}">
 			<fileset dir="${lib}">
 				<include name="*.jar"/>
 			</fileset>
 		</copy>
-		<copy todir="${app.jar}">
+		<copy todir="${app.java}">
 			<fileset dir="${build}">
 				<include name="*.jnilib"/>
 			</fileset>
 		</copy>
+		<antcall target="copy-language-ressources"/>
 		<antcall target="repace-tokens"/>
 	</target>
-
+	
+	<target name="copy-language-ressources">
+		<copy todir="${app.java}">
+			<fileset dir="English.lproj">
+				<include name="*.properties"/>
+			</fileset>
+		</copy>
+		<copy todir="${app.java}">
+			<fileset dir="German.lproj">
+				<include name="*.properties"/>
+			</fileset>
+		</copy>
+		<copy todir="${app.java}">
+			<fileset dir="Dutch.lproj">
+				<include name="*.properties"/>
+			</fileset>
+		</copy>
+		<copy todir="${app.java}">
+			<fileset dir="French.lproj">
+				<include name="*.properties"/>
+			</fileset>
+		</copy>
+		<copy todir="${app.java}">
+			<fileset dir="Italian.lproj">
+				<include name="*.properties"/>
+			</fileset>
+		</copy>
+		<copy todir="${app.java}">
+			<fileset dir="Japanese.lproj">
+				<include name="*.properties"/>
+			</fileset>
+		</copy>
+		<copy todir="${app.java}">
+			<fileset dir="Portuguese.lproj">
+				<include name="*.properties"/>
+			</fileset>
+		</copy>
+	</target>
 
 	<target name="repace-tokens">
 		<replace
@@ -200,4 +238,3 @@
 		</manifest>
 	</target>
 </project>
-

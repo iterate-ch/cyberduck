@@ -32,14 +32,14 @@ public class CDProgressCell extends CDTableCell {
 	private static Logger log = Logger.getLogger(CDProgressCell.class);
 
 	private Queue queue;
-	
+
 	public void setObjectValue(Object queue) {
 		this.queue = (Queue) queue;
 	}
-	
+
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
-		
+
 //		log.debug("Redrawing progress cell...");
 		NSPoint cellPoint = cellFrame.origin();
 		NSSize cellSize = cellFrame.size();
@@ -55,48 +55,48 @@ public class CDProgressCell extends CDTableCell {
 		float PROGRESS_WIDTH = progress * (cellSize.width() - SPACE * 2);
 		if (PROGRESS_WIDTH < 0)
 			PROGRESS_WIDTH = 0;
-		
+
 		NSRect barRect = new NSRect(cellPoint.x() + SPACE,
-									cellPoint.y() + cellSize.height() / 2 - PROGRESS_HEIGHT / 2,
-									cellSize.width() - SPACE * 2,
-									PROGRESS_HEIGHT);
+		    cellPoint.y() + cellSize.height() / 2 - PROGRESS_HEIGHT / 2,
+		    cellSize.width() - SPACE * 2,
+		    PROGRESS_HEIGHT);
 		NSRect barRectFilled = new NSRect(cellPoint.x() + SPACE,
-										  cellPoint.y() + cellSize.height() / 2 - PROGRESS_HEIGHT / 2,
-										  PROGRESS_WIDTH,
-										  PROGRESS_HEIGHT);
-		
+		    cellPoint.y() + cellSize.height() / 2 - PROGRESS_HEIGHT / 2,
+		    PROGRESS_WIDTH,
+		    PROGRESS_HEIGHT);
+
 		//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and
 		//coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
 		//invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.
 //		controlView.lockFocus();
-		
+
 		// drawing current of size string
 		NSGraphics.drawAttributedString(
-										new NSAttributedString((int) (progress * 100) + "%"
-															   + " - " +
-															   queue.getProgress(),
-															   //															   queue.getCurrentAsString()
-															   //															   +" of "+
-															   //															   queue.getSizeAsString(),
-															   normalFont),
-										new NSRect(cellPoint.x() + SPACE,
-												   cellPoint.y() + cellSize.height() / 2 - PROGRESS_HEIGHT / 2 - 10 - SPACE,
-												   cellSize.width() - SPACE,
-												   cellSize.height())
-										);
-		
+		    new NSAttributedString((int) (progress * 100) + "%"
+		    + " - " +
+		    queue.getProgress(),
+		        //															   queue.getCurrentAsString()
+		        //															   +" of "+
+		        //															   queue.getSizeAsString(),
+		        normalFont),
+		    new NSRect(cellPoint.x() + SPACE,
+		        cellPoint.y() + cellSize.height() / 2 - PROGRESS_HEIGHT / 2 - 10 - SPACE,
+		        cellSize.width() - SPACE,
+		        cellSize.height())
+		);
+
 		// drawing percentage and speed
 		NSGraphics.drawAttributedString(
-										new NSAttributedString(queue.getSpeedAsString()
-															   + " - " +
-															   queue.getTimeLeft(),
-															   tinyFont),
-										new NSRect(cellPoint.x() + SPACE,
-												   cellPoint.y() + cellSize.height() / 2 + PROGRESS_HEIGHT / 2 + SPACE,
-												   cellSize.width() - SPACE,
-												   cellSize.height())
-										);
-		
+		    new NSAttributedString(queue.getSpeedAsString()
+		    + " - " +
+		    queue.getTimeLeft(),
+		        tinyFont),
+		    new NSRect(cellPoint.x() + SPACE,
+		        cellPoint.y() + cellSize.height() / 2 + PROGRESS_HEIGHT / 2 + SPACE,
+		        cellSize.width() - SPACE,
+		        cellSize.height())
+		);
+
 		// drawing progress bar
 		if (highlighted)
 			NSColor.whiteColor().set();
@@ -111,7 +111,7 @@ public class CDProgressCell extends CDTableCell {
 			NSColor.colorWithPatternImage(NSImage.imageNamed("stripeGray.tiff")).set();
 		NSColor.colorWithPatternImage(NSImage.imageNamed("stripe.tiff")).set();
 		NSBezierPath.fillRect(barRectFilled);
-		
+
 //		controlView.unlockFocus();
 	}
 }

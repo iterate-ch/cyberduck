@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.List;
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
@@ -39,6 +40,24 @@ import org.apache.log4j.Logger;
  */
 public class HTTPPath extends Path {
 	private static Logger log = Logger.getLogger(HTTPPath.class);
+
+	static {
+		PathFactory.addFactory(Session.HTTP, new Factory());
+	}
+
+	private static class Factory extends PathFactory {
+		protected Path create(Session session, String path) {
+			return new HTTPPath((HTTPSession) session, path);
+		}
+
+		protected Path create(Session session, String path, Local file) {
+			return new HTTPPath((HTTPSession) session, path, file);
+		}
+
+		protected Path create(Session session, NSDictionary dict) {
+			return new HTTPPath((HTTPSession) session, dict);
+		}
+	}
 
 	private HTTPSession session;
 
@@ -64,9 +83,7 @@ public class HTTPPath extends Path {
 
 	public Path copy(Session s) {
 		HTTPPath copy = new HTTPPath((HTTPSession) s, this.getAbsolute());
-//		HTTPPath copy = new HTTPPath((HTTPSession)s, this.getParent().getAbsolute(), this.getLocal());
 		copy.attributes = this.attributes;
-		//	copy.status = this.status;
 		return copy;
 	}
 

@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Codec;
 import ch.cyberduck.core.Path;
 
 import com.apple.cocoa.application.*;
@@ -38,6 +39,7 @@ public class CDFolderController {
 
 	public void setSheet(NSWindow sheet) {
 		this.sheet = sheet;
+		this.sheet.setDelegate(this);
 	}
 
 	private NSTextField folderField; /* IBOutlet */
@@ -50,10 +52,10 @@ public class CDFolderController {
 		return this.sheet;
 	}
 
-	private static NSMutableArray allDocuments = new NSMutableArray();
+	private static NSMutableArray instances = new NSMutableArray();
 
 	public CDFolderController() {
-		allDocuments.addObject(this);
+		instances.addObject(this);
 		if (false == NSApplication.loadNibNamed("Folder", this)) {
 			log.fatal("Couldn't load Folder.nib");
 			return;
@@ -63,7 +65,7 @@ public class CDFolderController {
 	public void windowWillClose(NSNotification notification) {
 		this.window().setDelegate(null);
 		//	NSNotificationCenter.defaultCenter().removeObserver(this);
-		allDocuments.removeObject(this);
+		instances.removeObject(this);
 	}
 
 	public void closeSheet(Object sender) {
@@ -76,7 +78,7 @@ public class CDFolderController {
 		sheet.orderOut(null);
 		switch (returncode) {
 			case (NSAlertPanel.DefaultReturn):
-				((Path) contextInfo).mkdir(folderField.stringValue());
+				((Path) contextInfo).mkdir(Codec.encode(folderField.stringValue()));
 				break;
 			case (NSAlertPanel.AlternateReturn):
 				break;
