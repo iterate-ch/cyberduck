@@ -181,11 +181,7 @@ public class TransportProtocolInputStream {
 
 		// Try to reset the buffer
 		if(startpos >= endpos) {
-			//if (log.isDebugEnabled()) {
-			// log.debug("Buffer has been reset");
-			// }*/
 			endpos = 0;
-
 			startpos = 0;
 		}
 
