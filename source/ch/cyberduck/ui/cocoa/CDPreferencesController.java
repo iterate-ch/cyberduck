@@ -119,49 +119,70 @@ public class CDPreferencesController {
 	panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window(), this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }
 
+    private NSTextField bufferField;
+    public void setBufferField(NSTextField bufferField) {
+	this.bufferField = bufferField;
+	this.bufferField.setStringValue(Preferences.instance().getProperty("connection.buffer"));
+	NSNotificationCenter.defaultCenter().addObserver(
+						  this,
+						  new NSSelector("bufferFieldDidChange", new Class[]{NSNotification.class}),
+						  NSControl.ControlTextDidChangeNotification,
+						  this.bufferField);
+    }
+
+    public void bufferFieldDidChange(NSNotification sender) {
+	try {
+	    Integer.parseInt(this.bufferField.stringValue());
+	    Preferences.instance().setProperty("connection.buffer", this.bufferField.stringValue());
+	}
+	catch(NumberFormatException e) {
+	    log.error(e.getMessage());
+	}
+    }
+    
     private NSTextField anonymousField;
     public void setAnonymousField(NSTextField anonymousField) {
 	this.anonymousField = anonymousField;
-	anonymousField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.pass"));
+	this.anonymousField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.pass"));
 	NSNotificationCenter.defaultCenter().addObserver(
 						  this,
 						  new NSSelector("anonymousFieldDidChange", new Class[]{NSNotification.class}),
 						  NSControl.ControlTextDidChangeNotification,
-						  anonymousField);
+						  this.anonymousField);
     }
 
     public void anonymousFieldDidChange(NSNotification sender) {
-	Preferences.instance().setProperty("ftp.anonymous.pass", anonymousField.stringValue());
+	Preferences.instance().setProperty("ftp.anonymous.pass", this.anonymousField.stringValue());
     }
 
     private NSTextField downloadPathField;
     public void setDownloadPathField(NSTextField downloadPathField) {
 	this.downloadPathField = downloadPathField;
-	downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
+	this.downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
 	NSNotificationCenter.defaultCenter().addObserver(
 						  this,
 						  new NSSelector("downloadPathFieldDidChange", new Class[]{NSNotification.class}),
 						  NSControl.ControlTextDidChangeNotification,
-						  downloadPathField);
+						  this.downloadPathField);
     }
 
     public void downloadPathFieldDidChange(NSNotification sender) {
-	Preferences.instance().setProperty("connection.download.folder", downloadPathField.stringValue());
+	Preferences.instance().setProperty("connection.download.folder", this.downloadPathField.stringValue());
     }
 
     private NSTextField loginField;
     public void setLoginField(NSTextField loginField) {
 	this.loginField = loginField;
-	loginField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
+	this.loginField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
 	NSNotificationCenter.defaultCenter().addObserver(
 						  this,
 						  new NSSelector("loginFieldDidChange", new Class[]{NSNotification.class}),
 						  NSControl.ControlTextDidChangeNotification,
-						  loginField);
+						  this.loginField);
     }
 
     public void loginFieldDidChange(NSNotification sender) {
-	Preferences.instance().setProperty("connection.login.name", loginField.stringValue());
+	Preferences.instance().setProperty("connection.login.name", this.loginField.stringValue());
     }
 
     private NSButton showHiddenCheckbox;
@@ -292,8 +313,8 @@ public class CDPreferencesController {
 	this.connectmodeCombo = connectmodeCombo;
 	this.connectmodeCombo.setTarget(this);
 	this.connectmodeCombo.setAction(new NSSelector("connectmodeComboClicked", new Class[] {NSPopUpButton.class}));
-	connectmodeCombo.removeAllItems();
-	connectmodeCombo.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
+	this.connectmodeCombo.removeAllItems();
+	this.connectmodeCombo.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
 	if(Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
 	    connectmodeCombo.setTitle(CONNECTMODE_PASSIVE);
 	else
@@ -312,8 +333,8 @@ public class CDPreferencesController {
 	this.protocolCombo = protocolCombo;
 	this.protocolCombo.setTarget(this);
 	this.protocolCombo.setAction(new NSSelector("protocolComboClicked", new Class[] {NSPopUpButton.class}));
-	protocolCombo.removeAllItems();
-	protocolCombo.addItemsWithTitles(new NSArray(new String[]{PROTOCOL_FTP, PROTOCOL_SFTP}));
+	this.protocolCombo.removeAllItems();
+	this.protocolCombo.addItemsWithTitles(new NSArray(new String[]{PROTOCOL_FTP, PROTOCOL_SFTP}));
 	if(Preferences.instance().getProperty("connection.protocol.default").equals("ftp"))
 	    protocolCombo.setTitle(PROTOCOL_FTP);
 	else
@@ -372,7 +393,7 @@ public class CDPreferencesController {
 		String filename;
 		if((filename = (String)selected.lastObject()) != null) {
 		    Preferences.instance().setProperty("connection.download.folder", filename);
-		    downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
+		    this.downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
 		}
 		break;
 	    }

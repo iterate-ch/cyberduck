@@ -35,6 +35,8 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.Vector;
 
+import ch.cyberduck.core.Transcript;
+
 /**
  *  Supports client-side FTP. Most common
  *  FTP operations are present in this class.
@@ -116,8 +118,7 @@ public class FTPClient {
      *
      *   @param millis The length of the timeout, in milliseconds
      */
-    public void setTimeout(int millis)
-        throws IOException {
+    public void setTimeout(int millis) throws IOException {
 
         this.timeout = millis;
         control.setTimeout(millis);
@@ -139,13 +140,16 @@ public class FTPClient {
      *  @param   user       user name
      *  @param   password   user's password
      */
-    public void login(String user, String password)
-        throws IOException, FTPException {
+    public void login(String user, String password) throws IOException, FTPException {
 
-        String response = control.sendCommand("USER " + user);
-        lastValidReply = control.validateReply(response, "331");
-        response = control.sendCommand("PASS " + password);
-        lastValidReply = control.validateReply(response, "230");
+	this.user(user);
+	if(lastValidReply.getReplyCode().equals("331"))
+	    this.password(password);
+
+//        String response = control.sendCommand("USER " + user);
+//      lastValidReply = control.validateReply(response, "331");
+//        response = control.sendCommand("PASS " + password);
+//        lastValidReply = control.validateReply(response, "230");
     }
 
 
@@ -155,10 +159,8 @@ public class FTPClient {
      *  password() method - but we allow for
      *
      *  @param   user       user name
-     *  @param   password   user's password
      */
-    public void user(String user)
-        throws IOException, FTPException {
+    private void user(String user) throws IOException, FTPException {
 
         String reply = control.sendCommand("USER " + user);
 
@@ -173,10 +175,9 @@ public class FTPClient {
      *  username to log into the FTP server. Must be
      *  preceeded by the user() method
      *
-     *  @param   user       user name
      *  @param   password   user's password
      */
-    public void password(String password) throws IOException, FTPException {
+    private void password(String password) throws IOException, FTPException {
 
         String reply = control.sendCommand("PASS " + password);
 
@@ -441,15 +442,14 @@ public class FTPClient {
         String replyCode = lastValidReply.getReplyCode();
         if (!replyCode.equals("450") && !replyCode.equals("550")) {
             // get an character input stream to read data from .
-            LineNumberReader in =
-                new LineNumberReader(
-                     new InputStreamReader(data.getInputStream()));
+            LineNumberReader in = new LineNumberReader(new InputStreamReader(data.getInputStream()));
 
             // read a line at a time
             Vector lines = new Vector();    
             String line = null;
             while ((line = in.readLine()) != null) {
                 lines.add(line);
+		Transcript.instance().transcript(line);
             }        
             try {
                 in.close();

@@ -30,7 +30,6 @@ import java.util.List;
 public abstract class Path {
     private static Logger log = Logger.getLogger(Path.class);
 
-    private String name = null;
     private String path = null;
     private java.io.File local = null;
     protected Path parent = null;
@@ -86,7 +85,6 @@ public abstract class Path {
     }
 
     /**
-	* Change this path later for example if the name has changed
      * @param parent The parent directory
      * @param name The relative filename
      */
@@ -203,11 +201,10 @@ public abstract class Path {
      * or the full path if it is a directory
      */
     public String getName() {
-//	if(name == null) {
-	    String abs = this.getAbsolute();
-	    int index = abs.lastIndexOf("/");
-	    name = (index > 0) ? abs.substring(index + 1) : abs;
-//	}
+	String abs = this.getAbsolute();
+	int index = abs.lastIndexOf("/");
+	String name = (index > 0) ? abs.substring(index + 1) : abs.substring(1);
+//	name = (index > 0) ? abs.substring(index + 1) : abs;
 	return name;
     }
 

@@ -430,7 +430,6 @@ import java.net.Socket;
                  else { // not the last line
                      reply.append(" ");
                      reply.append(line);
-		     Transcript.instance().transcript(line);
                  }
              } // end while
          } // end if

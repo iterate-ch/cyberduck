@@ -149,61 +149,6 @@ public class CDBrowserTable extends NSTableView implements Observer {
     }
     
 
-        // ----------------------------------------------------------
-    // Drag methods
-    // ----------------------------------------------------------
-
-    public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
-	log.debug("finishedDraggingImage:"+operation);
-	if(promisedDragPaths != null) {
-	    CDTransferController controller = new CDTransferController(promisedDragPaths, Queue.KIND_DOWNLOAD);
-//	    CDTransferController controller = new CDTransferController(this.workdir.getSession().copy(), promisedDragPaths, Queue.KIND_DOWNLOAD);
-	    controller.transfer();
-	    promisedDragPaths = null;
-	}
-    }
-
-    public boolean ignoreModifierKeysWhileDragging() {
-	return true;
-    }
-    
-    public int draggingSourceOperationMaskForLocal(boolean local) {
-	log.debug("draggingSourceOperationMaskForLocal:"+local);
-	if(local)
-	    return NSDraggingInfo.DragOperationNone;
-	else
-	    return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
-
-    }
-
-    private Path[] promisedDragPaths;
-
-    /**
-	@return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-     * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-     * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
-     * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
-     * blocking the destination application.
-     */
-    public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
-	log.debug("namesOfPromisedFilesDroppedAtDestination:"+dropDestination);
-
-	this.promisedDragPaths = new Path[this.numberOfSelectedRows()];
-	NSMutableArray promisedDragNames = new NSMutableArray();
-
-	NSEnumerator enum = this.selectedRowEnumerator();
-	int i = 0;
-	Session session = workdir.getSession().copy();
-	while(enum.hasMoreElements()) {
-	    promisedDragPaths[i] = browserModel.getEntry(((Integer)enum.nextElement()).intValue()).copy(session);
-	    promisedDragPaths[i].setLocal(new java.io.File(dropDestination.getPath(), promisedDragPaths[i].getName()));
-	    promisedDragNames.addObject(promisedDragPaths[i].getName());
-	    i++;
-	}
-	return promisedDragNames;
-//	return new NSArray(new String[]{promisedDragPath.getName()});
-    }
-
         
         // ----------------------------------------------------------
     // BrowserTable delegate methods
@@ -388,6 +333,10 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	    p.rename((String)value);
 	}
 
+	/**
+	    * The files dragged from the browser to the Finder
+	 */
+	private Path[] promisedDragPaths;
 	
     // ----------------------------------------------------------
     // Drop methods
@@ -450,11 +399,7 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	    return true;
 	}
 
-	
-	    // ----------------------------------------------------------
-    // Drag methods
-    // ----------------------------------------------------------
-	
+		
 	/**    Invoked by tableView after it has been determined that a drag should begin, but before the drag has been started.
 	    * The drag image and other drag-related information will be set up and provided by the table view once this call
 	    * returns with true.
@@ -464,18 +409,21 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	    */
 	public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
 	    log.debug("tableViewWriteRowsToPasteboard:"+rows);
+	    Session session = workdir.getSession().copy(); //new
 	    if(rows.count() > 0) {
-		Path[] roots = new Path[rows.count()];
+		this.promisedDragPaths = new Path[rows.count()];
+//		Path[] draggedPaths = new Path[rows.count()];
 		NSMutableArray types = new NSMutableArray();
 		for(int i = 0; i < rows.count(); i++) {
-		    roots[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue());
-		    if(roots[i].isFile()) {
-			if(roots[i].getExtension() != null)
-			    types.addObject(roots[i].getExtension());
+		    promisedDragPaths[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue()).copy(session);
+//		    draggedPaths[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue());
+		    if(promisedDragPaths[i].isFile()) {
+			if(promisedDragPaths[i].getExtension() != null)
+			    types.addObject(promisedDragPaths[i].getExtension());
 			else
 			    types.addObject(NSPathUtilities.FileTypeUnknown);
 		    }
-		    else if(roots[i].isDirectory()) {
+		    else if(promisedDragPaths[i].isDirectory()) {
 			types.addObject("'fldr'");
 		    }
 		    else
@@ -487,13 +435,84 @@ public class CDBrowserTable extends NSTableView implements Observer {
 		NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
 		NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
 
-		CDBrowserTable.this.dragPromisedFilesOfTypes(types, imageRect, CDBrowserTable.this, true, event);
+		CDBrowserTable.this.dragPromisedFilesOfTypes(types, imageRect, this, true, event);
 		
 	    // The types argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
 	    }
+	    // we return false because we don't want the table to draw the drag image
 	    return false;
 	}
 
+
+	        // ----------------------------------------------------------
+    // Drag methods
+    // ----------------------------------------------------------
+
+
+	public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
+	    log.debug("DragOperationCopy:"+NSDraggingInfo.DragOperationCopy);
+	    log.debug("DragOperationLink:"+NSDraggingInfo.DragOperationLink);
+	    log.debug("DragOperationGeneric:"+NSDraggingInfo.DragOperationGeneric);
+	    log.debug("DragOperationPrivate:"+NSDraggingInfo.DragOperationPrivate);
+	    log.debug("DragOperationMove:"+NSDraggingInfo.DragOperationMove);
+	    log.debug("DragOperationDelete:"+NSDraggingInfo.DragOperationDelete);
+	    log.debug("DragOperationEvery:"+NSDraggingInfo.DragOperationEvery);
+	    log.debug("DragOperationAll:"+NSDraggingInfo.DragOperationAll);
+	    log.debug("DragOperationNone:"+NSDraggingInfo.DragOperationNone);
+	    log.debug("finishedDraggingImage:"+operation);
+	    if(! (NSDraggingInfo.DragOperationNone == operation)) {
+		if(promisedDragPaths != null) {
+		    CDTransferController controller = new CDTransferController(promisedDragPaths, Queue.KIND_DOWNLOAD);
+//	    CDTransferController controller = new CDTransferController(this.workdir.getSession().copy(), promisedDragPaths, Queue.KIND_DOWNLOAD);
+		    controller.transfer();
+		    promisedDragPaths = null;
+		}
+	    }
+	}
+
+	public boolean ignoreModifierKeysWhileDragging() {
+	    return false;
+	}
+
+	public int draggingSourceOperationMaskForLocal(boolean local) {
+	    log.debug("draggingSourceOperationMaskForLocal:"+local);
+	    if(local)
+		return NSDraggingInfo.DragOperationNone;
+	    else
+		return NSDraggingInfo.DragOperationCopy;
+//		return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
+	}
+
+	/**
+	    @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
+	 * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+	 * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
+	 * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
+	 * blocking the destination application.
+	 */
+	public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
+	    log.debug("namesOfPromisedFilesDroppedAtDestination:"+dropDestination);
+	    
+//	this.promisedDragPaths = new Path[this.numberOfSelectedRows()];
+	    NSMutableArray promisedDragNames = new NSMutableArray();
+	    for(int i = 0; i < promisedDragPaths.length; i++) {
+		promisedDragPaths[i].setLocal(new java.io.File(dropDestination.getPath(), promisedDragPaths[i].getName()));
+		promisedDragNames.addObject(promisedDragPaths[i].getName());
+	    }
+	    
+//	NSEnumerator enum = this.selectedRowEnumerator();
+//	int i = 0;
+//	Session session = workdir.getSession().copy();
+//	while(enum.hasMoreElements()) {
+//	    promisedDragPaths[i] = browserModel.getEntry(((Integer)enum.nextElement()).intValue()).copy(session);
+//	    promisedDragPaths[i].setLocal(new java.io.File(dropDestination.getPath(), promisedDragPaths[i].getName()));
+//	    promisedDragNames.addObject(promisedDragPaths[i].getName());
+//	    i++;
+//	}
+	    return promisedDragNames;
+	}
+
+	
 
     // ----------------------------------------------------------
     // Data access
