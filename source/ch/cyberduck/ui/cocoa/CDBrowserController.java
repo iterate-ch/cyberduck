@@ -57,13 +57,13 @@ public class CDBrowserController extends NSObject implements Observer {
 
     public static CDBrowserController controllerForWindow(NSWindow window) {
         //2004-02-24 23:01:38.648 Cyberduck[1096] warning: can't find Java class for Objective C class (null).  Returning com/apple/cocoa/foundation/NSObject.
-        Object delegate = window.delegate();
-        if (delegate != null && delegate instanceof CDBrowserController) {
-            return (CDBrowserController)delegate;
-        }
-        else {
-            return null;
-        }
+		if(window.isVisible()) {
+			Object delegate = window.delegate();
+			if (delegate != null && delegate instanceof CDBrowserController) {
+				return (CDBrowserController)delegate;
+			}
+		}
+		return null;
     }
 
     private NSTextView logView;
@@ -238,10 +238,9 @@ public class CDBrowserController extends NSObject implements Observer {
         this.bookmarkTable.setDelegate(this.bookmarkModel);
 
         // receive drag events from types
-        this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]{"BookmarkPboardType",
-                                                                            NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
-                                                                            NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as BookmarkPboardType
-        ));
+        this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]
+															   {NSPasteboard.FilenamesPboardType}
+															   )); //accept bookmark files dragged from the Finder
         this.bookmarkTable.setRowHeight(45f);
 
         NSTableColumn iconColumn = new NSTableColumn();

@@ -102,7 +102,7 @@ public class CDQueueController extends NSObject implements Observer {
 
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose:" + notification);
-        QueueList.instance().save();
+//        QueueList.instance().save();
         instances.removeObject(this);
         instance = null;
     }
@@ -187,7 +187,7 @@ public class CDQueueController extends NSObject implements Observer {
 
     public void startItem(Queue queue, boolean resumeRequested) {
         log.info("Starting item:" + queue);
-        QueueList.instance().save();
+//        QueueList.instance().save();
         this.queueTable.reloadData();
         this.queueTable.selectRow(QueueList.instance().indexOf(queue), false);
         this.queueTable.scrollRowToVisible(QueueList.instance().indexOf(queue));

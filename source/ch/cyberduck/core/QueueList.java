@@ -62,6 +62,7 @@ public abstract class QueueList {
         if (index < this.size()) {
             this.data.remove(index);
         }
+		this.save();
     }
 
     public void removeItem(Queue item) {

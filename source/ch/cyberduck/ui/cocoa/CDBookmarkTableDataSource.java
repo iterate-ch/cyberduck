@@ -74,13 +74,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			}
             return NSDraggingInfo.DragOperationCopy;
         }
-		// Reordering of the elements in the table view is supported
-		// We declare our own pasteboard to hold the data temporarly
-        if (info.draggingPasteboard().availableTypeFromArray(new NSArray("BookmarkPBoardType")) != null) {
-			//tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
-			return NSDraggingInfo.DragOperationMove;
-		}
-        return NSDraggingInfo.DragOperationMove; //@todo remove, fix BookmarkPBoardType dragging
+        return NSDraggingInfo.DragOperationNone;
     }
 
     /**
@@ -125,21 +119,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 					CDQueueController.instance().startItem(q);
 					return true;
                 }
-				return false;
             }
-			if (NSPasteboard.pasteboardWithName("BookmarkPBoard").availableTypeFromArray(new NSArray("BookmarkPBoardType")) != null) {
-				NSArray elements = (NSArray)NSPasteboard.pasteboardWithName("BookmarkPBoard").propertyListForType("BookmarkPBoardType");// get the data from paste board
-				// remove the bookmark item from its old location
-				BookmarkList.instance().removeItem(draggedRow);
-				tableView.reloadData();
-				for (int i = 0; i < elements.count(); i++) {
-					NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-					BookmarkList.instance().addItem(new Host(dict), row);
-				}
-				tableView.reloadData();
-				tableView.selectRow(row, false);
-				return true;
-			}
         }
 		return false;
     }
@@ -169,17 +149,10 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
             this.draggedRow = ((Integer)rows.objectAtIndex(0)).intValue();
             this.promisedDragBookmarks = new Host[rows.count()];
             this.promisedDragBookmarksFiles = new java.io.File[rows.count()];
-            NSMutableArray bookmarkDictionaries = new NSMutableArray();
             for (int i = 0; i < rows.count(); i++) {
                 promisedDragBookmarks[i] = (Host)BookmarkList.instance().getItem(((Integer)rows.objectAtIndex(i)).intValue());
-                bookmarkDictionaries.addObject(promisedDragBookmarks[i].getAsDictionary());
             }
 
-			NSPasteboard bookmarkPBoard = NSPasteboard.pasteboardWithName("BookmarkPBoard");
-            bookmarkPBoard.declareTypes(new NSArray("BookmarkPBoardType"), null);
-            if (bookmarkPBoard.setPropertyListForType(bookmarkDictionaries, "BookmarkPBoardType")) {
-                log.debug("BookmarkPBoardType data sucessfully written to pasteboard");
-            }
 			if(pboard.setStringForType("duck", NSPasteboard.FilesPromisePboardType)) {
 				log.debug("FilesPromisePboardType data sucessfully written to pasteboard");
 			}
@@ -188,8 +161,6 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
 			NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
 			tableView.dragPromisedFilesOfTypes(new NSArray("duck"), imageRect, this, false, event);
-			// We both want a inner drag and a drag to the Finder to succeed
-			return true;
         }
         // we return false because we don't want the table to draw the drag image
         return false;
@@ -216,8 +187,6 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                 log.error(e.getMessage());
             }
         }
-//        promisedDragBookmarks = null;
-//        promisedDragBookmarksFiles = null;
         return promisedDragNames;
     }
 }

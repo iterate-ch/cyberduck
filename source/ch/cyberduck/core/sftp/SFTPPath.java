@@ -107,8 +107,8 @@ public class SFTPPath extends Path {
     public synchronized List list(boolean refresh, boolean showHidden) {
         List files = session.cache().get(this.getAbsolute());
         session.addPathToHistory(this);
-        if (refresh || files.size() == 0) {
-            files.clear();
+        if (refresh || null == files) {
+            files = new ArrayList();
             session.log("Listing " + this.getName(), Message.PROGRESS);
             SftpFile workingDirectory = null;
             try {
@@ -211,7 +211,8 @@ public class SFTPPath extends Path {
             session.check();
             session.log("Make directory " + this.getName(), Message.PROGRESS);
             session.SFTP.makeDirectory(this.getAbsolute());
-            this.getParent().invalidate();
+			this.setCache(new ArrayList());
+            //this.getParent().invalidate();
         }
         catch (SshException e) {
             session.log("SSH Error: " + e.getMessage(), Message.ERROR);

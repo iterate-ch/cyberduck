@@ -63,16 +63,19 @@ public abstract class BookmarkList {
 
     public void addItem(Host item) {
         this.data.add(item);
+		this.save();
     }
 
     public void addItem(Host item, int row) {
         this.data.add(row, item);
+		this.save();
     }
 
     public void removeItem(int index) {
         if (index < this.size()) {
             this.data.remove(index);
         }
+		this.save();
     }
 
     public void removeItem(Host item) {
@@ -84,7 +87,6 @@ public abstract class BookmarkList {
         if (row < this.size()) {
             result = (Host)this.data.get(row);
         }
-		log.debug("getItem:"+row+":"+result);
         return result;
     }
 

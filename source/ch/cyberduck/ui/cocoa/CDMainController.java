@@ -31,11 +31,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.BookmarkList;
-import ch.cyberduck.core.Rendezvous;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.*;
 
 public class CDMainController extends NSObject {
     private static Logger log = Logger.getLogger(CDMainController.class);
@@ -553,7 +549,12 @@ public class CDMainController extends NSObject {
         this.saveVersionInfo();
         //Writing usage info
         Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
+		log.info("Saving Preferences...");
 		Preferences.instance().save();
+		log.info("Saving Bookmarks...");
+		BookmarkList.instance().save();
+		log.info("Saving Queue...");
+		QueueList.instance().save();
 	}
 
     // ----------------------------------------------------------

@@ -22,6 +22,7 @@ import com.apple.cocoa.foundation.NSDictionary;
 
 import java.io.*;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
@@ -123,8 +124,8 @@ public class FTPPath extends Path {
     public synchronized List list(boolean refresh, boolean showHidden) {
         List files = session.cache().get(this.getAbsolute());
         session.addPathToHistory(this);
-        if (refresh || files.size() == 0) {
-            files.clear();
+        if (refresh || null == files) {
+            files = new ArrayList();
             session.log("Listing " + this.getName(), Message.PROGRESS);
             try {
                 session.check();
@@ -185,7 +186,8 @@ public class FTPPath extends Path {
             session.check();
             session.log("Make directory " + this.getName(), Message.PROGRESS);
             session.FTP.mkdir(this.getAbsolute());
-            this.getParent().invalidate();
+			this.setCache(new ArrayList());
+            //this.getParent().invalidate();
         }
         catch (FTPException e) {
 			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
