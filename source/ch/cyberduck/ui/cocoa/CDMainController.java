@@ -471,7 +471,6 @@ public class CDMainController extends NSObject {
 
 	public void newBrowserMenuClicked(Object sender) {
 		CDController c = CDMainController.newDocument(true);
-		c.cascade();
 	}
 
 	public void showTransferQueueClicked(Object sender) {
@@ -620,26 +619,21 @@ public class CDMainController extends NSObject {
 
 	public static CDBrowserController newDocument(boolean force) {
 		log.debug("newDocument");
+		NSArray browsers = CDMainController.orderedBrowsers();
 		if(!force) {
-			NSApplication app = NSApplication.sharedApplication();
-			NSArray orderedWindows = (NSArray)NSKeyValue.valueForKey(app, "orderedWindows");
-			int i, c = orderedWindows.count();
-			NSMutableArray orderedDocs = new NSMutableArray();
-			Object curDelegate;
-			for(i = 0; i < c; i++) {
-				if(((NSWindow)orderedWindows.objectAtIndex(i)).isVisible()) {
-					curDelegate = ((NSWindow)orderedWindows.objectAtIndex(i)).delegate();
-					if((curDelegate != null) && (curDelegate instanceof CDBrowserController)) {
-						CDBrowserController controller = (CDBrowserController)curDelegate;
-						if(!controller.isMounted()) {
-							controller.window().makeKeyAndOrderFront(null);
-							return controller;
-						}
-					}
+			java.util.Enumeration enumerator = browsers.objectEnumerator();
+			while (enumerator.hasMoreElements()) {
+				CDBrowserController controller = (CDBrowserController)enumerator.nextElement(); 
+				if(!controller.isMounted()) {
+					controller.window().makeKeyAndOrderFront(null);
+					return controller;
 				}
 			}
 		}
 		CDBrowserController controller = new CDBrowserController();
+		if(browsers.count() > 0) {
+			controller.cascade();
+		}
 		controller.window().makeKeyAndOrderFront(null);
 		return controller;
 	}
@@ -655,7 +649,7 @@ public class CDMainController extends NSObject {
 		return false;
 	}
 
-	public NSArray orderedBrowsers() {
+	public static NSArray orderedBrowsers() {
 		log.debug("orderedBrowsers");
 		NSApplication app = NSApplication.sharedApplication();
 		NSArray orderedWindows = (NSArray)NSKeyValue.valueForKey(app, "orderedWindows");

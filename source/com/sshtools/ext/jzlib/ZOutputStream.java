@@ -123,5 +123,4 @@ public class ZOutputStream extends OutputStream {
 	public void flush() throws IOException {
 		out.flush();
 	}
-	
 }

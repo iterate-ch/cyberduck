@@ -89,9 +89,6 @@ public abstract class Preferences {
 
 		defaults.put("update.check", "true");
 
-//		defaults.put("sftp.implementation", "j2ssh");
-//		defaults.put("ftp.implementation", "enterprisedt");
-		
 		defaults.put("bookmarkDrawer.isOpen", "false");
 
 		defaults.put("browser.columnIcon", "true");
@@ -103,7 +100,7 @@ public abstract class Preferences {
 		defaults.put("browser.alternatingRows", "false");
 		defaults.put("browser.verticalLines", "false");
 		defaults.put("browser.horizontalLines", "true");
-		defaults.put("browser.confirmQuit", "true");
+		defaults.put("browser.confirmDisconnect", "true");
 		defaults.put("browser.showHidden", "false");
 		defaults.put("browser.charset.encoding", "ISO-8859-1");
 		defaults.put("browser.doubleclick.edit", "false");
