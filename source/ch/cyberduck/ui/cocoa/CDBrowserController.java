@@ -158,12 +158,12 @@ public class CDBrowserController extends CDController implements Observer {
 								   );
 						//window().setDocumentEdited(false);
 					}
-					else if(msg.getTitle().equals(Message.REFRESH)) {
-						refreshButtonClicked(null);
-					}
 					else if(msg.getTitle().equals(Message.PROGRESS)) {
 						statusLabel.setObjectValue(msg.getContent());
 						statusLabel.display();
+					}
+					else if(msg.getTitle().equals(Message.REFRESH)) {
+						refreshButtonClicked(null);
 					}
 					else if(msg.getTitle().equals(Message.OPEN)) {
 						progressIndicator.startAnimation(this);

@@ -509,10 +509,12 @@ public class CDQueueController extends CDController {
 
 	public void deleteButtonClicked(Object sender) {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
-		int i = 0;
 		while(enum.hasMoreElements()) {
-			this.queueModel.removeItem(((Integer)enum.nextElement()).intValue()-i);
-			i++;
+			int i = ((Integer)enum.nextElement()).intValue();
+			Queue queue = this.queueModel.getItem(i);
+			if(!queue.isRunning()) {
+				this.queueModel.removeItem(i);
+			}
 		}
 		this.reloadQueueTable();
 	}
