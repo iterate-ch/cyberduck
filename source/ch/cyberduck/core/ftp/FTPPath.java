@@ -369,9 +369,6 @@ public class FTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			this.download(in, out);
-			if (status.isCanceled()) {
-				this.session.FTP.abor();
-			}
 			if (in != null) {
 				in.close();
 			}
@@ -381,6 +378,9 @@ public class FTPPath extends Path {
 			}
 			if (this.status.isComplete()) {
 				this.session.FTP.validateTransfer();
+			}
+			if (status.isCanceled()) {
+				this.session.FTP.abor();
 			}
 		}
 		catch (FTPException e) {
@@ -424,9 +424,6 @@ public class FTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			this.download(in, out);
-			if (status.isCanceled()) {
-				this.session.FTP.abor();
-			}
 			if (in != null) {
 				in.close();
 			}
@@ -436,6 +433,9 @@ public class FTPPath extends Path {
 			}			
 			if (this.status.isComplete()) {
 				this.session.FTP.validateTransfer();
+			}
+			if (status.isCanceled()) {
+				this.session.FTP.abor();
 			}
 		}
 		catch (FTPException e) {
@@ -521,9 +521,6 @@ public class FTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			this.upload(out, in);
-			if (status.isCanceled()) {
-				this.session.FTP.abor();
-			}
 			if (in != null) {
 				in.close();
 			}
@@ -533,6 +530,9 @@ public class FTPPath extends Path {
 			}
 			if (this.status.isComplete()) {
 				this.session.FTP.validateTransfer();
+			}
+			if (status.isCanceled()) {
+				this.session.FTP.abor();
 			}
 			if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
 				this.changePermissions(this.getLocal().getPermission(), false);
@@ -578,9 +578,6 @@ public class FTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			this.upload(out, in);
-			if (status.isCanceled()) {
-				this.session.FTP.abor();
-			}
 			if (in != null) {
 				in.close();
 			}
@@ -590,6 +587,9 @@ public class FTPPath extends Path {
 			}
 			if (this.status.isComplete()) {
 				this.session.FTP.validateTransfer();
+			}
+			if (status.isCanceled()) {
+				this.session.FTP.abor();
 			}
 			if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
 				this.changePermissions(this.getLocal().getPermission(), false);
