@@ -311,7 +311,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 			return;
 		}
 		if(queue instanceof SyncQueue) {
-			queue.start(new CDSyncValidatorController(this, resumeRequested));
+			queue.start(new CDSyncValidatorController(this));
 			return;
 		}
 		throw new IllegalArgumentException("Unknown queuing action");

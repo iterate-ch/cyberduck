@@ -230,7 +230,8 @@ public abstract class Queue extends Observable implements Observer {
 								  }
 								  );
 		if(this.validator.start()) {
-			for (Iterator i = this.getRoots().iterator(); i.hasNext() && !this.worker.isCanceled(); ) {
+			//@todo move to validator
+			for (Iterator i = this.getRoots().iterator(); i.hasNext(); ) {
 				Path p = (Path)i.next();
 				log.debug("Iterating over childs of " + p);
 				Iterator childs = this.getChilds(new ArrayList(), p).iterator();

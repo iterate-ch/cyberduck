@@ -32,7 +32,7 @@ import java.util.ArrayList;
  */
 public class CDSyncValidatorController extends CDValidatorController {
 
-    public CDSyncValidatorController(CDController windowController, boolean resumeRequested) {
+    public CDSyncValidatorController(CDController windowController) {
         super(windowController, false);
         if (false == NSApplication.loadNibNamed("Sync", this)) {
             log.fatal("Couldn't load Sync.nib");
@@ -128,6 +128,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 	
 	protected boolean validateFile(Path p) {
 		if(!p.modificationDate().equals(p.getLocal().getTimestamp())) {
+			//if(createFilesCheckbox.state() == NSCell.OnState) //@todo
 			if(p.remote.exists()) {
 				this.remoteCandidates.add(p);
 			}
