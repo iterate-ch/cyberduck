@@ -100,13 +100,23 @@
 		<exec executable="gpg" spawn="false">
 			<arg line="-a -o ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.sig --detach-sig ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"/>
 		</exec>
-		<exec executable="md5sum" spawn="false">
-			<arg line="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg > ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5"/>
+		<exec executable="md5sum" spawn="false" output="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5">
+			<arg line="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"/>
 		</exec>
 	</target>
 
 	<target name="scp">
 		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"
+		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/" 
+		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
+		       passphrase="">
+		</scp>
+		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.sig"
+		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/" 
+		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
+		       passphrase="">
+		</scp>
+		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5"
 		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/" 
 		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
 		       passphrase="">
