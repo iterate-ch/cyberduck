@@ -3,6 +3,7 @@ package org.apache.commons.net.ftp.parser;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
+
 import java.util.Hashtable;
 import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
 
@@ -11,11 +12,12 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
     public Path parseFTPEntry(Path parent, String entry) {
         if (!entry.startsWith("+")) return null;
         
-        Path newPath = PathFactory.createPath(parent.getSession());
+        Path f = PathFactory.createPath(parent.getSession());
 
         int indexOfTab = entry.indexOf("\t");
-        if (indexOfTab == -1) return null;
-        
+        if (indexOfTab == -1) {
+			return null;
+        }
         // parse name.
         int startName = indexOfTab + 1;
         String name = entry.substring(startName);
@@ -23,18 +25,15 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
             int i = name.lastIndexOf("\r\n");
             name = name.substring(0, i);
         }
-        if (name.equals(".") || name.equals("..") || name.equals("")) return null;
-        newPath.setPath(parent.getAbsolute(), name);
-        
-        // set some reasonable defaults
-        newPath.attributes.setPermission(new Permission("----------"));
-        newPath.attributes.setOwner("unknown");
-        newPath.attributes.setGroup("unknown");
+		if (null == name || name.equals(".") || name.equals("..")) {
+			return (null);
+		}
+        f.setPath(parent.getAbsolute(), name);
         
         // parse facts.
         int i;
         int endFacts = startName - 2; // first char of name -> tab -> end of last fact.
-        EPLFEntryParserContext factContext = new EPLFEntryParserContext(newPath);
+        EPLFEntryParserContext factContext = new EPLFEntryParserContext(f);
         for (i = 1; i < endFacts; i++) {
             int factEnd = entry.indexOf(",", i);
             String fact = entry.substring(i, factEnd);
@@ -43,9 +42,10 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
         }
         factContext.conclude();
         
-        if (!factContext.hasMayBeRetreivedFact() && !factContext.hasMayCWDToFact()) return null;
-
-        return newPath;
+        if (!factContext.hasMayBeRetreivedFact() && !factContext.hasMayCWDToFact()) {
+			return null;
+		}
+        return f;
     }
 
     private static class EPLFEntryParserContext {
