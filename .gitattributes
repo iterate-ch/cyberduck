@@ -1,4 +1,6 @@
 * text=auto !eol
+/cyberduck-application.icns svneol=native#unset
+/cyberduck-document.icns svneol=native#unset
 /cyberduck.app.icns svneol=native#unset
 /cyberduck.document.icns svneol=native#unset
 img/back.tiff svneol=native#unset

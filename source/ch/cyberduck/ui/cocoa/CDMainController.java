@@ -24,9 +24,19 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.History;
 import ch.cyberduck.core.Favorites;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 
 public class CDMainController {
     private static Logger log = Logger.getLogger(CDMainController.class);
+
+    static {
+	org.apache.log4j.BasicConfigurator.configure();
+	Logger log = Logger.getRootLogger();
+	log.setLevel(Level.OFF);
+//	log.setLevel(Level.WARN);
+//	log.setLevel(Level.DEBUG);
+//	log.setLevel(Level.INFO);
+    }
 
     public void awakeFromNib() {
 	CDBrowserController controller = new CDBrowserController();
@@ -88,8 +98,10 @@ public class CDMainController {
 	switch(sender.state()) {
 	    case NSCell.OnState:
 		Preferences.instance().setProperty("donate", "false");
+		return;
 	    case NSCell.OffState:
 		Preferences.instance().setProperty("donate", "true");
+		return;
 	}
     }
 
@@ -112,8 +124,22 @@ public class CDMainController {
 
     public void closeDonationSheet(NSButton sender) {
 	log.debug("closeDonationSheet");
-//	donationSheet.close();
-	NSApplication.sharedApplication().endSheet(donationSheet, NSAlertPanel.AlternateReturn);
+	/*
+	donationSheet.close();
+	switch(sender.tag()) {
+	    case(NSAlertPanel.DefaultReturn):
+		try {
+		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("donate.url")));
+		}
+		catch(java.net.MalformedURLException e) {
+		    e.printStackTrace();
+		}
+	    case(NSAlertPanel.AlternateReturn):
+		//
+	}
+        NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
+	 */
+	NSApplication.sharedApplication().endSheet(donationSheet, sender.tag());
     }
 
 
@@ -130,8 +156,6 @@ public class CDMainController {
     public void newBrowserMenuClicked(Object sender) {
 	CDBrowserController controller = new CDBrowserController();
 	this.references = references.arrayByAddingObject(controller);
-//	controller.window().setMenu(null);
-//	controller.window().center();
 	controller.window().makeKeyAndOrderFront(null);
     }
 
@@ -140,10 +164,10 @@ public class CDMainController {
     // Application delegate methods
     // ----------------------------------------------------------
 
-    public void applicationDidFinishLaunching (NSNotification notification) {
+//    public void applicationDidFinishLaunching (NSNotification notification) {
         // To get service requests to go to the controller...
 //        NSApplication.sharedApplication().setServicesProvider(this);
-    }
+  //  }
 
 
 //    public boolean applicationOpenFile (NSApplication app, String filename) {
@@ -163,6 +187,7 @@ public class CDMainController {
 	History.instance().save();
 	Favorites.instance().save();
 
+	/*
 	if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
 	    if (false == NSApplication.loadNibNamed("Donate", this)) {
 		log.error("Couldn't load Donate.nib");
@@ -180,6 +205,7 @@ public class CDMainController {
 						  null); //contextInfo
 	    return NSApplication.TerminateLater;
 	}
+	 */
 	return NSApplication.TerminateNow;
     }
 

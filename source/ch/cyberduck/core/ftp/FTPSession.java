@@ -60,46 +60,42 @@ public class FTPSession extends Session {
 	    return parent;
 	}
 	
-	public void list() {
-	    this.list(this.cache() == null);
+	public List list() {
+	    return this.list(null == this.cache());
 	}
 	
 	/**
 	* Request a file listing from the server. Has to be a directory
 	* @param
 	*/
-	public synchronized void list(boolean refresh) {
-	    log.debug("list");
+	public synchronized List list(boolean refresh) {
 	    if(refresh) {
-		new Thread() {
-		    public void run() {
-			try {
-			    FTPSession.this.check();
-			    FTPSession.this.log("Listing "+FTPFile.this.getName(), Message.PROGRESS);
-			    FTP.setType(FTPTransferType.ASCII);
-			    FTP.chdir(FTPFile.this.getAbsolute());
-			    FTPFile.this.setCache(new FTPParser().parseList(FTPFile.this.getAbsolute(), FTP.dir()));
-			    FTPSession.this.callObservers(FTPFile.this);
-			    FTPSession.this.log("Listing complete", Message.PROGRESS);
-			}
-			catch(FTPException e) {
-			    FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
-			}
-			catch(IOException e) {
-			    FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
-			}
-		    }
-		}.start();
+		try {
+		    FTPSession.this.check();
+		    FTPSession.this.log("Listing "+this.getName(), Message.PROGRESS);
+		    FTP.setType(FTPTransferType.ASCII);
+		    FTP.chdir(FTPFile.this.getAbsolute());
+		    this.setCache(new FTPParser().parseList(this.getAbsolute(), FTP.dir()));
+		    FTPSession.this.callObservers(this);
+		    FTPSession.this.log("Listing complete", Message.PROGRESS);
+		}
+		catch(FTPException e) {
+		    FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+		    FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
 	    }
 	    else {
 		FTPSession.this.callObservers(FTPFile.this);
 	    }
+	    return this.cache();
 	}	
 
 	public synchronized void delete() {
 	    log.debug("delete");
 	    try {
-		FTPSession.this.check();
+		//FTPSession.this.check();
 		if(this.isDirectory()) {
 		    FTP.chdir(this.getAbsolute());
 		    List files = new FTPParser().parseList(this.getAbsolute(), FTP.dir());
@@ -273,6 +269,7 @@ public class FTPSession extends Session {
     }
 
     public synchronized void close() {
+	this.callObservers(new Message(Message.CLOSE, "Closing session."));
 	try {
 	    if(FTP != null) {
 		this.log("Disconnecting...", Message.PROGRESS);

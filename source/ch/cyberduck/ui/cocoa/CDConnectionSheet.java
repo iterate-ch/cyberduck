@@ -155,11 +155,10 @@ public class CDConnectionSheet {
 	urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostField.stringValue()+":"+portField.stringValue());
     }
 
-
-    public void closeSheet(Object sender) {
+    public void closeSheet(NSButton sender) {
 	log.debug("closeSheet");
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-	NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
+	NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
     
     public void connectionSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {

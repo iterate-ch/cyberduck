@@ -120,21 +120,19 @@ public abstract class Path {// extends Observable {
     
 
     public List cache() {
-	log.debug("cache");
 	return this.cache;
     }
 
     public void setCache(List files) {
-	log.debug("setCache");
 	this.cache = files;
     }
     
     /**
     * @param refresh Refetch the list from the server
     */
-    public abstract void list(boolean refresh);
+    public abstract List list(boolean refresh);
 
-    public abstract void list();
+    public abstract List list();
 
     public abstract void delete();
 

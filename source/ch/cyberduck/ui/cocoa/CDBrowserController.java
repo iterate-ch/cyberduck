@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
 import java.util.Observer;
 import java.util.Observable;
 import com.sshtools.j2ssh.transport.InvalidHostFileException;
@@ -40,15 +39,6 @@ import ch.cyberduck.core.Path;
 */
 public class CDBrowserController implements Observer {
     private static Logger log = Logger.getLogger(CDBrowserController.class);
-
-    static {
-	org.apache.log4j.BasicConfigurator.configure();
-	Logger log = Logger.getRootLogger();
-	log.setLevel(Level.OFF);
-	log.setLevel(Level.WARN);
-	log.setLevel(Level.DEBUG);
-	log.setLevel(Level.INFO);
-    }
     
     // ----------------------------------------------------------
     // Outlets
@@ -60,10 +50,17 @@ public class CDBrowserController implements Observer {
 //	this.mainWindow.setDelegate(this);
     }
 
-    private CDBrowserView browserTable; // IBOutlet
-    public void setBrowserTable(CDBrowserView browserTable) {
+//    private CDBrowserView browserTable; // IBOutlet
+//    public void setBrowserTable(CDBrowserView browserTable) {
+//	this.browserTable = browserTable;
+  //  }
+
+    private NSTableView browserTable; // IBOutlet
+    public void setBrowserTable(NSTableView browserTable) {
 	this.browserTable = browserTable;
     }
+
+    private CDBrowserTableDataSource model;
     
     private NSTextField quickConnectField; // IBOutlet
     public void setQuickConnectField(NSTextField quickConnectField) {
@@ -119,19 +116,79 @@ public class CDBrowserController implements Observer {
     }
 
     private void init() {
-	log.debug("innit");
+	log.debug("init");
 
-	this.pathController = new CDPathController(pathPopup);
-	this.connectionSheet = new CDConnectionSheet(this);
+	browserTable.setDataSource(model = new CDBrowserTableDataSource());
+	browserTable.setDelegate(this);
+	browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
+	browserTable.setTarget(this);
+	browserTable.setDrawsGrid(false);
+	browserTable.setAutoresizesAllColumnsToFit(true);
+	browserTable.setDoubleAction(new NSSelector("browserRowClicked", new Class[] {Object.class}));
+	browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
+	browserTable.setIndicatorImage(NSImage.imageNamed("NSAscendingSortIndicator"), browserTable.tableColumnWithIdentifier("FILENAME"));
+
+
+	pathController = new CDPathController(pathPopup);
+	connectionSheet = new CDConnectionSheet(this);
 
 	this.setupToolbar();
     }
 
+    // ----------------------------------------------------------
+    // BrowserTable delegate methods
+    // ----------------------------------------------------------
+    
+    public void browserRowClicked(Object sender) {
+	log.debug("browserRowClicked");
+        Path p = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.clickedRow());
+	if(p.isFile()) {
+	    CDTransferController controller = new CDTransferController(p);
+	    controller.download();
+	}
+	if(p.isDirectory())
+	    p.list();
+    }
+
+    private static final NSColor TABLE_CELL_SHADED_COLOR = NSColor.colorWithCalibratedRGB(0.929f, 0.953f, 0.996f, 1.0f);
+
+    public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
+	if(cell instanceof NSTextFieldCell) {
+	    if (! (view == null || cell == null || column == null)) {
+		if (row % 2 == 0) {
+		    ((NSTextFieldCell)cell).setDrawsBackground(true);
+		    ((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
+		}
+		else
+		    ((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
+	    }
+	}
+    }
+
+    /**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
+	* The delegate can implement this method to disallow selection of particular rows.
+	*/
+    public  boolean tableViewShouldSelectRow( NSTableView aTableView, int rowIndex) {
+	return true;
+    }
+
+
+    /**	Returns true to permit aTableView to edit the cell at rowIndex in aTableColumn, false to deny permission.
+	*The delegate can implemen this method to disallow editing of specific cells.
+	*/
+    public boolean tableViewShouldEditLocation( NSTableView view, NSTableColumn tableColumn, int row) {
+        String identifier = (String)tableColumn.identifier();
+//	if(identifier.equals("FILENAME"))
+//	    return true;
+	return false;
+    }
+    
+
+    //----------------------
     
     public void finalize() throws Throwable {
 	super.finalize();
 	log.debug("finalize");
-//	toolbar.setDelegate(null);
     }
 
     public NSWindow window() {
@@ -139,10 +196,6 @@ public class CDBrowserController implements Observer {
     }
 
 
-    public String windowNibName() {
-        return "Browser";
-    }
-    
     public void update(Observable o, Object arg) {
 	log.debug("update:"+o+","+arg);
 	if(o instanceof Session) {
@@ -167,18 +220,37 @@ public class CDBrowserController implements Observer {
 		    statusLabel.setStringValue(msg.getDescription());
 		}
 		// update status label
-		if(msg.getTitle().equals(Message.PROGRESS)) {
+		else if(msg.getTitle().equals(Message.PROGRESS)) {
 		    statusLabel.setStringValue(msg.getDescription());
 		}
-		if(msg.getTitle().equals(Message.TRANSCRIPT)) {
+		else if(msg.getTitle().equals(Message.TRANSCRIPT)) {
 		    statusLabel.setStringValue(msg.getDescription());
 		}
-		if(msg.getTitle().equals(Message.OPEN)) {
+		else if(msg.getTitle().equals(Message.OPEN)) {
+		    ((CDBrowserTableDataSource)browserTable.dataSource()).clear();
+		    browserTable.reloadData();
+
 		    progressIndicator.startAnimation(this);
 		    mainWindow.setTitle(host.getName());
 		    History.instance().add(host);
 		}
+		else if(msg.getTitle().equals(Message.CLOSE)) {
+		    ((CDBrowserTableDataSource)browserTable.dataSource()).clear();
+		    browserTable.reloadData();
+
+		    progressIndicator.stopAnimation(this);
+		}
 	    }
+	    if(arg instanceof Path) {
+		java.util.List cache = ((Path)arg).cache();
+		java.util.Iterator i = cache.iterator();
+//		log.debug("List size:"+cache.size());
+		((CDBrowserTableDataSource)browserTable.dataSource()).clear();
+		while(i.hasNext()) {
+		    ((CDBrowserTableDataSource)browserTable.dataSource()).addEntry(i.next());
+		}
+		browserTable.reloadData();
+	    }	    
 	}
     }
     
@@ -331,7 +403,7 @@ public class CDBrowserController implements Observer {
 	Session session = host.getSession();
 	
 	session.addObserver((Observer)this);
-	session.addObserver((Observer)browserTable);
+//	session.addObserver((Observer)browserTable);
 	session.addObserver((Observer)pathController);
 
 	session.mount();
@@ -603,7 +675,9 @@ public class CDBrowserController implements Observer {
     public void closeSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	// if multi window app only close the one window with main.close()
 	sheet.orderOut(null);
-	if(returncode == NSAlertPanel.DefaultReturn)
+	if(returncode == NSAlertPanel.DefaultReturn) {
 	    this.unmount(host);
+	    this.window().close();
+	}
     }
 }

@@ -69,12 +69,14 @@ public class HTTPSession extends Session {
             return parent;
         }
 
-        public void list(boolean refresh) {
+        public List list(boolean refresh) {
             HTTPSession.this.log("Invalid Operation", Message.ERROR);
+	    return null;
         }
 
-        public void list() {
+        public List list() {
             HTTPSession.this.log("Invalid Operation", Message.ERROR);
+	    return null;
         }
 	
         public void delete() {
@@ -234,6 +236,7 @@ public class HTTPSession extends Session {
     }
 
     public void close() {
+	this.callObservers(new Message(Message.CLOSE, "Closing session."));
 	try {
 	    HTTP.quit();
 	}

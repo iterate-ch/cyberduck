@@ -70,7 +70,7 @@ public class Transcript {
      * Inform all the concrete listeners about
      * @param text The information to pass to the listeners
       */
-     public void transcript(String text) {
+     public synchronized void transcript(String text) {
 //	 log.debug("transcript:"+text);
 	 Iterator i = listeners.iterator();
 	 while(i.hasNext()) {

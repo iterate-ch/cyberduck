@@ -64,6 +64,7 @@ public class CDTransferController implements Observer {
     private NSProgressIndicator progressBar;
     public void setProgressField(NSProgressIndicator progressBar) {
 	this.progressBar = progressBar;
+	this.progressBar.setIndeterminate(true);
 	this.progressBar.setUsesThreadedAnimation(true);
     }
 
@@ -144,8 +145,7 @@ public class CDTransferController implements Observer {
 		}
 		if(msg.getTitle().equals(Message.START)) {
 		    this.resumeButton.setTitle("Resume");
-		    this.progressBar.setIndeterminate(true);
-		    this.progressBar.animate(null);
+		    this.progressBar.startAnimation(null);
 		    return;
 		}
 		if(msg.getTitle().equals(Message.STOP)) {
@@ -195,7 +195,7 @@ public class CDTransferController implements Observer {
 	this.file.status.setCanceled(true);
     }
 
-    public boolean windowShouldClose(NSWindow sender) {
+    public boolean windowShouldClose(Object sender) {
 	if(!this.file.status.isStopped()) {
 	    NSAlertPanel.beginCriticalAlertSheet(
 					       "Cancel transfer?", //title

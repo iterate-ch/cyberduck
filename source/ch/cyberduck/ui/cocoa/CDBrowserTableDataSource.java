@@ -108,7 +108,7 @@ public class CDBrowserTableDataSource implements NSTableView.DataSource {
 	NSPasteboard pasteboard = info.draggingPasteboard();
 	// What type of data are we going to allow to be dragged?  The pasteboard
  // might contain different formats
-	NSArray formats = new NSArray(NSPasteboard.FileContentsPboardType);
+	NSArray formats = new NSArray(NSPasteboard.FilenamesPboardType);
 
 	// find the best match of the types we'll accept and what's actually on the pasteboard
 	// In the file format type that we're working with, get all data on the pasteboard
@@ -117,7 +117,7 @@ public class CDBrowserTableDataSource implements NSTableView.DataSource {
 	for(i = 0; i < filesList.count(); i++) {
 	    log.debug(filesList.objectAtIndex(i));
 	    
-	    
+	    //@todo
 	    //data.addEntry(fileseList.objectAtIndex(i), row+i);
 	}
 	tableView.reloadData();
@@ -137,9 +137,11 @@ public class CDBrowserTableDataSource implements NSTableView.DataSource {
     public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
 	if(rows.count() > 1)
 	    return false;
-//	Path p = this.getEntry(rows.objectAtIndex(rows.count()-1));
+	//@todo
+//	Path p = (Path)this.getEntry(((Integer)rows.objectAtIndex(0)).intValue());
+//	pboard.declareTypes(new NSArray(NSPasteboard.FilenamesPboardType), null);
+//	pboard.setStringForType(p.getLocal().toString(), NSPasteboard.FilenamesPboardType);
 	return true;
-	
     }
 
 	
