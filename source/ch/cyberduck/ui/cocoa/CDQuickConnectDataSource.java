@@ -27,20 +27,18 @@ import com.apple.cocoa.application.NSTableView;
 /**
 * @version $Id$
  */
-public class CDQuickConnectDataSource { //implements NSComboBox.DataSource {
-	
-	private CDHistoryImpl history = CDHistoryImpl.instance();
-	
+public class CDQuickConnectDataSource { //implements NSComboBox.DataSource, NSTableView.DataSource {
+		
     // ----------------------------------------------------------
     // NSComboBox.DataSource
     // ----------------------------------------------------------
 	
     public int numberOfItemsInComboBox(NSComboBox combo) {
-		return history.size();
+		return CDHistoryImpl.instance().size();
     }
 	
     public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-		Host h = (Host)history.values().toArray()[row];
+		Host h = (Host)CDHistoryImpl.instance().values().toArray()[row];
 		return h.getHostname();
     }
     
@@ -49,14 +47,14 @@ public class CDQuickConnectDataSource { //implements NSComboBox.DataSource {
     // ----------------------------------------------------------
 	
     public int numberOfRowsInTableView(NSTableView tableView) {
-		return history.values().size();
+		return CDHistoryImpl.instance().values().size();
     }
     
     //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 		String identifier = (String)tableColumn.identifier();
 		if(identifier.equals("URL")) {
-			Host h = (Host)history.values().toArray()[row];
+			Host h = (Host)CDHistoryImpl.instance().values().toArray()[row];
 			return h.getHostname();
 		}
 		throw new IllegalArgumentException("Unknown identifier: "+identifier);

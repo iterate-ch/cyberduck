@@ -441,15 +441,17 @@ public class CDPreferencesController {
 		NSNotificationCenter.defaultCenter().addObserver(
 												   this,
 												   new NSSelector("historyFieldDidChange", new Class[]{NSNotification.class}),
-												   NSControl.ControlTextDidChangeNotification,
+												   NSControl.ControlTextDidEndEditingNotification,
 												   this.historyField);
     }
 	
     public void historyFieldDidChange(NSNotification sender) {
-		int size = Integer.parseInt(this.historyField.stringValue());
-		Preferences.instance().setProperty("history.size", size);
-		while(CDHistoryImpl.instance().size() > size) {
-			CDHistoryImpl.instance().removeItem(CDHistoryImpl.instance().size()-1);//@todo bug
+		if(this.historyField.stringValue() != null && !this.historyField.stringValue().equals("")) {
+			int size = Integer.parseInt(this.historyField.stringValue());
+			Preferences.instance().setProperty("history.size", size);
+			while(CDHistoryImpl.instance().size() > size) {
+				CDHistoryImpl.instance().removeItem(CDHistoryImpl.instance().size()-1);
+			}
 		}
     }
 

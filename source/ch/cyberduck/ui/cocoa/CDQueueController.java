@@ -68,7 +68,14 @@ public class CDQueueController implements Observer, Validator {
 		this.queueTable.setDataSource(this.queueModel = new CDQueueTableDataSource());
 		this.queueTable.setDelegate(this.queueModel);
 		// receive drag events from types
-		this.queueTable.registerForDraggedTypes(new NSArray("QueuePBoardType"));
+		// in fact we are not interested in file promises, but because the browser model can only initiate
+		// a drag with tableView.dragPromisedFilesOfTypes(), we listens for those events
+		// and then use the private pasteboard instead.
+		this.queueTable.registerForDraggedTypes(new NSArray(
+															new Object[]{"QueuePBoardType", 
+																NSPasteboard.FilesPromisePboardType}
+															)
+												);
 
 		this.queueTable.setRowHeight(50f);
 

@@ -62,7 +62,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
  // ----------------------------------------------------------
 
 	public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-		log.debug("tableViewValidateDrop");
+		log.debug("tableViewValidateDrop:row:"+row+",operation:"+operation);
 		NSPasteboard pboard = info.draggingPasteboard();
 //		NSArray formats = new NSArray(NSPasteboard.FilenamesPboardType);
 //		NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
@@ -94,7 +94,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
      * incorporate the data from the dragging pasteboard at this time.
      */
     public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-		log.debug("tableViewAcceptDrop:"+row+","+operation);
+		log.debug("tableViewAcceptDrop:row:"+row+",operation:"+operation);
 		NSPasteboard pboard = info.draggingPasteboard();
 		// What type of data are we going to allow to be dragged?  The pasteboard might contain different formats
 //		NSArray formats = new NSArray(NSPasteboard.FilenamesPboardType);
@@ -187,7 +187,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
     }
 	
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
-		log.debug("finishedDraggingImage:"+operation);
+		log.debug("finishedDraggingImage:operation:"+operation);
 		if(! (NSDraggingInfo.DragOperationNone == operation)) {
 			if(promisedDragBookmarks != null) {
 				for(int i = 0; i < promisedDragBookmarks.length; i++) {

@@ -56,9 +56,16 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 	// ----------------------------------------------------------
 	
 	public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-		log.debug("tableViewValidateDrop");
-		// means the drag operation can be desided by the destination
-		return NSDraggingInfo.DragOperationGeneric;
+		log.debug("tableViewValidateDrop:row:"+row+",operation:"+operation);
+		NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+		if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+			log.debug("tableViewValidateDrop:DragOperationGeneric");
+			// means the drag operation can be desided by the table view
+			// the tableview will draw rectangles or lines
+			return NSDraggingInfo.DragOperationGeneric;
+		}
+		log.debug("tableViewValidateDrop:DragOperationNone");
+		return NSDraggingInfo.DragOperationNone;
 	}
 	
 	/**
@@ -69,12 +76,12 @@ public class CDQueueTableDataSource extends CDTableDataSource {
      * incorporate the data from the dragging pasteboard at this time.
      */
     public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-		log.debug("tableViewAcceptDrop:"+row+","+operation);
-		NSPasteboard pboard = info.draggingPasteboard();
-		log.debug("availableTypeFromArray:"+pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
+		log.debug("tableViewAcceptDrop:row:"+row+",operation:"+operation);
+		// we are only interested in our private pasteboard with a description of the queue
+		// encoded in as a xml.
+		NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+		log.debug("availableTypeFromArray:QueuePBoardType: "+pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
 		if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-			// test to see if the string for the type we defined in the paste board.
-			// if doesn't, do nothing.
 			Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
 			log.debug("tableViewAcceptDrop:"+o);
 			if(o != null) {
@@ -94,9 +101,6 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 				return true;
 			}
 		}
-//		else if(pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
-//			NSArray queueElements = info.namesOfPromisedFilesDroppedAtDestination(null);
-//		}
 		return false;
 	}
 }

@@ -54,7 +54,9 @@ public class CDBrowserController implements Observer {
 		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
 		this.browserTable.setDelegate(this.browserModel);
 		// receive drag events from types
-		this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType, "BookmarkPboardType"));
+		this.browserTable.registerForDraggedTypes(new NSArray(new Object[]{
+			NSPasteboard.FilenamesPboardType, 
+			"BookmarkPboardType"}));
 		this.browserTable.setRowHeight(17f);
 		
 		// setting appearance attributes
@@ -275,10 +277,10 @@ public class CDBrowserController implements Observer {
 	public void quickConnectSelectionChanged(Object sender) {
 		log.debug("quickConnectSelectionChanged");
 		String input = ((NSControl)sender).stringValue();
-		if(input.equals("Clear")) {
-			CDHistoryImpl.instance().clear();
-			this.quickConnectPopup.reloadData();
-		}
+//		if(input.equals("Clear")) {
+//			CDHistoryImpl.instance().clear();
+//			this.quickConnectPopup.reloadData();
+//		}
 		Host host = CDHistoryImpl.instance().getItem(input);
 		if(null == host) {
 			int index;

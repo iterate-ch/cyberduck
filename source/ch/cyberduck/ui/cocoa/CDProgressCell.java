@@ -69,9 +69,10 @@ public class CDProgressCell extends CDTableCell {
 		NSGraphics.drawAttributedString(
 										new NSAttributedString((int)(progress*100)+"%"
 															   +" - "+
-															   queue.getCurrentAsString()
-															   +" of "+
-															   queue.getSizeAsString(),
+															   queue.getProgress(),
+//															   queue.getCurrentAsString()
+//															   +" of "+
+//															   queue.getSizeAsString(),
 															   normalFont),
 										new NSRect(cellPoint.x()+SPACE, 
 												   cellPoint.y()+cellSize.height()/2-PROGRESS_HEIGHT/2-10-SPACE, 

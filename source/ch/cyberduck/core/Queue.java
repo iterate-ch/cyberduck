@@ -316,6 +316,14 @@ public class Queue extends Observable implements Observer { //Thread {
 		+" "+this.status;
 	}
 	
+	public String getProgress() {
+		if(this.getCurrentAsString() != null && this.getSizeAsString() != null)
+			return this.getCurrentAsString()
+				+" of "+
+				this.getSizeAsString();
+		return "";
+	}
+		
     /**
 		* @return The cummulative file size of all files remaining in the this
      */
@@ -339,7 +347,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	public String getSizeAsString() {
 		if(this.getSize() != -1) //@todo performance
 			return Status.getSizeAsString(this.getSize());
-		return "";
+		return null;
     }
 	
 	/**
@@ -365,7 +373,7 @@ public class Queue extends Observable implements Observer { //Thread {
     public String getCurrentAsString() {
 		if(this.getCurrent() != -1) //@todo performance
 			return Status.getSizeAsString(this.getCurrent());
-		return "";
+		return null;
     }
 	
     /**

@@ -108,6 +108,8 @@ public class Login {
 	}
 	
     public boolean hasReasonableValues() {
+		if(this.usesPublicKeyAuthentication())
+			return true;
 		if(this.user != null && this.pass != null) {
 			// anonymous login is ok
 			if(this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name")) && this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass")))

@@ -119,9 +119,12 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 																		  * feedback when inserting into a sorted position).
      */
     public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-		log.debug("tableViewValidateDrop");
-		tableView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-		return NSTableView.DropAbove;
+		log.debug("tableViewValidateDrop:row:"+row+",operation:"+operation);
+		if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+			tableView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+			return NSTableView.DropAbove;
+		}
+		return NSDraggingInfo.DragOperationNone;
     }
     
     /**
@@ -132,7 +135,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
      * incorporate the data from the dragging pasteboard at this time.
      */
     public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-		log.debug("tableViewAcceptDrop:"+row+","+operation);
+		log.debug("tableViewAcceptDrop:row:"+row+",operation:"+operation);
 		NSPasteboard pboard = info.draggingPasteboard();
 		// What type of data are we going to allow to be dragged?  The pasteboard might contain different formats
 		if(pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
@@ -181,9 +184,9 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			NSMutableArray types = new NSMutableArray();
 			NSMutableArray queues = new NSMutableArray();
 			// declare our dragged type in the paste board
-			pboard.declareTypes(new NSArray(
-											new Object[]{"QueuePBoardType", NSPasteboard.FilesPromisePboardType}),
-								null);
+//			pboard.declareTypes(new NSArray(new Object[]{"QueuePBoardType", 
+//												NSPasteboard.FilesPromisePboardType}), null);
+			pboard.declareTypes(new NSArray(NSPasteboard.FilesPromisePboardType), null);
 			for(int i = 0; i < rows.count(); i++) {
 				Session session = this.workdir().getSession().copy();
 				promisedDragPaths[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue()).copy(session);
@@ -204,40 +207,41 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 				else
 					types.addObject(NSPathUtilities.FileTypeUnknown);
 			}
-			if(pboard.setPropertyListForType(queues, "QueuePBoardType"))
-				log.debug("QueuePBoardType data sucessfully written to pasteboard");
-			else
-				log.error("Could not write QueuePBoardType data to pasteboard");
 			if(pboard.setPropertyListForType(types, NSPasteboard.FilesPromisePboardType))
 				log.debug("FilesPromisePboardType data sucessfully written to pasteboard");
 			else
 				log.error("Could not write FilenamesPboardType data to pasteboard");
+
+			NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+			queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
+			if(queuePboard.setPropertyListForType(queues, "QueuePBoardType"))
+				log.debug("QueuePBoardType data sucessfully written to pasteboard");
+			else
+				log.error("Could not write QueuePBoardType data to pasteboard");
 			
-/*			NSEvent event = NSApplication.sharedApplication().currentEvent();
+			NSEvent event = NSApplication.sharedApplication().currentEvent();
 			NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
 			NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
 			
 			tableView.dragPromisedFilesOfTypes(types, imageRect, this, true, event);
-			*/
-			return true;
 		}
 		// we return false because we don't want the table to draw the drag image
 		return false;
     }
 
 	
-    public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
-		log.debug("finishedDraggingImage:"+operation);
-		if(! (NSDraggingInfo.DragOperationNone == operation)) {
-			if(promisedDragPaths != null) {
-				for(int i = 0; i < promisedDragPaths.length; i++) {
-					CDQueueController.instance().addItemAndStart(new Queue(promisedDragPaths[i], 
-																	   Queue.KIND_DOWNLOAD));
-				}
-				promisedDragPaths = null;
-			}
-		}
-    }
+//    public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
+//		log.debug("finishedDraggingImage:operation"+operation);
+//		if(! (NSDraggingInfo.DragOperationNone == operation)) {
+//			if(promisedDragPaths != null) {
+//				for(int i = 0; i < promisedDragPaths.length; i++) {
+//					CDQueueController.instance().addItemAndStart(new Queue(promisedDragPaths[i], 
+//																	   Queue.KIND_DOWNLOAD));
+//				}
+//				promisedDragPaths = null;
+//			}
+//		}
+//    }
     
     /**
 		@return the names (not full paths) of the files that the receiver promises to create at dropDestination.
@@ -256,13 +260,16 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			for(int i = 0; i < promisedDragPaths.length; i++) {
 				try {
 					//@todo url decoding still needed?
-					promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), Codec.encode(promisedDragPaths[i].getName())));
-					promisedDragNames.addObject(Codec.encode(promisedDragPaths[i].getName()));
+					this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), Codec.encode(this.promisedDragPaths[i].getName())));
+					CDQueueController.instance().addItemAndStart(new Queue(this.promisedDragPaths[i], 
+																		   Queue.KIND_DOWNLOAD));
+					promisedDragNames.addObject(Codec.encode(this.promisedDragPaths[i].getName()));
 				}
 				catch(java.io.UnsupportedEncodingException e) {
 					log.error(e.getMessage());	
 				}
 			}
+			this.promisedDragPaths = null;
 			return promisedDragNames;
 		}
     }
