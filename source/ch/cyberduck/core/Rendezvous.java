@@ -33,7 +33,10 @@ import org.apache.log4j.Logger;
 public class Rendezvous extends Observable implements ServiceListener {
 	private static Logger log = Logger.getLogger(Rendezvous.class);
 
-	private static final String[] serviceTypes = new String[]{"_sftp._tcp.local.", "_ftp._tcp.local.", "_ssh._tcp.local."};
+	private static final String[] serviceTypes = new String[]{
+		"_sftp._tcp.local.", 
+		"_ftp._tcp.local.", 
+		"_ssh._tcp.local."};
 
 	private Map services;
 	private JmDNS jmDNS;
@@ -44,6 +47,7 @@ public class Rendezvous extends Observable implements ServiceListener {
 	}
 
 	public void init() {
+		log.debug("init");
 		try {
 			for (int i = 0; i < serviceTypes.length; i++) {
 				this.jmDNS = new JmDNS();
@@ -58,7 +62,8 @@ public class Rendezvous extends Observable implements ServiceListener {
 
 	public void quit() {
 		log.info("Removing Rendezvous service listener");
-		this.jmDNS.removeServiceListener(this);
+		if(this.jmDNS != null)
+			this.jmDNS.removeServiceListener(this);
 	}
 
 //    public static Rendezvous instance() {

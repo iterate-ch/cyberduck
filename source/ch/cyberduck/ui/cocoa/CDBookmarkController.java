@@ -32,8 +32,8 @@ import org.apache.log4j.Logger;
 public class CDBookmarkController {
 	private static Logger log = Logger.getLogger(CDBookmarkController.class);
 
-	private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)");
-	private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)");
+	private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)", "");
+	private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
 
 	private Host host;
 
@@ -155,7 +155,7 @@ public class CDBookmarkController {
 
 	public void setPkLabel(NSTextField pkLabel) {
 		this.pkLabel = pkLabel;
-		this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected"));
+		this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
 	}
 
 	private NSButton pkCheckbox;
@@ -168,7 +168,7 @@ public class CDBookmarkController {
 
 	public void pkCheckboxSelectionChanged(Object sender) {
 		log.debug("pkCheckboxSelectionChanged");
-		if (this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected"))) {
+		if (this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
 			NSOpenPanel panel = new NSOpenPanel();
 			panel.setCanChooseDirectories(false);
 			panel.setCanChooseFiles(true);
@@ -177,7 +177,7 @@ public class CDBookmarkController {
 		}
 		else {
 			this.pkCheckbox.setState(NSCell.OffState);
-			this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected"));
+			this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
 		}
 	}
 
@@ -200,7 +200,7 @@ public class CDBookmarkController {
 				{
 					this.host.getLogin().setPrivateKeyFile(null);
 					this.pkCheckbox.setState(NSCell.OffState);
-					this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected"));
+					this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
 					break;
 				}
 		}
@@ -245,7 +245,7 @@ public class CDBookmarkController {
 		}
 		else {
 			this.pkCheckbox.setState(NSCell.OffState);
-			this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected"));
+			this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
 		}
 	}
 

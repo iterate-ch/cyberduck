@@ -144,9 +144,9 @@ public class SFTPSession extends Session {
 
 	private synchronized void login() throws IOException {
 		log.debug("login");
-		if (!host.getLogin().hasReasonableValues()) {
-			host.getLogin().getController().loginFailure("The username or password is not reasonable.");
-		}
+//@todo		if (!host.getLogin().hasReasonableValues()) {
+//			host.getLogin().getController().loginFailure("The username or password is not reasonable.");
+//		}
 		this.log("Authenticating as '" + host.getLogin().getUsername() + "'", Message.PROGRESS);
 		if (host.getLogin().usesPasswordAuthentication()) {// password authentication
 			PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
@@ -158,7 +158,7 @@ public class SFTPSession extends Session {
 			//	this.log(SSH.getAuthenticationBanner(100), Message.TRANSCRIPT);
 // Evaluate the result
 			if (AuthenticationProtocolState.COMPLETE == result) {
-				this.log("Login sucessfull", Message.PROGRESS);
+				this.log("Login successfull", Message.PROGRESS);
 			}
 			else {
 				this.log("Login failed", Message.PROGRESS);

@@ -118,14 +118,12 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 	public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 		log.debug("tableViewAcceptDrop:row:" + row + ",operation:" + operation);
 		NSPasteboard pboard = info.draggingPasteboard();
-		// What type of data are we going to allow to be dragged?  The pasteboard might contain different formats
 		if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
 			Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
 			log.debug("tableViewAcceptDrop:" + o);
 			if (o != null) {
 				if (o instanceof NSArray) {
 					NSArray filesList = (NSArray) o;
-					//					NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
 					for (int i = 0; i < filesList.count(); i++) {
 						Session session = this.workdir().getSession().copy();
 						log.debug(filesList.objectAtIndex(i));

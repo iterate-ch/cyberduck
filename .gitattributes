@@ -16,7 +16,7 @@ de.lproj/Folder.strings svneol=native#unset
 de.lproj/Goto.strings svneol=native#unset
 de.lproj/Info.strings svneol=native#unset
 de.lproj/InfoPlist.strings -text
-de.lproj/Localizable.strings -text svneol=unset#application/octet-stream
+de.lproj/Localizable.strings -text
 de.lproj/Login.strings svneol=native#unset
 de.lproj/Main.strings svneol=native#unset
 de.lproj/Preferences.strings svneol=native#unset
@@ -142,7 +142,7 @@ nl.lproj/Folder.strings svneol=native#unset
 nl.lproj/Goto.strings svneol=native#unset
 nl.lproj/Info.strings svneol=native#unset
 nl.lproj/InfoPlist.strings -text
-nl.lproj/Localizable.strings -text svneol=unset#application/octet-stream
+nl.lproj/Localizable.strings -text
 nl.lproj/Login.strings svneol=native#unset
 nl.lproj/Main.strings svneol=native#unset
 nl.lproj/Preferences.strings svneol=native#unset

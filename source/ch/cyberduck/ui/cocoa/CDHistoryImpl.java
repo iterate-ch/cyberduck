@@ -48,11 +48,6 @@ public class CDHistoryImpl extends History {
 		return instance;
 	}
 
-	protected void finalize() throws Throwable {
-		super.finalize();
-		this.save();
-	}
-
 	public void load() {
 		this.load(HISTORY_FILE);
 	}

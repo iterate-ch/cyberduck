@@ -20,7 +20,23 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.LoginController;
 
+import org.apache.log4j.Logger;
+
 public class Login {
+	private static Logger log = Logger.getLogger(Login.class);
+
+	static {
+        // Ensure native keychain library is loaded
+        System.loadLibrary("Keychain");
+    }
+	
+	//char *getpwdfromkeychain( const char *service, const char *account, OSStatus *error );
+    native String getPasswordFromKeychain(String service, String account);
+	
+	//void addpwdtokeychain( const char *service, const char *account, const char *password );
+	native void addPasswordToKeychain(String service, String account, String password);
+	
+	private String service;
 	private String user;
 	private transient String pass;
 	private LoginController controller;
@@ -28,40 +44,21 @@ public class Login {
 
 	/**
 	 * New instance with default values. Anonymous login.
+	 * @param service The service to use when looking up the password in the keychain
 	 */
-	public Login() {
+	public Login(String service) {
+		this.service = service;
 		this.user = Preferences.instance().getProperty("ftp.anonymous.name");
 		this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 	}
 
-//	public Login(String user, File privateKeyFile) {
-//		this.user = user;
-//		this.privateKeyFile = privateKeyFile;
-//	}
-
 	/**
-	 * New instance with default values. Anonymous login.
-	 * @param controller The controller to handle failed logins attempts
-	 */
-	//public Login(LoginController controller) {
-	//	this();
-	//	this.controller = controller;
-	//}
-
-	/**
-	 * @param l the login credentials
-	 * @param controller The controller to handle failed logins attempts
-	 */
-//    public Login(String l, LoginController controller) {
-//		this(l);
-//		this.controller = controller;
-//    }
-
-	/**
+		* @param service The service to use when looking up the password in the keychain
 	 * @param user Login with this username
 	 * @param pass Passphrase
 	 */
-	public Login(String user, String pass) {
+	public Login(String service, String user, String pass) {
+		this.service = service;
 		if (null == user || user.equals(""))
 			this.user = Preferences.instance().getProperty("ftp.anonymous.name");
 		else
@@ -73,9 +70,11 @@ public class Login {
 	}
 
 	/**
+		* @param service The service to use when looking up the password in the keychain
 	 * @param l the login credentials
 	 */
-	public Login(String l) {
+	public Login(String service, String l) {
+		this.service = service;
 		if (l != null) {
 			if (l.indexOf(':') != -1) {
 				this.user = l.substring(0, l.indexOf(':'));
@@ -130,11 +129,24 @@ public class Login {
 	public void setUsername(String u) {
 		this.user = u;
 	}
-
+	
 	public String getPassword() {
+		if(!this.hasReasonableValues()) {
+			if(Preferences.instance().getProperty("connection.login.useKeychain").equals("true")) {
+				log.info("Searching keychain for password...");
+				this.pass = this.getPasswordFromKeychain(this.service, this.getUsername());
+				if(null == this.pass) {
+					//				if(this.controller != null)
+					//					this.controller.loginFailure("The username or password is not reasonable.");
+					//				else
+					// still no reasonable values, what a pitty
+					this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+				}
+			}
+		}
 		return this.pass;
 	}
-
+	
 	public void setPassword(String p) {
 		this.pass = p;
 	}

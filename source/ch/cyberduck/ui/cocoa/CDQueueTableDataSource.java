@@ -98,6 +98,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 					}
 					tableView.reloadData();
 				}
+				//@todo clean pboard
 				return true;
 			}
 		}

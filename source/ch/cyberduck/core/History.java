@@ -69,8 +69,8 @@ public abstract class History {
 
 	public Host getItem(String key) {
 		Host result = (Host) this.data.get(key);
-		if (null == result)
-			throw new IllegalArgumentException("No host with key " + key + " in History.");
+//		if (null == result)
+//			throw new IllegalArgumentException("No host with key " + key + " in History.");
 		return result;
 	}
 

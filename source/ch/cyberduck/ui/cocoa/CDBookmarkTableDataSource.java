@@ -96,15 +96,12 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 		log.debug("tableViewAcceptDrop:row:" + row + ",operation:" + operation);
 		NSPasteboard pboard = info.draggingPasteboard();
-		// What type of data are we going to allow to be dragged?  The pasteboard might contain different formats
-//		NSArray formats = new NSArray(NSPasteboard.FilenamesPboardType);
 		if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
 			Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
 			log.debug("tableViewAcceptDrop:" + o);
 			if (o != null) {
 				if (o instanceof NSArray) {
 					NSArray filesList = (NSArray) o;
-					//				NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
 					for (int i = 0; i < filesList.count(); i++) {
 						Host h = CDBookmarksImpl.instance().importBookmark(new java.io.File((String) filesList.objectAtIndex(i)));
 						if (row != -1) {
@@ -135,7 +132,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 					NSArray elements = (NSArray) o;
 					for (int i = 0; i < elements.count(); i++) {
 						NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-						if (row != -1)
+						if (row != -1 && row < CDBookmarksImpl.instance().size()-1)
 							CDBookmarksImpl.instance().addItem(new Host(dict), row);
 						else
 							CDBookmarksImpl.instance().addItem(new Host(dict));

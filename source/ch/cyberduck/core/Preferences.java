@@ -119,6 +119,7 @@ public abstract class Preferences {
 		defaults.put("queue.postProcessItemWhenComplete", "false");
 
 		defaults.put("connection.login.name", System.getProperty("user.name"));
+		defaults.put("connection.login.useKeychain", "true");
 		defaults.put("connection.download.folder", System.getProperty("user.home"));
 		defaults.put("download.duplicate", "ask");
 

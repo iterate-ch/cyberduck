@@ -520,5 +520,8 @@ public class Queue extends Observable implements Observer { //Thread {
 			    }
 		    }
 		);
+
+		this.jobs.add(this.root);
+		this.setChanged();
 	}
 }

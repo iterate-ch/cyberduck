@@ -48,11 +48,6 @@ public class CDQueuesImpl extends Queues { //implements NSTableView.DataSource {
 		return instance;
 	}
 
-	protected void finalize() throws Throwable {
-		super.finalize();
-		this.save();
-	}
-
 	public void save() {
 		this.save(QUEUE_FILE);
 	}

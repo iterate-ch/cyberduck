@@ -34,19 +34,19 @@ public class CDPreferencesController {
 
 	private static CDPreferencesController instance;
 
-	private static final String CONNECTMODE_ACTIVE = NSBundle.localizedString("Active");
-	private static final String CONNECTMODE_PASSIVE = NSBundle.localizedString("Passive");
+	private static final String CONNECTMODE_ACTIVE = NSBundle.localizedString("Active", "");
+	private static final String CONNECTMODE_PASSIVE = NSBundle.localizedString("Passive", "");
 
-	private static final String TRANSFERMODE_BINARY = NSBundle.localizedString("Binary");
-	private static final String TRANSFERMODE_ASCII = NSBundle.localizedString("ASCII");
+	private static final String TRANSFERMODE_BINARY = NSBundle.localizedString("Binary", "");
+	private static final String TRANSFERMODE_ASCII = NSBundle.localizedString("ASCII", "");
 
 	private static final String PROTOCOL_FTP = "FTP";
 	private static final String PROTOCOL_SFTP = "SFTP";
 
-	private static final String ASK_ME_WHAT_TO_DO = NSBundle.localizedString("Ask me what to do");
-	private static final String OVERWRITE_EXISTING_FILE = NSBundle.localizedString("Overwrite existing file");
-	private static final String TRY_TO_RESUME_TRANSFER = NSBundle.localizedString("Try to resume transfer");
-	private static final String USE_A_SIMILAR_NAME = NSBundle.localizedString("Use similar name");
+	private static final String ASK_ME_WHAT_TO_DO = NSBundle.localizedString("Ask me what to do", "");
+	private static final String OVERWRITE_EXISTING_FILE = NSBundle.localizedString("Overwrite existing file", "");
+	private static final String TRY_TO_RESUME_TRANSFER = NSBundle.localizedString("Try to resume transfer", "");
+	private static final String USE_A_SIMILAR_NAME = NSBundle.localizedString("Use similar name", "");
 
 	// ----------------------------------------------------------
 	// Outlets

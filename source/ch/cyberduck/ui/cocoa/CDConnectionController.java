@@ -34,8 +34,8 @@ import org.apache.log4j.Logger;
 public class CDConnectionController implements Observer {
 	private static Logger log = Logger.getLogger(CDConnectionController.class);
 
-	private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)");
-	private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)");
+	private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)", "");
+	private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
 
 	// ----------------------------------------------------------
 	// Outlets
@@ -54,6 +54,7 @@ public class CDConnectionController implements Observer {
 	private NSPopUpButton historyPopup;
 
 	public void setHistoryPopup(NSPopUpButton historyPopup) {
+		log.debug("setHistoryPopup");
 		this.historyPopup = historyPopup;
 		this.historyPopup.setImage(NSImage.imageNamed("history.tiff"));
 		Iterator i = CDHistoryImpl.instance().iterator();
@@ -125,6 +126,7 @@ public class CDConnectionController implements Observer {
 	private NSPopUpButton protocolPopup;
 
 	public void setProtocolPopup(NSPopUpButton protocolPopup) {
+		log.debug("setProtocolPopup");
 		this.protocolPopup = protocolPopup;
 		this.protocolPopup.setTarget(this);
 		this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[]{Object.class}));
@@ -141,6 +143,7 @@ public class CDConnectionController implements Observer {
 	private CDQuickConnectDataSource quickConnectDataSource;
 
 	public void setHostPopup(NSComboBox hostPopup) {
+		log.debug("setHostPopup");
 		this.hostPopup = hostPopup;
 		this.hostPopup.setTarget(this);
 		this.hostPopup.setAction(new NSSelector("hostSelectionChanged", new Class[]{Object.class}));
@@ -185,9 +188,22 @@ public class CDConnectionController implements Observer {
 
 	public void setPkLabel(NSTextField pkLabel) {
 		this.pkLabel = pkLabel;
-		this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected"));
+		this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
 	}
 
+	private NSButton keychainCheckbox;
+	
+	public void setKeychainCheckbox(NSButton keychainCheckbox) {
+		this.keychainCheckbox = keychainCheckbox;
+		this.keychainCheckbox.setTarget(this);
+		this.keychainCheckbox.setAction(new NSSelector("keychainCheckboxSelectionChanged", new Class[]{Object.class}));
+	}
+
+	public void keychainCheckboxSelectionChanged(Object sender) {
+		log.debug("keychainCheckboxSelectionChanged");
+		
+	}
+	
 	private NSButton pkCheckbox;
 
 	public void setPkCheckbox(NSButton pkCheckbox) {
@@ -198,7 +214,7 @@ public class CDConnectionController implements Observer {
 
 	public void pkCheckboxSelectionChanged(Object sender) {
 		log.debug("pkCheckboxSelectionChanged");
-		if (this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected"))) {
+		if (this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
 			NSOpenPanel panel = new NSOpenPanel();
 			panel.setCanChooseDirectories(false);
 			panel.setCanChooseFiles(true);
@@ -208,7 +224,7 @@ public class CDConnectionController implements Observer {
 		else {
 			this.passField.setEnabled(true);
 			this.pkCheckbox.setState(NSCell.OffState);
-			this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected"));
+			this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
 		}
 	}
 
@@ -229,25 +245,20 @@ public class CDConnectionController implements Observer {
 				{
 					this.passField.setEnabled(true);
 					this.pkCheckbox.setState(NSCell.OffState);
-					this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected"));
+					this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
 					break;
 				}
 		}
 	}
 
-	private NSButton keychainCheckbox;
-
-	public void setKeychainCheckbox(NSButton keychainCheckbox) {
-		this.keychainCheckbox = keychainCheckbox;
-		this.keychainCheckbox.setTarget(this);
-		this.keychainCheckbox.setEnabled(false);
-		this.keychainCheckbox.setAction(new NSSelector("keychainCheckboxSelectionChanged", new Class[]{Object.class}));
-	}
-
-	public void keychainCheckboxSelectionChanged(Object sender) {
-		log.debug("keychainCheckboxSelectionChanged");
-		//@todo Implement Keychain Access
-	}
+//	private NSButton keychainCheckbox;
+//
+//	public void setKeychainCheckbox(NSButton keychainCheckbox) {
+//		this.keychainCheckbox = keychainCheckbox;
+//		this.keychainCheckbox.setEnabled(false);
+//		this.keychainCheckbox.setTarget(this);
+//		this.keychainCheckbox.setAction(new NSSelector("keychainCheckboxSelectionChanged", new Class[]{Object.class}));
+//	}
 
 	private NSTextField urlLabel;
 

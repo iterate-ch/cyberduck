@@ -212,12 +212,10 @@ public class HTTPPath extends Path {
 			if (out == null) {
 				throw new IOException("Unable to buffer data");
 			}
-			//	    session.log("Opening data stream...", Message.PROGRESS);
 			InputStream in = session.HTTP.getInputStream(GET);
 			if (in == null) {
 				throw new IOException("Unable opening data stream");
 			}
-			//session.log("Downloading "+this.getName(), Message.PROGRESS);
 			this.download(in, out);
 		}
 		catch (HttpException e) {

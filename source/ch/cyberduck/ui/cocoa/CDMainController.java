@@ -92,9 +92,9 @@ public class CDMainController {
 			NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.update.xml")));
 			if (null == data) {
 				NSAlertPanel.runCriticalAlert(
-				    NSBundle.localizedString(NSBundle.localizedString("Error")), //title
-				    NSBundle.localizedString(NSBundle.localizedString("There was a problem checking for an update. Please try again later.")),
-				    NSBundle.localizedString("OK"), // defaultbutton
+				    NSBundle.localizedString("Error", "Alert sheet title"), //title
+				    NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text"),
+				    NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
 				    null, //alternative button
 				    null//other button
 				);
@@ -111,8 +111,8 @@ public class CDMainController {
 			if (errorString[0] != null || null == propertyListFromXMLData) {
 				log.error("Version info could not be retrieved: " + errorString[0]);
 				NSAlertPanel.runCriticalAlert(
-				    NSBundle.localizedString("Error"), //title
-				    NSBundle.localizedString("Update check failed. Version info could not be retrieved") + ": " + errorString[0],
+				    NSBundle.localizedString("Error", "Alert sheet title"), //title
+				    NSBundle.localizedString("Update check failed. Version info could not be retrieved", "Alert sheet text") + ": " + errorString[0],
 				    "OK", // defaultbutton
 				    null, //alternative button
 				    null//other button
@@ -128,8 +128,8 @@ public class CDMainController {
 
 				if (currentVersionNumber.equals(latestVersionNumber)) {
 					NSAlertPanel.runInformationalAlert(
-					    NSBundle.localizedString("No update"), //title
-					    NSBundle.localizedString("No newer version available.") + " Cyberduck " + currentVersionNumber + " " + NSBundle.localizedString("is up to date."),
+					    NSBundle.localizedString("No update", "Alert sheet title"), //title
+					    NSBundle.localizedString("No newer version available.", "Alert sheet text") + " Cyberduck " + currentVersionNumber + " " + NSBundle.localizedString("is up to date.", "Alert sheet text"),
 					    "OK", // defaultbutton
 					    null, //alternative button
 					    null//other button
@@ -140,7 +140,7 @@ public class CDMainController {
 						log.fatal("Couldn't load Update.nib");
 						return;
 					}
-					this.updateLabel.setStringValue("Cyberduck " + currentVersionNumber + " " + NSBundle.localizedString("is out of date. The current version is") + " " + latestVersionNumber + ".");
+					this.updateLabel.setStringValue("Cyberduck " + currentVersionNumber + " " + NSBundle.localizedString("is out of date. The current version is", "Alert sheet text") + " " + latestVersionNumber + ".");
 					this.updateText.replaceCharactersInRange(new NSRange(updateText.textStorage().length(), 0), comment);
 					this.updateSheet.setTitle(filename);
 					this.updateSheet.makeKeyAndOrderFront(null);
@@ -312,7 +312,6 @@ public class CDMainController {
 				log.fatal("Couldn't load Donate.nib");
 				return NSApplication.TerminateNow;
 			}
-			this.donationSheet.setTitle(NSBundle.localizedString("Donate!"));
 			this.donationSheet.center();
 			this.donationSheet.makeKeyAndOrderFront(null);
 			return NSApplication.TerminateLater;

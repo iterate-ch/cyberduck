@@ -39,11 +39,6 @@ public abstract class Bookmarks {
 		this.load();
 	}
 
-	protected void finalize() throws Throwable {
-		super.finalize();
-		this.save();
-	}
-
 	public abstract void save();
 
 	public abstract void load();

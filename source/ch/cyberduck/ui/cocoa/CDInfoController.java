@@ -155,7 +155,7 @@ public class CDInfoController {
 		otherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
 		otherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
 
-		permissionsBox.setTitle(NSBundle.localizedString("Permissions") + " | " + permission.getString() + " (" + permission.getOctalCode() + ")");
+		permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.getString() + " (" + permission.getOctalCode() + ")");
 
 		if (file.isFile()) {
 			this.iconImageView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
@@ -218,7 +218,7 @@ public class CDInfoController {
 		file.attributes.setPermission(permission);
 
 		file.changePermissions(permission.getOctalCode());
-		permissionsBox.setTitle(NSBundle.localizedString("Permissions") + " | " + permission.getString() + " (" + permission.getOctalCode() + ")");
+		permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.getString() + " (" + permission.getOctalCode() + ")");
 	}
 
 	public NSWindow window() {

@@ -36,14 +36,14 @@ public class CDBrowserController implements Observer {
 	// Outlets
 	// ----------------------------------------------------------
 
-	private NSWindow mainWindow; // IBOutlet
+	private NSWindow window; // IBOutlet
 
-	public void setMainWindow(NSWindow mainWindow) {
-		this.mainWindow = mainWindow;
+	public void setMainWindow(NSWindow window) {
+		this.window = window;
 	}
 
 	public NSWindow window() {
-		return this.mainWindow;
+		return this.window;
 	}
 
 	private CDBrowserTableDataSource browserModel;
@@ -97,7 +97,7 @@ public class CDBrowserController implements Observer {
 		}
 		if (Preferences.instance().getProperty("browser.columnFilename").equals("true")) {
 			NSTableColumn c = new NSTableColumn();
-			c.headerCell().setStringValue(NSBundle.localizedString("Filename"));
+			c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
 			c.setIdentifier("FILENAME");
 			c.setMinWidth(100f);
 			c.setWidth(250f);
@@ -110,7 +110,7 @@ public class CDBrowserController implements Observer {
 		}
 		if (Preferences.instance().getProperty("browser.columnSize").equals("true")) {
 			NSTableColumn c = new NSTableColumn();
-			c.headerCell().setStringValue(NSBundle.localizedString("Size"));
+			c.headerCell().setStringValue(NSBundle.localizedString("Size", "A column in the browser"));
 			c.setIdentifier("SIZE");
 			c.setMinWidth(50f);
 			c.setWidth(80f);
@@ -122,7 +122,7 @@ public class CDBrowserController implements Observer {
 		}
 		if (Preferences.instance().getProperty("browser.columnModification").equals("true")) {
 			NSTableColumn c = new NSTableColumn();
-			c.headerCell().setStringValue(NSBundle.localizedString("Modified"));
+			c.headerCell().setStringValue(NSBundle.localizedString("Modified", "A column in the browser"));
 			c.setIdentifier("MODIFIED");
 			c.setMinWidth(100f);
 			c.setWidth(180f);
@@ -134,7 +134,7 @@ public class CDBrowserController implements Observer {
 		}
 		if (Preferences.instance().getProperty("browser.columnOwner").equals("true")) {
 			NSTableColumn c = new NSTableColumn();
-			c.headerCell().setStringValue(NSBundle.localizedString("Owner"));
+			c.headerCell().setStringValue(NSBundle.localizedString("Owner", "A column in the browser"));
 			c.setIdentifier("OWNER");
 			c.setMinWidth(100f);
 			c.setWidth(80f);
@@ -146,7 +146,7 @@ public class CDBrowserController implements Observer {
 		}
 		if (Preferences.instance().getProperty("browser.columnPermissions").equals("true")) {
 			NSTableColumn c = new NSTableColumn();
-			c.headerCell().setStringValue(NSBundle.localizedString("Permissions"));
+			c.headerCell().setStringValue(NSBundle.localizedString("Permissions", "A column in the browser"));
 			c.setIdentifier("PERMISSIONS");
 			c.setMinWidth(100f);
 			c.setWidth(100f);
@@ -171,17 +171,13 @@ public class CDBrowserController implements Observer {
 			Path p = (Path) browserModel.getEntry(browserTable.selectedRow()); //last row selected
 			if (p.isFile() || browserTable.numberOfSelectedRows() > 1) {
 				NSEnumerator enum = browserTable.selectedRowEnumerator();
-//				List items = new ArrayList();
 				if (this.isMounted()) {
-					//					Session session = browserModel.workdir().getSession().copy();
 					while (enum.hasMoreElements()) {
 						Session session = browserModel.workdir().getSession().copy();
-						//						items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
 						CDQueueController.instance().addItemAndStart(new Queue(
 						    ((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session),
 						    Queue.KIND_DOWNLOAD));
 					}
-//					CDQueueController.instance().addTransfer(items, Queue.KIND_DOWNLOAD);
 				}
 			}
 			if (p.isDirectory())
@@ -262,8 +258,8 @@ public class CDBrowserController implements Observer {
 
 	public void bookmarkTableRowDoubleClicked(Object sender) {
 		log.debug("bookmarkTableRowDoubleClicked");
-		if (bookmarkTable.clickedRow() != -1) { //table header clicked
-			Host host = (Host) CDBookmarksImpl.instance().getItem(bookmarkTable.clickedRow());
+		if(this.bookmarkTable.selectedRow() != -1) {
+			Host host = (Host) CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow());
 			this.mount(host);
 		}
 	}
@@ -290,9 +286,9 @@ public class CDBrowserController implements Observer {
 		if (null == host) {
 			int index;
 			if ((index = input.indexOf('@')) != -1)
-				host = new Host(input.substring(index + 1, input.length()), new Login(input.substring(0, index)));
+				host = new Host(input.substring(index + 1, input.length()), new Login(input.substring(index+1, input.length()), input.substring(0, index)));
 			else
-				host = new Host(input, new Login());
+				host = new Host(input, new Login(input));
 		}
 		this.mount(host);
 	}
@@ -389,7 +385,7 @@ public class CDBrowserController implements Observer {
 			item = new Host(h.getProtocol(), h.getHostname(), h.getPort(), h.getLogin(), h.getDefaultPath());
 		}
 		else {
-			item = new Host("", new Login());
+			item = new Host("", new Login(""));
 		}
 		CDBookmarksImpl.instance().addItem(item);
 		CDBookmarkController controller = new CDBookmarkController(item);
@@ -493,7 +489,7 @@ public class CDBrowserController implements Observer {
 
 	public void setStatusLabel(NSTextField statusLabel) {
 		this.statusLabel = statusLabel;
-		this.statusLabel.setObjectValue(NSBundle.localizedString("Idle"));
+		this.statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
 	}
 
 	/**
@@ -539,133 +535,7 @@ public class CDBrowserController implements Observer {
 		this.window().makeFirstResponder(quickConnectPopup);
 	}
 
-	// ----------------------------------------------------------
-	// Toolbar Delegate
-	// ----------------------------------------------------------
 
-	public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
-
-		NSToolbarItem item = new NSToolbarItem(itemIdentifier);
-
-		if (itemIdentifier.equals("New Connection")) {
-			item.setLabel(NSBundle.localizedString("New Connection"));
-			item.setPaletteLabel(NSBundle.localizedString("New Connection"));
-			item.setToolTip(NSBundle.localizedString("Connect to remote host"));
-			item.setImage(NSImage.imageNamed("connect.tiff"));
-			item.setTarget(this);
-			item.setAction(new NSSelector("connectButtonClicked", new Class[]{Object.class}));
-		}
-		else if (itemIdentifier.equals("Bookmarks")) {
-			item.setView(showBookmarkButton);
-			item.setMinSize(showBookmarkButton.frame().size());
-			item.setMaxSize(showBookmarkButton.frame().size());
-		}
-		else if (itemIdentifier.equals("Quick Connect")) {
-			item.setLabel(NSBundle.localizedString("Quick Connect"));
-			item.setPaletteLabel(NSBundle.localizedString("Quick Connect"));
-			item.setToolTip(NSBundle.localizedString("Connect to host"));
-			item.setView(quickConnectPopup);
-			item.setMinSize(quickConnectPopup.frame().size());
-			item.setMaxSize(quickConnectPopup.frame().size());
-		}
-		else if (itemIdentifier.equals("Refresh")) {
-			item.setLabel(NSBundle.localizedString("Refresh"));
-			item.setPaletteLabel(NSBundle.localizedString("Refresh"));
-			item.setToolTip(NSBundle.localizedString("Refresh directory listing"));
-			item.setImage(NSImage.imageNamed("refresh.tiff"));
-			item.setTarget(this);
-			item.setAction(new NSSelector("refreshButtonClicked", new Class[]{Object.class}));
-		}
-		else if (itemIdentifier.equals("Download")) {
-			item.setLabel(NSBundle.localizedString("Download"));
-			item.setPaletteLabel(NSBundle.localizedString("Download"));
-			item.setToolTip(NSBundle.localizedString("Download file"));
-			item.setImage(NSImage.imageNamed("downloadFile.tiff"));
-			item.setTarget(this);
-			item.setAction(new NSSelector("downloadButtonClicked", new Class[]{Object.class}));
-		}
-		else if (itemIdentifier.equals("Upload")) {
-			item.setLabel(NSBundle.localizedString("Upload"));
-			item.setPaletteLabel(NSBundle.localizedString("Upload"));
-			item.setToolTip(NSBundle.localizedString("Upload local file to the remote host"));
-			item.setImage(NSImage.imageNamed("uploadFile.tiff"));
-			item.setTarget(this);
-			item.setAction(new NSSelector("uploadButtonClicked", new Class[]{Object.class}));
-		}
-		else if (itemIdentifier.equals("Get Info")) {
-			item.setLabel(NSBundle.localizedString("Get Info"));
-			item.setPaletteLabel(NSBundle.localizedString("Get Info"));
-			item.setToolTip(NSBundle.localizedString("Show file attributes"));
-			item.setImage(NSImage.imageNamed("info.tiff"));
-			item.setTarget(this);
-			item.setAction(new NSSelector("infoButtonClicked", new Class[]{Object.class}));
-		}
-		else if (itemIdentifier.equals("Delete")) {
-			item.setLabel(NSBundle.localizedString("Delete"));
-			item.setPaletteLabel(NSBundle.localizedString("Delete"));
-			item.setToolTip(NSBundle.localizedString("Delete file"));
-			item.setImage(NSImage.imageNamed("deleteFile.tiff"));
-			item.setTarget(this);
-			item.setAction(new NSSelector("deleteButtonClicked", new Class[]{Object.class}));
-		}
-		else if (itemIdentifier.equals("New Folder")) {
-			item.setLabel(NSBundle.localizedString("New Folder"));
-			item.setPaletteLabel(NSBundle.localizedString("New Folder"));
-			item.setToolTip(NSBundle.localizedString("Create New Folder"));
-			item.setImage(NSImage.imageNamed("newfolder.icns"));
-			item.setTarget(this);
-			item.setAction(new NSSelector("folderButtonClicked", new Class[]{Object.class}));
-		}
-		else if (itemIdentifier.equals("Disconnect")) {
-			item.setLabel(NSBundle.localizedString("Disconnect"));
-			item.setPaletteLabel(NSBundle.localizedString("Disconnect"));
-			item.setToolTip(NSBundle.localizedString("Disconnect"));
-			item.setImage(NSImage.imageNamed("disconnect.tiff"));
-			item.setTarget(this);
-			item.setAction(new NSSelector("disconnectButtonClicked", new Class[]{Object.class}));
-		}
-		else {
-			// itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
-			// Returning null will inform the toolbar this kind of item is not supported.
-			item = null;
-		}
-		return item;
-	}
-
-
-	public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-		return new NSArray(new Object[]{
-			"New Connection",
-			NSToolbarItem.SeparatorItemIdentifier,
-			"Bookmarks",
-			"Quick Connect",
-			"Refresh",
-			"Get Info",
-			"Download",
-			"Upload",
-			NSToolbarItem.FlexibleSpaceItemIdentifier,
-			"Disconnect"
-		});
-	}
-
-	public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
-		return new NSArray(new Object[]{
-			"New Connection",
-			"Bookmarks",
-			"Quick Connect",
-			"Refresh",
-			"Download",
-			"Upload",
-			"Delete",
-			"New Folder",
-			"Get Info",
-			"Disconnect",
-			NSToolbarItem.CustomizeToolbarItemIdentifier,
-			NSToolbarItem.SpaceItemIdentifier,
-			NSToolbarItem.SeparatorItemIdentifier,
-			NSToolbarItem.FlexibleSpaceItemIdentifier
-		});
-	}
 
 	public void update(Observable o, Object arg) {
 		log.debug("update:" + o + "," + arg);
@@ -689,11 +559,11 @@ public class CDBrowserController implements Observer {
 				Message msg = (Message) arg;
 				if (msg.getTitle().equals(Message.ERROR)) {
 					NSAlertPanel.beginCriticalAlertSheet(
-					    NSBundle.localizedString("Error"), //title
-					    NSBundle.localizedString("OK"), // defaultbutton
+					    NSBundle.localizedString("Error", "Alert sheet title"), //title
+					    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
 					    null, //alternative button
 					    null, //other button
-					    mainWindow, //docWindow
+					    this.window(), //docWindow
 					    null, //modalDelegate
 					    null, //didEndSelector
 					    null, // dismiss selector
@@ -702,11 +572,11 @@ public class CDBrowserController implements Observer {
 					);
 					this.progressIndicator.stopAnimation(this);
 					this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
-					this.statusLabel.setObjectValue(msg.getContent());
+					this.statusLabel.setObjectValue(NSBundle.localizedString((String)msg.getContent(), "Progress.strings", ""));
 				}
 				// update status label
 				else if (msg.getTitle().equals(Message.PROGRESS)) {
-					this.statusLabel.setObjectValue(msg.getContent());
+					this.statusLabel.setObjectValue(NSBundle.localizedString((String)msg.getContent(), "Progress.strings", ""));
 					this.statusLabel.display();
 				}
 				else if (msg.getTitle().equals(Message.TRANSCRIPT)) {
@@ -732,7 +602,7 @@ public class CDBrowserController implements Observer {
 				}
 				else if (msg.getTitle().equals(Message.STOP)) {
 					this.progressIndicator.stopAnimation(this);
-					this.statusLabel.setObjectValue(NSBundle.localizedString("Idle"));
+					this.statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
 					this.toolbar.validateVisibleItems();
 				}
 			}
@@ -748,7 +618,7 @@ public class CDBrowserController implements Observer {
 		CDGotoController controller = new CDGotoController(browserModel.workdir());
 		NSApplication.sharedApplication().beginSheet(
 		    controller.window(), //sheet
-		    mainWindow, //docwindow
+		    this.window(), //docwindow
 		    controller, //modal delegate
 		    new NSSelector(
 		        "gotoSheetDidEnd",
@@ -762,7 +632,7 @@ public class CDBrowserController implements Observer {
 		CDFolderController controller = new CDFolderController();
 		NSApplication.sharedApplication().beginSheet(
 		    controller.window(), //sheet
-		    mainWindow, //docwindow
+		    this.window(), //docwindow
 		    controller, //modal delegate
 		    new NSSelector(
 		        "newfolderSheetDidEnd",
@@ -783,7 +653,7 @@ public class CDBrowserController implements Observer {
 		log.debug("deleteButtonClicked");
 		NSEnumerator enum = browserTable.selectedRowEnumerator();
 		Vector files = new Vector();
-		StringBuffer alertText = new StringBuffer(NSBundle.localizedString("Really delete the following files? This cannot be undone."));
+		StringBuffer alertText = new StringBuffer(NSBundle.localizedString("Really delete the following files? This cannot be undone.", "Confirm deleting files."));
 		while (enum.hasMoreElements()) {
 			int selected = ((Integer) enum.nextElement()).intValue();
 			Path p = (Path) browserModel.getEntry(selected);
@@ -791,9 +661,9 @@ public class CDBrowserController implements Observer {
 			alertText.append("\n- " + Codec.encode(p.getName()));
 		}
 		NSAlertPanel.beginCriticalAlertSheet(
-		    NSBundle.localizedString("Delete"), //title
-		    NSBundle.localizedString("Delete"), // defaultbutton
-		    NSBundle.localizedString("Cancel"), //alternative button
+		    NSBundle.localizedString("Delete", "Alert sheet title"), //title
+		    NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
+		    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
 		    null, //other button
 		    this.window(), //window
 		    this, //delegate
@@ -853,7 +723,7 @@ public class CDBrowserController implements Observer {
 		panel.setCanChooseDirectories(true);
 		panel.setCanChooseFiles(true);
 		panel.setAllowsMultipleSelection(true);
-		panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, mainWindow, this, new NSSelector("uploadPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+		panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window(), this, new NSSelector("uploadPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
 	}
 
 	public void uploadPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
@@ -905,7 +775,7 @@ public class CDBrowserController implements Observer {
 		CDConnectionController controller = new CDConnectionController(this);
 		NSApplication.sharedApplication().beginSheet(
 		    controller.window(), //sheet
-		    mainWindow, //docwindow
+		    this.window(), //docwindow
 		    controller, //modal delegate
 		    new NSSelector(
 		        "connectionSheetDidEnd",
@@ -930,7 +800,7 @@ public class CDBrowserController implements Observer {
 		pathController.removeAllItems();
 		browserModel.clear();
 		browserTable.reloadData();
-		mainWindow.setTitle(host.getProtocol() + ":" + host.getHostname());
+		this.window().setTitle(host.getProtocol() + ":" + host.getHostname());
 
 		if (host.getProtocol().equals(Session.SFTP)) {
 			try {
@@ -939,8 +809,8 @@ public class CDBrowserController implements Observer {
 			catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
 				//This exception is thrown whenever an exception occurs open or reading from the host file.
 				NSAlertPanel.beginCriticalAlertSheet(
-				    NSBundle.localizedString("Error"), //title
-				    NSBundle.localizedString("OK"), // defaultbutton
+				    NSBundle.localizedString("Error", "Alert sheet title"), //title
+				    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
 				    null, //alternative button
 				    null, //other button
 				    this.window(), //docWindow
@@ -948,7 +818,7 @@ public class CDBrowserController implements Observer {
 				    null, //didEndSelector
 				    null, // dismiss selector
 				    null, // context
-				    NSBundle.localizedString("Could not open or read the host file") + ": " + e.getMessage() // message
+				    NSBundle.localizedString("Could not open or read the host file", "Alert sheet text") + ": " + e.getMessage() // message
 				);
 			}
 		}
@@ -982,9 +852,9 @@ public class CDBrowserController implements Observer {
 	public boolean windowShouldClose(NSWindow sender) {
 		if (this.isConnected()) {
 			NSAlertPanel.beginCriticalAlertSheet(
-			    NSBundle.localizedString("Disconnect from") + " " + browserModel.workdir().getSession().getHost().getHostname(), //title
-			    NSBundle.localizedString("Disconnect"), // defaultbutton
-			    NSBundle.localizedString("Cancel"), //alternative button
+			    NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + browserModel.workdir().getSession().getHost().getHostname(), //title
+			    NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
+			    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
 			    null, //other button
 			    sender, //window
 			    this, //delegate
@@ -998,7 +868,7 @@ public class CDBrowserController implements Observer {
 			        ), // end selector
 			    null, // dismiss selector
 			    null, // context
-			    NSBundle.localizedString("The connection will be closed.") // message
+			    NSBundle.localizedString("The connection will be closed.", "Alert sheet text") // message
 			);
 			return false;
 		}
@@ -1027,40 +897,6 @@ public class CDBrowserController implements Observer {
 			this.unmount();
 			this.window().close();
 		}
-	}
-
-	public boolean validateToolbarItem(NSToolbarItem item) {
-		//	log.debug("validateToolbarItem:"+item.label());
-		backButton.setEnabled(pathController.numberOfItems() > 0);
-		upButton.setEnabled(pathController.numberOfItems() > 0);
-		pathPopup.setEnabled(pathController.numberOfItems() > 0);
-
-		String label = item.label();
-//		if(label.equals(NSBundle.localizedString("New Connection"))) {
-//			return !this.isMounting;
-//		}
-		if (label.equals(NSBundle.localizedString("Refresh"))) {
-			return this.isMounted();
-		}
-		else if (label.equals(NSBundle.localizedString("Download"))) {
-			return this.isMounted() && browserTable.selectedRow() != -1;
-		}
-		else if (label.equals(NSBundle.localizedString("Upload"))) {
-			return this.isMounted();
-		}
-		else if (label.equals(NSBundle.localizedString("Delete"))) {
-			return this.isMounted() && browserTable.selectedRow() != -1;
-		}
-		else if (label.equals(NSBundle.localizedString("New Folder"))) {
-			return this.isMounted();
-		}
-		else if (label.equals(NSBundle.localizedString("Get Info"))) {
-			return this.isMounted() && browserTable.selectedRow() != -1;
-		}
-		else if (label.equals(NSBundle.localizedString("Disconnect"))) {
-			return this.isMounted() && browserModel.workdir().getSession().isConnected();
-		}
-		return true;
 	}
 
 	public boolean validateMenuItem(_NSObsoleteMenuItemProtocol cell) {
@@ -1101,5 +937,164 @@ public class CDBrowserController implements Observer {
 			return this.isMounted();
 		}
 		return true;
+	}
+	
+	// ----------------------------------------------------------
+	// Toolbar Delegate
+	// ----------------------------------------------------------
+	
+	public boolean validateToolbarItem(NSToolbarItem item) {
+		//	log.debug("validateToolbarItem:"+item.label());
+		backButton.setEnabled(pathController.numberOfItems() > 0);
+		upButton.setEnabled(pathController.numberOfItems() > 0);
+		pathPopup.setEnabled(pathController.numberOfItems() > 0);
+		
+		String identifier = item.itemIdentifier();
+		if (identifier.equals("Refresh")) {
+			return this.isMounted();
+		}
+		else if (identifier.equals("Download")) {
+			return this.isMounted() && browserTable.selectedRow() != -1;
+		}
+		else if (identifier.equals("Upload")) {
+			return this.isMounted();
+		}
+		else if (identifier.equals("Delete")) {
+			return this.isMounted() && browserTable.selectedRow() != -1;
+		}
+		else if (identifier.equals("New Folder")) {
+			return this.isMounted();
+		}
+		else if (identifier.equals("Get Info")) {
+			return this.isMounted() && browserTable.selectedRow() != -1;
+		}
+		else if (identifier.equals("Disconnect")) {
+			return this.isMounted() && browserModel.workdir().getSession().isConnected();
+		}
+		return true;
+	}
+	
+	public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
+		
+		NSToolbarItem item = new NSToolbarItem(itemIdentifier);
+		
+		if (itemIdentifier.equals("New Connection")) {
+			item.setLabel(NSBundle.localizedString("New Connection", "Toolbar item"));
+			item.setPaletteLabel(NSBundle.localizedString("New Connection", "Toolbar item"));
+			item.setToolTip(NSBundle.localizedString("Connect to remote host", "Toolbar item tooltip"));
+			item.setImage(NSImage.imageNamed("connect.tiff"));
+			item.setTarget(this);
+			item.setAction(new NSSelector("connectButtonClicked", new Class[]{Object.class}));
+		}
+		else if (itemIdentifier.equals("Bookmarks")) {
+			item.setView(showBookmarkButton);
+			item.setMinSize(showBookmarkButton.frame().size());
+			item.setMaxSize(showBookmarkButton.frame().size());
+		}
+		else if (itemIdentifier.equals("Quick Connect")) {
+			item.setLabel(NSBundle.localizedString("Quick Connect", "Toolbar item"));
+			item.setPaletteLabel(NSBundle.localizedString("Quick Connect", "Toolbar item"));
+			item.setToolTip(NSBundle.localizedString("Connect to server", "Toolbar item tooltip"));
+			item.setView(quickConnectPopup);
+			item.setMinSize(quickConnectPopup.frame().size());
+			item.setMaxSize(quickConnectPopup.frame().size());
+		}
+		else if (itemIdentifier.equals("Refresh")) {
+			item.setLabel(NSBundle.localizedString("Refresh", "Toolbar item"));
+			item.setPaletteLabel(NSBundle.localizedString("Refresh", "Toolbar item"));
+			item.setToolTip(NSBundle.localizedString("Refresh directory listing", "Toolbar item tooltip"));
+			item.setImage(NSImage.imageNamed("refresh.tiff"));
+			item.setTarget(this);
+			item.setAction(new NSSelector("refreshButtonClicked", new Class[]{Object.class}));
+		}
+		else if (itemIdentifier.equals("Download")) {
+			item.setLabel(NSBundle.localizedString("Download", "Toolbar item"));
+			item.setPaletteLabel(NSBundle.localizedString("Download", "Toolbar item"));
+			item.setToolTip(NSBundle.localizedString("Download file", "Toolbar item tooltip"));
+			item.setImage(NSImage.imageNamed("downloadFile.tiff"));
+			item.setTarget(this);
+			item.setAction(new NSSelector("downloadButtonClicked", new Class[]{Object.class}));
+		}
+		else if (itemIdentifier.equals("Upload")) {
+			item.setLabel(NSBundle.localizedString("Upload", "Toolbar item"));
+			item.setPaletteLabel(NSBundle.localizedString("Upload", "Toolbar item"));
+			item.setToolTip(NSBundle.localizedString("Upload local file to the remote host", "Toolbar item tooltip"));
+			item.setImage(NSImage.imageNamed("uploadFile.tiff"));
+			item.setTarget(this);
+			item.setAction(new NSSelector("uploadButtonClicked", new Class[]{Object.class}));
+		}
+		else if (itemIdentifier.equals("Get Info")) {
+			item.setLabel(NSBundle.localizedString("Get Info", "Toolbar item"));
+			item.setPaletteLabel(NSBundle.localizedString("Get Info", "Toolbar item"));
+			item.setToolTip(NSBundle.localizedString("Show file attributes", "Toolbar item tooltip"));
+			item.setImage(NSImage.imageNamed("info.tiff"));
+			item.setTarget(this);
+			item.setAction(new NSSelector("infoButtonClicked", new Class[]{Object.class}));
+		}
+		else if (itemIdentifier.equals("Delete")) {
+			item.setLabel(NSBundle.localizedString("Delete", "Toolbar item"));
+			item.setPaletteLabel(NSBundle.localizedString("Delete", "Toolbar item"));
+			item.setToolTip(NSBundle.localizedString("Delete file", "Toolbar item tooltip"));
+			item.setImage(NSImage.imageNamed("deleteFile.tiff"));
+			item.setTarget(this);
+			item.setAction(new NSSelector("deleteButtonClicked", new Class[]{Object.class}));
+		}
+		else if (itemIdentifier.equals("New Folder")) {
+			item.setLabel(NSBundle.localizedString("New Folder", "Toolbar item"));
+			item.setPaletteLabel(NSBundle.localizedString("New Folder", "Toolbar item"));
+			item.setToolTip(NSBundle.localizedString("Create New Folder", "Toolbar item tooltip"));
+			item.setImage(NSImage.imageNamed("newfolder.icns"));
+			item.setTarget(this);
+			item.setAction(new NSSelector("folderButtonClicked", new Class[]{Object.class}));
+		}
+		else if (itemIdentifier.equals("Disconnect")) {
+			item.setLabel(NSBundle.localizedString("Disconnect", "Toolbar item"));
+			item.setPaletteLabel(NSBundle.localizedString("Disconnect", "Toolbar item"));
+			item.setToolTip(NSBundle.localizedString("Disconnect from server", "Toolbar item tooltip"));
+			item.setImage(NSImage.imageNamed("eject.tiff"));
+			item.setTarget(this);
+			item.setAction(new NSSelector("disconnectButtonClicked", new Class[]{Object.class}));
+		}
+		else {
+			// itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
+			// Returning null will inform the toolbar this kind of item is not supported.
+			item = null;
+		}
+		return item;
+	}
+	
+	
+	public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
+		return new NSArray(new Object[]{
+			"New Connection",
+			NSToolbarItem.SeparatorItemIdentifier,
+			"Bookmarks",
+			"Quick Connect",
+			"Refresh",
+			"Get Info",
+			"Download",
+			"Upload",
+			NSToolbarItem.FlexibleSpaceItemIdentifier,
+			"Disconnect"
+		});
+	}
+	
+	public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
+		return new NSArray(new Object[]{
+			"New Connection",
+			"Bookmarks",
+			"Quick Connect",
+			"Refresh",
+			"Download",
+			"Upload",
+			"Delete",
+			"New Folder",
+			"Get Info",
+			"Disconnect",
+			NSToolbarItem.CustomizeToolbarItemIdentifier,
+			NSToolbarItem.SpaceItemIdentifier,
+			NSToolbarItem.SeparatorItemIdentifier,
+			NSToolbarItem.FlexibleSpaceItemIdentifier
+		});
 	}
 }
