@@ -99,7 +99,7 @@ public class EnterpriseUnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
 			f.attributes.setOwner(usr);
 			f.attributes.setGroup(grp);
 			try {
-				f.attributes.setSize(Long.parseLong(filesize));
+				f.attributes.setSize(Double.parseDouble(filesize));
 			}
 			catch(NumberFormatException e) {
 // intentionally do nothing

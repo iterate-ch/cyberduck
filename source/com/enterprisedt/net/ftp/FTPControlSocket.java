@@ -599,12 +599,14 @@ public class FTPControlSocket {
 	protected void log(String msg, boolean command) {
 		if(msg.startsWith("PASS"))
 			msg = "PASS ********";
-		if(messageListener != null)
-			if(command)
+		if(messageListener != null) {
+			if(command) {
 				messageListener.logCommand(msg);
-			else
+			}
+			else {
 				messageListener.logReply(msg);
-
+			}
+		}
 	}
 }
 

@@ -511,7 +511,7 @@ public class CDMainController extends NSObject {
 
 	public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
 		log.debug("applicationShouldHandleReopen");
-		if(CDMainController.orderedBrowsers().count() == 0) {
+		if(CDMainController.orderedBrowsers().count() == 0 && CDMainController.orderedTransfers().count() == 0) {
 			return CDMainController.newDocument() == null;
 		}
 		return false;
@@ -646,6 +646,27 @@ public class CDMainController extends NSObject {
 		if(key.equals("orderedBrowsers"))
 			return true;
 		return false;
+	}
+
+	public static NSArray orderedTransfers() {
+		log.debug("orderedTransfers");
+		NSApplication app = NSApplication.sharedApplication();
+		NSArray orderedWindows = (NSArray)NSKeyValue.valueForKey(app, "orderedWindows");
+		int i, c = orderedWindows.count();
+		NSMutableArray orderedDocs = new NSMutableArray();
+		Object curDelegate;
+		for(i = 0; i < c; i++) {
+			if(((NSWindow)orderedWindows.objectAtIndex(i)).isVisible()) {
+				curDelegate = ((NSWindow)orderedWindows.objectAtIndex(i)).delegate();
+				if((curDelegate != null) && (curDelegate instanceof CDQueueController)) {
+					orderedDocs.addObject(curDelegate);
+					log.debug("orderedTransfers:"+orderedDocs);
+					return orderedDocs;
+				}
+			}
+		}
+		log.debug("orderedTransfers:"+orderedDocs);
+		return orderedDocs;
 	}
 
 	public static NSArray orderedBrowsers() {

@@ -140,9 +140,8 @@ public class VMSFTPEntryParser extends RegexFTPFileEntryParserImpl {
 			//size is retreived in blocks and needs to be put in bytes
 			//for us humans and added to the FTPFile array
 			try {
-				Long theSize = new Long(size);
-				long sizeInBytes = theSize.longValue()*longBlock;
-				f.attributes.setSize(sizeInBytes);
+				Long filesize = new Long(size);
+				f.attributes.setSize(filesize.doubleValue()*longBlock);
 			}
 			catch(NumberFormatException e) {
 				// intentionally do nothing
