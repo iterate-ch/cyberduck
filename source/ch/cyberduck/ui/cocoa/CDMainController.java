@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.BasicConfigurator;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.growl.*;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 public class CDMainController extends NSObject {
     private static Logger log = Logger.getLogger(CDMainController.class);
@@ -201,7 +201,6 @@ public class CDMainController extends NSObject {
         public RendezvousMenuDelegate(Rendezvous rendezvous) {
 			log.debug("RendezvousMenuDelegate");
             rendezvous.addObserver(this);
-            rendezvous.init();
         }
 
         public void update(final Observable o, final Object arg) {
@@ -213,6 +212,8 @@ public class CDMainController extends NSObject {
                             Message msg = (Message)arg;
                             Host host = rendezvous.getService((String)msg.getContent());
                             if (msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
+								//@todo rendezvous icon
+								Growl.instance().notify("Rendezvous", (String)msg.getContent());
                                 items.put((String)msg.getContent(),
                                         host);
                             }

@@ -354,11 +354,11 @@ public class Queue extends Observable implements Observer {
 			if(this.isRunning()) {
 				return this.getCurrentAsString()
 				+" of "+this.getSizeAsString()
-				+" ("+this.getSpeedAsString()+")  "
+				+" at "+this.getSpeedAsString()+"  "
 				+this.status;
 			}
 			return this.getCurrentAsString()
-			+" of "+this.getSizeAsString()+"   "
+			+" of "+this.getSizeAsString()+"  "
 			+this.status;
 		}
 		return "(Unknown size)  "+this.status;

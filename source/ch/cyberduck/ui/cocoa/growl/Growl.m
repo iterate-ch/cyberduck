@@ -59,6 +59,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notify(
 #define	GROWL_UPLOAD_COMPLETE				NSLocalizedString(@"Upload complete", @"Growl Notification")
 #define	GROWL_CONNECTION_OPENED				NSLocalizedString(@"Connection opened", @"Growl Notification")
 #define	GROWL_CONNECTION_FAILED				NSLocalizedString(@"Connection failed", @"Growl Notification")
+#define	GROWL_RENDEZVOUS_FOUND_SERVICE		NSLocalizedString(@"Rendezvous", @"Growl Notification")
 
 @implementation Growl
 
@@ -95,6 +96,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notify(
 			GROWL_UPLOAD_COMPLETE,
 			GROWL_CONNECTION_OPENED,
 			GROWL_CONNECTION_FAILED,
+			GROWL_RENDEZVOUS_FOUND_SERVICE,
 			nil];
 		NSArray *defaultNotifications = [NSArray arrayWithObjects:
 			GROWL_DOWNLOAD_COMPLETE,
@@ -114,6 +116,24 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notify(
 																	 userInfo:registrationDict];
 	}
 	registered = YES;
+}
+
+- (void)notifyGrowl:(NSString *)title :(NSString *)description withImage:(NSImage *) image
+{
+	if(registered) {
+		NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:
+			title, GROWL_NOTIFICATION_NAME,
+			title, GROWL_NOTIFICATION_TITLE,
+			[image TIFFRepresentation], GROWL_NOTIFICATION_ICON,
+			description, GROWL_NOTIFICATION_DESCRIPTION,
+			@"Cyberduck", GROWL_APP_NAME,
+			nil];
+		
+		[[NSDistributedNotificationCenter defaultCenter]
+										postNotificationName: GROWL_NOTIFICATION
+													  object: nil
+													userInfo: event];
+	}
 }
 
 - (void)notifyGrowl:(NSString *)title :(NSString *)description
