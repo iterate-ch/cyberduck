@@ -51,6 +51,8 @@ fr.lproj/Main.strings svneol=native#unset
 fr.lproj/Preferences.strings svneol=native#unset
 fr.lproj/Transfer.strings svneol=native#unset
 fr.lproj/Update.strings svneol=native#unset
+/generic-document.icns -text
+/generic-document.tiff -text
 img/add.tiff svneol=native#unset
 img/addPressed.tiff svneol=native#unset
 img/alert.tiff -text
@@ -62,11 +64,9 @@ img/bookmarks.tiff svneol=native#unset
 img/cancel.tiff -text
 img/clean.tiff -text
 img/connect.tiff svneol=native#unset
-img/delete.tiff svneol=native#unset
 img/deleteFile.tiff -text
 img/disconnect.tiff svneol=native#unset
 img/disk.tiff svneol=native#unset
-img/download.tiff svneol=native#unset
 img/downloadFile.tiff -text
 img/drawer.tiff -text
 img/drawerPressed.tiff -text
@@ -97,7 +97,6 @@ img/stripeWhite.tiff -text
 img/triangleLeft.tiff -text
 img/triangleRight.tiff -text
 img/up.tiff svneol=native#unset
-img/upload.tiff svneol=native#unset
 img/uploadFile.tiff -text
 it.lproj/Bookmark.strings svneol=native#unset
 it.lproj/Browser.strings svneol=native#unset
@@ -127,13 +126,11 @@ ja.lproj/Login.strings svneol=native#unset
 ja.lproj/Main.strings svneol=native#unset
 ja.lproj/Preferences.strings svneol=native#unset
 ja.lproj/Queue.strings svneol=native#unset
-ja.lproj/Transfer.strings svneol=native#unset
 ja.lproj/Update.strings svneol=native#unset
 lib/ext/ant.jar -text
 lib/ext/junit.jar -text
 lib/j2ssh.jar svneol=native#unset
 lib/jmdns.jar -text
-lib/jrendezvous.jar -text
 lib/log4j.jar svneol=native#unset
 lib/logging.jar -text
 nl.lproj/Bookmark.strings svneol=native#unset
