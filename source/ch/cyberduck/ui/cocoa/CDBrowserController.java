@@ -449,16 +449,16 @@ public class CDBrowserController implements Observer {
 				   (String)msg.getContent() // message
 				   );
 		    progressIndicator.stopAnimation(this);
-		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getContent()));
+		    statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
 		}
 		
 		// update status label
 		else if(msg.getTitle().equals(Message.PROGRESS)) {
-		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getContent()));
+		    statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
 		    statusLabel.display();
 		}
 		else if(msg.getTitle().equals(Message.TRANSCRIPT)) {
-		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getContent()));
+		    statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
 		}
 		
 		else if(msg.getTitle().equals(Message.OPEN)) {

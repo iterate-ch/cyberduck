@@ -67,11 +67,6 @@ public class CDDownloadController {
 	//
     }
 
-    public void finalize() throws Throwable {
-	log.debug("finalize");
-	super.finalize();
-    }
-
     public void windowWillClose(NSNotification notification) {
 	this.window().setDelegate(null);
 	allDocuments.removeObject(this);

@@ -86,11 +86,6 @@ public class CDLoginController extends LoginController {
 	return this.sheet;
     }
 
-    public void finalize() {
-	//this.window().setDelegate(null);
-	//allDocuments.removeObject(this);
-    }
-    
 //    public void windowWillClose(NSNotification notification) {
 //	this.window().setDelegate(null);
 //	allDocuments.removeObject(this);
@@ -114,7 +109,7 @@ public class CDLoginController extends LoginController {
 					      this, //modalDelegate
 					      new NSSelector(
 			  "loginSheetDidEnd",
-			  new Class[] { NSWindow.class, int.class, NSWindow.class }
+			  new Class[] { NSWindow.class, int.class, Object.class }
 			  ),// did end selector
 					      null); //contextInfo
 //	log.debug("Ordering front sheet window");
@@ -134,7 +129,7 @@ public class CDLoginController extends LoginController {
 	* Selector method from
      * @see #loginFailure
      */
-    public void loginSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+    public void loginSheetDidEnd(NSWindow sheet, int returncode, Object main) {
 	log.debug("loginSheetDidEnd");
 	this.window().orderOut(null);
 	switch(returncode) {

@@ -273,7 +273,7 @@ public class CDConnectionController {
 	NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
     
-    public void connectionSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+    public void connectionSheetDidEnd(NSWindow sheet, int returncode, Object context) {
 	log.debug("connectionSheetDidEnd");
 	sheet.orderOut(null);
 	switch(returncode) {

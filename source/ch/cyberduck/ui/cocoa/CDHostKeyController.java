@@ -38,12 +38,13 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
     private String host;
     private SshPublicKey publicKey;
     private boolean done;
-    private NSWindow mainWindow;
+    
+    private NSWindow parentWindow;
 
-    public CDHostKeyController(NSWindow mainWindow) throws InvalidHostFileException {
+    public CDHostKeyController(NSWindow parentWindow) throws InvalidHostFileException {
 	super(System.getProperty("user.home")+"/.ssh/known_hosts");
 //	super(CDPreferencesImpl.instance().getProperty("sshtools.home"));
-	this.mainWindow = mainWindow;
+	this.parentWindow = parentWindow;
     }
 
 //    public void onDeniedHost(String hostname) {
@@ -53,14 +54,14 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 //					   "OK",// defaultbutton
 //					   null,//alternative button
 //					   null,//other button
-//					   mainWindow,
+//					   parentWindow,
 //					   this, //delegate
 //					   new NSSelector
 //					   (
 //	 "deniedHostSheetDidEnd",
 //	 new Class[]
 //	 {
-//	     NSWindow.class, int.class, NSWindow.class
+//	     NSWindow.class, int.class, Object.class
 //	 }
 //	 ),// end selector
 //					   null, // dismiss selector
@@ -86,14 +87,14 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 					   "Allow",// defaultbutton
 					   "Deny",//alternative button
 					   isHostFileWriteable() ? "Always" : null,//other button
-					   mainWindow,
+					   parentWindow,
 					   this, //delegate
 					   new NSSelector
 					   (
 	 "keyMismatchSheetDidEnd",
 	 new Class[]
 	 {
-	     NSWindow.class, int.class, NSWindow.class
+	     NSWindow.class, int.class, Object.class
 	 }
 	 ),// end selector
 					   null, // dismiss selector
@@ -122,20 +123,21 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 					   "Allow",// defaultbutton
 					   "Deny",//alternative button
 					   isHostFileWriteable() ? "Always" : null,//other button
-					   mainWindow,//window
+					   parentWindow,//window
 					   this, //delegate
 					   new NSSelector
 					   (
 	 "unknownHostSheetDidEnd",
 	 new Class[]
 	 {
-	     NSWindow.class, int.class, NSWindow.class
+	     NSWindow.class, int.class, Object.class
 	 }
 	 ),// end selector
 					   null, // dismiss selector
 					   null, // context
 					   "The host " + host
 					   + " is currently unknown to the system. The host key fingerprint is: " + publicKey.getFingerprint()+".");
+//	this.window().makeKeyAndOrderFront(null);
 	while(!this.done) {
 	    try {
 		Thread.sleep(500); //milliseconds
@@ -147,13 +149,13 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
     }
 
 
-//    public void deniedHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+//    public void deniedHostSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
 //	log.debug("deniedHostSheetDidEnd");
 //	sheet.orderOut(null);
 //	done = true;
 //  }
 
-    public void keyMismatchSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+    public void keyMismatchSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
 	log.debug("keyMismatchSheetDidEnd");
 	sheet.orderOut(null);
 	try {
@@ -165,7 +167,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 					    "OK",// defaultbutton
 					    null,//alternative button
 					    null,//other button
-					    mainWindow,
+					    parentWindow,
 					    this, //delegate
 					    null,// end selector
 					    null, // dismiss selector
@@ -184,7 +186,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 	}
     }
 
-    public void unknownHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+    public void unknownHostSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
 	log.debug("unknownHostSheetDidEnd");
 	sheet.orderOut(null);
 	try {
@@ -196,7 +198,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 					    "OK",// defaultbutton
 					    null,//alternative button
 					    null,//other button
-					    mainWindow,
+					    parentWindow,
 					    this, //delegate
 					    null,// end selector
 					    null, // dismiss selector

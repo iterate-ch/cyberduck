@@ -77,7 +77,7 @@
 		<echo message="Building ${app.name}..."/>
 		<mkdir dir="${classes}" />
 		<mkdir dir="${build}" />
-		<mkdir dir="${app.config}" />
+<!--		<mkdir dir="${app.config}" />-->
 	    <copy todir="${app.jar}">
 		<fileset dir="${lib}">
 		    <include name="*.jar" />

@@ -32,7 +32,7 @@ public class CDMainController {
     static {
 	org.apache.log4j.BasicConfigurator.configure();
 	Logger log = Logger.getRootLogger();
-	log.setLevel(Level.toLevel(Preferences.instance().getProperty("logger.level")));
+	log.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 //	log.setLevel(Level.OFF);
 //	log.setLevel(Level.DEBUG);
 //	log.setLevel(Level.INFO);
@@ -64,11 +64,18 @@ public class CDMainController {
 	    String currentVersionNumber = (String)bundle.objectForInfoDictionaryKey("CFBundleVersion");
 	    log.info("Current version:"+currentVersionNumber);
 
-//	    NSData data = new NSData(new File("versionlist.xml"));
-	    NSData data = new NSData(new java.net.URL("http://sudo.ch/versionlist.xml"));
-//	    NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.xml")));
-	    log.info(data.length() +" bytes.");
-	    data.writeToURL(new File("versionlist-fromnet.xml").toURL(), true);
+	    NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.update.xml")));
+	    if(null == data) {
+		NSAlertPanel.runCriticalAlert(
+				     "Error", //title
+				     "There was a problem checking for an update. Please try again later.",
+				     "OK",// defaultbutton
+				     null,//alternative button
+				     null//other button
+				     );
+		return;
+	    }
+	    log.debug(data.length() +" bytes.");
 	    NSDictionary entries = (NSDictionary)NSPropertyListSerialization.propertyListFromXMLData(data);
 	    if(null == entries)
 		log.error("Version info could not be retrieved.");
@@ -96,7 +103,7 @@ public class CDMainController {
 						     null//other button
 						     );
 		if(NSAlertPanel.DefaultReturn == selection) {
-		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")+"/Cyberduck-"+currentVersionNumber+".dmg"));
+		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")+"Cyberduck-"+currentVersionNumber+".dmg"));
 		}
 	    }
 	}

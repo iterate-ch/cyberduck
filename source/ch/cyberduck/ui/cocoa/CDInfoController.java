@@ -159,12 +159,6 @@ public class CDInfoController {//implements Observer {
 						    groupField);
     }
 
-
-    public void finalize() throws Throwable {
-	super.finalize();
-	log.debug("finalize");
-    }
-
     public void windowWillClose(NSNotification notification) {
 	this.window().setDelegate(null);
 	NSNotificationCenter.defaultCenter().removeObserver(this);

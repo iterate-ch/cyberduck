@@ -45,11 +45,6 @@ public class CDPathController implements Observer {
 	this.combo.setAction(new NSSelector("selectionChanged", new Class[] { Object.class } ));
     }
 
-    public void finalize() throws Throwable {
-	super.finalize();
-	log.debug("finalize");
-    }
-
     public NSView view() {
 	return this.combo;
     }

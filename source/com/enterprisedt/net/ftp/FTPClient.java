@@ -304,7 +304,7 @@ public class FTPClient {
      *  @param  remoteFile  name of remote file
      *  @modified
      */
-    private void initGet(String remoteFile, int resume)
+    private void initGet(String remoteFile, long resume)
         throws IOException, FTPException {
 	    
 	    // set up data channel
@@ -335,7 +335,7 @@ public class FTPClient {
      *  @param  append      true if appending, false otherwise
      */
     public java.io.Writer putASCII(String remoteFile, boolean append) throws IOException, FTPException {
-	this.initPut(remoteFile, false);
+	this.initPut(remoteFile, append);
 	return new OutputStreamWriter(data.getOutputStream());
     }
     /**
@@ -346,7 +346,7 @@ public class FTPClient {
      *  @param  append      true if appending, false otherwise
      */
     public java.io.OutputStream putBinary(String remoteFile, boolean append) throws IOException, FTPException {
-	this.initPut(remoteFile, false);
+	this.initPut(remoteFile, append);
 	return data.getOutputStream();
     }
 
@@ -357,7 +357,7 @@ public class FTPClient {
      *  @param localPath   full path of local file to write to
      *  @param remoteFile  name of remote file
      */
-    public java.io.Reader getASCII(String remoteFile, int resume) throws IOException, FTPException {
+    public java.io.Reader getASCII(String remoteFile, long resume) throws IOException, FTPException {
 	this.initGet(remoteFile, resume);
 	return new InputStreamReader(data.getInputStream());
     }
@@ -367,7 +367,7 @@ public class FTPClient {
      *  @param localPath   full path of local file to write to
      *  @param remoteFile  name of remote file
      */
-    public java.io.InputStream getBinary(String remoteFile, int resume) throws IOException, FTPException {
+    public java.io.InputStream getBinary(String remoteFile, long resume) throws IOException, FTPException {
 	this.initGet(remoteFile, resume);
 	return data.getInputStream();
     }

@@ -36,6 +36,65 @@ public class CDPreferencesController {
     // Outlets
     // ----------------------------------------------------------
 
+    private NSButtonCell duplicateAskmeCheckbox;
+    public void setDuplicateAskmeCheckbox(NSButtonCell duplicateAskmeCheckbox) {
+	this.duplicateAskmeCheckbox = duplicateAskmeCheckbox;
+	this.duplicateAskmeCheckbox.setTarget(this);
+	this.duplicateAskmeCheckbox.setAction(new NSSelector("duplicateAskmeCheckboxClicked", new Class[] {NSButtonCell.class}));
+    }
+
+    public void duplicateAskmeCheckboxClicked(NSButtonCell sender) {
+	switch(sender.state()) {
+	    case NSCell.OnState:
+		Preferences.instance().setProperty("connection.duplicate.ask", "true");
+		break;
+	    case NSCell.OffState:
+		Preferences.instance().setProperty("connection.duplicate.ask", "false");
+		break;
+	}
+    }
+    
+    private NSButtonCell duplicateOverwriteCheckbox;
+    public void setDuplicateOverwriteCheckbox(NSButtonCell duplicateOverwriteCheckbox) {
+	this.duplicateOverwriteCheckbox = duplicateOverwriteCheckbox;
+	this.duplicateOverwriteCheckbox.setTarget(this);
+	this.duplicateOverwriteCheckbox.setAction(new NSSelector("duplicateOverwriteCheckboxClicked", new Class[] {NSButtonCell.class}));
+    }
+
+    public void duplicateOverwriteCheckboxClicked(NSButtonCell sender) {
+	switch(sender.state()) {
+	    case NSCell.OnState:
+		Preferences.instance().setProperty("connection.duplicate.overwrite", "true");
+		break;
+	    case NSCell.OffState:
+		Preferences.instance().setProperty("connection.duplicate.overwrite", "false");
+		break;
+	}
+    }
+    
+    private NSButtonCell duplicateResumeCheckbox;
+    public void setDuplicateResumeCheckbox(NSButtonCell duplicateResumeCheckbox) {
+	this.duplicateResumeCheckbox = duplicateResumeCheckbox;
+	this.duplicateResumeCheckbox.setTarget(this);
+	this.duplicateResumeCheckbox.setAction(new NSSelector("duplicateResumeCheckboxClicked", new Class[] {NSButtonCell.class}));
+    }
+
+    public void duplicateResumeCheckboxClicked(NSButtonCell sender) {
+	switch(sender.state()) {
+	    case NSCell.OnState:
+		Preferences.instance().setProperty("connection.duplicate.resume", "true");
+		break;
+	    case NSCell.OffState:
+		Preferences.instance().setProperty("connection.duplicate.resume", "false");
+		break;
+	}
+    }
+
+    private NSButton downloadPathButton;
+    public void setDownloadPathButton(NSButton downloadPathButton) {
+	this.downloadPathButton = downloadPathButton;
+    }
+    
     private NSTextField anonymousField;
     public void setAnonymousField(NSTextField anonymousField) {
 	this.anonymousField = anonymousField;
@@ -51,11 +110,6 @@ public class CDPreferencesController {
 	this.loginField = loginField;
     }
     
-    private NSButton downloadPathButton;
-    public void setDownloadPathButton(NSButton downloadPathButton) {
-	this.downloadPathButton = downloadPathButton;
-    }
-
     private NSButton showHiddenCheckbox;
     public void setShowHiddenCheckbox(NSButton showHiddenCheckbox) {
 	this.showHiddenCheckbox = showHiddenCheckbox;
