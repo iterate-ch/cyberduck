@@ -56,7 +56,7 @@ public class CDIconCell extends CDTableCell {
     private static final NSImage folderIcon = NSImage.imageNamed("folder32.tiff");
     private static final NSImage notFoundIcon = NSImage.imageNamed("notfound.tiff");
 
-	private static final float SPACE = 2;
+	private static final float SPACE = 4;
 
     static {
         arrowUpIcon.setSize(new NSSize(32f, 32f));
@@ -112,20 +112,19 @@ public class CDIconCell extends CDTableCell {
 				}
 			}
 			else if(queue instanceof SyncQueue) {
-				fileIcon = syncIcon;
+				arrowIcon = syncIcon;
+				fileIcon = folderIcon;
 			}
-			if (fileIcon != null) {
-				fileIcon.setScalesWhenResized(true);
-				fileIcon.setSize(new NSSize(32f, 32f));
-				
-				fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE, 
-													  cellPoint.y() + 32 + SPACE), 
-										  NSImage.CompositeSourceOver);
-				if(arrowIcon != null) {
-					arrowIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE * 2, 
-														   cellPoint.y() + 32 + SPACE * 2), 
-											   NSImage.CompositeSourceOver);
-				}
+			fileIcon.setScalesWhenResized(true);
+			fileIcon.setSize(new NSSize(32f, 32f));
+			
+			fileIcon.compositeToPoint(new NSPoint(cellPoint.x()+SPACE, 
+												  cellPoint.y()+32+SPACE), 
+									  NSImage.CompositeSourceOver);
+			if(arrowIcon != null) {
+				arrowIcon.compositeToPoint(new NSPoint(cellPoint.x()+SPACE*3, 
+													   cellPoint.y()+32+SPACE*3), 
+										   NSImage.CompositeSourceOver);
 			}
 		}
 	}
