@@ -112,13 +112,25 @@ public class SyncQueue extends Queue {
 		return childs;
 	}
 
-	//@todo localgetsize vs. remotegetsize
-	//cache value upon validation
 	public long getSize() {
-		if(/*this.worker.isRunning() && */this.worker.isInitialized()) {
+		if(this.worker.isRunning() && this.worker.isInitialized()) {
 			long size = 0;
 			for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
-				size += ((Path)iter.next()).getSize();
+				Path path = ((Path)iter.next());
+				if(path.getRemote().exists() && path.getLocal().exists()) {
+					if(path.getLocal().getTimestamp().before(path.attributes.getTimestamp())) {
+						size += path.getRemote().getSize();
+					}
+					if(path.getLocal().getTimestamp().after(path.attributes.getTimestamp())) {
+						size += path.getLocal().getSize();
+					}
+				}
+				else if(path.getRemote().exists()) {
+					size += path.getRemote().getSize();
+				}
+				else if(path.getLocal().exists()) {
+					size += path.getLocal().getSize();
+				}
 			}
 			this.size = size;
 		}

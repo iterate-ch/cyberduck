@@ -181,6 +181,7 @@ public class FTPPath extends Path {
 			session.log("Renaming "+this.getName()+" to "+filename, Message.PROGRESS);
 			session.FTP.rename(this.getAbsolute(), filename);
 			this.setPath(filename);
+			this.getParent().invalidate();
 			session.log("Idle", Message.STOP);
 		}
 		catch(FTPException e) {
@@ -510,6 +511,7 @@ public class FTPPath extends Path {
 			if(this.attributes.isDirectory()) {
 				this.mkdir();
 			}
+			this.getParent().invalidate();
 			session.log("Idle", Message.STOP);
 		}
 		catch(FTPException e) {

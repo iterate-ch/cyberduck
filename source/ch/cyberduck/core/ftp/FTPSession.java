@@ -119,8 +119,8 @@ public class FTPSession extends Session {
 
 	private synchronized void login() throws IOException {
 		log.debug("login");
+		Login credentials = host.getLogin();
 		try {
-			Login credentials = host.getLogin();
 			if(credentials.check()) {
 				this.log("Authenticating as "+host.getLogin().getUsername()+"...", Message.PROGRESS);
 				this.FTP.login(credentials.getUsername(), credentials.getPassword());
@@ -130,8 +130,8 @@ public class FTPSession extends Session {
 		}
 		catch(FTPException e) {
 			this.log("Login failed", Message.PROGRESS);
-			if(host.getLogin().promptUser("Authentication for user "+host.getLogin().getUsername()+" failed. The server response is: "+e.getMessage())) {
-				// let's try again with the new values
+			host.setLogin(credentials.promptUser("Authentication for user "+credentials.getUsername()+" failed. The server response is: "+e.getMessage()));
+			if(host.getLogin().tryAgain()) {
 				this.login();
 			}
 			else {

@@ -56,27 +56,44 @@ public abstract class CDController {
 			NSApplication.sharedApplication().endSheet(this.window().attachedSheet());
 		}
 	}
-
-	public void beginSheet(NSWindow sheet) {
-		log.debug("beginSheet");
-		try {
-			synchronized(this) {
-				while(this.hasSheet()) {
+	
+	public void waitForSheet() {
+		synchronized(this) {
+			while(this.window().attachedSheet() != null) {
+				try {
 					log.debug("Sleeping..."); this.wait(); log.debug("Awakened");
 				}
-				this.window().makeKeyAndOrderFront(null);
-				NSApplication.sharedApplication().beginSheet(sheet, //sheet
-				    this.window(),
-				    this, //modalDelegate
-				    new NSSelector("sheetDidEnd",
-				        new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
-				    null); //contextInfo
-				this.window().makeKeyAndOrderFront(null);
+				catch(InterruptedException e) {
+					log.error(e.getMessage());
+				}
 			}
 		}
-		catch(InterruptedException e) {
-			log.error(e.getMessage());
-		}
+	}
+	
+	public void beginSheet(NSWindow sheet) {
+		this.beginSheet(sheet, new NSSelector("sheetDidEnd",
+									   new Class[]{NSWindow.class, int.class, Object.class}) // did end selector
+						);
+	}
+	
+	public void beginSheet(NSWindow sheet, NSSelector endSelector) {
+		this.beginSheet(sheet, endSelector, null);
+	}
+	
+	public void beginSheet(NSWindow sheet, NSSelector endSelector, Object contextInfo) {
+		this.beginSheet(sheet, this, endSelector, contextInfo);
+	}
+
+	public void beginSheet(NSWindow sheet, Object delegate, NSSelector endSelector, Object contextInfo) {
+		log.debug("beginSheet");
+		this.waitForSheet();
+		this.window().makeKeyAndOrderFront(null);
+		NSApplication.sharedApplication().beginSheet(sheet, //sheet
+													 this.window(),
+													 delegate, //modalDelegate
+													 endSelector, // did end selector
+													 contextInfo); //contextInfo
+		this.window().makeKeyAndOrderFront(null);
 	}
 
 	public void sheetDidEnd(NSWindow window, int returncode, Object contextInfo) {

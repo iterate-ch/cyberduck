@@ -756,7 +756,7 @@ public class CDPreferencesController extends NSObject {
 			int max = Integer.parseInt(this.concurrentConnectionsField.stringValue());
 			Preferences.instance().setProperty("connection.pool.max", max);
 			synchronized(SessionPool.instance()) {
-				SessionPool.instance().notify();
+				SessionPool.instance().notifyAll();
 			}
 		}
 		catch(NumberFormatException e) {

@@ -97,7 +97,7 @@ public class SessionPool extends Hashtable {
 		String key = session.getHost().getURL();
 		if(this.containsKey(key)) {
 			((List)this.get(key)).remove(session);
-			this.notify();
+			this.notifyAll();
 		}
 	}
 }

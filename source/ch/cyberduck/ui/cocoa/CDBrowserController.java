@@ -192,10 +192,6 @@ public class CDBrowserController extends CDController implements Observer {
 		});
 	}
 
-	public void alertSheetDidClose(NSWindow window, int returncode, Object context) {
-		this.notify();
-	}
-
 	// ----------------------------------------------------------
 	// Outlets
 	// ----------------------------------------------------------
@@ -766,8 +762,7 @@ public class CDBrowserController extends CDController implements Observer {
 	public void gotoButtonClicked(Object sender) {
 		log.debug("gotoButtonClicked");
 		CDGotoController controller = new CDGotoController(this.workdir());
-		NSApplication.sharedApplication().beginSheet(controller.window(), //sheet
-		    this.window(), //docwindow
+		this.beginSheet(controller.window(), //sheet
 		    controller, //modal delegate
 		    new NSSelector("gotoSheetDidEnd",
 		        new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
@@ -777,23 +772,21 @@ public class CDBrowserController extends CDController implements Observer {
 	public void fileButtonClicked(Object sender) {
 		log.debug("fileButtonClicked");
 		CDFileController controller = new CDFileController();
-		NSApplication.sharedApplication().beginSheet(controller.window(), //sheet
-													 this.window(), //docwindow
-													 controller, //modal delegate
-													 new NSSelector("newFileSheetDidEnd",
-																	new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
-													 this.workdir()); //contextInfo
+		this.beginSheet(controller.window(), //sheet
+						controller, //modal delegate
+						new NSSelector("newFileSheetDidEnd",
+									   new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
+						this.workdir()); //contextInfo
 	}
 	
 	public void folderButtonClicked(Object sender) {
 		log.debug("folderButtonClicked");
 		CDFolderController controller = new CDFolderController();
-		NSApplication.sharedApplication().beginSheet(controller.window(), //sheet
-													 this.window(), //docwindow
-													 controller, //modal delegate
-													 new NSSelector("newFolderSheetDidEnd",
-																	new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
-													 this.workdir()); //contextInfo
+		this.beginSheet(controller.window(), //sheet
+						controller, //modal delegate
+						new NSSelector("newFolderSheetDidEnd",
+									   new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
+						this.workdir()); //contextInfo
 	}
 	
 	public void infoButtonClicked(Object sender) {
@@ -959,10 +952,9 @@ public class CDBrowserController extends CDController implements Observer {
 			case (NSAlertPanel.DefaultReturn):
 				Path selection = (Path)contextInfo;
 				if(sheet.filenames().count() > 0) {
-					Path sync = selection.copy(selection.getSession().copy());
-					sync.setLocal(new Local((String)sheet.filenames().lastObject()));
+					selection.setLocal(new Local((String)sheet.filenames().lastObject()));
 					Queue q = new SyncQueue((Observer)this);
-					q.addRoot(sync);
+					q.addRoot(selection);
 					CDQueueController.instance().startItem(q);
 				}
 				break;
@@ -1039,12 +1031,7 @@ public class CDBrowserController extends CDController implements Observer {
 	public void connectButtonClicked(Object sender) {
 		log.debug("connectButtonClicked");
 		CDConnectionController controller = new CDConnectionController(this);
-		NSApplication.sharedApplication().beginSheet(controller.window(), //sheet
-		    this.window(), //docwindow
-		    controller, //modal delegate
-		    new NSSelector("connectionSheetDidEnd",
-		        new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
-		    null); //contextInfo
+		this.beginSheet(controller.window());
 	}
 
 	public void disconnectButtonClicked(Object sender) {

@@ -27,7 +27,6 @@ public interface LoginController {
      * A concrete sublcass could eg. display a panel.
      *
      * @param explanation Any additional information why the login failed.
-     * @return true If we whould try again with new login
      */
-    public boolean promptUser(Login login, String explanation);
+    public Login promptUser(Login login, String explanation);
 }

@@ -32,7 +32,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public class CDConnectionController extends NSObject implements Observer {
+public class CDConnectionController extends CDController implements Observer {
 	private static Logger log = Logger.getLogger(CDConnectionController.class);
 
 	private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)", "");
@@ -41,17 +41,6 @@ public class CDConnectionController extends NSObject implements Observer {
 	// ----------------------------------------------------------
 	// Outlets
 	// ----------------------------------------------------------
-
-	private NSWindow window;
-
-	public void setWindow(NSWindow window) {
-		this.window = window;
-		this.window.setDelegate(this);
-	}
-
-	public NSWindow window() {
-		return this.window;
-	}
 
 	/*
 		private NSPopUpButton historyPopup;
@@ -256,7 +245,7 @@ public class CDConnectionController extends NSObject implements Observer {
 			panel.beginSheetForDirectory(System.getProperty("user.home")+"/.ssh",
 			    null,
 			    null,
-			    this.window,
+			    this.window(),
 			    this,
 			    new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
 			    null);
@@ -299,14 +288,14 @@ public class CDConnectionController extends NSObject implements Observer {
 
 	private static NSMutableArray instances = new NSMutableArray();
 
-	private CDBrowserController browser;
+	private CDBrowserController browserController;
 
 	// ----------------------------------------------------------
 	// Constructors
 	// ----------------------------------------------------------
 
-	public CDConnectionController(CDBrowserController browser) {
-		this.browser = browser;
+	public CDConnectionController(CDBrowserController browserController) {
+		this.browserController = browserController;
 		if(false == NSApplication.loadNibNamed("Connection", this)) {
 			log.fatal("Couldn't load Connection.nib");
 		}
@@ -319,7 +308,7 @@ public class CDConnectionController extends NSObject implements Observer {
 	}
 
 
-	private void awakeFromNib() {
+	public void awakeFromNib() {
 		log.debug("awakeFromNib");
 		// Notify the updateURLLabel() method if the user types.
 		//ControlTextDidChangeNotification
@@ -403,28 +392,16 @@ public class CDConnectionController extends NSObject implements Observer {
 		else if(selectedItem.tag() == Session.FTP_PORT) {
 			protocol = Session.FTP+"://";
 		}
-		/*
-		else if (selectedItem.tag() == Session.FTPS_PORT) {
-		protocol = Session.FTPS + "://";
-		}
-		 */
 		urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostPopup.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
 	}
 
 	public void closeSheet(NSButton sender) {
-		log.debug("closeSheet");
+		this.browserController.endSheet();
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 		// Rendezvous should not eat ressources if there is no need to do so
 		this.rendezvous.deleteObserver(this);
 		this.rendezvous.quit();
-		// Ends a document modal session by specifying the window window, window. Also passes along a returnCode to the delegate.
-		NSApplication.sharedApplication().endSheet(this.window, sender.tag());
-	}
-
-	public void connectionSheetDidEnd(NSWindow window, int returncode, Object context) {
-		log.debug("connectionSheetDidEnd");
-		window.orderOut(null);
-		switch(returncode) {
+		switch(sender.tag()) {
 			case (NSAlertPanel.DefaultReturn):
 				// Every item in the protocol popup has a tag
 				// The value of the tag is the default port number for the protocol selected
@@ -436,26 +413,26 @@ public class CDConnectionController extends NSObject implements Observer {
 					case (Session.SSH_PORT):
 						// SFTP has been selected as the protocol to connect with
 						host = new Host(Session.SFTP,
-						    hostPopup.stringValue(),
-						    Integer.parseInt(portField.stringValue()),
-						    new Login(hostPopup.stringValue(), usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState),
-						    pathField.stringValue());
+										hostPopup.stringValue(),
+										Integer.parseInt(portField.stringValue()),
+										new Login(hostPopup.stringValue(), usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState),
+										pathField.stringValue());
 						break;
 					case (Session.FTP_PORT):
 						// FTP has been selected as the protocol to connect with
 						host = new Host(Session.FTP,
-						    hostPopup.stringValue(),
-						    Integer.parseInt(portField.stringValue()),
-						    new Login(hostPopup.stringValue(), usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState),
-						    pathField.stringValue());
+										hostPopup.stringValue(),
+										Integer.parseInt(portField.stringValue()),
+										new Login(hostPopup.stringValue(), usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState),
+										pathField.stringValue());
 						break;
 					default:
 						throw new IllegalArgumentException("No protocol selected.");
 				}
-				if(pkCheckbox.state() == NSCell.OnState) {
-					host.getLogin().setPrivateKeyFile(pkLabel.stringValue());
-				}
-				browser.mount(host);
+					if(pkCheckbox.state() == NSCell.OnState) {
+						host.getLogin().setPrivateKeyFile(pkLabel.stringValue());
+					}
+					browserController.mount(host);
 				break;
 			case (NSAlertPanel.AlternateReturn):
 				break;

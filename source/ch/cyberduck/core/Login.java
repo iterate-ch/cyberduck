@@ -190,7 +190,7 @@ public class Login {
 				log.info("Searching keychain for password...");
 				String passFromKeychain = this.getPasswordFromKeychain();
 				if(null == passFromKeychain || passFromKeychain.equals("")) {
-					return controller.promptUser(this, "The username or password does not seem reasonable.");
+					return this.promptUser("The username or password does not seem reasonable.").tryAgain();
 				}
 				else {
 					this.pass = passFromKeychain;
@@ -198,18 +198,28 @@ public class Login {
 				}
 			}
 			else {
-				return controller.promptUser(this, "The username or password does not seem reasonable.");
+				return this.promptUser("The username or password does not seem reasonable.").tryAgain();
 			}
 		}
 		return true;
 	}
 
+	private boolean tryAgain;
+	
+	public boolean tryAgain() {
+		return this.tryAgain;
+	}
+
+	public void setTryAgain(boolean v) {
+		this.tryAgain = v;
+	}
+	
 	/**
 	 * @return true if the user hasn't canceled the login process. If false is returned,
 	 *         no more attempts should be made and the connection closed.
 	 * @pre controller != null
 	 */
-	public boolean promptUser(String message) {
+	public Login promptUser(String message) {
 		return this.controller.promptUser(this, message);
 	}
 

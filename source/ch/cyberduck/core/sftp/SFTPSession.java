@@ -186,7 +186,7 @@ public class SFTPSession extends Session {
 		return SSH.authenticate(auth);
 	}
 
-	private int loginUsingPublicKeyAuthentication(final Login credentials) throws IOException {
+	private int loginUsingPublicKeyAuthentication(Login credentials) throws IOException {
 		log.info("Trying Public Key authentication...");
 		PublicKeyAuthenticationClient pk = new PublicKeyAuthenticationClient();
 		pk.setUsername(credentials.getUsername());
@@ -197,7 +197,8 @@ public class SFTPSession extends Session {
 		if(keyFile.isPassphraseProtected()) {
 			passphrase = credentials.getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
 			if(null == passphrase || passphrase.equals("")) {
-				if(host.getLogin().promptUser("The Private Key is password protected. Enter the passphrase for the key file '"+credentials.getPrivateKeyFile()+"'.")) {
+				host.setLogin(credentials.promptUser("The Private Key is password protected. Enter the passphrase for the key file '"+credentials.getPrivateKeyFile()+"'."));
+				if(host.getLogin().tryAgain()) {
 					passphrase = credentials.getPassword();
 					if(keyFile.isPassphraseProtected()) {
 						if(credentials.usesKeychain()) {
@@ -218,18 +219,16 @@ public class SFTPSession extends Session {
 
 	private synchronized void login() throws IOException {
 		log.debug("login");
-		final Login credentials = host.getLogin();
+		Login credentials = host.getLogin();
 		if(credentials.check()) {
 			this.log("Authenticating as '"+credentials.getUsername()+"'", Message.PROGRESS);
 			if(credentials.usesPublicKeyAuthentication()) {
 				if(AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(credentials)) {
 					this.log("Login successful", Message.PROGRESS);
-					//credentials.addPasswordToKeychain();
 					return;
 				}
 			}
 			else {
-//                if (AuthenticationProtocolState.COMPLETE == this.loginUsingAgentAuthentication(credentials) ||
 				if(
 				    AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
 				    AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
@@ -239,7 +238,8 @@ public class SFTPSession extends Session {
 				}
 			}
 			this.log("Login failed", Message.PROGRESS);
-			if(credentials.promptUser("Authentication as user "+credentials.getUsername()+" failed.")) {
+			host.setLogin(credentials.promptUser("Authentication for user "+credentials.getUsername()+" failed."));
+			if(host.getLogin().tryAgain()) {
 				this.login();
 			}
 			else {

@@ -162,21 +162,26 @@ public abstract class Path {
 		return this.size;
 	}
 		
-	/**
+	private Path parent;
+	
+	/*
 	 * @return My parent directory
 	 */
 	public Path getParent() {
-		int index = this.getAbsolute().lastIndexOf('/');
-		String parent = null;
-		if(index > 0) {
-			parent = this.getAbsolute().substring(0, index);
+		if(null == parent) {
+			int index = this.getAbsolute().lastIndexOf('/');
+//			String parent = null;
+			if(index > 0) {
+				this.parent = this.getAbsolute().substring(0, index);
+			}
+			else {//if (index == 0) //parent is root
+				this.parent = "/";
+			}
+			this.parent = PathFactory.createPath(this.getSession(), parent);
 		}
-		else {//if (index == 0) //parent is root
-			parent = "/";
-		}
-		return PathFactory.createPath(this.getSession(), parent);
+		return this.parent;
 	}
-
+	
 	/**
 	 * @throws NullPointerException if session is not initialized
 	 */
@@ -232,10 +237,6 @@ public abstract class Path {
 	 * @param recursive Include subdirectories and files
 	 */
 	public abstract void changePermissions(Permission perm, boolean recursive);
-
-	public boolean exists() {
-		return this.getParent().list(false, true).contains(this);
-	}
 
 	/*
 	public boolean exists(boolean returnFalseIfSizeIsZero) {
@@ -463,6 +464,10 @@ public abstract class Path {
 		}
 	}
 
+	public boolean exists() {
+		return this.getParent().list(false, true).contains(this);
+	}
+		
 	public boolean equals(Object other) {
 		if(other instanceof Path) {
 			return this.getAbsolute().equals(((Path)other).getAbsolute());

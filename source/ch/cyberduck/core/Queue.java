@@ -197,26 +197,6 @@ public abstract class Queue extends Observable {
 			return this.jobs;
 		}
 				
-		public void run() {
-			this.init();
-			this.validator.validate(queue);
-			if(!this.validator.isCanceled()) {
-				if(this.validator.getResult().size() > 0) {
-					this.jobs = this.validator.getResult();
-					for(Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
-						((Path)iter.next()).status.reset();
-					}
-					for(Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
-						this.queue.process((Path)iter.next());
-					}
-				}
-			}
-			else {
-				this.cancel();
-			}
-			this.finish();
-		}
-		
 		private void init() {
 			this.running = true;
 			this.progress = new Timer(500,
@@ -248,10 +228,30 @@ public abstract class Queue extends Observable {
 										  }
 									  });
 			this.progress.start();
-			//@todo this.queue.getRoot().getSession().cache().clear();
+			//@todo this.queue.getRoot().getSession().cache().clear(); //@todo in path.upload() instead
 			this.queue.callObservers(new Message(Message.QUEUE_START));
 		}
 		
+		public void run() {
+			this.init();
+			this.validator.validate(queue);
+			if(!this.validator.isCanceled()) {
+				if(this.validator.getResult().size() > 0) {
+					this.jobs = this.validator.getResult();
+					for(Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
+						((Path)iter.next()).status.reset();
+					}
+					for(Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
+						this.queue.process((Path)iter.next());
+					}
+				}
+			}
+			else {
+				this.cancel();
+			}
+			this.finish();
+		}
+				
 		private void finish() {
 			this.running = false;
 			this.progress.stop();

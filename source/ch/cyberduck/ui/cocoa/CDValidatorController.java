@@ -59,18 +59,9 @@ public abstract class CDValidatorController extends AbstractValidator {
 			}
 		}
 		if(this.visible && !this.isCanceled()) {
-			synchronized(CDQueueController.instance()) {
-				this.statusIndicator.stopAnimation(null);
-				this.setEnabled(true);
-				while(CDQueueController.instance().hasSheet()) {
-					try {
-						log.debug("Sleeping..."); CDQueueController.instance().wait(); log.debug("Awakened");
-					}
-					catch(InterruptedException e) {
-						log.error(e.getMessage());
-					}
-				}
-			}
+			this.statusIndicator.stopAnimation(null);
+			this.setEnabled(true);
+			CDQueueController.instance().waitForSheet();
 		}
 	}
 

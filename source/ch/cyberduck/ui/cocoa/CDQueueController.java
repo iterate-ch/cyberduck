@@ -442,14 +442,6 @@ public class CDQueueController extends CDController {
 
 	public synchronized void openButtonClicked(Object sender) {
 		if(this.queueTable.selectedRow() != -1) {
-			while(this.hasSheet()) {
-				try {
-					log.debug("Sleeping..."); this.wait(); log.debug("Awakened");
-				}
-				catch(InterruptedException e) {
-					log.error(e.getMessage());
-				}
-			}
 			Queue item = this.queueModel.getItem(this.queueTable.selectedRow());
 			Path f = item.getRoot();
 			String file = item.getRoot().getLocal().toString();
@@ -480,14 +472,6 @@ public class CDQueueController extends CDController {
 
 	public synchronized void revealButtonClicked(Object sender) {
 		if(this.queueTable.selectedRow() != -1) {
-			while(this.hasSheet()) {
-				try {
-					log.debug("Sleeping..."); this.wait(); log.debug("Awakened");
-				}
-				catch(InterruptedException e) {
-					log.error(e.getMessage());
-				}
-			}
 			Queue item = this.queueModel.getItem(this.queueTable.selectedRow());
 			Path f = item.getRoot();
 			String file = item.getRoot().getLocal().toString();

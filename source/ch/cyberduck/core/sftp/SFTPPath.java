@@ -205,6 +205,7 @@ public class SFTPPath extends Path {
 			session.log("Renaming "+this.getName()+" to "+filename, Message.PROGRESS);
 			session.SFTP.renameFile(this.getAbsolute(), filename);
 			this.setPath(filename);
+			this.getParent().invalidate();
 			session.log("Idle", Message.STOP);
 		}
 		catch(SshException e) {
@@ -410,6 +411,7 @@ public class SFTPPath extends Path {
 			if(this.attributes.isDirectory()) {
 				this.mkdir();
 			}
+			this.getParent().invalidate();
 			session.log("Idle", Message.STOP);
 		}
 		catch(SshException e) {
