@@ -9,7 +9,9 @@
 /cyberduck-document.tiff -text
 de.lproj/Bookmark.nib/keyedobjects.nib -text
 de.lproj/Bookmark.strings svneol=native#unset
+de.lproj/Browser.nib/keyedobjects.nib -text
 de.lproj/Browser.strings svneol=native#unset
+de.lproj/Connection.nib/keyedobjects.nib -text
 de.lproj/Connection.strings svneol=native#unset
 de.lproj/Donate.nib/keyedobjects.nib -text
 de.lproj/Donate.strings svneol=native#unset
@@ -23,6 +25,7 @@ de.lproj/Info.nib/keyedobjects.nib -text
 de.lproj/Info.strings svneol=native#unset
 de.lproj/InfoPlist.strings -text
 de.lproj/Localizable.strings -text
+de.lproj/Login.nib/keyedobjects.nib -text
 de.lproj/Login.strings svneol=native#unset
 de.lproj/Main.nib/keyedobjects.nib -text
 de.lproj/Main.strings svneol=native#unset
@@ -87,6 +90,7 @@ es.lproj/Update.nib/keyedobjects.nib -text
 es.lproj/Update.strings svneol=native#unset
 fr.lproj/Bookmark.nib/keyedobjects.nib -text
 fr.lproj/Bookmark.strings svneol=native#unset
+fr.lproj/Browser.nib/keyedobjects.nib -text
 fr.lproj/Browser.strings svneol=native#unset
 fr.lproj/Connection.nib/keyedobjects.nib -text
 fr.lproj/Connection.strings svneol=native#unset
@@ -252,6 +256,7 @@ lib/log4j.jar svneol=native#unset
 lib/logging.jar -text
 nl.lproj/Bookmark.nib/keyedobjects.nib -text
 nl.lproj/Bookmark.strings svneol=native#unset
+nl.lproj/Browser.nib/keyedobjects.nib -text
 nl.lproj/Browser.strings svneol=native#unset
 nl.lproj/Connection.nib/keyedobjects.nib -text
 nl.lproj/Connection.strings svneol=native#unset
@@ -271,6 +276,7 @@ nl.lproj/Login.nib/keyedobjects.nib -text
 nl.lproj/Login.strings svneol=native#unset
 nl.lproj/Main.nib/keyedobjects.nib -text
 nl.lproj/Main.strings svneol=native#unset
+nl.lproj/Preferences.nib/keyedobjects.nib -text
 nl.lproj/Preferences.strings svneol=native#unset
 nl.lproj/Queue.nib/keyedobjects.nib -text
 nl.lproj/Queue.strings svneol=native#unset
@@ -278,7 +284,9 @@ nl.lproj/Update.nib/keyedobjects.nib -text
 nl.lproj/Update.strings svneol=native#unset
 pt.lproj/Bookmark.nib/keyedobjects.nib -text
 pt.lproj/Bookmark.strings svneol=native#unset
+pt.lproj/Browser.nib/keyedobjects.nib -text
 pt.lproj/Browser.strings svneol=native#unset
+pt.lproj/Connection.nib/keyedobjects.nib -text
 pt.lproj/Connection.strings svneol=native#unset
 pt.lproj/Donate.nib/keyedobjects.nib -text
 pt.lproj/Donate.strings svneol=native#unset
@@ -292,6 +300,7 @@ pt.lproj/Info.nib/keyedobjects.nib -text
 pt.lproj/Info.strings svneol=native#unset
 pt.lproj/InfoPlist.strings svneol=native#unset
 pt.lproj/Localizable.strings svneol=native#unset
+pt.lproj/Login.nib/keyedobjects.nib -text
 pt.lproj/Login.strings svneol=native#unset
 pt.lproj/Main.nib/keyedobjects.nib -text
 pt.lproj/Main.strings svneol=native#unset
