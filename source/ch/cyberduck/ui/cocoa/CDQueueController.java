@@ -264,10 +264,18 @@ public class CDQueueController extends CDController {
 			public void update(final java.util.Observable o, final Object arg) {
 				Message msg = (Message)arg;
 				if(msg.getTitle().equals(Message.QUEUE_START)) {
-					toolbar.validateVisibleItems();
+					ThreadUtilities.instance().invokeLater(new Runnable() {
+						public void run() {
+							toolbar.validateVisibleItems();
+						}
+					});
 				}
 				if(msg.getTitle().equals(Message.QUEUE_STOP)) {
-					toolbar.validateVisibleItems();
+					ThreadUtilities.instance().invokeLater(new Runnable() {
+						public void run() {
+							toolbar.validateVisibleItems();
+						}
+					});
 					o.deleteObserver(this);
 				}
 			}

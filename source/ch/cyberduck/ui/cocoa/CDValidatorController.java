@@ -61,7 +61,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 				log.info("Adding "+child+" to final set.");				
 				this.validatedList.add(child);
 			}
-			this.fireDataChanged();
 		}
 		if(this.isCanceled()) {
 			return;
@@ -92,6 +91,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 		}
 		this.promptList.add(p);
 		this.workList.add(p);
+		this.fireDataChanged();
 	}
 	
 	protected void adjustFilename(Path path) {

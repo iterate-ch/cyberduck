@@ -22,13 +22,10 @@ import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.foundation.NSCoder;
 import com.apple.cocoa.foundation.NSRect;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class CDProgressCell extends CDTableCell {
-	private static Logger log = Logger.getLogger(CDProgressCell.class);
 
 	public CDProgressCell() {
 		super();

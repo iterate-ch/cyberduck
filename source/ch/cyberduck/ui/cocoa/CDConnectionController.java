@@ -42,31 +42,6 @@ public class CDConnectionController extends CDController implements Observer {
 	// Outlets
 	// ----------------------------------------------------------
 
-	/*
-		private NSPopUpButton historyPopup;
-
-		public void setHistoryPopup(NSPopUpButton historyPopup) {
-			this.historyPopup = historyPopup;
-			this.historyPopup.setImage(NSImage.imageNamed("history.tiff"));
-			Iterator i = CDHistoryImpl.instance().iterator();
-			while (i.hasNext()) {
-				historyPopup.addItem(i.next().toString());
-			}
-			//		this.historyPopup.addItem("Clear");
-			this.historyPopup.setTarget(this);
-			this.historyPopup.setAction(new NSSelector("historySelectionChanged", new Class[]{Object.class}));
-		}
-
-		public void historySelectionChanged(Object sender) {
-			log.debug("historySelectionChanged");
-			//		if(historyPopup.titleOfSelectedItem().equals("Clear")) {
-			//			CDHistoryImpl.instance().clear();
-			//			historyPopup.removeAllItems();
-			//		}
-			this.selectionChanged(CDHistoryImpl.instance().getItem(historyPopup.indexOfSelectedItem() - 1));
-		}
-	 */
-
 	private NSPopUpButton bookmarksPopup;
 
 	public void setBookmarksPopup(NSPopUpButton bookmarksPopup) {

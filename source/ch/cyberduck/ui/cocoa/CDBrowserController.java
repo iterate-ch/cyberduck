@@ -180,7 +180,7 @@ public class CDBrowserController extends CDController implements Observer {
 				this.pathPopupButton.removeAllItems();
 				ThreadUtilities.instance().invokeLater(new Runnable() {
 					public void run() {
-						CDBrowserController.this.toolbar.validateVisibleItems();
+						toolbar.validateVisibleItems();
 					}
 				});
 				//this.window().setDocumentEdited(true);
@@ -191,7 +191,7 @@ public class CDBrowserController extends CDController implements Observer {
 				this.statusIcon.setNeedsDisplay(true);
 				ThreadUtilities.instance().invokeLater(new Runnable() {
 					public void run() {
-						CDBrowserController.this.toolbar.validateVisibleItems();
+						toolbar.validateVisibleItems();
 					}
 				});
 				//this.window().setDocumentEdited(false);
@@ -1227,7 +1227,7 @@ public class CDBrowserController extends CDController implements Observer {
 				this.window().setRepresentedFilename(bookmark.getAbsolutePath());
 			}
 
-			//TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(logView));
+			TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(this.logView));
 
 			Session session = SessionFactory.createSession(host);
 			//this.workdir = PathFactory.createPath(session, host.getDefaultPath());
