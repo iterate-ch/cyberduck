@@ -4,7 +4,9 @@
 /cyberduck-document.icns svneol=native#unset
 img/add.tiff svneol=native#unset
 img/addPressed.tiff svneol=native#unset
+img/arrow.tiff svneol=native#unset
 img/back.tiff svneol=native#unset
+img/back32.tiff -text
 img/connect.tiff svneol=native#unset
 img/delete.tiff svneol=native#unset
 img/disconnect.tiff svneol=native#unset
@@ -15,6 +17,7 @@ img/folder.tiff -text
 img/info.tiff svneol=native#unset
 img/newfolder.icns svneol=native#unset
 img/refresh.tiff svneol=native#unset
+img/refresh_aqua.tiff -text
 img/reload.tiff svneol=native#unset
 img/remove.tiff svneol=native#unset
 img/removePressed.tiff svneol=native#unset
