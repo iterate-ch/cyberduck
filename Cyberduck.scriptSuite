@@ -86,7 +86,7 @@
 						<key>AppleEventCode</key>
 						<string>PrCl</string>
 						<key>Optional</key>
-						<string>Yes</string>
+						<string>No</string>
 						<key>Type</key>
 						<string>NSString&lt;Protocols&gt;</string>
 					</dict>

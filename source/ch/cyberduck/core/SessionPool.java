@@ -69,7 +69,7 @@ public class SessionPool extends Hashtable {
 		   connections = (List)this.get(key);
 		   while(connections.size() >= Integer.parseInt(Preferences.instance().getProperty("connection.pool.max"))) {
 			   try {
-				   session.log("Allowed connections exceeded. Waiting...", Message.PROGRESS);
+				   session.log(NSBundle.localizedString("Maximum allowed connections exceeded. Waiting...", ""), Message.PROGRESS);
 				   this.wait(Integer.parseInt(Preferences.instance().getProperty("connection.pool.timeout"))*1000);
 			   }
 			   catch (InterruptedException ignored) {

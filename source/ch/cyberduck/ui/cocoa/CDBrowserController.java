@@ -1042,13 +1042,13 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 	
 	public void mount(NSScriptCommand command) {
         log.debug("mount:"+command);
-//		NSDictionary args = command.evaluatedArguments();
-//		Host host = new Host((String)args.objectForKey("Protocol"),
-//							 (String)args.objectForKey("Host"),
-//							 Integer.parseInt((String)args.objectForKey("Port")),
-//							 new Login((String)args.objectForKey("Host"), (String)args.objectForKey("Username"), (String)args.objectForKey("Password"), false),
-//							 (String)args.objectForKey("Path"));
-//		this.mount(host);
+		NSDictionary args = command.evaluatedArguments();
+		Host host = new Host((String)args.objectForKey("Protocol"),
+							 (String)args.objectForKey("Host"),
+							 Integer.parseInt((String)args.objectForKey("Port")),
+							 new Login((String)args.objectForKey("Host"), (String)args.objectForKey("Username"), (String)args.objectForKey("Password"), false),
+							 (String)args.objectForKey("InitialPath"));
+		this.mount(host);
 	}
 		
     public void mount(final Host host) {

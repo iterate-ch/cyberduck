@@ -78,7 +78,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 				StringBuffer tooltip = new StringBuffer();
 				Queue q = this.getItem(row);
 				for(Iterator i = q.getJobs().iterator(); i.hasNext(); ) {
-					tooltip.append(i.next().toString());
+					tooltip.append(i.next().toString()+"\n");
 				}
 				return tooltip.toString();
 			}
