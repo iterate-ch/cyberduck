@@ -29,23 +29,23 @@ import org.apache.log4j.Logger;
  */
 public class CDPreferencesController {
     private static Logger log = Logger.getLogger(CDPreferencesController.class);
-
+	
     private static CDPreferencesController instance;
-
+	
     private static final String CONNECTMODE_ACTIVE = NSBundle.localizedString("Active");
     private static final String CONNECTMODE_PASSIVE = NSBundle.localizedString("Passive");
     
     private static final String TRANSFERMODE_BINARY = NSBundle.localizedString("Binary");
     private static final String TRANSFERMODE_ASCII = NSBundle.localizedString("ASCII");
-
+	
     private static final String PROTOCOL_FTP = "FTP";
     private static final String PROTOCOL_SFTP = "SFTP";
-
-//    private static final String ASK_ME_WHAT_TO_DO = NSBundle.localizedString("Ask me what to do");
+	
+	//    private static final String ASK_ME_WHAT_TO_DO = NSBundle.localizedString("Ask me what to do");
     private static final String OVERWRITE_EXISTING_FILE = NSBundle.localizedString("Overwrite existing file");
     private static final String TRY_TO_RESUME_TRANSFER = NSBundle.localizedString("Try to resume transfer");
     private static final String USE_A_SIMILAR_NAME = NSBundle.localizedString("Use similar name");
-        
+	
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
@@ -53,25 +53,25 @@ public class CDPreferencesController {
     // public-key algorithms
     private static final String SSH_DSS = "ssh-dss";
     private static final String SSH_RSA = "ssh-rsa";
-
+	
     private NSPopUpButton publickeyCombo;
     public void setPublickeyCombo(NSPopUpButton publickeyCombo) {
-	this.publickeyCombo = publickeyCombo;
-	this.publickeyCombo.setTarget(this);
-	this.publickeyCombo.setAction(new NSSelector("publickeyComboClicked", new Class[] {NSPopUpButton.class}));
-	this.publickeyCombo.removeAllItems();
-	this.publickeyCombo.addItemsWithTitles(
-					   new NSArray(new String[]{
-					       SSH_DSS,
-					       SSH_RSA
-					   }));
-	
-	publickeyCombo.setTitle(Preferences.instance().getProperty("ssh.publickey"));
+		this.publickeyCombo = publickeyCombo;
+		this.publickeyCombo.setTarget(this);
+		this.publickeyCombo.setAction(new NSSelector("publickeyComboClicked", new Class[] {NSPopUpButton.class}));
+		this.publickeyCombo.removeAllItems();
+		this.publickeyCombo.addItemsWithTitles(
+										 new NSArray(new String[]{
+											 SSH_DSS,
+											 SSH_RSA
+										 }));
+		
+		publickeyCombo.setTitle(Preferences.instance().getProperty("ssh.publickey"));
     }
     public void publickeyComboClicked(NSPopUpButton sender) {
-	Preferences.instance().setProperty("ssh.publickey", sender.titleOfSelectedItem());
+		Preferences.instance().setProperty("ssh.publickey", sender.titleOfSelectedItem());
     }    
-
+	
     //encryption ciphers
     private static final String des_cbc = "3des-cbc";
     private static final String blowfish_cbc = "blowfish-cbc"; 
@@ -82,61 +82,61 @@ public class CDPreferencesController {
     private static final String aes196_cbc = "aes196-cbc";
     private static final String aes128_cbc = "aes128-cbc";
     private static final String cast128_cbc = "cast128-cbc";
-            
+	
     private NSPopUpButton CSEncryptionCombo;
     public void setCSEncryptionCombo(NSPopUpButton CSEncryptionCombo) {
-	this.CSEncryptionCombo = CSEncryptionCombo;
-	this.CSEncryptionCombo.setTarget(this);
-	this.CSEncryptionCombo.setAction(new NSSelector("CSEncryptionComboClicked", new Class[] {NSPopUpButton.class}));
-	this.CSEncryptionCombo.removeAllItems();
-	this.CSEncryptionCombo.addItemsWithTitles(
-					   new NSArray(new String[]{
-					       "Default",
-					       des_cbc, 
-					       blowfish_cbc, 
-					       twofish256_cbc, 
-					       twofish196_cbc, 
-					       twofish128_cbc,
-					       aes256_cbc,
-					       aes196_cbc,
-					       aes128_cbc,
-					       cast128_cbc
-					   }));
-	
-	CSEncryptionCombo.setTitle(Preferences.instance().getProperty("ssh.CSEncryption"));
+		this.CSEncryptionCombo = CSEncryptionCombo;
+		this.CSEncryptionCombo.setTarget(this);
+		this.CSEncryptionCombo.setAction(new NSSelector("CSEncryptionComboClicked", new Class[] {NSPopUpButton.class}));
+		this.CSEncryptionCombo.removeAllItems();
+		this.CSEncryptionCombo.addItemsWithTitles(
+											new NSArray(new String[]{
+												"Default",
+												des_cbc, 
+												blowfish_cbc, 
+												twofish256_cbc, 
+												twofish196_cbc, 
+												twofish128_cbc,
+												aes256_cbc,
+												aes196_cbc,
+												aes128_cbc,
+												cast128_cbc
+											}));
+		
+		CSEncryptionCombo.setTitle(Preferences.instance().getProperty("ssh.CSEncryption"));
     }
     
     public void CSEncryptionComboClicked(NSPopUpButton sender) {
-	Preferences.instance().setProperty("ssh.CSEncryption", sender.titleOfSelectedItem());
+		Preferences.instance().setProperty("ssh.CSEncryption", sender.titleOfSelectedItem());
     }    
     
     private NSPopUpButton SCEncryptionCombo;
     public void setSCEncryptionCombo(NSPopUpButton SCEncryptionCombo) {
-	this.SCEncryptionCombo = SCEncryptionCombo;
-	this.SCEncryptionCombo.setTarget(this);
-	this.SCEncryptionCombo.setAction(new NSSelector("SCEncryptionComboClicked", new Class[] {NSPopUpButton.class}));
-	this.SCEncryptionCombo.removeAllItems();
-	this.SCEncryptionCombo.addItemsWithTitles(
-					   new NSArray(new String[]{
-					       "Default",
-					       des_cbc, 
-					       blowfish_cbc, 
-					       twofish256_cbc, 
-					       twofish196_cbc, 
-					       twofish128_cbc,
-					       aes256_cbc,
-					       aes196_cbc,
-					       aes128_cbc,
-					       cast128_cbc
-					   }));
-	
-	SCEncryptionCombo.setTitle(Preferences.instance().getProperty("ssh.SCEncryption"));
+		this.SCEncryptionCombo = SCEncryptionCombo;
+		this.SCEncryptionCombo.setTarget(this);
+		this.SCEncryptionCombo.setAction(new NSSelector("SCEncryptionComboClicked", new Class[] {NSPopUpButton.class}));
+		this.SCEncryptionCombo.removeAllItems();
+		this.SCEncryptionCombo.addItemsWithTitles(
+											new NSArray(new String[]{
+												"Default",
+												des_cbc, 
+												blowfish_cbc, 
+												twofish256_cbc, 
+												twofish196_cbc, 
+												twofish128_cbc,
+												aes256_cbc,
+												aes196_cbc,
+												aes128_cbc,
+												cast128_cbc
+											}));
+		
+		SCEncryptionCombo.setTitle(Preferences.instance().getProperty("ssh.SCEncryption"));
     }
     
     public void SCEncryptionComboClicked(NSPopUpButton sender) {
-	Preferences.instance().setProperty("ssh.SCEncryption", sender.titleOfSelectedItem());
+		Preferences.instance().setProperty("ssh.SCEncryption", sender.titleOfSelectedItem());
     }    
-
+	
     
     //authentication algorithms
     private static final String hmac_sha1 = "hmac-sha1";
@@ -146,384 +146,397 @@ public class CDPreferencesController {
     
     private NSPopUpButton SCAuthenticationCombo;
     public void setSCAuthenticationCombo(NSPopUpButton SCAuthenticationCombo) {
-	this.SCAuthenticationCombo = SCAuthenticationCombo;
-	this.SCAuthenticationCombo.setTarget(this);
-	this.SCAuthenticationCombo.setAction(new NSSelector("SCAuthenticationComboClicked", new Class[] {NSPopUpButton.class}));
-	this.SCAuthenticationCombo.removeAllItems();
-	this.SCAuthenticationCombo.addItemsWithTitles(
-					       new NSArray(new String[]{
-						   "Default",
-						   hmac_sha1,
-						   hmac_sha1_96, 
-						   hmac_md5,
-						   hmac_md5_96
-					       }));
-	
-	SCAuthenticationCombo.setTitle(Preferences.instance().getProperty("ssh.SCAuthentication"));
+		this.SCAuthenticationCombo = SCAuthenticationCombo;
+		this.SCAuthenticationCombo.setTarget(this);
+		this.SCAuthenticationCombo.setAction(new NSSelector("SCAuthenticationComboClicked", new Class[] {NSPopUpButton.class}));
+		this.SCAuthenticationCombo.removeAllItems();
+		this.SCAuthenticationCombo.addItemsWithTitles(
+												new NSArray(new String[]{
+													"Default",
+													hmac_sha1,
+													hmac_sha1_96, 
+													hmac_md5,
+													hmac_md5_96
+												}));
+		
+		SCAuthenticationCombo.setTitle(Preferences.instance().getProperty("ssh.SCAuthentication"));
     }
     
     public void SCAuthenticationComboClicked(NSPopUpButton sender) {
-	Preferences.instance().setProperty("ssh.SCAuthentication", sender.titleOfSelectedItem());
+		Preferences.instance().setProperty("ssh.SCAuthentication", sender.titleOfSelectedItem());
     }    
-
+	
     
     private NSPopUpButton CSAuthenticationCombo;
     public void setCSAuthenticationCombo(NSPopUpButton CSAuthenticationCombo) {
-	this.CSAuthenticationCombo = CSAuthenticationCombo;
-	this.CSAuthenticationCombo.setTarget(this);
-	this.CSAuthenticationCombo.setAction(new NSSelector("CSAuthenticationComboClicked", new Class[] {NSPopUpButton.class}));
-	this.CSAuthenticationCombo.removeAllItems();
-	this.CSAuthenticationCombo.addItemsWithTitles(
-					       new NSArray(new String[]{
-						   "Default",
-						   hmac_sha1,
-						   hmac_sha1_96, 
-						   hmac_md5,
-						   hmac_md5_96
-					       }));
-	
-	CSAuthenticationCombo.setTitle(Preferences.instance().getProperty("ssh.CSAuthentication"));
+		this.CSAuthenticationCombo = CSAuthenticationCombo;
+		this.CSAuthenticationCombo.setTarget(this);
+		this.CSAuthenticationCombo.setAction(new NSSelector("CSAuthenticationComboClicked", new Class[] {NSPopUpButton.class}));
+		this.CSAuthenticationCombo.removeAllItems();
+		this.CSAuthenticationCombo.addItemsWithTitles(
+												new NSArray(new String[]{
+													"Default",
+													hmac_sha1,
+													hmac_sha1_96, 
+													hmac_md5,
+													hmac_md5_96
+												}));
+		
+		CSAuthenticationCombo.setTitle(Preferences.instance().getProperty("ssh.CSAuthentication"));
     }
     
     public void CSAuthenticationComboClicked(NSPopUpButton sender) {
-	Preferences.instance().setProperty("ssh.CSAuthentication", sender.titleOfSelectedItem());
+		Preferences.instance().setProperty("ssh.CSAuthentication", sender.titleOfSelectedItem());
     }    
-
+	
     
     private NSButton downloadPathButton;
     public void setDownloadPathButton(NSButton downloadPathButton) {
-	this.downloadPathButton = downloadPathButton;
-	this.downloadPathButton.setTarget(this);
-	this.downloadPathButton.setAction(new NSSelector("downloadPathButtonClicked", new Class[] {NSButton.class}));
+		this.downloadPathButton = downloadPathButton;
+		this.downloadPathButton.setTarget(this);
+		this.downloadPathButton.setAction(new NSSelector("downloadPathButtonClicked", new Class[] {NSButton.class}));
     }
-
+	
     public void downloadPathButtonClicked(NSButton sender) {
-	NSOpenPanel panel = new NSOpenPanel();
-	panel.setCanChooseFiles(false);
-	panel.setCanChooseDirectories(true);
-	panel.setAllowsMultipleSelection(false);
-	panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window(), this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+		NSOpenPanel panel = new NSOpenPanel();
+		panel.setCanChooseFiles(false);
+		panel.setCanChooseDirectories(true);
+		panel.setAllowsMultipleSelection(false);
+		panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window(), this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }
-
+	
     private NSButton defaultBufferButton;
     public void setDefaultBufferButton(NSButton defaultBufferButton) {
-	this.defaultBufferButton = defaultBufferButton;
-	this.defaultBufferButton.setTarget(this);
-	this.defaultBufferButton.setAction(new NSSelector("defaultBufferButtonClicked", new Class[] {NSButton.class}));
+		this.defaultBufferButton = defaultBufferButton;
+		this.defaultBufferButton.setTarget(this);
+		this.defaultBufferButton.setAction(new NSSelector("defaultBufferButtonClicked", new Class[] {NSButton.class}));
     }
-
+	
     public void defaultBufferButtonClicked(NSButton sender) {
-	Preferences.instance().setProperty("connection.buffer", Preferences.instance().getProperty("connection.buffer.default"));
-	try {
-	    int bytes = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
-	    int kbit = bytes/1024*8;
-	    this.bufferField.setStringValue(""+kbit);
-	}
-	catch(NumberFormatException e) {
-	    log.error(e.getMessage());
-	}
+		Preferences.instance().setProperty("connection.buffer", Preferences.instance().getProperty("connection.buffer.default"));
+		try {
+			int bytes = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
+			int kbit = bytes/1024*8;
+			this.bufferField.setStringValue(""+kbit);
+		}
+		catch(NumberFormatException e) {
+			log.error(e.getMessage());
+		}
     }
-
+	
     private NSTextField bufferField;
     public void setBufferField(NSTextField bufferField) {
-	this.bufferField = bufferField;
-	try {
-	    int bytes = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
-	    int kbit = bytes/1024*8;
-	    this.bufferField.setStringValue(""+kbit);
-	}
-	catch(NumberFormatException e) {
-	    log.error(e.getMessage());
-	}
-	NSNotificationCenter.defaultCenter().addObserver(
-						  this,
-						  new NSSelector("bufferFieldDidChange", new Class[]{NSNotification.class}),
-						  NSControl.ControlTextDidChangeNotification,
-						  this.bufferField);
+		this.bufferField = bufferField;
+		try {
+			int bytes = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
+			int kbit = bytes/1024*8;
+			this.bufferField.setStringValue(""+kbit);
+		}
+		catch(NumberFormatException e) {
+			log.error(e.getMessage());
+		}
+		NSNotificationCenter.defaultCenter().addObserver(
+												   this,
+												   new NSSelector("bufferFieldDidChange", new Class[]{NSNotification.class}),
+												   NSControl.ControlTextDidChangeNotification,
+												   this.bufferField);
     }
-
+	
     public void bufferFieldDidChange(NSNotification sender) {
-	try {
-	    int kbit = Integer.parseInt(this.bufferField.stringValue());
-	    Preferences.instance().setProperty("connection.buffer", (int)kbit/8*1024); //Bytes
-	}
-	catch(NumberFormatException e) {
-	    log.error(e.getMessage());
-	}
+		try {
+			int kbit = Integer.parseInt(this.bufferField.stringValue());
+			Preferences.instance().setProperty("connection.buffer", (int)kbit/8*1024); //Bytes
+		}
+		catch(NumberFormatException e) {
+			log.error(e.getMessage());
+		}
     }
-
+	
     private NSTextField userAgentField;
     public void setUserAgentField(NSTextField userAgentField) {
-	log.debug("setUserAgentField");
-	this.userAgentField = userAgentField;
-	this.userAgentField.setStringValue(Preferences.instance().getProperty("http.agent"));
-	log.debug("setUserAgentField-end");
+		this.userAgentField = userAgentField;
+		this.userAgentField.setStringValue(Preferences.instance().getProperty("http.agent"));
     }
     
     private NSTextField anonymousField;
     public void setAnonymousField(NSTextField anonymousField) {
-	this.anonymousField = anonymousField;
-	this.anonymousField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.pass"));
-	NSNotificationCenter.defaultCenter().addObserver(
-						  this,
-						  new NSSelector("anonymousFieldDidChange", new Class[]{NSNotification.class}),
-						  NSControl.ControlTextDidChangeNotification,
-						  this.anonymousField);
+		this.anonymousField = anonymousField;
+		this.anonymousField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.pass"));
+		NSNotificationCenter.defaultCenter().addObserver(
+												   this,
+												   new NSSelector("anonymousFieldDidChange", new Class[]{NSNotification.class}),
+												   NSControl.ControlTextDidChangeNotification,
+												   this.anonymousField);
     }
-
+	
     public void anonymousFieldDidChange(NSNotification sender) {
-	Preferences.instance().setProperty("ftp.anonymous.pass", this.anonymousField.stringValue());
+		Preferences.instance().setProperty("ftp.anonymous.pass", this.anonymousField.stringValue());
+    }
+	
+    private NSTextField historyField;
+    public void setHistoryField(NSTextField historyField) {
+		this.historyField = historyField;
+		this.historyField.setStringValue(Preferences.instance().getProperty("history.size"));
+		NSNotificationCenter.defaultCenter().addObserver(
+												   this,
+												   new NSSelector("historyFieldDidChange", new Class[]{NSNotification.class}),
+												   NSControl.ControlTextDidChangeNotification,
+												   this.historyField);
+    }
+	
+    public void historyFieldDidChange(NSNotification sender) {
+		Preferences.instance().setProperty("history.size", this.historyField.stringValue());
     }
 
     private NSTextField downloadPathField;
     public void setDownloadPathField(NSTextField downloadPathField) {
-	this.downloadPathField = downloadPathField;
-	this.downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
-	NSNotificationCenter.defaultCenter().addObserver(
-						  this,
-						  new NSSelector("downloadPathFieldDidChange", new Class[]{NSNotification.class}),
-						  NSControl.ControlTextDidChangeNotification,
-						  this.downloadPathField);
+		this.downloadPathField = downloadPathField;
+		this.downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
+		NSNotificationCenter.defaultCenter().addObserver(
+												   this,
+												   new NSSelector("downloadPathFieldDidChange", new Class[]{NSNotification.class}),
+												   NSControl.ControlTextDidChangeNotification,
+												   this.downloadPathField);
     }
-
+	
     public void downloadPathFieldDidChange(NSNotification sender) {
-	Preferences.instance().setProperty("connection.download.folder", this.downloadPathField.stringValue());
+		Preferences.instance().setProperty("connection.download.folder", this.downloadPathField.stringValue());
     }
-
+	
     private NSTextField loginField;
     public void setLoginField(NSTextField loginField) {
-	this.loginField = loginField;
-	this.loginField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
-	NSNotificationCenter.defaultCenter().addObserver(
-						  this,
-						  new NSSelector("loginFieldDidChange", new Class[]{NSNotification.class}),
-						  NSControl.ControlTextDidChangeNotification,
-						  this.loginField);
+		this.loginField = loginField;
+		this.loginField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
+		NSNotificationCenter.defaultCenter().addObserver(
+												   this,
+												   new NSSelector("loginFieldDidChange", new Class[]{NSNotification.class}),
+												   NSControl.ControlTextDidChangeNotification,
+												   this.loginField);
     }
-
+	
     public void loginFieldDidChange(NSNotification sender) {
-	Preferences.instance().setProperty("connection.login.name", this.loginField.stringValue());
+		Preferences.instance().setProperty("connection.login.name", this.loginField.stringValue());
     }
-
+	
     private NSButton showHiddenCheckbox;
     public void setShowHiddenCheckbox(NSButton showHiddenCheckbox) {
-	this.showHiddenCheckbox = showHiddenCheckbox;
-	this.showHiddenCheckbox.setTarget(this);
-	this.showHiddenCheckbox.setAction(new NSSelector("showHiddenCheckboxClicked", new Class[] {NSButton.class}));
-	showHiddenCheckbox.setState(Preferences.instance().getProperty("browser.showHidden").equals("true") ? NSCell.OnState : NSCell.OffState);
+		this.showHiddenCheckbox = showHiddenCheckbox;
+		this.showHiddenCheckbox.setTarget(this);
+		this.showHiddenCheckbox.setAction(new NSSelector("showHiddenCheckboxClicked", new Class[] {NSButton.class}));
+		showHiddenCheckbox.setState(Preferences.instance().getProperty("browser.showHidden").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
-
+	
     public void showHiddenCheckboxClicked(NSButton sender) {
-	switch(sender.state()) {
-	    case NSCell.OnState:
-		Preferences.instance().setProperty("browser.showHidden", "true");
-		break;
-	    case NSCell.OffState:
-		Preferences.instance().setProperty("browser.showHidden", "false");
-		break;
-	}
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("browser.showHidden", "true");
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("browser.showHidden", "false");
+				break;
+		}
     }
-
+	
     private NSButton newBrowserCheckbox;
     public void setNewBrowserCheckbox(NSButton newBrowserCheckbox) {
-	this.newBrowserCheckbox = newBrowserCheckbox;
-	this.newBrowserCheckbox.setTarget(this);
-	this.newBrowserCheckbox.setAction(new NSSelector("newBrowserCheckboxClicked", new Class[] {NSButton.class}));
-	newBrowserCheckbox.setState(Preferences.instance().getProperty("browser.opendefault").equals("true") ? NSCell.OnState : NSCell.OffState);
+		this.newBrowserCheckbox = newBrowserCheckbox;
+		this.newBrowserCheckbox.setTarget(this);
+		this.newBrowserCheckbox.setAction(new NSSelector("newBrowserCheckboxClicked", new Class[] {NSButton.class}));
+		newBrowserCheckbox.setState(Preferences.instance().getProperty("browser.opendefault").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
-
+	
     public void newBrowserCheckboxClicked(NSButton sender) {
-	switch(sender.state()) {
-	    case NSCell.OnState:
-		Preferences.instance().setProperty("browser.opendefault", "true");
-		break;
-	    case NSCell.OffState:
-		Preferences.instance().setProperty("browser.opendefault", "false");
-		break;
-	}
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("browser.opendefault", "true");
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("browser.opendefault", "false");
+				break;
+		}
     }
-
+	
     private NSButton closeTransferCheckbox;
     public void setCloseTransferCheckbox(NSButton closeTransferCheckbox) {
-	this.closeTransferCheckbox = closeTransferCheckbox;
-	this.closeTransferCheckbox.setTarget(this);
-	this.closeTransferCheckbox.setAction(new NSSelector("closeTransferCheckboxClicked", new Class[] {NSButton.class}));
-	closeTransferCheckbox.setState(Preferences.instance().getProperty("transfer.close").equals("true") ? NSCell.OnState : NSCell.OffState);
+		this.closeTransferCheckbox = closeTransferCheckbox;
+		this.closeTransferCheckbox.setTarget(this);
+		this.closeTransferCheckbox.setAction(new NSSelector("closeTransferCheckboxClicked", new Class[] {NSButton.class}));
+		closeTransferCheckbox.setState(Preferences.instance().getProperty("transfer.close").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
-
+	
     public void closeTransferCheckboxClicked(NSButton sender) {
-	switch(sender.state()) {
-	    case NSCell.OnState:
-		Preferences.instance().setProperty("transfer.close", "true");
-		break;
-	    case NSCell.OffState:
-		Preferences.instance().setProperty("transfer.close", "false");
-		break;
-	}
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("transfer.close", "true");
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("transfer.close", "false");
+				break;
+		}
     }
-
+	
     private NSButton processCheckbox;
     public void setProcessCheckbox(NSButton processCheckbox) {
-	this.processCheckbox = processCheckbox;
-	this.processCheckbox.setTarget(this);
-	this.processCheckbox.setAction(new NSSelector("processCheckboxClicked", new Class[] {NSButton.class}));
+		this.processCheckbox = processCheckbox;
+		this.processCheckbox.setTarget(this);
+		this.processCheckbox.setAction(new NSSelector("processCheckboxClicked", new Class[] {NSButton.class}));
     }
-
+	
     public void processCheckboxClicked(NSButton sender) {
-	switch(sender.state()) {
-	    case NSCell.OnState:
-		Preferences.instance().setProperty("connection.download.postprocess", "true");
-		break;
-	    case NSCell.OffState:
-		Preferences.instance().setProperty("connection.download.postprocess", "false");
-		break;
-	}
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("connection.download.postprocess", "true");
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("connection.download.postprocess", "false");
+				break;
+		}
     }
-
+	
     private NSPopUpButton duplicateCombo;
     public void setDuplicateCombo(NSPopUpButton duplicateCombo) {
-	this.duplicateCombo = duplicateCombo;
-	this.duplicateCombo.setTarget(this);
-	this.duplicateCombo.setAction(new NSSelector("duplicateComboClicked", new Class[] {NSPopUpButton.class}));
-	this.duplicateCombo.removeAllItems();	
-	this.duplicateCombo.addItemsWithTitles(new NSArray(new String[]{OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
-//	if(Preferences.instance().getProperty("download.duplicate").equals("ask"))
-//	    this.duplicateCombo.setTitle(ASK_ME_WHAT_TO_DO);
-	if(Preferences.instance().getProperty("download.duplicate").equals("overwrite"))
-	    this.duplicateCombo.setTitle(OVERWRITE_EXISTING_FILE);
-	else if(Preferences.instance().getProperty("download.duplicate").equals("resume"))
-	    this.duplicateCombo.setTitle(TRY_TO_RESUME_TRANSFER);
-	else if(Preferences.instance().getProperty("download.duplicate").equals("similar"))
-	    this.duplicateCombo.setTitle(USE_A_SIMILAR_NAME);
+		this.duplicateCombo = duplicateCombo;
+		this.duplicateCombo.setTarget(this);
+		this.duplicateCombo.setAction(new NSSelector("duplicateComboClicked", new Class[] {NSPopUpButton.class}));
+		this.duplicateCombo.removeAllItems();	
+		this.duplicateCombo.addItemsWithTitles(new NSArray(new String[]{OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
+		//	if(Preferences.instance().getProperty("download.duplicate").equals("ask"))
+  //	    this.duplicateCombo.setTitle(ASK_ME_WHAT_TO_DO);
+		if(Preferences.instance().getProperty("download.duplicate").equals("overwrite"))
+			this.duplicateCombo.setTitle(OVERWRITE_EXISTING_FILE);
+		else if(Preferences.instance().getProperty("download.duplicate").equals("resume"))
+			this.duplicateCombo.setTitle(TRY_TO_RESUME_TRANSFER);
+		else if(Preferences.instance().getProperty("download.duplicate").equals("similar"))
+			this.duplicateCombo.setTitle(USE_A_SIMILAR_NAME);
     }
-
+	
     public void duplicateComboClicked(NSPopUpButton sender) {
-//	if(sender.selectedItem().title().equals(ASK_ME_WHAT_TO_DO))
-//	    Preferences.instance().setProperty("download.duplicate", "ask");
-	if(sender.selectedItem().title().equals(OVERWRITE_EXISTING_FILE))
-	    Preferences.instance().setProperty("download.duplicate", "overwrite");
-	else if(sender.selectedItem().title().equals(TRY_TO_RESUME_TRANSFER))
-	    Preferences.instance().setProperty("download.duplicate", "resume");
-	else if(sender.selectedItem().title().equals(USE_A_SIMILAR_NAME))
-	    Preferences.instance().setProperty("download.duplicate", "similar");
+		//	if(sender.selectedItem().title().equals(ASK_ME_WHAT_TO_DO))
+  //	    Preferences.instance().setProperty("download.duplicate", "ask");
+		if(sender.selectedItem().title().equals(OVERWRITE_EXISTING_FILE))
+			Preferences.instance().setProperty("download.duplicate", "overwrite");
+		else if(sender.selectedItem().title().equals(TRY_TO_RESUME_TRANSFER))
+			Preferences.instance().setProperty("download.duplicate", "resume");
+		else if(sender.selectedItem().title().equals(USE_A_SIMILAR_NAME))
+			Preferences.instance().setProperty("download.duplicate", "similar");
     }
-
+	
     private NSPopUpButton transfermodeCombo;
     public void setTransfermodeCombo(NSPopUpButton transfermodeCombo) {
-	this.transfermodeCombo = transfermodeCombo;
-	this.transfermodeCombo.setTarget(this);
-	this.transfermodeCombo.setAction(new NSSelector("transfermodeComboClicked", new Class[] {NSPopUpButton.class}));
-	this.transfermodeCombo.removeAllItems();
-	this.transfermodeCombo.addItemsWithTitles(new NSArray(new String[]{TRANSFERMODE_BINARY, TRANSFERMODE_ASCII}));
-	if(Preferences.instance().getProperty("ftp.transfermode").equals("binary"))
-	    this.transfermodeCombo.setTitle(TRANSFERMODE_BINARY);
-	else
-	    this.transfermodeCombo.setTitle(TRANSFERMODE_ASCII);
+		this.transfermodeCombo = transfermodeCombo;
+		this.transfermodeCombo.setTarget(this);
+		this.transfermodeCombo.setAction(new NSSelector("transfermodeComboClicked", new Class[] {NSPopUpButton.class}));
+		this.transfermodeCombo.removeAllItems();
+		this.transfermodeCombo.addItemsWithTitles(new NSArray(new String[]{TRANSFERMODE_BINARY, TRANSFERMODE_ASCII}));
+		if(Preferences.instance().getProperty("ftp.transfermode").equals("binary"))
+			this.transfermodeCombo.setTitle(TRANSFERMODE_BINARY);
+		else
+			this.transfermodeCombo.setTitle(TRANSFERMODE_ASCII);
     }
-
+	
     public void transfermodeComboClicked(NSPopUpButton sender) {
-	if(sender.selectedItem().title().equals(TRANSFERMODE_ASCII))
-	    Preferences.instance().setProperty("ftp.transfermode", "ascii");
-	else
-	    Preferences.instance().setProperty("ftp.transfermode", "binary");
+		if(sender.selectedItem().title().equals(TRANSFERMODE_ASCII))
+			Preferences.instance().setProperty("ftp.transfermode", "ascii");
+		else
+			Preferences.instance().setProperty("ftp.transfermode", "binary");
     }
-
+	
     private NSPopUpButton connectmodeCombo;
     public void setConnectmodeCombo(NSPopUpButton connectmodeCombo) {
-	this.connectmodeCombo = connectmodeCombo;
-	this.connectmodeCombo.setTarget(this);
-	this.connectmodeCombo.setAction(new NSSelector("connectmodeComboClicked", new Class[] {NSPopUpButton.class}));
-	this.connectmodeCombo.removeAllItems();
-	this.connectmodeCombo.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
-	if(Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
-	    connectmodeCombo.setTitle(CONNECTMODE_PASSIVE);
-	else
-	    connectmodeCombo.setTitle(CONNECTMODE_ACTIVE);
+		this.connectmodeCombo = connectmodeCombo;
+		this.connectmodeCombo.setTarget(this);
+		this.connectmodeCombo.setAction(new NSSelector("connectmodeComboClicked", new Class[] {NSPopUpButton.class}));
+		this.connectmodeCombo.removeAllItems();
+		this.connectmodeCombo.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
+		if(Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
+			connectmodeCombo.setTitle(CONNECTMODE_PASSIVE);
+		else
+			connectmodeCombo.setTitle(CONNECTMODE_ACTIVE);
     }
-
+	
     public void connectmodeComboClicked(NSPopUpButton sender) {
-	if(sender.selectedItem().title().equals(CONNECTMODE_ACTIVE))
-	    Preferences.instance().setProperty("ftp.connectmode", "active");
-	else
-	    Preferences.instance().setProperty("ftp.connectmode", "passive");
+		if(sender.selectedItem().title().equals(CONNECTMODE_ACTIVE))
+			Preferences.instance().setProperty("ftp.connectmode", "active");
+		else
+			Preferences.instance().setProperty("ftp.connectmode", "passive");
     }
-
+	
     private NSPopUpButton protocolCombo;
     public void setProtocolCombo(NSPopUpButton protocolCombo) {
-	this.protocolCombo = protocolCombo;
-	this.protocolCombo.setTarget(this);
-	this.protocolCombo.setAction(new NSSelector("protocolComboClicked", new Class[] {NSPopUpButton.class}));
-	this.protocolCombo.removeAllItems();
-	this.protocolCombo.addItemsWithTitles(new NSArray(new String[]{PROTOCOL_FTP, PROTOCOL_SFTP}));
-	if(Preferences.instance().getProperty("connection.protocol.default").equals("ftp"))
-	    protocolCombo.setTitle(PROTOCOL_FTP);
-	else
-	    protocolCombo.setTitle(PROTOCOL_SFTP);
+		this.protocolCombo = protocolCombo;
+		this.protocolCombo.setTarget(this);
+		this.protocolCombo.setAction(new NSSelector("protocolComboClicked", new Class[] {NSPopUpButton.class}));
+		this.protocolCombo.removeAllItems();
+		this.protocolCombo.addItemsWithTitles(new NSArray(new String[]{PROTOCOL_FTP, PROTOCOL_SFTP}));
+		if(Preferences.instance().getProperty("connection.protocol.default").equals("ftp"))
+			protocolCombo.setTitle(PROTOCOL_FTP);
+		else
+			protocolCombo.setTitle(PROTOCOL_SFTP);
     }
-
+	
     public void protocolComboClicked(NSPopUpButton sender) {
-	if(sender.selectedItem().title().equals(PROTOCOL_FTP)) {
-	    Preferences.instance().setProperty("connection.protocol.default", Session.FTP);
-	    Preferences.instance().setProperty("connection.port.default", Session.FTP_PORT);
-	}
-	else {
-	    Preferences.instance().setProperty("connection.protocol.default", Session.SFTP);
-	    Preferences.instance().setProperty("connection.port.default", Session.SSH_PORT);
-	}
+		if(sender.selectedItem().title().equals(PROTOCOL_FTP)) {
+			Preferences.instance().setProperty("connection.protocol.default", Session.FTP);
+			Preferences.instance().setProperty("connection.port.default", Session.FTP_PORT);
+		}
+		else {
+			Preferences.instance().setProperty("connection.protocol.default", Session.SFTP);
+			Preferences.instance().setProperty("connection.port.default", Session.SSH_PORT);
+		}
     }
-
-
+	
+	
     private NSWindow window;
     public void setWindow(NSWindow window) {
-	this.window = window;
+		this.window = window;
     }
-
-
+	
+	
     private static NSMutableArray allDocuments = new NSMutableArray();
-
+	
     public static CDPreferencesController instance() {
-	if(null == instance) {
-	    instance = new CDPreferencesController();
-	    allDocuments.addObject(instance);
-	}
+		if(null == instance) {
+			instance = new CDPreferencesController();
+			allDocuments.addObject(instance);
+		}
         if (false == NSApplication.loadNibNamed("Preferences", instance)) {
             log.fatal("Couldn't load Preferences.nib");
         }
-	return instance;
+		return instance;
     }
-
+	
     private CDPreferencesController() {
-	allDocuments.addObject(this);
+		allDocuments.addObject(this);
     }
-
+	
     public void awakeFromNib() {
-	this.window.center();
+		this.window.center();
     }
-
+	
     public NSWindow window() {
-	return this.window;
+		return this.window;
     }
-
+	
     public void windowWillClose(NSNotification notification) {
-	this.window().setDelegate(null);
-	NSNotificationCenter.defaultCenter().removeObserver(this);
-	allDocuments.removeObject(this);
+		this.window().setDelegate(null);
+		NSNotificationCenter.defaultCenter().removeObserver(this);
+		allDocuments.removeObject(this);
     }
-
+	
     public void openPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
-	switch(returnCode) {
-	    case(NSPanel.OKButton): {
-		NSArray selected = sheet.filenames();
-		String filename;
-		if((filename = (String)selected.lastObject()) != null) {
-		    Preferences.instance().setProperty("connection.download.folder", filename);
-		    this.downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
+		switch(returnCode) {
+			case(NSPanel.OKButton): {
+				NSArray selected = sheet.filenames();
+				String filename;
+				if((filename = (String)selected.lastObject()) != null) {
+					Preferences.instance().setProperty("connection.download.folder", filename);
+					this.downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
+				}
+				break;
+			}
+			case(NSPanel.CancelButton): {
+				break;
+			}
 		}
-		break;
-	    }
-	    case(NSPanel.CancelButton): {
-		break;
-	    }
-	}
     }
 }

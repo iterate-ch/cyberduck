@@ -32,7 +32,7 @@ public class CDFavoriteController {
     
     private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)");
     private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)");
-
+	
     private Host host;
     
     // ----------------------------------------------------------
@@ -41,32 +41,36 @@ public class CDFavoriteController {
     
     private NSWindow window;
     public void setWindow(NSWindow window) {
-	this.window = window;
+		this.window = window;
     }
     
     private NSPopUpButton protocolPopup;
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
-	this.protocolPopup = protocolPopup;
-	this.protocolPopup.setTarget(this);
-	this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[] {Object.class}));
+		this.protocolPopup = protocolPopup;
+		this.protocolPopup.setTarget(this);
+		this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[] {Object.class}));
     }
     private NSTextField nicknameField; // IBOutlet
     public void setNicknameField(NSTextField nicknameField) {
-	this.nicknameField = nicknameField;
+		this.nicknameField = nicknameField;
     }
     private NSTextField hostField; // IBOutlet
     public void setHostField(NSTextField hostField) {
-	this.hostField = hostField;
+		this.hostField = hostField;
+    }
+    private NSTextField pathField; // IBOutlet
+    public void setPathField(NSTextField pathField) {
+		this.pathField = pathField;
     }
     private NSTextField urlField; // IBOutlet
     public void setUrlField(NSTextField urlField) {
-	this.urlField = urlField;
+		this.urlField = urlField;
     }
     private NSTextField usernameField; // IBOutlet
     public void setUsernameField(NSTextField usernameField) {
-	this.usernameField = usernameField;
+		this.usernameField = usernameField;
     }
-
+	
     private static NSMutableArray allDocuments = new NSMutableArray();
     
     // ----------------------------------------------------------
@@ -74,9 +78,9 @@ public class CDFavoriteController {
     // ----------------------------------------------------------
     
     public CDFavoriteController(Host favorite) {
-	log.debug("CDFavoriteController:"+favorite);
-	this.host = favorite;
-	allDocuments.addObject(this);
+		log.debug("CDFavoriteController:"+favorite);
+		this.host = favorite;
+		allDocuments.addObject(this);
         if (false == NSApplication.loadNibNamed("Favorite", this)) {
             log.fatal("Couldn't load Favorite.nib");
             return;
@@ -84,77 +88,88 @@ public class CDFavoriteController {
     }
     
     public void awakeFromNib() {
-	log.debug("awakeFromNib");
-	NSPoint origin = this.window.frame().origin();
-	this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
-	this.window.setTitle(this.host.getNickname());
-	(NSNotificationCenter.defaultCenter()).addObserver(
-						    this,
-						    new NSSelector("hostInputDidEndEditing", new Class[]{NSNotification.class}),
-						    NSControl.ControlTextDidEndEditingNotification,
-						    hostField);
-	(NSNotificationCenter.defaultCenter()).addObserver(
-						    this,
-						    new NSSelector("nicknameInputDidEndEditing", new Class[]{NSNotification.class}),
-						    NSControl.ControlTextDidEndEditingNotification,
-						    nicknameField);
-	(NSNotificationCenter.defaultCenter()).addObserver(
-						    this,
-						    new NSSelector("usernameInputDidEndEditing", new Class[]{NSNotification.class}),
-						    NSControl.ControlTextDidEndEditingNotification,
-						    usernameField);
-	this.updateFields();
+		log.debug("awakeFromNib");
+		NSPoint origin = this.window.frame().origin();
+		this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
+		this.window.setTitle(this.host.getNickname());
+		(NSNotificationCenter.defaultCenter()).addObserver(
+													 this,
+													 new NSSelector("hostInputDidEndEditing", new Class[]{NSNotification.class}),
+													 NSControl.ControlTextDidChangeNotification,
+													 hostField);
+		(NSNotificationCenter.defaultCenter()).addObserver(
+													 this,
+													 new NSSelector("pathInputDidEndEditing", new Class[]{NSNotification.class}),
+													 NSControl.ControlTextDidChangeNotification,
+													 pathField);
+		(NSNotificationCenter.defaultCenter()).addObserver(
+													 this,
+													 new NSSelector("nicknameInputDidEndEditing", new Class[]{NSNotification.class}),
+													 NSControl.ControlTextDidChangeNotification,
+													 nicknameField);
+		(NSNotificationCenter.defaultCenter()).addObserver(
+													 this,
+													 new NSSelector("usernameInputDidEndEditing", new Class[]{NSNotification.class}),
+													 NSControl.ControlTextDidChangeNotification,
+													 usernameField);
+		this.updateFields();
     }
     
     public void windowWillClose(NSNotification notification) {
-	this.window().setDelegate(null);
-	NSNotificationCenter.defaultCenter().removeObserver(this);
-	allDocuments.removeObject(this);
+		this.window().setDelegate(null);
+		NSNotificationCenter.defaultCenter().removeObserver(this);
+		allDocuments.removeObject(this);
     }
     
     public void protocolSelectionChanged(Object sender) {
-	log.debug("protocolSelectionChanged:"+sender);
-	int tag = protocolPopup.selectedItem().tag();
-	switch(tag) {
-	    case(Session.SSH_PORT):
-		this.host.setProtocol(Session.SFTP);
-		this.host.setPort(Session.SSH_PORT);
-		break;
-	    case(Session.FTP_PORT):
-		this.host.setProtocol(Session.FTP);
-		this.host.setPort(Session.FTP_PORT);
-		break;
-	}
-	this.updateFields();
+		log.debug("protocolSelectionChanged:"+sender);
+		int tag = protocolPopup.selectedItem().tag();
+		switch(tag) {
+			case(Session.SSH_PORT):
+				this.host.setProtocol(Session.SFTP);
+				this.host.setPort(Session.SSH_PORT);
+				break;
+			case(Session.FTP_PORT):
+				this.host.setProtocol(Session.FTP);
+				this.host.setPort(Session.FTP_PORT);
+				break;
+		}
+		this.updateFields();
     }
     
     public void hostInputDidEndEditing(NSNotification sender) {
-	log.debug("hostInputDidEndEditing");
-	this.host.setHostname(hostField.stringValue());
-	this.updateFields();
+		log.debug("hostInputDidEndEditing");
+		this.host.setHostname(hostField.stringValue());
+		this.updateFields();
     }
 
+	public void pathInputDidEndEditing(NSNotification sender) {
+		log.debug("pathInputDidEndEditing");
+		this.host.setDefaultPath(pathField.stringValue());
+		this.updateFields();
+    }
+	
     public void nicknameInputDidEndEditing(NSNotification sender) {
-	log.debug("nicknameInputDidEndEditing");
-	this.host.setNickname(nicknameField.stringValue());
-	this.updateFields();
+		log.debug("nicknameInputDidEndEditing");
+		this.host.setNickname(nicknameField.stringValue());
+		this.updateFields();
     }
-
+	
     public void usernameInputDidEndEditing(NSNotification sender) {
-	log.debug("usernameInputDidEndEditing");
-	this.host.getLogin().setUsername(usernameField.stringValue());
-	this.updateFields();
+		log.debug("usernameInputDidEndEditing");
+		this.host.getLogin().setUsername(usernameField.stringValue());
+		this.updateFields();
     }
     
     private void updateFields() {
-	this.window.setTitle(this.host.getNickname());
-	this.urlField.setStringValue(this.host.getURL());
-	this.nicknameField.setStringValue(this.host.getNickname());
-	this.usernameField.setStringValue(this.host.getLogin().getUsername());
-	this.protocolPopup.selectItemWithTitle(this.host.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
+		this.window.setTitle(this.host.getNickname());
+		this.urlField.setStringValue(this.host.getURL());
+		this.nicknameField.setStringValue(this.host.getNickname());
+		this.usernameField.setStringValue(this.host.getLogin().getUsername());
+		this.protocolPopup.selectItemWithTitle(this.host.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
     }
     
     public NSWindow window() {
-	return this.window;
+		return this.window;
     }
 }

@@ -96,34 +96,27 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	}
     }
     
-    public boolean performKeyEquivalent(NSEvent e) {
-	log.debug(e);
-	log.debug("modifier flags:"+e.modifierFlags());
-	log.debug("charactersIgnoringModifiers:"+e.charactersIgnoringModifiers());
-	log.debug("NSEvent.UpArrowFunctionKey:"+NSEvent.UpArrowFunctionKey);
-	log.debug("NSEvent.DownArrowFunctionKey:"+NSEvent.DownArrowFunctionKey);
-	log.debug("NSEvent.CommandKeyMask & NSEvent.UpArrowFunctionKey:"+(NSEvent.CommandKeyMask & NSEvent.UpArrowFunctionKey));
-	log.debug("e.modifierFlags() & NSEvent.CommandKeyMask:"+(e.modifierFlags() & NSEvent.CommandKeyMask));
-
-	if((e.modifierFlags() == 11534608) {
-	    log.debug("*** NSEvent.CommandKeyMask");
+//    public boolean performKeyEquivalent(NSEvent e) {
+//	log.debug(e);
+//	if(e.modifierFlags() == 11534608) {
+//	    log.debug("*** NSEvent.CommandKeyMask");
      //up arrow key
      //	61063 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.6 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=126
-	    if(e.keyCode() == 126) {
-		if(this.workdir != null) {
-		    this.workdir.getParent().list();
-		    return true;
-		}
-	    }
+//	    if(e.keyCode() == 126) {
+//		if(this.workdir != null) {
+//		    this.workdir.getParent().list();
+//		    return true;
+//		}
+//	    }
      //down arrow key
      //	61254 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.7 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=125
-	    if(e.keyCode() == 125) {
-		this.browserTableViewDidClickTableRow(e);
-		return true;
-	    }
-	}
-	return super.performKeyEquivalent(e);
-    }
+//	    if(e.keyCode() == 125) {
+//		this.browserTableViewDidClickTableRow(e);
+//		return true;
+//	    }
+//	}
+//	return super.performKeyEquivalent(e);
+//    }
     
     public void browserTableViewDidClickTableRow(Object sender) {
 	log.debug("browserTableViewDidClickTableRow:"+sender);

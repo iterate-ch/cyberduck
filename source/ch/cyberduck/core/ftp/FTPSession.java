@@ -31,138 +31,142 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 /**
- * Opens a connection to the remote server via ftp protocol
+* Opens a connection to the remote server via ftp protocol
  * @version $Id$
  */
 public class FTPSession extends Session {
     private static Logger log = Logger.getLogger(Session.class);
-
+	
     protected FTPClient FTP;
-
+	
     /**
-     * @param client The client to use which does implement the ftp protocol
+		* @param client The client to use which does implement the ftp protocol
      * @param action The <code>TransferAction</code> to execute after the connection has been opened
      * @param transfer The <code>Bookmark</code> object
      * @param secure If the connection is secure
      */
     public FTPSession(Host h) {//, TransferAction action) {
         super(h);
-	this.FTP = new FTPClient();
-//@todo proxy        System.getProperties().put("proxySet", Preferences.instance().getProperty("connection.proxy"));
-//@todo proxy        System.getProperties().put("proxyHost", Preferences.instance().getProperty("connection.proxy.host"));
-//@todo proxy        System.getProperties().put("proxyPort", Preferences.instance().getProperty("connection.proxy.port"));
+		this.FTP = new FTPClient();
+		//@todo proxy        System.getProperties().put("proxySet", Preferences.instance().getProperty("connection.proxy"));
+  //@todo proxy        System.getProperties().put("proxyHost", Preferences.instance().getProperty("connection.proxy.host"));
+  //@todo proxy        System.getProperties().put("proxyPort", Preferences.instance().getProperty("connection.proxy.port"));
     }
-
+	
     public synchronized void close() {
-	this.callObservers(new Message(Message.CLOSE, "Closing session."));
-	try {
-	    if(FTP != null) {
-		this.log("Disconnecting...", Message.PROGRESS);
-		FTP.quit();
-	    }
-	    this.log("Disconnected", Message.PROGRESS);
-	}
-	catch(FTPException e) {
-	    this.log("FTP Error: "+e.getMessage(), Message.ERROR);
-	}
-	catch(IOException e) {
-	    this.log("IO Error: "+e.getMessage(), Message.ERROR);
-	}
-	finally {
-	    this.setConnected(false);
-	}
-    }
-
-    public synchronized void connect() throws IOException {
-	this.callObservers(new Message(Message.OPEN, "Opening session."));
-	this.log("Opening FTP connection to " + host.getIp()+"...", Message.PROGRESS);
-	if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
-	    FTP.setConnectMode(FTPConnectMode.ACTIVE);
-	}
-	else {
-	    FTP.setConnectMode(FTPConnectMode.PASV);
-	}
-//@todo proxy		    if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
-//			FTP.initSOCKS(Preferences.instance().getProperty("connection.proxy.port"), Preferences.instance().getProperty("connection.proxy.host"));
-//		    }
-//		    if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
-//			FTP.initSOCKSAuthentication(Preferences.instance().getProperty("connection.proxy.username"), Preferences.instance().getProperty("connection.proxy.password"));
-//		    }
-	FTP.connect(host.getHostname(), host.getPort());
-	this.log("FTP connection opened", Message.PROGRESS);
-	this.login();
-	FTP.system();
-	this.setConnected(true);
-    }
-
-
-    public synchronized void mount() {
-	new Thread() {
-	    public void run() {
+		this.callObservers(new Message(Message.CLOSE, "Closing session."));
 		try {
-		    connect();
-		    FTPPath home = (FTPPath)FTPSession.this.workdir();
-		    home.list();
+			if(FTP != null) {
+				this.log("Disconnecting...", Message.PROGRESS);
+				FTP.quit();
+			}
+			this.log("Disconnected", Message.PROGRESS);
 		}
 		catch(FTPException e) {
-		    FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
+			this.log("FTP Error: "+e.getMessage(), Message.ERROR);
 		}
 		catch(IOException e) {
-		    FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+			this.log("IO Error: "+e.getMessage(), Message.ERROR);
 		}
-	    }
-	}.start();
+		finally {
+			this.setConnected(false);
+		}
     }
-
+	
+    public synchronized void connect() throws IOException {
+		this.callObservers(new Message(Message.OPEN, "Opening session."));
+		this.log("Opening FTP connection to " + host.getIp()+"...", Message.PROGRESS);
+		if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
+			FTP.setConnectMode(FTPConnectMode.ACTIVE);
+		}
+		else {
+			FTP.setConnectMode(FTPConnectMode.PASV);
+		}
+		//@todo proxy		    if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
+  //			FTP.initSOCKS(Preferences.instance().getProperty("connection.proxy.port"), Preferences.instance().getProperty("connection.proxy.host"));
+  //		    }
+  //		    if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
+  //			FTP.initSOCKSAuthentication(Preferences.instance().getProperty("connection.proxy.username"), Preferences.instance().getProperty("connection.proxy.password"));
+  //		    }
+		FTP.connect(host.getHostname(), host.getPort());
+		this.log("FTP connection opened", Message.PROGRESS);
+		this.login();
+		FTP.system();
+		this.setConnected(true);
+    }
+	
+	
+    public synchronized void mount() {
+		new Thread() {
+			public void run() {
+				try {
+					connect();
+					FTPPath home;
+					if((host.getDefaultPath() != null) && (host.getDefaultPath() != Path.HOME))
+						home = new FTPPath(FTPSession.this, host.getDefaultPath());
+					else
+						home = (FTPPath)FTPSession.this.workdir();
+					home.list();
+				}
+				catch(FTPException e) {
+					FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
+				}
+				catch(IOException e) {
+					FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+				}
+			}
+		}.start();
+    }
+	
     private synchronized void login() throws IOException {
-	log.debug("login");
-	try {
-	    this.log("Authenticating as " + host.getLogin().getUsername() + "...", Message.PROGRESS);
-	    FTP.login(host.getLogin().getUsername(), host.getLogin().getPassword());
-	    this.log("Login successfull.", Message.PROGRESS);
-	}
-	catch(FTPException e) {
-	    this.log("Login failed", Message.PROGRESS);
+		log.debug("login");
+		try {
+			this.log("Authenticating as " + host.getLogin().getUsername() + "...", Message.PROGRESS);
+			FTP.login(host.getLogin().getUsername(), host.getLogin().getPassword());
+			this.log("Login successfull.", Message.PROGRESS);
+		}
+		catch(FTPException e) {
+			this.log("Login failed", Message.PROGRESS);
             if(host.getLogin().getController().loginFailure("Authentication for user "+ host.getLogin().getUsername() + " failed. The server response is: "+e.getMessage())) {
                 // let's try again with the new values
-		this.login();
+				this.login();
             }
-	    else {
-		throw new FTPException("Login as user "+host.getLogin().getUsername()+" failed.");
-	    }
-	}
+			else {
+				throw new FTPException("Login as user "+host.getLogin().getUsername()+" failed.");
+			}
+		}
     }
-
+	
     public Path workdir() {
-	try {
-	    return new FTPPath(this, FTP.pwd());
-	}
-	catch(FTPException e) {
-	    this.log("FTP Error: "+e.getMessage(), Message.ERROR);
-	}
-	catch(IOException e) {
-	    this.log("IO Error: "+e.getMessage(), Message.ERROR);
-	}
-	return  null;
+		try {
+			return new FTPPath(this, FTP.pwd());
+		}
+		catch(FTPException e) {
+			this.log("FTP Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+			this.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+		return  null;
     }
-
-
+	
+	
     public void check() throws IOException {
-	log.debug("check");
-	this.log("Working", Message.START);
-	if(!FTP.isAlive()) {
-	    this.setConnected(false);
-	    this.connect();
-	    while(true) {
-		if(this.isConnected())
-		    return;
-		this.log("Waiting for connection...", Message.PROGRESS);
-		Thread.yield();
-	    }
-	}
+		log.debug("check");
+		this.log("Working", Message.START);
+		if(!FTP.isAlive()) {
+			this.setConnected(false);
+			this.connect();
+			while(true) {
+				if(this.isConnected())
+					return;
+				this.log("Waiting for connection...", Message.PROGRESS);
+				Thread.yield();
+			}
+		}
     }
-
+	
     public Session copy() {
-	return new FTPSession(this.host);
+		return new FTPSession(this.host);
     }
 }

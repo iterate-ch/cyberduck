@@ -20,7 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Favorites;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Login;
 import ch.cyberduck.core.Preferences;
+
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
 import com.apple.cocoa.foundation.*;
@@ -53,20 +55,33 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
 	}
 	return instance;
     }
+    
+    private static final String HOSTNAME = "Hostname";
+    private static final String NICKNAME = "Nickname";
+    private static final String PORT = "Port";
+    private static final String PROTOCOL = "Protocol";
+    private static final String USERNAME = "Username";
+    private static final String PATH = "Path";
 
     public void save() {
 	log.debug("save");
 	if(Preferences.instance().getProperty("favorites.save").equals("true")) {
 	    try {
+		NSMutableArray list = new NSMutableArray();
 		Iterator i = super.getIterator();
-
-		NSMutableArray data = new NSMutableArray();
 		while(i.hasNext()) {
+		    NSMutableDictionary element = new NSMutableDictionary();
 		    Host next = (Host)i.next();
-		    data.addObject(new NSArray(new String[]{next.getNickname(), next.getURL()}));
+		    element.setObjectForKey(next.getNickname(), NICKNAME);
+		    element.setObjectForKey(next.getHostname(), HOSTNAME);
+		    element.setObjectForKey(next.getPort()+"", PORT);
+		    element.setObjectForKey(next.getProtocol(), PROTOCOL);
+		    element.setObjectForKey(next.getLogin().getUsername(), USERNAME);
+		    element.setObjectForKey(next.getDefaultPath(), PATH);
+		    list.addObject(element);
 		}
 		NSMutableData collection = new NSMutableData();
-		collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(data));
+		collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(list));
 		
 	    // data is written to a backup location, and then, assuming no errors occur, 
 		// the backup location is renamed to the specified name
@@ -85,22 +100,42 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
 	log.debug("load");
 	if(FAVORTIES_FILE.exists()) {
 	    log.info("Found Favorites file: "+FAVORTIES_FILE.toString());
-
+	    
 	    NSData plistData = new NSData(FAVORTIES_FILE);
-	    NSArray entries = (NSArray)NSPropertyListSerialization.propertyListFromXMLData(plistData);
-	    log.info("Successfully read Favorites: "+entries);
-	    java.util.Enumeration i = entries.objectEnumerator();
-	    while(i.hasMoreElements()) {
-		try {
-		    this.addItem(new Host((String)i.nextElement()));
-		}
-		catch(java.net.MalformedURLException e) {
-		    log.error(e.getMessage());
+	    Object propertyListFromXMLData = NSPropertyListSerialization.propertyListFromXMLData(plistData);
+	    log.info("Successfully read Favorites: "+propertyListFromXMLData);
+	    if(propertyListFromXMLData instanceof NSArray) {
+		NSArray entries = (NSArray)propertyListFromXMLData;
+		java.util.Enumeration i = entries.objectEnumerator();
+		Object element;
+		while(i.hasMoreElements()) {
+		    element = i.nextElement();
+		    if(element instanceof NSMutableDictionary) { //new since 2.1
+			NSMutableDictionary a = (NSMutableDictionary)element;
+			this.addItem(
+		new Host(
+	   (String)a.objectForKey(PROTOCOL), 
+	   (String)a.objectForKey(NICKNAME),
+	   (String)a.objectForKey(HOSTNAME), 
+	   Integer.parseInt((String)a.objectForKey(PORT)),
+	   new Login((String)a.objectForKey(USERNAME)),
+	   (String)a.objectForKey(PATH)
+	   )
+		);
+		    }
+		    if(element instanceof String) { //backward compatibilty <= 2.1beta5
+			try {
+			    this.addItem(new Host((String)element));
+			}
+			catch(java.net.MalformedURLException e) {
+			    log.error(e.getMessage());
+			}
+		    }
 		}
 	    }
 	}
     }
-
+    
     // ----------------------------------------------------------
     // NSTableView.DataSource
     // ----------------------------------------------------------

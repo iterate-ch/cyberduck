@@ -37,106 +37,106 @@ import java.util.Observer;
  */
 public class CDConnectionController {
     private static Logger log = Logger.getLogger(CDConnectionController.class);
-
+	
     private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)");
     private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)");
     
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
-
+	
     private NSWindow sheet;
     public void setSheet(NSWindow sheet) {
-	this.sheet = sheet;
+		this.sheet = sheet;
     }
-
+	
     public NSWindow window() {
-	return this.sheet;
+		return this.sheet;
     }
     
     private NSPopUpButton favoritesPopup;
     public void setFavoritesPopup(NSPopUpButton favoritesPopup) {
-	this.favoritesPopup = favoritesPopup;
-	this.favoritesPopup.setImage(NSImage.imageNamed("favorites.tiff"));
-
-	CDFavoritesImpl.instance().load();
-	Iterator i = CDFavoritesImpl.instance().getIterator();
-	while(i.hasNext())
-	    favoritesPopup.addItem(i.next().toString());
-	
-	this.favoritesPopup.setTarget(this);
-	this.favoritesPopup.setAction(new NSSelector("favoritesSelectionChanged", new Class[] {Object.class}));
+		this.favoritesPopup = favoritesPopup;
+		this.favoritesPopup.setImage(NSImage.imageNamed("favorites.tiff"));
+		
+		CDFavoritesImpl.instance().load();
+		Iterator i = CDFavoritesImpl.instance().getIterator();
+		while(i.hasNext())
+			favoritesPopup.addItem(i.next().toString());
+		
+		this.favoritesPopup.setTarget(this);
+		this.favoritesPopup.setAction(new NSSelector("favoritesSelectionChanged", new Class[] {Object.class}));
     }
     
     private NSPopUpButton rendezvousPopup;
     private RendezvousDataSource rendezvousDataSource;
     public void setRendezvousPopup(NSPopUpButton rendezvousPopup) {
-	this.rendezvousPopup = rendezvousPopup;
-	this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous.tiff"));
-	this.rendezvousPopup.setTarget(this);
-	this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionChanged", new Class[] {Object.class}));
-	this.rendezvousDataSource = new RendezvousDataSource();
-	Rendezvous.instance().addObserver(rendezvousDataSource);
-	Rendezvous.instance().init();
+		this.rendezvousPopup = rendezvousPopup;
+		this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous.tiff"));
+		this.rendezvousPopup.setTarget(this);
+		this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionChanged", new Class[] {Object.class}));
+		this.rendezvousDataSource = new RendezvousDataSource();
+		Rendezvous.instance().addObserver(rendezvousDataSource);
+		Rendezvous.instance().init();
     }
-
+	
     private class RendezvousDataSource implements Observer {
-	public void update(Observable o, Object arg) {
-	    log.debug("update:"+o+","+arg);
-	    if(o instanceof Rendezvous) {
-		if(arg instanceof Message) {
-		    Message msg = (Message)arg;
-		    rendezvousPopup.addItem(((Host)msg.getContent()).getURL());
-//		    Map s = ((Rendezvous)o).getServices();
-//		    Iterator i = s.values().iterator();
-//		    while(i.hasNext())
-//			rendezvousPopup.addItem(((Host)i.next()).getURL());
+		public void update(Observable o, Object arg) {
+			log.debug("update:"+o+","+arg);
+			if(o instanceof Rendezvous) {
+				if(arg instanceof Message) {
+					Message msg = (Message)arg;
+					rendezvousPopup.addItem(((Host)msg.getContent()).getURL());
+					//		    Map s = ((Rendezvous)o).getServices();
+	 //		    Iterator i = s.values().iterator();
+  //		    while(i.hasNext())
+  //			rendezvousPopup.addItem(((Host)i.next()).getURL());
+				}
+			}
 		}
-	    }
-	}
     }
-
+	
     private NSPopUpButton protocolPopup;
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
-	this.protocolPopup = protocolPopup;
-	this.protocolPopup.setTarget(this);
-	this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[] {Object.class}));
+		this.protocolPopup = protocolPopup;
+		this.protocolPopup.setTarget(this);
+		this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[] {Object.class}));
     }
-
+	
     private NSComboBox hostPopup;
     public void setHostPopup(NSComboBox hostPopup) {
-	this.hostPopup = hostPopup;
-	this.hostPopup.setTarget(this);
-	this.hostPopup.setAction(new NSSelector("hostSelectionChanged", new Class[] {Object.class}));
-	this.hostPopup.setUsesDataSource(true);
-	this.hostPopup.setDataSource(CDHistoryImpl.instance());
+		this.hostPopup = hostPopup;
+		this.hostPopup.setTarget(this);
+		this.hostPopup.setAction(new NSSelector("hostSelectionChanged", new Class[] {Object.class}));
+		this.hostPopup.setUsesDataSource(true);
+		this.hostPopup.setDataSource(CDHistoryImpl.instance());
     }
-
+	
     private NSTextField pathField;
     public void setPathField(NSTextField pathField) {
-	this.pathField = pathField;
+		this.pathField = pathField;
     }
-
+	
     private NSTextField portField;
     public void setPortField(NSTextField portField) {
-	this.portField = portField;
+		this.portField = portField;
     }
-
+	
     private NSTextField usernameField;
     public void setUsernameField(NSTextField usernameField) {
-	this.usernameField = usernameField;
+		this.usernameField = usernameField;
     }
-
+	
     private NSTextField passField;
     public void setPassField(NSTextField passField) {
-	this.passField = passField;
+		this.passField = passField;
     }
-
+	
     private NSTextField urlLabel;
     public void setUrlLabel(NSTextField urlLabel) {
-	this.urlLabel = urlLabel;
+		this.urlLabel = urlLabel;
     }
-
+	
     private static NSMutableArray allDocuments = new NSMutableArray();
     
     private CDBrowserController browser;
@@ -144,128 +144,140 @@ public class CDConnectionController {
     // ----------------------------------------------------------
     // Constructors
     // ----------------------------------------------------------
-
+	
     public CDConnectionController(CDBrowserController browser) {
-	this.browser = browser;
-	allDocuments.addObject(this);
-	log.debug("CDConnectionController");
+		this.browser = browser;
+		allDocuments.addObject(this);
+		log.debug("CDConnectionController");
         if (false == NSApplication.loadNibNamed("Connection", this)) {
             log.fatal("Couldn't load Connection.nib");
             return;
         }
-//	this.init();
+		//	this.init();
     }
-
+	
     public void windowWillClose(NSNotification notification) {
-	this.window().setDelegate(null);
-	NSNotificationCenter.defaultCenter().removeObserver(this);
-	allDocuments.removeObject(this);
+		this.window().setDelegate(null);
+		NSNotificationCenter.defaultCenter().removeObserver(this);
+		allDocuments.removeObject(this);
     }
     
-            
+	
     private void awakeFromNib() {
-	log.debug("awakeFromNib");
-	// Notify the updateLabel() method if the user types.
-	NSNotificationCenter.defaultCenter().addObserver(
-						  this,
-						  new NSSelector("updateLabel", new Class[]{Object.class}),
-						  NSControl.ControlTextDidChangeNotification,
-						  hostPopup);
-	NSNotificationCenter.defaultCenter().addObserver(
-						    this,
-						    new NSSelector("updateLabel", new Class[]{Object.class}),
-						    NSControl.ControlTextDidChangeNotification,
-						    pathField);
-	NSNotificationCenter.defaultCenter().addObserver(
-						    this,
-						    new NSSelector("updateLabel", new Class[]{Object.class}),
-						    NSControl.ControlTextDidChangeNotification,
-						    portField);
-	NSNotificationCenter.defaultCenter().addObserver(
-						    this,
-						    new NSSelector("updateLabel", new Class[]{Object.class}),
-						    NSControl.ControlTextDidChangeNotification,
-						    usernameField);
+		log.debug("awakeFromNib");
+		// Notify the updateLabel() method if the user types.
+		NSNotificationCenter.defaultCenter().addObserver(
+												   this,
+												   new NSSelector("updateLabel", new Class[]{Object.class}),
+												   NSControl.ControlTextDidChangeNotification,
+												   hostPopup);
+		NSNotificationCenter.defaultCenter().addObserver(
+												   this,
+												   new NSSelector("updateLabel", new Class[]{Object.class}),
+												   NSControl.ControlTextDidChangeNotification,
+												   pathField);
+		NSNotificationCenter.defaultCenter().addObserver(
+												   this,
+												   new NSSelector("updateLabel", new Class[]{Object.class}),
+												   NSControl.ControlTextDidChangeNotification,
+												   portField);
+		NSNotificationCenter.defaultCenter().addObserver(
+												   this,
+												   new NSSelector("updateLabel", new Class[]{Object.class}),
+												   NSControl.ControlTextDidChangeNotification,
+												   usernameField);
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
-	this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals("ftp") ? FTP_STRING : SFTP_STRING);
-	this.portField.setIntValue(protocolPopup.selectedItem().tag());
-//	this.pathField.setStringValue("~");
+		this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals("ftp") ? FTP_STRING : SFTP_STRING);
+		this.portField.setIntValue(protocolPopup.selectedItem().tag());
+		//	this.pathField.setStringValue("~");
     }
-
+	
     public void hostSelectionChanged(Object sender) {
-	log.debug("hostSelectionChanged:"+sender);
-	int index = hostPopup.indexOfSelectedItem();
-	if(index != -1) {
-	    this.updateFields(((CDHistoryImpl)CDHistoryImpl.instance()).getItemAtIndex(index));
-	}
-	this.updateLabel(sender);
+		log.debug("hostSelectionChanged:"+sender);
+		int index = hostPopup.indexOfSelectedItem();
+		if(index != -1) {
+			this.updateFields(((CDHistoryImpl)CDHistoryImpl.instance()).getItemAtIndex(index));
+		}
+		this.updateLabel(sender);
     }
-
+	
     public void favoritesSelectionChanged(Object sender) {
-	log.debug("favoritesSelectionChanged:"+sender);
-	this.updateFields(CDFavoritesImpl.instance().getItem(favoritesPopup.titleOfSelectedItem()));
-	this.updateLabel(sender);
+		log.debug("favoritesSelectionChanged:"+sender);
+		this.updateFields(CDFavoritesImpl.instance().getItem(favoritesPopup.titleOfSelectedItem()));
+		this.updateLabel(sender);
     }
-
+	
     public void rendezvousSelectionChanged(Object sender) {
-	log.debug("rendezvousSelectionChanged:"+sender);
-	Object selectedItem = Rendezvous.instance().getService(rendezvousPopup.titleOfSelectedItem());
-	this.updateFields((Host)selectedItem);
-	this.updateLabel(sender);
+		log.debug("rendezvousSelectionChanged:"+sender);
+		Object selectedItem = Rendezvous.instance().getService(rendezvousPopup.titleOfSelectedItem());
+		this.updateFields((Host)selectedItem);
+		this.updateLabel(sender);
     }
     
     public void protocolSelectionChanged(Object sender) {
-	log.debug("protocolSelectionChanged:"+sender);
-	this.portField.setIntValue(protocolPopup.selectedItem().tag());
-	this.updateLabel(sender);
+		log.debug("protocolSelectionChanged:"+sender);
+		this.portField.setIntValue(protocolPopup.selectedItem().tag());
+		this.updateLabel(sender);
     }
-
+	
     public void updateFields(Host selectedItem) {
-	log.debug("updateFields:"+selectedItem);
-	this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
-	this.hostPopup.setStringValue(selectedItem.getHostname());
-	this.portField.setIntValue(protocolPopup.selectedItem().tag());
-	this.usernameField.setStringValue(selectedItem.getLogin().getUsername());
+		log.debug("updateFields:"+selectedItem);
+		this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
+		this.hostPopup.setStringValue(selectedItem.getHostname());
+		this.portField.setIntValue(protocolPopup.selectedItem().tag());
+		this.usernameField.setStringValue(selectedItem.getLogin().getUsername());
     }
-
+	
     public void updateLabel(Object sender) {
-	NSMenuItem selectedItem = protocolPopup.selectedItem();
-	String protocol = null;
-	if(selectedItem.tag() == Session.SSH_PORT)
-	    protocol = Session.SFTP+"://";
-	else if(selectedItem.tag() == Session.FTP_PORT)
-	    protocol = Session.FTP+"://";
-	urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostPopup.stringValue()+":"+portField.stringValue());
+		NSMenuItem selectedItem = protocolPopup.selectedItem();
+		String protocol = null;
+		if(selectedItem.tag() == Session.SSH_PORT)
+			protocol = Session.SFTP+"://";
+		else if(selectedItem.tag() == Session.FTP_PORT)
+			protocol = Session.FTP+"://";
+		urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostPopup.stringValue()+":"+portField.stringValue());
     }
-
+	
     public void closeSheet(NSButton sender) {
-	log.debug("closeSheet");
+		log.debug("closeSheet");
         NSNotificationCenter.defaultCenter().removeObserver(this);
-	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-	NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
+		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
     
     public void connectionSheetDidEnd(NSWindow sheet, int returncode, Object context) {
-	log.debug("connectionSheetDidEnd");
-	sheet.orderOut(null);
-	switch(returncode) {
-	    case(NSAlertPanel.DefaultReturn):
-		int tag = protocolPopup.selectedItem().tag();
-		Host host = null;
-		switch(tag) {
-		    case(Session.SSH_PORT):
-			host = new Host(Session.SFTP, hostPopup.stringValue(), Integer.parseInt(portField.stringValue()), new Login(usernameField.stringValue(), passField.stringValue()));
-			break;
-		    case(Session.FTP_PORT):
-			host = new Host(Session.FTP, hostPopup.stringValue(), Integer.parseInt(portField.stringValue()), new Login(usernameField.stringValue(), passField.stringValue()));
-			break;
-		    default:
-			throw new IllegalArgumentException("No protocol selected.");
+		log.debug("connectionSheetDidEnd");
+		sheet.orderOut(null);
+		switch(returncode) {
+			case(NSAlertPanel.DefaultReturn):
+				int tag = protocolPopup.selectedItem().tag();
+				Host host = null;
+				switch(tag) {
+					case(Session.SSH_PORT):
+						host = new Host(
+					  Session.SFTP, 
+					  hostPopup.stringValue(), 
+					  Integer.parseInt(portField.stringValue()), 
+					  new Login(usernameField.stringValue(), passField.stringValue()),
+					  pathField.stringValue()
+					  );
+						break;
+					case(Session.FTP_PORT):
+						host = new Host(
+					  Session.FTP, 
+					  hostPopup.stringValue(), 
+					  Integer.parseInt(portField.stringValue()), 
+					  new Login(usernameField.stringValue(), passField.stringValue()),
+					  pathField.stringValue()
+					  );
+						break;
+					default:
+						throw new IllegalArgumentException("No protocol selected.");
+				}
+					browser.mount(host);
+				break;
+			case(NSAlertPanel.AlternateReturn):
+				break;
 		}
-		browser.mount(host);
-		break;
-	    case(NSAlertPanel.AlternateReturn):
-		break;
-	}
     }
 }

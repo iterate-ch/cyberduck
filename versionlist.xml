@@ -8,6 +8,10 @@
 	<string>Cyberduck-2.1beta5.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.1
+- Updated SSH Core
+- 
+
 2.1beta5
 - HTTP is now supported again. Files can be downloaded from regular web servers.
 - Cyberduck can now be configured as the default FTP helper application. See "http://www.monkeyfood.com/software/moreInternet/". This seems to work with Safari and Internet Explorer.

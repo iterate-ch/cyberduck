@@ -27,56 +27,56 @@ import java.util.Map;
 
 /**
 * Keeps track of recently connected hosts.
-  * The hosts are stored in a hashmap where host.getName() is the key
+ * The hosts are stored in a hashmap where host.getName() is the key
  * @see ch.cyberduck.core.Host
  * @version $Id$
  */
 public abstract class History {
     private static Logger log = Logger.getLogger(History.class);
-
+	
     private Map data = new HashMap();
-
+	
     public History() {
-	this.load();
+		this.load();
     }
-
+	
     /**
-	* Write data to file.
+		* Write data to file.
      */
     public abstract void save();
-
+	
     /**
-	* Read from file into memory.
+		* Read from file into memory.
      */
     public abstract void load();
-
+	
     public void addItem(Host h) {
-	log.debug("addItem:"+h);
-	this.data.put(h.getHostname(), h);
+		log.debug("addItem:"+h);
+		this.data.put(h.getHostname(), h);
     }
-
+	
     public void removeItem(String url) {
-	log.debug("removeItem:"+url);
-	this.data.remove(url);
+		log.debug("removeItem:"+url);
+		this.data.remove(url);
     }
-
+	
     /**
-	* @param name the Key the host is stored with (ususally host.toString())
+		* @param name the Key the host is stored with (ususally host.toString())
      */
     public Host getItem(String name) {
-	Host result =  (Host)this.data.get(name);
-	if(null == result) {
-	    log.info("Host "+name+" not found in History.");
-// throw new IllegalArgumentException("Host "+name+" not found in History.");
-	}
-	return result;
+		Host result =  (Host)this.data.get(name);
+		if(null == result) {
+			log.info("Host "+name+" not found in History.");
+			// throw new IllegalArgumentException("Host "+name+" not found in History.");
+		}
+		return result;
     }
-
+	
     public Collection values() {
-	return data.values();
+		return data.values();
     }
-
+	
     public Iterator getIterator() {
-	return data.values().iterator();
+		return data.values().iterator();
     }
 }

@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 import java.net.URL;
 
 /**
-* @author Stuart A. Malone
+ * @author Stuart A. Malone
  */
 public class CDGetURLScriptCommand extends NSScriptCommand {
     private static Logger log = Logger.getLogger(CDGetURLScriptCommand.class);

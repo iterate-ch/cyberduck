@@ -24,65 +24,67 @@ import java.io.*;
 import java.util.List;
 
 /**
- * A path is a remote directory or file.
+* A path is a remote directory or file.
  * @version $Id$
  */
 public abstract class Path {
     private static Logger log = Logger.getLogger(Path.class);
-
+	
     private String path = null;
     private java.io.File local = null;
     protected Path parent = null;
     private List cache = null;
     public Status status = new Status();
     public Attributes attributes = new Attributes();
-
-    public static String FILE = "FILE";
-    public static String FOLDER = "FOLDER";
-    public static String LINK = "LINK";
+	
+    public static final String FILE = "FILE";
+    public static final String FOLDER = "FOLDER";
+    public static final String LINK = "LINK";
+	
+	public static final String HOME = "~";
     
     /**
-	* A remote path where nothing is known about a local equivalent.
+		* A remote path where nothing is known about a local equivalent.
      * @param path the absolute directory
      * @param name the file relative to param path
      */
     public Path(String parent, String name) {
-	this.setPath(parent, name);
+		this.setPath(parent, name);
     }
-
+	
     /**
-	* A remote path where nothing is known about a local equivalent.
+		* A remote path where nothing is known about a local equivalent.
      * @param path The absolute path of the remote file
      */
     public Path(String path) {
         this.setPath(path);
     }
-
+	
     /**
-	* Create a new path where you know the local file already exists
+		* Create a new path where you know the local file already exists
      * and the remote equivalent might be created later.
      * The remote filename will be extracted from the local file.
-	* @param parent The absolute path to the parent directory on the remote host
+	 * @param parent The absolute path to the parent directory on the remote host
      * @param file The associated local file
      */
     public Path(String parent, java.io.File file) {
-	this.setPath(parent, file);
+		this.setPath(parent, file);
     }
-
+	
     /**
-	* Copies the current path with its attributes but without the status information
+		* Copies the current path with its attributes but without the status information
      * @param session The session this path will use to fullfill its tasks
-	* @return A copy of me with a new session
+	 * @return A copy of me with a new session
      */
     public abstract Path copy(Session session);
-
+	
     public void setPath(String parent, java.io.File file) {
-	this.setPath(parent, file.getName());
-	this.setLocal(file);
+		this.setPath(parent, file.getName());
+		this.setLocal(file);
     }
-
+	
     /**
-     * @param parent The parent directory
+		* @param parent The parent directory
      * @param name The relative filename
      */
     public void setPath(String parent, String name) {
@@ -91,102 +93,102 @@ public abstract class Path {
         else
             this.setPath(parent + "/" + name);
     }
-
+	
     /**
-	* @param pathname The absolute path of the file
+		* @param pathname The absolute path of the file
      */
     public void setPath(String name) {
         if(name.length() > 1 && name.charAt(name.length()-1) == '/')
-	    this.path = name.substring(0, name.length()-1);
-	else
-	    this.path = name;
+			this.path = name.substring(0, name.length()-1);
+		else
+			this.path = name;
     }
-
+	
     /**
-	* @return My parent directory
+		* @return My parent directory
      */
     public abstract Path getParent();
-
+	
     /**
-	* @throws NullPointerException if session is not initialized
+		* @throws NullPointerException if session is not initialized
      */
     public Host getHost() {
-	return this.getSession().getHost();
+		return this.getSession().getHost();
     }
-
+	
     /**
-	* @return My directory listing
+		* @return My directory listing
      */
     public List cache() {
-	return this.cache;
+		return this.cache;
     }
-
+	
     public void setCache(List files) {
-	this.cache = files;
+		this.cache = files;
     }
-
+	
     /**
-	* Request a file listing from the server. Has to be a directory
+		* Request a file listing from the server. Has to be a directory
      * @param notifyobservers Notify the observers if true
      */
     public abstract List list(boolean notifyobservers, boolean showHidden);
-
+	
     public abstract List list();
-
+	
     /**
-	* Remove this file from the remote host. Does not affect
+		* Remove this file from the remote host. Does not affect
      * any corresponding local file
      */
     public abstract void delete();
-
+	
     /**
-    *	Create a new directory inside me on the remote host
-    * @param folder The relative name of the new folder
-    */
+		*	Create a new directory inside me on the remote host
+	 * @param folder The relative name of the new folder
+	 */
     public abstract Path mkdir(String folder);
-
-//    public abstract int size();
+	
+	//    public abstract int size();
     
     /**
-	* Create a new emtpy file on the remote host
+		* Create a new emtpy file on the remote host
      */
-//    public abstract void touch(String file);
-
+	//    public abstract void touch(String file);
+	
     public abstract void rename(String n);
-
+	
     /**
-	* @param p ocal permissions
+		* @param p ocal permissions
      */
     public abstract void changePermissions(int p);
-
+	
     public boolean isFile() {
-	return this.attributes.getMode().charAt(0) == '-';
+		return this.attributes.getMode().charAt(0) == '-';
     }
-
+	
     /**
-	* @return true if is directory or a symbolic link that everyone can execute
+		* @return true if is directory or a symbolic link that everyone can execute
      */
     public boolean isDirectory() {
-	if(this.isLink())
-	    return this.attributes.getPermission().getOtherPermissions()[Permission.EXECUTE];
-	return this.attributes.getMode().charAt(0) == 'd';
+		if(this.isLink())
+			return this.attributes.getPermission().getOtherPermissions()[Permission.EXECUTE];
+		return this.attributes.getMode().charAt(0) == 'd';
     }
-
+	
     public boolean isLink() {
-	return this.attributes.getMode().charAt(0) == 'l';
+		return this.attributes.getMode().charAt(0) == 'l';
     }
-
+	
     /**
-	* @return The file type
+		* @return The file type
      */
     public String getKind() {
-	if(this.isFile())
-	    return "File";
-	if(this.isDirectory())
-	    return "Folder";
-	if(this.isLink())
-	    return "Link";
-	return "Unknown";
+		if(this.isFile())
+			return "File";
+		if(this.isDirectory())
+			return "Folder";
+		if(this.isLink())
+			return "Link";
+		return "Unknown";
     }
     
     /**
@@ -197,69 +199,69 @@ public abstract class Path {
     }
     
     /**
-     * @return The filename if the path is a file
+		* @return The filename if the path is a file
      * or the full path if it is a directory
      */
     public String getName() {
-	String abs = this.getAbsolute();
-	int index = abs.lastIndexOf('/');
-	String name = (index > 0) ? abs.substring(index + 1) : abs.substring(1);
-	index = name.lastIndexOf('?');
-	name = (index > 0) ? name.substring(index + 1) : name;
-	return name;
+		String abs = this.getAbsolute();
+		int index = abs.lastIndexOf('/');
+		String name = (index > 0) ? abs.substring(index + 1) : abs.substring(1);
+		index = name.lastIndexOf('?');
+		name = (index > 0) ? name.substring(index + 1) : name;
+		return name;
     }
-
+	
     /**
-     * @return the absolute path name
+		* @return the absolute path name
      */
     public String getAbsolute() {
-	//log.debug("getAbsolute:"+this.path);
-	return this.path;
+		//log.debug("getAbsolute:"+this.path);
+		return this.path;
     }
     
-//    public String getAbsoluteEncoded(String path) {
-  //      return java.net.URLEncoder.encode(this.getAbsolute());//, "utf-8");
-  //  }
-
+	//    public String getAbsoluteEncoded(String path) {
+ //      return java.net.URLEncoder.encode(this.getAbsolute());//, "utf-8");
+ //  }
+	
     public void setLocal(java.io.File file) {
-	this.local = file;
+		this.local = file;
     }
     
     /**
         * @return The local alias of this path
      */
     public File getLocal() {
-	//default value if not set explicitly, i.e. with drag and drop
-	if(null == this.local)
-	    return new File(Preferences.instance().getProperty("connection.download.folder"), this.getName());
-	return this.local;
+		//default value if not set explicitly, i.e. with drag and drop
+		if(null == this.local)
+			return new File(Preferences.instance().getProperty("connection.download.folder"), this.getName());
+		return this.local;
     }
-
+	
     /**
-	* @return the extensdion if any
+		* @return the extensdion if any
      */
     public String getExtension() {
-	String name = this.getName();
-	int index = name.lastIndexOf(".");
-	if(index != -1)
-	    return name.substring(index, name.length());
-	return null;
+		String name = this.getName();
+		int index = name.lastIndexOf(".");
+		if(index != -1)
+			return name.substring(index, name.length());
+		return null;
     }
-
+	
     public abstract Session getSession();
-
+	
     public abstract void download();
-
+	
     public abstract void upload();
-
+	
     public abstract void fillQueue(List queue, int kind);
-
+	
     // ----------------------------------------------------------
     // Transfer methods
     // ----------------------------------------------------------
     
     /**
-	* ascii upload
+		* ascii upload
      * @param reader The stream to read from
      * @param writer The stream to write to
      */
@@ -267,9 +269,9 @@ public abstract class Path {
         log.debug("upload(" + writer.toString() + ", " + reader.toString());
         this.transfer(reader, writer);
     }
-
+	
     /**
-	* binary upload
+		* binary upload
      * @param i The stream to read from
      * @param o The stream to write to
      */
@@ -277,9 +279,9 @@ public abstract class Path {
         log.debug("upload(" + o.toString() + ", " + i.toString());
         this.transfer(i, o);
     }
-
+	
     /**
-	* ascii download
+		* ascii download
      * @param reader The stream to read from
      * @param writer The stream to write to
      */
@@ -287,9 +289,9 @@ public abstract class Path {
         log.debug("transfer(" + reader.toString() + ", " + writer.toString());
         this.transfer(reader, writer);
     }
-
+	
     /**
-	* binary download
+		* binary download
      * @param i The stream to read from
      * @param o The stream to write to
      */
@@ -297,26 +299,26 @@ public abstract class Path {
         log.debug("transfer(" + i.toString() + ", " + o.toString());
         this.transfer(i, o);
     }
-
+	
     /**
-	* @param reader The stream to read from
+		* @param reader The stream to read from
      * @param writer The stream to write to
      */
     private void transfer(java.io.Reader reader, java.io.Writer writer) throws IOException {
         LineNumberReader in = new LineNumberReader(reader);
         BufferedWriter out = new BufferedWriter(writer);
-
+		
         this.status.reset();
-
-	long current = this.status.getCurrent();
-//        boolean complete = false;
-        // read/write a line at a time
+		
+		long current = this.status.getCurrent();
+		//        boolean complete = false;
+  // read/write a line at a time
         String line = null;
         while (!status.isComplete() && !status.isCanceled()) {
             line = in.readLine();
             if(line == null) {
-		this.status.setComplete(true);
-//                complete = true;
+				this.status.setComplete(true);
+				//                complete = true;
             }
             else {
                 this.status.setCurrent(current += line.getBytes().length);
@@ -324,9 +326,9 @@ public abstract class Path {
                 out.newLine();
             }
         }
-//	this.status.setComplete(complete);
-//        this.eof(complete);
-        // close streams
+		//	this.status.setComplete(complete);
+  //        this.eof(complete);
+  // close streams
         if(in != null) {
             in.close();
         }
@@ -335,7 +337,7 @@ public abstract class Path {
             out.close();
         }
     }
-
+	
     /**
         * @param i The stream to read from
      * @param o The stream to write to
@@ -343,31 +345,31 @@ public abstract class Path {
     private void transfer(java.io.InputStream i, java.io.OutputStream o) throws IOException {
         BufferedInputStream in = new BufferedInputStream(new DataInputStream(i));
         BufferedOutputStream out = new BufferedOutputStream(new DataOutputStream(o));
-
+		
         this.status.reset();
-
+		
         // do the retrieving
         int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
         byte[] chunk = new byte[chunksize];
         int amount = 0;
         long current = this.status.getCurrent();
-//        boolean complete = false;
-
+		//        boolean complete = false;
+		
         // read from socket (bytes) & write to file in chunks
         while (!status.isComplete() && !status.isCanceled()) {
-	    // Reads up to len bytes of data from the input stream into  an array of bytes.  An attempt is made to read as many as  len bytes, but a smaller number may be read, possibly  zero. The number of bytes actually read is returned as an integer. 
+			// Reads up to len bytes of data from the input stream into  an array of bytes.  An attempt is made to read as many as  len bytes, but a smaller number may be read, possibly  zero. The number of bytes actually read is returned as an integer. 
             amount = in.read(chunk, 0, chunksize);
             if(amount == -1) {
-		this.status.setComplete(true);
+				this.status.setComplete(true);
             }
             else {
                 this.status.setCurrent(current += amount);
                 out.write(chunk, 0, amount);
             }
         }
-//	this.status.setComplete(complete);
-//        this.eof(complete);
-        // close streams
+		//	this.status.setComplete(complete);
+  //        this.eof(complete);
+  // close streams
         if(in != null) {
             in.close();
         }
@@ -378,7 +380,7 @@ public abstract class Path {
     }
     
     public String toString() {
-	return this.getAbsolute();
-//        return "Local:"+this.getLocal().toString()+",Remote:"+this.getAbsolute();
+		return this.getAbsolute();
+		//        return "Local:"+this.getLocal().toString()+",Remote:"+this.getAbsolute();
     }
 }
