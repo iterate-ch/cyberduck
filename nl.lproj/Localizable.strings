@@ -67,4 +67,5 @@
 "Close session?" = "Sessie afsluiten?";
 "Disconnect from" = "Verbreek verbinding met";
 "Close" = "Sluit";
-"The connection will be closed" = "De verbinding wordt afgesloten.";
+"Disconnect from" = "Verbinding met";
+"The connection will be closed." = "De verbinding wordt afgesloten.";
