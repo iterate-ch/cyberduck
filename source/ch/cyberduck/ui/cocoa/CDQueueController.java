@@ -219,58 +219,64 @@ public class CDQueueController extends NSObject {
         }
         queue.start(new CDValidatorController(queue.kind(), resumeRequested));
     }
+	
+	public boolean isVisible() {
+		return this.window() != null && this.window().isVisible();
+	}
 
     public void update(Queue observable, Object arg) {
 //		log.debug("update:"+observable+","+arg);
-        if (arg instanceof Message) {
-            Message msg = (Message)arg;
-            if (msg.getTitle().equals(Message.PROGRESS) || msg.getTitle().equals(Message.ERROR)) {
-                if (this.window().isVisible()) {
-                    if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
-                        int row = QueueList.instance().indexOf(observable);
-                        NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
-                        this.queueTable.setNeedsDisplay(queueRect);
-                    }
-                }
-            }
-            else if (msg.getTitle().equals(Message.DATA)) {
-                if (this.window().isVisible()) {
-                    if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
-                        int row = QueueList.instance().indexOf(observable);
-                        NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
-                        this.queueTable.setNeedsDisplay(progressRect);
-                    }
-                }
-            }
-            else if (msg.getTitle().equals(Message.QUEUE_START)) {
-                this.toolbar.validateVisibleItems();
-                QueueList.instance().save();
-            }
-            else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
-                this.toolbar.validateVisibleItems();
-                Queue queue = (Queue)observable;
-                if (queue.isComplete()) {
-                    if (Queue.KIND_DOWNLOAD == queue.kind()) {
-                        if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
-                            boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
-                            log.debug("Success opening file:" + success);
-                        }
-                    }
-                    if (Queue.KIND_UPLOAD == queue.kind()) {
-                        if (callback != null) {
-                            log.debug("Telling observable to refresh directory listing");
-                            callback.update(null, new Message(Message.REFRESH));
-                        }
-                    }
-                    if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
-                        this.queueTable.deselectAll(null);
-                        QueueList.instance().removeItem(queue);
-                        this.queueTable.reloadData();
-                    }
-                }
-                QueueList.instance().save();
-            }
-        }
+		if(this.isVisible()) {
+			if (arg instanceof Message) {
+				Message msg = (Message)arg;
+				if (msg.getTitle().equals(Message.PROGRESS) || msg.getTitle().equals(Message.ERROR)) {
+					if (this.window().isVisible()) {
+						if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
+							int row = QueueList.instance().indexOf(observable);
+							NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
+							this.queueTable.setNeedsDisplay(queueRect);
+						}
+					}
+				}
+				else if (msg.getTitle().equals(Message.DATA)) {
+					if (this.window().isVisible()) {
+						if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
+							int row = QueueList.instance().indexOf(observable);
+							NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
+							this.queueTable.setNeedsDisplay(progressRect);
+						}
+					}
+				}
+				else if (msg.getTitle().equals(Message.QUEUE_START)) {
+					this.toolbar.validateVisibleItems();
+					QueueList.instance().save();
+				}
+				else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+					this.toolbar.validateVisibleItems();
+					Queue queue = (Queue)observable;
+					if (queue.isComplete()) {
+						if (Queue.KIND_DOWNLOAD == queue.kind()) {
+							if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
+								boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+								log.debug("Success opening file:" + success);
+							}
+						}
+						if (Queue.KIND_UPLOAD == queue.kind()) {
+							if (callback != null) {
+								log.debug("Telling observable to refresh directory listing");
+								callback.update(null, new Message(Message.REFRESH));
+							}
+						}
+						if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
+							this.queueTable.deselectAll(null);
+							QueueList.instance().removeItem(queue);
+							this.queueTable.reloadData();
+						}
+					}
+					QueueList.instance().save();
+				}
+			}
+		}
     }
 
     public void awakeFromNib() {

@@ -659,9 +659,9 @@ public class CDBrowserController extends NSObject implements Observer {
 //				browserTable.reloadData();
             }
             else if (msg.getTitle().equals(Message.START)) {
-                progressIndicator.startAnimation(this);
                 statusIcon.setImage(null);
                 statusIcon.setNeedsDisplay(true);
+                progressIndicator.startAnimation(this);
                 toolbar.validateVisibleItems();
             }
             else if (msg.getTitle().equals(Message.STOP)) {

@@ -5,163 +5,163 @@ Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
 2.3.1
-- Chinese (Simplified) Localization
-- Rendezvous discovered services in Bookmark menu
-- Fixed a bug causing uploads to fail on hosts with different login credentials at upper level directories
-- Fixed a bug causing bookmarks to get lost uppon moving items in the bookmark drawer
-- Preference item to disable the update check
-- Toolbar item to open downloaded files with default application
-- Graceful application termination (Properly ask to close all connections and then quit)
-- Remembering choosen directories in open and save dialogs
+- [Feature] Chinese (Simplified) Localization
+- [Feature] Rendezvous services in Bookmark menu
+- [Bugfix] Upper level directories had to be listed first when uploading files
+- [Bugfix] Changes to bookmarks won't be saved
+- [Feature] Preference item to disable the update check
+- [Feature] Toolbar item to open downloaded files with default application
+- [Feature] Graceful application termination (Properly ask to close all connections and then quit)
+- [Bugfix] Remembering choosen directories in open and save dialogs
 
 2.3
-- Finnish Localization
-- Supporting Keyboard Interactive (PAM) Authentication (SSH)
-- Fixed a bug which caused not all available Rendezvous services to get listed
-- Removed 'Type ahead' feature of the browser (responsible for frequent crashes)
+- [Feature] Finnish Localization
+- [Feature] Supporting Keyboard Interactive (PAM) Authentication (SSH)
+- [Bugfix] not all available Rendezvous services were listed
+- [Bugfix] Removed 'Type ahead' feature of the browser (responsible for frequent crashes)
 
 2.3b2
-- Much improved queue management (fewer connections)
-- Resume downloads (SFTP)
-- Resume uploads (SFTP)
-- Resume uploads (FTP)
-- Move files on remote host by drag and drop
-- Drag files onto bookmark to quickly upload
-- Bookmarks are shown in the menu
-- Menu item 'Download As...'
-- Editing multiple files in the external editor with the same name
-- Warning if a duplicate exists when uploading files
-- 'Apply to all' checkbox in dialog asking for replace/resume/skip existing files
-- Improved caching of directory listings
-- When dropping files onto folders it will upload these into the folder
-- When typing the first letter of a file it gets selected in the browser
-- Toolbar button to remove all completed items from the queue
-- Convert line endings when downloading in ASCII mode (FTP)
-- Auto transfer mode (FTP)
-- Dock menu item to open new browser
-- Correctly updating incorrect keychain entries
-- Preserve modification date when downloading files
-- Ignoring .DS_Store files
-- Bug fixes
+- [Feature] Much improved queue management (fewer connections)
+- [Feature] Resume downloads (SFTP)
+- [Feature] Resume uploads (SFTP)
+- [Feature] Resume uploads (FTP)
+- [Feature] Move files on remote host by drag and drop
+- [Feature] Drag files onto bookmark to quickly upload
+- [Feature] Bookmarks are shown in the menu
+- [Feature] Menu item 'Download As...'
+- [Feature] Editing multiple files in the external editor with the same name
+- [Feature] Warning if a duplicate exists when uploading files
+- [Feature] 'Apply to all' checkbox in dialog asking for replace/resume/skip existing files
+- [Feature] Improved caching of directory listings
+- [Feature] When dropping files onto folders it will upload these into the folder
+- [Feature] When typing the first letter of a file it gets selected in the browser
+- [Feature] Toolbar button to remove all completed items from the queue
+- [Feature] Convert line endings when downloading in ASCII mode (FTP)
+- [Feature] Auto transfer mode (FTP)
+- [Feature] Dock menu item to open new browser
+- [Bugfix] Correctly updating incorrect keychain entries
+- [Feature] Preserve modification date when downloading files
+- [Bugfix] Ignoring .DS_Store files
+- [Bugfix] Bug fixes
 
 2.3b1
-- External editor support (SubEthaEdit, BBEdit, TextWrangler, Text-Edit Plus)
+- [Feature] External editor support (SubEthaEdit, BBEdit, TextWrangler, Text-Edit Plus)
 
 2.2
-- Supporting folders with sticky/set-uid/set-gid bits (FTP)
-- Updated Dutch localization
-- Updated French localization
-- Minor performance improvements
+- [Bugfix] Supporting folders with sticky/set-uid/set-gid bits (FTP)
+- [Feature] Updated Dutch localization
+- [Feature] Updated French localization
+- [Bugfix] Minor performance improvements
 
 2.2b6
-- Preliminary support for Windows, VMS and OS/2 file listings (FTP)
-- Properly deleting symbolic links (FTP)
-- Displaying link icons in browser
-- Downloading files from FTP servers not supporting the SIZE command (FTP)
-- Fixed a bug where overwritten files with SFTP got corrupted (Thanks to Jan!)
-- Contextual Menu support
-- Bug fixes
+- [Feature] Preliminary support for Windows, VMS and OS/2 file listings (FTP)
+- [Bugfix] Properly deleting symbolic links (FTP)
+- [Feature] Displaying link icons in browser
+- [Bugfix] Downloading files from FTP servers not supporting the SIZE command (FTP)
+- [Bugfix] Fixed a bug where overwritten files with SFTP got corrupted (Thanks to Jan!)
+- [Feature] Contextual Menu support
+- [Bugfix] Bug fixes
 
 2.2b5
-- Chinese (Traditional) Localization
-- Korean Localization
-- Passphrases for private key files are stored in the Keychain (SSH)
-- Bookmark editor allows to specify the port number
-- When a bookmark is edited, the properties are updated in the bookmark drawer instantly
-- A confirmation dialog is displayed before deleting a bookmark
-- A confirmation dialog is displayed when connecting to a new site in a browser still connected to another host
-- Transcript messages are only shown in the corresponding browser
-- Fixed a bug which caused the browser window to be 'frozen' after an upload
-- Option to adjust the 'LIST' command sent (FTP)
-- Fixed a bug which caused a crash when not connected to a network
-- Updated application icon
+- [Feature] Chinese (Traditional) Localization
+- [Feature] Korean Localization
+- [Feature] Passphrases for private key files are stored in the Keychain (SSH)
+- [Feature] Bookmark editor allows to specify the port number
+- [Bugfix] When a bookmark is edited, the properties are updated in the bookmark drawer instantly
+- [Feature] A confirmation dialog is displayed before deleting a bookmark
+- [Feature] A confirmation dialog is displayed when connecting to a new site in a browser still connected to another host
+- [Bugfix] Transcript messages are only shown in the corresponding browser
+- [Bugfix] Fixed a bug which caused the browser window to be 'frozen' after an upload
+- [Feature] Option to adjust the 'LIST' command sent (FTP)
+- [Bugfix] Fixed a bug which caused a crash when not connected to a network
+- [Feature] Updated application icon
 
 2.2b4
-- Fixed a bug that with some servers the permissions could not be modified (FTP)
-- When addding a transfer to the queue it is highlighted
-- Improved login process
-- Updated Japanese localization
+- [Bugfix] Fixed a bug that with some servers the permissions could not be modified (FTP)
+- [Bugfix] When addding a transfer to the queue it is highlighted
+- [Bugfix] Improved login process
+- [Feature] Updated Japanese localization
 
 2.2b3
-- Caching directory listings
-- Auto-refresh the directory listing after uploading a file
-- Sending 'LIST -a' to list directories (FTP)
-- Fixed a bug where entries in the queue would be deleted too early
+- [Feature] Caching directory listings
+- [Feature] Auto-refresh the directory listing after uploading a file
+- [Feature] Sending 'LIST -a' to list directories (FTP)
+- [Bugfix] Fixed a bug where entries in the queue would be deleted too early
 
 2.2b2
-- Updated Japanese localization
-- Updated French localization
-- Updated Portuguese localization
-- Updated Italian localization
-- The log is now written with a fixed-width font
-- Various minor improvements
+- [Feature] Updated Japanese localization
+- [Feature] Updated French localization
+- [Feature] Updated Portuguese localization
+- [Feature] Updated Italian localization
+- [Bugfix] The log is now written with a fixed-width font
+- [Feature] Various minor improvements
 
 2.2b1
-- Keychain integration
-- New file transfer manager
-- Full Unicode support
-- Choose character encoding for file listings
-- Support for public key authentication (SSH)
-- Live filtering of directory listings
-- Improved Rendezvous support (jmDNS 0.2)
-- Drag files from the browser to the transfer manager
-- Drag links to the transfer manager to start download
-- Browser can be customized to show/hide certain columns
-- Japanese Localization
-- Italian Localization
-- Portuguese Localization
-- Spanish Localization
-- French Localization
-- Option to disable 'CHMOD' after upload (FTP)
-- Option to disable sending the 'SYST' command (FTP)
-- When clicking the dock icon and now window is active, a new browser window is opened
-- Bookmarks can be rearranged
-- When login credentials aren't reasonable, ask before trying to login
+- [Feature] Keychain integration
+- [Feature] New file transfer manager
+- [Feature] Full Unicode support
+- [Feature] Choose character encoding for file listings
+- [Feature] Support for public key authentication (SSH)
+- [Feature] Live filtering of directory listings
+- [Feature] Improved Rendezvous support (jmDNS 0.2)
+- [Feature] Drag files from the browser to the transfer manager
+- [Feature] Drag links to the transfer manager to start download
+- [Feature] Browser can be customized to show/hide certain columns
+- [Feature] Japanese Localization
+- [Feature] Italian Localization
+- [Feature] Portuguese Localization
+- [Feature] Spanish Localization
+- [Feature] French Localization
+- [Feature] Option to disable 'CHMOD' after upload (FTP)
+- [Feature] Option to disable sending the 'SYST' command (FTP)
+- [Bugfix] When clicking the dock icon and now window is active, a new browser window is opened
+- [Feature] Bookmarks can be rearranged
+- [Bugfix] When login credentials aren't reasonable, ask before trying to login
 
 2.1
-- Bookmarks can now be edited
-- Bookmarks can now be saved as a regular file (Drag the bookmarks to the Finder)
-- Bookmarks saved as files can be imported by dropping them on the Bookmarks Drawer
-- Double clicking a Cyberduck bookmark file in the Finder will open a new browser and connect to the remote site
-- Bookmarks can now be modified
-- Specify an initial directory upon new connection (e.g. public_html instead of the default home)
-- Use keyboard shortcut (commann-up/down) for browsing a directory
-- Uploaded files have the same permissions as locally (FTP)
-- Updated icon set
-- Remembering sort order while browsing
-- Toolbar icon to toggle Bookmark drawer
-- Updated SSH Core (v0.2.5)
-- Dutch Localization
-- German Localization
-- Smaller changes and bug fixes
+- [Feature] Bookmarks can now be edited
+- [Feature] Bookmarks can now be saved as a regular file (Drag the bookmarks to the Finder)
+- [Feature] Bookmarks saved as files can be imported by dropping them on the Bookmarks Drawer
+- [Feature] Double clicking a Cyberduck bookmark file in the Finder will open a new browser and connect to the remote site
+- [Feature] Bookmarks can now be modified
+- [Feature] Specify an initial directory upon new connection (e.g. public_html instead of the default home)
+- [Feature] Use keyboard shortcut (commann-up/down) for browsing a directory
+- [Feature] Uploaded files have the same permissions as locally (FTP)
+- [Feature] Updated icon set
+- [Bugfix] Remembering sort order while browsing
+- [Feature] Toolbar icon to toggle Bookmark drawer
+- [Feature] Updated SSH Core (v0.2.5)
+- [Feature] Dutch Localization
+- [Feature] German Localization
+- [Bugfix] Smaller changes and bug fixes
 
 2.1b5
-- HTTP is now supported again. Files can be downloaded from regular web servers
-- Cyberduck can now be configured as the default FTP helper application. See "http://www.monkeyfood.com/software/moreInternet/". This seems to work with Safari and Internet Explorer
-- Dragging files to the Finder is now more reliable
-- The transfer panel does now close again if defined so in the preferences
-- The buffer size (the size of download chunks to keep in memory before writing to disk) is now adjustable
-- Login to anonymous servers where no password is needed is now supported (FTP)
-- Smaller bug fixes
+- [Feature] HTTP is now supported again. Files can be downloaded from regular web servers
+- [Feature] Cyberduck can now be configured as the default FTP helper application. See "http://www.monkeyfood.com/software/moreInternet/". This seems to work with Safari and Internet Explorer
+- [Bugfix] Dragging files to the Finder is now more reliable
+- [Bugfix] The transfer panel does now close again if defined so in the preferences
+- [Feature] The buffer size (the size of download chunks to keep in memory before writing to disk) is now adjustable
+- [Bugfix] Login to anonymous servers where no password is needed is now supported (FTP)
+- [Bugfix] Smaller bug fixes
 
 2.1b4
-- Cyberduck now has the official creator code 'CYCK' and can handle URL events from other applications
-- Smaller bug fixes
+- [Feature] Cyberduck now has the official creator code 'CYCK' and can handle URL events from other applications
+- [Bugfix] Smaller bug fixes
 
 2.1b3
-- Localization support
-- Files and foldes can now be dragged to the Finder to download them
-- Windows do now no more stack exactly on the top of prior one
-- There are now equivalent menu actions for the toolbar items
-- Modification dates and time are now displayed correctly
-- The modification date column is now sorted correctly
-- Browser columns are now sortable in both directions
-- When deleting multiple files and directores, the file list will now only get updated at the end because of performance
-- If multiples have been selected to transfer, Cyberduck now puts them in the same queue and opens only one connection to the server
-- There is a new command 'Go to folder' for changing the working directory quickly
-- Many smaller bug fixes
+- [Feature] Localization support
+- [Feature] Files and foldes can now be dragged to the Finder to download them
+- [Bugfix] Windows do now no more stack exactly on the top of prior one
+- [Feature] There are now equivalent menu actions for the toolbar items
+- [Bugfix] Modification dates and time are now displayed correctly
+- [Bugfix] The modification date column is now sorted correctly
+- [Bugfix] Browser columns are now sortable in both directions
+- [Bugfix] When deleting multiple files and directores, the file list will now only get updated at the end because of performance
+- [Bugfix] If multiples have been selected to transfer, Cyberduck now puts them in the same queue and opens only one connection to the server
+- [Feature] There is a new command 'Go to folder' for changing the working directory quickly
+- [Bugfix] Many smaller bug fixes
 
 2.1b2
-- SSH (SFTP) support
-- Completly rewritten user interface using the Cocoa Framework
+- [Feature] SSH (SFTP) support
+- [Feature] Completly rewritten user interface using the Cocoa Framework
 

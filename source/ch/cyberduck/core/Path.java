@@ -372,6 +372,7 @@ public abstract class Path {
 		log.debug("Adding "+this.toString()+" to download queue.");
 		queue.add(this);
         if (this.isDirectory()) {
+			this.status.setSize(0);
             for (Iterator i = this.list(false, true).iterator(); i.hasNext();) {
                 Path p = (Path)i.next();
                 p.setLocal(new Local(this.getLocal(), p.getName()));
@@ -391,6 +392,7 @@ public abstract class Path {
 		queue.add(this);
         if (this.getLocal().isDirectory()) {
 			this.attributes.setType(Path.DIRECTORY_TYPE);
+			this.status.setSize(0);
             File[] files = this.getLocal().listFiles();
             for (int i = 0; i < files.length; i++) {
                 Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), new Local(files[i].getAbsolutePath()));

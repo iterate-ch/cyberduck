@@ -236,7 +236,9 @@ public class CDMainController extends NSObject {
 		
 		public int numberOfItemsInMenu(NSMenu menu) {
 			log.debug("numberOfItemsInMenu"+menu);
-            return items.size();
+			if(items.size() > 0)
+				return items.size();
+			return 1;
         }
 		
         /**
@@ -249,11 +251,19 @@ public class CDMainController extends NSObject {
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
 			log.debug("menuUpdateItemAtIndex:"+index);
-			Host h = (Host)items.values().toArray()[index];
-			sender.setTitle(h.getNickname());
-			sender.setTarget(this);
-			sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
-            return true;
+			if(items.size() == 0) {
+				sender.setTitle(NSBundle.localizedString("No Rendezvous services available", ""));
+				sender.setEnabled(false);
+				return true;
+			}
+			else {
+				Host h = (Host)items.values().toArray()[index];
+				sender.setTitle(h.getNickname());
+				sender.setTarget(this);
+				sender.setEnabled(true);
+				sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
+				return true;
+			}
         }
 		
         public void rendezvousMenuClicked(NSMenuItem sender) {
