@@ -180,7 +180,7 @@ public class Attributes extends Observable {
 
 	public String getGroup() {
 		if(null == this.group)
-			NSBundle.localizedString("Unknown", "")
+			NSBundle.localizedString("Unknown", "");
 		return this.group;
 	}
 }

@@ -912,6 +912,11 @@ public class CDBrowserController extends CDController implements Observer {
 			}
 			if(enum.hasMoreElements()) {
 				alertText.append("\n- (...)");
+				while(enum.hasMoreElements()) {
+					int selected = ((Integer)enum.nextElement()).intValue();
+					Path p = (Path)browserModel.getEntry(selected);
+					files.add(p);
+				}
 			}
 			NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Delete", "Alert sheet title"), //title
 												 NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
