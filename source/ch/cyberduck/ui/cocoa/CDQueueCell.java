@@ -50,6 +50,7 @@ public class CDQueueCell extends CDTableCell {
     private static final NSImage arrowUpIcon = NSImage.imageNamed("arrowUp.tiff");
     private static final NSImage arrowDownIcon = NSImage.imageNamed("arrowDown.tiff");
     private static final NSImage folderIcon = NSImage.imageNamed("folder32.tiff");
+    private static final NSImage notFoundIcon = NSImage.imageNamed("notfound.tiff");
 
     static {
         arrowUpIcon.setSize(new NSSize(32f, 32f));
@@ -64,31 +65,37 @@ public class CDQueueCell extends CDTableCell {
         if (queue != null) {
             NSPoint cellPoint = cellFrame.origin();
             NSSize cellSize = cellFrame.size();
-
+			
             // drawing file icon
             switch (queue.kind()) {
                 case Queue.KIND_DOWNLOAD:
                     arrowIcon = arrowDownIcon;
                     if (queue.getRoot().isFile()) {
 						fileIcon = (NSImage)icons.get(queue.getRoot().getExtension());
-//                        fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
                     }
-                    else if (queue.getRoot().isDirectory()) {
-                        fileIcon = folderIcon;
-                    }
-                    break;
+					else if (queue.getRoot().isDirectory()) {
+						fileIcon = folderIcon;
+					}
+					break;
                 case Queue.KIND_UPLOAD:
                     arrowIcon = arrowUpIcon;
                     if (queue.getRoot().getLocal().isFile()) {
-						fileIcon = (NSImage)icons.get(queue.getRoot().getExtension());
-//                        fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
+						if(queue.getRoot().getLocal().exists()) {
+							fileIcon = (NSImage)icons.get(queue.getRoot().getExtension());
+						}
+						else { 
+							fileIcon = notFoundIcon;
+						}
                     }
-                    else if (queue.getRoot().getLocal().isDirectory()) {
-                        fileIcon = folderIcon;
-                    }
-                    break;
+					else if (queue.getRoot().getLocal().isDirectory()) {
+						fileIcon = folderIcon;
+					}
+					else { 
+						fileIcon = notFoundIcon;
+					}
+					break;
             }
-
+			
             final float BORDER = 40;
             final float SPACE = 5;
 

@@ -1127,8 +1127,11 @@ public class CDBrowserController implements Observer {
     // Browser Model
     // ----------------------------------------------------------
 
-    private class CDBrowserTableDataSource extends CDTableDataSource {
+	private static final NSImage symlinkIcon = NSImage.imageNamed("symlink.tiff");
+	private static final NSImage folderIcon = NSImage.imageNamed("folder16.tiff");
+	private static final NSImage notFoundIcon = NSImage.imageNamed("notfound.tiff");
 
+	private class CDBrowserTableDataSource extends CDTableDataSource {
         private List fullData;
         private List currentData;
 
@@ -1148,20 +1151,21 @@ public class CDBrowserController implements Observer {
                 if (identifier.equals("TYPE")) {
                     NSImage icon;
                     if (p.attributes.isSymbolicLink()) {
-                        icon = NSImage.imageNamed("symlink.tiff");
+                        icon = symlinkIcon;
                     }
-                    else {
-                        if (p.attributes.isDirectory()) {
-                            icon = NSImage.imageNamed("folder16.tiff");
-                        }
-                        else {
-                            icon = NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
-                        }
-                    }
+					else if (p.attributes.isDirectory()) {
+						icon = folderIcon;
+					}
+					else if (p.attributes.isFile()) {
+						icon = NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
+					}
+					else {
+						icon = notFoundIcon;
+					}
                     icon.setSize(new NSSize(16f, 16f));
                     return icon;
                 }
-                if (identifier.equals("FILENAME")) {
+                else if (identifier.equals("FILENAME")) {
                     return p.getName();
                 }
                 else if (identifier.equals("SIZE")) {

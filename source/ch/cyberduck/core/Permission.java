@@ -242,12 +242,12 @@ public class Permission {
 	}
 
 	private boolean[] getOwnerPermissions(String s) {
-		boolean[] b = {s.charAt(1) == 'r', s.charAt(2) == 'w', s.charAt(3) == 'x'};
+		boolean[] b = {s.charAt(1) == 'r', s.charAt(2) == 'w', s.charAt(3) == 'x' || s.charAt(9) == 's'};
 		return b;
 	}
 
 	private boolean[] getGroupPermissions(String s) {
-		boolean[] b = {s.charAt(4) == 'r', s.charAt(5) == 'w', s.charAt(6) == 'x'};
+		boolean[] b = {s.charAt(4) == 'r', s.charAt(5) == 'w', s.charAt(6) == 'x' || s.charAt(9) == 's'};
 		return b;
 	}
 
