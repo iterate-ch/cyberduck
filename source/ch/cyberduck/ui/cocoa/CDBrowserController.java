@@ -139,6 +139,10 @@ public class CDBrowserController implements Observer {
 		this.showBookmarkButton.setAction(new NSSelector("toggleBookmarkDrawer", new Class[] {Object.class}));
     }
 
+	public void toggleBookmarkDrawer(Object sender) {
+		bookmarkDrawer.toggle(this);
+    }
+	
     private NSButton editBookmarkButton; // IBOutlet
     public void setEditBookmarkButton(NSButton editBookmarkButton) {
 		this.editBookmarkButton = editBookmarkButton;
@@ -220,9 +224,17 @@ public class CDBrowserController implements Observer {
 		this.pathPopup = pathPopup;
     }
 	
+	// ----------------------------------------------------------
+	// Drawers
+	// ----------------------------------------------------------
+	
     private NSDrawer logDrawer; // IBOutlet
     public void setLogDrawer(NSDrawer logDrawer) {
 		this.logDrawer = logDrawer;
+    }
+	
+	public void toggleLogDrawer(Object sender) {
+		logDrawer.toggle(this);
     }
 	
     private NSDrawer bookmarkDrawer; // IBOutlet
@@ -230,6 +242,10 @@ public class CDBrowserController implements Observer {
 		this.bookmarkDrawer = bookmarkDrawer;
     }
     
+	// ----------------------------------------------------------
+	// Status
+	// ----------------------------------------------------------
+	
     private NSProgressIndicator progressIndicator; // IBOutlet
     public void setProgressIndicator(NSProgressIndicator progressIndicator) {
 		this.progressIndicator = progressIndicator;
@@ -497,14 +513,6 @@ public class CDBrowserController implements Observer {
     // Selector methods for the toolbar items
     // ----------------------------------------------------------
     
-    public void toggleLogDrawer(Object sender) {
-		logDrawer.toggle(this);
-    }
-	
-    public void toggleBookmarkDrawer(Object sender) {
-		bookmarkDrawer.toggle(this);
-    }
-	
     public void gotoButtonClicked(Object sender) {
         log.debug("folderButtonClicked");
 		CDGotoController controller = new CDGotoController(browserModel.workdir());
@@ -649,7 +657,7 @@ public class CDBrowserController implements Observer {
 			}
 		}
     }
-	
+		
     public void insideButtonClicked(Object sender) {
 		log.debug("insideButtonClicked");
 		this.browserTableViewDidClickTableRow(sender);
@@ -665,11 +673,6 @@ public class CDBrowserController implements Observer {
 		browserModel.workdir().getParent().list();
 	}
     
-    public void drawerButtonClicked(Object sender) {
-		log.debug("drawerButtonClicked");
-		logDrawer.toggle(mainWindow);
-    }
-	
     public void connectButtonClicked(Object sender) {
 		log.debug("connectButtonClicked");
 		//todo keep reference?
@@ -695,7 +698,7 @@ public class CDBrowserController implements Observer {
     public void mount(Host host) {
 		log.debug("mount:"+host);
 		this.isMounting = true;
-		this.window().makeKeyAndOrderFront(null);
+//		this.window().makeKeyAndOrderFront(null);
 		this.unmount();
 		this.host = host;
 		this.host.getSession().addObserver((Observer)this);

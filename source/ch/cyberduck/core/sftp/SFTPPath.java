@@ -91,7 +91,6 @@ public class SFTPPath extends Path {
     }
 	
     public List list(boolean notifyobservers, boolean showHidden) {
-		//	boolean showHidden = Preferences.instance().getProperty("browser.showHidden").equals("true");
 		SftpFile workingDirectory = null;
 		session.log("Listing "+this.getAbsolute(), Message.PROGRESS);
 		session.addPathToHistory(this);
@@ -107,8 +106,6 @@ public class SFTPPath extends Path {
 			List files = new java.util.ArrayList();
 			while(i.hasNext()) {
 				SftpFile x = (SftpFile)i.next();
-				//		log.debug(x.getAbsolutePath());
-				
 				if(!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
 					SFTPPath p = new SFTPPath(session, this.getAbsolute(), x.getFilename());
 					if(p.getName().charAt(0) == '.' && !showHidden) {
@@ -274,6 +271,7 @@ public class SFTPPath extends Path {
 		log.debug("changePermissions");
 		try {
 			session.check();
+//			session.SFTP.changePermissions(this.getAbsolute(), permissions);
 			session.SFTP.changePermissions(this.getAbsolute(), this.attributes.getPermission().getString());
 		}
 		catch(SshException e) {
@@ -349,12 +347,10 @@ public class SFTPPath extends Path {
 			}
 			SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
 			this.status.setCurrent(0); // sftp resume not possible
-							  //	    this.session.log("Opening data stream...", Message.PROGRESS);
 			SftpFileInputStream in = new SftpFileInputStream(p);
 			if(in == null) {
 				throw new IOException("Unable opening data stream");
 			}
-			//this.session.log("Downloading "+this.getName(), Message.PROGRESS);
 			this.download(in, out);
 		}
 		catch(SshException e) {
@@ -394,24 +390,12 @@ public class SFTPPath extends Path {
 			if(in == null) {
 				throw new IOException("Unable to buffer data");
 			}
-			//	    this.session.log("Opening data stream...", Message.PROGRESS);
 			SftpFile remoteFile = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
-			FileAttributes remoteAttributes = remoteFile.getAttributes();
-			
-			com.apple.cocoa.foundation.NSDictionary localAttributes = com.apple.cocoa.foundation.NSPathUtilities.fileAttributes(this.getLocal().getAbsolutePath(), true);
-			int localPermissions = ((Integer)localAttributes.objectForKey(com.apple.cocoa.foundation.NSPathUtilities.FilePosixPermissions)).intValue();
-			log.info("***Local file permissions:"+localPermissions);
-//			session.SFTP.changePermissions(this.getAbsolute(), new Permission(localPermissions).toString());
-//			log.debug("Integer.parseInt(localPermissions, 8):"+Integer.parseInt(""+localPermissions, 8));
-//			log.debug("Integer.parseInt(localPermissions, 8) ^ 0777):"+(Integer.parseInt(""+localPermissions, 8) ^ 0777));
-			
-   			remoteAttributes.setPermissions("rw-r--r--"); //todo
-   			this.session.SFTP.setAttributes(remoteFile, remoteAttributes);
+			this.changePermissions(this.getLocalPermissions());
 			SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);
 			if(out == null) {
 				throw new IOException("Unable opening data stream");
 			}
-			//this.session.log("Uploading "+this.getName(), Message.PROGRESS);
 			this.upload(out, in);
 		}
 		catch(SshException e) {

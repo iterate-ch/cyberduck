@@ -235,6 +235,19 @@ public abstract class Path {
 		return this.local;
     }
 	
+	/**
+		* @return octal
+	 * @warning uses cocoa classes
+	 */
+	public int getLocalPermissions() {
+		com.apple.cocoa.foundation.NSDictionary localAttributes = com.apple.cocoa.foundation.NSPathUtilities.fileAttributes(this.getLocal().getAbsolutePath(), true);
+		int localPermissions = ((Integer)localAttributes.objectForKey(com.apple.cocoa.foundation.NSPathUtilities.FilePosixPermissions)).intValue();
+		log.debug("Local file permissions (decimal):"+localPermissions);
+		log.debug("Local file permissions (octal):"+Integer.toOctalString(localPermissions));
+		return localPermissions;
+//		return Integer.toOctalString(localPermissions);
+	}
+	
     /**
 		* @return the extensdion if any
      */

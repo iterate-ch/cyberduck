@@ -77,8 +77,8 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
 		}
 		if(identifier.equals("FILENAME")) {
 //			try {
-//				log.debug("***as is: "+p.getName());
-//				log.debug("***unicode>unicode: "+new String(p.getName().getBytes("UTF-8"), "UTF-8").toString());
+//			log.debug("***as is: "+p.getName());
+//				log.debug("***rawdata>unicode: "+new String(p.getName().getBytes("RAWDATA"), "UTF-8").toString());
 //				return new String(p.getName().getBytes("UTF-8"), "UTF-8").toString();
 //			}
 //			catch(java.io.UnsupportedEncodingException e) {
