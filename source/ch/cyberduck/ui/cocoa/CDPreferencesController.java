@@ -210,6 +210,15 @@ public class CDPreferencesController extends NSObject {
 				this.chmodUploadDefaultCheckbox.setEnabled(false);
                 break;
         }
+		this.uownerr.setEnabled(sender.state() == NSCell.OnState);
+		this.uownerw.setEnabled(sender.state() == NSCell.OnState);
+		this.uownerx.setEnabled(sender.state() == NSCell.OnState);
+		this.ugroupr.setEnabled(sender.state() == NSCell.OnState);
+		this.ugroupw.setEnabled(sender.state() == NSCell.OnState);
+		this.ugroupx.setEnabled(sender.state() == NSCell.OnState);
+		this.uotherr.setEnabled(sender.state() == NSCell.OnState);
+		this.uotherw.setEnabled(sender.state() == NSCell.OnState);
+		this.uotherx.setEnabled(sender.state() == NSCell.OnState);
     }
 
 	private NSButton chmodUploadDefaultCheckbox; //IBOutlet
@@ -219,7 +228,17 @@ public class CDPreferencesController extends NSObject {
         this.chmodUploadDefaultCheckbox.setTarget(this);
         this.chmodUploadDefaultCheckbox.setAction(new NSSelector("chmodUploadDefaultCheckboxClicked", new Class[]{NSButton.class}));
         this.chmodUploadDefaultCheckbox.setState(Preferences.instance().getProperty("queue.upload.permissions.useDefault").equals("true") ? NSCell.OnState : NSCell.OffState);
-		this.chmodUploadDefaultCheckbox.setEnabled(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true"));
+		boolean enabled = Preferences.instance().getProperty("queue.upload.changePermissions").equals("true");
+		this.chmodUploadDefaultCheckbox.setEnabled(enabled);
+		this.uownerr.setEnabled(enabled);
+		this.uownerw.setEnabled(enabled);
+		this.uownerx.setEnabled(enabled);
+		this.ugroupr.setEnabled(enabled);
+		this.ugroupw.setEnabled(enabled);
+		this.ugroupx.setEnabled(enabled);
+		this.uotherr.setEnabled(enabled);
+		this.uotherw.setEnabled(enabled);
+		this.uotherx.setEnabled(enabled);
     }
 	
     public void chmodUploadDefaultCheckboxClicked(NSButton sender) {
@@ -253,6 +272,15 @@ public class CDPreferencesController extends NSObject {
 				this.chmodDownloadDefaultCheckbox.setEnabled(false);
                 break;
         }
+		this.downerr.setEnabled(sender.state() == NSCell.OnState);
+		this.downerw.setEnabled(sender.state() == NSCell.OnState);
+		this.downerx.setEnabled(sender.state() == NSCell.OnState);
+		this.dgroupr.setEnabled(sender.state() == NSCell.OnState);
+		this.dgroupw.setEnabled(sender.state() == NSCell.OnState);
+		this.dgroupx.setEnabled(sender.state() == NSCell.OnState);
+		this.dotherr.setEnabled(sender.state() == NSCell.OnState);
+		this.dotherw.setEnabled(sender.state() == NSCell.OnState);
+		this.dotherx.setEnabled(sender.state() == NSCell.OnState);
     }
 
 	private NSButton chmodDownloadDefaultCheckbox; //IBOutlet
@@ -262,7 +290,17 @@ public class CDPreferencesController extends NSObject {
         this.chmodDownloadDefaultCheckbox.setTarget(this);
         this.chmodDownloadDefaultCheckbox.setAction(new NSSelector("chmodDownloadDefaultCheckboxClicked", new Class[]{NSButton.class}));
         this.chmodDownloadDefaultCheckbox.setState(Preferences.instance().getProperty("queue.download.permissions.useDefault").equals("true") ? NSCell.OnState : NSCell.OffState);
-		this.chmodDownloadDefaultCheckbox.setEnabled(Preferences.instance().getProperty("queue.download.changePermissions").equals("true"));
+		boolean enabled = Preferences.instance().getProperty("queue.download.changePermissions").equals("true");
+		this.chmodDownloadDefaultCheckbox.setEnabled(enabled);
+		this.downerr.setEnabled(enabled);
+		this.downerw.setEnabled(enabled);
+		this.downerx.setEnabled(enabled);
+		this.dgroupr.setEnabled(enabled);
+		this.dgroupw.setEnabled(enabled);
+		this.dgroupx.setEnabled(enabled);
+		this.dotherr.setEnabled(enabled);
+		this.dotherw.setEnabled(enabled);
+		this.dotherx.setEnabled(enabled);
     }
 	
     public void chmodDownloadDefaultCheckboxClicked(NSButton sender) {
