@@ -61,9 +61,21 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 
     public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
         log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
-        NSPasteboard pboard = info.draggingPasteboard();
-        if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-            tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
+        if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+			tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
+			Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
+			if (o != null) {
+				if (o instanceof NSArray) {
+					NSArray filesList = (NSArray) o;
+					for (int i = 0; i < filesList.count(); i++) {
+						String file = (String) filesList.objectAtIndex(i);
+						if (file.indexOf(".duck") != -1) {
+							tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
+							break;
+						}
+					}
+				}
+			}
             return NSDraggingInfo.DragOperationCopy;
         }
         if (draggedRows != null) {
@@ -87,9 +99,8 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
     public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
         log.debug("tableViewAcceptDrop:row:" + row + ",operation:" + operation);
         if (row != -1 && row < tableView.numberOfRows()) {
-            NSPasteboard pboard = info.draggingPasteboard();
-            if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-                Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
+            if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+                Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
                 log.debug("tableViewAcceptDrop:" + o);
                 if (o != null) {
                     if (o instanceof NSArray) {

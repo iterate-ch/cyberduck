@@ -146,7 +146,7 @@ this.selectionChanged(CDHistoryImpl.instance().getItem(historyPopup.indexOfSelec
     }
 
     private NSComboBox hostPopup;
-    private CDQuickConnectDataSource quickConnectDataSource;
+    private Object quickConnectDataSource;
 
     public void setHostPopup(NSComboBox hostPopup) {
         log.debug("setHostPopup");
@@ -154,15 +154,18 @@ this.selectionChanged(CDHistoryImpl.instance().getItem(historyPopup.indexOfSelec
         this.hostPopup.setTarget(this);
         this.hostPopup.setAction(new NSSelector("hostSelectionChanged", new Class[]{Object.class}));
         this.hostPopup.setUsesDataSource(true);
-        this.hostPopup.setDataSource(this.quickConnectDataSource = new CDQuickConnectDataSource());
+        this.hostPopup.setDataSource(this.quickConnectDataSource = new Object() {
+			public int numberOfItemsInComboBox(NSComboBox combo) {
+				return BookmarkList.instance().size();
+			}
+			public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
+				return BookmarkList.instance().getItem(row).getHostname();
+			}
+		});
     }
 
     public void hostSelectionChanged(Object sender) {
         log.debug("hostSelectionChanged:" + sender);
-//        int index = hostPopup.indexOfSelectedItem();
-//        if (index != -1) {
-//          this.selectionChanged(((CDHistoryImpl) CDHistoryImpl.instance()).getItem(index));
-//        }
         this.updateURLLabel(sender);
     }
 

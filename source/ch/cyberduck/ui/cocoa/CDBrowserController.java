@@ -139,14 +139,21 @@ public class CDBrowserController extends NSObject implements Observer {
     }
 
     private NSComboBox quickConnectPopup; // IBOutlet
-    private CDQuickConnectDataSource quickConnectDataSource;
+    private Object quickConnectDataSource;
 
     public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
         this.quickConnectPopup = quickConnectPopup;
         this.quickConnectPopup.setTarget(this);
         this.quickConnectPopup.setAction(new NSSelector("quickConnectSelectionChanged", new Class[]{Object.class}));
         this.quickConnectPopup.setUsesDataSource(true);
-        this.quickConnectPopup.setDataSource(this.quickConnectDataSource = new CDQuickConnectDataSource());
+        this.quickConnectPopup.setDataSource(this.quickConnectDataSource = new Object() {
+			public int numberOfItemsInComboBox(NSComboBox combo) {
+				return BookmarkList.instance().size();
+			}
+			public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
+				return BookmarkList.instance().getItem(row).getHostname();
+			}
+		});
     }
 
     public void quickConnectSelectionChanged(Object sender) {
