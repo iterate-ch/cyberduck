@@ -385,6 +385,10 @@ public class TransportProtocolClient extends TransportProtocolCommon {
 			host = properties.getHost();
 		}
 
+        if(null == hosts) {
+            log.warn("Host key accepted without verification!");
+            return true;
+        }
 		if(!hosts.verifyHost(host, pk)) {
 			log.info("The host key was not accepted");
 			return false;

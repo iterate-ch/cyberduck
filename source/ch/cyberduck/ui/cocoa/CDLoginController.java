@@ -113,8 +113,8 @@ public class CDLoginController extends CDController implements LoginController {
 		this.login = login;
 		this.textField.setStringValue(message);
 		this.userField.setStringValue(login.getUsername());
-		this.windowController.beginSheet(this.window());
-		this.windowController.waitForSheetEnd();
+		this.windowController.beginSheet(window());
+	    this.windowController.waitForSheetEnd();
 		return this.login;
 	}
 
@@ -127,12 +127,14 @@ public class CDLoginController extends CDController implements LoginController {
 		}
 		switch(sender.tag()) {
 			case (NSAlertPanel.DefaultReturn):
+				log.info("Updating login credentials...");
 				this.login.setTryAgain(true);
 				this.login.setUsername((String)userField.objectValue());
 				this.login.setPassword((String)passField.objectValue());
 				this.login.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
 				break;
 			case (NSAlertPanel.AlternateReturn):
+				log.info("Cancelling login...");
 				this.login.setTryAgain(false);
 				break;
 		}

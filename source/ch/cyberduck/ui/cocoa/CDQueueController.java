@@ -286,7 +286,7 @@ public class CDQueueController extends CDController {
 			queue.getHost().setHostKeyVerificationController(new CDHostKeyController(this));
 		}
 		queue.getHost().setLoginController(new CDLoginController(this));
-		new Thread() {
+		new Thread("Session") {
 			public void run() {
 				queue.process(resumeRequested, true);
 			}

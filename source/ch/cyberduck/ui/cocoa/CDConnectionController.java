@@ -58,7 +58,7 @@ public class CDConnectionController extends CDController {
 
 	public void bookmarksSelectionChanged(Object sender) {
 		int index = CDBookmarkTableDataSource.instance().indexOf(bookmarksPopup.titleOfSelectedItem());
-		this.selectionChanged((Host)CDBookmarkTableDataSource.instance().get(index));
+		this.bookmarkSelectionDidChange((Host)CDBookmarkTableDataSource.instance().get(index));
 	}
 
 	private Rendezvous rendezvous;
@@ -77,7 +77,7 @@ public class CDConnectionController extends CDController {
 		this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous16.tiff"));
 		this.rendezvousPopup.setToolTip(NSBundle.localizedString("Rendezvous", ""));
 		this.rendezvousPopup.setTarget(this);
-		this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionChanged", new Class[]{Object.class}));
+		this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionDidChange", new Class[]{Object.class}));
 		this.rendezvous = new Rendezvous();
 		this.rendezvous.addObserver(new Observer() {
 			public void update(final Observable o, final Object arg) {
@@ -102,8 +102,8 @@ public class CDConnectionController extends CDController {
 		this.rendezvous.init();
 	}
 
-	public void rendezvousSelectionChanged(Object sender) {
-		this.selectionChanged((Host)rendezvous.getService(rendezvousPopup.titleOfSelectedItem()));
+	public void rendezvousSelectionDidChange(Object sender) {
+		this.bookmarkSelectionDidChange((Host)rendezvous.getService(rendezvousPopup.titleOfSelectedItem()));
 	}
 
 	private NSPopUpButton protocolPopup;
@@ -111,11 +111,11 @@ public class CDConnectionController extends CDController {
 	public void setProtocolPopup(NSPopUpButton protocolPopup) {
 		this.protocolPopup = protocolPopup;
 		this.protocolPopup.setTarget(this);
-		this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[]{Object.class}));
+		this.protocolPopup.setAction(new NSSelector("protocolSelectionDidChange", new Class[]{Object.class}));
 	}
 
-	public void protocolSelectionChanged(Object sender) {
-		log.debug("protocolSelectionChanged:"+sender);
+	public void protocolSelectionDidChange(Object sender) {
+		log.debug("protocolSelectionDidChange:"+sender);
 		this.portField.setIntValue(protocolPopup.selectedItem().tag());
 		this.pkCheckbox.setEnabled(protocolPopup.selectedItem().title().equals(SFTP_STRING));
 		this.updateURLLabel(sender);
@@ -127,7 +127,7 @@ public class CDConnectionController extends CDController {
 	public void setHostPopup(NSComboBox hostPopup) {
 		this.hostPopup = hostPopup;
 		this.hostPopup.setTarget(this);
-		this.hostPopup.setAction(new NSSelector("hostSelectionChanged", new Class[]{Object.class}));
+		this.hostPopup.setAction(new NSSelector("hostSelectionDidChange", new Class[]{Object.class}));
 		this.hostPopup.setUsesDataSource(true);
 		this.hostPopup.setDataSource(this.quickConnectDataSource = new Object() {
 			public int numberOfItemsInComboBox(NSComboBox combo) {
@@ -140,11 +140,24 @@ public class CDConnectionController extends CDController {
 		});
 	}
 
-	public void hostSelectionChanged(Object sender) {
-		log.debug("hostSelectionChanged:"+sender);
+	public void hostSelectionDidChange(Object sender) {
+		log.debug("hostSelectionDidChange:"+sender);
 		this.updateURLLabel(sender);
 	}
-
+	
+	public void hostFieldTextDidChange(Object sender) {
+		try {
+			Host h = Host.parse(hostPopup.stringValue());
+			this.hostPopup.setStringValue(h.getHostname());
+			this.portField.setStringValue(String.valueOf(h.getPort()));
+			this.usernameField.setStringValue(h.getCredentials().getUsername());
+			this.pathField.setStringValue(h.getDefaultPath());
+		}
+		catch(java.net.MalformedURLException e) {
+			// ignore; just a hostname has been entered
+		}
+	}
+	
 	private NSTextField pathField;
 
 	public void setPathField(NSTextField pathField) {
@@ -212,12 +225,12 @@ public class CDConnectionController extends CDController {
 	public void setPkCheckbox(NSButton pkCheckbox) {
 		this.pkCheckbox = pkCheckbox;
 		this.pkCheckbox.setTarget(this);
-		this.pkCheckbox.setAction(new NSSelector("pkCheckboxSelectionChanged", new Class[]{Object.class}));
+		this.pkCheckbox.setAction(new NSSelector("pkCheckboxSelectionDidChange", new Class[]{Object.class}));
 		this.pkCheckbox.setState(NSCell.OffState);
 	}
 
-	public void pkCheckboxSelectionChanged(Object sender) {
-		log.debug("pkCheckboxSelectionChanged");
+	public void pkCheckboxSelectionDidChange(Object sender) {
+		log.debug("pkCheckboxSelectionDidChange");
 		if(this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
 			NSOpenPanel panel = NSOpenPanel.openPanel();
 			panel.setCanChooseDirectories(false);
@@ -291,34 +304,38 @@ public class CDConnectionController extends CDController {
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
 		this.window().setReleasedWhenClosed(true);
-
+		
 		// Notify the updateURLLabel() method if the user types.
 		//ControlTextDidChangeNotification
 		NSNotificationCenter.defaultCenter().addObserver(this,
-		    new NSSelector("updateURLLabel", new Class[]{Object.class}),
-		    NSControl.ControlTextDidChangeNotification,
-		    hostPopup);
+														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 hostPopup);
 		NSNotificationCenter.defaultCenter().addObserver(this,
-		    new NSSelector("updateURLLabel", new Class[]{Object.class}),
-		    NSControl.ControlTextDidChangeNotification,
-		    pathField);
+														 new NSSelector("hostFieldTextDidChange", new Class[]{Object.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 hostPopup);
 		NSNotificationCenter.defaultCenter().addObserver(this,
-		    new NSSelector("updateURLLabel", new Class[]{Object.class}),
-		    NSControl.ControlTextDidChangeNotification,
-		    portField);
+														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 pathField);
 		NSNotificationCenter.defaultCenter().addObserver(this,
-		    new NSSelector("updateURLLabel", new Class[]{Object.class}),
-		    NSControl.ControlTextDidChangeNotification,
-		    usernameField);
+														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 portField);
 		NSNotificationCenter.defaultCenter().addObserver(this,
-		    new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
-		    NSControl.ControlTextDidEndEditingNotification,
-		    hostPopup);
+														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 usernameField);
 		NSNotificationCenter.defaultCenter().addObserver(this,
-		    new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
-		    NSControl.ControlTextDidEndEditingNotification,
-		    usernameField);
-
+														 new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
+														 NSControl.ControlTextDidEndEditingNotification,
+														 hostPopup);
+		NSNotificationCenter.defaultCenter().addObserver(this,
+														 new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
+														 NSControl.ControlTextDidEndEditingNotification,
+														 usernameField);
+		
 		this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
 		this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.portField.setIntValue(protocolPopup.selectedItem().tag());
@@ -348,7 +365,7 @@ public class CDConnectionController extends CDController {
 		}
 	}
 
-	private void selectionChanged(Host selectedItem) {
+	private void bookmarkSelectionDidChange(Host selectedItem) {
 		this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.hostPopup.setStringValue(selectedItem.getHostname());
 		this.pathField.setStringValue(selectedItem.getDefaultPath());

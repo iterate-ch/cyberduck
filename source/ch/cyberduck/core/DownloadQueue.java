@@ -38,7 +38,7 @@ public class DownloadQueue extends Queue {
 	
 	public NSMutableDictionary getAsDictionary() {
 		NSMutableDictionary dict = super.getAsDictionary();
-		dict.setObjectForKey(Queue.KIND_DOWNLOAD+"", "Kind");
+		dict.setObjectForKey(String.valueOf(Queue.KIND_DOWNLOAD), "Kind");
 		return dict;
 	}
 

@@ -53,7 +53,7 @@ public class UploadQueue extends Queue {
 
 	public NSMutableDictionary getAsDictionary() {
 		NSMutableDictionary dict = super.getAsDictionary();
-		dict.setObjectForKey(Queue.KIND_UPLOAD+"", "Kind");
+		dict.setObjectForKey(String.valueOf(Queue.KIND_UPLOAD), "Kind");
 		return dict;
 	}
 

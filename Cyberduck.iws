@@ -126,6 +126,32 @@
         <option name="myCondition" value="" />
         <option name="myLogMessage" value="" />
       </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDController.java" line="81">
+        <option name="ENABLED" value="true" />
+        <option name="SUSPEND_VM" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="myCondition" value="" />
+        <option name="myLogMessage" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDController.java" line="106">
+        <option name="ENABLED" value="true" />
+        <option name="SUSPEND_VM" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="myCondition" value="" />
+        <option name="myLogMessage" value="" />
+      </breakpoint>
     </line_breakpoints>
     <exception_breakpoints>
       <breakpoint_any>
@@ -152,7 +178,78 @@
     <option name="HIDE_WARNINGS" value="false" />
   </component>
   <component name="FileEditorManager" split-orientation="vertical" split-proportion="0.5">
-    <first-group />
+    <first-group selected-file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDConnectionController.java">
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDApplescriptabilityController.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="11" column="36" selection-start="463" selection-end="463" vertical-scroll-proportion="0.176">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Attributes.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="72" column="7" selection-start="1940" selection-end="1940" vertical-scroll-proportion="0.22040816">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/DownloadQueue.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="40" column="43" selection-start="1176" selection-end="1190" vertical-scroll-proportion="0.472">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Host.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="89" column="59" selection-start="3038" selection-end="3038" vertical-scroll-proportion="0.12244898">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/UploadQueue.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="55" column="62" selection-start="1490" selection-end="1490" vertical-scroll-proportion="0.18367347">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/SyncQueue.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="74" column="54" selection-start="1908" selection-end="1908" vertical-scroll-proportion="0.41632652">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBrowserController.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="34" column="13" selection-start="1048" selection-end="1048" vertical-scroll-proportion="0.33333334">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDConnectionController.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="37" column="54" selection-start="1227" selection-end="1227" vertical-scroll-proportion="-3.5918367">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDController.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="67" column="45" selection-start="2113" selection-end="2113" vertical-scroll-proportion="0.43809524">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="jar:///System/Library/Frameworks/JavaVM.framework/Versions/1.4.2/Home/src.jar!/src/java/lang/Thread.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="566" column="0" selection-start="22373" selection-end="22373" vertical-scroll-proportion="0.19066666">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+    </first-group>
     <second-group />
   </component>
   <component name="HierarchyBrowserManager">
@@ -171,15 +268,15 @@
     <expanded_node url="" module="Cyberduck" type="module" />
   </component>
   <component name="ProjectPane">
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa" module="Cyberduck" type="directory" />
-    <expanded_node url="" module="Cyberduck" type="module" />
     <expanded_node url="file://$PROJECT_DIR$/source/ch" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core/ftp" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa" module="Cyberduck" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck" module="Cyberduck" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/ui" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core" module="Cyberduck" type="directory" />
+    <expanded_node url="" module="Cyberduck" type="module" />
+    <expanded_node url="file://$PROJECT_DIR$/source" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core/ftp" module="Cyberduck" type="directory" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" splitterProportion="0.5">
@@ -203,6 +300,13 @@
   </component>
   <component name="RunManager">
     <activeType name="Remote" />
+    <configuration selected="false" default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+    </configuration>
     <configuration selected="false" default="true" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" />
       <option name="VM_PARAMETERS" />
@@ -233,13 +337,6 @@
       <option name="HEIGHT" value="300" />
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <option name="VM_PARAMETERS" />
-    </configuration>
-    <configuration selected="false" default="true" type="Remote" factoryName="Remote">
-      <option name="USE_SOCKET_TRANSPORT" value="true" />
-      <option name="SERVER_MODE" value="false" />
-      <option name="SHMEM_ADDRESS" value="javadebug" />
-      <option name="HOST" value="localhost" />
-      <option name="PORT" value="5005" />
     </configuration>
     <configuration selected="true" default="false" name="Remote" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
@@ -301,13 +398,13 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1024" height="699" extended-state="0" />
+    <frame x="1" y="22" width="1280" height="955" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32983682" order="8" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="7" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.0" order="0" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.54485047" order="1" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.30463037" order="0" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.5453461" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
@@ -317,7 +414,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
       <window_info id="CVS File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.55813956" order="4" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.22494173" order="4" />
       <window_info id="simpleUML" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32981315" order="3" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.4" order="0" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
@@ -402,107 +499,107 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar:///System/Library/Frameworks/JavaVM.framework/Versions/1.4.2/Home/src.jar!/src/java/util/ArrayList.java">
+    <entry file="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/SshClient.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="222" column="14" selection-start="8362" selection-end="8362" vertical-scroll-proportion="1.0784314">
+        <state line="640" column="41" selection-start="20525" selection-end="20525" vertical-scroll-proportion="0.5498155">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/DownloadQueue.java">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDLoginController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="66" column="0" selection-start="1846" selection-end="1846" vertical-scroll-proportion="3.0277777">
+        <state line="117" column="0" selection-start="3799" selection-end="3799" vertical-scroll-proportion="1.4580419">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/SyncQueue.java">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Login.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="94" column="0" selection-start="2447" selection-end="2447" vertical-scroll-proportion="1.1212121">
+        <state line="223" column="0" selection-start="7003" selection-end="7003" vertical-scroll-proportion="0.5276753">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/ftp/FTPSession.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="0" selection-start="2149" selection-end="2149" vertical-scroll-proportion="3.2121212">
+        <state line="145" column="0" selection-start="4713" selection-end="4713" vertical-scroll-proportion="1.0848708">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Queue.java">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Session.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="195" column="0" selection-start="5078" selection-end="5078" vertical-scroll-proportion="1.0909091">
+        <state line="120" column="0" selection-start="3079" selection-end="3079" vertical-scroll-proportion="0.5174825">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///System/Library/Java/com/apple/cocoa/foundation/_private/NSReflect.class">
+    <entry file="jar:///System/Library/Frameworks/JavaVM.framework/Versions/1.4.2/Home/src.jar!/src/java/lang/Thread.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="59" column="0" selection-start="2374" selection-end="2374" vertical-scroll-proportion="0.34545454">
+        <state line="566" column="0" selection-start="22373" selection-end="22373" vertical-scroll-proportion="0.19066666">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDGotoController.java">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="98" column="0" selection-start="2961" selection-end="2961" vertical-scroll-proportion="0.4181818">
+        <state line="67" column="45" selection-start="2113" selection-end="2113" vertical-scroll-proportion="0.43809524">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Local.java">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDApplescriptabilityController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="166" column="0" selection-start="5058" selection-end="5058" vertical-scroll-proportion="0.5018868">
+        <state line="11" column="36" selection-start="463" selection-end="463" vertical-scroll-proportion="0.176">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Attributes.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="96" column="0" selection-start="2325" selection-end="2325" vertical-scroll-proportion="0.116981134">
+        <state line="72" column="7" selection-start="1940" selection-end="1940" vertical-scroll-proportion="0.22040816">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Path.java">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/DownloadQueue.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="456" column="104" selection-start="13140" selection-end="13140" vertical-scroll-proportion="0.23018868">
+        <state line="40" column="43" selection-start="1176" selection-end="1190" vertical-scroll-proportion="0.472">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/ftp/FTPPath.java">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Host.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="559" column="67" selection-start="16668" selection-end="16668" vertical-scroll-proportion="0.12264151">
+        <state line="89" column="59" selection-start="3038" selection-end="3038" vertical-scroll-proportion="0.12244898">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/sftp/SFTPPath.java">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/UploadQueue.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="449" column="66" selection-start="14593" selection-end="14593" vertical-scroll-proportion="0.12264151">
+        <state line="55" column="62" selection-start="1490" selection-end="1490" vertical-scroll-proportion="0.18367347">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/SyncQueue.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="74" column="54" selection-start="1908" selection-end="1908" vertical-scroll-proportion="0.41632652">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDConnectionController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="37" column="54" selection-start="1227" selection-end="1227" vertical-scroll-proportion="-3.5918367">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBrowserController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2083" column="68" selection-start="78448" selection-end="78448" vertical-scroll-proportion="0.12264151">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDValidatorController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="365" column="22" selection-start="12277" selection-end="12277" vertical-scroll-proportion="0.55283016">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDSyncQueueValidatorController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="233" column="118" selection-start="7233" selection-end="7233" vertical-scroll-proportion="0.34339622">
+        <state line="34" column="13" selection-start="1048" selection-end="1048" vertical-scroll-proportion="0.33333334">
           <folding />
         </state>
       </provider>

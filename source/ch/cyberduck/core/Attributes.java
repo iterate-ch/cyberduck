@@ -64,7 +64,7 @@ public class Attributes extends Observable {
 
 	public NSDictionary getAsDictionary() {
 		NSMutableDictionary dict = new NSMutableDictionary();
-		dict.setObjectForKey(this.type+"", "Type");
+		dict.setObjectForKey(String.valueOf(this.type), "Type");
 		return dict;
 	}
 

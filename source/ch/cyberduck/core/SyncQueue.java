@@ -54,7 +54,7 @@ public class SyncQueue extends Queue {
 
 	public NSMutableDictionary getAsDictionary() {
 		NSMutableDictionary dict = super.getAsDictionary();
-		dict.setObjectForKey(Queue.KIND_SYNC+"", "Kind");
+		dict.setObjectForKey(String.valueOf(Queue.KIND_SYNC), "Kind");
 		return dict;
 	}
 

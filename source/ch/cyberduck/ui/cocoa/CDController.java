@@ -77,22 +77,31 @@ public abstract class CDController {
 			NSApplication.sharedApplication().endSheet(this.window().attachedSheet());
 		}
 	}
-
+	
 	public void waitForSheetEnd() {
 		log.debug("waitForSheetEnd");
 		synchronized(this) {
-			while(this.hasSheet()) {
-				try {
-					log.debug("Sleeping:waitForSheetEnd...");
-					this.wait();
-					log.debug("Awakened:waitForSheetEnd");
-				}
-				catch(InterruptedException e) {
-					log.error(e.getMessage());
-				}
-			}
-		}
-	}
+//			if(!Thread.currentThread().getName().equals("Session")) {
+//				log.info("Asked to display sheet on main thread; spawn new thread to prevent lock");
+//				new Thread("Session") {
+//					public void run() {
+//						CDController.this.waitForSheetEnd();
+//					}
+//				}.start();
+//				//@todo block
+//			}
+            while(this.hasSheet()) {
+                try {
+                    log.debug("Sleeping:waitForSheetEnd...");
+                    this.wait();
+                    log.debug("Awakened:waitForSheetEnd");
+                }
+                catch(InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
+    }
 
 	public void waitForSheetDisplay(NSWindow sheet) {
 		log.debug("waitForSheetDisplay:"+sheet);
@@ -124,20 +133,29 @@ public abstract class CDController {
 		this.beginSheet(sheet, this, endSelector, contextInfo);
 	}
 
-	public void beginSheet(NSWindow sheet, Object delegate, NSSelector endSelector, Object contextInfo) {
+	public void beginSheet(final NSWindow sheet, final Object delegate, final NSSelector endSelector, final Object contextInfo) {
 		log.debug("beginSheet:"+sheet);
 		synchronized(this) {
-			this.waitForSheetEnd();
-			this.window().makeKeyAndOrderFront(null);
-			NSApplication.sharedApplication().beginSheet(sheet, //sheet
-			    this.window(),
-			    delegate, //modalDelegate
-			    endSelector, // did end selector
-			    contextInfo); //contextInfo
-			this.window().makeKeyAndOrderFront(null);
-			this.notifyAll();
-		}
-	}
+//			if(!Thread.currentThread().getName().equals("Session")) {
+//				log.info("Asked to display sheet on main thread; spawn new thread to prevent lock");
+//				new Thread("Session") {
+//					public void run() {
+//						CDController.this.beginSheet(sheet, delegate, endSelector, contextInfo);
+//					}
+//				}.start();
+//				this.waitForSheetDisplay(sheet);
+//			}
+            this.waitForSheetEnd();
+            this.window().makeKeyAndOrderFront(null);
+            NSApplication.sharedApplication().beginSheet(sheet, //sheet
+                    this.window(),
+                    delegate, //modalDelegate
+                    endSelector, // did end selector
+                    contextInfo); //contextInfo
+            this.window().makeKeyAndOrderFront(null);
+            this.notifyAll();
+        }
+    }
 
 	public void sheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
 		log.debug("sheetDidEnd:"+sheet);

@@ -107,7 +107,7 @@ public class Login {
 	}
 
 	/**
-	 * @param serviceName The service to use when looking up the password in the keychain
+	 * @param h The service to use when looking up the password in the keychain
 	 * @param user        Login with this username
 	 * @param pass        Passphrase
 	 */
@@ -119,7 +119,7 @@ public class Login {
 	}
 
 	/**
-	 * @param serviceName             The serviceName to use when looking up the password in the keychain
+	 * @param h             The serviceName to use when looking up the password in the keychain
 	 * @param user                    Login with this username
 	 * @param pass                    Passphrase
 	 * @param shouldBeAddedToKeychain if the credential should be added to the keychain uppon successful login
@@ -135,7 +135,7 @@ public class Login {
 
 	/**
 	 * @param u    The username to use or null if anonymous
-	 * @param pass The password to use or null if anonymous
+	 * @param p The password to use or null if anonymous
 	 */
 	private void init(String u, String p) {
 		if(null == u || u.equals("")) {
@@ -251,6 +251,11 @@ public class Login {
 	 * @pre controller != null
 	 */
 	public Login promptUser(String message) {
+		if(null == controller) {
+			log.warn("No valid password found");
+			this.setTryAgain(false);
+			return this;
+		}
 		return this.controller.promptUser(this, message);
 	}
 

@@ -87,7 +87,7 @@ public class Host {
 		dict.setObjectForKey(this.getProtocol(), Host.PROTOCOL);
 		dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
 		dict.setObjectForKey(this.getHostname(), Host.HOSTNAME);
-		dict.setObjectForKey(this.getPort()+"", Host.PORT);
+		dict.setObjectForKey(String.valueOf(this.getPort()), Host.PORT);
 		dict.setObjectForKey(this.getCredentials().getUsername(), Host.USERNAME);
 		dict.setObjectForKey(this.getDefaultPath(), Host.PATH);
 		if(this.getCredentials().getPrivateKeyFile() != null) {
