@@ -359,16 +359,6 @@ public class CDMainController extends NSObject {
         if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
             CDBrowserController controller = new CDBrowserController();
             controller.window().makeKeyAndOrderFront(null);
-            /*
-            if (!Preferences.instance().getProperty("connection.host.default").equals(NSBundle.localizedString("None", ""))) {
-                try {
-                    controller.mount(new Host(Preferences.instance().getProperty("connection.host.default")));
-                }
-                catch(java.net.MalformedURLException e) {
-                    log.error(e.getMessage());
-                }
-            }
-             */
         }
         if (Preferences.instance().getProperty("queue.openByDefault").equals("true")) {
             this.showTransferQueueClicked(null);
@@ -423,10 +413,8 @@ public class CDMainController extends NSObject {
             int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
                     NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
                     NSBundle.localizedString("Review...", ""), //default
-                    NSBundle.localizedString("Quit Anyway",
-                            ""), //alternate
-                    NSBundle.localizedString("Cancel",
-                            "Cancel")); //other
+                    NSBundle.localizedString("Quit Anyway", ""), //alternate
+                    NSBundle.localizedString("Cancel", "")); //other
 
             if (choice == NSAlertPanel.OtherReturn) {
 // Cancel

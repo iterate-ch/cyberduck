@@ -108,7 +108,6 @@ public class CDPreferencesController extends NSObject {
 this.defaultHostCombobox.removeAllItems();
 this.defaultHostCombobox.setTarget(this);
 this.defaultHostCombobox.setAction(new NSSelector("defaultHostComboboxClicked", new Class[]{NSPopUpButton.class}));
-        this.defaultHostCombobox.addItem(NSBundle.localizedString("Empty Browser", ""));
         for(int i = 0; i < BookmarkList.instance().size(); i++) {
             Host  h = BookmarkList.instance().getItem(i);
             this.defaultHostCombobox.addItem(h.getNickname());
