@@ -10,6 +10,20 @@ de.lproj/InfoPlist.strings -text
 de.lproj/Localizable.strings -text svneol=unset#application/octet-stream
 en.lproj/InfoPlist.strings -text
 en.lproj/Localizable.strings -text svneol=unset#application/octet-stream
+fr.lproj/Bookmark.strings svneol=native#unset
+fr.lproj/Browser.strings svneol=native#unset
+fr.lproj/Connection.strings svneol=native#unset
+fr.lproj/Donate.strings svneol=native#unset
+fr.lproj/Download.strings svneol=native#unset
+fr.lproj/Folder.strings svneol=native#unset
+fr.lproj/Goto.strings svneol=native#unset
+fr.lproj/Info.strings svneol=native#unset
+fr.lproj/InfoPlist.strings svneol=native#unset
+fr.lproj/Login.strings svneol=native#unset
+fr.lproj/Main.strings svneol=native#unset
+fr.lproj/Preferences.strings svneol=native#unset
+fr.lproj/Transfer.strings svneol=native#unset
+fr.lproj/Update.strings svneol=native#unset
 img/add.tiff svneol=native#unset
 img/addPressed.tiff svneol=native#unset
 img/alert.tiff -text
