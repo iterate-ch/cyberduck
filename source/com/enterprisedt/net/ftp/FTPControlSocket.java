@@ -290,46 +290,13 @@ public class FTPControlSocket {
         // NOTE: PASV command in IBM/Mainframe returns the string
         // 227 Entering Passive Mode 128,3,122,1,15,87	(missing
         // brackets)
+        //
+        // Improvement: The first digit found after the reply code
+        // is considered start of IP. End of IP can be EOL or random
+        // characters. Should take care of all PASV reponse lines,
+        // right?
 
-        // extract the IP data string from between the brackets
-        int startIP = reply.indexOf('(');
-        int endIP = reply.indexOf(')');
-
-        // allow for IBM missing brackets around IP address
-        if (startIP < 0 && endIP < 0) {
-            startIP = reply.toUpperCase().lastIndexOf("MODE") + 4;
-            endIP = reply.length();
-        }
-
-        String ipData = reply.substring(startIP + 1, endIP);
-        int parts[] = new int[6];
-
-        int len = ipData.length();
-        int partCount = 0;
-        StringBuffer buf = new StringBuffer();
-
-        // loop thru and examine each char
-        for (int i = 0; i < len && partCount <= 6; i++) {
-
-            char ch = ipData.charAt(i);
-            if (Character.isDigit(ch)) {
-                buf.append(ch);
-            }
-            else if (ch != ',') {
-                throw new FTPException("Malformed PASV reply: " + reply);
-            }
-
-            // get the part
-            if (ch == ',' || i + 1 == len) { // at end or at separator
-                try {
-                    parts[partCount++] = Integer.parseInt(buf.toString());
-                    buf.setLength(0);
-                }
-                catch (NumberFormatException ex) {
-                    throw new FTPException("Malformed PASV reply: " + reply);
-                }
-            }
-        }
+        int parts[] = parsePASVResponse(reply);
 
         // assemble the IP address
         // we try connecting, so we don't bother checking digits etc
@@ -343,8 +310,40 @@ public class FTPControlSocket {
         return new Socket(ipAddress, port);
     }
 
-
-    /**
+    public static int[] parsePASVResponse(String response) throws FTPException {
+        int startIP = 0;
+        for (int i = 4; i < response.length(); i++) {
+            if (Character.isDigit(response.charAt(i))) { 
+				startIP = i; 
+				break; 
+			}
+        }
+        
+        int i;
+        int j = startIP;
+        int parts[] = new int[6];        
+        for (i = 0; i < 6; i++) {
+            StringBuffer buf = new StringBuffer();
+            for (; j < response.length(); j++) {
+                char c = response.charAt(j);
+                if (Character.isDigit(c)) {
+                    buf.append(c);
+                } 
+				else if (i < 5 && c != ',') {
+                    throw new FTPException("Malformed PASV reply: " + response);
+                } 
+				else {
+                    j += 1;
+                    break;
+                }
+            }
+            if (buf.length() == 0) throw new FTPException("Malformed PASV reply: " + response);
+            parts[i] = new Integer(buf.toString()).intValue();
+        }
+        return parts;
+    }
+    
+        /**
      * Send a command to the FTP server and
      * return the server's reply
      *

@@ -22,8 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
 
-import com.enterprisedt.net.ftp.FTPException;
-
 /**
  * Implementation FTPFileEntryParser and FTPFileListParser for standard
  * Unix Systems.
@@ -102,6 +100,10 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
         Path f = PathFactory.createPath(parent.getSession());
         int type;
         boolean isDevice = false;
+
+        if (entry.startsWith("+")) {
+            return new EPLFFTPEntryParser().parseFTPEntry(parent, entry);
+        }
 
         if (matches(entry)) {
             String typeStr = group(1);
@@ -188,34 +190,17 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
                 // oddball cases like symbolic links, file names
                 // with spaces in them.
                 name += endtoken;
-                if (Path.SYMBOLIC_LINK_TYPE == (Path.SYMBOLIC_LINK_TYPE & type)) {
+                if (Path.SYMBOLIC_LINK_TYPE == type) {
                     int end = name.indexOf(" -> ");
                     // Give up if no link indicator is present
                     if (-1 == end) {
                         f.setPath(parent.getAbsolute(), name);
                     }
                     else {
+                        //Path orig = PathFactory.createPath(parent.getSession(), parent.getAbsolute(), name.substring(end+4));
                         f.setPath(parent.getAbsolute(), name.substring(0, end));
-					}
-					try {
-						f.cwdir();
-						f.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
-					}
-					catch(java.io.IOException e) {
-						f.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
-					}
-					//						String link = name.substring(end + 4);
-					//						if(link.charAt(0) == '/') {
-					//							Path linkedPath = PathFactory.createPath(parent.getSession(), 
-					//																	 name.substring(end + 4));
-					//							f.setLinkedPath(linkedPath);
-					//						}
-					//						else {
-					//							Path linkedPath = PathFactory.createPath(parent.getSession(), 
-					//																	 parent.getAbsolute(), 
-					//																	 name.substring(end + 4));
-					//							f.setLinkedPath(linkedPath);
-					//						}
+                        //f.setLink(name.substring(end + 4));
+                    }
                 }
                 else {
                     f.setPath(parent.getAbsolute(), name);
