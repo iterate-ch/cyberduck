@@ -130,7 +130,6 @@ public class SFTPSession extends Session {
 		}
 
 		SSH.connect(properties, host.getHostKeyVerificationController());
-		log.debug("********");
 		if(SSH.isConnected()) {
 			this.log("SSH connection opened", Message.PROGRESS);
 			String id = SSH.getServerId();

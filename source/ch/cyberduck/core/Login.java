@@ -202,8 +202,8 @@ public class Login {
 		if(!this.hasReasonableValues()) {
 			if(Preferences.instance().getProperty("connection.login.useKeychain").equals("true")) {
 				log.info("Searching keychain for password...");
-				String passFromKeychain = this.getInternetPasswordFromKeychain();
-//				String passFromKeychain = this.getPasswordFromKeychain();
+//				String passFromKeychain = this.getInternetPasswordFromKeychain();
+				String passFromKeychain = this.getPasswordFromKeychain();
 				if(null == passFromKeychain || passFromKeychain.equals("")) {
 					return this.promptUser("The username or password does not seem reasonable.").tryAgain();
 				}

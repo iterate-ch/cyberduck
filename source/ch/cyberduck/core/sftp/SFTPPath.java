@@ -119,7 +119,7 @@ public class SFTPPath extends Path {
 							Path p = PathFactory.createPath(session, this.getAbsolute(), x.getFilename());
 							p.attributes.setOwner(x.getAttributes().getUID().toString());
 							p.attributes.setGroup(x.getAttributes().getGID().toString());
-							p.setSize(x.getAttributes().getSize().intValue());
+							p.setSize(x.getAttributes().getSize().longValue());
 							p.attributes.setTimestamp(Long.parseLong(x.getAttributes().getModifiedTime().toString())*1000L);
 							String permStr = x.getAttributes().getPermissionsString();
 							if(permStr.charAt(0) == 'd') {
@@ -216,10 +216,20 @@ public class SFTPPath extends Path {
 			session.close();
 		}
 	}
-
+	
 	public synchronized long getSize(boolean force) {
 		if(force) {
-			return this.size;
+			try {
+				SftpFile f = session.SFTP.openDirectory(this.getAbsolute());
+				this.size = f.getAttributes().getSize().longValue();
+			}
+			catch(SshException e) {
+				session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+			}
+			catch(IOException e) {
+				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.close();
+			}
 		}
 		return this.size;
 	}

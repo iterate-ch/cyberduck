@@ -196,7 +196,7 @@ public class FTPPath extends Path {
 	public synchronized long getSize(boolean force) {
 		if(force) {
 			try {
-				return this.session.FTP.size(this.getAbsolute());
+				this.size = this.session.FTP.size(this.getAbsolute());
 			}
 			catch(FTPException e) {
 				log.error(e.getMessage());
