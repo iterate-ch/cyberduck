@@ -771,33 +771,23 @@ public class CDBrowserController extends CDController implements Observer {
 		});
 	}
 
-	public void quickConnectSelectionChanged(Object sender) {
-		log.debug("quickConnectSelectionChanged");
-		try {
-			String input = ((NSControl)sender).stringValue();
-			for(Iterator iter = bookmarkModel.iterator(); iter.hasNext();) {
-				Host h = (Host)iter.next();
-				if(h.getHostname().equals(input)) {
-					this.mount(h);
-					return;
-				}
-			}
-			this.mount(Host.parse(input));
-		}
-		catch(java.net.MalformedURLException e) {
-			NSAlertPanel.beginCriticalAlertSheet("Error", //title
-			    "OK", // defaultbutton
-			    null, //alternative button
-			    null, //other button
-			    this.window(), //docWindow
-			    null, //modalDelegate
-			    null, //didEndSelector
-			    null, // dismiss selector
-			    null, // context
-			    e.getMessage() // message
-			);
-		}
-	}
+    public void quickConnectSelectionChanged(Object sender) {
+        log.debug("quickConnectSelectionChanged");
+        String input = ((NSControl) sender).stringValue();
+        try {
+            for (Iterator iter = bookmarkModel.iterator(); iter.hasNext();) {
+                Host h = (Host) iter.next();
+                if (h.getHostname().equals(input)) {
+                    this.mount(h);
+                    return;
+                }
+            }
+            this.mount(Host.parse(input));
+        }
+        catch (java.net.MalformedURLException e) {
+            this.mount(new Host(input));
+        }
+    }
 
 	private NSPopUpButton actionPopupButton; // IBOutlet
 	
