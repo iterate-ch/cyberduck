@@ -35,7 +35,6 @@ public class CDTranscriptImpl implements Transcript {
 	private NSTextView textView;
 	
 	public CDTranscriptImpl(NSTextView textView) {
-		super();
 		this.textView = textView;
 	}
 

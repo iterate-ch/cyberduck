@@ -7,9 +7,9 @@
             OUTLETS = {
                 alternatingRowBackgroundCheckbox = NSButton; 
                 anonymousField = NSTextField; 
+                bringQueueToFrontCheckbox = NSButton; 
                 bufferField = NSTextField; 
                 chmodCheckbox = NSButton; 
-                closeTransferCheckbox = NSButton; 
                 columnModificationCheckbox = NSButton; 
                 columnOwnerCheckbox = NSButton; 
                 columnPermissionsCheckbox = NSButton; 
@@ -31,6 +31,7 @@
                 processCheckbox = NSButton; 
                 protocolCombobox = NSPopUpButton; 
                 publickeyCombobox = NSPopUpButton; 
+                removeFromQueueCheckbox = NSButton; 
                 scAuthenticationCombobox = NSPopUpButton; 
                 scEncryptionCombobox = NSPopUpButton; 
                 showHiddenCheckbox = NSButton; 

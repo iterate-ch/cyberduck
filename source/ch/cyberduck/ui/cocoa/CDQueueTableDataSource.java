@@ -44,8 +44,8 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 	}
 	
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-		String identifier = (String)tableColumn.identifier();
 		if(row < numberOfRowsInTableView(tableView)) {
+			String identifier = (String)tableColumn.identifier();
 			if(identifier.equals("DATA")) {
 				return CDQueuesImpl.instance().getItem(row);
 			}

@@ -1147,7 +1147,6 @@ public class CDBrowserController implements Observer {
 		private List currentData;
 
 		public CDBrowserTableDataSource() {
-			super();
 			this.fullData = new ArrayList();
 			this.currentData = new ArrayList();
 		}
@@ -1155,34 +1154,36 @@ public class CDBrowserController implements Observer {
 		public int numberOfRowsInTableView(NSTableView tableView) {
 			return currentData.size();
 		}
-
+		
 		public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-	//		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
-			String identifier = (String) tableColumn.identifier();
-			Path p = (Path) this.currentData.get(row);
-			if (identifier.equals("TYPE")) {
-				NSImage icon;
-				if (p.isDirectory())
-					icon = NSImage.imageNamed("folder16.tiff");
-				else
-					icon = NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
-				icon.setSize(new NSSize(16f, 16f));
-				return icon;
+			if(row < this.numberOfRowsInTableView(tableView)) {
+				String identifier = (String) tableColumn.identifier();
+				Path p = (Path) this.currentData.get(row);
+				if (identifier.equals("TYPE")) {
+					NSImage icon;
+					if (p.isDirectory())
+						icon = NSImage.imageNamed("folder16.tiff");
+					else
+						icon = NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
+					icon.setSize(new NSSize(16f, 16f));
+					return icon;
+				}
+				if (identifier.equals("FILENAME")) {
+					return p.getName();
+				}
+				else if (identifier.equals("SIZE"))
+					return Status.getSizeAsString(p.status.getSize());
+				else if (identifier.equals("MODIFIED"))
+					return p.attributes.getModified();
+				else if (identifier.equals("OWNER"))
+					return p.attributes.getOwner();
+				else if (identifier.equals("PERMISSIONS"))
+					return p.attributes.getPermission().toString();
+				throw new IllegalArgumentException("Unknown identifier: " + identifier);
 			}
-			if (identifier.equals("FILENAME")) {
-				return p.getName();
-			}
-			else if (identifier.equals("SIZE"))
-				return Status.getSizeAsString(p.status.getSize());
-			else if (identifier.equals("MODIFIED"))
-				return p.attributes.getModified();
-			else if (identifier.equals("OWNER"))
-				return p.attributes.getOwner();
-			else if (identifier.equals("PERMISSIONS"))
-				return p.attributes.getPermission().toString();
-			throw new IllegalArgumentException("Unknown identifier: " + identifier);
+			return null;
 		}
-
+		
 		/**
 		 * The files dragged from the browser to the Finder
 		 */

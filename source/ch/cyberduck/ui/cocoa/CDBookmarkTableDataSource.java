@@ -39,17 +39,19 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 
 	//getValue()
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-//		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
-		String identifier = (String) tableColumn.identifier();
-		if (identifier.equals("ICON")) {
-			return NSImage.imageNamed("cyberduck-document.icns");
+		if(row < this.numberOfRowsInTableView(tableView)) {
+			String identifier = (String) tableColumn.identifier();
+			if (identifier.equals("ICON")) {
+				return NSImage.imageNamed("cyberduck-document.icns");
+			}
+			if (identifier.equals("BOOKMARK")) {
+				return (Host) CDBookmarksImpl.instance().getItem(row);
+			}
+			throw new IllegalArgumentException("Unknown identifier: " + identifier);
 		}
-		if (identifier.equals("BOOKMARK")) {
-			return (Host) CDBookmarksImpl.instance().getItem(row);
-		}
-		throw new IllegalArgumentException("Unknown identifier: " + identifier);
+		return null;
 	}
-
+	
 
 	// ----------------------------------------------------------
 	// Drop methods

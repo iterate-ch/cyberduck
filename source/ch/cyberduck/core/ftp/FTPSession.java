@@ -85,6 +85,8 @@ public class FTPSession extends Session {
 	public synchronized void connect() throws IOException {
 		this.callObservers(new Message(Message.OPEN, "Opening session."));
 		this.log("Opening FTP connection to " + host.getIp() + "...", Message.PROGRESS);
+		this.log("-------" + new java.util.Date().toString(), Message.TRANSCRIPT);
+		this.log("-------" + host.getIp(), Message.TRANSCRIPT);
 		this.FTP = new FTPClient();
 		if (Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
 			this.FTP.setConnectMode(FTPConnectMode.ACTIVE);

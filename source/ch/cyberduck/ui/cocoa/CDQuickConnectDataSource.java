@@ -49,14 +49,17 @@ public class CDQuickConnectDataSource { //implements NSComboBox.DataSource, NSTa
 	public int numberOfRowsInTableView(NSTableView tableView) {
 		return CDHistoryImpl.instance().values().size();
 	}
-
+	
 	//getValue()
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-		String identifier = (String) tableColumn.identifier();
-		if (identifier.equals("URL")) {
-			Host h = (Host) CDHistoryImpl.instance().getItem(row);
-			return h.getHostname();
+		if(row < this.numberOfRowsInTableView(tableView)) {
+			String identifier = (String) tableColumn.identifier();
+			if (identifier.equals("URL")) {
+				Host h = (Host) CDHistoryImpl.instance().getItem(row);
+				return h.getHostname();
+			}
+			throw new IllegalArgumentException("Unknown identifier: " + identifier);
 		}
-		throw new IllegalArgumentException("Unknown identifier: " + identifier);
+		return null;
 	}
 }
