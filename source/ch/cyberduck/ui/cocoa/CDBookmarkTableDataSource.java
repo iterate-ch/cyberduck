@@ -261,7 +261,12 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	}
 
 	public int indexOf(Object o) {
-		return this.data.indexOf(o);
+		int index = 0;
+		for(Iterator i = this.data.iterator(); i.hasNext(); index++) {
+			if(i.next().equals(o))
+				return index;
+		}
+		return -1;
 	}
 
 	public Collection values() {

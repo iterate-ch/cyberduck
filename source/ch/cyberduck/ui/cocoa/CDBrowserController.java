@@ -484,9 +484,8 @@ public class CDBrowserController extends CDController implements Observer {
 	public void bookmarkTableRowDoubleClicked(Object sender) {
 		log.debug("bookmarkTableRowDoubleClicked");
 		if(this.bookmarkTable.selectedRow() != -1) {
-			Host host = (Host)bookmarkModel.getItem(bookmarkTable.selectedRow());
-			this.window().setTitle(host.getProtocol()+":"+host.getHostname());
-			this.mount(host);
+			this.mount((Host)bookmarkModel.getItem(bookmarkTable.selectedRow()));
+			this.toggleBookmarkDrawer(null);
 		}
 	}
 
@@ -1233,8 +1232,10 @@ public class CDBrowserController extends CDController implements Observer {
 		)) {
 			{
 				this.window().setTitle(host.getProtocol()+":"+host.getHostname());
+				this.infoLabel.setStringValue("");
 				File bookmark = new File(HISTORY_FOLDER+"/"+host.getHostname()+".duck");
-				CDBookmarkTableDataSource.instance().exportBookmark(host, bookmark);
+				CDBookmarkTableDataSource.instance().exportBookmark(host, 
+																	bookmark);
 				this.window().setRepresentedFilename(bookmark.getAbsolutePath());
 			}
 
@@ -1514,7 +1515,7 @@ public class CDBrowserController extends CDController implements Observer {
 		if(identifier.equals("Download") || identifier.equals("downloadButtonClicked:")) {
 			return this.isMounted() && this.browserTable.selectedRow() != -1;
 		}
-		if(identifier.equals("Upload") || identifier.equals("downloadButtonClicked:")) {
+		if(identifier.equals("Upload") || identifier.equals("uploadButtonClicked:")) {
 			return this.isMounted();
 		}
 		if(identifier.equals("Synchronize") || identifier.equals("syncButtonClicked:")) {

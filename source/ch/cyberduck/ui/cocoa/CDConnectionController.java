@@ -47,6 +47,7 @@ public class CDConnectionController extends CDController implements Observer {
 	public void setBookmarksPopup(NSPopUpButton bookmarksPopup) {
 		this.bookmarksPopup = bookmarksPopup;
 		this.bookmarksPopup.setImage(NSImage.imageNamed("bookmarks.tiff"));
+		this.bookmarksPopup.setToolTip(NSBundle.localizedString("Bookmarks", ""));
 		Iterator i = CDBookmarkTableDataSource.instance().iterator();
 		while(i.hasNext()) {
 			bookmarksPopup.addItem(i.next().toString());
@@ -56,8 +57,8 @@ public class CDConnectionController extends CDController implements Observer {
 	}
 
 	public void bookmarksSelectionChanged(Object sender) {
-		log.debug("bookmarksSelectionChanged");
-		this.selectionChanged(CDBookmarkTableDataSource.instance().getItem(bookmarksPopup.indexOfSelectedItem()));
+		int index = CDBookmarkTableDataSource.instance().indexOf(bookmarksPopup.titleOfSelectedItem());
+		this.selectionChanged(CDBookmarkTableDataSource.instance().getItem(index));
 	}
 
 	private Rendezvous rendezvous;
@@ -66,6 +67,7 @@ public class CDConnectionController extends CDController implements Observer {
 	public void setRendezvousPopup(NSPopUpButton rendezvousPopup) {
 		this.rendezvousPopup = rendezvousPopup;
 		this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous16.tiff"));
+		this.rendezvousPopup.setToolTip(NSBundle.localizedString("Rendezvous", ""));
 		this.rendezvousPopup.setTarget(this);
 		this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionChanged", new Class[]{Object.class}));
 		this.rendezvous = new Rendezvous();
@@ -74,7 +76,6 @@ public class CDConnectionController extends CDController implements Observer {
 	}
 
 	public void rendezvousSelectionChanged(Object sender) {
-		log.debug("rendezvousSelectionChanged:"+sender);
 		this.selectionChanged((Host)rendezvous.getService(rendezvousPopup.titleOfSelectedItem()));
 	}
 
@@ -281,7 +282,6 @@ public class CDConnectionController extends CDController implements Observer {
 		instances.removeObject(this);
 	}
 
-
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
 		// Notify the updateURLLabel() method if the user types.
@@ -341,7 +341,6 @@ public class CDConnectionController extends CDController implements Observer {
 	}
 
 	private void selectionChanged(Host selectedItem) {
-		log.debug("selectionChanged:"+selectedItem);
 		this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.hostPopup.setStringValue(selectedItem.getHostname());
 		this.pathField.setStringValue(selectedItem.getDefaultPath());

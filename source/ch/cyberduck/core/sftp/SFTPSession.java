@@ -86,6 +86,7 @@ public class SFTPSession extends Session {
 	public synchronized void connect(String encoding) throws IOException {
 		this.log("Opening SSH connection to "+host.getIp()+"...", Message.PROGRESS);
 		this.setConnected();
+		this.log("========================", Message.TRANSCRIPT);
 		this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
 		this.log(host.getIp(), Message.TRANSCRIPT);
 		SSH = new SshClient();
