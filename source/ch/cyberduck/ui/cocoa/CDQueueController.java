@@ -123,7 +123,6 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 
     public void windowWillClose(NSNotification notification) {
 		this.queueModel.save();
-//        this.window = null;
     }
 
     private NSWindow window; // IBOutlet
@@ -357,7 +356,6 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 						this.reloadQueueTable();
 					}
 				}
-				this.queueModel.save();
 			}
 		}
 	}
@@ -608,6 +606,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 			Queue q = this.queueModel.getItem(i);
             if (q.getSize() == q.getCurrent() && q.getSize() > 0) {
                 this.queueModel.removeItem(i);
+				i--;
             }
 		}
 		this.reloadQueueTable();

@@ -50,14 +50,116 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 	// ----------------------------------------------------------
     // Constructor
     // ----------------------------------------------------------
-		
-	 public CDBrowserController() {
-		 instances.addObject(this);
-		 if (false == NSApplication.loadNibNamed("Browser", this)) {
-			 log.fatal("Couldn't load Browser.nib");
-		 }
-	 }
-	 
+	
+	public CDBrowserController() {
+		instances.addObject(this);
+		if (false == NSApplication.loadNibNamed("Browser", this)) {
+			log.fatal("Couldn't load Browser.nib");
+		}
+	}
+	
+	public static CDBrowserController controllerForWindow(NSWindow window) {
+		if (window.isVisible()) {
+			Object delegate = window.delegate();
+			if (delegate != null && delegate instanceof CDBrowserController) {
+				return (CDBrowserController)delegate;
+			}
+		}
+		return null;
+	}
+	
+	public void awakeFromNib() {
+        log.debug("awakeFromNib");
+		this.window().setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
+		this.window().setInitialFirstResponder(quickConnectPopup);
+        this.pathController = new CDPathController(pathPopup);
+        // Drawer states
+        if (Preferences.instance().getProperty("logDrawer.isOpen").equals("true")) {
+            this.logDrawer.open();
+        }
+        if (Preferences.instance().getProperty("bookmarkDrawer.isOpen").equals("true")) {
+            this.bookmarkDrawer.open();
+        }
+        // Toolbar
+        this.toolbar = new NSToolbar("Cyberduck Toolbar");
+        this.toolbar.setDelegate(this);
+        this.toolbar.setAllowsUserCustomization(true);
+        this.toolbar.setAutosavesConfiguration(true);
+        this.window().setToolbar(toolbar);
+    }
+	
+	public void update(final Observable o, final Object arg) {
+        log.debug("update:" + o + "," + arg);
+        if (arg instanceof Path) {
+            browserModel.setData(((Path)arg).cache());
+            NSTableColumn selectedColumn = browserModel.selectedColumn() != null ? browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
+            browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
+            browserModel.sort(selectedColumn, browserModel.isSortedAscending());
+            browserTable.reloadData();
+            toolbar.validateVisibleItems();
+			this.window().makeFirstResponder(browserTable);
+        }
+        else if (arg instanceof Message) {
+            Message msg = (Message)arg;
+            if (msg.getTitle().equals(Message.ERROR)) {
+                if (window().isVisible()) {
+                    NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+														 null, //alternative button
+														 null, //other button
+														 window(), //docWindow
+														 null, //modalDelegate
+														 null, //didEndSelector
+														 null, // dismiss selector
+														 null, // context
+														 (String)msg.getContent() // message
+														 );
+                }
+                progressIndicator.stopAnimation(this);
+                statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
+                statusIcon.setNeedsDisplay(true);
+                statusLabel.setObjectValue(msg.getContent());
+                statusLabel.display();
+				// window().setDocumentEdited(false);
+            }
+            else if (msg.getTitle().equals(Message.REFRESH)) {
+                refreshButtonClicked(null);
+            }
+            else if (msg.getTitle().equals(Message.PROGRESS)) {
+                statusLabel.setObjectValue(msg.getContent());
+                statusLabel.display();
+            }
+            else if (msg.getTitle().equals(Message.OPEN)) {
+                progressIndicator.startAnimation(this);
+                statusIcon.setImage(null);
+                statusIcon.setNeedsDisplay(true);
+				this.browserModel.clear();
+				this.browserTable.reloadData();
+                toolbar.validateVisibleItems();
+				// window().setDocumentEdited(true);
+            }
+            else if (msg.getTitle().equals(Message.CLOSE)) {
+                progressIndicator.stopAnimation(this);
+                statusIcon.setImage(null);
+                statusIcon.setNeedsDisplay(true);
+                toolbar.validateVisibleItems();
+				// window().setDocumentEdited(false);
+            }
+            else if (msg.getTitle().equals(Message.START)) {
+                statusIcon.setImage(null);
+                statusIcon.setNeedsDisplay(true);
+                progressIndicator.startAnimation(this);
+                toolbar.validateVisibleItems();
+            }
+            else if (msg.getTitle().equals(Message.STOP)) {
+                progressIndicator.stopAnimation(this);
+                statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
+                statusLabel.display();
+                toolbar.validateVisibleItems();
+            }
+        }
+    }
+	
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
@@ -75,16 +177,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 
     public NSWindow window() {
         return this.window;
-    }
-
-    public static CDBrowserController controllerForWindow(NSWindow window) {
-        if (window.isVisible()) {
-            Object delegate = window.delegate();
-            if (delegate != null && delegate instanceof CDBrowserController) {
-                return (CDBrowserController)delegate;
-            }
-        }
-        return null;
     }
 
     private NSTextView logView;
@@ -486,66 +578,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         }
     }
 
-	public void paste(Object sender) {
-		log.debug("paste");
-		NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-		if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-			Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
-			if (o != null) {
-				NSArray elements = (NSArray)o;
-				for (int i = 0; i < elements.count(); i++) {
-					NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-					Queue q = new Queue(dict);
-					Path workdir = this.pathController.workdir();
-					for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-						Path p = (Path)iter.next();
-						PathFactory.createPath(workdir.getSession(), p.getAbsolute()).rename(workdir.getAbsolute() + "/" + p.getName());
-						p.getParent().invalidate();
-						workdir.list(true);
-					}
-				}
-				pboard.setPropertyListForType(null, "QueuePBoardType");
-				this.browserTable.reloadData();
-			}
-		}
-	}
-	
-	public void copy(Object sender) {
-		if(browserTable.selectedRow() != -1) {
-			NSMutableArray queueDictionaries = new NSMutableArray();
-			Session session = pathController.workdir().getSession().copy();
-			Queue q = new Queue(Queue.KIND_DOWNLOAD);
-			NSEnumerator enum = browserTable.selectedRowEnumerator();
-			while (enum.hasMoreElements()) {
-				Path path = this.browserModel.getEntry(((Integer)enum.nextElement()).intValue());
-				q.addRoot(path.copy(session));
-			}
-			queueDictionaries.addObject(q.getAsDictionary());
-			// Writing data for private use when the item gets dragged to the transfer queue.
-			NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-			queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
-			if (queuePboard.setPropertyListForType(queueDictionaries, "QueuePBoardType")) {
-				log.debug("QueuePBoardType data sucessfully written to pasteboard");
-			}
-			Path p = this.browserModel.getEntry(browserTable.selectedRow());
-			NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
-			pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
-			if (!pboard.setStringForType(p.getAbsolute(), NSPasteboard.StringPboardType)) {
-				log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
-			}
-		}
-	}
-	
-    public void copyURLButtonClicked(Object sender) {
-        log.debug("copyURLButtonClicked");
-        Host h = pathController.workdir().getSession().getHost();
-        NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
-        pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
-        if (!pboard.setStringForType(h.getURL()+h.getDefaultPath(), NSPasteboard.StringPboardType)) {
-            log.error("Error writing URL to NSPasteboard.StringPboardType.");
-        }
-    }
-	
     // ----------------------------------------------------------
     // Browser navigation
     // ----------------------------------------------------------
@@ -624,100 +656,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
     public void setStatusLabel(NSTextField statusLabel) {
         this.statusLabel = statusLabel;
         this.statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
-    }
-
-    public void awakeFromNib() {
-        log.debug("awakeFromNib");
-		this.window().setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
-		this.window().setInitialFirstResponder(quickConnectPopup);
-        this.pathController = new CDPathController(pathPopup);
-        // Drawer states
-        if (Preferences.instance().getProperty("logDrawer.isOpen").equals("true")) {
-            this.logDrawer.open();
-        }
-        if (Preferences.instance().getProperty("bookmarkDrawer.isOpen").equals("true")) {
-            this.bookmarkDrawer.open();
-        }
-        // Toolbar
-        this.toolbar = new NSToolbar("Cyberduck Toolbar");
-        this.toolbar.setDelegate(this);
-        this.toolbar.setAllowsUserCustomization(true);
-        this.toolbar.setAutosavesConfiguration(true);
-        this.window().setToolbar(toolbar);
-    }
-
-
-    public void update(final Observable o, final Object arg) {
-        log.debug("update:" + o + "," + arg);
-        if (arg instanceof Path) {
-            browserModel.setData(((Path)arg).cache());
-            NSTableColumn selectedColumn = browserModel.selectedColumn() != null ? browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
-            browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
-            browserModel.sort(selectedColumn, browserModel.isSortedAscending());
-            browserTable.reloadData();
-            toolbar.validateVisibleItems();
-			this.window().makeFirstResponder(browserTable);
-        }
-        else if (arg instanceof Message) {
-            Message msg = (Message)arg;
-            if (msg.getTitle().equals(Message.ERROR)) {
-                if (window().isVisible()) {
-                    NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                            NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                            null, //alternative button
-                            null, //other button
-                            window(), //docWindow
-                            null, //modalDelegate
-                            null, //didEndSelector
-                            null, // dismiss selector
-                            null, // context
-                            (String)msg.getContent() // message
-                    );
-                }
-                progressIndicator.stopAnimation(this);
-                statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
-                statusIcon.setNeedsDisplay(true);
-                statusLabel.setObjectValue(msg.getContent());
-                statusLabel.display();
-				// window().setDocumentEdited(false);
-            }
-            else if (msg.getTitle().equals(Message.REFRESH)) {
-                refreshButtonClicked(null);
-            }
-            // update status label
-            else if (msg.getTitle().equals(Message.PROGRESS)) {
-                statusLabel.setObjectValue(msg.getContent());
-                statusLabel.display();
-            }
-            else if (msg.getTitle().equals(Message.OPEN)) {
-                progressIndicator.startAnimation(this);
-                statusIcon.setImage(null);
-                statusIcon.setNeedsDisplay(true);
-				this.browserModel.clear();
-				this.browserTable.reloadData();
-                toolbar.validateVisibleItems();
-				// window().setDocumentEdited(true);
-            }
-            else if (msg.getTitle().equals(Message.CLOSE)) {
-                progressIndicator.stopAnimation(this);
-                statusIcon.setImage(null);
-                statusIcon.setNeedsDisplay(true);
-                toolbar.validateVisibleItems();
-				// window().setDocumentEdited(false);
-            }
-            else if (msg.getTitle().equals(Message.START)) {
-                statusIcon.setImage(null);
-                statusIcon.setNeedsDisplay(true);
-                progressIndicator.startAnimation(this);
-                toolbar.validateVisibleItems();
-            }
-            else if (msg.getTitle().equals(Message.STOP)) {
-                progressIndicator.stopAnimation(this);
-                statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
-                statusLabel.display();
-                toolbar.validateVisibleItems();
-            }
-        }
     }
 	
     // ----------------------------------------------------------
@@ -966,6 +904,66 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         return connected;
     }
 	
+	public void paste(Object sender) {
+		log.debug("paste");
+		NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+		if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+			Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
+			if (o != null) {
+				NSArray elements = (NSArray)o;
+				for (int i = 0; i < elements.count(); i++) {
+					NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
+					Queue q = new Queue(dict);
+					Path workdir = this.pathController.workdir();
+					for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
+						Path p = (Path)iter.next();
+						PathFactory.createPath(workdir.getSession(), p.getAbsolute()).rename(workdir.getAbsolute() + "/" + p.getName());
+						p.getParent().invalidate();
+						workdir.list(true);
+					}
+				}
+				pboard.setPropertyListForType(null, "QueuePBoardType");
+				this.browserTable.reloadData();
+			}
+		}
+	}
+	
+	public void copy(Object sender) {
+		if(browserTable.selectedRow() != -1) {
+			NSMutableArray queueDictionaries = new NSMutableArray();
+			Session session = pathController.workdir().getSession().copy();
+			Queue q = new Queue(Queue.KIND_DOWNLOAD);
+			NSEnumerator enum = browserTable.selectedRowEnumerator();
+			while (enum.hasMoreElements()) {
+				Path path = this.browserModel.getEntry(((Integer)enum.nextElement()).intValue());
+				q.addRoot(path.copy(session));
+			}
+			queueDictionaries.addObject(q.getAsDictionary());
+			// Writing data for private use when the item gets dragged to the transfer queue.
+			NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+			queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
+			if (queuePboard.setPropertyListForType(queueDictionaries, "QueuePBoardType")) {
+				log.debug("QueuePBoardType data sucessfully written to pasteboard");
+			}
+			Path p = this.browserModel.getEntry(browserTable.selectedRow());
+			NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
+			pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
+			if (!pboard.setStringForType(p.getAbsolute(), NSPasteboard.StringPboardType)) {
+				log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
+			}
+		}
+	}
+	
+    public void copyURLButtonClicked(Object sender) {
+        log.debug("copyURLButtonClicked");
+        Host h = pathController.workdir().getSession().getHost();
+        NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
+        pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
+        if (!pboard.setStringForType(h.getURL()+h.getDefaultPath(), NSPasteboard.StringPboardType)) {
+            log.error("Error writing URL to NSPasteboard.StringPboardType.");
+        }
+    }
+	
 	public void mount(NSScriptCommand command) {
         log.debug("mount:"+command);
 //		NSDictionary args = command.evaluatedArguments();
@@ -1080,36 +1078,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         // no running transfer, we quit if the user didn't choose to !procceed
         NSApplication.sharedApplication().replyToApplicationShouldTerminate(proceed);
     }
-	
-    // ----------------------------------------------------------
-	// Overriden NSDocument methods
-    // ----------------------------------------------------------
-		
-//	public String displayName() {
-//        if (this.isMounted()) {
-//		}
-//	}
-
-//	private static NSImage documentIcon = NSImage.imageNamed("cyberduck-document.icns");
-//	static {
-//		documentIcon.setSize(new NSSize(16f, 16f));
-//	}
-	
-//	public void windowControllerDidLoadNib(NSWindowController  c) {
-//        super.windowControllerDidLoadNib(c);
-//    }
-	
-//	public String windowNibName() {
-//		return "Browser";
-//	}
-	
-//	public String fileType() {
-//		return "duck";
-//	}
-	
-//	public boolean isDocumentEdited() {
-//		return this.isMounted();
-//	}
 	
 	public boolean loadDataRepresentation(NSData data, String type) {
 		if(type.equals("Cyberduck Bookmark")) {

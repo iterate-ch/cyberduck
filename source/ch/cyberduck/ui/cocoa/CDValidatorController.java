@@ -115,9 +115,8 @@ public class CDValidatorController extends Validator {
                 resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
                 Path remote = path;
                 List list = path.getParent().list(); //List cache = path.getParent().cache();
-                int i = list.indexOf(path);
-                if (i != -1) {
-                    remote = (Path)list.get(i);
+                if (list.indexOf(path) != -1) {
+                    remote = (Path)list.get(list.indexOf(path));
                 }
                 String alertText =
                         NSBundle.localizedString("Local", "") + ":\n"

@@ -258,8 +258,9 @@ public class CDQueueTableDataSource extends CDTableDataSource {
     public void removeItem(Queue item) {
 		for(Iterator i = data.iterator(); i.hasNext(); ) {
 			CDProgressController c = (CDProgressController)i.next();
-			if(c.getQueue().equals(item))
+			if(c.getQueue().equals(item)) {
 				i.remove();
+			}
 		}
     }
 	

@@ -43,10 +43,6 @@ public class NetwareFTPEntryParser extends RegexFTPFileEntryParserImpl {
 	 - [RWCEAFMS]          0                      27945 Sep 05  1994 WHATIS.MSC
 	 d [RWCEAFMS]          0                        512 Jan 22 20:44 MAINT
 	 d [RWCEAFMS]          0                        512 Dec 29  2003 MISC
-	 d [RWCEAFMS]          0                        512 Sep 20 18:34 PCOUNTER
-	 d [RWCEAFMS] Helleupp                          512 Jul 22 14:08 PEGASUS
-	 - [RWCEAFMS]          0                       1593 Feb 18 16:36 00README
-	 - [RWCEAFMS]          0                       1482 Apr 02  2003 00INDEX
      */
     private static final String REGEX =
  		"([-d])\\s+" //file type

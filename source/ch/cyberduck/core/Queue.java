@@ -305,26 +305,6 @@ public class Queue extends Observable implements Observer {
 			this.queue.getRoot().getSession().addObserver(this.queue);
 			this.queue.getRoot().getSession().cache().clear();
 			this.queue.init();
-/*			for (Iterator i = roots.iterator(); i.hasNext() && !canceled; ) {
-				Path r = (Path)i.next();
-				log.debug("Iterating over childs of " + r);
-				Iterator childs = r.getChilds(this.queue.kind()).iterator();
-				while (childs.hasNext() && !canceled) {
-					Path child = (Path)childs.next();
-					log.debug("Adding " + child.getName() + " as child to queue.");
-					this.jobs.add(child);
-				}
-			}
-			for (Iterator iter = jobs.iterator(); iter.hasNext() && !canceled; ) {
-				Path item = (Path)iter.next();
-				log.debug("Validating " + item.toString());
-				if (!this.validator.validate(item)) {
-					iter.remove();
-				}
-				item.status.reset();
-				this.size += item.status.getSize();
-			}
-*/			
 			progress.start();
 			for (Iterator iter = jobs.iterator(); iter.hasNext() && !canceled; ) {
 				Path job = (Path)iter.next();

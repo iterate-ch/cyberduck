@@ -81,12 +81,6 @@ public class CDPathController extends NSObject implements Observer {
 					this.removeAllItems();
 				}
 			}
-//			else if (arg instanceof Message) {
-//				Message msg = (Message)arg;
-//				if (msg.getTitle().equals(Message.CLOSE)) {
-//					this.removeAllItems();
-//				}
-//			}
         }
     }
 

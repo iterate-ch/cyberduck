@@ -25,16 +25,12 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Observable;
 
-import org.apache.log4j.Logger;
-
 /**
  * Attributes of a remote directory or file.
  *
  * @version $Id$
  */
 public class Attributes extends Observable {
-    private static Logger log = Logger.getLogger(Attributes.class);
-
     private Date modified = new Date();
     private String owner = "Unknown";
     private String group = "Unknown";
@@ -46,7 +42,6 @@ public class Attributes extends Observable {
     }
 
     public Attributes(NSDictionary dict) {
-        log.debug("Attributes");
         Object typeObj = dict.objectForKey("Type");
         if (typeObj != null) {
             this.type = Integer.parseInt((String)typeObj);
@@ -95,12 +90,10 @@ public class Attributes extends Observable {
     }
 
     public void setType(int type) {
-        log.debug("setType:" + type);
         this.type = type;
     }
 
     public int getType() {
-        log.debug("getType:" + this.type);
         return this.type;
     }
 

@@ -90,7 +90,7 @@ public abstract class Path {
     }
 
     public Path() {
-        //
+        super();
     }
 
     /**
@@ -109,7 +109,6 @@ public abstract class Path {
      * @param path The absolute path of the remote file
      */
     public Path(String path) {
-        log.debug("Path");
         this.setPath(path);
     }
 
@@ -144,7 +143,6 @@ public abstract class Path {
     }
 
     public void setPath(String p) {
-        log.debug("setPath:" + p);
         this.path = p;
     }
 	

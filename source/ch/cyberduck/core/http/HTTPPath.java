@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.httpclient.Header;
@@ -107,8 +108,7 @@ public class HTTPPath extends Path {
     }
 
     public synchronized List list(boolean notifyobservers, boolean showHidden) {
-        session.log("Invalid Operation", Message.ERROR);
-        return null;
+        return new ArrayList();
     }
 
     public synchronized void delete() {
