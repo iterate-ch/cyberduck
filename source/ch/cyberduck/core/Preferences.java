@@ -75,7 +75,7 @@ public abstract class Preferences {//extends Properties {
             String strVendor = System.getProperty("java.vendor");
             String strVersion = System.getProperty("java.version");
             //Assumes a system version string of the form:
-            //[major].[minor].[release]††(eg. 1.2.2)
+            //[major].[minor].[release]  (eg. 1.2.2)
             Double dVersion = new Double(strVersion.substring(0, 3));
             //If we are running in a MS environment, use the MS stream handler.
             if(-1 < strVendor.indexOf("Microsoft")) {
@@ -93,7 +93,7 @@ public abstract class Preferences {//extends Properties {
             }
             //If we are in a normal Java environment,
             //try to use the JSSE handler.
-            //NOTE:††JSSE requires 1.2 or better
+            //NOTE:  JSSE requires 1.2 or better
             else if( 1.2 <= dVersion.doubleValue() ) {
                 System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");
                 try {
@@ -111,22 +111,23 @@ public abstract class Preferences {//extends Properties {
         return current;
     }
 
+/**
+*	@param property The name of the property to overwrite
+* 	@param value The new vlaue 
+*/
     public abstract void setProperty(String property, String value);
 
+/**
+*	@param property The name of the property to overwrite
+* 	@param v The new vlaue 
+*/
     public abstract void setProperty(String property, boolean v);
-//        log.debug("setProperty(" + property + ", " + v + ")");
-//        String value = "false";
-//        if (v) {
-//            value = "true";
-//        }
-//        this.put(property, value);
-//    }
 
+/**
+*	@param property The name of the property to overwrite
+* 	@param v The new vlaue 
+*/
     public abstract void setProperty(String property, int v);
-        //log.debug("setProperty(" + property + ", " + v + ")");
-        //String value = String.valueOf(v);
-        //this.put(property, value);
-    //}
 
     /**
      * setting the default prefs values
@@ -135,9 +136,10 @@ public abstract class Preferences {//extends Properties {
         log.debug("setDefaults()");
 
 	//	System.out.println("Working directory:"+System.getProperty("user.dir"));
-	this.setProperty("cyberduck.version", "2.1");
-        this.setProperty("cyberduck.uses", "0");
-	this.setProperty("cyberduck.donate", "false");
+	this.setProperty("version", "2.1");
+        this.setProperty("uses", "0");
+	this.setProperty("donate", "false");
+	this.setProperty("donate.url" , "http://www.cyberduck.ch/donate/");
         
 	System.setProperty("sshtools.home", System.getProperty("user.dir"));
 	System.setProperty("sshtools.config", System.getProperty("user.dir"));
@@ -218,13 +220,13 @@ public abstract class Preferences {//extends Properties {
  //        this.setProperty("ftp.passive", "false");
 
 	//listing properties
-        this.setProperty("showHidden", "false");
-        this.setProperty("listing.showType", "true");
-        this.setProperty("listing.showFilenames", "true");
-        this.setProperty("listing.showSize", "true");
-        this.setProperty("listing.showDate", "true");
-        this.setProperty("listing.showOwner", "true");
-        this.setProperty("listing.showAccess", "false");
+        this.setProperty("listing.listing.showHidden", "false");
+//        this.setProperty("listing.showType", "true");
+  //      this.setProperty("listing.showFilenames", "true");
+    //    this.setProperty("listing.showSize", "true");
+      //  this.setProperty("listing.showDate", "true");
+       // this.setProperty("listing.showOwner", "true");
+       // this.setProperty("listing.showAccess", "false");
         
         //frame sizes
         this.setProperty("frame.width", "560");
@@ -256,16 +258,14 @@ public abstract class Preferences {//extends Properties {
     }
     
 
+/**
+* @pram property The property to query.
+*	@return The value of the property
+*/
     public abstract String getProperty(String property);
-        //log.debug("getProperty(" + property + ")");
-        //String value = super.getProperty(property);
-        //if(value == null)
-        //    throw new IllegalArgumentException("No property with key '" + property.toString() + "'");
-        //return value;
-   // }
         
     /**
-     * Save preferences into user home
+     * Save preferences; ensure perisistency
      */
     public abstract void store();
 

@@ -18,18 +18,19 @@ package ch.cyberduck.core;
  */
 
 public abstract class Login {
-    private String user = Preferences.instance().getProperty("connection.login.anonymous.name");
-    private transient String pass = Preferences.instance().getProperty("connection.login.anonymous.pass");
-
+    private String user;
+    private transient String pass;
     /**
-	* New instance with default values. (anonymous login)
+	* New instance with default values. Anonymous login.
      */
     public Login() {
-	super();
+	this.user = Preferences.instance().getProperty("connection.login.anonymous.name");
+	this.pass = Preferences.instance().getProperty("connection.login.anonymous.pass");
     }
 
     /**
-	* 
+	* @param user Login with this username
+	* @param pass Passphrase
      */
     public Login(String user, String pass) {
 	this.user = user;
@@ -53,7 +54,13 @@ public abstract class Login {
     }
 
     /**
-	* @return true If we whould try again with new login
+    * Call this to allow the user to reenter the new login credentials.
+    * A concrete sublcass could eg. display a panel. 
+    	* @return true If we whould try again with new login
      */
     public abstract boolean loginFailure();
+    
+    public String toString() {
+	return this.getUsername()+":"+this.getPassword();
+    }
 }

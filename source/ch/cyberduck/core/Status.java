@@ -75,8 +75,8 @@ public class Status extends Observable implements Serializable {
      */
 
 
-    private String progressmessage = "Idle";
-    private String timemessage = "00:00";
+//    private String progressmessage = "Idle";
+//    private String timemessage = "00:00";
 
     private Calendar calendar = Calendar.getInstance();
     private DateFormat df = DateFormat.getTimeInstance();
@@ -116,7 +116,7 @@ public class Status extends Observable implements Serializable {
      * @see ch.cyberduck.core.Message
      */
     public void callObservers(Object arg) {
-	//        log.debug("[Bookmark] Notifying " + this.countObservers() + " observers.");
+        log.debug("callObservers:"+arg.toString());
  //        long start = System.currentTimeMillis();
         this.setChanged();
 	//@todo        if(this.isSelected())
@@ -127,24 +127,25 @@ public class Status extends Observable implements Serializable {
 //	log.debug("setMessage("+message+","+title);
 	Message msg = new Message(title, message);
 	if(title.equals(Message.PROGRESS)) {
-	    this.progressmessage = message;
-	    msg = new Message(Message.PROGRESS, timemessage+" "+message);
+//	    this.progressmessage = message;
+	    msg = new Message(Message.PROGRESS, message);
+//	    msg = new Message(Message.PROGRESS, timemessage+" "+message);
 	}
-	if(title.equals(Message.TIME)) {
-	    this.timemessage = message;
-	    msg = new Message(Message.PROGRESS, message+" "+progressmessage);
-	}
+//	if(title.equals(Message.TIME)) {
+//	    this.timemessage = message;
+//	    msg = new Message(Message.PROGRESS, message+" "+progressmessage);
+//	}
         this.callObservers(msg);
     }
 
-    public String parseTime(int t) {
-        if(t > 9) {
-            return String.valueOf(t);
-        }
-        else {
-            return "0" + t;
-        }
-    }
+//  public String parseTime(int t) {
+//    if(t > 9) {
+//      return String.valueOf(t);
+//        }
+//        else {
+//            return "0" + t;
+//        }
+//    }
 
     public double parseDouble(double d) {
         //log.debug("parseDouble(" + d + ")");
@@ -173,6 +174,7 @@ public class Status extends Observable implements Serializable {
     
     private void setStopped(boolean b) {
         this.stopped = b;
+	this.setMessage("Idle", Message.PROGRESS);
     }
     public boolean isStopped() {
         return this.stopped;
@@ -195,7 +197,7 @@ public class Status extends Observable implements Serializable {
         this.setCanceled(false);
         this.setComplete(false);
         this.setStopped(false);
-        this.chronoTimer.start();
+//        this.chronoTimer.start();
 	this.callObservers(new Message(Message.START));
     }
 
@@ -204,8 +206,9 @@ public class Status extends Observable implements Serializable {
      */
     public void fireStopEvent() {
         log.debug("fireStopEvent()");
-        if(this.chronoTimer != null)
-            this.chronoTimer.stop();
+	
+        //if(this.chronoTimer != null)
+          //  this.chronoTimer.stop();
 	this.setStopped(true);
 	this.callObservers(new Message(Message.STOP));
     }
@@ -215,7 +218,7 @@ public class Status extends Observable implements Serializable {
      */
     public void fireCompleteEvent() {
         log.debug("fireCompleteEvent()");
-        this.chronoTimer.stop();
+//        this.chronoTimer.stop();
 	this.setStopped(true);
 	this.setComplete(true);
 	this.callObservers(new Message(Message.COMPLETE));
@@ -296,6 +299,7 @@ public class Status extends Observable implements Serializable {
      */
     public void reset() {
         log.debug("reset()");
+	/*
         this.timemessage = "00:00";
 
         if(chronoTimer == null) {
@@ -334,5 +338,6 @@ public class Status extends Observable implements Serializable {
             }
             );
         }
+	*/
     }
 } 

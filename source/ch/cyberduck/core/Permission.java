@@ -24,14 +24,32 @@ import java.util.Arrays;
  * Encapsulating unix file permissions.
  * @version $Id$
  */
-public class Permission implements java.io.Serializable {
+public class Permission {//implements java.io.Serializable {
 
+    /**
+     * Index of OWNER bit
+     */
     public static final int OWNER = 0;
+    /**
+    * Index of GROUP bit
+     */
     public static final int GROUP = 1;
+    /**
+	* Index of OTHER bit
+     */
     public static final int OTHER = 2;
 
+    /**
+	* Index of READ bit
+     */
     public static final int READ = 0;
+    /**
+	* Index of WRITE bit
+     */
     public static final int WRITE = 1;
+    /**
+	* Index of EXECUTE bit
+     */
     public static final int EXECUTE = 2;
     
     // {read, write, execute}

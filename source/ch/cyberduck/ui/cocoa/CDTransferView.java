@@ -110,15 +110,6 @@ public class CDTransferView extends NSTableView implements Observer {
 		}
 	    }
 	}
-	if(o instanceof Host) {
-	    if(arg instanceof Path) {
-		List cache = ((Path)arg).cache();
-		java.util.Iterator i = cache.iterator();
-		while(i.hasNext()) {
-		    ((Path)i.next()).addObserver(this);
-		}
-	    }
-	}
     }
 	
 

@@ -1,3 +1,5 @@
+package ch.cyberduck.ui.cocoa;
+
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
@@ -16,24 +18,20 @@
  *  dkocher@cyberduck.ch
  */
 
-package ch.cyberduck.ui.cocoa;
-
 import org.apache.log4j.Logger;
-
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-
 import ch.cyberduck.core.Preferences;
 
+/**
+* Concrete subclass using the Cocoao Preferences classes.
+* @see com.apple.cocoa.foundation.NSUserDefaults
+* @version $Id$
+*/
 public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
-
     private static Logger log = Logger.getLogger(Preferences.class);
 
     private NSUserDefaults defaults = NSUserDefaults.standardUserDefaults();
-
-    public CDPreferencesImpl() {
-	//
-    }
 
     public String getProperty(String property) {
         log.debug("getProperty(" + property + ")");

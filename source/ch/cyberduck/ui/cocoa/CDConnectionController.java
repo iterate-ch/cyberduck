@@ -20,9 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-import java.io.IOException;
 import java.util.Observer;
 import java.util.Observable;
+import java.util.List;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.http.*;
 import ch.cyberduck.core.sftp.*;
@@ -89,7 +89,7 @@ public class CDConnectionController extends NSObject implements Observer {
             String path = null;
 	    String protocol = Preferences.instance().getProperty("connection.protocol.default");
             int port = -1;
-            Login login = new CDLogin();
+            Login login = new CDLogin(); //anonymous
 
 	    //@todo new connection via menu item recent connection
      //	if(sender instanceof NSMenu
@@ -202,6 +202,7 @@ public class CDConnectionController extends NSObject implements Observer {
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.SELECTION)) {
 		    Host host = (Host)o;
+		    //@todo does not work
 		    mainWindow.setTitle(host.getName());
 		}
 	    }
@@ -217,6 +218,14 @@ public class CDConnectionController extends NSObject implements Observer {
 		}
 	    }
 	     */
+	    if(arg instanceof Path) {
+		List cache = ((Path)arg).cache();
+		java.util.Iterator i = cache.iterator();
+		while(i.hasNext()) {
+		    //((Path)i.next()).addObserver(infoWindow);
+		    ((Path)i.next()).addObserver(transferView);
+		}
+	    }
 	}
     }
     
@@ -232,14 +241,18 @@ public class CDConnectionController extends NSObject implements Observer {
 	    super(u, p);
 	}
 
+	/**
+	* Selector method from 
+	* @see loginFailure
+	*/
 	public void loginSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	    log.info("loginSheetDidEnd:"+sheet+":"+returncode+":"+main);
 //	    CDLoginSheet loginSheet = (CDLoginSheet)sheet;
 	    switch(returncode) {
 		case(NSAlertPanel.DefaultReturn):
 		    tryAgain = true;
-                    this.setUsername(loginSheet.getUser());
-		    this.setPassword(loginSheet.getPass());
+		    this.setUsername(loginSheet.user());
+		    this.setPassword(loginSheet.pass());
                     break;
 		case(NSAlertPanel.AlternateReturn):
 		    tryAgain = false;
@@ -253,7 +266,8 @@ public class CDConnectionController extends NSObject implements Observer {
 	    log.info("Authentication failed");
 	    if(loginSheet == null)
 		NSApplication.loadNibNamed("Login", CDConnectionController.this);
-	    loginSheet.makeKeyAndOrderFront(this);
+	    loginSheet.makeKeyAndOrderFront(this);//@todo
+//	    loginSheet.setUser(this.getUsername());
 	    NSApplication.sharedApplication().beginSheet(
 						  loginSheet, //sheet
 						  mainWindow, //docWindow
@@ -275,6 +289,9 @@ public class CDConnectionController extends NSObject implements Observer {
 	}	
     }
     
+    /**
+    * Concrete Coccoa implementation of a SSH HostKeyVerification
+    */
     private class CDHostKeyVerification extends AbstractHostKeyVerification {
 	private String host;
 	private String fingerprint;

@@ -91,4 +91,15 @@ public class CDBrowserTableDataSource extends NSObject {
     public Object getEntry(int row) {
 	return this.data.get(row);
     }
+
+    public void removeEntry(Object o) {
+	log.debug("removeEntry("+o+")");
+	data.remove(data.indexOf(o));
+    }
+
+    public void removeEntry(int row) {
+	log.debug("removeEntry("+row+")");
+	data.remove(row);
+    }
+    
 }

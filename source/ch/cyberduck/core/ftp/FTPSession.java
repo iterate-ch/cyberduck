@@ -61,29 +61,42 @@ public class FTPSession extends Session {
             log.debug("getParent:"+parent);
 	    return parent;
 	}
-
+	
 	public void list() {
+	    this.list(false);
+	}
+	
+	/**
+	* Request a file listing from the server. Has to be a directory
+	* @param
+	*/
+	public void list(boolean refresh) {
 	    log.debug("list");
-	    new Thread() {
-		public void run() {
-		    try {
-			FTPSession.this.check();
-			FTPSession.this.log("Listing "+FTPFile.this.getName(), Message.PROGRESS);
-			FTP.setType(FTPTransferType.ASCII);
-			FTP.chdir(getAbsolute());
-			FTPFile.this.setCache(new FTPParser().parseList(FTPFile.this.getAbsolute(), FTP.dir()));
-			FTPSession.this.host.callObservers(FTPFile.this);
-			FTPSession.this.log("Listing complete", Message.PROGRESS);
+	    if(refresh) {
+		new Thread() {
+		    public void run() {
+			try {
+			    FTPSession.this.check();
+			    FTPSession.this.log("Listing "+FTPFile.this.getName(), Message.PROGRESS);
+			    FTP.setType(FTPTransferType.ASCII);
+			    FTP.chdir(getAbsolute());
+			    FTPFile.this.setCache(new FTPParser().parseList(FTPFile.this.getAbsolute(), FTP.dir()));
+			    FTPSession.this.host.callObservers(FTPFile.this);
+			    FTPSession.this.log("Listing complete", Message.PROGRESS);
+			}
+			catch(FTPException e) {
+			    FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
+			}
+			catch(IOException e) {
+			    FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+			}
 		    }
-		    catch(FTPException e) {
-			FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
-		    }
-		    catch(IOException e) {
-			FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
-		    }
-		}
-	    }.start();
-    }
+		}.start();
+	    }
+	    else {
+		FTPSession.this.host.callObservers(FTPFile.this);
+	    }
+	}	
 
 	public void delete() {
 	    log.debug("delete");
@@ -112,7 +125,7 @@ public class FTPSession extends Session {
 		    FTPSession.this.log("Deleting "+this.getName(), Message.PROGRESS);
 		    FTP.delete(this.getName());
 		}
-		this.getParent().list();
+		this.getParent().list(true);
 	    }
 	    catch(FTPException e) {
 		FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
@@ -129,7 +142,7 @@ public class FTPSession extends Session {
                 FTP.chdir(this.getParent().getAbsolute());
 		FTPSession.this.log("Renaming "+this.getName()+" to "+filename, Message.PROGRESS);
                 FTP.rename(this.getName(), filename);
-                this.getParent().list();
+		this.getParent().list(true);
             }
 	    catch(FTPException e) {
 		FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
@@ -139,12 +152,14 @@ public class FTPSession extends Session {
 	    }
         }
         
-        public void mkdir() {
+        public void mkdir(String name) {
             log.debug("mkdir");
             try {
 		FTPSession.this.check();
-		FTPSession.this.log("Make directory "+this.getName(), Message.PROGRESS);
-                FTP.mkdir(this.getName());
+		FTPSession.this.log("Make directory "+name, Message.PROGRESS);
+//                FTP.mkdir(this.getName());
+                FTP.mkdir(name);
+		this.list(true);
             }
 	    catch(FTPException e) {
 		FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
@@ -350,9 +365,9 @@ public class FTPSession extends Session {
     public FTPSession(Host h) {//, TransferAction action) {
         super(h);
 	this.FTP = new FTPClient();
-        System.getProperties().put("proxySet", Preferences.instance().getProperty("connection.proxy"));
-        System.getProperties().put("proxyHost", Preferences.instance().getProperty("connection.proxy.host"));
-        System.getProperties().put("proxyPort", Preferences.instance().getProperty("connection.proxy.port"));
+//@todo proxy        System.getProperties().put("proxySet", Preferences.instance().getProperty("connection.proxy"));
+//@todo proxy        System.getProperties().put("proxyHost", Preferences.instance().getProperty("connection.proxy.host"));
+//@todo proxy        System.getProperties().put("proxyPort", Preferences.instance().getProperty("connection.proxy.port"));
     }
 
     public void close() {
@@ -377,7 +392,6 @@ public class FTPSession extends Session {
 	    public void run() {
 		host.status.fireActiveEvent();
 		FTPSession.this.log("Opening FTP connection to " + host.getIp()+"...", Message.PROGRESS);
-		//            if(!FTP.isAlive()) {
 		try {
 		    if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
 			FTP.setConnectMode(FTPConnectMode.ACTIVE);
@@ -385,14 +399,12 @@ public class FTPSession extends Session {
 		    else {
 			FTP.setConnectMode(FTPConnectMode.PASV);
 		    }
-		    /*
-		    if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
-			FTP.initSOCKS(Preferences.instance().getProperty("connection.proxy.port"), Preferences.instance().getProperty("connection.proxy.host"));
-		    }
-		    if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
-			FTP.initSOCKSAuthentication(Preferences.instance().getProperty("connection.proxy.username"), Preferences.instance().getProperty("connection.proxy.password"));
-		    }
-		     */
+//@todo proxy		    if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
+//			FTP.initSOCKS(Preferences.instance().getProperty("connection.proxy.port"), Preferences.instance().getProperty("connection.proxy.host"));
+//		    }
+//		    if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
+//			FTP.initSOCKSAuthentication(Preferences.instance().getProperty("connection.proxy.username"), Preferences.instance().getProperty("connection.proxy.password"));
+//		    }
 		    FTP.connect(host.getName(), host.getPort());
 		    FTPSession.this.login();
 		    FTP.system();
@@ -450,7 +462,7 @@ public class FTPSession extends Session {
 	public List parseList(String parent, String[] list) throws FTPException {
 	    //        log.debug("[FTPParser] parseList(" + parent + "," + list + ")");
 	    List parsedList = new ArrayList();
-	    boolean showHidden = Preferences.instance().getProperty("ftp.showHidden").equals("true");
+	    boolean showHidden = Preferences.instance().getProperty("listing.showHidden").equals("true");
 	    for(int i = 0; i < list.length; i++) {
 		int index = 0;
 		String line = list[i].trim();

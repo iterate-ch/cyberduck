@@ -25,59 +25,36 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDLoginSheet extends NSPanel {
-    private static Logger log = Logger.getLogger(CDLoginSheet.class);
+public class CDFolderSheet extends NSPanel {
 
-//@todo
-    public NSTextField userField;
-    public NSSecureTextField passField;
+    private NSTextField folderField; /* IBOutlet */
 
-    public CDLoginSheet() {
+    public void setFolderField(NSTextField folderField) {
+	this.folderField = folderField;
+    }
+    
+    public CDFolderSheet() {
 	super();
     }
 
-    public CDLoginSheet(NSRect contentRect, int styleMask, int backingType, boolean defer) {
+    public CDFolderSheet(NSRect contentRect, int styleMask, int backingType, boolean defer) {
 	super(contentRect, styleMask, backingType, defer);
     }
 
-    public CDLoginSheet(NSRect contentRect, int styleMask, int bufferingType, boolean defer, NSScreen aScreen) {
+    public CDFolderSheet(NSRect contentRect, int styleMask, int bufferingType, boolean defer, NSScreen aScreen) {
 	super(contentRect, styleMask, bufferingType, defer, aScreen);
     }
-    
+
     public void awakeFromNib() {
-    /*
-	(NSNotificationCenter.defaultCenter()).addObserver(
-						    this,
-						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
-						    NSControl.ControlTextDidChangeNotification,
-						    userField);
-	(NSNotificationCenter.defaultCenter()).addObserver(
-						    this,
-						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
-						    NSControl.ControlTextDidChangeNotification,
-						    passField);
-						    */
+	//
     }
 
     public void closeSheet(NSObject sender) {
-	log.debug("closeSheet");
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 	NSApplication.sharedApplication().endSheet(this, ((NSButton)sender).tag());
     }
-    
-    /*
-    public void textInputDidChange(NSNotification sender) {
-	log.debug("textInputDidChange");
-	this.setUsername(userField.stringValue());
-	this.setPassword(passField.stringValue());
-    }
-    */
 
-    public String user() {
-	return userField.stringValue();
-    }
-
-    public String pass() {
-	return passField.stringValue();
+    public String getValue() {
+	return folderField.stringValue();
     }
 }

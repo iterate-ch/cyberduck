@@ -32,13 +32,12 @@ import org.apache.log4j.Logger;
 public class CDMainController extends NSObject {
     private static Logger log = Logger.getLogger(CDMainController.class);
 
-    public NSWindow mainWindow; // IBOutlet
-    public NSWindow preferencesWindow; // IBOutlet
-    public NSWindow infoWindow; // IBOutlet
-    public NSPanel infoPanel; // IBOutlet
-    public NSPanel newfolderSheet; // IBOutlet
+    public CDMainWindow mainWindow; // IBOutlet
+    public CDInfoWindow infoWindow; // IBOutlet
+    public CDPreferencesWindow preferencesWindow; // IBOutlet
+    public CDFolderSheet newfolderSheet; // IBOutlet
     public NSPanel donationSheet; // IBOutlet
-    public NSPanel connectionSheet; // IBOutlet
+    public CDConnectionSheet connectionSheet; // IBOutlet
 
     public NSTextField quickConnectField; // IBOutlet
     public CDPathComboBox pathComboBox; // IBOutlet
@@ -50,9 +49,11 @@ public class CDMainController extends NSObject {
     public CDMainController() {
 	super();
 	log.debug("CDMainController");
+    }
+    
+    static {
 	org.apache.log4j.BasicConfigurator.configure();
     }
-
     
 
     // ----------------------------------------------------------
@@ -79,12 +80,7 @@ public class CDMainController extends NSObject {
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
 		Path parent = (Path)pathComboBox.getItem(pathComboBox.numberOfItems()-1);
-		//Path dir = new Path(parent, sheet.getPath());
-		
-		/*
-		dir.mkdir();
-		dir.list();//@todo path.getParent().list();
-		 */
+		parent.mkdir(newfolderSheet.getValue());
 	    case(NSAlertPanel.AlternateReturn):
 		//
 	}
@@ -145,7 +141,7 @@ public class CDMainController extends NSObject {
     public void refreshButtonPressed(NSObject sender) {
 	log.debug("refreshButtonPressed");
 	Path p = (Path)pathComboBox.getItem(0);
-	p.list();
+	p.list(true);
     }
 
     public void downloadButtonPressed(NSObject sender) {
@@ -291,7 +287,7 @@ public class CDMainController extends NSObject {
 	    return pathComboBox.numberOfItems() > 0;
 	}
 	if(label.equals("Refresh")) {
-	    //return ;
+	    return pathComboBox.numberOfItems() > 0;
 	}
 	if(label.equals("Download")) {
 	    return browserTable.numberOfRows() > 0;
@@ -300,7 +296,7 @@ public class CDMainController extends NSObject {
 	    return browserTable.numberOfRows() > 0;
 	}
 	if(label.equals("New Folder")) {
-	    //return ;
+	    return pathComboBox.numberOfItems() > 0;
 	}
 	if(label.equals("Get Info")) {
 	    return browserTable.numberOfRows() > 0;
@@ -315,9 +311,11 @@ public class CDMainController extends NSObject {
     
     public int applicationShouldTerminate(NSObject sender) {
 	log.debug("applicationShouldTerminate");
+	Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses"))+1);
         Preferences.instance().store();
         NSApplication.loadNibNamed("Donate", this);
-        if(Preferences.instance().getProperty("cyberduck.donate").equals("true")) {
+//        if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
+        if(Preferences.instance().getProperty("donate").equals("true")) {
             NSApplication.sharedApplication().beginSheet(
                                                 donationSheet,//sheet
                                                 mainWindow, //docwindow
@@ -353,7 +351,7 @@ public class CDMainController extends NSObject {
         this.closeDonationSheet(this);
 	log.debug("donate");
 	try {
-	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL("http://www.cyberduck.ch/donate/"));
+	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("donate.url")));
 	}
 	catch(java.net.MalformedURLException e) {
 	    e.printStackTrace();

@@ -32,7 +32,10 @@ public class Message {//{implements java.io.Serializable {
     public static final String PROGRESS = "PROGRESS";
     public static final String ERROR = "ERROR";
     public static final String DATA = "DATA";
-    public static final String TIME = "TIME";
+    /**
+    * 
+    */
+//    public static final String TIME = "TIME";
 
     public static final String OPEN = "OPEN";
     public static final String CLOSE = "CLOSE";
@@ -70,6 +73,6 @@ public class Message {//{implements java.io.Serializable {
     }
     
     public String toString() {
-        return this.getDescription();
+        return this.getTitle()+":"+this.getDescription();
     }
 }

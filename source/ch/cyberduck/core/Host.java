@@ -44,10 +44,11 @@ public class Host extends Observable {
     public Host(String protocol, String name, int port, String workdir, Login login) {
         this.protocol = protocol != null ? protocol : this.protocol;
         this.port = port != -1 ? port : this.port;
+	//@todo extract protocol:// if accidentially added
         this.name = name;
-        this.workdir = workdir != null ? workdir : this.workdir;
+	this.workdir = workdir != null ? workdir : this.workdir;
         this.login = login != null ? login : this.login;
-	
+	log.debug(this.toString());
     }
 
     public Host(String protocol, String name, int port, Login login) {
@@ -60,7 +61,7 @@ public class Host extends Observable {
     }
 
     public void callObservers(Object arg) {
-//        log.debug("callObservers:"+arg.toString());
+        log.debug("callObservers:"+arg.toString());
 	this.setChanged();
 //	if(arg instanceof Path)
 	    //@todothis.workdir = (Path)arg;
@@ -146,8 +147,12 @@ public class Host extends Observable {
             return "Unknown host";
         }
     }
+    
+    public String toString() {
+	return("Host:"+protocol+","+name+","+port+","+workdir+","+login);
+    }
 
     class HostStatus extends Status {
-
+	//
     }
 }

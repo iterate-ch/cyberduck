@@ -71,7 +71,7 @@ public class CDInfoWindow extends NSPanel implements Observer {
     }
 
     public void awakeFromNib() {
-	log.debug("CDInfoWindow:awakeFromNib");
+	log.debug("awakeFromNib");
 	(NSNotificationCenter.defaultCenter()).addObserver(
 						    this,
 						    new NSSelector("textInputDidEndEditing", new Class[]{NSNotification.class}),
@@ -80,7 +80,6 @@ public class CDInfoWindow extends NSPanel implements Observer {
     }
 
     public void update(Observable o, Object arg) {
-	log.debug("setSelectedPath");
 	if(o instanceof Path) {
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;

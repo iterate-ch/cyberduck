@@ -19,6 +19,6 @@ package ch.cyberduck.core;
  */
 
 public interface Transcripter {
-    
+        
     public void transcript(String text);
 }

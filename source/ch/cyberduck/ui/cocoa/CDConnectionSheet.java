@@ -30,12 +30,41 @@ import org.apache.log4j.Logger;
 public class CDConnectionSheet extends NSPanel {
     private static Logger log = Logger.getLogger(CDConnectionSheet.class);
 
-    public NSPopUpButton protocolPopup;    
-    public NSTextField hostNameField;
-    public NSTextField pathField;
-    public NSTextField portField;
-    public NSTextField usernameField;
-    public NSTextField urlLabel;
+    private NSPopUpButton protocolPopup;    
+
+    public void setProtocolPopup(NSTextField protocolPopup) {
+	this.protocolPopup = protocolPopup;
+    }
+
+    private NSTextField hostNameField;
+    
+    public void setHostNameField(NSTextField hostNameField) {
+	this.hostNameField = hostNameField;
+    }
+    
+    private NSTextField pathField;
+
+    public void setPathField(NSTextField pathField) {
+	this.pathField = pathField;
+    }
+    
+    private NSTextField portField;
+
+    public void setPortField(NSTextField portField) {
+	this.portField = portField;
+    }
+
+    private NSTextField usernameField;
+
+    public void setUsernameField(NSTextField usernameField) {
+	this.usernameField = usernameField;
+    }
+
+    private NSTextField urlLabel;
+
+    public void setUrlLabel(NSTextField urlLabel) {
+	this.urlLabel = urlLabel;
+    }
     
     public CDConnectionSheet() {
 	super();
@@ -86,7 +115,7 @@ public class CDConnectionSheet extends NSPanel {
     public void closeSheet(NSObject sender) {
 	log.debug("closeSheet");
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-	NSApplication.sharedApplication().endSheet(this, NSAlertPanel.DefaultReturn);
+	NSApplication.sharedApplication().endSheet(this, ((NSButton)sender).tag());
     }
     
     public void protocolSelectionChanged(NSObject sender) {
@@ -104,6 +133,18 @@ public class CDConnectionSheet extends NSPanel {
     public void textInputDidChange(NSNotification sender) {
 	log.debug("textInputDidChange");
 	urlLabel.setStringValue(usernameField.stringValue()+"@"+hostNameField.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
+    }
+    
+    public void textDidBeginEditing(NSNotification aNotification) {
+	log.debug("textDidBeginEditing");
+    }
+    
+    public void textDidChange(NSNotification aNotification) {
+	log.debug("textDidChange");
+    }
+
+    public void textDidEndEditing(NSNotification aNotification) {
+	log.debug("textDidEndEditing");
     }
 
     public void finalize() {

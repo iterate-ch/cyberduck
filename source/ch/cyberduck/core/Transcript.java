@@ -19,17 +19,24 @@ package ch.cyberduck.core;
  */
 
 import org.apache.log4j.Logger;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
+* Singleton
  * @version $Id$
  */
 public class Transcript {
     private static Logger log = Logger.getLogger(Transcript.class);
 
     private static Transcript instance;
-//    private List listeners = new ArrayList();
 
-    private Transcripter listener;
+    private List listeners = new ArrayList();
+    
+    private Transcript() {
+    //
+    }
     
     public static Transcript instance() {
 	log.debug("instance");
@@ -39,24 +46,30 @@ public class Transcript {
         return instance;
      }
 
+    /**
+    * @param l Add this Transripter to the list of listeners
+    */
     public void addListener(Transcripter l) {
-//	listeners.add(l);
-	this.listener = l;
+	listeners.add(l);
+    }
+    
+    /**
+    * @param l Remove this Transripter form the listeneres list
+    */
+    public void removeListener(Transcripter l) {
+	listeners.remove(listeners.indexOf(l));
     }
 
     /*
      /**
-     * Write to the view
+     * Inform all the concrete listeners about
+     * @param text The information to pass to the listeners
       */
      public void transcript(String text) {
 	 log.debug("transcript:"+text);
-	 /*
 	 Iterator i = listeners.iterator();
 	 while(i.hasNext()) {
-	     ((Listener)i).transcript(text);
+	     ((Transcripter)i.next()).transcript(text);
 	 }
-	  */
-	 listener.transcript(text);
      }
-
 }

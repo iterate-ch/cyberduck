@@ -88,7 +88,7 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
     }
 
     public void callObservers(Object arg) {
-	//        log.debug("callObservers:"+arg.toString());
+	log.debug("callObservers:"+arg.toString());
 	this.setChanged();
 	this.notifyObservers(arg);
     }
@@ -125,13 +125,21 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
     }
     
     /**
-     * @return the content of this directory.
-     */
+    * @param refresh Refetch the list from the server
+    */
+    public abstract void list(boolean refresh);
+
     public abstract void list();
 
     public abstract void delete();
 
-    public abstract void mkdir();
+    /**
+    *	Create a new directory inside me
+    * @param folder The relative name of the new folder
+    */
+    public abstract void mkdir(String folder);
+    
+//    public abstract void touch(String file);
 
     public abstract void rename(String n);
 

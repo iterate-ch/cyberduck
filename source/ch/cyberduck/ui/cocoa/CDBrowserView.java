@@ -79,6 +79,7 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	//this.setIndicatorImage(NSImage.imageNamed("indicator.tiff"), this.tableColumnWithIdentifier("FILENAME"))
     }
 
+
     public void doubleClickAction(NSObject sender) {
 	log.debug("doubleClickAction");
         Path p = (Path)model.getEntry(this.clickedRow());
@@ -88,9 +89,18 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	    p.list();
     }
     
+    
+    public void tableViewSelectionDidChange(NSNotification notification) {
+	log.debug("tableViewSelectionDidChange");
+	int row = this.selectedRow();
+	if(row != -1) {
+	    ((Path)model.getEntry(row)).callObservers(Message.SELECTION);
+	}
+    }
+
+    
     public void update(Observable o, Object arg) {
 //	log.debug("update:"+o+":"+arg);
-//	log.debug("update");
 	if(o instanceof Host) {
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;
@@ -99,19 +109,6 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 		    this.reloadData();
 		    this.setNeedsDisplay(true);
 		}
-		/*
-		if(msg.getTitle().equals(Message.SELECTION)) {
-		    Host h = (Host)o;
-		    List cache = h.cache();
-		    java.util.Iterator i = cache.iterator();
-		    model.clear();
-		    while(i.hasNext()) {
-			model.addEntry(i.next());
-			this.reloadData();
-		    }
-		    this.setNeedsDisplay(true);
-		}
-		 */
 	    }
 	    if(arg instanceof Path) {
 		model.clear();
@@ -192,7 +189,6 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
      */
     public void keyUp(NSEvent event) {
 	log.debug("keyUp:"+event.toString());
-	log.debug(event.toString());
         Path p = (Path)model.getEntry(this.selectedRow());
 //@todo enter key	if(event.keyCode() == //36 76
 	if(event.modifierFlags() == NSEvent.CommandKeyMask) {

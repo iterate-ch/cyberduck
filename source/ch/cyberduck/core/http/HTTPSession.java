@@ -82,7 +82,7 @@ public class HTTPSession extends Session {
         public void rename(String filename) {
             HTTPSession.this.log("Invalid Operation", Message.ERROR);
         }
-        public void mkdir() {
+        public void mkdir(String name) {
             HTTPSession.this.log("Invalid Operation", Message.ERROR);
         }
 
@@ -99,16 +99,16 @@ public class HTTPSession extends Session {
 			HTTPSession.this.check();
 			GET = new GetMethod(HTTPFile.this.getAbsolute()); //@todo encode url
 			GET.setUseDisk(false);
-			if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
+//	@todo proxy		if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
 			    // enter the username and password for the proxy
-			    String authString = Preferences.instance().getProperty("connection.proxy.username")+":"+Preferences.instance().getProperty("connection.proxy.password");
+//			    String authString = Preferences.instance().getProperty("connection.proxy.username")+":"+Preferences.instance().getProperty("connection.proxy.password");
 			    // base64 encode the password.
-			    String auth = "Basic " + Base64.encode(authString.getBytes());
+//			    String auth = "Basic " + Base64.encode(authString.getBytes());
 			    // Set up the connection so it knows we are sending proxy user information
-			    GET.addRequestHeader( "Proxy-Authorization", auth );
-			}
+//			    GET.addRequestHeader( "Proxy-Authorization", auth );
+//			}
 			GET.addRequestHeader("Accept", GET.getAcceptHeader());
-			GET.addRequestHeader("User-Agent", "Cyberduck/" + Preferences.instance().getProperty("cyberduck.version"));
+			GET.addRequestHeader("User-Agent", "Cyberduck/" + Preferences.instance().getProperty("version"));
 			if(HTTPFile.this.status.isResume()) {
 			    GET.addRequestHeader("Range", "bytes=" + HTTPFile.this.status.getCurrent() + "-");
 			}
@@ -249,12 +249,12 @@ public class HTTPSession extends Session {
 	    public void run() {
 		host.status.fireActiveEvent();
 		HTTPSession.this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
-		if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
-		    HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
-		}
-		else {
-		    HTTP.connect(host.getName(), host.getPort(), false);//@todo implement https
-		}
+//		if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
+//		    HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
+//		}
+//		else {
+		HTTP.connect(host.getName(), host.getPort(), false);//@todo implement https
+//		}
 		HTTPSession.this.log("HTTP connection opened", Message.PROGRESS);
 		HTTPFile p = new HTTPFile(host.getWorkdir());
 		p.download();
