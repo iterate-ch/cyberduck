@@ -111,11 +111,11 @@ public class CDProgressController extends NSObject implements Observer {
 		return this.queue;
 	}
 	
-	private boolean selected;
+	private boolean highlighted;
 	
-	public void setSelected(boolean selected) {
-		this.selected = selected;
-		if(selected) {
+	public void setHighlighted(boolean highlighted) {
+		this.highlighted = highlighted;
+		if(highlighted) {
 			this.filenameField.setTextColor(NSColor.whiteColor());
 			this.progressField.setTextColor(NSColor.whiteColor());
 		}
@@ -125,8 +125,8 @@ public class CDProgressController extends NSObject implements Observer {
 		}
 	}
 	
-	public boolean isSelected() {
-		return this.selected;
+	public boolean isHighlighted() {
+		return this.highlighted;
 	}
 		
 	private NSTextField filenameField; // IBOutlet

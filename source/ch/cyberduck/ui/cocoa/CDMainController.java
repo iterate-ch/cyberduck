@@ -492,6 +492,7 @@ public class CDMainController extends NSObject {
 	
     public void applicationDidFinishLaunching(NSNotification notification) {
         log.info("Available localizations:" + NSBundle.mainBundle().localizations());
+		Growl.instance().launch();
         if (Preferences.instance().getProperty("queue.openByDefault").equals("true")) {
             this.showTransferQueueClicked(null);
         }
@@ -510,7 +511,6 @@ public class CDMainController extends NSObject {
             this.checkForUpdate(false);
         }
         this.rendezvous.init();
-		Growl.instance().launch();
     }
 
     public void applicationShouldSleep(Object o) {

@@ -113,7 +113,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 		this.tableViewSelectionChange();
 	}
 
-	public void windowDidBecomeMain(NSNotification notification) {
+	public void windowDidResignKey(NSNotification notification) {
 		this.tableViewSelectionChange();
 	}
 	
@@ -226,13 +226,10 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     }
 	
 	private void tableViewSelectionChange() {
+		log.debug("tableViewSelectionChange");
+		boolean key = this.window().isKeyWindow();
 		for(int i = 0; i < this.queueModel.size(); i++) {
-			this.queueModel.getController(i).setSelected(false);
-		}
-        NSEnumerator enum = this.queueTable.selectedRowEnumerator();
-        while (enum.hasMoreElements()) {
-			int selectedRow = ((Integer)enum.nextElement()).intValue();
-			this.queueModel.getController(selectedRow).setSelected(true);
+			this.queueModel.getController(i).setHighlighted(this.queueTable.isRowSelected(i) && key);
 		}
 		this.toolbar.validateVisibleItems();
 		this.updateLabels();
@@ -246,6 +243,10 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 		this.tableViewSelectionChange();
 	}
 		
+	public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn column, int row) {
+//		boolean highlighted = ((NSCell)cell).isHighlighted() && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(NSColor.secondarySelectedControlColor());
+	}
+	
 	private void reloadQueueTable() {
         log.debug("reloadQueueTable");
 		while (this.queueTable.subviews().count() > 0) {
