@@ -88,7 +88,6 @@ public class CDMainController {
 
     public void updateMenuClicked(Object sender) {
         try {
-            //	    NSBundle bundle = NSBundle.bundleForClass(this.getClass());
             String currentVersionNumber = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
             log.info("Current version:" + currentVersionNumber);
 
@@ -102,8 +101,6 @@ public class CDMainController {
                 );
                 return;
             }
-            log.debug(data.length() + " bytes.");
-            //			NSDictionary entries = (NSDictionary)NSPropertyListSerialization.propertyListFromXMLData(data);
             String[] errorString = new String[]{null};
             Object propertyListFromXMLData =
                     NSPropertyListSerialization.propertyListFromData(data,

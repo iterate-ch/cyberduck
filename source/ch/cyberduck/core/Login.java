@@ -186,7 +186,6 @@ public class Login {
 
 	public void setUsername(String user) {
 		this.init(user, this.getPassword());
-//		this.user = user;
 	}
 
 	public String getPassword() {
@@ -195,7 +194,6 @@ public class Login {
 
 	public void setPassword(String pass) {
 		this.init(this.getUsername(), pass);
-//		this.pass = pass;
 	}
 
 	public void setController(LoginController lc) {

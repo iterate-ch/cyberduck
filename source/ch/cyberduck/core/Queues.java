@@ -69,7 +69,6 @@ public abstract class Queues {
 	}
 
 	public Queue getItem(int row) {
-//		log.debug("getItem:"+row);
 		Queue result = null;
 		if(row < this.size())
 		   result = (Queue) this.data.get(row);

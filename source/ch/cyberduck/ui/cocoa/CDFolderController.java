@@ -32,8 +32,6 @@ import ch.cyberduck.core.Path;
 public class CDFolderController {
     private static Logger log = Logger.getLogger(CDFolderController.class);
 
-    //    private Path parent;
-
     private NSWindow window;
 
     public void setWindow(NSWindow window) {

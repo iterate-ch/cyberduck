@@ -125,7 +125,7 @@ public class FTPPath extends Path {
 				session.FTP.setTransferType(FTPTransferType.ASCII);
 				session.FTP.chdir(this.getAbsolute());
 
-				FTPFileEntryParser parser =  new DefaultFTPFileEntryParserFactory().createFileEntryParser(session.host.getIdentification()); //todo cache
+				FTPFileEntryParser parser =  new DefaultFTPFileEntryParserFactory().createFileEntryParser(session.host.getIdentification());
 				
 				String[] lines = session.FTP.dir();
 				for (int i = 0; i < lines.length; i++) {

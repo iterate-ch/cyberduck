@@ -28,8 +28,6 @@ public abstract class TranscriptFactory {
 
 	private static Map transcripts = new HashMap();
 
-//	protected abstract Transcript create(Session s);
-
 	public static void addImpl(String host, Transcript impl) {
 		transcripts.put(host, impl);
 	}

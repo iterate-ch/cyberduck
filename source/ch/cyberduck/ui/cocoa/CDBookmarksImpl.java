@@ -162,7 +162,6 @@ public class CDBookmarksImpl extends Bookmarks { //implements NSTableView.DataSo
         try {
             log.info("Exporting bookmark " + bookmark + " to " + file);
             NSMutableData collection = new NSMutableData();
-            //			public static NSData dataFromPropertyList(Object plist, int format, String[] errorString)
             String[] errorString = new String[]{null};
             collection.appendData(NSPropertyListSerialization.dataFromPropertyList(bookmark.getAsDictionary(),
                     NSPropertyListSerialization.PropertyListXMLFormat,
@@ -170,7 +169,6 @@ public class CDBookmarksImpl extends Bookmarks { //implements NSTableView.DataSo
             if (errorString[0] != null) {
                 log.error("Problem writing bookmark file: " + errorString[0]);
             }
-            //collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(bookmark.getAsDictionary()));
             if (collection.writeToURL(file.toURL(), true)) {
                 log.info("Bookmarks sucessfully saved in :" + file.toString());
                 NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolutePath());

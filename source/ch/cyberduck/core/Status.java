@@ -52,9 +52,6 @@ public class Status extends Observable implements Serializable {
 	 * Indicates that the last action has been completed.
 	 */
 	private boolean complete = false;
-	/**
-	 * The last action has been stopped, but must not be completed.
-	 */
 
 	/**
 	 * Notify all observers
@@ -62,7 +59,6 @@ public class Status extends Observable implements Serializable {
 	 * @see ch.cyberduck.core.Message
 	 */
 	public void callObservers(Message arg) {
-		//	log.debug("callObserver:"+arg);
 		//	log.debug(this.countObservers()+" observers known.");
 		this.setChanged();
 		this.notifyObservers(arg);

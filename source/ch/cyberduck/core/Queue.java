@@ -143,7 +143,6 @@ public class Queue extends Observable implements Observer { //Thread {
 	}
 
 	public void callObservers(Object arg) {
-		//	log.debug(this.countObservers()+" observers known.");
 		this.setChanged();
 		this.notifyObservers(arg);
 	}
@@ -163,7 +162,6 @@ public class Queue extends Observable implements Observer { //Thread {
 				this.callObservers(arg);
 			}
 		}
-//		this.callObservers(arg);
 	}
 
 	private void process() {
@@ -513,6 +511,5 @@ public class Queue extends Observable implements Observer { //Thread {
 		);
 
 		this.jobs.add(this.root);
-//		this.setChanged();
 	}
 }

@@ -331,7 +331,6 @@ public class CDBrowserController implements Observer {
     }
 
     public void searchFieldTextDidChange(NSNotification aNotification) {
-//		log.debug("searchFieldTextDidChange:"+aNotification);
         String searchString = null;
         NSDictionary userInfo = aNotification.userInfo();
         if (null != userInfo) {
@@ -349,8 +348,8 @@ public class CDBrowserController implements Observer {
                     Path next;
                     while (i.hasNext()) {
                         next = (Path) i.next();
-                        //						if(next.getName().startsWith(searchString)) {
-                        if (next.getName().indexOf(searchString) != -1) {
+                        if(next.getName().toLowerCase().startsWith(searchString.toLowerCase())) {
+//                        if (next.getName().toLowerCase().indexOf(searchString.toLowerCase()) != -1) {
                             subset.add(next);
                         }
                     }

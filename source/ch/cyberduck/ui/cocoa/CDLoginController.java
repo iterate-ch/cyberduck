@@ -71,8 +71,6 @@ public class CDLoginController extends LoginController {
     public void setWindow(NSWindow window) {
         this.window = window;
         this.window.setDelegate(this);
-//		this.window.makeFirstResponder(loginButton);
-//		this.window.setDefaultButtonCell(loginButton.cell());
     }
 
     private NSWindow parentWindow;
@@ -124,8 +122,6 @@ public class CDLoginController extends LoginController {
 
     public void closeSheet(NSButton sender) {
         log.debug("closeSheet");
-        //		this.userField.validateEditing();
-        //		this.passField.validateEditing();
         if (null == userField.objectValue() || userField.objectValue().equals("")) {
             log.warn("Value of username field is null");
         }

@@ -22,8 +22,6 @@ import ch.cyberduck.core.Login;
 
 public abstract class LoginController {
 
-//	protected Login login;
-
     /**
      * Call this to allow the user to reenter the new login credentials.
      * A concrete sublcass could eg. display a panel.
@@ -32,5 +30,4 @@ public abstract class LoginController {
      * @return true If we whould try again with new login
      */
     public abstract boolean promptUser(Login login, String explanation);
-
 }

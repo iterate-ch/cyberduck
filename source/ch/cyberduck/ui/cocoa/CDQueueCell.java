@@ -24,6 +24,9 @@ import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRect;
 import com.apple.cocoa.foundation.NSSize;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Queue;
@@ -33,11 +36,11 @@ public class CDQueueCell extends CDTableCell {
 
     private Queue queue;
 	
-//	private static Map icons = new HashMap();
+	private static Map icons = new HashMap();
 
     public void setObjectValue(Object q) {
         this.queue = (Queue) q;
-//		icons.put(this.queue.getRoot().getExtension(), NSWorkspace.sharedWorkspace().iconForFileType(this.queue.getRoot().getExtension()));
+		icons.put(this.queue.getRoot().getExtension(), NSWorkspace.sharedWorkspace().iconForFileType(this.queue.getRoot().getExtension()));
     }
 
     public static NSMenu defaultMenu() {
@@ -59,7 +62,6 @@ public class CDQueueCell extends CDTableCell {
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         super.drawInteriorWithFrameInView(cellFrame, controlView);
         if (queue != null) {
-            //		log.debug("Redrawing queue cell...");
             NSPoint cellPoint = cellFrame.origin();
             NSSize cellSize = cellFrame.size();
 
@@ -67,10 +69,9 @@ public class CDQueueCell extends CDTableCell {
             switch (queue.kind()) {
                 case Queue.KIND_DOWNLOAD:
                     arrowIcon = arrowDownIcon;
-                    if (queue.getRoot().isFile())
-//						fileIcon = (NSImage)icons.get(queue.getRoot().getExtension());
-                    {
-                        fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
+                    if (queue.getRoot().isFile()) {
+						fileIcon = (NSImage)icons.get(queue.getRoot().getExtension());
+//                        fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
                     }
                     else if (queue.getRoot().isDirectory()) {
                         fileIcon = folderIcon;
@@ -78,10 +79,9 @@ public class CDQueueCell extends CDTableCell {
                     break;
                 case Queue.KIND_UPLOAD:
                     arrowIcon = arrowUpIcon;
-                    if (queue.getRoot().getLocal().isFile())
-//						fileIcon = (NSImage)icons.get(queue.getRoot().getExtension());
-                    {
-                        fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
+                    if (queue.getRoot().getLocal().isFile()) {
+						fileIcon = (NSImage)icons.get(queue.getRoot().getExtension());
+//                        fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
                     }
                     else if (queue.getRoot().getLocal().isDirectory()) {
                         fileIcon = folderIcon;

@@ -405,7 +405,7 @@ public class CDPreferencesController {
         Preferences.instance().setProperty("ssh.SCEncryption", sender.titleOfSelectedItem());
     }
 
-
+	
     //authentication algorithms
     private static final String hmac_sha1 = "hmac-sha1";
     private static final String hmac_sha1_96 = "hmac-sha1-96";

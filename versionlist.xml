@@ -3,11 +3,19 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.2b5</string>
+	<string>2.2b6</string>
 	<key>file</key>
-	<string>Cyberduck-2.2beta5.dmg</string>
+	<string>Cyberduck-2.2beta6.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.2b6
+- Preliminary support for Windows, VMS and OS/2 file listings (FTP)
+- Properly deleting symbolic links
+- Displaying link icons in browser
+- Downloading files from FTP servers not supporting the SIZE command
+- Fixed a bug where overwritten files with SFTP got corrupted (Thanks to Jan!)
+- Bug fixes
+
 2.2b5
 - Chinese (Traditional) Localization
 - Korean Localization
