@@ -112,7 +112,6 @@ public class FTPSession extends Session {
 			this.FTP.setConnectMode(FTPConnectMode.PASV);
 		}
 		this.log("FTP connection opened", Message.PROGRESS);
-		this.FTP.setTimeout(Integer.parseInt(Preferences.instance().getProperty("ftp.timeout")));
 		this.login();
 		if(Preferences.instance().getProperty("ftp.sendSystemCommand").equals("true")) {
 			this.host.setIdentification(this.FTP.system());
