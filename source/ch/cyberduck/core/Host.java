@@ -92,7 +92,7 @@ public class Host {
 			if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
 				this.session = new HTTPSession(this);
 			}
-			//  @todo      if(this.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
+			//  if(this.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
    //            return new HTTPSession(this);
    //        }
 			else if(this.getProtocol().equalsIgnoreCase(Session.FTP)) {

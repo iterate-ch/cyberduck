@@ -222,7 +222,6 @@ public class CDTransferController implements Observer, Validator {
 				this.totalProgressBar.setIndeterminate(true);
 				this.totalProgressBar.startAnimation(null);
 				
-				this.stopButton.setStringValue("Close");
 				this.stopButton.setEnabled(true);
 				this.resumeButton.setEnabled(false);
 				this.reloadButton.setEnabled(false);
@@ -241,9 +240,11 @@ public class CDTransferController implements Observer, Validator {
 			else if(msg.getTitle().equals(Message.STOP)) {
 				log.debug("STOP");
 				this.totalProgressBar.stopAnimation(null);
-				this.stopButton.setEnabled(false);
-				this.resumeButton.setEnabled(true);
-				this.reloadButton.setEnabled(true);
+				if(0 == queue.remainingJobs()) {
+					this.stopButton.setEnabled(false);
+					this.resumeButton.setEnabled(true);
+					this.reloadButton.setEnabled(true);
+				}
 			}
 			// COMPLETE
 			else if(msg.getTitle().equals(Message.COMPLETE)) {
@@ -279,8 +280,7 @@ public class CDTransferController implements Observer, Validator {
 										 );
 				this.queue.cancel();
 				this.totalProgressBar.stopAnimation(null);
-				this.stopButton.setStringValue("Close");
-				this.stopButton.setEnabled(true);
+				this.stopButton.setEnabled(false);
 				this.resumeButton.setEnabled(true);
 				this.reloadButton.setEnabled(true);
 				this.progressField.setObjectValue(msg.getContent());

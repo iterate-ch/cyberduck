@@ -747,7 +747,7 @@ public class CDBrowserController implements Observer {
 			this.host.getSession().deleteObserver((Observer)pathController);
 			this.host.closeSession();
 		}
-		this.mounted = false;
+//		this.mounted = false;
     }
         
 	
