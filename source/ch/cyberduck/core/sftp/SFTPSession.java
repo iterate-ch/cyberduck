@@ -226,7 +226,6 @@ public class SFTPSession extends Session {
 				    AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
 					this.log("Login successful", Message.PROGRESS);
 					credentials.addInternetPasswordToKeychain();
-//					credentials.addPasswordToKeychain();
 					return;
 				}
 			}

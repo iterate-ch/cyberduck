@@ -350,7 +350,10 @@ public class CDConnectionController extends CDController implements Observer {
 		if(hostPopup.stringValue() != null && !hostPopup.stringValue().equals("") &&
 		    usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
 			Login l = new Login(new Host(hostPopup.stringValue(), protocolPopup.selectedItem().tag()), usernameField.stringValue(), null);
-			String passFromKeychain = l.getPasswordFromKeychain();
+			String passFromKeychain = l.getInternetPasswordFromKeychain();
+			if(passFromKeychain != null && !passFromKeychain.equals("")) {
+				passFromKeychain = l.getPasswordFromKeychain(); //legacy support
+			}
 			if(passFromKeychain != null && !passFromKeychain.equals("")) {
 				log.info("Password for "+usernameField.stringValue()+" found in Keychain");
 				this.passField.setStringValue(passFromKeychain);

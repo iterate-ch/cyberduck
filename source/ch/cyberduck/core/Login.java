@@ -218,7 +218,7 @@ public class Login {
 				log.info("Searching keychain for password...");
 				String passFromKeychain = this.getInternetPasswordFromKeychain();
 				if(null == passFromKeychain || passFromKeychain.equals("")) {
-					passFromKeychain = this.getPasswordFromKeychain();
+					passFromKeychain = this.getPasswordFromKeychain(); //legacy support
 				}
 				if(null == passFromKeychain || passFromKeychain.equals("")) {
 					return this.promptUser("The username or password does not seem reasonable.").tryAgain();

@@ -35,6 +35,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
  instead of the individual user bookmarks file if available
 - [Feature] Check for running transfers on application quit
 - [Feature] Updated FTP core (FTP)
+- [Feature] Saving passwords as 'Internet Password' in the Keychain
 - [Bugfix] Update existing browsers when changing the default interface attributes in the Preferences
 - [Bugfix] Don't cache DNS lookups forever
 - [Bugfix] Bookmark drawer icon has no text-only equivalent
