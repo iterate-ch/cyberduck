@@ -21,6 +21,7 @@
                 downloadPathButton = NSButton; 
                 downloadPathField = NSTextField; 
                 duplicateCombobox = NSPopUpButton; 
+                editorCombobox = NSPopUpButton; 
                 encodingCombobox = NSPopUpButton; 
                 historyField = NSTextField; 
                 horizontalLinesCheckbox = NSButton; 
