@@ -13,7 +13,7 @@
 		<key>511</key>
 		<string>346 458 332 108 0 0 1024 746 </string>
 		<key>896</key>
-		<string>364 195 296 540 0 0 1024 746 </string>
+		<string>364 197 296 539 0 0 1024 746 </string>
 		<key>953</key>
 		<string>462 429 187 232 0 0 1024 746 </string>
 	</dict>
@@ -21,11 +21,6 @@
 	<string>364.0</string>
 	<key>IBOldestOS</key>
 	<integer>2</integer>
-	<key>IBOpenObjects</key>
-	<array>
-		<integer>953</integer>
-		<integer>896</integer>
-	</array>
 	<key>IBSystem Version</key>
 	<string>7U16</string>
 </dict>

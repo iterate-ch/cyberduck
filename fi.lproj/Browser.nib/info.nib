@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>IBDocumentLocation</key>
-	<string>186 61 510 372 0 0 1024 746 </string>
+	<string>139 77 510 372 0 0 1024 746 </string>
 	<key>IBEditorPositions</key>
 	<dict>
 		<key>1058</key>
@@ -22,6 +22,6 @@
 	<key>IBOldestOS</key>
 	<integer>2</integer>
 	<key>IBSystem Version</key>
-	<string>7S215</string>
+	<string>7U16</string>
 </dict>
 </plist>

@@ -420,6 +420,7 @@ public class CDBrowserController extends CDController implements Observer {
 			}
 			else if(msg.getTitle().equals(Message.OPEN)) {
 				this.progressIndicator.startAnimation(this);
+				this.infoLabel.setStringValue("");
 				this.statusIcon.setImage(null);
 				this.statusIcon.setNeedsDisplay(true);
 				this.browserModel.clear();

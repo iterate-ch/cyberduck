@@ -3,11 +3,11 @@
         {CLASS = CDTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {
             ACTIONS = {
+                createFileButtonClicked = id; 
                 deleteFileButtonClicked = id; 
                 downloadAsButtonClicked = id; 
                 downloadButtonClicked = id; 
                 editButtonClicked = id; 
-                fileButtonClicked = id; 
                 folderButtonClicked = id; 
                 infoButtonClicked = id; 
                 refreshButtonClicked = id; 
