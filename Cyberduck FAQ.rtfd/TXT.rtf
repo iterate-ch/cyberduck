@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica-Oblique;
 \f3\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;}
-\vieww12040\viewh13600\viewkind0
+\vieww12040\viewh13540\viewkind0
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\fs24 \cf0      {{\NeXTGraphic cyberduck-application.icns \width2560 \height2560
@@ -51,7 +51,7 @@
 
 \f0\b0 \cf0 	Write an email to 
 \f2\i <mailto:bugs@cyberduck.ch>
-\f0\i0  with a description what you have a done and what went wrong. It would help if you can include the crash report and also all the \cf0 files\cf0  with the pattern ~/Library/Logs/JavaNativeCrash_pid(****).log\
+\f0\i0  with a description what you have a done and what went wrong. It would help if you can include the crash report and also all the files with the pattern ~/Library/Logs/JavaNativeCrash_pid(****).log\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 \
@@ -324,24 +324,10 @@
 \f0\b0\fs24 \cf0 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b \cf0 	I try to open a new SSH connection but I just get the spinning progress bar. In the Console.app I can read 'java.lang.NegativeArraySizeException at com.sshtools.j2ssh.io.ByteArrayReader.readString(ByteArrayReader.java:164)'\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	Delete all SSH1 keys in ~/.ssh/known_hosts.\
-	\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
 \f1\b \cf0 	When listing a directory on a FTP server I get the error message in response to the  'LIST -a' command: 550 Directory not found.\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0 \cf0 	Uncheck the option 'FTP > Send LIST -a command' in the Preferences.\
-\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 	In the dialog asking to allow the host key I cannot choose to always remember the host key. The host key isn't written in the  ~/.ssh/known_hosts file\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	There is either no write permission to the  ~/.ssh/known_hosts file or there are incompatible keys stored. Delete the file or remove any SSH1 keys and try again.\
 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
