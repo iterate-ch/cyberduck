@@ -418,6 +418,7 @@ no.lproj/Connection.nib/keyedobjects.nib -text
 no.lproj/Connection.strings svneol=native#unset
 no.lproj/Donate.nib/keyedobjects.nib -text
 no.lproj/Donate.strings svneol=native#unset
+no.lproj/Download.nib/keyedobjects.nib -text
 no.lproj/Download.strings svneol=native#unset
 no.lproj/Folder.nib/keyedobjects.nib -text
 no.lproj/Folder.strings svneol=native#unset
