@@ -6,6 +6,7 @@
 /cyberduck-application.psd -text
 /cyberduck-application.tiff -text
 /cyberduck-document.icns svneol=native#unset
+/cyberduck-document.tiff -text
 de.lproj/Bookmark.strings svneol=native#unset
 de.lproj/Browser.strings svneol=native#unset
 de.lproj/Connection.strings svneol=native#unset
@@ -131,6 +132,7 @@ ja.lproj/Update.strings svneol=native#unset
 lib/ext/ant.jar -text
 lib/ext/junit.jar -text
 lib/j2ssh.jar svneol=native#unset
+lib/jmdns.jar -text
 lib/jrendezvous.jar -text
 lib/log4j.jar svneol=native#unset
 lib/logging.jar -text
