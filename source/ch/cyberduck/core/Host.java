@@ -29,6 +29,7 @@ public class Host {
     private String protocol;
     private int port;
     private String hostname;
+    private String nickname;
     private Path defaultpath;
     private transient HostKeyVerification hostKeyVerification;
     private transient Session session;
@@ -44,6 +45,7 @@ public class Host {
 	    this.hostname = url.substring(url.indexOf("@")+1, url.lastIndexOf(":"));
 	    this.port = Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length()));
 	    this.login = new Login(url.substring(url.indexOf("://")+3, url.lastIndexOf("@")));
+	    this.nickname = this.getLogin().getUsername()+"@"+this.getHostname();
 	}
 	catch(NumberFormatException e) {
 	    log.error(e.getMessage());
@@ -53,11 +55,11 @@ public class Host {
 	    log.error(e.getMessage());
 	    throw new java.net.MalformedURLException("Not a valid URL: "+url);
 	}
+	log.debug(this.toString());
     }
 
     public Host(String hostname, Login login) {
 	this(Preferences.instance().getProperty("connection.protocol.default"), hostname, Integer.parseInt(Preferences.instance().getProperty("connection.port.default")), login);
-	log.debug(this.toString());
     }
 
     public Host(String hostname, int port, Login login) {
@@ -65,12 +67,15 @@ public class Host {
     }
     
     public Host(String protocol, String hostname, int port, Login login) {
-        this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
-        this.port = port != -1 ? port : this.getDefaultPort(protocol);
+	this.setProtocol(protocol);
+	this.setPort(port);
         this.hostname = hostname;
         this.login = login;
+	this.nickname = this.getLogin().getUsername()+"@"+this.getHostname();
 	log.debug(this.toString());
     }
+    
+    // ----------------------------------------------------------
 
     public Session getSession() {
 //        log.debug("getSession");
@@ -142,19 +147,35 @@ public class Host {
 	return this.login;
     }
 
+    public void setProtocol(String protocol) {
+        this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
+    }
+
     public String getProtocol() {
 	return this.protocol;
+    }
+    
+    public String getNickname() {
+	return this.nickname;
+    }
+    
+    public void setNickname(String nickname) {
+	this.nickname = nickname;
     }
 
     public String getHostname() {
 	return this.hostname;
     }
 
-    private void setHostname(String hostname) {
+    public void setHostname(String hostname) {
 	log.debug("setHostname"+hostname);
 	this.hostname = hostname;
     }
 
+    public void setPort(int port) {
+        this.port = port != -1 ? port : this.getDefaultPort(this.getProtocol());
+    }
+    
     public int getPort() {
 	return this.port;
     }
@@ -185,7 +206,6 @@ public class Host {
 
     public String toString() {
 	return this.getURL();
-//	return this.getProtocol()+"://"+this.getName();
     }
 
     /**

@@ -37,7 +37,7 @@ import java.util.*;
 public class CDBrowserTable extends NSTableView implements Observer {
     private static Logger log = Logger.getLogger(CDBrowserTable.class);
     
-    private static final NSColor TABLE_CELL_SHADED_COLOR = NSColor.colorWithCalibratedRGB(0.929f, 0.953f, 0.996f, 1.0f);
+//    private static final NSColor TABLE_CELL_SHADED_COLOR = NSColor.colorWithCalibratedRGB(0.929f, 0.953f, 0.996f, 1.0f);
 
     private CDBrowserTableDataSource browserModel;
     private CDBrowserTableDelegate browserDelegate;
@@ -58,13 +58,13 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	log.debug("CDBrowserTable:"+frame);
     }
 
-    public CDBrowserTable(NSCoder decoder, long token) {
+    protected CDBrowserTable(NSCoder decoder, long token) {
 	super(decoder, token);
     }
 
-    public void encodeWithCoder(NSCoder encoder) {
-	super.encodeWithCoder(encoder);
-    }    
+//    public void encodeWithCoder(NSCoder encoder) {
+//	super.encodeWithCoder(encoder);
+//    }    
 
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
@@ -75,7 +75,7 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	this.setDrawsGrid(false);
 	this.setAutoresizesAllColumnsToFit(true);
 	this.setAutosaveTableColumns(true);
-	this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
+//	this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
 	this.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
     }
 
@@ -159,7 +159,7 @@ public class CDBrowserTable extends NSTableView implements Observer {
     // ----------------------------------------------------------
 
     private class CDBrowserTableDelegate {
-
+	/*
 	boolean sortAscending = true;
 	NSTableColumn lastClickedColumn;
 
@@ -258,26 +258,27 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	    }
 	    reloadData();
 	}
+	 */
 
-	public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
-	    if (view != null && cell != null && column != null) {
-		if(cell instanceof NSTextFieldCell) {
-		    if (row % 2 == 0) {
-			((NSTextFieldCell)cell).setDrawsBackground(true);
-			((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
-		    }
-		    else {
+//	public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
+//	    if (view != null && cell != null && column != null) {
+//		if(cell instanceof NSTextFieldCell) {
+//		    if (row % 2 == 0) {
+//			((NSTextFieldCell)cell).setDrawsBackground(true);
+//			((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
+//		    }
+//		    else {
 //			((NSTextFieldCell)cell).setDrawsBackground(false);
-			((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
-		    }
-		}
-	    }
-	}
+//			((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
+//		    }
+//		}
+//	    }
+//	}
 
 	/**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
 	    * The delegate can implement this method to disallow selection of particular rows.
 	    */
-	public  boolean tableViewShouldSelectRow( NSTableView aTableView, int rowIndex) {
+	public  boolean tableViewShouldSelectRow(NSTableView aTableView, int rowIndex) {
 	    return true;
 	}
 
@@ -285,7 +286,7 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	/**	Returns true to permit aTableView to edit the cell at rowIndex in aTableColumn, false to deny permission.
 	    *The delegate can implemen this method to disallow editing of specific cells.
 	    */
-	public boolean tableViewShouldEditLocation( NSTableView view, NSTableColumn tableColumn, int row) {
+	public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
 	    return false;
 	}
     }

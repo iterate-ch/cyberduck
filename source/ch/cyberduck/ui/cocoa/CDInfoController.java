@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDInfoController {//implements Observer {
+public class CDInfoController {
     private static Logger log = Logger.getLogger(CDInfoController.class);
 
     private Path file;

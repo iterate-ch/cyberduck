@@ -112,6 +112,8 @@ public abstract class Preferences {
         //defaults.put("files.encode", "true");
 	defaults.put("connection.download.postprocess", "false");
         //Connection
+//	private int BLOCKSIZE = 65535;
+
         defaults.put("connection.buffer", "4096");
 	defaults.put("connection.buffer.default", "4096");
 	defaults.put("connection.port.default", "21");

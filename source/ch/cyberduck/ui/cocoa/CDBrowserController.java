@@ -51,7 +51,6 @@ public class CDBrowserController implements Observer {
 	this.favoritesTable = favoritesTable;
 	this.favoritesTable.setDataSource(CDFavoritesImpl.instance());
 	this.favoritesTable.setDelegate(favoritesDelegate = new CDFavoritesTableDelegate());
-//	this.favoritesTable.tableColumnWithIdentifier("URL").setDataCell(new NSButtonCell());
 	this.favoritesTable.setTarget(this);
 	this.favoritesTable.setDrawsGrid(false);
 	this.favoritesTable.setAutoresizesAllColumnsToFit(true);
@@ -68,6 +67,15 @@ public class CDBrowserController implements Observer {
 	this.quickConnectPopup.setDataSource(CDHistoryImpl.instance());
     }
     
+    private NSButton editFavoriteButton; // IBOutlet
+    public void setEditFavoriteButton(NSButton editFavoriteButton) {
+	this.editFavoriteButton = editFavoriteButton;
+	this.editFavoriteButton.setImage(NSImage.imageNamed("edit.tiff"));
+	this.editFavoriteButton.setAlternateImage(NSImage.imageNamed("editPressed.tiff"));
+	this.editFavoriteButton.setTarget(this);
+	this.editFavoriteButton.setAction(new NSSelector("editFavoriteButtonClicked", new Class[] {Object.class}));
+    }
+
     private NSButton addFavoriteButton; // IBOutlet
     public void setAddFavoriteButton(NSButton addFavoriteButton) {
 	this.addFavoriteButton = addFavoriteButton;
@@ -177,25 +185,25 @@ public class CDBrowserController implements Observer {
 	}
     }
 
-    private static final NSColor TABLE_CELL_SHADED_COLOR = NSColor.colorWithCalibratedRGB(0.929f, 0.953f, 0.996f, 1.0f);
+//    private static final NSColor TABLE_CELL_SHADED_COLOR = NSColor.colorWithCalibratedRGB(0.929f, 0.953f, 0.996f, 1.0f);
     
     // ----------------------------------------------------------
     // FavoritesTable delegate methods
     // ----------------------------------------------------------
 
     private class CDFavoritesTableDelegate {
-	public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
-	    if(cell instanceof NSTextFieldCell) {
-		if (! (view == null || cell == null || column == null)) {
-		    if (row % 2 == 0) {
-			((NSTextFieldCell)cell).setDrawsBackground(true);
-			((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
-		    }
-		    else
-			((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
-		}
-	    }
-	}
+//	public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
+//	    if(cell instanceof NSTextFieldCell) {
+//		if (! (view == null || cell == null || column == null)) {
+//		    if (row % 2 == 0) {
+//			((NSTextFieldCell)cell).setDrawsBackground(true);
+//			((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
+//		    }
+//		    else
+//			((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
+//		}
+//	    }
+//	}
 
 	/**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
 	    * The delegate can implement this method to disallow selection of particular rows.
@@ -276,6 +284,14 @@ public class CDBrowserController implements Observer {
 	}
     }
     
+    public void editFavoriteButtonClicked(Object sender) {
+	int row = favoritesTable.selectedRow();
+	if(row != -1) {
+	    Host item = CDFavoritesImpl.instance().getItem(CDFavoritesImpl.instance().values().toArray()[row].toString());
+	    CDFavoriteController controller = new CDFavoriteController(item);
+	    controller.window().makeKeyAndOrderFront(null);
+	}
+    }
 
     public void addFavoriteButtonClicked(Object sender) {
 	if(this.host != null) {

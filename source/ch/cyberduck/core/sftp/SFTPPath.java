@@ -356,10 +356,10 @@ public class SFTPPath extends Path {
 	    }
 //	    this.session.log("Opening data stream...", Message.PROGRESS);
 	    SftpFile remoteFile = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
-	    FileAttributes attrs = remoteFile.getAttributes();
+//	    FileAttributes attrs = remoteFile.getAttributes();
 	    //@ todo default upload permissions
-	    attrs.setPermissions("rw-r--r--");
-	    this.session.SFTP.setAttributes(remoteFile, attrs);
+//	    attrs.setPermissions("rw-r--r--");
+//	    this.session.SFTP.setAttributes(remoteFile, attrs);
 	    SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);
 	    if(out == null) {
 		throw new IOException("Unable opening data stream");

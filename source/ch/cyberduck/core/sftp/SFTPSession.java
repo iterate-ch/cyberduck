@@ -27,8 +27,9 @@ import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
 import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
-import com.sshtools.j2ssh.session.SessionChannelClient;
+//import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
+//import com.sshtools.j2ssh.SftpClient;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -43,7 +44,7 @@ public class SFTPSession extends Session {
 
     protected SftpSubsystemClient SFTP;
     private SshClient SSH;
-    private SessionChannelClient channel;
+//    private SessionChannelClient channel;
 
     /**
 	* @param client The client to use which does implement the ftp protocol
@@ -59,12 +60,12 @@ public class SFTPSession extends Session {
     public synchronized void close() {
 	this.callObservers(new Message(Message.CLOSE, "Closing session."));
 	try {
-	    if(channel != null) {
-		this.log("Closing SSH Session Channel", Message.PROGRESS);
-		channel.close();
+	    if(this.SFTP != null) {
+		this.log("Disconnecting...", Message.PROGRESS);
+		this.SFTP.stop();
 	    }
 	    if(SSH != null) {
-		this.log("Disconnecting...", Message.PROGRESS);
+		this.log("Closing SSH Session Channel", Message.PROGRESS);
 		SSH.disconnect();
 	    }
 	    this.log("Disconnected", Message.PROGRESS);
@@ -97,6 +98,7 @@ public class SFTPSession extends Session {
 		    // Sets the preffered server->client message authentication
 //		    properties.setPrefSCMac("hmac-md5");
 
+	this.log("Opening SSH session...", Message.PROGRESS);
 	SSH.connect(properties, host.getHostKeyVerificationController());
 	this.log("SSH connection opened", Message.PROGRESS);
 	this.log(SSH.getServerId(), Message.TRANSCRIPT);
@@ -104,16 +106,19 @@ public class SFTPSession extends Session {
 	log.info(SSH.getAvailableAuthMethods(host.getLogin().getUsername()));
 
 	this.login();
-	this.log("Opening SSH session channel", Message.PROGRESS);
+//	this.log("Opening SSH session channel", Message.PROGRESS);
 		    // The connection is authenticated we can now do some real work!
-	channel = SSH.openSessionChannel();
-	this.log("Starting SFTP subsystem", Message.PROGRESS);
-	SFTP = new SftpSubsystemClient();
-	channel.startSubsystem(SFTP);
-	this.log("SFTP subsystem ready.", Message.PROGRESS);
+//	this.channel = SSH.openSessionChannel();
+	this.log("Starting SFTP subsystem...", Message.PROGRESS);
+//	SFTP = SSH.openSftpClient();
+        this.SFTP = SSH.openSftpChannel();
+//	SFTP = new SftpSubsystemClient();
+//	this.channel.startSubsystem(SFTP);
+	
+	this.log("SFTP subsystem ready", Message.PROGRESS);
 	this.setConnected(true);
     }
-
+    
     public synchronized void mount() {
 	new Thread() {
 	    public void run() {
@@ -131,7 +136,7 @@ public class SFTPSession extends Session {
 	    }
 	}.start();
     }
-
+    
     private synchronized void login() throws IOException {
 	log.debug("login");
 	// password authentication
@@ -172,14 +177,13 @@ public class SFTPSession extends Session {
 	// Set the key and authenticate
 	auth.setKey(key);
 	int result = session.authenticate(auth);
-	 */
-	
+	 */	
     }
 
     public Path workdir() {
 	try {
 	    //this.check();
-	    return new SFTPPath(this, SFTP.getDefaultDirectory()); //todo change to return current directory
+	    return new SFTPPath(this, SFTP.getDefaultDirectory());
 	}
 	catch(SshException e) {
 	    this.log("SSH Error: "+e.getMessage(), Message.ERROR);
@@ -195,7 +199,7 @@ public class SFTPSession extends Session {
 	this.log("Working", Message.START);
 	if(!SSH.isConnected()) {
 	    this.setConnected(false);
-	    SSH.disconnect();
+	    this.close();
 	    this.connect();
 	    while(true) {
 		if(this.isConnected())
