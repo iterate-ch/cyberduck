@@ -14,6 +14,7 @@
 - [Feature] Action dropdown menu in toolbar
 - [Feature] Added Jedit X to the list of supported editors (http://www.artman21.net/product/JeditX/)
 - [Feature] Added mi to the list of supported editors (http://mimikaki.net/)
+- [Feature] Added Smultron to the list of supported editors (http://smultron.sourceforge.net/)
 - [Bugfix] Rendezvous implementation updated 
 - [Bugfix] Folder to synchronize not selectable in some cases
 - [Bugfix] Fallback to default directory when specified directory doesn't exist
