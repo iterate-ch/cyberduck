@@ -103,7 +103,21 @@ public class CDBrowserController implements Observer {
 		this.quickConnectPopup.setUsesDataSource(true);
 		this.quickConnectPopup.setDataSource(this.quickConnectDataSource = new CDQuickConnectDataSource());
     }
-	    
+	
+	public void quickConnectSelectionChanged(Object sender) {
+		log.debug("quickConnectSelectionChanged");
+		String input = ((NSControl)sender).stringValue();
+		Host host = CDHistoryImpl.instance().getItem(input);
+		if(null == host) {
+			int index;
+			if((index = input.indexOf('@')) != -1)
+				host = new Host(input.substring(index+1, input.length()), new Login(input.substring(0, index)));
+			else
+				host = new Host(input, new Login());
+		}
+		this.mount(host);
+    }
+	
     private NSButton showBookmarkButton; // IBOutlet
     public void setShowBookmarkButton(NSButton showBookmarkButton) {
 		this.showBookmarkButton = showBookmarkButton;
@@ -637,20 +651,6 @@ public class CDBrowserController implements Observer {
     public void drawerButtonClicked(Object sender) {
 		log.debug("drawerButtonClicked");
 		logDrawer.toggle(mainWindow);
-    }
-	
-    public void quickConnectSelectionChanged(Object sender) {
-		log.debug("quickConnectSelectionChanged");
-		String input = ((NSControl)sender).stringValue();
-		Host host = CDHistoryImpl.instance().getItem(input);
-		if(null == host) {
-			int index;
-			if((index = input.indexOf('@')) != -1)
-				host = new Host(input.substring(index+1, input.length()), new Login(input.substring(0, index)));
-			else
-				host = new Host(input, new Login());
-		}
-		this.mount(host);
     }
 	
     public void connectButtonClicked(Object sender) {

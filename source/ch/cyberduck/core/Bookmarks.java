@@ -177,8 +177,8 @@ public abstract class Bookmarks {
      */
     public Host getItem(String name) {
 		Host result =  (Host)this.data.get(name);
-		if(null == result)
-			throw new IllegalArgumentException("Host "+name+" not found in Bookmarks.");
+//		if(null == result)
+//			throw new IllegalArgumentException("Host "+name+" not found in Bookmarks.");
 		return result;
     }
 	
