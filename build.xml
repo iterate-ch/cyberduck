@@ -42,7 +42,7 @@
 	<path id="classpath">
 	    <pathelement location="/System/Library/Java"/>
 	    <fileset dir="${lib}">
-		<include name="**/*.jar"/>
+		<include name="*.jar"/>
 	    </fileset>
 	</path>
 		
@@ -73,7 +73,7 @@
 		<echo message="   ---------------------------------------------------------------"/>
 	</target>
 	
-	<target name="init">
+	<target name="init" depends="manifest">
 		<tstamp/>
 		<echo message="Building ${app.name}..."/>
 		<mkdir dir="${classes}" />
@@ -99,7 +99,8 @@
 	    </javac>
 	    
 	    <jar jarfile="${build}/core.jar"
-		update="yes">
+		update="yes"
+		manifest="${build}/MANIFEST.MF">
 		<fileset dir="${classes}/core">
 		    <include name="ch/cyberduck/core/**/*.class"/>
 		</fileset>
@@ -124,7 +125,8 @@
 	    </javac>
 	    
 	    <jar jarfile="${build}/cocoa.jar"
-		update="yes">
+		update="yes"
+		manifest="${build}/MANIFEST.MF">
 		<fileset dir="${classes}/cocoa/">
 		    <include name="ch/cyberduck/ui/*.class"/>
 		    <include name="ch/cyberduck/ui/cocoa/**/*.class"/>
@@ -189,7 +191,8 @@
 	    </javac>
 	    
 	    <jar jarfile="${build}/ftp.jar"
-		update="yes">
+		update="yes"
+		manifest="${build}/MANIFEST.MF">
 		<fileset dir="${classes}/ftp">
 		    <include name="com/enterprisedt/**/*.class"/>
 		</fileset>
@@ -251,6 +254,17 @@
 		<delete file="${build}/core.jar" />
 		<delete file="${build}/ftp.jar" />
 		<delete file="${build}/http.jar" />
+	</target>
+	
+	<target name="manifest">
+	  <manifest file="${build}/MANIFEST.MF">
+		<attribute name="Built-By" value="${user.name}"/>
+		    <attribute name="Specification-Title" value="Cyberduck"/>
+		    <attribute name="Specification-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
+		    <attribute name="Specification-Vendor" value="David Kocher"/>
+		    <attribute name="Implementation-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/> 
+	    </manifest>
+
 	</target>
 </project>
 
