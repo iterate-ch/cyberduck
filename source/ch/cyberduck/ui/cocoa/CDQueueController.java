@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -280,6 +281,13 @@ public class CDQueueController extends NSObject implements Observer {
             item.setTarget(this);
             item.setAction(new NSSelector("removeButtonClicked", new Class[]{Object.class}));
         }
+        if (itemIdentifier.equals("Clear")) {
+            item.setLabel(NSBundle.localizedString("Clear", ""));
+            item.setPaletteLabel(NSBundle.localizedString("Clear", ""));
+            item.setImage(NSImage.imageNamed("cleanAll.tiff"));
+            item.setTarget(this);
+            item.setAction(new NSSelector("clearButtonClicked", new Class[]{Object.class}));
+        }
         return item;
     }
 
@@ -373,6 +381,16 @@ public class CDQueueController extends NSObject implements Observer {
         this.queueTable.reloadData();
     }
 
+	public void clearButtonClicked(Object sender) {
+		for(Iterator iter = CDQueuesImpl.instance().iterator(); iter.hasNext(); ) {
+			Queue q = (Queue)iter.next();
+			if(q.isEmpty()) {
+				iter.remove();
+			}
+        }
+        this.queueTable.reloadData();
+    }
+	
 	public boolean validateMenuItem(_NSObsoleteMenuItemProtocol cell) {
         String sel = cell.action().name();
 		log.debug("validateMenuItem:"+sel);
@@ -440,6 +458,7 @@ public class CDQueueController extends NSObject implements Observer {
             "Reload",
             "Stop",
             "Remove",
+			"Clear",
             NSToolbarItem.FlexibleSpaceItemIdentifier,
             "Show"
         });
@@ -451,6 +470,7 @@ public class CDQueueController extends NSObject implements Observer {
             "Reload",
             "Stop",
             "Remove",
+			"Clear",
             "Show",
             NSToolbarItem.CustomizeToolbarItemIdentifier,
             NSToolbarItem.SpaceItemIdentifier,
@@ -502,6 +522,9 @@ public class CDQueueController extends NSObject implements Observer {
         }
         if (identifier.equals("Show")) {
             return this.queueTable.numberOfSelectedRows() == 1;
+        }
+        if (identifier.equals("Clear")) {
+            return this.queueTable.numberOfRows() > 0;
         }
         if (identifier.equals("Remove")) {
             if (this.queueTable.numberOfSelectedRows() < 1) {

@@ -331,8 +331,10 @@ public class SFTPPath extends Path {
 			switch (kind) {
 				case Queue.KIND_DOWNLOAD:
 					childs = this.getDownloadQueue(childs);
+					break;
 				case Queue.KIND_UPLOAD:
 					childs = this.getUploadQueue(childs);
+					break;
 			}
 		}
 		catch (SshException e) {
@@ -350,15 +352,13 @@ public class SFTPPath extends Path {
 				for (Iterator i = this.list(false, true).iterator() ; i.hasNext() ;) {
 					SFTPPath p = (SFTPPath) i.next();
 					p.setLocal(new Local(this.getLocal(), p.getName()));
-					p.status.setResume(this.status.isResume());
+					//p.status.setResume(this.status.isResume());
 					p.getDownloadQueue(queue);
 				}
 			}
 			else if (this.isFile()) {
 				queue.add(this);
 			}
-			else
-				throw new IOException("Cannot determine file type");
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -373,8 +373,7 @@ public class SFTPPath extends Path {
 		try {
 			log.debug("download:" + this.toString());
 			if (this.isDirectory()) {
-				this.getLocal().mkdir();
-//				throw new IOException("Download must be a file.");
+				throw new IOException("Download must be a file.");
 			}
 			else {
 				this.session.check();
@@ -411,7 +410,7 @@ public class SFTPPath extends Path {
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
 				Path p = PathFactory.createPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
-				p.status.setResume(this.status.isResume());
+				//p.status.setResume(this.status.isResume());
 				((SFTPPath)p).getUploadQueue(queue);
 			}
 		}
@@ -419,8 +418,6 @@ public class SFTPPath extends Path {
 			this.status.setSize(this.getLocal().length());
 			queue.add(this);
 		}
-		else
-			throw new IOException("Cannot determine file type");
 		return queue;
 	}
 

@@ -798,7 +798,7 @@ public class CDBrowserController extends NSObject implements Observer {
 					Path path  = (Path)contextInfo;
 					path.setLocal(new Local(filename));
 					Queue queue = new Queue(Queue.KIND_DOWNLOAD);
-					queue.add(path);
+					queue.addRoot(path);
 					CDQueuesImpl.instance().addItem(queue);
 					CDQueueController.instance().startItem(queue);
 				}
@@ -819,7 +819,7 @@ public class CDBrowserController extends NSObject implements Observer {
 				Session session = pathController.workdir().getSession().copy();
 				while (enum.hasMoreElements()) {
 					Path path = ((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session);
-					q.add(path);
+					q.addRoot(path);
 				}
 					CDQueuesImpl.instance().addItem(q);
 					CDQueueController.instance().startItem(q);
@@ -850,7 +850,7 @@ public class CDBrowserController extends NSObject implements Observer {
 					Path item = parent.copy(session);
 					item.setPath(parent.getAbsolute(), new Local((String) enumerator.nextElement()));
 					//                    Queue queue = new Queue(item, Queue.KIND_UPLOAD);
-					q.add(item);
+					q.addRoot(item);
 				}
 						CDQueuesImpl.instance().addItem(q);
 						CDQueueController.instance().startItem(q, (Observer) this);
@@ -1342,7 +1342,7 @@ public class CDBrowserController extends NSObject implements Observer {
                             Path p = PathFactory.createPath(session,
                                     pathController.workdir().getAbsolute(),
                                     new Local((String) filesList.objectAtIndex(i)));
-							q.add(p);
+							q.addRoot(p);
                         }
 							CDQueuesImpl.instance().addItem(q);
 							CDQueueController.instance().startItem(q, (Observer) CDBrowserController.this);
@@ -1396,7 +1396,7 @@ public class CDBrowserController extends NSObject implements Observer {
                     else {
                         fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
                     }
-					q.add(promisedDragPaths[i]);
+					q.addRoot(promisedDragPaths[i]);
 //                    queueDictionaries.addObject(new Queue(promisedDragPaths[i], Queue.KIND_DOWNLOAD).getAsDictionary());
                 }
 				queueDictionaries.addObject(q.getAsDictionary());
@@ -1440,7 +1440,7 @@ public class CDBrowserController extends NSObject implements Observer {
                         this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
                                 this.promisedDragPaths[i].getName()));
 //                        Queue queue = new Queue(this.promisedDragPaths[i], Queue.KIND_DOWNLOAD);
-						q.add(this.promisedDragPaths[i]);
+						q.addRoot(this.promisedDragPaths[i]);
                         promisedDragNames.addObject(this.promisedDragPaths[i].getName());
                     }
                     catch (java.io.UnsupportedEncodingException e) {

@@ -316,8 +316,10 @@ public class FTPPath extends Path {
 			switch (kind) {
 				case Queue.KIND_DOWNLOAD:
 					childs = this.getDownloadQueue(childs);
+					break;
 				case Queue.KIND_UPLOAD:
 					childs = this.getUploadQueue(childs);
+					break;
 			}
 		}
 		catch (FTPException e) {
@@ -334,15 +336,13 @@ public class FTPPath extends Path {
 			for (Iterator i = this.list(false, true).iterator() ; i.hasNext() ;) {
 				FTPPath p = (FTPPath) i.next();
 				p.setLocal(new Local(this.getLocal(), p.getName()));
-				p.status.setResume(this.status.isResume());
+				//p.status.setResume(this.status.isResume());
 				((FTPPath)p).getDownloadQueue(queue);
 			}
 		}
 		else if (this.isFile()) {
 			queue.add(this);
 		}
-		else
-			throw new IOException("Cannot determine file type");
 		return queue;
 	}
 
@@ -350,8 +350,7 @@ public class FTPPath extends Path {
 		try {
 			log.debug("download:" + this.toString());
 			if (this.isDirectory()) {
-				this.getLocal().mkdir();
-				//				throw new IOException("Download must be a file.");
+				throw new IOException("Download must be a file.");
 			}
 			else {
 				this.session.check();
@@ -376,7 +375,7 @@ public class FTPPath extends Path {
 				}
 				else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 					this.session.FTP.setTransferType(FTPTransferType.ASCII);
-					this.getLocal().getParentFile().mkdir();
+					this.getLocal().getParentFile().mkdirs();
 					java.io.Writer out = new FileWriter(this.getLocal(), this.status.isResume());
 					if (out == null) {
 						throw new IOException("Unable to buffer data");
@@ -416,7 +415,7 @@ public class FTPPath extends Path {
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
 				Path p = PathFactory.createPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
-				p.status.setResume(this.status.isResume());
+				//p.status.setResume(this.status.isResume());
 				((FTPPath)p).getUploadQueue(queue);
 			}
 		}
@@ -424,8 +423,6 @@ public class FTPPath extends Path {
 			this.status.setSize(this.getLocal().length());
 			queue.add(this);
 		}
-		else
-			throw new IOException("Cannot determine file type");
 		return queue;
 	}
 

@@ -131,6 +131,7 @@ img/back32.tiff -text
 img/bookmarks.tiff svneol=native#unset
 img/cancel.tiff -text
 img/clean.tiff -text
+img/cleanAll.tiff -text
 img/connect.tiff svneol=native#unset
 img/deleteFile.tiff -text
 img/disconnect.tiff svneol=native#unset
@@ -146,6 +147,7 @@ img/folder16.tiff -text
 img/folder32.tiff -text
 img/history.tiff -text
 img/info.tiff svneol=native#unset
+img/multipleDocuments.tiff -text
 img/newfolder.tiff -text
 img/notfound.tiff -text
 img/pencil.tiff -text

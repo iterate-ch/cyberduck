@@ -73,6 +73,23 @@ public class CDMainController extends NSObject {
     public void setUpdateText(NSTextView updateText) {
         this.updateText = updateText;
     }
+	
+	private NSMenu bookmarkMenu;
+	
+	public void setBookmarkMenu(NSMenu bookmarkMenu) {
+		this.bookmarkMenu = bookmarkMenu;		
+		for(int i = 0; i < CDBookmarksImpl.instance().size(); i++) {
+			Host h = CDBookmarksImpl.instance().getItem(i);
+			NSMenuItem item = new NSMenuItem(h.getNickname(),
+											 new NSSelector("bookmarkMenuClicked", new Class[]{Object.class}),
+											 "");
+			this.bookmarkMenu.addItem(item);
+		}
+	}
+	
+	public void bookmarkMenuClicked(Object sender) {
+		log.debug("bookmarkMenuClicked:"+sender);
+	}
 
     public void helpMenuClicked(Object sender) {
         NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().pathForResource("Help", "rtfd")).toString());

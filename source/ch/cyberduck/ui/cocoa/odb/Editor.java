@@ -68,7 +68,22 @@ public class Editor extends NSObject {
 		
 	public void open(Path f) {
 		this.file = f;
-		this.file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), file.getName()));
+		String parent = NSPathUtilities.temporaryDirectory();
+		String filename = file.getName();
+		String proposal = filename;
+		int no = 0;
+		int index = filename.lastIndexOf(".");
+		do {
+			this.file.setLocal(new Local(parent, proposal));
+			no++;
+			if (index != -1) {
+				proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
+			}
+			else {
+				proposal = filename + "-" + no;
+			}
+		}
+		while (this.file.getLocal().exists());
 		this.file.download();
 		this.edit(file.getLocal().getAbsolutePath());
 	}

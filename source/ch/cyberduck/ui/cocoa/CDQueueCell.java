@@ -44,6 +44,7 @@ public class CDQueueCell extends CDTableCell {
 
     private static final NSImage arrowUpIcon = NSImage.imageNamed("arrowUp.tiff");
     private static final NSImage arrowDownIcon = NSImage.imageNamed("arrowDown.tiff");
+    private static final NSImage multipleDocumentsIcon = NSImage.imageNamed("multipleDocuments.tiff");
     private static final NSImage folderIcon = NSImage.imageNamed("folder32.tiff");
     private static final NSImage notFoundIcon = NSImage.imageNamed("notfound.tiff");
 
@@ -62,26 +63,26 @@ public class CDQueueCell extends CDTableCell {
             NSSize cellSize = cellFrame.size();
 			
             // drawing file icon
-            switch (queue.kind()) {
-                case Queue.KIND_DOWNLOAD:
-                    arrowIcon = arrowDownIcon;
-					if (queue.getRoot().isFile()) {
-						fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
-					}
+			arrowIcon = queue.kind() == Queue.KIND_DOWNLOAD ? arrowDownIcon : arrowUpIcon;
+			if(queue.numberOfRoots() == 1) {
+				switch (queue.kind()) {
+					case Queue.KIND_DOWNLOAD:
+						if (queue.getRoot().isFile()) {
+							fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
+						}
 						else if (queue.getRoot().isDirectory()) {
 							fileIcon = folderIcon;
 						}
 						break;
-                case Queue.KIND_UPLOAD:
-                    arrowIcon = arrowUpIcon;
-					if (queue.getRoot().getLocal().isFile()) {
-						if(queue.getRoot().getLocal().exists()) {
-							fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
+					case Queue.KIND_UPLOAD:
+						if (queue.getRoot().getLocal().isFile()) {
+							if(queue.getRoot().getLocal().exists()) {
+								fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
+							}
+							else { 
+								fileIcon = notFoundIcon;
+							}
 						}
-						else { 
-							fileIcon = notFoundIcon;
-						}
-					}
 						else if (queue.getRoot().getLocal().isDirectory()) {
 							fileIcon = folderIcon;
 						}
@@ -89,50 +90,67 @@ public class CDQueueCell extends CDTableCell {
 							fileIcon = notFoundIcon;
 						}
 						break;
-            }
+				}
+			}
+			else {
+				fileIcon = multipleDocumentsIcon;
+			}
 			
             final float BORDER = 40;
             final float SPACE = 5;
 
             if (fileIcon != null) {
-//				fileIcon.setScalesWhenResized(true);
+				fileIcon.setScalesWhenResized(true);
                 fileIcon.setSize(new NSSize(32f, 32f));
 
                 fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE, cellPoint.y() + 32 + SPACE), NSImage.CompositeSourceOver);
                 arrowIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE * 2, cellPoint.y() + 32 + SPACE * 2), NSImage.CompositeSourceOver);
             }
-
+			
             // drawing path properties
             // local file
-            NSGraphics.drawAttributedString(new NSAttributedString(queue.getRoot().getName(),
-																   boldFont),
-                    new NSRect(cellPoint.x() + BORDER + SPACE,
-                            cellPoint.y() + SPACE,
-                            cellSize.width() - BORDER - SPACE,
-                            cellSize.height()));
+			if(queue.numberOfRoots() == 1) {
+				NSGraphics.drawAttributedString(new NSAttributedString(queue.getRoot().getName(),
+																	   boldFont),
+												new NSRect(cellPoint.x() + BORDER + SPACE,
+														   cellPoint.y() + SPACE,
+														   cellSize.width() - BORDER - SPACE,
+														   cellSize.height()));
+			}
+			else {
+				NSGraphics.drawAttributedString(new NSAttributedString(NSBundle.localizedString("(Multiples files)", ""),
+																	   tinyFont),
+												new NSRect(cellPoint.x() + BORDER + SPACE,
+														   cellPoint.y() + SPACE,
+														   cellSize.width() - BORDER - SPACE,
+														   cellSize.height()));
+			}
 			// number of files of queue item
-            NSGraphics.drawAttributedString(new NSAttributedString("("+queue.numberOfRoots()+" "+NSBundle.localizedString("files", "")+")",
-																   tinyFontRight),
+			if(queue.numberOfJobs() > 0) {
+				NSGraphics.drawAttributedString(new NSAttributedString("("+queue.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
+																	   tinyFontRight),
+												new NSRect(cellPoint.x() + BORDER + SPACE,
+														   cellPoint.y() + SPACE,
+														   cellSize.width() - BORDER - SPACE,
+														   cellSize.height()));
+			}
+            // remote url
+//            NSGraphics.drawAttributedString(new NSAttributedString(queue.getRoot().getHost().getProtocol() + "://" +
+//                    queue.getRoot().getHost().getHostname() +
+//                    queue.getRoot().getAbsolute(),
+            NSGraphics.drawAttributedString(new NSAttributedString(queue.getRoot().getHost().getHostname(),
+																   normalFont),
 											new NSRect(cellPoint.x() + BORDER + SPACE,
-													   cellPoint.y() + SPACE,
+													   cellPoint.y() + 20,
 													   cellSize.width() - BORDER - SPACE,
 													   cellSize.height()));
-            // remote url
-            NSGraphics.drawAttributedString(new NSAttributedString(queue.getRoot().getHost().getProtocol() + "://" +
-                    queue.getRoot().getHost().getHostname() +
-                    queue.getRoot().getAbsolute(),
-                    tinyFont),
-                    new NSRect(cellPoint.x() + BORDER + SPACE,
-                            cellPoint.y() + 20,
-                            cellSize.width() - BORDER - SPACE,
-                            cellSize.height()));
 			// status
             NSGraphics.drawAttributedString(new NSAttributedString(queue.getStatus(),
-                    tinyFont),
-                    new NSRect(cellPoint.x() + BORDER + SPACE,
-                            cellPoint.y() + 33,
-                            cellSize.width() - BORDER - SPACE,
-                            cellSize.height()));
+																   tinyFont),
+											new NSRect(cellPoint.x() + BORDER + SPACE,
+													   cellPoint.y() + 33,
+													   cellSize.width() - BORDER - SPACE,
+													   cellSize.height()));
         }
     }
 }

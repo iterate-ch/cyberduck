@@ -458,7 +458,7 @@ public abstract class Path {
 		return false;
 	}
 
-	public String toString() {
-		return this.getAbsolute();
-	}
+//@todo	public String toString() {
+//		return this.getAbsolute();
+//	}
 }

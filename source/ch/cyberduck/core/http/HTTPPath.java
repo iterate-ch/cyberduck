@@ -157,10 +157,12 @@ public class HTTPPath extends Path {
 	}
 
 	public List getChilds(int kind) {
+		List childs = new ArrayList();
 		try {
 			switch (kind) {
 				case Queue.KIND_DOWNLOAD:
-					return this.getDownloadQueue();
+					childs = this.getDownloadQueue();
+					break;
 				default:
 					throw new IllegalArgumentException("Upload not supported");
 			}
@@ -168,7 +170,7 @@ public class HTTPPath extends Path {
 		catch (IOException e) {
 			session.log(e.getMessage(), Message.ERROR);
 		}
-		return null;
+		return childs;
 	}
 
 	private List getDownloadQueue() throws IOException {
