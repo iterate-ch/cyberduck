@@ -167,8 +167,8 @@ public class CDInfoController extends CDWindowController {
 
         this.otherr.setTarget(this);
         this.otherr.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
-        this.otherx.setTarget(this);
-        this.otherx.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
+        this.otherw.setTarget(this);
+        this.otherw.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
         this.otherx.setTarget(this);
         this.otherx.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
 	}

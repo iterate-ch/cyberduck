@@ -52,11 +52,11 @@
       <value>
         <option name="BRANCH" value="1.21" />
         <option name="DATE" value="" />
-        <option name="USE_BRANCH" value="true" />
+        <option name="USE_BRANCH" value="false" />
         <option name="USE_DATE" value="false" />
       </value>
     </option>
-    <option name="SHOW_OUTPUT" value="false" />
+    <option name="SHOW_OUTPUT" value="true" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="UPDATE_GROUP_BY_PACKAGES" value="false" />
     <option name="ADD_WATCH_INDEX" value="0" />
@@ -112,73 +112,31 @@
     <option name="HIDE_WARNINGS" value="false" />
   </component>
   <component name="FileEditorManager" split-orientation="vertical" split-proportion="0.5">
-    <first-group selected-file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDSyncQueueValidatorController.java">
-      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Validator.java" pinned="false">
+    <first-group selected-file="file://$PROJECT_DIR$/Cyberduck.iws">
+      <entry file="file://$PROJECT_DIR$/Changelog.txt" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="25" column="17" selection-start="840" selection-end="840" vertical-scroll-proportion="1.0526316">
+          <state line="13" column="3" selection-start="483" selection-end="483" vertical-scroll-proportion="0.28467155">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/ValidatorFactory.java" pinned="false">
+      <entry file="file://$PROJECT_DIR$/cyberduck.iml" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="28" column="22" selection-start="909" selection-end="909" vertical-scroll-proportion="0.78518516">
+          <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBookmarkCell.java" pinned="false">
+      <entry file="file://$PROJECT_DIR$/Cyberduck.ipr" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="29" column="13" selection-start="981" selection-end="981" vertical-scroll-proportion="0.7074074">
+          <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
             <folding />
           </state>
         </provider>
       </entry>
-      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDController.java" pinned="false">
+      <entry file="file://$PROJECT_DIR$/Cyberduck.iws" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="31" column="22" selection-start="1107" selection-end="1107" vertical-scroll-proportion="0.7185185">
-            <folding />
-          </state>
-        </provider>
-      </entry>
-      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDConnectionController.java" pinned="false">
-        <provider selected="true" editor-type-id="text-editor">
-          <state line="35" column="13" selection-start="1073" selection-end="1073" vertical-scroll-proportion="0.7185185">
-            <folding />
-          </state>
-        </provider>
-      </entry>
-      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDTableCell.java" pinned="false">
-        <provider selected="true" editor-type-id="text-editor">
-          <state line="29" column="13" selection-start="1044" selection-end="1044" vertical-scroll-proportion="0.65925926">
-            <folding />
-          </state>
-        </provider>
-      </entry>
-      <entry file="file://$PROJECT_DIR$/source/com/sshtools/ext/bouncycastle/cipher/Twofish128Cbc.java" pinned="false">
-        <provider selected="true" editor-type-id="text-editor">
-          <state line="24" column="13" selection-start="1242" selection-end="1242" vertical-scroll-proportion="0.12631579">
-            <folding />
-          </state>
-        </provider>
-      </entry>
-      <entry file="file://$PROJECT_DIR$/source/com/sshtools/ext/bouncycastle/cipher/CipherEngine.java" pinned="false">
-        <provider selected="true" editor-type-id="text-editor">
-          <state line="26" column="17" selection-start="1312" selection-end="1312" vertical-scroll-proportion="0.22222222">
-            <folding />
-          </state>
-        </provider>
-      </entry>
-      <entry file="file://$PROJECT_DIR$/source/com/sshtools/ext/bouncycastle/cipher/CAST5Engine.java" pinned="false">
-        <provider selected="true" editor-type-id="text-editor">
-          <state line="43" column="24" selection-start="2579" selection-end="2579" vertical-scroll-proportion="0.9777778">
-            <folding />
-          </state>
-        </provider>
-      </entry>
-      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDSyncQueueValidatorController.java" pinned="false">
-        <provider selected="true" editor-type-id="text-editor">
-          <state line="221" column="57" selection-start="6589" selection-end="6589" vertical-scroll-proportion="0.37777779">
+          <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
             <folding />
           </state>
         </provider>
@@ -199,36 +157,17 @@
   <component name="J2EEProjectPane" />
   <component name="NamedScopeManager" />
   <component name="PackagesPane">
-    <expanded_node url="" module="Cyberduck" type="module" />
+    <expanded_node url="" module="cyberduck" type="module" />
   </component>
   <component name="ProjectPane">
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/util" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/transport/cipher" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/subsystem" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/transport" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core/ftp" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/transport/kex" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/ext" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/transport/compression" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/ext/jzlib" module="Cyberduck" type="directory" />
-    <expanded_node url="" module="Cyberduck" type="module" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/j2ssh" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/configuration" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/transport/hmac" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/session" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/ui" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/ext/bouncycastle" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/odb" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/ext/bouncycastle/cipher" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core/sftp" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$" module="cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core" module="cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source" module="cyberduck" type="directory" />
+    <expanded_node url="" module="cyberduck" type="module" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck" module="cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/ui" module="cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa" module="cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch" module="cyberduck" type="directory" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" splitterProportion="0.5">
@@ -253,13 +192,6 @@
   </component>
   <component name="RunManager">
     <activeType name="Remote" />
-    <configuration selected="false" default="true" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <module name="" />
-    </configuration>
     <configuration selected="false" default="true" type="Applet" factoryName="Applet">
       <module name="" />
       <option name="MAIN_CLASS_NAME" />
@@ -269,6 +201,13 @@
       <option name="HEIGHT" value="300" />
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <option name="VM_PARAMETERS" />
+    </configuration>
+    <configuration selected="false" default="true" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <module name="" />
     </configuration>
     <configuration selected="false" default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
@@ -344,7 +283,7 @@
     <option name="AUTO_ADD_FILES" value="0" />
     <option name="AUTO_DEL_FILES" value="0" />
   </component>
-  <component name="Talios.JiraConfigurationComponent">
+  <component name="Talios.JiraConfigurationComponent" enableIssueTracking="false" autoRefresh="false" useExternalBrowser="false" refreshTimeout="60" annotateissues="false">
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -360,29 +299,30 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="192" y="143" width="1024" height="704" extended-state="0" />
+    <frame x="23" y="36" width="989" height="746" extended-state="6" />
     <editor active="false" />
     <layout>
+      <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33031675" order="8" />
+      <window_info id="Code Outline" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="-1" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="7" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.3319672" order="0" />
-      <window_info id="Find" active="true" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.31228667" order="1" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33053893" order="8" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.35600424" order="0" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.47285068" order="1" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.24433249" order="1" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33031675" order="8" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
-      <window_info id="Sequence" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
+      <window_info id="CVS File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32095808" order="4" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.4" order="0" />
-      <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="0" />
       <window_info id="EJB" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="3" />
       <window_info id="Profile" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
+      <window_info id="Sequence" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="5" />
-      <window_info id="CVS File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
     </layout>
   </component>
   <component name="VCS.FileViewConfiguration">
@@ -453,155 +393,107 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/source/com/sshtools/ext/jzlib/ZLibCompression.java">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDConnectionController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="110" column="13" selection-start="3807" selection-end="3807" vertical-scroll-proportion="0.6757322">
+        <state line="117" column="0" selection-start="4532" selection-end="4560" vertical-scroll-proportion="0.19029851">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/transport/publickey/SshKeyPairFactory.java">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBrowserController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="145" column="0" selection-start="4077" selection-end="4077" vertical-scroll-proportion="0.46532845">
-          <folding>
-            <marker date="1110921491000" expanded="false" signature="2023:2031" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="2654:2671" placeholder="methodName" />
-            <marker date="1110921491000" expanded="false" signature="2758:2770" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="3075:3091" placeholder="algorithm" />
-            <marker date="1110921491000" expanded="false" signature="3331:3345" placeholder="encoded" />
-            <marker date="1110921491000" expanded="false" signature="4132:4146" placeholder="encoded" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/transport/publickey/InvalidSshKeyException.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="11" selection-start="1393" selection-end="1393" vertical-scroll-proportion="0.50364965">
-          <folding>
-            <marker date="1103322937000" expanded="false" signature="1416:1426" placeholder="msg" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/transport/AbstractKnownHostsKeyVerification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="90" column="12" selection-start="2783" selection-end="2783" vertical-scroll-proportion="0.10412574">
-          <folding>
-            <marker date="1110921491000" expanded="false" signature="2408:2425" placeholder="knownhosts" />
-            <marker date="1110921491000" expanded="false" signature="3299:3307" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="3580:3588" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="3684:3692" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="5890:5998" placeholder="host, allowedHostKey, actualHostKey" />
-            <marker date="1110921491000" expanded="false" signature="6415:6444" placeholder="host, key" />
-            <marker date="1110921491000" expanded="false" signature="6865:6909" placeholder="host, pk, always" />
-            <marker date="1110921491000" expanded="false" signature="7893:7904" placeholder="host" />
-            <marker date="1110921491000" expanded="false" signature="8030:8038" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="8110:8118" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="8808:8836" placeholder="host, pk" />
-            <marker date="1110921491000" expanded="false" signature="8967:8999" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="9038:9042" placeholder="°°" />
-            <marker date="1110921491000" expanded="false" signature="9199:9207" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="9471:9479" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="9760:9789" placeholder="names, pk" />
-            <marker date="1110921491000" expanded="false" signature="10412:10441" placeholder="host, key" />
-            <marker date="1110921491000" expanded="false" signature="10707:10737" placeholder="names, algorithm" />
-            <marker date="1110921491000" expanded="false" signature="10794:10799" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="10835:10849" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="10921:10950" placeholder="host, key" />
-            <marker date="1110921491000" expanded="false" signature="11052:11057" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="12389:12400" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="12431:12436" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="12517:12528" placeholder="»«" />
-            <marker date="1110921491000" expanded="false" signature="12563:12577" placeholder="»«" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/ftp/FTPPath.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="13" selection-start="1321" selection-end="1321" vertical-scroll-proportion="0.74864376">
-          <folding>
-            <element signature="imports" expanded="true" />
-            <marker date="1110048788000" expanded="false" signature="1423:1429" placeholder="°" />
-            <marker date="1110048788000" expanded="false" signature="1481:1487" placeholder="°" />
-            <marker date="1110048788000" expanded="false" signature="1537:1543" placeholder="°" />
-            <marker date="1110048788000" expanded="false" signature="1792:1804" placeholder="»«" />
-            <marker date="1110048788000" expanded="false" signature="1898:1910" placeholder="»«" />
-            <marker date="1110048788000" expanded="false" signature="2003:2015" placeholder="»«" />
-            <marker date="1110048788000" expanded="false" signature="2126:2138" placeholder="»«" />
-            <marker date="1110048788000" expanded="false" signature="2249:2261" placeholder="»«" />
-            <marker date="1110048788000" expanded="false" signature="7954:7960" placeholder="»«" />
-            <marker date="1110048788000" expanded="false" signature="9522:9528" placeholder="»«" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Validator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="17" selection-start="840" selection-end="840" vertical-scroll-proportion="1.0526316">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/ValidatorFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="22" selection-start="909" selection-end="909" vertical-scroll-proportion="0.78518516">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBookmarkCell.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="13" selection-start="981" selection-end="981" vertical-scroll-proportion="0.7074074">
+        <state line="373" column="23" selection-start="13006" selection-end="13017" vertical-scroll-proportion="0.1380597">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="22" selection-start="1107" selection-end="1107" vertical-scroll-proportion="0.7185185">
+        <state line="27" column="22" selection-start="963" selection-end="963" vertical-scroll-proportion="0.36630037">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDConnectionController.java">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDMainController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="13" selection-start="1073" selection-end="1073" vertical-scroll-proportion="0.7185185">
+        <state line="597" column="0" selection-start="21747" selection-end="21747" vertical-scroll-proportion="0.17049576">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDTableCell.java">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBookmarkController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="13" selection-start="1044" selection-end="1044" vertical-scroll-proportion="0.65925926">
+        <state line="31" column="50" selection-start="1039" selection-end="1039" vertical-scroll-proportion="0.36275697">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/com/sshtools/ext/bouncycastle/cipher/Twofish128Cbc.java">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDWindowController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="13" selection-start="1242" selection-end="1242" vertical-scroll-proportion="0.12631579">
+        <state line="50" column="0" selection-start="1716" selection-end="1716" vertical-scroll-proportion="0.286578">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/com/sshtools/ext/bouncycastle/cipher/CipherEngine.java">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Cache.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="17" selection-start="1312" selection-end="1312" vertical-scroll-proportion="0.22222222">
+        <state line="26" column="13" selection-start="857" selection-end="857" vertical-scroll-proportion="0.5328597">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDTranscriptImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="60" column="19" selection-start="2247" selection-end="2247" vertical-scroll-proportion="0.6277372">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDValidatorController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="163" column="8" selection-start="5928" selection-end="5928" vertical-scroll-proportion="0.02189781">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDDownloadQueueValidatorController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="32" column="58" selection-start="1055" selection-end="1055" vertical-scroll-proportion="0.021015761">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDSyncQueueValidatorController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="221" column="57" selection-start="6589" selection-end="6589" vertical-scroll-proportion="0.37777779">
+        <state line="36" column="7" selection-start="1156" selection-end="1156" vertical-scroll-proportion="0.021015761">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/com/sshtools/ext/bouncycastle/cipher/CAST5Engine.java">
+    <entry file="file://$PROJECT_DIR$/cyberduck.iml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="24" selection-start="2579" selection-end="2579" vertical-scroll-proportion="0.9777778">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Changelog.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="3" selection-start="483" selection-end="483" vertical-scroll-proportion="0.28467155">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Cyberduck.ipr">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Cyberduck.iws">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
