@@ -11,6 +11,7 @@
                 downloadButtonClicked = id; 
                 editBookmarkButtonClicked = id; 
                 editButtonClicked = id; 
+                fileButtonClicked = id; 
                 folderButtonClicked = id; 
                 gotoButtonClicked = id; 
                 infoButtonClicked = id; 

@@ -9,37 +9,38 @@
 	<key>comment</key>
         <string>Changelog:
 2.4b1
-- [Feature] Synchronization of files
-- [Feature] Growl notification support (see http://growl.info)
-- [Feature] Support for Novell Netware file listings (FTP)
-- [Feature] Limit number of concurrent connections to a remote host 
-- [Feature] Apply permissions recursively (FTP)
 - [Feature] Norwegian Localization
+- [Feature] Synchronization of files
+- [Feature] Create & Edit new files on server
+- [Feature] Support for Novell Netware file listings (FTP)
+- [Feature] Growl notification support (see http://growl.info)
+- [Feature] Limit number of concurrent connections to a remote host 
+- [Feature] Select a file in the browser by typing its first character
+- [Feature] Move remote files with copy & paste
+- [Feature] Put remote files into the transfer queue with copy & paste
+- [Feature] Apply permissions recursively (FTP)
+- [Feature] Option to apply default permissions to transferred files in Preferences
+- [Feature] Option to preserve modification date on download in Preferences
 - [Feature] Transfer Queue with "Aqua" progress indicator
+- [Feature] Bookmarks of recently connected hosts are saved in ~/Library/Application Support/Cyberduck/History 
+- [Feature] Provide a proxy icon for the connection in the window title bar
+- [Feature] The proxy icon in the window title bar can then be dragged to the bookmark drawer or the Finder.
 - [Feature] Updated toolbar icons
+- [Feature] Display the number of files in the browser 
 - [Feature] Added BBedit Lite to the list of supported editors
 - [Feature] Added TextMate to the list of supported editors
-- [Feature] Move remote files with copy and paste
-- [Feature] Put remote files into the transfer queue with copy and paste
-- [Feature] Provide a proxy icon for the connection in the window title bar
-- [Feature] The proxy icon in the window title barcan then be dragged to the bookmark drawer or the Finder.
-- [Feature] Select a file in the browser by typing its first character
-- [Feature] Limit the number of concurrent connections to server
-- [Feature] Apply default permissions to transferred files
 - [Feature] Tooltip in browser shows absolute path
 - [Feature] Tooltip in queue shows detailed info
-- [Feature] Dialog for duplicated files lists all at once
-- [Bugfix] Bookmark drawer icon has no text-only equivalent
-- [Bugfix] Tabbing between browser and filter box
-- [Bugfix] Quick Connect Field has initial focus
+- [Feature] Dialog for duplicated files lists all at once instead of consecutively asking
 - [Feature] Filter field is now a standard search field
-- [Feature] Display the number of files in the browser 
-- [Feature] Bookmarks of recently connected hosts are saved in ~/Library/Application Support/Cyberduck/History 
-- [Bugfix] HTTP download broken
 - [Feature] Read bookmarks from "/Library/Application Support/Cyberduck/"
  instead of the individual user bookmarks file if available
 - [Feature] Check for running transfers on application quit
 - [Feature] Updated FTP core (FTP)
+- [Bugfix] Bookmark drawer icon has no text-only equivalent
+- [Bugfix] Tabbing between browser and filter box
+- [Bugfix] Quick Connect Field has initial focus
+- [Bugfix] HTTP download broken
         </string>
     </dict>
 </plist>
