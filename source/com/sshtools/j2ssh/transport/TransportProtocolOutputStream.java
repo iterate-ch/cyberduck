@@ -62,7 +62,6 @@ public class TransportProtocolOutputStream {
 	public TransportProtocolOutputStream(/*Socket socket,*/
 	    OutputStream out, TransportProtocolCommon transport,
 	    TransportProtocolAlgorithmSync algorithms) {
-		// try {
 		this.out = out;
 		this.transport = transport;
 		this.algorithms = algorithms;

@@ -216,7 +216,6 @@ public class FTPPath extends Path {
 						session.check();
 						session.log("Getting timestamp of "+this.getName(), Message.PROGRESS);
 						this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()));
-						session.log("Getting size of "+this.getName(), Message.PROGRESS);
 						if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
 							if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
 								session.FTP.setTransferType(FTPTransferType.ASCII);
@@ -234,6 +233,7 @@ public class FTPPath extends Path {
 						else {
 							throw new FTPException("Transfer type not set");
 						}
+						session.log("Getting size of "+this.getName(), Message.PROGRESS);
 						this.attributes.setSize(session.FTP.size(this.getAbsolute()));
 					}
 					catch(FTPException e) {
@@ -564,6 +564,7 @@ public class FTPPath extends Path {
 						}
 						catch(FTPException e) {
 							log.warn(e.getMessage());
+							this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
 						}
 					}
 				}

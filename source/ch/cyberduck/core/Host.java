@@ -203,7 +203,7 @@ public class Host {
 		else if(input.indexOf('/', begin) != -1) {
 			cut = input.indexOf('/', begin);
 			hostname = input.substring(begin, cut);
-			begin += hostname.length()+1;
+			begin += hostname.length();
 			path = input.substring(begin, input.length());
 		}
 		Host h = new Host(protocol,
