@@ -1,1 +1,74 @@
+/* General */
+"Error" = "Error";
+"OK" = "OK";
+"Cancel" = "Cancel";
+
+/* CDMainController - Main.nib */
+"There was a problem checking for an update. Please try again later." = "There was a problem checking for an update. Please try again later.";
+"No update" = "No update";
+"No newer version available." = "No newer version available.";
+"is up to date." = "is up to date.";
+"is out of date. The current version is" = "is out of date. The current version is";
+"Donate!" = "Donate!";
+
+/* CDConnectionController - Connection.nib */
+"FTP (File Transfer)" = "FTP (File Transfer)";
+"SFTP (SSH Secure File Transfer)" = "SFTP (SSH Secure File Transfer)";
+
+/* CDTransferController - Transfer.nib */
+"of" = "of";
+"Total" = "Total";
+"Complete" = "Complete";
+"Stop" = "Stop";
+"File exists" = "File exists";
+"Resume" = "Resume";
+"Overwrite" = "Overwrite";
+"Cancel transfer?" = "Cancel transfer?";
+"The file" = "The file";
+"alredy exists in" = "alredy exists in";
+"Closing this window will stop the file transfer" = "Closing this window will stop the file transfer";
+
+/* CDInfoController - Info.nib */
+"Permissions" = "Permissions";
+
+/* CDHostKeyController */
+"Unknown host key" = "Unknown host key";
+"Host key mismatch" = "Host key mismatch";
+"Could not open or read the host file" = "Could not open or read the host file";
+"Allow" = "Allow";
+"Deny" = "Deny";
+"Always" = "Always";
+"The host key supplied is" = "The host key supplied is";
+"The current allowed key for this host is" = "The current allowed key for this host is";
+"Do you want to allow the host access?" = "Do you want to allow the host access?";
+"The host is currently unknown to the system. The host key fingerprint is" = "The host is currently unknown to the system. The host key fingerprint is";
+"Invalid host key" = "Invalid host key";
+"Cannot continue without a valid host key." = "Cannot continue without a valid host key.";
+
+
+/* CDBrowserController - Browser.nib */
+/* Toolbar items */
 "Idle" = "Idle";
+"New Connection" = "New Connection";
+"Connect to host" = "Connect to host";
+"Refresh" = "Refresh";
+"Refresh directory listing" = "Refresh directory listing";
+"Download" = "Download";
+"Download file" = "Download file";
+"Upload" = "Upload";
+"Get Info" = "Get Info";
+"Show file attributes" = "Show file attributes";
+"Delete" = "Delete";
+"Delete file" = "Delete file";
+"New Folder" = "New Folder";
+"Create New Folder" = "Create New Folder";
+"Disconnect" = "Disconnect";
+
+"Close session?" = "Close session?";
+"Close" = "Close";
+
+"Delete" = "Delete";
+"The connection to the host" = "The connection to the host";
+"will be closed." = "will be closed.";
+
+"Really delete the following files? This cannot be undone." = "Really delete the following files? This cannot be undone.";
