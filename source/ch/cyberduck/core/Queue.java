@@ -151,11 +151,14 @@ public class Queue extends Observable implements Observer { //Thread {
 	public void update(Observable o, Object arg) {
 		if (arg instanceof Message) {
 			Message msg = (Message) arg;
-			if (msg.getTitle().equals(Message.PROGRESS)) {
+			if (msg.getTitle().equals(Message.DATA)) {
+				this.callObservers(arg);
+			}
+			else if (msg.getTitle().equals(Message.PROGRESS)) {
 				this.status = (String) msg.getContent();
 				this.callObservers(arg);
 			}
-			if (msg.getTitle().equals(Message.ERROR)) {
+			else if (msg.getTitle().equals(Message.ERROR)) {
 				this.error = " : "+(String) msg.getContent();
 				this.callObservers(arg);
 			}
