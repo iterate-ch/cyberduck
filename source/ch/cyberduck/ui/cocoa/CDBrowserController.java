@@ -45,6 +45,7 @@ public class CDBrowserController implements Observer {
     public void setBrowserTable(NSTableView browserTable) {
 		this.browserTable = browserTable;
 		this.browserTable.setTarget(this);
+//		this.browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
 		this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
 		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
 		this.browserTable.setDoubleAction(new NSSelector("browserTableViewDidClickTableRow", new Class[] {Object.class}));
@@ -95,7 +96,9 @@ public class CDBrowserController implements Observer {
 		this.favoritesTable = favoritesTable;
 		this.favoritesTable.setDataSource(this.favoritesModel = new CDFavoritesTableDataSource());
 		this.favoritesTable.setTarget(this);
-//		this.favoritesTable.tableColumnWithIdentifier("FAVORITE").setDataCell(new NSSegmentedCell());
+		this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
+//		this.favoritesTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
+		this.favoritesTable.tableColumnWithIdentifier("FAVORITE").setDataCell(new CDFavoriteCell());
 		this.favoritesTable.setDoubleAction(new NSSelector("favoritesTableViewDidClickTableRow", new Class[] {Object.class}));
     }
 

@@ -57,6 +57,11 @@ public abstract class Favorites {
      */
     public abstract void load();
 	
+	
+	public abstract void import(java.io.File file);
+	
+	public abstract void export(Host favorite, java.io.File);
+	
     public void addItem(Host h) {
 		log.debug("addItem:"+h);
 		this.data.put(h.getURL(), h);

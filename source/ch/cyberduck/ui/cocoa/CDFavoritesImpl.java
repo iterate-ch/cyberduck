@@ -53,6 +53,59 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
 		}
 		return instance;
     }
+	
+	public void import(java.io.File file) {
+		NSData plistData = new NSData(FAVORTIES_FILE);
+		Object propertyListFromXMLData = NSPropertyListSerialization.propertyListFromXMLData(plistData);
+		log.info("Successfully read Favorites: "+propertyListFromXMLData);
+
+	}
+	
+	public void export(Host favorite, java.io.File file) {
+		NSMutableData collection = new NSMutableData();
+		collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(this.getAsDictionary(favorite)));
+		
+		this.writeToFile(collection, file);
+	}
+	
+	private NSDictionary getAsDictionary(Host favorite) {
+		NSMutableDictionary element = new NSMutableDictionary();
+		element.setObjectForKey(favorite.getNickname(), Favorites.NICKNAME);
+		element.setObjectForKey(favorite.getHostname(), Favorites.HOSTNAME);
+		element.setObjectForKey(favorite.getPort()+"", Favorites.PORT);
+		element.setObjectForKey(favorite.getProtocol(), Favorites.PROTOCOL);
+		element.setObjectForKey(favorite.getLogin().getUsername(), Favorites.USERNAME);
+		element.setObjectForKey(favorite.getDefaultPath(), Favorites.PATH);
+		return element;
+	}
+	
+	private Host readFromFile(java.io.File file) {
+		NSData plistData = new NSData(f);
+		Object propertyListFromXMLData = NSPropertyListSerialization.propertyListFromXMLData(plistData);
+		log.info("Successfully read file: "+propertyListFromXMLData);
+		if(propertyListFromXMLData instanceof NSDictionary) {
+			NSDictionary a = (NSDictionary)propertyListFromXMLData;
+			Host host = new Host(
+						(String)a.objectForKey(Favorites.PROTOCOL), 
+						(String)a.objectForKey(Favorites.NICKNAME),
+						(String)a.objectForKey(Favorites.HOSTNAME), 
+						Integer.parseInt((String)a.objectForKey(Favorites.PORT)),
+						new Login((String)a.objectForKey(Favorites.USERNAME)),
+						(String)a.objectForKey(Favorites.PATH)
+						);
+			return host;
+		}
+	}		
+	
+	private void writeToFile(NSData xml, java.io.File file) {
+		// data is written to a backup location, and then, assuming no errors occur, 
+  // the backup location is renamed to the specified name
+		if(collection.writeToURL(file.toURL(), true))
+			log.info("Favorites sucessfully saved in :"+file.toString());
+		else
+			log.error("Error saving Favorites in :"+file.toString());
+		
+	}
     	
     public void save() {
 		log.debug("save");
@@ -61,25 +114,13 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
 				NSMutableArray list = new NSMutableArray();
 				Iterator i = super.getIterator();
 				while(i.hasNext()) {
-					NSMutableDictionary element = new NSMutableDictionary();
-					Host next = (Host)i.next();
-					element.setObjectForKey(next.getNickname(), Favorites.NICKNAME);
-					element.setObjectForKey(next.getHostname(), Favorites.HOSTNAME);
-					element.setObjectForKey(next.getPort()+"", Favorites.PORT);
-					element.setObjectForKey(next.getProtocol(), Favorites.PROTOCOL);
-					element.setObjectForKey(next.getLogin().getUsername(), Favorites.USERNAME);
-					element.setObjectForKey(next.getDefaultPath(), Favorites.PATH);
-					list.addObject(element);
+					Host favorite = (Host)i.next();
+					list.addObject(this.getAsDictionary(favorite));
 				}
 				NSMutableData collection = new NSMutableData();
 				collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(list));
 				
-				// data is written to a backup location, and then, assuming no errors occur, 
-	// the backup location is renamed to the specified name
-				if(collection.writeToURL(FAVORTIES_FILE.toURL(), true))
-					log.info("Favorites sucessfully saved in :"+FAVORTIES_FILE.toString());
-				else
-					log.error("Error saving Favorites in :"+FAVORTIES_FILE.toString());
+				this.writeToFile(collection, FAVORTIES_FILE);
 			}
 			catch(java.net.MalformedURLException e) {
 				log.error(e.getMessage());

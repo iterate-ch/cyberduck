@@ -40,9 +40,13 @@ public class CDFavoritesTableDataSource {//implements NSTableView.DataSource {
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 		String identifier = (String)tableColumn.identifier();
+		if(identifier.equals("ICON")) {
+			return NSImage.imageNamed("cyberduck-document.icns");
+		}
 		if(identifier.equals("FAVORITE")) {
 			Host h = (Host)favorites.values().toArray()[row];
-			return h.getNickname();
+			return h;
+//			return h.getNickname();
 		}
 		throw new IllegalArgumentException("Unknown identifier: "+identifier);
 	}
@@ -50,6 +54,48 @@ public class CDFavoritesTableDataSource {//implements NSTableView.DataSource {
 	public Host getEntry(int row) {
 		return (Host)favorites.values().toArray()[row];
     }
+	
+	
+	public int tableViewValidateDrop( NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+		log.debug("tableViewValidateDrop");
+		NSPasteboard pasteboard = info.draggingPasteboard();
+		NSArray formats = new NSArray(NSPasteboard.FilenamesPboardType);
+		NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
+		for(int i = 0; i < filesList.count(); i++) {
+			String file = (String)filesList.objectAtIndex(i);
+			log.debug(file);
+			if(!file.contains(".duck")) {
+				return NSDraggingInfo.DragOperationNone
+			}
+		}
+		tableView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+		return NSTableView.DropAbove;	  		
+	}
+	
+	/**
+		* Invoked by tableView when the mouse button is released over a table view that previously decided to allow a drop.
+     * @param info contains details on this dragging operation.
+     * @param row The proposed location is row and action is operation.
+     * The data source should
+     * incorporate the data from the dragging pasteboard at this time.
+     */
+    public boolean tableViewAcceptDrop( NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+		log.debug("tableViewAcceptDrop:"+row+","+operation);
+		// Get the drag-n-drop pasteboard
+		NSPasteboard pasteboard = info.draggingPasteboard();
+		// What type of data are we going to allow to be dragged?  The pasteboard might contain different formats
+		NSArray formats = new NSArray(NSPasteboard.FilenamesPboardType);
+		
+		// find the best match of the types we'll accept and what's actually on the pasteboard
+  // In the file format type that we're working with, get all data on the pasteboard
+		NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
+		for(int i = 0; i < filesList.count(); i++) {
+			log.debug(filesList.objectAtIndex(i));
+			
+		}
+		return true;
+    }
+    
 	
 	// ----------------------------------------------------------
  // Drag methods
@@ -77,7 +123,7 @@ public class CDFavoritesTableDataSource {//implements NSTableView.DataSource {
 			NSMutableArray types = new NSMutableArray();
 			for(int i = 0; i < rows.count(); i++) {
 				promisedDragFavorites[i] = (Host)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue());
-				types.addObject("cyck");
+				types.addObject("duck");
 			}
 			NSEvent event = NSApplication.sharedApplication().currentEvent();
 			NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
@@ -93,25 +139,7 @@ public class CDFavoritesTableDataSource {//implements NSTableView.DataSource {
 		if(! (NSDraggingInfo.DragOperationNone == operation)) {
 			if(promisedDragFavorites != null) {
 				for(int i = 0; i < promisedDragFavorites.length; i++) {
-					try {
-						NSMutableDictionary element = new NSMutableDictionary();
-						element.setObjectForKey(promisedDragFavorites[i].getNickname(), Favorites.NICKNAME);
-						element.setObjectForKey(promisedDragFavorites[i].getHostname(), Favorites.HOSTNAME);
-						element.setObjectForKey(promisedDragFavorites[i].getPort()+"", Favorites.PORT);
-						element.setObjectForKey(promisedDragFavorites[i].getProtocol(), Favorites.PROTOCOL);
-						element.setObjectForKey(promisedDragFavorites[i].getLogin().getUsername(), Favorites.USERNAME);
-						element.setObjectForKey(promisedDragFavorites[i].getDefaultPath(), Favorites.PATH);
-						
-						NSMutableData collection = new NSMutableData();
-						collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(element));
-						if(collection.writeToURL(promisedDragFavoritesFiles[i].toURL(), true))
-							log.info("Favorite sucessfully saved to :"+promisedDragFavoritesFiles[i].toString());
-						else
-							log.error("Error saving Favorite to :"+promisedDragFavoritesFiles[i].toString());
-					}
-					catch(java.net.MalformedURLException e) {
-						log.error(e.getMessage());
-					}
+					
 				}
 				promisedDragFavorites = null;
 				promisedDragFavoritesFiles = null;
@@ -142,8 +170,8 @@ public class CDFavoritesTableDataSource {//implements NSTableView.DataSource {
 		log.debug("namesOfPromisedFilesDroppedAtDestination:"+dropDestination);
 		NSMutableArray promisedDragNames = new NSMutableArray();
 		for(int i = 0; i < promisedDragFavorites.length; i++) {
-			promisedDragFavoritesFiles[i] = new java.io.File(dropDestination.getPath(), promisedDragFavorites[i].getNickname());
-			promisedDragNames.addObject(promisedDragFavorites[i].getNickname());
+			promisedDragFavoritesFiles[i] = new java.io.File(dropDestination.getPath(), promisedDragFavorites[i].getNickname()+".duck");
+			promisedDragNames.addObject(promisedDragFavorites[i].getNickname()+".duck");
 		}
 		return promisedDragNames;
     }
