@@ -309,7 +309,7 @@ public class CDPreferencesController {
 		this.publickeyCombobox.removeAllItems();
 		this.publickeyCombobox.addItemsWithTitles(
 		    new NSArray(new String[]{
-			    "Default",
+			    NSBundle.localizedString("Default", ""),
 			    SSH_DSS,
 			    SSH_RSA
 		    }));
@@ -341,7 +341,7 @@ public class CDPreferencesController {
 		this.csEncryptionCombobox.removeAllItems();
 		this.csEncryptionCombobox.addItemsWithTitles(
 		    new NSArray(new String[]{
-			    "Default",
+			    NSBundle.localizedString("Default", ""),
 			    des_cbc,
 			    blowfish_cbc,
 			    twofish256_cbc,
@@ -369,7 +369,7 @@ public class CDPreferencesController {
 		this.scEncryptionCombobox.removeAllItems();
 		this.scEncryptionCombobox.addItemsWithTitles(
 		    new NSArray(new String[]{
-			    "Default",
+			    NSBundle.localizedString("Default", ""),
 			    des_cbc,
 			    blowfish_cbc,
 			    twofish256_cbc,
@@ -404,7 +404,7 @@ public class CDPreferencesController {
 		this.scAuthenticationCombobox.removeAllItems();
 		this.scAuthenticationCombobox.addItemsWithTitles(
 		    new NSArray(new String[]{
-			    "Default",
+			    NSBundle.localizedString("Default", ""),
 			    hmac_sha1,
 			    hmac_sha1_96,
 			    hmac_md5,
@@ -428,7 +428,7 @@ public class CDPreferencesController {
 		this.csAuthenticationCombobox.removeAllItems();
 		this.csAuthenticationCombobox.addItemsWithTitles(
 		    new NSArray(new String[]{
-			    "Default",
+			    NSBundle.localizedString("Default", ""),
 			    hmac_sha1,
 			    hmac_sha1_96,
 			    hmac_md5,

@@ -77,7 +77,6 @@ public class CDPreferencesImpl extends Preferences {
 
 	public void setDefaults() {
 		super.setDefaults();
-		this.setProperty("http.agent", "Cyberduck/" + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 	}
 
 	/**

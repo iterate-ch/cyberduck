@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import java.util.Hashtable;
 
+import com.apple.cocoa.foundation.NSBundle;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -128,17 +130,18 @@ public abstract class Preferences {
 		defaults.put("ftp.sendExtendedListCommand", "true");
 
 		defaults.put("http.agent", "Cyberduck/2.1");
+		defaults.put("http.agent", "Cyberduck/" + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		defaults.put("http.acceptheader", "*/*");
 
 		defaults.put("ssh.knownhosts", System.getProperty("user.home") + "/.ssh/known_hosts");
 
-		defaults.put("ssh.CSEncryption", "Default"); //client -> server encryption cipher
-		defaults.put("ssh.SCEncryption", "Default"); //server -> client encryption cipher
+		defaults.put("ssh.CSEncryption", NSBundle.localizedString("Default", "")); //client -> server encryption cipher
+		defaults.put("ssh.SCEncryption", NSBundle.localizedString("Default", "")); //server -> client encryption cipher
 
-		defaults.put("ssh.CSAuthentication", "Default"); //client -> server message authentication
-		defaults.put("ssh.SCAuthentication", "Default"); //server -> client message authentication
+		defaults.put("ssh.CSAuthentication", NSBundle.localizedString("Default", "")); //client -> server message authentication
+		defaults.put("ssh.SCAuthentication", NSBundle.localizedString("Default", "")); //server -> client message authentication
 
-		defaults.put("ssh.publickey", "Default");
+		defaults.put("ssh.publickey", NSBundle.localizedString("Default", ""));
 
 		defaults.put("ssh.compression", "zlib");
 	}

@@ -208,7 +208,6 @@ public class CDQueueController implements Observer, Validator {
 						this.queueTable.reloadData();
 					}
 				}
-				
 			}
 //			else if (msg.getTitle().equals(Message.START)) {
 //				log.debug("************START***********");

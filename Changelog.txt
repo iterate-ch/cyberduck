@@ -4,6 +4,14 @@ http://cyberduck.ch/
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
 2.2b2
+- Caching folder listings
+- Auto-refresh the folder listing after uploading a file
+- Now sending LIST -a to list directories with FTP
+
+http://cyberduck.ch/download.php?Cyberduck-2.2beta3.dmg
+http://cyberduck.ch/download.php?cyberduck-src-2.2beta3.tar.gz
+
+2.2b2
 - Updated Japanese localization
 - Updated French localization
 - Updated Portuguese localization
