@@ -234,10 +234,11 @@ public abstract class Queue extends Observable {
 		
 		public void run() {
 			this.init();
-			this.validator.validate(queue);
+			this.validator.validate(this.queue);
 			if(!this.validator.isCanceled()) {
 				if(this.validator.getResult().size() > 0) {
 					this.jobs = this.validator.getResult();
+					this.queue.reset();
 					for(Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
 						((Path)iter.next()).status.reset();
 					}
@@ -282,6 +283,8 @@ public abstract class Queue extends Observable {
 		}
 	}
 
+	protected abstract void reset();
+	
 	public void cancel() {
 		this.worker.cancel();
 	}
@@ -335,7 +338,7 @@ public abstract class Queue extends Observable {
 	 * @return double current bytes/second
 	 */
 	public String getSpeedAsString() {
-		if(this.isRunning()) {
+		if(this.worker.isRunning() && this.worker.isInitialized()) {
 			if(this.getSpeed() > -1) {
 				return Status.getSizeAsString(this.getSpeed())+"/sec";
 			}

@@ -411,7 +411,7 @@ public class SFTPPath extends Path {
 			if(this.attributes.isDirectory()) {
 				this.mkdir();
 			}
-//@todo			this.getParent().invalidate();
+			this.getParent().invalidate();
 			session.log("Idle", Message.STOP);
 		}
 		catch(SshException e) {

@@ -111,9 +111,31 @@ public class SyncQueue extends Queue {
 		this.addLocalChilds(childs, root);
 		return childs;
 	}
+	
+	protected void reset() {
+		this.size = 0;
+		for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
+			Path path = ((Path)iter.next());
+			if(path.getRemote().exists() && path.getLocal().exists()) {
+				if(path.getLocal().getTimestamp().before(path.attributes.getTimestamp())) {
+					this.size += path.getRemote().getSize();
+				}
+				if(path.getLocal().getTimestamp().after(path.attributes.getTimestamp())) {
+					this.size += path.getLocal().getSize();
+				}
+			}
+			else if(path.getRemote().exists()) {
+				this.size += path.getRemote().getSize();
+			}
+			else if(path.getLocal().exists()) {
+				this.size += path.getLocal().getSize();
+			}
+		}
+	}
 
 	public long getSize() {
-		if(this.worker.isRunning() && this.worker.isInitialized()) {
+		if(/*this.worker.isRunning() && */this.worker.isInitialized()) {
+			/*
 			long size = 0;
 			for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
 				Path path = ((Path)iter.next());
@@ -133,6 +155,7 @@ public class SyncQueue extends Queue {
 				}
 			}
 			this.size = size;
+			 */
 		}
 		return this.size; //cached value
 	}

@@ -316,6 +316,7 @@ public class CDQueueController extends CDController {
 		if(itemIdentifier.equals("Stop")) {
 			item.setLabel(NSBundle.localizedString("Stop", ""));
 			item.setPaletteLabel(NSBundle.localizedString("Stop", ""));
+			item.setToolTip(NSBundle.localizedString("Stop", ""));
 			item.setImage(NSImage.imageNamed("stop.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("stopButtonClicked", new Class[]{Object.class}));
@@ -324,6 +325,7 @@ public class CDQueueController extends CDController {
 		if(itemIdentifier.equals("Resume")) {
 			item.setLabel(NSBundle.localizedString("Resume", ""));
 			item.setPaletteLabel(NSBundle.localizedString("Resume", ""));
+			item.setToolTip(NSBundle.localizedString("Resume", ""));
 			item.setImage(NSImage.imageNamed("resume.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("resumeButtonClicked", new Class[]{Object.class}));
@@ -332,6 +334,7 @@ public class CDQueueController extends CDController {
 		if(itemIdentifier.equals("Reload")) {
 			item.setLabel(NSBundle.localizedString("Reload", ""));
 			item.setPaletteLabel(NSBundle.localizedString("Reload", ""));
+			item.setToolTip(NSBundle.localizedString("Reload", ""));
 			item.setImage(NSImage.imageNamed("reload.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("reloadButtonClicked", new Class[]{Object.class}));
@@ -340,6 +343,7 @@ public class CDQueueController extends CDController {
 		if(itemIdentifier.equals("Show")) {
 			item.setLabel(NSBundle.localizedString("Show", ""));
 			item.setPaletteLabel(NSBundle.localizedString("Show in Finder", ""));
+			item.setToolTip(NSBundle.localizedString("Show in Finder", ""));
 			item.setImage(NSImage.imageNamed("reveal.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("revealButtonClicked", new Class[]{Object.class}));
@@ -348,6 +352,7 @@ public class CDQueueController extends CDController {
 		if(itemIdentifier.equals("Open")) {
 			item.setLabel(NSBundle.localizedString("Open", ""));
 			item.setPaletteLabel(NSBundle.localizedString("Open", ""));
+			item.setToolTip(NSBundle.localizedString("Open", ""));
 			item.setImage(NSImage.imageNamed("open.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("openButtonClicked", new Class[]{Object.class}));
@@ -356,6 +361,7 @@ public class CDQueueController extends CDController {
 		if(itemIdentifier.equals("Remove")) {
 			item.setLabel(NSBundle.localizedString("Remove", ""));
 			item.setPaletteLabel(NSBundle.localizedString("Remove", ""));
+			item.setToolTip(NSBundle.localizedString("Remove", ""));
 			item.setImage(NSImage.imageNamed("clean.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("removeButtonClicked", new Class[]{Object.class}));
@@ -364,6 +370,7 @@ public class CDQueueController extends CDController {
 		if(itemIdentifier.equals("Clear")) {
 			item.setLabel(NSBundle.localizedString("Clear", ""));
 			item.setPaletteLabel(NSBundle.localizedString("Clear", ""));
+			item.setToolTip(NSBundle.localizedString("Clear", ""));
 			item.setImage(NSImage.imageNamed("cleanAll.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("clearButtonClicked", new Class[]{Object.class}));

@@ -47,13 +47,22 @@ public class DownloadQueue extends Queue {
 		return list;
 	}
 
+	protected void reset() {
+		this.size = 0;
+		for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
+			this.size += ((Path)iter.next()).getSize();
+		}
+	}
+		
 	public long getSize() {
 		if(/*this.worker.isRunning() && */this.worker.isInitialized()) {
+			/*
 			long size = 0;
 			for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
 				size += ((Path)iter.next()).getSize();
 			}
 			this.size = size;
+			 */
 		}
 		return this.size; //cached value
 	}

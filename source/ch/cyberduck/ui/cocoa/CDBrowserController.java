@@ -92,8 +92,16 @@ public class CDBrowserController extends CDController implements Observer {
 		}
 	}
 	
+	private static NSPoint cascadedWindowPoint;
+	
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
+		if(null == cascadedWindowPoint) {
+			cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(this.window().frame().origin());
+		}
+		else {
+			cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(cascadedWindowPoint);
+		}
 		this.window().setTitle("Cyberduck "+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		this.window().setInitialFirstResponder(quickConnectPopup);
 		// Drawer states

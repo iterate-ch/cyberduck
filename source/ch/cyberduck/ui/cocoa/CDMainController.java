@@ -600,16 +600,8 @@ public class CDMainController extends NSObject {
 		return false;
 	}
 
-	private static NSPoint cascadedWindowPoint;
-
 	public static CDBrowserController newDocument() {
 		CDBrowserController controller = new CDBrowserController();
-		if(null == cascadedWindowPoint) {
-//@todo			cascadedWindowPoint = controller.window().cascadeTopLeftFromPoint(NSPoint.fromString(Preferences.instance().getProperty("NSWindow Frame Browser")));
-		}
-		else {
-			cascadedWindowPoint = controller.window().cascadeTopLeftFromPoint(cascadedWindowPoint);
-		}
 		controller.window().makeKeyAndOrderFront(null);
 		return controller;
 	}
