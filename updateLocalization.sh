@@ -33,8 +33,6 @@ if [ $# = 1 ] ; then
     # modifications should not be made in the .nib file directly but in 
     # the .strings file instead.
     ./updateNibFromStrings.sh $language
-    # Update the localized .strings file with new strings added to to the base (English) version.
-    ./updateStringsFromNib.sh $language
 }
 else 
 {
