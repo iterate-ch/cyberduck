@@ -37,6 +37,8 @@ import ch.cyberduck.core.*;
 public class CDDownloadController extends NSObject {
     private static Logger log = Logger.getLogger(CDDownloadController.class);
 
+	private static NSMutableArray instances = new NSMutableArray();
+
     private NSWindow window;
 
     public void setWindow(NSWindow window) {
@@ -53,8 +55,6 @@ public class CDDownloadController extends NSObject {
     public void setUrlField(NSTextField urlField) {
         this.urlField = urlField;
     }
-
-    private static NSMutableArray instances = new NSMutableArray();
 
     public CDDownloadController() {
         instances.addObject(this);

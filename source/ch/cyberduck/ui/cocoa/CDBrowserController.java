@@ -40,6 +40,12 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 public class CDBrowserController extends NSObject implements Observer {
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
+	/**
+	* Keep references of controller objects because otherweise they get garbage collected
+     * if not referenced here.
+     */
+	private static NSMutableArray instances = new NSMutableArray();
+	
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
@@ -388,12 +394,6 @@ public class CDBrowserController extends NSObject implements Observer {
         this.statusLabel = statusLabel;
         this.statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
     }
-
-    /**
-     * Keep references of controller objects because otherweise they get garbage collected
-     * if not referenced here.
-     */
-    private static NSMutableArray instances = new NSMutableArray();
 
     private CDPathController pathController;
 

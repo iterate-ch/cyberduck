@@ -387,6 +387,12 @@ public abstract class Path {
 				throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
 		}
 		this.transfer(reader, writer);
+//		if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
+//			Permission perm = this.getLocal().getPermission();
+//			if(!perm.isUndefined()) {
+//				this.changePermissions(perm, false);
+//			}
+//		}
 	}
 
 	/**
@@ -404,6 +410,12 @@ public abstract class Path {
 				throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
 		}
 		this.transfer(i, o);
+//		if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
+//			Permission perm = this.getLocal().getPermission();
+//			if(!perm.isUndefined()) {
+//				this.changePermissions(perm, false);
+//			}
+//		}
 	}
 
 	/**
@@ -415,15 +427,13 @@ public abstract class Path {
 		log.debug("transfer(" + reader.toString() + ", " + writer.toString());
 		this.getSession().log("Downloading " + this.getName() + " (ASCII)", Message.PROGRESS);
 		this.transfer(reader, writer);
-		if(this.status.isComplete()) {
-			this.getLocal().getTemp().renameTo(this.getLocal());
-			if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-				Permission perm = this.attributes.getPermission();
-				if(!perm.isUndefined()) {
-					this.getLocal().setPermission(perm);
-				}
-			}
-		}
+		//this.getLocal().getTemp().renameTo(this.getLocal());
+//		if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
+//			Permission perm = this.attributes.getPermission();
+//			if(!perm.isUndefined()) {
+//				this.getLocal().setPermission(perm);
+//			}
+//		}
 	}
 
 	/**
@@ -435,15 +445,13 @@ public abstract class Path {
 		log.debug("transfer(" + i.toString() + ", " + o.toString());
 		this.getSession().log("Downloading " + this.getName(), Message.PROGRESS);
 		this.transfer(i, o);
-		if(this.status.isComplete()) {
-			this.getLocal().getTemp().renameTo(this.getLocal());
-			if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-				Permission perm = this.attributes.getPermission();
-				if(!perm.isUndefined()) {
-					this.getLocal().setPermission(perm);
-				}
-			}
-		}
+		//this.getLocal().getTemp().renameTo(this.getLocal());
+//		if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
+//			Permission perm = this.attributes.getPermission();
+//			if(!perm.isUndefined()) {
+//				this.getLocal().setPermission(perm);
+//			}
+//		}
 	}
 
 	/**
@@ -465,9 +473,10 @@ public abstract class Path {
 				complete = true;
 			}
 			else {
-				this.status.setCurrent(current += line.getBytes().length);
 				out.write(line, 0, line.length());
 				out.newLine();
+				out.flush();
+				this.status.setCurrent(current += line.getBytes().length);
 			}
 		}
 		this.status.setComplete(complete);
@@ -489,12 +498,13 @@ public abstract class Path {
 		// read from socket (bytes) & write to file in chunks
 		while (!complete && !status.isCanceled()) {
 			amount = in.read(chunk, 0, chunksize);
-			if (amount == -1) {
+			if (-1 == amount) {
 				complete = true;
 			}
 			else {
-				this.status.setCurrent(current += amount);
 				out.write(chunk, 0, amount);
+				out.flush();
+				this.status.setCurrent(current += amount);
 			}
 		}
 		this.status.setComplete(complete);

@@ -33,6 +33,8 @@ import ch.cyberduck.core.Status;
 public class CDInfoController extends NSObject {
     private static Logger log = Logger.getLogger(CDInfoController.class);
 
+	private static NSMutableArray instances = new NSMutableArray();
+
     private Path file;
 
     // ----------------------------------------------------------
@@ -120,8 +122,6 @@ public class CDInfoController extends NSObject {
     public void setIconImageView(NSImageView iconImageView) {
         this.iconImageView = iconImageView;
     }
-
-    private static NSMutableArray instances = new NSMutableArray();
 
     // ----------------------------------------------------------
     // Constructors

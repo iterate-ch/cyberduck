@@ -22,6 +22,8 @@ import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSNotification;
 
 import org.apache.log4j.Logger;
 
@@ -37,15 +39,23 @@ import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
+	private static NSMutableArray instances = new NSMutableArray();
+
     private String host;
     private SshPublicKey publicKey;
     private boolean done;
 
     private NSWindow parentWindow;
 
+	public void windowWillClose(NSNotification notification) {
+        instances.removeObject(this);
+    }
+	
     public CDHostKeyController(NSWindow parentWindow) throws InvalidHostFileException {
         super(Preferences.instance().getProperty("ssh.knownhosts"));
         this.parentWindow = parentWindow;
+        this.parentWindow.setDelegate(this);
+        instances.addObject(this);
     }
 
     public void onHostKeyMismatch(String host, SshPublicKey allowedHostKey, SshPublicKey actualHostKey) {

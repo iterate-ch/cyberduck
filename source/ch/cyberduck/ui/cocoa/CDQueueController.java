@@ -32,7 +32,9 @@ import ch.cyberduck.core.ftp.FTPPath;
 
 public class CDQueueController extends NSObject implements Observer {
     private static Logger log = Logger.getLogger(CDQueueController.class);
-
+	
+    private static NSMutableArray instances = new NSMutableArray();
+	
     private static CDQueueController instance;
 
     /**
@@ -41,8 +43,6 @@ public class CDQueueController extends NSObject implements Observer {
     private Observer callback;
 
     private NSToolbar toolbar;
-
-    private static NSMutableArray instances = new NSMutableArray();
 
     public static CDQueueController instance() {
         log.debug("instance");

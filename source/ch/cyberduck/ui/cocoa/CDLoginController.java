@@ -36,6 +36,8 @@ import ch.cyberduck.ui.LoginController;
 public class CDLoginController extends LoginController {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
+	private static NSMutableArray instances = new NSMutableArray();
+
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
@@ -74,8 +76,6 @@ public class CDLoginController extends LoginController {
     }
 
     private NSWindow parentWindow;
-
-    private static NSMutableArray instances = new NSMutableArray();
 
     public CDLoginController(NSWindow parentWindow) {
         instances.addObject(this);

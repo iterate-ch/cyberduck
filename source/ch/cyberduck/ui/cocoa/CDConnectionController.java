@@ -293,10 +293,10 @@ public class CDConnectionController extends NSObject implements Observer {
 
     public CDConnectionController(CDBrowserController browser) {
         this.browser = browser;
-        instances.addObject(this);
         if (false == NSApplication.loadNibNamed("Connection", this)) {
             log.fatal("Couldn't load Connection.nib");
         }
+        instances.addObject(this);
     }
 
     public void windowWillClose(NSNotification notification) {

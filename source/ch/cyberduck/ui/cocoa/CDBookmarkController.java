@@ -32,6 +32,8 @@ import ch.cyberduck.core.Session;
 public class CDBookmarkController extends NSObject {
     private static Logger log = Logger.getLogger(CDBookmarkController.class);
 
+	private static NSMutableArray instances = new NSMutableArray();
+
     private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)", "");
     private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
 
@@ -118,8 +120,6 @@ public class CDBookmarkController extends NSObject {
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
     }
-
-    private static NSMutableArray instances = new NSMutableArray();
 
     private NSTableView callback;
 

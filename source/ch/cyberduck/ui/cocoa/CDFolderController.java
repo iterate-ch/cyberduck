@@ -33,6 +33,8 @@ import ch.cyberduck.core.Path;
 public class CDFolderController extends NSObject {
     private static Logger log = Logger.getLogger(CDFolderController.class);
 
+	private static NSMutableArray instances = new NSMutableArray();
+
     private NSWindow window;
 
     public void setWindow(NSWindow window) {
@@ -49,8 +51,6 @@ public class CDFolderController extends NSObject {
     public NSWindow window() {
         return this.window;
     }
-
-    private static NSMutableArray instances = new NSMutableArray();
 
     public CDFolderController() {
         instances.addObject(this);

@@ -259,19 +259,18 @@ public class HTTPPath extends Path {
 			session.log(e.getMessage(), Message.ERROR);
 		}
 		finally {
+			session.log("Idle", Message.STOP);
 			try {
 				if (in != null) {
 					in.close();
 				}
 				if (out != null) {
-					out.flush();
 					out.close();
 				}
 			}
 			catch(IOException e) {
 				log.error(e.getMessage());
 			}
-			session.log("Idle", Message.STOP);
 		}
 	}
 

@@ -32,8 +32,11 @@ import org.apache.log4j.Logger;
 public class CDValidatorController extends Validator {
     private static Logger log = Logger.getLogger(CDValidatorController.class);
 	
+	private static NSMutableArray instances = new NSMutableArray();
+
 	public CDValidatorController(int kind, boolean resume) {
 		super(kind, resume);
+        instances.addObject(this);
 	}
 	
 	private NSImageView iconView; // IBOutlet
@@ -64,6 +67,10 @@ public class CDValidatorController extends Validator {
 	
     public NSWindow window() {
         return this.window;
+    }
+	
+	public void windowWillClose(NSNotification notification) {
+        instances.removeObject(this);
     }
 	
 	/*

@@ -345,6 +345,12 @@ public class SFTPPath extends Path {
 					throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
 			}
 			this.download(in, out);
+			if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
+				Permission perm = this.attributes.getPermission();
+				if(!perm.isUndefined()) {
+					this.getLocal().setPermission(perm);
+				}
+			}
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -353,19 +359,18 @@ public class SFTPPath extends Path {
 			this.session.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
 		finally {
+			session.log("Idle", Message.STOP);
 			try {
 				if (in != null) {
 					in.close();
 				}
 				if (out != null) {
-					out.flush();
 					out.close();
 				}
 			}
 			catch(IOException e) {
 				log.error(e.getMessage());
 			}
-			session.log("Idle", Message.STOP);
 		}
 	}
 	
@@ -394,7 +399,7 @@ public class SFTPPath extends Path {
 											   SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
 											   SftpSubsystemClient.OPEN_TRUNCATE); //File open flag, forces an existing file with the same name to be truncated to zero length when creating a file by specifying OPEN_CREATE.
 			}
-			this.changePermissions(this.getLocal().getPermission(), false);
+//			this.changePermissions(this.getLocal().getPermission(), false);
 			if(this.status.isResume()) {
 				this.status.setCurrent(p.getAttributes().getSize().intValue());
 			}
@@ -409,6 +414,12 @@ public class SFTPPath extends Path {
 					throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
 			}
 			this.upload(out, in);
+			if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
+				Permission perm = this.getLocal().getPermission();
+				if(!perm.isUndefined()) {
+					this.changePermissions(perm, false);
+				}
+			}
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -417,19 +428,18 @@ public class SFTPPath extends Path {
 			this.session.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
 		finally {
+			session.log("Idle", Message.STOP);
 			try {
 				if (in != null) {
 					in.close();
 				}
 				if (out != null) {
-					out.flush();
 					out.close();
 				}
 			}
 			catch(IOException e) {
 				log.error(e.getMessage());
 			}
-			session.log("Idle", Message.STOP);
 		}
 	}
 }

@@ -69,12 +69,12 @@ public class Editor extends NSObject {
 	public void open(Path f) {
 		this.file = f;
 		String parent = NSPathUtilities.temporaryDirectory();
-		String filename = file.getName();
+		String filename = f.getName();
 		String proposal = filename;
 		int no = 0;
 		int index = filename.lastIndexOf(".");
 		do {
-			this.file.setLocal(new Local(parent, proposal));
+			f.setLocal(new Local(parent, proposal));
 			no++;
 			if (index != -1) {
 				proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
@@ -83,9 +83,11 @@ public class Editor extends NSObject {
 				proposal = filename + "-" + no;
 			}
 		}
-		while (this.file.getLocal().exists());
-		this.file.download();
-		this.edit(file.getLocal().getAbsolute());
+		while (f.getLocal().exists());
+		f.download();
+		if(f.status.isComplete()) {
+			this.edit(f.getLocal().getAbsolute());
+		}
 	}
 	
 	private native void edit(String path);
