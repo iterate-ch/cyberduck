@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.AbstractValidator;
+import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Status;
@@ -64,8 +65,9 @@ public abstract class CDValidatorController extends AbstractValidator {
 		    this.fileTableView);
 	}
 
-	public boolean validate(List files, boolean resumeRequested) {
-		for(Iterator iter = files.iterator(); iter.hasNext() && !this.isCanceled();) {
+	public boolean validate(Queue queue, boolean resumeRequested) {
+		for(Iterator iter = queue.getChilds().iterator(); 
+				iter.hasNext() && !queue.isCanceled() && !this.isCanceled();) {
 			Path child = (Path)iter.next();
 			log.debug("Validating:"+child);
 			if(this.validate(child, resumeRequested)) {
@@ -384,7 +386,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 		}
 	}
 
-	private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
+	protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
 
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 		if(row < this.numberOfRowsInTableView(tableView)) {

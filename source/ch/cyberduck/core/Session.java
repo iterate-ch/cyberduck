@@ -91,13 +91,13 @@ public abstract class Session extends Observable {
 	public abstract void connect(String encoding) throws IOException;
 
 	public synchronized void connect() throws IOException {
-		this.connect(Preferences.instance().getProperty("browser.charset.encoding"));
+		this.connect(this.host.getEncoding());
 	}
 
 	/**
 	 * Connect to the remote host and mount the home directory
 	 */
-	public synchronized void mount(String encoding, boolean showHiddenFiles) {
+	public synchronized void mount(String encoding, Filter filter) {
 		this.log("Mounting "+host.getHostname()+"...", Message.PROGRESS);
 		try {
 			this.check();
@@ -111,15 +111,15 @@ public abstract class Session extends Observable {
 					home = PathFactory.createPath(this, host.getDefaultPath());
 					home.attributes.setType(Path.DIRECTORY_TYPE);
 				}
-				if(null == home.list(encoding, true, showHiddenFiles)) {
+				if(null == home.list(encoding, true, filter)) {
 					// the default path does not exist
 					home = workdir();
-					home.list(encoding, true, showHiddenFiles);
+					home.list(encoding, true, filter);
 				}
 			}
 			else {
 				home = workdir();
-				home.list(encoding, true, showHiddenFiles);
+				home.list(encoding, true, filter);
 			}
 			Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl Notification"),
 									host.getHostname());
@@ -165,6 +165,8 @@ public abstract class Session extends Observable {
 	 */
 	public abstract void check() throws IOException;
 
+	public abstract void interrupt();
+	
 	/**
 	 * @return boolean True if the session has not yet been closed.
 	 */

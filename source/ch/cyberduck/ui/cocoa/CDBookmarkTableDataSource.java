@@ -24,6 +24,7 @@ import com.apple.cocoa.foundation.*;
 import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
@@ -32,7 +33,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public class CDBookmarkTableDataSource extends CDTableDataSource {
+public class CDBookmarkTableDataSource extends Collection {
 	private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
 	private static final File BOOKMARKS_FILE_USER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Favorites.plist"));
@@ -66,8 +67,6 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	}
 
 	public void sort(NSTableColumn tableColumn, final boolean ascending) {
-		final int higher = ascending ? 1 : -1;
-		final int lower = ascending ? -1 : 1;
 		if(tableColumn.identifier().equals("BOOKMARK")) {
 			Collections.sort(this,
 							 new Comparator() {
@@ -85,8 +84,12 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	
 	private static NSImage documentIcon = NSImage.imageNamed("cyberduck-document.icns");
 
+	public int numberOfRowsInTableView(NSTableView tableView) {
+		return this.size();
+	}
+
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-		if(row < this.numberOfRowsInTableView(tableView)) {
+		if(row < this.size()) {
 			String identifier = (String)tableColumn.identifier();
 			if(identifier.equals("ICON")) {
 				return documentIcon;

@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
+import com.apple.cocoa.foundation.NSPathUtilities;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -153,6 +154,13 @@ public abstract class Path {
 	public abstract void reset();
 
 	private Path parent;
+	
+//	public Path getComponent(int level) {
+//		Path p = PathFactory.createPath(this.getSession(),
+//										(String)NSPathUtilities.pathComponents(this.getAbsolute()).objectAtIndex(level));
+//		p.attributes.setType(Path.DIRECTORY_TYPE);
+//		return p;
+//	}
 
 	/*
 	 * @return My parent directory
@@ -186,37 +194,33 @@ public abstract class Path {
 
 	public void invalidate() {
 		this.getSession().cache().remove(this.getAbsolute());
-	}
+    }
 
-	/**
-	 * @return null if there is an error, otherewise a list with 0-n <code>Path</code> references
-	 */
-	public List list() {
-		return this.list(false);
-	}
+    public List list(boolean refresh) {
+        return this.list(refresh, new NullFilter());
+    }
 
-	public List list(boolean refresh) {
+    public List list(boolean refresh, Filter filter) {
 		return this.list(Preferences.instance().getProperty("browser.charset.encoding"),
-		    refresh,
-		    Preferences.instance().getBoolean("browser.showHidden"));
+                refresh,
+                filter);
 	}
 
-	public List list(boolean refresh, boolean showHidden) {
-		return this.list(Preferences.instance().getProperty("browser.charset.encoding"), refresh, showHidden);
-	}
-
-	public List list(boolean refresh, boolean showHidden, boolean notifyObservers) {
-		return this.list(Preferences.instance().getProperty("browser.charset.encoding"), refresh, showHidden, notifyObservers);
+	public List list(boolean refresh, Filter filter, boolean notifyObservers) {
+		return this.list(Preferences.instance().getProperty("browser.charset.encoding"), refresh, filter, notifyObservers);
 	}
 
 	/**
 	 * Request a file listing from the server. Has to be a directory.
 	 */
-	public List list(String encoding, boolean refresh, boolean showHidden) {
-		return this.list(encoding, refresh, showHidden, true);
+	public List list(String encoding, boolean refresh, Filter filter) {
+		return this.list(encoding, refresh, filter, true);
 	}
 
-	public abstract List list(String encoding, boolean refresh, boolean showHidden, boolean notifyObservers);
+    /**
+     * @return null if there is an error, otherewise a list with 0-n <code>Path</code> references
+     */
+	public abstract List list(String encoding, boolean refresh, Filter filter, boolean notifyObservers);
 
 	/**
 	 * Remove this file from the remote host. Does not affect
@@ -244,9 +248,9 @@ public abstract class Path {
 	 */
 	public abstract void rename(String newFilename);
 
-//	public abstract void changeOwner(String owner, boolean recursive);
+	public abstract void changeOwner(String owner, boolean recursive);
 	
-//	public abstract void changeGroup(String group, boolean recursive);
+	public abstract void changeGroup(String group, boolean recursive);
 	
 	/**
 	 * @param recursive Include subdirectories and files
@@ -414,7 +418,8 @@ public abstract class Path {
 	}
 
 	public boolean exists() {
-		List listing = this.getParent().list(false, true, false);
+		List listing = this.getParent().list(Preferences.instance().getProperty("browser.charset.encoding"),
+										 false, new NullFilter(), false);
 		if(null == listing)
 			return false;
 		return listing.contains(this);

@@ -6,14 +6,16 @@
                 backButtonClicked = id; 
                 connectButtonClicked = id; 
                 copyURLButtonClicked = id; 
+                createFileButtonClicked = id; 
+                createFolderButtonClicked = id; 
                 deleteBookmarkButtonClicked = id; 
                 deleteFileButtonClicked = id; 
+                disconnectButtonClicked = id; 
                 downloadAsButtonClicked = id; 
                 downloadButtonClicked = id; 
+                duplicateFileButtonClicked = id; 
                 editBookmarkButtonClicked = id; 
                 editButtonClicked = id; 
-                fileButtonClicked = id; 
-                folderButtonClicked = id; 
                 gotoButtonClicked = id; 
                 infoButtonClicked = id; 
                 insideButtonClicked = id; 
@@ -35,6 +37,7 @@
                 donateMenuClicked = id; 
                 faqMenuClicked = id; 
                 feedbackMenuClicked = id; 
+                forumMenuClicked = id; 
                 helpMenuClicked = id; 
                 licenseMenuClicked = id; 
                 newBrowserMenuClicked = id; 

@@ -22,9 +22,14 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.NullFilter;
 
 /**
  * @version $Id$
@@ -36,20 +41,46 @@ public class CDGotoController extends CDController {
 
 	public void awakeFromNib() {
 		this.window().setReleasedWhenClosed(true);
+		this.folderCombobox.setStringValue(workdir.getAbsolute());
 	}
 
-	private NSTextField folderField; // IBOutlet
+	private NSComboBox folderCombobox; // IBOutlet
+	private Object folderComboDataSource;
 
-	public void setFolderField(NSTextField folderField) {
-		this.folderField = folderField;
+	public void setFolderCombobox(NSComboBox folderCombobox) {
+		this.folderCombobox = folderCombobox;
+		this.folderCombobox.setCompletes(true);
+		this.folderCombobox.setUsesDataSource(true);
+		this.folderCombobox.setDataSource(this.folderComboDataSource = new Object() {
+			private List directories = new ArrayList();
+			
+			{
+				for(Iterator i = workdir.list(false, new NullFilter(), false).iterator(); i.hasNext(); ) {
+					Path p = (Path)i.next();
+					if(p.attributes.isDirectory()) {
+						directories.add(p.getName());
+					}
+				}
+			}
+			
+			public int numberOfItemsInComboBox(NSComboBox combo) {
+				return directories.size();
+			}
+			
+			public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
+				if(row < this.numberOfItemsInComboBox(combo)) {
+					return directories.get(row);
+				}
+				return null;
+			}
+		});
 	}
 	
-	public void setCurrentString(String folder) {
-		this.folderField.setStringValue(folder);
-	}
+	private Path workdir;
 
-	public CDGotoController() {
+	public CDGotoController(Path workdir) {
 		instances.addObject(this);
+		this.workdir = workdir;
 		if(false == NSApplication.loadNibNamed("Goto", this)) {
 			log.fatal("Couldn't load Goto.nib");
 		}
@@ -60,8 +91,8 @@ public class CDGotoController extends CDController {
 	}
 
 	public void goButtonClicked(Object sender) {
-		if(folderField.stringValue().length() == 0) {
-			// folderField.setStringValue(this.file.getName());
+		if(folderCombobox.stringValue().length() == 0) {
+			// folderCombobox.setStringValue(this.file.getName());
 		}
 		else {
 			// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
@@ -74,12 +105,11 @@ public class CDGotoController extends CDController {
 	}
 
 	public void gotoSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-		log.debug("gotoSheetDidEnd");
 		sheet.orderOut(null);
 		switch(returncode) {
 			case (NSAlertPanel.DefaultReturn):
 				Path workdir = (Path)contextInfo;
-				this.gotoFolder(workdir, this.folderField.stringValue());
+				this.gotoFolder(workdir, this.folderCombobox.stringValue());
 				break;
 			case (NSAlertPanel.AlternateReturn):
 				break;
@@ -94,7 +124,7 @@ public class CDGotoController extends CDController {
 		else {
 			dir.setPath(filename);
 		}
-		dir.list();
+		dir.list(false);
 		return dir;
 	}
 }

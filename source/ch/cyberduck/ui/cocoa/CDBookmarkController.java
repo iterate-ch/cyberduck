@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 
@@ -53,6 +54,7 @@ public class CDBookmarkController extends CDController {
 
 	public void setProtocolPopup(NSPopUpButton protocolPopup) {
 		this.protocolPopup = protocolPopup;
+		this.protocolPopup.setEnabled(true);
 		this.protocolPopup.removeAllItems();
 		this.protocolPopup.addItemsWithTitles(new NSArray(new String[] {FTP_STRING, SFTP_STRING}));
 		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
@@ -63,19 +65,44 @@ public class CDBookmarkController extends CDController {
 		this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[]{Object.class}));
 	}
 
-	public void protocolSelectionChanged(Object sender) {
+	public void protocolSelectionChanged(NSPopUpButton sender) {
 		log.debug("protocolSelectionChanged:"+sender);
-		if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
+		if(sender.selectedItem().title().equals(SFTP_STRING)) {
 			this.host.setProtocol(Session.SFTP);
 			this.host.setPort(Session.SSH_PORT);
 		}
-		if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
+		if(sender.selectedItem().title().equals(FTP_STRING)) {
 			this.host.setProtocol(Session.FTP);
 			this.host.setPort(Session.FTP_PORT);
 		}
 		this.updateFields();
 	}
 
+	private NSPopUpButton encodingPopup; // IBOutlet
+	
+	public void setEncodingPopup(NSPopUpButton encodingPopup) {
+		this.encodingPopup = encodingPopup;
+		this.encodingPopup.setEnabled(true);
+		this.encodingPopup.removeAllItems();
+		java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
+		String[] items = new String[charsets.size()];
+		java.util.Iterator iterator = charsets.values().iterator();
+		int i = 0;
+		while(iterator.hasNext()) {
+			items[i] = ((java.nio.charset.Charset)iterator.next()).name();
+			i++;
+		}
+		this.encodingPopup.addItemsWithTitles(new NSArray(items));
+		this.encodingPopup.setTitle(this.host.getEncoding());
+		this.encodingPopup.setTarget(this);
+		this.encodingPopup.setAction(new NSSelector("encodingSelectionChanged", new Class[]{Object.class}));
+	}
+	
+	public void encodingSelectionChanged(NSPopUpButton sender) {
+		log.debug("encodingSelectionChanged:"+sender);
+		this.host.setEncoding(sender.titleOfSelectedItem());
+	}
+	
 	private NSTextField nicknameField; // IBOutlet
 
 	public void setNicknameField(NSTextField nicknameField) {
@@ -112,6 +139,40 @@ public class CDBookmarkController extends CDController {
 		this.usernameField = usernameField;
 	}
 
+	private NSPopUpButton connectmodePopup; //IBOutlet
+
+	private static final String CONNECTMODE_ACTIVE = NSBundle.localizedString("Active", "");
+	private static final String CONNECTMODE_PASSIVE = NSBundle.localizedString("Passive", "");
+
+	public void setConnectmodePopup(NSPopUpButton connectmodePopup) {
+		this.connectmodePopup = connectmodePopup;
+		this.connectmodePopup.setTarget(this);
+		this.connectmodePopup.setAction(new NSSelector("connectmodePopupClicked", new Class[]{NSPopUpButton.class}));
+		this.connectmodePopup.removeAllItems();
+		this.connectmodePopup.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
+		this.connectmodePopup.itemWithTitle(CONNECTMODE_PASSIVE).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+		this.connectmodePopup.itemWithTitle(CONNECTMODE_PASSIVE).setKeyEquivalent("p");
+		this.connectmodePopup.itemWithTitle(CONNECTMODE_ACTIVE).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+		this.connectmodePopup.itemWithTitle(CONNECTMODE_ACTIVE).setKeyEquivalent("a");
+		if(this.host.getProtocol().equals(Session.FTP)) {
+			if(host.getFTPConnectMode().equals(com.enterprisedt.net.ftp.FTPConnectMode.PASV)) {
+				this.connectmodePopup.setTitle(CONNECTMODE_PASSIVE);
+			}
+			if(host.getFTPConnectMode().equals(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE)) {
+				this.connectmodePopup.setTitle(CONNECTMODE_ACTIVE);
+			}
+		}
+	}
+	
+	public void connectmodePopupClicked(NSPopUpButton sender) {
+		if(sender.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
+			this.host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
+		}
+		if(sender.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
+			this.host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
+		}
+	}
+	
 	private NSTableView callback;
 
 	// ----------------------------------------------------------
@@ -180,7 +241,9 @@ public class CDBookmarkController extends CDController {
 			panel.setCanChooseDirectories(false);
 			panel.setCanChooseFiles(true);
 			panel.setAllowsMultipleSelection(false);
-			panel.beginSheetForDirectory(System.getProperty("user.home")+"/.ssh", null, null, this.window(), this, new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+			panel.beginSheetForDirectory(System.getProperty("user.home")+"/.ssh", null, null, this.window(), 
+										 this, 
+										 new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
 		}
 		else {
 			this.pkCheckbox.setState(NSCell.OffState);
@@ -253,6 +316,7 @@ public class CDBookmarkController extends CDController {
 		this.pathField.setStringValue(this.host.getDefaultPath());
 		this.usernameField.setStringValue(this.host.getCredentials().getUsername());
 		this.protocolPopup.setTitle(this.host.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
+		this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Session.FTP));
 		this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Session.SFTP));
 		if(this.host.getCredentials().usesPublicKeyAuthentication()) {
 			this.pkCheckbox.setState(NSCell.OnState);

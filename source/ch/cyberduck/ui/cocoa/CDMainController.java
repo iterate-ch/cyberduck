@@ -22,19 +22,14 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Rendezvous;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 public class CDMainController extends NSObject {
@@ -44,33 +39,33 @@ public class CDMainController extends NSObject {
 
 	public void awakeFromNib() {
 		NSNotificationCenter.defaultCenter().addObserver(this,
-		    new NSSelector("applicationShouldSleep", new Class[]{Object.class}),
-		    NSWorkspace.WorkspaceWillSleepNotification,
-		    null);
-
+														 new NSSelector("applicationShouldSleep", new Class[]{Object.class}),
+														 NSWorkspace.WorkspaceWillSleepNotification,
+														 null);
+		
 		NSNotificationCenter.defaultCenter().addObserver(this,
-		    new NSSelector("applicationShouldWake", new Class[]{Object.class}),
-		    NSWorkspace.WorkspaceDidWakeNotification,
-		    null);
-
-		this.threadWorkerTimer = new NSTimer(0.1, //seconds
-		    this, //target
-		    new NSSelector("handleThreadWorkerTimerEvent", new Class[]{NSTimer.class}),
-		    null, //userInfo
-		    true); //repeating
+														 new NSSelector("applicationShouldWake", new Class[]{Object.class}),
+														 NSWorkspace.WorkspaceDidWakeNotification,
+														 null);
+		
+		this.threadWorkerTimer = new NSTimer(0.05, //seconds
+											 this, //target
+											 new NSSelector("handleThreadWorkerTimerEvent", new Class[]{NSTimer.class}),
+											 null, //userInfo
+											 true); //repeating
 		NSRunLoop.currentRunLoop().addTimerForMode(this.threadWorkerTimer, NSRunLoop.DefaultRunLoopMode);
 	}
-
+	
 	// If we want the equivalent to SwingUtilities.invokeLater() for Cocoa, we have to fend for ourselves, it seems.
 	private NSTimer threadWorkerTimer;
-
+	
 	private void handleThreadWorkerTimerEvent(NSTimer t) {
 		Runnable item;
 		while((item = ThreadUtilities.instance().next()) != null) {
 			item.run();
 		}
 	}
-
+	
 	static {
 		BasicConfigurator.configure();
 		Logger.getRootLogger().setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
@@ -149,8 +144,10 @@ public class CDMainController extends NSObject {
 
 	private NSMenu bookmarkMenu;
 	private NSMenu rendezvousMenu;
+	private NSMenu historyMenu;
 	private Object bookmarkMenuDelegate;
 	private Object rendezvousMenuDelegate;
+	private Object historyMenuDelegate;
 	private Rendezvous rendezvous;
 
 	public void setBookmarkMenu(NSMenu bookmarkMenu) {
@@ -158,14 +155,17 @@ public class CDMainController extends NSObject {
 		this.bookmarkMenu = bookmarkMenu;
 		this.rendezvousMenu = new NSMenu();
 		this.rendezvousMenu.setAutoenablesItems(false);
+		this.historyMenu = new NSMenu();
+		this.historyMenu.setAutoenablesItems(false);
 		NSSelector setDelegateSelector =
 		    new NSSelector("setDelegate", new Class[]{Object.class});
 		if(setDelegateSelector.implementedByClass(NSMenu.class)) {
 			this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
-			this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate =
-			    new RendezvousMenuDelegate(this.rendezvous = Rendezvous.instance()));
+			this.historyMenu.setDelegate(this.historyMenuDelegate = new HistoryMenuDelegate());
+			this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate(this.rendezvous = Rendezvous.instance()));
 		}
-		this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle("Rendezvous"));
+		this.bookmarkMenu.setSubmenuForItem(historyMenu, this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("History", "")));
+		this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("Rendezvous", "")));
 	}
 
 	private class BookmarkMenuDelegate {
@@ -176,7 +176,8 @@ public class CDMainController extends NSObject {
 		}
 
 		public int numberOfItemsInMenu(NSMenu menu) {
-			return CDBookmarkTableDataSource.instance().size()+6; //index 0-3 are static menu items, 4 is sepeartor, 5 is Rendezvous with submenu, 6 is sepearator
+			return CDBookmarkTableDataSource.instance().size()+7; 
+			//index 0-3 are static menu items, 4 is sepeartor, 5 is Rendezvous with submenu, 6 is History submenu, 7 is sepearator
 		}
 
 		/**
@@ -190,10 +191,14 @@ public class CDMainController extends NSObject {
 		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
 			if(index == 4) {
 				item.setEnabled(true);
+				item.setImage(NSImage.imageNamed("history.tiff"));
+			}
+			if(index == 5) {
+				item.setEnabled(true);
 				item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
 			}
-			if(index > 5) {
-				Host h = (Host)CDBookmarkTableDataSource.instance().get(index-6);
+			if(index > 6) {
+				Host h = (Host)CDBookmarkTableDataSource.instance().get(index-7);
 				item.setTitle(h.getNickname());
 				item.setTarget(this);
                 item.setImage(NSImage.imageNamed("document16.tiff"));
@@ -210,6 +215,88 @@ public class CDMainController extends NSObject {
 		}
 	}
 
+	private static final File HISTORY_FOLDER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
+
+	private class HistoryMenuDelegate extends NSObject {
+
+        private File[] listFiles() {
+            return HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
+                public boolean accept(File dir, String name) {
+                    if(name.endsWith(".duck"))
+                        return true;
+                    return false;
+                }
+            });
+        }
+
+		public int numberOfItemsInMenu(NSMenu menu) {
+            File[] items = this.listFiles();
+            if(items.length > 0) {
+                return items.length+2;
+            }
+            return 1;
+		}
+
+		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
+            File[] items = this.listFiles();
+			if(items.length == 0) {
+				sender.setTitle(NSBundle.localizedString("No recently connected servers available", ""));
+				sender.setImage(null);
+				sender.setEnabled(false);
+				return !shouldCancel;
+			}
+			if(index == items.length) {
+				sender = new NSMenuItem().separatorItem();
+				sender.setTitle("");
+				sender.setImage(null);
+				sender.setTarget(this);
+				sender.setEnabled(false);
+				sender.setAction(null);
+				return !shouldCancel;
+			}
+			if(index == items.length+1) {
+				sender.setTitle(NSBundle.localizedString("Clear", ""));
+				sender.setImage(null);
+				sender.setTarget(this);
+				sender.setEnabled(true);
+				sender.setAction(new NSSelector("clearHistoryMenuClicked", new Class[]{NSMenuItem.class}));
+				return false;
+			}
+			Host h = CDBookmarkTableDataSource.instance().importBookmark(items[index]);
+			sender.setTitle(h.toString());
+			sender.setTarget(this);
+			sender.setEnabled(true);
+			sender.setImage(NSImage.imageNamed("document16.tiff"));
+			sender.setAction(new NSSelector("historyMenuClicked", new Class[]{NSMenuItem.class}));
+			return !shouldCancel;
+		}
+
+        public void clearHistoryMenuClicked(NSMenuItem sender) {
+            File[] items = HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
+                public boolean accept(File dir, String name) {
+                    if(name.endsWith(".duck"))
+                        return true;
+                    return false;
+                }
+            });
+            for(int i = 0; i < items.length; i++) {
+                items[i].delete();
+            }
+            historyMenu.update();
+        }
+
+		public void historyMenuClicked(NSMenuItem sender) {
+            File[] items = this.listFiles();
+            for(int i = 0; i < items.length; i++) {
+                Host h = CDBookmarkTableDataSource.instance().importBookmark(items[i]);
+                if(h.equals(sender.title())) {
+                    CDBrowserController controller = CDMainController.this.newDocument();
+                    controller.mount(h);
+                }
+            }
+		}
+	}
+	
 	private class RendezvousMenuDelegate extends NSObject implements Observer {
 		private Map items = new HashMap();
 
@@ -243,7 +330,6 @@ public class CDMainController extends NSObject {
 		}
 
 		public int numberOfItemsInMenu(NSMenu menu) {
-			//log.debug("numberOfItemsInMenu"+menu);
 			if(items.size() > 0) {
 				return items.size();
 			}
@@ -259,24 +345,22 @@ public class CDMainController extends NSObject {
 		 * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
 		 */
 		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-			//log.debug("menuUpdateItemAtIndex:"+index);
 			if(items.size() == 0) {
 				sender.setTitle(NSBundle.localizedString("No Rendezvous services available", ""));
 				sender.setEnabled(false);
-				return true;
+				return !shouldCancel;
 			}
-			else {
-				Host h = (Host)items.values().toArray()[index];
-				sender.setTitle(h.getNickname());
-				sender.setTarget(this);
-				sender.setEnabled(true);
-				sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
-				return true;
-			}
+            else {
+                Host h = (Host)items.values().toArray()[index];
+                sender.setTitle(h.getNickname());
+                sender.setTarget(this);
+                sender.setEnabled(true);
+                sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
+				return !shouldCancel;
+            }
 		}
 
 		public void rendezvousMenuClicked(NSMenuItem sender) {
-			//log.debug("rendezvousMenuClicked:" + sender);
 			CDBrowserController controller = CDMainController.this.newDocument();
 			controller.mount((Host)items.get(sender.title()));
 		}
@@ -613,7 +697,7 @@ public class CDMainController extends NSObject {
 		NSPasteboard.pasteboardWithName("QueuePBoard").setPropertyListForType(null, "QueuePBoardType");
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 		//stoppping worker thread
-		this.threadWorkerTimer.invalidate();
+		//this.threadWorkerTimer.invalidate();
 		//Terminating rendezvous discovery
 		this.rendezvous.quit();
 		//Writing version info

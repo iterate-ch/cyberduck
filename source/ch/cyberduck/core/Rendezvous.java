@@ -36,7 +36,7 @@ public class Rendezvous extends Observable implements ServiceListener {
 	private static Logger log = Logger.getLogger(Rendezvous.class);
 
 	private static final String[] serviceTypes = new String[]{
-		"_sftp._tcp.local.",
+//		"_sftp._tcp.local.",
 		"_ssh._tcp.local.",
 		"_ftp._tcp.local."
 	};

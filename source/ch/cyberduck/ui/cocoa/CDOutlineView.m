@@ -16,15 +16,15 @@
  *  dkocher@cyberduck.ch
  */
 
-#import "CDTableView.h"
+#import "CDOutlineView.h"
 
-@interface CDTableView (Private)
+@interface CDOutlineView (Private)
 - (NSTableColumn *)_typeAheadSelectionColumn;
 - (void)selectRow;
 - (void)selectRowWithTimer:(NSTimer *)sender;
 @end
 
-@implementation CDTableView
+@implementation CDOutlineView
 
 - (void)awakeFromNib
 {
@@ -42,6 +42,11 @@
 	[select_string release];
 	[select_timer release];
 	[super dealloc];
+}
+
+- (BOOL)shouldCollapseAutoExpandedItemsForDeposited:(BOOL)deposited
+{
+	return !deposited;
 }
 
 - (void)keyDown:(NSEvent *)event
@@ -91,10 +96,10 @@
 	int counter;
 	
 	NSString *compare = [select_string lowercaseString];
-	for (counter = 0; counter < [[self dataSource] numberOfRowsInTableView: self]; counter++) {
-		NSString *object = [[[self dataSource] tableView:self 
-							   objectValueForTableColumn:[self _typeAheadSelectionColumn] 
-													 row:counter] lowercaseString];
+	for (counter = 0; counter < [[self dataSource] outlineView:self numberOfChildrenOfItem: nil]; counter++) {
+		NSString *object = [[[self dataSource] outlineView:self 
+								 objectValueForTableColumn:[self _typeAheadSelectionColumn] 
+													byItem:nil] lowercaseString];
 		if (to_index < [object length] && to_index < [compare length] + 1) {
 			if (object && [[object substringToIndex:to_index] isEqualToString:[compare substringToIndex:to_index]])	{
 				char one = [compare characterAtIndex:to_index];

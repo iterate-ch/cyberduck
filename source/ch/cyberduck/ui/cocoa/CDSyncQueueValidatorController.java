@@ -19,13 +19,19 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.NSSize;
+import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSAttributedString;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SyncQueue;
 import ch.cyberduck.core.Validator;
@@ -68,6 +74,25 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		this.downloadRadioCell.setTarget(this);
 		this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
 
+		{
+			NSTableColumn c = new NSTableColumn();
+			c.setIdentifier("INCLUDE");
+			c.headerCell().setStringValue("");
+			c.setMinWidth(20f);
+			c.setWidth(20f);
+			c.setMaxWidth(20f);
+			c.setResizable(true);
+			c.setEditable(false);
+			NSButtonCell cell = new NSButtonCell();
+			cell.setControlSize(NSCell.SmallControlSize); 
+			cell.setButtonType(NSButtonCell.SwitchButton);
+			cell.setAllowsMixedState(false);
+			cell.setTarget(this);
+			c.setDataCell(cell);
+			c.dataCell().setAlignment(NSText.CenterTextAlignment);
+			this.fileTableView.addTableColumn(c);
+			this.fileTableView.moveColumnToColumn(this.fileTableView.numberOfColumns()-1, 0);
+		}
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("NEW");
@@ -200,9 +225,31 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	}
 
 	public void syncActionFired(NSButton sender) {
-		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
+//		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
+		for(Iterator i = this.workList.iterator(); i.hasNext(); ) {
+			Path p = (Path)i.next();
+			if(!p.isSkipped()) {
+				this.validatedList.add(p);
+			}
+		}
 		this.setCanceled(false);
 		this.windowController.endSheet();
+	}
+	
+	private NSPopUpButton timezonePopupButton;
+	
+	public void setTimezonePopupButton(NSPopUpButton timezonePopupButton) {
+		this.timezonePopupButton = timezonePopupButton;
+		this.timezonePopupButton.setTarget(this);
+		this.timezonePopupButton.setAction(new NSSelector("timezonePopupButtonClicked", new Class[]{NSPopUpButton.class}));
+		this.timezonePopupButton.removeAllItems();
+		this.timezonePopupButton.addItemsWithTitles(new NSArray(TimeZone.getAvailableIDs()));
+		this.timezonePopupButton.setTitle(TimeZone.getDefault().getID());
+	}
+	
+	public void timezonePopupButtonClicked(NSPopUpButton sender) {
+		Preferences.instance().setProperty("queue.sync.timezone", sender.titleOfSelectedItem());
+		this.fireDataChanged();
 	}
 	
 	// ----------------------------------------------------------
@@ -217,6 +264,16 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		}
 	}
 
+	public void tableViewSetObjectValueForLocation(NSTableView tableView, Object object, NSTableColumn tableColumn, int row) {
+		if(row < this.numberOfRowsInTableView(tableView)) {
+			String identifier = (String)tableColumn.identifier();
+			if(identifier.equals("INCLUDE")) {
+				Path p = (Path)this.workList.get(row);
+				p.setSkipped(((Integer)object).intValue() == NSCell.OffState);
+			}
+		}
+	}
+	
 	private static final NSImage ARROW_UP_ICON = NSImage.imageNamed("arrowUp16.tiff");
 	private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDown16.tiff");
 	private static final NSImage PLUS_ICON = NSImage.imageNamed("plus.tiff");
@@ -226,6 +283,11 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			String identifier = (String)tableColumn.identifier();
 			Path p = (Path)this.workList.get(row);
 			if(p != null) {
+				if(identifier.equals("INCLUDE")) {
+					if(p.isSkipped())
+						return new Integer(NSCell.OffState);
+					return new Integer(NSCell.OnState);
+				}
 				if(identifier.equals("TYPE")) {
 					if(p.getRemote().exists() && p.getLocal().exists()) {
 						if(p.getLocal().getTimestampAsCalendar().before(p.getRemote().attributes.getTimestampAsCalendar())) {
@@ -254,4 +316,123 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		}
 		return null;
 	}
+	
+	// ----------------------------------------------------------
+	// NSOutlineView.DataSource
+	// ----------------------------------------------------------
+	
+	/*
+	public boolean outlineViewShouldEditTableColumn(NSOutlineView outlineView, 
+													NSTableColumn tableColumn, Object item) {
+		return false;
+	}
+	
+	public int outlineViewNumberOfChildrenOfItem(NSOutlineView outlineView, Path item) {
+		if(null == item) {
+			item = this.queue.getRoot();
+		}
+		return this.queue.getChilds(item).size();
+	}
+				
+	public boolean outlineViewIsItemExpandable(NSOutlineView outlineView, Path item) {
+		if(null == item) {
+			item = this.queue.getRoot();
+		}
+		return item.attributes.isDirectory();
+	}
+	
+	public void outlineViewWillDisplayCell(NSOutlineView outlineView, Object cell, 
+										   NSTableColumn tableColumn, Path item) {
+		String identifier = (String)tableColumn.identifier();
+		if(identifier.equals("FILENAME")) {
+			NSImage icon;
+			if(item.attributes.isDirectory()) {
+				icon = FOLDER_ICON;
+			}
+			if(item.attributes.isFile()) {
+				icon = CDIconCache.instance().get(item.getExtension());
+			}
+			icon.setSize(new NSSize(16f, 16f));
+			((CDOutlineCell)cell).setIcon(icon);
+			((CDOutlineCell)cell).setAttributedStringValue(new NSAttributedString(item.getName(), 
+																				  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY));
+		}
+	}
+	
+	public Path outlineViewChildOfItem(NSOutlineView outlineView, int index, Path item) {
+		if(null == item) {
+			item = this.queue.getRoot();
+		}
+		return this.queue.getChilds(item).get(index);
+	}
+	
+	public Object outlineViewObjectValueForItem(NSOutlineView outlineView, NSTableColumn tableColumn, Path p) {
+		if(null != p) {
+			String identifier = (String)tableColumn.identifier();
+			if(identifier.equals("FILENAME")) {
+				return new NSAttributedString(p.getRemote().getName(),
+											  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+			}
+			if(identifier.equals("TYPEAHEAD")) {
+				return p.getRemote().getName();
+			}
+			if(identifier.equals("REMOTE")) {
+				if(p.getRemote().exists()) {
+					if(p.attributes.isFile()) {
+						return new NSAttributedString(Status.getSizeAsString(p.attributes.getSize())+", "+p.attributes.getTimestampAsShortString(),
+													  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+					}
+					if(p.attributes.isDirectory()) {
+						return new NSAttributedString(p.attributes.getTimestampAsShortString(),
+													  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+					}
+				}
+				return null;
+			}
+			if(identifier.equals("LOCAL")) {
+				if(p.getLocal().exists()) {
+					if(p.attributes.isFile()) {
+						return new NSAttributedString(Status.getSizeAsString(p.getLocal().getSize())+", "+p.getLocal().getTimestampAsShortString(),
+													  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+					}
+					if(p.attributes.isDirectory()) {
+						return new NSAttributedString(p.getLocal().getTimestampAsShortString(),
+													  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+					}
+				}
+				return null;
+			}
+			if(identifier.equals("INCLUDE")) {
+				if(p.isSkipped())
+					return new Integer(NSCell.OffState);
+				return new Integer(NSCell.OnState);
+			}
+			if(identifier.equals("TYPE")) {
+				if(p.getRemote().exists() && p.getLocal().exists()) {
+					if(p.getLocal().getTimestampAsCalendar().before(p.getRemote().attributes.getTimestampAsCalendar())) {
+						return ARROW_DOWN_ICON;
+					}
+					if(p.getLocal().getTimestampAsCalendar().after(p.getRemote().attributes.getTimestampAsCalendar())) {
+						return ARROW_UP_ICON;
+					}
+				}
+				if(p.getRemote().exists()) {
+					return ARROW_DOWN_ICON;
+				}
+				if(p.getLocal().exists()) {
+					return ARROW_UP_ICON;
+				}
+				throw new IllegalArgumentException("The file must exist either locally or on the server");
+			}
+			if(identifier.equals("NEW")) {
+				if(!(p.getRemote().exists() && p.getLocal().exists())) {
+					return PLUS_ICON;
+				}
+				return null;
+			}
+			throw new IllegalArgumentException("Unknown identifier: "+identifier);
+		}
+		return null;
+	}
+	 */
 }

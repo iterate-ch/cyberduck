@@ -1,7 +1,5 @@
-package ch.cyberduck.core;
-
 /*
- *  Copyright (c) 2004 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 Whitney Young. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,16 +16,11 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.List;
+#import <Cocoa/Cocoa.h>
 
-/**
- * @version $Id$
- */
-public interface Validator {
-
-	public boolean validate(Queue queue, boolean resumeRequested);
-
-	public List getValidated();
-
-	public boolean isCanceled();
+@interface CDOutlineView : NSOutlineView {
+	NSMutableString *select_string;
+	NSTimer *select_timer;
 }
+
+@end

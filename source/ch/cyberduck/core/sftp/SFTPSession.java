@@ -26,6 +26,7 @@ import com.sshtools.j2ssh.configuration.SshConnectionProperties;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import com.sshtools.j2ssh.transport.TransportProtocol;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
+import com.sshtools.j2ssh.transport.HostKeyVerification;
 
 import java.io.IOException;
 
@@ -84,6 +85,31 @@ public class SFTPSession extends Session {
 		}
 	}
 
+	public void interrupt() {
+		try {
+			if(null == this.SSH) {
+				return;
+			}
+			this.SSH.getActiveSession("sftp").close();
+		}
+		catch(SshException e) {
+			log.error("SSH Error: "+e.getMessage());
+		}
+		catch(IOException e) {
+			this.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+	}
+	
+	private HostKeyVerification hostKeyVerification;
+
+	public void setHostKeyVerificationController(HostKeyVerification h) {
+		this.hostKeyVerification = h;
+	}
+	
+	public HostKeyVerification getHostKeyVerificationController() {
+		return this.hostKeyVerification;
+	}
+		
 	public synchronized void connect(String encoding) throws IOException {
 		this.log("Opening SSH connection to "+host.getIp()+"...", Message.PROGRESS);
 		this.setConnected();
@@ -127,7 +153,7 @@ public class SFTPSession extends Session {
 				properties.setProxyPassword(Proxy.getSOCKSProxyPassword());
 			}
 		}
-		SSH.connect(properties, host.getHostKeyVerificationController());
+		SSH.connect(properties, this.getHostKeyVerificationController());
 		if(SSH.isConnected()) {
 			this.log("SSH connection opened", Message.PROGRESS);
 			String id = SSH.getServerId();

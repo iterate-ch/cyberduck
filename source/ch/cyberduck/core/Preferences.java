@@ -84,13 +84,13 @@ public abstract class Preferences {
 		defaults.put("website.update.xml", "http://update.cyberduck.ch/versionlist.xml");
 		defaults.put("website.update", "http://update.cyberduck.ch/");
 		defaults.put("website.home", "http://cyberduck.ch/");
+		defaults.put("website.forum", "http://cyberduck.ch/forum/");
 
 		defaults.put("update.check", "true");
 
 		defaults.put("bookmarkDrawer.isOpen", "false");
 
-		defaults.put("browser.columnIcon", "true");
-		defaults.put("browser.columnFilename", "true");
+		defaults.put("browser.view", "1");
 		defaults.put("browser.columnSize", "true");
 		defaults.put("browser.columnModification", "true");
 		defaults.put("browser.columnOwner", "false");
@@ -163,7 +163,7 @@ public abstract class Preferences {
 		defaults.put("connection.buffer.default", "16384");
 		defaults.put("connection.port.default", "21");
 		defaults.put("connection.protocol.default", "ftp");
-		defaults.put("connection.timeout", "20000");
+		defaults.put("connection.timeout", "30000");
 		defaults.put("connection.keepalive", "false");
 		defaults.put("connection.keepalive.interval", "30000");
 

@@ -98,14 +98,13 @@ public class SFTPPath extends Path {
 		return this.session;
 	}
 
-	public List list(String encoding, boolean refresh, boolean showHidden, boolean notifyObservers) {
+	public List list(String encoding, boolean refresh, Filter filter, boolean notifyObservers) {
 		synchronized(session) {
-			List files = session.cache().get(this.getAbsolute());
 			if(notifyObservers) {
 				session.addPathToHistory(this);
 			}
-			if(refresh || null == files) {
-				files = new ArrayList();
+			if(refresh || session.cache().get(this.getAbsolute()) == null) {
+				List files = new ArrayList();
 				session.log("Listing "+this.getAbsolute(), Message.PROGRESS);
 				try {
 					session.check();
@@ -120,31 +119,29 @@ public class SFTPPath extends Path {
 					while(i.hasNext()) {
 						SftpFile x = (SftpFile)i.next();
 						if(!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
-							if(!(x.getFilename().charAt(0) == '.') || showHidden) {
-								Path p = PathFactory.createPath(session, this.getAbsolute(), x.getFilename());
-								p.attributes.setOwner(x.getAttributes().getUID().toString());
-								p.attributes.setGroup(x.getAttributes().getGID().toString());
-								p.attributes.setSize(x.getAttributes().getSize().doubleValue());
-								p.attributes.setTimestamp(Long.parseLong(x.getAttributes().getModifiedTime().toString())*1000L);
-								String permStr = x.getAttributes().getPermissionsString();
-								if(permStr.charAt(0) == 'd') {
-									p.attributes.setType(Path.DIRECTORY_TYPE);
-								}
-								else if(permStr.charAt(0) == 'l') {
-									try {
-										p.cwdir();
-										p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
-									}
-									catch(java.io.IOException e) {
-										p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
-									}
-								}
-								else {
-									p.attributes.setType(Path.FILE_TYPE);
-								}
-								p.attributes.setPermission(new Permission(permStr.substring(1, permStr.length())));
-								files.add(p);
+							Path p = PathFactory.createPath(session, this.getAbsolute(), x.getFilename());
+							p.attributes.setOwner(x.getAttributes().getUID().toString());
+							p.attributes.setGroup(x.getAttributes().getGID().toString());
+							p.attributes.setSize(x.getAttributes().getSize().doubleValue());
+							p.attributes.setTimestamp(Long.parseLong(x.getAttributes().getModifiedTime().toString())*1000L);
+							String permStr = x.getAttributes().getPermissionsString();
+							if(permStr.charAt(0) == 'd') {
+								p.attributes.setType(Path.DIRECTORY_TYPE);
 							}
+							else if(permStr.charAt(0) == 'l') {
+								try {
+									p.cwdir();
+									p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+								}
+								catch(java.io.IOException e) {
+									p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+								}
+							}
+							else {
+								p.attributes.setType(Path.FILE_TYPE);
+							}
+							p.attributes.setPermission(new Permission(permStr.substring(1, permStr.length())));
+							files.add(p);
 						}
 					}
 					session.cache().put(this.getAbsolute(), files);
@@ -163,7 +160,7 @@ public class SFTPPath extends Path {
 			if(notifyObservers) {
 				session.callObservers(this);
 			}
-			return files;
+			return session.cache().get(this.getAbsolute(), filter);
 		}
 	}
 
@@ -256,7 +253,7 @@ public class SFTPPath extends Path {
 					session.SFTP.removeFile(this.getAbsolute());
 				}
 				else if(this.attributes.isDirectory()) {
-					List files = this.list(true, true, false);
+					List files = this.list(true, new NullFilter(), false);
 					java.util.Iterator iterator = files.iterator();
 					Path file = null;
 					while(iterator.hasNext()) {
@@ -285,6 +282,76 @@ public class SFTPPath extends Path {
 		}
 	}
 
+	public void changeOwner(String owner, boolean recursive) {
+		synchronized(session) {
+			log.debug("changeOwner");
+			try {
+				session.check();
+				if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
+					session.log("Changing owner to "+owner+" on "+this.getName(), Message.PROGRESS);
+					session.SFTP.changeOwner(this.getAbsolute(), owner);
+				}
+				else if(this.attributes.isDirectory()) {
+					session.log("Changing owner to "+owner+" on "+this.getName(), Message.PROGRESS);
+					session.SFTP.changeOwner(this.getAbsolute(), owner);
+					if(recursive) {
+						List files = this.list(false, new NullFilter(), false);
+						java.util.Iterator iterator = files.iterator();
+						Path file = null;
+						while(iterator.hasNext()) {
+							file = (Path)iterator.next();
+							file.changeOwner(owner, recursive);
+						}
+					}
+				}
+				this.getParent().invalidate();
+				session.log("Idle", Message.STOP);
+			}
+			catch(SshException e) {
+				session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+			}
+			catch(IOException e) {
+				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.close();
+			}
+		}
+	}
+	
+	public void changeGroup(String group, boolean recursive) {
+		synchronized(session) {
+			log.debug("changeGroup");
+			try {
+				session.check();
+				if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
+					session.log("Changing group to "+group+" on "+this.getName(), Message.PROGRESS);
+					session.SFTP.changeGroup(this.getAbsolute(), group);
+				}
+				else if(this.attributes.isDirectory()) {
+					session.log("Changing group to "+group+" on "+this.getName(), Message.PROGRESS);
+					session.SFTP.changeGroup(this.getAbsolute(), group);
+					if(recursive) {
+						List files = this.list(false, new NullFilter(), false);
+						java.util.Iterator iterator = files.iterator();
+						Path file = null;
+						while(iterator.hasNext()) {
+							file = (Path)iterator.next();
+							file.changeGroup(group, recursive);
+						}
+					}
+				}
+				this.getParent().invalidate();
+				session.log("Idle", Message.STOP);
+			}
+			catch(SshException e) {
+				session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+			}
+			catch(IOException e) {
+				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.close();
+			}
+		}
+	}
+
 	public void changePermissions(Permission perm, boolean recursive) {
 		synchronized(session) {
 			log.debug("changePermissions");
@@ -298,7 +365,7 @@ public class SFTPPath extends Path {
 					session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
 					session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
 					if(recursive) {
-						List files = this.list(false, true, false);
+						List files = this.list(false, new NullFilter(), false);
 						java.util.Iterator iterator = files.iterator();
 						Path file = null;
 						while(iterator.hasNext()) {

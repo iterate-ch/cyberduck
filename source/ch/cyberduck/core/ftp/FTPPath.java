@@ -111,14 +111,13 @@ public class FTPPath extends Path {
 		return this.session;
 	}
 
-	public List list(String encoding, boolean refresh, boolean showHidden, boolean notifyObservers) {
+	public List list(String encoding, boolean refresh, Filter filter, boolean notifyObservers) {
 		synchronized(session) {
-			List files = session.cache().get(this.getAbsolute());
 			if(notifyObservers) {
 				session.addPathToHistory(this);
 			}
-			if(refresh || null == files) {
-				files = new ArrayList();
+			if(refresh || session.cache().get(this.getAbsolute()) == null) {
+				List files = new ArrayList();
 				session.log("Listing "+this.getAbsolute(), Message.PROGRESS);
 				try {
 					session.check();
@@ -128,10 +127,7 @@ public class FTPPath extends Path {
 					for(int i = 0; i < lines.length; i++) {
 						Path p = session.parser.parseFTPEntry(this, lines[i]);
 						if(p != null) {
-							String filename = p.getName();
-							if(!(filename.charAt(0) == '.') || showHidden) {
-								files.add(p);
-							}
+							files.add(p);
 						}
 					}
 					session.cache().put(this.getAbsolute(), files);
@@ -150,7 +146,7 @@ public class FTPPath extends Path {
 			if(notifyObservers) {
 				session.callObservers(this);
 			}
-			return files;
+			return session.cache().get(this.getAbsolute(), filter);
 		}
 	}
 
@@ -260,7 +256,7 @@ public class FTPPath extends Path {
 					session.FTP.delete(this.getName());
 				}
 				else if(this.attributes.isDirectory()) {
-					List files = this.list(true, true, false);
+					List files = this.list(true, new NullFilter(), false);
 					java.util.Iterator iterator = files.iterator();
 					Path file = null;
 					while(iterator.hasNext()) {
@@ -289,7 +285,77 @@ public class FTPPath extends Path {
 			}
 		}
 	}
+	
+	public void changeOwner(String owner, boolean recursive) {
+		synchronized(session) {
+			String command = "chown";
+			try {
+				session.check();
+				if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
+					session.log("Changing owner to "+this.attributes.getOwner()+" on "+this.getName(), Message.PROGRESS);
+					session.FTP.site(command+" "+owner+" "+this.getAbsolute());
+				}
+				else if(this.attributes.isDirectory()) {
+					session.log("Changing owner to "+this.attributes.getOwner()+" on "+this.getName(), Message.PROGRESS);
+					session.FTP.site(command+" "+owner+" "+this.getAbsolute());
+					if(recursive) {
+						List files = this.list(false, new NullFilter(), false);
+						java.util.Iterator iterator = files.iterator();
+						Path file = null;
+						while(iterator.hasNext()) {
+							file = (Path)iterator.next();
+							file.changeOwner(owner, recursive);
+						}
+					}
+				}
+				this.getParent().invalidate();
+				session.log("Idle", Message.STOP);
+			}
+			catch(FTPException e) {
+				session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+			}
+			catch(IOException e) {
+				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.close();
+			}
+		}
+	}
 
+	public void changeGroup(String group, boolean recursive) {
+		synchronized(session) {
+			String command = "chgrp";
+			try {
+				session.check();
+				if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
+					session.log("Changing group to "+this.attributes.getGroup()+" on "+this.getName(), Message.PROGRESS);
+					session.FTP.site(command+" "+group+" "+this.getAbsolute());
+				}
+				else if(this.attributes.isDirectory()) {
+					session.log("Changing group to "+this.attributes.getGroup()+" on "+this.getName(), Message.PROGRESS);
+					session.FTP.site(command+" "+group+" "+this.getAbsolute());
+					if(recursive) {
+						List files = this.list(false, new NullFilter(), false);
+						java.util.Iterator iterator = files.iterator();
+						Path file = null;
+						while(iterator.hasNext()) {
+							file = (Path)iterator.next();
+							file.changeGroup(group, recursive);
+						}
+					}
+				}
+				this.getParent().invalidate();
+				session.log("Idle", Message.STOP);
+			}
+			catch(FTPException e) {
+				session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+			}
+			catch(IOException e) {
+				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.close();
+			}
+		}
+	}
+	
 	public void changePermissions(Permission perm, boolean recursive) {
 		synchronized(session) {
 			log.debug("changePermissions:"+perm);
@@ -304,7 +370,7 @@ public class FTPPath extends Path {
 					session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
 					session.FTP.site(command+" "+perm.getOctalCode()+" "+this.getAbsolute());
 					if(recursive) {
-						List files = this.list(false, true, false);
+						List files = this.list(false, new NullFilter(), false);
 						java.util.Iterator iterator = files.iterator();
 						Path file = null;
 						while(iterator.hasNext()) {
@@ -459,17 +525,12 @@ public class FTPPath extends Path {
 				lineSeparator = DOS_LINE_SEPARATOR;
 			}
 			session.FTP.setTransferType(FTPTransferType.ASCII);
-//			if(this.status.isResume()) {
-//				this.status.setCurrent(this.getLocal().getSize());
-//			}
 			out = new FromNetASCIIOutputStream(new FileOutputStream(this.getLocal(), false),
-			    //this.status.isResume()),
 			    lineSeparator);
 			if(out == null) {
 				throw new IOException("Unable to buffer data");
 			}
 			in = new FromNetASCIIInputStream(session.FTP.get(this.getAbsolute(), 0),
-			    //			    this.status.isResume() ? this.getLocal().getSize() : 0),
 			    lineSeparator);
 			if(in == null) {
 				throw new IOException("Unable opening data stream");

@@ -24,9 +24,9 @@ import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
 import com.apple.cocoa.foundation.*;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.File;
 
 import org.apache.log4j.Logger;
 
@@ -35,12 +35,10 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public class CDQueueTableDataSource extends CDTableDataSource {
+public class CDQueueTableDataSource extends Collection {
 	private static Logger log = Logger.getLogger(CDQueueTableDataSource.class);
 
 	private static final File QUEUE_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Queue.plist"));
-
-	private List data = new ArrayList();;
 
 	static {
 		QUEUE_FILE.getParentFile().mkdir();
@@ -154,7 +152,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 						NSArray elements = (NSArray)o;
 						for(int i = 0; i < elements.count(); i++) {
 							NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-							this.add(Queue.createQueue(dict), row);
+							this.add(row, Queue.createQueue(dict));
 							tableView.reloadData();
 							tableView.selectRow(row, false);
 						}
@@ -238,23 +236,25 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 		}
 	}
 
-	public void add(Queue queue) {
+	public boolean add(Object queue) {
 		super.add(new CDProgressController((Queue)queue));
 		this.save();
+        return true;
 	}
 
-	public void add(Queue queue, int row) {
+	public void add(int row, Object queue) {
 		super.add(row, new CDProgressController((Queue)queue));
 		this.save();
 	}
 
-	public void remove(Queue item) {
+	public boolean remove(Object item) {
 		for(int i = 0; i < this.size(); i++) {
 			CDProgressController c = this.getController(i);
 			if(c.getQueue().equals(item)) {
 				super.remove(i);
 			}
 		}
+        return true;
 	}
 
     /**

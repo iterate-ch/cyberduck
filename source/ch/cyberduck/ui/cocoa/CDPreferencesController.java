@@ -126,7 +126,7 @@ public class CDPreferencesController extends CDController {
 	// Outlets
 	// ----------------------------------------------------------
 
-	private NSPopUpButton editorCombobox;
+	private NSPopUpButton editorCombobox; //IBOutlet
 
 	public void setEditorCombobox(NSPopUpButton editorCombobox) {
 		this.editorCombobox = editorCombobox;
@@ -154,7 +154,7 @@ public class CDPreferencesController extends CDController {
 		Preferences.instance().setProperty("editor.bundleIdentifier", (String)Editor.SUPPORTED_EDITORS.get(sender.titleOfSelectedItem()));
 	}
 
-	private NSPopUpButton encodingCombobox;
+	private NSPopUpButton encodingCombobox; //IBOutlet
 
 	public void setEncodingCombobox(NSPopUpButton encodingCombobox) {
 		this.encodingCombobox = encodingCombobox;
@@ -518,6 +518,26 @@ public class CDPreferencesController extends CDController {
 		CDBrowserController.updateBrowserTableAttributes();
 	}
 
+	private NSButton infoWindowAsInspectorCheckbox; //IBOutlet
+	
+	public void setInfoWindowAsInspectorCheckbox(NSButton infoWindowAsInspectorCheckbox) {
+		this.infoWindowAsInspectorCheckbox = infoWindowAsInspectorCheckbox;
+		this.infoWindowAsInspectorCheckbox.setTarget(this);
+		this.infoWindowAsInspectorCheckbox.setAction(new NSSelector("infoWindowAsInspectorCheckboxClicked", new Class[]{NSButton.class}));
+		this.infoWindowAsInspectorCheckbox.setState(Preferences.instance().getBoolean("browser.info.isInspector") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void infoWindowAsInspectorCheckboxClicked(NSButton sender) {
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("browser.info.isInspector", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("browser.info.isInspector", false);
+				break;
+		}
+	}
+	
 	private NSButton columnModificationCheckbox; //IBOutlet
 
 	public void setColumnModificationCheckbox(NSButton columnModificationCheckbox) {
@@ -606,7 +626,7 @@ public class CDPreferencesController extends CDController {
 	private static final String SSH_DSS = "ssh-dss";
 	private static final String SSH_RSA = "ssh-rsa";
 
-	private NSPopUpButton publickeyCombobox;
+	private NSPopUpButton publickeyCombobox; //IBOutlet
 
 	public void setPublickeyCombobox(NSPopUpButton publickeyCombobox) {
 		this.publickeyCombobox = publickeyCombobox;
@@ -645,7 +665,6 @@ public class CDPreferencesController extends CDController {
 		this.csEncryptionCombobox.setAction(new NSSelector("csEncryptionComboboxClicked", new Class[]{NSPopUpButton.class}));
 		this.csEncryptionCombobox.removeAllItems();
 		this.csEncryptionCombobox.addItemsWithTitles(new NSArray(new String[]{
-			//NSBundle.localizedString("Default", ""),
 			des_cbc,
 			blowfish_cbc,
 			twofish256_cbc,
@@ -671,7 +690,6 @@ public class CDPreferencesController extends CDController {
 		this.scEncryptionCombobox.setAction(new NSSelector("scEncryptionComboboxClicked", new Class[]{NSPopUpButton.class}));
 		this.scEncryptionCombobox.removeAllItems();
 		this.scEncryptionCombobox.addItemsWithTitles(new NSArray(new String[]{
-			//NSBundle.localizedString("Default", ""),
 			des_cbc,
 			blowfish_cbc,
 			twofish256_cbc,
@@ -705,7 +723,6 @@ public class CDPreferencesController extends CDController {
 		this.scAuthenticationCombobox.setAction(new NSSelector("scAuthenticationComboboxClicked", new Class[]{NSPopUpButton.class}));
 		this.scAuthenticationCombobox.removeAllItems();
 		this.scAuthenticationCombobox.addItemsWithTitles(new NSArray(new String[]{
-			//NSBundle.localizedString("Default", ""),
 			hmac_sha1,
 			hmac_sha1_96,
 			hmac_md5,
@@ -728,7 +745,6 @@ public class CDPreferencesController extends CDController {
 		this.csAuthenticationCombobox.setAction(new NSSelector("csAuthenticationComboboxClicked", new Class[]{NSPopUpButton.class}));
 		this.csAuthenticationCombobox.removeAllItems();
 		this.csAuthenticationCombobox.addItemsWithTitles(new NSArray(new String[]{
-			//NSBundle.localizedString("Default", ""),
 			hmac_sha1,
 			hmac_sha1_96,
 			hmac_md5,
@@ -741,7 +757,31 @@ public class CDPreferencesController extends CDController {
 	public void csAuthenticationComboboxClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("ssh.CSAuthentication", sender.titleOfSelectedItem());
 	}
+	
+	private static final String ZLIB = "zlib";
 
+	private NSPopUpButton compressionCombobox; //IBOutlet
+
+	public void setCompressionCombobox(NSPopUpButton compressionCombobox) {
+		this.compressionCombobox = compressionCombobox;
+		this.compressionCombobox.setTarget(this);
+		this.compressionCombobox.setAction(new NSSelector("compressionComboboxClicked", new Class[]{NSPopUpButton.class}));
+		this.compressionCombobox.removeAllItems();
+		this.compressionCombobox.addItemsWithTitles(new NSArray(new String[]{
+			NSBundle.localizedString("None", ""),
+			ZLIB
+		}));
+		
+		this.compressionCombobox.setTitle(Preferences.instance().getProperty("ssh.compression"));
+	}
+	
+	public void compressionComboboxClicked(NSPopUpButton sender) {
+		if(sender.titleOfSelectedItem().equals(ZLIB))
+			Preferences.instance().setProperty("ssh.compression", ZLIB);
+		else
+			Preferences.instance().setProperty("ssh.compression", "none");
+	}
+	
 	private NSButton downloadPathButton; //IBOutlet
 
 	public void setDownloadPathButton(NSButton downloadPathButton) {
@@ -757,23 +797,21 @@ public class CDPreferencesController extends CDController {
 		panel.setAllowsMultipleSelection(false);
 		panel.beginSheetForDirectory(null, null, null, this.window(), this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
 	}
-
+	
 	public void openPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
 		switch(returnCode) {
-			case (NSAlertPanel.DefaultReturn):
-				{
-					NSArray selected = sheet.filenames();
-					String filename;
-					if((filename = (String)selected.lastObject()) != null) {
-						Preferences.instance().setProperty("queue.download.folder", filename);
-						this.downloadPathField.setStringValue(Preferences.instance().getProperty("queue.download.folder"));
-					}
-					break;
+			case (NSAlertPanel.DefaultReturn): {
+				NSArray selected = sheet.filenames();
+				String filename;
+				if((filename = (String)selected.lastObject()) != null) {
+					Preferences.instance().setProperty("queue.download.folder", filename);
+					this.downloadPathField.setStringValue(Preferences.instance().getProperty("queue.download.folder"));
 				}
-			case (NSAlertPanel.AlternateReturn):
-				{
-					break;
-				}
+				break;
+			}
+			case (NSAlertPanel.AlternateReturn): {
+				break;
+			}
 		}
 	}
 
@@ -1297,7 +1335,27 @@ public class CDPreferencesController extends CDController {
 		}
 	}
 
-	private NSButton autoUpdateCheckbox;
+	private NSButton confirmDisconnectCheckbox; //IBOutlet
+
+	public void setConfirmDisconnectCheckbox(NSButton confirmDisconnectCheckbox) {
+		this.confirmDisconnectCheckbox = confirmDisconnectCheckbox;
+		this.confirmDisconnectCheckbox.setTarget(this);
+		this.confirmDisconnectCheckbox.setAction(new NSSelector("confirmDisconnectCheckboxClicked", new Class[]{NSButton.class}));
+		this.confirmDisconnectCheckbox.setState(Preferences.instance().getBoolean("browser.confirmDisconnect") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void confirmDisconnectCheckboxClicked(NSButton sender) {
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("browser.confirmDisconnect", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("browser.confirmDisconnect", false);
+				break;
+		}
+	}
+	
+	private NSButton autoUpdateCheckbox; //IBOutlet
 
 	public void setAutoUpdateCheckbox(NSButton autoUpdateCheckbox) {
 		this.autoUpdateCheckbox = autoUpdateCheckbox;

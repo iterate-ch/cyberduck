@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.sshtools.j2ssh.transport.HostKeyVerification;
-
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
@@ -38,16 +36,19 @@ public class Host {
 	private String nickname;
 	private String identification;
 	private String defaultpath = Path.HOME;
-	private HostKeyVerification hostKeyVerification;
 	private Login login;
-
+	private String encoding;
+	private com.enterprisedt.net.ftp.FTPConnectMode connectMode;
+	
 	public static final String HOSTNAME = "Hostname";
 	public static final String NICKNAME = "Nickname";
 	public static final String PORT = "Port";
 	public static final String PROTOCOL = "Protocol";
 	public static final String USERNAME = "Username";
 	public static final String PATH = "Path";
+	public static final String ENCODING = "Encoding";
 	public static final String KEYFILE = "Private Key File";
+	public static final String FTPCONNECTMODE = "FTP Connect Mode";
 
 	protected void finalize() throws Throwable {
 		log.debug("------------- finalize");
@@ -80,6 +81,19 @@ public class Host {
 		if(nicknameObj != null) {
 			this.setNickname((String)nicknameObj);
 		}
+		Object encodingObj = dict.objectForKey(Host.ENCODING);
+		if(encodingObj != null) {
+			this.setEncoding((String)encodingObj);
+		}
+		Object connectModeObj = dict.objectForKey(Host.FTPCONNECTMODE);
+		if(connectModeObj != null) {
+			if(connectModeObj.equals("active")) {
+				this.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
+			}
+			else {
+				this.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
+			}
+		}
 		log.debug(this.toString());
 	}
 
@@ -91,8 +105,17 @@ public class Host {
 		dict.setObjectForKey(String.valueOf(this.getPort()), Host.PORT);
 		dict.setObjectForKey(this.getCredentials().getUsername(), Host.USERNAME);
 		dict.setObjectForKey(this.getDefaultPath(), Host.PATH);
+		dict.setObjectForKey(this.getEncoding(), Host.ENCODING);
 		if(this.getCredentials().getPrivateKeyFile() != null) {
 			dict.setObjectForKey(this.getCredentials().getPrivateKeyFile(), Host.KEYFILE);
+		}
+		if(this.getProtocol().equals(Session.FTP)) {
+			if(this.getFTPConnectMode().equals(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE)) {
+			   dict.setObjectForKey("active", Host.FTPCONNECTMODE);
+			}
+			else {
+				dict.setObjectForKey("passive", Host.FTPCONNECTMODE);
+			}
 		}
 		return dict;
 	}
@@ -286,6 +309,12 @@ public class Host {
 	 */
 	public void setProtocol(String protocol) {
 		this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
+		if(this.getProtocol().equals(Session.FTP)) {
+			if(Preferences.instance().getProperty("ftp.connectmode").equals("active"))
+				this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE;
+			if(Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
+				this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.PASV;
+		}
 	}
 
 	public String getProtocol() {
@@ -333,16 +362,25 @@ public class Host {
 	public void setLoginController(LoginController c) {
 		this.getCredentials().setController(c);
 	}
-
-	//ssh specific
-	public void setHostKeyVerificationController(HostKeyVerification h) {
-		this.hostKeyVerification = h;
+	
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
+	
+	public String getEncoding() {
+		if(null == this.encoding)
+			this.encoding = Preferences.instance().getProperty("browser.charset.encoding");
+		return this.encoding;
 	}
 
-	public HostKeyVerification getHostKeyVerificationController() {
-		return this.hostKeyVerification;
+	public void setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode connectMode) {
+		this.connectMode = connectMode;
 	}
 
+	public com.enterprisedt.net.ftp.FTPConnectMode getFTPConnectMode() {
+		return this.connectMode;
+	}
+	
 	/**
 	 * @return The IP address of the remote host if available
 	 */

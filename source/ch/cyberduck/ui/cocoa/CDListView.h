@@ -18,7 +18,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface CDTableView : NSTableView {
+@interface CDListView : NSTableView {
 	NSMutableString *select_string;
 	NSTimer *select_timer;
 }

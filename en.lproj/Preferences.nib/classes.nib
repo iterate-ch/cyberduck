@@ -22,8 +22,10 @@
                 columnOwnerCheckbox = NSButton; 
                 columnPermissionsCheckbox = NSButton; 
                 columnSizeCheckbox = NSButton; 
+                concurrentConnectionForceDisconnectCheckbox = NSButton; 
                 concurrentConnectionsField = NSTextField; 
                 concurrentConnectionsTimeoutField = NSTextField; 
+                confirmDisconnectCheckbox = NSButton; 
                 connectmodeCombobox = NSPopUpButton; 
                 csAuthenticationCombobox = NSPopUpButton; 
                 csEncryptionCombobox = NSPopUpButton; 
@@ -45,6 +47,8 @@
                 encodingCombobox = NSPopUpButton; 
                 extensionsField = NSTextField; 
                 horizontalLinesCheckbox = NSButton; 
+                infoWindowAsInspectorCheckbox = NSButton; 
+                keepAliveCheckbox = NSButton; 
                 keychainCheckbox = NSButton; 
                 lineEndingCombobox = NSPopUpButton; 
                 listCheckbox = NSButton; 

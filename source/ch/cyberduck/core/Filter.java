@@ -18,16 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.List;
-
-/**
- * @version $Id$
- */
-public interface Validator {
-
-	public boolean validate(Queue queue, boolean resumeRequested);
-
-	public List getValidated();
-
-	public boolean isCanceled();
+public interface Filter {
+	public boolean accept(Path file);
 }

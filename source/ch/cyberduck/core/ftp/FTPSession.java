@@ -44,7 +44,8 @@ public class FTPSession extends Session {
 
 	private static class Factory extends SessionFactory {
 		protected Session create(Host h) {
-			return new FTPSession(h);
+			FTPSession s = new FTPSession(h);
+			return s;
 		}
 	}
 
@@ -75,7 +76,22 @@ public class FTPSession extends Session {
 			this.setClosed();
 		}
 	}
-
+	
+	public void interrupt() {
+		try {
+			if(null == this.FTP) {
+				return;
+			}
+			this.FTP.interrupt();
+		}
+		catch(FTPException e) {
+			this.log("FTP Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+			this.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+	}
+	
 	public synchronized void connect(String encoding) throws IOException {
 		this.log("Opening FTP connection to "+host.getIp()+"...", Message.PROGRESS);
 		this.setConnected();
@@ -85,8 +101,7 @@ public class FTPSession extends Session {
 		this.FTP = new FTPClient(host.getHostname(),
 								 host.getPort(),
 								 Preferences.instance().getInteger("connection.timeout"), //timeout
-								 encoding,
-								 new FTPMessageListener() {
+								 encoding, new FTPMessageListener() {
 									 public void logCommand(String cmd) {
 										 FTPSession.this.log(cmd, Message.TRANSCRIPT);
 									 }
@@ -106,12 +121,7 @@ public class FTPSession extends Session {
 				    Proxy.getSOCKSProxyPassword());
 			}
 		}
-		if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
-			this.FTP.setConnectMode(FTPConnectMode.ACTIVE);
-		}
-		else {
-			this.FTP.setConnectMode(FTPConnectMode.PASV);
-		}
+		this.FTP.setConnectMode(this.host.getFTPConnectMode());
 		this.log("FTP connection opened", Message.PROGRESS);
 		this.login();
 		if(Preferences.instance().getBoolean("ftp.sendSystemCommand")) {

@@ -36,12 +36,12 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 /**
  * @version $Id$
  */
-public class CDFileController extends CDController {
-	private static Logger log = Logger.getLogger(CDFileController.class);
+public abstract class CDFileController extends CDController {
+	protected static Logger log = Logger.getLogger(CDFileController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
 
-	private NSTextField filenameField; //IBOutlet
+	protected NSTextField filenameField; //IBOutlet
 
 	public void setFilenameField(NSTextField filenameField) {
 		this.filenameField = filenameField;
@@ -53,9 +53,6 @@ public class CDFileController extends CDController {
 
 	public CDFileController() {
 		instances.addObject(this);
-		if(false == NSApplication.loadNibNamed("File", this)) {
-			log.fatal("Couldn't load File.nib");
-		}
 	}
 
 	public void windowWillClose(NSNotification notification) {
@@ -91,54 +88,5 @@ public class CDFileController extends CDController {
 
 	public void editButtonClicked(NSButton sender) {
 		this.createButtonClicked(sender);
-	}
-
-	public void newFileSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-		log.debug("newFileSheetDidEnd");
-		sheet.orderOut(null);
-		Path workdir = (Path)contextInfo;
-		switch(returncode) {
-			case (NSAlertPanel.DefaultReturn): //Edit
-				Path path = this.create(workdir, filenameField.stringValue());
-				Editor editor = new Editor();
-				editor.open(path);
-				break;
-			case (NSAlertPanel.OtherReturn): //Create
-				this.create(workdir, filenameField.stringValue());
-				break;
-			case (NSAlertPanel.AlternateReturn): //Cancel
-				break;
-		}
-	}
-
-	public Path create(Path workdir, String filename) {
-		Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), new Local(NSPathUtilities.temporaryDirectory(), filename));
-		if(!file.getRemote().exists()) {
-			try {
-				String proposal;
-				int no = 0;
-				int index = filename.lastIndexOf(".");
-				while(file.getLocal().exists()) {
-					no++;
-					if(index != -1) {
-						proposal = filename.substring(0, index)+"-"+no+filename.substring(index);
-					}
-					else {
-						proposal = filename+"-"+no;
-					}
-					file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
-				}
-				file.getLocal().createNewFile();
-				file.upload();
-				file.getLocal().delete();
-			}
-			catch(java.io.IOException e) {
-				log.error(e.getMessage());
-			}
-		}
-		List l = workdir.list(true);
-		if(l.contains(file))
-		   return (Path)l.get(l.indexOf(file));
-		return null;
 	}
 }

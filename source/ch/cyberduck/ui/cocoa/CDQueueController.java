@@ -237,7 +237,7 @@ public class CDQueueController extends CDController {
 
 	public void addItem(Queue queue) {
 		int row = this.queueModel.size();
-		this.queueModel.add(queue, row);
+		this.queueModel.add(row, queue);
 		this.queueModel.getController(row).init();
 		this.reloadQueueTable();
 		this.queueTable.selectRow(row, false);
@@ -275,8 +275,8 @@ public class CDQueueController extends CDController {
 		if(Preferences.instance().getBoolean("queue.orderFrontOnTransfer")) {
 			this.window().makeKeyAndOrderFront(null);
 		}
-		if(queue.getHost().getProtocol().equals(Session.SFTP)) {
-			queue.getHost().setHostKeyVerificationController(new CDHostKeyController(this));
+		if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
+			((ch.cyberduck.core.sftp.SFTPSession)queue.getSession()).setHostKeyVerificationController(new CDHostKeyController(this));
 		}
 		queue.getHost().setLoginController(new CDLoginController(this));
 		new Thread("Session") {

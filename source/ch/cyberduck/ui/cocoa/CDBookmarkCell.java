@@ -49,14 +49,12 @@ public class CDBookmarkCell extends CDTableCell {
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
 		if(bookmark != null) {
-			NSPoint cellPoint = cellFrame.origin();
-			NSSize cellSize = cellFrame.size();
 			NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(), boldFont),
-			    new NSRect(cellPoint.x(), cellPoint.y()+1, cellSize.width()-5, cellSize.height()));
+			    new NSRect(cellFrame.origin().x(), cellFrame.origin().y()+1, cellFrame.size().width()-5, cellFrame.size().height()));
 			NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getCredentials().getUsername(), tinyFont),
-			    new NSRect(cellPoint.x(), cellPoint.y()+14, cellSize.width()-5, cellSize.height()));
+			    new NSRect(cellFrame.origin().x(), cellFrame.origin().y()+14, cellFrame.size().width()-5, cellFrame.size().height()));
 			NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getHostname()+"/"+bookmark.getDefaultPath(), tinyFont),
-			    new NSRect(cellPoint.x(), cellPoint.y()+27, cellSize.width()-5, cellSize.height()));
+			    new NSRect(cellFrame.origin().x(), cellFrame.origin().y()+27, cellFrame.size().width()-5, cellFrame.size().height()));
 		}
 	}
 }
