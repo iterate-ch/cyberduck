@@ -438,9 +438,6 @@ public class CDBrowserController extends CDController implements Observer {
 						toolbar.validateVisibleItems();
 					}
 				});
-				File bookmark = new File(HISTORY_FOLDER+"/"+((Session)o).getHost().getHostname()+".duck");
-				CDBookmarkTableDataSource.instance().exportBookmark(((Session)o).getHost(),
-																	bookmark);
 			}
 			else if(msg.getTitle().equals(Message.CLOSE)) {
 				this.progressIndicator.stopAnimation(this);
@@ -1518,7 +1515,9 @@ public class CDBrowserController extends CDController implements Observer {
 	private void init(Host host) {
 		TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(this.logView));
 		this.window().setTitle(host.getProtocol()+":"+host.getCredentials().getUsername()+"@"+host.getHostname());
-		this.window().setRepresentedFilename(new File(HISTORY_FOLDER+"/"+host.getHostname()+".duck").getAbsolutePath());
+		File bookmark = new File(HISTORY_FOLDER+"/"+host.getHostname()+".duck");
+		CDBookmarkTableDataSource.instance().exportBookmark(host, bookmark);
+		this.window().setRepresentedFilename(bookmark.getAbsolutePath());
 	}
 
 	public Session mount(Host host) {
