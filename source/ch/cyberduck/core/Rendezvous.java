@@ -51,17 +51,21 @@ public class Rendezvous extends Observable implements ServiceListener {
 
     public void init() {
         log.debug("init");
-        try {
-            this.jmDNS = new JmDNS(java.net.InetAddress.getLocalHost());
-            for (int i = 0; i < serviceTypes.length; i++) {
-                log.info("Adding Rendezvous service listener for " + serviceTypes[i]);
-                this.jmDNS.addServiceListener(serviceTypes[i], this);
-            }
-        }
-        catch (IOException e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-        }
+		new Thread() {
+			public void run() {
+				try {
+					Rendezvous.this.jmDNS = new JmDNS(java.net.InetAddress.getLocalHost());
+					for (int i = 0; i < serviceTypes.length; i++) {
+						log.info("Adding Rendezvous service listener for " + serviceTypes[i]);
+						Rendezvous.this.jmDNS.addServiceListener(serviceTypes[i], Rendezvous.this);
+					}
+				}
+				catch (IOException e) {
+					log.error(e.getMessage());
+					e.printStackTrace();
+				}
+			}
+		}.start();
     }
 
     public void quit() {

@@ -144,6 +144,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                     }
                 }
             }
+			//Moving items
             if (draggedRows != null) {
                 NSPasteboard bookmarkPboard = NSPasteboard.pasteboardWithName("BookmarkPBoard");
                 log.debug("availableTypeFromArray:BookmarkPBoardType: " + bookmarkPboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")));
@@ -159,7 +160,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                             NSArray elements = (NSArray)o;
                             for (int i = 0; i < elements.count(); i++) {
                                 NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-                                if (row != -1 && row < BookmarkList.instance().size() - 1) {
+                                if (row != -1 && row < BookmarkList.instance().size()) {
                                     BookmarkList.instance().addItem(new Host(dict), row);
                                 }
                             }

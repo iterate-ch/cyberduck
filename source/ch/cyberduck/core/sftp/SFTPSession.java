@@ -126,6 +126,7 @@ public class SFTPSession extends Session {
         log.debug("login");
         final Login credentials = host.getLogin();
 		//@todo
+		/*
 		if(credentials.usesKBIAuthentication()) {
 			log.info("Trying KBI authentication");
             if(credentials.check()) {
@@ -176,7 +177,8 @@ public class SFTPSession extends Session {
 				}			
 			}
 		}
-        else if(credentials.usesPasswordAuthentication()) {// password authentication
+		 */
+        if(credentials.usesPasswordAuthentication()) {// password authentication
 			log.info("Trying Password authentication");
             if(credentials.check()) {
                 this.log("Authenticating as '" + credentials.getUsername() + "'", Message.PROGRESS);

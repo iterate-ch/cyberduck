@@ -6,7 +6,8 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 
 2.3
 - Removed 'Type ahead' feature of the browser (stability problems)
-- Bug fixes
+- Fixed a bug causing bookmarks to get lost upon moving items in the bookmark drawer
+- Fixed a bug which causing not all Rendezvous services avaiable to get listed
 
 2.3b2
 - Much improved queue management (fewer connections)
