@@ -85,6 +85,7 @@ es.lproj/Update.strings svneol=native#unset
 fr.lproj/Bookmark.nib/keyedobjects.nib -text
 fr.lproj/Bookmark.strings svneol=native#unset
 fr.lproj/Browser.strings svneol=native#unset
+fr.lproj/Connection.nib/keyedobjects.nib -text
 fr.lproj/Connection.strings svneol=native#unset
 fr.lproj/Donate.nib/keyedobjects.nib -text
 fr.lproj/Donate.strings svneol=native#unset
@@ -98,6 +99,7 @@ fr.lproj/Info.nib/keyedobjects.nib -text
 fr.lproj/Info.strings svneol=native#unset
 fr.lproj/InfoPlist.strings svneol=native#unset
 fr.lproj/Localizable.strings svneol=native#unset
+fr.lproj/Login.nib/keyedobjects.nib -text
 fr.lproj/Login.strings svneol=native#unset
 fr.lproj/Main.nib/keyedobjects.nib -text
 fr.lproj/Main.strings svneol=native#unset
