@@ -20,6 +20,7 @@ img/upload.tiff svneol=native#unset
 lib/ext/ant.jar -text
 lib/ext/junit.jar -text
 lib/log4j-1.2.6.jar svneol=native#unset
+lib/log4j.jar svneol=native#unset
 source/ch/cyberduck/Attic/connection/.DS_Store svneol=native#unset
 source/ch/cyberduck/Attic/connection/ftp/.DS_Store svneol=native#unset
 source/ch/cyberduck/Attic/connection/http/.DS_Store svneol=native#unset
