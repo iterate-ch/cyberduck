@@ -18,15 +18,14 @@ package ch.cyberduck.ui.swing;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Preferences;
 import org.apache.log4j.Logger;
-import java.util.Properties;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.awt.Dimension;
-
-import ch.cyberduck.core.Preferences;
+import java.util.Properties;
 
 /**
 * @version $Id$
@@ -45,7 +44,7 @@ public class PreferencesImpl extends Preferences { //PreferencesImplSwing
     }
 
     public String getProperty(String property) {
-        log.debug("getProperty(" + property + ")");
+        log.info("getProperty(" + property + ")");
         String value = props.getProperty(property);
         if(value == null)
             return super.getProperty(property);
@@ -53,12 +52,12 @@ public class PreferencesImpl extends Preferences { //PreferencesImplSwing
     }
 
     public void setProperty(String property, String value) {
-        log.debug("setProperty(" + property + ", " + value + ")");
+        log.info("setProperty(" + property + ", " + value + ")");
         props.put(property, value);
     }
 
     public void setProperty(String property, boolean v) {
-        log.debug("setProperty(" + property + ", " + v + ")");
+        log.info("setProperty(" + property + ", " + v + ")");
         String value = "false";
         if (v) {
             value = "true";
@@ -67,7 +66,7 @@ public class PreferencesImpl extends Preferences { //PreferencesImplSwing
     }
     
     public void setProperty(String property, int v) {
-        log.debug("setProperty(" + property + ", " + v + ")");
+        log.info("setProperty(" + property + ", " + v + ")");
         String value = String.valueOf(v);
         props.put(property, value);
     }

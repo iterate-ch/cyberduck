@@ -18,17 +18,11 @@ package ch.cyberduck.ui.swing;
  *  dkocher@cyberduck.ch
 */
 
-import org.apache.log4j.Logger;
-import java.util.List;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-import java.io.EOFException;
 import ch.cyberduck.core.History;
 import ch.cyberduck.core.Host;
+import org.apache.log4j.Logger;
+
+import java.io.*;
 
 public class HistoryImpl extends History {
     private static Logger log = Logger.getLogger(HistoryImpl.class);

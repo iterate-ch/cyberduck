@@ -288,8 +288,6 @@ public class HttpConnection {
             _input = _socket.getInputStream();
             _output = _socket.getOutputStream();
             _open = true;
-            //@todo: really set timeout? is it worth?
-//           this.setSoTimeout(Integer.parseInt(ch.cyberduck.core.Preferences.instance().getProperty("connection.timeout"))*60*1000);
         }
         catch (IOException e) {
             // Connection wasn't opened properly

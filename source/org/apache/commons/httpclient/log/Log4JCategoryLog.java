@@ -156,7 +156,8 @@ public class Log4JCategoryLog  implements Log {
     }
 
     public final int getLevel() {
-        return _category.getPriority().toInt();
+//        return _category.getPriority().toInt();
+        return _category.getLevel().toInt();
     }
 
 }

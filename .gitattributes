@@ -2,8 +2,6 @@
 /Cyberduck[!!-~]Website.webloc -text svneol=unset#application/octet-stream
 /cyberduck-application.icns svneol=native#unset
 /cyberduck-document.icns svneol=native#unset
-/cyberduck.app.icns svneol=native#unset
-/cyberduck.document.icns svneol=native#unset
 img/back.tiff svneol=native#unset
 img/connect.tiff svneol=native#unset
 img/delete.tiff svneol=native#unset
@@ -26,6 +24,3 @@ source/ch/cyberduck/Attic/connection/.DS_Store svneol=native#unset
 source/ch/cyberduck/Attic/connection/ftp/.DS_Store svneol=native#unset
 source/ch/cyberduck/Attic/connection/http/.DS_Store svneol=native#unset
 source/ch/cyberduck/Attic/connection/sftp/.DS_Store svneol=native#unset
-source/ch/cyberduck/complete.au svneol=native#unset
-source/ch/cyberduck/start.au svneol=native#unset
-source/ch/cyberduck/stop.au svneol=native#unset

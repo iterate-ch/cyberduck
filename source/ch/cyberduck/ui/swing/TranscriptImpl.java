@@ -18,9 +18,9 @@ package ch.cyberduck.ui.swing;
  *  dkocher@cyberduck.ch
  */
 
-import javax.swing.JTextArea;
 import ch.cyberduck.core.Transcripter;
-import ch.cyberduck.ui.swing.common.GUIFactory;
+
+import javax.swing.*;
 
 /**
 * Singleton text area to append logging messages.
@@ -34,7 +34,7 @@ public class TranscriptImpl implements Transcripter { //TranscriptImplSwing
 	super();
 	this.view = new JTextArea();
 	view.setEditable(true);
-	view.setFont(GUIFactory.FONT_MONOSPACED_SMALL);
+//	view.setFont(GUIFactory.FONT_MONOSPACED_SMALL);
     }
 
     public void transcript(String text) {

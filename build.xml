@@ -38,7 +38,7 @@
 	<property name="classes" value="${build}/classes" />
 	<property name="resources" value="${home}/resources" />
 	<property name="doc" value="${home}/doc" />
-	<property name="classpath" value="/System/Library/Java/:${lib}/log4j.jar" />
+	<property name="classpath" value="/System/Library/Java/:${lib}/j2ssh.jar:${lib}/log4j.jar" />
 	
 	<!-- mac os x properties used by target 'app'-->
 	<property name="app.name" value="Cyberduck" />
@@ -67,7 +67,6 @@
 		<echo message="   all-modules --> build all modules"/>
 		<echo message="   core --> build cyberduck-core"/>
 		<echo message="   cocoa --> build cocoa gui classes"/>
-		<echo message="   ssh --> build ssh tool library"/>
 		<echo message="   ftp --> build ftp tool library"/>
 		<echo message="   http --> build jakarta http library"/>
 		<echo message="   ---------------------------------------------------------------"/>
@@ -79,19 +78,16 @@
 		<mkdir dir="${classes}" />
 		<mkdir dir="${build}" />
 		<mkdir dir="${app.config}" />
-	</target>
-
-	<target name="all-modules" depends="core,ftp,ssh,http,cocoa,swing"></target>
-	
-	<target name="libraries">
 	    <copy todir="${app.jar}">
 		<fileset dir="${lib}">
 		    <include name="*.jar" />
 		</fileset>
 	    </copy>
 	</target>
+
+	<target name="all-modules" depends="core,ftp,http,cocoa,swing"></target>
 	
-	<target name="core" depends="init, libraries">
+	<target name="core" depends="init">
 	    <mkdir dir="${classes}/core" />
 	    <javac 
 		debug="${debug}"
@@ -168,7 +164,7 @@
 	    </copy>
 	</target>
 
-
+<!--
 	<target name="ssh" depends="init">
 	    <mkdir dir="${classes}/ssh" />
 	    <javac 
@@ -199,7 +195,7 @@
 		</fileset>
 	    </copy>
 	</target>
-
+-->
 
 	<target name="ftp" depends="init">
 	    <mkdir dir="${classes}/ftp" />
@@ -284,8 +280,11 @@
 	
 	<target name="clean">
 		<delete dir="${classes}" />
-		<delete file="${dist}/${app.name}.jar" />
-		<delete file="${app.jar}/${app.name}.jar" />
+		<delete file="${build}/cocoa.jar" />
+		<delete file="${build}/swing.jar" />
+		<delete file="${build}/core.jar" />
+		<delete file="${build}/ftp.jar" />
+		<delete file="${build}/http.jar" />
 	</target>
 <!--
 	<target name="all" depends="clean, dist, doc"/>
