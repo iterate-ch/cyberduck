@@ -165,7 +165,50 @@
     <option name="HIDE_WARNINGS" value="false" />
   </component>
   <component name="FileEditorManager" split-orientation="vertical" split-proportion="0.5">
-    <first-group />
+    <first-group selected-file="file://$PROJECT_DIR$/test/org/apache/commons/net/ftp/parser/EPLFEntryParserTest.java">
+      <entry file="file://$PROJECT_DIR$/test/ch/cyberduck/core/CodecTest.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="18" column="3" selection-start="716" selection-end="716" vertical-scroll-proportion="0.18410853">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/build.properties" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/test/org/apache/commons/net/ftp/parser/EPLFEntryParserTest.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="82" column="71" selection-start="3338" selection-end="3338" vertical-scroll-proportion="0.5748503">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Attributes.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="180" column="18" selection-start="4916" selection-end="4916" vertical-scroll-proportion="0.4730539">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/test/com/enterprisedt/net/ftp/FTPPasvResponseTest.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="8" column="4" selection-start="294" selection-end="294" vertical-scroll-proportion="0.19161677">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/com/enterprisedt/net/ftp/FTPControlSocket.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="595" column="6" selection-start="15777" selection-end="15777" vertical-scroll-proportion="11.718563">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+    </first-group>
     <second-group />
   </component>
   <component name="HierarchyBrowserManager">
@@ -184,19 +227,33 @@
     <expanded_node url="" module="Cyberduck" type="module" />
   </component>
   <component name="ProjectPane">
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core/ftp" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/org/apache" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/ch" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core/sftp" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/org/apache/commons/net/ftp/parser" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/com/enterprisedt/net/ftp" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck" module="Cyberduck" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/ui" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/ch/cyberduck/core" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/com/enterprisedt/net" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/ch/cyberduck" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/j2ssh" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/org/apache/commons/net" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/com/enterprisedt" module="Cyberduck" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/source" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core" module="Cyberduck" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/source/com" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/org/apache/commons/net/ftp" module="Cyberduck" type="directory" />
     <expanded_node url="" module="Cyberduck" type="module" />
     <expanded_node url="file://$PROJECT_DIR$/source/ch" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/com" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/org" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/test/org/apache/commons" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core/ftp" module="Cyberduck" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core/sftp" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools/j2ssh" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/com/sshtools" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$" module="Cyberduck" type="directory" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" splitterProportion="0.5">
@@ -219,7 +276,30 @@
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
   </component>
   <component name="RunManager">
-    <activeType name="Remote" />
+    <activeType name="JUnit" />
+    <tempConfiguration selected="true" default="false" name="EPLFEntryParserTest.testStandardBinls" type="JUnit" factoryName="JUnit">
+      <module name="Cyberduck" />
+      <option name="PACKAGE_NAME" value="org.apache.commons.net.ftp.parser" />
+      <option name="MAIN_CLASS_NAME" value="org.apache.commons.net.ftp.parser.EPLFEntryParserTest" />
+      <option name="METHOD_NAME" value="testStandardBinls" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ADDITIONAL_CLASS_PATH" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="wholeProject" />
+      </option>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+    </tempConfiguration>
+    <configuration selected="false" default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+    </configuration>
     <configuration selected="false" default="true" type="JUnit" factoryName="JUnit">
       <module name="" />
       <option name="PACKAGE_NAME" />
@@ -234,12 +314,12 @@
         <value defaultName="wholeProject" />
       </option>
     </configuration>
-    <configuration selected="false" default="true" type="Remote" factoryName="Remote">
-      <option name="USE_SOCKET_TRANSPORT" value="true" />
-      <option name="SERVER_MODE" value="false" />
-      <option name="SHMEM_ADDRESS" value="javadebug" />
-      <option name="HOST" value="localhost" />
-      <option name="PORT" value="5005" />
+    <configuration selected="false" default="true" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <module name="" />
     </configuration>
     <configuration selected="false" default="true" type="Applet" factoryName="Applet">
       <module name="" />
@@ -250,13 +330,6 @@
       <option name="HEIGHT" value="300" />
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <option name="VM_PARAMETERS" />
-    </configuration>
-    <configuration selected="false" default="true" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <module name="" />
     </configuration>
     <configuration selected="true" default="false" name="Remote" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
@@ -327,11 +400,11 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-2" y="22" width="1024" height="699" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32983682" order="8" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="7" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.28" order="0" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.2728205" order="0" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4234079" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32874355" order="8" />
@@ -340,7 +413,7 @@
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Sequence" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="2" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33046472" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
       <window_info id="CVS File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.3545611" order="4" />
@@ -428,52 +501,6 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/net/SocksProxySocket.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="41" column="13" selection-start="1234" selection-end="1234" vertical-scroll-proportion="0.3322034">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/authentication/KBIPrompt.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="13" selection-start="1035" selection-end="1035" vertical-scroll-proportion="0.1781076">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/SshClient.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="436" column="0" selection-start="13137" selection-end="13137" vertical-scroll-proportion="0.32061067">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/com/sshtools/j2ssh/configuration/SshConnectionProperties.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="348" column="5" selection-start="6342" selection-end="6342" vertical-scroll-proportion="0.2822086">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Host.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="252" column="9" selection-start="7986" selection-end="7986" vertical-scroll-proportion="0.38722554">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBookmarkTableDataSource.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="301" column="17" selection-start="12253" selection-end="12253" vertical-scroll-proportion="0.61277443">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDTableDataSource.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="34" column="0" selection-start="1228" selection-end="1228" vertical-scroll-proportion="0.2994012">
@@ -533,6 +560,48 @@
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDQueueTableDataSource.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="268" column="20" selection-start="8837" selection-end="8837" vertical-scroll-proportion="0.49790794">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/com/enterprisedt/net/ftp/FTPPasvResponseTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="4" selection-start="294" selection-end="294" vertical-scroll-proportion="0.19161677">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/com/enterprisedt/net/ftp/FTPControlSocket.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="595" column="6" selection-start="15777" selection-end="15777" vertical-scroll-proportion="11.718563">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/ch/cyberduck/core/CodecTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="3" selection-start="716" selection-end="716" vertical-scroll-proportion="0.18410853">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/org/apache/commons/net/ftp/parser/EPLFEntryParserTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="82" column="71" selection-start="3338" selection-end="3338" vertical-scroll-proportion="0.5748503">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Attributes.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="180" column="18" selection-start="4916" selection-end="4916" vertical-scroll-proportion="0.4730539">
           <folding />
         </state>
       </provider>

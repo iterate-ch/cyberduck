@@ -33,7 +33,7 @@ public class CodecTest extends TestCase {
 	
 	public void testEncoding() {
 		try {
-			String testString = "aÃàoÃàuÃàaÃàaÃàaÃà!eÃÄ&%cÃß\""; //encoded
+			String testString = "aÃàoÃàuÃàaÃàaÃàaÃà!eÃÄ&%cÃß"; //encoded
 			{
                 String decoded = Codec.decode(testString);
                 String encoded = new String(Codec.encode(decoded));

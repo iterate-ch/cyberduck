@@ -82,7 +82,7 @@ public class FTPControlSocket {
 	 *
 	 * @param remoteAddr      Remote inet address
 	 * @param controlPort     port for control stream
-	 * @param millis          the length of the timeout, in milliseconds
+	 * @param timeout          the length of the timeout, in milliseconds
 	 * @param encoding        character encoding used for data
 	 * @param messageListener listens for messages
 	 */
@@ -229,7 +229,7 @@ public class FTPControlSocket {
 	 * server, connect to it and return our
 	 * connected socket.
 	 *
-	 * @param active if true, create in active mode, else
+	 * @param connectMode if true, create in active mode, else
 	 *               in passive mode
 	 * @return connected data socket
 	 */
@@ -595,7 +595,6 @@ public class FTPControlSocket {
 	 * Log a message, checking for passwords
 	 *
 	 * @param msg   message to log
-	 * @param reply true if a response, false otherwise
 	 */
 	protected void log(String msg, boolean command) {
 		if(msg.startsWith("PASS"))

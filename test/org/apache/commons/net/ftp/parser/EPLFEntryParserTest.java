@@ -35,22 +35,22 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         // Just to make sure we don't break the standard parser.
         Path parsed = parser.parseFTPEntry(parentPath, "drwxrwxr-x   7 root     ftpadmin     1024 Apr 20 16:17 pub");
 
-        this.assertTrue("is dir", parsed.attributes.isDirectory());
-        this.assertFalse("is root", parsed.isRoot());
-        this.assertEquals("pub", parsed.getName());
-        this.assertEquals("/pub", parsed.getAbsolute());
+        assertTrue("is dir", parsed.attributes.isDirectory());
+        assertFalse("is root", parsed.isRoot());
+        assertEquals("pub", parsed.getName());
+        assertEquals("/pub", parsed.getAbsolute());
 
-        this.assertEquals(1024, parsed.attributes.getSize());
+        assertEquals(1024, parsed.attributes.getSize());
 
-        this.assertNotNull("timestamp", parsed.attributes.getTimestamp());
-        this.assertEquals(Path.DIRECTORY_TYPE, parsed.attributes.getType());
-        this.assertTrue("attr is dir", parsed.attributes.isDirectory());
-        this.assertFalse("attr is file", parsed.attributes.isFile());
-        this.assertFalse("attr is link", parsed.attributes.isSymbolicLink());
-        this.assertEquals("root", parsed.attributes.getOwner());
-        this.assertEquals("ftpadmin", parsed.attributes.getGroup());
+        assertNotNull("timestamp", parsed.attributes.getTimestamp());
+        assertEquals(Path.DIRECTORY_TYPE, parsed.attributes.getType());
+        assertTrue("attr is dir", parsed.attributes.isDirectory());
+        assertFalse("attr is file", parsed.attributes.isFile());
+        assertFalse("attr is link", parsed.attributes.isSymbolicLink());
+        assertEquals("root", parsed.attributes.getOwner());
+        assertEquals("ftpadmin", parsed.attributes.getGroup());
 
-        this.assertEquals("rwxrwxr-x (775)", parsed.attributes.getPermission().toString());
+        assertEquals("rwxrwxr-x (775)", parsed.attributes.getPermission().toString());
     }
     
     public void testNull() {
@@ -65,71 +65,71 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
     public void testReadonlyFile() {
         Path parsed = parser.parseFTPEntry(parentPath, "+m825718503,r,s280,\tdjb.html\r\n");
 
-        this.assertEquals("name", "djb.html", parsed.getName());
-        this.assertEquals("absolute", "/djb.html", parsed.getAbsolute());
-        this.assertFalse("is dir", parsed.attributes.isDirectory());
-        this.assertFalse("is root", parsed.isRoot());
+        assertEquals("name", "djb.html", parsed.getName());
+        assertEquals("absolute", "/djb.html", parsed.getAbsolute());
+        assertFalse("is dir", parsed.attributes.isDirectory());
+        assertFalse("is root", parsed.isRoot());
         
-        this.assertEquals("size", 280, parsed.attributes.getSize());
+        assertEquals("size", 280, parsed.attributes.getSize());
         
         long millis = 825718503;
         millis = millis * 1000;
-        this.assertEquals("timestamp", new Date(millis), parsed.attributes.getTimestamp());
-        this.assertEquals("type", Path.FILE_TYPE, parsed.attributes.getType());
-        this.assertFalse("attr is dir", parsed.attributes.isDirectory());
-        this.assertTrue("attr is file", parsed.attributes.isFile());
-        this.assertFalse("attr is link", parsed.attributes.isSymbolicLink());
-        this.assertEquals("owner", "Unknown", parsed.attributes.getOwner());
-        this.assertEquals("group", "Unknown", parsed.attributes.getGroup());
+        assertEquals("timestamp", new Date(millis), parsed.attributes.getTimestamp());
+        assertEquals("type", Path.FILE_TYPE, parsed.attributes.getType());
+        assertFalse("attr is dir", parsed.attributes.isDirectory());
+        assertTrue("attr is file", parsed.attributes.isFile());
+        assertFalse("attr is link", parsed.attributes.isSymbolicLink());
+        assertEquals("owner", "Unknown", parsed.attributes.getOwner());
+        assertEquals("group", "Unknown", parsed.attributes.getGroup());
         
-//        this.assertEquals("permissions", "r--r--r-- (444)", parsed.attributes.getPermission().toString());
+//        assertEquals("permissions", "r--r--r-- (444)", parsed.attributes.getPermission().toString());
     }
     
     public void testReadonlyDirectory() {
         Path parsed = parser.parseFTPEntry(parentPath, "+m825718503,/,\t514");
         
-        this.assertEquals("name", "514", parsed.getName());
-        this.assertEquals("absolute", "/514", parsed.getAbsolute());
-        this.assertTrue("is dir", parsed.attributes.isDirectory());
-        this.assertFalse("is root", parsed.isRoot());
+        assertEquals("name", "514", parsed.getName());
+        assertEquals("absolute", "/514", parsed.getAbsolute());
+        assertTrue("is dir", parsed.attributes.isDirectory());
+        assertFalse("is root", parsed.isRoot());
         
-        this.assertEquals("size", -1, parsed.attributes.getSize());
+        assertEquals("size", -1, parsed.attributes.getSize());
         
         long millis = 825718503;
         millis = millis * 1000;
-        this.assertEquals("timestamp", new Date(millis), parsed.attributes.getTimestamp());
-        this.assertEquals("type", Path.DIRECTORY_TYPE, parsed.attributes.getType());
-        this.assertTrue("attr is dir", parsed.attributes.isDirectory());
-        this.assertFalse("attr is file", parsed.attributes.isFile());
-        this.assertFalse("attr is link", parsed.attributes.isSymbolicLink());
-        this.assertEquals("owner", "Unknown", parsed.attributes.getOwner());
-        this.assertEquals("group", "Unknown", parsed.attributes.getGroup());
+        assertEquals("timestamp", new Date(millis), parsed.attributes.getTimestamp());
+        assertEquals("type", Path.DIRECTORY_TYPE, parsed.attributes.getType());
+        assertTrue("attr is dir", parsed.attributes.isDirectory());
+        assertFalse("attr is file", parsed.attributes.isFile());
+        assertFalse("attr is link", parsed.attributes.isSymbolicLink());
+        assertEquals("owner", "Unknown", parsed.attributes.getOwner());
+        assertEquals("group", "Unknown", parsed.attributes.getGroup());
         
-//        this.assertEquals("permissions", "r-xr-xr-x (555)", parsed.attributes.getPermission().toString());
+//        assertEquals("permissions", "r-xr-xr-x (555)", parsed.attributes.getPermission().toString());
     }
     
     public void testSpecifiedPermissionsOverrideStandardDirPermissions() {
         Path parsed = parser.parseFTPEntry(parentPath, "+up153,/,\t514");
-        this.assertTrue("is dir", parsed.attributes.isDirectory());
-        this.assertEquals("type", Path.DIRECTORY_TYPE, parsed.attributes.getType());
-        this.assertTrue("attr is dir", parsed.attributes.isDirectory());
-//        this.assertEquals("--xr-x-wx (153)", parsed.attributes.getPermission().toString());
+        assertTrue("is dir", parsed.attributes.isDirectory());
+        assertEquals("type", Path.DIRECTORY_TYPE, parsed.attributes.getType());
+        assertTrue("attr is dir", parsed.attributes.isDirectory());
+//        assertEquals("--xr-x-wx (153)", parsed.attributes.getPermission().toString());
     }
     
     public void testSpecifiedPermissionsDoesntRemoveDirTag() {
         Path parsed = parser.parseFTPEntry(parentPath, "+/,up153,\t514");
-        this.assertTrue("is dir", parsed.attributes.isDirectory());
-        this.assertEquals("type", Path.DIRECTORY_TYPE, parsed.attributes.getType());
-        this.assertTrue("attr is dir", parsed.attributes.isDirectory());
-//        this.assertEquals("--xr-x-wx (153)", parsed.attributes.getPermission().toString());
+        assertTrue("is dir", parsed.attributes.isDirectory());
+        assertEquals("type", Path.DIRECTORY_TYPE, parsed.attributes.getType());
+        assertTrue("attr is dir", parsed.attributes.isDirectory());
+//        assertEquals("--xr-x-wx (153)", parsed.attributes.getPermission().toString());
     }
     
     public void testSpecifiedPermissionsOverrideStandardFilePermissions() {
         Path parsed = parser.parseFTPEntry(parentPath, "+up153,r,\tmyfile");
-        this.assertFalse("is dir", parsed.attributes.isDirectory());
-        this.assertEquals("type", Path.FILE_TYPE, parsed.attributes.getType());
-        this.assertTrue("attr is file", parsed.attributes.isFile());
-//        this.assertEquals("--xr-x-wx (153)", parsed.attributes.getPermission().toString());
+        assertFalse("is dir", parsed.attributes.isDirectory());
+        assertEquals("type", Path.FILE_TYPE, parsed.attributes.getType());
+        assertTrue("attr is file", parsed.attributes.isFile());
+//        assertEquals("--xr-x-wx (153)", parsed.attributes.getPermission().toString());
     }
     
     public void testHideUnreadableFilesAndDirs() {
@@ -144,25 +144,25 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         Path parsed = null;
         
         parsed = parser.parseFTPEntry(parentPath, "+,m825718503,r,s280,\tdjb.html\r\n");
-        this.assertEquals("name", "djb.html", parsed.getName());
-        this.assertFalse("is dir", parsed.attributes.isDirectory());
-        this.assertEquals("size", 280, parsed.attributes.getSize());        
-        this.assertEquals("timestamp", new Date(millis), parsed.attributes.getTimestamp());        
-        this.assertEquals("permissions", "--------- (000)", parsed.attributes.getPermission().toString());
+        assertEquals("name", "djb.html", parsed.getName());
+        assertFalse("is dir", parsed.attributes.isDirectory());
+        assertEquals("size", 280, parsed.attributes.getSize());
+        assertEquals("timestamp", new Date(millis), parsed.attributes.getTimestamp());
+        assertEquals("permissions", "--------- (000)", parsed.attributes.getPermission().toString());
         
         parsed = parser.parseFTPEntry(parentPath, "+m825718503,,r,s280,\tdjb.html\r\n");
-        this.assertEquals("X name", "djb.html", parsed.getName());
-        this.assertFalse("X is dir", parsed.attributes.isDirectory());
-        this.assertEquals("X size", 280, parsed.attributes.getSize());        
-        this.assertEquals("X timestamp", new Date(millis), parsed.attributes.getTimestamp());        
-        this.assertEquals("permissions", "--------- (000)", parsed.attributes.getPermission().toString());
+        assertEquals("X name", "djb.html", parsed.getName());
+        assertFalse("X is dir", parsed.attributes.isDirectory());
+        assertEquals("X size", 280, parsed.attributes.getSize());
+        assertEquals("X timestamp", new Date(millis), parsed.attributes.getTimestamp());
+        assertEquals("permissions", "--------- (000)", parsed.attributes.getPermission().toString());
         
         parsed = parser.parseFTPEntry(parentPath, "+m825718503,r,s280,,\tdjb.html\r\n");
-        this.assertEquals("XX name", "djb.html", parsed.getName());
-        this.assertFalse("XX is dir", parsed.attributes.isDirectory());
-        this.assertEquals("XX size", 280, parsed.attributes.getSize());        
-        this.assertEquals("XX timestamp", new Date(millis), parsed.attributes.getTimestamp());        
-        this.assertEquals("permissions", "--------- (000)", parsed.attributes.getPermission().toString());
+        assertEquals("XX name", "djb.html", parsed.getName());
+        assertFalse("XX is dir", parsed.attributes.isDirectory());
+        assertEquals("XX size", 280, parsed.attributes.getSize());
+        assertEquals("XX timestamp", new Date(millis), parsed.attributes.getTimestamp());
+        assertEquals("permissions", "--------- (000)", parsed.attributes.getPermission().toString());
     }
 
     public void testNoFacts() {
