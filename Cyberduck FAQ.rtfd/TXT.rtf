@@ -43,7 +43,7 @@
 \f1\b Why isn't there a <insert your preferred language here> localization?
 \f0\b0 \
 	Because nobody has written one yet. Why not doing it yourself? It's easy and you don't need any programming skills. Contact me and I'll send you the relevant files. Current available localizations are 
-\f2\i English, Dutch, German, French, Italian, Japanese, Korean, Portuguese, Spanish and Finnish
+\f2\i English, Dutch, German, French, Italian, Japanese, Korean, Chinese (Traditional and Simplified), Portuguese, Spanish and Finnish
 \f0\i0 .\
 
 \f1\b \
@@ -69,24 +69,10 @@
 
 \f1\b \cf0 	
 \f0\b0 ~/Library/Preferences/ch.sudo.cyberduck.plist\
-
-\f1\b \
-\'a5	How to disable automatic update check?\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	There is missing a checkbox in the preferences to disable the update check. A checkbox is only available in the dialog reporting a newer version. If you don't want to use this feature for whatever reasons, enter the following line in a Terminal.app window: 
-\f1\b \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f3\b0 \cf0 		defaults write ch.sudo.cyberduck update.check false\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0 \cf0 	No data is sent from your computer to the server but the IP address where the request originated is logged.\
 \
 \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b\fs48 \cf0 	Cyberduck How-to\
+\f1\b\fs48 	Cyberduck How-to\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0\fs24 \cf0 \
@@ -132,14 +118,17 @@
 \f1\b 	Does Cyberduck support Rendezvous/Zeroconf?
 \f0\b0 \
 	In the 'New Connection' Dialog look at the Rendezvous icon in the top left corner. You will get a list with FTP/SFTP servers supporting Rendezvous on your local network.\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+\cf0 	
+\f0\fs24 You can also see available Rendezvous services in the 'Bookmark' menu.\
 \
-	{{\NeXTGraphic Pasted Graphic 11.tiff \width9140 \height1560
+	{{\NeXTGraphic Pasted Graphic.tiff \width4680 \height1040
 }¬}
 \f0\fs24 \
 \
-\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b \'a5	BOOKMARK MANAGEMENT\
+\f1\b \cf0 \'a5	BOOKMARK MANAGEMENT\
 	How do I add a new bookmark?\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
@@ -190,7 +179,7 @@
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0 \cf0 \
-	Select the files to download in the browser window and press the 'Download' toolbar button. Or double click the the file. And last but not least just drag the file(s) or folder(s) to the desired download location in the Finder. A new transfer window will open and show you the transfer progress.\
+	Select the files to download in the browser window and press the 'Download' toolbar button. Or double click the the file. Or select 'Download' from the 'File' or the Context Menu. And last but not least just drag the file(s) or folder(s) to the desired download location in the Finder. A new transfer window will open and show you the transfer progress.\
 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
@@ -313,7 +302,7 @@
 	\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b \cf0 	When I upload a file I get the error 'SITE chmod 664: command not understood'\
+\f1\b \cf0 	When I upload a file I get the error 'SITE chmod 664: command not understood' or 'Permission denied'\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0 \cf0 	Uncheck the option 'FTP > Adjust file permissions on upload' in the Preferences\
