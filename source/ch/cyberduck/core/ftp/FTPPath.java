@@ -399,14 +399,14 @@ public class FTPPath extends Path {
 				lineSeparator = DOS_LINE_SEPARATOR;
 			}
 			session.FTP.setTransferType(FTPTransferType.ASCII);
-			try {
-				session.log("Determining file size...", Message.PROGRESS);
-				this.setSize(session.FTP.size(this.getAbsolute()));
-			}
-			catch(FTPException e) {
-				log.error(e.getMessage());
-				//ignore; SIZE command not recognized
-			}
+//			try {
+//				session.log("Determining file size...", Message.PROGRESS);
+//				this.setSize(session.FTP.size(this.getAbsolute()));
+//			}
+//			catch(FTPException e) {
+//				log.error(e.getMessage());
+//				//ignore; SIZE command not recognized
+//			}
 			if(this.status.isResume()) {
 				this.status.setCurrent(this.getLocal().getSize());
 			}

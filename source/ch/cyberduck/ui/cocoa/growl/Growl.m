@@ -155,6 +155,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 		GROWL_SYNCHRONIZATION_COMPLETE,
 		GROWL_CONNECTION_OPENED,
 		GROWL_CONNECTION_FAILED,
+		GROWL_RENDEZVOUS_FOUND_SERVICE,
 		nil];
 	
 	NSDictionary *registrationDict = [NSDictionary dictionaryWithObjectsAndKeys:

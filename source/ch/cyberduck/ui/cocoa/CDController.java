@@ -85,15 +85,17 @@ public abstract class CDController {
 	}
 
 	public void beginSheet(NSWindow sheet, Object delegate, NSSelector endSelector, Object contextInfo) {
-		log.debug("beginSheet");
-		this.waitForSheet();
-		this.window().makeKeyAndOrderFront(null);
-		NSApplication.sharedApplication().beginSheet(sheet, //sheet
-													 this.window(),
-													 delegate, //modalDelegate
-													 endSelector, // did end selector
-													 contextInfo); //contextInfo
-		this.window().makeKeyAndOrderFront(null);
+		synchronized(this) {
+			log.debug("beginSheet");
+			this.waitForSheet();
+			this.window().makeKeyAndOrderFront(null);
+			NSApplication.sharedApplication().beginSheet(sheet, //sheet
+														 this.window(),
+														 delegate, //modalDelegate
+														 endSelector, // did end selector
+														 contextInfo); //contextInfo
+			this.window().makeKeyAndOrderFront(null);
+		}
 	}
 
 	public void sheetDidEnd(NSWindow window, int returncode, Object contextInfo) {

@@ -61,6 +61,7 @@ public abstract class Path {
 		copy.local = this.local;
 		copy.attributes = this.attributes;
 		copy.status = this.status;
+		copy.size = this.size;
 		return copy;
 	}
 

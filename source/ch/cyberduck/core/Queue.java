@@ -340,7 +340,7 @@ public abstract class Queue extends Observable {
 	public String getSpeedAsString() {
 		if(this.worker.isRunning() && this.worker.isInitialized()) {
 			if(this.getSpeed() > -1) {
-				return Status.getSizeAsString(this.getSpeed())+"/sec";
+				return "("+Status.getSizeAsString(this.getSpeed())+"/sec)";
 			}
 		}
 		return "";
