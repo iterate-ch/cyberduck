@@ -2,11 +2,14 @@
     IBClasses = (
         {
             ACTIONS = {
+                addBookmarkButtonClicked = id; 
                 deleteButtonClicked = id; 
                 downloadButtonClicked = id; 
+                editBookmarkButtonClicked = id; 
                 folderButtonClicked = id; 
                 infoButtonClicked = id; 
                 refreshButtonClicked = id; 
+                removeBookmarkButtonClicked = id; 
             }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 
