@@ -44,9 +44,5 @@
 		</dict>
 		<key>Name</key>
 		<string>Cyberduck</string>
-		<key>UsedFeatures</key>
-		<array>
-			<string>UnnamedArguments</string>
-		</array>
 	</dict>
 </plist>
