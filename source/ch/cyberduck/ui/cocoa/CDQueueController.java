@@ -125,7 +125,7 @@ public class CDQueueController extends NSObject implements Observer, CDControlle
 	}
 	
 	public void alertSheetDidClose(Object sender) {
-		instance.notifyAll();
+//		instance.notifyAll();
 	}
 	
 	public void windowDidBecomeKey(NSNotification notification) {
@@ -340,8 +340,8 @@ public class CDQueueController extends NSObject implements Observer, CDControlle
 				while (this.window().attachedSheet() != null) {
 					try {
 						log.debug("Sleeping...");
-						instance.wait();
-//						Thread.sleep(1000); //milliseconds
+//						instance.wait();
+						Thread.sleep(1000); //milliseconds
 					}
 					catch (InterruptedException e) {
 						log.error(e.getMessage());

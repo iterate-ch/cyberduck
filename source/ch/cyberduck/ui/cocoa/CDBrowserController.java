@@ -215,7 +215,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         this.browserTable.setTarget(this);
         this.browserTable.setDoubleAction(new NSSelector("browserTableRowDoubleClicked", new Class[]{Object.class}));
         this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
-        this.browserTable.setDelegate(this.browserModel);
+        this.browserTable.setDelegate(this.browserModel); //@todo
         // receive drag events from types
         this.browserTable.registerForDraggedTypes(new NSArray(new Object[]{
             "QueuePboardType",
@@ -326,6 +326,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         }
 
         this.browserTable.sizeToFit();
+		
         // selection properties
         this.browserTable.setAllowsMultipleSelection(true);
         this.browserTable.setAllowsEmptySelection(true);
@@ -357,10 +358,10 @@ public class CDBrowserController extends NSObject implements CDController, Obser
     public void setBookmarkTable(NSTableView bookmarkTable) {
         log.debug("setBookmarkTable");
         this.bookmarkTable = bookmarkTable;
+		this.bookmarkTable.setDelegate(this);
         this.bookmarkTable.setTarget(this);
         this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableRowDoubleClicked", new Class[]{Object.class}));
         this.bookmarkTable.setDataSource(this.bookmarkModel = CDBookmarkTableDataSource.instance());
-        this.bookmarkTable.setDelegate(this.bookmarkModel);
 
         // receive drag events from types
         this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]
@@ -408,10 +409,10 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 
         this.bookmarkTable.sizeToFit();
 
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("bookmarkSelectionDidChange", new Class[]{NSNotification.class}),
-                NSTableView.TableViewSelectionDidChangeNotification,
-                this.bookmarkTable);
+//        (NSNotificationCenter.defaultCenter()).addObserver(this,
+//              new NSSelector("bookmarkSelectionDidChange", new Class[]{NSNotification.class}),
+//                NSTableView.TableViewSelectionDidChangeNotification,
+//                this.bookmarkTable);
     }
 
     public void bookmarkSelectionDidChange(NSNotification notification) {
@@ -1575,22 +1576,25 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                     icon.setSize(new NSSize(16f, 16f));
                     return icon;
                 }
-                else if (identifier.equals("FILENAME")) {
+                if (identifier.equals("FILENAME")) {
                     return new NSAttributedString(p.getName(), TABLE_CELL_PARAGRAPH_DICTIONARY);
                 }
-                else if (identifier.equals("SIZE")) {
+                if (identifier.equals("SIZE")) {
                     return new NSAttributedString(Status.getSizeAsString(p.status.getSize()), TABLE_CELL_PARAGRAPH_DICTIONARY);
                 }
-                else if (identifier.equals("MODIFIED")) {
+                if (identifier.equals("MODIFIED")) {
                     return new NSGregorianDate((double)p.attributes.getTimestamp().getTime() / 1000,
                             NSDate.DateFor1970);
                 }
-                else if (identifier.equals("OWNER")) {
+                if (identifier.equals("OWNER")) {
                     return new NSAttributedString(p.attributes.getOwner(), TABLE_CELL_PARAGRAPH_DICTIONARY);
                 }
-                else if (identifier.equals("PERMISSIONS")) {
+                if (identifier.equals("PERMISSIONS")) {
                     return new NSAttributedString(p.attributes.getPermission().toString(), TABLE_CELL_PARAGRAPH_DICTIONARY);
                 }
+				if (identifier.equals("TOOLTIP")) {
+					return p.getAbsolute();
+				}
                 throw new IllegalArgumentException("Unknown identifier: " + identifier);
             }
             return null;
@@ -1917,10 +1921,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             tableView.setIndicatorImage(this.sortAscending ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), tableColumn);
             this.sort(tableColumn, sortAscending);
             tableView.reloadData();
-        }
-
-        public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-            return false;
         }
 
         // ----------------------------------------------------------

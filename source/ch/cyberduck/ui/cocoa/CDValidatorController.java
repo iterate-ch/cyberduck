@@ -48,26 +48,17 @@ public abstract class CDValidatorController extends AbstractValidator {
     }
 
 	public void awakeFromNib() {
-		this.fileTableView.setDelegate(this);
 		this.fileTableView.setDataSource(this);
 		this.fileTableView.sizeToFit();
+        (NSNotificationCenter.defaultCenter()).addObserver(this,
+														   new NSSelector("tableViewSelectionDidChange", new Class[]{NSNotification.class}),
+														   NSTableView.TableViewSelectionDidChangeNotification,
+														   this.fileTableView);
 	}
 	
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
-
-	private NSTextField localTimestampField;
-	
-	public void setLocalTimestampField(NSTextField localTimestampField) {
-		this.localTimestampField = localTimestampField;
-	}
-	
-	private NSTextField remoteTimestampField;
-	
-	public void setRemoteTimestampField(NSTextField remoteTimestampField) {
-		this.remoteTimestampField = remoteTimestampField;
-	}
 	
 	private NSTextField infoLabel; // IBOutlet
 	
@@ -87,18 +78,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.localField = localField;
 	}
 
-	private NSTextField localSizeField; // IBOutlet
-	
-	public void setLocalSizeField(NSTextField localSizeField) {
-		this.localSizeField = localSizeField;
-	}
-
-	private NSTextField remoteSizeField; // IBOutlet
-	
-	public void setRemoteSizeField(NSTextField remoteSizeField) {
-		this.remoteSizeField = remoteSizeField;
-	}
-	
 	private NSProgressIndicator statusIndicator; // IBOutlet
 	
 	public void setStatusIndicator(NSProgressIndicator statusIndicator) {
@@ -151,7 +130,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 	
 	protected void reloadTable() {
-		this.fileTableView.deselectAll(null);
+//		this.fileTableView.deselectAll(null);
 		this.fileTableView.reloadData();
 		this.infoLabel.setStringValue(this.workset.size()+" "+NSBundle.localizedString("files", ""));
 	}
@@ -290,66 +269,33 @@ public abstract class CDValidatorController extends AbstractValidator {
 	
 	private final NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
 	
-	public boolean tableViewShouldSelectRow(NSTableView aTableView, int rowIndex) {
-		return true;
-	}
-	
 	public void tableViewSelectionDidChange(NSNotification notification) {
 		if(this.fileTableView.selectedRow() != -1) {
 			Path p = (Path)this.workset.get(this.fileTableView.selectedRow());
 			if(p != null) {
-				try {
-					if(p.getLocal().exists()) {
-						this.localField.setAttributedStringValue(new NSAttributedString(p.getLocal().getAbsolute(),
-																						TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
-																 );
-						String localeTS = formatter.stringForObjectValue(new NSGregorianDate((double)p.getLocal().getTimestamp().getTime()/1000, 
-																							 NSDate.DateFor1970)
-																		 );
-						this.localTimestampField.setAttributedStringValue(new NSAttributedString(localeTS, 
-																								 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
-																		  );
-						this.localSizeField.setStringValue(Status.getSizeAsString(p.getLocal().length()));
-					}
-					else {
-						this.localField.setStringValue("-");
-						this.localTimestampField.setStringValue("-");
-						this.localSizeField.setStringValue("-");
-					}
-					if(p.getRemote().exists()) {
-						this.urlField.setAttributedStringValue(new NSAttributedString(p.getRemote().getHost().getURL()+p.getRemote().getAbsolute(), 
-																					  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
-															   );
-						String remoteTS = formatter.stringForObjectValue(new NSGregorianDate((double)p.getRemote().attributes.getTimestamp().getTime()/1000, 
-																							 NSDate.DateFor1970)
-																		 );
-						this.remoteTimestampField.setAttributedStringValue(new NSAttributedString(remoteTS, 
-																								  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
-																		   );
-						this.remoteSizeField.setStringValue(Status.getSizeAsString(p.status.getSize()));
-					}
+				if(p.getLocal().exists()) {
+					this.localField.setAttributedStringValue(new NSAttributedString(p.getLocal().getAbsolute(),
+																					TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
+															 );
 				}
-				catch(NSFormatter.FormattingException e) {
-					log.error(e.toString());
+				else {
+					this.localField.setStringValue("-");
+				}
+				if(p.getRemote().exists()) {
+					this.urlField.setAttributedStringValue(new NSAttributedString(p.getRemote().getHost().getURL()+p.getRemote().getAbsolute(), 
+																				  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
+														   );
 				}
 			}
 		}
 		else {
 			this.urlField.setStringValue("-");
-			this.remoteTimestampField.setStringValue("-");
-			this.remoteSizeField.setStringValue("-");
-
 			this.localField.setStringValue("-");
-			this.localTimestampField.setStringValue("-");
-			this.localSizeField.setStringValue("-");
 		}
 	}
 	
-	public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn column, int row) {
-//		tableView.setToolTip(null);
-	}
-	
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
+		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier());
         if (row < numberOfRowsInTableView(tableView)) {
             String identifier = (String)tableColumn.identifier();
 			Path p = (Path)this.workset.get(row);
@@ -361,6 +307,28 @@ public abstract class CDValidatorController extends AbstractValidator {
 					NSImage icon = CDIconCache.instance().get(p.getExtension());
 					icon.setSize(new NSSize(16f, 16f));
 					return icon;
+				}
+				if (identifier.equals("TOOLTIP")) {
+					try {
+						String localTimestamp = formatter.stringForObjectValue(new NSGregorianDate((double)p.getLocal().getTimestamp().getTime()/1000, 
+																								   NSDate.DateFor1970)
+																			   );
+						String remoteTimestamp = formatter.stringForObjectValue(new NSGregorianDate((double)p.getRemote().attributes.getTimestamp().getTime()/1000, 
+																									NSDate.DateFor1970)
+																				);
+						return
+							NSBundle.localizedString("Local", "")+":\n"
+							+"\t"+p.getLocal().getAbsolute()+"\n"
+							+"\t"+NSBundle.localizedString("Size", "")+": "+ Status.getSizeAsString(p.getLocal().length())+"\n"
+							+"\t"+NSBundle.localizedString("Modified", "")+": "+localTimestamp+"\n"
+							+ NSBundle.localizedString("Remote", "")+":\n"
+							+"\t"+p.getAbsolute()+"\n"
+							+"\t"+NSBundle.localizedString("Size", "")+": "+Status.getSizeAsString(p.status.getSize())+"\n"
+							+"\t"+NSBundle.localizedString("Modified", "")+": "+remoteTimestamp+"\n";
+					}
+					catch(NSFormatter.FormattingException e) {
+						log.error(e.toString());
+					}
 				}
 			}
 		}
