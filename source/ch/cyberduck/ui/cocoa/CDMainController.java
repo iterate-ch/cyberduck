@@ -135,7 +135,7 @@ public class CDMainController extends NSObject {
 															   );
 						}
 						else {
-							if (false == NSApplication.loadNibNamed("Update", this)) {
+							if (false == NSApplication.loadNibNamed("Update", CDMainController.this)) {
 								log.fatal("Couldn't load Update.nib");
 								return;
 							}

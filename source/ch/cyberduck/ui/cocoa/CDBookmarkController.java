@@ -53,6 +53,7 @@ public class CDBookmarkController extends NSObject {
     }
 
     public void windowWillClose(NSNotification notification) {
+		OFFSET =- 16;
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
         CDBookmarksImpl.instance().save();
@@ -122,6 +123,8 @@ public class CDBookmarkController extends NSObject {
 
     private NSTableView callback;
 
+	private static int OFFSET = 0;
+
     // ----------------------------------------------------------
     // Constructors
     // ----------------------------------------------------------
@@ -130,6 +133,7 @@ public class CDBookmarkController extends NSObject {
         this.callback = callback;
         this.host = host;
         instances.addObject(this);
+		OFFSET =+ 16;
         if (false == NSApplication.loadNibNamed("Bookmark", this)) {
             log.fatal("Couldn't load Bookmark.nib");
         }
@@ -138,7 +142,7 @@ public class CDBookmarkController extends NSObject {
     public void awakeFromNib() {
         log.debug("awakeFromNib");
         NSPoint origin = this.window.frame().origin();
-        this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
+        this.window.setFrameOrigin(new NSPoint(origin.x() + OFFSET, origin.y() - OFFSET));
         this.window.setTitle(this.host.getNickname());
         (NSNotificationCenter.defaultCenter()).addObserver(this,
                 new NSSelector("hostInputDidEndEditing", new Class[]{NSNotification.class}),

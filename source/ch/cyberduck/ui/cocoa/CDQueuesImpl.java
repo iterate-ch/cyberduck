@@ -102,7 +102,7 @@ public class CDQueuesImpl extends Queues { //implements NSTableView.DataSource {
                 log.error("Problem reading queue file: " + errorString[0]);
             }
             else {
-                log.info("Successfully read Queue: " + propertyListFromXMLData);
+                log.debug("Successfully read Queue: " + propertyListFromXMLData);
             }
             if (propertyListFromXMLData instanceof NSArray) {
                 NSArray entries = (NSArray) propertyListFromXMLData;

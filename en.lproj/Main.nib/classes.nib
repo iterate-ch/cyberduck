@@ -40,7 +40,7 @@
             }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDMainController"; 
             LANGUAGE = Java; 
-            SUPERCLASS = "java.lang.Object"; 
+            SUPERCLASS = NSObject; 
         }
     ); 
     IBVersion = 1; 

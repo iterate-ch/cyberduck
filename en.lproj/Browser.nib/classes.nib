@@ -40,7 +40,7 @@
                 upButton = NSButton; 
                 window = NSWindow; 
             }; 
-            SUPERCLASS = "java.lang.Object"; 
+            SUPERCLASS = NSObject; 
         }
     ); 
     IBVersion = 1; 

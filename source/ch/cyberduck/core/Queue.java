@@ -77,18 +77,21 @@ public class Queue extends Observable implements Observer { //Thread {
 	/**
 		* The root of the queue; either the file itself or the parent directory of all files
 	 */
-	private Path root;
+	private List roots = new ArrayList();
 	
 	/**
 		* @return Either the parent directory of the items in the queue or the file currently
 	 * being processed. If no file is currently transferred, the first item in the queue is returned.
 	 */
 	public Path getRoot() {
+		return (Path)roots.get(0);
+		/*
 		if(null != root)
 			return this.root;
 		if(null != currentJob)
 			return this.currentJob;
 		return (Path)jobs.get(0);
+		 */
 	}
 
 	/**
@@ -108,8 +111,6 @@ public class Queue extends Observable implements Observer { //Thread {
 	private long speed;
 
 	private long timeLeft = -1;
-//	private long current = 0;
-//	private long size = 0;
 
 	private String status = "";
 	private String error = "";
@@ -118,39 +119,39 @@ public class Queue extends Observable implements Observer { //Thread {
 		* @param root Usually the parent directory of serveral files
 	 * @param kind Either <code>KIND_DOWNLOAD</code> or <code>KIND_UPLOAD</code>
 	 */
-	public Queue(Path root, int kind) {
-		this.root = root;
-		this.kind = kind;
-		this.add(root);
-		this.init();
-	}
+//	public Queue(Path root, int kind) {
+//		this.root = root;
+//		this.kind = kind;
+//		this.add(root);
+//		this.init();
+//	}
 	
 	/**
+		* Creating an empty queue containing no items. Items have to be added later
+	 * using the <code>add</code> method.
 		* The root will be determined by runtime as the currently processed job
 	 * @param kind Either <code>KIND_DOWNLOAD</code> or <code>KIND_UPLOAD</code>
 	 */
 	public Queue(int kind) {
-		this(null, kind);
+		this.kind = kind;
+		this.init();
 	}
 	
 	public Queue(NSDictionary dict) {
 		Host host = new Host((NSDictionary) dict.objectForKey("Host"));
 		Session s = SessionFactory.createSession(host);
-		NSArray roots = (NSArray) dict.objectForKey("Roots");
-		for (int i = 0; i < roots.count(); i++) {
-			// only one root element allowed for now - will probably never change
-			this.root = PathFactory.createPath(s, (NSDictionary) roots.objectAtIndex(i));
+		NSArray r = (NSArray) dict.objectForKey("Roots");
+		for (int i = 0; i < r.count(); i++) {
+			this.roots.add(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
 		}
-		NSArray items = (NSArray) dict.objectForKey("Items");
-		if(null != items) {
-			for (int i = 0; i < items.count(); i++) {
-				this.add(PathFactory.createPath(s, (NSDictionary) items.objectAtIndex(i)));
-			}
-		}
+//		NSArray items = (NSArray) dict.objectForKey("Items");
+//		if(null != items) {
+//			for (int i = 0; i < items.count(); i++) {
+//				this.add(PathFactory.createPath(s, (NSDictionary) items.objectAtIndex(i)));
+//			}
+//		}
 		this.kind = Integer.parseInt((String)dict.objectForKey("Kind"));
 		this.status = (String) dict.objectForKey("Status");
-//		this.size = Integer.parseInt((String)dict.objectForKey("Size"));
-//		this.current = Integer.parseInt((String)dict.objectForKey("Current"));
 		this.init();
 	}
 
@@ -158,19 +159,17 @@ public class Queue extends Observable implements Observer { //Thread {
 		NSMutableDictionary dict = new NSMutableDictionary();
 		dict.setObjectForKey(this.status, "Status");
 		dict.setObjectForKey(this.kind+"", "Kind");
-//		dict.setObjectForKey(this.getSize()+"", "Size");
-//		dict.setObjectForKey(this.getCurrent()+"", "Current");
 		dict.setObjectForKey(this.getRoot().getHost().getAsDictionary(), "Host");
-		NSMutableArray roots = new NSMutableArray();
-//		for (Iterator iter = roots.iterator() ; iter.hasNext() ;) {
-			roots.addObject(this.getRoot().getAsDictionary());
-//		}
-		dict.setObjectForKey(roots, "Roots");
-		NSMutableArray items = new NSMutableArray();
-		for (Iterator iter = jobs.iterator() ; iter.hasNext() ;) {
-			items.addObject(((Path)iter.next()).getAsDictionary());
+		NSMutableArray r = new NSMutableArray();
+		for (Iterator iter = this.roots.iterator() ; iter.hasNext() ;) {
+			r.addObject(((Path)iter.next()).getAsDictionary());
 		}
-		dict.setObjectForKey(items, "Items");
+		dict.setObjectForKey(r, "Roots");
+//		NSMutableArray items = new NSMutableArray();
+//		for (Iterator iter = jobs.iterator() ; iter.hasNext() ;) {
+//			items.addObject(((Path)iter.next()).getAsDictionary());
+//		}
+//		dict.setObjectForKey(items, "Items");
 		return dict;
 	}
 	
@@ -179,11 +178,14 @@ public class Queue extends Observable implements Observer { //Thread {
 	 * @param item The path to be added in the queue
 	 */
 	public void add(Path item) {
-		for (Iterator iter = item.getChilds(this.kind).iterator() ; iter.hasNext() ;) {
-			this.jobs.add((Path)iter.next());
-		}
+		log.debug("add:"+item);
+		this.roots.add(item);
+//		this.root = item;
+//		for (Iterator iter = item.getChilds(Queue.this.kind).iterator() ; iter.hasNext() ;) {
+//			Queue.this.jobs.add((Path)iter.next());
+//		}
 	}
-
+	
 	/**
 		* @return Either <code>KIND_DOWNLOAD</code> or <code>KIND_UPLOAD</code>
 	 */
@@ -221,17 +223,23 @@ public class Queue extends Observable implements Observer { //Thread {
 	public void start(final Validator validator, final Observer observer) {
 		log.debug("start");
 		this.init();
-		
 		new Thread() {
 			public void run() {
 				Queue.this.addObserver(observer);
 				
 				Queue.this.elapsedTimer.start();
 				Queue.this.running = true;
-
-				callObservers(new Message(Message.QUEUE_START, Queue.this));
+				Queue.this.callObservers(new Message(Message.QUEUE_START, Queue.this));
+				
 				Queue.this.getRoot().getSession().addObserver(Queue.this);
-
+				for (Iterator i = roots.iterator() ; i.hasNext() && !Queue.this.isCanceled(); ) {
+					log.debug("*");
+					for (Iterator k = ((Path)i.next()).getChilds(Queue.this.kind).iterator() ; k.hasNext() && !Queue.this.isCanceled();) {
+						log.debug("-");
+						Queue.this.jobs.add((Path)k.next());
+					}
+				}
+				
 				for (Iterator iter = jobs.iterator() ; iter.hasNext() && !Queue.this.isCanceled(); ) {
 					Path item = (Path)iter.next();
 					if (!validator.validate(item, Queue.this.kind)) {
@@ -246,8 +254,8 @@ public class Queue extends Observable implements Observer { //Thread {
 					Queue.this.run((Path)iter.next());
 				}
 				
-				Queue.this.elapsedTimer.stop();
 				Queue.this.running = false;
+				Queue.this.elapsedTimer.stop();
 				Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
 
 				Queue.this.getRoot().getSession().close();
@@ -294,8 +302,6 @@ public class Queue extends Observable implements Observer { //Thread {
 			for (Iterator iter = jobs.iterator() ; iter.hasNext(); ) {
 				((Path)iter.next()).status.setCanceled(true);
 			}
-//			if(currentJob != null)
-//				currentJob.status.setCanceled(true);
 		}
 	}
 
@@ -336,12 +342,16 @@ public class Queue extends Observable implements Observer { //Thread {
 	public int processedJobs() {
 		return this.processedJobs;
 	}
+	
+	public int numberOfRoots() {
+		return this.roots.size();
+	}
 
 	/**
 	 * @return Number of jobs in the this.
 	 */
 	public int numberOfJobs() {
-		return jobs.size();
+		return this.jobs.size();
 	}
 
 	/**
@@ -480,6 +490,8 @@ public class Queue extends Observable implements Observer { //Thread {
 		this.completedJobs = 0;
 		this.processedJobs = 0;
 		this.error = "";
+		
+		this.jobs.clear();
 		
 		this.calendar.set(Calendar.HOUR, 0);
 		this.calendar.set(Calendar.MINUTE, 0);

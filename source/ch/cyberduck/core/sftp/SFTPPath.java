@@ -31,6 +31,7 @@ import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 
 import java.io.*;
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -345,10 +346,7 @@ public class SFTPPath extends Path {
 	private List getDownloadQueue(List queue) throws IOException {
 		try {
 			if (isDirectory()) {
-				this.session.check();
-				List files = this.list(false, true);
-				java.util.Iterator i = files.iterator();
-				while (i.hasNext()) {
+				for (Iterator i = this.list(false, true).iterator() ; i.hasNext() ;) {
 					SFTPPath p = (SFTPPath) i.next();
 					p.setLocal(new Local(this.getLocal(), p.getName()));
 					p.status.setResume(this.status.isResume());
@@ -356,8 +354,6 @@ public class SFTPPath extends Path {
 				}
 			}
 			else if (isFile()) {
-//				SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-//				this.status.setSize(p.getAttributes().getSize().intValue());
 				queue.add(this);
 			}
 			else
@@ -375,23 +371,26 @@ public class SFTPPath extends Path {
 	public void download() {
 		try {
 			log.debug("download:" + this.toString());
-			if (!this.isFile())
-				throw new IOException("Download must be a file.");
-			this.session.check();
-			this.getLocal().getParentFile().mkdirs();
-			OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
-			if (out == null) {
-				throw new IOException("Unable to buffer data");
+			if (this.isDirectory()) {
+				this.getLocal().mkdir();
+//				throw new IOException("Download must be a file.");
 			}
-			SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-			this.status.setCurrent(0); // sftp resume not possible
-			this.status.setSize(p.getAttributes().getSize().intValue());
-			SftpFileInputStream in = new SftpFileInputStream(p);
-			if (in == null) {
-				throw new IOException("Unable opening data stream");
+			else {
+				this.session.check();
+				this.getLocal().getParentFile().mkdirs();
+				OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
+				if (out == null) {
+					throw new IOException("Unable to buffer data");
+				}
+				SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
+				this.status.setCurrent(0); // sftp resume not possible
+				this.status.setSize(p.getAttributes().getSize().intValue());
+				SftpFileInputStream in = new SftpFileInputStream(p);
+				if (in == null) {
+					throw new IOException("Unable opening data stream");
+				}
+				this.download(in, out);
 			}
-			this.download(in, out);
-			//p.close();
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -447,7 +446,6 @@ public class SFTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			this.upload(out, in);
-			//p.close();
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);

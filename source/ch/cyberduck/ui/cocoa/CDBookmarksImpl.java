@@ -112,7 +112,7 @@ public class CDBookmarksImpl extends Bookmarks { //implements NSTableView.DataSo
                 log.error("Problem reading bookmark file: " + errorString[0]);
             }
             else {
-                log.info("Successfully read Bookmarks: " + propertyListFromXMLData);
+                log.debug("Successfully read Bookmarks: " + propertyListFromXMLData);
             }
             if (propertyListFromXMLData instanceof NSArray) {
                 NSArray entries = (NSArray) propertyListFromXMLData;
@@ -149,7 +149,7 @@ public class CDBookmarksImpl extends Bookmarks { //implements NSTableView.DataSo
             log.error("Problem reading bookmark file: " + errorString[0]);
         }
         else {
-            log.info("Successfully read bookmark file: " + propertyListFromXMLData);
+            log.debug("Successfully read bookmark file: " + propertyListFromXMLData);
         }
         if (propertyListFromXMLData instanceof NSDictionary) {
             return new Host((NSDictionary) propertyListFromXMLData);

@@ -71,7 +71,7 @@ public class CDHistoryImpl extends History {
                 log.error("Problem reading bookmark file: " + errorString[0]);
             }
             else {
-                log.info("Successfully read Bookmarks: " + propertyListFromXMLData);
+                log.debug("Successfully read Bookmarks: " + propertyListFromXMLData);
             }
             if (propertyListFromXMLData instanceof NSArray) {
                 NSArray entries = (NSArray) propertyListFromXMLData;

@@ -126,6 +126,7 @@ public class CDQueueCell extends CDTableCell {
                             cellPoint.y() + 20,
                             cellSize.width() - BORDER - SPACE,
                             cellSize.height()));
+			// status
             NSGraphics.drawAttributedString(new NSAttributedString(queue.getStatus(),
                     tinyFont),
                     new NSRect(cellPoint.x() + BORDER + SPACE,
