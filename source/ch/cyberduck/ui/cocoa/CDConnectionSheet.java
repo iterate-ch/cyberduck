@@ -31,6 +31,9 @@ import org.apache.log4j.Logger;
 public class CDConnectionSheet {
     private static Logger log = Logger.getLogger(CDConnectionSheet.class);
 
+    private static final String FTP_STRING;
+    private static final String SFTP_STRING;
+    
         // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
@@ -119,7 +122,8 @@ public class CDConnectionSheet {
 						    NSControl.ControlTextDidChangeNotification,
 						    usernameField);
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
-//@todo	this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default"));
+	this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{FTP_STRING, SFTP_STRING}));
+	this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals("ftp") ? FTP_STRING : SFTP_STRING);
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
 //	this.pathField.setStringValue("~");
     }

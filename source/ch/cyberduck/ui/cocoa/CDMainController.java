@@ -79,6 +79,8 @@ public class CDMainController {
 	    org.apache.commons.httpclient.HttpClient http = new org.apache.commons.httpclient.HttpClient();
 	    http.connect("www.cyberduck.ch", 80, false);
 	    org.apache.commons.httpclient.methods.GetMethod GET = new org.apache.commons.httpclient.methods.GetMethod("versionlist.xml");
+	    GET.addRequestHeader("Accept", GET.getAcceptHeader());
+	    GET.addRequestHeader("User-Agent", "Cyberduck/" + Preferences.instance().getProperty("version")+"-Check for Update");
 	    int response = http.executeMethod(GET);
 	    java.io.InputStream in = null;
 	    if(!org.apache.commons.httpclient.HttpStatus.isSuccessfulResponse(response)) {
@@ -171,10 +173,10 @@ public class CDMainController {
 	switch(sender.state()) {
 	    case NSCell.OnState:
 		Preferences.instance().setProperty("donate", "false");
-		return;
+		break;
 	    case NSCell.OffState:
 		Preferences.instance().setProperty("donate", "true");
-		return;
+		break;
 	}
     }
 

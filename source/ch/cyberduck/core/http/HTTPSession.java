@@ -100,12 +100,4 @@ public class HTTPSession extends Session {
 	this.log("Invalid Operation", Message.ERROR);
 	return null;
     }
-
-    public void download(Path file) {
-	this.log("Invalid Operation", Message.ERROR);
-    }
-
-    public void upload(java.io.File file) {
-	this.log("Invalid Operation", Message.ERROR);
-    }
 }

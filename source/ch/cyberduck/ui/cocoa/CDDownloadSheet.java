@@ -138,7 +138,7 @@ public class CDDownloadSheet {
 			break;
 		}
 		    	//@todo keep reference?
-		CDTransferController controller = new CDTransferController(file, CDTransferController.KIND_DOWNLOAD);
+		CDTransferController controller = new CDTransferController(file, Queue.KIND_DOWNLOAD);
 		controller.start();
 //		controller.window().makeKeyAndOrderFront(null);
 //		file.download();

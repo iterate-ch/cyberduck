@@ -178,10 +178,10 @@ public class CDPreferencesController {
 	switch(sender.state()) {
 	    case NSCell.OnState:
 		Preferences.instance().setProperty("browser.showHidden", "true");
-		return;
+		break;
 	    case NSCell.OffState:
 		Preferences.instance().setProperty("browser.showHidden", "false");
-		return;
+		break;
 	}
     }
 
@@ -190,10 +190,10 @@ public class CDPreferencesController {
 	switch(sender.state()) {
 	    case NSCell.OnState:
 		Preferences.instance().setProperty("browser.opendefault", "true");
-		return;
+		break;
 	    case NSCell.OffState:
 		Preferences.instance().setProperty("browser.opendefault", "false");
-		return;
+		break;
 	}
     }
 
@@ -201,10 +201,10 @@ public class CDPreferencesController {
 	switch(sender.state()) {
 	    case NSCell.OnState:
 		Preferences.instance().setProperty("transfer.close", "true");
-		return;
+		break;
 	    case NSCell.OffState:
 		Preferences.instance().setProperty("transfer.close", "false");
-		return;
+		break;
 	}
     }
     
@@ -226,10 +226,10 @@ public class CDPreferencesController {
 		    Preferences.instance().setProperty("connection.download.folder", filename);
 		    downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
 		}		
-		return;
+		break;
 	    }
 	    case(NSPanel.CancelButton): {
-		return;
+		break;
 	    }		
 	}
     }

@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Preferences;
 import com.apple.cocoa.application.*;
@@ -35,9 +36,6 @@ import java.util.Observer;
  */
 public class CDTransferController implements Observer {
     private static Logger log = Logger.getLogger(CDTransferController.class);
-
-    public static final int KIND_DOWNLOAD = 0;
-    public static final int KIND_UPLOAD = 1;
 
     private int kind;
     private Path file;
@@ -112,8 +110,6 @@ public class CDTransferController implements Observer {
 	this.file = file;
 	this.kind = kind;
 	//register for events
-	file.status.addObserver(this);
-	file.getSession().addObserver(this);
 	
         if (false == NSApplication.loadNibNamed("Transfer", this)) {
             log.fatal("Couldn't load Transfer.nib");
@@ -129,26 +125,36 @@ public class CDTransferController implements Observer {
 	this.fileField.setStringValue(file.getLocal().toString());
 	this.window().setTitle(file.getName());
 	this.progressField.setStringValue("");
+	this.dataField.setStringValue("");
+	this.clockField.setStringValue("00:00");
 	switch(kind) {
-	    case KIND_DOWNLOAD:
+	    case Queue.KIND_DOWNLOAD:
 		iconView.setImage(NSImage.imageNamed("download.tiff"));
-		return;
-	    case KIND_UPLOAD:
+		break;
+	    case Queue.KIND_UPLOAD:
 		iconView.setImage(NSImage.imageNamed("upload.tiff"));
-		return;
+		break;
 	}
     }
 
     public void start() {
-	this.window().makeKeyAndOrderFront(null);
+//	file.getDownloadSession().addObserver(this);
+	Queue queue = new Queue(kind);
+	queue.addObserver(this);
 	switch(kind) {
-	    case KIND_DOWNLOAD:
-		file.download();
-		return;
-	    case KIND_UPLOAD:
-		file.upload();
-		return;
+	    case Queue.KIND_DOWNLOAD:
+	//@todo check if file exists in download folder
+		file.fillDownloadQueue(queue);
+		break;
+	    case Queue.KIND_UPLOAD:
+	//@todo check if file exists on server
+		file.fillUploadQueue(queue);
+		break;
 	}
+	this.progressBar.setMaxValue(queue.size());
+	this.window().setTitle(file.getName()+" - "+queue.numberOfElements()+" files");
+	this.window().makeKeyAndOrderFront(null);
+	queue.start();
     }
 
     public void update(Observable o, Object arg) {
@@ -156,12 +162,11 @@ public class CDTransferController implements Observer {
 	if(o instanceof Status) {
 	    //@todo get session messages
 	    if(arg instanceof Message) {
+		Status status = (Status)o;
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.DATA)) {
 		    this.progressBar.setIndeterminate(false);
-		    this.progressBar.setMinValue(0);
-		    this.progressBar.setMaxValue(file.status.getSize());
-		    this.progressBar.setDoubleValue((double)file.status.getCurrent());
+		    this.progressBar.setDoubleValue((double)status.getCurrent());
 		    this.dataField.setStringValue(msg.getDescription());
 		}
 		else if(msg.getTitle().equals(Message.CLOCK)) {
@@ -172,6 +177,7 @@ public class CDTransferController implements Observer {
 		    this.progressBar.startAnimation(null);
 		    this.stopButton.setEnabled(true);
 		    this.resumeButton.setEnabled(false);
+//		    this.progressBar.setMinValue(0);
 		}
 		else if(msg.getTitle().equals(Message.STOP)) {
 		    this.progressBar.stopAnimation(null);
@@ -179,14 +185,14 @@ public class CDTransferController implements Observer {
 		    this.resumeButton.setEnabled(true);
 		}
 		else if(msg.getTitle().equals(Message.COMPLETE)) {
-		    this.progressBar.setDoubleValue((double)file.status.getCurrent());
+		    this.progressBar.setDoubleValue((double)status.getCurrent());
 		    this.resumeButton.setTitle("Reload");
 		    this.stopButton.setEnabled(false);
 		    this.resumeButton.setEnabled(true);
-		    if(KIND_DOWNLOAD == kind) {
+		    if(Queue.KIND_DOWNLOAD == kind) {
 			//path.getLocalTemp().renameTo(path.getLocal());//@todo
 			if(Preferences.instance().getProperty("connection.download.postprocess").equals("true")) {
-
+			    //@todo
 			}
 		    }
 		}

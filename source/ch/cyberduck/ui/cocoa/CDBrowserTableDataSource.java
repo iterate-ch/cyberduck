@@ -182,4 +182,8 @@ public class CDBrowserTableDataSource implements NSTableView.DataSource {
     public int indexOf(Path o) {
 	return data.indexOf(o);
     }
+
+    public List list() {
+	return this.data;
+    }
 }

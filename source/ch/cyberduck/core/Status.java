@@ -93,6 +93,7 @@ public class Status extends Observable implements Serializable {
      * @see ch.cyberduck.core.Message
      */
     public void callObservers(Message arg) {
+	log.debug("callObserver:"+arg);
 	log.debug(this.countObservers()+" observers known.");
         this.setChanged();
 	this.notifyObservers(arg);
@@ -193,11 +194,15 @@ public class Status extends Observable implements Serializable {
      */
     public void fireCompleteEvent() {
         log.debug("fireCompleteEvent()");
+	
 	this.setStopped(true);
 	this.setComplete(true);
-	this.currentSpeedTimer.stop();
-	this.overallSpeedTimer.stop();
-	this.chronoTimer.stop();
+	if(this.currentSpeedTimer != null)
+	    this.currentSpeedTimer.stop();
+	if(this.overallSpeedTimer != null)
+	    this.overallSpeedTimer.stop();
+	if(this.chronoTimer != null)
+	    this.chronoTimer.stop();
 	this.setResume(false);
 	this.callObservers(new Message(Message.COMPLETE));
     }

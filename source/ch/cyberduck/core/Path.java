@@ -65,7 +65,7 @@ public abstract class Path {// extends Observable {
 	this.setLocal(file);
     }
 
-    public void setPath(String parent, String name) {
+    private void setPath(String parent, String name) {
         if(parent.charAt(parent.length()-1) == '/')
             this.setPath(parent + name);
         else
@@ -75,7 +75,7 @@ public abstract class Path {// extends Observable {
     /**
 	* @param pathname The absolute path of the file
      */
-    public void setPath(String pathname) {
+    private void setPath(String pathname) {
 //	log.debug("setPath:"+pathname);
 //	if(pathname.charAt(pathname.length()-1) == '/')
 //	    pathname = pathname.substring(0, pathname.length()-2);
@@ -132,9 +132,9 @@ public abstract class Path {// extends Observable {
 
     public abstract void changePermissions(int p);
 
-    public abstract void changeOwner(String owner);
+//    public abstract void changeOwner(String owner);
 
-    public abstract void changeGroup(String group);
+//    public abstract void changeGroup(String group);
     
     public boolean isFile() {
 	return this.attributes.getMode().charAt(0) == '-';
@@ -186,9 +186,10 @@ public abstract class Path {// extends Observable {
 	return this.path;
     }
 
-    public String getAbsoluteEncoded(String path) {
-        return java.net.URLEncoder.encode(this.getAbsolute());//, "utf-8");
-    }
+    
+//    public String getAbsoluteEncoded(String path) {
+  //      return java.net.URLEncoder.encode(this.getAbsolute());//, "utf-8");
+  //  }
 
     public void setLocal(java.io.File file) {
 	this.local = file;
@@ -277,6 +278,14 @@ public abstract class Path {// extends Observable {
     public abstract void download();
 
     public abstract void upload();
+
+    public abstract void fillDownloadQueue(Queue queue);
+
+    public abstract void fillUploadQueue(Queue queue);
+
+    public abstract Session getDownloadSession();
+
+    public abstract Session getUploadSession();
 
     // ----------------------------------------------------------
     // Transfer methods
@@ -411,8 +420,8 @@ public abstract class Path {// extends Observable {
         }
     }
     
-    
     public String toString() {
-        return this.getAbsolute();
+	return this.getAbsolute();
+//        return "Local:"+this.getLocal().toString()+",Remote:"+this.getAbsolute();
     }
 }

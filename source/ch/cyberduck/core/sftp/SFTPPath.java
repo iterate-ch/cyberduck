@@ -22,6 +22,7 @@ import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Session;
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.sftp.SftpFile;
@@ -43,8 +44,10 @@ import java.util.List;
  */
 public class SFTPPath extends Path {
     private static Logger log = Logger.getLogger(SFTPPath.class);
-//    private SftpFile file;
+
     private SFTPSession session;
+    private SFTPSession downloadSession;
+    private SFTPSession uploadSession;
 	
     public SFTPPath(SFTPSession session, String parent, String name) {
 	super(parent, name);
@@ -60,10 +63,10 @@ public class SFTPPath extends Path {
 	super(parent, file);
 	this.session = session;
     }
-    
+
     public Path getParent() {
 	String abs = this.getAbsolute();
-	if((null == parent)) {// && !abs.equals("/")) {
+	if((null == parent)) {
 	    int index = abs.lastIndexOf('/');
 	    String dirname = abs;
 	    if(index > 0)
@@ -74,30 +77,39 @@ public class SFTPPath extends Path {
 	}
 	log.debug("getParent:"+parent);
 	return parent;
-	}
-
-    public synchronized List list() {
-	return this.list(null == this.cache());
+    }
+    
+    public Session getSession() {
+	return this.session;
     }
 
-    public synchronized List list(boolean refresh) {
-	log.debug("list");
-	if(refresh) {
-	    List files = null;
-	    SftpFile workingDirectory = null;
+    public Session getDownloadSession() {
+	return this.downloadSession;
+    }
+
+    public Session getUploadSession() {
+	return this.uploadSession;
+    }
+    
+    public synchronized List list() {
+	return this.list(true);
+    }
+
+    public synchronized List list(boolean notifyobservers) {
 	    boolean showHidden = Preferences.instance().getProperty("browser.showHidden").equals("true");
-			//@todo throw exception if we are not a directory
 	    try {
+		if(!this.isDirectory())
+		    throw new IOException("Must be a directory.");
 		session.check();
 		session.log("Listing "+this.getName(), Message.PROGRESS);
-		workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
+		SftpFile workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
 		List children = new ArrayList();
 		int read = 1;
 		while(read > 0) {
 		    read = session.SFTP.listChildren(workingDirectory, children);
 		}
 		java.util.Iterator i = children.iterator();
-		files = new java.util.ArrayList();
+		List files = new java.util.ArrayList();
 		while(i.hasNext()) {
 		    SftpFile x = (SftpFile)i.next();
 		    if(!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
@@ -105,6 +117,7 @@ public class SFTPPath extends Path {
 				    //log.debug(p.getName());
 			if(p.getName().charAt(0) == '.' && !showHidden) {
 					//p.attributes.setVisible(false);
+			    //@todo show . files if desired
 			}
 			else {
 			    p.attributes.setOwner(x.getAttributes().getUID().toString());
@@ -118,8 +131,10 @@ public class SFTPPath extends Path {
 		    }
 		}
 		this.setCache(files);
-		session.callObservers(this);
+		if(notifyobservers) {
+		    session.callObservers(this);
 		session.log("Listing complete", Message.PROGRESS);
+		}
 	    }
 	    catch(SshException e) {
 		session.log("SSH Error: "+e.getMessage(), Message.ERROR);
@@ -127,25 +142,20 @@ public class SFTPPath extends Path {
 	    catch(IOException e) {
 		session.log("IO Error: "+e.getMessage(), Message.ERROR);
 	    }
-	    /*
-	     finally {
-		 if(workingDirectory != null) {
-		     try {
-			 workingDirectory.close();
-		     }
-		     catch(SshException e) {
-			 session.log("SSH Error: "+e.getMessage(), Message.ERROR);
-		     }
-		     catch(IOException e) {
-			 session.log("IO Error: "+e.getMessage(), Message.ERROR);
-		     }
-		 }
-	     }
-	     */
-	}
-	else {
-	    session.callObservers(SFTPPath.this);
-	}
+	     //@todo
+//	     finally {
+//		 if(workingDirectory != null) {
+//		     try {
+//			 workingDirectory.close();
+//		     }
+//		     catch(SshException e) {
+//			 session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+//		     }
+//		     catch(IOException e) {
+//			 session.log("IO Error: "+e.getMessage(), Message.ERROR);
+//		     }
+//		 }
+//	     }
 	return this.cache();
     }
 
@@ -175,7 +185,7 @@ public class SFTPPath extends Path {
 		session.log("Deleting "+this.getName(), Message.PROGRESS);
 		session.SFTP.removeFile(this.getAbsolute());
 	    }
-	    this.getParent().list(true);
+	    this.getParent().list();
 	}
 	catch(SshException e) {
 	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
@@ -191,7 +201,7 @@ public class SFTPPath extends Path {
 	    session.check();
 	    session.log("Renaming "+this.getName()+" to "+filename, Message.PROGRESS);
 	    session.SFTP.renameFile(this.getAbsolute(), this.getParent().getAbsolute()+"/"+filename);
-	    this.getParent().list(true);
+	    this.getParent().list();
 	}
 	catch(SshException e) {
 	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
@@ -208,7 +218,7 @@ public class SFTPPath extends Path {
 	    session.log("Make directory "+name, Message.PROGRESS);
 //		session.SFTP.makeDirectory(this.getAbsolute());
 	    session.SFTP.makeDirectory(name);
-	    this.list(true);
+	    this.list();
 	}
 	catch(SshException e) {
 	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
@@ -234,12 +244,13 @@ public class SFTPPath extends Path {
 	}
     }
 
-    public void changeOwner(String owner) {
-	session.log("Invalid Operation", Message.ERROR);
+
+    public void fillDownloadQueue(Queue queue) {
+	//@todo
     }
 
-    public synchronized void changeGroup(String group) {
-	session.log("Invalid Operation", Message.ERROR);
+    public void fillUploadQueue(Queue queue) {
+	//@todo
     }
     
     public synchronized void download() {
@@ -253,8 +264,10 @@ public class SFTPPath extends Path {
 		    downloadSession.connect();
 		    if(isDirectory())
 			this.downloadFolder(SFTPPath.this);
-		    if(isFile())
+		    else if(isFile())
 			this.downloadFile(SFTPPath.this);
+		    else
+			throw new IOException("Cannot determine file type");
 		}
 		catch(SshException e) {
 		    downloadSession.log("SSH Error: "+e.getMessage(), Message.ERROR);
@@ -313,8 +326,10 @@ public class SFTPPath extends Path {
 		    uploadSession.connect();
 		    if(SFTPPath.this.getLocal().isDirectory())
 			this.uploadFolder(SFTPPath.this);
-		    if(SFTPPath.this.getLocal().isFile())
+		    else if(SFTPPath.this.getLocal().isFile())
 			this.uploadFile(SFTPPath.this);
+		    else
+			throw new IOException("Cannot determine file type");
 		}
 		catch(SshException e) {
 		    uploadSession.log("SSH Error: "+e.getMessage(), Message.ERROR);
@@ -348,9 +363,5 @@ public class SFTPPath extends Path {
 		uploadSession.log("Not implemented.", Message.ERROR);
 	    }	    
 	}.start();
-    }
-
-    public Session getSession() {
-	return this.session;
     }
 }

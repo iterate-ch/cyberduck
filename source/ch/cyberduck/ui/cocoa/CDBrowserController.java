@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.History;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Message;
+import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.sftp.SFTPSession;
@@ -60,7 +61,7 @@ public class CDBrowserController implements Observer {
 	this.browserTable = browserTable;
     }
 
-    private CDBrowserTableDataSource model;
+    private CDBrowserTableDataSource browserModel;
     
     private NSTextField quickConnectField; // IBOutlet
     public void setQuickConnectField(NSTextField quickConnectField) {
@@ -125,15 +126,15 @@ public class CDBrowserController implements Observer {
     private void init() {
 	log.debug("init");
 
-	browserTable.setDataSource(model = new CDBrowserTableDataSource());
+	browserTable.setDataSource(browserModel = new CDBrowserTableDataSource());
 	browserTable.setDelegate(this);
 	browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
 	browserTable.setTarget(this);
 	browserTable.setDrawsGrid(false);
 	browserTable.setAutoresizesAllColumnsToFit(true);
-	browserTable.setDoubleAction(new NSSelector("browserRowClicked", new Class[] {Object.class}));
+	browserTable.setDoubleAction(new NSSelector("tableViewDidClickTableRow", new Class[] {Object.class}));
 	browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
-	browserTable.setIndicatorImage(NSImage.imageNamed("NSAscendingSortIndicator"), browserTable.tableColumnWithIdentifier("FILENAME"));
+	browserTable.setAutosaveTableColumns(true);
 
 	pathController = new CDPathController(pathPopup);
 	connectionSheet = new CDConnectionSheet(this);
@@ -144,18 +145,80 @@ public class CDBrowserController implements Observer {
     // ----------------------------------------------------------
     // BrowserTable delegate methods
     // ----------------------------------------------------------
-    
-    public void browserRowClicked(Object sender) {
-	log.debug("browserRowClicked");
-        Path p = (Path)model.getEntry(browserTable.clickedRow());
-	if(p.isFile()) {
-	    this.downloadButtonClicked(sender);
-//	    CDTransferController controller = new CDTransferController(p);
-//	    controller.download();
+
+    public void tableViewDidClickTableRow(Object sender) {
+	log.debug("tableViewDidClickTableRow");
+	if(browserTable.clickedRow() != -1) { //table header clicked
+	    Path p = (Path)browserModel.getEntry(browserTable.clickedRow());
+	    if(p.isFile()) {
+		this.downloadButtonClicked(sender);
+	    }
+	    if(p.isDirectory())
+		p.list();
 	}
-	if(p.isDirectory())
-	    p.list();
     }
+
+    public void tableViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
+	log.debug("tableViewDidClickTableColumn");
+	String identifier = (String)tableColumn.identifier();
+	NSArray columns = tableView.tableColumns();
+	java.util.Enumeration enumerator = columns.objectEnumerator();
+	while (enumerator.hasMoreElements()) {
+	    NSTableColumn c = (NSTableColumn)enumerator.nextElement();
+	    if(c.identifier()!=identifier)
+		tableView.setIndicatorImage(null, c);
+	}
+	boolean a = true;
+	if(tableView.indicatorImage(tableColumn).name().equals("NSAscendingSortIndicator")) {
+	    tableView.setIndicatorImage(NSImage.imageNamed("NSDescendingSortIndicator"), tableColumn);
+	    a = false;
+	}
+	else {
+	    tableView.setIndicatorImage(NSImage.imageNamed("NSAscendingSortIndicator"), tableColumn);
+	}
+	final boolean ascending = a;
+	final int higher = ascending ? 1 : -1 ;
+	final int lower = ascending ? -1 : 1;
+	if(tableColumn.identifier().equals("FILENAME")) {
+	    java.util.Collections.sort((java.util.List)browserModel.list(),
+		      new java.util.Comparator() {
+			  public int compare(Object o1, Object o2) {
+			      Path p1 = (Path)o1;
+			      Path p2 = (Path)o2;
+			      if(ascending) {
+				  return p1.getName().compareTo(p2.getName());
+			      }
+			      else {
+				  return -p1.getName().compareTo(p2.getName());
+			      }
+			  }
+		      }
+		      );
+	    browserTable.reloadData();
+	}
+	else if(tableColumn.identifier().equals("SIZE")) {
+	    java.util.Collections.sort((java.util.List)browserModel.list(),
+				new java.util.Comparator() {
+				    public int compare(Object o1, Object o2) {
+					int p1 = ((Path)o1).status.getSize();
+					int p2 = ((Path)o2).status.getSize();
+					if (p1 > p2) {
+					    return lower;
+					}
+					else if (p1 < p2) {
+					    return higher;
+					}
+					else if (p1 == p2) {
+					    return 0;
+					}
+					return 0;
+				    }
+				}
+				);
+	    tableView.reloadData();
+	}
+    }
+
 
     private static final NSColor TABLE_CELL_SHADED_COLOR = NSColor.colorWithCalibratedRGB(0.929f, 0.953f, 0.996f, 1.0f);
 
@@ -189,9 +252,11 @@ public class CDBrowserController implements Observer {
 //	    return true;
 	return false;
     }
-    
 
-    //----------------------
+
+    // ----------------------------------------------------------
+    // 
+    // ----------------------------------------------------------
     
     public void finalize() throws Throwable {
 	super.finalize();
@@ -234,7 +299,7 @@ public class CDBrowserController implements Observer {
 		    statusLabel.setStringValue(msg.getDescription());
 		}
 		else if(msg.getTitle().equals(Message.OPEN)) {
-		    model.clear();
+		    browserModel.clear();
 		    browserTable.reloadData();
 
 		    progressIndicator.startAnimation(this);
@@ -242,7 +307,7 @@ public class CDBrowserController implements Observer {
 		    History.instance().add(host);
 		}
 		else if(msg.getTitle().equals(Message.CLOSE)) {
-		    model.clear();
+		    browserModel.clear();
 		    browserTable.reloadData();
 
 		    progressIndicator.stopAnimation(this);
@@ -252,9 +317,9 @@ public class CDBrowserController implements Observer {
 		java.util.List cache = ((Path)arg).cache();
 		java.util.Iterator i = cache.iterator();
 //		log.debug("List size:"+cache.size());
-		model.clear();
+		browserModel.clear();
 		while(i.hasNext()) {
-		    model.addEntry((Path)i.next());
+		    browserModel.addEntry((Path)i.next());
 		}
 		browserTable.reloadData();
 	    }	    
@@ -290,7 +355,7 @@ public class CDBrowserController implements Observer {
     public void infoButtonClicked(Object sender) {
 	log.debug("infoButtonClicked");
 	if(browserTable.selectedRow() != -1) {
-	    Path path = (Path)model.getEntry(browserTable.selectedRow());
+	    Path path = (Path)browserModel.getEntry(browserTable.selectedRow());
 	    CDInfoController controller = new CDInfoController(path);
 	    this.references = references.arrayByAddingObject(controller);
 	    controller.window().makeKeyAndOrderFront(null);
@@ -299,7 +364,7 @@ public class CDBrowserController implements Observer {
 
     public void deleteButtonClicked(Object sender) {
 	log.debug("deleteButtonClicked");
-	Path path = (Path)model.getEntry(browserTable.selectedRow());
+	Path path = (Path)browserModel.getEntry(browserTable.selectedRow());
 	NSAlertPanel.beginCriticalAlertSheet(
 					   "Delete", //title
 					   "Delete",// defaultbutton
@@ -342,9 +407,9 @@ public class CDBrowserController implements Observer {
 
     public void downloadButtonClicked(Object sender) {
 	log.debug("downloadButtonClicked");
-	Path path = (Path)model.getEntry(browserTable.selectedRow());
+	Path path = (Path)browserModel.getEntry(browserTable.selectedRow());
 	//@todo keep reference?
-	CDTransferController controller = new CDTransferController(path, CDTransferController.KIND_DOWNLOAD);
+	CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
 	controller.start();
 //	controller.window().makeKeyAndOrderFront(null);
 //	path.download();
@@ -377,15 +442,15 @@ public class CDBrowserController implements Observer {
 			path = new SFTPPath((SFTPSession)session, parent.getAbsolute(), new java.io.File(filename));
 		    }
 		    	//@todo keep reference?
-		    CDTransferController controller = new CDTransferController(path, CDTransferController.KIND_UPLOAD);
+		    CDTransferController controller = new CDTransferController(path, Queue.KIND_UPLOAD);
 		    controller.start();
 //		    controller.window().makeKeyAndOrderFront(null);
 //		    path.upload();
 		}
-		return;
+		break;
 	    }
 	    case(NSPanel.CancelButton): {
-		return;
+		break;
 	    }
 	}
     }
@@ -424,6 +489,11 @@ public class CDBrowserController implements Observer {
 		      new Class[] { NSWindow.class, int.class, NSWindow.class }
 		      ),// did end selector
 					      null); //contextInfo
+    }
+
+    public void disconnectButtonClicked(Object sender) {
+	this.unmount();
+	//@todo show in disconnected state in gui
     }
 
     public void mount(Host host) {
@@ -554,6 +624,14 @@ public class CDBrowserController implements Observer {
 	    item.setTarget(this);
 	    item.setAction(new NSSelector("folderButtonClicked", new Class[] {Object.class}));
 	}
+	else if (itemIdentifier.equals("Disconnect")) {
+	    item.setLabel("Disconnect");
+	    item.setPaletteLabel("Disconnect");
+	    item.setToolTip("Disconnect");
+	    item.setImage(NSImage.imageNamed("disconnect.tiff"));
+	    item.setTarget(this);
+	    item.setAction(new NSSelector("disconnectButtonClicked", new Class[] {Object.class}));
+	}
 	else if (itemIdentifier.equals("Toggle Drawer")) {
 	    item.setLabel("Toggle Drawer");
 	    item.setPaletteLabel("Toggle Drawer");
@@ -597,7 +675,7 @@ public class CDBrowserController implements Observer {
     }
 
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Up", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
+	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Up", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Disconnect", "Toggle Drawer", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
     }
 
     public void toolbarWillAddItem(NSNotification notification) {
@@ -650,6 +728,9 @@ public class CDBrowserController implements Observer {
 	}
 	else if(label.equals("Get Info")) {
 	    return browserTable.selectedRow() != -1;
+	}
+	else if (label.equals("Disconnect")) {
+	    return this.host != null;
 	}
 	return true;
     }

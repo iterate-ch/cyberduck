@@ -20,6 +20,7 @@ package ch.cyberduck.core.http;
 
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Session;
 import org.apache.log4j.Logger;
 
@@ -45,7 +46,7 @@ public class HTTPPath extends Path {
 
     public Path getParent() {
 	String abs = this.getAbsolute();
-	if((null == parent)) {// && !abs.equals("/")) {
+	if((null == parent)) {
 	    int index = abs.lastIndexOf('/');
 	    String dirname = abs;
 	    if(index > 0)
@@ -56,8 +57,18 @@ public class HTTPPath extends Path {
 	}
 	log.debug("getParent:"+parent);
 	return parent;
-        }
+    }
 
+    public Session getDownloadSession() {
+	//@todo
+	return null;
+    }
+
+    public Session getUploadSession() {
+	session.log("Invalid Operation", Message.ERROR);
+	return null;
+    }
+    
     public List list(boolean refresh) {
 	session.log("Invalid Operation", Message.ERROR);
 	return null;
@@ -87,6 +98,18 @@ public class HTTPPath extends Path {
 	session.log("Invalid Operation", Message.ERROR);
     }
 
+    public void changeGroup(String group) {
+	session.log("Invalid Operation", Message.ERROR);
+    }
+    
+    public void fillDownloadQueue(Queue queue) {
+
+    }
+
+    public void fillUploadQueue(Queue queue) {
+	session.log("Invalid Operation", Message.ERROR);
+    }
+    
     public synchronized void download() {
 	/*
 	new Thread() {

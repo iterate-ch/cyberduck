@@ -170,7 +170,7 @@ public class CDInfoController {//implements Observer {
 	if(filenameField.stringValue() != file.getName()) {
 	    String newName = filenameField.stringValue();
 	    file.rename(newName);
-	    file.setPath(file.getParent().getAbsolute(), newName);
+//	    file.setPath(file.getParent().getAbsolute(), newName);
 	}
     }
     public void ownerInputDidEndEditing(NSNotification sender) {
