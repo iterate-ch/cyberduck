@@ -133,7 +133,7 @@ public class CDBookmarkCell extends NSCell {
 								  new NSRect(cellPoint.x(), cellPoint.y()+14, cellSize.width()-5, cellSize.height())
 								  );
 		NSGraphics.drawAttributedString(
-								  new NSAttributedString(favorite.getURL(), tinyFont),
+								  new NSAttributedString(favorite.getDefaultPath(), tinyFont),
 								  new NSRect(cellPoint.x(), cellPoint.y()+28, cellSize.width()-5, cellSize.height())
 								  );
 		controlView.unlockFocus();

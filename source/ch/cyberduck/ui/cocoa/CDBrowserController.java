@@ -95,12 +95,13 @@ public class CDBrowserController implements Observer {
     }
 	
     private NSComboBox quickConnectPopup; // IBOutlet
+	private CDQuickConnectDataSource quickConnectDataSource;
     public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
 		this.quickConnectPopup = quickConnectPopup;
 		this.quickConnectPopup.setTarget(this);
 		this.quickConnectPopup.setAction(new NSSelector("quickConnectSelectionChanged", new Class[] {Object.class}));
 		this.quickConnectPopup.setUsesDataSource(true);
-		this.quickConnectPopup.setDataSource(CDHistoryImpl.instance());
+		this.quickConnectPopup.setDataSource(this.quickConnectDataSource = new CDQuickConnectDataSource());
     }
 	    
     private NSButton showBookmarkButton; // IBOutlet

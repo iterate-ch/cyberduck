@@ -273,7 +273,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
 		return data.indexOf(o);
     }
     
-    public List values() {
+    public Collection values() {
 		return this.data;
     }
 }    

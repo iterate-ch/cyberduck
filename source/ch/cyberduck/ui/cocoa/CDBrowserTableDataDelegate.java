@@ -36,7 +36,7 @@ public class CDBrowserTableDataDelegate extends CDTableDelegate {
 	private boolean sortAscending = true;
 	private NSTableColumn lastClickedColumn;
 	
-	
+	/*
 	public void tableViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
 		log.debug("tableViewDidClickTableColumn");
 		if(lastClickedColumn == tableColumn) {
@@ -132,4 +132,5 @@ else if(tableColumn.identifier().equals("OWNER")) {
 }
 tableView.reloadData();
 	}	
+*/
 }

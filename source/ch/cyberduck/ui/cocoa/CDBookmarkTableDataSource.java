@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Bookmarks;
 
-import java.util.List;
+import java.util.Collection;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -186,7 +186,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {//implements N
 		return promisedDragNames;
     }
 	
-	public List values() {
+	public Collection values() {
 		return this.bookmarks.values();
     }	
 }	

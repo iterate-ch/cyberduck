@@ -18,7 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.List;
+import java.util.Collection;
 
 import com.apple.cocoa.application.*;
 
@@ -27,11 +27,11 @@ import com.apple.cocoa.application.*;
  */
 public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 
-	public abstract List values();
+	public abstract Collection values();
 	
 	public abstract int numberOfRowsInTableView(NSTableView tableView);
 	
-	public abstract void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row);
+//	public abstract void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row);
 	
 	public abstract Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row);
 }
