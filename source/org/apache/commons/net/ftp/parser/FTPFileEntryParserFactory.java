@@ -55,6 +55,8 @@ package org.apache.commons.net.ftp.parser;
  */
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 
+import java.io.IOException;
+
 /**
  * The interface describes a factory for creating FTPFileEntryParsers
  */
@@ -72,5 +74,6 @@ public interface FTPFileEntryParserFactory {
      *                   Thrown on any exception in instantiation
      * @see org.apache.commons.net.ftp.parser.ParserInitializationException
      */
-    public FTPFileEntryParser createFileEntryParser(String key);
+    public FTPFileEntryParser createFileEntryParser(String key) throws IOException;
+;
 }

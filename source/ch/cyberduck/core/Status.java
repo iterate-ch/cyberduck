@@ -128,10 +128,11 @@ public class Status extends Observable implements Serializable {
 
 	public void setComplete(boolean complete) {
 		this.complete = complete;
-		if(this.getCurrent() < this.getSize())
-			log.warn("Item marked as complete, but current is "+this.getCurrent()+" and total is "+this.getSize());
-		if(complete)
+		if(complete) {
+			if(this.getCurrent() < this.getSize())
+				log.warn("Item marked as complete, but current is "+this.getCurrent()+" and total is "+this.getSize());
 			this.setCurrent(this.getSize());
+		}
 	}
 
 	public boolean isComplete() {
