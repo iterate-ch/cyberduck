@@ -14,21 +14,12 @@
  *
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
- *  Created by Andreas on Fri Oct 18 2002.
- *  Copyright (c) 2002 Andreas Mayer. All rights reserved.
- *
- *	This subclass of NSTableView allows you to display different tool tips
- *	for each cell in the table.
- *
- *	When the table view needs to display a tool tip, it asks it's data source
- *	for it. So you need to implement tableView:toolTipForTableColumn:row: in
- *	your table's data source. See declaration below.
  */
 
 #import <Cocoa/Cocoa.h>
 
-@interface AMToolTipTableView : NSTableView {
-	NSMutableDictionary *regionList;
+@interface CDTableView : NSTableView {
+
 }
 
 - (void)awakeFromNib;

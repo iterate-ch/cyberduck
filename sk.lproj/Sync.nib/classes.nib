@@ -1,6 +1,6 @@
 {
     IBClasses = (
-        {CLASS = AMToolTipTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {CLASS = CDTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {
             CLASS = "ch.cyberduck.ui.cocoa.CDSyncQueueController"; 
             LANGUAGE = Java; 

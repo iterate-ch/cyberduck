@@ -178,9 +178,10 @@ public abstract class CDValidatorController extends AbstractValidator implements
 	public void setFileTableView(NSTableView fileTableView) {
 		this.fileTableView = fileTableView;
 		this.fileTableView.setDataSource(this);
+		this.fileTableView.setDelegate(this);
 		this.fileTableView.sizeToFit();
 		this.fileTableView.setRowHeight(17f);
-		this.fileTableView.setAutoresizesAllColumnsToFit(true);
+//		this.fileTableView.setAutoresizesAllColumnsToFit(true);
 		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
 		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
 		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
@@ -224,7 +225,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 			c.setMaxWidth(500f);
 			c.setResizable(true);
 			c.setEditable(false);
-			c.setDataCell(new NSTextFieldCell());
+			c.setDataCell(new CDTextCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.fileTableView.addTableColumn(c);
 		}
@@ -236,7 +237,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 			c.setWidth(180f);
 			c.setMaxWidth(500f);
 			c.setResizable(true);
-			c.setDataCell(new NSTextFieldCell());
+			c.setDataCell(new CDTextCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.fileTableView.addTableColumn(c);
 		}
@@ -248,7 +249,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 			c.setWidth(180f);
 			c.setMaxWidth(500f);
 			c.setResizable(true);
-			c.setDataCell(new NSTextFieldCell());
+			c.setDataCell(new CDTextCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.fileTableView.addTableColumn(c);
 		}
@@ -259,7 +260,6 @@ public abstract class CDValidatorController extends AbstractValidator implements
 		this.fileTableView.setAllowsColumnResizing(true);
 		this.fileTableView.setAllowsColumnSelection(false);
 		this.fileTableView.setAllowsColumnReordering(true);
-//		this.fileTableView.sizeToFit();
 	}
 
 	protected NSButton skipButton; // IBOutlet
@@ -372,7 +372,40 @@ public abstract class CDValidatorController extends AbstractValidator implements
 	protected void fireDataChanged() {
 		this.reloadTable();
 	}
-		
+	
+/*
+	private static final NSColor LIGHT_GREEN_COLOR = NSColor.colorWithCalibratedRGB(0.0f, 1.0f, 0.0f, 0.5f);
+	private static final NSColor LIGHT_RED_COLOR = NSColor.colorWithCalibratedRGB(1.0f, 0.0f, 0.0f, 0.5f);
+	
+	public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn tableColumn, int row) {
+		String identifier = (String)tableColumn.identifier();
+		if(identifier.equals("REMOTE")) {
+			Path p = (Path)this.workList.get(row);
+			if(p.getRemote().exists() && p.getLocal().exists()) {
+				((CDTextCell)cell).setDrawsBackground(true);
+				if(p.getLocal().getTimestamp().before(p.getRemote().attributes.getTimestamp())) {
+					((CDTextCell)cell).setBackgroundColor(LIGHT_GREEN_COLOR);
+				}
+				else {
+					((CDTextCell)cell).setBackgroundColor(LIGHT_RED_COLOR);
+				}
+			}
+		}
+		if(identifier.equals("LOCAL")) {
+			Path p = (Path)this.workList.get(row);
+			if(p.getRemote().exists() && p.getLocal().exists()) {
+				((CDTextCell)cell).setDrawsBackground(true);
+				if(p.getLocal().getTimestamp().after(p.getRemote().attributes.getTimestamp())) {
+					((CDTextCell)cell).setBackgroundColor(LIGHT_GREEN_COLOR);
+				}
+				else {
+					((CDTextCell)cell).setBackgroundColor(LIGHT_RED_COLOR);
+				}
+			}
+		}
+	}
+*/
+	
 	public void tableViewSelectionDidChange(NSNotification notification) {
 		if(this.fileTableView.selectedRow() != -1) {
 			Path p = (Path)this.workList.get(this.fileTableView.selectedRow());

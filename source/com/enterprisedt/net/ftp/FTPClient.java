@@ -123,7 +123,7 @@ public class FTPClient {
 		*/
     {
         tsFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-    }  
+    }
     
     /**
 		*  Constructor. Creates the control
@@ -877,7 +877,7 @@ public class FTPClient {
 		*  @param    remoteFile   name of remote file
 		*  @return   modification time of file as a date
 		*/
-    public long modtime(String remoteFile)
+    public Date modtime(String remoteFile)
         throws IOException, FTPException {
 			
 			checkConnection(true);
@@ -885,11 +885,9 @@ public class FTPClient {
 			FTPReply reply = control.sendCommand("MDTM " + remoteFile);
 			lastValidReply = control.validateReply(reply, "213");
 			
-			return Long.parseLong(lastValidReply.getReplyText());
 			// parse the reply string ...
-//			Date ts = tsFormat.parse(lastValidReply.getReplyText(),
-//									 new ParsePosition(0));
-//			return ts;
+			return tsFormat.parse(lastValidReply.getReplyText(),
+									 new ParsePosition(0));
 		}
 	
     /**

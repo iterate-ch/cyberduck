@@ -1,6 +1,6 @@
 {
     IBClasses = (
-        {CLASS = AMToolTipTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {CLASS = CDTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             CLASS = "ch.sudo.cyberduck.ui.cocoa.CDValidatorController"; 
