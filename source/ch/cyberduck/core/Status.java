@@ -48,9 +48,30 @@ public class Status extends Observable implements Serializable {
     private static Logger log = Logger.getLogger(Status.class);
 
     /**
+    * Download is resumable
+     */
+    private transient boolean resume = false;
+
+    private int current = 0;
+    /*
+     * current speed (bytes/second)
+     */
+    private transient double speed = 0;
+    /*
+     * overall speed (bytes/second)
+     */
+    private transient double overall = 0;
+    /*
+     * the size of the file
+     */
+    private int size = -1;
+
+    private transient Timer currentSpeedTimer, overallSpeedTimer;//, timeLeftTimer;
+
+    /**
     * Progress trackers.
      */
-    private transient Timer chronoTimer;
+    //private transient Timer chronoTimer;
 
     private boolean canceled;
     /**
@@ -62,35 +83,15 @@ public class Status extends Observable implements Serializable {
      */
     private transient boolean stopped = true;
 
-    /**
-	* I am selected in the table view
-     */
-    /*
-     private boolean selected;
-
-     public void setSelected(boolean s) {
-	 this.selected = s;
-     }
-     public boolean isSelected() {
-	 return this.selected;
-     }
-     */
-
-
 //    private String progressmessage = "Idle";
 //    private String timemessage = "00:00";
 
-    private Calendar calendar = Calendar.getInstance();
-    private DateFormat df = DateFormat.getTimeInstance();
+//    private Calendar calendar = Calendar.getInstance();
+//    private DateFormat df = DateFormat.getTimeInstance();
     
-    private int seconds = 0;
-    private int minutes = 0;
-    private int hours = 0;
-
-    //@todo
-//    private final static transient AudioClip startSound = Applet.newAudioClip(Cyberduck.getResource("start.au"));
-//    private final static transient AudioClip stopSound = Applet.newAudioClip(Cyberduck.getResource("stop.au"));
-//    private final static transient AudioClip completeSound = Applet.newAudioClip(Cyberduck.getResource("complete.au"));
+//    private int seconds = 0;
+//    private int minutes = 0;
+//    private int hours = 0;
 
     /**
 	* The wrapper for any status informations of a transfer like it's length and transferred
@@ -203,6 +204,8 @@ public class Status extends Observable implements Serializable {
         this.setComplete(false);
         this.setStopped(false);
 //        this.chronoTimer.start();
+	this.overallSpeedTimer.start();
+	this.currentSpeedTimer.start();
 	this.callObservers(new Message(Message.START));
     }
 
@@ -215,6 +218,11 @@ public class Status extends Observable implements Serializable {
         //if(this.chronoTimer != null)
           //  this.chronoTimer.stop();
 	this.setStopped(true);
+	if(this.currentSpeedTimer != null)
+	    this.currentSpeedTimer.stop();
+	if(this.overallSpeedTimer != null)
+	    this.overallSpeedTimer.stop();
+	this.setResume(false);
 	this.callObservers(new Message(Message.STOP));
     }
 
@@ -226,8 +234,192 @@ public class Status extends Observable implements Serializable {
 //        this.chronoTimer.stop();
 	this.setStopped(true);
 	this.setComplete(true);
+	this.currentSpeedTimer.stop();
+	this.overallSpeedTimer.stop();
+	this.setResume(false);
 	this.callObservers(new Message(Message.COMPLETE));
     }
+
+
+
+    public BoundedRangeModel getProgressModel() {
+	DefaultBoundedRangeModel m = null;
+	try {
+	    if(attributes.getSize() < 0) {
+		m = new DefaultBoundedRangeModel(0, 0, 0, 100);
+	    }
+	    m = new DefaultBoundedRangeModel(this.getCurrent(), 0, 0, attributes.getSize());
+	}
+	catch(IllegalArgumentException e) {
+	    m = new DefaultBoundedRangeModel(0, 0, 0, 100);
+	}
+	return m;
+    }
+
+    public int getCurrent() {
+	return current;
+    }
+
+    /**
+	* @param c The currently transfered bytes
+     */
+    public void setCurrent(int c) {
+	//        log.debug("setCurrent(" + c + ")");
+	this.current = c;
+
+	Message msg = null;
+	if(this.getSpeed() <= 0 && this.getOverall() <= 0) {
+	    msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of " + this.parseDouble(attributes.getSize()/1024) + " kBytes.");
+	}
+	else {
+	    if(this.getOverall() <= 0) {
+		msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of "
+		    + this.parseDouble(attributes.getSize()/1024) + " kBytes. Current: " +
+		    + this.parseDouble(this.getSpeed()/1024) + "kB/s. ");// + this.getTimeLeftMessage();
+	    }
+	    else {
+		msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of "
+		    + this.parseDouble(attributes.getSize()/1024) + " kBytes. Current: "
+		    + this.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
+		    + this.parseDouble(this.getOverall()/1024) + " kB/s. ");// + this.getTimeLeftMessage();
+	    }
+	}
+	this.callObservers(msg);
+    }
+
+    /**
+	* @return double current bytes/second
+     */
+    private double getSpeed() {
+	return this.speed;
+    }
+    private void setSpeed(double s) {
+	this.speed = s;
+    }
+
+    /**
+	* @return double bytes per seconds transfered since the connection has been opened
+     */
+    private double getOverall() {
+	return this.overall;
+    }
+    private void setOverall(double s) {
+	this.overall = s;
+    }
+
+    public void setResume(boolean value) {
+	this.resume = value;
+    }
+    public boolean isResume() {
+	return this.resume;
+    }
+
+
+    public void reset() {
+	super.reset();
+	this.speed = 0;
+	this.overall = 0;
+	if(overallSpeedTimer == null) {
+	    overallSpeedTimer = new Timer(4000,
+				   new ActionListener() {
+				       Vector overall = new Vector();
+				       double current;
+				       double last;
+				       public void actionPerformed(ActionEvent e) {
+					   current = getCurrent();
+					   if(current <= 0) {
+					       setOverall(0);
+					   }
+					   else {
+					       overall.add(new Double((current - last)/4)); // bytes transferred for the last 4 seconds
+					       Iterator iterator = overall.iterator();
+					       double sum = 0;
+					       while(iterator.hasNext()) {
+						   Double s = (Double)iterator.next();
+						   sum = sum + s.doubleValue();
+					       }
+					       setOverall((sum/overall.size()));
+					       last = current;
+					       //                        log.debug("overallSpeed " + sum/overall.size()/1024 + " KBytes/sec");
+					   }
+				       }
+				   }
+				   );
+	}
+
+	if(currentSpeedTimer == null) {
+	    currentSpeedTimer = new Timer(500,
+				   new ActionListener() {
+				       int i = 0;
+				       int current;
+				       int last;
+				       int[] speeds = new int[8];
+				       public void actionPerformed(ActionEvent e) {
+					   int diff = 0;
+					   current = getCurrent();
+					   if(current <= 0) {
+					       setSpeed(0);
+					   }
+					   else {
+					       speeds[i] = (current - last)*(2); i++; last = current;
+					       if(i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
+						   i = 0;
+					       }
+
+					       for (int k = 0; k < speeds.length; k++) {
+						   diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
+					       }
+
+					       //                        log.debug("currentSpeed " + diff/speeds.length/1024 + " KBytes/sec");
+					       setSpeed((diff/speeds.length));
+					   }
+				       }
+				   }
+				   );
+	}
+	/*
+	 this.timemessage = "00:00";
+
+	 if(chronoTimer == null) {
+	     chronoTimer = new Timer(1000,
+			      new ActionListener() {
+				  public void actionPerformed(ActionEvent event) {
+				      //                    log.debug("chronoTimer:actionPerformed()");
+				      seconds++;
+				      // calendar.set(year, mont, date, hour, minute, second)
+	  // >= one hour
+				      if(seconds >= 3600) {
+					  hours = (int)(seconds/60/60);
+					  minutes = (int)((seconds - hours*60*60)/60);
+					  calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), hours, minutes, seconds - minutes*60);
+				      }
+				      else {
+					  // >= one minute
+					  if(seconds >= 60) {
+					      minutes = (int)(seconds/60);
+					      calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), minutes, seconds - minutes*60);
+					  }
+					  // only seconds
+					  else {
+					      calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), seconds);
+					  }
+				      }
+
+				      // der variable timemessage den neuen wert zuweisen.
+				      if(calendar.get(Calendar.HOUR) > 0) {
+					  setMessage(parseTime(calendar.get(Calendar.HOUR)) + ":" + parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND)), Message.TIME);
+				      }
+				      else {
+					  setMessage(parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND)), Message.TIME);
+				      }
+				  }
+			      }
+			      );
+	 }
+	 */
+    }
+
+    
 
  /*
     private transient boolean ignoreEvents = false;
@@ -299,50 +491,5 @@ public class Status extends Observable implements Serializable {
     }
      */
 
-    /**
-     * reset messages and timers
-     */
-    public void reset() {
-        log.debug("reset()");
-	/*
-        this.timemessage = "00:00";
 
-        if(chronoTimer == null) {
-        chronoTimer = new Timer(1000,
-            new ActionListener() {
-                public void actionPerformed(ActionEvent event) {
-                    //                    log.debug("chronoTimer:actionPerformed()");
-                    seconds++;
-                    // calendar.set(year, mont, date, hour, minute, second)
-                    // >= one hour
-                    if(seconds >= 3600) {
-                        hours = (int)(seconds/60/60);
-                        minutes = (int)((seconds - hours*60*60)/60);
-                        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), hours, minutes, seconds - minutes*60);
-                    }
-                    else {
-                        // >= one minute
-                        if(seconds >= 60) {
-                            minutes = (int)(seconds/60);
-                            calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), minutes, seconds - minutes*60);
-                        }
-                        // only seconds
-                        else {
-                            calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), seconds);
-                        }
-                    }
-
-                    // der variable timemessage den neuen wert zuweisen.
-                    if(calendar.get(Calendar.HOUR) > 0) {
-                        setMessage(parseTime(calendar.get(Calendar.HOUR)) + ":" + parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND)), Message.TIME);
-                    }
-                    else {
-                        setMessage(parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND)), Message.TIME);
-                    }
-                }
-            }
-            );
-        }
-	*/
-    }
 } 

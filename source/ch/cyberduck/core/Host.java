@@ -33,7 +33,6 @@ import org.apache.log4j.Logger;
 public class Host extends Observable {
     private static Logger log = Logger.getLogger(Host.class);
 
-    public Status status = new HostStatus();
     public Login login;
     private String protocol = Preferences.instance().getProperty("connection.protocol.default");
     private int port = Integer.parseInt(Preferences.instance().getProperty("connection.port.default"));
@@ -171,9 +170,5 @@ public class Host extends Observable {
     
     public String toString() {
 	return("Host:"+protocol+","+name+","+port+","+workdir+","+login);
-    }
-
-    class HostStatus extends Status {
-	//
     }
 }
