@@ -87,7 +87,8 @@ public class CDValidatorController extends Validator {
 			if (false == NSApplication.loadNibNamed("Validator", this)) {
 				log.fatal("Couldn't load Validator.nib");
 			}
-			this.resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
+			this.resumeButton.setEnabled(this.fileExists);
+//			this.resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
 			String file = null;
 			if (Queue.KIND_DOWNLOAD == kind)
 				file = path.getLocal().getAbsolutePath();
@@ -149,7 +150,7 @@ public class CDValidatorController extends Validator {
 	
 	public void cancelActionFired(NSButton sender) {
 		log.debug("*** cancelActionFired");
-		this.setCanceled();
+		this.isCanceled = true;
 		this.include = false;
 		this.resumeChoosen = true;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
@@ -164,7 +165,7 @@ public class CDValidatorController extends Validator {
 			case 0: //Cancel
 				log.debug("Canceled");
 				this.include = false;
-				this.setCanceled();
+				this.isCanceled = true;
                 break;
             case 1://NSAlertPanel.DefaultReturn //Overwrite
 				log.debug("Overwrite");

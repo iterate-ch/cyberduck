@@ -641,11 +641,6 @@ public class CDBrowserController extends NSObject implements Observer {
 //					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
                 this.toolbar.validateVisibleItems();
             }
-            else if (msg.getTitle().equals(Message.CLOSE)) {
-//					this.statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
-                this.progressIndicator.stopAnimation(this);
-                this.toolbar.validateVisibleItems();
-            }
             else if (msg.getTitle().equals(Message.START)) {
                 //this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
                 this.progressIndicator.startAnimation(this);

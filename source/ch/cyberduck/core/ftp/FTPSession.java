@@ -52,7 +52,7 @@ public class FTPSession extends Session {
 	}
 	
 	public synchronized void close() {
-		this.callObservers(new Message(Message.CLOSE, "Closing session."));
+//		this.callObservers(new Message(Message.CLOSE, "Closing session."));
 		try {
 			if (this.FTP != null) {
 				this.log("Disconnecting...", Message.PROGRESS);

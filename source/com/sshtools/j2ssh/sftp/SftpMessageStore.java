@@ -72,7 +72,7 @@ class SftpMessageStore extends SubsystemMessageStore {
                     if (msg instanceof MessageRequestId) {
                         if (((MessageRequestId) msg).getId().equals(requestId)) {
                             messages.remove(msg);
-
+							//@todo write to log
                             return msg;
                         }
                     }

@@ -362,7 +362,8 @@ public class SFTPPath extends Path {
 			log.debug("download:"+this.toString());
 			this.session.check();
 			this.getLocal().getParentFile().mkdirs();
-			out = new FileOutputStream(this.getLocal(), this.status.isResume());
+//			out = new FileOutputStream(this.getLocal(), this.status.isResume());
+			out = new FileOutputStream(this.getLocal().getTemp(), this.status.isResume());
 			if (out == null) {
 				throw new IOException("Unable to buffer data");
 			}
@@ -373,14 +374,18 @@ public class SFTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			if(this.status.isResume()) {
-				this.status.setCurrent(this.getLocal().length());
+//				this.status.setCurrent(this.getLocal().length());
+				this.status.setCurrent(this.getLocal().getTemp().length());
 				long skipped = in.skip(this.status.getCurrent());
 				log.info("Skipping "+skipped+" bytes");
 				if(skipped < this.status.getCurrent())
 					throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
 			}
-			if(this.status.getCurrent() < this.status.getSize()) {
-				this.download(in, out);
+			this.download(in, out);
+			if (this.status.isComplete()) {
+				if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
+					this.getLocal().setPermission(this.attributes.getPermission());
+				}
 			}
 		}
 		catch (SshException e) {
@@ -461,9 +466,7 @@ public class SFTPPath extends Path {
 				if(skipped < this.status.getCurrent())
 					throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
 			}
-			if(this.status.getCurrent() < this.status.getSize()) {
-				this.upload(out, in);
-			}
+			this.upload(out, in);
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);

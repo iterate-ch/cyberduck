@@ -373,6 +373,9 @@ public abstract class Path {
 		log.debug("transfer(" + reader.toString() + ", " + writer.toString());
 		this.getSession().log("Downloading " + this.getName() + " (ASCII)", Message.PROGRESS);
 		this.transfer(reader, writer);
+		if(this.status.isComplete()) {
+			this.getLocal().getTemp().renameTo(this.getLocal());
+		}
 	}
 
 	/**
@@ -384,6 +387,9 @@ public abstract class Path {
 		log.debug("transfer(" + i.toString() + ", " + o.toString());
 		this.getSession().log("Downloading " + this.getName(), Message.PROGRESS);
 		this.transfer(i, o);
+		if(this.status.isComplete()) {
+			this.getLocal().getTemp().renameTo(this.getLocal());
+		}
 	}
 
 	/**

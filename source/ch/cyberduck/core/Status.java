@@ -159,6 +159,7 @@ public class Status extends Observable implements Serializable {
 	}
 
 	public void setResume(boolean resume) {
+		log.info("setResume:"+resume);
 		this.resume = resume;
 	}
 

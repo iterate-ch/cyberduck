@@ -16,6 +16,16 @@
 			<key>CFBundleTypeName</key>
 			<string>Cyberduck Bookmark</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>part</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>cyberduck-document</string>
+			<key>CFBundleTypeName</key>
+			<string>Cyberduck Download</string>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>Cyberduck</string>

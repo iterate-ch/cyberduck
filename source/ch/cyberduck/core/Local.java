@@ -21,6 +21,8 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
+import com.apple.cocoa.application.NSFileWrapper;
+
 import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
@@ -45,10 +47,26 @@ public class Local extends File {
 	public Local(String path) {
 		super(path);
 	}
+	
+	public File getTemp() {
+		return new File(super.getAbsolutePath()+".part");
+	}
+	
+	public NSFileWrapper getWrapper() {
+		return new NSFileWrapper(this.getTemp().getAbsolutePath(), false);
+		//this.getWrapper().setIcon(NSImage.imageNamed(img));
+	}
 
 	public Permission getPermission() {
 		NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
 		return new Permission(((Integer) fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue());
+	}
+	
+	public void setPermission(Permission p) {
+		boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(), 
+										  new NSDictionary(new Integer(p.getDecimalCode()), 
+														   NSPathUtilities.FilePosixPermissions));
+		log.debug("Setting permissions suceeded:"+success);
 	}
 
 	public String getTimestampAsString() {

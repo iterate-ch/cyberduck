@@ -116,6 +116,7 @@ public abstract class Preferences {
 		defaults.put("queue.download.folder", System.getProperty("user.home"));
 		defaults.put("queue.fileExists", "ask");
 		defaults.put("queue.upload.changePermissions", "true");
+		defaults.put("queue.download.changePermissions", "true");
 
 		defaults.put("connection.login.name", System.getProperty("user.name"));
 		defaults.put("connection.login.useKeychain", "true");

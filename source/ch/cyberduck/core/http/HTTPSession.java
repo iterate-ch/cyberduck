@@ -51,7 +51,7 @@ public class HTTPSession extends Session {
 	}
 
 	public synchronized void close() {
-		this.callObservers(new Message(Message.CLOSE, "Closing session."));
+//		this.callObservers(new Message(Message.CLOSE, "Closing session."));
 		try {
 			this.HTTP.quit();
 			this.getHost().getLogin().setPassword(null);

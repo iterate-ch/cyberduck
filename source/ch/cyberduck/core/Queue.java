@@ -186,6 +186,8 @@ public class Queue extends Observable implements Observer { //Thread {
 			Message msg = (Message) arg;
 			if (msg.getTitle().equals(Message.DATA)) {
 				this.callObservers(arg);
+				//this.currentJob.getLocal().setIcon();
+				//100*this.currentJob.status.getCurrent()/this.currentJob.status.getTotal()
 			}
 			else if (msg.getTitle().equals(Message.PROGRESS)) {
 				this.status = (String) msg.getContent();

@@ -203,6 +203,8 @@ public class Permission {
 		this.mask = "-"+getString();
 //		log.debug("Permission:"+this.toString());
 	}
+	
+	
 
 	/**
 		* @param access unix access permitions, i.e. -rwxrwxrwx
@@ -244,20 +246,29 @@ public class Permission {
 	}
 
 	private boolean[] getOwnerPermissions(String s) {
-		boolean[] b = {s.charAt(1) == 'r', s.charAt(2) == 'w', s.charAt(3) == 'x' || s.charAt(9) == 's'};
+		boolean[] b = {
+			s.charAt(1) == 'r', 
+			s.charAt(2) == 'w', 
+			s.charAt(3) == 'x' || s.charAt(3) == 's' || s.charAt(3) == 'S' || s.charAt(3) == 't' || s.charAt(3) == 'T' || s.charAt(3) == 'L'};
 		return b;
 	}
 
 	private boolean[] getGroupPermissions(String s) {
-		boolean[] b = {s.charAt(4) == 'r', s.charAt(5) == 'w', s.charAt(6) == 'x' || s.charAt(9) == 's'};
+		boolean[] b = {
+			s.charAt(4) == 'r', 
+			s.charAt(5) == 'w', 
+			s.charAt(6) == 'x' || s.charAt(6) == 's' || s.charAt(6) == 'S' || s.charAt(6) == 't' || s.charAt(6) == 'T' || s.charAt(6) == 'L'};
 		return b;
 	}
 
 	private boolean[] getOtherPermissions(String s) {
-		boolean[] b = {s.charAt(7) == 'r', s.charAt(8) == 'w', s.charAt(9) == 'x' || s.charAt(9) == 't' || s.charAt(9) == 'T'};
+		boolean[] b = {
+			s.charAt(7) == 'r', 
+			s.charAt(8) == 'w', 
+			s.charAt(9) == 'x' || s.charAt(9) == 's' || s.charAt(9) == 'S' || s.charAt(9) == 't' || s.charAt(9) == 'T' || s.charAt(9) == 'L'};
 		return b;
 	}
-
+		
 	/**
 	 * @return i.e. rwxrwxrwx (777)
 	 */

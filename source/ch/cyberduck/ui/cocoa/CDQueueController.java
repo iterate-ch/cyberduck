@@ -333,7 +333,9 @@ public class CDQueueController extends NSObject implements Observer {
     public void revealButtonClicked(Object sender) {
         if (this.queueTable.selectedRow() != -1) {
             Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-            if (!NSWorkspace.sharedWorkspace().selectFile(item.getRoot().getLocal().toString(), "")) {
+			Path f = item.getRoot();
+			String file = f.status.isComplete() ? item.getRoot().getLocal().toString() : item.getRoot().getLocal().getTemp().toString();
+            if (!NSWorkspace.sharedWorkspace().selectFile(file, "")) {
                 if (item.isComplete()) {
                     NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Could not show the file in the Finder", ""), //title
                             NSBundle.localizedString("OK", ""), // defaultbutton
@@ -345,7 +347,7 @@ public class CDQueueController extends NSObject implements Observer {
                             null, // dismiss selector
                             null, // context
                             NSBundle.localizedString("Could not show the file", "") + " \""
-                            + item.getRoot().getLocal().toString()
+                            + file
                             + "\". " + NSBundle.localizedString("It moved since you downloaded it.", "") // message
                     );
                 }
@@ -360,7 +362,7 @@ public class CDQueueController extends NSObject implements Observer {
                             null, // dismiss selector
                             null, // context
                             NSBundle.localizedString("Could not show the file", "") + " \""
-                            + item.getRoot().getLocal().toString()
+                            + file
                             + "\". " + NSBundle.localizedString("The file has not yet been downloaded.", "") // message
                     );
                 }
