@@ -367,7 +367,7 @@ public class FTPPath extends Path {
 				}
 				this.upload(out, in);
 				this.session.FTP.validateTransfer();
-				this.changePermissions(this.getLocal().attributes.getPermission().getOctalCode());
+				this.changePermissions(this.getLocal().getPermission().getOctalCode());
 			}
 			else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 				this.session.FTP.setTransferType(FTPTransferType.ASCII);
@@ -382,7 +382,7 @@ public class FTPPath extends Path {
 				}
 				this.upload(out, in);
 				this.session.FTP.validateTransfer();
-				this.changePermissions(this.getLocal().attributes.getPermission().getOctalCode());
+				this.changePermissions(this.getLocal().getPermission().getOctalCode());
 //				this.changePermissions(Integer.parseInt(Integer.toOctalString(this.getLocalPermissions())));
 			}
 			else {

@@ -201,7 +201,7 @@ public class SFTPSession extends Session {
     public void check() throws IOException {
 		log.debug("check");
 		this.log("Working", Message.START);
-		if(!SSH.isConnected()) {
+		if(null == this.SSH || !SSH.isConnected()) {
 			this.setConnected(false);
 			this.close();
 			this.connect();

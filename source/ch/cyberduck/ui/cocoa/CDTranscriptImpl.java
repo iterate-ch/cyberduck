@@ -29,45 +29,45 @@ import org.apache.log4j.Logger;
  */
 public class CDTranscriptImpl implements Transcripter {
     private static Logger log = Logger.getLogger(CDTranscriptImpl.class);
-
+	
     private NSTextView textView;
     public void setTextView(NSTextView textView) {
-	this.textView = textView;
+		this.textView = textView;
     }
     
     public CDTranscriptImpl() {
-	super();
-	log.debug("CDTranscriptImpl");
+		super();
+		log.debug("CDTranscriptImpl");
     }
-
+	
     public void awakeFromNib() {
-	log.debug("awakeFromNib");
-	textView.setEditable(false);
-	textView.setSelectable(true);
-	Transcript.instance().addListener(this);
+		log.debug("awakeFromNib");
+		textView.setEditable(false);
+		textView.setSelectable(true);
+		Transcript.instance().addListener(this);
     }
-
+	
     public void transcript(String message) {
-//	log.debug("transcript:"+message);
-	/**
-	* Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
-	 * formatting attributes of the first character of the text it replaces, or of the character immediately
-	 * before aRange if the range's length is 0. If the range's location is 0, the formatting
-	 * attributes of the first character in the receiver are used.
-	 */
-	NSRange range = new NSRange(textView.string().length(), 0);
-	this.textView.replaceCharactersInRange(range, message+"\n");
-//	this.textView.scrollRangeToVisible(range);
-//	this.textView.scrollRangeToVisible(new NSRange(textView.string().length(), message.length()-1));
-
+		//	log.debug("transcript:"+message);
+		/**
+		* Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
+		 * formatting attributes of the first character of the text it replaces, or of the character immediately
+		 * before aRange if the range's length is 0. If the range's location is 0, the formatting
+		 * attributes of the first character in the receiver are used.
+		 */
+		NSRange range = new NSRange(textView.string().length(), 0);
+		this.textView.replaceCharactersInRange(range, message+"\n");
+		//	this.textView.scrollRangeToVisible(range);
+  //	this.textView.scrollRangeToVisible(new NSRange(textView.string().length(), message.length()-1));
+		
     }
-
+	
     public void clearLogButtonClicked(Object sender) {
-//	this.textView.selectAll();
-//	this.textView.delete();
+		//	this.textView.selectAll();
+  //	this.textView.delete();
     }
     
     public Object getView() {
-	return textView;
+		return textView;
     }
 }

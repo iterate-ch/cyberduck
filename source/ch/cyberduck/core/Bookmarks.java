@@ -19,9 +19,9 @@ package ch.cyberduck.core;
  */
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
@@ -42,11 +42,8 @@ public abstract class Bookmarks {
     public static final String USERNAME = "Username";
     public static final String PATH = "Path";
 	
-    protected Map data = new HashMap();
-	
-    public Bookmarks() {
-//		this.load();
-    }
+    protected List data = new ArrayList();
+//    protected Map data = new HashMap();
 	
 	private Host getFromDictionary(NSDictionary dict) {
 		return new Host(
@@ -84,7 +81,7 @@ public abstract class Bookmarks {
 	
 	public void exportBookmark(Host bookmark, java.io.File file) {
 		try {
-			log.info("Importing bookmark "+bookmark+" to "+file);
+			log.info("Exporting bookmark "+bookmark+" to "+file);
 			NSMutableData collection = new NSMutableData();
 			collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(this.getAsDictionary(bookmark)));
 			if(collection.writeToURL(file.toURL(), true))
@@ -157,35 +154,41 @@ public abstract class Bookmarks {
 		}
     }
 	
-    public void addItem(Host h) {
-		log.debug("addItem:"+h);
-		this.data.put(h.getURL(), h);
+	// ----------------------------------------------------------
+	//	Data Manipulation
+	// ----------------------------------------------------------
+	
+    public void addItem(Host item) {
+		log.debug("addItem:"+item);
+		this.data.add(item);
+//		this.data.put(item.getURL(), item);
     }
 	
-    public void removeItem(String key) {
-		log.debug("removeItem:"+key);
-		this.data.remove(key);
+	public void removeItem(int index) {
+		this.data.remove(index);
+	}
+	
+    public void removeItem(Host item) {
+		log.debug("removeItem:"+item);
+		this.removeItem(this.data.lastIndexOf(item));
+//		this.data.remove(key);
     }
 	
     /**
 		* @param name the Key the host is stored with (ususally host.toString())
      */
-    public Host getItem(String name) {
-		Host result =  (Host)this.data.get(name);
+    public Host getItem(int index) {
+		Host result = (Host)this.data.get(index);
 		if(null == result)
-			throw new IllegalArgumentException("Host "+name+" not found in Bookmarks.");
+			throw new IllegalArgumentException("No host with index "+index+" in Bookmarks.");
 		return result;
     }
 	
     public Collection values() {
-		return data.values();
+		return data;
     }
 	
     public Iterator iterator() {
-		return data.values().iterator();
-    }
-	
-	public Host getItemAtIndex(int row) {
-		return (Host)this.values().toArray()[row];
+		return data.iterator();
     }
 }

@@ -79,6 +79,7 @@ public class CDBrowserController implements Observer {
 		this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
 		this.bookmarkTable.setDelegate(this.bookmarkModel);
 		this.bookmarkTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
+//		this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]{NSPasteboard.FilenamesPboardType, NSPasteboard.pasteboardWithName("BookmarkPboardType")}));
 //		this.bookmarkTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
 		this.bookmarkTable.tableColumnWithIdentifier("FAVORITE").setDataCell(new CDBookmarkCell());
 		this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkRowClicked", new Class[] {Object.class}));
@@ -154,9 +155,8 @@ public class CDBrowserController implements Observer {
     }
 	
 	public void editBookmarkButtonClicked(Object sender) {
-		int row = bookmarkTable.selectedRow();
-		Host item = CDBookmarksImpl.instance().getItem(CDBookmarksImpl.instance().values().toArray()[row].toString());
-		CDBookmarkController controller = new CDBookmarkController(item);
+//		Host item = CDBookmarksImpl.instance().getItem(CDBookmarksImpl.instance().values().toArray()[bookmarkTable.selectedRow()].toString());
+		CDBookmarkController controller = new CDBookmarkController(CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow()));
 		controller.window().makeKeyAndOrderFront(null);
     }
 	
@@ -170,17 +170,18 @@ public class CDBrowserController implements Observer {
     }
 	
 	public void addBookmarkButtonClicked(Object sender) {
-		if(this.host != null) {
-			CDBookmarksImpl.instance().addItem(host);
+		Host item = this.host;
+		if(item != null) {
+			CDBookmarksImpl.instance().addItem(item);
 			this.bookmarkTable.reloadData();
 		}
 		else {
-			Host h = new Host("", new Login());
-			CDBookmarksImpl.instance().addItem(h);
+			item = new Host("", new Login());
+			CDBookmarksImpl.instance().addItem(item);
 			this.bookmarkTable.reloadData();
-			//			this.bookmarkTable.selectRow(CDBookmarksImpl.instance().indexOf(h), true);
-   //			this.editBookmarkButtonClicked(null);
 		}
+		CDBookmarkController controller = new CDBookmarkController(item);
+		controller.window().makeKeyAndOrderFront(null);
     }
 	
     private NSButton removeBookmarkButton; // IBOutlet
@@ -194,8 +195,8 @@ public class CDBrowserController implements Observer {
     }
     			
     public void removeBookmarkButtonClicked(Object sender) {
-		int row = bookmarkTable.selectedRow();
-		CDBookmarksImpl.instance().removeItem(CDBookmarksImpl.instance().values().toArray()[row].toString());
+		CDBookmarksImpl.instance().removeItem(bookmarkTable.selectedRow());
+//		CDBookmarksImpl.instance().removeItem(CDBookmarksImpl.instance().values().toArray()[row].toString());
 		this.bookmarkTable.reloadData();
     }
 
@@ -834,7 +835,7 @@ public class CDBrowserController implements Observer {
     public boolean validateMenuItem(_NSObsoleteMenuItemProtocol cell) {
 		//	log.debug("validateMenuItem:"+aCell);
         String sel = cell.action().name();
-		log.debug("validateMenuItem:"+sel);
+//		log.debug("validateMenuItem:"+sel);
         if (sel.equals("gotoButtonClicked:")) {
 			return !this.isMounting && this.mounted;
         }

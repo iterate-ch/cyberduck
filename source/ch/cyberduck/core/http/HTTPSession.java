@@ -47,7 +47,7 @@ public class HTTPSession extends Session {
 		this.callObservers(new Message(Message.CLOSE, "Closing session."));
 		try {
 			this.HTTP.quit();
-			//	    this.connectionManager.releaseConnection(this.connection);
+			this.HTTP = null;
 		}
 		catch(IOException e) {
 			log.error(e.getMessage());
@@ -84,7 +84,7 @@ public class HTTPSession extends Session {
     public void check() throws IOException {
 		log.debug("check");
 		this.log("Working", Message.START);
-		if(!HTTP.isAlive()) {
+		if(null == HTTP || !HTTP.isAlive()) {
 			this.setConnected(false);
 			this.connect();
 			while(true) {

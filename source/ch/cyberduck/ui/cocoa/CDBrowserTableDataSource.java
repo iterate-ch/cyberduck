@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDBrowserTableDataSource extends CDTableDataSource {//implements NSTableView.DataSource {
+public class CDBrowserTableDataSource extends CDTableDataSource {
     private static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 	
 	private List data;
@@ -57,11 +57,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
     public int numberOfRowsInTableView(NSTableView tableView) {
 		return data.size();
     }
-    
-	//    public void tableViewSortDescriptorsDidChange(NSTableView tableView, NSArray oldDescriptors) {
- //		log.debug("tableViewSortDescriptorsDidChange:"+oldDescriptors);
- //			}
-    
+        
     //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 		//	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
@@ -95,11 +91,11 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
     }
     
     //setValue()
-    public void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row) {
+//    public void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row) {
 //		log.debug("tableViewSetObjectValueForLocation:"+row);
-		Path p = (Path)data.get(row);
-		p.rename((String)value);
-    }
+//		Path p = (Path)data.get(row);
+//		p.rename((String)value);
+//    }
     
     /**
 		* The files dragged from the browser to the Finder
@@ -135,7 +131,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
      * The data source should
      * incorporate the data from the dragging pasteboard at this time.
      */
-    public boolean tableViewAcceptDrop( NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+    public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 		log.debug("tableViewAcceptDrop:"+row+","+operation);
 		// Get the drag-n-drop pasteboard
 		NSPasteboard pasteboard = info.draggingPasteboard();
@@ -212,18 +208,6 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
 				promisedDragPaths = null;
 			}
 		}
-    }
-    
-    public boolean ignoreModifierKeysWhileDragging() {
-		return false;
-    }
-    
-    public int draggingSourceOperationMaskForLocal(boolean local) {
-		log.debug("draggingSourceOperationMaskForLocal:"+local);
-		if(local)
-			return NSDraggingInfo.DragOperationNone;
-		else
-			return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
     }
     
     /**
@@ -366,12 +350,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
 		this.data.clear();
 	}
 	
-//	public void addEntry(Path entry, int row) {
-//		this.data.add(row, entry);
-//	}
-	
 	public void addEntry(Path entry) {
-		log.debug(entry);
 		if(entry.attributes.isVisible())
 			this.data.add(entry);
 	}

@@ -89,6 +89,7 @@ public class Host {
 	
     public Session getSession() {
 		if(null == this.session) {
+			log.debug("***Session is null! Constructing new one.");
 			if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
 				this.session = new HTTPSession(this);
 			}
@@ -183,7 +184,8 @@ public class Host {
     
     public void setNickname(String nickname) {
 //		log.debug("setNickname:"+nickname);
-        this.nickname = nickname != null ? nickname : this.getLogin().getUsername()+"@"+this.getHostname();
+        this.nickname = nickname != null ? nickname : this.getHostname();
+//        this.nickname = nickname != null ? nickname : this.getLogin().getUsername()+"@"+this.getHostname();
     }
 	
     public String getHostname() {
@@ -241,4 +243,8 @@ public class Host {
     public String getURL() {
 		return this.getProtocol()+"://"+this.getLogin().getUsername()+"@"+this.getHostname()+":"+this.getPort()+"/"+this.getDefaultPath();
     }
+	
+	public boolean equals(Object other) {
+		return this.toString().equals(other.toString());	
+	}
 }

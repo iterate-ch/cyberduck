@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  */
 
 import java.io.File;
+import java.util.Date;
+import java.text.DateFormat;
 
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSPathUtilities;
@@ -32,27 +34,45 @@ import org.apache.log4j.Logger;
 public class Local extends File {
     private static Logger log = Logger.getLogger(Local.class);
 	
-	public Attributes attributes;
+//	public Attributes attributes;
 	
 	public Local(File parent, String name) {
 		super(parent, name);
-		this.init();
+//		this.init();
 	}
 
 	public Local(String parent, String name) {
 		super(parent, name);
-		this.init();
+//		this.init();
 	}
 	
 	public Local(String path) {
 		super(path);
-		this.init();
+//		this.init();
 	}
 	
-	private void init() {
-		this.attributes = new Attributes();
+    public Permission getPermission() {
 		NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
-		this.attributes.setPermission(new Permission(((Integer)fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue()));
-		this.attributes.setModified(this.lastModified());
+		return new Permission(((Integer)fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue());
+	}
+	
+	public String getModified() {
+		return (DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)).format(new Date(super.lastModified()));
+	}
+	
+	public Date getModifiedDate() {
+		return new Date(super.lastModified());
+	}
+	
+	public boolean equals(Object other) {
+		if(other instanceof Local) {
+			Local local = (Local)other;
+			return this.getAbsolutePath().equals(local.getAbsolutePath());
+		}
+		if(other instanceof Path) {
+			Path remote = (Path)other;
+			return this.getName().equals(remote.getName()) && this.getModified().equals(remote.attributes.getModified());
+		}
+		return false;		
 	}
 }

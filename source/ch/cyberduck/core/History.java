@@ -18,15 +18,51 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.Iterator;
+import java.util.Collection;
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * @version $Id$
  */
 public abstract class History extends Bookmarks {
+	
+	private Map data = new HashMap();
+
 	public History() {
 		super();
 	}
 	
 	public void addItem(Host h) {
 		this.data.put(h.getHostname(), h);
+    }
+	
+	public void removeItem(int index) {
+		this.data.remove(this.getItem(index));
+	}
+	
+    public void removeItem(Host item) {
+//		log.debug("removeItem:"+item);
+		this.data.remove(item.getHostname());
+    }
+	
+    public Host getItem(int index) {
+		return this.getItem(this.values().toArray()[index].toString());
+	}
+	
+	public Host getItem(String key) {
+		Host result =  (Host)this.data.get(key);
+		if(null == result)
+			throw new IllegalArgumentException("Host "+key+" not found in Bookmarks.");
+		return result;
+	}
+
+	public Collection values() {
+		return data.values();
+    }
+	
+	public Iterator iterator() {
+		return this.values().iterator();
     }
 }

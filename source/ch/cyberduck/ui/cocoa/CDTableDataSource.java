@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.application.NSDraggingInfo;
 
 /**
 * @version $Id$
@@ -51,4 +52,19 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 		return false;
 	}
 	
+	// ----------------------------------------------------------
+	//	NSDraggingSource
+	// ----------------------------------------------------------
+
+	public boolean ignoreModifierKeysWhileDragging() {
+		return false;
+    }
+    
+	public int draggingSourceOperationMaskForLocal(boolean local) {
+//		log.debug("draggingSourceOperationMaskForLocal:"+local);
+		if(local)
+			return NSDraggingInfo.DragOperationNone;
+		else
+			return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
+    }
 }

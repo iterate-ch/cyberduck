@@ -43,8 +43,6 @@ lib/j2ssh.jar svneol=native#unset
 lib/jrendezvous.jar -text
 lib/log4j.jar svneol=native#unset
 lib/logging.jar -text
-nl.lproj/InfoPlist.strings -text
-nl.lproj/Localizable.strings -text svneol=unset#application/octet-stream
 source/ch/cyberduck/Attic/connection/.DS_Store svneol=native#unset
 source/ch/cyberduck/Attic/connection/ftp/.DS_Store svneol=native#unset
 source/ch/cyberduck/Attic/connection/http/.DS_Store svneol=native#unset

@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class Attributes extends Observable {
-    private static Logger log = Logger.getLogger(Path.class);
+    private static Logger log = Logger.getLogger(Attributes.class);
 	
     private Date modified;	
     private String owner;
@@ -86,7 +86,7 @@ public class Attributes extends Observable {
     }
 	
     public void setPermission(Permission p) {
-		log.debug("setPermission:"+p);
+//		log.debug("setPermission:"+p);
 		this.permission = p;
     }
 	

@@ -390,7 +390,7 @@ public class SFTPPath extends Path {
 				throw new IOException("Unable to buffer data");
 			}
 			SftpFile remoteFile = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
-			this.changePermissions(this.getLocal().attributes.getPermission().getDecimalCode());
+			this.changePermissions(this.getLocal().getPermission().getDecimalCode());
 			SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);
 			if(out == null) {
 				throw new IOException("Unable opening data stream");

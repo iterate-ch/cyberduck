@@ -88,7 +88,7 @@ public abstract class Path {
      * @param name The relative filename
      */
     public void setPath(String parent, String name) {
-		log.debug("setPath:"+parent+","+name);
+//		log.debug("setPath:"+parent+","+name);
         if(parent.charAt(parent.length()-1) == '/')
             this.setPath(parent + name);
         else
@@ -376,6 +376,18 @@ public abstract class Path {
             out.close();
         }
     }
+	
+	public boolean equals(Object other) {
+		if(other instanceof Path) {
+			Path path = (Path)other;
+			return this.getAbsolute().equals(path.getAbsolute());
+		}
+		if(other instanceof Local) {
+			Local local = (Local)other;
+			return this.getName().equals(local.getName()) && this.attributes.getModified().equals(local.getModified());
+		}
+		return false;
+	}
     
     public String toString() {
 		return this.getAbsolute();

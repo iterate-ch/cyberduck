@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDBookmarkTableDataSource {//implements NSTableView.DataSource {
+public class CDBookmarkTableDataSource extends CDTableDataSource {
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 	
 	Bookmarks bookmarks = CDBookmarksImpl.instance();
@@ -59,8 +59,11 @@ public class CDBookmarkTableDataSource {//implements NSTableView.DataSource {
 		return (Host)bookmarks.values().toArray()[row];
     }
 	
-	
-	public int tableViewValidateDrop( NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+	// ----------------------------------------------------------
+ // Drop methods
+ // ----------------------------------------------------------
+
+	public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 		log.debug("tableViewValidateDrop");
 		NSPasteboard pasteboard = info.draggingPasteboard();
 		NSArray formats = new NSArray(NSPasteboard.FilenamesPboardType);
@@ -84,7 +87,7 @@ public class CDBookmarkTableDataSource {//implements NSTableView.DataSource {
      * The data source should
      * incorporate the data from the dragging pasteboard at this time.
      */
-    public boolean tableViewAcceptDrop( NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+    public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 		log.debug("tableViewAcceptDrop:"+row+","+operation);
 		// Get the drag-n-drop pasteboard
 		NSPasteboard pasteboard = info.draggingPasteboard();
@@ -100,7 +103,6 @@ public class CDBookmarkTableDataSource {//implements NSTableView.DataSource {
 		}
 		return true;
     }
-    
 	
 	// ----------------------------------------------------------
  // Drag methods
@@ -122,18 +124,24 @@ public class CDBookmarkTableDataSource {//implements NSTableView.DataSource {
     public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
 		log.debug("tableViewWriteRowsToPasteboard:"+rows);
 		if(rows.count() > 0) {
-			this.promisedDragBookmarks = new Host[rows.count()];
-			this.promisedDragBookmarksFiles = new java.io.File[rows.count()];
-			// The types argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
-			NSMutableArray types = new NSMutableArray();
-			for(int i = 0; i < rows.count(); i++) {
-				promisedDragBookmarks[i] = (Host)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue());
-				types.addObject("duck");
-			}
-			NSEvent event = NSApplication.sharedApplication().currentEvent();
-			NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
-			NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
-			tableView.dragPromisedFilesOfTypes(types, imageRect, this, true, event);
+//			if(pboard.equals(NSPasteboard.pasteboardWithName("BookmarkPboardType"))) {
+//				pboard.setPropertyListForType(new NSArray(this.getEntry(((Integer)rows.objectAtIndex(rows.count()-1)).intValue())), "BookmarkPboardType");
+//				return true;
+//			}
+//			if(pboard.equals(NSPasteboard.FilenamesPboardType)) {
+				this.promisedDragBookmarks = new Host[rows.count()];
+				this.promisedDragBookmarksFiles = new java.io.File[rows.count()];
+				// The types argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
+				NSMutableArray types = new NSMutableArray();
+				for(int i = 0; i < rows.count(); i++) {
+					promisedDragBookmarks[i] = (Host)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue());
+					types.addObject("duck");
+				}
+				NSEvent event = NSApplication.sharedApplication().currentEvent();
+				NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
+				NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
+				tableView.dragPromisedFilesOfTypes(types, imageRect, this, true, event);
+//			}
 		}
 		// we return false because we don't want the table to draw the drag image
 		return false;
@@ -152,18 +160,6 @@ public class CDBookmarkTableDataSource {//implements NSTableView.DataSource {
 		}
 	}
 	
-	public boolean ignoreModifierKeysWhileDragging() {
-		return false;
-    }
-    
-    public int draggingSourceOperationMaskForLocal(boolean local) {
-		log.debug("draggingSourceOperationMaskForLocal:"+local);
-		if(local)
-			return NSDraggingInfo.DragOperationNone;
-		else
-			return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
-    }
-    
     /**
 		@return the names (not full paths) of the files that the receiver promises to create at dropDestination.
      * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
@@ -180,7 +176,7 @@ public class CDBookmarkTableDataSource {//implements NSTableView.DataSource {
 													 java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), 
 													 promisedDragBookmarks[i].getNickname()+".duck"
 													 );
-				promisedDragNames.addObject(promisedDragBookmarks[i].getNickname()+".duck");
+				promisedDragNames.addObject(promisedDragBookmarks[i].getNickname());
 			}
 			catch(java.io.UnsupportedEncodingException e) {
 				log.error(e.getMessage());	

@@ -68,7 +68,8 @@ public class CDConnectionController implements Observer {
     
 	public void bookmarksSelectionChanged(Object sender) {
 		log.debug("bookmarksSelectionChanged:"+sender);
-		this.updateFields(CDBookmarksImpl.instance().getItem(bookmarksPopup.titleOfSelectedItem()));
+		this.updateFields(CDBookmarksImpl.instance().getItem(bookmarksPopup.indexOfSelectedItem()));
+//		this.updateFields(CDBookmarksImpl.instance().getItem(bookmarksPopup.titleOfSelectedItem()));
 		this.updateLabel(sender);
     }
 	
@@ -128,7 +129,7 @@ public class CDConnectionController implements Observer {
 		log.debug("hostSelectionChanged:"+sender);
 		int index = hostPopup.indexOfSelectedItem();
 		if(index != -1) {
-			this.updateFields(((CDHistoryImpl)CDHistoryImpl.instance()).getItemAtIndex(index));
+			this.updateFields(((CDHistoryImpl)CDHistoryImpl.instance()).getItem(index));
 		}
 		this.updateLabel(sender);
     }
