@@ -130,7 +130,8 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			NSPasteboard pboard = NSPasteboard.pasteboardWithName("HostPBoard");
 			if(this.hostPboardChangeCount < pboard.changeCount()) {
 				if(pboard.availableTypeFromArray(new NSArray("HostPBoardType")) != null) {
-					tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
+					tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
+					//tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
 					return NSDraggingInfo.DragOperationMove;
 				}
 			}
@@ -160,19 +161,21 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 				Session session = SessionFactory.createSession(h);
 				for(int i = 0; i < filesList.count(); i++) {
 					String filename = (String)filesList.objectAtIndex(i);
-					// Adding a previously exported bookmark file from the Finder
-					if(filename.indexOf(".duck") != -1) {
+					if(filename.endsWith(".duck")) {
+						// Adding a previously exported bookmark file from the Finder
 						this.add(row, this.importBookmark(new java.io.File(filename)));
 						tableView.reloadData();
 						tableView.selectRow(row, false);
 						return true;
 					}
-					// drop of a file from the finder > upload to the remote host this bookmark points to
-					Path p = PathFactory.createPath(session,
-					    h.getDefaultPath(),
-					    new java.io.File(filename).getName());
-					p.setLocal(new Local(filename));
-					q.addRoot(p);
+					else {
+						// Drop of a file from the finder > upload to the remote host this bookmark points to
+						Path p = PathFactory.createPath(session,
+														h.getDefaultPath(),
+														new java.io.File(filename).getName());
+						p.setLocal(new Local(filename));
+						q.addRoot(p);
+					}
 				}
 				// if anything has been added to the queue then process the queue
 				if(q.numberOfRoots() > 0) {
