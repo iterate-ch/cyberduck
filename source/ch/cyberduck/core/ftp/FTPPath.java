@@ -94,6 +94,16 @@ public class FTPPath extends Path {
 		return this.session;
 	}
 	
+	/*
+	 public FTPFile[] listFiles(String parserKey, String pathname)
+	 throws IOException
+	 {
+		 FTPListParseEngine engine = 
+        	initiateListParsing(parserKey, pathname);
+		 return engine.getFiles();
+	 }
+*/
+	 
 	public synchronized List list() {
 		return this.list(false);
 	}

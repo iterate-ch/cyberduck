@@ -76,17 +76,6 @@ public class Login {
 	private LoginController controller;
 
 	/**
-	 * New instance with default values. Anonymous login.
-	 * @param service The service to use when looking up the password in the keychain
-	 */
-//	public Login(String service) {
-//		this(service,
-//		    Preferences.instance().getProperty("connection.login.name"),
-//			 null,
-//		    false);
-//	}
-
-	/**
 	 * @param service The service to use when looking up the password in the keychain
 	 * @param user Login with this username
 	 * @param pass Passphrase
@@ -95,41 +84,18 @@ public class Login {
 		this(service, user, pass, false);
 	}
 
+	/**
+		* @param service The service to use when looking up the password in the keychain
+	 * @param user Login with this username
+	 * @param pass Passphrase
+	 * @param addToKeychain if the credential should be added to the keychain uppon successful login
+	 */
 	public Login(String service, String user, String pass, boolean addToKeychain) {
 		this.service = service;
 		this.addToKeychain = addToKeychain;
 		this.init(user, pass);
 	}
 
-	/**
-	 * @param service The service to use when looking up the password in the keychain
-	 * @param l the login credentials
-	 */
-	/*
-	public Login(String service, String l) {
-		this.service = service;
-		if (l != null) {
-			if (l.indexOf(':') != -1) {
-				this.init(l.substring(0, l.indexOf(':')), l.substring(l.indexOf(':') + 1, l.length()));
-//				this.user = l.substring(0, l.indexOf(':'));
-//				this.pass = l.substring(l.indexOf(':') + 1, l.length());
-			}
-			else {
-				this.init(user, null);
-//				this.user = l;
-//				this.pass = null;
-//				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
-			}
-		}
-		else {
-			this.init(user, null);
-//			this.user = Preferences.instance().getProperty("connection.login.name");
-//			this.pass = null;
-//			this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
-		}
-	}
-	 */
-	
 	private void init(String user, String pass) {
 		if (null == user || user.equals("")) {
 			this.user = Preferences.instance().getProperty("connection.login.name");
@@ -149,8 +115,6 @@ public class Login {
 			if(this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"))) {
 				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 			}
-//			else
-//				this.pass = null;
 		}
 		else 
 			this.pass = pass;
@@ -237,8 +201,4 @@ public class Login {
 	public void setController(LoginController lc) {
 		this.controller = lc;
 	}
-	
-//	public String toString() {
-//		return this.user+":"+this.pass;
-//	}
 }

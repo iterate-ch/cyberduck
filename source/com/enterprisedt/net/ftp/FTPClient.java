@@ -47,6 +47,12 @@ import java.util.Vector;
  *  @author      Bruce Blackshaw
  *  @version     $Revision$
  *
+ *  Change Log:
+ *
+ *        $Log$
+ *        Revision 1.26  2004/02/21 12:12:27  dkocher
+ *        *** empty log message ***
+ * 
  */
 public class FTPClient {
 
