@@ -744,7 +744,7 @@ public class CDBrowserController extends CDController implements Observer {
 	public void bookmarkSelectionDidChange(NSNotification notification) {
 		log.debug("bookmarkSelectionDidChange");
 		editBookmarkButton.setEnabled(bookmarkTable.numberOfSelectedRows() == 1);
-		deleteBookmarkButton.setEnabled(bookmarkTable.selectedRow() != 1);
+		deleteBookmarkButton.setEnabled(bookmarkTable.selectedRow() != -1);
 	}
 
 	public void bookmarkTableRowDoubleClicked(Object sender) {

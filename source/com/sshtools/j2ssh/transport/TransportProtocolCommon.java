@@ -358,14 +358,9 @@ public abstract class TransportProtocolCommon implements TransportProtocol, Runn
             startBinaryPacketProtocol();
         }
         catch (Throwable e) {
-            if (e instanceof IOException) {
-                state.setLastError((IOException) e);
-            }
-            //todo compare with previous cvs version
-            if (state.getValue() != TransportProtocolState.DISCONNECTED) {
-                log.error("The Transport Protocol thread failed", e);
-                //log.info(e.getMessage());
-                stop();
+            if(e instanceof IOException) {
+                state.setLastError((IOException)e);
+                state.setValue(TransportProtocolState.DISCONNECTED);
             }
         }
         finally {

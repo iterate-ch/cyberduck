@@ -106,13 +106,13 @@ public class SFTPSession extends Session {
 		properties.setPort(host.getPort());
 		// Sets the prefered client->server encryption cipher
 		properties.setPrefCSEncryption(Preferences.instance().getProperty("ssh.CSEncryption"));
-		// Sets the preffered server->client encryption cipher
+		// Sets the prefered server->client encryption cipher
 		properties.setPrefSCEncryption(Preferences.instance().getProperty("ssh.SCEncryption"));
-		// Sets the preffered client->server message authentication
+		// Sets the prefered client->server message authentication
 		properties.setPrefCSMac(Preferences.instance().getProperty("ssh.CSAuthentication"));
-		// Sets the preffered server->client message authentication
+		// Sets the prefered server->client message authentication
 		properties.setPrefSCMac(Preferences.instance().getProperty("ssh.SCAuthentication"));
-		// Sets the preferred server host key for server authentication
+		// Sets the prefered server host key for server authentication
 		properties.setPrefPublicKey(Preferences.instance().getProperty("ssh.publickey"));
 		// Set the zlib compression
 		properties.setPrefSCComp(Preferences.instance().getProperty("ssh.compression"));
