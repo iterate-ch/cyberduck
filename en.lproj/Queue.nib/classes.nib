@@ -1,5 +1,6 @@
 {
     IBClasses = (
+        {CLASS = AMToolTipTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {
             ACTIONS = {
                 reloadButtonClicked = id; 

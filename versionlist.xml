@@ -9,87 +9,36 @@
 	<key>comment</key>
         <string>Changelog:
 2.4b1
-- [Feature] Synchronization
-- [Feature] Refactored transfer queue
+- [Feature] Synchronization of files
 - [Feature] Growl notification support (see http://growl.info)
 - [Feature] Support for Novell Netware file listings (FTP)
+- [Feature] Limit number of concurrent connections to a remote host 
 - [Feature] Apply permissions recursively (FTP)
 - [Feature] Norwegian Localization
+- [Feature] Transfer Queue with "Aqua" progress indicator
 - [Feature] Updated toolbar icons
 - [Feature] Added BBedit Lite to the list of supported editors
 - [Feature] Added TextMate to the list of supported editors
-- [Feature] Move remote files with copy & paste
-- [Feature] Put remote files into the transfer queue with copy & paste
-- [Feature] Provide a proxy-icon for the connection in the title bar. The icon can then be dragged to the Bookmark drawer or to the Finder as a .duck file.
+- [Feature] Move remote files with copy and paste
+- [Feature] Put remote files into the transfer queue with copy and paste
+- [Feature] Provide a proxy icon for the connection in the window title bar
+- [Feature] The proxy icon in the window title barcan then be dragged to the bookmark drawer or the Finder.
+- [Feature] Limit the number of concurrent connections to server
+- [Feature] Apply default permissions to transferred files
+- [Feature] Tooltip in browser shows absolute path
+- [Feature] Tooltip in queue shows detailed info
+- [Feature] Dialog for duplicated files lists all at once
 - [Bugfix] Bookmark drawer icon has no text-only equivalent
 - [Bugfix] Tabbing between browser and filter box
 - [Bugfix] Quick Connect Field has initial focus
 - [Feature] Filter field is now a standard search field
 - [Feature] Display the number of files in the browser 
+- [Feature] Bookmarks of recently connected hosts are saved in ~/Library/Application Support/Cyberduck/History 
 - [Bugfix] HTTP download broken
 - [Feature] Read bookmarks from "/Library/Application Support/Cyberduck/"
  instead of the individual user bookmarks file if available
 - [Feature] Check for running transfers on application quit
 - [Feature] Updated FTP core (FTP)
-
-2.3.3
-- [Bugfix] Correctly parsing symbolic links
-
-2.3.2
-- [Feature] Slovak Localization
-- [Feature] Czech Localization
-- [Feature] Support for EPFL file listings to support servers running "publicfile" (FTP)
-- [Bugfix] Improved PASV response parsing (FTP)
-- [Feature] Supporting SOCKS proxies (not tested)
-- [Feature] Change file permissions on multiple files
-- [Feature] Copy the URL of a remote site
-- [Bugfix] Use date formatting rules set in the System Preferences
-- [Featuer] Preference item to set the action when double-clicking files (Download or edit)
-- [Bugfix] Remembering the position of the browser window
-- [Bugfix] Compatibility with servers not supporting the SIZE command (FTP)
-
-2.3.1
-- [Feature] Chinese (Simplified) Localization
-- [Feature] Rendezvous services in Bookmark menu
-- [Bugfix] Upper level directories had to be listed first when uploading files
-- [Bugfix] Changes to bookmarks won't be saved
-- [Feature] Preference item to disable the update check
-- [Feature] Toolbar item to open downloaded files with default application
-- [Feature] Graceful application termination (Properly ask to close all connections and then quit)
-- [Bugfix] Remembering choosen directories in open and save dialogs
-
-2.3
-- [Feature] Finnish Localization
-- [Feature] Supporting Keyboard Interactive (PAM) Authentication (SSH)
-- [Bugfix] not all available Rendezvous services were listed
-- [Bugfix] Removed 'Type ahead' feature of the browser (responsible for frequent crashes)
-
-2.3b2
-- [Feature] Much improved queue management (fewer connections)
-- [Feature] Resume downloads (SFTP)
-- [Feature] Resume uploads (SFTP)
-- [Feature] Resume uploads (FTP)
-- [Feature] Move files on remote host by drag and drop
-- [Feature] Drag files onto bookmark to quickly upload
-- [Feature] Bookmarks are shown in the menu
-- [Feature] Menu item 'Download As...'
-- [Feature] Editing multiple files in the external editor with the same name
-- [Feature] Warning if a duplicate exists when uploading files
-- [Feature] 'Apply to all' checkbox in dialog asking for replace/resume/skip existing files
-- [Feature] Improved caching of directory listings
-- [Feature] When dropping files onto folders it will upload these into the folder
-- [Feature] When typing the first letter of a file it gets selected in the browser
-- [Feature] Toolbar button to remove all completed items from the queue
-- [Feature] Convert line endings when downloading in ASCII mode (FTP)
-- [Feature] Auto transfer mode (FTP)
-- [Feature] Dock menu item to open new browser
-- [Bugfix] Correctly updating incorrect keychain entries
-- [Feature] Preserve modification date when downloading files
-- [Bugfix] Ignoring .DS_Store files
-- [Bugfix] Bug fixes
-
-2.3b1
-- [Feature] External editor support (SubEthaEdit, BBEdit, TextWrangler, Text-Edit Plus)
         </string>
     </dict>
 </plist>

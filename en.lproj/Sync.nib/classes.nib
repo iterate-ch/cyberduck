@@ -1,5 +1,6 @@
 {
     IBClasses = (
+        {CLASS = AMToolTipTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {cancelActionFired = id; syncActionFired = id; }; 
@@ -10,11 +11,7 @@
                 fileTableView = NSTableView; 
                 infoLabel = NSTextField; 
                 localField = NSTextField; 
-                localSizeField = NSTextField; 
-                localTimestampField = NSTextField; 
                 mirrorRadioCell = NSButtonCell; 
-                remoteSizeField = NSTextField; 
-                remoteTimestampField = NSTextField; 
                 statusIndicator = NSProgressIndicator; 
                 syncButton = NSButton; 
                 uploadRadioCell = NSButtonCell; 

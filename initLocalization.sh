@@ -38,6 +38,9 @@ for nibfile in `ls English.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; do
     rm -rf $language.lproj/$nibfile/CVS
     nibtool --localizable-strings $language.lproj/$nibfile > $language.lproj/$nib.strings
 done
+cp English.lproj/Localizable.strings $language.lproj/
+cp English.lproj/InfoPlist.strings $language.lproj/
+cp English.lproj/License.txt $language.lproj/
 
 exit 0
 

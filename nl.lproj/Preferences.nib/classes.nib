@@ -2,6 +2,10 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
+            ACTIONS = {
+                defaultPermissionsDownloadChanged = id; 
+                defaultPermissionsUploadChanged = id; 
+            }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDPreferencesController"; 
             LANGUAGE = Java; 
             OUTLETS = {
@@ -11,16 +15,29 @@
                 bringQueueToFrontCheckbox = NSButton; 
                 bufferField = NSTextField; 
                 chmodDownloadCheckbox = NSButton; 
+                chmodDownloadDefaultCheckbox = NSButton; 
                 chmodUploadCheckbox = NSButton; 
+                chmodUploadDefaultCheckbox = NSButton; 
                 columnModificationCheckbox = NSButton; 
                 columnOwnerCheckbox = NSButton; 
                 columnPermissionsCheckbox = NSButton; 
                 columnSizeCheckbox = NSButton; 
+                concurrentConnectionsField = NSTextField; 
+                concurrentConnectionsTimeoutField = NSTextField; 
                 connectmodeCombobox = NSPopUpButton; 
                 csAuthenticationCombobox = NSPopUpButton; 
                 csEncryptionCombobox = NSPopUpButton; 
                 defaultBufferButton = NSButton; 
+                dgroupr = NSButton; 
+                dgroupw = NSButton; 
+                dgroupx = NSButton; 
+                dotherr = NSButton; 
+                dotherw = NSButton; 
+                dotherx = NSButton; 
                 doubleClickCheckbox = NSButton; 
+                downerr = NSButton; 
+                downerw = NSButton; 
+                downerx = NSButton; 
                 downloadPathButton = NSButton; 
                 downloadPathField = NSTextField; 
                 duplicateCombobox = NSPopUpButton; 
@@ -42,6 +59,15 @@
                 showHiddenCheckbox = NSButton; 
                 systCheckbox = NSButton; 
                 transfermodeCombobox = NSPopUpButton; 
+                ugroupr = NSButton; 
+                ugroupw = NSButton; 
+                ugroupx = NSButton; 
+                uotherr = NSButton; 
+                uotherw = NSButton; 
+                uotherx = NSButton; 
+                uownerr = NSButton; 
+                uownerw = NSButton; 
+                uownerx = NSButton; 
                 verticalLinesCheckbox = NSButton; 
                 window = NSWindow; 
             }; 

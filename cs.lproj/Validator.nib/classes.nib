@@ -1,5 +1,6 @@
 {
     IBClasses = (
+        {CLASS = AMToolTipTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {
@@ -14,11 +15,7 @@
                 fileTableView = NSTableView; 
                 infoLabel = NSTextField; 
                 localField = NSTextField; 
-                localSizeField = NSTextField; 
-                localTimestampField = NSTextField; 
                 overwriteButton = NSButton; 
-                remoteSizeField = NSTextField; 
-                remoteTimestampField = NSTextField; 
                 resumeButton = NSButton; 
                 skipButton = NSButton; 
                 statusIndicator = NSProgressIndicator; 

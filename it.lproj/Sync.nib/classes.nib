@@ -1,5 +1,6 @@
 {
     IBClasses = (
+        {CLASS = AMToolTipTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {cancelActionFired = id; syncActionFired = id; }; 

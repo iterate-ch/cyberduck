@@ -1,5 +1,6 @@
 {
     IBClasses = (
+        {CLASS = AMToolTipTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {
             ACTIONS = {
                 addBookmarkButtonClicked = id; 
@@ -42,11 +43,6 @@
                 window = NSWindow; 
             }; 
             SUPERCLASS = NSObject; 
-        }, 
-        {
-            CLASS = "ch.cyberduck.ui.cocoa.CDBrowserTable"; 
-            LANGUAGE = Java; 
-            SUPERCLASS = NSTableView; 
         }
     ); 
     IBVersion = 1; 
