@@ -38,7 +38,7 @@ public class CDProgressCell extends CDTableCell {
     }
 
     private static final NSImage stripeGrayIcon = NSImage.imageNamed("stripeGray.tiff");
-    private static final NSImage stripeWhiteIcon = NSImage.imageNamed("stripe.tiff");
+    private static final NSImage stripeWhiteIcon = NSImage.imageNamed("stripeWhite.tiff");
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         super.drawInteriorWithFrameInView(cellFrame, controlView);
@@ -99,12 +99,11 @@ public class CDProgressCell extends CDTableCell {
             }
             NSBezierPath.strokeRect(barRect);
             if (highlighted) {
-                NSColor.whiteColor().set();
+				NSColor.colorWithPatternImage(stripeWhiteIcon).set();
             }
             else {
                 NSColor.colorWithPatternImage(stripeGrayIcon).set();
             }
-            NSColor.colorWithPatternImage(stripeWhiteIcon).set();
             NSBezierPath.fillRect(barRectFilled);
         }
     }

@@ -303,7 +303,15 @@ public class CDMainController {
 
     public boolean applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
-		
+				
+         // Writing version info
+		//this.saveVersionInfo();
+        Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
+		//return this.checkForMountedBrowsers(app);
+		return true;
+    }
+	
+	private boolean checkForMountedBrowsers(NSApplication app) {
 		NSArray windows = app.windows();
         int count = windows.count();
         boolean needsConfirm = false;
@@ -346,13 +354,8 @@ public class CDMainController {
                 }
             }
         }
-		
-         // Writing version info
-		//this.saveVersionInfo();
-		
-        Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
 		return true;
-    }
+	}
 	
 	private void saveVersionInfo() {
         try {

@@ -370,6 +370,67 @@ public class CDQueueController implements Observer, Validator {
         this.queueTable.reloadData();
     }
 
+	public boolean validateMenuItem(_NSObsoleteMenuItemProtocol cell) {
+        String sel = cell.action().name();
+		log.debug("validateMenuItem:"+sel);
+		if (sel.equals("removeButtonClicked:")) {
+            if (this.queueTable.numberOfSelectedRows() < 1) {
+                return false;
+            }
+            NSEnumerator enum = queueTable.selectedRowEnumerator();
+            while (enum.hasMoreElements()) {
+                Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
+                if (!queue.isCanceled()) {
+                    return false;
+                }
+            }
+            return true;
+		}
+		if (sel.equals("revealButtonClicked:")) {
+            return this.queueTable.numberOfSelectedRows() == 1;
+		}
+		if (sel.equals("reloadButtonClicked:")) {
+            if (this.queueTable.numberOfSelectedRows() < 1) {
+                return false;
+            }
+            NSEnumerator enum = queueTable.selectedRowEnumerator();
+            while (enum.hasMoreElements()) {
+                Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
+                if (queue.isRunning()) {
+                    return false;
+                }
+            }
+            return true;
+		}
+		if (sel.equals("stopButtonClicked:")) {
+            if (this.queueTable.numberOfSelectedRows() < 1) {
+                return false;
+            }
+            NSEnumerator enum = queueTable.selectedRowEnumerator();
+            while (enum.hasMoreElements()) {
+                Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
+                if (!queue.isRunning()) {
+                    return false;
+                }
+            }
+            return true;
+		}
+		if (sel.equals("resumeButtonClicked:")) {
+            if (this.queueTable.numberOfSelectedRows() < 1) {
+                return false;
+            }
+            NSEnumerator enum = queueTable.selectedRowEnumerator();
+            while (enum.hasMoreElements()) {
+                Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
+                if (!(queue.isCanceled() && !(queue.remainingJobs() == 0) && (queue.getRoot() instanceof FTPPath))) {
+                    return false;
+                }
+            }
+            return true;
+		}
+        return true;
+    }
+	
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
             "Resume",

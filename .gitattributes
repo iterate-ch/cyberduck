@@ -157,7 +157,6 @@ img/reveal.tiff -text
 img/run.tiff -text
 img/server.tiff svneol=native#unset
 img/stop.tiff svneol=native#unset
-img/stripe.tiff -text
 img/stripeGray.tiff -text
 img/stripeWhite.tiff -text
 img/symlink.tiff -text

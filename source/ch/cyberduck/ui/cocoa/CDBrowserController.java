@@ -74,7 +74,8 @@ public class CDBrowserController implements Observer {
         this.browserTable.setTarget(this);
         this.browserTable.setDoubleAction(new NSSelector("browserTableRowDoubleClicked", new Class[]{Object.class}));
         this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
-        this.browserTable.setDelegate(this.browserModel);
+        this.browserTable.setDelegate(this);
+//        this.browserTable.setDelegate(this.browserModel);
         // receive drag events from types
         this.browserTable.registerForDraggedTypes(new NSArray(new Object[]{
             NSPasteboard.FilenamesPboardType,
@@ -194,6 +195,7 @@ public class CDBrowserController implements Observer {
         if (browserTable.numberOfSelectedRows() > 0) {
             Path p = (Path) browserModel.getEntry(browserTable.selectedRow()); //last row selected
             if (p.isFile() || browserTable.numberOfSelectedRows() > 1) {
+				this.downloadButtonClicked(sender);
                 NSEnumerator enum = browserTable.selectedRowEnumerator();
                 if (this.isMounted()) {
                     while (enum.hasMoreElements()) {
@@ -219,7 +221,8 @@ public class CDBrowserController implements Observer {
         this.bookmarkTable.setTarget(this);
         this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableRowDoubleClicked", new Class[]{Object.class}));
         this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
-        this.bookmarkTable.setDelegate(this.bookmarkModel);
+        this.bookmarkTable.setDelegate(this);
+//        this.bookmarkTable.setDelegate(this.bookmarkModel);
         // receive drag events from types
         this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]{"BookmarkPboardType",
                                                                             NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
@@ -449,7 +452,7 @@ public class CDBrowserController implements Observer {
                 break;
         }
     }
-
+	
     // ----------------------------------------------------------
     // Browser navigation
     // ----------------------------------------------------------
@@ -735,18 +738,22 @@ public class CDBrowserController implements Observer {
         pathController.workdir().list(true);
     }
 
-    public void downloadButtonClicked(Object sender) {
-        log.debug("downloadButtonClicked");
-        NSEnumerator enum = browserTable.selectedRowEnumerator();
-        while (enum.hasMoreElements()) {
-            Session session = pathController.workdir().getSession().copy();
-            Queue queue = new Queue(((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session), Queue.KIND_DOWNLOAD);
-            CDQueuesImpl.instance().addItem(queue);
-            CDQueueController.instance().startItem(queue);
-        }
-    }
+	public void downloadButtonClicked(Object sender) {
+		if (browserTable.numberOfSelectedRows() > 0) {
+			NSEnumerator enum = browserTable.selectedRowEnumerator();
+			if (this.isMounted()) {
+				while (enum.hasMoreElements()) {
+					Session session = pathController.workdir().getSession().copy();
+					Path path = ((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session);
+					Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
+					CDQueuesImpl.instance().addItem(queue);
+					CDQueueController.instance().startItem(queue);
+				}
+			}
+		}
+	}
 
-    public void uploadButtonClicked(Object sender) {
+	public void uploadButtonClicked(Object sender) {
         log.debug("uploadButtonClicked");
         NSOpenPanel panel = new NSOpenPanel();
         panel.setCanChooseDirectories(true);
@@ -925,12 +932,20 @@ public class CDBrowserController implements Observer {
         this.logDrawer.close();
     }
 
-
-    public boolean validateMenuItem(_NSObsoleteMenuItemProtocol cell) {
+	public boolean validateMenuItem(_NSObsoleteMenuItemProtocol cell) {
         //	log.debug("validateMenuItem:"+aCell);
         String sel = cell.action().name();
-//		log.debug("validateMenuItem:"+sel);
-        if (sel.equals("gotoButtonClicked:")) {
+		log.debug("validateMenuItem:"+sel);
+		if (sel.equals("addBookmarkButtonClicked:")) {
+			return true;
+		}
+		if (sel.equals("removeBookmarkButtonClicked:")) {
+			return bookmarkTable.numberOfSelectedRows() == 1;
+		}
+		if (sel.equals("editBookmarkButtonClicked:")) {
+			return bookmarkTable.numberOfSelectedRows() == 1;
+		}
+		if (sel.equals("gotoButtonClicked:")) {
             return this.isMounted();
         }
         if (sel.equals("infoButtonClicked:")) {
@@ -945,20 +960,14 @@ public class CDBrowserController implements Observer {
         if (sel.equals("refreshButtonClicked:")) {
             return this.isMounted();
         }
+        if (sel.equals("downloadButtonClicked:")) {
+            return this.isMounted() && browserTable.selectedRow() != -1;
+        }
         if (sel.equals("insideButtonClicked:")) {
             return this.isMounted() && browserTable.selectedRow() != -1;
         }
         if (sel.equals("upButtonClicked:")) {
             return this.isMounted();
-        }
-        if (sel.equals("addBookmarkButtonClicked:")) {
-            return true;
-        }
-        if (sel.equals("removeBookmarkButtonClicked:")) {
-            return bookmarkTable.numberOfSelectedRows() == 1;
-        }
-        if (sel.equals("editBookmarkButtonClicked:")) {
-            return bookmarkTable.numberOfSelectedRows() == 1;
         }
         if (sel.equals("backButtonClicked:")) {
             return this.isMounted();
@@ -1475,4 +1484,25 @@ public class CDBrowserController implements Observer {
             return this.fullData;
         }
     }
+
+	// ----------------------------------------------------------
+	// TableView Delegate methods
+	// ----------------------------------------------------------
+
+	/**
+	* Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
+	 * The delegate can implement this method to disallow selection of particular rows.
+	 */
+	public boolean tableViewShouldSelectRow(NSTableView aTableView, int rowIndex) {
+		return true;
+	}
+
+
+	/**
+	* Returns true to permit aTableView to edit the cell at rowIndex in aTableColumn, false to deny permission.
+	 * The delegate can implemen this method to disallow editing of specific cells.
+	 */
+	public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
+		return false;
+	}
 }
