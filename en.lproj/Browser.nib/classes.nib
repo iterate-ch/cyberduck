@@ -3,17 +3,14 @@
         {CLASS = CDTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {
             ACTIONS = {
-                addBookmarkButtonClicked = id; 
                 deleteFileButtonClicked = id; 
                 downloadAsButtonClicked = id; 
                 downloadButtonClicked = id; 
-                editBookmarkButtonClicked = id; 
                 editButtonClicked = id; 
                 fileButtonClicked = id; 
                 folderButtonClicked = id; 
                 infoButtonClicked = id; 
                 refreshButtonClicked = id; 
-                removeBookmarkButtonClicked = id; 
                 syncButtonClicked = id; 
             }; 
             CLASS = FirstResponder; 
