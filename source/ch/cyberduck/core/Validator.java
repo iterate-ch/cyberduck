@@ -26,13 +26,27 @@ import org.apache.log4j.Logger;
 public abstract class Validator {
 	private static Logger log = Logger.getLogger(Validator.class);
 	
-	protected boolean canceled = false;
-	protected boolean resume = false;
+	/**
+	* The user canceled this request, no further validation should be taken
+	 */
+	private boolean canceled = false;
+	/**
+		* The user requested to resume this transfer
+	 */
+	private boolean resumeRequested = false;
 	protected int kind;
 
-	public Validator(int kind, boolean resume) {
+	public Validator(int kind, boolean resumeRequested) {
 		this.kind = kind;
-		this.resume = resume;
+		this.resumeRequested = resumeRequested;
+	}
+	
+	protected void setCanceled() {
+		this.canceled = true;
+	}
+	
+	protected boolean isCanceled() {
+		return this.canceled;
 	}
 	
     /**
@@ -40,30 +54,24 @@ public abstract class Validator {
      */
     public boolean validate(Path path) {
         log.debug("validate:"+path);
-		if(canceled)
+		if(this.isCanceled()) {
+			log.info("*** Canceled "+path.getName()+" - no further validation needed");
 			return false;
+		}
 		boolean exists = false;
 		if (Queue.KIND_DOWNLOAD == kind)
 			exists = path.getLocal().exists();
 		if (Queue.KIND_UPLOAD == kind)
 			exists = path.exists();
-		if (resume) {
+		log.info("*** File "+path.getName()+" exists:"+exists);
+		if (resumeRequested) {
 			path.status.setResume(exists);
+			log.info("*** Returning "+path.getName()+" from validation after setting resume to "+exists);
 			return true;
-			/*
-			if (path.status.isComplete()) {
-				return true;
-			}
-			else if (!path.status.isComplete()) {
-				path.status.setResume(exists);
-				return true;
-			}
-			 */
 		}
 		if (exists) {
-			log.debug("File "+path.getName()+" exists");
 			if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
-				log.debug("Prompt user");
+				log.debug("*** Prompting user on "+path.getName());
 				// @todo Waiting for other alert sheets open to be closed first
 				return this.prompt(path);
 			}

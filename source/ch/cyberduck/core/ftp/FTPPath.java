@@ -329,9 +329,9 @@ public class FTPPath extends Path {
 		try {
 			log.debug("download:"+this.toString());
 			this.session.check();
-			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
 			if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 				this.session.FTP.setTransferType(FTPTransferType.BINARY);
+				this.status.setSize(this.session.FTP.size(this.getAbsolute()));
 				this.getLocal().getParentFile().mkdirs();
 				OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
 				if (out == null) {
@@ -354,6 +354,7 @@ public class FTPPath extends Path {
 			}
 			else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 				this.session.FTP.setTransferType(FTPTransferType.ASCII);
+				this.status.setSize(this.session.FTP.size(this.getAbsolute()));
 				this.getLocal().getParentFile().mkdirs();
 				java.io.Writer out = new FileWriter(this.getLocal(), this.status.isResume());
 				if (out == null) {
@@ -433,10 +434,10 @@ public class FTPPath extends Path {
 				}
 			}
 			else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+				this.session.FTP.setTransferType(FTPTransferType.ASCII);
 				if(this.status.isResume()) {
 					this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
 				}
-				this.session.FTP.setTransferType(FTPTransferType.ASCII);
 				java.io.Reader in = new FileReader(this.getLocal());
 				if (in == null) {
 					throw new IOException("Unable to buffer data");

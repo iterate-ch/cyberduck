@@ -69,16 +69,21 @@ public class CDValidatorController extends Validator {
 	/*
 	 * Use the same settings for all succeeding items to check
 	 */
-	private boolean applyToAll = false;
+	private boolean applySettingsToAll = false;
 	/**
 		* Include this file in the transfer queue
 	 */
     private boolean include = false;
-    private boolean done = true;
+	/**
+		* The resume button has been selected
+	 */
+	private boolean resumeChoosen = false;
+	
+    private boolean sheetClosedAndSelectionMade = true;
 	
 	public boolean prompt(Path path) {
-		if(!applyToAll) {
-			this.done = false;
+		if(!applySettingsToAll) {
+			this.sheetClosedAndSelectionMade = false;
 			if (false == NSApplication.loadNibNamed("Validator", this)) {
 				log.fatal("Couldn't load Validator.nib");
 			}
@@ -93,7 +98,6 @@ public class CDValidatorController extends Validator {
 			img.setScalesWhenResized(true);
 			img.setSize(new NSSize(64f, 64f));
 			this.iconView.setImage(img);
-//@todo			while (!SHEET_CLOSED) {
 			NSApplication.sharedApplication().beginSheet(this.window(), //sheet
 														 CDQueueController.instance().window(),
 														 this, //modalDelegate
@@ -103,7 +107,7 @@ public class CDValidatorController extends Validator {
 			this.window().makeKeyAndOrderFront(null);
 		}
 		// Waiting for user to make choice
-		while (!done) {
+		while (!sheetClosedAndSelectionMade) {
 			try {
 				log.debug("Sleeping...");
 				Thread.sleep(1000); //milliseconds
@@ -112,54 +116,54 @@ public class CDValidatorController extends Validator {
 				log.error(e.getMessage());
 			}
 		}
-		path.status.setResume(resume);
+		path.status.setResume(resumeChoosen);
 		log.debug("return:" + include);
 		return include;
 		}
 	
 	public void closeSheet(NSButton sender) {
-		this.applyToAll = (applyCheckbox.state() == NSCell.OnState);
+		this.applySettingsToAll = (applyCheckbox.state() == NSCell.OnState);
 		NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
 
     public void resumeActionFired(NSButton sender) {
 		log.debug("resumeActionFired");
-		this.resume = true;
+		this.resumeChoosen = true;
 		this.include = true;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
 
 	public void overwriteActionFired(NSButton sender) {
 		log.debug("overwriteActionFired");
-		this.resume = false;
+		this.resumeChoosen = false;
 		this.include = true;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
 	
     public void skipActionFired(NSButton sender) {
 		log.debug("skipActionFired");
-		this.resume = true;
+		this.resumeChoosen = true;
 		this.include = false;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
 	
 	public void cancelActionFired(NSButton sender) {
 		log.debug("cancelActionFired");
-		this.canceled = true;
+		this.setCanceled();
 		this.include = false;
-		this.resume = true;
+		this.resumeChoosen = true;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
 	
     public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         this.window().close();
-		this.applyToAll = (applyCheckbox.state() == NSCell.OnState);
+		this.applySettingsToAll = (applyCheckbox.state() == NSCell.OnState);
 		/*
         switch (returncode) {
 			case 0: //Cancel
 				log.debug("Canceled");
 				this.include = false;
-				this.canceled = true;
+				this.setCanceled();
                 break;
             case 1://NSAlertPanel.DefaultReturn //Overwrite
 				log.debug("Overwrite");
@@ -177,6 +181,6 @@ public class CDValidatorController extends Validator {
                 break;
         }
 		 */
-        this.done = true;
+        this.sheetClosedAndSelectionMade = true;
     }
 }
