@@ -44,7 +44,7 @@ public class Editor {
 //		SUPPORTED_EDITORS.put("PageSpinner", "com.optima.PageSpinner");
 		SUPPORTED_EDITORS.put("TextMate", "com.macromates.textmate");
 		SUPPORTED_EDITORS.put("Tex-Edit Plus", "com.transtex.texeditplus");
-		SUPPORTED_EDITORS.put("Saskatoon", "net.sf.saskatoon");
+//		SUPPORTED_EDITORS.put("Saskatoon", "net.sf.saskatoon");
 	}
 
 	static {
