@@ -15,7 +15,6 @@
 - Support for public key authentication (SSH)
 - Live filtering directory listings
 - Improved Rendezvous support (jmDNS 0.2)
-- Reorder bookmarks with drag and drop
 - Drag files from the browser to the transfer manager
 - Drag links to the transfer manager to start download
 - Browser can be customized to show/hide certain columns

@@ -208,7 +208,6 @@ public class SftpSubsystemClient extends SubsystemChannel {
                 SftpFile f;
 
                 for (int i = 0; i < files.length; i++) {
-//                    f = new SftpFile(Codec.decode(file.getAbsolutePath()) + "/" + Codec.decode(files[i].getFilename()), files[i].getAttributes());
                     f = new SftpFile(file.getAbsolutePath() + "/" + files[i].getFilename(), files[i].getAttributes());
                     f.setSFTPSubsystem(this);
                     children.add(f);
@@ -305,7 +304,6 @@ public class SftpSubsystemClient extends SubsystemChannel {
         throws IOException {
         String absolutePath = getAbsolutePath(path);
         UnsignedInteger32 requestId = nextRequestId();
-//        SubsystemMessage msg = new SshFxpOpenDir(requestId, new String(Codec.encode(absolutePath)));
         SubsystemMessage msg = new SshFxpOpenDir(requestId, absolutePath);
         sendMessage(msg);
         byte[] handle = getHandleResponse(requestId);
@@ -370,7 +368,6 @@ public class SftpSubsystemClient extends SubsystemChannel {
                 }
 
                 return files[0].getAbsolutePath();
-//                return Codec.decode(files[0].getAbsolutePath());
             } else if (reply instanceof SshFxpStatus) {
                 throw new IOException(((SshFxpStatus) reply).getErrorMessage());
             } else {
@@ -428,8 +425,6 @@ public class SftpSubsystemClient extends SubsystemChannel {
         }
 
         UnsignedInteger32 requestId = nextRequestId();
-//			SubsystemMessage msg = new SshFxpOpen(requestId, new String(Codec.encode(absolutePath)),
-//												  new UnsignedInteger32(flags), attrs);
 			SubsystemMessage msg = new SshFxpOpen(requestId, absolutePath,
 												  new UnsignedInteger32(flags), attrs);
         sendMessage(msg);
