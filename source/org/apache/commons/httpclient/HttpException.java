@@ -62,7 +62,7 @@
 
 package org.apache.commons.httpclient;
 
-import ch.cyberduck.connection.SessionException;
+import ch.cyberduck.core.SessionException;
 
 /**
  * <p>
