@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpException;
