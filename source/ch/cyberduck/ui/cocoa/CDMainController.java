@@ -307,8 +307,7 @@ public class CDMainController {
          // Writing version info
 		//this.saveVersionInfo();
         Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
-		//return this.checkForMountedBrowsers(app);
-		return true;
+		return this.checkForMountedBrowsers(app);
     }
 	
 	private boolean checkForMountedBrowsers(NSApplication app) {
