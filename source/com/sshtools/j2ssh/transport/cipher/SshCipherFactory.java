@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import com.sshtools.j2ssh.configuration.ConfigurationLoader;
 import com.sshtools.j2ssh.io.IOUtil;
 import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
-
+import com.sshtools.ext.bouncycastle.cipher.*;
 
 /**
  * @author $author$
@@ -51,50 +51,18 @@ public class SshCipherFactory {
 		ciphers = new HashMap();
 
 		log.info("Loading supported cipher algorithms");
-
+		
 		ciphers.put("3des-cbc", TripleDesCbc.class);
 		ciphers.put("blowfish-cbc", BlowfishCbc.class);
+		ciphers.put("twofish256-cbc", Twofish256Cbc.class);
+		ciphers.put("twofish192-cbc", Twofish192Cbc.class);
+		ciphers.put("twofish128-cbc", Twofish128Cbc.class);
+		ciphers.put("aes256-cbc", AES256Cbc.class);
+		ciphers.put("aes192-cbc", AES192Cbc.class);
+		ciphers.put("aes128-cbc", AES128Cbc.class);
+		ciphers.put("cast128-cbc", CAST128Cbc.class);
+		
 		defaultCipher = "blowfish-cbc";
-
-		try {
-			Enumeration enum = ConfigurationLoader.getExtensionClassLoader()
-			    .getResources("j2ssh.cipher");
-			URL url;
-			Properties properties = new Properties();
-			InputStream in;
-
-			while((enum != null) && enum.hasMoreElements()) {
-				url = (URL)enum.nextElement();
-				in = url.openStream();
-				properties.load(in);
-				IOUtil.closeStream(in);
-
-				int num = 1;
-				String name = "";
-				Class cls;
-
-				while(properties.getProperty("cipher.name."+
-				    String.valueOf(num)) != null) {
-					try {
-						name = properties.getProperty("cipher.name."+
-						    String.valueOf(num));
-						cls = ConfigurationLoader.getExtensionClassLoader()
-						    .loadClass(properties.getProperty("cipher.class."+String.valueOf(num)));
-						cls.newInstance();
-						ciphers.put(name, cls);
-						log.info("Installed "+name+" cipher");
-					}
-					catch(Throwable ex) {
-						log.info("Could not install cipher class for "+name,
-						    ex);
-					}
-
-					num++;
-				}
-			}
-		}
-		catch(Throwable t) {
-		}
 
 		// Build a list of the supported ciphers
 		supported = new ArrayList(ciphers.keySet());

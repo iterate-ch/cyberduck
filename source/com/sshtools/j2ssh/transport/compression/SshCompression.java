@@ -26,6 +26,8 @@
  */
 package com.sshtools.j2ssh.transport.compression;
 
+import java.io.IOException;
+
 
 /**
  * @author $author$
@@ -41,11 +43,13 @@ public interface SshCompression {
 	 * @param data
 	 * @return
 	 */
-	public byte[] compress(byte[] data, int start, int len);
+	public byte[] compress(byte[] data, int start, int len)
+            throws IOException;
 
 	/**
 	 * @param data
 	 * @return
 	 */
-	public byte[] uncompress(byte[] data, int start, int len);
+	public byte[] uncompress(byte[] data, int start, int len)
+            throws IOException;
 }

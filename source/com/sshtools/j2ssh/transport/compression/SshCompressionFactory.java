@@ -54,60 +54,15 @@ public class SshCompressionFactory {
 		log.info("Loading compression methods");
 
 		comps.put(COMP_NONE, "");
+		comps.put("zlib", com.sshtools.ext.jzlib.ZLibCompression.class);
 
-		defaultAlgorithm = COMP_NONE;
-
-		try {
-			Enumeration enum = ConfigurationLoader.getExtensionClassLoader()
-			    .getResources("j2ssh.compression");
-			URL url;
-			Properties properties = new Properties();
-			InputStream in;
-
-			while((enum != null) && enum.hasMoreElements()) {
-				url = (URL)enum.nextElement();
-				in = url.openStream();
-				properties.load(in);
-				IOUtil.closeStream(in);
-
-				int num = 1;
-				String name = "";
-				Class cls;
-
-				while(properties.getProperty("compression.name."+
-				    String.valueOf(num)) != null) {
-					try {
-						name = properties.getProperty("compression.name."+
-						    String.valueOf(num));
-						cls = ConfigurationLoader.getExtensionClassLoader()
-						    .loadClass(properties.getProperty("compression.class."+String.valueOf(num)));
-						cls.newInstance();
-						comps.put(name, cls);
-						log.info("Installed "+name+" compression");
-					}
-					catch(Throwable ex) {
-						log.info("Could not install cipher class for "+name,
-						    ex);
-					}
-
-					num++;
-				}
-			}
-		}
-		catch(Throwable t) {
-		}
+		defaultAlgorithm = "none";
 	}
 
 	/**
 	 * Creates a new SshCompressionFactory object.
 	 */
 	protected SshCompressionFactory() {
-	}
-
-	/**
-	 *
-	 */
-	public static void initialize() {
 	}
 
 	/**
