@@ -165,9 +165,11 @@ public abstract class Path {
             int cut = this.getAbsolute().lastIndexOf('/', index);
 			if(cut > 0) {
                 this.parent = PathFactory.createPath(this.getSession(), this.getAbsolute().substring(0, cut));
+                this.parent.attributes.setType(Path.DIRECTORY_TYPE);
 			}
 			else {//if (index == 0) //parent is root
                 this.parent = PathFactory.createPath(this.getSession(), "/");
+                this.parent.attributes.setType(Path.DIRECTORY_TYPE);
 			}
 		}
 		return this.parent;
@@ -237,6 +239,10 @@ public abstract class Path {
 	 */
 	public abstract void rename(String newFilename);
 
+	public abstract void changeOwner(String owner, boolean recursive);
+	
+	public abstract void changeGroup(String group, boolean recursive);
+	
 	/**
 	 * @param recursive Include subdirectories and files
 	 */
@@ -307,30 +313,18 @@ public abstract class Path {
 	// Transfer methods
 	// ----------------------------------------------------------
 
-	/**
-	 * ascii upload
-	 *
-	 * @param reader The stream to read from
-	 * @param writer The stream to write to
-	 */
-	public void upload(java.io.Writer writer, java.io.Reader reader) throws IOException {
-		if(log.isDebugEnabled()) {
-			log.debug("upload("+writer.toString()+", "+reader.toString());
-		}
-		this.getSession().log("Uploading "+this.getName()+" (ASCII)", Message.PROGRESS);
-		if(this.status.isResume()) {
-			long skipped = reader.skip(this.status.getCurrent());
-			log.info("Skipping "+skipped+" bytes");
-			if(skipped < this.status.getCurrent()) {
-				throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
-			}
-		}
-		this.transfer(reader, writer);
+	private boolean skip = false;
+	
+	public void setSkipped(boolean ignoreTransferRequests) {
+		log.debug("setSkipped:"+ignoreTransferRequests);
+		this.skip = ignoreTransferRequests;
 	}
-
+	
+	public boolean isSkipped() {
+		return this.skip;
+	}
+	
 	/**
-	 * binary upload
-	 *
 	 * @param i The stream to read from
 	 * @param o The stream to write to
 	 */
@@ -350,23 +344,6 @@ public abstract class Path {
 	}
 
 	/**
-	 * ascii download
-	 *
-	 * @param reader The stream to read from
-	 * @param writer The stream to write to
-	 */
-	public void download(java.io.Reader reader, java.io.Writer writer) throws IOException {
-		if(log.isDebugEnabled()) {
-			log.debug("transfer("+reader.toString()+", "+writer.toString());
-		}
-		this.getSession().log("Downloading "+this.getName()+" (ASCII)", Message.PROGRESS);
-		this.transfer(reader, writer);
-		//this.getLocal().getTemp().renameTo(this.getLocal());
-	}
-
-	/**
-	 * binary download
-	 *
 	 * @param i The stream to read from
 	 * @param o The stream to write to
 	 */
@@ -379,34 +356,6 @@ public abstract class Path {
 		//this.getLocal().getTemp().renameTo(this.getLocal());
 	}
 
-	/**
-	 * @param reader The stream to read from
-	 * @param writer The stream to write to
-	 */
-	private void transfer(java.io.Reader reader, java.io.Writer writer) throws IOException {
-		if(log.isDebugEnabled()) {
-			log.debug("transfer("+reader.toString()+", "+writer.toString());
-		}
-		LineNumberReader in = new LineNumberReader(reader);
-		BufferedWriter out = new BufferedWriter(writer);
-
-		long current = this.status.getCurrent();
-		boolean complete = false;
-		// read/write a line at a time
-		String line = null;
-		while(!complete && !status.isCanceled()) {
-			line = in.readLine();
-			if(line == null) {
-				complete = true;
-			}
-			else {
-				out.write(line, 0, line.length());
-				out.flush();
-				this.status.setCurrent(current += line.getBytes().length);
-			}
-		}
-		this.status.setComplete(complete);
-	}
 
 	/**
 	 * @param i The stream to read from
@@ -416,8 +365,8 @@ public abstract class Path {
 		if(log.isDebugEnabled()) {
 			log.debug("transfer("+i.toString()+", "+o.toString());
 		}
-		BufferedInputStream in = new BufferedInputStream(i);
-		BufferedOutputStream out = new BufferedOutputStream(o);
+		BufferedInputStream in = new BufferedInputStream(i, Preferences.instance().getInteger("connection.buffer"));
+		BufferedOutputStream out = new BufferedOutputStream(o, Preferences.instance().getInteger("connection.buffer"));
 		int chunksize = Preferences.instance().getInteger("connection.buffer");
 		byte[] chunk = new byte[chunksize];
 		int amount = 0;
@@ -431,8 +380,8 @@ public abstract class Path {
 			}
 			else {
 				out.write(chunk, 0, amount);
-				out.flush();
 				this.status.setCurrent(current += amount);
+				out.flush();
 			}
 		}
 		this.status.setComplete(complete);
