@@ -4,7 +4,7 @@
             CLASS = CDProgressController; 
             LANGUAGE = ObjC; 
             OUTLETS = {
-                alertIcon = NSImageView; 
+                alertIcon = NSButton; 
                 filenameField = NSTextField; 
                 progressBar = NSProgressIndicator; 
                 progressField = NSTextField; 

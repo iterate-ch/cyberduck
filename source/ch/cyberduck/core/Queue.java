@@ -278,12 +278,6 @@ public abstract class Queue extends Observable {
 										  }
 									  });
 			this.progress.start();
-//			this.queue.getRoot().getSession().addObserver(new Observer() {
-//				public void update(Observable o, Object arg) {
-//					Queue.this.callObservers(arg);
-//				}
-//			}
-//														  );
 			//@todo this.queue.getRoot().getSession().cache().clear();
 			this.queue.callObservers(new Message(Message.QUEUE_START));
 		}
@@ -291,7 +285,6 @@ public abstract class Queue extends Observable {
 		private void finish() {
 			this.running = false;
 			this.progress.stop();
-//			this.queue.getRoot().getSession().deleteObserver(this.queue);
 			this.queue.getRoot().getSession().close();
 			this.queue.callObservers(new Message(Message.QUEUE_STOP));
 		}
@@ -318,9 +311,6 @@ public abstract class Queue extends Observable {
 
 	/**
 	 * Stops the currently running thread processing the queue.
-	 *
-	 * @pre The thread must be running
-	 */
 	public void cancel() {
 		this.worker.cancel();
 	}

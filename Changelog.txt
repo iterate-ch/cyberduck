@@ -14,7 +14,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] Select a file in the browser by typing its first character
 - [Feature] Move remote files with copy & paste
 - [Feature] Put remote files into the transfer queue with copy & paste
-- [Feature] Apply permissions recursively (FTP)
+- [Feature] Apply permissions recursively
 - [Feature] Option to apply default permissions to transferred files in Preferences
 - [Feature] Option to preserve modification date on download in Preferences
 - [Feature] Transfer Queue with "Aqua" progress indicator
@@ -33,6 +33,8 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
  instead of the individual user bookmarks file if available
 - [Feature] Check for running transfers on application quit
 - [Feature] Updated FTP core (FTP)
+- [Bugfix] Update existing browsers when changing the default interface attributes in the Preferences
+- [Bugfix] Don't cache DNS lookups forever
 - [Bugfix] Bookmark drawer icon has no text-only equivalent
 - [Bugfix] Tabbing between browser and filter box
 - [Bugfix] Quick Connect Field has initial focus
