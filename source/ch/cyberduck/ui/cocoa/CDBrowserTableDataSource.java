@@ -68,13 +68,13 @@ public class CDBrowserTableDataSource extends NSObject {
 	if(identifier.equals("FILENAME"))
 	    return p.getName();
 	if(identifier.equals("SIZE"))
-	    return p.getSize();
+	    return p.attributes.getSizeAsString();
 	if(identifier.equals("MODIFIED"))
-	    return p.getModified();
+	    return p.attributes.getModified();
 	if(identifier.equals("OWNER"))
-	    return p.getOwner();
+	    return p.attributes.getOwner();
 	if(identifier.equals("PERMISSION"))
-	    return p.getPermission().toString();
+	    return p.attributes.getPermission().toString();
 	return null;
 //	throw new IllegalArgumentException("Unknown identifier: "+identifier);
     }
@@ -94,12 +94,10 @@ public class CDBrowserTableDataSource extends NSObject {
     }
 
     public void addEntry(Object entry) {
-	log.debug("addEntry("+entry+")");
 	this.data.add(entry);
     }
     
     public Object getEntry(int row) {
-	log.debug("getEntry("+row+")");
 	return this.data.get(row);
     }
 }

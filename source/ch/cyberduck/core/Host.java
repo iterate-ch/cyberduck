@@ -35,13 +35,13 @@ import org.apache.log4j.Logger;
 
 public class Host extends Observable {
 
-    public Status status = new Status();
+    public Status status = new HostStatus();
     public Login login;
     private String protocol = Preferences.instance().getProperty("connection.protocol.default");
     private int port = Integer.parseInt(Preferences.instance().getProperty("connection.port.default"));
     private String name;
-//    private Path path;
-    private String path = Preferences.instance().getProperty("connection.path.default");
+    //private Path path;
+    private String workdir = Preferences.instance().getProperty("connection.path.default");
     
     private HostKeyVerification hostKeyVerification;
 
@@ -53,13 +53,18 @@ public class Host extends Observable {
         this.protocol = protocol != null ? protocol : this.protocol;
         this.port = port != -1 ? port : this.port;
         this.name = name;
-        this.path = path != null ? path : this.path;
+        this.workdir = path != null ? path : this.workdir;
         this.login = login != null ? login : this.login;
 	
     }
 
     public Host(String protocol, String name, int port, Login login) {
 	this(protocol, name, port, null, login);
+    }
+
+    public void addObserver(Observer o) {
+	this.status.addObserver(o);
+	super.addObserver(o);
     }
 
     public void callObservers(Object arg) {
@@ -69,9 +74,9 @@ public class Host extends Observable {
     }
 
     //    public Session getSession(TransferAction action) throws IOException {
-    public Session getSession() {//throws IOException {
-        log.debug("getSession");
-	this.callObservers(Message.OPEN);
+    public Session openSession() {//throws IOException {
+        log.debug("openSession");
+	this.callObservers(new Message(Message.OPEN, "Opening Session"));
 	if(null == session) {
 	    if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
 		return new HTTPSession(this);
@@ -91,12 +96,19 @@ public class Host extends Observable {
     }
 
     public void closeSession() {
-	this.callObservers(Message.CLOSE);
+	this.callObservers(new Message(Message.CLOSE, "Closing session"));
 	if(null == session) {
 	    this.session.close();
 	    this.session = null;
 	}
     }
+
+    /*
+    public void recycle() {
+	//this.closeSession();
+	this.session
+    }
+     */
 
     public Login getLogin() {
 	return this.login;
@@ -106,8 +118,8 @@ public class Host extends Observable {
 	return this.name;
     }
 
-    public String getPath() { //public Path getPath()
-	return this.path;
+    public String getWorkdir() {
+	return this.workdir;
     }
     
     public int getPort() {
@@ -141,5 +153,9 @@ public class Host extends Observable {
         catch(java.net.UnknownHostException e) {
             return "Unknown host";
         }
+    }
+
+    class HostStatus extends Status {
+
     }
 }

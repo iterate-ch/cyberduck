@@ -140,7 +140,7 @@ public abstract class Preferences {//extends Properties {
 	//	System.out.println("Working directory:"+System.getProperty("user.dir"));
 	this.setProperty("cyberduck.version", "2.1");
         this.setProperty("cyberduck.uses", "0");
-	this.setProperty("cyberduck.donate", "false");
+	this.setProperty("cyberduck.donate", "true");
         
 	System.setProperty("sshtools.home", System.getProperty("user.dir"));
 	System.setProperty("sshtools.config", System.getProperty("user.dir"));
@@ -199,8 +199,8 @@ public abstract class Preferences {//extends Properties {
         this.setProperty("connection.port.default", "21");
         this.setProperty("connection.protocol.default", "ftp");
         this.setProperty("connection.transfertype.default", "binary");
-        this.setProperty("connection.timeout", "2"); // seconds
-        this.setProperty("connection.timeout.default", "2"); // seconds
+//        this.setProperty("connection.timeout", "2"); // seconds
+  //      this.setProperty("connection.timeout.default", "2"); // seconds
         this.setProperty("connection.proxy", "false");
         this.setProperty("connection.proxy.host", "proxy");
         this.setProperty("connection.proxy.port", "9999");

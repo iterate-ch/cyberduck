@@ -23,13 +23,11 @@ import java.util.Observable;
 import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
-
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-
+import ch.cyberduck.core.Message;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -38,7 +36,7 @@ import org.apache.log4j.Logger;
 public class CDBrowserView extends NSTableView implements Observer, NSDraggingDestination {
     private static Logger log = Logger.getLogger(CDBrowserView.class);
 
-//    public Object transferController;
+    private CDBrowserTableDataSource model;
     
     public CDBrowserView() {
 	super();
@@ -62,9 +60,12 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
     
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
+	this.model = (CDBrowserTableDataSource)this.dataSource();
 	this.setDelegate(this);
 	this.setTarget(this);
-	this.setIntercellSpacing(NSSize.ZeroSize);
+	this.setDrawsGrid(false);
+	this.setAutoresizesAllColumnsToFit(true);
+//	this.setIntercellSpacing(NSSize.ZeroSize);
         this.setDoubleAction(new NSSelector("doubleClickAction", new Class[] {null}));
 	//By setting the drop row to -1, the entire table is highlighted instead of just a single row.
 
@@ -78,9 +79,11 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 
     public void doubleClickAction(NSObject sender) {
 	log.debug("doubleClickAction");
-        CDBrowserTableDataSource browserTableDataSource = (CDBrowserTableDataSource)this.dataSource();
-        Path p = (Path)browserTableDataSource.getEntry(this.clickedRow());
-        p.list();
+        Path p = (Path)model.getEntry(this.clickedRow());
+	if(p.isFile())
+	    p.download();
+	if(p.isDirectory())
+	    p.list();
     }
     
     /*
@@ -89,8 +92,7 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	if(event.clickCount() == 2) { //double click
             int clickedRow = this.clickedRow();
             log.debug(""+clickedRow);
-            CDBrowserTableDataSource browserTableDataSource = (CDBrowserTableDataSource)this.dataSource();
-            Path p = (Path)browserTableDataSource.getEntry(clickedRow);
+            Path p = (Path)model.getEntry(clickedRow);
             p.list();
 	}
     }
@@ -102,21 +104,26 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	    if(arg instanceof java.util.List) {
 		java.util.List files = (java.util.List)arg;
 		java.util.Iterator i = files.iterator();
-		CDBrowserTableDataSource browserTableDataSource = (CDBrowserTableDataSource)this.dataSource();
-		browserTableDataSource.clear();
+		model.clear();
 		while(i.hasNext()) {
-		    browserTableDataSource.addEntry(i.next());
+		    model.addEntry(i.next());
 		    this.reloadData();
+		}
+	    }
+	    if(arg instanceof Message) {
+		Message msg = (Message)arg;
+		if(msg.getTitle().equals(Message.SELECTION)) {
+		    //@todo
+		    /*
+		    Host h = (Host)o;
+		    Path p = h.getWorkdir();
+		    p.list();
+		    */
 		}
 	    }
 	}
     }
 
-    public Path getWorkingPath() {
-	//@todo
-	return null;
-    }
-    
 
     // ----------------------------------------------------------
     // Delegate methods
@@ -128,10 +135,15 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	*/
     public void tableViewWillDisplayCell(NSTableView browserTable, Object cell, NSTableColumn tableColumn, int row) {
 //	log.debug("tableViewWillDisplayCell:"+row);
+
+	/*
 	String identifier = (String)tableColumn.identifier();
-//	CDBrowserTableDataSource ds = (CDBrowserTableDataSource)browserTable.dataSource();
 	if(identifier.equals("TYPE"))
 	    tableColumn.setDataCell(new NSImageCell());
+*/
+
+
+	
 //	    tableColumn.dataCell().setImage(new NSImage());
 
 //@todo throws null pointer fo ds ???
@@ -180,6 +192,7 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	//	NSTableView table = (NSTableView)notification.object(); // Returns the object associated with the receiver. This is often the object that posted this notification
     }
 
+/*
     public void sort(final String columnIdentifier, final boolean ascending) {
 	final int higher;
 	final int lower;
@@ -208,6 +221,7 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 		      );
 	}
     }
+ */
 
 
     // ----------------------------------------------------------

@@ -31,7 +31,6 @@ import ch.cyberduck.core.http.*;
 import ch.cyberduck.core.sftp.*;
 import ch.cyberduck.core.ftp.*;
 import ch.cyberduck.ui.cocoa.CDPathPopUpButton;
-import ch.cyberduck.ui.cocoa.CDStatusLabel;
 import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.transport.InvalidHostFileException;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
@@ -62,7 +61,7 @@ public class CDConnectionController extends NSObject implements Observer {
     public NSPopUpButton protocolPopup;
     public NSTextField hostField;
     public NSTextField usernameField;
-    public NSSecureTextField passwordField;
+    public NSTextField passwordField;
     public NSTextView logView;
     public NSProgressIndicator progressIndicator;
     
@@ -78,6 +77,10 @@ public class CDConnectionController extends NSObject implements Observer {
 	//
     }
 
+    public void disconnect(NSObject sender) {
+	log.debug("disconnect");
+    }    
+
     public void connect(NSObject sender) {
 	log.debug("connect");
 //	try {
@@ -86,7 +89,7 @@ public class CDConnectionController extends NSObject implements Observer {
 	    Host host = null;
             String server = null;
             String path = null;
-	    String protocol = null;
+	    String protocol = Preferences.instance().getProperty("connection.protocol.default");
             int port = -1;
             Login login = new CDLogin();
 
@@ -101,6 +104,7 @@ public class CDConnectionController extends NSObject implements Observer {
 	    if(sender instanceof NSButton) { //connection initiated from connection sheet
 		NSApplication.sharedApplication().endSheet(connectionSheet, NSAlertPanel.AlternateReturn);
                 server = hostField.stringValue();
+		path = pathField.stringValue();
                 int tag = protocolPopup.selectedItem().tag();
                 switch(tag) {
                     case(Session.SSH_PORT):
@@ -124,21 +128,20 @@ public class CDConnectionController extends NSObject implements Observer {
 	    }
 	    log.debug(protocol+","+hostField.stringValue()+","+usernameField.stringValue()+","+passwordField.stringValue());
             
-            host = new Host(protocol, server, port, path, login);
-	    //@todo add to hostcontroller
-	    host.status.fireActiveEvent();
+            ((CDHostView)hostTable).add(host = new Host(protocol, server, port, path, login));
+
+//	    host.status.fireActiveEvent();
 	    mainWindow.setTitle(host.getName());
 
 	    host.addObserver((CDBrowserView)browserTable);
 	    host.addObserver((CDHostView)hostTable);
 	    host.addObserver((CDPathPopUpButton)pathPopUpButton);
-	    host.status.addObserver((CDLogController)logController);
-//	    host.status.addObserver((CDLogView)logView);
-	    host.status.addObserver((CDStatusLabel)statusLabel);
-	    host.status.addObserver((CDProgressWheel)progressIndicator);
-	    host.status.addObserver(this);
+	    host.addObserver((CDLogController)logController);
+//	    host.addObserver((CDLogView)logView);
+	    host.addObserver((CDProgressWheel)progressIndicator);
+	    host.addObserver(this);
 	    
-	    Session session = host.getSession();
+	    Session session = host.openSession();
 
 	    if(protocol.equals(Session.SFTP)) {
 		try {
@@ -162,27 +165,7 @@ public class CDConnectionController extends NSObject implements Observer {
 		    log.error(e.getMessage());
 		}		
 	    }
-            session.start();
-//	}
-//	catch(IOException e) {
-//	    log.error(e.toString());
-//	}
-	//	connectedListView.addSubview(new CDConnectedItemView(host));
-//	connectedListView.setNeedsDisplay(true);
-
-//	Thread session = new Session(host);
-//	session.start();	
-
- //                // Now try to write to a file without creating it!
- //SftpFile file = sftp.openFile("shinning.txt",
- //                            SftpSubsystemClient.OPEN_CREATE
- //                          | SftpSubsystemClient.OPEN_WRITE);
-
-
-    }
-
-    public void disconnect(NSObject sender) {
-	log.debug("disconnect");
+            session.connect();
     }
 
     public void update(Observable o, Object arg) {
@@ -202,11 +185,23 @@ public class CDConnectionController extends NSObject implements Observer {
 			       null, // dismiss selector
 			       null, // context
 			       msg.getDescription() // message
-					    );
+			       );
+	    }
+	    if(msg.getTitle().equals(Message.PROGRESS)) {
+		statusLabel.setStringValue(msg.getDescription());
+	    }
+	}
+	if(o instanceof Host) {
+	    if(arg instanceof Message) {
+		Message msg = (Message)arg;
+		if(msg.getTitle().equals(Message.SELECTION)) {
+		    Host host = (Host)o;
+		    mainWindow.setTitle(host.getName());
+		}
 	    }
 	}
     }
-
+    
     private class CDLogin extends Login {
 	private boolean done;
 	private boolean tryAgain;

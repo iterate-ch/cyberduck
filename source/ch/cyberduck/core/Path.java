@@ -19,13 +19,19 @@ package ch.cyberduck.core;
  */
 
 import java.text.DateFormat;
+import java.util.Vector;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Date;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.Serializable;
-
+import java.io.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.Timer;
+import javax.swing.BoundedRangeModel;
+import javax.swing.DefaultBoundedRangeModel;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -37,41 +43,20 @@ import org.apache.log4j.Logger;
  * A path is a remote directory or file.
  * @version $Id$
  */
-public abstract class Path implements Serializable, Transferable {
+public abstract class Path implements Serializable {//, Transferable {
 
     private static Logger log = Logger.getLogger(Path.class);
 
-    private String name = null;
-    private String path = null;
+    protected String name = null;
+    protected String path = null;
     protected Path parent = null;
+    public FileStatus status = new FileStatus();
+    public Attributes attributes = new Attributes();
+
+    public static String FILE = "FILE";
+    public static String FOLDER = "FOLDER";
+    public static String LINK = "LINK";
     
-    private int size;
-    private long modified;
-
-    private String owner;
-    private String group;
-    private String access;
-    private Permission permission;
-
-    private boolean visible = true;
-
-    public static final DataFlavor pathFlavor
-        = new DataFlavor(ch.cyberduck.core.Path.class, "ch.cyberduck.core.Path");
-
-    public DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[]{pathFlavor};
-    }
-
-    public boolean isDataFlavorSupported(DataFlavor flavor) {
-        return flavor.equals(pathFlavor);
-    }
-
-    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
-        if(flavor.equals(pathFlavor))
-            return this;
-        throw new UnsupportedFlavorException(flavor);
-    }
-
     /**
      * @param path the absolute directory
      * @param name the file relative to param path
@@ -156,8 +141,21 @@ public abstract class Path implements Serializable, Transferable {
      * but seems to be a file because there isn't a '/' at
      * the end of the path.
      */
-    public abstract boolean isFile();
-    /*
+
+
+    public boolean isFile() {
+	return this.attributes.getMode().charAt(0) == '-';
+    }
+
+    public boolean isDirectory() {
+	return this.attributes.getMode().charAt(0) == 'd';
+    }
+
+    public boolean isLink() {
+	return this.attributes.getMode().charAt(0) == 'l';
+    }
+
+    /* bad code
     public boolean isFile() {
         String path = this.toString();
         if(path.lastIndexOf('/') == path.length() - 1) {
@@ -173,8 +171,7 @@ public abstract class Path implements Serializable, Transferable {
      * @return true  even if the directory doesn't exist on the local filesystem
      * but seems to be a directory because it ends with '/'
      */
-    public abstract boolean isDirectory();
-    /*
+    /* bad code
     public boolean isDirectory() {
 //        log.debug("[Path] isDirectory()");
         String path = this.toString();
@@ -185,6 +182,13 @@ public abstract class Path implements Serializable, Transferable {
     }
      */
 
+    /**
+        * @return true if this paths points to '/'
+     */
+    public boolean isRoot() {
+        return this.getAbsolute().equals("/");
+    }
+    
     /**
      * @return The filename if the path is a file
      * or the full path if it is a directory
@@ -206,6 +210,10 @@ public abstract class Path implements Serializable, Transferable {
 	return this.path;
     }
 
+    public String getAbsoluteEncoded(String path) {
+        return java.net.URLEncoder.encode(this.getAbsolute());//, "utf-8");
+    }
+    
     /**
         * @return The local alias of this path
      */
@@ -281,117 +289,459 @@ public abstract class Path implements Serializable, Transferable {
     }
     */
 
-    /*
-    public static String encode(String path) {
-        return java.net.URLEncoder.encode(path);
-    }
-     */
-
-    /**
-     * @param size The size of the file
-     */
-    public void setSize(int size) {
-//	log.debug("setSize:"+size);
-        this.size = size;
-    }
-
-
-    private static final int KILO = 1024; //2^10
-    private static final int MEGA = 1048576; // 2^20
-    private static final int GIGA = 1073741824; // 2^30
+    // ----------------------------------------------------------
+    // File attributes
+    // ----------------------------------------------------------    
     
+    public class Attributes {
+	private int size;
+	private long modified;
+
+	private String owner;
+	private String group;
+	private String access;
+	private Permission permission;
+	private boolean visible = true;
+
+	/**
+	    * @param visible If this path should be shown in the directory listing
+	 */
+	public void setVisible(boolean visible) {
+	    this.visible = visible;
+	}
+	/**
+	    * @return If this path is shown in the directory listing
+	 */
+	public boolean isVisible() {
+	    return this.visible;
+	}
+	
+	/**
+	* @ param size the size of file in bytes.
+	 */
+	public void setSize(int size) {
+	    //	log.debug("setSize:"+size);
+	    this.size = size;
+	}
+
+	/**
+	* @ return length the size of file in bytes.
+	 */
+	public int getSize() {
+	    return size;
+	}	
+
+	private static final int KILO = 1024; //2^10
+	private static final int MEGA = 1048576; // 2^20
+	private static final int GIGA = 1073741824; // 2^30
+	
+	/**
+	    * @return The size of the file
+	 */
+	public String getSizeAsString() {
+	    if(size < KILO) {
+		return size + " B";
+	    }
+	    else if(size < MEGA) {
+		return new Double(size/KILO).intValue() + " KB";
+	    }
+	    else if(size < GIGA) {
+		return new Double(size/MEGA).intValue() + " MB";
+	    }
+	    else {
+		return new Double(size/GIGA).intValue() + " GB";
+	    }
+	}
+
+	/**
+	    * Set the modfication returned by ftp directory listings
+	 */
+	public void setModified(long m) {
+	    this.modified = m;
+	}
+
+	/**
+	    * @return the modification date of this file
+	 */
+	public String getModified() {
+	    return (DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)).format(new Date(this.modified));
+	}
+
+	/**
+	    * @param access unix access permitions, i.e. -rwxrwxrwx
+	 */
+	public void setMode(String access) {
+	    this.access = access;
+	}
+
+	/**
+	    * @return The unix access permissions
+	 */
+	public String getMode() {
+	    return this.access;
+	}
+
+	public void setPermission(Permission p) {
+	    this.permission = p;
+	}
+
+	public Permission getPermission() {
+	    return this.permission;
+	}
+
+	public void setOwner(String o) {
+	    this.owner = o;
+	}
+
+	public String getOwner() {
+	    return this.owner;
+	}
+
+	public void setGroup(String g) {
+	    this.group = g;
+	}
+
+	public String getGroup() {
+	    return this.group;
+	}
+
+    }
+
+    public class FileStatus extends Status {
+
+	/**
+	* Download is resumable
+	 */
+	private transient boolean resume = false;
+
+	private int current = 0;
+	/*
+	 * current speed (bytes/second)
+	 */
+	private transient double speed = 0;
+	/*
+	 * overall speed (bytes/second)
+	 */
+	private transient double overall = 0;
+	/*
+	 * the size of the file
+	 */
+	private int size = -1;
+
+	private transient Timer currentSpeedTimer, overallSpeedTimer;//, timeLeftTimer;
+	
+	public BoundedRangeModel getProgressModel() {
+	    DefaultBoundedRangeModel m = null;
+	    try {
+		if(attributes.getSize() < 0) {
+		    m = new DefaultBoundedRangeModel(0, 0, 0, 100);
+		}
+		m = new DefaultBoundedRangeModel(this.getCurrent(), 0, 0, attributes.getSize());
+	    }
+	    catch(IllegalArgumentException e) {
+		m = new DefaultBoundedRangeModel(0, 0, 0, 100);
+	    }
+	    return m;
+	}
+
+	public int getCurrent() {
+	    return current;
+	}
+	/**
+	* @param c The currently transfered bytes
+	 */
+	public void setCurrent(int c) {
+	    //        log.debug("setCurrent(" + c + ")");
+	    this.current = c;
+
+	    Message msg = null;
+	    if(this.getSpeed() <= 0 && this.getOverall() <= 0) {
+		msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of " + this.parseDouble(attributes.getSize()/1024) + " kBytes.");
+	    }
+	    else {
+		if(this.getOverall() <= 0) {
+		    msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of "
+			+ this.parseDouble(attributes.getSize()/1024) + " kBytes. Current: " +
+			+ this.parseDouble(this.getSpeed()/1024) + "kB/s. ");// + this.getTimeLeftMessage();
+		}
+		else {
+		    msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of "
+			+ this.parseDouble(attributes.getSize()/1024) + " kBytes. Current: "
+			+ this.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
+			+ this.parseDouble(this.getOverall()/1024) + " kB/s. ");// + this.getTimeLeftMessage();
+		}
+	    }
+
+	    this.callObservers(msg);
+	}
+
+	/**
+        * @return double current bytes/second
+	 */
+	private double getSpeed() {
+	    return this.speed;
+	}
+	private void setSpeed(double s) {
+	    this.speed = s;
+	}
+
+	/**
+	* @return double bytes per seconds transfered since the connection has been opened
+	 */
+	private double getOverall() {
+	    return this.overall;
+	}
+	private void setOverall(double s) {
+	    this.overall = s;
+	}
+
+	public void setResume(boolean value) {
+	    this.resume = value;
+	}
+	public boolean isResume() {
+	    return this.resume;
+	}
+
+	public void fireActiveEvent() {
+	    super.fireActiveEvent();
+	    this.overallSpeedTimer.start();
+	    this.currentSpeedTimer.start();
+	}
+
+	public void fireStopEvent() {
+	    super.fireStopEvent();
+	    if(this.currentSpeedTimer != null)
+		this.currentSpeedTimer.stop();
+	    if(this.overallSpeedTimer != null)
+		this.overallSpeedTimer.stop();
+	    this.setResume(false);
+
+	}
+
+	public void fireCompleteEvent() {
+	    super.fireCompleteEvent();
+	    this.currentSpeedTimer.stop();
+	    this.overallSpeedTimer.stop();
+            this.setResume(false);
+	}
+
+	public void reset() {
+	    super.reset();
+	    this.speed = 0;
+	    this.overall = 0;
+	    if(overallSpeedTimer == null) {
+		overallSpeedTimer = new Timer(4000,
+				new ActionListener() {
+				    Vector overall = new Vector();
+				    double current;
+				    double last;
+				    public void actionPerformed(ActionEvent e) {
+					//                    log.debug("overallSpeedTimer:actionPerformed()");
+					current = getCurrent();
+					if(current <= 0) {
+					    setOverall(0);
+					}
+					else {
+					    overall.add(new Double((current - last)/4)); // bytes transferred for the last 4 seconds
+					    Iterator iterator = overall.iterator();
+					    double sum = 0;
+					    while(iterator.hasNext()) {
+						Double s = (Double)iterator.next();
+						sum = sum + s.doubleValue();
+					    }
+					    setOverall((sum/overall.size()));
+					    last = current;
+					    //                        log.debug("overallSpeed " + sum/overall.size()/1024 + " KBytes/sec");
+					}
+				    }
+				}
+				);
+	    }
+
+	    if(currentSpeedTimer == null) {
+		currentSpeedTimer = new Timer(500,
+				new ActionListener() {
+				    int i = 0;
+				    int current;
+				    int last;
+				    int[] speeds = new int[8];
+				    public void actionPerformed(ActionEvent e) {
+					//                    log.debug("currentSpeedTimer:actionPerformed()");
+					int diff = 0;
+					current = getCurrent();
+					if(current <= 0) {
+					    setSpeed(0);
+					}
+					else {
+					    speeds[i] = (current - last)*(2); i++; last = current;
+					    if(i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
+						i = 0;
+					    }
+
+					    for (int k = 0; k < speeds.length; k++) {
+						diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
+					    }
+
+					    //                        log.debug("currentSpeed " + diff/speeds.length/1024 + " KBytes/sec");
+					    setSpeed((diff/speeds.length));
+					}
+				    }
+				}
+				);
+	    }
+	}
+	
+	public String toString() {
+	    return "Status:" + "Stopped=" + isStopped() + ", Complete=" + isComplete() + ", Resume=" + isResume() + ", Current=" + getCurrent() + ", Speed=" + getSpeed() + ", Overall=" + getOverall();
+	}
+    }
+
+
+    // ----------------------------------------------------------
+    // Transfer methods
+    // ----------------------------------------------------------
+    
+
     /**
-     * @return The size of the file
+	* ascii upload
+     * @param reader The stream to read from
+     * @param writer The stream to write to
      */
-    public String getSize() {
-        if(size < KILO) {
-            return size + " B";
+    public void upload(java.io.Writer writer, java.io.Reader reader) throws IOException {
+        log.debug("upload(" + writer.toString() + ", " + reader.toString());
+	//      this.log("Uploading " + action.getParam() + "... (ASCII)", Message.PROGRESS);
+        this.transfer(reader, writer);
+	//        this.log("Upload of '" + action.getParam() + "' complete", Message.PROGRESS);
+    }
+
+    /**
+	* binary upload
+     * @param i The stream to read from
+     * @param o The stream to write to
+     */
+    public void upload(java.io.OutputStream o, java.io.InputStream i) throws IOException {
+        log.debug("upload(" + o.toString() + ", " + i.toString());
+	//        this.log("Uploading " + action.getParam() + "... (BINARY)", Message.PROGRESS);
+        this.transfer(i, o);
+	//        this.log("Upload of '" + action.getParam() + "' complete", Message.PROGRESS);
+    }
+
+    /**
+	* ascii download
+     * @param reader The stream to read from
+     * @param writer The stream to write to
+     */
+    public void download(java.io.Reader reader, java.io.Writer writer) throws IOException {
+        log.debug("transfer(" + reader.toString() + ", " + writer.toString());
+	//        this.log("Downloading " + bookmark.getServerFilename() + "... (ASCII)", Message.PROGRESS);
+        this.transfer(reader, writer);
+    }
+
+    /**
+	* binary download
+     * @param i The stream to read from
+     * @param o The stream to write to
+     */
+    public void download(java.io.InputStream i, java.io.OutputStream o) throws IOException {
+        log.debug("transfer(" + i.toString() + ", " + o.toString());
+	//        this.log("Downloading " + bookmark.getServerFilename() + "... (BINARY) ", Message.PROGRESS);
+        this.transfer(i, o);
+    }
+
+    /**
+	* @param reader The stream to read from
+     * @param writer The stream to write to
+     */
+    private void transfer(java.io.Reader reader, java.io.Writer writer) throws IOException {
+        LineNumberReader in = new LineNumberReader(reader);
+        BufferedWriter out = new BufferedWriter(writer);
+        int current = this.status.getCurrent();
+        boolean complete = false;
+        // read/write a line at a time
+        String line = null;
+        while (!complete && !this.status.isCancled()) {
+            line = in.readLine();
+            if(line == null) {
+                complete = true;
+            }
+            else {
+                this.status.setCurrent(current += line.getBytes().length);
+                out.write(line, 0, line.length());
+                out.newLine();
+            }
         }
-        else if(size < MEGA) {
-            return new Double(size/KILO).intValue() + " KB";
+        this.eof(complete);
+        // close streams
+        if(in != null) {
+            in.close();
         }
-        else if(size < GIGA) {
-            return new Double(size/MEGA).intValue() + " MB";
+        if(out != null) {
+            out.flush();
+            out.close();
+        }
+    }
+
+    /**
+        * @param i The stream to read from
+     * @param o The stream to write to
+     */
+    private void transfer(java.io.InputStream i, java.io.OutputStream o) throws IOException {
+        BufferedInputStream in = new BufferedInputStream(new DataInputStream(i));
+        BufferedOutputStream out = new BufferedOutputStream(new DataOutputStream(o));
+
+        // do the retrieving
+        int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
+        byte[] chunk = new byte[chunksize];
+        int amount = 0;
+        int current = this.status.getCurrent();
+        boolean complete = false;
+
+        // read from socket (bytes) & write to file in chunks
+        while (!complete && !this.status.isCancled()) {
+            amount = in.read(chunk, 0, chunksize);
+            if(amount == -1) {
+                complete = true;
+            }
+            else {
+                this.status.setCurrent(current += amount);
+                out.write(chunk, 0, amount);
+            }
+        }
+        this.eof(complete);
+        // close streams
+        if(in != null) {
+            in.close();
+        }
+        if(out != null) {
+            out.flush();
+            out.close();
+        }
+    }
+
+    /**
+	* Do some cleanup if transfer has been completed
+     */
+    private void eof(boolean complete) {
+        if(complete) {
+            this.status.setCurrent(this.attributes.getSize());
+
+            //if(action.toString().equals(TransferAction.GET)) {
+            //    bookmark.getLocalTempPath().renameTo(bookmark.getLocalPath());
+            //    if(Preferences.instance().getProperty("files.postprocess").equals("true")) {
+            //        bookmark.open();
+            //    }
+	    // }
+           // this.log("Complete" , Message.PROGRESS);
+            this.status.fireCompleteEvent();
         }
         else {
-            return new Double(size/GIGA).intValue() + " GB";
+//            this.log("Incomplete", Message.PROGRESS);
+            this.status.fireStopEvent();
         }
     }
-
-    /**
-        * Set the modfication returned by ftp directory listings
-     */
-    public void setModified(long m) {
-        this.modified = m;
-    }
-
-    /**
-     * @return the modification date of this file
-     */
-    public String getModified() {
-        return (DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)).format(new Date(this.modified));
-    }
-
-    /**
-     * @param access unix access permitions, i.e. -rwxrwxrwx
-     */
-    public void setMode(String access) {
-        this.access = access;
-    }
-
-    /**
-        * @return The unix access permissions
-     */
-    public String getMode() {
-        return this.access;
-    }
-
-    public void setPermission(Permission p) {
-        this.permission = p;
-    }
-
-    public Permission getPermission() {
-        return this.permission;
-    }
     
-    public void setOwner(String o) {
-        this.owner = o;
-    }
-
-    public String getOwner() {
-        return this.owner;
-    }
-
-    public void setGroup(String g) {
-        this.group = g;
-    }
-
-    public String getGroup() {
-        return this.group;
-    }
-    
-    /**
-     * @param visible If this path should be shown in the directory listing
-     */
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
-
-    /**
-        * @return If this path is shown in the directory listing
-     */
-    public boolean isVisible() {
-        return this.visible;
-    }
-
-    /**
-        * @return true if this paths points to '/'
-     */
-    public boolean isRoot() {
-        return this.getAbsolute().equals("/");
-    }
     
     public String toString() {
-        return this.getAbsolute().toString();
+        return this.getAbsolute();
     }
 }

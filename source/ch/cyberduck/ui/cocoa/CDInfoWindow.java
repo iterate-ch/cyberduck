@@ -20,20 +20,22 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-
 import org.apache.log4j.Logger;
+import ch.cyberduck.core.Path;
 
 /**
 * @version $Id$
  */
 public class CDInfoWindow extends NSPanel {
 
-    public Object filenameField; /* IBOutlet */
-    public Object groupField; /* IBOutlet */
-    public Object kindField; /* IBOutlet */
-    public Object modifiedField; /* IBOutlet */
-    public Object ownerField; /* IBOutlet */
-    public Object sizeField; /* IBOutlet */
+    public NSTextField filenameField; /* IBOutlet */
+    public NSTextField groupField; /* IBOutlet */
+    public NSTextField kindField; /* IBOutlet */
+    public NSTextField modifiedField; /* IBOutlet */
+    public NSTextField ownerField; /* IBOutlet */
+    public NSTextField sizeField; /* IBOutlet */
+
+    private Path selectedPath;
 
     private static Logger log = Logger.getLogger(CDInfoWindow.class);
 
@@ -54,5 +56,9 @@ public class CDInfoWindow extends NSPanel {
 
     public void awakeFromNib() {
 	log.debug("CDInfoWindow:awakeFromNib");
+    }
+
+    public void setSelectedPath(Path p) {
+	this.selectedPath = p;
     }
 }

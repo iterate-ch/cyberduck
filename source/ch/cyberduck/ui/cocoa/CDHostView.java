@@ -26,9 +26,14 @@ import java.util.Observable;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Message;
 
+/**
+* @version $Id$
+ */
 public class CDHostView extends NSTableView implements Observer {
 
     private static Logger log = Logger.getLogger(CDHostView.class);
+
+    private CDHostTableDataSource model;
 
     public CDHostView() {
 	super();
@@ -49,7 +54,18 @@ public class CDHostView extends NSTableView implements Observer {
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
 	this.setDelegate(this);
+	this.setAutoresizesAllColumnsToFit(true);
+	this.model = (CDHostTableDataSource)this.dataSource();
+//@todo	this.tableColumnWithIdentifier("STATUS").setDataCell(new NSImageCell());;
 //	this.tableColumnWithIdentifier("HOST").setDataCell(new CDHostCell());;
+    }
+
+    public void add(Host h) {
+	model.addEntry(h);
+    }
+
+    public void remove(Host h) {
+	model.removeEntry(h);
     }
 
     // ----------------------------------------------------------
@@ -70,10 +86,6 @@ public class CDHostView extends NSTableView implements Observer {
 	return false;
     }
 
-    public void tableViewSelectionDidChange(NSNotification notification) {
-	log.debug("tableViewSelectionDidChange");
-    }
-
     public void tableViewWillDisplayCell(NSTableView browserTable, Object cell, NSTableColumn tableColumn, int row) {
 	log.debug("tableViewWillDisplayCell");
 	/*
@@ -90,6 +102,12 @@ public class CDHostView extends NSTableView implements Observer {
 	 */
     }
 
+    public void tableViewSelectionDidChange(NSNotification notification) {
+	log.debug("tableViewSelectionDidChange");
+	Host h = (Host)model.getEntry(this.selectedRow());
+	h.callObservers(Message.SELECTION);
+    }
+    
     // ----------------------------------------------------------
     // Observer interface
     // ----------------------------------------------------------
@@ -99,13 +117,11 @@ public class CDHostView extends NSTableView implements Observer {
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.OPEN)) {
-		    CDHostTableDataSource ds = (CDHostTableDataSource)this.dataSource();
-		    ds.addEntry(o);
+		    model.addEntry(o);
 		    this.reloadData();
 		}
 		if(msg.getTitle().equals(Message.CLOSE)) {
-		    CDHostTableDataSource ds = (CDHostTableDataSource)this.dataSource();
-		    ds.removeEntry(o);
+		    model.addEntry(o);
 		    this.reloadData();
 		}
 	    }

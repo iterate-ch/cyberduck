@@ -25,8 +25,6 @@ public class CDHostTableDataSource extends NSObject {
 
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
-	//@todo 
-	this.addEntry(new Host("ftp", "hostname", 21, null));
     }
 
     public int numberOfRowsInTableView(NSTableView tableView) {
@@ -37,6 +35,9 @@ public class CDHostTableDataSource extends NSObject {
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 	log.debug("tableViewObjectValueForLocation");
 	Host h = (Host)data.get(row);
+	String identifier = (String)tableColumn.identifier();
+	if(identifier.equals("STATUS"))
+	    return NSImage.imageNamed("blipBlue.tiff");
 	return h.getName();	
     }
 

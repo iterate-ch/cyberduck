@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public abstract class Session extends Thread {
+public abstract class Session {//extends Thread {
 
     private static Logger log = Logger.getLogger(Session.class);
 
@@ -65,7 +65,6 @@ public abstract class Session extends Thread {
 	this.host = h;
 //	this.action = action;
 //        this.secure = secure;
-	Preferences.instance();
 	
         System.getProperties().put("proxySet", Preferences.instance().getProperty("connection.proxy"));
         System.getProperties().put("proxyHost", Preferences.instance().getProperty("connection.proxy.host"));
@@ -77,156 +76,16 @@ public abstract class Session extends Thread {
         this.log("-------" + host.getName(), Message.TRANSCRIPT);
     }
 
-    abstract class Runner extends Thread {
-	public abstract void run();
-    }
+    /**
+     * The protocol specific implementation has to  be coded in the subclasses. 
+     */
+    public abstract void connect();
 
     /**
-     * Start the session and run the action specified with <code>TransferAction</code>
-     * in the constructor.
-     * The protocol specific implementation is be coded in the subclasses. 
+	* The protocol specific implementation has to  be coded in the subclasses.
      */
-    public abstract void run();
-
     public abstract void close();
 
-    /**
-     * ascii upload
-     * @param reader The stream to read from
-     * @param writer The stream to write to
-     */
-    public void upload(java.io.Writer writer, java.io.Reader reader) throws IOException {
-        log.debug("[Session] upload(" + writer.toString() + ", " + reader.toString());
-  //      this.log("Uploading " + action.getParam() + "... (ASCII)", Message.PROGRESS);
-        this.transfer(reader, writer);
-//        this.log("Upload of '" + action.getParam() + "' complete", Message.PROGRESS);
-    }
-
-    /**
-     * binary upload
-     * @param i The stream to read from
-     * @param o The stream to write to
-     */
-    public void upload(java.io.OutputStream o, java.io.InputStream i) throws IOException {
-        log.debug("[Session] upload(" + o.toString() + ", " + i.toString());
-//        this.log("Uploading " + action.getParam() + "... (BINARY)", Message.PROGRESS);
-        this.transfer(i, o);
-//        this.log("Upload of '" + action.getParam() + "' complete", Message.PROGRESS);
-    }
-
-    /**
-     * ascii download
-     * @param reader The stream to read from
-     * @param writer The stream to write to
-     */
-    public void download(java.io.Reader reader, java.io.Writer writer) throws IOException {
-        log.debug("[Session] transfer(" + reader.toString() + ", " + writer.toString());
-//        this.log("Downloading " + bookmark.getServerFilename() + "... (ASCII)", Message.PROGRESS);
-        this.transfer(reader, writer);
-    }
-
-    /**
-     * binary download
-     * @param i The stream to read from
-     * @param o The stream to write to
-     */
-    public void download(java.io.InputStream i, java.io.OutputStream o) throws IOException {
-        log.debug("[Session] transfer(" + i.toString() + ", " + o.toString());
-//        this.log("Downloading " + bookmark.getServerFilename() + "... (BINARY) ", Message.PROGRESS);
-        this.transfer(i, o);
-    }
-
-    /**
-    * @param reader The stream to read from
-        * @param writer The stream to write to
-     */
-    private void transfer(java.io.Reader reader, java.io.Writer writer) throws IOException {
-        LineNumberReader in = new LineNumberReader(reader);
-        BufferedWriter out = new BufferedWriter(writer);
-        int current = host.status.getCurrent();
-        boolean complete = false;
-        // read/write a line at a time
-        String line = null;
-        while (!complete && !host.status.isCancled()) {
-            line = in.readLine();
-            if(line == null) {
-                complete = true;
-            }
-            else {
-                host.status.setCurrent(current += line.getBytes().length);
-                out.write(line, 0, line.length());
-                out.newLine();
-            }
-        }
-        this.eof(complete);
-        // close streams
-        if(in != null) {
-            in.close();
-        }
-        if(out != null) {
-            out.flush();
-            out.close();
-        }
-    }
-
-    /**
-        * @param i The stream to read from
-     * @param o The stream to write to
-     */
-    private void transfer(java.io.InputStream i, java.io.OutputStream o) throws IOException {
-        BufferedInputStream in = new BufferedInputStream(new DataInputStream(i));
-        BufferedOutputStream out = new BufferedOutputStream(new DataOutputStream(o));
-
-        // do the retrieving
-        int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
-        byte[] chunk = new byte[chunksize];
-        int amount = 0;
-        int current = host.status.getCurrent();
-        boolean complete = false;
-
-        // read from socket (bytes) & write to file in chunks
-        while (!complete && !host.status.isCancled()) {
-            amount = in.read(chunk, 0, chunksize);
-            if(amount == -1) {
-                complete = true;
-            }
-            else {
-                host.status.setCurrent(current += amount);
-                out.write(chunk, 0, amount);
-            }
-        }
-        this.eof(complete);
-        // close streams
-        if(in != null) {
-            in.close();
-        }
-        if(out != null) {
-            out.flush();
-            out.close();
-        }
-    }
-
-    /**
-     * Do some cleanup if transfer has been completed
-     */
-    private void eof(boolean complete) {
-        if(complete) {
-            host.status.setCurrent(host.status.getLength());
-            
-            //if(action.toString().equals(TransferAction.GET)) {
-            //    bookmark.getLocalTempPath().renameTo(bookmark.getLocalPath());
-            //    if(Preferences.instance().getProperty("files.postprocess").equals("true")) {
-            //        bookmark.open();
-            //    }
-           // }
-            this.log("Complete" , Message.PROGRESS);
-            host.status.fireCompleteEvent();
-        }
-        else {
-            this.log("Incomplete", Message.PROGRESS);
-            host.status.fireStopEvent();
-        }
-    }
     
     /**
         * Can be called within the <code>run()</code> to check if the thread should die.
@@ -244,6 +103,7 @@ public abstract class Session extends Thread {
 //        log.debug("[Session] log("+message+","+type+")");
 
 	host.status.setMessage(message, title);
+//	host.status.setMessage(host.getName()+System.getProperty("line.separator")+message, title);
 	/*
 //@todo        bookmark.status.setMessage(message, type);
         if(type.equals(Message.TRANSCRIPT)) {

@@ -80,6 +80,7 @@ public class SFTPSession extends Session {
 	    host.callObservers(this);
 	    List files = null;
 	    SftpFile workingDirectory = null;
+	    //@todo throw exception if we are not a directory
 	    try {
 //		if((file != null) && file.isDirectory()) {
 		    log.debug("Listing " + this.getAbsolute());
@@ -93,22 +94,25 @@ public class SFTPSession extends Session {
 		    files = new java.util.ArrayList();
 		    while(i.hasNext()) {
 			SftpFile x = (SftpFile)i.next();
-			if(!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
-                            SFTPFile f = new SFTPFile(x.getAbsolutePath());
-                            if(!Preferences.instance().getProperty("ftp.showHidden").equals("true")) {
-                                if(x.getFilename().charAt(0) == '.') {
-                                    f.setVisible(false);
-                                }
-                            }
-                            f.setSize(x.getAttributes().getSize().intValue());
-			    f.setModified(x.getAttributes().getModifiedTime().longValue());
-			    f.setPermission(new Permission(x.getAttributes().getPermissionsString()));
-//			    f.setOwner(x.getAttributes.getOwner());
-//			    SFTPSession.this.log(f.getName(), Message.PROGRESS);
-//			    log.debug("Adding "+f.getAbsolute()+" to file listing.");
-			    files.add(f);
-			    //		    host.callObservers(files);
+			//			if(!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
+			SFTPFile f = new SFTPFile(this.getAbsolute(), x.getFilename());
+			log.debug(f.getName());
+			//don't use this, because like this no cached data is used //SFTPFile f = new SFTPFile(x.getAbsolutePath());
+			if(!Preferences.instance().getProperty("ftp.showHidden").equals("true")) {
+			    if(f.getName().charAt(0) == '.') {
+				f.attributes.setVisible(false);
+			    }
 			}
+			f.attributes.setOwner(x.getAttributes().getUID().toString());
+			f.attributes.setGroup(x.getAttributes().getGID().toString());
+			f.attributes.setSize(x.getAttributes().getSize().intValue());
+			f.attributes.setModified(x.getAttributes().getModifiedTime().longValue());
+			f.attributes.setMode(x.getAttributes().getPermissionsString());
+			f.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
+   //			    SFTPSession.this.log(f.getName(), Message.PROGRESS);
+   //			    log.debug("Adding "+f.getAbsolute()+" to file listing.");
+			files.add(f);
+			//}
 		    }
 		    file = workingDirectory;
 		    host.callObservers(files);
@@ -187,6 +191,7 @@ public class SFTPSession extends Session {
 	    }
 	}
 
+	/* bad performance
 	public boolean isFile() {
 	    try {
 		SftpFile workingDirectory = SFTP.openDirectory(this.getAbsolute());
@@ -214,13 +219,25 @@ public class SFTPSession extends Session {
 	    }
 	    return false;
 	}
+	 */
 
         public void download() {
 
         }
 
         public void upload() {
+	    /*
+	    SftpFile file = sftp.openFile("cp.txt",
+				   SftpSubsystemClient.OPEN_CREATE
+				   | SftpSubsystemClient.OPEN_WRITE, attrs);
 
+	    SftpFileOutputStream out = new SftpFileOutputStream(file);
+	    String line = "All work and no play makes johnny a bad boy!\n";
+	    for(int i=0;i<100;i++)
+		out.write(line.getBytes());
+
+	    out.close();
+	     */
         }
     }
 
@@ -260,33 +277,33 @@ public class SFTPSession extends Session {
 	host.status.fireStopEvent();
     }
 
-
-    public void run() {
-	host.status.fireActiveEvent();
-	this.log("Opening SSH connection to " + host.getIp()+"...", Message.PROGRESS);
-	try {
-	    //if(!SSH.isConnected()) {
-	    // Make a client connection
-//	    this.log("Initializing SSH connection", Message.PROGRESS);
-	    // Connect to the host
-	    SSH.connect(host.getName(), host.getHostKeyVerification());
-	    this.login();
-            String path = host.getPath().equals(Preferences.instance().getProperty("connection.path.default")) ? SFTP.getDefaultDirectory() : host.getPath();
-	    SFTPFile home = new SFTPFile(path);
-	    home.list();
-            host.status.fireStopEvent();
-	}
-	catch(SshException e) {
-	    SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
-	}
-	catch(IOException e) {
-	    SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
-	}
-        finally {
-//            this.saveLog();
-//            this.bookmark.status.ignoreEvents(false);
-  //          this.bookmark.status.fireStopEvent();
-        }
+public void connect() {
+    new Thread() {
+	public void run() {
+	    host.status.fireActiveEvent();
+	    SFTPSession.this.log("Opening SSH connection to " + host.getIp()+"...", Message.PROGRESS);
+	    try {
+		//if(!SSH.isConnected()) {
+  // Make a client connection
+  //	    this.log("Initializing SSH connection", Message.PROGRESS);
+  // Connect to the host
+		SSH.connect(host.getName(), host.getHostKeyVerification());
+		SFTPSession.this.login();
+		String path = host.getWorkdir().equals(Preferences.instance().getProperty("connection.path.default")) ? SFTP.getDefaultDirectory() : host.getWorkdir();
+		SFTPFile home = new SFTPFile(path);
+		home.list();
+		}
+	    catch(SshException e) {
+		SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	    }
+	    catch(IOException e) {
+		SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+	    }
+	    finally {
+		host.status.fireStopEvent();
+	    }
+	    }
+	}.start();
     }
 
     private void login() throws IOException {

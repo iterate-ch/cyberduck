@@ -105,8 +105,8 @@ public class HTTPSession extends Session {
 		GET.addRequestHeader("Accept", GET.getAcceptHeader());
 
 		GET.addRequestHeader("User-Agent", "Cyberduck/" + Preferences.instance().getProperty("cyberduck.version"));
-		if(host.status.isResume()) {
-		    GET.addRequestHeader("Range", "bytes=" + host.status.getCurrent() + "-");
+		if(this.status.isResume()) {
+		    GET.addRequestHeader("Range", "bytes=" + this.status.getCurrent() + "-");
 		}
 		String v = GET.isHttp11() ? "HTTP/1.1" : "HTTP/1.0";
 		HTTPSession.this.log("GET " + this.getAbsolute() + " " + v, Message.TRANSCRIPT);
@@ -139,14 +139,14 @@ public class HTTPSession extends Session {
 		    throw new HttpException(HttpStatus.getStatusText(response), response);
 		}
 
-		if(host.status.isResume()) {
+		if(this.status.isResume()) {
 		    if(GET.getStatusCode() != HttpStatus.SC_PARTIAL_CONTENT) {
 			HTTPSession.this.log("Resumption not possible.", Message.ERROR);
-			host.status.setCurrent(0);
-			host.status.setResume(false);
+			this.status.setCurrent(0);
+			this.status.setResume(false);
 		    }
 		    else {
-			HTTPSession.this.log("Resume at " + host.status.getCurrent() + ".", Message.PROGRESS);
+			HTTPSession.this.log("Resume at " + this.status.getCurrent() + ".", Message.PROGRESS);
 		    }
 		}
 
@@ -155,29 +155,29 @@ public class HTTPSession extends Session {
 		Header transferEncodingHeader = GET.getResponseHeader("Bookmark-Encoding");
 		if(lengthHeader != null) {
 		    try {
-			host.status.setLength(Integer.parseInt(lengthHeader.getValue()));
+			this.attributes.setSize(Integer.parseInt(lengthHeader.getValue()));
 		    }
 		    catch(NumberFormatException e) {
-			host.status.setLength(-1);
+			this.attributes.setSize(-1);
 		    }
 		}
 		if(rangeHeader != null) {
 		    try {
 			String r = rangeHeader.getValue();
 			int l = Integer.parseInt(r.substring(v.indexOf('/') + 1));
-			host.status.setLength(l);
+			this.attributes.setSize(l);
 		    }
 		    catch(NumberFormatException e) {
-			host.status.setLength(-1);
+			this.attributes.setSize(-1);
 		    }
 		}
 		else if(null != transferEncodingHeader) {
 		    if("chunked".equalsIgnoreCase(transferEncodingHeader.getValue())) {
-			host.status.setLength(-1);
+			this.attributes.setSize(-1);
 		    }
 		}
 		/*
-		 //@todo		OutputStream out = new FileOutputStream(host.getLocalTempPath().toString(), host.status.isResume());
+		 //@todo		OutputStream out = new FileOutputStream(host.getLocalTempPath().toString(), this.status.isResume());
 		 if(out == null) {
 		     throw new IOException("Unable to buffer data");
 		 }
@@ -233,7 +233,6 @@ public class HTTPSession extends Session {
         this.HTTP = new HttpClient();
     }
 
-
     public void close() {
 	try {
 	    HTTP.quit();
@@ -244,23 +243,25 @@ public class HTTPSession extends Session {
 	host.status.fireStopEvent();
     }
 
-    /**
-     * Connect to the remote server and execute the action set
-     * via <code>Session.setAction(TransferAction action)</code>
-     * Must be ConnectAction.GET
-     */
-    public void run() {
-	host.status.fireActiveEvent();
-	this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
-	//            if(this.action.toString().equals(TransferAction.GET)) {
-	if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
-	    HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
+    public void connect() {
+	new Runner().start();
+    }
+
+    class Runner extends Thread {
+	public void run() {
+	    host.status.fireActiveEvent();
+	    HTTPSession.this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
+	    //            if(this.action.toString().equals(TransferAction.GET)) {
+	    if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
+		HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
+	    }
+	    else {
+		HTTP.connect(host.getName(), host.getPort(), false);//@todo implement https
+	    }
+	    HTTPSession.this.log("HTTP connection opened", Message.PROGRESS);
+	    //@todo     	           this.check();
+	    HTTPFile p = new HTTPFile(host.getWorkdir());
+	    p.download();
 	}
-	else {
-	    HTTP.connect(host.getName(), host.getPort(), false);//@todo implement https
-	}
-	this.log("HTTP connection opened", Message.PROGRESS);
-	//@todo     	           this.check();
-	new HTTPFile(host.getPath()).download();
     }
 }
