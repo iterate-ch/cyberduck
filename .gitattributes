@@ -637,7 +637,6 @@ zh_TW.lproj/Main.nib/keyedobjects.nib -text
 zh_TW.lproj/Main.strings svneol=native#unset
 zh_TW.lproj/Preferences.nib/keyedobjects.nib -text
 zh_TW.lproj/Preferences.strings svneol=native#unset
-zh_TW.lproj/Progress.nib/keyedobjects.nib -text
 zh_TW.lproj/Queue.nib/keyedobjects.nib -text
 zh_TW.lproj/Queue.strings svneol=native#unset
 zh_TW.lproj/Sync.nib/keyedobjects.nib -text
