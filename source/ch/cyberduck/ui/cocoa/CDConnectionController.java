@@ -27,6 +27,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.http.*;
 import ch.cyberduck.core.sftp.*;
 import ch.cyberduck.core.ftp.*;
+import ch.cyberduck.ui.ObserverList;
 import ch.cyberduck.ui.cocoa.CDPathComboBox;
 import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.transport.InvalidHostFileException;
@@ -44,13 +45,38 @@ import org.apache.log4j.Logger;
 public class CDConnectionController extends NSObject implements Observer {
     private static Logger log = Logger.getLogger(CDConnectionController.class);
 
-    public NSWindow mainWindow; // IBOutlet
-    public NSPanel connectionSheet; // IBOutlet
-    public CDLoginSheet loginSheet; // IBOutlet
+
+    // ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
+    
+    private CDMainWindow mainWindow; // IBOutlet
+    public void setMainWindow(CDMainWindow mainWindow) {
+	this.mainWindow = mainWindow;
+    }
+
+    private CDConnectionSheet connectionSheet; // IBOutlet
+    public void setConnectionSheet(CDConnectionSheet connectionSheet) {
+	this.connectionSheet = connectionSheet;
+    }
+
+    private CDLoginSheet loginSheet; // IBOutlet
+    public void setLoginSheet(CDLoginSheet loginSheet) {
+	this.loginSheet = loginSheet;
+    }
+    
+    private NSProgressIndicator progressIndicator; // IBOutlet
+    public void setLoginSheet(NSProgressIndicator progressIndicator) {
+	this.progressIndicator = progressIndicator;
+    }
+
+    private NSTextField statusLabel; // IBOutlet
+    public void setStatusLabel(NSTextField statusLabel) {
+	this.statusLabel = statusLabel;
+    }
+    
 
     public CDPathComboBox pathComboBox; // IBOutlet
-    public NSProgressIndicator progressIndicator; // IBOutlet
-    public NSTextField statusLabel; // IBOutlet
     public NSTextField pathField; // IBOutlet
     public NSTextField portField; // IBOutlet
     public NSPopUpButton protocolPopup; // IBOutlet
@@ -60,8 +86,8 @@ public class CDConnectionController extends NSObject implements Observer {
     public NSTextField passwordField; // IBOutlet
     public NSTextView logView; // IBOutlet
     
-    public CDBrowserView browserView; // IBOutlet
-    public CDTransferView transferView; // IBOutlet
+//    public CDBrowserView browserView; // IBOutlet
+//    public CDTransferView transferView; // IBOutlet
     public CDHostView hostView; // IBOutlet
   
     public CDConnectionController() {
@@ -70,7 +96,13 @@ public class CDConnectionController extends NSObject implements Observer {
     }
 
     public void awakeFromNib() {
-	//
+	ObserverList.instance().registerObserver((Observer)this);
+    }
+
+    public void recycle(NSObject sender) {
+	log.debug("recycle");
+	Host host = (Host)((CDHostTableDataSource)hostView.dataSource()).getEntry(hostView.selectedRow());
+	host.recycle();
     }
 
     public void disconnect(NSObject sender) {
@@ -81,6 +113,7 @@ public class CDConnectionController extends NSObject implements Observer {
     }    
 
     public void connect(NSObject sender) {
+	//@todo thread
 	log.debug("connect");
 //	try {
 
@@ -130,11 +163,10 @@ public class CDConnectionController extends NSObject implements Observer {
 	    Host host = new Host(protocol, server, port, path, login);
 	    mainWindow.setTitle(host.getName());
 
-	    host.addObserver(browserView);
-//	    host.addObserver(transferView);
-	    host.addObserver(hostView);
-	    host.addObserver(pathComboBox);
-	    host.addObserver(this);
+//	    host.addObserver(browserView);
+//	    host.addObserver(hostView);
+//	    host.addObserver(pathComboBox);
+//	    host.addObserver(this);
 	    
 	    Session session = host.openSession();
 
@@ -163,7 +195,7 @@ public class CDConnectionController extends NSObject implements Observer {
             session.connect();
     }
 
-
+/*
     public void download(Path download) {
 	log.debug("download:"+download);
 	((CDTransferTableDataSource)transferView.dataSource()).addEntry(download);
@@ -177,6 +209,7 @@ public class CDConnectionController extends NSObject implements Observer {
 	upload.addObserver(transferView);
 	upload.upload();
     }
+ */
 
     public void update(Observable o, Object arg) {
 	//	log.debug("update:"+arg);
@@ -243,6 +276,11 @@ public class CDConnectionController extends NSObject implements Observer {
 //	    }
 	}
     }
+
+
+    // ----------------------------------------------------------
+    // CDLogin
+    // ----------------------------------------------------------
     
     private class CDLogin extends Login {
 	private boolean done;
@@ -303,6 +341,11 @@ public class CDConnectionController extends NSObject implements Observer {
 	    return tryAgain;
 	}	
     }
+
+
+    // ----------------------------------------------------------
+    // CDHostKeyVerification
+    // ----------------------------------------------------------
     
     /**
     * Concrete Coccoa implementation of a SSH HostKeyVerification

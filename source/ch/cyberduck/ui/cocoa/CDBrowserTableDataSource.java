@@ -118,7 +118,7 @@ public class CDBrowserTableDataSource extends NSObject {
 	NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
 	// Insert the MP3 filenames into our songs array
 	int i = 0;
-	for(i; i < filesList.count(); i++) {
+	for(i = 0; i < filesList.count(); i++) {
 	    log.debug(filesList.objectAtIndex(i));
 	    //data.addEntry(fileseList.objectAtIndex(i), row+i);
 	}
@@ -127,6 +127,10 @@ public class CDBrowserTableDataSource extends NSObject {
 	tableView.selectRow(row+i-1, false);
 	return true;
     }
+
+    // ----------------------------------------------------------
+    // Data access
+    // ----------------------------------------------------------
     
     public void clear() {
 	log.debug("clear");

@@ -86,11 +86,6 @@ public class CDMainController extends NSObject {
 	this.browserTable = browserTable;
     }
 
-    private CDConnectionController connectionController; // IBOutlet
-    public void setConnectionController(CDConnectionController connectionController) {
-	this.connectionController = connectionController;
-    }
-    
     
     private NSMutableDictionary toolbarItems;
 
@@ -199,8 +194,8 @@ public class CDMainController extends NSObject {
     public void downloadButtonPressed(NSObject sender) {
 	log.debug("downloadButtonPressed");
 	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
-//	path.download();
-	connectionController.download(path);
+	path.download();
+//	connectionController.download(path);
     }
 
     public void uploadButtonPressed(NSObject sender) {
@@ -212,7 +207,7 @@ public class CDMainController extends NSObject {
     /*
     public void backButtonPressed(NSObject sender) {
 	log.debug("backButtonPressed");
-	//
+	//History
     }
      */
 

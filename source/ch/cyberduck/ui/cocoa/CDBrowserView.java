@@ -26,6 +26,7 @@ import java.util.Comparator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Message;
+import ch.cyberduck.ui.ObserverList;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
@@ -41,8 +42,8 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
     private static final float STRIPE_BLUE = (float)(254.0/255.0);
     
     private NSColor sStripeColor = null;
-    
-    private CDBrowserTableDataSource model;
+
+    private CDBrowserTableDataSource model = new CDBrowserTableDataSource();;
     
     public CDBrowserView() {
 	super();
@@ -51,25 +52,34 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 
     public CDBrowserView(NSRect frame) {
 	super(frame);
-	log.debug("CDBrowserView");
+	log.debug("CDBrowserView:"+frame);
     }
 
     public CDBrowserView(NSCoder decoder, long token) {
 	super(decoder, token);
-	log.debug("CDBrowserView");
+	log.debug("CDBrowserView:"+decoder+","+token);
     }
     
     public void encodeWithCoder(NSCoder encoder) {
 	super.encodeWithCoder(encoder);
 	log.debug("CDBrowserView");
     }
-    
+
+    /**
+	* Gets called multiple times if this class is references from multiple nib files
+     */
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
+
+	this.setDataSource(model);
+	
+	ObserverList.instance().registerObserver(this);
 	// Registering for File Drops
 	this.registerForDraggedTypes(new NSArray(NSPasteboard.FileContentsPboardType));
-	
-	this.model = (CDBrowserTableDataSource)this.dataSource();
+
+//	if(null == this.model) 
+//	    this.model = (CDBrowserTableDataSource)this.dataSource();
+//	log.debug("CDBrowserTableDataSource:"+model);
 	this.setDelegate(this);
 	this.setTarget(this);
 	this.setDrawsGrid(false);
@@ -99,35 +109,44 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	log.debug("tableViewSelectionDidChange");
 	int row = this.selectedRow();
 	if(row != -1) {
-	    ((Path)model.getEntry(row)).callObservers(Message.SELECTION);
+//	    ((Path)model.getEntry(row)).callObservers(Message.SELECTION);
 	}
     }
 
     
     public void update(Observable o, Object arg) {
-//	log.debug("update:"+o+":"+arg);
+	log.debug("update");
 	if(o instanceof Host) {
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;
+		// A new session has been opened.
+		if(msg.getTitle().equals(Message.OPEN)) {
+		    model.clear();
+		    this.reloadData();
+		}
+		// The host's session has been closed.
 		if(msg.getTitle().equals(Message.CLOSE)) {
 		    model.clear();
 		    this.reloadData();
-		    this.setNeedsDisplay(true);
 		}
 	    }
 	    if(arg instanceof Path) {
-		model.clear();
 		List cache = ((Path)arg).cache();
 		java.util.Iterator i = cache.iterator();
 		model.clear();
 		while(i.hasNext()) {
 		    model.addEntry(i.next());
-		    this.reloadData();
 		}
-		this.setNeedsDisplay(true);
+		this.reloadData();
 	    }
 	}
     }
+
+
+    public void reloadData() {
+	super.reloadData();
+	this.setNeedsDisplay(true);
+    }    
 
     // ----------------------------------------------------------
     // Drawing methods

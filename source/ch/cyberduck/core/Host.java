@@ -23,6 +23,7 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.ui.ObserverList;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 import java.util.Observable;
 import java.util.Observer;
@@ -48,6 +49,7 @@ public class Host extends Observable {
         this.name = name;
 	this.workdir = workdir != null ? workdir : this.workdir;
         this.login = login != null ? login : this.login;
+	ObserverList.instance().registerObservable(this);
 	log.debug(this.toString());
     }
 
@@ -55,10 +57,10 @@ public class Host extends Observable {
 	this(protocol, name, port, null, login);
     }
 
-    public void addObserver(Observer o) {
-	this.status.addObserver(o);
-	super.addObserver(o);
-    }
+//    public void addObserver(Observer o) {
+//	this.status.addObserver(o);
+//	super.addObserver(o);
+  //  }
 
     public void callObservers(Object arg) {
         log.debug("callObservers:"+arg.toString());
@@ -81,7 +83,7 @@ public class Host extends Observable {
 
     public Session openSession() {//throws IOException {
         log.debug("openSession");
-	this.callObservers(new Message(Message.OPEN, "Opening Session"));
+	this.callObservers(new Message(Message.OPEN));
 	if(null == session) {
 	    if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
 		this.session = new HTTPSession(this);
@@ -105,7 +107,7 @@ public class Host extends Observable {
 	    this.session.close();
 	    this.session = null;
 	}
-	this.callObservers(new Message(Message.CLOSE, "Closing session"));
+	this.callObservers(new Message(Message.CLOSE));
     }
 
     public void recycle() {

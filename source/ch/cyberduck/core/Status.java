@@ -34,6 +34,7 @@ import java.util.Vector;
 import java.net.URL;
 import org.apache.log4j.Logger;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.ui.ObserverList;
 
 /**
   * The Status class is the model of a download's status. The view of this is represented by
@@ -98,6 +99,8 @@ public class Status extends Observable implements Serializable {
         calendar.set(Calendar.HOUR, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
+
+	ObserverList.instance().registerObservable(this);
 
         /*
 	 timeLeftTimer = new Timer(1000,
@@ -199,7 +202,7 @@ public class Status extends Observable implements Serializable {
         this.setComplete(false);
         this.setStopped(false);
 //        this.chronoTimer.start();
-	this.callObservers(new Message(Message.START, "Starting Session"));
+	this.callObservers(new Message(Message.START));
     }
 
     /**
@@ -211,7 +214,7 @@ public class Status extends Observable implements Serializable {
         //if(this.chronoTimer != null)
           //  this.chronoTimer.stop();
 	this.setStopped(true);
-	this.callObservers(new Message(Message.STOP, "Stopping Session"));
+	this.callObservers(new Message(Message.STOP));
     }
 
 /**
@@ -222,7 +225,7 @@ public class Status extends Observable implements Serializable {
 //        this.chronoTimer.stop();
 	this.setStopped(true);
 	this.setComplete(true);
-	this.callObservers(new Message(Message.COMPLETE, "Completed Session"));
+	this.callObservers(new Message(Message.COMPLETE));
     }
 
  /*

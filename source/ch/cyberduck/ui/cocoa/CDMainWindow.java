@@ -31,19 +31,16 @@ public class CDMainWindow extends NSWindow {//implements Observer {
     public CDMainWindow() {
 	super();
 	log.debug("CDMainWindow");
-//	ObserverList.instance().registerObserver((Observer)this);
     }
 
     public CDMainWindow(NSRect contentRect, int styleMask, int backingType, boolean defer) {
 	super(contentRect, styleMask, backingType, defer);
 	log.debug("CDMainWindow");
-//	ObserverList.instance().registerObserver((Observer)this);
     }
 
     public CDMainWindow(NSRect contentRect, int styleMask, int bufferingType, boolean defer, NSScreen aScreen) {
 	super(contentRect, styleMask, bufferingType, defer, aScreen);
 	log.debug("CDMainWindow");
-//	ObserverList.instance().registerObserver((Observer)this);
     }
 
     public void awakeFromNib() {
@@ -55,8 +52,6 @@ public class CDMainWindow extends NSWindow {//implements Observer {
 	c.setDataCell(new CDServerItemView());
 	    */
 	this.setDelegate(this);
-
-
     }
 
     // ----------------------------------------------------------

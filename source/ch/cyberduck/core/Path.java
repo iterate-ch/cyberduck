@@ -33,6 +33,7 @@ import javax.swing.DefaultBoundedRangeModel;
 import java.util.Observable;
 import java.util.Observer;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.ui.ObserverList;
 import org.apache.log4j.Logger;
 
 /**
@@ -63,6 +64,7 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
             this.setPath(path + name);
         else
             this.setPath(path + "/" + name);
+	ObserverList.instance().registerObservable(this);//@todo only register if download
     }
 
     /**
@@ -70,6 +72,7 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
      */
     public Path(String path) {
         this.setPath(path);
+	ObserverList.instance().registerObservable(this);//@todo only register if download
     }
 
     /**
@@ -80,19 +83,22 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
         this.path = pathname.trim();
     }
 
+/*
     public void addObserver(Observer o) {
 	log.debug("addObserver:"+o);
 	this.status.addObserver(o);
 	this.attributes.addObserver(o);
 	super.addObserver(o);
     }
-
+*/
+ 
     public void callObservers(Object arg) {
 	log.debug("callObservers:"+arg.toString());
 	this.setChanged();
 	this.notifyObservers(arg);
     }
 
+ /*
     public void deleteObserver(Observer o) {
 	log.debug("deleteObserver:"+o);
 	this.status.deleteObserver(o);
@@ -106,7 +112,7 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
 	this.attributes.deleteObservers();
 	super.deleteObservers();
     }
-    
+    */
 
     /**
 	* @return my parent directory
@@ -535,14 +541,14 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
 
 	public void fireActiveEvent() {
 	    super.fireActiveEvent();
-//	    Path.this.callObservers(new Message(Message.START));
+	    Path.this.callObservers(new Message(Message.START));
 	    this.overallSpeedTimer.start();
 	    this.currentSpeedTimer.start();
 	}
 
 	public void fireStopEvent() {
 	    super.fireStopEvent();
-//	    Path.this.callObservers(new Message(Message.STOP));
+	    Path.this.callObservers(new Message(Message.STOP));
 	    if(this.currentSpeedTimer != null)
 		this.currentSpeedTimer.stop();
 	    if(this.overallSpeedTimer != null)
@@ -553,7 +559,7 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
 
 	public void fireCompleteEvent() {
 	    super.fireCompleteEvent();
-//	    Path.this.callObservers(new Message(Message.COMPLETE));
+	    Path.this.callObservers(new Message(Message.COMPLETE));
 	    this.currentSpeedTimer.stop();
 	    this.overallSpeedTimer.stop();
             this.setResume(false);

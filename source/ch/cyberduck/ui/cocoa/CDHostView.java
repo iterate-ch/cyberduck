@@ -23,6 +23,7 @@ import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
 import java.util.Observer;
 import java.util.Observable;
+import ch.cyberduck.ui.ObserverList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Message;
 
@@ -33,7 +34,7 @@ public class CDHostView extends NSTableView implements Observer {
 
     private static Logger log = Logger.getLogger(CDHostView.class);
 
-    private CDHostTableDataSource model;
+    private CDHostTableDataSource model = new CDHostTableDataSource();
 
     public CDHostView() {
 	super();
@@ -53,6 +54,11 @@ public class CDHostView extends NSTableView implements Observer {
 
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
+
+	this.setDataSource(model);
+
+	ObserverList.instance().registerObserver((Observer)this);
+
 	this.setDelegate(this);
 	this.setAutoresizesAllColumnsToFit(true);
 	this.model = (CDHostTableDataSource)this.dataSource();
@@ -86,7 +92,7 @@ public class CDHostView extends NSTableView implements Observer {
 	int row = this.selectedRow();
 	if(row != -1) {
 	    Host h = (Host)model.getEntry(this.selectedRow());
-	    h.callObservers(Message.SELECTION);
+	    h.callObservers(new Message(Message.SELECTION));
 	}
     }
 
@@ -109,6 +115,11 @@ public class CDHostView extends NSTableView implements Observer {
 	}
     }
     */
+
+    public void reloadData() {
+	super.reloadData();
+	this.setNeedsDisplay(true);
+    }    
     
     // ----------------------------------------------------------
     // Observer interface

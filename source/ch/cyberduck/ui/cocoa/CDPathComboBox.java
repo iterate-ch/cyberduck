@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.ArrayList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.ui.ObserverList;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
@@ -67,6 +68,9 @@ public class CDPathComboBox extends NSPopUpButton implements Observer {
     }
 
     public void awakeFromNib() {
+    
+    	ObserverList.instance().registerObserver((Observer)this);
+
 	this.setTarget(this);
 	this.setAction(new NSSelector("selectionChanged", new Class[]{null}));
 	this.removeAllItems();

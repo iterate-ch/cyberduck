@@ -29,12 +29,12 @@ public class CDLoginSheet extends NSPanel {
     private static Logger log = Logger.getLogger(CDLoginSheet.class);
 
     private NSTextField userField;
-    public void setUserField(userField) {
+    public void setUserField(NSTextField userField) {
 	this.userField = userField;
     }
 
     private NSSecureTextField passField;
-    public void setPassField(passField) {
+    public void setPassField(NSSecureTextField passField) {
 	this.passField = passField;
     }
     

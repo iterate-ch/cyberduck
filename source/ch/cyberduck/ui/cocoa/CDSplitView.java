@@ -28,15 +28,23 @@ import org.apache.log4j.Logger;
 public class CDSplitView extends NSSplitView {
     private static Logger log = Logger.getLogger(CDSplitView.class);
 
-    private NSView browserView;
-    public void setBrowserView(browserView) {
+    // ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
+    
+    private NSTableView browserView;
+    public void setBrowserView(NSTableView browserView) {
 	this.browserView = browserView;
     }
     
-    private NSView transferView;
-    public void setBrowserView(transferView) {
+    private NSTableView transferView;
+    public void setTransferView(NSTableView transferView) {
 	this.transferView = transferView;
     }
+
+    // ----------------------------------------------------------
+    // Constructor
+    // ----------------------------------------------------------
     
     public CDSplitView() {
 	super();
@@ -63,22 +71,16 @@ public class CDSplitView extends NSSplitView {
     // ----------------------------------------------------------
 
     public boolean splitViewCanCollapseSubview( NSSplitView sender, NSView subview) {
-//	log.debug("splitViewCanCollapseSubview");
-	return true;
+	log.debug("splitViewCanCollapseSubview");
+	return false;
+	//	return transferView.numberOfRows() == 0;
+//	return (subview == transferView);
     }
 
-    public boolean canCollapseSubview(NSView subview) {
-	log.debug("canCollapseSubview");
-	return (subview == transferView);
-    }
-    
     //	Returns the thickness of the divider. You can subclass NSSplitView and override this method to change the divider's size, if necessary.
 //    public float dividerThickness()
 
     //public abstract float splitViewConstrainMaxSplitPosition( NSSplitView sender, float proposedMax, int offset)
 
     //public abstract float splitViewConstrainMinSplitPosition( NSSplitView sender, float proposedMin, int offset)
-
-
-	    
 }

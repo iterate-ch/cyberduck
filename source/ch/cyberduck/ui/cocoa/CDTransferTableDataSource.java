@@ -56,10 +56,11 @@ public class CDTransferTableDataSource extends NSObject {//implements NSTableVie
 	if(identifier.equals("FILENAME"))
 	    return p.getName();
 	if(identifier.equals("PROGRESS"))
-	    return null;
+	    return p.status.getCurrent()+"";
 //	    return new NSProgressIndicator();
 	if(identifier.equals("BUTTON")) {
-	    return new NSButtonCell(NSImage.imageNamed("stop.tiff"));
+	    return NSImage.imageNamed("stop.tiff");
+//	    return new NSButtonCell(NSImage.imageNamed("stop.tiff"));
 	}
 	throw new IllegalArgumentException("Unknown identifier: "+identifier);
     }

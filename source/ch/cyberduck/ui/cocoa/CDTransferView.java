@@ -29,6 +29,7 @@ import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.ui.ObserverList;
 
 /**
 * @version $Id$
@@ -36,7 +37,7 @@ import ch.cyberduck.core.Preferences;
 public class CDTransferView extends NSTableView implements Observer {
     private static Logger log = Logger.getLogger(CDTransferView.class);
 
-    private CDTransferTableDataSource model;
+    private CDTransferTableDataSource model = new CDTransferTableDataSource();
 
     public CDTransferView() {
 	super();
@@ -55,23 +56,28 @@ public class CDTransferView extends NSTableView implements Observer {
     }
 
     public void awakeFromNib() {
-	this.model = (CDTransferTableDataSource)this.dataSource();
+	log.debug("awakeFromNib");
+
+	this.setDataSource(model);
+
+	ObserverList.instance().registerObserver((Observer)this);
+
 	this.setDelegate(this);
 	this.setTarget(this);
         this.setDoubleAction(new NSSelector("doubleClickAction", new Class[] {null}));
 	this.setAutoresizesAllColumnsToFit(true);
-	if(this.tableColumnWithIdentifier("PROGRESS") != null)
-	    this.tableColumnWithIdentifier("PROGRESS").setDataCell(new CDProgressCell());
+//	if(this.tableColumnWithIdentifier("PROGRESS") != null)
+//	    this.tableColumnWithIdentifier("PROGRESS").setDataCell(new CDProgressCell());
 	if(this.tableColumnWithIdentifier("TYPE") != null)
 	    this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
 	if(this.tableColumnWithIdentifier("BUTTON") != null)
-	    this.tableColumnWithIdentifier("BUTTON").setDataCell(new NSButtonCell());
+	    this.tableColumnWithIdentifier("BUTTON").setDataCell(new NSImageCell());	
     }
 
     public void doubleClickAction(NSObject sender) {
 	log.debug("doubleClickAction");
-        Path p = (Path)model.getEntry(this.clickedRow());
-	p.download();
+//        Path p = (Path)model.getEntry(this.clickedRow());
+//	p.download();
     }
 
     public void keyUp(NSEvent event) {
@@ -86,28 +92,23 @@ public class CDTransferView extends NSTableView implements Observer {
 	}
     }
 
+    public void reloadData() {
+	super.reloadData();
+	this.setNeedsDisplay(true);
+    }
+
     public void update(Observable o, Object arg) {
-	if(o instanceof Status) {
-	    log.debug("instanceof Status:"+o.toString());
+	log.debug("update:"+o+","+arg);
+	if(o instanceof Path.FileStatus) {
+//	    log.debug("instanceof Status:"+o.toString());
 	    if(arg instanceof Message) {
-		log.debug("instanceof Message:"+arg.toString());
+//		log.debug("instanceof Message:"+arg.toString());
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.DATA))
 		    //  return new JProgressBar(bookmark.status.getProgressModel());
 		    this.reloadData(); //@todo inefficient?
-//		if(msg.getTitle().equals(Message.START)) {
-//		    model.addEntry(o);
-//		    this.reloadData();
-//		}
-		if(msg.getTitle().equals(Message.STOP)) {
-		    if(Preferences.instance().getProperty("files.removeCompleted").equals("true")) {
-			model.removeEntry(o);
-			this.reloadData();
-		    }
-		}
 	    }
 	}
-	/*
 	if(o instanceof Path) {
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;
@@ -123,7 +124,6 @@ public class CDTransferView extends NSTableView implements Observer {
 		}
 	    }
 	}
-	 */
     }
 	
 
@@ -150,7 +150,7 @@ public class CDTransferView extends NSTableView implements Observer {
 	log.debug("tableViewSelectionDidChange");
 	//
     }
-
+/*
     class CDProgressCell extends NSCell {
 	NSProgressIndicator progressBar;
 
@@ -171,5 +171,5 @@ public class CDTransferView extends NSTableView implements Observer {
 	    progressBar.displayRect(cellFrame);
 	}
     }
-    
+    */
 }
