@@ -88,44 +88,6 @@ public abstract class CDValidatorController extends AbstractValidator implements
 			}
 		}
 	}
-
-	protected boolean validateFile(Path path, boolean resumeRequested) {
-		if(resumeRequested) { // resume existing files independant of settings in preferences
-			path.status.setResume(this.isExisting(path));
-			return true;
-		}
-		// When overwriting file anyway we don't have to check if the file already exists
-		if(Preferences.instance().getProperty("queue.fileExists").equals("overwrite")) {
-			log.info("Apply validation rule to overwrite file "+path.getName());
-			path.status.setResume(false);
-			return true;
-		}
-		if(this.isExisting(path)) {
-			path.reset();
-			if(Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
-				log.debug("Apply validation rule to resume:"+path.getName());
-				path.status.setResume(true);
-				return true;
-			}
-			if(Preferences.instance().getProperty("queue.fileExists").equals("similar")) {
-				log.debug("Apply validation rule to apply similar name:"+path.getName());
-				path.status.setResume(false);
-				this.adjustFilename(path);
-				log.info("Changed local name to "+path.getName());
-				return true;
-			}
-			if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
-				log.debug("Apply validation rule to ask:"+path.getName());
-				this.prompt(path);
-				return false;
-			}
-			throw new IllegalArgumentException("No rules set to validate transfers");
-		}
-		else {
-			path.status.setResume(false);
-			return true;
-		}
-	}
 	
 	protected abstract void load();
 	

@@ -310,7 +310,7 @@ public abstract class Queue extends Observable {
 	}
 
 	public boolean isComplete() {
-		log.info("*******"+this.getCurrent()+" of "+this.getSize());
+		//log.info(this.getCurrent()+" of "+this.getSize());
 		return !(this.getSize() == 0 && this.getCurrent() == 0) && (this.getSize() == this.getCurrent());
 	}
 
