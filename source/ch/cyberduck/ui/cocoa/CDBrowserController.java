@@ -945,7 +945,7 @@ public class CDBrowserController extends NSObject implements Observer {
 			return bookmarkTable.numberOfSelectedRows() == 1;
 		}
 		if (sel.equals("editButtonClicked:")) {
-			if( this.isMounted() && browserModel.size() > 0 && browserTable.numberOfSelectedRows() == 1) {
+			if( this.isMounted() && browserModel.size() > 0 && browserTable.selectedRow() != -1) {
 				Path p = (Path) browserModel.getEntry(browserTable.selectedRow());
 				return p.attributes.isFile();
 			}
@@ -1003,7 +1003,7 @@ public class CDBrowserController extends NSObject implements Observer {
         }
 		else if (identifier.equals("Edit")) {
             if(this.isMounted()) {
-				if( browserModel.size() > 0 && browserTable.numberOfSelectedRows() == 1) {
+				if( browserModel.size() > 0 && browserTable.selectedRow() != -1) {
 					Path p = (Path) browserModel.getEntry(browserTable.selectedRow()); //last row selected
 					return p.attributes.isFile();
 				}

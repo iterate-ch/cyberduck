@@ -119,6 +119,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 	(*env)->CallVoidMethod(env, editorObject, didCloseFileMethod);	
 //	(*env)->CallVoidMethod(env, editorObject, didCloseFileMethod, convertToJString(env, path));	
 
+	[[ODBEditor sharedODBEditor] autorelease];
 	[self release];
 }
 
