@@ -1,0 +1,219 @@
+<!-- 
+ *  Simple Ant (http://jakarta.apache.org/ant) build script for Cyberduck
+ *
+ *  $Header$
+ *  $Revision$
+ *  $Date$
+ *
+ *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  http://icu.unizh.ch/~dkocher/
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  Bug fixes, suggestions and comments should be sent to:
+ *  dkocher@cyberduck.ch
+ -->
+
+<project name="Cyberduck" default="usage" basedir=".">
+
+	<property file="build.properties"/>
+
+	<!-- set global properties for this build -->
+	<property name="home" value="." />
+	<property name="build" value="${home}/build" />
+	<property name="dist" value="${home}/dist" />
+	<property name="img" value="${home}/img" />
+	<property name="lib" value="${home}/lib" />
+	<property name="source" value="${home}/source" />
+	<property name="classes" value="${build}/classes" />
+	<property name="resources" value="${home}/resources" />
+	<property name="doc" value="${home}/doc" />
+	<property name="classpath" value="/System/Library/Java/:${lib}/log4j.jar:${lib}/xerces.jar:${lib}/xml.jar:${lib}/ant.jar:${lib}/junit.jar" />
+
+	<!-- mac os x properties used by target 'app'-->
+	<property name="app.name" value="Cyberduck" />
+	<property name="app.bundle" value="${build}/${app.name}.app" />
+	<property name="app.contents" value="${app.bundle}/Contents" />
+	<property name="app.resources" value="${app.contents}/Resources" />
+	<property name="app.classes" value="${home}/${build}/intermediates/${app.name}.build/JavaClasses" />
+	<property name="app.jar" value="${app.resources}/Java" />
+	
+	<target name="usage">
+		<echo message="ant version:   ${ant.version}"/>
+		<echo message="java version:  ${ant.java.version}"/>
+		<echo message="java compiler: ${java.compiler}"/>
+		<echo message="jdk home:      ${jdk.home}"/>
+		<echo message=""/>
+		<echo message="   ---------------------------------------------------------------"/>
+		<echo message="   project home:		${home}"/>
+		<echo message="   project build:  	${build}"/>
+		<echo message="   project source:	${source}"/>
+		<echo message="   project dist:		${dist}"/>
+		<echo message="   project classpath:    ${classpath}"/>
+		<echo message="   ---------------------------------------------------------------"/>
+		<echo message=""/>
+		<echo message=" available targets are:"/>
+		<echo message=""/>
+		<echo message="   all --> build all targets"/>
+		<echo message="   doc --> javadoc"/>
+		<echo message="   compile --> comile sources"/>
+		<echo message="   clean --> delete class and jar files"/>
+		<echo message="   ---------------------------------------------------------------"/>
+	</target>
+	
+	<target name="init">
+		<tstamp/>
+		<echo message="Building ${app.name}..."/>
+		<mkdir dir="${classes}" />
+		<mkdir dir="${build}" />
+		<mkdir dir="${dist}" />
+		<mkdir dir="${doc}" />
+	</target>
+	<!--
+	<target name="compile" depends="init">
+		<javac 
+		    debug="on"
+		    deprecation="on"
+		    classpath="${classpath}" 
+		    srcdir="${source}" 
+		    destdir="${classes}"
+		</javac>
+	</target>
+	-->
+	
+	<target name="core">
+		<javac 
+		    debug="on"
+		    deprecation="on"
+		    classpath="${classpath}" 
+		    srcdir="${source}" 
+		    destdir="${classes}/core"
+		    includes="ch/cyberduck/core/**"
+		/>
+	</target>
+	
+	
+	
+	<target name="jar" depends="compile" description="build executable jar file">
+		<jar	jarfile="${dist}/${app.name}.jar"
+				update="yes"
+				manifest="${resources}/${app.name}.MF">
+    			<!--<fileset dir="${lib}">
+				 	<include name="javax/**"/>
+				 	<include name="com/**"/>
+				 	<include name="org/**"/>
+				</fileset>-->
+    			<fileset dir="${classes}">
+				 	<include name="**/*.class"/>
+				</fileset>
+				<fileset dir="${source}">
+				 	<include name="**/*.jpg"/>
+				 	<include name="**/*.gif"/>
+				 	<include name="**/*.au"/>
+				</fileset>
+		</jar>
+	</target>
+	
+	<target name="doc" depends="init">
+		<javadoc packagenames="ch.cyberduck.*"
+		           sourcepath="${source}"
+		           destdir="${doc}"
+		           author="true"
+		           version="true"
+		           use="true"
+		           windowtitle="${app.name} API"
+		           doctitle="${app.name}"
+		           private="true"
+		           bottom="Copyright (c) 2001 David Kocher. Enjoy ${app.name}!">
+		  </javadoc>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${classes}" />
+		<delete file="${dist}/${app.name}.jar" />
+		<delete file="${app.jar}/${app.name}.jar" />
+	</target>
+
+	<target name="all" depends="clean, dist, doc"/>
+
+<!--	<target name="dist" depends="app, zip, tar"/>-->
+
+<!--	<target name="zip" depends="jar" description="build zip file for distribution">
+		<zip zipfile="${dist}/${app.name}.zip" update="true">
+			<fileset dir="${dist}">
+				<include name="Readme.pdf" />
+				<include name="License.txt" />
+				<include name="${app.name}.jar" />
+			</fileset>
+		</zip>	
+	</target>
+-->
+<!--	<target name="tar" depends="jar" description="build tar.gz file for distribution">
+		<tar tarfile="${dist}/${app.name}.tar">
+			<tarfileset dir="${dist}">
+				<include name="Readme.pdf" />
+				<include name="License.txt" />
+				<include name="${app.name}.jar" />
+			</tarfileset>
+		</tar>
+                <gzip src="${dist}/${app.name}.tar" zipfile="${dist}/${app.name}.tar.gz" />
+                <delete file="${dist}/${app.name}.tar"/>
+	</target>
+-->
+
+	<target name="app" depends="jar" description="build mac os x bundle">
+
+		<mkdir dir="${app.bundle}" />
+		<mkdir dir="${app.resources}" />
+		<mkdir dir="${app.contents}" />
+		<mkdir dir="${app.contents}/MacOS" />
+		<mkdir dir="${app.jar}" />
+
+		<echo message="put stuff into Contents"/>
+		<copy todir="${app.contents}">
+			<fileset dir="${resources}">
+				<include name="Info.plist" />
+				<include name="PkgInfo" />
+			</fileset>
+		</copy>
+		<replace dir="${app.contents}" includes="**/*.plist">
+			<replacefilter token="*cyberduck.version.major*" value="${cyberduck.version.major}"/>
+			<replacefilter token="*cyberduck.version.minor*" value="${cyberduck.version.minor}"/>
+		</replace>
+
+		<echo message="put icns and stuff into ${app.resources}"/>
+		<copy todir="${app.resources}">
+			<fileset dir="${resources}">
+				<include name="*.icns" />
+			</fileset>
+		</copy>
+
+		<echo message="put jars into ${app.jar}"/>
+		<copy todir="${app.jar}">
+			<fileset dir="${dist}">
+				<include name="${app.name}.jar" />
+			</fileset>
+			<fileset dir="${lib}">
+				<include name="log4j.jar" />
+				<include name="jaxb.jar" />
+			</fileset>
+		</copy>
+
+		<echo message="put app stub in ${app.contents}/MacOS and make executable"/>
+		<copy todir="${app.contents}/MacOS">
+			<fileset dir="${resources}">
+				<include name="${app.name}" />
+			</fileset>
+		</copy>
+		<chmod perm="ugo+rx" file="${app.contents}/MacOS/${app.name}" />
+	</target>
+</project>
+
