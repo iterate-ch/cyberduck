@@ -74,6 +74,8 @@ public class CDConnectionController extends NSObject {
 //	log.addAppender(statusLabel);
     }
 
+    private static final int SFTP_TAG = 1;
+    private static final int FTP_TAG = 2;
 
     public void connect(NSObject sender) {
 	log.debug("connect");
@@ -82,10 +84,10 @@ public class CDConnectionController extends NSObject {
 	    String protocol = null;
 	    int tag = protocolPopup.selectedItem().tag();
 	    switch(tag) {
-		case(1):
+		case(SFTP_TAG):
 		    protocol = Session.SFTP;
 		    break;
-		case(2):
+		case(FTP_TAG):
 		    protocol = Session.FTP;
 		    break;
 //		case(3):
@@ -98,7 +100,7 @@ public class CDConnectionController extends NSObject {
      //NSMenuItem item = menu.getSelectedItem()
      //host = item.
 
-//	    log.debug(protocol+","+hostField.stringValue()+","+usernameField.stringValue()+","+passwordField.stringValue());
+	    log.debug(protocol+","+hostField.stringValue()+","+usernameField.stringValue()+","+passwordField.stringValue());
 		
 	    if(sender instanceof NSTextField) {
 		host = new Host(protocol, ((NSControl)sender).stringValue(), 22, null, null);
@@ -112,7 +114,6 @@ public class CDConnectionController extends NSObject {
 	    Session session = host.getSession();
 
 	    //@todo new thread to open connection
-	    log.debug("connecting...");
 	    session.connect();
 	    log.debug("connected.");
 	    session.login();

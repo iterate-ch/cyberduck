@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 
 public class CDMainController extends NSObject {
 
-    private static Logger log = Logger.getLogger(CDMainController.class);
+    private static Logger log = Logger.getLogger(CDMainController);
 
     public CDMainController() {
 	super();
