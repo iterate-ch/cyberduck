@@ -40,7 +40,7 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
     }
 
     public String getProperty(String property) {
-        log.debug("getProperty(" + property + ")");
+//        log.debug("getProperty(" + property + ")");
         String value = (String)props.objectForKey(property);
         if(value == null)
             return super.getProperty(property);
@@ -71,7 +71,7 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
 
     public void setDefaults() {
 	super.setDefaults();
-	log.debug("setDefaults");
+//	log.debug("setDefaults");
 //	this.setProperty("sshtools.home", NSBundle.mainBundle().resourcePath());
 //	System.setProperty("sshtools.home", NSBundle.mainBundle().resourcePath());
 //	this.setProperty("sshtools.home", APP_SUPPORT_DIR.toString());
@@ -82,7 +82,7 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
 	* Overwrite the default values with user props if any.
      */
     public void load() {
-        log.debug("load()");
+//        log.debug("load()");
 	this.props = NSUserDefaults.standardUserDefaults();
     }
 

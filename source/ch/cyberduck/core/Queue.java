@@ -230,7 +230,10 @@ public class Queue extends Observable implements Observer { //Thread {
 		Timer timeLeftTimer = new Timer(1000,
 				  new ActionListener() {
 				      public void actionPerformed(ActionEvent e) {
-					  setTimeLeft((int)((candidate.status.getSize() - candidate.status.getCurrent())/getSpeed()));
+					  if(getSpeed() > 0)
+					      setTimeLeft((int)((candidate.status.getSize() - candidate.status.getCurrent())/getSpeed()));
+					  else
+					      setTimeLeft(-1);
 				      }
 				  }
 				  );
@@ -325,18 +328,14 @@ public class Queue extends Observable implements Observer { //Thread {
 	* @return The number of bytes already processed.
      */
     public int getCurrent() {
-	//@todo is it worth? ouch, calculating...
 	return candidate.status.getCurrent();
-	/*
-	int current = 0;
-	Iterator i = files.iterator();
-	Path file = null;
-	while(i.hasNext()) {
-	    file = (Path)i.next();
-	    current = current + file.status.getCurrent();
-	}
-	 */
-//	log.debug("getCurrent:"+current);
+//	int current = 0;
+//	Iterator i = files.iterator();
+//	Path file = null;
+//	while(i.hasNext()) {
+//	    file = (Path)i.next();
+//	    current = current + file.status.getCurrent();
+//	}
 //	return current;
     }
 
