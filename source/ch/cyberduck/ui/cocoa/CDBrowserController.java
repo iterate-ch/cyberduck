@@ -59,12 +59,10 @@ public class CDBrowserController implements Observer {
     }
 	
     private NSTextView logView;
-//	private CDTranscriptImpl transcriptView;
 
     public void setLogView(NSTextView logView) {
         this.logView = logView;
         this.logView.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
-//		this.transcriptView = new CDTranscriptImpl(logView);
     }
 
     private CDBrowserTableDataSource browserModel;
@@ -1000,7 +998,6 @@ public class CDBrowserController implements Observer {
     }
 
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
-
         NSToolbarItem item = new NSToolbarItem(itemIdentifier);
 
         if (itemIdentifier.equals("New Connection")) {

@@ -148,8 +148,7 @@ public interface FTPFileEntryParser
      * @param listEntry A line of text from the file listing
      * @return An FTPFile instance corresponding to the supplied entry
      */
-//    FTPFile parseFTPEntry(String listEntry);
-    Path parseFTPEntry(Path parent, String entry);
+    Path parseFTPEntry(Path parent, String listEntry);
 
     /**
      * Reads the next entry using the supplied BufferedReader object up to 

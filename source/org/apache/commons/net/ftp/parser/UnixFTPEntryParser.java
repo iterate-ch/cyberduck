@@ -133,7 +133,6 @@ public class UnixFTPEntryParser extends FTPFileEntryParserImpl
 
         if (matches(entry))
         {
-			log.debug(group(0));
             String typeStr = group(1);
 			String permStr = group(2);
             String hardLinkCount = group(15);
@@ -146,7 +145,6 @@ public class UnixFTPEntryParser extends FTPFileEntryParserImpl
             String hr = group(23);
             String min = group(24);
             String name = group(25);
-			log.debug("name:"+name);
             String endtoken = group(26);
 
             switch (typeStr.charAt(0))
