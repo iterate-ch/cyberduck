@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Preferences;
 
-public class CDMainController {
+public class CDMainController extends NSObject {
     private static Logger log = Logger.getLogger(CDMainController.class);
 
     private static final File VERSION_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Version.plist"));

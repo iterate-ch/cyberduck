@@ -46,8 +46,12 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit
 
 @interface Editor : NSObject
 {
-	//
+	jclass		editorClass;
+	jobject		editorObject;
+	JNIEnv*		env;
 }
+
+- (id)init:(JNIEnv*)env withEditorClass:(jclass)editorClass withEditorObject:(jobject)editorObject;
 
 - (IBAction) odbEdit:(id) sender path:(NSString *)path;
 

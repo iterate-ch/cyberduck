@@ -54,7 +54,7 @@ public class CDBookmarkController extends NSObject {
 
     public void windowWillClose(NSNotification notification) {
         NSNotificationCenter.defaultCenter().removeObserver(this);
-//        instances.removeObject(this);
+        instances.removeObject(this);
         CDBookmarksImpl.instance().save();
     }
 
@@ -118,7 +118,7 @@ public class CDBookmarkController extends NSObject {
         this.usernameField = usernameField;
     }
 
-//    private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
     private NSTableView callback;
 
@@ -129,7 +129,7 @@ public class CDBookmarkController extends NSObject {
     public CDBookmarkController(NSTableView callback, Host host) {
         this.callback = callback;
         this.host = host;
-//        instances.addObject(this);
+        instances.addObject(this);
         if (false == NSApplication.loadNibNamed("Bookmark", this)) {
             log.fatal("Couldn't load Bookmark.nib");
         }

@@ -53,11 +53,9 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 	return (*env)->NewStringUTF(env, unichars);
 }
 
-// global variables
-
-jclass editorClass = 0;
-jobject editorObject = 0;
-JNIEnv* globalenv = 0;
+//jclass editorClass = 0;
+//jobject editorObject = 0;
+//JNIEnv* globalenv = 0;
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 										JNIEnv *env, 
@@ -66,28 +64,36 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 {
 	
 	// save jni environment for access in other methods
-	globalenv = env;
+//	globalenv = env;
+//	editorObject = (*env)->NewGlobalRef(env, this);
+//	editorClass = (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, this));
 	
-	editorObject = (*env)->NewGlobalRef(env, this);
-	editorClass = (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, this));
-	
-//	NSString *file = convertToNSString(env, path);
-//    NS_DURING;
-	
-	Editor *editor = [[Editor alloc] init];
+	Editor *editor = [[Editor alloc] init: env
+						  withEditorClass: (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, this)) 
+						 withEditorObject: (*env)->NewGlobalRef(env, this)];
+//	Editor *editor = [[Editor alloc] init];
 	[editor odbEdit:nil path:convertToNSString(env, path)];
-	
-//	NS_HANDLER;
-//	NSLog( @"ODBEditor:Failed editing file \"%@\"", file);
-//    NS_ENDHANDLER;
 }
 
 @implementation Editor
 
-- (id)init
+- (id)init:(JNIEnv*)jniEnv withEditorClass:(jclass)class withEditorObject:(jobject)obj
 {
     self = [super init];
+	if (self != nil) {
+		env = jniEnv;
+		editorClass = class;
+		editorObject = obj;
+	}
     return self;
+}
+
+- (void)dealloc
+{
+	(*env)->DeleteGlobalRef(env, editorObject);
+	(*env)->DeleteGlobalRef(env, editorClass);
+	env = NULL;
+	[super dealloc];
 }
 
 - (IBAction) odbEdit:(id) sender path:(NSString *)path
@@ -96,33 +102,30 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
     [[ODBEditor sharedODBEditor] editFile:path options: nil forClient:self context: NULL];
 }
 
--(void)odbEditor:(ODBEditor *)editor didModifyFile:(NSString *)path newFileLocation:(NSString *)newPath  context:(NSDictionary *)context
+- (void)odbEditor:(ODBEditor *)editor didModifyFile:(NSString *)path newFileLocation:(NSString *)newPath  context:(NSDictionary *)context
 {
 
-	jmethodID didModifyFileMethod = (*globalenv)->GetMethodID(globalenv, editorClass, "didModifyFile", "(Ljava/lang/String;)V");
+	jmethodID didModifyFileMethod = (*env)->GetMethodID(env, editorClass, "didModifyFile", "(Ljava/lang/String;)V");
 	if (didModifyFileMethod == 0) {
 		NSLog( @"Editor -> GetMethodID:didModifyFile failed");
 		return;
 	}
 	
-	(*globalenv)->CallVoidMethod(globalenv, editorObject, didModifyFileMethod, convertToJString(globalenv, path));	
+	(*env)->CallVoidMethod(env, editorObject, didModifyFileMethod, convertToJString(env, path));	
 }
 
--(void)odbEditor:(ODBEditor *)editor didClosefile:(NSString *)path context:(NSDictionary *)context 
+- (void)odbEditor:(ODBEditor *)editor didClosefile:(NSString *)path context:(NSDictionary *)context 
 {
 	
-	jmethodID didCloseFileMethod = (*globalenv)->GetMethodID(globalenv, editorClass, "didCloseFile", "(Ljava/lang/String;)V");
+	jmethodID didCloseFileMethod = (*env)->GetMethodID(env, editorClass, "didCloseFile", "(Ljava/lang/String;)V");
 	if (didCloseFileMethod == 0) {
 		NSLog( @"Editor -> GetMethodID:didCloseFile failed");
 		return;
 	}
 	
-	(*globalenv)->CallVoidMethod(globalenv, editorObject, didCloseFileMethod, convertToJString(globalenv, path));	
+	(*env)->CallVoidMethod(env, editorObject, didCloseFileMethod, convertToJString(env, path));	
 
 	[self release];
-
-//	(*globalenv)->DeleteGlobalRef(globalenv, editorObject); //@todo cannot delete global ref; probably needd by other Editor
-//	(*globalenv)->DeleteGlobalRef(globalenv, editorClass);
 }
 
 @end

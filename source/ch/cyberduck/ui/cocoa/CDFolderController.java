@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
@@ -29,7 +30,7 @@ import ch.cyberduck.core.Path;
 /**
  * @version $Id$
  */
-public class CDFolderController {
+public class CDFolderController extends NSObject {
     private static Logger log = Logger.getLogger(CDFolderController.class);
 
     private NSWindow window;

@@ -22,6 +22,7 @@ import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSPopUpButton;
 import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ import ch.cyberduck.core.Session;
 /**
  * @version $Id$
  */
-public class CDPathController implements Observer {
+public class CDPathController extends NSObject implements Observer {
     private static Logger log = Logger.getLogger(CDPathController.class);
 
     private NSPopUpButton combo;

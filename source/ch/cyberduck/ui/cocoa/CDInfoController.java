@@ -121,7 +121,7 @@ public class CDInfoController extends NSObject {
         this.iconImageView = iconImageView;
     }
 
-//    private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
     // ----------------------------------------------------------
     // Constructors
@@ -129,7 +129,7 @@ public class CDInfoController extends NSObject {
 
     public CDInfoController(Path file) {
         this.file = file;
-//        instances.addObject(this);
+        instances.addObject(this);
         if (false == NSApplication.loadNibNamed("Info", this)) {
             log.fatal("Couldn't load Info.nib");
         }
@@ -195,7 +195,7 @@ public class CDInfoController extends NSObject {
             file.rename(filenameField.stringValue());
         }
         NSNotificationCenter.defaultCenter().removeObserver(this);
-//        instances.removeObject(this);
+        instances.removeObject(this);
     }
 
 

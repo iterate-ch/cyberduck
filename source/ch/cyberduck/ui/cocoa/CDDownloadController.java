@@ -22,6 +22,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,7 +34,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public class CDDownloadController {
+public class CDDownloadController extends NSObject {
     private static Logger log = Logger.getLogger(CDDownloadController.class);
 
     private NSWindow window;

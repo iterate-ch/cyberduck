@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.FTPPath;
 
-public class CDQueueController implements Observer, Validator {
+public class CDQueueController extends NSObject implements Observer, Validator {
     private static Logger log = Logger.getLogger(CDQueueController.class);
 
     private static CDQueueController instance;

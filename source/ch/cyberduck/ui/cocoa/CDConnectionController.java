@@ -32,7 +32,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public class CDConnectionController implements Observer {
+public class CDConnectionController extends NSObject implements Observer {
     private static Logger log = Logger.getLogger(CDConnectionController.class);
 
     private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)", "");

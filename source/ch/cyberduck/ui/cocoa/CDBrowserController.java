@@ -524,7 +524,7 @@ public class CDBrowserController extends NSObject implements Observer {
      * Keep references of controller objects because otherweise they get garbage collected
      * if not referenced here.
      */
-//    private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
     private CDPathController pathController;
 
@@ -535,7 +535,7 @@ public class CDBrowserController extends NSObject implements Observer {
     // ----------------------------------------------------------
 
     public CDBrowserController() {
-//        instances.addObject(this);
+        instances.addObject(this);
         if (false == NSApplication.loadNibNamed("Browser", this)) {
             log.fatal("Couldn't load Browser.nib");
         }
@@ -927,7 +927,7 @@ public class CDBrowserController extends NSObject implements Observer {
             pathController.workdir().getSession().deleteObserver((Observer) pathController);
         }
         NSNotificationCenter.defaultCenter().removeObserver(this);
-//        instances.removeObject(this);
+        instances.removeObject(this);
         this.bookmarkDrawer.close();
         this.logDrawer.close();
     }
