@@ -37,16 +37,17 @@ public class Host {
     private Session session;
     private Login login;
 
-//    public Host(String url) {
-//	this(url.substring(0, url.indexOf("://")),
-  //    url.substring(url.indexOf("://")+3, url.lastIndexOf("@")),
-    //  url.substring(url.indexOf("@")+1, url.lastIndexOf(":")),
- //     Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length())));
-   // }
-
-//    public Host(String protocol, String host, int port) {
-//	this(protocol, String user, host, port, null);
-//    }
+    public Host(String url) {
+	this.setURL(url);
+    }
+    
+    public Host(String name, int port, Login login) {
+        this.protocol = this.getDefaultProtocol(port);
+        this.port = port != -1 ? port : this.getDefaultPort(protocol);
+        this.name = name;
+        this.login = login;
+	log.debug(this.toString());
+    }
     
     public Host(String protocol, String name, int port, Login login) {
         this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
@@ -81,11 +82,29 @@ public class Host {
 	}
 	return this.session;
     }
+
+    /**
+	* @param url Must be in the format protocol://username@hostname:portnumber
+     */
+    public void setURL(String url) {
+	try {
+	    this.protocol = url.substring(0, url.indexOf("://"));
+	    this.name = url.substring(url.indexOf("@")+1, url.lastIndexOf(":"));
+	    this.port = Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length()));
+	    this.login = new Login(url.substring(url.indexOf("://")+3, url.lastIndexOf("@")));
+	}
+	catch(NumberFormatException e) {
+	    log.error(e.getMessage());
+	}
+	catch(IndexOutOfBoundsException e) {
+	    log.error(e.getMessage());
+	}
+    }
     
 //    public boolean hasValidSession() {
 //	return session != null && session.isConnected();//@todo use check() without reconnecting 
 //    }
-
+    
     public void closeSession() {
         log.debug("closeSession");
 	if(session != null) {
@@ -93,7 +112,20 @@ public class Host {
 	    this.session = null;
 	}
     }
-    
+
+    private String getDefaultProtocol(int port) {
+	switch(port) {
+	    case Session.HTTP_PORT:
+		return Session.HTTP;
+	    case Session.FTP_PORT:
+		return Session.FTP;
+	    case Session.SSH_PORT:
+		return Session.SFTP;
+	    default:
+		throw new IllegalArgumentException("Cannot find protocol for port number "+port);
+	}
+	
+    }
     
     private int getDefaultPort(String protocol) {
 	if(protocol.equals(Session.FTP))
@@ -102,7 +134,7 @@ public class Host {
 	    return Session.SSH_PORT;
 	else if(protocol.equals(Session.HTTP))
 	    return Session.HTTP_PORT;
-	return -1;
+	throw new IllegalArgumentException("Cannot find port number for protocol "+protocol);
     }
 
 /*
@@ -148,11 +180,6 @@ public class Host {
 	return this.protocol;
     }
 
-    private void setProtocol(String protocol) {
-	log.debug("setProtocol"+protocol);
-	this.protocol = protocol;
-    }
-
     public String getName() {
 	return this.name;
     }
@@ -166,11 +193,6 @@ public class Host {
 	return this.port;
     }
 
-    private void setPort(int port) {
-	log.debug("setPort"+port);
-	this.port = port;
-    }
-
     //ssh specific
     public void setHostKeyVerificationController(HostKeyVerification h) {
 	this.hostKeyVerification = h;
@@ -179,16 +201,6 @@ public class Host {
     public HostKeyVerification getHostKeyVerificationController() {
 	return this.hostKeyVerification;
     }
-
-//    public URL getURL() {
-//	try {
-//	    return new URL(this.toString());
-//	}
-//	catch(java.net.MalformedURLException e) {
-//	    log.error(e.getMessage());
-//	}
-//	return null;
-//  }
 
     /**
 	* @return The IP address of the remote host if available
@@ -205,11 +217,16 @@ public class Host {
         }
     }
 
+    public String toString() {
+	return this.getURL();
+//	return this.getProtocol()+"://"+this.getName();
+    }
+
     /**
 	* protocol://user@host:port
-	@ return The URL of the remote host including user login name and port
+	@return The URL of the remote host including user login name and port
      */
-    public String toString() {
+    public String getURL() {
 	return this.getProtocol()+"://"+this.getLogin().getUsername()+"@"+this.getName()+":"+this.getPort();
     }
 }

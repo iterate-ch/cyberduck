@@ -66,7 +66,7 @@ public abstract class Path {// extends Observable {
 	* Create a new path where you know the local file already exists
      * and the remote equivalent might be created later.
      * The remote filename will be extracted from the local file.
-	* @parm parent The absolute path to the parent directory on the remote host
+	* @param parent The absolute path to the parent directory on the remote host
      * @param file The associated local file
      */
     public Path(String parent, java.io.File file) {
@@ -151,7 +151,7 @@ public abstract class Path {// extends Observable {
     }
 
     /**
-	* Returns true if is directory or a symbolic link that everyone can execute
+	* @return true if is directory or a symbolic link that everyone can execute
      */
     public boolean isDirectory() {
 	if(this.isLink())
@@ -237,7 +237,7 @@ public abstract class Path {// extends Observable {
     
 
     /**
-	* @returns the extensdion if any
+	* @return the extensdion if any
      */
     public String getExtension() {
 	String name = this.getName();
@@ -248,7 +248,7 @@ public abstract class Path {// extends Observable {
     }
 
     /**
-	* @return Returns the number of '/' characters in a path
+	* @return the number of '/' characters in a path
      */
 //     public int getPathDepth() {
 //	 int depth = 0;
@@ -260,7 +260,7 @@ public abstract class Path {// extends Observable {
 //    }
     
     /*
-    * Returns a path relative the parameter
+    * @return a path relative the parameter
     * @param relative 
     */
 //    public Path getRelativePath(Path relative) {
@@ -275,8 +275,8 @@ public abstract class Path {// extends Observable {
 
 
     /**
-     * @ param depth the '/'
-     * @ return a new Path cut to the length of parameter <code>depth</code>
+     * @param depth the '/'
+     * @return a new Path cut to the length of parameter <code>depth</code>
      */
 //    public Path getPathFragment(int depth) throws IllegalArgumentException {
 //        log.debug("[Path] getPathFragment(" + depth + ")");

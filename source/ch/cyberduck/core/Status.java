@@ -79,7 +79,7 @@ public class Status extends Observable implements Serializable {
     }
 
     /**
-	* @ param size the size of file in bytes.
+	* @param size the size of file in bytes.
      */
     public void setSize(int size) {
 	//	log.debug("setSize:"+size);
@@ -87,7 +87,7 @@ public class Status extends Observable implements Serializable {
     }
 
     /**
-	* @ return length the size of file in bytes.
+	* @return length the size of file in bytes.
      */
     public int getSize() {
 //	log.debug("getSize:"+size);

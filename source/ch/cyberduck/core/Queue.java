@@ -255,7 +255,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		overallSpeedTimer.stop();
 		currentSpeedTimer.stop();
 
-		candidate.getSession().close();
+		candidate.getSession().close(); //todo session might be null
 		callObservers(new Message(Message.STOP));
 		stopped = true;
 	    }
@@ -276,7 +276,7 @@ public class Queue extends Observable implements Observer { //Thread {
   //  }
 
     /**
-	*@ return The number of elements in the queue
+	*@return The number of elements in the queue
      */
     public int numberOfJobs() {
 //	log.debug("numberOfJobs:"+files.size());
