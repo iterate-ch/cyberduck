@@ -32,17 +32,18 @@ import org.apache.log4j.Logger;
 public class CDMainController extends NSObject {
     private static Logger log = Logger.getLogger(CDMainController.class);
 
-    public NSPanel infoPanel; /* IBOutlet */
-    public NSPanel newfolderSheet; /* IBOutlet */
-    public NSWindow mainWindow; /* IBOutlet */
-    public NSWindow preferencesWindow; /* IBOutlet */
-    public NSWindow donationSheet; /* IBOutlet */
-    public NSWindow infoWindow; /* IBOutlet */
-    public NSWindow connectionSheet; /* IBOutlet */
-    public NSTextField quickConnectField; /* IBOutlet */
-    public CDPathComboBox pathComboBox; /* IBOutlet */
-    public NSDrawer drawer; /* IBOutlet */
-    public NSTableView browserTable; /* IBOutlet */
+    public NSWindow mainWindow; // IBOutlet
+    public NSWindow preferencesWindow; // IBOutlet
+    public NSWindow infoWindow; // IBOutlet
+    public NSPanel infoPanel; // IBOutlet
+    public NSPanel newfolderSheet; // IBOutlet
+    public NSPanel donationSheet; // IBOutlet
+    public NSPanel connectionSheet; // IBOutlet
+
+    public NSTextField quickConnectField; // IBOutlet
+    public CDPathComboBox pathComboBox; // IBOutlet
+    public NSDrawer drawer; // IBOutlet
+    public NSTableView browserTable; // IBOutlet
 
     private NSMutableDictionary toolbarItems;
 
@@ -100,7 +101,7 @@ public class CDMainController extends NSObject {
 	if(infoWindow == null)
 	    NSApplication.loadNibNamed("Info", this);
 	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
-	((CDInfoWindow)infoWindow).update(path, new Message(Message.SELECTION, null));
+	((CDInfoWindow)infoWindow).update(path, new Message(Message.SELECTION));
 	infoWindow.orderFront(this);
     }
 
@@ -190,17 +191,17 @@ public class CDMainController extends NSObject {
 			  ),// did end selector
 					      null); //contextInfo
     }
+
+    public void connectionSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+	log.debug("connectionSheetDidEnd");
+	sheet.close();
+    }
     
     public void preferencesButtonPressed(NSObject sender) {
 	log.debug("preferencesButtonPressed");
 	if(null == preferencesWindow)
 	    NSApplication.loadNibNamed("Preferences", this);
         preferencesWindow.makeKeyAndOrderFront(this);
-    }
-
-    public void connectionSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	log.debug("connectionSheetDidEnd");
-	sheet.close();
     }
     
     public void awakeFromNib() {

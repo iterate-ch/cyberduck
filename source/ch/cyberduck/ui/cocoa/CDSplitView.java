@@ -56,7 +56,7 @@ public class CDSplitView extends NSSplitView {
     // ----------------------------------------------------------
 
     public boolean splitViewCanCollapseSubview( NSSplitView sender, NSView subview) {
-	log.debug("splitViewCanCollapseSubview");
+//	log.debug("splitViewCanCollapseSubview");
 	return true;
     }
 

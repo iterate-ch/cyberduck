@@ -196,7 +196,7 @@ public class Status extends Observable implements Serializable {
         this.setComplete(false);
         this.setStopped(false);
         this.chronoTimer.start();
-	this.callObservers(new Message(Message.START, null));
+	this.callObservers(new Message(Message.START));
     }
 
     /**
@@ -207,7 +207,7 @@ public class Status extends Observable implements Serializable {
         if(this.chronoTimer != null)
             this.chronoTimer.stop();
 	this.setStopped(true);
-	this.callObservers(new Message(Message.STOP, null));
+	this.callObservers(new Message(Message.STOP));
     }
 
 /**
@@ -218,7 +218,7 @@ public class Status extends Observable implements Serializable {
         this.chronoTimer.stop();
 	this.setStopped(true);
 	this.setComplete(true);
-	this.callObservers(new Message(Message.COMPLETE, null));
+	this.callObservers(new Message(Message.COMPLETE));
     }
 
  /*

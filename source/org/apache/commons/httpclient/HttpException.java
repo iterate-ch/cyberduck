@@ -62,7 +62,7 @@
 
 package org.apache.commons.httpclient;
 
-import ch.cyberduck.core.SessionException;
+import java.io.IOException;
 
 /**
  * <p>
@@ -71,21 +71,24 @@ import ch.cyberduck.core.SessionException;
  * @version $Revision$ $Date$
  * @modified <a href="mailto:dkocher@cyberduck.ch">David Kocher</a>
  */
-public class HttpException extends SessionException {
+public class HttpException extends IOException {
 
     private int code = -1;
 
-    /*
     public HttpException() {
         super();
     }
-     */
 
     public HttpException(String message) {
         super(message);
     }
-    
+
     public HttpException(String message, int code) {
-        super(message, code);
+        super(message);
+	this.code = code;
+    }
+
+    public int getReplyCode() {
+	return this.code;
     }
 }

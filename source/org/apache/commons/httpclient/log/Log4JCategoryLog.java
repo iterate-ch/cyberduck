@@ -63,6 +63,7 @@
 package org.apache.commons.httpclient.log;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 import org.apache.log4j.Priority;
 
 /**
@@ -73,7 +74,7 @@ public class Log4JCategoryLog  implements Log {
     Logger _category = null;
 
     public Log4JCategoryLog(String name) {
-        _category = Category.getInstance(name);
+        _category = Logger.getLogger(name);
     }
 
     public final void debug(Object message) {
@@ -144,9 +145,13 @@ public class Log4JCategoryLog  implements Log {
             case Log.FATAL:
                 _category.setLevel(Level.FATAL);
                 break;
+	    default:
+		throw new IllegalArgumentException(""+level);
+		/*
             default:
                 _category.setLevel(Level.toPriority(level));
                 break;
+		*/
         }
     }
 

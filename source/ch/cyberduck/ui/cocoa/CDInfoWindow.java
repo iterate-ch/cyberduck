@@ -33,23 +33,23 @@ import ch.cyberduck.core.Permission;
 public class CDInfoWindow extends NSPanel implements Observer {
     private static Logger log = Logger.getLogger(CDInfoWindow.class);
 
-    public NSTextField filenameField; /* IBOutlet */
-    public NSTextField groupField; /* IBOutlet */
-    public NSTextField kindField; /* IBOutlet */
-    public NSTextField modifiedField; /* IBOutlet */
-    public NSTextField ownerField; /* IBOutlet */
-    public NSTextField sizeField; /* IBOutlet */
-    public NSBox permissionsBox; /* IBOutlet */
+    public NSTextField filenameField; // IBOutlet
+    public NSTextField groupField; // IBOutlet
+    public NSTextField kindField; // IBOutlet
+    public NSTextField modifiedField; // IBOutlet
+    public NSTextField ownerField; // IBOutlet
+    public NSTextField sizeField; // IBOutlet
+    public NSBox permissionsBox; // IBOutlet
     
-    public NSButton ownerr; /* IBOutlet */
-    public NSButton ownerw; /* IBOutlet */
-    public NSButton ownerx; /* IBOutlet */
-    public NSButton groupr; /* IBOutlet */
-    public NSButton groupw; /* IBOutlet */
-    public NSButton groupx; /* IBOutlet */
-    public NSButton otherr; /* IBOutlet */
-    public NSButton otherw; /* IBOutlet */
-    public NSButton otherx; /* IBOutlet */
+    public NSButton ownerr; // IBOutlet
+    public NSButton ownerw; // IBOutlet
+    public NSButton ownerx; // IBOutlet
+    public NSButton groupr; // IBOutlet
+    public NSButton groupw; // IBOutlet
+    public NSButton groupx; // IBOutlet
+    public NSButton otherr; // IBOutlet
+    public NSButton otherw; // IBOutlet
+    public NSButton otherx; // IBOutlet
 
     public NSImageView iconImageView;
 

@@ -62,7 +62,6 @@ public abstract class Preferences {//extends Properties {
      */
     public static Preferences instance() {
         if(current == null) {
-//            PREFS_DIRECTORY.mkdir();
             String strVendor = System.getProperty("java.vendor");
             if(strVendor.indexOf("Apple") != -1)
                 current = new ch.cyberduck.ui.cocoa.CDPreferencesImpl();
@@ -76,7 +75,7 @@ public abstract class Preferences {//extends Properties {
             String strVendor = System.getProperty("java.vendor");
             String strVersion = System.getProperty("java.version");
             //Assumes a system version string of the form:
-            //[major].[minor].[release]  (eg. 1.2.2)
+            //[major].[minor].[release]††(eg. 1.2.2)
             Double dVersion = new Double(strVersion.substring(0, 3));
             //If we are running in a MS environment, use the MS stream handler.
             if(-1 < strVendor.indexOf("Microsoft")) {
@@ -94,7 +93,7 @@ public abstract class Preferences {//extends Properties {
             }
             //If we are in a normal Java environment,
             //try to use the JSSE handler.
-            //NOTE:  JSSE requires 1.2 or better
+            //NOTE:††JSSE requires 1.2 or better
             else if( 1.2 <= dVersion.doubleValue() ) {
                 System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");
                 try {
@@ -269,37 +268,9 @@ public abstract class Preferences {//extends Properties {
      * Save preferences into user home
      */
     public abstract void store();
-        //log.debug("store()");
-        //try {
-        //    FileOutputStream output = new FileOutputStream(new File(PREFS_DIRECTORY, PREFERENCES_FILE));
-        //    this.store(output, "Cyberduck properties - YOU SHOULD NOT EDIT THIS FILE");
-        //    output.close();
-        //}
-        //catch(IOException e) {
-        //    System.err.println("Could not save current preferences.\n" + e.getMessage());
-        //}
-    //}
 
     /**
      * Overriding the default values with prefs from the last session.
      */
     public abstract void load();
-        //log.debug("load()");
-        //try {
-        //    File prefs = new File(PREFS_DIRECTORY, PREFERENCES_FILE);
-        //    if (prefs.exists()) {
-        //        this.load(new FileInputStream(prefs));
-        //    }
-        //    else {
-        //        System.err.println("Could not load current preferences.");
-        //    }
-        //}
-        //catch(IOException e) {
-        //    System.err.println("Could not load current preferences.\n" + e.getMessage());
-        //}
-    //}
-
-    public abstract void list();
-    //    this.list(System.out);
-    //}
 }

@@ -110,11 +110,24 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
 	* @return my parent directory
      */
     public abstract Path getParent();
+
+    public List cache() {
+	return this.cache;
+    }
+
+    public void setCache(List files) {
+	if(this.cache != null) {
+	    Iterator i = this.cache.iterator();
+	    while(i.hasNext())
+		((Observable)i.next()).deleteObservers();
+	}
+	this.cache = files;
+    }
     
     /**
      * @return the content of this directory.
      */
-    public abstract List list();
+    public abstract void list();
 
     public abstract void delete();
 
@@ -515,14 +528,14 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
 
 	public void fireActiveEvent() {
 	    super.fireActiveEvent();
-	    Path.this.callObservers(new Message(Message.START, null));
+	    Path.this.callObservers(new Message(Message.START));
 	    this.overallSpeedTimer.start();
 	    this.currentSpeedTimer.start();
 	}
 
 	public void fireStopEvent() {
 	    super.fireStopEvent();
-	    Path.this.callObservers(new Message(Message.STOP, null));
+	    Path.this.callObservers(new Message(Message.STOP));
 	    if(this.currentSpeedTimer != null)
 		this.currentSpeedTimer.stop();
 	    if(this.overallSpeedTimer != null)
@@ -533,7 +546,7 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
 
 	public void fireCompleteEvent() {
 	    super.fireCompleteEvent();
-	    Path.this.callObservers(new Message(Message.COMPLETE, null));
+	    Path.this.callObservers(new Message(Message.COMPLETE));
 	    this.currentSpeedTimer.stop();
 	    this.overallSpeedTimer.stop();
             this.setResume(false);

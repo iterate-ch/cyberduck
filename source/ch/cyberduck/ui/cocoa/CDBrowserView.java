@@ -89,34 +89,40 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
     }
     
     public void update(Observable o, Object arg) {
-	log.debug("update");
+//	log.debug("update:"+o+":"+arg);
+//	log.debug("update");
 	if(o instanceof Host) {
 	    if(arg instanceof Message) {
-		if(arg.equals(Message.CLOSE)) {
+		Message msg = (Message)arg;
+		if(msg.getTitle().equals(Message.CLOSE)) {
 		    model.clear();
 		    this.reloadData();
+		    this.setNeedsDisplay(true);
 		}
+		/*
+		if(msg.getTitle().equals(Message.SELECTION)) {
+		    Host h = (Host)o;
+		    List cache = h.cache();
+		    java.util.Iterator i = cache.iterator();
+		    model.clear();
+		    while(i.hasNext()) {
+			model.addEntry(i.next());
+			this.reloadData();
+		    }
+		    this.setNeedsDisplay(true);
+		}
+		 */
 	    }
-	    if(arg instanceof java.util.List) {
-		java.util.List files = (java.util.List)arg;
-		java.util.Iterator i = files.iterator();
+	    if(arg instanceof Path) {
+		model.clear();
+		List cache = ((Path)arg).cache();
+		java.util.Iterator i = cache.iterator();
 		model.clear();
 		while(i.hasNext()) {
 		    model.addEntry(i.next());
 		    this.reloadData();
 		}
 		this.setNeedsDisplay(true);
-	    }
-	    if(arg instanceof Message) {
-		Message msg = (Message)arg;
-		if(msg.getTitle().equals(Message.SELECTION)) {
-		    //@todo
-		    /*
-		    Host h = (Host)o;
-		    Path p = h.getWorkdir();
-		    p.list();
-		    */
-		}
 	    }
 	}
     }

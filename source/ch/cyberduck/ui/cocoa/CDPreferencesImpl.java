@@ -75,8 +75,4 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
     public void store() {
 	defaults.synchronize();
     }
-
-    public void list() {
-	//@todo
-    }
 }

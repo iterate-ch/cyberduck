@@ -18,50 +18,34 @@ package ch.cyberduck.core;
  */
 
 import java.io.IOException;
-
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.http.HTTPSession;
-
-//import ch.cyberduck.core.Path;
-
+import ch.cyberduck.core.Path;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
-
 import java.util.Observable;
 import java.util.Observer;
-
+import java.util.List;
 import org.apache.log4j.Logger;
 
 public class Host extends Observable {
+    private static Logger log = Logger.getLogger(Host.class);
 
     public Status status = new HostStatus();
     public Login login;
     private String protocol = Preferences.instance().getProperty("connection.protocol.default");
     private int port = Integer.parseInt(Preferences.instance().getProperty("connection.port.default"));
     private String name;
-    //private Path path;
     private String workdir = Preferences.instance().getProperty("connection.path.default");
-    
     private HostKeyVerification hostKeyVerification;
-
     private transient Session session;
-
-    private static Logger log = Logger.getLogger(Host.class);
 
     public Host(String protocol, String name, int port, String workdir, Login login) {
         this.protocol = protocol != null ? protocol : this.protocol;
         this.port = port != -1 ? port : this.port;
         this.name = name;
         this.workdir = workdir != null ? workdir : this.workdir;
-	/*
-	if(path != null) {
-	    if(path.charAt(0)=='/')
-		this.workdir = path;
-	    else
-		this.workdir = "/"+path;
-	}
-	 */
         this.login = login != null ? login : this.login;
 	
     }
@@ -78,6 +62,8 @@ public class Host extends Observable {
     public void callObservers(Object arg) {
 //        log.debug("callObservers:"+arg.toString());
 	this.setChanged();
+//	if(arg instanceof Path)
+	    //@todothis.workdir = (Path)arg;
 	this.notifyObservers(arg);
     }
 
@@ -127,7 +113,7 @@ public class Host extends Observable {
     public String getWorkdir() {
 	return this.workdir;
     }
-    
+
     public int getPort() {
 	return this.port;
     }

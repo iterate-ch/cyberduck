@@ -44,24 +44,25 @@ import org.apache.log4j.Logger;
 public class CDConnectionController extends NSObject implements Observer {
     private static Logger log = Logger.getLogger(CDConnectionController.class);
 
-    public NSWindow mainWindow; /* IBOutlet */
-    public NSWindow connectionSheet; /* IBOutlet */
-    public NSWindow loginSheet; /* IBOutlet */
+    public NSWindow mainWindow; // IBOutlet
+    public NSPanel connectionSheet; // IBOutlet
+    public CDLoginSheet loginSheet; // IBOutlet
 
-    public CDPathComboBox pathComboBox; /* IBOutlet */
-    public NSProgressIndicator progressIndicator; /* IBOutlet */
-    public NSTextField statusLabel; /* IBOutlet */
-    public NSTextField pathField; /* IBOutlet */
-    public NSTextField portField; /* IBOutlet */
-    public NSPopUpButton protocolPopup; /* IBOutlet */
-    public NSTextField hostField; /* IBOutlet */
-    public NSTextField usernameField; /* IBOutlet */
-    public NSTextField passwordField; /* IBOutlet */
-    public NSTextView logView; /* IBOutlet */
+    public CDPathComboBox pathComboBox; // IBOutlet
+    public NSProgressIndicator progressIndicator; // IBOutlet
+    public NSTextField statusLabel; // IBOutlet
+    public NSTextField pathField; // IBOutlet
+    public NSTextField portField; // IBOutlet
+    public NSPopUpButton protocolPopup; // IBOutlet
+    public NSTextField hostField; // IBOutlet
+    //@todo remove
+    public NSTextField usernameField; // IBOutlet
+    public NSTextField passwordField; // IBOutlet
+    public NSTextView logView; // IBOutlet
     
-    public CDBrowserView browserView; /* IBOutlet */
-    public CDTransferView transferView; /* IBOutlet */
-    public CDHostView hostView; /* IBOutlet */
+    public CDBrowserView browserView; // IBOutlet
+    public CDTransferView transferView; // IBOutlet
+    public CDHostView hostView; // IBOutlet
   
     public CDConnectionController() {
 	super();
@@ -232,7 +233,8 @@ public class CDConnectionController extends NSObject implements Observer {
 	}
 
 	public void loginSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	    CDLoginSheet loginSheet = (CDLoginSheet)sheet;
+	    log.info("loginSheetDidEnd:"+sheet+":"+returncode+":"+main);
+//	    CDLoginSheet loginSheet = (CDLoginSheet)sheet;
 	    switch(returncode) {
 		case(NSAlertPanel.DefaultReturn):
 		    tryAgain = true;
@@ -244,13 +246,14 @@ public class CDConnectionController extends NSObject implements Observer {
                     break;
 	    }
 	    done = true;
-	    sheet.close();
+	    loginSheet.close();
 	}
 
 	public boolean loginFailure() {
-	    log.info("Authentication failed.");
-	    mainWindow.makeFirstResponder(loginSheet);
-	    //loginSheet.makeKeyAndOrderFront(this);
+	    log.info("Authentication failed");
+	    if(loginSheet == null)
+		NSApplication.loadNibNamed("Login", CDConnectionController.this);
+	    loginSheet.makeKeyAndOrderFront(this);
 	    NSApplication.sharedApplication().beginSheet(
 						  loginSheet, //sheet
 						  mainWindow, //docWindow
@@ -260,7 +263,6 @@ public class CDConnectionController extends NSObject implements Observer {
 		       new Class[] { NSWindow.class, int.class, NSWindow.class }
 		       ),// did end selector
 						  null); //contextInfo
-            mainWindow.makeFirstResponder(loginSheet);
 	    while(!done) {
 		try {
 		    Thread.sleep(500); //milliseconds

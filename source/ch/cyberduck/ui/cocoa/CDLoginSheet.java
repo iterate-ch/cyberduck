@@ -51,7 +51,9 @@ public class CDLoginSheet extends NSPanel {
 	log.debug("closeSheet");
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 	NSButton button = (NSButton)sender;
-	if(button.title().equals("Login")) {
+	log.debug("DefaultReturn:"+NSAlertPanel.DefaultReturn);
+	log.debug("AlternateReturn:"+NSAlertPanel.AlternateReturn);
+	if(button.title().equals("Login")) { //@todo replace with id
 	    NSApplication.sharedApplication().endSheet(this, NSAlertPanel.DefaultReturn);
 	}
 	else

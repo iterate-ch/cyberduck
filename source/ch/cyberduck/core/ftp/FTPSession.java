@@ -62,19 +62,17 @@ public class FTPSession extends Session {
 	    return parent;
 	}
 
-	public List list() {
+	public void list() {
 	    log.debug("list");
-//@todo	    new Thread() {
-//		public void run() {
-		    List files = null;
+	    new Thread() {
+		public void run() {
 		    try {
 			FTPSession.this.check();
-			FTPSession.this.log("Listing "+this.getName(), Message.PROGRESS);
+			FTPSession.this.log("Listing "+FTPFile.this.getName(), Message.PROGRESS);
 			FTP.setType(FTPTransferType.ASCII);
 			FTP.chdir(getAbsolute());
-			files = new FTPParser().parseList(getAbsolute(), FTP.dir());
-			host.callObservers(this);
-			host.callObservers(files);
+			FTPFile.this.setCache(new FTPParser().parseList(FTPFile.this.getAbsolute(), FTP.dir()));
+			FTPSession.this.host.callObservers(FTPFile.this);
 			FTPSession.this.log("Listing complete", Message.PROGRESS);
 		    }
 		    catch(FTPException e) {
@@ -83,9 +81,8 @@ public class FTPSession extends Session {
 		    catch(IOException e) {
 			FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 		    }
-		    return files;
-//		}
-//	    }.start();
+		}
+	    }.start();
     }
 
 	public void delete() {

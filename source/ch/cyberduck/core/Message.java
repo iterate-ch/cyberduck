@@ -23,7 +23,7 @@ package ch.cyberduck.core;
  * of messages.
  * @version $Id$
  */
-public class Message implements java.io.Serializable {
+public class Message {//{implements java.io.Serializable {
 
     private String title;
     private String description;
@@ -54,10 +54,11 @@ public class Message implements java.io.Serializable {
     }
 
     /**
-     * @param d The description of the mesage
+     * @param d The title of the mesage
      */
-    public Message(String d) {
-        this.description = d;
+    public Message(String title) {
+        this.title = title;
+	this.description = null;
     }
 
     public String getTitle() {

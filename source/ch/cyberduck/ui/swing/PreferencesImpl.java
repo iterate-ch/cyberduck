@@ -99,10 +99,6 @@ public class PreferencesImpl extends Preferences { //PreferencesImplSwing
         }
     }    
 
-    public void list() {
-        defaults.list(System.out);
-    }
-
     private String getXLocation(int componentWidth) {
         return new Integer((screenSize.width/2) - (componentWidth/2)).toString();
     }

@@ -272,15 +272,6 @@ public class HttpClient {
         return method.getInputStream(getState(),connection);
     }
 
-    /*
-    public java.io.Reader getASCII(HttpMethod method) throws IOException {
-        if(!connection.isOpen()) {
-            connection.open();
-        }
-        return method.getASCII(getState(),connection);
-    }
-     */
-
     public boolean isAlive() {
         if(connection == null)
             return false;

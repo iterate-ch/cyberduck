@@ -25,7 +25,7 @@ public abstract class Login {
 	* New instance with default values. (anonymous login)
      */
     public Login() {
-
+	super();
     }
 
     /**

@@ -23,6 +23,7 @@ import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
 import java.util.Observer;
 import java.util.Observable;
+import java.util.List;
 import ch.cyberduck.core.Path.FileStatus;
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Host;
@@ -63,6 +64,8 @@ public class CDTransferView extends NSTableView implements Observer {
 	    this.tableColumnWithIdentifier("PROGRESS").setDataCell(new CDProgressCell());
 	if(this.tableColumnWithIdentifier("TYPE") != null)
 	    this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
+	if(this.tableColumnWithIdentifier("BUTTON") != null)
+	    this.tableColumnWithIdentifier("BUTTON").setDataCell(new NSButtonCell());
     }
 
     public void doubleClickAction(NSObject sender) {
@@ -108,11 +111,10 @@ public class CDTransferView extends NSTableView implements Observer {
 	    }
 	}
 	if(o instanceof Host) {
-	    if(arg instanceof java.util.List) {
-		java.util.List files = (java.util.List)arg;
-		java.util.Iterator i = files.iterator();
+	    if(arg instanceof Path) {
+		List cache = ((Path)arg).cache();
+		java.util.Iterator i = cache.iterator();
 		while(i.hasNext()) {
-		    //@todo remove observers if path no longer in listing >memory leak!!!
 		    ((Path)i.next()).addObserver(this);
 		}
 	    }

@@ -72,9 +72,8 @@ public class HTTPSession extends Session {
             return parent;
         }
 
-        public List list() {
+        public void list() {
             HTTPSession.this.log("Invalid Operation", Message.ERROR);
-	    return null;
         }
 
         public void delete() {

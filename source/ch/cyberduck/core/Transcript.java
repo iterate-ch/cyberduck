@@ -1,3 +1,5 @@
+package ch.cyberduck.core;
+
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
@@ -16,10 +18,6 @@
  *  dkocher@cyberduck.ch
  */
 
-package ch.cyberduck.core;
-
-//import java.util.List;
-//import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 /**
@@ -42,7 +40,6 @@ public class Transcript {
      }
 
     public void addListener(Transcripter l) {
-	log.debug("addListener:"+l);
 //	listeners.add(l);
 	this.listener = l;
     }

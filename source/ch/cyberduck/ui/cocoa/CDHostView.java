@@ -131,7 +131,7 @@ public class CDHostView extends NSTableView implements Observer {
     // ----------------------------------------------------------
     // Cell class
     // ----------------------------------------------------------
-    
+    /*
     class CDHostCell extends NSCell {//NSButtonCell
 //	private int MARGIN_X = 0;
 	private CDHostView hostView;
@@ -149,32 +149,29 @@ public class CDHostView extends NSTableView implements Observer {
 	    hostView.setFrame(cellFrame);
 	    hostView.displayRect(cellFrame);
 
-	    /*
-	    log.debug("drawInteriorWithFrameInView");
-	    String hostName = "@replace This is a host name";
-
-	    NSImage iconImage = NSImage.imageNamed("server.tiff");
-	    log.debug(iconImage.toString());
-	    NSPoint iconPoint = new NSPoint(cellFrame.origin().x() + MARGIN_X, cellFrame.origin().y());
-	    NSSize iconSize = new NSSize(32, 32);//NSSize.ZeroSize;
-
-	    iconImage.setSize(iconSize);
-	    iconImage.compositeToPoint(iconPoint, NSImage.CompositeSourceOver);
-	     */
+//	    log.debug("drawInteriorWithFrameInView");
+//	    String hostName = "@replace This is a host name";
+//
+//	    NSImage iconImage = NSImage.imageNamed("server.tiff");
+//	    log.debug(iconImage.toString());
+//	    NSPoint iconPoint = new NSPoint(cellFrame.origin().x() + MARGIN_X, cellFrame.origin().y());
+//	    NSSize iconSize = new NSSize(32, 32);//NSSize.ZeroSize;
+//
+//	    iconImage.setSize(iconSize);
+//	    iconImage.compositeToPoint(iconPoint, NSImage.CompositeSourceOver);
 
 
 
 
-	    /*
-	    NSRect pathRect;
-	    float w = cellFrame.size().width() - (pathRect.origin().x() - cellFrame.origin().x());
-	    float h = cellFrame.size().height();
-	    float x = iconSize.width() + MARGIN_X;
-	    float y = cellFrame.origin().y();
-
-	    pathRect = new NSRect(x, y, w, h);
+//	    NSRect pathRect;
+//	    float w = cellFrame.size().width() - (pathRect.origin().x() - cellFrame.origin().x());
+//	    float h = cellFrame.size().height();
+//	    float x = iconSize.width() + MARGIN_X;
+//	    float y = cellFrame.origin().y();
+//
+//	    pathRect = new NSRect(x, y, w, h);
 //		hostname.drawInRect(pathRect, null);
- */
 	}
-    }
+  }
+	     */
 }
