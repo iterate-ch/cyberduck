@@ -1732,7 +1732,6 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 
 	private boolean validateItem(String identifier) {
-		log.debug("validateItem:"+identifier);
 		if(identifier.equals("copy:")) {
 			return this.isMounted() && browserTable.selectedRow() != -1;
 		}
