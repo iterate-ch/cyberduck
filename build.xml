@@ -236,7 +236,7 @@
 	</target>
 
 
-	<target name="clean" description="Delete compiled classes and jar files">
+	<target name="clean" description="Delete compiled classes, jar files, jnilibs and application bundle">
 		<delete dir="${build.classes}"/>
 		<delete dir="${build}/Cyberduck.build"/>
 		<delete>
@@ -249,7 +249,7 @@
 	</target>
 
 
-	<target name="manifest">
+	<target name="manifest" description="Create a manifest used in the jar files">
 		<manifest file="${build}/MANIFEST.MF">
 			<attribute name="Built-By" value="${user.name}"/>
 			<attribute name="Specification-Title" value="Cyberduck"/>
@@ -260,7 +260,7 @@
 	</target>
 	
 	
-	<target name="junit" depends="compile" description="Runs all test cases">
+	<target name="junit" depends="compile" description="Runs all test cases and generate report">
         <javac
             debug="${debug}"
             deprecation="on"
