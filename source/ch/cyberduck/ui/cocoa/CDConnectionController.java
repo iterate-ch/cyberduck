@@ -109,10 +109,10 @@ public class CDConnectionController {
 	this.hostPopup.setDataSource(CDHistoryImpl.instance());
     }
 
-//    private NSTextField pathField;
-//    public void setPathField(NSTextField pathField) {
-//	this.pathField = pathField;
-//    }
+    private NSTextField pathField;
+    public void setPathField(NSTextField pathField) {
+	this.pathField = pathField;
+    }
 
     private NSTextField portField;
     public void setPortField(NSTextField portField) {
@@ -168,11 +168,11 @@ public class CDConnectionController {
 						  new NSSelector("updateLabel", new Class[]{Object.class}),
 						  NSControl.ControlTextDidChangeNotification,
 						  hostPopup);
-//	NSNotificationCenter.defaultCenter().addObserver(
-//						    this,
-//						    new NSSelector("updateLabel", new Class[]{Object.class}),
-//						    NSControl.ControlTextDidChangeNotification,
-//						    pathField);
+	NSNotificationCenter.defaultCenter().addObserver(
+						    this,
+						    new NSSelector("updateLabel", new Class[]{Object.class}),
+						    NSControl.ControlTextDidChangeNotification,
+						    pathField);
 	NSNotificationCenter.defaultCenter().addObserver(
 						    this,
 						    new NSSelector("updateLabel", new Class[]{Object.class}),

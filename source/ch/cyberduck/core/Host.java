@@ -33,26 +33,10 @@ public class Host {
     private String protocol;
     private int port;
     private String hostname;
-    private Path path;
+    private Path defaultpath;
     private transient HostKeyVerification hostKeyVerification;
     private transient Session session;
     private transient Login login;
-
-//    public Host(String url) throws java.net.MalformedURLException {
-//	try {
-//	    this.protocol = this.parseProtocol(url);
-//	    this.port = this.parsePortnumber(url);
-//	    this.hostname = this.parseHostname(url);
-//	    this.login = this.parseUser(url);
-//	}
-//	catch(IndexOutOfBoundsException e) {
-//	    throw new java.net.MalformedURLException(e.getMessage());
-//	}
-//	catch(NumberFormatException e) {
-//	    throw new java.net.MalformedURLException(e.getMessage());
-//	}
-//	log.debug(this.toString());
-//    }
 
     /**
 	* For internal use only.
@@ -75,20 +59,20 @@ public class Host {
 	}
     }
 
-    public Host(String hostname, int port, Login login) {
-	this(getDefaultProtocol(port), hostname, port, login);
+    public Host(String hostname, Login login) {
+	this(Preferences.instance().getProperty("connection.protocol.default"), hostname, Integer.parseInt(Preferences.instance().getProperty("connection.port.default")), login);
+	log.debug(this.toString());
     }
+
+//    public Host(String hostname, int port, Login login) {
+//	this(getDefaultProtocol(port), hostname, port, login);
+//    }
     
     public Host(String protocol, String hostname, int port, Login login) {
         this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
         this.port = port != -1 ? port : this.getDefaultPort(protocol);
         this.hostname = hostname;
         this.login = login;
-	log.debug(this.toString());
-    }
-
-    public Host(String hostname, Login login) {
-	this(Preferences.instance().getProperty("connection.protocol.default"), hostname, Integer.parseInt(Preferences.instance().getProperty("connection.port.default")), login);
 	log.debug(this.toString());
     }
 
@@ -114,8 +98,12 @@ public class Host {
 	return this.session;
     }
 
-    public Path getPath() {
-	return this.path;
+    public void setDefaultPath(Path defaultpath) {
+	this.defaultpath = defaultpath;
+    }
+
+    public Path getDefaultPath() {
+	return this.defaultpath;
     }
     
     public void closeSession() {
