@@ -382,22 +382,21 @@ public class FTPSession extends Session {
 		FTPSession.this.log("Opening FTP connection to " + host.getIp()+"...", Message.PROGRESS);
 		//            if(!FTP.isAlive()) {
 		try {
-
 		    if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
 			FTP.setConnectMode(FTPConnectMode.ACTIVE);
 		    }
 		    else {
 			FTP.setConnectMode(FTPConnectMode.PASV);
 		    }
+		    /*
 		    if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
 			FTP.initSOCKS(Preferences.instance().getProperty("connection.proxy.port"), Preferences.instance().getProperty("connection.proxy.host"));
 		    }
 		    if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
 			FTP.initSOCKSAuthentication(Preferences.instance().getProperty("connection.proxy.username"), Preferences.instance().getProperty("connection.proxy.password"));
 		    }
-
+		     */
 		    FTP.connect(host.getName(), host.getPort());
-		    //		    FTP.setTimeout(Integer.parseInt(Preferences.instance().getProperty("connection.timeout"))*60*1000);
 		    FTPSession.this.login();
 		    FTP.system();
 		    String path = host.getWorkdir().equals(Preferences.instance().getProperty("connection.path.default")) ? FTP.pwd() : host.getWorkdir();
@@ -463,9 +462,10 @@ public class FTPSession extends Session {
 		    String filename = p.getName();
 		    if(!(filename.equals(".") || filename.equals(".."))) {
 			if(filename.charAt(0) == '.' && !showHidden) {
-			    p.attributes.setVisible(false);
+			    //p.attributes.setVisible(false);
 			}
-			parsedList.add(p);
+			else
+			    parsedList.add(p);
 		    }
 		}
 	    }
@@ -626,42 +626,38 @@ public class FTPSession extends Session {
 		p.attributes.setPermission(new Permission(access));
 		p.attributes.setSize(Integer.parseInt(size));
 
+		if(isLink(line)) {
+		    // the following lines are the most ugly. I just don't know how I can be sure
+      // a link is a directory or a file. Now I look if there's a '.' and if we have execute rights.
 
-		// @todo implement this in Path.class
-		/*
-		 if(isLink(line)) {
-		     // the following lines are the most ugly. I just don't know how I can be sure
-       // a link is a directory or a file. Now I look if there's a '.' and if we have execute rights.
+		    //good chance it is a directory if everyone can execute
+		    boolean execute = p.attributes.getPermission().getOtherPermissions()[Permission.EXECUTE];
+		    boolean point = false;
+		    if(link.length() >= 4) {
+			if(link.charAt(link.length()-3) == '.' || link.charAt(link.length()-4) == '.')
+			    point = true;
+		    }
+		    boolean directory = false;
+		    if(!point && execute)
+			directory = true;
 
-		     //good chance it is a directory if everyone can execute
-		     boolean execute = p.getPermission().getOtherPermissions()[Permission.EXECUTE];
-		     boolean point = false;
-		     if(link.length() >= 4) {
-			 if(link.charAt(link.length()-3) == '.' || link.charAt(link.length()-4) == '.')
-			     point = true;
-		     }
-		     boolean directory = false;
-		     if(!point && execute)
-			 directory = true;
-
-		     if(directory) {
-			 //log.debug("***Parsing link as directory:"+link);
-			 if(!(link.charAt(link.length()-1) == '/'))
-			     link = link+"/";
-			 if(link.charAt(0) == '/')
-			     p.setPath(link);
-			 else
-			     p.setPath(path + link);
-		     }
-		     else {
-			 //log.debug("***Parsing link as file:"+link);
-			 if(link.charAt(0) == '/')
-			     p.setPath(link);
-			 else
-			     p.setPath(path + link);
-		     }
-		 }
-		 */
+		    if(directory) {
+			log.debug("Parsing link as directory:"+link);
+			//if(!(link.charAt(link.length()-1) == '/'))
+			//    link = link+"/";
+			if(link.charAt(0) == '/')
+			    p.setPath(link);
+			else
+			    p.setPath(path + link);
+		    }
+		    else {
+			log.debug("Parsing link as file:"+link);
+			if(link.charAt(0) == '/')
+			    p.setPath(link);
+			else
+			    p.setPath(path + link);
+		    }
+		}
 		return p;
 	    }
 	    catch(NoSuchElementException e) {

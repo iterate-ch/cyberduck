@@ -69,7 +69,19 @@ public class CDTransferView extends NSTableView implements Observer {
 	log.debug("doubleClickAction");
         Path p = (Path)model.getEntry(this.clickedRow());
 	p.download();
-    }    
+    }
+
+    public void keyUp(NSEvent event) {
+	log.debug("keyUp:"+event.toString());
+	short key = event.keyCode();
+	if(event.keyCode() == 51) { //@todo
+	    Path p = (Path)model.getEntry(this.selectedRow());
+	    if(p.status.isStopped()) {
+		p.deleteObservers();
+		model.removeEntry(p);
+	    }
+	}
+    }
 
     public void update(Observable o, Object arg) {
 	if(o instanceof FileStatus) {

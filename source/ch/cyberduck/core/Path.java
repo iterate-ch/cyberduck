@@ -60,21 +60,24 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
      * @return Path new instance
      */
     public Path(String path, String name) {
-        if(path.charAt(path.length() -1) == '/')
-            this.init(path + name);
+        if(path.charAt(path.length()-1) == '/')
+            this.setPath(path + name);
         else
-            this.init(path + "/" + name);
+            this.setPath(path + "/" + name);
     }
 
     /**
      * @param path The absolute path of the file
      */
     public Path(String path) {
-        this.init(path);
+        this.setPath(path);
     }
 
-    private void init(String pathname) {
-	log.debug("init:"+pathname);
+    /**
+	* @param pathname The absolute path of the file
+     */
+    public void setPath(String pathname) {
+	log.debug("setPath:"+pathname);
         this.path = pathname.trim();
     }
 
@@ -88,6 +91,18 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
 	//        log.debug("callObservers:"+arg.toString());
 	this.setChanged();
 	this.notifyObservers(arg);
+    }
+
+    public void deleteObserver(Observer o) {
+	this.status.deleteObserver(o);
+	this.attributes.deleteObserver(o);
+	super.deleteObserver(o);
+    }
+
+    public void deleteObservers() {
+	this.status.deleteObservers();
+	this.attributes.deleteObservers();
+	super.deleteObservers();
     }
     
 
@@ -283,20 +298,24 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
 	private String group;
 	private String access;
 	private Permission permission;
-	private boolean visible = true;
+//	private boolean visible = true;
 
 	/**
 	    * @param visible If this path should be shown in the directory listing
 	 */
+	/*
 	public void setVisible(boolean visible) {
 	    this.visible = visible;
 	}
+	 */
 	/**
 	    * @return If this path is shown in the directory listing
 	 */
+	 /*
 	public boolean isVisible() {
 	    return this.visible;
 	}
+	 */
 	
 	/**
 	* @ param size the size of file in bytes.

@@ -194,18 +194,18 @@ public abstract class Preferences {//extends Properties {
         //this.setProperty("connection.log", "true");
         this.setProperty("connection.log.file", "cyberduck.connection.log");
         this.setProperty("connection.buffer", "4096");
-        this.setProperty("connection.log.speech", "false");
+//        this.setProperty("connection.log.speech", "false");
         this.setProperty("connection.port.default", "21");
         this.setProperty("connection.protocol.default", "ftp");
         this.setProperty("connection.transfertype.default", "binary");
 //        this.setProperty("connection.timeout", "2"); // seconds
   //      this.setProperty("connection.timeout.default", "2"); // seconds
-        this.setProperty("connection.proxy", "false");
-        this.setProperty("connection.proxy.host", "proxy");
-        this.setProperty("connection.proxy.port", "9999");
-        this.setProperty("connection.proxy.authenticate", "false");
-        this.setProperty("connection.proxy.username", "user");
-        this.setProperty("connection.proxy.password", "pass");
+//        this.setProperty("connection.proxy", "false");
+//        this.setProperty("connection.proxy.host", "proxy");
+  //      this.setProperty("connection.proxy.port", "9999");
+    //    this.setProperty("connection.proxy.authenticate", "false");
+      //  this.setProperty("connection.proxy.username", "user");
+      //  this.setProperty("connection.proxy.password", "pass");
 
         this.setProperty("connection.path.default", "~");
 

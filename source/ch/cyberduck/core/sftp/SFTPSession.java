@@ -53,7 +53,6 @@ public class SFTPSession extends Session {
 	}
 
 	public Path getParent() {
-//	    log.debug("getParent");
             String abs = this.getAbsolute();
 	    if((null == parent) && !abs.equals("/")) {
 		int index = abs.lastIndexOf('/');
@@ -99,15 +98,17 @@ public class SFTPSession extends Session {
 			SFTPFile p = new SFTPFile(this.getAbsolute(), x.getFilename());
 			//log.debug(p.getName());
 			if(p.getName().charAt(0) == '.' && !showHidden) {
-			    p.attributes.setVisible(false);
+			    //p.attributes.setVisible(false);
 			}
-			p.attributes.setOwner(x.getAttributes().getUID().toString());
-			p.attributes.setGroup(x.getAttributes().getGID().toString());
-			p.attributes.setSize(x.getAttributes().getSize().intValue());
-			p.attributes.setModified(x.getAttributes().getModifiedTime().longValue());
-			p.attributes.setMode(x.getAttributes().getPermissionsString());
-			p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
-			files.add(p);
+			else {
+			    p.attributes.setOwner(x.getAttributes().getUID().toString());
+			    p.attributes.setGroup(x.getAttributes().getGID().toString());
+			    p.attributes.setSize(x.getAttributes().getSize().intValue());
+			    p.attributes.setModified(x.getAttributes().getModifiedTime().longValue());
+			    p.attributes.setMode(x.getAttributes().getPermissionsString());
+			    p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
+			    files.add(p);
+			}
 		    }
 		}
 		SFTPSession.this.log("Listing complete", Message.PROGRESS);
@@ -252,7 +253,7 @@ public class SFTPSession extends Session {
 		    if(in == null) {
 			throw new IOException("Unable opening data stream");
 		    }
-		    SFTPSession.this.log("Downloading "+this.getName()+"...", Message.PROGRESS);
+		    SFTPSession.this.log("Downloading "+SFTPFile.this.getName()+"...", Message.PROGRESS);
 		    SFTPFile.this.download(in, out);
 		}
 

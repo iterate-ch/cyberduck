@@ -176,13 +176,31 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	return false;
     }
 
-    public void tableViewSelectionDidChange(NSNotification notification) {
-	log.debug("tableViewSelectionDidChange");
-	//	NSTableView table = (NSTableView)notification.object(); // Returns the object associated with the receiver. This is often the object that posted this notification
+    // ----------------------------------------------------------
+    // Overwritten NSResponder methods
+    // ----------------------------------------------------------
 
-//	Path p = model.getEntry(this.selectedRow());
-//@todo	p.callObservers(
+    /**
+	* Informs the receiver that the user has released a key event specified by theEvent. NSResponder's
+     * implementation simply passes this message to the next responder.
+     */
+    public void keyUp(NSEvent event) {
+	log.debug("keyUp:"+event.toString());
+	log.debug(event.toString());
+        Path p = (Path)model.getEntry(this.selectedRow());
+//@todo enter key	if(event.keyCode() == //36 76
+	if(event.modifierFlags() == NSEvent.CommandKeyMask) {
+	    if(event.keyCode() == NSEvent.UpArrowFunctionKey)
+		p.getParent().getParent().list(); //@todo use current directory. what if no file in current folder????
+	    if(event.keyCode() == NSEvent.DownArrowFunctionKey) {
+		if(p.isDirectory())
+		    p.list();
+		if(p.isFile())
+		    p.download();
+	    }
+	}
     }
+    
 
 /*
     public void sort(final String columnIdentifier, final boolean ascending) {

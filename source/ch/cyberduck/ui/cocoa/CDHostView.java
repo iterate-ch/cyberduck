@@ -79,22 +79,6 @@ public class CDHostView extends NSTableView implements Observer {
 	return false;
     }
 
-    public void tableViewWillDisplayCell(NSTableView browserTable, Object cell, NSTableColumn tableColumn, int row) {
-	log.debug("tableViewWillDisplayCell");
-	/*
-	CDHostCell hostCell = (CDHostCell)cell;
-	
-	log.debug(hostCell.objectValue());
-
-	NSMutableAttributedString attrStr = new NSMutableAttributedString((String)hostCell.objectValue());
-	NSRange range = new NSRange(0, attrStr.length());
-
-//	[attrStr addAttribute:NSFontAttributeName value:_font range:range];
-
-	hostCell.setAttributedStringValue(attrStr);
-	 */
-    }
-
     public void tableViewSelectionDidChange(NSNotification notification) {
 	log.debug("tableViewSelectionDidChange");
 	int row = this.selectedRow();
@@ -112,16 +96,17 @@ public class CDHostView extends NSTableView implements Observer {
 * Informs the receiver that the user has released a key event specified by theEvent. NSResponder's
      * implementation simply passes this message to the next responder.
      */
+    /*
     public void keyUp(NSEvent event) {
-	log.debug(event.toString());
+	log.debug("keyUp:"+event.toString());
 	short key = event.keyCode();
-	log.debug(""+key);
-	log.debug(""+NSEvent.DeleteFunctionKey);
-	if(event.keyCode() == NSEvent.DeleteFunctionKey) {
-	    model.removeEntry(this.selectedRow());
+	if(event.keyCode() == 51) { //@todo
+	    Host host = (Host)model.getEntry(this.selectedRow());
+	    host.closeSession();
+	    host.deleteObservers();
 	}
     }
-    
+    */
     
     // ----------------------------------------------------------
     // Observer interface
@@ -147,7 +132,7 @@ public class CDHostView extends NSTableView implements Observer {
     // Cell class
     // ----------------------------------------------------------
     
-    class CDHostCell extends NSCell {
+    class CDHostCell extends NSCell {//NSButtonCell
 //	private int MARGIN_X = 0;
 	private CDHostView hostView;
 	

@@ -1,3 +1,5 @@
+package ch.cyberduck.ui.cocoa;
+
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
@@ -16,13 +18,12 @@
  *  dkocher@cyberduck.ch
  */
 
-package ch.cyberduck.ui.cocoa;
-
 import java.util.List;
 import java.util.ArrayList;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
+import ch.cyberduck.core.Path;
 
 /**
 * @version $Id$
@@ -46,19 +47,26 @@ public class CDTransferTableDataSource extends NSObject {//implements NSTableVie
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 	log.debug("tableViewObjectValueForLocation:"+row);
         String identifier = (String)tableColumn.identifier();
+        Path p = (Path)data.get(row);
 	if(identifier.equals("TYPE")) {
-	    //if.isDownload() return down.tiff
-	    //if.isUpload() return up.tiff
-	    return "Upload/Download";
+	    //@todo
+	    return NSImage.imageNamed("download.tiff");
+	    //if p.isUpload() return NSImage.imageNamed("upload.tiff");
 	}
 	if(identifier.equals("FILENAME"))
-	    return "Filename";
+	    return p.getName();
 	if(identifier.equals("PROGRESS"))
-	    return "00% of 124445K";
+	    return null;
+//	    return new NSProgressIndicator();
 	throw new IllegalArgumentException("Unknown identifier: "+identifier);
     }
     
     //setValue()
+    /**
+	* Sets an attribute value for the record in aTableView at rowIndex. anObject is the new value,
+     * and aTableColumn contains the identifier for the attribute, which you get by using NSTableColumn's
+     * identifier method.
+     */
     public void tableViewSetObjectValueForLocation(NSTableView tableView, Object object, NSTableColumn tableColumn, int row) {
 	log.debug("tableViewSetObjectValueForLocation");
     }
@@ -68,6 +76,15 @@ public class CDTransferTableDataSource extends NSObject {//implements NSTableVie
 	this.data.add(entry);
     }
 
+    public void removeEntry(Object o) {
+	log.debug("removeEntry("+o+")");
+	data.remove(data.indexOf(o));
+    }
+
+    public void removeEntry(int row) {
+	log.debug("removeEntry("+row+")");
+	data.remove(row);
+    }
     
     public Object getEntry(int row) {
 	log.debug("getEntry("+row+")");

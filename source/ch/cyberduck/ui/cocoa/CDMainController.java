@@ -1,3 +1,5 @@
+package ch.cyberduck.ui.cocoa;
+
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
@@ -15,8 +17,6 @@
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
-
-package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
@@ -165,13 +165,11 @@ public class CDMainController extends NSObject {
     }
      */
 
-    /*
      public void upButtonPressed(NSObject sender) {
-	 log.debug("backButtonPressed");
-	 Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
-	 path.getParent().list();
+	 log.debug("upButtonPressed");
+	 Path p = (Path)pathComboBox.getItem(0);
+	 p.getParent().list();
      }
-     */
     
     public void drawerButtonPressed(NSObject sender) {
 	log.debug("drawerButtonPressed");
@@ -195,7 +193,8 @@ public class CDMainController extends NSObject {
     
     public void preferencesButtonPressed(NSObject sender) {
 	log.debug("preferencesButtonPressed");
-	NSApplication.loadNibNamed("Preferences", this);
+	if(null == preferencesWindow)
+	    NSApplication.loadNibNamed("Preferences", this);
         preferencesWindow.makeKeyAndOrderFront(this);
     }
 

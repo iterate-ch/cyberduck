@@ -41,15 +41,10 @@ public abstract class Session {//extends Thread {
 
     public Host host;
 
-//    public boolean secure = false;
-
     public Session(Host h) {//, TransferAction action) {//, boolean secure) {
 	log.debug("Session("+h+")");
 	this.host = h;
-//        this.secure = secure;
-	
-	//@todo        this.log = new Log();
-	this.log(System.getProperty("line.separator"));
+		this.log(System.getProperty("line.separator"), Message.TRANSCRIPT);
         this.log("-------" + new Date().toString(), Message.TRANSCRIPT);
         this.log("-------" + host.getIp(), Message.TRANSCRIPT);
     }

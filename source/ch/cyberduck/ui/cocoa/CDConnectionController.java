@@ -1,3 +1,5 @@
+package ch.cyberduck.ui.cocoa;
+
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
@@ -16,8 +18,6 @@
  *  dkocher@cyberduck.ch
  */
 
-package ch.cyberduck.ui.cocoa;
-
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 import java.io.IOException;
@@ -30,8 +30,8 @@ import ch.cyberduck.core.ftp.*;
 import ch.cyberduck.ui.cocoa.CDPathComboBox;
 import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.transport.InvalidHostFileException;
-import com.sshtools.j2ssh.transport.HostKeyVerification;
-import com.sshtools.j2ssh.authentication.PasswordAuthentication;
+import com.sshtools.j2ssh.transport.AbstractHostKeyVerification;
+import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
 import com.sshtools.j2ssh.sftp.*;
 import com.sshtools.j2ssh.*;
@@ -42,7 +42,6 @@ import org.apache.log4j.Logger;
 * @version $Id$
 */
 public class CDConnectionController extends NSObject implements Observer {
-
     private static Logger log = Logger.getLogger(CDConnectionController.class);
 
     public NSWindow mainWindow; /* IBOutlet */
@@ -50,6 +49,7 @@ public class CDConnectionController extends NSObject implements Observer {
     public NSWindow loginSheet; /* IBOutlet */
 
     public CDPathComboBox pathComboBox; /* IBOutlet */
+    public NSProgressIndicator progressIndicator; /* IBOutlet */
     public NSTextField statusLabel; /* IBOutlet */
     public NSTextField pathField; /* IBOutlet */
     public NSTextField portField; /* IBOutlet */
@@ -58,10 +58,10 @@ public class CDConnectionController extends NSObject implements Observer {
     public NSTextField usernameField; /* IBOutlet */
     public NSTextField passwordField; /* IBOutlet */
     public NSTextView logView; /* IBOutlet */
-    public NSProgressIndicator progressIndicator; /* IBOutlet */
     
-    public CDBrowserView browserTable; /* IBOutlet */
-    public CDHostView hostTable; /* IBOutlet */
+    public CDBrowserView browserView; /* IBOutlet */
+    public CDTransferView transferView; /* IBOutlet */
+    public CDHostView hostView; /* IBOutlet */
   
     public CDConnectionController() {
 	super();
@@ -74,8 +74,9 @@ public class CDConnectionController extends NSObject implements Observer {
 
     public void disconnect(NSObject sender) {
 	log.debug("disconnect");
-	Host host = (Host)((CDHostTableDataSource)hostTable.dataSource()).getEntry(hostTable.selectedRow());
+	Host host = (Host)((CDHostTableDataSource)hostView.dataSource()).getEntry(hostView.selectedRow());
 	host.closeSession();
+	host.deleteObservers();
     }    
 
     public void connect(NSObject sender) {
@@ -128,11 +129,10 @@ public class CDConnectionController extends NSObject implements Observer {
 	    Host host = new Host(protocol, server, port, path, login);
 	    mainWindow.setTitle(host.getName());
 
-	    //@new host.addObserver(transferController);
-	    host.addObserver(browserTable);
-	    host.addObserver(hostTable);
+	    host.addObserver(browserView);
+	    host.addObserver(transferView);
+	    host.addObserver(hostView);
 	    host.addObserver(pathComboBox);
-	    host.addObserver((CDProgressWheel)progressIndicator);
 	    host.addObserver(this);
 	    
 	    Session session = host.openSession();
@@ -186,6 +186,12 @@ public class CDConnectionController extends NSObject implements Observer {
 		// update status label
 		if(msg.getTitle().equals(Message.PROGRESS)) {
 		    statusLabel.setStringValue(msg.getDescription());
+		}
+		if(msg.getTitle().equals(Message.START)) {
+		    progressIndicator.startAnimation(this);
+		}
+		if(msg.getTitle().equals(Message.STOP)) {
+		    progressIndicator.stopAnimation(this);
 		}
 	    }
 	}
@@ -243,8 +249,8 @@ public class CDConnectionController extends NSObject implements Observer {
 
 	public boolean loginFailure() {
 	    log.info("Authentication failed.");
-//	    mainWindow.makeFirstResponder(loginSheet);
-	    //NSApplication.beginSheet( NSWindow sheet, NSWindow docWindow, Object modalDelegate, NSSelector didEndSelector, Object contextInfo)
+	    mainWindow.makeFirstResponder(loginSheet);
+	    //loginSheet.makeKeyAndOrderFront(this);
 	    NSApplication.sharedApplication().beginSheet(
 						  loginSheet, //sheet
 						  mainWindow, //docWindow
@@ -267,7 +273,7 @@ public class CDConnectionController extends NSObject implements Observer {
 	}	
     }
     
-    private class CDHostKeyVerification extends HostKeyVerification {
+    private class CDHostKeyVerification extends AbstractHostKeyVerification {
 	private String host;
 	private String fingerprint;
 	
