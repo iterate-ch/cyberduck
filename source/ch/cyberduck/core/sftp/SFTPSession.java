@@ -89,9 +89,12 @@ public class SFTPSession extends Session {
 		this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
 		this.log(host.getIp(), Message.TRANSCRIPT);
 		SSH = new SshClient();
+		SSH.setSocketTimeout(Integer.parseInt(Preferences.instance().getProperty("connection.timeout")));
 		SSH.addEventHandler(new SshEventAdapter() {
 			public void onSocketTimeout(TransportProtocol transport) {
 				log.debug("onSocketTimeout");
+				SFTPSession.this.close();
+				return;
 			}
 
 			public void onDisconnect(TransportProtocol transport) {
@@ -101,7 +104,6 @@ public class SFTPSession extends Session {
 		SshConnectionProperties properties = new SshConnectionProperties();
 		properties.setHost(host.getHostname());
 		properties.setPort(host.getPort());
-
 		// Sets the prefered client->server encryption cipher
 		properties.setPrefCSEncryption(Preferences.instance().getProperty("ssh.CSEncryption"));
 		// Sets the preffered server->client encryption cipher
@@ -125,7 +127,6 @@ public class SFTPSession extends Session {
 				properties.setProxyPassword(Proxy.getSOCKSProxyPassword());
 			}
 		}
-		
 		SSH.connect(properties, host.getHostKeyVerificationController());
 		if(SSH.isConnected()) {
 			this.log("SSH connection opened", Message.PROGRESS);
@@ -257,6 +258,7 @@ public class SFTPSession extends Session {
 			this.connect();
 			return;
 		}
+		this.host.getIp();
 		if(!this.SSH.isConnected()) {
 			this.close();
 			this.connect();

@@ -83,7 +83,7 @@ public class FTPSession extends Session {
 		this.log(host.getIp(), Message.TRANSCRIPT);
 		this.FTP = new FTPClient(host.getHostname(), 
 								 host.getPort(), 
-								 Integer.parseInt(Preferences.instance().getProperty("ftp.timeout")), //timeout 
+								 Integer.parseInt(Preferences.instance().getProperty("connection.timeout")), //timeout 
 								 encoding);
 		this.FTP.setMessageListener(new FTPMessageListener() {
 			public void logCommand(String cmd) {
@@ -167,6 +167,7 @@ public class FTPSession extends Session {
 			this.connect();
 			return;
 		}
+		this.host.getIp();
 		if(!this.FTP.isAlive()) {
 			this.close();
 			this.connect();

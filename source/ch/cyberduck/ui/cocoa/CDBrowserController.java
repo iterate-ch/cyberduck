@@ -121,20 +121,20 @@ public class CDBrowserController extends CDController implements Observer {
 	public void update(final Observable o, final Object arg) {
 		if(arg instanceof Path) {
 			this.workdir = (Path)arg;
-			pathPopupItems.clear();
-			pathPopupButton.removeAllItems();
-			addPathToPopup(this.workdir);
+			this.pathPopupItems.clear();
+			this.pathPopupButton.removeAllItems();
+			this.addPathToPopup(this.workdir);
 			for(Path p = this.workdir; !p.isRoot();) {
 				p = p.getParent();
-				addPathToPopup(p);
+				this.addPathToPopup(p);
 			}
 			this.browserModel.setData(this.workdir.getSession().cache().get(this.workdir.getAbsolute()));
 			NSTableColumn selectedColumn = this.browserModel.selectedColumn() != null ? this.browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
-			browserTable.setIndicatorImage(this.browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
+			this.browserTable.setIndicatorImage(this.browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
 			this.browserModel.sort(selectedColumn, this.browserModel.isSortedAscending());
-			browserTable.reloadData();
+			this.browserTable.reloadData();
 			this.window().makeFirstResponder(browserTable);
-			infoLabel.setStringValue(this.browserModel.numberOfRowsInTableView(browserTable)+" "+
+			this.infoLabel.setStringValue(this.browserModel.numberOfRowsInTableView(browserTable)+" "+
 									 NSBundle.localizedString("files", ""));
 			toolbar.validateVisibleItems();
 		}

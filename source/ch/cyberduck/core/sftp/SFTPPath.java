@@ -147,10 +147,12 @@ public class SFTPPath extends Path {
 			}
 			catch(SshException e) {
 				session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+				return files;
 			}
 			catch(IOException e) {
 				session.log("IO Error: "+e.getMessage(), Message.ERROR);
 				session.close();
+				return files;
 			}
 		}
 		session.callObservers(this);

@@ -171,16 +171,11 @@ public class FTPClient {
 			    +"The requested action must be performed before a connection is established.");
 	}
 
-	public void noop() throws IOException, FTPException {
-		FTPReply reply = control.sendCommand("NOOP");
-		lastValidReply = control.validateReply(reply, "200");
-	}
-
 	/**
 	 * @return true if the control socket isn't null
 	 */
 	public boolean isAlive() {
-		if(null == control) {
+		if(null == this.control) {
 			return false;
 		}
 		try {
@@ -188,6 +183,7 @@ public class FTPClient {
 			return true;
 		}
 		catch(IOException e) {
+			this.control = null;
 			return false;
 		}
 	}
@@ -270,6 +266,13 @@ public class FTPClient {
 	 */
 	public void cancelTransfer() {
 		cancelTransfer = true;
+	}
+
+	public void noop() throws IOException, FTPException {
+		checkConnection(true);
+		
+		FTPReply reply = control.sendCommand("NOOP");
+		lastValidReply = control.validateReply(reply, "200");
 	}
 
 	/**
