@@ -24,9 +24,9 @@
 					<key>WorkingDirectory</key>
 					<dict>
 						<key>Description</key>
-						<string>The current working directory.</string>
+						<string>The current working folder.</string>
 						<key>Name</key>
-						<string>working directory</string>
+						<string>working folder</string>
 					</dict>
 					<key>Encoding</key>
 					<dict>
@@ -60,7 +60,7 @@
 				<key>Name</key>
 				<string>make new</string>
 			</dict>
-			<key>Connect</key>
+			<key>Cyberduck.Connect</key>
 			<dict>
 				<key>Description</key>
 				<string>Connect to a specified server.</string>
@@ -94,7 +94,7 @@
 						<key>Description</key>
 						<string>The initial path to change to after connection is made.</string>
 						<key>Name</key>
-						<string>with initial directory</string>
+						<string>with initial folder</string>
 					</dict>
 					<key>Password</key>
 					<dict>
@@ -112,19 +112,19 @@
 					</dict>
 				</dict>
 			</dict>
-			<key>Disconnect</key>
+			<key>Cyberduck.Disconnect</key>
 			<dict>
 				<key>Description</key>
 				<string>Disconnect from server.</string>
 				<key>Name</key>
 				<string>disconnect</string>
 			</dict>
-			<key>CreateFolder</key>
+			<key>Cyberduck.CreateFolder</key>
 			<dict>
 				<key>Description</key>
 				<string>Create a new folder.</string>
 				<key>Name</key>
-				<string>create folder</string>
+				<string>create</string>
 				<key>Arguments</key>
 				<dict>
 					<key>Path</key>
@@ -132,11 +132,45 @@
 						<key>Description</key>
 						<string>The filename.</string>
 						<key>Name</key>
-						<string>with name</string>
+						<string>folder</string>
 					</dict>
 				</dict>
 			</dict>
-			<key>DeleteFile</key>
+			<key>Cyberduck.CreateFile</key>
+			<dict>
+				<key>Description</key>
+				<string>Create a new file.</string>
+				<key>Name</key>
+				<string>touch</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>Description</key>
+						<string>The filename.</string>
+						<key>Name</key>
+						<string>file</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>Cyberduck.EditFile</key>
+			<dict>
+				<key>Description</key>
+				<string>Edit file.</string>
+				<key>Name</key>
+				<string>edit</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>Description</key>
+						<string>The filename.</string>
+						<key>Name</key>
+						<string>file</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>Cyberduck.DeleteFile</key>
 			<dict>
 				<key>Description</key>
 				<string>Delete file.</string>
@@ -153,14 +187,14 @@
 					</dict>
 				</dict>
 			</dict>
-			<key>Refresh</key>
+			<key>Cyberduck.Refresh</key>
 			<dict>
 				<key>Description</key>
-				<string>Refresh directory listing.</string>
+				<string>Refresh folder listing.</string>
 				<key>Name</key>
 				<string>refresh</string>
 			</dict>
-			<key>Download</key>
+			<key>Cyberduck.Download</key>
 			<dict>
 				<key>Description</key>
 				<string>Download file.</string>
@@ -178,7 +212,7 @@
 					<key>Local</key>
 					<dict>
 						<key>Description</key>
-						<string>The download directory.</string>
+						<string>The download folder.</string>
 						<key>Name</key>
 						<string>to</string>
 					</dict>
@@ -191,7 +225,7 @@
 					</dict>
 				</dict>
 			</dict>
-			<key>Upload</key>
+			<key>Cyberduck.Upload</key>
 			<dict>
 				<key>Description</key>
 				<string>Upload file.</string>
@@ -209,7 +243,7 @@
 					<key>Remote</key>
 					<dict>
 						<key>Description</key>
-						<string>The upload directory.</string>
+						<string>The upload folder.</string>
 						<key>Name</key>
 						<string>to</string>
 					</dict>
@@ -222,12 +256,12 @@
 					</dict>
 				</dict>
 			</dict>
-			<key>Goto</key>
+			<key>Cyberduck.Goto</key>
 			<dict>
 				<key>Description</key>
 				<string>Go to Folder.</string>
 				<key>Name</key>
-				<string>change directory</string>
+				<string>change folder</string>
 				<key>Arguments</key>
 				<dict>
 					<key>Path</key>
@@ -239,7 +273,7 @@
 					</dict>
 				</dict>
 			</dict>
-			<key>List</key>
+			<key>Cyberduck.List</key>
 			<dict>
 				<key>Description</key>
 				<string>List folder content.</string>
@@ -252,18 +286,18 @@
 						<key>Description</key>
 						<string>The filename.</string>
 						<key>Name</key>
-						<string>directory</string>
+						<string>folder</string>
 					</dict>
 				</dict>
 			</dict>
-			<key>GetURL</key>
+			<key>Cyberduck.GetURL</key>
 			<dict>
 				<key>Description</key>
 				<string>Open a URL</string>
 				<key>Name</key>
 				<string>open URL</string>
 			</dict>
-			<key>OpenURL</key>
+			<key>Cyberduck.OpenURL</key>
 			<dict>
 				<key>Description</key>
 				<string>Open a URL</string>

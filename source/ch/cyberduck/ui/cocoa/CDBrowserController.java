@@ -141,10 +141,19 @@ public class CDBrowserController extends CDController implements Observer {
 											   this.workdir().getAbsolute(), 
 											   (String)args.objectForKey("Path"));
 			NSMutableArray result = new NSMutableArray();
-			for(Iterator i = path.list().iterator(); i.hasNext(); ) {
+			for(Iterator i = path.list(this.encoding, false, this.showHiddenFiles).iterator(); i.hasNext(); ) {
 				result.addObject(((Path)i.next()).getName());
 			}
 			return result;
+		}
+		return null;
+	}
+	
+	public Object handleGotoScriptCommand(NSScriptCommand command) {
+		if(this.isMounted()) {
+			NSDictionary args = command.evaluatedArguments();
+			CDGotoController c = new CDGotoController();
+			c.gotoFolder(this.workdir(), (String)args.objectForKey("Path"));
 		}
 		return null;
 	}
@@ -169,6 +178,19 @@ public class CDBrowserController extends CDController implements Observer {
 		return null;
 	}
 	
+	public Object handleEditScriptCommand(NSScriptCommand command) {
+		log.debug("handleEditScriptCommand:"+command);
+		if(this.isMounted()) {
+			NSDictionary args = command.evaluatedArguments();
+			Path path = PathFactory.createPath(this.workdir().getSession(), 
+											   this.workdir().getAbsolute(), 
+											   (String)args.objectForKey("Path"));
+			Editor editor = new Editor();
+			editor.open(path);
+		}
+		return null;
+	}
+
 	public Object handleDeleteScriptCommand(NSScriptCommand command) {
 		log.debug("handleDeleteScriptCommand:"+command);
 		if(this.isMounted()) {
@@ -177,6 +199,7 @@ public class CDBrowserController extends CDController implements Observer {
 												this.workdir().getAbsolute(), 
 												(String)args.objectForKey("Path"));
 			path.delete();
+			path.getParent().list(encoding, true, showHiddenFiles);
 		}
 		return null;
 	}
@@ -189,16 +212,6 @@ public class CDBrowserController extends CDController implements Observer {
 		return null;
 	}
 	
-	public Object handleGotoScriptCommand(NSScriptCommand command) {
-		log.debug("handleGotoScriptCommand:"+command);
-		if(this.isMounted()) {
-			NSDictionary args = command.evaluatedArguments();
-			CDGotoController c = new CDGotoController();
-			c.gotoFolder(this.workdir(), (String)args.objectForKey("Path"));
-		}
-		return null;
-	}
-
 	public Object handleDownloadScriptCommand(NSScriptCommand command) {
 		log.debug("handleDownloadScriptCommand:"+command);
 		if(this.isMounted()) {
@@ -352,7 +365,7 @@ public class CDBrowserController extends CDController implements Observer {
 				this.statusIcon.setNeedsDisplay(true);
 				this.statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
 																			  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-//				this.statusLabel.display();
+				this.statusLabel.display();
 				this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
 				    (String)msg.getContent(), // message
 				    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
@@ -363,7 +376,7 @@ public class CDBrowserController extends CDController implements Observer {
 			else if(msg.getTitle().equals(Message.PROGRESS)) {
 				this.statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
 																				 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-//				this.statusLabel.display();
+				this.statusLabel.display();
 			}
 			else if(msg.getTitle().equals(Message.REFRESH)) {
 				this.reloadButtonClicked(null);
@@ -406,7 +419,7 @@ public class CDBrowserController extends CDController implements Observer {
 				this.progressIndicator.stopAnimation(this);
 				this.statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
 																				 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-//				this.statusLabel.display();
+				this.statusLabel.display();
 				ThreadUtilities.instance().invokeLater(new Runnable() {
 					public void run() {
 						CDBrowserController.this.toolbar.validateVisibleItems();

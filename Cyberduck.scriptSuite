@@ -67,23 +67,27 @@
 				</dict>
 				<key>SupportedCommands</key>
 				<dict>
-					<key>Connect</key>
+					<key>Cyberduck.Connect</key>
 					<string>handleMountScriptCommand:</string>
-					<key>Disconnect</key>
+					<key>Cyberduck.Disconnect</key>
 					<string>handleDisconnectScriptCommand:</string>
-					<key>Refresh</key>
+					<key>Cyberduck.Refresh</key>
 					<string>handleRefreshScriptCommand:</string>
-					<key>List</key>
+					<key>Cyberduck.List</key>
 					<string>handleListScriptCommand:</string>
-					<key>Goto</key>
+					<key>Cyberduck.Goto</key>
 					<string>handleGotoScriptCommand:</string>
-					<key>CreateFolder</key>
+					<key>Cyberduck.CreateFolder</key>
 					<string>handleCreateFolderScriptCommand:</string>
-					<key>DeleteFile</key>
+					<key>Cyberduck.CreateFile</key>
+					<string>handleCreateFileScriptCommand:</string>
+					<key>Cyberduck.EditFile</key>
+					<string>handleEditScriptCommand:</string>
+					<key>Cyberduck.DeleteFile</key>
 					<string>handleDeleteScriptCommand:</string>
-					<key>Download</key>
+					<key>Cyberduck.Download</key>
 					<string>handleDownloadScriptCommand:</string>
-					<key>Upload</key>
+					<key>Cyberduck.Upload</key>
 					<string>handleUploadScriptCommand:</string>
 				</dict>
 			</dict>
@@ -99,7 +103,7 @@
 				<key>CommandClass</key>
 				<string>ch.cyberduck.ui.cocoa.CDApplescriptabilityController</string>
 			</dict>
-			<key>Connect</key>
+			<key>Cyberduck.Connect</key>
 			<dict>
 				<key>AppleEventCode</key>
 				<string>CoCt</string>
@@ -163,17 +167,17 @@
 					</dict>
 				</dict>
 			</dict>
-			<key>Disconnect</key>
+			<key>Cyberduck.Disconnect</key>
 			<dict>
 				<key>AppleEventCode</key>
 				<string>DiCt</string>
 				<key>CommandClass</key>
 				<string>NSScriptCommand</string>
 			</dict>
-			<key>CreateFolder</key>
+			<key>Cyberduck.CreateFolder</key>
 			<dict>
 				<key>AppleEventCode</key>
-				<string>CrEr</string>
+				<string>FoLd</string>
 				<key>CommandClass</key>
 				<string>NSScriptCommand</string>
 				<key>Arguments</key>
@@ -189,10 +193,10 @@
 					</dict>
 				</dict>
 			</dict>
-			<key>DeleteFile</key>
+			<key>Cyberduck.CreateFile</key>
 			<dict>
 				<key>AppleEventCode</key>
-				<string>DeLe</string>
+				<string>FiLe</string>
 				<key>CommandClass</key>
 				<string>NSScriptCommand</string>
 				<key>Arguments</key>
@@ -208,7 +212,47 @@
 					</dict>
 				</dict>
 			</dict>
-			<key>Download</key>
+			<key>Cyberduck.EditFile</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>EdFi</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PaTh</string>
+						<key>Optional</key>
+						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>Cyberduck.DeleteFile</key>
+			<dict>
+				<key>AppleEventClassCode</key>
+				<string>core</string>
+				<key>AppleEventCode</key>
+				<string>delo</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PaTh</string>
+						<key>Optional</key>
+						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>Cyberduck.Download</key>
 			<dict>
 				<key>AppleEventCode</key>
 				<string>DoAd</string>
@@ -245,7 +289,7 @@
 					</dict>
 				</dict>
 			</dict>
-			<key>Upload</key>
+			<key>Cyberduck.Upload</key>
 			<dict>
 				<key>AppleEventCode</key>
 				<string>UpAd</string>
@@ -282,14 +326,14 @@
 					</dict>
 				</dict>
 			</dict>
-			<key>Refresh</key>
+			<key>Cyberduck.Refresh</key>
 			<dict>
 				<key>AppleEventCode</key>
 				<string>ReSh</string>
 				<key>CommandClass</key>
 				<string>NSScriptCommand</string>
 			</dict>
-			<key>Goto</key>
+			<key>Cyberduck.Goto</key>
 			<dict>
 				<key>AppleEventCode</key>
 				<string>GoTo</string>
@@ -308,7 +352,7 @@
 					</dict>
 				</dict>
 			</dict>
-			<key>List</key>
+			<key>Cyberduck.List</key>
 			<dict>
 				<key>AppleEventCode</key>
 				<string>LiSt</string>
@@ -327,11 +371,11 @@
 					</dict>
 				</dict>
 				<key>ResultAppleEventCode</key>
-				<string>LiSt</string>
+				<string>List</string>
 				<key>Type</key>
 				<string>NSArray</string>
 			</dict>
-			<key>GetURL</key>
+			<key>Cyberduck.GetURL</key>
 			<dict>
 				<key>AppleEventClassCode</key>
 				<string>GURL</string>
@@ -340,7 +384,7 @@
 				<key>CommandClass</key>
 				<string>ch.cyberduck.ui.cocoa.CDApplescriptabilityController</string>
 			</dict>
-			<key>OpenURL</key>
+			<key>Cyberduck.OpenURL</key>
 			<dict>
 				<key>AppleEventClassCode</key>
 				<string>WWW!</string>

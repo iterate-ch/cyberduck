@@ -154,16 +154,13 @@ public class CDProgressController extends NSObject implements Observer {
 	}
 
 	private String getProgressText() {
-		if(queue.isInitialized()) {
-			if(this.queue.isRunning()) {
-				return this.queue.getCurrentAsString()
-				    +" "+NSBundle.localizedString("of", "1.2MB of 3.4MB")+" "+this.queue.getSizeAsString()
-				    +" "+this.queue.getSpeedAsString()+" "+this.statusText;
-			}
+		if(this.queue.isRunning()) {
 			return this.queue.getCurrentAsString()
-			    +" "+NSBundle.localizedString("of", "1.2MB of 3.4MB")+" "+this.queue.getSizeAsString()+"  "+this.statusText;
+			+" "+NSBundle.localizedString("of", "1.2MB of 3.4MB")+" "+this.queue.getSizeAsString()
+			+" "+this.queue.getSpeedAsString()+" "+this.statusText;
 		}
-		return "("+NSBundle.localizedString("Unknown size", "")+")  "+this.statusText;
+		return this.queue.getCurrentAsString()
+		+" "+NSBundle.localizedString("of", "1.2MB of 3.4MB")+" "+this.queue.getSizeAsString()+"  "+this.statusText;
 	}
 
 	private String getErrorText() {
