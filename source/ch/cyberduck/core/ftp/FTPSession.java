@@ -42,7 +42,6 @@ public class FTPSession extends Session {
      */
     public FTPSession(Host h) {//, TransferAction action) {
         super(h);
-        //		this.FTP = new FTPClient();
         //@todo proxy        System.getProperties().put("proxySet", Preferences.instance().getProperty("connection.proxy"));
         //@todo proxy        System.getProperties().put("proxyHost", Preferences.instance().getProperty("connection.proxy.host"));
         //@todo proxy        System.getProperties().put("proxyPort", Preferences.instance().getProperty("connection.proxy.port"));

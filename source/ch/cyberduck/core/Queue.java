@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 /**
 * Used to queue multiple connections. <code>queue.start()</code> will
  * start the the connections in the order the have been added to me.
- * Useful for actions where the reihenfolge of the taken actions
+ * Useful for actions where the order of the taken actions
  * is important, i.e. deleting directories or uploading directories.
  * @version $Id$
  */
@@ -63,14 +63,15 @@ public class Queue extends Observable implements Observer { //Thread {
     /**
 		* Number of completed jobs in the queue
      */
-    private int processedJobs;
+    private int completedJobs;
     /**
 		* The file currently beeing processed in the queue
      */
-    private Path candidate;
+    private Path currentJob;
 	
     /**
-		* This is a list of root path, meaning a directory or file selected to transfer.
+		* This is a list of root paths. This is either a directory
+	 * or a regular file itself.
      */
     private List roots; //Path
 	
@@ -85,9 +86,12 @@ public class Queue extends Observable implements Observer { //Thread {
     private List[] jobs;
     
     /**
-		* The queue has been stopped from processing for any reason
+		* The queue has been canceled from processing for any reason
      */
-    private boolean stopped;
+    private boolean canceled;
+	
+	private boolean initialized;
+	
     /*
      * 	current speed (bytes/second)
      */
@@ -100,7 +104,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		* The size of all files accumulated
      */
     private long size;
-    private long current;
+//    private long current;
     private int timeLeft;
     
     public Queue(List roots, int kind, Validator validator) {
@@ -108,8 +112,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		this.roots = roots;
 		this.kind = kind;
 		this.validator = validator;
-		this.candidate = (Path)roots.get(0);
-		this.jobs = new ArrayList[roots.size()];
+//		this.currentJob = (Path)roots.get(0);
     }
     
     /**
@@ -138,47 +141,45 @@ public class Queue extends Observable implements Observer { //Thread {
 	
     private void process() {
 		log.debug("process");
-
 		int i = 0;
 		Iterator rootIterator = roots.iterator();
 		while(rootIterator.hasNext()) {
 			//Iterating over all the files in the queue
-			if(this.isStopped()) {
+			if(this.isCanceled()) {
 				break;
 			}
 			Path root = (Path)rootIterator.next();
-			this.callObservers(root);
 			root.getSession().addObserver(this);
-			
+//			this.callObservers(root);
 			Iterator elements = jobs[i].iterator();
-			while(elements.hasNext() && !isStopped()) {
+			while(elements.hasNext() && !isCanceled()) {
 				this.progressTimer.start();
 				this.leftTimer.start();
 				
-				this.candidate = (Path)elements.next();
-				this.candidate.status.setResume(root.status.isResume());
-				
-				this.candidate.status.addObserver(this);
-				
-				this.processedJobs++;
-				
+				this.currentJob = (Path)elements.next();
+				this.initialized = true;
+
+				this.currentJob.status.setResume(root.status.isResume());
+				this.currentJob.status.addObserver(this);
+								
 				//				this.callObservers(new Message(Message.PROGRESS, 
 	//								   KIND_DOWNLOAD == kind ? 
- //								   "Downloading "+candidate.getName()+" ("+(this.processedJobs())+" of "+(this.numberOfJobs())+")" : 
- //								   "Uploading "+candidate.getName()+" ("+(this.processedJobs())+" of "+(this.numberOfJobs())+")"));
+ //								   "Downloading "+currentJob.getName()+" ("+(this.completedJobs())+" of "+(this.numberOfJobs())+")" : 
+ //								   "Uploading "+currentJob.getName()+" ("+(this.completedJobs())+" of "+(this.numberOfJobs())+")"));
 				
 				switch(kind) {
 					case KIND_DOWNLOAD:
-						candidate.download();
+						currentJob.download();
 						break;
 					case KIND_UPLOAD:
-						candidate.upload();
+						currentJob.upload();
 						break;
 				}
-				if(candidate.status.isComplete()) {
-					current += candidate.status.getCurrent();
+				if(currentJob.status.isComplete()) {
+					this.completedJobs++;
+//					this.current += currentJob.status.getCurrent();
 				}
-				this.candidate.status.deleteObserver(this);
+				this.currentJob.status.deleteObserver(this);
 				
 				this.progressTimer.stop();
 				this.leftTimer.stop();
@@ -199,6 +200,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		log.debug("start");
 		this.reset();
 		this.init();
+		this.jobs = new ArrayList[roots.size()];
 		int i = 0;
 		Iterator rootIterator = roots.iterator();
 		while(rootIterator.hasNext()) {
@@ -214,11 +216,11 @@ public class Queue extends Observable implements Observer { //Thread {
 		}
 		new Thread() {
 			public void run() {
-				stopped = false;
+				canceled = false;
 				elapsedTimer.start();
 				process();
 				elapsedTimer.stop();
-				stopped = true;
+				canceled = true;
 			}
 		}.start();
     }
@@ -232,17 +234,25 @@ public class Queue extends Observable implements Observer { //Thread {
  //    }
 	
     public void cancel() {
-		this.stopped = true;
-		if(candidate != null)
-			candidate.status.setCanceled(true);
+		this.canceled = true;
+//		if(currentJob != null)
+			currentJob.status.setCanceled(true);
     }
 	
-    public boolean isStopped() {
-		return stopped;
+	public boolean isInitialized() {
+		return this.initialized;
+	}
+	
+	public boolean isRunning() {
+		return !this.isCanceled();
+	}
+	
+    public boolean isCanceled() {
+		return this.canceled;
     }
 	
 	public Path getCurrentJob() {
-		return this.candidate;
+		return this.currentJob;
 	}
 	
     /**
@@ -250,17 +260,17 @@ public class Queue extends Observable implements Observer { //Thread {
      */
     public int remainingJobs() {
 		log.debug("remainingJobs:");
-		return this.numberOfJobs() - this.processedJobs();
+		return this.numberOfJobs() - this.completedJobs();
     }
 	
     /**
 		* @return Number of completed (totally transferred) items in the queue.
      */
-    public int processedJobs() {
-		log.debug("processedJobs:"+processedJobs);
-		return this.processedJobs;
+    public int completedJobs() {
+		log.debug("completedJobs:"+completedJobs);
+		return this.completedJobs;
     }
-	
+
     /**
 		* @return Number of jobs in the queue.
      */
@@ -278,6 +288,10 @@ public class Queue extends Observable implements Observer { //Thread {
      */
     public boolean isEmpty() {
 		return this.remainingJobs() == 0;
+    }
+	
+	public String getSizeAsString() {
+		return Status.getSizeAsString(this.getSize());
     }
 	
     /**
@@ -300,7 +314,7 @@ public class Queue extends Observable implements Observer { //Thread {
 				}
 			}
 		}
-		log.debug("calculateTotalSize:"+value);
+//		log.debug("calculateTotalSize:"+value);
 		return value;
     }
 	
@@ -314,34 +328,41 @@ public class Queue extends Observable implements Observer { //Thread {
 				}
 			}
 		}
-		log.debug("calculateCurrentSize:"+value);
+//		log.debug("calculateCurrentSize:"+value);
 		return value;
     }
 	
+    public String getCurrentAsString() {
+		return Status.getSizeAsString(this.getCurrent());
+    }
+
     /**
-		* @return The number of bytes already processed.
+		* @return The number of bytes already processed of all elements in the whole queue.
      */
     public long getCurrent() {
-		//	log.debug("getCurrent:"+(this.current + candidate.status.getCurrent()));
-  //	return this.calculateCurrentSize();
-		return (this.current + candidate.status.getCurrent());	
+		return this.calculateCurrentSize();
+//		return (this.current + currentJob.status.getCurrent());	
     }
 	
     /**
 		* @return double current bytes/second
      */
-    public long getSpeed() {
-		return this.speed;
+    public String getSpeedAsString() {
+		return Status.getSizeAsString(this.getSpeed());
     }
+	
+	public long getSpeed() {
+		return this.speed;
+	}
     
     private void setSpeed(long s) {
 		this.speed = s;
-		this.callObservers(new Message(Message.DATA, candidate.status));
+		this.callObservers(new Message(Message.DATA, currentJob.status));
     }
 	
     private void setTimeLeft(int seconds) {
         this.timeLeft = seconds;
-		this.callObservers(new Message(Message.DATA, candidate.status));
+		this.callObservers(new Message(Message.DATA, currentJob.status));
     }
 	
     public String getTimeLeft() {
@@ -385,15 +406,15 @@ public class Queue extends Observable implements Observer { //Thread {
 	
 private void reset() {
     this.size = -1;
-    this.current = 0;
-    this.speed = 0;
+//    this.current = 0;
+    this.speed = -1;
 	//    this.overall = 0;
-    this.timeLeft = 0;
-    this.processedJobs = 0;
+    this.timeLeft = -1;
+    this.completedJobs = 0;
     this.calendar.set(Calendar.HOUR, 0);
     this.calendar.set(Calendar.MINUTE, 0);
     this.calendar.set(Calendar.SECOND, 0);
-//	this.callObservers(new Message(Message.DATA, candidate.status));
+//	this.callObservers(new Message(Message.DATA, currentJob.status));
 }
 
 private void init() {
@@ -440,7 +461,7 @@ private void init() {
 											 double current;
 											 double last;
 											 public void actionPerformed(ActionEvent e) {
-												 current = candidate.status.getCurrent();
+												 current = currentJob.status.getCurrent();
 												 if(current <= 0) {
 													 setOverall(0);
 												 }
@@ -469,7 +490,7 @@ private void init() {
 									   long[] speeds = new long[8];
 									   public void actionPerformed(ActionEvent e) {
 										   long diff = 0;
-										   current = candidate.status.getCurrent(); // Bytes
+										   current = currentJob.status.getCurrent(); // Bytes
 										   if(current <= 0) {
 											   setSpeed(0);
 										   }
@@ -493,13 +514,12 @@ private void init() {
     this.leftTimer = new Timer(1000,
 							   new ActionListener() {
 								   public void actionPerformed(ActionEvent e) {
-									   if(getSpeed() > 0)
-										   Queue.this.setTimeLeft((int)((Queue.this.getSize() - candidate.status.getCurrent())/getSpeed()));
-									   else
-										   Queue.this.setTimeLeft(-1);
+//									   if(getSpeed() > 0)
+									   Queue.this.setTimeLeft((int)((Queue.this.getSize() - currentJob.status.getCurrent())/getSpeed()));
+//									   else
+//										   Queue.this.setTimeLeft(-1);
 								   }
 							   }
-							   );    
-	
+							   );
 }
 }

@@ -68,10 +68,8 @@ public class CDBrowserController implements Observer {
 					while(enum.hasMoreElements()) {
 						items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
 					}
-					CDQueueController controller = CDQueueController.instance();
-					controller.addTransfer(items, Queue.KIND_DOWNLOAD);
+					CDQueueController.instance().addTransfer(items, Queue.KIND_DOWNLOAD);
 //					controller.addTransfer((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
-					controller.window().makeKeyAndOrderFront(null);
 //					CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
 //					controller.transfer();
 				}
@@ -673,8 +671,9 @@ public class CDBrowserController implements Observer {
 		while(enum.hasMoreElements()) {
 			items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
 		}
-		CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
-		controller.transfer();
+		CDQueueController.instance().addTransfer(items, Queue.KIND_DOWNLOAD);
+//		CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
+//		controller.transfer();
     }
     
     public void uploadButtonClicked(Object sender) {
@@ -701,8 +700,9 @@ public class CDBrowserController implements Observer {
 					item.setPath(parent.getAbsolute(), new Local((String)enumerator.nextElement()));
 					items.add(item);
 				}
-				CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_UPLOAD);
-				controller.transfer();
+				CDQueueController.instance().addTransfer(items, Queue.KIND_UPLOAD);
+//				CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_UPLOAD);
+//				controller.transfer();
 				break;
 			}
 			case(NSPanel.CancelButton): {

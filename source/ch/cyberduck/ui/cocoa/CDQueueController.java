@@ -28,12 +28,12 @@ import java.util.Observer;
 import java.util.Observable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
 import org.apache.log4j.Logger;
-
 
 public class CDQueueController implements Observer, Validator {
     private static Logger log = Logger.getLogger(CDQueueController.class);
@@ -62,20 +62,22 @@ public class CDQueueController implements Observer, Validator {
 		this.queueTable.tableColumnWithIdentifier("DATA").setDataCell(new CDQueueCell());
     }
 	
+	public void addTransfer(Path root, int kind) {
+		List l = new ArrayList(); 
+		l.add(root);
+		this.addTransfer(l, kind);
+	}
+
 	/**
 		* @param kind Tag specifiying if it is a download or upload.
      */
 	public void addTransfer(List roots, int kind) {
-//		this.kind = kind;
-//		this.roots = roots;
 		Queue queue = new Queue(roots, kind, this);
 		this.queueModel.addEntry(queue);
 		this.queueTable.reloadData();
 		queue.addObserver(this);
 		queue.start();
-//		this.root = roots[0];
-//		this.host = root.getHost();
-//		this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
+//todo		this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
     }
 
 	public void update(Observable o, Object arg) {
@@ -108,10 +110,8 @@ public class CDQueueController implements Observer, Validator {
  // Toolbar Delegate
  // ----------------------------------------------------------
     
-	public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
-		
+	public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {		
 		NSToolbarItem item = new NSToolbarItem(itemIdentifier);
-		
 		if (itemIdentifier.equals(NSBundle.localizedString("Stop"))) {
 			item.setLabel(NSBundle.localizedString("Stop"));
 			item.setPaletteLabel(NSBundle.localizedString("Stop"));
@@ -170,8 +170,8 @@ public class CDQueueController implements Observer, Validator {
 	
 	public void revealButtonClicked(NSButton sender) {
 		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
-		NSWorkspace.sharedWorkspace().selectFile(item.getCurrentJob().getLocal().toString(), "");
-//		NSWorkspace.sharedWorkspace().selectFile(item.getRoots()[0].getLocal().toString(), "");
+		if(item.isInitialized())
+			NSWorkspace.sharedWorkspace().selectFile(item.getCurrentJob().getLocal().toString(), "");
     }	
 	
 	public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
@@ -196,13 +196,16 @@ public class CDQueueController implements Observer, Validator {
 //		log.debug("validateToolbarItem:"+item.label());
 		String label = item.label();
 		if(label.equals(NSBundle.localizedString("Stop"))) {
-			return this.queueTable.selectedRow() != -1 && !((Queue)this.queueModel.getEntry(this.queueTable.selectedRow())).isStopped();
+			Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+			return this.queueTable.selectedRow() != -1 && !queue.isCanceled();
 		}
 		if(label.equals(NSBundle.localizedString("Resume"))) {
-			return this.queueTable.selectedRow() != -1 && ((Queue)this.queueModel.getEntry(this.queueTable.selectedRow())).isStopped();
+			Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+			return this.queueTable.selectedRow() != -1 && !queue.isRunning() && !(queue.remainingJobs() == 0);
 		}
 		if(label.equals(NSBundle.localizedString("Reload"))) {
-			return this.queueTable.selectedRow() != -1 && ((Queue)this.queueModel.getEntry(this.queueTable.selectedRow())).isStopped();
+			Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+			return this.queueTable.selectedRow() != -1 && !queue.isRunning();
 		}
 		if(label.equals(NSBundle.localizedString("Reveal in Finder"))) {
 			return this.queueTable.selectedRow() != -1;

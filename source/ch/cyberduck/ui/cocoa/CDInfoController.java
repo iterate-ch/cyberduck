@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Permission;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -117,7 +118,7 @@ public class CDInfoController {
 		this.kindField.setStringValue(file.getKind());
 		this.modifiedField.setStringValue(file.attributes.getModified());
 		this.ownerField.setStringValue(file.attributes.getOwner());
-		this.sizeField.setStringValue(file.status.getSizeAsString()+" ("+file.status.getSize()+" bytes)");
+		this.sizeField.setStringValue(Status.getSizeAsString(file.status.getSize())+" ("+file.status.getSize()+" bytes)");
 		
 		Permission permission = file.attributes.getPermission();
 		boolean[] ownerPerm = permission.getOwnerPermissions();

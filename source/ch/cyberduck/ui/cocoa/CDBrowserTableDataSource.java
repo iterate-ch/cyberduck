@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.ftp.FTPPath;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.sftp.SFTPPath;
 import ch.cyberduck.core.sftp.SFTPSession;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -87,7 +89,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			return p.getName();
 		}
 		else if(identifier.equals("SIZE"))
-			return p.status.getSizeAsString();
+			return Status.getSizeAsString(p.status.getSize());
 		else if(identifier.equals("MODIFIED"))
 			return p.attributes.getModified();
 		else if(identifier.equals("OWNER"))
@@ -148,17 +150,19 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		// find the best match of the types we'll accept and what's actually on the pasteboard
   // In the file format type that we're working with, get all data on the pasteboard
 		NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
-		Path[] roots = new Path[filesList.count()];
+//		Path[] roots = new Path[filesList.count()];
+		List roots = new ArrayList();
 		Session session = this.workdir().getSession().copy();
 		for(int i = 0; i < filesList.count(); i++) {
 			log.debug(filesList.objectAtIndex(i));
 			if(this.workdir() instanceof FTPPath)
-				roots[i] = new FTPPath((FTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i)));
+				roots.add(new FTPPath((FTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i))));
 			if(this.workdir() instanceof SFTPPath)
-				roots[i] = new SFTPPath((SFTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i)));
+				roots.add(new SFTPPath((SFTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i))));
 		}
-		CDTransferController controller = new CDTransferController(roots, Queue.KIND_UPLOAD);
-		controller.transfer();
+		CDQueueController.instance().addTransfer(roots, Queue.KIND_UPLOAD);
+//		CDTransferController controller = new CDTransferController(roots, Queue.KIND_UPLOAD);
+//		controller.transfer();
 		return true;
     }
     
@@ -210,8 +214,9 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		log.debug("finishedDraggingImage:"+operation);
 		if(! (NSDraggingInfo.DragOperationNone == operation)) {
 			if(promisedDragPaths != null) {
-				CDTransferController controller = new CDTransferController(promisedDragPaths, Queue.KIND_DOWNLOAD);
-				controller.transfer();
+				CDQueueController.instance().addTransfer(Arrays.asList(promisedDragPaths), Queue.KIND_DOWNLOAD);
+//				CDTransferController controller = new CDTransferController(promisedDragPaths, Queue.KIND_DOWNLOAD);
+//				controller.transfer();
 				promisedDragPaths = null;
 			}
 		}

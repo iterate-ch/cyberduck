@@ -34,8 +34,7 @@ public class CDQueueCell extends NSCell {
 	
 	public void setObjectValue(Object queue) {
 //		log.debug("setObjectValue:"+transfer);
-		if(queue instanceof Queue)
-	        this.queue = (Queue)queue;
+		this.queue = (Queue)queue;
     }
     
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
@@ -104,58 +103,68 @@ public class CDQueueCell extends NSCell {
 		NSPoint cellPoint = cellFrame.origin();
 		NSSize cellSize = cellFrame.size();	
 		
-		// drawing file icon
-		NSImage fileIcon = null;
-		switch(queue.kind()) {
-			case Queue.KIND_DOWNLOAD:
-				if(queue.getCurrentJob().isFile())
-					fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getCurrentJob().getExtension());
-				else
-					fileIcon = NSImage.imageNamed("folder.icns");
-				break;
-			case Queue.KIND_UPLOAD:
-				if(queue.getCurrentJob().getLocal().isFile())
-					fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getCurrentJob().getExtension());
-				else
-					fileIcon = NSImage.imageNamed("folder.icns");
-				break;
-		}
-		
-		fileIcon.setSize(new NSSize(16f, 16f));
-		fileIcon.compositeToPoint(new NSPoint(cellPoint.x(), cellPoint.y()+16+1), NSImage.CompositeSourceOver);
-		
-		// drawing path properties
-		// local file
-		NSGraphics.drawAttributedString(
-								  new NSAttributedString(queue.getCurrentJob().getName(), boldFont), 
-								  new NSRect(cellPoint.x()+20, cellPoint.y()+1, cellSize.width()-5, cellSize.height())
-								  );
-		// remote url
-		NSGraphics.drawAttributedString(
-								  new NSAttributedString(queue.getCurrentJob().getHost().getURL()+queue.getCurrentJob().getAbsolute(), tinyFont),
-								  new NSRect(cellPoint.x()+20, cellPoint.y()+20, cellSize.width()-5, cellSize.height())
-								  );
-		// drawing status
-		NSGraphics.drawAttributedString(
-								  new NSAttributedString(
-								 (queue.getCurrentJob().status.getCurrent()/1024)+
+		if(queue.isInitialized()) {
+			// drawing file icon
+			NSImage fileIcon = null;
+			NSImage arrowIcon = null;
+			switch(queue.kind()) {
+				case Queue.KIND_DOWNLOAD:
+					arrowIcon = NSImage.imageNamed("arrowDown.tiff");
+					if(queue.getCurrentJob().isFile())
+						fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getCurrentJob().getExtension());
+					else
+						fileIcon = NSImage.imageNamed("folder.icns");
+					break;
+				case Queue.KIND_UPLOAD:
+					arrowIcon = NSImage.imageNamed("arrowUp.tiff");
+					if(queue.getCurrentJob().getLocal().isFile())
+						fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getCurrentJob().getExtension());
+					else
+						fileIcon = NSImage.imageNamed("folder.icns");
+					break;
+			}
+			
+			fileIcon.setSize(new NSSize(32f, 32f));
+			arrowIcon.setSize(new NSSize(32f, 32f));
+//			fileIcon.compositeToPoint(new NSPoint(cellPoint.x(), cellPoint.y()+16+1), NSImage.CompositeSourceOver);
+			float alpha = (float)(queue.getCurrent()/queue.getSize());
+			fileIcon.dissolveToPoint(new NSPoint(cellPoint.x(), cellPoint.y()+32f+1), alpha);
+			arrowIcon.compositeToPoint(new NSPoint(cellPoint.x(), cellPoint.y()+32f+1), NSImage.CompositeSourceOver);
+				
+			// drawing path properties
+   // local file
+			NSGraphics.drawAttributedString(
+								   new NSAttributedString(queue.getCurrentJob().getName(), boldFont), 
+								   new NSRect(cellPoint.x()+36, cellPoint.y()+1, cellSize.width()-5, cellSize.height())
+								   );
+			// remote url
+			NSGraphics.drawAttributedString(
+								   new NSAttributedString(queue.getCurrentJob().getHost().getURL()+queue.getCurrentJob().getAbsolute(), tinyFont),
+								   new NSRect(cellPoint.x()+36, cellPoint.y()+20, cellSize.width()-5, cellSize.height())
+								   );
+			// drawing status
+			NSGraphics.drawAttributedString(
+								   new NSAttributedString(
+								  queue.getCurrentJob().status.getCurrent()/1024+
 								  " "+NSBundle.localizedString("of")+
 								  " "+(queue.getCurrentJob().status.getSize()/1024)+"kB ("+
-								  (queue.getCurrent()/1024)+" of "+
-								  (queue.getSize()/1024)+"kB "+NSBundle.localizedString("Total")+"), "+
-								  Status.parseLong(queue.getSpeed()/1024) + "kB/s, "+queue.getTimeLeft(),
+								  queue.getCurrentAsString()+" of "+
+								  queue.getSizeAsString()+""+NSBundle.localizedString("Total")+") - "+
+								  queue.getSpeedAsString()+" - "+queue.getTimeLeft(),
 								  tinyFont),
-								  new NSRect(cellPoint.x()+20, cellPoint.y()+33, cellSize.width()-5, cellSize.height())
-								  );
-		
-		NSGraphics.drawAttributedString(
-								  new NSAttributedString(
-								 Queue.KIND_DOWNLOAD == queue.kind() ? 
-								 "Downloading "+queue.getCurrentJob().getName()+" ("+(queue.processedJobs())+" of "+(queue.numberOfJobs())+")" : 
-								 "Uploading "+queue.getCurrentJob().getName()+" ("+(queue.processedJobs())+" of "+(queue.numberOfJobs())+")", 
-								 tinyFont),
-								  new NSRect(cellPoint.x()+20, cellPoint.y()+46, cellSize.width()-5, cellSize.height())
-								  );
+								   new NSRect(cellPoint.x()+36, cellPoint.y()+33, cellSize.width()-5, cellSize.height())
+								   );
+			
+			NSGraphics.drawAttributedString(
+								   new NSAttributedString(
+								  Queue.KIND_DOWNLOAD == queue.kind() ? 
+								  "Downloading "+queue.getCurrentJob().getName()+" ("+(queue.completedJobs()+1)+" of "+(queue.numberOfJobs())+")" : 
+								  "Uploading "+queue.getCurrentJob().getName()+" ("+(queue.completedJobs()+1)+" of "+(queue.numberOfJobs())+")", 
+								  tinyFont),
+								   new NSRect(cellPoint.x()+36, cellPoint.y()+46, cellSize.width()-5, cellSize.height())
+								   );
+		}
+		NSGraphics.fillRectList(new NSRect[]{new NSRect(cellPoint.x(), cellSize.height(), cellSize.width()+1, 1)});
 		controlView.unlockFocus();
 	}	
 }

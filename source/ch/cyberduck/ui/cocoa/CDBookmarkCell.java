@@ -31,8 +31,7 @@ public class CDBookmarkCell extends NSCell {
 	
 	public void setObjectValue(Object bookmark) {
 //		log.debug("setObjectValue:"+bookmark);
-		if(bookmark instanceof Host)
-	        this.bookmark = (Host)bookmark;
+		this.bookmark = (Host)bookmark;
     }
     
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
