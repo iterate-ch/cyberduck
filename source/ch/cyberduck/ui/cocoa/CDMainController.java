@@ -29,6 +29,7 @@ import java.util.Observer;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.BasicConfigurator;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.growl.*;
@@ -69,15 +70,9 @@ public class CDMainController extends NSObject {
     }
 
     static {
-        org.apache.log4j.BasicConfigurator.configure();
+        BasicConfigurator.configure();
         Logger log = Logger.getRootLogger();
         log.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
-        //	log.setLevel(Level.OFF);
-        //	log.setLevel(Level.DEBUG);
-        //	log.setLevel(Level.INFO);
-        //	log.setLevel(Level.WARN);
-        //	log.setLevel(Level.ERROR);
-        //	log.setLevel(Level.FATAL);
     }
 
     // ----------------------------------------------------------

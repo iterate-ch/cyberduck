@@ -32,7 +32,7 @@ import ch.cyberduck.ui.cocoa.CDQueueController;
 /**
  * @version $Id$
  */
-public class Queue implements Observer { //Thread {
+public class Queue extends Observable implements Observer {
     private static Logger log = Logger.getLogger(Queue.class);
 
     /**
@@ -43,12 +43,6 @@ public class Queue implements Observer { //Thread {
      * File transfer pogress
      */
     private Timer progressTimer;
-    /**
-     * Time left since start of processing
-     */
-    private Timer elapsedTimer;
-
-    private Calendar calendar = Calendar.getInstance();
 
     public static final int KIND_DOWNLOAD = 0;
     public static final int KIND_UPLOAD = 1;
@@ -91,7 +85,6 @@ public class Queue implements Observer { //Thread {
     private long timeLeft = -1;
 
     private String status = "";
-//    private String error = "";
 
     /**
      * Creating an empty queue containing no items. Items have to be added later
@@ -173,21 +166,24 @@ public class Queue implements Observer { //Thread {
         return this.kind;
     }
 
+	/**
+		* Notify all observers
+     *
+     * @param arg The message to send to the observers
+     * @see ch.cyberduck.core.Message
+     */
+    public void callObservers(Object arg) {
+        this.setChanged();
+        this.notifyObservers(arg);
+    }
+		
     public void update(Observable o, Object arg) {
+		this.callObservers(arg);
         if (arg instanceof Message) {
             Message msg = (Message)arg;
-            if (msg.getTitle().equals(Message.DATA)) {
-                CDQueueController.instance().update(this, arg);
-            }
-            else if (msg.getTitle().equals(Message.PROGRESS)) {
+            if (msg.getTitle().equals(Message.PROGRESS))
                 this.status = (String)msg.getContent();
-                CDQueueController.instance().update(this, arg);
-            }
-            else if (msg.getTitle().equals(Message.ERROR)) {
-                // this.error = " : "+(String)msg.getContent();
-                CDQueueController.instance().update(this, arg);
-            }
-        }
+		}
     }
 
     /**
@@ -198,16 +194,14 @@ public class Queue implements Observer { //Thread {
      */
     public synchronized void start(final Validator validator) {
         log.debug("start");
-//        this.error = "";
         this.jobs.clear();
         new Thread() {
             public void run() {
                 int mypool = NSAutoreleasePool.push();
 
-                Queue.this.elapsedTimer.start();
                 Queue.this.running = true;
                 Queue.this.canceled = false;
-                CDQueueController.instance().update(Queue.this, new Message(Message.QUEUE_START));
+                Queue.this.callObservers(new Message(Message.QUEUE_START));
 
                 Queue.this.getRoot().getSession().addObserver(Queue.this);
                 Queue.this.getRoot().getSession().cache().clear();
@@ -255,8 +249,7 @@ public class Queue implements Observer { //Thread {
                 Queue.this.getRoot().getSession().deleteObserver(Queue.this);
 
                 Queue.this.running = false;
-                Queue.this.elapsedTimer.stop();
-                CDQueueController.instance().update(Queue.this, new Message(Message.QUEUE_STOP));
+                Queue.this.callObservers(new Message(Message.QUEUE_STOP));
 
                 NSAutoreleasePool.pop(mypool);
             }
@@ -269,7 +262,6 @@ public class Queue implements Observer { //Thread {
      * @pre The thread must be running
      */
     public void cancel() {
-        //this.currentJob.status.setCanceled(true);
         for (Iterator iter = jobs.iterator(); iter.hasNext();) {
             ((Path)iter.next()).status.setCanceled(true);
         }
@@ -309,16 +301,11 @@ public class Queue implements Observer { //Thread {
     public boolean isComplete() {
         return this.getSize() == this.getCurrent();
     }
-
-    public String getStatus() {
-        return this.getElapsedTime() + " " + this.status;
-//        return this.getElapsedTime() + " " + this.status + " " + error;
+	
+    public String getStatusText() {
+		return this.getCurrentAsString()+" of "+this.getSizeAsString()+"  "+this.status;
     }
-
-    public String getProgress() {
-        return this.getCurrentAsString() + " of " + this.getSizeAsString();
-    }
-
+		
     /**
      * @return The cummulative file size of all files remaining in the this
      */
@@ -326,7 +313,7 @@ public class Queue implements Observer { //Thread {
         return this.calculateTotalSize();
     }
 
-
+	//@todo
     private long calculateTotalSize() {
         long value = 0;
         for (Iterator iter = jobs.iterator(); iter.hasNext();) {
@@ -346,6 +333,7 @@ public class Queue implements Observer { //Thread {
         return this.calculateCurrentSize();
     }
 
+	//@todo
     private long calculateCurrentSize() {
         long value = 0;
         for (Iterator iter = jobs.iterator(); iter.hasNext();) {
@@ -400,70 +388,8 @@ public class Queue implements Observer { //Thread {
         return "";
     }
 
-    public String getElapsedTime() {
-        if (calendar.get(Calendar.HOUR) > 0) {
-            return this.parseTime(calendar.get(Calendar.HOUR))
-                    + ":"
-                    + parseTime(calendar.get(Calendar.MINUTE))
-                    + ":"
-                    + parseTime(calendar.get(Calendar.SECOND));
-        }
-        else {
-            return this.parseTime(calendar.get(Calendar.MINUTE))
-                    + ":"
-                    + parseTime(calendar.get(Calendar.SECOND));
-        }
-    }
-
-    private String parseTime(int t) {
-        if (t > 9) {
-            return String.valueOf(t);
-        }
-        else {
-            return "0" + t;
-        }
-    }
-
     private void init() {
         log.debug("init");
-
-        this.calendar.set(Calendar.HOUR, 0);
-        this.calendar.set(Calendar.MINUTE, 0);
-        this.calendar.set(Calendar.SECOND, 0);
-        this.calendar.set(Calendar.HOUR, 0);
-        this.calendar.set(Calendar.MINUTE, 0);
-        this.calendar.set(Calendar.SECOND, 0);
-        this.elapsedTimer = new Timer(1000,
-                new ActionListener() {
-                    int seconds = 0;
-                    int minutes = 0;
-                    int hours = 0;
-
-                    public void actionPerformed(ActionEvent event) {
-                        seconds++;
-                        // calendar.set(year, mont, date, hour, minute, second)
-                        // >= one hour
-                        if (seconds >= 3600) {
-                            hours = (int)(seconds / 60 / 60);
-                            minutes = (int)((seconds - hours * 60 * 60) / 60);
-                            calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), hours, minutes, seconds - minutes * 60);
-                        }
-                        else {
-                            // >= one minute
-                            if (seconds >= 60) {
-                                minutes = (int)(seconds / 60);
-                                calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), minutes, seconds - minutes * 60);
-                            }
-                            // only seconds
-                            else {
-                                calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), seconds);
-                            }
-                        }
-                        CDQueueController.instance().update(Queue.this, new Message(Message.PROGRESS));
-//                        Queue.this.callObservers(new Message(Message.PROGRESS));
-                    }
-                });
-
         this.progressTimer = new Timer(500,
                 new ActionListener() {
                     int i = 0;

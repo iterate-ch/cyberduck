@@ -8,6 +8,13 @@
 	<string>Cyberduck-2.3.3.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.3.4
+- [Feature] Norwegian Localization
+- [Feature] Growl notification support (see http://growl.info)
+- [Feature] Refactored transfer queue
+- [Feature] Updated toolbar icons
+- [Feature] Added BBedit Lite to the list of supported editors
+
 2.3.3
 - [Bugfix] Correctly parsing symbolic links
 

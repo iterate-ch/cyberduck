@@ -55,7 +55,6 @@ public class CDProgressController extends NSObject implements Observer {
     }
 	
     public void update(Observable o, Object arg) {
-//		log.debug("update:"+arg);
 		if (arg instanceof Message) {
 			Message msg = (Message)arg;
 			if (msg.getTitle().equals(Message.DATA)) {
@@ -112,6 +111,7 @@ public class CDProgressController extends NSObject implements Observer {
 	
 	public void setProgressField(NSTextField progressField) {
 		this.progressField = progressField;
+		this.progressField.setTextColor(NSColor.darkGrayColor());
 	}
 		
 	private NSProgressIndicator progressBar;
@@ -120,9 +120,11 @@ public class CDProgressController extends NSObject implements Observer {
 		this.progressBar = progressBar;
 		this.progressBar.setIndeterminate(false);
 		this.progressBar.setDisplayedWhenStopped(true);
+		this.progressBar.setControlTint(NSProgressIndicator.GraphiteControlTint);
 		this.progressBar.setControlTint(NSProgressIndicator.BlueControlTint);
 		this.progressBar.setControlSize(NSProgressIndicator.SmallControlSize);
 		this.progressBar.setStyle(NSProgressIndicator.ProgressIndicatorBarStyle);
+		this.progressBar.setUsesThreadedAnimation(true);
 	}
 	
 	private NSView progressView;

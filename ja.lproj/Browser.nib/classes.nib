@@ -34,7 +34,6 @@
                 quickConnectPopup = NSComboBox; 
                 removeBookmarkButton = NSButton; 
                 searchField = NSTextField; 
-                showBookmarkButton = NSButton; 
                 statusIcon = NSImageView; 
                 statusLabel = NSTextField; 
                 upButton = NSButton; 
