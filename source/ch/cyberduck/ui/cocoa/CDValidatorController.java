@@ -38,6 +38,9 @@ public class CDValidatorController extends Validator {
     public CDValidatorController(int kind, boolean resume) {
         super(kind, resume);
         instances.addObject(this);
+		if (false == NSApplication.loadNibNamed("Validator", this)) {
+			log.fatal("Couldn't load Validator.nib");
+		}
     }
 
     private NSImageView iconView; // IBOutlet
@@ -95,13 +98,10 @@ public class CDValidatorController extends Validator {
     private boolean sheetClosedAndSelectionMade = true;
 
     public boolean prompt(final Path path) {
-        ThreadUtilities.instance().invokeLater(new Runnable() {
-            public void run() {
-				if (!applySettingsToAll) {
-					sheetClosedAndSelectionMade = false;
-					if (false == NSApplication.loadNibNamed("Validator", this)) {
-						log.fatal("Couldn't load Validator.nib");
-					}
+		if (!applySettingsToAll) {
+			sheetClosedAndSelectionMade = false;
+			ThreadUtilities.instance().invokeLater(new Runnable() {
+				public void run() {
 					resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
 					String alertText =
 						NSBundle.localizedString("Local", "") + ":\n"
@@ -128,8 +128,8 @@ public class CDValidatorController extends Validator {
 					window().makeKeyAndOrderFront(null);
 				}
 			}
+												   );
 		}
-											   );
         // Waiting for user to make choice
         while (!sheetClosedAndSelectionMade) {
 			try {

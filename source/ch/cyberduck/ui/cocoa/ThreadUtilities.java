@@ -49,8 +49,8 @@ public class ThreadUtilities {
 	
 	public synchronized Runnable next() {
 		//log.debug("next");
-		if(log.isDebugEnabled())
-			log.debug("Size of thread queue:"+queue.size()+" objects waiting for removal");
+//		if(log.isDebugEnabled())
+//			log.debug("Size of thread queue:"+queue.size()+" objects waiting for removal");
         if (this.queue.isEmpty())
             return null;
         return (Runnable)this.queue.remove(0);

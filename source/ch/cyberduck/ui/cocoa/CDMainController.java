@@ -39,7 +39,7 @@ public class CDMainController extends NSObject {
 
 	public void awakeFromNib() {
 		//@todo performance tests
-		this.threadWorkerTimer = new NSTimer(0.001, this, new NSSelector("handleThreadWorkerTimerEvent", new Class[] {NSTimer.class}), null, true);
+		this.threadWorkerTimer = new NSTimer(0.1, this, new NSSelector("handleThreadWorkerTimerEvent", new Class[] {NSTimer.class}), null, true);
 		NSRunLoop.currentRunLoop().addTimerForMode(this.threadWorkerTimer, NSRunLoop.DefaultRunLoopMode);
 	}
 

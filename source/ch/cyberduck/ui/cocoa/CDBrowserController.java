@@ -502,8 +502,8 @@ public class CDBrowserController extends NSObject implements Observer {
 
     public void update(final Observable o, final Object arg) {
         log.debug("update:" + o + "," + arg);
-		ThreadUtilities.instance().invokeLater(new Runnable() {
-			public void run() {
+//		ThreadUtilities.instance().invokeLater(new Runnable() {
+//			public void run() {
 				if (arg instanceof Path) {
 					browserModel.setData(((Path) arg).cache());
 					NSTableColumn selectedColumn = browserModel.selectedColumn() != null ? browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
@@ -571,9 +571,9 @@ public class CDBrowserController extends NSObject implements Observer {
 						toolbar.validateVisibleItems();
 					}
 				}
-			}
-		}
-											   );
+//			}
+//		}
+//											   );
     }
 	
     // ----------------------------------------------------------
