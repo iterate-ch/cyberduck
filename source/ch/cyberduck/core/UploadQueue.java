@@ -60,19 +60,17 @@ public class UploadQueue extends Queue {
 		return dict;
 	}
 
-	public void callObservers(Object arg) {
-		super.callObservers(arg);
-		if(arg instanceof Message) {
-			Message msg = (Message)arg;
-			if(msg.getTitle().equals(Message.QUEUE_STOP)) {
-				if(this.isComplete()) {
-					Growl.instance().notify(NSBundle.localizedString("Upload complete",
-																	 "Growl Notification"),
-											this.getName());
-					if(callback != null) {
-						callback.update(null, new Message(Message.REFRESH));
-					}
-				}
+	protected void finish() {
+		super.finish();
+		if(this.isComplete()) {
+			this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Upload complete",
+																					  "Growl Notification")));
+			this.callObservers(new Message(Message.QUEUE_STOP));
+			Growl.instance().notify(NSBundle.localizedString("Upload complete",
+															 "Growl Notification"),
+									this.getName());
+			if(callback != null) {
+				callback.update(null, new Message(Message.REFRESH));
 			}
 		}
 	}

@@ -248,11 +248,10 @@ public abstract class Queue extends Observable {
 		return true;
 	}
 	
-	private void finish() {
+	protected void finish() {
 		this.running = false;
 		this.progress.stop();
 		this.getRoot().getSession().close();
-		this.callObservers(new Message(Message.QUEUE_STOP));
 	}
 	
 	public void cancel() {
