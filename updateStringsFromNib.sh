@@ -34,7 +34,7 @@ for nibfile in `ls $language.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; 
     echo "Updating $nib.strings in $language.lproj..."
     
     mv $language.lproj/$nib.strings $language.lproj/$nib.strings.bak
-    nibtool --previous $language.lproj/$nibfile --incremental $language.lproj/$nibfile --localizable-strings English.lproj/$nibfile > $language.lproj/$nib.strings
+    nibtool --previous English.lproj/$nibfile --incremental $language.lproj/$nibfile --localizable-strings English.lproj/$nibfile > $language.lproj/$nib.strings
 done
 exit 0
 
