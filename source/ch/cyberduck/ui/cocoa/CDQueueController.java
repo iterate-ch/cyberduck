@@ -454,11 +454,11 @@ public class CDQueueController extends CDController {
 
 	public synchronized void openButtonClicked(Object sender) {
 		if(this.queueTable.selectedRow() != -1) {
-			Queue item = (Queue)this.queueModel.get(this.queueTable.selectedRow());
-			Path f = item.getRoot();
-			String file = item.getRoot().getLocal().toString();
+			Queue q = (Queue)this.queueModel.get(this.queueTable.selectedRow());
+			Path f = q.getRoot();
+			String file = q.getRoot().getLocal().toString();
 			if(!NSWorkspace.sharedWorkspace().openFile(file)) {
-				if(item.isComplete()) {
+				if(q.isComplete()) {
 					this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not open the file", ""), //title
 					    NSBundle.localizedString("Could not open the file", "")+" \""
 					    +file
@@ -484,11 +484,11 @@ public class CDQueueController extends CDController {
 
 	public synchronized void revealButtonClicked(Object sender) {
 		if(this.queueTable.selectedRow() != -1) {
-			Queue item = (Queue)this.queueModel.get(this.queueTable.selectedRow());
-			Path f = item.getRoot();
-			String file = item.getRoot().getLocal().toString();
+			Queue q = (Queue)this.queueModel.get(this.queueTable.selectedRow());
+			Path f = q.getRoot();
+			String file = q.getRoot().getLocal().toString();
 			if(!NSWorkspace.sharedWorkspace().selectFile(file, "")) {
-				if(item.isComplete()) {
+				if(q.isComplete()) {
 					this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not show the file in the Finder", ""), //title
 					    NSBundle.localizedString("Could not show the file", "")+" \""
 					    +file
@@ -521,8 +521,8 @@ public class CDQueueController extends CDController {
 		int j = 0;
 		while(enum.hasMoreElements()) {
 			int i = ((Integer)enum.nextElement()).intValue();
-			Queue queue = (Queue)this.queueModel.get(i-j);
-			if(!queue.isRunning()) {
+			Queue q = (Queue)this.queueModel.get(i-j);
+			if(!q.isRunning()) {
 				this.queueModel.remove(i-j);
 				j++;
 			}
@@ -533,7 +533,7 @@ public class CDQueueController extends CDController {
 	public void clearButtonClicked(Object sender) {
 		for(int i = 0; i < this.queueModel.size(); i++) {
 			Queue q = (Queue)this.queueModel.get(i);
-			if(q.getSize() == q.getCurrent() && q.getSize() > 0) {
+			if(q.isComplete()) {
 				this.queueModel.remove(i);
 				i--;
 			}
