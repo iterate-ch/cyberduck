@@ -1,4 +1,5 @@
 package ch.cyberduck.core;
+
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.sshtools.j2ssh.session.SessionChannelClient;
-import com.sshtools.j2ssh.authentication.PasswordAuthentication;
+import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
 import com.sshtools.j2ssh.sftp.*;
 import com.sshtools.j2ssh.*;
@@ -213,7 +213,8 @@ public class SFTPSession extends Session {
 	    log.debug("changePermissions");
 	    try {
 		SFTPSession.this.check();
-		SFTP.changePermissions(this.getAbsolute(), this.attributes.getPermission().getCode());
+//		SFTP.changePermissions(this.getAbsolute(), this.attributes.getPermission().getCode());
+		SFTP.changePermissions(this.getAbsolute(), this.attributes.getPermission().getString());
 	    }
 	    catch(SshException e) {
 		SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
@@ -360,16 +361,30 @@ public void connect() {
 	    host.status.fireActiveEvent();
 	    SFTPSession.this.log("Opening SSH connection to " + host.getIp()+"...", Message.PROGRESS);
 	    try {
-		//if(!SSH.isConnected()) {
-  // Make a client connection
-  //	    this.log("Initializing SSH connection", Message.PROGRESS);
-  // Connect to the host
+/*
+import com.sshtools.j2ssh.configuration.SshConnectionProperties
+ SshConnectionProperties properties = new SshConnectionProperties();
+ properties.setHost("firestar");
+ properties.setPort(22);
+ ssh.connect(properties);
+
+ // Sets the prefered client->server encryption cipher
+ properties.setPrefCSEncryption("blowfish-cbc");
+ // Sets the preffered server->client encryption cipher
+ properties.setPrefSCEncryption("3des-cbc");
+
+ // Sets the preffered client->server message authenticaiton
+ properties.setPrefCSMac("hmac-sha1");
+ // Sets the preffered server->client message authentication
+ properties.setPrefSCMac("hmac-md5");
+ */
 		SSH.connect(host.getName(), host.getHostKeyVerification());
+		SFTPSession.this.log(SSH.getServerId(), Message.TRANSCRIPT);
 		SFTPSession.this.login();
 		String path = host.getWorkdir().equals(Preferences.instance().getProperty("connection.path.default")) ? SFTP.getDefaultDirectory() : host.getWorkdir();
 		SFTPFile home = new SFTPFile(path);
 		home.list();
-		}
+	    }
 	    catch(SshException e) {
 		SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
 	    }
@@ -379,20 +394,20 @@ public void connect() {
 	    finally {
 		host.status.fireStopEvent();
 	    }
-	    }
-	}.start();
-    }
+	}
+    }.start();
+}
 
     private void login() throws IOException {
 	// Create a password authentication instance
 	this.log("Authenticating as '"+host.login.getUsername()+"'", Message.PROGRESS);
-	PasswordAuthentication auth = new PasswordAuthentication();
+	PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
 	auth.setUsername(host.login.getUsername());
 	auth.setPassword(host.login.getPassword());
 
 	// Try the authentication
 	int result = SSH.authenticate(auth);
-	this.log(SSH.getAuthenticationBanner(), Message.TRANSCRIPT);
+	this.log(SSH.getAuthenticationBanner(1), Message.TRANSCRIPT);
 	// Evaluate the result
 	if (result == AuthenticationProtocolState.COMPLETE) {
 	    this.log("Login sucessfull", Message.PROGRESS);
@@ -416,6 +431,12 @@ public void connect() {
     }
     
     public void check() throws IOException {
+/*
+	TransportProtocolState state = ssh.getConnectionState();
+ if (state.getValue()==TransportProtocolState.DISCONNECTED) {
+     System.out.println("Transport protocol has disconnected!");
+ }
+ */
 	if(!SSH.isConnected()) {
 	    this.connect();
 	}

@@ -394,13 +394,12 @@ public class FTPSession extends Session {
 		    }
 
 		    FTP.connect(host.getName(), host.getPort());
-//		    FTP.setTimeout(Integer.parseInt(Preferences.instance().getProperty("connection.timeout"))*60*1000);
+		    //		    FTP.setTimeout(Integer.parseInt(Preferences.instance().getProperty("connection.timeout"))*60*1000);
 		    FTPSession.this.login();
 		    FTP.system();
 		    String path = host.getWorkdir().equals(Preferences.instance().getProperty("connection.path.default")) ? FTP.pwd() : host.getWorkdir();
 		    FTPFile home = new FTPFile(path);
 		    home.list();
-		    host.status.fireStopEvent();
 		}
 		catch(FTPException e) {
 		    FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
@@ -411,9 +410,9 @@ public class FTPSession extends Session {
 		finally {
 		    host.status.fireStopEvent();
 		}
-		}
-	    }.start();
-	}
+	    }
+	}.start();
+    }
 
     private void login() throws IOException {
 	try {

@@ -106,6 +106,12 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
     public void update(Observable o, Object arg) {
 	log.debug("update");
 	if(o instanceof Host) {
+	    if(arg instanceof Message) {
+		if(arg.equals(Message.CLOSE)) {
+		    model.clear();
+		    this.reloadData();
+		}
+	    }
 	    if(arg instanceof java.util.List) {
 		java.util.List files = (java.util.List)arg;
 		java.util.Iterator i = files.iterator();

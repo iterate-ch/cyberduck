@@ -1,7 +1,4 @@
 /*
- *  ch.cyberduck.ui.cocoa.CDConnectionController.java
- *  Cyberduck
- *
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
  *
@@ -30,7 +27,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.http.*;
 import ch.cyberduck.core.sftp.*;
 import ch.cyberduck.core.ftp.*;
-import ch.cyberduck.ui.cocoa.CDPathPopUpButton;
+import ch.cyberduck.ui.cocoa.CDPathComboBox;
 import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.transport.InvalidHostFileException;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
@@ -52,9 +49,7 @@ public class CDConnectionController extends NSObject implements Observer {
     public NSWindow connectionSheet; /* IBOutlet */
     public NSWindow loginSheet; /* IBOutlet */
 
-    public NSObject logController; /* IBOutlet */
-
-    public NSPopUpButton pathPopUpButton; /* IBOutlet */
+    public CDPathComboBox pathComboBox; /* IBOutlet */
     public NSTextField statusLabel; /* IBOutlet */
     public NSTextField pathField; /* IBOutlet */
     public NSTextField portField; /* IBOutlet */
@@ -136,9 +131,7 @@ public class CDConnectionController extends NSObject implements Observer {
 	    //@new host.addObserver(transferController);
 	    host.addObserver(browserTable);
 	    host.addObserver(hostTable);
-	    host.addObserver((CDPathPopUpButton)pathPopUpButton);
-	    host.addObserver((CDLogController)logController);
-//	    host.addObserver((CDLogView)logView);
+	    host.addObserver(pathComboBox);
 	    host.addObserver((CDProgressWheel)progressIndicator);
 	    host.addObserver(this);
 	    
@@ -209,11 +202,11 @@ public class CDConnectionController extends NSObject implements Observer {
 	    /*
 	    if(arg instanceof Path) {
 		Path p = (Path)arg;
-		pathPopUpButton.removeAllItems();
-		pathPopUpButton.addItem(p);
+		pathComboBox.removeAllItems();
+		pathComboBox.addItem(p);
 		while(!p.isRoot()) {
 		    p = p.getParent();
-		    pathPopUpButton.addItem(p);
+		    pathComboBox.addItem(p);
 		}
 	    }
 	     */

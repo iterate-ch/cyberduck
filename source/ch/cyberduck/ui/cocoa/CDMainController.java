@@ -1,5 +1,3 @@
-package ch.cyberduck.ui.cocoa;
-
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
@@ -18,20 +16,21 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+package ch.cyberduck.ui.cocoa;
+
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
-
 import org.apache.log4j.Logger;
 
 /**
 * @version $Id$
 */
 public class CDMainController extends NSObject {
+    private static Logger log = Logger.getLogger(CDMainController.class);
 
     public NSPanel infoPanel; /* IBOutlet */
     public NSPanel newfolderSheet; /* IBOutlet */
@@ -41,14 +40,11 @@ public class CDMainController extends NSObject {
     public NSWindow infoWindow; /* IBOutlet */
     public NSWindow connectionSheet; /* IBOutlet */
     public NSTextField quickConnectField; /* IBOutlet */
-    public NSPopUpButton pathPopUpButton; /* IBOutlet */
+    public CDPathComboBox pathComboBox; /* IBOutlet */
     public NSDrawer drawer; /* IBOutlet */
-
-    private NSMutableDictionary toolbarItems;
-
     public NSTableView browserTable; /* IBOutlet */
 
-    private static Logger log = Logger.getLogger(CDMainController.class);
+    private NSMutableDictionary toolbarItems;
 
     public CDMainController() {
 	super();
@@ -64,7 +60,8 @@ public class CDMainController extends NSObject {
 
     public void folderButtonPressed(NSObject sender) {
         log.debug("folderButtonPressed");
-        NSApplication.loadNibNamed("Folder", this);
+	if(newfolderSheet == null)
+	    NSApplication.loadNibNamed("Folder", this);
 	NSApplication.sharedApplication().beginSheet(
 					      newfolderSheet,//sheet
 					      mainWindow, //docwindow
@@ -80,9 +77,12 @@ public class CDMainController extends NSObject {
         log.debug("newfolderSheetDidEnd");
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
+		Path parent = (Path)pathComboBox.getItem(pathComboBox.numberOfItems()-1);
+		//Path dir = new Path(parent, sheet.getPath());
+		
 		/*
-		path.mkdir();
-		path.list();//@todo path.getParent().list();
+		dir.mkdir();
+		dir.list();//@todo path.getParent().list();
 		 */
 	    case(NSAlertPanel.AlternateReturn):
 		//
@@ -97,12 +97,13 @@ public class CDMainController extends NSObject {
     
     public void infoButtonPressed(NSObject sender) {
 	log.debug("infoButtonPressed");
-        NSApplication.loadNibNamed("Info", this); //@todo if(infoWindow == null)
+	if(infoWindow == null)
+	    NSApplication.loadNibNamed("Info", this);
 	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
 	((CDInfoWindow)infoWindow).update(path, new Message(Message.SELECTION, null));
 	infoWindow.orderFront(this);
     }
-    
+
     public void deleteButtonPressed(NSObject sender) {
 	log.debug("deleteButtonPressed");
 	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
@@ -142,10 +143,8 @@ public class CDMainController extends NSObject {
 
     public void refreshButtonPressed(NSObject sender) {
 	log.debug("refreshButtonPressed");
-	/*
-	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
-	path.getParent().list();
-	 */
+	Path p = (Path)pathComboBox.getItem(0);
+	p.list();
     }
 
     public void downloadButtonPressed(NSObject sender) {
@@ -223,11 +222,11 @@ public class CDMainController extends NSObject {
 	//    private void addToolbarItem(NSMutableDictionary toolbarItems, String identifier, String label, String paletteLabel, String toolTip, Object target, NSSelector action, NSImage image) {
 
 	this.addToolbarItem(toolbarItems, "Path", "Path", "Path", "Change working directory", this, null, null);
-	NSToolbarItem pathPopUpButtonItem = (NSToolbarItem)toolbarItems.objectForKey("Path");
-	pathPopUpButtonItem.setView(pathPopUpButton);
-	pathPopUpButtonItem.setMinSize(pathPopUpButton.frame().size());
-	pathPopUpButtonItem.setMaxSize(pathPopUpButton.frame().size());
-//	pathPopUpButtonItem.setMaxSize(new NSSize(170, pathPopUpButton.frame().height()));
+	NSToolbarItem pathComboBoxItem = (NSToolbarItem)toolbarItems.objectForKey("Path");
+	pathComboBoxItem.setView(pathComboBox);
+	pathComboBoxItem.setMinSize(pathComboBox.frame().size());
+	pathComboBoxItem.setMaxSize(pathComboBox.frame().size());
+//	pathComboBoxItem.setMaxSize(new NSSize(170, pathComboBox.frame().height()));
 
 	this.addToolbarItem(toolbarItems, "Quick Connect", "Quick Connect", "Quick Connect", "Connect to host", this, null, null);
 	NSToolbarItem quickConnectItem = (NSToolbarItem)toolbarItems.objectForKey("Quick Connect");
@@ -289,7 +288,7 @@ public class CDMainController extends NSObject {
 //	log.debug("validateToolbarItem");
 	String label = item.label();
 	if(label.equals("Path")) {
-	    return pathPopUpButton.numberOfItems() > 0;
+	    return pathComboBox.numberOfItems() > 0;
 	}
 	if(label.equals("Refresh")) {
 	    //return ;

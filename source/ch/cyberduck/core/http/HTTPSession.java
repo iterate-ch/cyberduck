@@ -96,7 +96,8 @@ public class HTTPSession extends Session {
 		public void run() {
 		    GetMethod GET = null;
 		    try {
-			GET = new GetMethod(HTTPFile.this.getAbsolute());
+			HTTPSession.this.check();
+			GET = new GetMethod(HTTPFile.this.getAbsolute()); //@todo encode url
 			GET.setUseDisk(false);
 			if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
 			    // enter the username and password for the proxy
@@ -192,15 +193,15 @@ public class HTTPSession extends Session {
 			 HTTPSession.this.log("Downloading "+HTTPFile.this.getName()+"...", Message.PROGRESS);
 			 HTTPFile.this.download(in, out);
 		    }
-		    catch(IOException e) {
-			HTTPSession.this.log(e.getMessage(), Message.ERROR);
-		    }
 		    catch(HttpException e) {
 			Header[] responseHeaders = GET.getResponseHeaders();
 			for(int i = 0; i < responseHeaders.length; i++) {
 			    HTTPSession.this.log(responseHeaders[i].toExternalForm(), Message.TRANSCRIPT);
 			}
 			HTTPSession.this.log(e.getReplyCode() + " " +  e.getMessage(), Message.ERROR);
+		    }
+		    catch(IOException e) {
+			HTTPSession.this.log(e.getMessage(), Message.ERROR);
 		    }
 		}
 	    }.start();
@@ -248,7 +249,6 @@ public class HTTPSession extends Session {
 	    public void run() {
 		host.status.fireActiveEvent();
 		HTTPSession.this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
-		//            if(this.action.toString().equals(TransferAction.GET)) {
 		if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
 		    HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
 		}
@@ -256,9 +256,9 @@ public class HTTPSession extends Session {
 		    HTTP.connect(host.getName(), host.getPort(), false);//@todo implement https
 		}
 		HTTPSession.this.log("HTTP connection opened", Message.PROGRESS);
-		//@todo     	           this.check();
 		HTTPFile p = new HTTPFile(host.getWorkdir());
 		p.download();
+		host.status.fireStopEvent();
 	    }
 	}.start();
     }

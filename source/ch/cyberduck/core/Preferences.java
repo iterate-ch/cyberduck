@@ -29,7 +29,6 @@ import java.net.URLStreamHandlerFactory;
 import java.security.Provider;
 import java.security.Security;
 import java.util.Properties;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -139,7 +138,7 @@ public abstract class Preferences {//extends Properties {
 	//	System.out.println("Working directory:"+System.getProperty("user.dir"));
 	this.setProperty("cyberduck.version", "2.1");
         this.setProperty("cyberduck.uses", "0");
-	this.setProperty("cyberduck.donate", "true");
+	this.setProperty("cyberduck.donate", "false");
         
 	System.setProperty("sshtools.home", System.getProperty("user.dir"));
 	System.setProperty("sshtools.config", System.getProperty("user.dir"));

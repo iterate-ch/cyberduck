@@ -44,10 +44,11 @@ public class CDPathComboBox extends NSPopUpButton implements Observer {
 	//	log.debug("update:"+arg);
 	if(o instanceof Host) {
 	    if(arg instanceof Path) {
-		log.debug("update:"+arg);
 		Path p = (Path)arg;
 		this.removeAllItems();
+		// current path has index 0
 		this.addItem(p);
+		// root path has index numberOfItems()-1
 		while(!p.isRoot()) {
 		    p = p.getParent();
 		    this.addItem(p);
@@ -79,6 +80,11 @@ public class CDPathComboBox extends NSPopUpButton implements Observer {
 
     public Path getItem(int row) {
 	return (Path)items.get(row);
+    }
+
+    public void removeAllItems() {
+	this.items.clear();
+	super.removeAllItems();
     }
 
     public CDPathComboBox() {

@@ -1,5 +1,3 @@
-package ch.cyberduck.core;
-
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
@@ -18,33 +16,50 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import javax.swing.JTextArea;
+package ch.cyberduck.core;
 
-//import ch.cyberduck.ui.common.GUIFactory;
+//import java.util.List;
+//import java.util.ArrayList;
+import org.apache.log4j.Logger;
 
 /**
- * Singleton text area to append logging messages.
  * @version $Id$
  */
-public class Transcript extends JTextArea {
+public class Transcript {
+    private static Logger log = Logger.getLogger(Transcript.class);
 
     private static Transcript instance;
+//    private List listeners = new ArrayList();
+
+    private Transcripter listener;
     
     public static Transcript instance() {
-        if(instance == null)
-            instance = new Transcript();
+	log.debug("instance");
+        if(null == instance) {
+	    instance = new Transcript();
+	}
         return instance;
      }
 
-     private Transcript() {
-         super();
-         this.setEditable(true);
-//         this.setFont(GUIFactory.FONT_MONOSPACED_SMALL);
+    public void addListener(Transcripter l) {
+	log.debug("addListener:"+l);
+//	listeners.add(l);
+	this.listener = l;
+    }
+
+    /*
+     /**
+     * Write to the view
+      */
+     public void transcript(String text) {
+	 log.debug("transcript:"+text);
+	 /*
+	 Iterator i = listeners.iterator();
+	 while(i.hasNext()) {
+	     ((Listener)i).transcript(text);
+	 }
+	  */
+	 listener.transcript(text);
      }
 
-     public void transcript(String text) {
-        //if(Preferences.instance().getProperty("connection.log").equals("true")) {
-        this.append(text);
-        this.setSelectionStart(this.getText().length());
-    }
 }

@@ -19,7 +19,7 @@ package ch.cyberduck.core;
 
 import java.io.IOException;
 
-//import ch.cyberduck.core.http.HTTPSession;
+import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.http.HTTPSession;
@@ -73,42 +73,40 @@ public class Host extends Observable {
 	this.notifyObservers(arg);
     }
 
-    //    public Session getSession(TransferAction action) throws IOException {
     public Session openSession() {//throws IOException {
         log.debug("openSession");
 	this.callObservers(new Message(Message.OPEN, "Opening Session"));
 	if(null == session) {
 	    if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
-		return new HTTPSession(this);
+		this.session = new HTTPSession(this);
 	    }
 	    //        if(this.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
      //            return new HTTPSession(this);
      //        }
 	    if(this.getProtocol().equalsIgnoreCase(Session.FTP)) {
-		return new FTPSession(this);
+		this.session = new FTPSession(this);
 	    }
 	    if(this.getProtocol().equalsIgnoreCase(Session.SFTP)) {
-		return new SFTPSession(this);
+		this.session = new SFTPSession(this);
 	    }
-	    return null;
 	}
-        return session;
+        return this.session;
     }
 
     public void closeSession() {
-	this.callObservers(new Message(Message.CLOSE, "Closing session"));
-	if(null == session) {
+        log.debug("closeSession");
+	if(session != null) {
 	    this.session.close();
 	    this.session = null;
 	}
+	this.callObservers(new Message(Message.CLOSE, "Closing session"));
     }
 
-    /*
     public void recycle() {
-	//this.closeSession();
-	this.session
+        log.debug("recycle");
+	this.closeSession();
+	this.openSession();
     }
-     */
 
     public Login getLogin() {
 	return this.login;

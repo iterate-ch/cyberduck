@@ -21,11 +21,9 @@ package ch.cyberduck.core;
 import java.text.DateFormat;
 import java.util.Vector;
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,6 +46,7 @@ public abstract class Path extends Observable implements Serializable {//, Trans
     protected String name = null;
     protected String path = null;
     protected Path parent = null;
+    private List cache;
     public FileStatus status = new FileStatus();
     public Attributes attributes = new Attributes();
 
@@ -197,8 +196,8 @@ public abstract class Path extends Observable implements Serializable {//, Trans
     /**
         * @return The local alias of this path
      */
-    public String getLocal() {
-        return Preferences.instance().getProperty("download.path") + this.getName();
+    public File getLocal() {
+        return new File(Preferences.instance().getProperty("download.path"), this.getName());
     }
 
     public String getExtension() {

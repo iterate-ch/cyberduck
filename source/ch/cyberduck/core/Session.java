@@ -72,8 +72,7 @@ public abstract class Session {//extends Thread {
 
 	//@todo        this.log = new Log();
         this.log("-------" + new Date().toString(), Message.TRANSCRIPT);
-        this.log("-------" + host.getName(), Message.TRANSCRIPT);
-        this.log("-------" + host.getName(), Message.TRANSCRIPT);
+        this.log("-------" + host.getIp(), Message.TRANSCRIPT);
     }
 
     /**

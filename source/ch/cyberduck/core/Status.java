@@ -134,7 +134,6 @@ public class Status extends Observable implements Serializable {
 	    this.timemessage = message;
 	    msg = new Message(Message.PROGRESS, message+" "+progressmessage);
 	}
-
         this.callObservers(msg);
     }
 
