@@ -52,6 +52,9 @@ import org.apache.log4j.Logger;
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.32  2004/03/30 18:58:05  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.31  2004/03/24 16:28:09  dkocher
  *        *** empty log message ***
  *
@@ -701,15 +704,14 @@ public class FTPClient {
 	 */
 	public String system() throws IOException, FTPException {
 		String reply = control.sendCommand("SYST");
-
+		String[] validCodes = {"215", "200"};
 		      //if (syst() == FTPReply.NAME_SYSTEM_TYPE)
 			  // Technically, we should expect a NAME_SYSTEM_TYPE response, but
 			  // in practice FTP servers deviate, so we soften the condition to
 			  // a positive completion.
 //        if (__systemName == null && FTPReply.isPositiveCompletion(syst()))
 //          __systemName = ((String)_replyLines.elementAt(0)).substring(4);
-		
-		lastValidReply = control.validateReply(reply, "215");
+		lastValidReply = control.validateReply(reply, validCodes);
 		return lastValidReply.getReplyText();
 	}
 

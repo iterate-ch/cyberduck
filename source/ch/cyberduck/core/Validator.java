@@ -27,9 +27,8 @@ public abstract class Validator {
 	private static Logger log = Logger.getLogger(Validator.class);
 	
 	protected boolean canceled = false;
+	protected boolean resume = false;
 	protected int kind;
-	
-	private boolean resume = false;
 
 	public Validator(int kind, boolean resume) {
 		this.kind = kind;
@@ -49,6 +48,9 @@ public abstract class Validator {
 		if (Queue.KIND_UPLOAD == kind)
 			exists = path.exists();
 		if (resume) {
+			path.status.setResume(exists);
+			return true;
+			/*
 			if (path.status.isComplete()) {
 				return true;
 			}
@@ -56,6 +58,7 @@ public abstract class Validator {
 				path.status.setResume(exists);
 				return true;
 			}
+			 */
 		}
 		if (exists) {
 			log.debug("File "+path.getName()+" exists");

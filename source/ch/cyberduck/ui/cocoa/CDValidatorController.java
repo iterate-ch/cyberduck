@@ -77,7 +77,7 @@ public class CDValidatorController extends Validator {
     private boolean done = true;
 	
 	public boolean prompt(Path path) {
-		if(false == applyToAll) {
+		if(!applyToAll) {
 			this.done = false;
 			if (false == NSApplication.loadNibNamed("Validator", this)) {
 				log.fatal("Couldn't load Validator.nib");
@@ -112,6 +112,7 @@ public class CDValidatorController extends Validator {
 				log.error(e.getMessage());
 			}
 		}
+		path.status.setResume(resume);
 		log.debug("return:" + include);
 		return include;
 		}
@@ -121,7 +122,6 @@ public class CDValidatorController extends Validator {
 		NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
 
-	/*
     public void resumeActionFired(NSButton sender) {
 		log.debug("resumeActionFired");
 		this.resume = true;
@@ -138,6 +138,7 @@ public class CDValidatorController extends Validator {
 	
     public void skipActionFired(NSButton sender) {
 		log.debug("skipActionFired");
+		this.resume = true;
 		this.include = false;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
@@ -146,13 +147,14 @@ public class CDValidatorController extends Validator {
 		log.debug("cancelActionFired");
 		this.canceled = true;
 		this.include = false;
+		this.resume = true;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
-	 */
 	
     public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         this.window().close();
 		this.applyToAll = (applyCheckbox.state() == NSCell.OnState);
+		/*
         switch (returncode) {
 			case 0: //Cancel
 				log.debug("Canceled");
@@ -174,6 +176,7 @@ public class CDValidatorController extends Validator {
                 this.include = false;
                 break;
         }
+		 */
         this.done = true;
     }
 }

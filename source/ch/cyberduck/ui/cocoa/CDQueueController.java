@@ -443,7 +443,7 @@ public class CDQueueController extends NSObject implements Observer {
         if (identifier.equals("Resume") || identifier.equals("resumeButtonClicked:")) {
 			if(this.queueTable.numberOfSelectedRows() == 1) {
                 Queue queue = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-				return !queue.isRunning() && !(queue.isComplete());
+				return !queue.isRunning() && !queue.isComplete();
 			}
 			return false;
 			/*			

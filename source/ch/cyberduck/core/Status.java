@@ -57,7 +57,7 @@ public class Status extends Observable implements Serializable {
 	private boolean complete = false;
 	
 	public Status() {
-		super(); //
+		super();
 	}
 
 	public Status(NSDictionary dict) {
@@ -112,11 +112,11 @@ public class Status extends Observable implements Serializable {
 		//@todo fix GB limitation
 		if (size < KILO)
 			return size + "B";
-		else if (size < MEGA) {
+		if (size < MEGA) {
 			String v = String.valueOf((double)size/KILO);
 			return v.substring(0, v.indexOf('.')+2)+"kB";
 		}
-		else if (size < GIGA) {
+		if (size < GIGA) {
 			String v = String.valueOf((double)size/MEGA);
 			return v.substring(0, v.indexOf('.')+2)+"MB";
 		}
@@ -128,6 +128,10 @@ public class Status extends Observable implements Serializable {
 
 	public void setComplete(boolean complete) {
 		this.complete = complete;
+		if(this.getCurrent() < this.getSize())
+			log.warn("Item marked as complete, but current is "+this.getCurrent()+" and total is "+this.getSize());
+		if(complete)
+			this.setCurrent(this.getSize());
 	}
 
 	public boolean isComplete() {
@@ -163,11 +167,10 @@ public class Status extends Observable implements Serializable {
 	}
 
 	public void reset() {
-		log.debug("reset");
+		log.debug("reset (resume="+resume+")");
 		this.complete = false;
 		this.canceled = false;
 		if(!this.isResume()) {
-			log.debug("***reset>Setting current to 0, no resume***");
 			this.setCurrent(0);
 		}
 	}

@@ -445,6 +445,7 @@ public abstract class Path {
 		}
 		this.status.setComplete(complete);
 		// close streams
+		//@todo finally
 		if (in != null) {
 			in.close();
 		}
