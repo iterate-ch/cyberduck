@@ -65,7 +65,6 @@ fr.lproj/Localizable.strings svneol=native#unset
 fr.lproj/Login.strings svneol=native#unset
 fr.lproj/Main.strings svneol=native#unset
 fr.lproj/Preferences.strings svneol=native#unset
-fr.lproj/Transfer.strings svneol=native#unset
 fr.lproj/Update.strings svneol=native#unset
 /generic-document.icns -text
 /generic-document.tiff -text
@@ -146,7 +145,6 @@ ja.lproj/Queue.strings svneol=native#unset
 ja.lproj/Update.strings svneol=native#unset
 lib/ext/ant.jar -text
 lib/ext/junit.jar -text
-lib/j2ssh.jar svneol=native#unset
 lib/jmdns.jar -text
 lib/log4j.jar svneol=native#unset
 lib/logging.jar -text

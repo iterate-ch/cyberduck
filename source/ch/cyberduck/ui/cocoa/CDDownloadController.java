@@ -44,6 +44,9 @@ public class CDDownloadController {
 	}
 
 	public NSWindow window() {
+		if (false == NSApplication.loadNibNamed("Download", this)) {
+			log.fatal("Couldn't load Download.nib");
+		}
 		return this.window;
 	}
 
@@ -57,17 +60,13 @@ public class CDDownloadController {
 
 	public CDDownloadController() {
 		instances.addObject(this);
-		if (false == NSApplication.loadNibNamed("Download", this)) {
-			log.fatal("Couldn't load Download.nib");
-			return;
-		}
 	}
 
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
 		CDQueueController.instance().window().makeKeyAndOrderFront(null);
 		NSApplication.sharedApplication().beginSheet(
-		    this.window(), //sheet
+		    this.window, //sheet
 		    CDQueueController.instance().window(),
 		    this, //modalDelegate
 		    new NSSelector(
@@ -78,18 +77,17 @@ public class CDDownloadController {
 	}
 
 	public void windowWillClose(NSNotification notification) {
-		this.window().setDelegate(null);
 		instances.removeObject(this);
 	}
 
 	public void closeSheet(Object sender) {
 		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-		NSApplication.sharedApplication().endSheet(this.window(), ((NSButton) sender).tag());
+		NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
 	}
 
 	public void downloadSheetDidEnd(NSWindow sheet, int returncode, Object context) {
 		log.debug("loginSheetDidEnd");
-		this.window().orderOut(null);
+		this.window.orderOut(null);
 		switch (returncode) {
 			case (NSAlertPanel.DefaultReturn):
 				URL url = null;
@@ -107,7 +105,7 @@ public class CDDownloadController {
 //						else if (host.getProtocol().equals(Session.HTTP)) {
 //							path = new HTTPPath((HTTPSession) session, file);
 //						}
-						this.window().orderOut(null);
+						this.window.orderOut(null);
 						CDQueueController.instance().addItem(new Queue(path,
 						    Queue.KIND_DOWNLOAD), true);
 					}
@@ -121,7 +119,7 @@ public class CDDownloadController {
 					    "OK", // defaultbutton
 					    null, //alternative button
 					    null, //other button
-					    this.window(), //docWindow
+					    this.window, //docWindow
 					    null, //modalDelegate
 					    null, //didEndSelector
 					    null, // dismiss selector

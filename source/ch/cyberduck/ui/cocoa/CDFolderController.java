@@ -35,11 +35,11 @@ public class CDFolderController {
 
 	//    private Path parent;
 
-	private NSWindow sheet;
+	private NSWindow window;
 
-	public void setSheet(NSWindow sheet) {
-		this.sheet = sheet;
-		this.sheet.setDelegate(this);
+	public void setWindow(NSWindow window) {
+		this.window = window;
+		this.window.setDelegate(this);
 	}
 
 	private NSTextField folderField; /* IBOutlet */
@@ -49,28 +49,25 @@ public class CDFolderController {
 	}
 
 	public NSWindow window() {
-		return this.sheet;
+		if (false == NSApplication.loadNibNamed("Folder", this)) {
+			log.fatal("Couldn't load Folder.nib");
+		}
+		return this.window;
 	}
 
 	private static NSMutableArray instances = new NSMutableArray();
 
 	public CDFolderController() {
 		instances.addObject(this);
-		if (false == NSApplication.loadNibNamed("Folder", this)) {
-			log.fatal("Couldn't load Folder.nib");
-			return;
-		}
 	}
 
 	public void windowWillClose(NSNotification notification) {
-		this.window().setDelegate(null);
-		//	NSNotificationCenter.defaultCenter().removeObserver(this);
 		instances.removeObject(this);
 	}
 
 	public void closeSheet(Object sender) {
 		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-		NSApplication.sharedApplication().endSheet(this.window(), ((NSButton) sender).tag());
+		NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
 	}
 
 	public void newfolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {

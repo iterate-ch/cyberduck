@@ -43,6 +43,7 @@ public class CDQueueController implements Observer, Validator {
 	private static NSMutableArray instances = new NSMutableArray();
 
 	public static CDQueueController instance() {
+		log.debug("instance");
 		if (null == instance) {
 			instance = new CDQueueController();
 			if (false == NSApplication.loadNibNamed("Queue", instance)) {
@@ -53,17 +54,21 @@ public class CDQueueController implements Observer, Validator {
 	}
 
 	private CDQueueController() {
+		log.debug("CDQueueController");
 		instances.addObject(this);
 	}
 
 	public void windowWillClose(NSNotification notification) {
+		log.debug("windowWillClose");
 		instances.removeObject(this);
+		instance = null;
 	}
 
 	private NSWindow window; // IBOutlet
 
 	public void setWindow(NSWindow window) {
 		this.window = window;
+		this.window.setDelegate(this);
 	}
 
 	public NSWindow window() {
@@ -137,7 +142,7 @@ public class CDQueueController implements Observer, Validator {
 	}
 
 	public void addItem(Queue queue, boolean start) {
-		this.window().makeKeyAndOrderFront(null);
+		this.window.makeKeyAndOrderFront(null);
 		CDQueuesImpl.instance().addItem(queue);
 		this.queueTable.reloadData();
 		this.queueTable.selectRow(this.queueTable.numberOfRows() - 1, false);
@@ -147,10 +152,10 @@ public class CDQueueController implements Observer, Validator {
 
 	public void startItem(Queue queue) {
 		queue.addObserver(this);
-		queue.getRoot().getHost().getLogin().setController(new CDLoginController(this.window()));
+		queue.getRoot().getHost().getLogin().setController(new CDLoginController(this.window));
 		if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
 			try {
-				queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(this.window()));
+				queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(this.window));
 			}
 			catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
 				//This exception is thrown whenever an exception occurs open or reading from the host file.
@@ -159,7 +164,7 @@ public class CDQueueController implements Observer, Validator {
 				    NSBundle.localizedString("OK", ""), // defaultbutton
 				    null, //alternative button
 				    null, //other button
-				    this.window(), //docWindow
+				    this.window, //docWindow
 				    null, //modalDelegate
 				    null, //didEndSelector
 				    null, // dismiss selector
@@ -176,7 +181,7 @@ public class CDQueueController implements Observer, Validator {
 		if (arg instanceof Message) {
 			Message msg = (Message) arg;
 
-			if (this.window().isVisible()) {
+			if (this.window.isVisible()) {
 				if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
 //					log.debug("Queue table visible, redrawing cells");
 					int row = CDQueuesImpl.instance().indexOf((Queue) observable);
@@ -232,7 +237,7 @@ public class CDQueueController implements Observer, Validator {
 				    NSBundle.localizedString("OK", ""), // defaultbutton
 				    null, //alternative button
 				    null, //other button
-				    this.window(), //docWindow
+				    this.window, //docWindow
 				    null, //modalDelegate
 				    null, //didEndSelector
 				    null, // dismiss selector
@@ -244,12 +249,12 @@ public class CDQueueController implements Observer, Validator {
 	}
 
 	public void awakeFromNib() {
-		this.window().setTitle("Transfer Queue");
+		log.debug("awakeFromNib");
 		this.toolbar = new NSToolbar("Queue Toolbar");
 		this.toolbar.setDelegate(this);
 		this.toolbar.setAllowsUserCustomization(true);
 		this.toolbar.setAutosavesConfiguration(true);
-		this.window().setToolbar(toolbar);
+		this.window.setToolbar(toolbar);
 	}
 
 	// ----------------------------------------------------------
@@ -345,7 +350,7 @@ public class CDQueueController implements Observer, Validator {
 					    NSBundle.localizedString("OK", ""), // defaultbutton
 					    null, //alternative button
 					    null, //other button
-					    this.window(), //docWindow
+					    this.window, //docWindow
 					    null, //modalDelegate
 					    null, //didEndSelector
 					    null, // dismiss selector
@@ -361,7 +366,7 @@ public class CDQueueController implements Observer, Validator {
 					    NSBundle.localizedString("OK", ""), // defaultbutton
 					    null, //alternative button
 					    null, //other button
-					    this.window(), //docWindow
+					    this.window, //docWindow
 					    null, //modalDelegate
 					    null, //didEndSelector
 					    null, // dismiss selector
@@ -485,7 +490,7 @@ public class CDQueueController implements Observer, Validator {
 						    NSBundle.localizedString("Resume", ""), // defaultbutton
 						    NSBundle.localizedString("Cancel", ""), //alternative button
 						    NSBundle.localizedString("Overwrite", ""), //other button
-						    this.window(),
+						    this.window,
 						    this, //delegate
 						    new NSSelector
 						        (
@@ -584,7 +589,7 @@ public class CDQueueController implements Observer, Validator {
 //		switch (returncode) {
 //			case NSAlertPanel.DefaultReturn:
 //				this.stopButtonClicked(null);
-//				this.window().close();
+//				this.window.close();
 //				break;
 //			case NSAlertPanel.AlternateReturn:
 //				break;

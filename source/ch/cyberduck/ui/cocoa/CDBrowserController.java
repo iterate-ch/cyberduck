@@ -39,12 +39,15 @@ public class CDBrowserController implements Observer {
 
 	private NSWindow window; // IBOutlet
 
-	public void setMainWindow(NSWindow window) {
+	public void setWindow(NSWindow window) {
 		this.window = window;
 		this.window.setDelegate(this);
 	}
 
 	public NSWindow window() {
+		if (false == NSApplication.loadNibNamed("Browser", this)) {
+			log.fatal("Couldn't load Browser.nib");
+		}
 		return this.window;
 	}
 
@@ -510,18 +513,13 @@ public class CDBrowserController implements Observer {
 
 	public CDBrowserController() {
 		instances.addObject(this);
-		log.debug("CDBrowserController");
-		if (false == NSApplication.loadNibNamed("Browser", this)) {
-			log.fatal("Couldn't load Browser.nib");
-			return;
-		}
 	}
 
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
-		NSPoint origin = this.window().frame().origin();
-		this.window().setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
-		this.window().setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
+		NSPoint origin = this.window.frame().origin();
+		this.window.setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
+		this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 		this.pathController = new CDPathController(pathPopup);
 		// Drawer states
 		if (logDrawerOpen)
@@ -533,8 +531,8 @@ public class CDBrowserController implements Observer {
 		this.toolbar.setDelegate(this);
 		this.toolbar.setAllowsUserCustomization(true);
 		this.toolbar.setAutosavesConfiguration(true);
-		this.window().setToolbar(toolbar);
-		this.window().makeFirstResponder(quickConnectPopup);
+		this.window.setToolbar(toolbar);
+		this.window.makeFirstResponder(quickConnectPopup);
 	}
 
 
@@ -564,7 +562,7 @@ public class CDBrowserController implements Observer {
 				    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
 				    null, //alternative button
 				    null, //other button
-				    this.window(), //docWindow
+				    this.window, //docWindow
 				    null, //modalDelegate
 				    null, //didEndSelector
 				    null, // dismiss selector
@@ -619,7 +617,7 @@ public class CDBrowserController implements Observer {
 		CDGotoController controller = new CDGotoController(browserModel.workdir());
 		NSApplication.sharedApplication().beginSheet(
 		    controller.window(), //sheet
-		    this.window(), //docwindow
+		    this.window, //docwindow
 		    controller, //modal delegate
 		    new NSSelector(
 		        "gotoSheetDidEnd",
@@ -633,7 +631,7 @@ public class CDBrowserController implements Observer {
 		CDFolderController controller = new CDFolderController();
 		NSApplication.sharedApplication().beginSheet(
 		    controller.window(), //sheet
-		    this.window(), //docwindow
+		    this.window, //docwindow
 		    controller, //modal delegate
 		    new NSSelector(
 		        "newfolderSheetDidEnd",
@@ -672,7 +670,7 @@ public class CDBrowserController implements Observer {
 		    NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
 		    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
 		    null, //other button
-		    this.window(), //window
+		    this.window, //window
 		    this, //delegate
 		    new NSSelector
 		        (
@@ -730,7 +728,7 @@ public class CDBrowserController implements Observer {
 		panel.setCanChooseDirectories(true);
 		panel.setCanChooseFiles(true);
 		panel.setAllowsMultipleSelection(true);
-		panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window(), this, new NSSelector("uploadPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+		panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window, this, new NSSelector("uploadPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
 	}
 
 	public void uploadPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
@@ -774,7 +772,7 @@ public class CDBrowserController implements Observer {
 		CDConnectionController controller = new CDConnectionController(this);
 		NSApplication.sharedApplication().beginSheet(
 		    controller.window(), //sheet
-		    this.window(), //docwindow
+		    this.window, //docwindow
 		    controller, //modal delegate
 		    new NSSelector(
 		        "connectionSheetDidEnd",
@@ -791,7 +789,8 @@ public class CDBrowserController implements Observer {
 		log.debug("mount:" + host);
 		this.unmount();
 
-		Session session = host.createSession();
+//		Session session = host.createSession();
+		Session session = SessionFactory.createSession(host);
 		session.addObserver((Observer) this);
 		session.addObserver((Observer) pathController);
 
@@ -799,11 +798,12 @@ public class CDBrowserController implements Observer {
 		pathController.removeAllItems();
 		browserModel.clear();
 		browserTable.reloadData();
-		this.window().setTitle(host.getProtocol() + ":" + host.getHostname());
+		this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
 
-		if (host.getProtocol().equals(Session.SFTP)) {
+		if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
+//		if (host.getProtocol().equals(Session.SFTP)) {
 			try {
-				host.setHostKeyVerificationController(new CDHostKeyController(this.window()));
+				host.setHostKeyVerificationController(new CDHostKeyController(this.window));
 			}
 			catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
 				//This exception is thrown whenever an exception occurs open or reading from the host file.
@@ -812,7 +812,7 @@ public class CDBrowserController implements Observer {
 				    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
 				    null, //alternative button
 				    null, //other button
-				    this.window(), //docWindow
+				    this.window, //docWindow
 				    null, //modalDelegate
 				    null, //didEndSelector
 				    null, // dismiss selector
@@ -821,7 +821,7 @@ public class CDBrowserController implements Observer {
 				);
 			}
 		}
-		host.getLogin().setController(new CDLoginController(this.window()));
+		host.getLogin().setController(new CDLoginController(this.window));
 		session.mount();
 		CDHistoryImpl.instance().addItem(host);
 	}
@@ -879,7 +879,6 @@ public class CDBrowserController implements Observer {
 			browserModel.workdir().getSession().deleteObserver((Observer) this);
 			browserModel.workdir().getSession().deleteObserver((Observer) pathController);
 		}
-		this.window().setDelegate(null);
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 		instances.removeObject(this);
 	}
@@ -894,7 +893,7 @@ public class CDBrowserController implements Observer {
 		sheet.orderOut(null);
 		if (returncode == NSAlertPanel.DefaultReturn) {
 			this.unmount();
-			this.window().close();
+			this.window.close();
 		}
 	}
 

@@ -146,6 +146,7 @@ public class Host {
 
 	// ----------------------------------------------------------
 
+	/*
 	public Session createSession() {
 		log.debug("createSession");
 		if (this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
@@ -164,6 +165,7 @@ public class Host {
 			throw new IllegalArgumentException("Unknown protocol");
 		}
 	}
+	 */
 
 	public void setDefaultPath(String defaultpath) {
 		this.defaultpath = defaultpath;

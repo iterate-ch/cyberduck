@@ -34,21 +34,18 @@ public abstract class Preferences {
 	private static Preferences current = null;
 	private Hashtable defaults;
 
+	//	System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", Preferences.instance().getProperty("http.wire.logging"));
+	//	System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", Preferences.instance().getProperty("http.logging"));
+	//	System.setProperty("rendezvous.debug", Preferences.instance().getProperty("rendezvous.logging"));
+
 	/**
 	 * @return The singleton instance of me.
 	 */
 	public static Preferences instance() {
 		if (null == current) {
-//	    String strVendor = System.getProperty("java.vendor");
-			//          if(strVendor.indexOf("Apple") != -1)
 			current = new ch.cyberduck.ui.cocoa.CDPreferencesImpl();
-//	    else
-//		current = new ch.cyberduck.ui.swing.PreferencesImpl();
 			current.setDefaults();
 			current.load();
-//	System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", Preferences.instance().getProperty("http.wire.logging"));
-//	System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", Preferences.instance().getProperty("http.logging"));
-//	System.setProperty("rendezvous.debug", Preferences.instance().getProperty("rendezvous.logging"));
 		}
 		return current;
 	}
@@ -75,8 +72,6 @@ public abstract class Preferences {
 	 * setting the default prefs values
 	 */
 	public void setDefaults() {
-//        log.debug("setDefaults()");
-
 		this.defaults = new Hashtable();
 
 //	defaults.put("logging", "DEBUG");
@@ -90,8 +85,7 @@ public abstract class Preferences {
 		defaults.put("uses", "0");
 		defaults.put("donate", "true");
 		defaults.put("mail", "mailto:dkocher@cyberduck.ch");
-//	defaults.put("website.donate" , "http://www.cyberduck.ch/donate/");
-		defaults.put("website.donate", "https://www.paypal.com/xclick/business=dkocher%40cyberduck.ch&item_name=Cyberduck&item_number=Cyberduck");
+		defaults.put("website.donate" , "http://cyberduck.ch/donate/");
 		defaults.put("website.update.xml", "http://update.cyberduck.ch/versionlist.xml");
 		defaults.put("website.update", "http://cyberduck.ch/");
 		defaults.put("website.home", "http://cyberduck.ch/");
@@ -140,6 +134,7 @@ public abstract class Preferences {
 		defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
 		defaults.put("ftp.connectmode", "passive");
 		defaults.put("ftp.transfermode", "binary");
+		defaults.put("ftp.sendSystemCommand", "true");
 
 		defaults.put("http.agent", "Cyberduck/2.1");
 		defaults.put("http.acceptheader", "*/*");
@@ -180,12 +175,4 @@ public abstract class Preferences {
 	 * Overriding the default values with prefs from the last session.
 	 */
 	public abstract void load();
-
-//    private String getXLocation(int componentWidth) {
-//        return new Integer((screenSize.width/2) - (componentWidth/2)).toString();
-	//   }
-
-//    private String getYLocation(int componentHeight) {
-	//      return new Integer((screenSize.height/2) - (componentHeight/2)).toString();
-	//  }
 }

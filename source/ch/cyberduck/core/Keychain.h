@@ -19,11 +19,13 @@
 
 #include <syslog.h>
 #include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <Login.h>
 #include <Security/SecBase.h>
 #include <Security/SecKeychain.h>
-//#include <CoreFoundation/CFString.h>
 
-char *getpwdfromkeychain( const char *service, const char *account, OSStatus *error );
-void addpwdtokeychain( const char *service, const char *account, const char *password );
+char *getpwdfromkeychain(const char *service, const char *account, OSStatus *error);
+void addpwdtokeychain(const char *service, const char *account, const char *password);
 

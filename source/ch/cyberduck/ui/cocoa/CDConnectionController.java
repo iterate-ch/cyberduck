@@ -42,15 +42,18 @@ public class CDConnectionController implements Observer {
 	// Outlets
 	// ----------------------------------------------------------
 
-	private NSWindow sheet;
+	private NSWindow window;
 
-	public void setSheet(NSWindow sheet) {
-		this.sheet = sheet;
-		this.sheet.setDelegate(this);
+	public void setWindow(NSWindow window) {
+		this.window = window;
+		this.window.setDelegate(this);
 	}
 
 	public NSWindow window() {
-		return this.sheet;
+		if (false == NSApplication.loadNibNamed("Connection", this)) {
+			log.fatal("Couldn't load Connection.nib");
+		}
+		return this.window;
 	}
 
 	private NSPopUpButton historyPopup;
@@ -101,9 +104,9 @@ public class CDConnectionController implements Observer {
 		this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous.tiff"));
 		this.rendezvousPopup.setTarget(this);
 		this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionChanged", new Class[]{Object.class}));
-//		this.rendezvous = new Rendezvous();
-//		this.rendezvous.addObserver(this);
-//		this.rendezvous.init();
+		this.rendezvous = new Rendezvous();
+		this.rendezvous.addObserver(this);
+		this.rendezvous.init();
 	}
 
 	public void rendezvousSelectionChanged(Object sender) {
@@ -216,7 +219,7 @@ public class CDConnectionController implements Observer {
 			panel.setCanChooseDirectories(false);
 			panel.setCanChooseFiles(true);
 			panel.setAllowsMultipleSelection(false);
-			panel.beginSheetForDirectory(System.getProperty("user.home") + "/.ssh", null, null, this.window(), this, new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+			panel.beginSheetForDirectory(System.getProperty("user.home") + "/.ssh", null, null, this.window, this, new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
 		}
 		else {
 			this.passField.setEnabled(true);
@@ -225,12 +228,12 @@ public class CDConnectionController implements Observer {
 		}
 	}
 
-	public void pkSelectionPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
-		sheet.orderOut(null);
+	public void pkSelectionPanelDidEnd(NSOpenPanel window, int returnCode, Object contextInfo) {
+		window.orderOut(null);
 		switch (returnCode) {
 			case (NSPanel.OKButton):
 				{
-					NSArray selected = sheet.filenames();
+					NSArray selected = window.filenames();
 					java.util.Enumeration enumerator = selected.objectEnumerator();
 					while (enumerator.hasMoreElements()) {
 						this.pkLabel.setStringValue((String) enumerator.nextElement());
@@ -265,15 +268,9 @@ public class CDConnectionController implements Observer {
 	public CDConnectionController(CDBrowserController browser) {
 		this.browser = browser;
 		instances.addObject(this);
-		log.debug("CDConnectionController");
-		if (false == NSApplication.loadNibNamed("Connection", this)) {
-			log.fatal("Couldn't load Connection.nib");
-			return;
-		}
 	}
 
 	public void windowWillClose(NSNotification notification) {
-		this.window().setDelegate(null);
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 		instances.removeObject(this);
 	}
@@ -303,7 +300,6 @@ public class CDConnectionController implements Observer {
 		    new NSSelector("updateURLLabel", new Class[]{Object.class}),
 		    NSControl.ControlTextDidChangeNotification,
 		    usernameField);
-		//NSControlTextDidEndEditingNotification
 		NSNotificationCenter.defaultCenter().addObserver(
 		    this,
 		    new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
@@ -319,10 +315,6 @@ public class CDConnectionController implements Observer {
 		this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.portField.setIntValue(protocolPopup.selectedItem().tag());
 		this.pkCheckbox.setEnabled(Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP));
-		
-		this.rendezvous = new Rendezvous();
-		this.rendezvous.addObserver(this);
-//@todo		this.rendezvous.init();		
 	}
 
 	public void getPasswordFromKeychain(Object sender) {
@@ -333,7 +325,7 @@ public class CDConnectionController implements Observer {
 			Login l = new Login(hostPopup.stringValue(), usernameField.stringValue());
 			String passFromKeychain = l.getPasswordFromKeychain();
 			if (passFromKeychain != null && !passFromKeychain.equals("")) {
-				log.info("****Password for " + usernameField.stringValue() + " found in Keychain:" + passFromKeychain);
+				log.info("Password for " + usernameField.stringValue() + " found in Keychain:" + passFromKeychain);
 				this.passField.setStringValue(passFromKeychain);
 			}
 			else {
@@ -375,15 +367,13 @@ public class CDConnectionController implements Observer {
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 		this.rendezvous.deleteObserver(this);
 		this.rendezvous.quit();
-		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+		// Ends a document modal session by specifying the window window, window. Also passes along a returnCode to the delegate.
+		NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
 
-	public void connectionSheetDidEnd(NSWindow sheet, int returncode, Object context) {
+	public void connectionSheetDidEnd(NSWindow window, int returncode, Object context) {
 		log.debug("connectionSheetDidEnd");
-		sheet.orderOut(null);
-		this.rendezvous.deleteObserver(this);
-		this.rendezvous.quit();
+		window.orderOut(null);
 		switch (returncode) {
 			case (NSAlertPanel.DefaultReturn):
 				int tag = protocolPopup.selectedItem().tag();

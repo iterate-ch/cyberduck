@@ -32,11 +32,11 @@ import org.apache.log4j.Logger;
 public class CDGotoController {
 	private static Logger log = Logger.getLogger(CDGotoController.class);
 
-	private NSWindow sheet; // IBOutlet
+	private NSWindow window; // IBOutlet
 
-	public void setSheet(NSWindow sheet) {
-		this.sheet = sheet;
-		this.sheet.setDelegate(this);
+	public void setWindow(NSWindow window) {
+		this.window = window;
+		this.window.setDelegate(this);
 	}
 
 	private NSTextField folderField; // IBOutlet
@@ -47,7 +47,10 @@ public class CDGotoController {
 	}
 
 	public NSWindow window() {
-		return this.sheet;
+		if (false == NSApplication.loadNibNamed("Goto", this)) {
+			log.fatal("Couldn't load Goto.nib");
+		}
+		return this.window;
 	}
 
 	private Path current;
@@ -57,20 +60,15 @@ public class CDGotoController {
 	public CDGotoController(Path current) {
 		this.current = current;
 		instances.addObject(this);
-		if (false == NSApplication.loadNibNamed("Goto", this)) {
-			log.fatal("Couldn't load Goto.nib");
-			return;
-		}
 	}
 
 	public void windowWillClose(NSNotification notification) {
-		this.window().setDelegate(null);
 		instances.removeObject(this);
 	}
 
 	public void closeSheet(Object sender) {
 		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-		NSApplication.sharedApplication().endSheet(this.window(), ((NSButton) sender).tag());
+		NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
 	}
 
 	public void gotoSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {

@@ -33,7 +33,47 @@ public class CDPreferencesController {
 	private static Logger log = Logger.getLogger(CDPreferencesController.class);
 
 	private static CDPreferencesController instance;
+	
+	private static NSMutableArray instances = new NSMutableArray();
 
+	private NSWindow window; //IBOutlet
+	
+	public void setWindow(NSWindow window) {
+		this.window = window;
+		this.window.setDelegate(this);
+	}
+		
+	public static CDPreferencesController instance() {
+		log.debug("instance");
+		if (null == instance) {
+			instance = new CDPreferencesController();
+			if (false == NSApplication.loadNibNamed("Preferences", instance)) {
+				log.fatal("Couldn't load Preferences.nib");
+			}
+		}
+		return instance;
+	}
+	
+	private CDPreferencesController() {
+		log.debug("CDPreferencesController");
+		instances.addObject(this);
+	}
+	
+	public void awakeFromNib() {
+		log.debug("awakeFromNib");
+		this.window.center();
+	}
+	
+	public NSWindow window() {
+		return this.window;
+	}
+	
+	public void windowWillClose(NSNotification notification) {
+		NSNotificationCenter.defaultCenter().removeObserver(this);
+		instances.removeObject(this);
+		instance = null;
+	}
+	
 	private static final String CONNECTMODE_ACTIVE = NSBundle.localizedString("Active", "");
 	private static final String CONNECTMODE_PASSIVE = NSBundle.localizedString("Passive", "");
 
@@ -76,6 +116,46 @@ public class CDPreferencesController {
 		Preferences.instance().setProperty("browser.charset.encoding", sender.titleOfSelectedItem());
 	}
 
+	private NSButton systCheckbox; //IBOutlet
+	
+	public void setSystCheckbox(NSButton systCheckbox) {
+		this.systCheckbox = systCheckbox;
+		this.systCheckbox.setTarget(this);
+		this.systCheckbox.setAction(new NSSelector("systCheckboxClicked", new Class[]{NSButton.class}));
+		this.systCheckbox.setState(Preferences.instance().getProperty("ftp.sendSystemCommand").equals("true") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void systCheckboxClicked(NSButton sender) {
+		switch (sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("ftp.sendSystemCommand", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("ftp.sendSystemCommand", false);
+				break;
+		}
+	}
+	
+	private NSButton chmodCheckbox; //IBOutlet
+	
+	public void setChmodCheckbox(NSButton chmodCheckbox) {
+		this.chmodCheckbox = chmodCheckbox;
+		this.chmodCheckbox.setTarget(this);
+		this.chmodCheckbox.setAction(new NSSelector("chmodCheckboxClicked", new Class[]{NSButton.class}));
+		this.chmodCheckbox.setState(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void chmodCheckboxClicked(NSButton sender) {
+		switch (sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("queue.upload.changePermissions", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("queue.upload.changePermissions", false);
+				break;
+		}
+	}
+	
 	private NSButton horizontalLinesCheckbox; //IBOutlet
 
 	public void setHorizontalLinesCheckbox(NSButton horizontalLinesCheckbox) {
@@ -376,9 +456,28 @@ public class CDPreferencesController {
 		panel.setCanChooseFiles(false);
 		panel.setCanChooseDirectories(true);
 		panel.setAllowsMultipleSelection(false);
-		panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window(), this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+		panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window, this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
 	}
 
+	public void openPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
+		switch (returnCode) {
+			case (NSPanel.OKButton):
+			{
+				NSArray selected = sheet.filenames();
+				String filename;
+				if ((filename = (String) selected.lastObject()) != null) {
+					Preferences.instance().setProperty("queue.download.folder", filename);
+					this.downloadPathField.setStringValue(Preferences.instance().getProperty("queue.download.folder"));
+				}
+				break;
+			}
+			case (NSPanel.CancelButton):
+			{
+				break;
+			}
+		}
+	}
+	
 	private NSButton defaultBufferButton; //IBOutlet
 
 	public void setDefaultBufferButton(NSButton defaultBufferButton) {
@@ -698,61 +797,6 @@ public class CDPreferencesController {
 		else {
 			Preferences.instance().setProperty("connection.protocol.default", Session.SFTP);
 			Preferences.instance().setProperty("connection.port.default", Session.SSH_PORT);
-		}
-	}
-
-	private NSWindow window; //IBOutlet
-
-	public void setWindow(NSWindow window) {
-		this.window = window;
-	}
-	
-	private static NSMutableArray instances = new NSMutableArray();
-	
-	public static CDPreferencesController instance() {
-		if (null == instance) {
-			instance = new CDPreferencesController();
-			if (false == NSApplication.loadNibNamed("Preferences", instance)) {
-				log.fatal("Couldn't load Preferences.nib");
-			}
-		}
-		return instance;
-	}
-	
-	private CDPreferencesController() {
-		instances.addObject(this);
-	}
-
-	public void awakeFromNib() {
-		log.debug("awakeFromNib");
-		this.window.center();
-	}
-
-	public NSWindow window() {
-		return this.window;
-	}
-
-	public void windowWillClose(NSNotification notification) {
-		NSNotificationCenter.defaultCenter().removeObserver(this);
-		instances.removeObject(this);
-	}
-
-	public void openPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
-		switch (returnCode) {
-			case (NSPanel.OKButton):
-				{
-					NSArray selected = sheet.filenames();
-					String filename;
-					if ((filename = (String) selected.lastObject()) != null) {
-						Preferences.instance().setProperty("queue.download.folder", filename);
-						this.downloadPathField.setStringValue(Preferences.instance().getProperty("queue.download.folder"));
-					}
-					break;
-				}
-			case (NSPanel.CancelButton):
-				{
-					break;
-				}
 		}
 	}
 }

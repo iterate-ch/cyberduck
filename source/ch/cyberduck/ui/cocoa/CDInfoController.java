@@ -47,6 +47,13 @@ public class CDInfoController {
 		this.window.setDelegate(this);
 	}
 
+	public NSWindow window() {
+		if(false == NSApplication.loadNibNamed("Info", this)) {
+			log.fatal("Couldn't load Info.nib");
+		}
+		return this.window;
+	}
+	
 	private NSTextField filenameField; // IBOutlet
 
 	public void setFilenameField(NSTextField filenameField) {
@@ -128,10 +135,6 @@ public class CDInfoController {
 		log.debug("CDInfoController:" + file);
 		this.file = file;
 		instances.addObject(this);
-		if(false == NSApplication.loadNibNamed("Info", this)) {
-			log.fatal("Couldn't load Info.nib");
-			return;
-		}
 	}
 
 	public void awakeFromNib() {
@@ -193,7 +196,6 @@ public class CDInfoController {
 		if(!filenameField.stringValue().equals(file.getName())) {
 			file.rename(filenameField.stringValue());
 		}
-		this.window().setDelegate(null);
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 		instances.removeObject(this);
 	}
@@ -240,9 +242,5 @@ public class CDInfoController {
 
 		file.changePermissions(permission.getOctalCode(), recursiveCheckbox.state() == NSCell.OnState);
 		permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.getString() + " (" + permission.getOctalCode() + ")");
-	}
-
-	public NSWindow window() {
-		return this.window;
 	}
 }

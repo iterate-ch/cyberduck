@@ -8,10 +8,22 @@
 	<string>Cyberduck-2.1.dmg</string>
 	<key>comment</key>
         <string>Changelog:
-2.2
+2.2b1
+- Keychain integration (Saving passwords)
+- New file transfer manager
 - Support for public key authentication (SSH)
 - Live filtering directory listings
-- New transfer/queue manager
+- Improved Rendezvous support (jmDNS 0.2)
+- Reorder bookmarks with drag and drop
+- Drag files from the browser to the transfer manager
+- Drag links to the transfer manager to start download
+- Browser can be customized to show/hide certain columns
+- Supporting different character encodings
+- Japanese Localization
+- Italian Localization
+- Portuguese Localization
+- Spanish Localization
+- Various improvements and bug fixes
 
 2.1
 - Bookmarks can now be edited.
@@ -30,7 +42,7 @@
 - German Localization
 - Smaller changes and bug fixes.
 
-2.1beta5
+2.1b5
 - HTTP is now supported again. Files can be downloaded from regular web servers.
 - Cyberduck can now be configured as the default FTP helper application. See "http://www.monkeyfood.com/software/moreInternet/". This seems to work with Safari and Internet Explorer.
 - Dragging files to the Finder is now more reliable.
@@ -39,11 +51,11 @@
 - Login to anonymous FTP servers where no password is needed is now supported.
 - Smaller bug fixes
 
-2.1beta4
+2.1b4
 - Cyberduck now has the official creator code 'CYCK' and can handle URL events from other applications. See "http://www.monkeyfood.com/software/moreInternet/" to configure Cyberduck as the default FTP helper application.
 - Smaller bug fixes.
 
-2.1beta3
+2.1b3
 - Localization support
 - Files and foldes can now be dragged to the Finder to download them.
 - Windows do now no more stack exactly on the top of prior one.
@@ -56,7 +68,7 @@
 - There is a new command 'Go to folder' for changing the working directory quickly.
 - Many smaller bug fixes.
 
-2.1beta2
+2.1b2
 - SSH (SFTP) support
 - Completly rewritten user interface using the Cocoa Framework
         </string>

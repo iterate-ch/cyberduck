@@ -101,7 +101,9 @@ public class FTPSession extends Session {
 		this.FTP.connect(host.getHostname(), host.getPort());
 		this.log("FTP connection opened", Message.PROGRESS);
 		this.login();
-		this.FTP.system();
+		if(Preferences.instance().getProperty("ftp.sendSystemCommand").equals("true")) {
+			this.FTP.system();
+		}
 		this.setConnected(true);
 	}
 

@@ -185,6 +185,12 @@
 			</fileset>
 			-->
 		</jar>
+		<jar jarfile="${build}/j2ssh.jar"
+			update="yes">
+			<fileset dir="${classes}">
+				<include name="com/sshtools/j2ssh/**/*.class"/>
+			</fileset>
+		</jar>
 		<jar jarfile="${build}/ftp.jar"
 			update="yes"
 			manifest="${build}/MANIFEST.MF">

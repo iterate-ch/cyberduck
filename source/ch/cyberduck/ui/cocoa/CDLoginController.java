@@ -65,11 +65,11 @@ public class CDLoginController implements LoginController {
 		this.keychainCheckbox.setState(Preferences.instance().getProperty("connection.login.useKeychain").equals("true") ? NSCell.OnState : NSCell.OffState);
 	}
 
-	private NSWindow sheet; // IBOutlet
+	private NSWindow window; // IBOutlet
 
-	public void setSheet(NSWindow sheet) {
-		this.sheet = sheet;
-		this.sheet.setDelegate(this);
+	public void setWindow(NSWindow window) {
+		this.window = window;
+		this.window.setDelegate(this);
 	}
 
 	private NSWindow parentWindow;
@@ -79,17 +79,16 @@ public class CDLoginController implements LoginController {
 	public CDLoginController(NSWindow parentWindow) {
 		this.parentWindow = parentWindow;
 		instances.addObject(this);
-		if (false == NSApplication.loadNibNamed("Login", this)) {
-			log.fatal("Couldn't load Login.nib");
-		}
 	}
 
 	public NSWindow window() {
-		return this.sheet;
+		if (false == NSApplication.loadNibNamed("Login", this)) {
+			log.fatal("Couldn't load Login.nib");
+		}
+		return this.window;
 	}
 
 	public void windowWillClose(NSNotification notification) {
-		this.window().setDelegate(null);
 		instances.removeObject(this);
 	}
 
@@ -105,7 +104,7 @@ public class CDLoginController implements LoginController {
 		this.textField.setStringValue(message);
 		this.userField.setStringValue(login.getUsername());
 		NSApplication.sharedApplication().beginSheet(
-		    this.window(), //sheet
+		    this.window, //sheet
 		    parentWindow,
 		    this, //modalDelegate
 		    new NSSelector(
@@ -113,7 +112,7 @@ public class CDLoginController implements LoginController {
 		        new Class[]{NSWindow.class, int.class, Object.class}
 		    ), // did end selector
 		    login); //contextInfo
-		this.window().makeKeyAndOrderFront(null);
+		this.window.makeKeyAndOrderFront(null);
 		while (!done) {
 			try {
 				log.debug("Sleeping...");
@@ -131,7 +130,7 @@ public class CDLoginController implements LoginController {
 		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 		this.userField.abortEditing();
 		this.passField.abortEditing();
-		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+		NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
 
 	/**
@@ -139,7 +138,7 @@ public class CDLoginController implements LoginController {
 	 * @see #loginFailure
 	 */
 	public void loginSheetDidEnd(NSWindow sheet, int returncode, Object context) {
-		this.window().orderOut(null);
+		this.window.orderOut(null);
 		Login login = (Login) context;
 		log.debug("loginSheetDidEnd:" + login.toString());
 		switch (returncode) {

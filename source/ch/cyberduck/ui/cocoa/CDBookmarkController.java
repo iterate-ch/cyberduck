@@ -45,8 +45,21 @@ public class CDBookmarkController {
 
 	public void setWindow(NSWindow window) {
 		this.window = window;
+		this.window.setDelegate(this);
 	}
 
+	public NSWindow window() {
+		if(false == NSApplication.loadNibNamed("Bookmark", this)) {
+			log.fatal("Couldn't load Bookmark.nib");
+		}
+		return this.window;
+	}
+	
+	public void windowWillClose(NSNotification notification) {
+		NSNotificationCenter.defaultCenter().removeObserver(this);
+		instances.removeObject(this);
+	}
+	
 	private NSPopUpButton protocolPopup; // IBOutlet
 
 	public void setProtocolPopup(NSPopUpButton protocolPopup) {
@@ -111,10 +124,6 @@ public class CDBookmarkController {
 		log.debug("CDBookmarkController:" + bookmark);
 		this.host = bookmark;
 		instances.addObject(this);
-		if (false == NSApplication.loadNibNamed("Bookmark", this)) {
-			log.fatal("Couldn't load Bookmark.nib");
-			return;
-		}
 	}
 
 	public void awakeFromNib() {
@@ -167,7 +176,7 @@ public class CDBookmarkController {
 			panel.setCanChooseDirectories(false);
 			panel.setCanChooseFiles(true);
 			panel.setAllowsMultipleSelection(false);
-			panel.beginSheetForDirectory(System.getProperty("user.home") + "/.ssh", null, null, this.window(), this, new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+			panel.beginSheetForDirectory(System.getProperty("user.home") + "/.ssh", null, null, this.window, this, new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
 		}
 		else {
 			this.pkCheckbox.setState(NSCell.OffState);
@@ -242,14 +251,5 @@ public class CDBookmarkController {
 			this.pkCheckbox.setState(NSCell.OffState);
 			this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
 		}
-	}
-
-	public NSWindow window() {
-		return this.window;
-	}
-	
-	public void windowWillClose(NSNotification notification) {
-		NSNotificationCenter.defaultCenter().removeObserver(this);
-		instances.removeObject(this);
 	}
 }

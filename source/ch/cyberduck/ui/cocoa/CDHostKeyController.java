@@ -108,7 +108,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		    null, // dismiss selector
 		    null, // context
 		    NSBundle.localizedString("The host is currently unknown to the system. The host key fingerprint is", "") + ": " + publicKey.getFingerprint() + ".");
-		//	this.window().makeKeyAndOrderFront(null);
+		//	this.window.makeKeyAndOrderFront(null);
 		while (!this.done) {
 			try {
 				log.debug("Sleeping...");

@@ -99,8 +99,16 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 						Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
 						// we assume a file has an extension
 						if (null != p.getExtension()) {
-							CDQueueController.instance().addItem(new Queue(p,
-							    Queue.KIND_DOWNLOAD), true);
+							Queue q = new Queue(p, Queue.KIND_DOWNLOAD);//, true);
+							if (row != -1) {
+								CDQueuesImpl.instance().addItem(q, row);
+//								CDQueueController.instance().addItem(new Queue(p,
+//																			   Queue.KIND_DOWNLOAD), true);
+							}
+							else {
+								CDQueuesImpl.instance().addItem(q);
+							}
+							CDQueueController.instance().startItem(q);
 							return true;
 						}
 					}
