@@ -132,24 +132,28 @@ public class CDBrowserController extends CDController implements Observer {
 		this.unmount();
 		return null;
 	}
-
-	public Object handleListScriptCommand(NSScriptCommand command) {
+	
+	public NSArray handleListScriptCommand(NSScriptCommand command) {
 		log.debug("handleListScriptCommand:"+command);
+		NSMutableArray result = new NSMutableArray();
 		if(this.isMounted()) {
 			NSDictionary args = command.evaluatedArguments();
-			Path path = PathFactory.createPath(this.workdir().getSession(), 
-											   this.workdir().getAbsolute(), 
-											   (String)args.objectForKey("Path"));
-			NSMutableArray result = new NSMutableArray();
+			Object pathObj = args.objectForKey("Path");
+			Path path = this.workdir();
+			if(pathObj != null) {
+				path = PathFactory.createPath(this.workdir().getSession(), 
+											  this.workdir().getAbsolute(), 
+											  (String)args.objectForKey("Path"));
+			}
 			for(Iterator i = path.list(this.encoding, false, this.showHiddenFiles).iterator(); i.hasNext(); ) {
 				result.addObject(((Path)i.next()).getName());
 			}
-			return result;
 		}
-		return null;
+		return result;
 	}
 	
 	public Object handleGotoScriptCommand(NSScriptCommand command) {
+		log.debug("handleGotoScriptCommand:"+command);
 		if(this.isMounted()) {
 			NSDictionary args = command.evaluatedArguments();
 			CDGotoController c = new CDGotoController();
@@ -167,9 +171,22 @@ public class CDBrowserController extends CDController implements Observer {
 		}
 		return null;
 	}
+	
+	public boolean handleExistsScriptCommand(NSScriptCommand command) {
+		log.debug("handleExistsScriptCommand:"+command);
+		if(this.isMounted()) {
+			NSDictionary args = command.evaluatedArguments();
+			Path path = PathFactory.createPath(this.workdir().getSession(), 
+											   this.workdir().getAbsolute(), 
+											   (String)args.objectForKey("Path"));
+			return path.exists();
+		}
+		return false;
+	}
+	
 
 	public Object handleCreateFileScriptCommand(NSScriptCommand command) {
-		log.debug("handleCreateFolderScriptCommand:"+command);
+		log.debug("handleCreateFileScriptCommand:"+command);
 		if(this.isMounted()) {
 			NSDictionary args = command.evaluatedArguments();
 			CDFileController c = new CDFileController();

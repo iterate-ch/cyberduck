@@ -88,14 +88,14 @@ public class CDGotoController extends CDController {
 	}
 	
 	public Path gotoFolder(Path workdir, String filename) {
-		Path go = workdir.copy(workdir.getSession());
+		Path dir = workdir.copy(workdir.getSession());
 		if(filename.charAt(0) != '/') {
-			go.setPath(workdir.getAbsolute(), filename);
+			dir.setPath(workdir.getAbsolute(), filename);
 		}
 		else {
-			go.setPath(filename);
+			dir.setPath(filename);
 		}
-		go.list();
-		return go;
+		dir.list();
+		return dir;
 	}
 }

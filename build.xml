@@ -95,7 +95,7 @@
 
 	<target name="release" depends="build">
 		<exec executable="buildDMG.pl" spawn="false">
-		    <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor} -buildDir ${build} -compressionLevel 9 -volSize 15 ${build}/${app.name}.app ${app.name}\ FAQ.rtfd ${app.name}\ Website.webloc Donate.webloc English.lproj/License.txt Credits.html"/>
+		    <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor} -buildDir ${build} -compressionLevel 9 -volSize 15 ${build}/${app.name}.app ${app.name}\ FAQ.rtfd ${app.name}\ Website.webloc Donate.webloc English.lproj/License.txt Credits.html AppleScript\ Samples"/>
 		</exec>
 	</target>
 
@@ -126,7 +126,6 @@
 		<antcall target="repace-tokens"/>
 	</target>
 	
-
 	<target name="repace-tokens">
 		<echo message="Replacing version string with ${cyberduck.version.major}.${cyberduck.version.minor}..."/>
 		<replace
@@ -155,7 +154,6 @@
 			<include name="*.lproj/InfoPlist.strings"/>
 		</replace>
 	</target>
-	  
 	
 	<target name="compile" depends="init" description="Compile the source tree">
 		<javac
@@ -166,7 +164,6 @@
 			<classpath refid="build.classpath"/>
 		</javac>
 	</target>
-  
   
 	<target name="archive" depends="compile, manifest" description="Create .jar files of the compiled classes">
 		<jar jarfile="${build}/cocoa.jar"
@@ -202,7 +199,6 @@
 			</fileset>
 		</jar>
 	</target>
-  
 
 	<target name="doc" depends="init" description="Generate Javadoc">
 		<mkdir dir="${doc}"/>
@@ -219,7 +215,6 @@
 		</javadoc>
 	</target>
 
-
 	<target name="clean" description="Delete compiled classes, jar files, jnilibs and application bundle">
 		<delete dir="${build.classes}"/>
 		<delete dir="${build}/Cyberduck.build"/>
@@ -232,7 +227,6 @@
 		<delete dir="${build}/Cyberduck.app"/>
 	</target>
 
-
 	<target name="manifest" description="Create a manifest used in the jar files">
 		<manifest file="${build}/MANIFEST.MF">
 			<attribute name="Built-By" value="${user.name}"/>
@@ -242,7 +236,6 @@
 			<attribute name="Implementation-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
 		</manifest>
 	</target>
-	
 	
 	<target name="junit" depends="compile" description="Runs all test cases and generate report">
         <javac
