@@ -79,11 +79,11 @@ public class SFTPPath extends Path {
     }
     
     public List list() {
-	return this.list(true);
+	return this.list(true, Preferences.instance().getProperty("browser.showHidden").equals("true"));
     }
 
-    public List list(boolean notifyobservers) {
-	boolean showHidden = Preferences.instance().getProperty("browser.showHidden").equals("true");
+    public List list(boolean notifyobservers, boolean showHidden) {
+//	boolean showHidden = Preferences.instance().getProperty("browser.showHidden").equals("true");
 	SftpFile workingDirectory = null;
 	session.log("Listing "+this.getAbsolute(), Message.PROGRESS);
 	session.addPathToHistory(this);
@@ -150,7 +150,7 @@ public class SFTPPath extends Path {
 	try {
 	    session.check();
 	    if(this.isDirectory()) {
-		List files = this.list();
+		List files = this.list(false, true);
 		java.util.Iterator iterator = files.iterator();
 		Path file = null;
 		while(iterator.hasNext()) {
@@ -290,7 +290,7 @@ public class SFTPPath extends Path {
 	try {
 	    this.session.check();
 	    if(isDirectory()) {
-		List files = this.list(false);
+		List files = this.list(false, true);
 		java.util.Iterator i = files.iterator();
 		while(i.hasNext()) {
 		    SFTPPath p = (SFTPPath)i.next();
@@ -321,7 +321,7 @@ public class SFTPPath extends Path {
 		throw new IOException("Download must be a file.");
 //	    status.fireActiveEvent();
 	    this.session.check();
-	    this.getLocal().getParentFile().mkdir();
+	    this.getLocal().getParentFile().mkdirs();
 	    OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
 	    if(out == null) {
 		throw new IOException("Unable to buffer data");

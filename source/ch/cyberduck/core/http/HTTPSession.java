@@ -22,7 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.*;
 import org.apache.log4j.Logger;
 import java.io.IOException;
 
@@ -33,53 +33,65 @@ import java.io.IOException;
 public class HTTPSession extends Session {
     private static Logger log = Logger.getLogger(Session.class);
 
-    protected HttpClient HTTP;
+//    protected HttpClient HTTP;
+
+//    private HostConfiguration hostConfiguration;
+//    private HttpConnectionManager connectionManager;
+    protected HttpConnection HTTP;
 
     public HTTPSession(Host h) {
         super(h);
-        this.HTTP = new HttpClient();
+        this.HTTP = new HttpConnection(h.getName(), h.getPort());
+//        this.HTTP = new HttpClient();
+//	this.connectionManager = new SimpleHttpConnectionManager();
+//	this.hostConfiguration = new HostConfiguration();
+//	this.hostConfiguration.setHost(h.getName(), h.getPort());
+//	this.HTTP.setHostConfiguration(hostConfiguration);
     }
 
-    public void close() {
+    public synchronized void close() {
 	this.callObservers(new Message(Message.CLOSE, "Closing session."));
-	try {
-	    HTTP.quit();
-	}
-	catch(IOException e) {
-	    log.error(e.getMessage());
-	}
-	finally {
+//	try {
+	    this.HTTP.close();
+//	    this.connectionManager.releaseConnection(this.connection);
+//	}
+//	catch(IOException e) {
+//	    log.error(e.getMessage());
+//	}
+//	finally {
 	    this.setConnected(false);
-	}
+//	}
     }
-
 
     public Session copy() {
 	return new HTTPSession(this.host);
     }
     
-
-    public synchronized void connect() {
+    public synchronized void connect() throws IOException {
 	this.callObservers(new Message(Message.OPEN, "Opening session."));
-	HTTPSession.this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
+	this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
+
+	this.HTTP.open();
+//	connection = HTTP.getHttpConnectionManager().getConnection(hostConfiguration);
 //		if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
 //		    HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
 //		}
 //		else {
-	HTTP.connect(host.getName(), host.getPort(), false);
+//	HTTP.connect(host.getName(), host.getPort(), false);
 //		}
 	this.setConnected(true);
 	log("HTTP connection opened", Message.PROGRESS);
     }
     
-    public void mount() {
+    public synchronized void mount() {
 	this.log("Invalid Operation", Message.ERROR);
     }
 
     public void check() throws IOException {
 	this.log("Working", Message.START);
 	log.debug("check");
-	if(!HTTP.isAlive()) {
+
+	if(!HTTP.isOpen()) {
 	    this.setConnected(false);
 	    this.connect();
 	    while(true) {
@@ -89,6 +101,16 @@ public class HTTPSession extends Session {
 		Thread.yield();
 	    }
 	}
+//	if(!HTTP.isAlive()) {
+//	    this.setConnected(false);
+//	    this.connect();
+//	    while(true) {
+//		if(this.isConnected())
+//		    return;
+//		this.log("Waiting for connection...", Message.PROGRESS);
+//		Thread.yield();
+//	    }
+//	}
     }    
 
     public Path workdir() {

@@ -57,7 +57,7 @@ public class Queue extends Observable implements Observer { //Thread {
     /**
 	* Number of completed jobs in the queue
      */
-    private int completedJobs = 0;
+    private int completedJobs;
     /**
 	* The file currently beeing processed in the queue
      */
@@ -76,22 +76,21 @@ public class Queue extends Observable implements Observer { //Thread {
     /*
      * 	current speed (bytes/second)
      */
-    private transient double speed = 0;
+    private transient double speed;
     /*
      * overall speed (bytes/second)
      */
-    private transient double overall = 0;
+    private transient double overall;
     /**
 	* The size of all files accumulated
      */
-    private int size = 0;
+    private int size;
+    private int current;
 
-//    private int completedBytes = 0;
-
-    private int timeLeft = 0;
+    private int timeLeft;
 
     Calendar calendar = Calendar.getInstance();
-
+    
     /**
 	* @param file The base file to build a queue for. If this is a not a folder
      * the queue will consist of only this.
@@ -105,8 +104,6 @@ public class Queue extends Observable implements Observer { //Thread {
 //	this.roots = new ArrayList();
 //	this.roots.add(root);
 	this.root = root;
-	//@todo new constructor
-//	this.candidate = roots.get(0);
 	this.kind = kind;
     }
 
@@ -151,7 +148,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	this.reset();
 	new Thread() {
 	    public void run() {
-
+		
 		Timer clockTimer = new Timer(1000,
 			       new ActionListener() {
 				   int seconds = 0;
@@ -182,13 +179,14 @@ public class Queue extends Observable implements Observer { //Thread {
 					   callObservers(new Message(Message.CLOCK, parseTime(calendar.get(Calendar.HOUR)) + ":" + parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND))));
 				       }
 				       else {
-					   callObservers(new Message(Message.CLOCK, parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND))));
+					   Queue.this.callObservers(new Message(Message.CLOCK, parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND))));
 				       }
 				   }
 			       }
 			       );
 		clockTimer.start();
 
+		/*
 		Timer overallSpeedTimer = new Timer(4000,
 				      new ActionListener() {
 					  Vector overall = new Vector();
@@ -214,6 +212,7 @@ public class Queue extends Observable implements Observer { //Thread {
 					  }
 				      }
 				      );
+		 */
 
 		Timer currentSpeedTimer = new Timer(500,
 				      new ActionListener() {
@@ -238,7 +237,7 @@ public class Queue extends Observable implements Observer { //Thread {
 						  }
 						  
 					       //                        log.debug("currentSpeed " + diff/speeds.length/1024 + " KBytes/sec");
-						  setSpeed((diff/speeds.length));
+						  Queue.this.setSpeed((diff/speeds.length));
 					      }
 
 					  }
@@ -249,9 +248,9 @@ public class Queue extends Observable implements Observer { //Thread {
 				  new ActionListener() {
 				      public void actionPerformed(ActionEvent e) {
 					  if(getSpeed() > 0)
-					      setTimeLeft((int)((candidate.status.getSize() - candidate.status.getCurrent())/getSpeed()));
+					      Queue.this.setTimeLeft((int)((candidate.status.getSize() - candidate.status.getCurrent())/getSpeed()));
 					  else
-					      setTimeLeft(-1);
+					      Queue.this.setTimeLeft(-1);
 				      }
 				  }
 				  );
@@ -266,17 +265,12 @@ public class Queue extends Observable implements Observer { //Thread {
 //		while(i.hasNext()) {
 //		    Path next = (Path)i.next();
 		root.fillQueue(Queue.this, session, kind);
-//		}
 		Iterator k = jobs.iterator();
 		while(k.hasNext()) {
 		    size += ((Path)k.next()).status.getSize();
 		}
-//		}
 		
 		// --------------------------------------------------------------
-
-// fired in the session anyway		callObservers(new Message(Message.START));
-
 		
 		//Iterating over all the files in the queue
 		Iterator i = jobs.iterator();
@@ -285,11 +279,9 @@ public class Queue extends Observable implements Observer { //Thread {
 		    candidate.status.setResume(resume);
 		    candidate.status.addObserver(Queue.this);
 
-		    overallSpeedTimer.start();
+//		    overallSpeedTimer.start();
 		    currentSpeedTimer.start();
 		    timeLeftTimer.start();
-
-//		    callObservers(candidate);
 		    
 		    callObservers(new Message(Message.PROGRESS, (KIND_DOWNLOAD == kind ? "Downloading " : "Uploading ") +candidate.getName()+" ("+(completedJobs+1)+" of "+jobs.size()+")"));
 
@@ -302,14 +294,14 @@ public class Queue extends Observable implements Observer { //Thread {
 			    break;
 		    }
 		    if(candidate.status.isComplete()) {
+			current += candidate.status.getCurrent();
 			completedJobs++;
 //			completedJobs.add(candidate);
 //			jobs.remove(candidate);
-//			callObservers(new Message(Message.COMPLETE));
 		    }
 		    candidate.status.deleteObserver(Queue.this);
 
-		    overallSpeedTimer.stop();
+//		    overallSpeedTimer.stop();
 		    currentSpeedTimer.stop();
 		    timeLeftTimer.stop();
 		}
@@ -370,6 +362,8 @@ public class Queue extends Observable implements Observer { //Thread {
      */
     public int getSize() {
 //	log.debug("getSize");
+//	if(-1 == this.size)
+//	    return candidate.status.getSize();
 	return this.size;
 //	if(-1 == this.totalBytes) {
 //	    this.totalBytes = 0;
@@ -396,13 +390,13 @@ public class Queue extends Observable implements Observer { //Thread {
 	* @return The number of bytes already processed.
      */
     public int getCurrent() {
-	//@todo optimize (cache)
-	int currentBytes = 0;
-	Iterator i = jobs.iterator();
-	while(i.hasNext()) {
-	    currentBytes += ((Path)i.next()).status.getCurrent();
-	}
-	return currentBytes;
+	return this.current + candidate.status.getCurrent();
+//	int currentBytes = 0;
+//	Iterator i = jobs.iterator();
+//	while(i.hasNext()) {
+//	    currentBytes += ((Path)i.next()).status.getCurrent();
+//	}
+//	return currentBytes;
 	
 //	return candidate.status.getCurrent();
 //	int current = 0;
@@ -418,23 +412,27 @@ public class Queue extends Observable implements Observer { //Thread {
     /**
 	* @return double current bytes/second
      */
-    private double getSpeed() {
+    public double getSpeed() {
 	return this.speed;
     }
     
     private void setSpeed(double s) {
 	this.speed = s;
-
-	this.callObservers(new Message(Message.SPEED, "Current: "
-				+ Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
-				+ Status.parseDouble(this.getOverall()/1024) + " kB/s. "+this.getTimeLeft()));
+	this.callObservers(new Message(Message.DATA, candidate.status));
+//	this.callObservers(new Message(Message.SPEED, 
+//				Status.parseDouble(this.getSpeed()/1024) + "kB/s, about "
+//				+this.getTimeLeft()+" remaining."));
+	
+//	this.callObservers(new Message(Message.SPEED, "Current: "
+//				+ Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
+//				+ Status.parseDouble(this.getOverall()/1024) + " kB/s. "+this.getTimeLeft()));
     }
 
     private void setTimeLeft(int seconds) {
         this.timeLeft = seconds;
     }
 
-    private String getTimeLeft() {
+    public String getTimeLeft() {
         String message = "";
         //@todo: implementation of better 'time left' management.
         if(this.timeLeft != -1) {
@@ -451,27 +449,30 @@ public class Queue extends Observable implements Observer { //Thread {
     /**
 	* @return double bytes per seconds transfered since the connection has been opened
      */
-    private double getOverall() {
-	return this.overall;
-    }
-    
-    private void setOverall(double s) {
-	this.overall = s;
+//    private double getOverall() {
+//	return this.overall;
+//    }
 
-	this.callObservers(new Message(Message.SPEED, "Current: "
-				+ Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
-				+ Status.parseDouble(this.getOverall()/1024) + " kB/s. "+this.getTimeLeft()));
-    }
+//private void setOverall(double s) {
+//    this.overall = s;
+//
+//    this.callObservers(new Message(Message.SPEED, "Current: "
+//				   + Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
+//				   + Status.parseDouble(this.getOverall()/1024) + " kB/s. "+this.getTimeLeft()));
+//}
 
 private void reset() {
-    this.size = 0;
-    this.speed = 0;
-    this.overall = 0;
+    this.size = -1;
+    this.current = -1;
+    this.speed = -1;
+    this.overall = -1;
     this.stopped = false;
+    this.timeLeft = -1;
     this.completedJobs = 0;
     calendar.set(Calendar.HOUR, 0);
     calendar.set(Calendar.MINUTE, 0);
     calendar.set(Calendar.SECOND, 0);
+    
 }
 
   //  public void reset() {
@@ -480,4 +481,4 @@ private void reset() {
 //	log.debug("Readding "+completedJobs.size()+" jobs to the queue.");
 //	jobs.addAll(0, completedJobs);
     //}
-}
+    }

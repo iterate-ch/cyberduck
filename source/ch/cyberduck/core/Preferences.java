@@ -77,13 +77,12 @@ public abstract class Preferences {//extends Properties {
 
 	this.defaults = new Hashtable();
 
-	defaults.put("logging", "DEBUG");
+//	defaults.put("logging", "DEBUG");
 //	defaults.put("logging", "INFO");
-//	defaults.put("logging", "WARN");
+	defaults.put("logging", "WARN");
 //	defaults.put("logging", "ERROR");
 //	defaults.put("logging", "FATAL");
 
-	//	System.out.println("Working directory:"+System.getProperty("user.dir"));
 	defaults.put("version", "2.1");
         defaults.put("uses", "0");
 	defaults.put("donate", "true");
@@ -105,47 +104,12 @@ public abstract class Preferences {//extends Properties {
 	defaults.put("connection.duplicate.resume", "false");
 	defaults.put("connection.duplicate.overwrite", "false");
 	
-	//        defaults.put("laf.default", javax.swing.UIManager.getSystemLookAndFeelClassName());
-        //defaults.put("laf.default", javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
-
-
-        //Sound clips
-//        defaults.put("status.sound.stop", "false");
-//        defaults.put("status.sound.start", "true");
- //       defaults.put("status.sound.complete", "true");
-    
         //defaults.put("files.encode", "true");
 	defaults.put("connection.download.postprocess", "false");
-   //     defaults.put("files.removeCompleted", "false");
-        
-        //BookmarkTable properties
-        //BookmarkTable column locations
-
- //       defaults.put("table.column0.position", "0");
-//        defaults.put("table.column1.position", "1");
-//        defaults.put("table.column2.position", "2");
-//        defaults.put("table.column3.position", "3");
-        //BookmarkTable column widths
-//        defaults.put("table.column0.width", "12");
-  //      defaults.put("table.column1.width", "500");
-    //    defaults.put("table.column2.width", "15");
-      //  defaults.put("table.column3.width", "150");
-        
-        
         //Connection
-//        defaults.put("connection.log.file", "cyberduck.connection.log");
         defaults.put("connection.buffer", "1024");
         defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
-//        defaults.put("connection.timeout", "2"); // seconds
-  //      defaults.put("connection.timeout.default", "2"); // seconds
-//        defaults.put("connection.proxy", "false");
-//        defaults.put("connection.proxy.host", "proxy");
-  //      defaults.put("connection.proxy.port", "9999");
-    //    defaults.put("connection.proxy.authenticate", "false");
-      //  defaults.put("connection.proxy.username", "user");
-      //  defaults.put("connection.proxy.password", "pass");
-
 //        defaults.put("connection.path.default", "~");
         
         //ftp properties
@@ -165,36 +129,6 @@ public abstract class Preferences {//extends Properties {
 //	    Supported Mac Server->Client [hmac-md5, hmac-sha1, hmac-ripemd160, hmac-ripemd160@openssh.com, hmac-sha1-96, hmac-md5-96]
 	    // [publickey, password, keyboard-interactive]
 
-
-	//listing properties
-//        defaults.put("listing.showType", "true");
-  //      defaults.put("listing.showFilenames", "true");
-   //     defaults.put("listing.showSize", "true");
-    //    defaults.put("listing.showDate", "true");
-//	defaults.put("listing.showOwner", "true");
-//	defaults.put("listing.showAccess", "false");
-        
-        //frame sizes
- //       defaults.put("frame.width", "560");
-   //     defaults.put("frame.height", "480");
-//       defaults.put("frame.x", getXLocation(560));
-//        defaults.put("frame.y", getYLocation(480));
-    //    defaults.put("transcriptdialog.width", "520");
-      //  defaults.put("transcriptdialog.height", "550");
-//        defaults.put("transcriptdialog.x", getXLocation(520));
-//        defaults.put("transcriptdialog.y", getYLocation(550));
-    //    defaults.put("logdialog.width", "500");
-      //  defaults.put("logdialog.height", "300");
-//        defaults.put("logdialog.x", getXLocation(500));
-//        defaults.put("logdialog.y", getYLocation(300));
-    //    defaults.put("preferencesdialog.width", "500");
-      //  defaults.put("preferencesdialog.height", "485");
-//        defaults.put("preferencesdialog.x", getXLocation(500));
-//        defaults.put("preferencesdialog.y", getYLocation(485));
-     //   defaults.put("newconnectiondialog.width", "500");
-     //   defaults.put("newconnectiondialog.height", "300");
-//        defaults.put("newconnectiondialog.x", getXLocation(500));
-//        defaults.put("newconnectiondialog.y", getYLocation(300));
     }
     
 

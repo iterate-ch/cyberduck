@@ -2,7 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
-	<key>Cyberduck</key>
-	<string>2.1beta1</string>
+	<key>version</key>
+	<string>2.1beta2</string>
+	<key>file</key>
+	<string>Cyberduck-2.1beta2.dmg.gz</string>
+	<key>comment</key>
+	<string>New version</string>
     </dict>
 </plist>

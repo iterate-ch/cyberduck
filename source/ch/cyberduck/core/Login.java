@@ -43,7 +43,6 @@ public class Login {
 	}
     }
 
-
     /**
 	* @param user Login with this username
 	* @param pass Passphrase

@@ -140,55 +140,6 @@ public class Status extends Observable implements Serializable {
 //	this.complete = false;
 //    }
 
-    /**
-	* Notify that the connection has been opened.
-     */
-//    public void fireActiveEvent() {
-  //      log.debug("fireActiveEvent()");
-    //    this.reset();
-      //  this.setCanceled(false);
-       // this.setComplete(false);
-//        this.setStopped(false);
-//	this.overallSpeedTimer.start();
-//	this.currentSpeedTimer.start();
-//	this.chronoTimer.start();
-//	this.callObservers(new Message(Message.START));
-//    }
-
-    /**
-	* Notify that the connection has been closed.
-     */
-//    public void fireStopEvent() {
-  //      log.debug("fireStopEvent()");
-//	
-//	this.setStopped(true);
-//	if(this.currentSpeedTimer != null)
-//	    this.currentSpeedTimer.stop();
-//	if(this.overallSpeedTimer != null)
-//	    this.overallSpeedTimer.stop();
-//	if(this.chronoTimer != null)
-//	    this.chronoTimer.stop();
-//	this.setResume(false);
-//	this.callObservers(new Message(Message.STOP));
-//    }
-
-/**
-* Notify that the transfer has been completed.
-     */
-  //  public void fireCompleteEvent() {
-//        log.debug("fireCompleteEvent()");
-	
-//	this.setStopped(true);
-//	this.setComplete(true);
-//	if(this.currentSpeedTimer != null)
-//	    this.currentSpeedTimer.stop();
-//	if(this.overallSpeedTimer != null)
-//	    this.overallSpeedTimer.stop();
-//	if(this.chronoTimer != null)
-//	    this.chronoTimer.stop();
-//	this.setResume(false);
-//	this.callObservers(new Message(Message.COMPLETE));
-//    }
 
 //    public BoundedRangeModel getProgressModel() {
 //	DefaultBoundedRangeModel m = null;
@@ -214,7 +165,8 @@ public class Status extends Observable implements Serializable {
     public void setCurrent(int c) {
 	//        log.debug("setCurrent(" + c + ")");
 	this.current = c;
-	this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of " + Status.parseDouble(this.getSize()/1024) + " kBytes."));
+	this.callObservers(new Message(Message.DATA, this));
+//	this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of " + Status.parseDouble(this.getSize()/1024) + " kBytes."));
     }
 
 

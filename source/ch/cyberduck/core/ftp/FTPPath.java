@@ -85,20 +85,19 @@ public class FTPPath extends Path {
     }
 
     public List list() {
-	return this.list(true);
+	return this.list(true, Preferences.instance().getProperty("browser.showHidden").equals("true"));
     }
 
-    public List list(boolean notifyobservers) {
+    public List list(boolean notifyobservers, boolean showHidden) {
 	session.log("Listing "+this.getAbsolute(), Message.PROGRESS);
 	session.addPathToHistory(this);
 	try {
 	    session.check();
 	    session.FTP.setType(FTPTransferType.ASCII);
 	    session.FTP.chdir(FTPPath.this.getAbsolute());
-	    this.setCache(new FTPParser().parseList(this.getAbsolute(), session.FTP.dir()));
+	    this.setCache(new FTPParser().parseList(this.getAbsolute(), session.FTP.dir(), showHidden));
 	    if(notifyobservers) {
 		session.callObservers(this);
-//		session.log("Listing complete", Message.PROGRESS);
 	    }
 	}
 	catch(FTPException e) {
@@ -119,7 +118,7 @@ public class FTPPath extends Path {
 	    session.check();
 	    if(this.isDirectory()) {
 		session.FTP.chdir(this.getAbsolute());
-		List files = this.list(false);
+		List files = this.list(false, true);
 		java.util.Iterator iterator = files.iterator();
 		Path file = null;
 		while(iterator.hasNext()) {
@@ -269,7 +268,7 @@ public class FTPPath extends Path {
 //	this.session = (FTPSession)this.getSession().copy();
 //	    session.check();
 	    if(this.isDirectory()) {
-		List files = this.list(false);
+		List files = this.list(false, true);
 		java.util.Iterator i = files.iterator();
 		while(i.hasNext()) {
 		    FTPPath p = (FTPPath)i.next();
@@ -295,7 +294,7 @@ public class FTPPath extends Path {
 	    if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 //		this.session.log("Setting transfer mode to BINARY", Message.PROGRESS);
 		this.session.FTP.setType(FTPTransferType.BINARY);
-		this.getLocal().getParentFile().mkdir();
+		this.getLocal().getParentFile().mkdirs();
 		OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
 		if(out == null) {
 		    throw new IOException("Unable to buffer data");
@@ -441,10 +440,10 @@ public class FTPPath extends Path {
 	    "OCT", "NOV", "DEC"
 	};
 
-	public List parseList(String parent, String[] list) throws FTPException {
+	public List parseList(String parent, String[] list, boolean showHidden) throws FTPException {
 	    //        log.debug("[FTPParser] parseList(" + parent + "," + list + ")");
 	    List parsedList = new ArrayList();
-	    boolean showHidden = Preferences.instance().getProperty("browser.showHidden").equals("true");
+//	    boolean showHidden = Preferences.instance().getProperty("browser.showHidden").equals("true");
 	    for(int i = 0; i < list.length; i++) {
 		int index = 0;
 		String line = list[i].trim();

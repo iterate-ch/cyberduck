@@ -116,7 +116,7 @@ public abstract class Path {// extends Observable {
 	* Request a file listing from the server. Has to be a directory
      * @param notifyobservers Notify the observers if true
      */
-    public abstract List list(boolean notifyobservers);
+    public abstract List list(boolean notifyobservers, boolean showHidden);
 
     public abstract List list();
 
@@ -221,21 +221,6 @@ public abstract class Path {// extends Observable {
 	return this.local;
     }
 
-//    public BoundedRangeModel getProgressModel() {
-//	DefaultBoundedRangeModel m = null;
-//	try {
-//	    if(this.getSize() < 0) {
-//		m = new DefaultBoundedRangeModel(0, 0, 0, 100);
-//	    }
-//	    m = new DefaultBoundedRangeModel(this.status.getCurrent(), 0, 0, this.getSize());
-//	}
-//	catch(IllegalArgumentException e) {
-//	    m = new DefaultBoundedRangeModel(0, 0, 0, 100);
-//	}
-//	return m;
-//  }
-    
-
     /**
 	* @return the extensdion if any
      */
@@ -307,11 +292,6 @@ public abstract class Path {// extends Observable {
     public abstract void upload();
 
     public abstract void fillQueue(Queue queue, Session session, int kind);
-
-
-//    public abstract void fillDownloadQueue(Queue queue, Session session);
-
-//    public abstract void fillUploadQueue(Queue queue, Session session);
 
 
     // ----------------------------------------------------------

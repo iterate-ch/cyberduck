@@ -115,10 +115,6 @@ public abstract class Session extends Observable {
 
     public abstract Session copy();
     
-//    public abstract void download(Path download) throws IOException;
-
-  //  public abstract void upload(java.io.File upload);
-    
     /**
      * @return boolean True if the session has not yet been closed. 
      */
@@ -158,33 +154,3 @@ public abstract class Session extends Observable {
 	this.callObservers(new Message(title, message));
     }
 }
-/*
-import java.util.*;
-
-class SystemProperties
-{
-    public static void main(String args[])
-    {
-        Properties systemproperties = System.getProperties();
-        systemproperties.put("firewallHost",
-                             "web.proxy.nl.com"); // firewall proxy server
-        systemproperties.put("firewallPort",
-                             "140");              // firewall port #
-        systemproperties.put("firewallSet","true");
-        systemproperties.put("proxyHost",
-                             "http.proxy.nl.com");// http proxy server
-        systemproperties.put("proxyPort",
-                             "180");              // http port #
-        systemproperties.put("proxySet","true");
-        systemproperties.put("ftpProxyHost",
-                             "ftp.proxy.nl.com"); // ftp proxy server
-        systemproperties.put("ftpProxyPort",
-                             "110");              // ftp port #
-        systemproperties.put("ftpProxySet","true");
-        systemproperties.put("http.nonProxyHosts",
-                             "apple.com|netscape.com");
-                                                  // proxy bypass sites
-        System.setProperties(systemproperties);
-    }
-}
-     */

@@ -136,33 +136,6 @@ public class Host {
 	    return Session.HTTP_PORT;
 	throw new IllegalArgumentException("Cannot find port number for protocol "+protocol);
     }
-
-/*
- public void setServerPath(String p) {
-     Cyberduck.DEBUG("[Bookmark] setServerPath("+ p.toString() + ")");
-     if(p == null || p.equals("")) {
-	 this.serverPath = new Path("/");
-	 this.serverDirectory = serverPath;
-     }
-     else {
-	 this.serverPath = new Path(p);
-	 if(serverPath.isDirectory()) {
-	     this.serverDirectory = serverPath;
-	     this.serverFilename = null;
-	     this.localFilename = null;
-	     this.localFinalPath = null;
-	     this.localTempPath = null;
-	     this.localDirectory = null;
-	 }
-	 else {
-	     this.serverDirectory = serverPath.getParent();
-                //this.serverFilename = Path.encode(serverPath.getName());
-	     this.serverFilename = serverPath.getName();
-	     this.setLocalPath(new File(Preferences.instance().getProperty("download.path"), this.serverFilename));
-	 }
-     }
- }
- */
     
     // ----------------------------------------------------------
     // Accessor methods
