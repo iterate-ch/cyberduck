@@ -51,10 +51,10 @@ public class OS400FTPEntryParser extends RegexFTPFileEntryParserImpl {
             String sec = group(8);
             String typeStr = group(9);
             String name = group(10);
-            if (null == name || name.equals(".") || name.equals("..")) {
-                return (null);
+            if (null == name || name.equals("") || name.equals(".") || name.equals("..")) {
+                return null;
             }
-
+			
             if (typeStr.equalsIgnoreCase("*DIR")) {
                 f.attributes.setType(Path.DIRECTORY_TYPE);
             }

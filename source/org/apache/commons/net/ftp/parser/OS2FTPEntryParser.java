@@ -80,10 +80,10 @@ public class OS2FTPEntryParser extends RegexFTPFileEntryParserImpl {
             String hr = group(7);
             String min = group(8);
             String name = group(9);
-            if (null == name || name.equals(".") || name.equals("..")) {
-                return (null);
+            if (null == name || name.equals("") || name.equals(".") || name.equals("..")) {
+                return null;
             }
-
+			
             //is it a DIR or a file
             if (dirString.trim().equals("DIR") || attrib.trim().equals("DIR")) {
                 f.attributes.setType(Path.DIRECTORY_TYPE);

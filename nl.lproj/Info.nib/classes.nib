@@ -14,6 +14,7 @@
                 iconImageView = NSImageView; 
                 kindField = NSTextField; 
                 modifiedField = NSTextField; 
+                octalField = NSTextField; 
                 otherr = NSButton; 
                 otherw = NSButton; 
                 otherx = NSButton; 
@@ -23,7 +24,6 @@
                 ownerx = NSButton; 
                 pathField = NSTextField; 
                 permissionsBox = NSBox; 
-                recursiveCheckbox = NSButton; 
                 sizeField = NSTextField; 
                 window = NSWindow; 
             }; 

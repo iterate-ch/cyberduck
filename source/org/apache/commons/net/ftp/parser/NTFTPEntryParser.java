@@ -80,8 +80,8 @@ public class NTFTPEntryParser extends RegexFTPFileEntryParserImpl {
             String dirString = group(7);
             String size = group(8);
             String name = group(9);
-            if (null == name || name.equals(".") || name.equals("..")) {
-                return (null);
+            if (null == name || name.equals("") || name.equals(".") || name.equals("..")) {
+                return null;
             }
             f.setPath(parent.getAbsolute(), name);
             //convert all the calendar stuff to ints

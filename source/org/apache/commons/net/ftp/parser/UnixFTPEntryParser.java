@@ -118,8 +118,8 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
             String hr = group(23);
             String min = group(24);
             String name = group(25);
-            if (null == name || name.equals(".") || name.equals("..")) {
-                return (null);
+            if (null == name || name.equals("") || name.equals(".") || name.equals("..")) {
+                return null;
             }
             String endtoken = group(26);
 

@@ -84,8 +84,8 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         this.assertFalse("attr is dir", parsed.attributes.isDirectory());
         this.assertTrue("attr is file", parsed.attributes.isFile());
         this.assertFalse("attr is link", parsed.attributes.isSymbolicLink());
-        this.assertEquals("owner", "unknown", parsed.attributes.getOwner());
-        this.assertEquals("group", "unknown", parsed.attributes.getGroup());
+        this.assertEquals("owner", "Unknown", parsed.attributes.getOwner());
+        this.assertEquals("group", "Unknown", parsed.attributes.getGroup());
         
         this.assertEquals("permissions", "-r--r--r-- (444)", parsed.attributes.getPermission().toString());
     }
@@ -98,7 +98,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         this.assertTrue("is dir", parsed.attributes.isDirectory());
         this.assertFalse("is root", parsed.isRoot());
         
-        this.assertEquals("size", 0, parsed.status.getSize());
+        this.assertEquals("size", -1, parsed.status.getSize());
         
         long millis = 825718503;
         millis = millis * 1000;
@@ -107,8 +107,8 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         this.assertTrue("attr is dir", parsed.attributes.isDirectory());
         this.assertFalse("attr is file", parsed.attributes.isFile());
         this.assertFalse("attr is link", parsed.attributes.isSymbolicLink());
-        this.assertEquals("owner", "unknown", parsed.attributes.getOwner());
-        this.assertEquals("group", "unknown", parsed.attributes.getGroup());
+        this.assertEquals("owner", "Unknown", parsed.attributes.getOwner());
+        this.assertEquals("group", "Unknown", parsed.attributes.getGroup());
         
         this.assertEquals("permissions", "dr-xr-xr-x (555)", parsed.attributes.getPermission().toString());
     }

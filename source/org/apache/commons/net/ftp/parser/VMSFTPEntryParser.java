@@ -99,8 +99,8 @@ public class VMSFTPEntryParser extends RegexFTPFileEntryParserImpl {
         if (matches(entry)) {
             Path f = PathFactory.createPath(parent.getSession());
             String name = group(1);
-            if (null == name || name.equals(".") || name.equals("..")) {
-                return (null);
+            if (null == name || name.equals("") || name.equals(".") || name.equals("..")) {
+                return null;
             }
             String size = group(2);
             String day = group(3);
@@ -108,25 +108,25 @@ public class VMSFTPEntryParser extends RegexFTPFileEntryParserImpl {
             String yr = group(5);
             String hr = group(6);
             String min = group(7);
-//            String sec = group(8);
-//            String owner = group(9);
+			//            String sec = group(8);
+			//            String owner = group(9);
             /*
-String grp;
-String user;
-StringTokenizer t = new StringTokenizer(owner, ",");
-switch (t.countTokens()) {
-case 1:
-grp  = null;
-user = t.nextToken();
-break;
-case 2:
-grp  = t.nextToken();
-user = t.nextToken();
-break;
-default:
-grp  = null;
-user = null;
-}
+			 String grp;
+			 String user;
+			 StringTokenizer t = new StringTokenizer(owner, ",");
+			 switch (t.countTokens()) {
+				 case 1:
+					 grp  = null;
+					 user = t.nextToken();
+					 break;
+				 case 2:
+					 grp  = t.nextToken();
+					 user = t.nextToken();
+					 break;
+				 default:
+					 grp  = null;
+					 user = null;
+			 }
              */
             
             if (name.lastIndexOf(".DIR") != -1) {
@@ -152,11 +152,11 @@ user = null;
             cal.set(Calendar.YEAR, new Integer(yr).intValue());
             cal.set(Calendar.HOUR_OF_DAY, new Integer(hr).intValue());
             cal.set(Calendar.MINUTE, new Integer(min).intValue());
-//            cal.set(Calendar.SECOND, new Integer(sec).intValue());
+			//            cal.set(Calendar.SECOND, new Integer(sec).intValue());
             f.attributes.setTimestamp(cal.getTime());
-
-//            f.attributes.setGroup(grp);
-//            f.attributes.setOwner(user);
+			
+			//            f.attributes.setGroup(grp);
+			//            f.attributes.setOwner(user);
             //set group and owner
             //Since I don't need the persmissions on this file (RWED), I'll 
             //leave that for further development. 'Cause it will be a bit 
