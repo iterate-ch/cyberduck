@@ -240,10 +240,7 @@ public class FTPPath extends Path {
     }
 
     public void fillQueue(Queue queue, Session session, int kind) {
-//	    Queue queue = new Queue(this, kind);
-//	List queue = new ArrayList();
 	try {
-//	    this.session = (FTPSession)this.getSession().copy();
 	    this.session = (FTPSession)session;
 	    this.session.check();
 	    switch(kind) {
@@ -264,8 +261,6 @@ public class FTPPath extends Path {
     }
 
     private void fillDownloadQueue(Queue queue)  throws IOException {
-//	this.session = (FTPSession)this.getSession().copy();
-//	    session.check();
 	    if(this.isDirectory()) {
 		List files = this.list(false, true);
 		java.util.Iterator i = files.iterator();

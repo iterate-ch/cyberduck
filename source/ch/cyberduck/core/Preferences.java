@@ -40,11 +40,11 @@ public abstract class Preferences {//extends Properties {
      */
     public static Preferences instance() {
 	if(null == current) {
-	    String strVendor = System.getProperty("java.vendor");
-            if(strVendor.indexOf("Apple") != -1)
-		current = new ch.cyberduck.ui.cocoa.CDPreferencesImpl();
-	    else
-		current = new ch.cyberduck.ui.swing.PreferencesImpl();
+//	    String strVendor = System.getProperty("java.vendor");
+  //          if(strVendor.indexOf("Apple") != -1)
+	    current = new ch.cyberduck.ui.cocoa.CDPreferencesImpl();
+//	    else
+//		current = new ch.cyberduck.ui.swing.PreferencesImpl();
 	    current.setDefaults();
             current.load();
 	}

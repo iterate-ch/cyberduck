@@ -41,7 +41,6 @@ public class Transcript {
     
     public static Transcript instance() {
         if(null == instance) {
-	    //@todo return a transcript dependant of hostinfo
 	    instance = new Transcript();
 	}
         return instance;
