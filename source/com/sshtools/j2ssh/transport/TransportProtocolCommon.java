@@ -849,6 +849,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 
 		// Perform a transport protocol message loop
 		while(state.getValue() != TransportProtocolState.DISCONNECTED) {
+			log.debug("tansport protocol loop running with state "+state.getValue());
 			// Process incoming messages returning any transport protocol
 			// messages to be handled here
 			msg = processMessages();

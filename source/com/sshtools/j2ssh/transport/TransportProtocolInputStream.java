@@ -125,9 +125,6 @@ class TransportProtocolInputStream {
 		if((endpos-startpos) < len) {
 			// Double check the buffer has enough room for the data
 			if((buffered.length-endpos) < len) {
-				/*if (log.isDebugEnabled()) {
-				      log.debug("Trimming used data from buffer");
-				                 }*/
 
 				// no it does not odds are that the startpos is too high
 				System.arraycopy(buffered, startpos, buffered, 0,
@@ -183,11 +180,6 @@ class TransportProtocolInputStream {
 		}
 
 		startpos += len;
-
-		/*if (log.isDebugEnabled()) {
-		       log.debug("Buffer StartPos=" + String.valueOf(startpos)
-		        + " EndPos=" + String.valueOf(endpos));
-		 }*/
 
 		// Try to reset the buffer
 		if(startpos >= endpos) {

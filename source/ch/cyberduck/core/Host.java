@@ -24,7 +24,8 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 import org.apache.log4j.Logger;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 
-public class Host {
+public class
+    Host {
 	private static Logger log = Logger.getLogger(Host.class);
 
 	private String protocol;

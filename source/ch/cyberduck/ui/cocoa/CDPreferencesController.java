@@ -378,16 +378,16 @@ public class CDPreferencesController extends CDController {
 		Preferences.instance().setProperty("queue.upload.permissions.default", permission.getMask());
 	}
 
-	private NSButton preserveModificationCheckbox; //IBOutlet
+	private NSButton preserveModificationDownloadCheckbox; //IBOutlet
 	
-	public void setPreserveModificationCheckbox(NSButton preserveModificationCheckbox) {
-		this.preserveModificationCheckbox = preserveModificationCheckbox;
-		this.preserveModificationCheckbox.setTarget(this);
-		this.preserveModificationCheckbox.setAction(new NSSelector("preserveModificationCheckboxClicked", new Class[]{NSButton.class}));
-		this.preserveModificationCheckbox.setState(Preferences.instance().getProperty("queue.download.preserveDate").equals("true") ? NSCell.OnState : NSCell.OffState);
+	public void setPreserveModificationDownloadCheckbox(NSButton preserveModificationDownloadCheckbox) {
+		this.preserveModificationDownloadCheckbox = preserveModificationDownloadCheckbox;
+		this.preserveModificationDownloadCheckbox.setTarget(this);
+		this.preserveModificationDownloadCheckbox.setAction(new NSSelector("preserveModificationDownloadCheckboxClicked", new Class[]{NSButton.class}));
+		this.preserveModificationDownloadCheckbox.setState(Preferences.instance().getProperty("queue.download.preserveDate").equals("true") ? NSCell.OnState : NSCell.OffState);
 	}
 	
-	public void preserveModificationCheckboxClicked(NSButton sender) {
+	public void preserveModificationDownloadCheckboxClicked(NSButton sender) {
 		switch(sender.state()) {
 			case NSCell.OnState:
 				Preferences.instance().setProperty("queue.download.preserveDate", true);
@@ -398,6 +398,26 @@ public class CDPreferencesController extends CDController {
 		}
 	}
 
+	private NSButton preserveModificationUploadCheckbox; //IBOutlet
+	
+	public void setPreserveModificationUploadCheckbox(NSButton preserveModificationUploadCheckbox) {
+		this.preserveModificationUploadCheckbox = preserveModificationUploadCheckbox;
+		this.preserveModificationUploadCheckbox.setTarget(this);
+		this.preserveModificationUploadCheckbox.setAction(new NSSelector("preserveModificationUploadCheckboxClicked", new Class[]{NSButton.class}));
+		this.preserveModificationUploadCheckbox.setState(Preferences.instance().getProperty("queue.upload.preserveDate").equals("true") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void preserveModificationUploadCheckboxClicked(NSButton sender) {
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("queue.upload.preserveDate", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("queue.upload.preserveDate", false);
+				break;
+		}
+	}
+	
 	private NSButton horizontalLinesCheckbox; //IBOutlet
 
 	public void setHorizontalLinesCheckbox(NSButton horizontalLinesCheckbox) {

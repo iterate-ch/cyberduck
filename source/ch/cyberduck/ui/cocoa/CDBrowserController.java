@@ -1120,7 +1120,9 @@ public class CDBrowserController extends CDController implements Observer {
 	public void upButtonClicked(Object sender) {
 		log.debug("upButtonClicked");
 		this.browserTable.deselectAll(null);
+		Path previous = this.workdir();
 		this.workdir().getParent().list(this.encoding, false, this.showHiddenFiles);
+		this.browserTable.selectRow(this.browserModel.indexOf(previous), false);
 	}
 
 	public void connectButtonClicked(Object sender) {
@@ -1242,7 +1244,7 @@ public class CDBrowserController extends CDController implements Observer {
 		    new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
 		)) {
 			{
-				this.window().setTitle(host.getProtocol()+":"+host.getHostname());
+				this.window().setTitle(host.getProtocol()+":"+host.getCredentials().getUsername()+"@"+host.getHostname());
 				this.infoLabel.setStringValue("");
 				File bookmark = new File(HISTORY_FOLDER+"/"+host.getHostname()+".duck");
 				CDBookmarkTableDataSource.instance().exportBookmark(host, 
