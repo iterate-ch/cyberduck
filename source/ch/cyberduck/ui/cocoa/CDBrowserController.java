@@ -25,6 +25,9 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
 
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
+
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.History;
