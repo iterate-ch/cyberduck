@@ -244,8 +244,11 @@ public class CDBrowserController extends CDController implements Observer {
 											   (String)args.objectForKey("Path"));
 			path.setLocal(new Local((String)args.objectForKey("Local")));
 			path.attributes.setType(Path.DIRECTORY_TYPE);
-			Queue queue = new SyncQueue(path);
-			queue.process(false, false);
+			for(Iterator i = new SyncQueue(path).getChilds().iterator(); i.hasNext(); ) {
+				((Path)i.next()).sync();
+			}
+//			Queue queue = new SyncQueue(path);
+//			queue.process(false, false);
 		}
 		return null;
 	}
@@ -257,7 +260,7 @@ public class CDBrowserController extends CDController implements Observer {
 			Path path = PathFactory.createPath(this.workdir().getSession(), 
 											   this.workdir().getAbsolute(), 
 											   (String)args.objectForKey("Path"));
-			//@todo path.attributes.setType()
+			path.attributes.setType(Path.FILE_TYPE);
 			Object localObj = args.objectForKey("Local");
 			if(localObj != null) {
 				path.setLocal(new Local((String)localObj, path.getName()));
@@ -266,7 +269,9 @@ public class CDBrowserController extends CDController implements Observer {
 			if(nameObj != null) {
 				path.setLocal(new Local(path.getLocal().getParent(), (String)nameObj));
 			}
-			path.download();
+			for(Iterator i = new DownloadQueue(path).getChilds().iterator(); i.hasNext(); ) {
+				((Path)i.next()).download();
+			}
 //			Queue queue = new DownloadQueue(path);
 //			queue.processs(false, false);
 		}
@@ -280,6 +285,7 @@ public class CDBrowserController extends CDController implements Observer {
 			Path path = PathFactory.createPath(this.workdir().getSession(), 
 											   this.workdir().getAbsolute(), 
 											   new Local((String)args.objectForKey("Path")));
+			path.attributes.setType(Path.FILE_TYPE);
 			Object remoteObj = args.objectForKey("Remote");
 			if(remoteObj != null) {
 				path.setPath((String)remoteObj, path.getName());
@@ -288,7 +294,9 @@ public class CDBrowserController extends CDController implements Observer {
 			if(nameObj != null) {
 				path.setPath(this.workdir().getAbsolute(), (String)nameObj);
 			}
-			path.upload();
+			for(Iterator i = new UploadQueue(path).getChilds().iterator(); i.hasNext(); ) {
+				((Path)i.next()).upload();
+			}
 //			Queue queue = new UploadQueue(path);
 //			queue.processs(false, false);
 		}

@@ -448,11 +448,13 @@ public abstract class Path {
 
 	public void sync() {
 		if(this.getRemote().exists() && this.getLocal().exists()) {
-			if(this.getLocal().getTimestamp().before(this.attributes.getTimestamp())) {
-				this.download();
-			}
-			if(this.getLocal().getTimestamp().after(this.attributes.getTimestamp())) {
-				this.upload();
+			if(this.attributes.isFile()) {
+				if(this.getLocal().getTimestamp().before(this.attributes.getTimestamp())) {
+					this.download();
+				}
+				if(this.getLocal().getTimestamp().after(this.attributes.getTimestamp())) {
+					this.upload();
+				}
 			}
 		}
 		else if(this.getRemote().exists()) {
