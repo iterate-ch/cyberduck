@@ -65,10 +65,11 @@ public class CDDownloadController {
 
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
-		CDQueueController.instance();
+		CDQueueController controller = CDQueueController.instance();
+		controller.window().makeKeyAndOrderFront(null);
 		NSApplication.sharedApplication().beginSheet(
 		    this.window, //sheet
-		    CDQueueController.instance().window(),
+		    controller.window(),
 		    this, //modalDelegate
 		    new NSSelector(
 		        "downloadSheetDidEnd",

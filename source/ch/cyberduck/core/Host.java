@@ -145,27 +145,6 @@ public class Host {
 
 	// ----------------------------------------------------------
 
-	/*
-	public Session createSession() {
-		log.debug("createSession");
-		if (this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
-			return new HTTPSession(this);
-		}
-		//  if(this.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
-//            return new HTTPSession(this);
-//        }
-		else if (this.getProtocol().equalsIgnoreCase(Session.FTP)) {
-			return new FTPSession(this);
-		}
-		else if (this.getProtocol().equalsIgnoreCase(Session.SFTP)) {
-			return new SFTPSession(this);
-		}
-		else {
-			throw new IllegalArgumentException("Unknown protocol");
-		}
-	}
-	 */
-
 	public void setDefaultPath(String defaultpath) {
 		this.defaultpath = defaultpath;
 	}
@@ -176,17 +155,7 @@ public class Host {
 
 	public boolean hasReasonableDefaultPath() {
 		return this.defaultpath != null && !this.defaultpath.equals("") && !this.defaultpath.equals(Path.HOME);
-//        log.debug("hasReasonableDefaultPath:"+reasonable+"("+defaultpath+")");
-//		return reasonable;
 	}
-
-//    public void closeSession() {
-//      log.debug("closeSession");
-//		if(session != null) {
-//			this.session.close();
-//			this.session = null;
-//		}
-//    }
 
 	protected static String getDefaultProtocol(int port) {
 		switch (port) {
@@ -240,7 +209,6 @@ public class Host {
 	}
 
 	public void setNickname(String nickname) {
-//		log.debug("setNickname:"+nickname);
 		this.nickname = nickname != null ? nickname : this.getHostname() + " (" + this.getProtocol().toUpperCase() + ")";
 	}
 
@@ -249,7 +217,6 @@ public class Host {
 	}
 
 	public void setHostname(String hostname) {
-//		log.debug("setHostname:"+hostname);
 		this.hostname = hostname;
 	}
 

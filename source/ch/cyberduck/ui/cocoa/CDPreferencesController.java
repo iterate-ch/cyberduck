@@ -684,16 +684,36 @@ public class CDPreferencesController {
 		}
 	}
 
-	private NSButton closeTransferCheckbox; //IBOutlet
+	private NSButton bringQueueToFrontCheckbox; //IBOutlet
+	
+	public void setBringQueueToFrontCheckbox(NSButton bringQueueToFrontCheckbox) {
+		this.bringQueueToFrontCheckbox = bringQueueToFrontCheckbox;
+		this.bringQueueToFrontCheckbox.setTarget(this);
+		this.bringQueueToFrontCheckbox.setAction(new NSSelector("bringQueueToFrontCheckboxClicked", new Class[]{NSButton.class}));
+		this.bringQueueToFrontCheckbox.setState(Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void bringQueueToFrontCheckboxClicked(NSButton sender) {
+		switch (sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("queue.orderFrontOnTransfer", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("queue.orderFrontOnTransfer", false);
+				break;
+		}
+	}
+	
+	private NSButton removeFromQueueCheckbox; //IBOutlet
 
-	public void setCloseTransferCheckbox(NSButton closeTransferCheckbox) {
-		this.closeTransferCheckbox = closeTransferCheckbox;
-		this.closeTransferCheckbox.setTarget(this);
-		this.closeTransferCheckbox.setAction(new NSSelector("closeTransferCheckboxClicked", new Class[]{NSButton.class}));
-		this.closeTransferCheckbox.setState(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true") ? NSCell.OnState : NSCell.OffState);
+	public void setRemoveFromQueueCheckbox(NSButton removeFromQueueCheckbox) {
+		this.removeFromQueueCheckbox = removeFromQueueCheckbox;
+		this.removeFromQueueCheckbox.setTarget(this);
+		this.removeFromQueueCheckbox.setAction(new NSSelector("removeFromQueueCheckboxClicked", new Class[]{NSButton.class}));
+		this.removeFromQueueCheckbox.setState(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true") ? NSCell.OnState : NSCell.OffState);
 	}
 
-	public void closeTransferCheckboxClicked(NSButton sender) {
+	public void removeFromQueueCheckboxClicked(NSButton sender) {
 		switch (sender.state()) {
 			case NSCell.OnState:
 				Preferences.instance().setProperty("queue.removeItemWhenComplete", true);

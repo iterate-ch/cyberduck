@@ -122,7 +122,6 @@ public class CDBookmarkController {
 	public CDBookmarkController(NSTableView callback, Host host) {
 		this.callback = callback;
 		this.host = host;
-//		this.host = CDBookmarksImpl.instance().getItem(bookmarkTableView.selectedRow());
 		instances.addObject(this);
 		if(false == NSApplication.loadNibNamed("Bookmark", this)) {
 			log.fatal("Couldn't load Bookmark.nib");

@@ -52,7 +52,7 @@ public class CDQueueController implements Observer, Validator {
 				log.fatal("Couldn't load Queue.nib");
 			}
 		}
-		instance.window().makeKeyAndOrderFront(null);
+//		instance.window().makeKeyAndOrderFront(null);
 		return instance;
 	}
 
@@ -61,6 +61,7 @@ public class CDQueueController implements Observer, Validator {
 	}
 
 	public void windowWillClose(NSNotification notification) {
+		CDQueuesImpl.instance().save();
 		instances.removeObject(this);
 		instance = null;
 	}
@@ -147,7 +148,9 @@ public class CDQueueController implements Observer, Validator {
 		this.queueTable.selectRow(CDQueuesImpl.instance().indexOf(queue), false);
 		this.queueTable.scrollRowToVisible(CDQueuesImpl.instance().indexOf(queue));
 
-		this.window.makeKeyAndOrderFront(null);
+		if(Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true"))
+			this.window.makeKeyAndOrderFront(null);
+
 		queue.getRoot().getHost().getLogin().setController(new CDLoginController(this.window));
 		if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
 			try {
@@ -201,9 +204,7 @@ public class CDQueueController implements Observer, Validator {
 					}
 					if (Queue.KIND_UPLOAD == queue.kind()) {
 						if (callback != null) {
-							queue.getRoot().getParent().list(true);
 							callback.update(observable, new Message(Message.REFRESH));
-//							callback.update(observable, queue.getRoot().getParent());
 						}
 					}
 					if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {

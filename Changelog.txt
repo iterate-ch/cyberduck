@@ -23,17 +23,11 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - Improved login process
 - Updated Japanese localization
 
-http://cyberduck.ch/download.php?Cyberduck-2.2beta4.dmg
-http://cyberduck.ch/download.php?cyberduck-src-2.2beta4.tar.gz
-
 2.2b3
 - Caching folder listings
 - Auto-refresh the folder listing after uploading a file
 - Sending 'LIST -a' to list directories with FTP
 - Fixed a bug where entries in the queue would be deleted too early
-
-http://cyberduck.ch/download.php?Cyberduck-2.2beta3.dmg
-http://cyberduck.ch/download.php?cyberduck-src-2.2beta3.tar.gz
 
 2.2b2
 - Updated Japanese localization
@@ -42,9 +36,6 @@ http://cyberduck.ch/download.php?cyberduck-src-2.2beta3.tar.gz
 - Updated Italian localization
 - The log is now written with a fixed-width font
 - Various minor improvements
-
-http://cyberduck.ch/download.php?Cyberduck-2.2beta2.dmg
-http://cyberduck.ch/download.php?cyberduck-src-2.2beta2.tar.gz
 
 2.2b1
 - Keychain integration
@@ -68,9 +59,6 @@ http://cyberduck.ch/download.php?cyberduck-src-2.2beta2.tar.gz
 - Bookmarks can be rearranged
 - When login credentials aren't reasonable, ask before trying to login
 
-http://cyberduck.ch/download.php?Cyberduck-2.2beta1.dmg
-http://cyberduck.ch/download.php?cyberduck-src-2.2beta1.tar.gz
-
 2.1
 - Bookmarks can now be edited.
 - Bookmarks can now be saved as a regular file (Drag the bookmarks to the Finder).
@@ -88,9 +76,6 @@ http://cyberduck.ch/download.php?cyberduck-src-2.2beta1.tar.gz
 - German Localization
 - Smaller changes and bug fixes.
 
-http://cyberduck.ch/download.php?Cyberduck-2.1.dmg
-http://cyberduck.ch/download.php?cyberduck-src-2.1.tar.gz
-
 2.1b5
 - HTTP is now supported again. Files can be downloaded from regular web servers.
 - Cyberduck can now be configured as the default FTP helper application. See "http://www.monkeyfood.com/software/moreInternet/". This seems to work with Safari and Internet Explorer.
@@ -100,15 +85,9 @@ http://cyberduck.ch/download.php?cyberduck-src-2.1.tar.gz
 - Login to anonymous FTP servers where no password is needed is now supported.
 - Smaller bug fixes
 
-http://cyberduck.ch/download.php?Cyberduck-2.1beta5.dmg
-http://cyberduck.ch/download.php?cyberduck-src-2.1beta5.tar.gz
-
 2.1b4
 - Cyberduck now has the official creator code 'CYCK' and can handle URL events from other applications.
 - Smaller bug fixes.
-
-http://cyberduck.ch/download.php?Cyberduck-2.1beta4.dmg
-http://cyberduck.ch/download.php?cyberduck-src-2.1beta4.tar.gz
 
 2.1b3
 - Localization support
@@ -123,12 +102,7 @@ http://cyberduck.ch/download.php?cyberduck-src-2.1beta4.tar.gz
 - There is a new command 'Go to folder' for changing the working directory quickly.
 - Many smaller bug fixes.
 
-http://cyberduck.ch/download.php?Cyberduck-2.1beta3.dmg.gz
-http://cyberduck.ch/download.php?cyberduck-src-2.1beta3.tar.gz
-
 2.1b2
 - SSH (SFTP) support
 - Completly rewritten user interface using the Cocoa Framework
 
-http://cyberduck.ch/download.php?Cyberduck-2.1beta2.dmg.gz
-http://cyberduck.ch/download.php?cyberduck-src-2.1beta2.tar.gz

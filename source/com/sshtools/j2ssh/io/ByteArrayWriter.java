@@ -190,8 +190,9 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
     public void writeString(String str) throws IOException {
         if (str == null) {
             writeInt(0);
-        } else {
-            writeInt(str.length());
+        } 
+		else {
+            writeInt(str.getBytes().length);
 			write(str.getBytes());
 //            write(str.getBytes("US-ASCII"));
         }

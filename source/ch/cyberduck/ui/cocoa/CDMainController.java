@@ -244,7 +244,8 @@ public class CDMainController {
 	}
 
 	public void showTransferQueueClicked(Object sender) {
-		CDQueueController.instance();
+		CDQueueController controller = CDQueueController.instance();
+		controller.window().makeKeyAndOrderFront(null);
 	}
 
 	// ----------------------------------------------------------
@@ -302,10 +303,6 @@ public class CDMainController {
 //			return NSApplication.TerminateLater;
 //		}
 		Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
-//		Preferences.instance().save();
-//		CDBookmarksImpl.instance().save();
-//		CDHistoryImpl.instance().save();
-//		CDQueuesImpl.instance().save();
 
 		if (Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
 			if (false == NSApplication.loadNibNamed("Donate", this)) {

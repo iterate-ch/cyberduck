@@ -175,15 +175,17 @@ public class SFTPSession extends Session {
 				}
 				else {
 					this.log("Login failed", Message.PROGRESS);
-					String explanation = null;
 					if (AuthenticationProtocolState.PARTIAL == result)
-						explanation = "Authentication as user " + credentials.getUsername() + " succeeded but another authentication method is required.";
-					else //(AuthenticationProtocolState.FAILED == result)
-						explanation = "Authentication as user " + credentials.getUsername() + " failed.";
-					if (credentials.promptUser(explanation))
-						this.login();
+						throw new SshException("Authentication as user " + credentials.getUsername() + " succeeded but another authentication method is required.");
+					else if (AuthenticationProtocolState.FAILED == result) {
+						if (credentials.promptUser("Authentication as user " + credentials.getUsername() + " failed."))
+							this.login();
+						else {
+							throw new SshException("Login as user " + credentials.getUsername() + " canceled.");
+						}
+					}
 					else {
-						throw new SshException("Login as user " + credentials.getUsername() + " failed.");
+						throw new SshException("Login as user " + credentials.getUsername() + " failed for an unknown reason.");
 					}
 				}
 			}

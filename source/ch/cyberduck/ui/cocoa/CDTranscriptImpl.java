@@ -31,15 +31,6 @@ import com.apple.cocoa.foundation.NSRange;
  * @version $Id$
  */
 public class CDTranscriptImpl implements Transcript {
-//	static {
-//		TranscriptFactory.addFactory("cocoa", new Factory());
-//	}
-//	
-//	private static class Factory extends TranscriptFactory {
-//		protected Transcript create(Session s) {
-//			return new CDTranscriptImpl(s);
-//		}
-//	}
 	
 	private NSTextView textView;
 	

@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class CDQueuesImpl extends Queues { //implements NSTableView.DataSource {
-	private static Logger log = Logger.getLogger(CDBookmarksImpl.class);
+	private static Logger log = Logger.getLogger(CDQueuesImpl.class);
 
 	private static CDQueuesImpl instance;
 
@@ -68,13 +68,6 @@ public class CDQueuesImpl extends Queues { //implements NSTableView.DataSource {
 				    NSPropertyListSerialization.PropertyListXMLFormat,
 				    errorString)
 				);
-				//				NSMutableDictionary versionInfo = new NSMutableDictionary();
-				//				versionInfo.setObjectForKey(NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"), "Version");
-				//				collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
-				//																					   versionInfo,
-				//																					   NSPropertyListSerialization.PropertyListXMLFormat,
-				//																					   errorString)
-				//									  );
 				if (errorString[0] != null)
 					log.error("Problem writing queue file: " + errorString[0]);
 

@@ -395,12 +395,19 @@ public class CDBrowserController implements Observer {
 		Host item;
 		if (this.isMounted()) {
 			Host h = pathController.workdir().getSession().getHost();
-			item = new Host(h.getProtocol(), h.getHostname(), h.getPort(), h.getLogin(), h.getDefaultPath());
+			item = new Host(h.getProtocol(), 
+							h.getHostname(), 
+							h.getPort(), 
+							new Login(h.getHostname(), h.getLogin().getUsername(), h.getLogin().getPassword()), 
+							h.getDefaultPath());
 		}
 		else {
 			item = new Host("", new Login("", null, null));
 		}
 		CDBookmarksImpl.instance().addItem(item);
+		this.bookmarkTable.reloadData();
+		this.bookmarkTable.selectRow(CDBookmarksImpl.instance().indexOf(item), false);
+		this.bookmarkTable.scrollRowToVisible(CDBookmarksImpl.instance().indexOf(item));
 		CDBookmarkController controller = new CDBookmarkController(bookmarkTable, item);
 	}
 
@@ -666,9 +673,7 @@ public class CDBrowserController implements Observer {
 		while (enum.hasMoreElements()) {
 			int selected = ((Integer) enum.nextElement()).intValue();
 			Path path = browserModel.getEntry(selected);
-			//			Path path = browserModel.getEntry(browserTable.selectedRow());
 			CDInfoController controller = new CDInfoController(path);
-//			controller.window().makeKeyAndOrderFront(null);
 		}
 	}
 
@@ -803,7 +808,7 @@ public class CDBrowserController implements Observer {
 
 	public void disconnectButtonClicked(Object sender) {
 		this.unmount(new NSSelector(
-									"closeSheetDidEnd",
+									"unmountSheetDidEnd",
 									new Class[] { NSWindow.class, int.class, Object.class }
 									), null // end selector
 					 );
@@ -909,21 +914,16 @@ public class CDBrowserController implements Observer {
 	// ----------------------------------------------------------
 
 	public boolean windowShouldClose(NSWindow sender) {
-//		if (this.isConnected()) {
 		return this.unmount(new NSSelector(
 										"closeSheetDidEnd",
 										new Class[] { NSWindow.class, int.class, Object.class }
 										), null // end selector
 						 );
-//			return false;
-//		}
-//		return true;
 	}
 
 	public void closeSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
 		this.unmountSheetDidEnd(sheet, returncode, contextInfo);
 		if (returncode == NSAlertPanel.DefaultReturn) {
-//			this.unmount();
 			this.window.close();
 		}
 	}
