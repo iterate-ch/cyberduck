@@ -40,7 +40,6 @@
 - [Bugfix] Bookmark drawer icon has no text-only equivalent
 - [Bugfix] Tabbing between browser and filter box
 - [Bugfix] Quick Connect Field has initial focus
-- [Bugfix] HTTP download broken
         </string>
     </dict>
 </plist>

@@ -55,12 +55,7 @@ public class UploadQueue extends Queue {
 			}
 		}
 		if(p.attributes.isFile()) {
-			if(p.exists()) {
-				List l = p.getParent().list(false, true);
-				Path r = (Path)l.get(l.indexOf(p));
-				r.setLocal(p.getLocal());
-				childs.add(r);
-			}
+			childs.add(p);
 		}
 		return childs;
 	}

@@ -595,7 +595,6 @@ public class CDBrowserController extends CDController implements Observer {
 		this.backButton.setAction(new NSSelector("backButtonClicked", new Class[]{Object.class}));
 	}
 
-	private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
 	private static final NSImage DISK_ICON = NSImage.imageNamed("disk.tiff");
 
 	private List pathPopupItems = new ArrayList();
@@ -1325,6 +1324,9 @@ public class CDBrowserController extends CDController implements Observer {
 		if(identifier.equals("New Folder") || identifier.equals("folderButtonClicked:")) {
 			return this.isMounted();
 		}
+		if(identifier.equals("New File") || identifier.equals("fileButtonClicked:")) {
+			return this.isMounted();
+		}
 		if(identifier.equals("Delete") || identifier.equals("deleteButtonClicked:")) {
 			return this.isMounted() && browserTable.selectedRow() != -1;
 		}
@@ -1542,9 +1544,9 @@ public class CDBrowserController extends CDController implements Observer {
 	// Browser Model
 	// ----------------------------------------------------------
 
-	private static final NSImage symlinkIcon = NSImage.imageNamed("symlink.tiff");
-	private static final NSImage folderIcon = NSImage.imageNamed("folder16.tiff");
-	private static final NSImage notFoundIcon = NSImage.imageNamed("notfound.tiff");
+	private static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
+	private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
+	private static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
 	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
 
@@ -1575,16 +1577,16 @@ public class CDBrowserController extends CDController implements Observer {
 				if(identifier.equals("TYPE")) {
 					NSImage icon;
 					if(p.attributes.isSymbolicLink()) {
-						icon = symlinkIcon;
+						icon = SYMLINK_ICON;
 					}
 					else if(p.attributes.isDirectory()) {
-						icon = folderIcon;
+						icon = FOLDER_ICON;
 					}
 					else if(p.attributes.isFile()) {
 						icon = CDIconCache.instance().get(p.getExtension());
 					}
 					else {
-						icon = notFoundIcon;
+						icon = NOT_FOUND_ICON;
 					}
 					icon.setSize(new NSSize(16f, 16f));
 					return icon;

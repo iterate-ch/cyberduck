@@ -67,11 +67,37 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		this.uploadRadioCell.setAction(new NSSelector("uploadCellClicked", new Class[]{Object.class}));
 		this.downloadRadioCell.setTarget(this);
 		this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
+		{
+			NSTableColumn c = new NSTableColumn();
+			c.setIdentifier("NEW");
+			c.headerCell().setStringValue("");
+			c.setMinWidth(20f);
+			c.setWidth(20f);
+			c.setMaxWidth(20f);
+			c.setResizable(true);
+			c.setEditable(false);
+			c.setDataCell(new NSImageCell());
+			c.dataCell().setAlignment(NSText.CenterTextAlignment);
+			this.fileTableView.addTableColumn(c);
+		}		
+		{
+			NSTableColumn c = new NSTableColumn();
+			c.setIdentifier("TYPE");
+			c.headerCell().setStringValue("");
+			c.setMinWidth(20f);
+			c.setWidth(20f);
+			c.setMaxWidth(20f);
+			c.setResizable(true);
+			c.setEditable(false);
+			c.setDataCell(new NSImageCell());
+			c.dataCell().setAlignment(NSText.CenterTextAlignment);
+			this.fileTableView.addTableColumn(c);
+		}		
 	}
 
 	protected boolean validateFile(Path p, boolean resume) {
 		log.debug("validateFile:"+p);
-		if(p.getRemote().exists(false) && p.getLocal().exists()) {
+		if(p.getRemote().exists() && p.getLocal().exists()) {
 			if (!(p.status.getSize() == p.getLocal().size())) {
 				this.prompt(p);
 			}
@@ -82,11 +108,25 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		return false;
 	}
 	
-	protected boolean exists(Path p) {
-		return p.getRemote().exists(false) || p.getLocal().exists();
+	protected boolean validateDirectory(Path p) {
+		if(p.getRemote().exists() && p.getLocal().exists()) {
+			return false;
+		}
+		else {
+			this.prompt(p);
+			if(!p.getRemote().exists()) {
+				p.getSession().cache().put(p.getAbsolute(), new ArrayList());
+			}
+		}
+		return false;
+	}
+	
+	protected boolean isExisting(Path p) {
+		return p.getRemote().exists() || p.getLocal().exists();
 	}
 	
 	protected void setEnabled(boolean enabled) {
+		this.cancelButton.setEnabled(enabled);
 		this.syncButton.setEnabled(enabled);
 	}
 
@@ -106,7 +146,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			this.validated = new ArrayList();
 			for(Iterator i = this.workset.iterator(); i.hasNext();) {
 				Path p = (Path)i.next();
-				if(p.getRemote().exists(false)) {
+				if(p.getRemote().exists()) {
 					this.validated.add(p);
 				}
 			}
@@ -141,25 +181,25 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	// Outlets
 	// ----------------------------------------------------------
 	
-	private NSButtonCell mirrorRadioCell;
+	protected NSButtonCell mirrorRadioCell;
 
 	public void setSyncRadioCell(NSButtonCell mirrorRadioCell) {
 		this.mirrorRadioCell = mirrorRadioCell;
 	}
 
-	private NSButtonCell downloadRadioCell;
+	protected NSButtonCell downloadRadioCell;
 
 	public void setDownloadRadioCell(NSButtonCell downloadRadioCell) {
 		this.downloadRadioCell = downloadRadioCell;
 	}
 
-	private NSButtonCell uploadRadioCell;
+	protected NSButtonCell uploadRadioCell;
 
 	public void setUploadRadioCell(NSButtonCell uploadRadioCell) {
 		this.uploadRadioCell = uploadRadioCell;
 	}
 
-	private NSButton syncButton;
+	protected NSButton syncButton;
 
 	public void setSyncButton(NSButton syncButton) {
 		this.syncButton = syncButton;
@@ -169,6 +209,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	}
 
 	public void syncActionFired(NSButton sender) {
+		this.setCanceled(false);
 		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
 	}
 	
@@ -190,7 +231,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			Path p = (Path)this.validated.get(row);
 			if(p != null) {
 				if(identifier.equals("TYPE")) {
-					if(p.getRemote().exists(false) && p.getLocal().exists()) {
+					if(p.getRemote().exists() && p.getLocal().exists()) {
 						if(p.getLocal().getTimestamp().before(p.getRemote().attributes.getTimestamp())) {
 							return ARROW_DOWN_ICON;
 						}
@@ -198,7 +239,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 							return ARROW_UP_ICON;
 						}
 					}
-					if(p.getRemote().exists(false)) {
+					if(p.getRemote().exists()) {
 						return ARROW_DOWN_ICON;
 					}
 					if(p.getLocal().exists()) {
@@ -207,7 +248,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 					throw new IllegalArgumentException("The file must exist either locally or on the server");
 				}
 				if(identifier.equals("NEW")) {
-					if(!(p.getRemote().exists(false) && p.getLocal().exists())) {
+					if(!(p.getRemote().exists() && p.getLocal().exists())) {
 						return PLUS_ICON;
 					}
 				}

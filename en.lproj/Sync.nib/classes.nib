@@ -2,14 +2,10 @@
     IBClasses = (
         {CLASS = AMToolTipTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {
-            ACTIONS = {cancelActionFired = id; syncActionFired = id; }; 
-            CLASS = NSObject; 
-            LANGUAGE = ObjC; 
-        }, 
-        {
             CLASS = "ch.cyberduck.ui.cocoa.CDSyncQueueController"; 
             LANGUAGE = Java; 
             OUTLETS = {
+                cancelButton = NSButton; 
                 downloadRadioCell = NSCell; 
                 fileTableView = NSTableView; 
                 infoLabel = NSTextField; 

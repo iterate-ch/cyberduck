@@ -61,10 +61,16 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
 		return result;
 	}
 
-	protected boolean exists(Path p) {
+	protected boolean isExisting(Path p) {
 		return p.getLocal().exists();
 	}
 
+	protected boolean validateDirectory(Path path) {
+		if(!path.getLocal().exists())
+			return true;
+		return false;
+	}
+	
 	protected void adjustFilename(Path path) {
 		String parent = path.getLocal().getParent();
 		String filename = path.getLocal().getName();

@@ -34,13 +34,17 @@ import org.apache.log4j.Logger;
 public abstract class Queue extends Observable implements Observer {
 	protected static Logger log = Logger.getLogger(Queue.class);
 
-//	private Validator validator;
 	private Worker worker;
 
+	private long size = -1;
+	
 	private List roots = new ArrayList();
 	private List jobs = new ArrayList();
 
 	private String status = "";
+	private StringBuffer error;
+	private StringBuffer tooltip;
+	
 
 	/**
 	 * The observer to notify when an upload is complete
@@ -107,9 +111,11 @@ public abstract class Queue extends Observable implements Observer {
 			if(itemsObj != null) {
 				NSArray items = (NSArray)itemsObj;
 				if(null != items) {
+					List jobs = new ArrayList();
 					for(int i = 0; i < items.count(); i++) {
-						q.addJob(PathFactory.createPath(s, (NSDictionary)items.objectAtIndex(i)));
+						jobs.add(PathFactory.createPath(s, (NSDictionary)items.objectAtIndex(i)));
 					}
+					q.setJobs(jobs);
 				}
 			}
 		}
@@ -141,13 +147,23 @@ public abstract class Queue extends Observable implements Observer {
 		this.roots.add(item);
 	}
 
-	private void addJob(Path item) {
-		this.jobs.add(item);
-	}
-
 	protected void setJobs(List jobs) {
 		this.jobs = jobs;
-		this.reset();
+		{
+			this.tooltip = new StringBuffer();
+			int i = 0;
+			Iterator iter = this.jobs.iterator();
+			while(i < 10 && iter.hasNext()) {
+				this.tooltip.append(iter.next().toString());
+				if(iter.hasNext()) {
+					this.tooltip.append("\n");
+				}
+				i++;
+			}
+			if(iter.hasNext()) {
+				this.tooltip.append("...");
+			}
+		}
 	}
 	
 	public Path getRoot() {
@@ -190,12 +206,15 @@ public abstract class Queue extends Observable implements Observer {
 			}
 		}
 	}
-
+	
 	public void update(Observable o, Object arg) {
 		if(arg instanceof Message) {
 			Message msg = (Message)arg;
 			if(msg.getTitle().equals(Message.PROGRESS)) {
 				this.status = (String)msg.getContent();
+			}
+			if(msg.getTitle().equals(Message.ERROR)) {
+				this.error.append("\n"+(String)msg.getContent());
 			}
 		}
 		this.callObservers(arg);
@@ -203,6 +222,8 @@ public abstract class Queue extends Observable implements Observer {
 
 	public void reset() {
 		this.size = 0;
+		this.status = "";
+		this.error = new StringBuffer();
 		for(Iterator iter = jobs.iterator(); iter.hasNext();) {
 			Path p = (Path)iter.next();
 			p.status.reset();
@@ -229,10 +250,7 @@ public abstract class Queue extends Observable implements Observer {
 	}
 	
 	/**
-	 * Process the queue. All files will be downloaded or uploaded rerspectively.
-	 *
-	 * @param validator A callback class where the user can decide what to do if
-	 *                  the file already exists at the download or upload location respectively
+	 * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
 	 */
 	public void start(boolean resume) {
 		this.resume = resume;
@@ -257,6 +275,7 @@ public abstract class Queue extends Observable implements Observer {
 			List jobs = this.validator.validate(queue);
 			if(jobs.size() > 0) {
 				this.queue.setJobs(jobs);
+				this.queue.reset();
 				for(Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
 					Path job = (Path)iter.next();
 					job.status.addObserver(queue);
@@ -299,7 +318,7 @@ public abstract class Queue extends Observable implements Observer {
 									  });
 			this.progress.start();
 			this.queue.getRoot().getSession().addObserver(this.queue);
-			//@todo			this.queue.getRoot().getSession().cache().clear();
+			//@todo this.queue.getRoot().getSession().cache().clear();
 			this.queue.callObservers(new Message(Message.QUEUE_START));
 		}
 		
@@ -368,6 +387,14 @@ public abstract class Queue extends Observable implements Observer {
 	public boolean isInitalized() {
 		return !(this.getSize() == 0 && this.getCurrent() == 0);
 	}
+	
+	public String getTooltip() {
+		return tooltip.toString();
+	}
+	
+	public String getErrorText() {
+		return this.error.toString();
+	}
 
 	public String getStatusText() {
 		if(this.isInitalized()) {
@@ -384,11 +411,6 @@ public abstract class Queue extends Observable implements Observer {
 		return "(Unknown size)  "+this.status;
 	}
 
-	private long size = -1;
-
-	/**
-	 * @return The cummulative file size of all files remaining in the this
-	 */
 	public long getSize() {
 		if(-1 == this.size) { // not yet initialized; get cached size of jobs
 			long value = 0;

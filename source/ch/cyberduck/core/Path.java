@@ -173,20 +173,8 @@ public abstract class Path {
 		return this.getSession().getHost();
 	}
 
-	/**
-	 * @return Same as list but will not send notification to observers
-	 */
-/*    public List childs() {
-        List childs = this.getSession().cache().get(this.getAbsolute());
-		if(null == childs) {
-			childs = this.list(false, true);
-		}
-		return childs;
-    }
-*/
 	public void invalidate() {
 		this.getSession().cache().remove(this.getAbsolute());
-		//this.exists = false;
 	}
 
 	public List list() {
@@ -214,6 +202,10 @@ public abstract class Path {
 	 */
 	public abstract void cwdir() throws IOException;
 
+	public void mkdir() {
+		this.mkdir(false);
+	}
+	
 	/**
 	 * @param recursive Create intermediate directories as required.  If this option is
 	 *                  not specified, the full path prefix of each operand must already exist
@@ -231,19 +223,11 @@ public abstract class Path {
 	public abstract void changePermissions(Permission perm, boolean recursive);
 
 	public boolean exists() {
-		return this.exists(true);
-	}
-
-	/**
-	 * @param test Test for existance
-	 */
-	public boolean exists(boolean test) {
 		if(this.isRoot()) {
 			return true;
 		}
-		if(test) {
-			this.exists = this.getParent().list(false, true).contains(this);
-		}
+		this.exists = this.getParent().list(false, true).contains(this);
+		log.debug(this.toString()+":\n++++++++++++++ exists:"+this.exists);
 		return this.exists;
 	}
 

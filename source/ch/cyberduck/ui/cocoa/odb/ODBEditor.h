@@ -50,8 +50,6 @@ extern NSString * const ODBEditorCustomPathKey;
 
 - (BOOL)editFile:(NSString *)path options:(NSDictionary *)options forClient:(id)client context:(void *)context;
 
-//- (BOOL)editString:(NSString *)string options:(NSDictionary *)options forClient:(id)client context:(void *)context;
-
 @end
 
 @interface NSObject(ODBEditorClient)
@@ -61,8 +59,5 @@ extern NSString * const ODBEditorCustomPathKey;
 
 -(void)odbEditor:(ODBEditor *)editor didModifyFile:(NSString *)path newFileLocation:(NSString *)newPath  context:(NSDictionary *)context;
 -(void)odbEditor:(ODBEditor *)editor didClosefile:(NSString *)path context:(NSDictionary *)context;
-
-//-(void)odbEditor:(ODBEditor *)editor didModifyFileForString:(NSString *)newString context:(void *)context;
-//-(void)odbEditor:(ODBEditor *)editor didCloseFileForString:(NSString *)newString context:(void *)context;
 
 @end

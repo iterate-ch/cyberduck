@@ -76,16 +76,9 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 			if(identifier.equals("PROGRESS")) {
 				return this.getController(row).view();
 			}
-			if(identifier.equals("TOOLTIP")) {
-				StringBuffer tooltip = new StringBuffer();
+			if(identifier.equals("TOOLTIP")) { //@todo cache tooltip in queue model
 				Queue q = this.getItem(row);
-				for(Iterator i = q.getJobs().iterator(); i.hasNext();) {
-					tooltip.append(i.next().toString());
-					if(i.hasNext()) {
-						tooltip.append("\n");
-					}
-				}
-				return tooltip.toString();
+				return q.getTooltip();
 			}
 			throw new IllegalArgumentException("Unknown identifier: "+identifier);
 		}

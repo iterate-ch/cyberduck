@@ -18,9 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.Observable;
-import java.util.Observer;
-
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
@@ -32,7 +29,7 @@ import ch.cyberduck.ui.cocoa.growl.Growl;
 /**
  * @version $Id$
  */
-public class CDQueueController extends CDController implements Observer {
+public class CDQueueController extends CDController {
 	private static Logger log = Logger.getLogger(CDQueueController.class);
 
 	private static CDQueueController instance;
@@ -183,29 +180,30 @@ public class CDQueueController extends CDController implements Observer {
 		this.queueTable.registerForDraggedTypes(new NSArray(new Object[]{"QueuePBoardType",
 		                                                                 NSPasteboard.StringPboardType,
 		                                                                 NSPasteboard.FilesPromisePboardType}));
-
 		this.queueTable.setRowHeight(50f);
-
-		NSTableColumn iconColumn = new NSTableColumn();
-		iconColumn.setIdentifier("ICON");
-		iconColumn.setMinWidth(36f);
-		iconColumn.setWidth(36f);
-		iconColumn.setMaxWidth(36f);
-		iconColumn.setEditable(false);
-		iconColumn.setResizable(true);
-		iconColumn.setDataCell(new CDIconCell());
-		this.queueTable.addTableColumn(iconColumn);
-
-		NSTableColumn progressColumn = new NSTableColumn();
-		progressColumn.setIdentifier("PROGRESS");
-		progressColumn.setMinWidth(80f);
-		progressColumn.setWidth(300f);
-		progressColumn.setMaxWidth(1000f);
-		progressColumn.setEditable(false);
-		progressColumn.setResizable(true);
-		progressColumn.setDataCell(new CDProgressCell());
-		this.queueTable.addTableColumn(progressColumn);
-
+		{
+			NSTableColumn c = new NSTableColumn();
+			c.setIdentifier("ICON");
+			c.setMinWidth(36f);
+			c.setWidth(36f);
+			c.setMaxWidth(36f);
+			c.setEditable(false);
+			c.setResizable(true);
+			c.setDataCell(new CDIconCell());
+			this.queueTable.addTableColumn(c);
+		}
+		
+		{
+			NSTableColumn c = new NSTableColumn();
+			c.setIdentifier("PROGRESS");
+			c.setMinWidth(80f);
+			c.setWidth(300f);
+			c.setMaxWidth(1000f);
+			c.setEditable(false);
+			c.setResizable(true);
+			c.setDataCell(new CDProgressCell());
+			this.queueTable.addTableColumn(c);
+		}
 		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
 		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
 		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
@@ -254,8 +252,13 @@ public class CDQueueController extends CDController implements Observer {
 		this.queueTable.reloadData();
 		this.tableViewSelectionChange();
 	}
+	
+	public void removeItem(Queue queue) {
+		this.queueModel.removeItem(queue);
+		this.reloadQueueTable();
+	}
 
-	private void addItem(Queue queue) {
+	public void addItem(Queue queue) {
 		this.queueModel.addItem(queue);
 		this.reloadQueueTable();
 		this.queueTable.selectRow(this.queueModel.size()-1, false);
@@ -268,7 +271,7 @@ public class CDQueueController extends CDController implements Observer {
 	}
 
 	private void startItem(Queue queue, boolean resumeRequested) {
-		queue.addObserver(this);
+//		queue.addObserver(this);
 		if(Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
 			this.window().makeKeyAndOrderFront(null);
 		}
@@ -292,54 +295,6 @@ public class CDQueueController extends CDController implements Observer {
 
 	public boolean isVisible() {
 		return this.window() != null && this.window().isVisible();
-	}
-
-	public void update(Observable observable, Object arg) {
-		if(arg instanceof Message) {
-			Message msg = (Message)arg;
-			if(msg.getTitle().equals(Message.ERROR)) {
-				this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"),
-				    (String)msg.getContent(), // message
-				    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-				    null, //alternative button
-				    null //other button
-				),
-				    true);
-			}
-			else if(msg.getTitle().equals(Message.QUEUE_START)) {
-				this.toolbar.validateVisibleItems();
-			}
-			else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
-				this.toolbar.validateVisibleItems();
-				Queue queue = (Queue)observable;
-				if(queue.isComplete()) {
-					if(queue instanceof DownloadQueue) {
-						Growl.instance().notify(NSBundle.localizedString("Download complete",
-						    "Growl Notification"),
-						    queue.getName());
-						if(Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
-							boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
-							log.debug("Success opening file:"+success);
-						}
-					}
-					if(queue instanceof UploadQueue) {
-						Growl.instance().notify(NSBundle.localizedString("Upload complete",
-						    "Growl Notification"),
-						    queue.getName());
-					}
-					if(queue instanceof SyncQueue) {
-						Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
-						    "Growl Notification"),
-						    queue.getName());
-					}
-					if(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
-						this.queueModel.removeItem(queue);
-						this.reloadQueueTable();
-					}
-				}
-				queue.deleteObserver(this);
-			}
-		}
 	}
 
 	public void awakeFromNib() {

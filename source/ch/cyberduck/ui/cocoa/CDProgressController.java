@@ -25,11 +25,13 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Queue;
+import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.core.*;
 
 /**
  * @version $Id$
@@ -67,7 +69,6 @@ public class CDProgressController extends NSObject implements Observer {
 		this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
 		    TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
 		this.updateProgressfield();
-		this.updateAlertIcon();
 	}
 
 	public void update(Observable o, Object arg) {
@@ -81,25 +82,42 @@ public class CDProgressController extends NSObject implements Observer {
 			else if(msg.getTitle().equals(Message.PROGRESS)) {
 				this.updateProgressfield();
 			}
+			else if(msg.getTitle().equals(Message.ERROR)) {
+				this.alertIcon.setHidden(false);
+			}
 			else if(msg.getTitle().equals(Message.QUEUE_START)) {
 				this.progressBar.setIndeterminate(true);
 				this.progressBar.startAnimation(null);
-				this.updateAlertIcon();
+				this.alertIcon.setHidden(true);
 			}
 			else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
 				this.progressBar.setIndeterminate(false);
 				this.progressBar.stopAnimation(null);
-				this.updateAlertIcon();
+				if(this.queue.isComplete()) {
+					if(this.queue instanceof DownloadQueue) {
+						Growl.instance().notify(NSBundle.localizedString("Download complete",
+																		 "Growl Notification"),
+												this.queue.getName());
+						if(Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
+							boolean success = NSWorkspace.sharedWorkspace().openFile(this.queue.getRoot().getLocal().toString());
+							log.debug("Success opening file:"+success);
+						}
+					}
+					if(this.queue instanceof UploadQueue) {
+						Growl.instance().notify(NSBundle.localizedString("Upload complete",
+																		 "Growl Notification"),
+												this.queue.getName());
+					}
+					if(this.queue instanceof SyncQueue) {
+						Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
+																		 "Growl Notification"),
+												this.queue.getName());
+					}
+					if(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
+						CDQueueController.instance().removeItem(this.queue);
+					}
+				}
 			}
-		}
-	}
-
-	private void updateAlertIcon() {
-		if(this.queue.isRunning() || this.queue.isComplete()) {
-			alertIcon.setImage(null);
-		}
-		else {
-			alertIcon.setImage(NSImage.imageNamed("alert.tiff"));
 		}
 	}
 
@@ -125,6 +143,16 @@ public class CDProgressController extends NSObject implements Observer {
 		return this.queue;
 	}
 
+	public void alertButtonClicked(NSButton sender) {
+		CDQueueController.instance().beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"),
+																				this.queue.getErrorText(), // message
+																				NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+																				null, //alternative button
+																				null //other button
+																				),
+												true);
+	}
+		
 	private boolean highlighted;
 
 	public void setHighlighted(boolean highlighted) {
@@ -178,10 +206,13 @@ public class CDProgressController extends NSObject implements Observer {
 		this.progressBar.setUsesThreadedAnimation(true);
 	}
 
-	private NSImageView alertIcon; // IBOutlet
+	private NSButton alertIcon; // IBOutlet
 
-	public void setAlertIcon(NSImageView alertIcon) {
+	public void setAlertIcon(NSButton alertIcon) {
 		this.alertIcon = alertIcon;
+		this.alertIcon.setHidden(true);
+		this.alertIcon.setTarget(this);
+		this.alertIcon.setAction(new NSSelector("alertButtonClicked", new Class[]{Object.class}));
 	}
 
 	private NSView progressView; // IBOutlet

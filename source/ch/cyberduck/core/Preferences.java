@@ -134,7 +134,7 @@ public abstract class Preferences {
 		defaults.put("ftp.transfermode.ascii.extensions", "txt cgi htm html shtml xml xsl php php3 js css asp java c cp cpp m h pl py rb sh");
 		defaults.put("ftp.line.separator", "unix");
 		defaults.put("ftp.sendSystemCommand", "true");
-		defaults.put("ftp.sendExtendedListCommand", "false");
+		defaults.put("ftp.sendExtendedListCommand", "true");
 
 		defaults.put("connection.pool.timeout", "180"); // in seconds
 		defaults.put("connection.pool.max", "3"); // maximumum concurrent connections to the same host

@@ -64,10 +64,18 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 		return result;
 	}
 
-	protected boolean exists(Path p) {
+	protected boolean isExisting(Path p) {
 		return p.exists();
 	}
 
+	protected boolean validateDirectory(Path path) {
+		if(!path.getRemote().exists()) {
+			path.getSession().cache().put(path.getAbsolute(), new ArrayList());
+			return true;
+		}
+		return false;
+	}
+	
 	protected void adjustFilename(Path path) {
 		String parent = path.getParent().getAbsolute();
 		String filename = path.getName();

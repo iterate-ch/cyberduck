@@ -53,8 +53,6 @@ import com.sshtools.j2ssh.util.Hash;
  */
 public abstract class TransportProtocolCommon implements TransportProtocol,
         Runnable {
-    // Flag to keep on running
-    //private boolean keepRunning = true;
 
     /**  */
     protected static Log log = LogFactory.getLog(TransportProtocolCommon.class);
@@ -347,8 +345,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 
             if (state.getValue() != TransportProtocolState.DISCONNECTED) {
                 log.error("The Transport Protocol thread failed", e);
-                //log.info(e.getMessage());
-                //stop(); @todo
+                stop();
             }
         }
         finally {
@@ -934,6 +931,8 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
                 ms.close();
             }
             catch (Exception e) {
+				log.error(e.getMessage());
+				e.printStackTrace();
             }
         }
 
@@ -945,7 +944,9 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
         try {
             provider.close();
         }
-        catch (IOException ioe) {
+        catch (IOException e) {
+			log.error(e.getMessage());
+			e.printStackTrace();
         }
     }
 

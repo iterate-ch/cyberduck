@@ -42,8 +42,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 
 	public void awakeFromNib() {
-		this.fileTableView.setDataSource(this);
-		this.fileTableView.sizeToFit();
 		(NSNotificationCenter.defaultCenter()).addObserver(this,
 		    new NSSelector("tableViewSelectionDidChange", new Class[]{NSNotification.class}),
 		    NSTableView.TableViewSelectionDidChangeNotification,
@@ -140,13 +138,71 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.statusIndicator = statusIndicator;
 	}
 
-	private NSTableView fileTableView; // IBOutlet
+	protected NSTableView fileTableView; // IBOutlet
 
 	public void setFileTableView(NSTableView fileTableView) {
 		this.fileTableView = fileTableView;
+		this.fileTableView.setDataSource(this);
+		this.fileTableView.sizeToFit();
+		this.fileTableView.setRowHeight(17f);
+		this.fileTableView.setAutoresizesAllColumnsToFit(true);
+		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
+		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
+		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
+			this.fileTableView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getProperty("browser.alternatingRows").equals("true"));
+		}
+		NSSelector setGridStyleMaskSelector =
+		    new NSSelector("setGridStyleMask", new Class[]{int.class});
+		if(setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
+			if(Preferences.instance().getProperty("browser.horizontalLines").equals("true") && Preferences.instance().getProperty("browser.verticalLines").equals("true")) {
+				this.fileTableView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
+			}
+			else if(Preferences.instance().getProperty("browser.verticalLines").equals("true")) {
+				this.fileTableView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
+			}
+			else if(Preferences.instance().getProperty("browser.horizontalLines").equals("true")) {
+				this.fileTableView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
+			}
+			else {
+				this.fileTableView.setGridStyleMask(NSTableView.GridNone);
+			}
+		}
+		{
+			NSTableColumn c = new NSTableColumn();
+			c.setIdentifier("ICON");
+			c.headerCell().setStringValue("");
+			c.setMinWidth(20f);
+			c.setWidth(20f);
+			c.setMaxWidth(20f);
+			c.setResizable(true);
+			c.setEditable(false);
+			c.setDataCell(new NSImageCell());
+			c.dataCell().setAlignment(NSText.CenterTextAlignment);
+			this.fileTableView.addTableColumn(c);
+		}
+		{
+			NSTableColumn c = new NSTableColumn();
+			c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
+			c.setIdentifier("FILENAME");
+			c.setMinWidth(100f);
+			c.setWidth(250f);
+			c.setMaxWidth(500f);
+			c.setResizable(true);
+			c.setEditable(false);
+			c.setDataCell(new NSTextFieldCell());
+			c.dataCell().setAlignment(NSText.LeftTextAlignment);
+			this.fileTableView.addTableColumn(c);
+		}
+		
+		// selection properties
+		this.fileTableView.setAllowsMultipleSelection(true);
+		this.fileTableView.setAllowsEmptySelection(true);
+		this.fileTableView.setAllowsColumnReordering(true);
+		
+		this.fileTableView.sizeToFit();
 	}
 
-	private NSButton skipButton; // IBOutlet
+	protected NSButton skipButton; // IBOutlet
 
 	public void setSkipButton(NSButton skipButton) {
 		this.skipButton = skipButton;
@@ -155,7 +211,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.skipButton.setAction(new NSSelector("skipActionFired", new Class[]{Object.class}));
 	}
 
-	private NSButton resumeButton; // IBOutlet
+	protected NSButton resumeButton; // IBOutlet
 
 	public void setResumeButton(NSButton resumeButton) {
 		this.resumeButton = resumeButton;
@@ -164,7 +220,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.resumeButton.setAction(new NSSelector("resumeActionFired", new Class[]{Object.class}));
 	}
 
-	private NSButton overwriteButton; // IBOutlet
+	protected NSButton overwriteButton; // IBOutlet
 
 	public void setOverwriteButton(NSButton overwriteButton) {
 		this.overwriteButton = overwriteButton;
@@ -173,7 +229,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.overwriteButton.setAction(new NSSelector("overwriteActionFired", new Class[]{Object.class}));
 	}
 
-	private NSButton cancelButton; // IBOutlet
+	protected NSButton cancelButton; // IBOutlet
 	
 	public void setCancelButton(NSButton cancelButton) {
 		this.cancelButton = cancelButton;
@@ -194,10 +250,10 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 
 	protected void setEnabled(boolean enabled) {
+		this.cancelButton.setEnabled(enabled);
 		this.overwriteButton.setEnabled(enabled);
 		this.resumeButton.setEnabled(enabled);
 		this.skipButton.setEnabled(enabled);
-		this.cancelButton.setEnabled(enabled);
 	}
 
 	protected void reloadTable() {
@@ -214,31 +270,31 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 
 	public void resumeActionFired(NSButton sender) {
-		this.setCanceled(false);
 		for(Iterator i = this.workset.iterator(); i.hasNext();) {
 			((Path)i.next()).status.setResume(true);
 		}
+		this.setCanceled(false);
 		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
 	}
 
 	public void overwriteActionFired(NSButton sender) {
-		this.setCanceled(false);
 		for(Iterator i = this.workset.iterator(); i.hasNext();) {
 			((Path)i.next()).status.setResume(false);
 		}
+		this.setCanceled(false);
 		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
 	}
 
 	public void skipActionFired(NSButton sender) {
-		this.setCanceled(false);
 		this.workset.clear();
+		this.setCanceled(false);
 		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
 	}
 
 	public void cancelActionFired(NSButton sender) {
-		this.setCanceled(true);
 		this.validated.clear();
 		this.workset.clear();
+		this.setCanceled(true);
 		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
 	}
 
@@ -266,7 +322,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 				else {
 					this.localField.setStringValue("-");
 				}
-				if(p.getRemote().exists(false)) {
+				if(p.getRemote().exists()) { //@todo
 					this.urlField.setAttributedStringValue(new NSAttributedString(p.getRemote().getHost().getURL()+p.getRemote().getAbsolute(),
 					    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 				}
@@ -278,6 +334,8 @@ public abstract class CDValidatorController extends AbstractValidator {
 		}
 	}
 
+	private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
+
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 		if(row < this.numberOfRowsInTableView(tableView)) {
 			String identifier = (String)tableColumn.identifier();
@@ -287,18 +345,24 @@ public abstract class CDValidatorController extends AbstractValidator {
 					return new NSAttributedString(p.getRemote().getName());
 				}
 				if(identifier.equals("ICON")) {
-					NSImage icon = CDIconCache.instance().get(p.getExtension());
-					icon.setSize(new NSSize(16f, 16f));
-					return icon;
+					if(p.attributes.isDirectory()) {
+						return FOLDER_ICON;
+					}
+					if(p.attributes.isFile()) {
+						NSImage icon = CDIconCache.instance().get(p.getExtension());
+						icon.setSize(new NSSize(16f, 16f));
+						return icon;
+					}
+					return NSImage.imageNamed("notfound.tiff");
 				}
 				if(identifier.equals("TOOLTIP")) {
 					StringBuffer tooltip = new StringBuffer();
-					if(p.exists(false)) {
+					if(p.exists()) { //@todo
 						tooltip.append(NSBundle.localizedString("Remote", "")+":\n"
 						    +"  "+Status.getSizeAsString(p.status.getSize())+"\n"
 						    +"  "+p.attributes.getTimestampAsString());
 					}
-					if(p.exists(false) && p.getLocal().exists())
+					if(p.getRemote().exists() && p.getLocal().exists())
 						tooltip.append("\n");
 					if(p.getLocal().exists()) {
 						tooltip.append(NSBundle.localizedString("Local", "")+":\n"

@@ -85,10 +85,8 @@ public abstract class Session extends Observable {
 	}
 
 	public void callObservers(Object arg) {
-		if(log.isDebugEnabled()) {
-			log.debug("callObservers:"+arg);
-			log.debug(this.countObservers()+" observer(s) known.");
-		}
+//		log.debug("callObservers:"+arg);
+//		log.debug(this.countObservers()+" observer(s) known.");
 		this.setChanged();
 		this.notifyObservers(arg);
 	}
@@ -219,7 +217,7 @@ public abstract class Session extends Observable {
 	}
 
 	public void log(String message, String title) {
-		log.debug("["+title+"] "+message);
+//		log.debug("["+title+"] "+message);
 		if(title.equals(Message.TRANSCRIPT)) {
 			this.transcript.log(message);
 		}

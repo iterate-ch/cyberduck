@@ -5,7 +5,7 @@ Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
 2.4b1
-- [Feature] Norwegian Localization
+- [Localize] Norwegian Localization
 - [Feature] Synchronization of files
 - [Feature] Create & Edit new files on server
 - [Feature] Support for Novell Netware file listings (FTP)
@@ -36,14 +36,13 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Bugfix] Bookmark drawer icon has no text-only equivalent
 - [Bugfix] Tabbing between browser and filter box
 - [Bugfix] Quick Connect Field has initial focus
-- [Bugfix] HTTP download broken
 
 2.3.3
 - [Bugfix] Correctly parsing symbolic links
 
 2.3.2
-- [Feature] Slovak Localization
-- [Feature] Czech Localization
+- [Localize] Slovak Localization
+- [Localize] Czech Localization
 - [Feature] Support for EPFL file listings to support servers running "publicfile" (FTP)
 - [Bugfix] Improved PASV response parsing (FTP)
 - [Feature] Supporting SOCKS proxies (not tested)
@@ -55,7 +54,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Bugfix] Compatibility with servers not supporting the SIZE command (FTP)
 
 2.3.1
-- [Feature] Chinese (Simplified) Localization
+- [Localize] Chinese (Simplified) Localization
 - [Feature] Rendezvous services in Bookmark menu
 - [Bugfix] Upper level directories had to be listed first when uploading files
 - [Bugfix] Changes to bookmarks won't be saved
@@ -65,7 +64,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Bugfix] Remembering choosen directories in open and save dialogs
 
 2.3
-- [Feature] Finnish Localization
+- [Localize] Finnish Localization
 - [Feature] Supporting Keyboard Interactive (PAM) Authentication (SSH)
 - [Bugfix] not all available Rendezvous services were listed
 - [Bugfix] Removed 'Type ahead' feature of the browser (responsible for frequent crashes)
@@ -99,8 +98,8 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 
 2.2
 - [Bugfix] Supporting folders with sticky/set-uid/set-gid bits (FTP)
-- [Feature] Updated Dutch localization
-- [Feature] Updated French localization
+- [Localize] Updated Dutch localization
+- [Localize] Updated French localization
 - [Bugfix] Minor performance improvements
 
 2.2b6
@@ -113,8 +112,8 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Bugfix] Bug fixes
 
 2.2b5
-- [Feature] Chinese (Traditional) Localization
-- [Feature] Korean Localization
+- [Localize] Chinese (Traditional) Localization
+- [Localize] Korean Localization
 - [Feature] Passphrases for private key files are stored in the Keychain (SSH)
 - [Feature] Bookmark editor allows to specify the port number
 - [Bugfix] When a bookmark is edited, the properties are updated in the bookmark drawer instantly
@@ -130,7 +129,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Bugfix] Fixed a bug that with some servers the permissions could not be modified (FTP)
 - [Bugfix] When addding a transfer to the queue it is highlighted
 - [Bugfix] Improved login process
-- [Feature] Updated Japanese localization
+- [Localize] Updated Japanese localization
 
 2.2b3
 - [Feature] Caching directory listings
@@ -139,10 +138,10 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Bugfix] Fixed a bug where entries in the queue would be deleted too early
 
 2.2b2
-- [Feature] Updated Japanese localization
-- [Feature] Updated French localization
-- [Feature] Updated Portuguese localization
-- [Feature] Updated Italian localization
+- [Localize] Updated Japanese localization
+- [Localize] Updated French localization
+- [Localize] Updated Portuguese localization
+- [Localize] Updated Italian localization
 - [Bugfix] The log is now written with a fixed-width font
 - [Feature] Various minor improvements
 
@@ -157,11 +156,11 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] Drag files from the browser to the transfer manager
 - [Feature] Drag links to the transfer manager to start download
 - [Feature] Browser can be customized to show/hide certain columns
-- [Feature] Japanese Localization
-- [Feature] Italian Localization
-- [Feature] Portuguese Localization
-- [Feature] Spanish Localization
-- [Feature] French Localization
+- [Localize] Japanese Localization
+- [Localize] Italian Localization
+- [Localize] Portuguese Localization
+- [Localize] Spanish Localization
+- [Localize] French Localization
 - [Feature] Option to disable 'CHMOD' after upload (FTP)
 - [Feature] Option to disable sending the 'SYST' command (FTP)
 - [Bugfix] When clicking the dock icon and now window is active, a new browser window is opened
@@ -181,8 +180,8 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Bugfix] Remembering sort order while browsing
 - [Feature] Toolbar icon to toggle Bookmark drawer
 - [Feature] Updated SSH Core (v0.2.5)
-- [Feature] Dutch Localization
-- [Feature] German Localization
+- [Localize] Dutch Localization
+- [Localize] German Localization
 - [Bugfix] Smaller changes and bug fixes
 
 2.1b5
@@ -199,7 +198,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Bugfix] Smaller bug fixes
 
 2.1b3
-- [Feature] Localization support
+- [Localize] Localization support
 - [Feature] Files and foldes can now be dragged to the Finder to download them
 - [Bugfix] Windows do now no more stack exactly on the top of prior one
 - [Feature] There are now equivalent menu actions for the toolbar items

@@ -20,6 +20,8 @@ package ch.cyberduck.core.ftp;
 
 import java.io.IOException;
 
+import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
 import org.apache.log4j.Logger;
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
@@ -47,6 +49,7 @@ public class FTPSession extends Session {
 	}
 
 	protected FTPClient FTP;
+	protected FTPFileEntryParser parser;
 
 	private FTPSession(Host h) {
 		super(h);
@@ -111,6 +114,7 @@ public class FTPSession extends Session {
 		if(Preferences.instance().getProperty("ftp.sendSystemCommand").equals("true")) {
 			this.host.setIdentification(this.FTP.system());
 		}
+		this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.host.getIdentification());
 	}
 
 	private synchronized void login() throws IOException {

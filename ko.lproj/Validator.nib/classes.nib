@@ -3,15 +3,10 @@
         {CLASS = AMToolTipTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {
-                cancelActionFired = id; 
-                overwriteActionFired = id; 
-                resumeActionFired = id; 
-                skipActionFired = id; 
-            }; 
             CLASS = "ch.sudo.cyberduck.ui.cocoa.CDValidatorController"; 
             LANGUAGE = Java; 
             OUTLETS = {
+                cancelButton = NSButton; 
                 fileTableView = NSTableView; 
                 infoLabel = NSTextField; 
                 localField = NSTextField; 

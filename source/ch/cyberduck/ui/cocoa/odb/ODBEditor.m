@@ -32,8 +32,6 @@ NSString * const ODBEditorIsEditingString	= @"ODBEditorIsEditingString";
 
 - (BOOL)_launchExternalEditor;
 
-//- (NSString *)_tempFileForEditingString:(NSString *)string;
-
 - (BOOL)_editFile:(NSString *)path isEditingString:(BOOL)editingStringFlag options:(NSDictionary *)options forClient:(id)client context:(NSDictionary *)context;
 
 - (void)handleModifiedFileEvent:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent;
