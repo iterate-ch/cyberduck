@@ -152,28 +152,7 @@ public class HTTPPath extends Path {
 		session.log("Invalid Operation", Message.ERROR);
 	}
 
-	public List getChilds(int kind) {
-		List childs = new ArrayList();
-		try {
-			switch (kind) {
-				case Queue.KIND_DOWNLOAD:
-					childs = this.getDownloadQueue();
-					break;
-				default:
-					throw new IllegalArgumentException("Upload not supported");
-			}
-		}
-		catch (IOException e) {
-			session.log(e.getMessage(), Message.ERROR);
-		}
-		return childs;
-	}
-
-	private List getDownloadQueue() throws IOException {
-		return this.getDownloadQueue(new ArrayList());
-	}
-	
-	private List getDownloadQueue(List queue) throws IOException {
+	protected List getUploadQueue(List queue) {
 		queue.add(this);
 		return queue;
 	}

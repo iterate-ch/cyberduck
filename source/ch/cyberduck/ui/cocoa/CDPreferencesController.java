@@ -232,16 +232,16 @@ public class CDPreferencesController extends NSObject {
         }
     }
 
-    private NSButton chmodCheckbox; //IBOutlet
+    private NSButton chmodUploadCheckbox; //IBOutlet
 
-    public void setChmodCheckbox(NSButton chmodCheckbox) {
-        this.chmodCheckbox = chmodCheckbox;
-        this.chmodCheckbox.setTarget(this);
-        this.chmodCheckbox.setAction(new NSSelector("chmodCheckboxClicked", new Class[]{NSButton.class}));
-        this.chmodCheckbox.setState(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true") ? NSCell.OnState : NSCell.OffState);
+    public void setChmodUploadCheckbox(NSButton chmodUploadCheckbox) {
+        this.chmodUploadCheckbox = chmodUploadCheckbox;
+        this.chmodUploadCheckbox.setTarget(this);
+        this.chmodUploadCheckbox.setAction(new NSSelector("chmodUploadCheckboxClicked", new Class[]{NSButton.class}));
+        this.chmodUploadCheckbox.setState(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
 
-    public void chmodCheckboxClicked(NSButton sender) {
+    public void chmodUploadCheckboxClicked(NSButton sender) {
         switch (sender.state()) {
             case NSCell.OnState:
                 Preferences.instance().setProperty("queue.upload.changePermissions", true);
@@ -252,6 +252,26 @@ public class CDPreferencesController extends NSObject {
         }
     }
 
+	private NSButton chmodDownloadCheckbox; //IBOutlet
+	
+    public void setChmodDownloadCheckbox(NSButton chmodDownloadCheckbox) {
+        this.chmodDownloadCheckbox = chmodDownloadCheckbox;
+        this.chmodDownloadCheckbox.setTarget(this);
+        this.chmodDownloadCheckbox.setAction(new NSSelector("chmodDownloadCheckboxClicked", new Class[]{NSButton.class}));
+        this.chmodDownloadCheckbox.setState(Preferences.instance().getProperty("queue.download.changePermissions").equals("true") ? NSCell.OnState : NSCell.OffState);
+    }
+	
+    public void chmodDownloadCheckboxClicked(NSButton sender) {
+        switch (sender.state()) {
+            case NSCell.OnState:
+                Preferences.instance().setProperty("queue.download.changePermissions", true);
+                break;
+            case NSCell.OffState:
+                Preferences.instance().setProperty("queue.download.changePermissions", false);
+                break;
+        }
+    }
+	
     private NSButton horizontalLinesCheckbox; //IBOutlet
 
     public void setHorizontalLinesCheckbox(NSButton horizontalLinesCheckbox) {

@@ -103,7 +103,7 @@ public abstract class Preferences {
 		defaults.put("editor.name", "SubEthaEdit");
 		defaults.put("editor.bundleIdentifier", "de.codingmonkeys.SubEthaEdit");
 
-		defaults.put("history.size", "10");
+		defaults.put("history.size", "50");
 		defaults.put("history.save", "true");
 
 		defaults.put("favorites.save", "true");

@@ -118,7 +118,6 @@ public class FTPPath extends Path {
 	
 	public synchronized List list(boolean refresh, boolean showHidden) {
 		List files = this.getSession().cache().get(this.getAbsolute());
-//		List files = this.cache();
 		session.addPathToHistory(this);
 		if(refresh || files.size() == 0) {
 			files.clear();
@@ -224,7 +223,6 @@ public class FTPPath extends Path {
 			session.check();
 			session.log("Make directory " + name, Message.PROGRESS);
 			session.FTP.mkdir(name);
-			this.list(true);
 		}
 		catch (FTPException e) {
 			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -290,41 +288,6 @@ public class FTPPath extends Path {
 		}
 	}
 	
-	public List getChilds(int kind) {
-		List childs = new ArrayList();
-		try {
-			switch (kind) {
-				case Queue.KIND_DOWNLOAD:
-					childs = this.getDownloadQueue(childs);
-					break;
-				case Queue.KIND_UPLOAD:
-					childs = this.getUploadQueue(childs);
-					break;
-			}
-		}
-		catch (FTPException e) {
-			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-		}
-		catch (IOException e) {
-			session.log("IO Error: " + e.getMessage(), Message.ERROR);
-		}
-		return childs;
-	}
-	
-	private List getDownloadQueue(List queue) throws IOException {
-		if (this.isDirectory()) {
-			for (Iterator i = this.list(false, true).iterator() ; i.hasNext() ;) {
-				FTPPath p = (FTPPath) i.next();
-				p.setLocal(new Local(this.getLocal(), p.getName()));
-				((FTPPath)p).getDownloadQueue(queue);
-			}
-		}
-		else if (this.isFile()) {
-			queue.add(this);
-		}
-		return queue;
-	}
-
 	public void download() {
 		try {
 			log.debug("download:"+this.toString());
@@ -460,28 +423,14 @@ public class FTPPath extends Path {
 		}
 	}
 	
-	private List getUploadQueue(List queue) throws IOException {
-		if (this.getLocal().isDirectory()) {
-			if(!this.exists())
-				this.session.check();
-				session.FTP.mkdir(this.getAbsolute());
-			File[] files = this.getLocal().listFiles();
-			for (int i = 0; i < files.length; i++) {
-				Path p = PathFactory.createPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
-				((FTPPath)p).getUploadQueue(queue);
-			}
-		}
-		else if (this.getLocal().isFile()) {
-			this.status.setSize(this.getLocal().length()); //setting the file size to the known size of the local file
-			queue.add(this);
-		}
-		return queue;
-	}
-
 	public void upload() {
 		try {
 			log.debug("upload:"+this.toString());
 			this.session.check();
+			if(!this.getParent().exists()) {
+				this.mkdir(this.getParent().getAbsolute());
+				this.getParent().getParent().list(true);
+			}
 			if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 				this.uploadBinary();
 			}

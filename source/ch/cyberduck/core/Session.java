@@ -42,10 +42,6 @@ public abstract class Session extends Observable {
 	
 	private Cache cache = new Cache();
 
-	public Cache cache() {
-		return this.cache;
-	}
-		
 	/**
 	 * Default port for http
 	 */
@@ -163,6 +159,10 @@ public abstract class Session extends Observable {
 		return workdir();
 	}
 
+	public Cache cache() {
+		return this.cache;
+	}
+		
 	public void log(String message, String title) {
 		if (title.equals(Message.TRANSCRIPT)) {
 			this.transcript.log(message);

@@ -22,6 +22,7 @@ import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.io.*;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -219,7 +220,9 @@ public abstract class Path {
 	public abstract void changePermissions(Permission perm, boolean recursive);
 	
 	public boolean exists() {
-		return this.getParent().list(false, true).contains(this);
+		if(this.isRoot())
+			return true;
+		return this.getParent().exists() && this.getParent().list(false, true).contains(this);
 	}
 
 	public boolean isFile() {
@@ -323,7 +326,47 @@ public abstract class Path {
 	/**
 		* @return All childs if this file denotes a directory and/or the file itself.
 	 */
-	public abstract List getChilds(int kind);
+	public List getChilds(int kind) {
+		List childs = new ArrayList();
+		switch (kind) {
+			case Queue.KIND_DOWNLOAD:
+				childs = this.getDownloadQueue(childs);
+				break;
+			case Queue.KIND_UPLOAD:
+				childs = this.getUploadQueue(childs);
+				break;
+		}
+		return childs;
+	}
+	
+	private List getDownloadQueue(List queue) {
+		if (this.isDirectory()) {
+			for (Iterator i = this.list(false, true).iterator() ; i.hasNext() ;) {
+				Path p = (Path) i.next();
+				p.setLocal(new Local(this.getLocal(), p.getName()));
+				p.getDownloadQueue(queue);
+			}
+		}
+		else if (this.isFile()) {
+			queue.add(this);
+		}
+		return queue;
+	}
+	
+	private List getUploadQueue(List queue) {
+		if (this.getLocal().isDirectory()) {
+			File[] files = this.getLocal().listFiles();
+			for (int i = 0; i < files.length; i++) {
+				Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), new Local(files[i].getAbsolutePath()));
+				p.getUploadQueue(queue);
+			}
+		}
+		else if (this.getLocal().isFile()) {
+			this.status.setSize(this.getLocal().length()); //setting the file size to the known size of the local file
+			queue.add(this);
+		}
+		return queue;
+	}
 
 	// ----------------------------------------------------------
 	// Transfer methods

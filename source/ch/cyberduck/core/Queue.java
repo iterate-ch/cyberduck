@@ -218,6 +218,7 @@ public class Queue extends Observable implements Observer { //Thread {
 				Queue.this.callObservers(new Message(Message.QUEUE_START, Queue.this));
 				
 				Queue.this.getRoot().getSession().addObserver(Queue.this);
+				Queue.this.getRoot().getSession().cache().clear();
 				for (Iterator i = roots.iterator() ; i.hasNext() && !Queue.this.isCanceled(); ) {
 					Path r = (Path)i.next();
 					log.debug("Iterating over childs of "+r);
@@ -228,15 +229,6 @@ public class Queue extends Observable implements Observer { //Thread {
 					}
 				}
 
-//				for (Iterator iter = jobs.iterator() ; iter.hasNext() && !Queue.this.isCanceled(); ) {
-//					Path item = (Path)iter.next();
-//					log.debug("Validating "+item.toString());
-//					if (validator.validate(item)) {
-//						item.status.reset();
-//						Queue.this.run(item);
-//					}
-//				}
-	
 				for (Iterator iter = jobs.iterator() ; iter.hasNext() && !Queue.this.isCanceled(); ) {
 					Path item = (Path)iter.next();
 					log.debug("Validating "+item.toString());
@@ -278,10 +270,7 @@ public class Queue extends Observable implements Observer { //Thread {
 				job.upload();
 				break;
 		}
-		if (job.status.isComplete()) {
-			//
-		}
-		
+
 		job.status.deleteObserver(this);
 		
 		this.progressTimer.stop();

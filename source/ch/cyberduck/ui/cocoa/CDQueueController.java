@@ -384,7 +384,7 @@ public class CDQueueController extends NSObject implements Observer {
 	public void clearButtonClicked(Object sender) {
 		for(Iterator iter = CDQueuesImpl.instance().iterator(); iter.hasNext(); ) {
 			Queue q = (Queue)iter.next();
-			if(q.getSize() == q.getCurrent()) {
+			if(q.getSize() == q.getCurrent() && q.getSize() > 0) {
 				iter.remove();
 			}
         }
