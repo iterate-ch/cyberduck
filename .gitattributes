@@ -394,10 +394,6 @@ pt.lproj/Update.nib/keyedobjects.nib -text
 pt.lproj/Update.strings svneol=native#unset
 pt.lproj/Validator.nib/keyedobjects.nib -text
 pt.lproj/Validator.strings svneol=native#unset
-source/ch/cyberduck/Attic/connection/.DS_Store svneol=native#unset
-source/ch/cyberduck/Attic/connection/ftp/.DS_Store svneol=native#unset
-source/ch/cyberduck/Attic/connection/http/.DS_Store svneol=native#unset
-source/ch/cyberduck/Attic/connection/sftp/.DS_Store svneol=native#unset
 zh_TW.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_TW.lproj/Bookmark.strings svneol=native#unset
 zh_TW.lproj/Browser.nib/keyedobjects.nib -text
