@@ -30,15 +30,6 @@ public abstract class AbstractValidator implements Validator {
 	private static Logger log = Logger.getLogger(Validator.class);
 
 	/**
-	 * The user requested to resume this transfer
-	 */
-	private boolean resumeRequested = false;
-
-	public AbstractValidator(boolean resumeRequested) {
-		this.resumeRequested = resumeRequested;
-	}
-
-	/**
 	 * The user canceled this request, no further validation should be taken
 	 */
 	private boolean canceled = false;
@@ -58,9 +49,9 @@ public abstract class AbstractValidator implements Validator {
 
 	protected abstract void prompt(Path p);
 
-	protected boolean validate(Path p) {
+	protected boolean validate(Path p, boolean resume) {
 		if(p.attributes.isFile()) {
-			return this.validateFile(p);
+			return this.validateFile(p, resume);
 		}
 		if(p.attributes.isDirectory()) {
 			return this.validateDirectory(p);
@@ -68,8 +59,8 @@ public abstract class AbstractValidator implements Validator {
 		throw new IllegalArgumentException(p.getName()+" is neither file nor directory");
 	}
 
-	protected boolean validateFile(Path path) {
-		if(this.resumeRequested) {
+	protected boolean validateFile(Path path, boolean resumeRequested) {
+		if(resumeRequested) {
 			boolean fileExists = this.exists(path);
 			log.info("File "+path.getName()+" exists:"+fileExists);
 			path.status.setResume(fileExists);

@@ -37,8 +37,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 
 	private static NSMutableArray instances = new NSMutableArray();
 
-	public CDValidatorController(boolean resumeRequested) {
-		super(resumeRequested);
+	public CDValidatorController() {
 		instances.addObject(this);
 	}
 
@@ -67,7 +66,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 		synchronized(CDQueueController.instance()) {
 			for(Iterator iter = q.getChilds().iterator(); iter.hasNext() && !this.isCanceled(); ) {
 				Path child = (Path)iter.next();
-				if(this.validate(child)) {
+				if(this.validate(child, q.isResume())) {
 					this.validated.add(child);
 				}
 				if(this.visible) {
@@ -77,6 +76,15 @@ public abstract class CDValidatorController extends AbstractValidator {
 			if(this.visible && !this.isCanceled()) {
 				this.statusIndicator.stopAnimation(null);
 				this.setEnabled(true);
+				while(CDQueueController.instance().hasSheet()) {
+					try {
+						log.debug("Sleeping...");
+						CDQueueController.instance().wait();
+					}
+					catch(InterruptedException e) {
+						log.error(e.getMessage());
+					}
+				}
 			}
 		}
 		q.deleteObserver(this);

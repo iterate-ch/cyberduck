@@ -41,13 +41,13 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 	}
 
 	private static class Factory extends ValidatorFactory {
-		protected Validator create(boolean resumeRequested) {
-			return new CDUploadQueueValidatorController(resumeRequested);
+		protected Validator create() {
+			return new CDUploadQueueValidatorController();
 		}
 	}
 
-	private CDUploadQueueValidatorController(boolean resumeRequested) {
-		super(resumeRequested);
+	private CDUploadQueueValidatorController() {
+		super();
 	}
 
 	protected void load() {

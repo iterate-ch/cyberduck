@@ -38,13 +38,13 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
 	}
 
 	private static class Factory extends ValidatorFactory {
-		protected Validator create(boolean resumeRequested) {
-			return new CDDownloadQueueValidatorController(resumeRequested);
+		protected Validator create() {
+			return new CDDownloadQueueValidatorController();
 		}
 	}
 
-	private CDDownloadQueueValidatorController(boolean resumeRequested) {
-		super(resumeRequested);
+	private CDDownloadQueueValidatorController() {
+		super();
 	}
 
 	protected void load() {

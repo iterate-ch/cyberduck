@@ -287,9 +287,7 @@ public class CDQueueController extends CDController implements Observer {
 				));
 			}
 		}
-		Validator validator = ValidatorFactory.createValidator(queue.getClass(), resumeRequested);
-		validator.validate(queue);
-		queue.start(validator.getResult());
+		queue.start(resumeRequested);
 	}
 
 	public boolean isVisible() {

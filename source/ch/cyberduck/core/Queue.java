@@ -224,14 +224,21 @@ public abstract class Queue extends Observable implements Observer {
 
 	protected abstract void process(Path p);
 
+	private boolean resume;
+	
+	public boolean isResume() {
+		return this.resume;
+	}
+	
 	/**
 	 * Process the queue. All files will be downloaded or uploaded rerspectively.
 	 *
 	 * @param validator A callback class where the user can decide what to do if
 	 *                  the file already exists at the download or upload location respectively
 	 */
-	public void start(Validator validator) {
-		this.worker = new Worker(this, validator);
+	public void start(boolean resume) {
+		this.resume = resume;
+		this.worker = new Worker(this, ValidatorFactory.createValidator(this.getClass()));
 		this.worker.start();
 	}
 

@@ -43,13 +43,13 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	}
 
 	private static class Factory extends ValidatorFactory {
-		protected Validator create(boolean resumeRequested) {
+		protected Validator create() {
 			return new CDSyncQueueValidatorController();
 		}
 	}
 
 	private CDSyncQueueValidatorController() {
-		super(false);
+		super();
 	}
 
 	protected void load() {
@@ -69,7 +69,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
 	}
 
-	protected boolean validateFile(Path p) {
+	protected boolean validateFile(Path p, boolean resume) {
 		log.debug("validateFile:"+p);
 		if(p.getRemote().exists(false) && p.getLocal().exists()) {
 			if (!(p.status.getSize() == p.getLocal().size())) { //@todo size should be correct!?
