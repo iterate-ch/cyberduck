@@ -201,30 +201,54 @@ public class CDInfoController extends NSObject {
 		}
         this.sizeField.setStringValue(Status.getSizeAsString(size) + " (" + size + " bytes)");
 
+		{
+			ownerr.setAllowsMixedState(true);
+			ownerr.setEnabled(false);
+			ownerw.setAllowsMixedState(true);
+			ownerw.setEnabled(false);
+			ownerx.setAllowsMixedState(true);
+			ownerx.setEnabled(false);
+			groupr.setAllowsMixedState(true);
+			groupr.setEnabled(false);
+			groupw.setAllowsMixedState(true);
+			groupw.setEnabled(false);
+			groupx.setAllowsMixedState(true);
+			groupx.setEnabled(false);
+			otherr.setAllowsMixedState(true);
+			otherr.setEnabled(false);
+			otherw.setAllowsMixedState(true);
+			otherw.setEnabled(false);
+			otherx.setAllowsMixedState(true);
+			otherx.setEnabled(false);
+		}
+		
 		Permission permission = null;
 		for(Iterator i = files.iterator(); i.hasNext();) {
-			log.debug("awakeFromNib-iterator");
-			//@todo set mixed state
 			permission = ((Path)i.next()).attributes.getPermission();
+			log.debug("Permission:"+permission);
 			boolean[] ownerPerm = permission.getOwnerPermissions();
 			boolean[] groupPerm = permission.getGroupPermissions();
 			boolean[] otherPerm = permission.getOtherPermissions();
-			// Sets the cell's state to value, which can be NSCell.OnState, NSCell.OffState, or NSCell.MixedState. 
-			// If necessary, this method also redraws the receiver.
-			ownerr.setState(ownerPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-			ownerw.setState(ownerPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-			ownerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-			groupr.setState(groupPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-			groupw.setState(groupPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-			groupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-			otherr.setState(otherPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-			otherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-			otherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+		
+			this.update(ownerr, ownerPerm[Permission.READ]);
+			this.update(ownerw, ownerPerm[Permission.WRITE]);
+			this.update(ownerx, ownerPerm[Permission.EXECUTE]);
+
+			this.update(groupr, groupPerm[Permission.READ]);
+			this.update(groupw, groupPerm[Permission.WRITE]);
+			this.update(groupx, groupPerm[Permission.EXECUTE]);
+
+			this.update(otherr, otherPerm[Permission.READ]);
+			this.update(otherw, otherPerm[Permission.WRITE]);
+			this.update(otherx, otherPerm[Permission.EXECUTE]);
 		}
 		
 //		octalField.setStringValue(""+file.getOctalCode());
-        permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
-
+		if(this.numberOfFiles() > 1)
+			permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + NSBundle.localizedString("(Multiple files)", ""));
+		else
+			permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
+		
         NSImage fileIcon = null;
 		if(this.numberOfFiles() > 1) {
 			fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
@@ -249,16 +273,22 @@ public class CDInfoController extends NSObject {
 		//														   new NSSelector("octalInputDidEndEditing", new Class[]{NSNotification.class}),
 		//														   NSControl.ControlTextDidEndEditingNotification,
 		//														   octalField);
-        //		(NSNotificationCenter.defaultCenter()).addObserver(this,
-        //				new NSSelector("ownerInputDidEndEditing", new Class[]{NSNotification.class}),
-        //				NSControl.ControlTextDidEndEditingNotification,
-        //				ownerField);
-        //		(NSNotificationCenter.defaultCenter()).addObserver(this,
-        //				new NSSelector("groupInputDidEndEditing", new Class[]{NSNotification.class}),
-        //				NSControl.ControlTextDidEndEditingNotification,
-        //				groupField);
-        log.debug("awakeFromNib-end");
-    }
+	}
+	
+	private void update(NSButton checkbox, boolean condition) {
+		// Sets the cell's state to value, which can be NSCell.OnState, NSCell.OffState, or NSCell.MixedState. 
+		// If necessary, this method also redraws the receiver.
+		log.debug("Checkbox state:"+checkbox.state());
+		log.debug("Should be enabled:"+condition);
+		if((checkbox.state() == NSCell.OffState || !checkbox.isEnabled()) && !condition)
+			checkbox.setState(NSCell.OffState);
+		else if((checkbox.state() == NSCell.OnState || !checkbox.isEnabled()) && condition)
+			checkbox.setState(NSCell.OnState);
+		else
+			checkbox.setState(NSCell.MixedState);
+		checkbox.setEnabled(true);
+		log.debug("New state:"+checkbox.state());
+	}
 
     public boolean windowShouldClose(NSWindow sender) {
         return true;
@@ -321,6 +351,9 @@ public class CDInfoController extends NSObject {
     public void permissionsSelectionChanged(Object sender) {
         log.debug("permissionsSelectionChanged");
         boolean[][] p = new boolean[3][3];
+		if(((NSButton)sender).state() == NSCell.MixedState)
+			((NSButton)sender).setNextState();
+
         p[Permission.OWNER][Permission.READ] = (ownerr.state() == NSCell.OnState);
         p[Permission.OWNER][Permission.WRITE] = (ownerw.state() == NSCell.OnState);
         p[Permission.OWNER][Permission.EXECUTE] = (ownerx.state() == NSCell.OnState);

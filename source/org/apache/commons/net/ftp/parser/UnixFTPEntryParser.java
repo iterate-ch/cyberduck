@@ -139,7 +139,7 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
             }
 
             f.attributes.setType(type);
-            f.attributes.setPermission(new Permission(typeStr + permStr));
+            f.attributes.setPermission(new Permission(permStr));
             f.attributes.setOwner(usr);
             f.attributes.setGroup(grp);
 

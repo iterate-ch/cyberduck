@@ -238,43 +238,6 @@ public abstract class Path {
 
 	//	public abstract void sync(Local local, boolean recursive, boolean commit, int kind);
 
-	/*
-    public boolean isFile() {
-        if (this.attributes.isSymbolicLink()) {
-            return this.linksToFile();
-        }
-        return this.attributes.isFile();
-    }
-	 */
-	
-    /**
-     * @return true if is directory or a symbolic link that everyone can execute
-     */
-	/*
-    public boolean isDirectory() {
-        if (this.attributes.isSymbolicLink()) {
-            return this.linksToDirectory();
-        }
-        return this.attributes.isDirectory();
-    }
-		 */
-
-    // hack
-	/*
-    private boolean linksToFile() {
-        return this.attributes.isSymbolicLink() && this.linkedPath.attributes.isFile();
-//        return this.attributes.isSymbolicLink() && this.getName().indexOf(".") != -1;
-    }
-	 */
-
-    // hack
-	/*
-    private boolean linksToDirectory() {
-        return this.attributes.isSymbolicLink() && this.linkedPath.attributes.isDirectory();
-//        return !this.linksToFile() && this.attributes.permission.getOwnerPermissions()[Permission.EXECUTE];
-    }
-	 */
-
     /**
      * @return true if this paths points to '/'
      */

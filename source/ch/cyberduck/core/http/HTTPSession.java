@@ -80,7 +80,7 @@ public class HTTPSession extends Session {
 			this.HTTP.connect(host.getHostname(), 
 							  host.getPort(), 
 							  Preferences.instance().getProperty("connection.proxy.host"),
-							  Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")) //@todo make sure its an int in the Preferences
+							  Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port"))
 							  );
 		}
 		else {

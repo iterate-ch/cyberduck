@@ -221,8 +221,8 @@ public class HTTPPath extends Path {
                     URL redirect = new URL(GET.getResponseHeader("Location").getValue());
                     session = new HTTPSession(new Host(redirect.getProtocol(), redirect.getHost(),
                             redirect.getPort(),
-                            new Login(redirect.getHost(), redirect.getUserInfo(), null))); //todo extract user from getUserInfo
-                    this.setPath(redirect.getFile());
+                            new Login(redirect.getHost(), redirect.getUserInfo(), null)));
+					this.setPath(redirect.getFile());
                     this.download();
                     return;
                 }
