@@ -50,7 +50,7 @@ public class Rendezvous extends Observable implements ServiceListener {
 
 	public void init() {
 		log.debug("init");
-		new Thread() {
+		new Thread("Rendezvous") {
 			public void run() {
 				try {
 					Rendezvous.this.jmDNS = new JmDNS(java.net.InetAddress.getLocalHost());

@@ -168,11 +168,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 					}
 					else {
 						// Drop of a file from the finder > upload to the remote host this bookmark points to
-						Path p = PathFactory.createPath(session,
-														h.getDefaultPath(),
-														new java.io.File(filename).getName());
-						p.setLocal(new Local(filename));
-						q.addRoot(p);
+						q.addRoot(PathFactory.createPath(session, h.getDefaultPath(), new Local(filename)));
 					}
 				}
 				// if anything has been added to the queue then process the queue
