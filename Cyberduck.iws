@@ -177,7 +177,7 @@
       </entry>
       <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDApplescriptabilityController.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="41" column="23" selection-start="1493" selection-end="1493" vertical-scroll-proportion="0.57676905">
+          <state line="16" column="24" selection-start="695" selection-end="695" vertical-scroll-proportion="0.2563418">
             <folding />
           </state>
         </provider>
@@ -592,7 +592,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDApplescriptabilityController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="41" column="23" selection-start="1493" selection-end="1493" vertical-scroll-proportion="0.57676905">
+        <state line="16" column="24" selection-start="695" selection-end="695" vertical-scroll-proportion="0.2563418">
           <folding />
         </state>
       </provider>
