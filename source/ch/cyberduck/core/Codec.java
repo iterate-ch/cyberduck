@@ -27,6 +27,7 @@ public class Codec {
     private static Logger log = Logger.getLogger(Codec.class);
 
     private Codec() {
+		super();
     }
 
     /**

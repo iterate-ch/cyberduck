@@ -46,13 +46,12 @@ public class HTTPSession extends Session {
     protected HttpClient HTTP;
     //    protected HttpConnection HTTP;
 
-    public HTTPSession(Host h) {
+    private HTTPSession(Host h) {
         super(h);
         //        this.HTTP = new HttpConnection(h.getHostname(), h.getPort());
     }
 
     public synchronized void close() {
-        this.callObservers(new Message(Message.CLOSE, "Closing session."));
         try {
             if (this.HTTP != null) {
                 this.log("Disconnecting...", Message.PROGRESS);
@@ -67,13 +66,13 @@ public class HTTPSession extends Session {
         }
         finally {
             this.log("Disconnected", Message.PROGRESS);
-            this.setConnected(false);
+            this.setClosed();
         }
     }
 
     public synchronized void connect() throws IOException {
-        this.callObservers(new Message(Message.OPEN, "Opening session."));
         this.log("Opening HTTP connection to " + host.getIp() + "...", Message.PROGRESS);
+        this.setConnected();
         this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
         this.log(host.getIp(), Message.TRANSCRIPT);
         this.HTTP = new HttpClient();
@@ -86,21 +85,22 @@ public class HTTPSession extends Session {
         else {
             this.HTTP.connect(host.getHostname(), host.getPort(), false);
         }
-        this.setConnected(true);
         this.log("HTTP connection opened", Message.PROGRESS);
-    }
-
-    public synchronized void check() throws IOException {
-        this.log("Working", Message.START);
-//		this.log("Checking connection...", Message.PROGRESS);
-        if (null == HTTP || !HTTP.isAlive()) {
-            this.setConnected(false);
-            this.connect();
-        }
     }
 
     public synchronized Path workdir() {
         this.log("Invalid Operation", Message.ERROR);
         return null;
+    }
+	
+	public synchronized void check() throws IOException {
+        this.log("Working", Message.START);
+		//		this.log("Checking connection...", Message.PROGRESS);
+        if (null == this.HTTP) {
+			this.connect(); return;
+		}
+		if(!this.HTTP.isAlive()) {
+            this.close(); this.connect();
+        }
     }
 }

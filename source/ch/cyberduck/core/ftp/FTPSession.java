@@ -48,12 +48,11 @@ public class FTPSession extends Session {
 
     protected FTPClient FTP;
 
-    public FTPSession(Host h) {
+    private FTPSession(Host h) {
         super(h);
     }
 
     public synchronized void close() {
-        this.callObservers(new Message(Message.CLOSE, "Closing session."));
         try {
             if (this.FTP != null) {
                 this.log("Disconnecting...", Message.PROGRESS);
@@ -72,13 +71,13 @@ public class FTPSession extends Session {
         }
         finally {
             this.log("Disconnected", Message.PROGRESS);
-            this.setConnected(false);
+            this.setClosed();
         }
     }
 
     public synchronized void connect() throws IOException {
-        this.callObservers(new Message(Message.OPEN, "Opening session."));
         this.log("Opening FTP connection to " + host.getIp() + "...", Message.PROGRESS);
+        this.setConnected();
         this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
         this.log(host.getIp(), Message.TRANSCRIPT);
         this.FTP = new FTPClient(host.getHostname(), host.getPort());
@@ -91,7 +90,7 @@ public class FTPSession extends Session {
 				FTPSession.this.log(reply, Message.TRANSCRIPT);
 			}
 		});
-		this.FTP.setStrictReturnCodes(false); //@todo
+		this.FTP.setStrictReturnCodes(false);
         if (Preferences.instance().getProperty("connection.proxy.useProxy").equals("true")) {
             this.FTP.initSOCKS(Preferences.instance().getProperty("connection.proxy.host"),
                     Preferences.instance().getProperty("connection.proxy.port"));
@@ -106,14 +105,12 @@ public class FTPSession extends Session {
         else {
             this.FTP.setConnectMode(FTPConnectMode.PASV);
         }
-//        this.FTP.connect(host.getHostname(), host.getPort());
         this.log("FTP connection opened", Message.PROGRESS);
 		this.FTP.setTimeout(Integer.parseInt(Preferences.instance().getProperty("ftp.timeout")));
         this.login();
         if (Preferences.instance().getProperty("ftp.sendSystemCommand").equals("true")) {
             this.host.setIdentification(this.FTP.system());
         }
-        this.setConnected(true);
     }
 
     private synchronized void login() throws IOException {
@@ -156,9 +153,11 @@ public class FTPSession extends Session {
     public synchronized void check() throws IOException {
         this.log("Working", Message.START);
 //		this.log("Checking connection...", Message.PROGRESS);
-        if (null == this.FTP || !this.FTP.isAlive()) {
-            this.setConnected(false);
-            this.connect();
+        if (null == this.FTP) {
+			this.connect(); return;
+		}
+		if(!this.FTP.isAlive()) {
+            this.close(); this.connect();
         }
     }
 }

@@ -150,7 +150,7 @@ public class SFTPPath extends Path {
                         }
                     }
                 }
-                this.getSession().cache().put(this.getAbsolute(), files);
+                session.cache().put(this.getAbsolute(), files);
                 session.log("Idle", Message.STOP);
             }
             catch (SshException e) {

@@ -50,16 +50,17 @@ public class CDMainController extends NSObject {
                 NSWorkspace.WorkspaceDidWakeNotification,
                 null);
 		
-        this.threadWorkerTimer = new NSTimer(0.2, this, new NSSelector("handleThreadWorkerTimerEvent", new Class[]{NSTimer.class}), null, true);
+        this.threadWorkerTimer = new NSTimer(0.5, //seconds
+											 this, //target
+											 new NSSelector("handleThreadWorkerTimerEvent", new Class[]{NSTimer.class}), 
+											 null, //userInfo
+											 true); //repeating
         NSRunLoop.currentRunLoop().addTimerForMode(this.threadWorkerTimer, NSRunLoop.DefaultRunLoopMode);
     }
 
     // If we want the equivalent to SwingUtilities.invokeLater() for Cocoa, we have to fend for ourselves, it seems.
     private NSTimer threadWorkerTimer;
 
-    /**
-     * Called very frequently, every 0.1 seconds
-     */
     private void handleThreadWorkerTimerEvent(NSTimer t) {
         //log.debug("handleThreadWorkerTimerEvent");
         Runnable item;
@@ -493,10 +494,6 @@ public class CDMainController extends NSObject {
 		return true;
     }
 	
-	public void applicationWillFinishLaunching(NSNotification notification) {
-		//
-	}
-	
     public void applicationDidFinishLaunching(NSNotification notification) {
         log.info("Available localizations:" + NSBundle.mainBundle().localizations());
         if (Preferences.instance().getProperty("queue.openByDefault").equals("true")) {
@@ -566,6 +563,8 @@ public class CDMainController extends NSObject {
     public void applicationWillTerminate(NSNotification notification) {
         log.debug("applicationWillTerminate");
         NSNotificationCenter.defaultCenter().removeObserver(this);
+		//stoppping worker thread
+		this.threadWorkerTimer.invalidate();
         //Terminating rendezvous discovery
         this.rendezvous.quit();
 		//Writing version info

@@ -111,7 +111,7 @@ public abstract class Session extends Observable {
         new Thread() {
             public void run() {
                 try {
-                    Session.this.check();
+                    check();
                     Path home;
                     if (host.hasReasonableDefaultPath()) {
                         if (host.getDefaultPath().charAt(0) != '/') {
@@ -174,12 +174,21 @@ public abstract class Session extends Observable {
     public boolean isConnected() {
         return this.connected;
     }
-
-    public void setConnected(boolean connected) {
-        log.debug("setConnected:" + connected);
-        this.connected = connected;
+	
+    public void setConnected() throws IOException {
+        log.debug("setConnected");
+		SessionPool.instance().add(this);
+		this.callObservers(new Message(Message.OPEN, "Session opened."));
+		this.connected = true;
+	}
+	
+	public void setClosed() {
+        log.debug("setClosed");
+		SessionPool.instance().release(this);
+		this.callObservers(new Message(Message.CLOSE, "Session closed."));
+        this.connected = false;
     }
-
+	
     public void addPathToHistory(Path p) {
         if (history.size() > 0) {
             if (!p.equals(history.get(history.size() - 1))) {

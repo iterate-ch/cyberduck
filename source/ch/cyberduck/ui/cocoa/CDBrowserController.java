@@ -960,9 +960,10 @@ public class CDBrowserController extends NSObject implements CDController, Obser
     }
 
     public void disconnectButtonClicked(Object sender) {
-        this.unmount(new NSSelector("unmountSheetDidEnd",
-                new Class[]{NSWindow.class, int.class, Object.class}), null // end selector
-        );
+		this.pathController.workdir().getSession().close();
+//        this.unmount(new NSSelector("unmountSheetDidEnd",
+//                new Class[]{NSWindow.class, int.class, Object.class}), null // end selector
+//        );
     }
 
     public boolean isMounted() {

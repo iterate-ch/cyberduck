@@ -22,6 +22,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Path;
 
 import java.util.List;
@@ -102,6 +103,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 	}
 	
 	public List getResult() {
+		log.debug("getResult:"+this.workset);
 		return this.workset;
 	}
 
@@ -168,13 +170,6 @@ public class CDSyncValidatorController extends CDValidatorController {
     // NSTableView.DataSource
     // ----------------------------------------------------------
 	
-	public void tableViewWillDisplayCell(NSTableView tableView, 
-												  Object c, 
-												  NSTableColumn tableColumn, 
-												  int rowIndex) {
-		// NSCell cell = (NSCell)c;
-	}
-	
 	private static final NSImage arrowUpIcon = NSImage.imageNamed("arrowUp16.tiff");
     private static final NSImage arrowDownIcon = NSImage.imageNamed("arrowDown16.tiff");
 	
@@ -207,6 +202,28 @@ public class CDSyncValidatorController extends CDValidatorController {
 				}
 				if (identifier.equals("NAME")) {
 					return p.getRemote().getName();
+				}
+				if (identifier.equals("TOOLTIP")) {
+					try {
+						String localTimestamp = formatter.stringForObjectValue(new NSGregorianDate((double)p.getLocal().getTimestamp().getTime()/1000, 
+																								   NSDate.DateFor1970)
+																			   );
+						String remoteTimestamp = formatter.stringForObjectValue(new NSGregorianDate((double)p.getRemote().attributes.getTimestamp().getTime()/1000, 
+																									NSDate.DateFor1970)
+																				);
+						return
+							NSBundle.localizedString("Local", "")+":\n"
+							+"\t"+p.getLocal().getAbsolute()+"\n"
+							+"\t"+Status.getSizeAsString(p.getLocal().length())+"\n"
+							+"\t"+localTimestamp+"\n"
+							+ NSBundle.localizedString("Remote", "")+":\n"
+							+"\t"+p.getAbsolute()+"\n"
+							+"\t"+Status.getSizeAsString(p.status.getSize())+"\n"
+							+"\t"+remoteTimestamp+"\n";
+					}
+					catch(NSFormatter.FormattingException e) {
+						log.error(e.toString());
+					}
 				}
 				throw new IllegalArgumentException("Unknown identifier: " + identifier);
 			}

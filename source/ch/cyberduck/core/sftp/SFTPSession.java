@@ -54,12 +54,11 @@ public class SFTPSession extends Session {
     protected SftpSubsystemClient SFTP;
     private SshClient SSH;
 
-    public SFTPSession(Host h) {
+    private SFTPSession(Host h) {
         super(h);
     }
 
     public synchronized void close() {
-        this.callObservers(new Message(Message.CLOSE, "Closing session."));
         try {
             if (this.SFTP != null) {
                 this.log("Disconnecting...", Message.PROGRESS);
@@ -83,27 +82,28 @@ public class SFTPSession extends Session {
         }
         finally {
             this.log("Disconnected", Message.PROGRESS);
-            this.setConnected(false);
+            this.setClosed();
         }
     }
-
+	
     public synchronized void connect() throws IOException {
-        this.callObservers(new Message(Message.OPEN, "Opening session."));
         this.log("Opening SSH connection to " + host.getIp() + "...", Message.PROGRESS);
-        this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
+		this.setConnected();
+		this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
         this.log(host.getIp(), Message.TRANSCRIPT);
         SSH = new SshClient();
+		//@todo
 		SSH.addEventHandler(new SshEventAdapter() {
 			public void onSocketTimeout(TransportProtocol transport) {
 				log.debug("onSocketTimeout");
 				SFTPSession.this.log("Disconnected", Message.PROGRESS);
-				SFTPSession.this.setConnected(false);
+				SFTPSession.this.setClosed();
 			}
 			
 			public void onDisconnect(TransportProtocol transport) {
 				log.debug("onDisconnect");
 				SFTPSession.this.log("Disconnected", Message.PROGRESS);
-				SFTPSession.this.setConnected(false);
+				SFTPSession.this.setClosed();
 			}
 		}
 							);
@@ -145,7 +145,6 @@ public class SFTPSession extends Session {
         this.log("Starting SFTP subsystem...", Message.PROGRESS);
         this.SFTP = SSH.openSftpChannel();
         this.log("SFTP subsystem ready", Message.PROGRESS);
-        this.setConnected(true);
     }
 
     private int loginUsingAgentAuthentication(final Login credentials) throws IOException {
@@ -266,11 +265,12 @@ public class SFTPSession extends Session {
 
     public synchronized void check() throws IOException {
         this.log("Working", Message.START);
-//		this.log("Checking connection...", Message.PROGRESS);
-        if (null == this.SSH || !SSH.isConnected()) {
-            this.setConnected(false);
-            this.close();
-            this.connect();
+		//		this.log("Checking connection...", Message.PROGRESS);
+        if (null == this.SSH) {
+			this.connect(); return;
+		}
+		if(!this.SSH.isConnected()) {
+            this.close(); this.connect();
         }
     }
 }

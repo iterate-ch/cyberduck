@@ -133,6 +133,8 @@ public abstract class Preferences {
         defaults.put("ftp.sendSystemCommand", "true");
         defaults.put("ftp.sendExtendedListCommand", "false");
 
+		defaults.put("connection.pool.timeout", "120"); // in seconds
+		defaults.put("connection.pool.max", "3"); // maximumum concurrent connections to the same host
         defaults.put("connection.login.name", System.getProperty("user.name"));
         defaults.put("connection.login.useKeychain", "true");
         defaults.put("connection.buffer", "16384"); //in bytes, is 128kbit

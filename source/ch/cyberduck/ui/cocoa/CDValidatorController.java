@@ -267,7 +267,7 @@ public abstract class CDValidatorController extends AbstractValidator {
     // NSTableView.DataSource
     // ----------------------------------------------------------
 	
-	private final NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
+	protected final NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
 	
 	public void tableViewSelectionDidChange(NSNotification notification) {
 		if(this.fileTableView.selectedRow() != -1) {
@@ -319,12 +319,12 @@ public abstract class CDValidatorController extends AbstractValidator {
 						return
 							NSBundle.localizedString("Local", "")+":\n"
 							+"\t"+p.getLocal().getAbsolute()+"\n"
-							+"\t"+NSBundle.localizedString("Size", "")+": "+ Status.getSizeAsString(p.getLocal().length())+"\n"
-							+"\t"+NSBundle.localizedString("Modified", "")+": "+localTimestamp+"\n"
+							+"\t"+Status.getSizeAsString(p.getLocal().length())+"\n"
+							+"\t"+localTimestamp+"\n"
 							+ NSBundle.localizedString("Remote", "")+":\n"
 							+"\t"+p.getAbsolute()+"\n"
-							+"\t"+NSBundle.localizedString("Size", "")+": "+Status.getSizeAsString(p.status.getSize())+"\n"
-							+"\t"+NSBundle.localizedString("Modified", "")+": "+remoteTimestamp+"\n";
+							+"\t"+Status.getSizeAsString(p.status.getSize())+"\n"
+							+"\t"+remoteTimestamp+"\n";
 					}
 					catch(NSFormatter.FormattingException e) {
 						log.error(e.toString());

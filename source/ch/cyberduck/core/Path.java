@@ -91,7 +91,7 @@ public abstract class Path {
         return dict;
     }
 
-    public Path() {
+    protected Path() {
         super();
     }
 
@@ -101,7 +101,7 @@ public abstract class Path {
      * @param path the absolute directory
      * @param name the file relative to param path
      */
-    public Path(String parent, String name) {
+    protected Path(String parent, String name) {
         this.setPath(parent, name);
     }
 
@@ -110,7 +110,7 @@ public abstract class Path {
      *
      * @param path The absolute path of the remote file
      */
-    public Path(String path) {
+    protected Path(String path) {
         this.setPath(path);
     }
 
@@ -122,7 +122,7 @@ public abstract class Path {
      * @param parent The absolute path to the parent directory on the remote host
      * @param file   The associated local file
      */
-    public Path(String parent, Local file) {
+    protected Path(String parent, Local file) {
         this.setPath(parent, file);
     }
 
@@ -431,29 +431,23 @@ public abstract class Path {
         }
         this.status.setComplete(complete);
     }
-
+	
 	public void sync() {
-        try {
-			this.getSession().check();
-			if(this.exists() && this.local.exists()) {
-				if(this.local.getTimestamp().before(this.attributes.getTimestamp())) {
-					this.download();
-				}
-				if(this.local.getTimestamp().after(this.attributes.getTimestamp())) {
-					this.upload();
-				}
-			}
-			else if(this.exists()) {
+		if(this.exists() && this.local.exists()) {
+			if(this.local.getTimestamp().before(this.attributes.getTimestamp())) {
 				this.download();
 			}
-			else if(this.local.exists()) {
+			if(this.local.getTimestamp().after(this.attributes.getTimestamp())) {
 				this.upload();
 			}
-			this.getSession().log("Idle", Message.STOP);
 		}
-        catch (IOException e) {
-            this.getSession().log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
+		else if(this.exists()) {
+			this.download();
+		}
+		else if(this.local.exists()) {
+			this.upload();
+		}
+		this.getSession().log("Idle", Message.STOP);
 	}
 	
     public boolean equals(Object other) {

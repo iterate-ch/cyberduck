@@ -86,6 +86,10 @@ public class Status extends Observable implements Serializable {
      * @see ch.cyberduck.core.Message
      */
     public void callObservers(Message arg) {
+        if (log.isDebugEnabled()) {
+            log.debug("callObservers:" + arg);
+            log.debug(this.countObservers() + " observer(s) known.");
+        }
         this.setChanged();
         this.notifyObservers(arg);
     }
