@@ -11,7 +11,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Bugfix] Files longer than 2GB
 - [Bugfix] Disable resume on ASCII tranfers (FTP)
 - [Bugfix] Incompatiblity with Filezilla Server (FTP)
-- [Bugfix] Dragging file to trash will delete it instead of download
+- [Bugfix] Synchronizing current working directory
 
 2.4b2
 - [Feature] Allow the selection of files in the browser by typing more than just the first character of the filename

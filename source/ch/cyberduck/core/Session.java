@@ -189,7 +189,7 @@ public abstract class Session extends Observable {
 	
 	public synchronized void setConnected() throws IOException {
 		log.debug("setConnected");
-		SessionPool.instance().add(this);
+		SessionPool.instance().add(this, Preferences.instance().getBoolean("connection.pool.force"));
 		this.callObservers(new Message(Message.OPEN, "Session opened."));
 		this.connected = true;
 	}

@@ -296,7 +296,7 @@
     <first-group selected-file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Login.java">
       <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Login.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="228" column="17" selection-start="7195" selection-end="7195" vertical-scroll-proportion="0.76045626">
+          <state line="204" column="9" selection-start="6292" selection-end="6292" vertical-scroll-proportion="0.21292776">
             <folding />
           </state>
         </provider>
@@ -612,7 +612,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Login.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="228" column="17" selection-start="7195" selection-end="7195" vertical-scroll-proportion="0.76045626">
+        <state line="204" column="9" selection-start="6292" selection-end="6292" vertical-scroll-proportion="0.21292776">
           <folding />
         </state>
       </provider>

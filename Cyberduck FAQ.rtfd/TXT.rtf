@@ -99,7 +99,10 @@
 \f1\b \cf0 	The server does only allow one single connection; I can't transfer any files!\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 	Limit the maximum number of simultaneous to a server in the 'Advanced' tab in the Preferences.\
+\f0\b0 \cf0 	Limit the maximum number of simultaneous to a server to one in the 'Advanced' tab in the Preferences. In addition, to force the browser connection to close upon transferring a file, open a Terminal.app window and type: \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f3 \cf0 		defaults write ch.sudo.cyberduck connection.pool.force true\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 \

@@ -1017,31 +1017,36 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void syncButtonClicked(Object sender) {
 		log.debug("syncButtonClicked");
-		if(browserTable.numberOfSelectedRows() == 1) {
-			NSOpenPanel panel = NSOpenPanel.openPanel();
-			Path selection = this.browserModel.getEntry(browserTable.selectedRow()).copy(workdir.getSession().copy());
-			panel.setCanChooseDirectories(selection.attributes.isDirectory());
-			panel.setCanChooseFiles(selection.attributes.isFile());
-			panel.setCanCreateDirectories(true);
-			panel.setAllowsMultipleSelection(false);
-			NSSelector setMessageSelector =
-				new NSSelector("setMessage", new Class[]{String.class});
-			if(setMessageSelector.implementedByClass(NSOpenPanel.class)) {
-				panel.setMessage(NSBundle.localizedString("Synchronize", "")
-								 +" "+selection.getName()+" "
-								 +NSBundle.localizedString("with", "Synchronize <file> with <file>")+"...");
-			}
-			panel.setPrompt(NSBundle.localizedString("Choose", ""));
-			panel.setTitle(NSBundle.localizedString("Synchronize", ""));
-			panel.beginSheetForDirectory(null,
-										 null,
-										 null,
-										 this.window(), //parent window
-										 this,
-										 new NSSelector("syncPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
-										 selection //context info
-										 );
+		Path selection;
+		if(browserTable.numberOfSelectedRows() == 1 && 
+		   this.browserModel.getEntry(this.browserTable.selectedRow()).attributes.isDirectory()) {
+			selection = this.browserModel.getEntry(browserTable.selectedRow()).copy(this.workdir().getSession().copy());
 		}
+		else {
+			selection = this.workdir().copy(this.workdir().getSession().copy());
+		}
+		NSOpenPanel panel = NSOpenPanel.openPanel();
+		panel.setCanChooseDirectories(selection.attributes.isDirectory());
+		panel.setCanChooseFiles(selection.attributes.isFile());
+		panel.setCanCreateDirectories(true);
+		panel.setAllowsMultipleSelection(false);
+		NSSelector setMessageSelector =
+			new NSSelector("setMessage", new Class[]{String.class});
+		if(setMessageSelector.implementedByClass(NSOpenPanel.class)) {
+			panel.setMessage(NSBundle.localizedString("Synchronize", "")
+							 +" "+selection.getName()+" "
+							 +NSBundle.localizedString("with", "Synchronize <file> with <file>")+"...");
+		}
+		panel.setPrompt(NSBundle.localizedString("Choose", ""));
+		panel.setTitle(NSBundle.localizedString("Synchronize", ""));
+		panel.beginSheetForDirectory(null,
+									 null,
+									 null,
+									 this.window(), //parent window
+									 this,
+									 new NSSelector("syncPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
+									 selection //context info
+									 );
 	}
 
 	public void syncPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
@@ -1536,7 +1541,7 @@ public class CDBrowserController extends CDController implements Observer {
 			return this.isMounted();
 		}
 		if(identifier.equals("Synchronize") || identifier.equals("syncButtonClicked:")) {
-			return this.isMounted() && this.browserTable.numberOfSelectedRows() == 1 && this.browserModel.getEntry(this.browserTable.selectedRow()).attributes.isDirectory();
+			return this.isMounted();
 		}
 		if(identifier.equals("Download As") || identifier.equals("downloadAsButtonClicked:")) {
 			return this.isMounted() && this.browserTable.numberOfSelectedRows() == 1;
@@ -2021,13 +2026,13 @@ public class CDBrowserController extends CDController implements Observer {
 					try {
 						this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
 						    this.promisedDragPaths[i].getName()));
-						if(this.promisedDragPaths[i].getLocal().getParent().equals(System.getProperty("user.home")+"/.Trash")) {
-							deleteFileButtonClicked(this.promisedDragPaths[i].copy(workdir().getSession()));
-						}
-						else {
-							q.addRoot(this.promisedDragPaths[i]);
-							promisedDragNames.addObject(this.promisedDragPaths[i].getName());
-						}
+//						if(this.promisedDragPaths[i].getLocal().getParent().equals(System.getProperty("user.home")+"/.Trash")) {
+//							deleteFileButtonClicked(this.promisedDragPaths[i].copy(workdir().getSession()));
+//						}
+//						else {
+						q.addRoot(this.promisedDragPaths[i]);
+						promisedDragNames.addObject(this.promisedDragPaths[i].getName());
+//						}
 					}
 					catch(java.io.UnsupportedEncodingException e) {
 						log.error(e.getMessage());

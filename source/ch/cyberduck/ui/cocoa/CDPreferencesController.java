@@ -58,7 +58,43 @@ public class CDPreferencesController extends CDController {
 		log.debug("awakeFromNib");
 		this.window().center();
 		this.transfermodeComboboxClicked(this.transfermodeCombobox);
-	}
+		{
+			Permission p = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
+			boolean[] ownerPerm = p.getOwnerPermissions();
+			boolean[] groupPerm = p.getGroupPermissions();
+			boolean[] otherPerm = p.getOtherPermissions();
+			
+			uownerr.setState(ownerPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+			uownerw.setState(ownerPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+			uownerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+			
+			ugroupr.setState(groupPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+			ugroupw.setState(groupPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+			ugroupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+			
+			uotherr.setState(otherPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+			uotherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+			uotherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+		}
+		{
+			Permission p = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
+			boolean[] ownerPerm = p.getOwnerPermissions();
+			boolean[] groupPerm = p.getGroupPermissions();
+			boolean[] otherPerm = p.getOtherPermissions();
+			
+			downerr.setState(ownerPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+			downerw.setState(ownerPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+			downerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+			
+			dgroupr.setState(groupPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+			dgroupw.setState(groupPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+			dgroupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+			
+			dotherr.setState(otherPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+			dotherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+			dotherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+		}
+}
 
 	public void windowWillClose(NSNotification notification) {
 		NSNotificationCenter.defaultCenter().removeObserver(this);
@@ -803,6 +839,26 @@ public class CDPreferencesController extends CDController {
 		}
 		catch(NumberFormatException e) {
 			log.error(e.getMessage());
+		}
+	}
+
+	private NSButton concurrentConnectionForceDisconnectCheckbox; //IBOutlet
+
+	public void setConcurrentConnectionForceDisconnectCheckbox(NSButton concurrentConnectionForceDisconnectCheckbox) {
+		this.concurrentConnectionForceDisconnectCheckbox = concurrentConnectionForceDisconnectCheckbox;
+		this.concurrentConnectionForceDisconnectCheckbox.setTarget(this);
+		this.concurrentConnectionForceDisconnectCheckbox.setAction(new NSSelector("concurrentConnectionForceDisconnectCheckboxClicked", new Class[]{NSButton.class}));
+		this.concurrentConnectionForceDisconnectCheckbox.setState(Preferences.instance().getBoolean("connection.pool.force") ? NSCell.OnState : NSCell.OffState);
+	}
+
+	public void concurrentConnectionForceDisconnectCheckboxClicked(NSButton sender) {
+		switch(sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("connection.pool.force", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("connection.pool.force", false);
+				break;
 		}
 	}
 

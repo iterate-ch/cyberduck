@@ -58,6 +58,10 @@ public class SessionPool extends Hashtable {
 		return Preferences.instance().getInteger("connection.pool.max");
 	}
 
+	public synchronized void add(Session session) throws IOException {
+		this.add(session, false);
+	}
+
 	/**
 	 * Adding a session to the connection pool of the remote host. This method
 	 * will block until the session has been added to the pool; e.g if the size
@@ -65,15 +69,20 @@ public class SessionPool extends Hashtable {
 	 *
 	 * @throws IOException If the timeout to wait for a place in the pool has exceeded.
 	 */
-	public synchronized void add(Session session) throws IOException {
+	public synchronized void add(Session session, boolean force) throws IOException {
 		String key = session.getHost().getURL();
 		List connections = null;
 		if(this.containsKey(key)) {
 			connections = (List)this.get(key);
 			while(connections.size() >= Preferences.instance().getInteger("connection.pool.max")) {
 				try {
-					session.log(NSBundle.localizedString("Maximum allowed connections exceeded. Waiting...", ""), Message.PROGRESS);
-					this.wait(Preferences.instance().getInteger("connection.pool.timeout")*1000);
+					if(force) {
+						((Session)connections.get(connections.size()-1)).close();
+					}
+					else {
+						session.log(NSBundle.localizedString("Maximum allowed connections exceeded. Waiting...", ""), Message.PROGRESS);
+						this.wait(Preferences.instance().getInteger("connection.pool.timeout")*1000);
+					}
 				}
 				catch(InterruptedException ignored) {
 					//
