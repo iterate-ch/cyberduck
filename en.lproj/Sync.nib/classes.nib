@@ -1,6 +1,6 @@
 {
     IBClasses = (
-        {CLASS = CDTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {CLASS = CDListView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {
             CLASS = "ch.cyberduck.ui.cocoa.CDSyncQueueController"; 
             LANGUAGE = Java; 
@@ -13,6 +13,7 @@
                 mirrorRadioCell = NSCell; 
                 statusIndicator = NSProgressIndicator; 
                 syncButton = NSButton; 
+                timezonePopupButton = id; 
                 uploadRadioCell = NSCell; 
                 urlField = NSTextField; 
                 window = NSWindow; 

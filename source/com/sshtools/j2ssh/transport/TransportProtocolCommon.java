@@ -311,8 +311,10 @@ public abstract class TransportProtocolCommon implements TransportProtocol, Runn
                     provider.getInputStream(),
                     algorithmsIn);
 
-            sshOut = new TransportProtocolOutputStream(provider.getOutputStream(),
-                    this, algorithmsOut);
+            sshOut = new TransportProtocolOutputStream(
+                    provider.getOutputStream(),
+                    this,
+                    algorithmsOut);
 
             // Register the transport layer messages that this class will handle
             messageStore.registerMessage(SshMsgDisconnect.SSH_MSG_DISCONNECT,

@@ -25,7 +25,6 @@
                 concurrentConnectionForceDisconnectCheckbox = NSButton; 
                 concurrentConnectionsField = NSTextField; 
                 concurrentConnectionsTimeoutField = NSTextField; 
-                confirmDisconnectCheckbox = NSButton; 
                 connectmodeCombobox = NSPopUpButton; 
                 csAuthenticationCombobox = NSPopUpButton; 
                 csEncryptionCombobox = NSPopUpButton; 

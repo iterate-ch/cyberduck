@@ -2154,7 +2154,7 @@ public class CDBrowserController extends CDController implements Observer {
         if (identifier.equals("New Folder") || identifier.equals("createFolderButtonClicked:")) {
             return this.isMounted();
         }
-        if (identifier.equals("New File") || identifier.equals("createfileButtonClicked:")) {
+        if (identifier.equals("New File") || identifier.equals("createFileButtonClicked:")) {
             return this.isMounted();
         }
         if (identifier.equals("Duplicate File") || identifier.equals("duplicateFileButtonClicked:")) {

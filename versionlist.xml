@@ -3,11 +3,23 @@ change<?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.4</string>
+	<string>2.4.1</string>
 	<key>file</key>
-	<string>Cyberduck-2.4.dmg</string>
+	<string>Cyberduck-2.4.1.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.4.1
+- [Feature] History of recently connected hosts in connection dialog
+- [Feature] History of recently connected hosts in bookmark menu
+- [Feature] Selecting remote server timezone in synchronization dialog
+- [Feature] Set character encoding per bookmark
+- [Feature] Set FTP connect mode per bookmark (FTP)
+- [Feature] Show folders in working directory (and autocomplete) in 'Go to Folder' dialog
+- [Feature] Preferences previously only avilable using the 'defaults' command
+- [Feature] Manually exclude files in synchronization dialog
+- [Feature] Apply button in File Info dialog
+- [Feature] Duplicate files on server
+
 2.4
 - [Localize] Swedish Localization
 - [Feature] Additional encryption ciphers supported (SFTP)

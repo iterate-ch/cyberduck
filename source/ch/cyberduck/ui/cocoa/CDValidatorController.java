@@ -65,9 +65,9 @@ public abstract class CDValidatorController extends AbstractValidator {
 		    this.fileTableView);
 	}
 
-	public boolean validate(Queue queue, boolean resumeRequested) {
-		for(Iterator iter = queue.getChilds().iterator(); 
-				iter.hasNext() && !queue.isCanceled() && !this.isCanceled();) {
+	public boolean validate(List childs, boolean resumeRequested) {
+		for(Iterator iter = childs.iterator(); 
+				iter.hasNext() && !this.isCanceled();) {
 			Path child = (Path)iter.next();
 			log.debug("Validating:"+child);
 			if(this.validate(child, resumeRequested)) {

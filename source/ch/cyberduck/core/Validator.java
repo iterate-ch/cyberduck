@@ -25,7 +25,7 @@ import java.util.List;
  */
 public interface Validator {
 
-	public boolean validate(Queue queue, boolean resumeRequested);
+	public boolean validate(List childs, boolean resumeRequested);
 
 	public List getValidated();
 

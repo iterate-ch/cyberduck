@@ -227,8 +227,8 @@ public class ConnectionProtocol extends AsyncService {
      * @param data
      * @throws IOException
      */
-    public synchronized void sendChannelData(Channel channel, byte[] data) throws
-            IOException {
+    public synchronized void sendChannelData(Channel channel, byte[] data)
+            throws IOException {
         synchronized (channel.getState()) {
             if (log.isDebugEnabled()) {
                 log.debug("Sending " + String.valueOf(data.length)

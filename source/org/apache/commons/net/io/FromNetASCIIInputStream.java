@@ -53,7 +53,6 @@ public final class FromNetASCIIInputStream extends PushbackInputStream {
 	 *         *
 	 */
 	public final boolean isConversionRequired() {
-//    public static final boolean isConversionRequired() {
 		return !_noConversionRequired;
 	}
 

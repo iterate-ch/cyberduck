@@ -95,7 +95,7 @@ public class SftpFileOutputStream extends OutputStream {
 	}
 
 	public long skip(long n) {
-		position = position.add(position, (int)n);
+		position = UnsignedInteger64.add(position, (int)n);
 		return n;
 	}
 

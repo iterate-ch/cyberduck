@@ -698,6 +698,18 @@ public class SftpSubsystemClient extends SubsystemChannel {
 		this.setAttributes(filename, attrs);
 	}
 
+	public void changeOwner(String filename, String owner) throws IOException {
+		FileAttributes attrs = new FileAttributes();
+//		attrs.setOwner(owner);
+		this.setAttributes(filename, attrs);
+	}
+
+	public void changeGroup(String filename, String group) throws IOException {
+		FileAttributes attrs = new FileAttributes();
+//		attrs.setGroup(owner);
+		this.setAttributes(filename, attrs);
+	}
+	
 	/**
 	 * @return
 	 * @throws IOException
