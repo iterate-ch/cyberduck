@@ -444,8 +444,7 @@ public class CDQueueController extends CDController {
 		if(this.queueTable.selectedRow() != -1) {
 			while(this.hasSheet()) {
 				try {
-					log.debug("Sleeping...");
-					this.wait();
+					log.debug("Sleeping..."); this.wait(); log.debug("Awakened");
 				}
 				catch(InterruptedException e) {
 					log.error(e.getMessage());
@@ -483,8 +482,7 @@ public class CDQueueController extends CDController {
 		if(this.queueTable.selectedRow() != -1) {
 			while(this.hasSheet()) {
 				try {
-					log.debug("Sleeping...");
-					this.wait();
+					log.debug("Sleeping..."); this.wait(); log.debug("Awakened");
 				}
 				catch(InterruptedException e) {
 					log.error(e.getMessage());

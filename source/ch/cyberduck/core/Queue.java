@@ -149,12 +149,6 @@ public abstract class Queue extends Observable {
 		this.notifyObservers(arg);
 	}
 	
-	private void reset(List jobs) {
-		for(Iterator iter = jobs.iterator(); iter.hasNext();) {
-			((Path)iter.next()).status.reset();
-		}
-	}
-
 	public List getChilds() {
 		List childs = new ArrayList();
 		for(Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext();) {
@@ -205,8 +199,12 @@ public abstract class Queue extends Observable {
 				
 		public void run() {
 			this.init();
+			this.validator.validate(queue);
 			if(!this.validator.isCanceled()) {
-				this.queue.reset(this.jobs);
+				this.jobs = this.validator.getResult();
+				for(Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
+					((Path)iter.next()).status.reset();
+				}
 				for(Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
 					this.queue.process((Path)iter.next());
 				}
@@ -250,7 +248,6 @@ public abstract class Queue extends Observable {
 			this.progress.start();
 			//@todo this.queue.getRoot().getSession().cache().clear();
 			this.queue.callObservers(new Message(Message.QUEUE_START));
-			this.jobs = this.validator.validate(queue);
 		}
 		
 		private void finish() {

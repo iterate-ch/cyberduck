@@ -146,8 +146,8 @@ public class CDBrowserController extends CDController implements Observer {
 																		NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
 																		null, //alternative button
 																		null //other button
-																		),
-										true);
+																		)
+								   );
 						//window().setDocumentEdited(false);
 					}
 					else if(msg.getTitle().equals(Message.REFRESH)) {

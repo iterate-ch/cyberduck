@@ -219,7 +219,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
 	public void syncActionFired(NSButton sender) {
 		this.setCanceled(false);
-		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+		CDQueueController.instance().endSheet();
 	}
 	
 	// ----------------------------------------------------------

@@ -186,8 +186,8 @@ public class CDProgressController extends NSObject implements Observer {
 																				NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
 																				null, //alternative button
 																				null //other button
-																				),
-												true);
+																				)
+												);
 	}
 		
 	private boolean highlighted;

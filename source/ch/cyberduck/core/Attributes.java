@@ -82,7 +82,6 @@ public class Attributes extends Observable {
 	
 	public String getTimestampAsShortString() {
 		try {
-			//@todo gettimestamp may return null
 			return shortDateFormatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
 		}
 		catch(NSFormatter.FormattingException e) {

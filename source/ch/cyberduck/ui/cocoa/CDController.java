@@ -57,28 +57,22 @@ public abstract class CDController {
 		}
 	}
 
-	public synchronized void beginSheet(NSWindow sheet) {
-		this.beginSheet(sheet, false);
-	}
-
-	public synchronized void beginSheet(NSWindow sheet, boolean force) {
-		if(force) this.endSheet();
+	public void beginSheet(NSWindow sheet) {
 		log.debug("beginSheet");
 		try {
-			this.window().makeKeyAndOrderFront(null);
 			synchronized(this) {
 				while(this.hasSheet()) {
-					log.debug("Sleeping...");
-					this.wait();
+					log.debug("Sleeping..."); this.wait(); log.debug("Awakened");
 				}
+				this.window().makeKeyAndOrderFront(null);
 				NSApplication.sharedApplication().beginSheet(sheet, //sheet
 				    this.window(),
 				    this, //modalDelegate
 				    new NSSelector("sheetDidEnd",
 				        new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
 				    null); //contextInfo
+				this.window().makeKeyAndOrderFront(null);
 			}
-			this.window().makeKeyAndOrderFront(null);
 		}
 		catch(InterruptedException e) {
 			log.error(e.getMessage());
@@ -86,9 +80,10 @@ public abstract class CDController {
 	}
 
 	public void sheetDidEnd(NSWindow window, int returncode, Object contextInfo) {
+		log.debug("sheetDidEnd:"+window);
 		window.orderOut(null);
 		synchronized(this) {
-			this.notify();
+			this.notifyAll();
 		}
 	}
 

@@ -48,24 +48,23 @@ public abstract class CDValidatorController extends AbstractValidator {
 		    this.fileTableView);
 	}
 	
-	public List validate(Queue q) {
-		synchronized(CDQueueController.instance()) {
-			for(Iterator iter = q.getChilds().iterator(); iter.hasNext() && !this.isCanceled(); ) {
-				Path child = (Path)iter.next();
-				if(this.validate(child, q.isResumeRequested())) {
-					this.validated.add(child);
-				}
-				if(this.visible) {
-					this.fireDataChanged();
-				}
+	public void validate(Queue q) {
+		for(Iterator iter = q.getChilds().iterator(); iter.hasNext() && !this.isCanceled(); ) {
+			Path child = (Path)iter.next();
+			if(this.validate(child, q.isResumeRequested())) {
+				this.validated.add(child);
 			}
-			if(this.visible && !this.isCanceled()) {
+			if(this.visible) {
+				this.fireDataChanged();
+			}
+		}
+		if(this.visible && !this.isCanceled()) {
+			synchronized(CDQueueController.instance()) {
 				this.statusIndicator.stopAnimation(null);
 				this.setEnabled(true);
 				while(CDQueueController.instance().hasSheet()) {
 					try {
-						log.debug("Sleeping...");
-						CDQueueController.instance().wait();
+						log.debug("Sleeping..."); CDQueueController.instance().wait(); log.debug("Awakened");
 					}
 					catch(InterruptedException e) {
 						log.error(e.getMessage());
@@ -73,7 +72,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 				}
 			}
 		}
-		return this.getResult();
 	}
 
 	protected boolean validateFile(Path path, boolean resumeRequested) {
@@ -116,8 +114,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 		}
 	}
 	
-	protected abstract List getResult();
-
 	protected abstract void load();
 	
 	protected boolean visible = false;
@@ -325,7 +321,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 			((Path)i.next()).status.setResume(true);
 		}
 		this.setCanceled(false);
-		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+		CDQueueController.instance().endSheet();
 	}
 
 	public void overwriteActionFired(NSButton sender) {
@@ -333,20 +329,20 @@ public abstract class CDValidatorController extends AbstractValidator {
 			((Path)i.next()).status.setResume(false);
 		}
 		this.setCanceled(false);
-		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+		CDQueueController.instance().endSheet();
 	}
 
 	public void skipActionFired(NSButton sender) {
 		this.workset.clear();
 		this.setCanceled(false);
-		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+		CDQueueController.instance().endSheet();
 	}
 
 	public void cancelActionFired(NSButton sender) {
 		this.validated.clear();
 		this.workset.clear();
 		this.setCanceled(true);
-		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+		CDQueueController.instance().endSheet();
 	}
 
 	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();

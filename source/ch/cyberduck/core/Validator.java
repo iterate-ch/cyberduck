@@ -25,10 +25,9 @@ import java.util.List;
  */
 public interface Validator {
 
-	/**
-	 * @return true if validatino was successfull, false if canceled by the user for whatever reason
-	 */
-	public List validate(Queue q);
+	public void validate(Queue q);
+	
+	public List getResult();
 	
 	public boolean isCanceled();
 }

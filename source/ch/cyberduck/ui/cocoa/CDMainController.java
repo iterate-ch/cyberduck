@@ -65,7 +65,6 @@ public class CDMainController extends NSObject {
 	private NSTimer threadWorkerTimer;
 
 	private void handleThreadWorkerTimerEvent(NSTimer t) {
-		//@todo use this.sleep(); this.notify()
 		Runnable item;
 		while((item = ThreadUtilities.instance().next()) != null) {
 			item.run();

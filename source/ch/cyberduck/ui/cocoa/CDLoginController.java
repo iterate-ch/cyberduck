@@ -120,8 +120,7 @@ public class CDLoginController implements LoginController {
 	public synchronized boolean promptUser(final Login l, final String message) {
 		while(windowController.window().attachedSheet() != null) {
 			try {
-				log.debug("Sleeping...");
-				this.wait();
+				log.debug("Sleeping..."); this.wait(); log.debug("Awakened");
 			}
 			catch(InterruptedException e) {
 				log.error(e.getMessage());
@@ -139,8 +138,7 @@ public class CDLoginController implements LoginController {
 			window().makeKeyAndOrderFront(null);
 			while(windowController.window().attachedSheet() != null) {
 				try {
-					log.debug("Sleeping...");
-					this.wait();
+					log.debug("Sleeping..."); this.wait(); log.debug("Awakened");
 				}
 				catch(InterruptedException e) {
 					log.error(e.getMessage());
