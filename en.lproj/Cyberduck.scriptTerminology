@@ -130,7 +130,7 @@
 					<key>Path</key>
 					<dict>
 						<key>Description</key>
-						<string>The filename.</string>
+						<string>The folder.</string>
 						<key>Name</key>
 						<string>folder</string>
 					</dict>
@@ -295,15 +295,15 @@
 				<key>Description</key>
 				<string>List folder content.</string>
 				<key>Name</key>
-				<string>list</string>
+				<string>browse</string>
 				<key>Arguments</key>
 				<dict>
 					<key>Path</key>
 					<dict>
 						<key>Description</key>
-						<string>The filename.</string>
+						<string>The folder.</string>
 						<key>Name</key>
-						<string>directory</string>
+						<string>folder</string>
 					</dict>
 				</dict>
 			</dict>

@@ -141,9 +141,16 @@ public class CDBrowserController extends CDController implements Observer {
 			Object pathObj = args.objectForKey("Path");
 			Path path = this.workdir();
 			if(pathObj != null) {
-				path = PathFactory.createPath(this.workdir().getSession(), 
-											  this.workdir().getAbsolute(), 
-											  (String)args.objectForKey("Path"));
+				String folder = (String)args.objectForKey("Path");
+				if(folder.charAt(0) == '/') {
+					path = PathFactory.createPath(this.workdir().getSession(),
+												  folder);
+				}
+				else {
+					path = PathFactory.createPath(this.workdir().getSession(),
+												  this.workdir().getAbsolute(),
+												  folder);
+				}
 			}
 			for(Iterator i = path.list(this.encoding, false, this.showHiddenFiles).iterator(); i.hasNext(); ) {
 				result.addObject(((Path)i.next()).getName());
