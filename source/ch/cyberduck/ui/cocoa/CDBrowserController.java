@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 import java.util.Observer;
 import java.util.Observable;
 import com.sshtools.j2ssh.transport.InvalidHostFileException;
@@ -42,6 +43,11 @@ public class CDBrowserController implements Observer {
 
     static {
 	org.apache.log4j.BasicConfigurator.configure();
+	Logger log = Logger.getRootLogger();
+	log.setLevel(Level.OFF);
+	log.setLevel(Level.WARN);
+	log.setLevel(Level.DEBUG);
+	log.setLevel(Level.INFO);
     }
     
     // ----------------------------------------------------------
@@ -77,6 +83,8 @@ public class CDBrowserController implements Observer {
     private NSProgressIndicator progressIndicator; // IBOutlet
     public void setProgressIndicator(NSProgressIndicator progressIndicator) {
 	this.progressIndicator = progressIndicator;
+	this.progressIndicator.setIndeterminate(true);
+	this.progressIndicator.setUsesThreadedAnimation(true);
     }
 
     private NSTextField statusLabel; // IBOutlet
@@ -170,11 +178,6 @@ public class CDBrowserController implements Observer {
 		    mainWindow.setTitle(host.getName());
 		    History.instance().add(host);
 		}
-		/*
-		if(msg.getTitle().equals(Message.CONNECTED)) {
-		    progressIndicator.stopAnimation(this);
-		}
-		 */
 	    }
 	}
     }
@@ -188,8 +191,8 @@ public class CDBrowserController implements Observer {
 	drawer.toggle(this);
     }
     
-    public void folderButtonPressed(Object sender) {
-        log.debug("folderButtonPressed");
+    public void folderButtonClicked(Object sender) {
+        log.debug("folderButtonClicked");
 	CDFolderSheet sheet = new CDFolderSheet((Path)pathController.getItem(pathController.numberOfItems()-1));
 	NSApplication.sharedApplication().beginSheet(
 					      sheet.window(),//sheet
@@ -203,36 +206,38 @@ public class CDBrowserController implements Observer {
     }
 
 
-    public void infoButtonPressed(Object sender) {
-	log.debug("infoButtonPressed");
-	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
-	CDInfoController controller = new CDInfoController(path);
-	controller.window().makeKeyAndOrderFront(null);
+    public void infoButtonClicked(Object sender) {
+	log.debug("infoButtonClicked");
+	if(browserTable.selectedRow() != -1) {
+	    Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
+	    CDInfoController controller = new CDInfoController(path);
+	    controller.window().makeKeyAndOrderFront(null);
+	}
     }
 
-    public void deleteButtonPressed(Object sender) {
-	log.debug("deleteButtonPressed");
+    public void deleteButtonClicked(Object sender) {
+	log.debug("deleteButtonClicked");
 	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
 	NSAlertPanel.beginInformationalAlertSheet(
-					       "Delete", //title
-					       "Delete",// defaultbutton
-					       "Cancel",//alternative button
-					       null,//other button
-					       mainWindow,//window
-					       this, //delegate
-					       new NSSelector
-					       (
-	     "deleteSheetDidEnd",
-	     new Class[]
-	     {
-		 NSWindow.class, int.class, Object.class
-	     }
-	     ),// end selector
-					       null, // dismiss selector
-					       path, // contextInfo
-					       "Really delete the file '"+path.getName()+"'? This cannot be undone." // message
-					       );
-	}
+					   "Delete", //title
+					   "Delete",// defaultbutton
+					   "Cancel",//alternative button
+					   null,//other button
+					   mainWindow,//window
+					   this, //delegate
+					   new NSSelector
+					   (
+	 "deleteSheetDidEnd",
+	 new Class[]
+	 {
+	     NSWindow.class, int.class, Object.class
+	 }
+	 ),// end selector
+					   null, // dismiss selector
+					   path, // contextInfo
+					   "Really delete the file '"+path.getName()+"'? This cannot be undone." // message
+					   );
+    }
 
     public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
 	log.debug("deleteSheetDidEnd");
@@ -246,22 +251,22 @@ public class CDBrowserController implements Observer {
 	}
     }
 
-    public void refreshButtonPressed(Object sender) {
-	log.debug("refreshButtonPressed");
+    public void refreshButtonClicked(Object sender) {
+	log.debug("refreshButtonClicked");
 	Path p = (Path)pathController.getItem(0);
 	p.list(true);
     }
 
-    public void downloadButtonPressed(Object sender) {
-	log.debug("downloadButtonPressed");
+    public void downloadButtonClicked(Object sender) {
+	log.debug("downloadButtonClicked");
 	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
 	CDTransferController controller = new CDTransferController(path);
 	controller.download();
     }
 
-    public void uploadButtonPressed(Object sender) {
+    public void uploadButtonClicked(Object sender) {
 	// @todo drag and drop
-	log.debug("uploadButtonPressed");
+	log.debug("uploadButtonClicked");
 	NSOpenPanel panel = new NSOpenPanel();
 	panel.setCanChooseFiles(true);
 	panel.setAllowsMultipleSelection(false);
@@ -286,30 +291,30 @@ public class CDBrowserController implements Observer {
 	}
     }
 	
-    public void backButtonPressed(Object sender) {
-	log.debug("backButtonPressed");
+    public void backButtonClicked(Object sender) {
+	log.debug("backButtonClicked");
 	//@todoHistory
     }
 
-     public void upButtonPressed(Object sender) {
-	 log.debug("upButtonPressed");
+     public void upButtonClicked(Object sender) {
+	 log.debug("upButtonClicked");
 	 Path p = (Path)pathController.getItem(0);
 	 p.getParent().list();
      }
     
-    public void drawerButtonPressed(Object sender) {
-	log.debug("drawerButtonPressed");
+    public void drawerButtonClicked(Object sender) {
+	log.debug("drawerButtonClicked");
 	drawer.toggle(mainWindow);
     }
 
-    public void connectFieldPressed(Object sender) {
-	log.debug("connectFieldPressed");
+    public void connectFieldClicked(Object sender) {
+	log.debug("connectFieldClicked");
 	Host host = new Host(((NSControl)sender).stringValue(), new CDLoginController(this.window()));
 	this.mount(host);
     }
 
-    public void connectButtonPressed(Object sender) {
-	log.debug("connectButtonPressed");
+    public void connectButtonClicked(Object sender) {
+	log.debug("connectButtonClicked");
 	NSApplication.sharedApplication().beginSheet(
 					      connectionSheet.window(),//sheet
 					      mainWindow, //docwindow
@@ -347,8 +352,6 @@ public class CDBrowserController implements Observer {
 	toolbar.setAllowsUserCustomization(true);
 	toolbar.setAutosavesConfiguration(true);
 	toolbar.setDisplayMode(NSToolbar.NSToolbarDisplayModeIconAndLabel);
-//	this.toolbarItems = new NSMutableDictionary();
-
 	mainWindow.setToolbar(toolbar);
     }
 
@@ -368,7 +371,7 @@ public class CDBrowserController implements Observer {
 	    item.setToolTip("Connect to remote host");
 	    item.setImage(NSImage.imageNamed("server.tiff"));
 	    item.setTarget(this);
-	    item.setAction(new NSSelector("connectButtonPressed", new Class[] {Object.class}));
+	    item.setAction(new NSSelector("connectButtonClicked", new Class[] {Object.class}));
 	}
 	else if (itemIdentifier.equals("Path")) {
 	    item.setLabel("Path");
@@ -392,7 +395,7 @@ public class CDBrowserController implements Observer {
 	    item.setToolTip("Show previous directory");
 	    item.setImage(NSImage.imageNamed("back.tiff"));
 	    item.setTarget(this);
-	    item.setAction(new NSSelector("backButtonPressed", new Class[] {Object.class}));
+	    item.setAction(new NSSelector("backButtonClicked", new Class[] {Object.class}));
 	}
 	else if (itemIdentifier.equals("Refresh")) {
 	    item.setLabel("Refresh");
@@ -400,7 +403,7 @@ public class CDBrowserController implements Observer {
 	    item.setToolTip("Refresh directory listing");
 	    item.setImage(NSImage.imageNamed("refresh.tiff"));
 	    item.setTarget(this);
-	    item.setAction(new NSSelector("refreshButtonPressed", new Class[] {Object.class}));
+	    item.setAction(new NSSelector("refreshButtonClicked", new Class[] {Object.class}));
 	}
 	else if (itemIdentifier.equals("Download")) {
 	    item.setLabel("Download");
@@ -408,15 +411,15 @@ public class CDBrowserController implements Observer {
 	    item.setToolTip("Download file");
 	    item.setImage(NSImage.imageNamed("download.tiff"));
 	    item.setTarget(this);
-	    item.setAction(new NSSelector("downloadButtonPressed", new Class[] {Object.class}));
+	    item.setAction(new NSSelector("downloadButtonClicked", new Class[] {Object.class}));
 	}
-	else if (itemIdentifier.equals("Upload")) {
-	    item.setLabel("Upload");
-	    item.setPaletteLabel("Upload");
-	    item.setToolTip("Upload file");
-	    item.setImage(NSImage.imageNamed("upload.tiff"));
+	else if (itemIdentifier.equals("Up")) {
+	    item.setLabel("Up");
+	    item.setPaletteLabel("Up");
+	    item.setToolTip("Show parent directory");
+	    item.setImage(NSImage.imageNamed("up.tiff"));
 	    item.setTarget(this);
-	    item.setAction(new NSSelector("uploadButtonPressed", new Class[] {Object.class}));
+	    item.setAction(new NSSelector("upButtonClicked", new Class[] {Object.class}));
 	}
 	else if (itemIdentifier.equals("Get Info")) {
 	    item.setLabel("Get Info");
@@ -424,7 +427,7 @@ public class CDBrowserController implements Observer {
 	    item.setToolTip("Show file attributes");
 	    item.setImage(NSImage.imageNamed("info.tiff"));
 	    item.setTarget(this);
-	    item.setAction(new NSSelector("infoButtonPressed", new Class[] {Object.class}));
+	    item.setAction(new NSSelector("infoButtonClicked", new Class[] {Object.class}));
 	}
 	else if (itemIdentifier.equals("Delete")) {
 	    item.setLabel("Delete");
@@ -432,7 +435,7 @@ public class CDBrowserController implements Observer {
 	    item.setToolTip("Delete file");
 	    item.setImage(NSImage.imageNamed("delete.tiff"));
 	    item.setTarget(this);
-	    item.setAction(new NSSelector("deleteButtonPressed", new Class[] {Object.class}));
+	    item.setAction(new NSSelector("deleteButtonClicked", new Class[] {Object.class}));
 	}
 	else if (itemIdentifier.equals("New Folder")) {
 	    item.setLabel("New Folder");
@@ -440,7 +443,7 @@ public class CDBrowserController implements Observer {
 	    item.setToolTip("Create New Folder");
 	    item.setImage(NSImage.imageNamed("newfolder.icns"));
 	    item.setTarget(this);
-	    item.setAction(new NSSelector("folderButtonPressed", new Class[] {Object.class}));
+	    item.setAction(new NSSelector("folderButtonClicked", new Class[] {Object.class}));
 	}
 	else {
 	    // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
@@ -450,9 +453,9 @@ public class CDBrowserController implements Observer {
 	return item;
 	
 	/*
-	this.addToolbarItem(toolbarItems, "New Connection", "New Connection", "New Connection", "Connect to host", this, new NSSelector("connectButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("server.tiff"));
+	this.addToolbarItem(toolbarItems, "New Connection", "New Connection", "New Connection", "Connect to host", this, new NSSelector("connectButtonClicked", new Class[] {Object.class}), NSImage.imageNamed("server.tiff"));
 	
-//	this.addToolbarItem(toolbarItems, "Back", "Back", "Back", "Go back", this, new NSSelector("backButtonPressed", new Class[] {null}), NSImage.imageNamed("back.tiff"));
+//	this.addToolbarItem(toolbarItems, "Back", "Back", "Back", "Go back", this, new NSSelector("backButtonClicked", new Class[] {null}), NSImage.imageNamed("back.tiff"));
 
 	this.addToolbarItem(toolbarItems, "Path", "Path", "Path", "Change working directory", pathController, null, null);
 	NSToolbarItem pathItem = (NSToolbarItem)toolbarItems.objectForKey("Path");
@@ -467,19 +470,19 @@ public class CDBrowserController implements Observer {
 	quickConnectItem.setMinSize(quickConnectField.frame().size());
 	quickConnectItem.setMaxSize(quickConnectField.frame().size());
 
-	this.addToolbarItem(toolbarItems, "Refresh", "Refresh", "Refresh", "Refresh directory listing", this, new NSSelector("refreshButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("refresh.tiff"));
+	this.addToolbarItem(toolbarItems, "Refresh", "Refresh", "Refresh", "Refresh directory listing", this, new NSSelector("refreshButtonClicked", new Class[] {Object.class}), NSImage.imageNamed("refresh.tiff"));
 
-	this.addToolbarItem(toolbarItems, "Download", "Download", "Download", "Download file", this, new NSSelector("downloadButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("download.tiff"));
+	this.addToolbarItem(toolbarItems, "Download", "Download", "Download", "Download file", this, new NSSelector("downloadButtonClicked", new Class[] {Object.class}), NSImage.imageNamed("download.tiff"));
 
-	this.addToolbarItem(toolbarItems, "Upload", "Upload", "Upload", "Upload file", this, new NSSelector("uploadButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("upload.tiff"));
+	this.addToolbarItem(toolbarItems, "Upload", "Upload", "Upload", "Upload file", this, new NSSelector("uploadButtonClicked", new Class[] {Object.class}), NSImage.imageNamed("upload.tiff"));
 
-	this.addToolbarItem(toolbarItems, "New Folder", "New Folder", "New Folder", "Create New Folder", this, new NSSelector("folderButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("newfolder.icns"));
+	this.addToolbarItem(toolbarItems, "New Folder", "New Folder", "New Folder", "Create New Folder", this, new NSSelector("folderButtonClicked", new Class[] {Object.class}), NSImage.imageNamed("newfolder.icns"));
 
-	this.addToolbarItem(toolbarItems, "Get Info", "Get Info", "Get Info", "Show file permissions", this, new NSSelector("infoButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("info.tiff"));
+	this.addToolbarItem(toolbarItems, "Get Info", "Get Info", "Get Info", "Show file permissions", this, new NSSelector("infoButtonClicked", new Class[] {Object.class}), NSImage.imageNamed("info.tiff"));
 
-	this.addToolbarItem(toolbarItems, "Toggle Drawer", "Toggle Drawer", "Toggle Drawer", "Show connection transcript", this, new NSSelector("drawerButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("transcript.tiff"));
+	this.addToolbarItem(toolbarItems, "Toggle Drawer", "Toggle Drawer", "Toggle Drawer", "Show connection transcript", this, new NSSelector("drawerButtonClicked", new Class[] {Object.class}), NSImage.imageNamed("transcript.tiff"));
 
-	this.addToolbarItem(toolbarItems, "Delete", "Delete", "Delete", "Delete file", this, new NSSelector("deleteButtonPressed", new Class[] {Object.class}), NSImage.imageNamed("delete.tiff"));
+	this.addToolbarItem(toolbarItems, "Delete", "Delete", "Delete", "Delete file", this, new NSSelector("deleteButtonClicked", new Class[] {Object.class}), NSImage.imageNamed("delete.tiff"));
 	 */
     }
 
@@ -505,7 +508,7 @@ public class CDBrowserController implements Observer {
     }
 
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Refresh", "Download", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
+	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Up", "Refresh", "Download", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
     }
 
     public void toolbarWillAddItem(NSNotification notification) {
@@ -518,7 +521,7 @@ public class CDBrowserController implements Observer {
 	if(addedItem.itemIdentifier().equals("Quick Connect")) {
 	    quickConnectItem = addedItem;
 	    quickConnectItem.setTarget(this);
-	    quickConnectItem.setAction(new NSSelector("connectFieldPressed", new Class[] { Object.class } ));
+	    quickConnectItem.setAction(new NSSelector("connectFieldClicked", new Class[] { Object.class } ));
 	}    
     }
 
@@ -536,6 +539,9 @@ public class CDBrowserController implements Observer {
 //	log.debug("validateToolbarItem");
 	String label = item.label();
 	if(label.equals("Path")) {
+	    return pathController.numberOfItems() > 0;
+	}
+	else if(label.equals("Up")) {
 	    return pathController.numberOfItems() > 0;
 	}
 	else if(label.equals("Refresh")) {
@@ -598,6 +604,6 @@ public class CDBrowserController implements Observer {
 	// if multi window app only close the one window with main.close()
 	sheet.orderOut(null);
 	if(returncode == NSAlertPanel.DefaultReturn)
-	    host.closeSession();
+	    this.unmount(host);
     }
 }

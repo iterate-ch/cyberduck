@@ -92,6 +92,11 @@ public abstract class Session extends Observable {
      */
     public abstract void close();
 
+     public void recycle() throws IOException {
+	 this.close();
+	 this.connect();
+     }
+    
     /**
 	* @return The current working directory (pwd)
      */
@@ -116,7 +121,6 @@ public abstract class Session extends Observable {
 
     public void setConnected(boolean connected) {
 	this.connected = connected;
-//	host.callObservers(new Message(Message.CONNECTED));
     }
     
     public void log(String message, String title) {

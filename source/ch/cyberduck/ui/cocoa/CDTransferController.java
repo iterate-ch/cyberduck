@@ -64,6 +64,7 @@ public class CDTransferController implements Observer {
     private NSProgressIndicator progressBar;
     public void setProgressField(NSProgressIndicator progressBar) {
 	this.progressBar = progressBar;
+	this.progressBar.setUsesThreadedAnimation(true);
     }
 
     private NSButton stopButton;
@@ -115,6 +116,7 @@ public class CDTransferController implements Observer {
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.DATA)) {
+		    this.progressBar.setIndeterminate(false);
 		    this.progressBar.setDoubleValue((double)file.status.getCurrent());
 		    this.progressField.setStringValue(msg.getDescription());
 		    return;
@@ -142,7 +144,8 @@ public class CDTransferController implements Observer {
 		}
 		if(msg.getTitle().equals(Message.START)) {
 		    this.resumeButton.setTitle("Resume");
-		    this.progressBar.startAnimation(this);
+		    this.progressBar.setIndeterminate(true);
+		    this.progressBar.animate(null);
 		    return;
 		}
 		if(msg.getTitle().equals(Message.STOP)) {
@@ -190,6 +193,43 @@ public class CDTransferController implements Observer {
 	this.stopButton.setEnabled(false);
 	this.resumeButton.setEnabled(true);
 	this.file.status.setCanceled(true);
+    }
+
+    public boolean windowShouldClose(NSWindow sender) {
+	if(!this.file.status.isStopped()) {
+	    NSAlertPanel.beginCriticalAlertSheet(
+					       "Cancel transfer?", //title
+					       "Stop",// defaultbutton
+					       "Cancel",//alternative button
+					       null,//other button
+					       this.window(),
+					       this, //delegate
+					       new NSSelector
+					       (
+	     "confirmSheetDidEnd",
+	     new Class[]
+	     {
+		 NSWindow.class, int.class, NSWindow.class
+	     }
+	     ),// end selector
+					       null, // dismiss selector
+					       this, // context
+					       "Closing this window will stop the file transfer" // message
+					       );
+	    return false;	    
+	}
+	return true;
+    }
+
+    public void confirmSheetDidEnd(NSWindow sheet, int returncode, NSWindow main)  {
+	sheet.orderOut(null);
+	if(returncode == NSAlertPanel.DefaultReturn) {
+	    this.stopButtonClicked(null);
+	    this.window().close();
+	}
+	if(returncode == NSAlertPanel.AlternateReturn) {
+	    //
+	}
     }
 }
 

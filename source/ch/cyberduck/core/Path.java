@@ -297,9 +297,7 @@ public abstract class Path {// extends Observable {
      * @ param depth the '/'
      * @ return a new Path cut to the length of parameter <code>depth</code>
      */
-
-    /*@todo
-	
+    /*
     public Path getPathFragment(int depth) throws IllegalArgumentException {
 //        log.debug("[Path] getPathFragment(" + depth + ")");
         if(depth > this.getPathDepth())

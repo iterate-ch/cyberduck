@@ -82,7 +82,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 	log.debug("onHostKeyMismatch");
 	this.host = host;
 	this.fingerprint = fingerprint;
-	NSAlertPanel.beginInformationalAlertSheet(
+	NSAlertPanel.beginCriticalAlertSheet(
 					   "Host key mismatch", //title
 					   "Allow",// defaultbutton
 					   "Deny",//alternative button
@@ -161,7 +161,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 	    if(returncode == NSAlertPanel.DefaultReturn)
 		allowHost(host, fingerprint, false);
 	    if(returncode == NSAlertPanel.AlternateReturn) {
-		NSAlertPanel.beginInformationalAlertSheet(
+		NSAlertPanel.beginCriticalAlertSheet(
 					    "Invalid host key", //title
 					    "OK",// defaultbutton
 					    null,//alternative button

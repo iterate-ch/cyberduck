@@ -31,10 +31,9 @@ public class Host {
     private static Logger log = Logger.getLogger(Host.class);
 
     public Login login;
-    private String protocol;//@todo = Preferences.instance().getProperty("connection.protocol.default");
-    private int port;// = Integer.parseInt(Preferences.instance().getProperty("connection.port.default"));
+    private String protocol;
+    private int port;
     private String name;
-//    private String workdir;
     private HostKeyVerification hostKeyVerification;
     private transient Session session;
 
@@ -47,7 +46,6 @@ public class Host {
         this.port = port != -1 ? port : this.port;
 	//@todo extract protocol:// if accidentially added
         this.name = name;
-//	this.workdir = workdir != null ? workdir : this.workdir;
         this.login = login != null ? login : this.login;
 //	ObserverList.instance().registerObservable(this);
 	log.debug(this.toString());
@@ -76,16 +74,12 @@ public class Host {
 		throw new IllegalArgumentException("Unknown protocol");
 	    }
 	}
-//@todo	this.callObservers(new Message(Message.OPEN, "Session opened."));
 	return this.session;
-//        this.session.mount();
     }
     
-    /*
-    public boolean hasValidSession() {
-	return session != null && session.isConnected();//@todo use check() without reconnecting 
-    }
-    */
+//    public boolean hasValidSession() {
+//	return session != null && session.isConnected();//@todo use check() without reconnecting 
+//    }
 
     public void closeSession() {
         log.debug("closeSession");
@@ -93,22 +87,9 @@ public class Host {
 	    this.session.close();
 	    this.session = null;
 	}
-//@todo	this.callObservers(new Message(Message.CLOSE, "Session closed"));
     }
 
-/*
-    public void recycle() {
-        log.debug("recycle");
-	this.closeSession();
-	this.openSession();
-    }
-    */
     
-//    public boolean isConnected() {
-//	return this.getSession().isConnected();
-  //  }    
-  
-  
     // ----------------------------------------------------------
     // Accessor methods
     // ----------------------------------------------------------
@@ -129,7 +110,6 @@ public class Host {
 	return this.port;
     }
 
-//@todo SSHHost, FTPHost, HTTPHost, etc
     //ssh specific
     public void setHostKeyVerification(HostKeyVerification h) {
 	this.hostKeyVerification = h;

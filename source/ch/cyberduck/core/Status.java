@@ -66,7 +66,7 @@ public class Status extends Observable implements Serializable {
      */
     private int size = -1;
 
-    private transient Timer currentSpeedTimer, overallSpeedTimer;//, timeLeftTimer;
+    private transient Timer currentSpeedTimer, overallSpeedTimer, timeLeftTimer, chronoTimer;
 
     /**
     * Progress trackers.
@@ -83,36 +83,21 @@ public class Status extends Observable implements Serializable {
      */
     private transient boolean stopped = true;
 
-//    private String progressmessage = "Idle";
-//    private String timemessage = "00:00";
-
-//    private Calendar calendar = Calendar.getInstance();
-//    private DateFormat df = DateFormat.getTimeInstance();
+    private Calendar calendar = Calendar.getInstance();
     
-//    private int seconds = 0;
-//    private int minutes = 0;
-//    private int hours = 0;
-
+    private int seconds = 0;
+    private int minutes = 0;
+    private int hours = 0;
+    private int left;
+    
     /**
 	* The wrapper for any status informations of a transfer like it's length and transferred
      * bytes.
      */
     public Status () {
-//        calendar.set(Calendar.HOUR, 0);
-//        calendar.set(Calendar.MINUTE, 0);
-//      calendar.set(Calendar.SECOND, 0);
-
-//	ObserverList.instance().registerObservable(this);
-
-        /*
-	 timeLeftTimer = new Timer(1000,
-			    new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				    setTimeLeft((int)((getLength() - getCurrent())/getSpeed()));
-				}
-			    }
-			    );
-         */
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.MINUTE, 0);
+	calendar.set(Calendar.SECOND, 0);
     }
 
     /**
@@ -125,30 +110,20 @@ public class Status extends Observable implements Serializable {
 	log.debug(this.countObservers()+" observers known.");
         long start = System.currentTimeMillis();
         this.setChanged();
-	//@todo        if(this.isSelected())
 	this.notifyObservers(arg);
         long end = System.currentTimeMillis();
 	log.debug((end - start) + " ms");
     }
 
-//    public void setMessage(String message, String title) {
-//	log.debug("setMessage("+message+","+title);
-//	Message msg = new Message(title, message);
-//	if(title.equals(Message.TIME)) {
-//	    this.timemessage = message;
-//	    msg = new Message(Message.PROGRESS, message+" "+progressmessage);
-//	}
-//        this.callObservers(msg);
-  //  }
 
-//  public String parseTime(int t) {
-//    if(t > 9) {
-//      return String.valueOf(t);
-//        }
-//        else {
-//            return "0" + t;
-//        }
-//    }
+    public String parseTime(int t) {
+	if(t > 9) {
+	    return String.valueOf(t);
+        }
+        else {
+            return "0" + t;
+	}
+    }
 
     public double parseDouble(double d) {
         //log.debug("parseDouble(" + d + ")");
@@ -270,13 +245,13 @@ public class Status extends Observable implements Serializable {
 	    if(this.getOverall() <= 0) {
 		msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of "
 		    + this.parseDouble(this.getSize()/1024) + " kBytes. Current: " +
-		    + this.parseDouble(this.getSpeed()/1024) + "kB/s. ");// + this.getTimeLeftMessage();
+		    + this.parseDouble(this.getSpeed()/1024) + "kB/s."); //\n" + this.getTimeLeftMessage());
 	    }
 	    else {
 		msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of "
 		    + this.parseDouble(this.getSize()/1024) + " kBytes. Current: "
 		    + this.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
-		    + this.parseDouble(this.getOverall()/1024) + " kB/s. ");// + this.getTimeLeftMessage();
+		    + this.parseDouble(this.getOverall()/1024) + " kB/s.");// \n" + this.getTimeLeftMessage());
 	    }
 	}
 	this.callObservers(msg);
@@ -339,9 +314,10 @@ public class Status extends Observable implements Serializable {
 	this.overall = s;
     }
 
-    public void setResume(boolean value) {
-	this.resume = value;
+    public void setResume(boolean resume) {
+	this.resume = resume;
     }
+    
     public boolean isResume() {
 	return this.resume;
     }
@@ -350,6 +326,7 @@ public class Status extends Observable implements Serializable {
     public void reset() {
 	this.speed = 0;
 	this.overall = 0;
+	this.current = this.isResume() ? current : 0;
 	if(overallSpeedTimer == null) {
 	    overallSpeedTimer = new Timer(4000,
 				   new ActionListener() {
@@ -408,72 +385,68 @@ public class Status extends Observable implements Serializable {
 				   }
 				   );
 	}
-	/*
-	 this.timemessage = "00:00";
 
-	 if(chronoTimer == null) {
-	     chronoTimer = new Timer(1000,
-			      new ActionListener() {
-				  public void actionPerformed(ActionEvent event) {
+	if(chronoTimer == null) {
+	    chronoTimer = new Timer(1000,
+			     new ActionListener() {
+				 public void actionPerformed(ActionEvent event) {
 				      //                    log.debug("chronoTimer:actionPerformed()");
-				      seconds++;
+				     seconds++;
 				      // calendar.set(year, mont, date, hour, minute, second)
 	  // >= one hour
-				      if(seconds >= 3600) {
-					  hours = (int)(seconds/60/60);
-					  minutes = (int)((seconds - hours*60*60)/60);
-					  calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), hours, minutes, seconds - minutes*60);
-				      }
-				      else {
+				     if(seconds >= 3600) {
+					 hours = (int)(seconds/60/60);
+					 minutes = (int)((seconds - hours*60*60)/60);
+					 calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), hours, minutes, seconds - minutes*60);
+				     }
+				     else {
 					  // >= one minute
-					  if(seconds >= 60) {
-					      minutes = (int)(seconds/60);
-					      calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), minutes, seconds - minutes*60);
-					  }
+					 if(seconds >= 60) {
+					     minutes = (int)(seconds/60);
+					     calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), minutes, seconds - minutes*60);
+					 }
 					  // only seconds
-					  else {
-					      calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), seconds);
-					  }
-				      }
+					 else {
+					     calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), seconds);
+					 }
+				     }
+				     
+				     if(calendar.get(Calendar.HOUR) > 0) {
+					 callObservers(new Message(Message.CLOCK, parseTime(calendar.get(Calendar.HOUR)) + ":" + parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND))));
+				     }
+				     else {
+					 callObservers(new Message(Message.CLOCK, parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND))));
+				     }
+				 }
+			     }
+			     );
+	}
 
-				      // der variable timemessage den neuen wert zuweisen.
-				      if(calendar.get(Calendar.HOUR) > 0) {
-					  setMessage(parseTime(calendar.get(Calendar.HOUR)) + ":" + parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND)), Message.TIME);
-				      }
-				      else {
-					  setMessage(parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND)), Message.TIME);
-				      }
-				  }
-			      }
-			      );
+	/*
+	 if(timeLeftTimer == null) {
+	     timeLeftTimer = new Timer(1000,
+			    new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				    setTimeLeft((int)((getSize() - getCurrent())/getSpeed()));
+				}
+			    }
+			    );
 	 }
 	 */
     }
 
-    
-
- /*
-    private transient boolean ignoreEvents = false;
-    
-    public void ignoreEvents(boolean ignore) {
-        this.ignoreEvents = ignore;
-    }
-  */
-            
-
-    /*
+/*
     private void setTimeLeft(int seconds) {
         this.left = seconds;
     }
     private int getTimeLeft() {
         return this.left;
     }
-     */
-    /*
+
     private String getTimeLeftMessage() {
         int s = this.getTimeLeft();
         String message = "";
-        /*@todo: implementation of better 'time left' management.
+        //@todo: implementation of better 'time left' management.
         if(s != -1) {
             if(s >= 60) {
                 message = (int)s/60 + " minutes remaining.";
@@ -484,5 +457,5 @@ public class Status extends Observable implements Serializable {
         }
         return message;
     }
-     */
+ */
 }

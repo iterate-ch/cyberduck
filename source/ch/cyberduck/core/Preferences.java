@@ -88,7 +88,9 @@ public abstract class Preferences {//extends Properties {
 	defaults.put("version", "2.1");
         defaults.put("uses", "0");
 	defaults.put("donate", "true");
+	defaults.put("mail", "mailto:dkocher@cyberduck.ch");
 	defaults.put("donate.url" , "http://www.cyberduck.ch/donate/");
+	defaults.put("website.url" , "http://www.cyberduck.ch/");
         
 	System.setProperty("sshtools.home", System.getProperty("user.dir"));
 	System.setProperty("sshtools.config", System.getProperty("user.dir"));
@@ -163,8 +165,8 @@ public abstract class Preferences {//extends Properties {
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");
         defaults.put("ftp.anonymous.pass", "user@domain.tld");
-	defaults.put("ftp.connectmode", "Passive");
-        defaults.put("ftp.transfermode", "Binary");
+	defaults.put("ftp.connectmode", "passive");
+        defaults.put("ftp.transfermode", "binary");
 
 	//listing properties
         defaults.put("listing.showHidden", "false");

@@ -172,8 +172,7 @@ public class CDConnectionSheet {
 		switch(tag) {
 		    case(Session.SSH_PORT):
 			try {
-			    host = new Host(Session.SFTP, hostField.stringValue(), Session.SSH_PORT,
-		       new CDLoginController(browser.window(), usernameField.stringValue(), passField.stringValue()));
+			    host = new Host(Session.SFTP, hostField.stringValue(), Integer.parseInt(portField.stringValue()), new CDLoginController(browser.window(), usernameField.stringValue(), passField.stringValue()));
 			    host.setHostKeyVerification(new CDHostKeyController(browser.window()));
 			}
 			    catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
@@ -193,7 +192,7 @@ public class CDConnectionSheet {
 			    }
 			    break;
 		    case(Session.FTP_PORT):
-			host = new Host(Session.FTP, hostField.stringValue(), Session.FTP_PORT, new CDLoginController(browser.window(), usernameField.stringValue(), passField.stringValue()));
+			host = new Host(Session.FTP, hostField.stringValue(), Integer.parseInt(portField.stringValue()), new CDLoginController(browser.window(), usernameField.stringValue(), passField.stringValue()));
 			break;
 		    default:
 			throw new IllegalArgumentException("No protocol selected.");

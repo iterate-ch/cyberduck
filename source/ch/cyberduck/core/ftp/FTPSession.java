@@ -35,8 +35,6 @@ import org.apache.log4j.Logger;
 public class FTPSession extends Session {
     private static Logger log = Logger.getLogger(Session.class);
     
-    private static final String TRANSFERTYPE = Preferences.instance().getProperty("ftp.transfermode");
-
     class FTPFile extends Path {
 
 	public FTPFile(String parent, String name) {
@@ -49,7 +47,7 @@ public class FTPSession extends Session {
 
 	public Path getParent() {
 	    String abs = this.getAbsolute();
-	    if((null == parent) && !abs.equals("/")) {
+	    if((null == parent)) {// && !abs.equals("/")) {
 		int index = abs.lastIndexOf('/');
 		String dirname = abs;
 		if(index > 0)
@@ -368,7 +366,7 @@ public class FTPSession extends Session {
     }
 
     private void downloadFile(Path file) throws IOException {
-	if(TRANSFERTYPE.equals("binary")) {
+	if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 	    this.log("Setting transfer mode to BINARY", Message.PROGRESS);
 	    FTP.setType(FTPTransferType.BINARY);
 	    file.status.setSize((int)(FTP.size(file.getAbsolute())));
@@ -385,7 +383,7 @@ public class FTPSession extends Session {
 	    file.download(in, out);
 	    FTP.validateTransfer();
 	}
-	else if(TRANSFERTYPE.equals("ascii")) {
+	else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 	    this.log("Setting transfer type to ASCII", Message.PROGRESS);
 	    FTP.setType(FTPTransferType.ASCII);
 	    file.status.setSize((int)(FTP.size(file.getAbsolute())));
@@ -442,7 +440,7 @@ public class FTPSession extends Session {
 
     private void uploadFile(java.io.File file) throws IOException {
 //@todo		    FTPFile.this.status.setSize((int)FTPFile.this.getLocal().length());
-	if(TRANSFERTYPE.equals(FTPTransferType.BINARY)) {
+	if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.BINARY)) {
 	    this.log("Setting transfer mode to BINARY.", Message.PROGRESS);
 	    FTP.setType(FTPTransferType.BINARY);
 	    java.io.InputStream in = new FileInputStream(file);
@@ -460,7 +458,7 @@ public class FTPSession extends Session {
 //@todo	    file.upload(out, in);
 	    FTP.validateTransfer();
 	}
-	else if(TRANSFERTYPE.equals(FTPTransferType.ASCII)) {
+	else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.ASCII)) {
 	    this.log("Setting transfer type to ASCII.", Message.PROGRESS);
 	    FTP.setType(FTPTransferType.ASCII);
 

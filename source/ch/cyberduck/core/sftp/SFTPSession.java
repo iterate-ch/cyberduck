@@ -58,7 +58,7 @@ public class SFTPSession extends Session {
 
 	public Path getParent() {
             String abs = this.getAbsolute();
-	    if((null == parent) && !abs.equals("/")) {
+	    if((null == parent)) {// && !abs.equals("/")) {
 		int index = abs.lastIndexOf('/');
 		String dirname = abs;
 		if(index > 0) 
@@ -459,13 +459,23 @@ public class SFTPSession extends Session {
 	}
     }
 
-    private void uploadFile(java.io.File file) throws IOException {
-	log.debug("not implemented");
-		    //@todo
-	/*
-	 SftpFile file = SFTP.openFile(file.getName(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
-	 SftpFileOutputStream out = new SftpFileOutputStream(file);
-	 */
+    private void uploadFile(java.io.File localFile) throws IOException {
+	java.io.InputStream in = new FileInputStream(localFile);
+	if(in == null) {
+	    throw new IOException("Unable to buffer data");
+	}
+
+	this.log("Opening data stream...", Message.PROGRESS);
+	SftpFile remoteFile = SFTP.openFile(localFile.getName(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
+//	FileAttributes attrs = remoteFile.getAttributes();
+//	attrs.setPermissions("rwxr-xr-x");
+//	SFTP.setAttributes(remoteFile, attrs);
+	SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);
+	if(out == null) {
+	    throw new IOException("Unable opening data stream");
+	}
+	this.log("Uploading "+localFile.getName()+"...", Message.PROGRESS);
+	//@todo file.upload(out, in);
     }
 
     private void uploadFolder(java.io.File file) throws IOException {

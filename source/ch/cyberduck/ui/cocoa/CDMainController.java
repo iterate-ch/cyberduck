@@ -31,7 +31,7 @@ public class CDMainController {
     public void awakeFromNib() {
 	CDBrowserController controller = new CDBrowserController();
 	controller.window().makeKeyAndOrderFront(null);
-	controller.connectButtonPressed(this);
+	controller.connectButtonClicked(this);
     }
 
     private NSArray references = new NSArray();
@@ -45,8 +45,28 @@ public class CDMainController {
 	this.donationSheet = donationSheet;
     }
 
+    public void helpMenuClicked(Object sender) {
+	NSWorkspace.sharedWorkspace().openFile("Help.rtfd", "TextEdit");
+    }
 
-    public void donateMenuPressed(Object sender) {
+    public void licenseMenuClicked(Object sender) {
+	NSWorkspace.sharedWorkspace().openFile("License.rtf", "TextEdit");
+    }
+
+    public void updateMenuClicked(Object sender) {
+
+    }
+    
+    public void websiteMenuClicked(Object sender) {
+	try {
+	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.url")));
+	}
+	catch(java.net.MalformedURLException e) {
+	    e.printStackTrace();
+	}
+    }
+    
+    public void donateMenuClicked(Object sender) {
 	try {
 	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("donate.url")));
 	}
@@ -55,6 +75,23 @@ public class CDMainController {
 	}
     }
 
+    public void feedbackMenuClicked(Object sender) {
+	try {
+	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail")+"?subject=Cyberduck Feedback"));
+	}
+	catch(java.net.MalformedURLException e) {
+	    e.printStackTrace();
+	}
+    }
+
+    public void neverShowDonationSheetAgain(NSButton sender) {
+	switch(sender.state()) {
+	    case NSCell.OnState:
+		Preferences.instance().setProperty("donate", "false");
+	    case NSCell.OffState:
+		Preferences.instance().setProperty("donate", "true");
+	}
+    }
 
     public void donationSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	log.debug("donationSheetDidEnd");
@@ -73,24 +110,24 @@ public class CDMainController {
         NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
     }
 
-    public void closeDonationSheet(Object sender) {
+    public void closeDonationSheet(NSButton sender) {
 	log.debug("closeDonationSheet");
-	donationSheet.close();
-//	NSApplication.sharedApplication().endSheet(donationSheet, NSAlertPanel.AlternateReturn);
+//	donationSheet.close();
+	NSApplication.sharedApplication().endSheet(donationSheet, NSAlertPanel.AlternateReturn);
     }
 
 
-    public void preferencesMenuPressed(Object sender) {
+    public void preferencesMenuClicked(Object sender) {
 	CDPreferencesController controller = CDPreferencesController.instance();
 	controller.window().makeKeyAndOrderFront(null);
     }
 
-    public void newDownloadMenuPressed(Object sender) {
+    public void newDownloadMenuClicked(Object sender) {
 	CDDownloadSheet controller = new CDDownloadSheet();
 	controller.window().makeKeyAndOrderFront(null);
     }
 
-    public void newBrowserMenuPressed(Object sender) {
+    public void newBrowserMenuClicked(Object sender) {
 	CDBrowserController controller = new CDBrowserController();
 	this.references = references.arrayByAddingObject(controller);
 //	controller.window().setMenu(null);
@@ -131,19 +168,16 @@ public class CDMainController {
 		log.error("Couldn't load Donate.nib");
 		return NSApplication.TerminateNow;
 	    }
-	    app.runModalForWindow(donationSheet);
-	    
-	   /*
+//	    app.runModalForWindow(donationSheet);
 	    NSApplication.sharedApplication().beginSheet(
 						  donationSheet,//sheet
 						  null, //docwindow
-						  this, //delegate
+						  this, //modal delegate
 						  new NSSelector(
 		       "donationSheetDidEnd",
 		       new Class[] { NSWindow.class, int.class, NSWindow.class }
 		       ),// did end selector
 						  null); //contextInfo
-	    */
 	    return NSApplication.TerminateLater;
 	}
 	return NSApplication.TerminateNow;

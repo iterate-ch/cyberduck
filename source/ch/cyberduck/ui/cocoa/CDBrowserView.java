@@ -94,8 +94,8 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
         this.setDoubleAction(new NSSelector("doubleClickAction", new Class[] {Object.class}));
 	//By setting the drop row to -1, the entire table is highlighted instead of just a single row.
 	//this.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-	if(this.tableColumnWithIdentifier("TYPE") != null)
-	    this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
+//	if(this.tableColumnWithIdentifier("TYPE") != null)
+//	    this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
 	//this.setIndicatorImage(NSImage.imageNamed("indicator.tiff"), this.tableColumnWithIdentifier("FILENAME"));
 //	this.setIndicatorImage(this._defaultTableHeaderSortImage(), this.tableColumnWithIdentifier("FILENAME"));
     }
@@ -171,8 +171,9 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
      NSTableView
      **/
     public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
-//java.lang.NullPointerException
-//	at ch.cyberduck.ui.cocoa.CDBrowserView.tableViewWillDisplayCell(CDBrowserView.java:181)
+//	if(column.identifier().equals("TYPE")) {
+//	    cell = new NSImageCell();
+//	}
 	if(cell instanceof NSTextFieldCell) {
 	    if (! (view == null || cell == null || column == null)) {
 		if (row % 2 == 0) {

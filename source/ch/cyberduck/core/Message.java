@@ -32,6 +32,7 @@ public class Message {//{implements java.io.Serializable {
     public static final String PROGRESS = "PROGRESS";
     public static final String ERROR = "ERROR";
     public static final String DATA = "DATA";
+    public static final String CLOCK = "CLOCK";
     /**
     * 
     */

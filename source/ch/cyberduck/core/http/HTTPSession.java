@@ -56,7 +56,7 @@ public class HTTPSession extends Session {
 
         public Path getParent() {
             String abs = this.getAbsolute();
-            if((null == parent) && !abs.equals("/")) {
+            if((null == parent)) {// && !abs.equals("/")) {
                 int index = abs.lastIndexOf('/');
                 String dirname = abs;
                 if(index > 0)

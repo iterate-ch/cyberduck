@@ -57,13 +57,13 @@ public class CDBrowserTableDataSource implements NSTableView.DataSource {
 	}
 	if(identifier.equals("FILENAME"))
 	    return p.getName();
-	if(identifier.equals("SIZE"))
+	else if(identifier.equals("SIZE"))
 	    return p.status.getSizeAsString();
-	if(identifier.equals("MODIFIED"))
+	else if(identifier.equals("MODIFIED"))
 	    return p.attributes.getModified();
-	if(identifier.equals("OWNER"))
+	else if(identifier.equals("OWNER"))
 	    return p.attributes.getOwner();
-	if(identifier.equals("PERMISSION"))
+	else if(identifier.equals("PERMISSION"))
 	    return p.attributes.getPermission().toString();
 	throw new IllegalArgumentException("Unknown identifier: "+identifier);
     }
