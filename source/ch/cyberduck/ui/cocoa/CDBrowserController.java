@@ -769,7 +769,10 @@ public class CDBrowserController extends CDController implements Observer {
 			}
 
 			public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-				return ((Host)CDBookmarkTableDataSource.instance().get(row)).getHostname();
+				if(row < this.numberOfItemsInComboBox(combo)) {
+					return ((Host)CDBookmarkTableDataSource.instance().get(row)).getHostname();
+				}
+				return null;
 			}
 		});
 	}
