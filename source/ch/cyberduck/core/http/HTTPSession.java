@@ -65,10 +65,6 @@ public class HTTPSession extends Session {
 		}
 	}
 
-	public Session copy() {
-		return new HTTPSession(this.host);
-	}
-
 	public synchronized void connect() throws IOException {
 		this.callObservers(new Message(Message.OPEN, "Opening session."));
 		this.log("Opening HTTP connection to " + host.getIp() + "...", Message.PROGRESS);

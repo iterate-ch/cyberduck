@@ -45,7 +45,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			return NSImage.imageNamed("cyberduck-document.icns");
 		}
 		if (identifier.equals("BOOKMARK")) {
-			return (Host) CDBookmarksImpl.instance().values().toArray()[row];
+			return (Host) CDBookmarksImpl.instance().getItem(row);
 		}
 		throw new IllegalArgumentException("Unknown identifier: " + identifier);
 	}
@@ -104,13 +104,14 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 						Host h = CDBookmarksImpl.instance().importBookmark(new java.io.File((String) filesList.objectAtIndex(i)));
 						if (row != -1) {
 							CDBookmarksImpl.instance().addItem(h, row);
+							tableView.reloadData();
 							tableView.selectRow(row, false);
 						}
 						else {
 							CDBookmarksImpl.instance().addItem(h);
+							tableView.reloadData();
 							tableView.selectRow(tableView.numberOfRows() - 1, false);
 						}
-						tableView.reloadData();
 					}
 					return true;
 				}
@@ -133,13 +134,14 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 							NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
 							if (row != -1 && row < CDBookmarksImpl.instance().size() - 1) {
 								CDBookmarksImpl.instance().addItem(new Host(dict), row);
-//								tableView.selectRow(row, false);
+								tableView.reloadData();
+								tableView.selectRow(row, false);
 							}
 							else {
 								CDBookmarksImpl.instance().addItem(new Host(dict));
-//								tableView.selectRow(tableView.numberOfRows() - 1, false);
+								tableView.reloadData();
+								tableView.selectRow(tableView.numberOfRows() - 1, false);
 							}
-							tableView.reloadData();
 						}
 						draggedRows = null;
 						return true;

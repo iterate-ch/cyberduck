@@ -36,7 +36,6 @@ public abstract class Preferences {
 
 	//	System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", Preferences.instance().getProperty("http.wire.logging"));
 	//	System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", Preferences.instance().getProperty("http.logging"));
-	//	System.setProperty("rendezvous.debug", Preferences.instance().getProperty("rendezvous.logging"));
 
 	/**
 	 * @return The singleton instance of me.
@@ -74,14 +73,7 @@ public abstract class Preferences {
 	public void setDefaults() {
 		this.defaults = new Hashtable();
 
-//	defaults.put("logging", "DEBUG");
-//	defaults.put("logging", "INFO");
 		defaults.put("logging", "WARN");
-//	defaults.put("logging", "ERROR");
-//	defaults.put("logging", "FATAL");
-		defaults.put("rendezvous.logging", "0");
-
-//	defaults.put("version", "2.1");
 		defaults.put("uses", "0");
 		defaults.put("donate", "true");
 		defaults.put("mail", "mailto:dkocher@cyberduck.ch");
@@ -122,10 +114,6 @@ public abstract class Preferences {
 		defaults.put("connection.login.name", System.getProperty("user.name"));
 		defaults.put("connection.login.useKeychain", "true");
 
-		//defaults.put("files.encode", "true");
-		//Connection
-		//	private int BLOCKSIZE = 65535;
-
 		defaults.put("connection.buffer", "1024");
 		defaults.put("connection.buffer.default", "1024");
 		defaults.put("connection.port.default", "21");
@@ -137,7 +125,7 @@ public abstract class Preferences {
 		defaults.put("ftp.connectmode", "passive");
 		defaults.put("ftp.transfermode", "binary");
 		defaults.put("ftp.sendSystemCommand", "true");
-		defaults.put("ftp.sendExtendedListCommand", "false");
+		defaults.put("ftp.sendExtendedListCommand", "true");
 
 		defaults.put("http.agent", "Cyberduck/2.1");
 		defaults.put("http.acceptheader", "*/*");

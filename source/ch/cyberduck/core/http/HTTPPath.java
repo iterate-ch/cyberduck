@@ -46,6 +46,10 @@ public class HTTPPath extends Path {
 	}
 
 	private static class Factory extends PathFactory {
+		protected Path create(Session session, String parent, String name) {
+			return new HTTPPath((HTTPSession) session, parent, name);
+		}
+
 		protected Path create(Session session, String path) {
 			return new HTTPPath((HTTPSession) session, path);
 		}
@@ -81,12 +85,6 @@ public class HTTPPath extends Path {
 		this.session = session;
 	}
 
-	public Path copy(Session s) {
-		HTTPPath copy = new HTTPPath((HTTPSession) s, this.getAbsolute());
-		copy.attributes = this.attributes;
-		return copy;
-	}
-
 	public Path getParent() {
 		String abs = this.getAbsolute();
 		if ((null == parent)) {
@@ -96,7 +94,7 @@ public class HTTPPath extends Path {
 				dirname = abs.substring(0, index);
 			if (index == 0) //parent is root
 				dirname = "/";
-			parent = new HTTPPath(session, dirname);
+			parent = PathFactory.createPath(session, dirname);
 		}
 		log.debug("getParent:" + parent);
 		return parent;
@@ -106,12 +104,15 @@ public class HTTPPath extends Path {
 		return this.session;
 	}
 
-	public List list(boolean notifyobservers, boolean showHidden) {
-		session.log("Invalid Operation", Message.ERROR);
-		return null;
-	}
-
 	public List list() {
+		return this.list(false);
+	}
+	
+	public List list(boolean refresh) {
+		return this.list(refresh, Preferences.instance().getProperty("browser.showHidden").equals("true"));
+	}
+	
+	public List list(boolean notifyobservers, boolean showHidden) {
 		session.log("Invalid Operation", Message.ERROR);
 		return null;
 	}

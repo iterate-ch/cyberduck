@@ -42,20 +42,21 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 	public int numberOfRowsInTableView(NSTableView tableView) {
 		return CDQueuesImpl.instance().size();
 	}
-
-	//getValue()
+	
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-//		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
-		String identifier = (String) tableColumn.identifier();
-		if (identifier.equals("DATA")) {
-			return CDQueuesImpl.instance().getItem(row);
+		String identifier = (String)tableColumn.identifier();
+		if(row < numberOfRowsInTableView(tableView)) {
+			if(identifier.equals("DATA")) {
+				return CDQueuesImpl.instance().getItem(row);
+			}
+			if(identifier.equals("PROGRESS")) {
+				return CDQueuesImpl.instance().getItem(row);
+			}
+			throw new IllegalArgumentException("Unknown identifier: " + identifier);
 		}
-		if (identifier.equals("PROGRESS")) {
-			return CDQueuesImpl.instance().getItem(row);
-		}
-		throw new IllegalArgumentException("Unknown identifier: " + identifier);
+		return null;
 	}
-
+	
 	// ----------------------------------------------------------
 	// Drop methods
 	// ----------------------------------------------------------
@@ -101,14 +102,16 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 						Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
 						// we assume a file has an extension
 						if (null != p.getExtension()) {
-							Queue q = new Queue(p, Queue.KIND_DOWNLOAD);//, true);
+							Queue q = new Queue(p, Queue.KIND_DOWNLOAD);
 							if (row != -1) {
 								CDQueuesImpl.instance().addItem(q, row);
-//								CDQueueController.instance().addItem(new Queue(p,
-//																			   Queue.KIND_DOWNLOAD), true);
+								tableView.reloadData();
+								tableView.selectRow(row, false);
 							}
 							else {
 								CDQueuesImpl.instance().addItem(q);
+								tableView.reloadData();
+								tableView.selectRow(tableView.numberOfRows() - 1, false);
 							}
 							CDQueueController.instance().startItem(q);
 							return true;
@@ -134,16 +137,16 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 						NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
 						if (row != -1) {
 							CDQueuesImpl.instance().addItem(new Queue(dict), row);
+							tableView.reloadData();
 							tableView.selectRow(row, false);
 						}
 						else {
 							CDQueuesImpl.instance().addItem(new Queue(dict));
+							tableView.reloadData();
 							tableView.selectRow(tableView.numberOfRows() - 1, false);
 						}
-						tableView.reloadData();
 					}
 					this.queuePboardChangeCount++;
-					//doesn't work?				pboard.setPropertyListForType(null, "QueuePBoardType");
 					return true;
 				}
 			}

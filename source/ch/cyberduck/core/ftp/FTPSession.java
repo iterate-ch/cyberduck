@@ -108,16 +108,16 @@ public class FTPSession extends Session {
 			public void run() {
 				try {
 					connect();
-					FTPPath home;
+					Path home;
 					if (host.hasReasonableDefaultPath()) {
 						if (host.getDefaultPath().charAt(0) != '/')
-							home = new FTPPath(FTPSession.this, ((FTPPath) FTPSession.this.workdir()).getAbsolute(), host.getDefaultPath());
+							home = PathFactory.createPath(FTPSession.this, ((FTPPath) FTPSession.this.workdir()).getAbsolute(), host.getDefaultPath());
 						else
-							home = new FTPPath(FTPSession.this, host.getDefaultPath());
+							home = PathFactory.createPath(FTPSession.this, host.getDefaultPath());
 					}
 					else
 						home = (FTPPath) FTPSession.this.workdir();
-					home.list();
+					home.list(true);
 				}
 				catch (FTPException e) {
 					FTPSession.this.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -154,7 +154,7 @@ public class FTPSession extends Session {
 
 	public Path workdir() {
 		try {
-			return new FTPPath(this, this.FTP.pwd());
+			return PathFactory.createPath(this, this.FTP.pwd());
 		}
 		catch (FTPException e) {
 			this.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -173,9 +173,5 @@ public class FTPSession extends Session {
 			this.setConnected(false);
 			this.connect();
 		}
-	}
-
-	public Session copy() {
-		return new FTPSession(this.host);
 	}
 }

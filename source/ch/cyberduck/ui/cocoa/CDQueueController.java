@@ -136,22 +136,15 @@ public class CDQueueController implements Observer, Validator {
 		this.queueTable.setAllowsColumnReordering(false);
 	}
 
-	public void addItem(Queue queue, boolean start, Observer callback) {
-		this.addItem(queue, start);
+	public void startItem(Queue queue, Observer callback) {
 		this.callback = callback;
-	}
-
-	public void addItem(Queue queue, boolean start) {
-		this.window.makeKeyAndOrderFront(null);
-		CDQueuesImpl.instance().addItem(queue);
-		this.queueTable.reloadData();
-		this.queueTable.selectRow(this.queueTable.numberOfRows() - 1, false);
-		if (start)
-			this.startItem(queue);
+		this.startItem(queue);
 	}
 
 	public void startItem(Queue queue) {
-		queue.addObserver(this);
+		this.queueTable.reloadData();
+		this.queueTable.selectRow(CDQueuesImpl.instance().indexOf(queue), false);
+		this.window.makeKeyAndOrderFront(null);
 		queue.getRoot().getHost().getLogin().setController(new CDLoginController(this.window));
 		if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
 			try {
@@ -173,65 +166,60 @@ public class CDQueueController implements Observer, Validator {
 				);
 			}
 		}
-		queue.start(this);
+		queue.start(this, this);
 	}
 
 	public void update(Observable observable, Object arg) {
 //		log.debug("update:"+observable+","+arg);
 		if (arg instanceof Message) {
 			Message msg = (Message) arg;
-
-			if (this.window.isVisible()) {
+			
+			if(this.window.isVisible()) {
 				if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
-//					log.debug("Queue table visible, redrawing cells");
 					int row = CDQueuesImpl.instance().indexOf((Queue) observable);
-					
-//					NSCell queueCell = this.queueTable.tableColumnWithIdentifier("DATA").dataCell();
 					NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
-//					queueCell.drawInteriorWithFrameInView(queueRect, this.queueTable);
-
-//					NSCell progressCell = this.queueTable.tableColumnWithIdentifier("PROGRESS").dataCell();
 					NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
-//					progressCell.drawInteriorWithFrameInView(progressRect, this.queueTable);
-
 					this.queueTable.setNeedsDisplay(queueRect.rectByUnioningRect(progressRect));
 				}
 			}
-
-			if (msg.getTitle().equals(Message.QUEUE_START) || msg.getTitle().equals(Message.QUEUE_STOP)) {
+			
+			if(msg.getTitle().equals(Message.QUEUE_START)) {
+				this.toolbar.validateVisibleItems();
+			}
+			else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
 				this.toolbar.validateVisibleItems();
 				Queue queue = (Queue) observable;
-				if (Queue.KIND_UPLOAD == queue.kind()) {
-					if (callback != null)
-						callback.update(observable, queue.getRoot());
-				}
-			}
-			else if (msg.getTitle().equals(Message.START)) {
-				log.debug("************START***********");
-				this.toolbar.validateVisibleItems();
-			}
-			else if (msg.getTitle().equals(Message.STOP)) {
-				log.debug("************STOP***********");
-				this.toolbar.validateVisibleItems();
-				if (observable instanceof Queue) {
-					Queue queue = (Queue) observable;
-					if (queue.numberOfJobs() == queue.processedJobs()) {
-						if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
-							this.queueTable.deselectAll(null);
-							CDQueuesImpl.instance().removeItem(queue);
-							this.queueTable.reloadData();
-						}
-						if (Queue.KIND_DOWNLOAD == queue.kind()) {
-							if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
-								boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
-								log.debug("Success opening file:" + success);
-							}
+				if (queue.isEmpty()) {
+					if (Queue.KIND_DOWNLOAD == queue.kind()) {
+						if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
+							boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+							log.debug("Success opening file:" + success);
 						}
 					}
+					if (Queue.KIND_UPLOAD == queue.kind()) {
+						if (callback != null) {
+							queue.getRoot().getParent().list(true);
+							callback.update(observable, queue.getRoot().getParent());
+						}
+					}
+					if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
+						this.queueTable.deselectAll(null);
+						CDQueuesImpl.instance().removeItem(queue);
+						this.queueTable.reloadData();
+					}
 				}
+				
 			}
+//			else if (msg.getTitle().equals(Message.START)) {
+//				log.debug("************START***********");
+//				this.toolbar.validateVisibleItems();
+//			}
+//			else if (msg.getTitle().equals(Message.STOP)) {
+//				log.debug("************STOP***********");
+//				this.toolbar.validateVisibleItems();
+//			}
 			else if (msg.getTitle().equals(Message.ERROR)) {
-				this.toolbar.validateVisibleItems();
+//				this.toolbar.validateVisibleItems();
 				NSAlertPanel.beginCriticalAlertSheet(
 				    NSBundle.localizedString("Error", ""), //title
 				    NSBundle.localizedString("OK", ""), // defaultbutton
@@ -325,7 +313,7 @@ public class CDQueueController implements Observer, Validator {
 			Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
 			if (!item.isRunning()) {
 				item.getRoot().status.setResume(true);
-				this.startItem(item);
+				this.startItem(item, null);
 			}
 		}
 	}
@@ -335,7 +323,7 @@ public class CDQueueController implements Observer, Validator {
 			Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
 			if (!item.isRunning()) {
 				item.getRoot().status.setResume(false);
-				this.startItem(item);
+				this.startItem(item, null);
 			}
 		}
 	}

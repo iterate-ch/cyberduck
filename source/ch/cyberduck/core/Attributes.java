@@ -59,16 +59,16 @@ public class Attributes extends Observable {
 	/**
 	 * @param visible If this path should be shown in the directory listing
 	 */
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
+//	public void setVisible(boolean visible) {
+//		this.visible = visible;
+//	}
 
 	/**
 	 * @return If this path is shown in the directory listing
 	 */
-	public boolean isVisible() {
-		return this.visible;
-	}
+//	public boolean isVisible() {
+//		return this.visible;
+//	}
 
 	/**
 	 * Set the modfication returned by ftp directory listings

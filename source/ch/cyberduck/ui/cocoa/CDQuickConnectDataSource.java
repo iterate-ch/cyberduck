@@ -54,7 +54,7 @@ public class CDQuickConnectDataSource { //implements NSComboBox.DataSource, NSTa
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 		String identifier = (String) tableColumn.identifier();
 		if (identifier.equals("URL")) {
-			Host h = (Host) CDHistoryImpl.instance().values().toArray()[row];
+			Host h = (Host) CDHistoryImpl.instance().getItem(row);
 			return h.getHostname();
 		}
 		throw new IllegalArgumentException("Unknown identifier: " + identifier);

@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.io.*;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
@@ -36,7 +37,7 @@ public abstract class Path {
 	private String path = null;
 	private Local local = null;
 	protected Path parent = null;
-	private List cache = null;
+	private List cache = new ArrayList();
 	public Status status = new Status();
 	public Attributes attributes;
 
@@ -46,6 +47,17 @@ public abstract class Path {
 
 	public static final String HOME = "~";
 
+	/**
+		* Deep copies the current path with its attributes but without the status information
+	 * @param session The session this path will use to fullfill its tasks
+	 * @return A copy of me with a new session
+	 */
+	public Path copy(Session s) {
+		Path copy = PathFactory.createPath(s, this.getAbsolute());
+		copy.attributes = this.attributes;
+		return copy;
+	}
+	
 	public Path(NSDictionary dict) {
 		log.debug("Path");
 		this.setPath((String) dict.objectForKey("Remote"));
@@ -94,13 +106,6 @@ public abstract class Path {
 		this.setPath(parent, file);
 		this.attributes = new Attributes();
 	}
-
-	/**
-	 * Copies the current path with its attributes but without the status information
-	 * @param session The session this path will use to fullfill its tasks
-	 * @return A copy of me with a new session
-	 */
-	public abstract Path copy(Session session);
 
 	public void setPath(String parent, Local file) {
 		this.setPath(parent, file.getName());
@@ -161,16 +166,17 @@ public abstract class Path {
 		return this.cache;
 	}
 
-	public void setCache(List files) {
+	protected void setCache(List files) {
 		this.cache = files;
 	}
 
 	/**
 	 * Request a file listing from the server. Has to be a directory
-	 * @param notifyobservers Notify the observers if true
 	 */
-	public abstract List list(boolean notifyobservers, boolean showHidden);
+	public abstract List list(boolean refresh, boolean showHidden);
 
+	public abstract List list(boolean refresh);
+	
 	public abstract List list();
 
 	/**

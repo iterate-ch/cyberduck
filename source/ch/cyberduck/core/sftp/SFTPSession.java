@@ -133,16 +133,16 @@ public class SFTPSession extends Session {
 			public void run() {
 				try {
 					connect();
-					SFTPPath home;
+					Path home;
 					if (host.hasReasonableDefaultPath()) {
 						if (host.getDefaultPath().charAt(0) != '/')
-							home = new SFTPPath(SFTPSession.this, ((SFTPPath) SFTPSession.this.workdir()).getAbsolute(), host.getDefaultPath());
+							home = PathFactory.createPath(SFTPSession.this, ((SFTPPath) SFTPSession.this.workdir()).getAbsolute(), host.getDefaultPath());
 						else
-							home = new SFTPPath(SFTPSession.this, host.getDefaultPath());
+							home = PathFactory.createPath(SFTPSession.this, host.getDefaultPath());
 					}
 					else
 						home = (SFTPPath) SFTPSession.this.workdir();
-					home.list();
+					home.list(true);
 				}
 				catch (SshException e) {
 					SFTPSession.this.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -222,7 +222,7 @@ public class SFTPSession extends Session {
 
 	public Path workdir() {
 		try {
-			return new SFTPPath(this, SFTP.getDefaultDirectory());
+			return PathFactory.createPath(this, SFTP.getDefaultDirectory());
 		}
 		catch (SshException e) {
 			this.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -241,9 +241,5 @@ public class SFTPSession extends Session {
 			this.close();
 			this.connect();
 		}
-	}
-
-	public Session copy() {
-		return new SFTPSession(this.host);
 	}
 }

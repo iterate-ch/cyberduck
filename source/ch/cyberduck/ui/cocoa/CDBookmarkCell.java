@@ -35,29 +35,26 @@ public class CDBookmarkCell extends CDTableCell {
 	public void setObjectValue(Object bookmark) {
 		this.bookmark = (Host) bookmark;
 	}
-
+	
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
-		//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and
-		//coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
-		//invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.
-//		controlView.lockFocus();
-
-		NSPoint cellPoint = cellFrame.origin();
-		NSSize cellSize = cellFrame.size();
-
-		NSGraphics.drawAttributedString(
-		    new NSAttributedString(bookmark.getNickname(), boldFont),
-		    new NSRect(cellPoint.x(), cellPoint.y() + 1, cellSize.width() - 5, cellSize.height())
-		);
-		NSGraphics.drawAttributedString(
-		    new NSAttributedString(bookmark.getLogin().getUsername(), tinyFont),
-		    new NSRect(cellPoint.x(), cellPoint.y() + 14, cellSize.width() - 5, cellSize.height())
-		);
-		NSGraphics.drawAttributedString(
-		    new NSAttributedString(bookmark.getDefaultPath(), tinyFont),
-		    new NSRect(cellPoint.x(), cellPoint.y() + 27, cellSize.width() - 5, cellSize.height())
-		);
-//		controlView.unlockFocus();
+		if(bookmark != null) {
+			
+			NSPoint cellPoint = cellFrame.origin();
+			NSSize cellSize = cellFrame.size();
+			
+			NSGraphics.drawAttributedString(
+											new NSAttributedString(bookmark.getNickname(), boldFont),
+											new NSRect(cellPoint.x(), cellPoint.y() + 1, cellSize.width() - 5, cellSize.height())
+											);
+			NSGraphics.drawAttributedString(
+											new NSAttributedString(bookmark.getLogin().getUsername(), tinyFont),
+											new NSRect(cellPoint.x(), cellPoint.y() + 14, cellSize.width() - 5, cellSize.height())
+											);
+			NSGraphics.drawAttributedString(
+											new NSAttributedString(bookmark.getDefaultPath(), tinyFont),
+											new NSRect(cellPoint.x(), cellPoint.y() + 27, cellSize.width() - 5, cellSize.height())
+											);
+		}
 	}
 }

@@ -64,11 +64,11 @@ public class Queue extends Observable implements Observer { //Thread {
 	/**
 	 * Number of jobs handled in the queue. Completed and currently being processed
 	 */
-	private int processedJobs;
+	private int processedJobs = 0;
 	/**
 	 * Number of completed jobs in the queue
 	 */
-	private int completedJobs;
+	private int completedJobs = 0;
 	/**
 	 * The file currently beeing processed in the queue
 	 */
@@ -160,7 +160,6 @@ public class Queue extends Observable implements Observer { //Thread {
 	private void process() {
 		log.debug("process");
 		if (!this.isCanceled()) {
-			root.getSession().addObserver(this);
 			Iterator elements = jobs.iterator();
 			while (elements.hasNext() && !this.isCanceled()) {
 				this.progressTimer.start();
@@ -188,7 +187,6 @@ public class Queue extends Observable implements Observer { //Thread {
 				this.progressTimer.stop();
 				this.leftTimer.stop();
 			}
-			root.getSession().deleteObserver(this);
 			if (this.isEmpty()) {
 				root.getSession().close();
 			}
@@ -200,26 +198,30 @@ public class Queue extends Observable implements Observer { //Thread {
 	 * @param validator A callback class where the user can decide what to do if
 	 * the file already exists at the download location
 	 */
-	public void start(final Validator validator) {
+	public void start(final Validator validator, final Observer observer) {
 		log.debug("start");
 		this.completedJobs = 0;
 		this.processedJobs = 0;
 		new Thread() {
 			public void run() {
+				Queue.this.addObserver(observer);
+
+				root.getSession().addObserver(Queue.this);
 				running = true;
 				callObservers(new Message(Message.QUEUE_START, Queue.this));
 				elapsedTimer.start();
 				jobs = new ArrayList();
 				if (validator.validate(root, kind)) {
 					log.debug("Filling this of root element " + root);
-					root.getSession().addObserver(Queue.this);
 					root.fillQueue(jobs, kind);
-					root.getSession().deleteObserver(Queue.this);
 					process();
 				}
 				elapsedTimer.stop();
 				running = false;
 				callObservers(new Message(Message.QUEUE_STOP, Queue.this));
+				root.getSession().deleteObserver(Queue.this);
+				
+				Queue.this.deleteObserver(observer);
 			}
 		}.start();
 	}

@@ -57,9 +57,9 @@ public abstract class Queues {
 		this.save();
 	}
 
-	public void removeItem(int index) {
-		log.debug("removeItem:" + index);
-		this.data.remove(index);
+	public void removeItem(int row) {
+		log.debug("removeItem:" + row);
+		this.data.remove(row);
 		this.save();
 	}
 
@@ -68,11 +68,13 @@ public abstract class Queues {
 		this.removeItem(this.data.lastIndexOf(item));
 	}
 
-	public Queue getItem(int index) {
-//		log.debug("getItem:"+index);
-		Queue result = (Queue) this.data.get(index);
+	public Queue getItem(int row) {
+//		log.debug("getItem:"+row);
+		Queue result = null;
+		if(row < this.size())
+		   result = (Queue) this.data.get(row);
 		if (null == result)
-			throw new IllegalArgumentException("No host with index " + index + " in Bookmarks.");
+			throw new IllegalArgumentException("No queue with index " + row + " in Queues.");
 		return result;
 	}
 

@@ -35,6 +35,7 @@ import java.io.IOException;
 
 import java.util.Properties;
 
+//import ch.cyberduck.core.Codec;
 
 /**
  *
@@ -123,6 +124,7 @@ public class PasswordAuthenticationClient extends SshAuthenticationClient {
         ByteArrayWriter baw = new ByteArrayWriter();
         baw.write(0);
         baw.writeString(password);
+//		baw.writeString(new String(Codec.encode(password)));
 
         SshMsgUserAuthRequest msg = new SshMsgUserAuthRequest(getUsername(),
                 serviceToStart, "password", baw.toByteArray());
@@ -138,7 +140,9 @@ public class PasswordAuthenticationClient extends SshAuthenticationClient {
                 baw = new ByteArrayWriter();
                 baw.write(1);
                 baw.writeString(password);
+//				baw.writeString(new String(Codec.encode(password)));
                 baw.writeString(newpassword);
+//				baw.writeString(new String(Codec.encode(newpassword)));
                 msg = new SshMsgUserAuthRequest(getUsername(), serviceToStart,
                         "password", baw.toByteArray());
                 authentication.sendMessage(msg);

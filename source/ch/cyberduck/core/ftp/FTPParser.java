@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
 
 import com.enterprisedt.net.ftp.FTPException;
@@ -49,21 +50,17 @@ public class FTPParser {
 	};
 
 	public List parseList(Path parent, String[] list, boolean showHidden) throws FTPException {
-		//        log.debug("[FTPParser] parseList(" + parent + "," + list + ")");
 		List parsedList = new ArrayList();
-		//	    boolean showHidden = Preferences.instance().getProperty("browser.showHidden").equals("true");
 		for (int i = 0; i < list.length; i++) {
 			int index = 0;
 			String line = list[i].trim();
 			if (isValidLine(line)) {
 				Path p = parseListLine(parent, line);
-//				Path p = parseListLine(parent, new String(line.getBytes("ISO-8859-1"), "UTF-8").toString());
 				String filename = p.getName();
 				if (!(filename.equals(".") || filename.equals(".."))) {
-					if (!showHidden && filename.charAt(0) == '.') {
-						p.attributes.setVisible(false);
+					if (!(filename.charAt(0) == '.') || showHidden) {
+						parsedList.add(p);
 					}
-					parsedList.add(p);
 				}
 			}
 		}
@@ -90,78 +87,11 @@ public class FTPParser {
 	}
 
 	public boolean isDirectory(String c) {
-		//        log.debug("[FTPParser] isDirectory(" + c + ")");
 		return c.charAt(0) == 'd';
 	}
 
 	private Path parseListLine(Path parent, String line) throws FTPException {
-		//        log.debug("[FTPParser] parseListLine("+ parent+","+line+")");
-		// unix list format never strarts with number
-		if ("0123456789".indexOf(line.charAt(0)) < 0) {
-			return parseUnixListLine(parent, line);
-		}
-		// windows list format always starts with number
-		else {
-			return parseWinListLine(parent, line);
-		}
-	}
-
-
-	private Path parseWinListLine(Path parent, String line) throws FTPException {
-		//        log.debug("[FTPParser] parseWinListLine("+ parent+","+line+")");
-
-		// 10-16-01  11:35PM                 1479 file
-		// 10-16-01  11:37PM       <DIR>          awt  *
-		Path p = null;
-		try {
-			StringTokenizer toker = new StringTokenizer(line);
-			long date = parseWinListDate(toker.nextToken(), toker.nextToken());// time
-			String size2dir = toker.nextToken();  // size or dir
-			String access;
-			int size = 0;
-			if (size2dir.equals("<DIR>")) {
-				access = "d?????????";
-			}
-			else {
-				access = "-?????????";
-			}
-			String name = toker.nextToken("").trim();
-			String owner = "";
-			String group = "";
-
-			if (isDirectory(access) && !(name.charAt(name.length() - 1) == '/')) {
-				name = name + "/";
-			}
-			p = new FTPPath((FTPSession) parent.getSession(), parent.getAbsolute(), name);
-			p.attributes.setOwner(owner);
-			p.attributes.setModified(date);
-//			p.attributes.setMask(access);
-			p.attributes.setPermission(new Permission(access));
-			p.status.setSize(size);
-			return p;
-		}
-		catch (NumberFormatException e) {
-			throw new FTPException("Invalid server response : " + e.getMessage());
-		}
-		catch (StringIndexOutOfBoundsException e) {
-			throw new FTPException("Invalid server response : " + e.getMessage());
-		}
-	}
-
-	private long parseWinListDate(String date, String time) throws NumberFormatException {
-		//10-16-01    11:35PM
-		//10-16-2001  11:35PM
-		Calendar c = Calendar.getInstance();
-		StringTokenizer toker = new StringTokenizer(date, "-");
-		int m = Integer.parseInt(toker.nextToken()),
-		    d = Integer.parseInt(toker.nextToken()),
-		    y = Integer.parseInt(toker.nextToken());
-		if (y >= 70) y += 1900; else y += 2000;
-		toker = new StringTokenizer(time, ":APM");
-		c.set(y, m, d, (time.endsWith("PM") ? 12 : 0) +
-		    Integer.parseInt(toker.nextToken()),
-		    Integer.parseInt(toker.nextToken()));
-		return c.getTime().getTime();
+		return parseUnixListLine(parent, line);
 	}
 
 	private Path parseUnixListLine(Path parent, String line) throws FTPException {
@@ -208,7 +138,7 @@ public class FTPParser {
 			    toker.nextToken()); // time or year
 			String name = toker.nextToken("").trim(); // name
 
-			p = new FTPPath((FTPSession) parent.getSession(), parent.getAbsolute(), name);
+			p = PathFactory.createPath((FTPSession) parent.getSession(), parent.getAbsolute(), name);
 			p.attributes.setOwner(owner);
 			p.attributes.setGroup(group);
 			p.attributes.setModified(date);
@@ -253,8 +183,6 @@ public class FTPParser {
 		}
 		return c.getTime().getTime();
 	}
-
-	// UTILITY METHODS
 
 	private boolean isValidLink(String link) {
 		return link.indexOf("->") != -1;

@@ -94,13 +94,12 @@ public class CDDownloadController {
 					URL url = new URL(urlField.stringValue());
 					Host host = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getHost(), url.getUserInfo()));
 					Session session = SessionFactory.createSession(host);
-					Path path = null;
 					String file = url.getFile();
 					if (file.length() > 1) {
-						path = PathFactory.createPath(SessionFactory.createSession(host), file);
-						this.window.orderOut(null);
-						CDQueueController.instance().addItem(new Queue(path,
-						    Queue.KIND_DOWNLOAD), true);
+						Path path = PathFactory.createPath(SessionFactory.createSession(host), file);
+						Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
+						CDQueuesImpl.instance().addItem(queue);
+						CDQueueController.instance().startItem(queue);
 					}
 					else {
 						throw new MalformedURLException("URL must contain reference to a file");

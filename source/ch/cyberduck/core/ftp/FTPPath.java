@@ -41,6 +41,10 @@ public class FTPPath extends Path {
 	}
 
 	private static class Factory extends PathFactory {
+		protected Path create(Session session, String parent, String name) {
+			return new FTPPath((FTPSession) session, parent, name);
+		}
+
 		protected Path create(Session session, String path) {
 			return new FTPPath((FTPSession) session, path);
 		}
@@ -61,12 +65,12 @@ public class FTPPath extends Path {
 	 * @param parent The parent directory relative to this file
 	 * @param name The filename of this path
 	 */
-	public FTPPath(FTPSession session, String parent, String name) {
+	private FTPPath(FTPSession session, String parent, String name) {
 		super(parent, name);
 		this.session = session;
 	}
 
-	public FTPPath(FTPSession session, String path) {
+	private FTPPath(FTPSession session, String path) {
 		super(path);
 		this.session = session;
 	}
@@ -76,20 +80,14 @@ public class FTPPath extends Path {
 	 * @param parent The parent directory relative to this file
 	 * @param file The corresponding local file to the remote path
 	 */
-	public FTPPath(FTPSession session, String parent, Local file) {
+	private FTPPath(FTPSession session, String parent, Local file) {
 		super(parent, file);
 		this.session = session;
 	}
 
-	public FTPPath(FTPSession session, NSDictionary dict) {
+	private FTPPath(FTPSession session, NSDictionary dict) {
 		super(dict);
 		this.session = session;
-	}
-
-	public Path copy(Session s) {
-		FTPPath copy = new FTPPath((FTPSession) s, this.getAbsolute());
-		copy.attributes = this.attributes;
-		return copy;
 	}
 
 	public Session getSession() {
@@ -97,33 +95,44 @@ public class FTPPath extends Path {
 	}
 	
 	public List list() {
-		return this.list(true, Preferences.instance().getProperty("browser.showHidden").equals("true"));
+		return this.list(false);
 	}
-
-	public List list(boolean notifyobservers, boolean showHidden) {
-		session.log("Listing " + this.getAbsolute(), Message.PROGRESS);
+	
+	public List list(boolean refresh) {
+		return this.list(refresh, Preferences.instance().getProperty("browser.showHidden").equals("true"));
+	}
+	
+	public List list(boolean refresh, boolean showHidden) {
+		List files = this.cache();
 		session.addPathToHistory(this);
-		try {
-			session.check();
-			session.FTP.setTransferType(FTPTransferType.ASCII);
-			session.FTP.chdir(this.getAbsolute());
-			this.setCache(FTPParser.instance().parseList(this, session.FTP.dir(), showHidden));
-			if (notifyobservers) {
-				session.callObservers(this);
+		if(refresh || files.size() == 0) {
+			files.clear();
+			session.log("Listing " + this.getAbsolute(), Message.PROGRESS);
+			try {
+				session.check();
+				session.FTP.setTransferType(FTPTransferType.ASCII);
+				session.FTP.chdir(this.getAbsolute());
+				this.setCache(files = FTPParser.instance().parseList(this, session.FTP.dir(), showHidden));
+//				this.setCache(FTPParser.instance().parseList(this, session.FTP.dir(), showHidden));
+				//			if (notifyobservers) {
+//				session.callObservers(this);
+				//			}
+			}
+			catch (FTPException e) {
+				session.log("FTP Error: " + e.getMessage(), Message.ERROR);
+			}
+			catch (IOException e) {
+				session.log("IO Error: " + e.getMessage(), Message.ERROR);
+			}
+			finally {
+				session.log("Idle", Message.STOP);
 			}
 		}
-		catch (FTPException e) {
-			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-		}
-		catch (IOException e) {
-			session.log("IO Error: " + e.getMessage(), Message.ERROR);
-		}
-		finally {
-			session.log("Idle", Message.STOP);
-		}
-		return this.cache();
+		session.callObservers(this);
+		return files;
+		//		return this.cache();
 	}
-
+	
 	public void delete() {
 		log.debug("delete:" + this.toString());
 		try {
@@ -171,7 +180,7 @@ public class FTPPath extends Path {
 			session.log("Renaming " + this.getName() + " to " + filename, Message.PROGRESS);
 			session.FTP.rename(this.getName(), filename);
 			this.setPath(this.getParent().getAbsolute(), filename);
-			this.getParent().list();
+			this.getParent().list(true);
 		}
 		catch (FTPException e) {
 			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -190,7 +199,7 @@ public class FTPPath extends Path {
 			session.check();
 			session.log("Make directory " + name, Message.PROGRESS);
 			session.FTP.mkdir(name);
-			this.list();
+			this.list(true);
 		}
 		catch (FTPException e) {
 			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -198,18 +207,15 @@ public class FTPPath extends Path {
 		catch (IOException e) {
 			session.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
-		return new FTPPath(session, this.getAbsolute(), name);
+		return PathFactory.createPath(session, this.getAbsolute(), name);
 	}
 
-//	public void changePermissions(int permissions, boolean recursive) {
 	public void changePermissions(Permission perm, boolean recursive) {
 //		log.debug("changePermissions:" + permissions);
 		String command = recursive ? "chmod -R" : "chmod";
 		try {
 			session.check();
-			session.FTP.site(command+" "+perm.getOctalCode()+" "+this.getAbsolute());
-//			session.FTP.site(command+" "+permissions+" "+this.getAbsolute());
-//			session.FTP.site("chmod "+permissions+" \""+this.getAbsolute()+"\"");
+			session.FTP.site(command+" "+perm.getOctalCode()+" \""+this.getAbsolute()+"\"");
 		}
 		catch (FTPException e) {
 			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -353,8 +359,8 @@ public class FTPPath extends Path {
 			session.FTP.mkdir(this.getAbsolute());
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
-				FTPPath p = new FTPPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
-				p.fillUploadQueue(queue);
+				Path p = PathFactory.createPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
+				((FTPPath)p).fillUploadQueue(queue);
 			}
 		}
 		else if (this.getLocal().isFile()) {

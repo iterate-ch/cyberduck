@@ -29,12 +29,19 @@ public abstract class PathFactory {
 
 	protected abstract Path create(Session session, String path);
 
+	protected abstract Path create(Session session, String parent, String name);
+
 	protected abstract Path create(Session session, String path, Local file);
 
 	protected abstract Path create(Session session, NSDictionary dict);
 
 	public static void addFactory(String protocol, PathFactory f) {
 		factories.put(protocol, f);
+	}
+
+	public static final Path createPath(Session session, String parent, String name) {
+		loadClass(session.getHost().getProtocol());
+		return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, parent, name);
 	}
 
 	public static final Path createPath(Session session, String path) {

@@ -64,6 +64,10 @@ public abstract class Session extends Observable {
 
 	private boolean connected;
 
+	public Session copy() {
+		return SessionFactory.createSession(this.host);
+	}
+	
 	public Session(Host h) {//, boolean secure) {
 		log.debug("Session(" + h + ")");
 		this.host = h;
@@ -119,8 +123,6 @@ public abstract class Session extends Observable {
 	 * @see Host
 	 */
 	public abstract void check() throws IOException;
-
-	public abstract Session copy();
 
 	/**
 	 * @return boolean True if the session has not yet been closed.

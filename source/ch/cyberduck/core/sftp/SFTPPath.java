@@ -47,6 +47,10 @@ public class SFTPPath extends Path {
 	}
 
 	private static class Factory extends PathFactory {
+		protected Path create(Session session, String parent, String name) {
+			return new SFTPPath((SFTPSession) session, parent, name);
+		}
+
 		protected Path create(Session session, String path) {
 			return new SFTPPath((SFTPSession) session, path);
 		}
@@ -62,30 +66,24 @@ public class SFTPPath extends Path {
 
 	private SFTPSession session;
 
-	public SFTPPath(SFTPSession session, String parent, String name) {
+	private SFTPPath(SFTPSession session, String parent, String name) {
 		super(parent, name);
 		this.session = session;
 	}
 
-	public SFTPPath(SFTPSession session, String path) {
+	private SFTPPath(SFTPSession session, String path) {
 		super(path);
 		this.session = session;
 	}
 
-	public SFTPPath(SFTPSession session, String parent, Local file) {
+	private SFTPPath(SFTPSession session, String parent, Local file) {
 		super(parent, file);
 		this.session = session;
 	}
 
-	public SFTPPath(SFTPSession session, NSDictionary dict) {
+	private SFTPPath(SFTPSession session, NSDictionary dict) {
 		super(dict);
 		this.session = session;
-	}
-
-	public Path copy(Session s) {
-		SFTPPath copy = new SFTPPath((SFTPSession) s, this.getAbsolute());
-		copy.attributes = this.attributes;
-		return copy;
 	}
 
 	public Session getSession() {
@@ -93,67 +91,71 @@ public class SFTPPath extends Path {
 	}
 
 	public List list() {
-		return this.list(true, Preferences.instance().getProperty("browser.showHidden").equals("true"));
+		return this.list(false);
 	}
-
-	public List list(boolean notifyobservers, boolean showHidden) {
-		SftpFile workingDirectory = null;
-		session.log("Listing " + this.getAbsolute(), Message.PROGRESS);
+	
+	public List list(boolean refresh) {
+		return this.list(refresh, Preferences.instance().getProperty("browser.showHidden").equals("true"));
+	}
+	
+	public List list(boolean refresh, boolean showHidden) {
+		List files = this.cache();
 		session.addPathToHistory(this);
-		try {
-			session.check();
-			workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
-			List children = new ArrayList();
-			int read = 1;
-			while (read > 0) {
-				read = session.SFTP.listChildren(workingDirectory, children);
-			}
-			java.util.Iterator i = children.iterator();
-			List files = new java.util.ArrayList();
-			while (i.hasNext()) {
-				SftpFile x = (SftpFile) i.next();
-				if (!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
-					SFTPPath p = new SFTPPath(session, this.getAbsolute(), x.getFilename());
-					if (p.getName().charAt(0) == '.' && !showHidden) {
-						p.attributes.setVisible(false);
+		if(refresh || files.size() == 0) {
+			files.clear();
+			session.log("Listing " + this.getAbsolute(), Message.PROGRESS);
+			SftpFile workingDirectory = null;
+			try {
+				session.check();
+				workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
+				List children = new ArrayList();
+				int read = 1;
+				while (read > 0) {
+					read = session.SFTP.listChildren(workingDirectory, children);
+				}
+				java.util.Iterator i = children.iterator();
+				while (i.hasNext()) {
+					SftpFile x = (SftpFile) i.next();
+					if (!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
+						if (!(x.getFilename().charAt(0) == '.') || showHidden) {
+							Path p = PathFactory.createPath(session, this.getAbsolute(), x.getFilename());
+							p.attributes.setOwner(x.getAttributes().getUID().toString());
+							p.attributes.setGroup(x.getAttributes().getGID().toString());
+							p.status.setSize(x.getAttributes().getSize().intValue());
+							p.attributes.setModified(Long.parseLong(x.getAttributes().getModifiedTime().toString()) * 1000L);
+							p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
+							files.add(p);
+						}
 					}
-					else {
-						p.attributes.setOwner(x.getAttributes().getUID().toString());
-						p.attributes.setGroup(x.getAttributes().getGID().toString());
-						p.status.setSize(x.getAttributes().getSize().intValue());
-						p.attributes.setModified(Long.parseLong(x.getAttributes().getModifiedTime().toString()) * 1000L);
-//						p.attributes.setMask(x.getAttributes().getPermissionsString());
-						p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
-						files.add(p);
+				}
+				this.setCache(files);
+				//			if (notifyobservers) {
+				//session.callObservers(this);
+				//			}
+			}
+			catch (SshException e) {
+				session.log("SSH Error: " + e.getMessage(), Message.ERROR);
+			}
+			catch (IOException e) {
+				session.log("IO Error: " + e.getMessage(), Message.ERROR);
+			}
+			finally {
+				session.log("Idle", Message.STOP);
+				if (workingDirectory != null) {
+					try {
+						workingDirectory.close();
+					}
+					catch (SshException e) {
+						session.log("SSH Error: " + e.getMessage(), Message.ERROR);
+					}
+					catch (IOException e) {
+						session.log("IO Error: " + e.getMessage(), Message.ERROR);
 					}
 				}
 			}
-			this.setCache(files);
-			if (notifyobservers) {
-				session.callObservers(this);
-			}
 		}
-		catch (SshException e) {
-			session.log("SSH Error: " + e.getMessage(), Message.ERROR);
-		}
-		catch (IOException e) {
-			session.log("IO Error: " + e.getMessage(), Message.ERROR);
-		}
-		finally {
-			session.log("Idle", Message.STOP);
-			if (workingDirectory != null) {
-				try {
-					workingDirectory.close();
-				}
-				catch (SshException e) {
-					session.log("SSH Error: " + e.getMessage(), Message.ERROR);
-				}
-				catch (IOException e) {
-					session.log("IO Error: " + e.getMessage(), Message.ERROR);
-				}
-			}
-		}
-		return this.cache();
+		session.callObservers(this);
+		return files;
 	}
 
 	public void delete() {
@@ -201,7 +203,7 @@ public class SFTPPath extends Path {
 			session.log("Renaming " + this.getName() + " to " + filename, Message.PROGRESS);
 			session.SFTP.renameFile(this.getAbsolute(), this.getParent().getAbsolute() + "/" + filename);
 			this.setPath(this.getParent().getAbsolute(), filename);
-			this.getParent().list();
+			this.getParent().list(true);
 		}
 		catch (SshException e) {
 			session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -220,7 +222,7 @@ public class SFTPPath extends Path {
 			session.check();
 			session.log("Make directory " + name, Message.PROGRESS);
 			session.SFTP.makeDirectory(this.getAbsolute() + "/" + name);
-			this.list();
+			this.list(true);
 		}
 		catch (SshException e) {
 			session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -231,7 +233,7 @@ public class SFTPPath extends Path {
 		finally {
 			session.log("Idle", Message.STOP);
 		}
-		return new SFTPPath(session, this.getAbsolute(), name);
+		return PathFactory.createPath(session, this.getAbsolute(), name);
 	}
 	
 	public void changeOwner(String uid, boolean recursive) {
@@ -275,12 +277,10 @@ public class SFTPPath extends Path {
 	}
 
 	public void changePermissions(Permission perm, boolean recursive) {
-//	public void changePermissions(int permissions, boolean recursive) {
 		log.debug("changePermissions");
 		try {
 			session.check();
 			session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
-//			session.SFTP.changePermissions(this.getAbsolute(), permissions);
 		}
 		catch (SshException e) {
 			session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -377,8 +377,8 @@ public class SFTPPath extends Path {
 			this.session.SFTP.makeDirectory(this.getAbsolute());
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
-				SFTPPath p = new SFTPPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
-				p.fillUploadQueue(queue);
+				Path p = PathFactory.createPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
+				((SFTPPath)p).fillUploadQueue(queue);
 			}
 		}
 		else if (this.getLocal().isFile()) {
@@ -398,12 +398,12 @@ public class SFTPPath extends Path {
 				throw new IOException("Unable to buffer data");
 			}
 			SftpFile remoteFile = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
+			this.changePermissions(this.getLocal().getPermission(), false);
 			SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);
 			if (out == null) {
 				throw new IOException("Unable opening data stream");
 			}
 			this.upload(out, in);
-			this.changePermissions(this.getLocal().getPermission(), false);
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);

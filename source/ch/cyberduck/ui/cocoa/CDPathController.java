@@ -54,15 +54,22 @@ public class CDPathController implements Observer {
 		return this.combo;
 	}
 
+	private Path workdir;
+
+	public Path workdir() {
+		return this.workdir;
+	}
+		
 	public void update(Observable o, Object arg) {
 		log.debug("update:" + o + "," + arg);
 		if (o instanceof Session) {
 			if (arg instanceof Path) {
-				Path p = (Path) arg;
+				this.workdir = (Path) arg;
 				this.removeAllItems();
 				// current path has index 0
-				this.addItem(p);
+				this.addItem(this.workdir);
 				// root path has index numberOfItems()-1
+				Path p = this.workdir;
 				while (!p.isRoot()) {
 					p = p.getParent();
 					this.addItem(p);

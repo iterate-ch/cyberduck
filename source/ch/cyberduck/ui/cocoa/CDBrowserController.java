@@ -175,9 +175,11 @@ public class CDBrowserController implements Observer {
 				NSEnumerator enum = browserTable.selectedRowEnumerator();
 				if (this.isMounted()) {
 					while (enum.hasMoreElements()) {
-						Session session = browserModel.workdir().getSession().copy();
-						CDQueueController.instance().addItem(new Queue(((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session), Queue.KIND_DOWNLOAD),
-						    true);
+						Session session = pathController.workdir().getSession().copy();
+						Path path = ((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session);
+						Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
+						CDQueuesImpl.instance().addItem(queue);
+						CDQueueController.instance().startItem(queue);
 					}
 				}
 			}
@@ -384,7 +386,7 @@ public class CDBrowserController implements Observer {
 		this.bookmarkDrawer.open();
 		Host item;
 		if (this.isMounted()) {
-			Host h = browserModel.workdir().getSession().getHost();
+			Host h = pathController.workdir().getSession().getHost();
 			item = new Host(h.getProtocol(), h.getHostname(), h.getPort(), h.getLogin(), h.getDefaultPath());
 		}
 		else {
@@ -544,22 +546,15 @@ public class CDBrowserController implements Observer {
 
 	public void update(Observable o, Object arg) {
 		log.debug("update:" + o + "," + arg);
-		if (arg instanceof Path) {
-			browserModel.setWorkdir((Path) arg);
-			java.util.List cache = ((Path) arg).cache();
-			java.util.Iterator i = cache.iterator();
-			//		log.debug("List size:"+cache.size());
-			browserModel.clear();
-			while (i.hasNext()) {
-				browserModel.addEntry((Path) i.next());
-			}
+		if(arg instanceof Path) {
+			browserModel.setData(((Path)arg).cache());
 			NSTableColumn selectedColumn = browserModel.selectedColumn() != null ? browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
 			browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
 			browserModel.sort(selectedColumn, browserModel.isSortedAscending());
 			browserTable.reloadData();
-			this.toolbar.validateVisibleItems();
+//			this.toolbar.validateVisibleItems();
 		}
-		if (arg instanceof Message) {
+		else if(arg instanceof Message) {
 			Message msg = (Message) arg;
 			if (msg.getTitle().equals(Message.ERROR)) {
 				NSAlertPanel.beginCriticalAlertSheet(
@@ -611,7 +606,6 @@ public class CDBrowserController implements Observer {
 				this.toolbar.validateVisibleItems();
 			}
 		}
-//		}
 	}
 
 	// ----------------------------------------------------------
@@ -620,7 +614,7 @@ public class CDBrowserController implements Observer {
 
 	public void gotoButtonClicked(Object sender) {
 		log.debug("folderButtonClicked");
-		CDGotoController controller = new CDGotoController(browserModel.workdir());
+		CDGotoController controller = new CDGotoController(pathController.workdir());
 		NSApplication.sharedApplication().beginSheet(
 		    controller.window(), //sheet
 		    this.window, //docwindow
@@ -629,7 +623,7 @@ public class CDBrowserController implements Observer {
 		        "gotoSheetDidEnd",
 		        new Class[]{NSPanel.class, int.class, Object.class}
 		    ), // did end selector
-		    browserModel.workdir()); //contextInfo
+		    pathController.workdir()); //contextInfo
 	}
 
 	public void folderButtonClicked(Object sender) {
@@ -643,7 +637,7 @@ public class CDBrowserController implements Observer {
 		        "newfolderSheetDidEnd",
 		        new Class[]{NSPanel.class, int.class, Object.class}
 		    ), // did end selector
-		    browserModel.workdir()); //contextInfo
+		    pathController.workdir()); //contextInfo
 	}
 
 
@@ -704,7 +698,7 @@ public class CDBrowserController implements Observer {
 						p = (Path) i.next();
 						p.delete();
 					}
-					p.getParent().list();
+					p.getParent().list(true);
 				}
 				break;
 			case (NSAlertPanel.AlternateReturn):
@@ -714,16 +708,17 @@ public class CDBrowserController implements Observer {
 
 	public void refreshButtonClicked(Object sender) {
 		log.debug("refreshButtonClicked");
-		browserModel.workdir().list();
+		pathController.workdir().list(true);
 	}
 
 	public void downloadButtonClicked(Object sender) {
 		log.debug("downloadButtonClicked");
 		NSEnumerator enum = browserTable.selectedRowEnumerator();
 		while (enum.hasMoreElements()) {
-			Session session = browserModel.workdir().getSession().copy();
-			CDQueueController.instance().addItem(new Queue(((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session),
-			    Queue.KIND_DOWNLOAD), true);
+			Session session = pathController.workdir().getSession().copy();
+			Queue queue = new Queue(((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session), Queue.KIND_DOWNLOAD);
+			CDQueuesImpl.instance().addItem(queue);
+			CDQueueController.instance().startItem(queue);
 		}
 	}
 
@@ -740,16 +735,17 @@ public class CDBrowserController implements Observer {
 		sheet.orderOut(null);
 		switch (returnCode) {
 			case NSPanel.OKButton:
-				Path parent = browserModel.workdir();
+				Path parent = pathController.workdir();
 				// selected files on the local filesystem
 				NSArray selected = sheet.filenames();
 				java.util.Enumeration enumerator = selected.objectEnumerator();
 				while (enumerator.hasMoreElements()) {
 					Session session = parent.getSession().copy();
 					Path item = parent.copy(session);
-					item.setPath(parent.getAbsolute(), new Local((String) enumerator.nextElement()));
-					CDQueueController.instance().addItem(new Queue(item,
-					    Queue.KIND_UPLOAD), true, (Observer) this);
+					item.setPath(parent.getAbsolute(), new Local((String)enumerator.nextElement()));
+					Queue queue = new Queue(item, Queue.KIND_UPLOAD);
+					CDQueuesImpl.instance().addItem(queue);
+					CDQueueController.instance().startItem(queue, (Observer)this);
 				}
 				break;
 			case NSPanel.CancelButton:
@@ -764,12 +760,12 @@ public class CDBrowserController implements Observer {
 
 	public void backButtonClicked(Object sender) {
 		log.debug("backButtonClicked");
-		browserModel.workdir().getSession().getPreviousPath().list();
+		pathController.workdir().getSession().getPreviousPath().list();
 	}
 
 	public void upButtonClicked(Object sender) {
 		log.debug("upButtonClicked");
-		browserModel.workdir().getParent().list();
+		pathController.workdir().getParent().list();
 	}
 
 	public void connectButtonClicked(Object sender) {
@@ -794,7 +790,6 @@ public class CDBrowserController implements Observer {
 		log.debug("mount:" + host);
 		this.unmount();
 
-//		Session session = host.createSession();
 		Session session = SessionFactory.createSession(host);
 		session.addObserver((Observer) this);
 		session.addObserver((Observer) pathController);
@@ -830,19 +825,19 @@ public class CDBrowserController implements Observer {
 	}
 
 	public boolean isMounted() {
-		return browserModel.workdir() != null;
+		return pathController.workdir() != null;
 	}
 
 	public boolean isConnected() {
 		if (this.isMounted())
-			return browserModel.workdir().getSession().isConnected();
+			return pathController.workdir().getSession().isConnected();
 		return false;
 	}
 
 	public void unmount() {
 		log.debug("unmount");
 		if (this.isConnected()) {
-			browserModel.workdir().getSession().close();
+			pathController.workdir().getSession().close();
 		}
 	}
 
@@ -854,7 +849,7 @@ public class CDBrowserController implements Observer {
 	public boolean windowShouldClose(NSWindow sender) {
 		if (this.isConnected()) {
 			NSAlertPanel.beginCriticalAlertSheet(
-			    NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + browserModel.workdir().getSession().getHost().getHostname(), //title
+			    NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + pathController.workdir().getSession().getHost().getHostname(), //title
 			    NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
 			    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
 			    null, //other button
@@ -879,8 +874,8 @@ public class CDBrowserController implements Observer {
 
 	public void windowWillClose(NSNotification notification) {
 		if (this.isMounted()) {
-			browserModel.workdir().getSession().deleteObserver((Observer) this);
-			browserModel.workdir().getSession().deleteObserver((Observer) pathController);
+			pathController.workdir().getSession().deleteObserver((Observer) this);
+			pathController.workdir().getSession().deleteObserver((Observer) pathController);
 		}
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 		instances.removeObject(this);
@@ -970,7 +965,7 @@ public class CDBrowserController implements Observer {
 			return this.isMounted() && browserTable.selectedRow() != -1;
 		}
 		else if (identifier.equals("Disconnect")) {
-			return this.isMounted() && browserModel.workdir().getSession().isConnected();
+			return this.isMounted() && pathController.workdir().getSession().isConnected();
 		}
 		return true;
 	}
@@ -1097,5 +1092,329 @@ public class CDBrowserController implements Observer {
 			NSToolbarItem.SeparatorItemIdentifier,
 			NSToolbarItem.FlexibleSpaceItemIdentifier
 		});
+	}
+	
+	// ----------------------------------------------------------
+	// Browser Model
+	// ----------------------------------------------------------
+	
+	private class CDBrowserTableDataSource extends CDTableDataSource {
+
+		private List fullData;
+		private List currentData;
+
+		public CDBrowserTableDataSource() {
+			super();
+			this.fullData = new ArrayList();
+			this.currentData = new ArrayList();
+		}
+
+		public int numberOfRowsInTableView(NSTableView tableView) {
+			return currentData.size();
+		}
+
+		public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
+	//		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
+			String identifier = (String) tableColumn.identifier();
+			Path p = (Path) this.currentData.get(row);
+			if (identifier.equals("TYPE")) {
+				NSImage icon;
+				if (p.isDirectory())
+					icon = NSImage.imageNamed("folder16.tiff");
+				else
+					icon = NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
+				icon.setSize(new NSSize(16f, 16f));
+				return icon;
+			}
+			if (identifier.equals("FILENAME")) {
+				return p.getName();
+			}
+			else if (identifier.equals("SIZE"))
+				return Status.getSizeAsString(p.status.getSize());
+			else if (identifier.equals("MODIFIED"))
+				return p.attributes.getModified();
+			else if (identifier.equals("OWNER"))
+				return p.attributes.getOwner();
+			else if (identifier.equals("PERMISSIONS"))
+				return p.attributes.getPermission().toString();
+			throw new IllegalArgumentException("Unknown identifier: " + identifier);
+		}
+
+		/**
+		 * The files dragged from the browser to the Finder
+		 */
+		private Path[] promisedDragPaths;
+
+		// ----------------------------------------------------------
+		// Drop methods
+		// ----------------------------------------------------------
+
+		public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+			log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
+			if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+				tableView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+				return NSTableView.DropAbove;
+			}
+			return NSDraggingInfo.DragOperationNone;
+		}
+
+		public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+			log.debug("tableViewAcceptDrop:row:" + row + ",operation:" + operation);
+			NSPasteboard pboard = info.draggingPasteboard();
+			if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+				Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
+				log.debug("tableViewAcceptDrop:" + o);
+				if (o != null) {
+					if (o instanceof NSArray) {
+						NSArray filesList = (NSArray) o;
+						for (int i = 0; i < filesList.count(); i++) {
+							log.debug(filesList.objectAtIndex(i));
+							Path p = PathFactory.createPath(pathController.workdir().getSession().copy(),
+								pathController.workdir().getAbsolute(),
+								new Local((String) filesList.objectAtIndex(i)));
+							Queue queue = new Queue(p, Queue.KIND_UPLOAD);
+							CDQueuesImpl.instance().addItem(queue);
+							CDQueueController.instance().startItem(queue, (Observer)CDBrowserController.this);
+						}
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+
+		// ----------------------------------------------------------
+		// Drag methods
+		// ----------------------------------------------------------
+
+		/**    Invoked by tableView after it has been determined that a drag should begin, but before the drag has been started.
+		 * The drag image and other drag-related information will be set up and provided by the table view once this call
+		 * returns with true.
+		 * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard
+		 * (data, owner, and so on).
+		 *@param rows is the list of row numbers that will be participating in the drag.
+		 */
+		public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
+			log.debug("tableViewWriteRowsToPasteboard:" + rows);
+			if (rows.count() > 0) {
+				this.promisedDragPaths = new Path[rows.count()];
+				// The fileTypes argument is the list of fileTypes being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
+				NSMutableArray fileTypes = new NSMutableArray();
+				NSMutableArray queueDictionaries = new NSMutableArray();
+				// declare our dragged type in the paste board
+				pboard.declareTypes(new NSArray(NSPasteboard.FilesPromisePboardType), null);
+				for (int i = 0; i < rows.count(); i++) {
+					Session session = pathController.workdir().getSession().copy();
+					promisedDragPaths[i] = (Path) this.getEntry(((Integer) rows.objectAtIndex(i)).intValue()).copy(session);
+					if (promisedDragPaths[i].isFile()) {
+	//					fileTypes.addObject(NSPathUtilities.FileTypeRegular);
+						if (promisedDragPaths[i].getExtension() != null)
+							fileTypes.addObject(promisedDragPaths[i].getExtension());
+						else
+							fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
+					}
+					else if (promisedDragPaths[i].isDirectory()) {
+	//					fileTypes.addObject(NSPathUtilities.FileTypeDirectory);
+						fileTypes.addObject("'fldr'");
+					}
+					else
+						fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
+					queueDictionaries.addObject(new Queue(promisedDragPaths[i], Queue.KIND_DOWNLOAD).getAsDictionary());
+				}
+				// Writing data for private use when the item gets dragged to the transfer queue.
+				NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+				queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
+				if (queuePboard.setPropertyListForType(queueDictionaries, "QueuePBoardType"))
+					log.debug("QueuePBoardType data sucessfully written to pasteboard");
+				else
+					log.error("Could not write QueuePBoardType data to pasteboard");
+
+				NSEvent event = NSApplication.sharedApplication().currentEvent();
+				NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
+				NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
+
+				tableView.dragPromisedFilesOfTypes(fileTypes, imageRect, this, true, event);
+			}
+			// we return false because we don't want the table to draw the drag image
+			return false;
+		}
+
+		/**
+		 @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
+		 * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+		 * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
+		 * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
+		 * blocking the destination application.
+		 */
+		public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
+			log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
+			if (null == dropDestination) {
+				return null; //return paths for interapplication communication
+			}
+			else {
+				NSMutableArray promisedDragNames = new NSMutableArray();
+				for (int i = 0; i < promisedDragPaths.length; i++) {
+					try {
+						this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"), 
+																	 this.promisedDragPaths[i].getName()));
+						Queue queue = new Queue(this.promisedDragPaths[i], Queue.KIND_DOWNLOAD);
+						CDQueuesImpl.instance().addItem(queue);
+						CDQueueController.instance().startItem(queue);
+						promisedDragNames.addObject(this.promisedDragPaths[i].getName());
+					}
+					catch (java.io.UnsupportedEncodingException e) {
+						log.error(e.getMessage());
+					}
+				}
+				this.promisedDragPaths = null;
+				return promisedDragNames;
+			}
+		}
+
+		// ----------------------------------------------------------
+		// Delegate methods
+		// ----------------------------------------------------------
+
+		public boolean isSortedAscending() {
+			return this.sortAscending;
+		}
+
+		public NSTableColumn selectedColumn() {
+			return this.selectedColumn;
+		}
+
+		private boolean sortAscending = true;
+		private NSTableColumn selectedColumn = null;
+
+		public void sort(NSTableColumn tableColumn, final boolean ascending) {
+			final int higher = ascending ? 1 : -1;
+			final int lower = ascending ? -1 : 1;
+			if (tableColumn.identifier().equals("TYPE")) {
+				Collections.sort(this.values(),
+					new Comparator() {
+						public int compare(Object o1, Object o2) {
+							Path p1 = (Path) o1;
+							Path p2 = (Path) o2;
+							if (p1.isDirectory() && p2.isDirectory())
+								return 0;
+							if (p1.isFile() && p2.isFile())
+								return 0;
+							if (p1.isFile())
+								return higher;
+							return lower;
+						}
+					}
+				);
+			}
+			else if (tableColumn.identifier().equals("FILENAME")) {
+				Collections.sort(this.values(),
+					new Comparator() {
+						public int compare(Object o1, Object o2) {
+							Path p1 = (Path) o1;
+							Path p2 = (Path) o2;
+							if (ascending)
+								return p1.getName().compareToIgnoreCase(p2.getName());
+							else
+								return -p1.getName().compareToIgnoreCase(p2.getName());
+						}
+					}
+				);
+			}
+			else if (tableColumn.identifier().equals("SIZE")) {
+				Collections.sort(this.values(),
+					new Comparator() {
+						public int compare(Object o1, Object o2) {
+							long p1 = ((Path) o1).status.getSize();
+							long p2 = ((Path) o2).status.getSize();
+							if (p1 > p2)
+								return higher;
+							else if (p1 < p2)
+								return lower;
+							else
+								return 0;
+						}
+					}
+				);
+			}
+			else if (tableColumn.identifier().equals("MODIFIED")) {
+				Collections.sort(this.values(),
+					new Comparator() {
+						public int compare(Object o1, Object o2) {
+							Path p1 = (Path) o1;
+							Path p2 = (Path) o2;
+							if (ascending)
+								return p1.attributes.getModifiedDate().compareTo(p2.attributes.getModifiedDate());
+							else
+								return -p1.attributes.getModifiedDate().compareTo(p2.attributes.getModifiedDate());
+						}
+					}
+				);
+			}
+			else if (tableColumn.identifier().equals("OWNER")) {
+				Collections.sort(this.values(),
+					new Comparator() {
+						public int compare(Object o1, Object o2) {
+							Path p1 = (Path) o1;
+							Path p2 = (Path) o2;
+							if (ascending)
+								return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
+							else
+								return -p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
+						}
+					}
+				);
+			}
+		}
+
+		public void tableViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
+			log.debug("tableViewDidClickTableColumn");
+			if (this.selectedColumn == tableColumn) {
+				this.sortAscending = !this.sortAscending;
+			}
+			else {
+				if (selectedColumn != null)
+					tableView.setIndicatorImage(null, selectedColumn);
+				this.selectedColumn = tableColumn;
+			}
+			tableView.setIndicatorImage(this.sortAscending ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), tableColumn);
+			this.sort(tableColumn, sortAscending);
+			tableView.reloadData();
+		}
+
+		// ----------------------------------------------------------
+		// Data access
+		// ----------------------------------------------------------
+
+		public void clear() {
+			this.fullData.clear();
+			this.currentData.clear();
+		}
+		
+		public void setData(List data) {
+			this.fullData = data;
+			this.currentData = data;
+		}
+
+		public Path getEntry(int row) {
+			return (Path) this.currentData.get(row);
+		}
+
+		public void removeEntry(Path o) {
+			fullData.remove(fullData.indexOf(o));
+			currentData.remove(currentData.indexOf(o));
+		}
+
+		public int indexOf(Path o) {
+			return currentData.indexOf(o);
+		}
+
+		public void setActiveSet(List currentData) {
+			this.currentData = currentData;
+		}
+
+		public List values() {
+			return this.fullData;
+		}
 	}
 }
