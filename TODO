@@ -25,6 +25,7 @@
 [DONE] Set FTP connect mode per bookmark (FTP)
 [DONE] Show folders in working directory (and autocomplete) in 'Go to Folder' dialog
 [DONE] Preferences previously only avilable using the 'defaults' command
-[DONE] Updated to use Growl 0.6
 [DONE] Manually exclude files in synchronization dialog
+-- Scheduled for 2.4
+[DONE] Updated to use Growl 0.6
 
