@@ -40,6 +40,8 @@ import java.util.Properties;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 /**
  *  Supports client-side FTP. Most common
  *  FTP operations are present in this class.
@@ -50,17 +52,21 @@ import java.util.Vector;
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.27  2004/02/21 21:39:30  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.26  2004/02/21 12:12:27  dkocher
  *        *** empty log message ***
  * 
  */
 public class FTPClient {
+	private static Logger log = Logger.getLogger(FTPClient.class);
 
 	/**
 	 *  Format to interpret MTDM timestamp
 	 */
-	private SimpleDateFormat tsFormat =
-	    new SimpleDateFormat("yyyyMMddHHmmss");
+//	private SimpleDateFormat tsFormat =
+//	    new SimpleDateFormat("yyyyMMddHHmmss");
 
 	/**
 	 *  Socket responsible for controlling
@@ -95,12 +101,12 @@ public class FTPClient {
 	 *  Holds the last valid reply from the server on the control socket
 	 */
 	private FTPReply lastValidReply;
-	
+
 	private Transcript transcript;
 
 	public FTPClient() {
 		super();
-		tsFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+//		tsFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
 
 	/**
@@ -471,10 +477,10 @@ public class FTPClient {
 																			 Preferences.instance().getProperty("browser.charset.encoding")));
 
 			// read a line at a time
-			Vector lines = new Vector();
+			Vector entries = new Vector();
 			String line = null;
 			while ((line = in.readLine()) != null) {
-				lines.add(line);
+				entries.add(line);
 				transcript.log(line);
 			}
 			try {
@@ -482,6 +488,7 @@ public class FTPClient {
 				data.close();
 			}
 			catch (IOException ignore) {
+				log.error(ignore.getMessage());
 			}
 
 			// check the control response
@@ -490,8 +497,8 @@ public class FTPClient {
 			lastValidReply = control.validateReply(reply, validCodes2);
 
 			// empty array is default
-			if (!lines.isEmpty())
-				result = (String[]) lines.toArray(result);
+			if (!entries.isEmpty())
+				result = (String[]) entries.toArray(result);
 		}
 		return result;
 	}
@@ -644,15 +651,15 @@ public class FTPClient {
 	 *  @param    remoteFile   name of remote file
 	 *  @return   modification time of file as a date
 	 */
-	public Date modtime(String remoteFile) throws IOException, FTPException {
-		String reply = control.sendCommand("MDTM " + remoteFile);
-		lastValidReply = control.validateReply(reply, "213");
-
-		// parse the reply string ...
-		Date ts = tsFormat.parse(lastValidReply.getReplyText(),
-		    new ParsePosition(0));
-		return ts;
-	}
+//	public Date modtime(String remoteFile) throws IOException, FTPException {
+//		String reply = control.sendCommand("MDTM " + remoteFile);
+//		lastValidReply = control.validateReply(reply, "213");
+//
+//		// parse the reply string ...
+//		Date ts = tsFormat.parse(lastValidReply.getReplyText(),
+//		    new ParsePosition(0));
+//		return ts;
+//	}
 
 	/**
 	 *  Get the current remote working directory
@@ -682,6 +689,14 @@ public class FTPClient {
 	 */
 	public String system() throws IOException, FTPException {
 		String reply = control.sendCommand("SYST");
+
+		      //if (syst() == FTPReply.NAME_SYSTEM_TYPE)
+			  // Technically, we should expect a NAME_SYSTEM_TYPE response, but
+			  // in practice FTP servers deviate, so we soften the condition to
+			  // a positive completion.
+//        if (__systemName == null && FTPReply.isPositiveCompletion(syst()))
+//          __systemName = ((String)_replyLines.elementAt(0)).substring(4);
+		
 		lastValidReply = control.validateReply(reply, "215");
 		return lastValidReply.getReplyText();
 	}

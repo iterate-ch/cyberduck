@@ -27,6 +27,8 @@ public abstract class PathFactory {
 
 	private static Map factories = new HashMap();
 
+	protected abstract Path create(Session session);
+
 	protected abstract Path create(Session session, String path);
 
 	protected abstract Path create(Session session, String parent, String name);
@@ -37,6 +39,11 @@ public abstract class PathFactory {
 
 	public static void addFactory(String protocol, PathFactory f) {
 		factories.put(protocol, f);
+	}
+
+	public static final Path createPath(Session session) {
+		loadClass(session.getHost().getProtocol());
+		return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session);
 	}
 
 	public static final Path createPath(Session session, String parent, String name) {

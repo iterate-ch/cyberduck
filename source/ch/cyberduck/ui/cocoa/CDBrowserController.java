@@ -1159,11 +1159,11 @@ public class CDBrowserController implements Observer {
 				Path p = (Path) this.currentData.get(row);
 				if (identifier.equals("TYPE")) {
 					NSImage icon;
-					if(p.isLink()) {
+					if(p.attributes.isSymbolicLink()) {
 						icon = NSImage.imageNamed("symlink.tiff");
 					}
 					else {
-						if (p.isDirectory())
+						if (p.attributes.isDirectory())
 							icon = NSImage.imageNamed("folder16.tiff");
 						else
 							icon = NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
@@ -1177,7 +1177,7 @@ public class CDBrowserController implements Observer {
 				else if (identifier.equals("SIZE"))
 					return Status.getSizeAsString(p.status.getSize());
 				else if (identifier.equals("MODIFIED"))
-					return p.attributes.getModified();
+					return p.attributes.getTimestampAsString();
 				else if (identifier.equals("OWNER"))
 					return p.attributes.getOwner();
 				else if (identifier.equals("PERMISSIONS"))
@@ -1391,9 +1391,9 @@ public class CDBrowserController implements Observer {
 							Path p1 = (Path) o1;
 							Path p2 = (Path) o2;
 							if (ascending)
-								return p1.attributes.getModifiedDate().compareTo(p2.attributes.getModifiedDate());
+								return p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
 							else
-								return -p1.attributes.getModifiedDate().compareTo(p2.attributes.getModifiedDate());
+								return -p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
 						}
 					}
 				);

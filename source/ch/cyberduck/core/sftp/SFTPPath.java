@@ -54,7 +54,11 @@ public class SFTPPath extends Path {
 		protected Path create(Session session, String path) {
 			return new SFTPPath((SFTPSession) session, path);
 		}
-
+		
+		protected Path create(Session session) {
+			return new SFTPPath((SFTPSession) session);
+		}
+				
 		protected Path create(Session session, String path, Local file) {
 			return new SFTPPath((SFTPSession) session, path, file);
 		}
@@ -66,6 +70,11 @@ public class SFTPPath extends Path {
 
 	private SFTPSession session;
 
+	private SFTPPath(SFTPSession session) {
+		super();
+		this.session = session;
+	}
+	
 	private SFTPPath(SFTPSession session, String parent, String name) {
 		super(parent, name);
 		this.session = session;
@@ -122,7 +131,15 @@ public class SFTPPath extends Path {
 							p.attributes.setOwner(x.getAttributes().getUID().toString());
 							p.attributes.setGroup(x.getAttributes().getGID().toString());
 							p.status.setSize(x.getAttributes().getSize().intValue());
-							p.attributes.setModified(Long.parseLong(x.getAttributes().getModifiedTime().toString()) * 1000L);
+							p.attributes.setTimestamp(Long.parseLong(x.getAttributes().getModifiedTime().toString()) * 1000L);
+							if(x.getAttributes().isFile())
+								p.attributes.setType(Path.FILE_TYPE);
+							else if(x.getAttributes().isDirectory())
+								p.attributes.setType(Path.DIRECTORY_TYPE);
+							else if(x.getAttributes().isLink())
+								p.attributes.setType(Path.SYMBOLIC_LINK_TYPE);
+							else
+								p.attributes.setType(Path.FILE_TYPE);
 							p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
 							files.add(p);
 						}
@@ -159,7 +176,7 @@ public class SFTPPath extends Path {
 		log.debug("delete:" + this.toString());
 		try {
 			session.check();
-			if (this.isFile() || this.isLink()) {
+			if (this.isFile()) {
 				session.log("Deleting " + this.getName(), Message.PROGRESS);
 				session.SFTP.removeFile(this.getAbsolute());
 			}

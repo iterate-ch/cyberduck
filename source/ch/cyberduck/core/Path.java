@@ -41,10 +41,11 @@ public abstract class Path {
 	public Status status = new Status();
 	public Attributes attributes;
 
-	public static final String FILE = "FILE";
-	public static final String FOLDER = "FOLDER";
-	public static final String LINK = "LINK";
-
+    public static final int FILE_TYPE = 0;
+    public static final int DIRECTORY_TYPE = 1;
+    public static final int SYMBOLIC_LINK_TYPE = 2;
+//    public static final int UNKNOWN_TYPE = 3;
+	
 	public static final String HOME = "~";
 
 	/**
@@ -61,9 +62,8 @@ public abstract class Path {
 	public Path(NSDictionary dict) {
 		log.debug("Path");
 		this.setPath((String) dict.objectForKey("Remote"));
-		this.setLocal(new Local((String) dict.objectForKey("Local")));
+		this.setLocal(new Local((String)dict.objectForKey("Local")));
 		this.attributes = new Attributes((NSDictionary)dict.objectForKey("Attributes"));
-		//this.setStatus(new Status((NSDictionary)dict.objectForKey("Status")));
 	}
 
 	public NSDictionary getAsDictionary() {
@@ -71,8 +71,11 @@ public abstract class Path {
 		dict.setObjectForKey(this.getAbsolute(), "Remote");
 		dict.setObjectForKey(this.getLocal().toString(), "Local");
 		dict.setObjectForKey(this.attributes.getAsDictionary(), "Attributes");
-		//dict.setObjectForKey(this.status.getAsDictionary(), "Status");
 		return dict;
+	}
+
+	public Path() {
+		this.attributes = new Attributes();
 	}
 
 	/**
@@ -204,9 +207,10 @@ public abstract class Path {
 	public abstract void changePermissions(Permission perm, boolean recursive);
 	
 	public boolean isFile() {
-		if (this.isLink())
+		if (this.attributes.isSymbolicLink())
 			return this.linksToFile();
-		return this.attributes.permission.getMask().charAt(0) == '-';
+		return this.attributes.isFile();
+//		return this.attributes.permission.getMask().charAt(0) == '-';
 	}
 	
 //	public abstract void sync(Local local, boolean recursive, boolean commit, int kind);
@@ -215,17 +219,18 @@ public abstract class Path {
 	 * @return true if is directory or a symbolic link that everyone can execute
 	 */
 	public boolean isDirectory() {
-		if (this.isLink())
+		if (this.attributes.isSymbolicLink())
 			return this.linksToDirectory();
-		return this.attributes.permission.getMask().charAt(0) == 'd';
+		return this.attributes.isDirectory();
+//		return this.attributes.permission.getMask().charAt(0) == 'd';
 	}
 
-	public boolean isLink() {
-		return this.attributes.permission.getMask().charAt(0) == 'l';
-	}
+//	public boolean isLink() {
+//		return this.attributes.permission.getMask().charAt(0) == 'l';
+//	}
 	
 	private boolean linksToFile() {
-		return this.isLink() && this.getName().indexOf(".") != -1;
+		return this.attributes.isSymbolicLink() && this.getName().indexOf(".") != -1;
 	}
 	
 	private boolean linksToDirectory() {
@@ -236,11 +241,11 @@ public abstract class Path {
 	 * @return The file type
 	 */
 	public String getKind() {
-		if (this.isLink())
+		if (this.attributes.isSymbolicLink())
 			return "Symbolic Link";
-		if (this.isFile())
+		if (this.attributes.isFile())
 			return "File";
-		if (this.isDirectory())
+		if (this.attributes.isDirectory())
 			return "Folder";
 		return "Unknown";
 	}
@@ -445,7 +450,7 @@ public abstract class Path {
 		}
 		if (other instanceof Local) {
 			Local local = (Local) other;
-			return this.getName().equals(local.getName()) && this.attributes.getModified().equals(local.getModified());
+			return this.getName().equals(local.getName()) && this.attributes.getTimestamp().equals(local.getTimestamp());
 		}
 		return false;
 	}

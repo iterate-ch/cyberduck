@@ -35,6 +35,10 @@ import org.apache.log4j.Logger;
 public class FTPSession extends Session {
 	private static Logger log = Logger.getLogger(Session.class);
 
+//	private String systemName;
+//	private FTPFileEntryParserFactory parserFactory;	
+//    private FTPFileEntryParser entryParser;
+	
 	static {
 		SessionFactory.addFactory(Session.FTP, new Factory());
 	}

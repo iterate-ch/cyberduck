@@ -51,11 +51,11 @@ public class Local extends File {
 		return new Permission(((Integer) fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue());
 	}
 
-	public String getModified() {
+	public String getTimestampAsString() {
 		return (DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)).format(new Date(super.lastModified()));
 	}
 
-	public Date getModifiedDate() {
+	public Date getTimestamp() {
 		return new Date(super.lastModified());
 	}
 
@@ -66,7 +66,7 @@ public class Local extends File {
 		}
 		if (other instanceof Path) {
 			Path remote = (Path) other;
-			return this.getName().equals(remote.getName()) && this.getModified().equals(remote.attributes.getModified());
+			return this.getName().equals(remote.getName()) && this.getTimestamp().equals(remote.attributes.getTimestamp());
 		}
 		return false;
 	}

@@ -32,6 +32,8 @@ import org.apache.log4j.Logger;
 public class CDMainController {
 	private static Logger log = Logger.getLogger(CDMainController.class);
 
+	private static final File VERSION_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Version.plist"));
+
 	static {
 		org.apache.log4j.BasicConfigurator.configure();
 		Logger log = Logger.getRootLogger();
@@ -307,6 +309,33 @@ public class CDMainController {
 //			}
 //			return NSApplication.TerminateLater;
 //		}
+		/*
+		 // Writing version info
+		try {
+			NSMutableArray list = new NSMutableArray();
+			NSMutableDictionary dict = new NSMutableDictionary();
+			dict.setObjectForKey((String)NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion"), "Version");
+			list.addObject(dict);
+			NSMutableData collection = new NSMutableData();
+			String[] errorString = new String[]{null};
+			collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
+																				   list,
+																				   NSPropertyListSerialization.PropertyListXMLFormat,
+																				   errorString)
+								  );
+			if (errorString[0] != null)
+				log.error("Problem writing bookmark file: " + errorString[0]);
+			
+			if (collection.writeToURL(VERSION_FILE.toURL(), true))
+				log.info("Bookmarks sucessfully saved to :" + VERSION_FILE.toString());
+			else
+				log.error("Error saving Bookmarks to :" + VERSION_FILE.toString());
+		}
+		catch (java.net.MalformedURLException e) {
+			log.error(e.getMessage());
+		}
+		 */
+		
 		Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
 
 		if (Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {

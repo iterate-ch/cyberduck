@@ -118,19 +118,19 @@ public class Queue extends Observable implements Observer { //Thread {
 			// only one root for now - can be extended in a later version
 			this.root = PathFactory.createPath(SessionFactory.createSession(host), (NSDictionary) elements.objectAtIndex(i));
 		}
-		this.kind = Integer.parseInt((String) dict.objectForKey("Kind"));
+		this.kind = Integer.parseInt((String)dict.objectForKey("Kind"));
 		this.status = (String) dict.objectForKey("Status");
-		this.size = Integer.parseInt((String) dict.objectForKey("Size"));
-		this.current = Integer.parseInt((String) dict.objectForKey("Current"));
+		this.size = Integer.parseInt((String)dict.objectForKey("Size"));
+		this.current = Integer.parseInt((String)dict.objectForKey("Current"));
 		this.init();
 	}
 
 	public NSDictionary getAsDictionary() {
 		NSMutableDictionary dict = new NSMutableDictionary();
 		dict.setObjectForKey(this.status, "Status");
-		dict.setObjectForKey(this.kind + "", "Kind");
-		dict.setObjectForKey(this.getSize() + "", "Size");
-		dict.setObjectForKey(this.getCurrent() + "", "Current");
+		dict.setObjectForKey(this.kind+"", "Kind");
+		dict.setObjectForKey(this.getSize()+"", "Size");
+		dict.setObjectForKey(this.getCurrent()+"", "Current");
 		dict.setObjectForKey(this.root.getHost().getAsDictionary(), "Host");
 		NSMutableArray list = new NSMutableArray();
 		list.addObject(this.root.getAsDictionary());

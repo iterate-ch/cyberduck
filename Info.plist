@@ -74,6 +74,7 @@
 		<string>http.jar</string>
 		<string>jmdns.jar</string>
 		<string>log4j.jar</string>
+		<string>oro.jar</string>
 	</array>
 	<key>NSJavaRoot</key>
 	<string>Contents/Resources/Java</string>

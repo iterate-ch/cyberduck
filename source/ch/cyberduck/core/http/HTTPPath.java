@@ -54,6 +54,10 @@ public class HTTPPath extends Path {
 			return new HTTPPath((HTTPSession) session, path);
 		}
 
+		protected Path create(Session session) {
+			return new HTTPPath((HTTPSession) session);
+		}
+				
 		protected Path create(Session session, String path, Local file) {
 			return new HTTPPath((HTTPSession) session, path, file);
 		}
@@ -85,6 +89,11 @@ public class HTTPPath extends Path {
 		this.session = session;
 	}
 
+	public HTTPPath(HTTPSession session) {
+		super();
+		this.session = session;
+	}
+	
 	public Path getParent() {
 		String abs = this.getAbsolute();
 		if ((null == parent)) {

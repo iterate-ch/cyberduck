@@ -37,6 +37,7 @@ public class Attributes extends Observable {
 	private Date modified = new Date();
 	private String owner = null;
 	private String group = null;
+	private int type = Path.FILE_TYPE;
 	protected Permission permission = new Permission();
 	private boolean visible = true;
 	
@@ -46,31 +47,41 @@ public class Attributes extends Observable {
 
 	public Attributes(NSDictionary dict) {
 		log.debug("Attributes");
-		this.permission = new Permission((NSDictionary)dict.objectForKey("Permission"));
+		Object permObj = dict.objectForKey("Permission");
+		if(permObj != null)
+			this.permission = new Permission((NSDictionary)permObj);
+		Object typeObj = dict.objectForKey("Type");
+		if(typeObj != null)
+			this.type = Integer.parseInt((String)typeObj);
 	}
 	
 	
 	public NSDictionary getAsDictionary() {
 		NSMutableDictionary dict = new NSMutableDictionary();
 		dict.setObjectForKey(this.permission.getAsDictionary(), "Permission");
+		dict.setObjectForKey(this.type+"", "Type");
 		return dict;
 	}
 	
 	/**
 	 * Set the modfication returned by ftp directory listings
 	 */
-	public void setModified(long m) {
+	public void setTimestamp(long m) {
 		this.modified = new Date(m);
+	}
+	
+	public void setTimestamp(Date d) {
+		this.modified = d;
 	}
 
 	/**
 	 * @return the modification date of this file
 	 */
-	public String getModified() {
+	public String getTimestampAsString() {
 		return (DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)).format(this.modified);
 	}
 
-	public Date getModifiedDate() {
+	public Date getTimestamp() {
 		return this.modified;
 	}
 
@@ -81,7 +92,31 @@ public class Attributes extends Observable {
 	public Permission getPermission() {
 		return this.permission;
 	}
+	
+	public void setType(int type) {
+		this.type = type;
+	}
 
+	public int getType() {
+		return this.type;
+	}
+	
+	public boolean isDirectory() {
+        return (this.type == Path.DIRECTORY_TYPE);
+    }
+	
+	public boolean isFile() {
+        return (this.type == Path.FILE_TYPE);
+    }
+	
+    public boolean isSymbolicLink() {
+        return (this.type == Path.SYMBOLIC_LINK_TYPE);
+    }
+	
+//    public boolean isUnknown() {
+//        return (this.type == Path.UNKNOWN_TYPE);
+//    }
+		
 	public void setOwner(String o) {
 		this.owner = o;
 	}

@@ -26,19 +26,25 @@ usage() {
 updateNibFromStrings() {
     nib=`basename $nibfile .nib`
 
-    echo "Updating $nib..."
-
     rm -rf $language.lproj/$nibfile.bak
     mv $language.lproj/$nibfile $language.lproj/$nibfile.bak
 
-    # force update
-    # nibtool --write $language.lproj/$nibfile --dictionary $language.lproj/$nib.strings English.lproj/$nibfile
-
-    # incremental update
-    nibtool --write $language.lproj/$nibfile \
-            --incremental $language.lproj/$nibfile.bak \
-            --dictionary $language.lproj/$nib.strings English.lproj/$nibfile
-
+    if($force == true); then
+        {
+            # force update
+            echo "Updating $nib... (force)"
+            nibtool --write $language.lproj/$nibfile --dictionary $language.lproj/$nib.strings English.lproj/$nibfile
+        }
+    else
+        {
+            # incremental update
+            echo "Updating $nib... (incremental)"
+            nibtool --write $language.lproj/$nibfile \
+                    --incremental $language.lproj/$nibfile.bak \
+                    --dictionary $language.lproj/$nib.strings English.lproj/$nibfile
+        
+        }
+    fi;
     cp -R $language.lproj/$nibfile.bak/CVS $language.lproj/$nibfile/CVS
 }
 
@@ -57,8 +63,9 @@ updateNibFromStrings() {
 
 language="all";
 nibfile="all";
+force=false;
 
-while [ "$1" != "" ]                    # When there are arguments...
+while [ "$1" != "" ] # When there are arguments...
 do
     case "$1" in 
         -h | --help) 
@@ -73,9 +80,13 @@ do
             shift;
             nibfile=$1
         ;;
+        -force) 
+            shift;
+            force=true
+        ;;
         *)  echo "Option [$1] not one of  [--langauge, --nib]";       # Error (!)
             exit 1
-        ;;                          # Abort Script Now
+        ;; # Abort Script Now
     esac;
     shift;
 done;

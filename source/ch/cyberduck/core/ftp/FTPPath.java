@@ -25,6 +25,9 @@ import com.apple.cocoa.foundation.NSDictionary;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
 
+import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
+import org.apache.commons.net.ftp.FTPFileEntryParser;
+
 import java.io.*;
 import java.util.List;
 
@@ -43,6 +46,10 @@ public class FTPPath extends Path {
 	private static class Factory extends PathFactory {
 		protected Path create(Session session, String parent, String name) {
 			return new FTPPath((FTPSession) session, parent, name);
+		}
+
+		protected Path create(Session session) {
+			return new FTPPath((FTPSession) session);
 		}
 
 		protected Path create(Session session, String path) {
@@ -75,6 +82,11 @@ public class FTPPath extends Path {
 		this.session = session;
 	}
 
+	private FTPPath(FTPSession session) {
+		super();
+		this.session = session;
+	}
+	
 	/**
 	 * @param session The connection to work with for regular file operations
 	 * @param parent The parent directory relative to this file
@@ -93,17 +105,7 @@ public class FTPPath extends Path {
 	public Session getSession() {
 		return this.session;
 	}
-	
-	/*
-	 public FTPFile[] listFiles(String parserKey, String pathname)
-	 throws IOException
-	 {
-		 FTPListParseEngine engine = 
-        	initiateListParsing(parserKey, pathname);
-		 return engine.getFiles();
-	 }
-*/
-	 
+		 
 	public synchronized List list() {
 		return this.list(false);
 	}
@@ -122,7 +124,26 @@ public class FTPPath extends Path {
 				session.check();
 				session.FTP.setTransferType(FTPTransferType.ASCII);
 				session.FTP.chdir(this.getAbsolute());
-				this.setCache(files = FTPParser.instance().parseList(this, session.FTP.dir(), showHidden));
+
+				FTPFileEntryParser parser =  new DefaultFTPFileEntryParserFactory().createFileEntryParser(session.FTP.system()); //todo cache
+				
+				String[] lines = session.FTP.dir();
+				//@todo replace with new FTPListParseEngine(parser)
+				// engine.getFiles()
+				for (int i = 0; i < lines.length; i++) {
+					Path p = parser.parseFTPEntry(this, lines[i]);
+					if(p != null) {
+						String filename = p.getName();
+						if (!(filename.equals(".") || filename.equals(".."))) {
+							if (!(filename.charAt(0) == '.') || showHidden) {
+								files.add(p);
+							}
+						}
+					}
+				}
+				
+				this.setCache(files);
+//				this.setCache(files = FTPParser.instance().parseList(this, session.FTP.dir(), showHidden));
 			}
 			catch (FTPException e) {
 				session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -142,7 +163,7 @@ public class FTPPath extends Path {
 		log.debug("delete:" + this.toString());
 		try {
 			session.check();
-			if (this.isFile() || this.isLink()) {
+			if (this.isFile()) {
 				session.log("Deleting " + this.getName(), Message.PROGRESS);
 				session.FTP.delete(this.getName());
 			}

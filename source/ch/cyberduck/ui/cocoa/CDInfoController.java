@@ -146,7 +146,7 @@ public class CDInfoController {
 		this.pathField.setStringValue(file.getParent().getAbsolute());
 		this.groupField.setStringValue(file.attributes.getGroup());
 		this.kindField.setStringValue(file.getKind());
-		this.modifiedField.setStringValue(file.attributes.getModified());
+		this.modifiedField.setStringValue(file.attributes.getTimestampAsString());
 		this.ownerField.setStringValue(file.attributes.getOwner());
 		this.sizeField.setStringValue(Status.getSizeAsString(file.status.getSize()) + " (" + file.status.getSize() + " bytes)");
 
@@ -238,10 +238,8 @@ public class CDInfoController {
 		p[Permission.OTHER][Permission.EXECUTE] = (otherx.state() == NSCell.OnState);
 
 		Permission permission = new Permission(p);
-//		file.attributes.setPermission(permission);
 
 		file.changePermissions(permission, recursiveCheckbox.state() == NSCell.OnState);
-//		file.changePermissions(permission.getOctalCode(), recursiveCheckbox.state() == NSCell.OnState);
 		permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.getString() + " (" + permission.getOctalCode() + ")");
 	}
 }
