@@ -18,12 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-
-import java.util.Collections;
-import java.util.Comparator;
-
-import ch.cyberduck.core.Path;
+import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSTableView;
 
 /**
 * @version $Id$

@@ -62,14 +62,14 @@
 
 package org.apache.commons.httpclient.methods;
 
+import java.io.IOException;
+
 import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.log.Log;
 import org.apache.commons.httpclient.log.LogSource;
-
-import java.io.IOException;
 
 /**
  * HEAD Method.

@@ -62,13 +62,13 @@
 
 package org.apache.commons.httpclient;
 
-import org.apache.commons.httpclient.log.Log;
-import org.apache.commons.httpclient.log.LogSource;
-
 import java.util.BitSet;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
+import org.apache.commons.httpclient.log.Log;
+import org.apache.commons.httpclient.log.LogSource;
 
 /**
  * <p>One element of an HTTP header's value.</p>

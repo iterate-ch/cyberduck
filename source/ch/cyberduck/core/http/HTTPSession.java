@@ -18,14 +18,14 @@ package ch.cyberduck.core.http;
  *  dkocher@cyberduck.ch
  */
 
+import java.io.IOException;
+
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.log4j.Logger;
-
-import java.io.IOException;
 
 /**
 * Opens a connection to the remote server via http protocol

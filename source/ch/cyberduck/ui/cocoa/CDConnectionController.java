@@ -18,6 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
+
 import ch.cyberduck.core.*;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSBundle;
@@ -25,12 +29,7 @@ import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSNotificationCenter;
 import com.apple.cocoa.foundation.NSSelector;
-import com.strangeberry.rendezvous.ServiceInfo;
 import org.apache.log4j.Logger;
-
-import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
 * @version $Id$
@@ -55,11 +54,10 @@ public class CDConnectionController implements Observer {
     }
     
     private NSPopUpButton bookmarksPopup;
-    public void setFavoritesPopup(NSPopUpButton bookmarksPopup) {
+    public void setBookmarksPopup(NSPopUpButton bookmarksPopup) {
 		this.bookmarksPopup = bookmarksPopup;
-		this.bookmarksPopup.setImage(NSImage.imageNamed("favorites.tiff"));
+		this.bookmarksPopup.setImage(NSImage.imageNamed("bookmarks.tiff"));
 		
-//		CDBookmarksImpl.instance().load();
 		Iterator i = CDBookmarksImpl.instance().iterator();
 		while(i.hasNext())
 			bookmarksPopup.addItem(i.next().toString());
@@ -117,12 +115,13 @@ public class CDConnectionController implements Observer {
     }
 		
     private NSComboBox hostPopup;
+	private CDQuickConnectDataSource quickConnectDataSource;
     public void setHostPopup(NSComboBox hostPopup) {
 		this.hostPopup = hostPopup;
 		this.hostPopup.setTarget(this);
 		this.hostPopup.setAction(new NSSelector("hostSelectionChanged", new Class[] {Object.class}));
 		this.hostPopup.setUsesDataSource(true);
-		this.hostPopup.setDataSource(CDHistoryImpl.instance());
+		this.hostPopup.setDataSource(this.quickConnectDataSource = new CDQuickConnectDataSource());
     }
 	
 	public void hostSelectionChanged(Object sender) {
@@ -218,6 +217,7 @@ public class CDConnectionController implements Observer {
 		log.debug("updateFields:"+selectedItem);
 		this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.hostPopup.setStringValue(selectedItem.getHostname());
+		this.pathField.setStringValue(selectedItem.getDefaultPath());
 		this.portField.setIntValue(protocolPopup.selectedItem().tag());
 		this.usernameField.setStringValue(selectedItem.getLogin().getUsername());
     }

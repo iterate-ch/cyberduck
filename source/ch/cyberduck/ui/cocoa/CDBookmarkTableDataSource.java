@@ -18,14 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Bookmarks;
-
 import java.util.Collection;
 
+import ch.cyberduck.core.Bookmarks;
+import ch.cyberduck.core.Host;
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
-
+import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSSize;
 import org.apache.log4j.Logger;
 
 /**
@@ -176,8 +178,11 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {//implements N
 		NSMutableArray promisedDragNames = new NSMutableArray();
 		for(int i = 0; i < promisedDragBookmarks.length; i++) {
 			try {
-				promisedDragBookmarksFiles[i] = new java.io.File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), promisedDragBookmarks[i].getNickname());
-				promisedDragNames.addObject(promisedDragBookmarks[i].getNickname());
+				promisedDragBookmarksFiles[i] = new java.io.File(
+													 java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), 
+													 promisedDragBookmarks[i].getNickname()+".duck"
+													 );
+				promisedDragNames.addObject(promisedDragBookmarks[i].getNickname()+".duck");
 			}
 			catch(java.io.UnsupportedEncodingException e) {
 				log.error(e.getMessage());	

@@ -62,9 +62,6 @@
 
 package org.apache.commons.httpclient;
 
-import org.apache.commons.httpclient.log.Log;
-import org.apache.commons.httpclient.log.LogSource;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -76,6 +73,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import org.apache.commons.httpclient.log.Log;
+import org.apache.commons.httpclient.log.LogSource;
 
 /**
  * <p>An abstract base implementation of {@link HttpMethod}.</p>

@@ -18,16 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
+import java.io.File;
+
 import ch.cyberduck.core.Bookmarks;
-import ch.cyberduck.core.Login;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Login;
+import ch.cyberduck.core.Preferences;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-
-import java.io.File;
 
 public class CDMainController {
     private static Logger log = Logger.getLogger(CDMainController.class);

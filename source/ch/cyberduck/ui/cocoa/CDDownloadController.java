@@ -18,6 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Login;
 import ch.cyberduck.core.Path;
@@ -36,9 +39,6 @@ import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSPoint;
 import org.apache.log4j.Logger;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
 * @version $Id$

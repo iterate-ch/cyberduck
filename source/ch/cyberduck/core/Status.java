@@ -18,10 +18,10 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
-
 import java.io.Serializable;
 import java.util.Observable;
+
+import org.apache.log4j.Logger;
 
 /**
   * The Status class is the model of a download's status.

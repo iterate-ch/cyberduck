@@ -18,10 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Bookmarks;
-
-import com.apple.cocoa.application.*;
+import ch.cyberduck.core.Host;
+import com.apple.cocoa.application.NSComboBox;
+import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSTableView;
 
 /**
 * @version $Id$

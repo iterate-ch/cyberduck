@@ -18,6 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import com.apple.cocoa.application.NSImage;
@@ -25,11 +30,6 @@ import com.apple.cocoa.application.NSPopUpButton;
 import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.foundation.NSSelector;
 import org.apache.log4j.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
 * @version $Id$

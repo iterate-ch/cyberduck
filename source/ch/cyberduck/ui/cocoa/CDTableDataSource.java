@@ -20,7 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import java.util.Collection;
 
-import com.apple.cocoa.application.*;
+import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSTableView;
 
 /**
 * @version $Id$

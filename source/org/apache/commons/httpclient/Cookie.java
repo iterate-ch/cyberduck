@@ -62,15 +62,15 @@
 
 package org.apache.commons.httpclient;
 
-import org.apache.commons.httpclient.log.Log;
-import org.apache.commons.httpclient.log.LogSource;
-
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import org.apache.commons.httpclient.log.Log;
+import org.apache.commons.httpclient.log.LogSource;
 
 /**
  * <p>An HTTP "magic-cookie", as specified in RFC 2109.</p>

@@ -18,12 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
-import com.apple.cocoa.application.*;
-
-import org.apache.log4j.Logger;
-
 import ch.cyberduck.core.Host;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSSize;
+import org.apache.log4j.Logger;
 
 public class CDBookmarkCell extends NSCell {
 	private static Logger log = Logger.getLogger(CDBookmarkCell.class);

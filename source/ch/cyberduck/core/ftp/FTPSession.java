@@ -18,6 +18,8 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
+import java.io.IOException;
+
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
@@ -27,8 +29,6 @@ import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPException;
 import org.apache.log4j.Logger;
-
-import java.io.IOException;
 
 /**
 * Opens a connection to the remote server via ftp protocol

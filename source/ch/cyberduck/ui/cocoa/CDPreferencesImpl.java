@@ -18,12 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import java.io.File;
+
 import ch.cyberduck.core.Preferences;
 import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSUserDefaults;
 import org.apache.log4j.Logger;
-
-import java.io.File;
 
 /**
 * Concrete subclass using the Cocoao Preferences classes.

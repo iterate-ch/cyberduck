@@ -18,6 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Session;
@@ -28,8 +32,6 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
-
-import java.util.*;
 
 /**
 * @version $Id$

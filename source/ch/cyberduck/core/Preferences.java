@@ -18,9 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
-
 import java.util.Hashtable;
+
+import org.apache.log4j.Logger;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading

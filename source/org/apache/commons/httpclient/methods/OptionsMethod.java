@@ -62,14 +62,14 @@
 
 package org.apache.commons.httpclient.methods;
 
+import java.util.Enumeration;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpState;
-
-import java.util.Enumeration;
-import java.util.StringTokenizer;
-import java.util.Vector;
 
 
 /**

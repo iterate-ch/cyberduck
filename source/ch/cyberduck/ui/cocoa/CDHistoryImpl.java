@@ -18,11 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
+import java.io.File;
 
 import ch.cyberduck.core.Bookmarks;
-
-import java.io.File;
+import com.apple.cocoa.foundation.NSPathUtilities;
 
 /**
 * @version $Id$
