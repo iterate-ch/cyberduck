@@ -70,7 +70,7 @@ public class CDBrowserController implements Observer {
 				p.list();
 		}
     }
-	
+		
     private CDBookmarkTableDataSource bookmarkModel;
     private NSTableView bookmarkTable; // IBOutlet
     public void setBookmarkTable(NSTableView bookmarkTable) {
@@ -83,22 +83,6 @@ public class CDBrowserController implements Observer {
 		this.bookmarkTable.tableColumnWithIdentifier("FAVORITE").setDataCell(new CDBookmarkCell());
 		this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableViewDidClickTableRow", new Class[] {Object.class}));
     }
-	
-	public void sortByFilenames(Object o) {
-		log.info("0******sortByFilenames**********");
-	}
-
-	public void sortByFilenames(NSTableView tableView, NSArray sortDescriptors) {
-		log.info("1******sortByFilenames**********");
-	}
-
-	public void sortByFilenames(NSTableView tableView, NSSortDescriptor sortDescriptors) {
-		log.info("2******sortByFilenames**********");
-	}
-
-	public void sortByFilenames(NSSortDescriptor sortDescriptors) {
-		log.info("3******sortByFilenames**********");
-	}
 	
 	public void bookmarkTableViewDidClickTableRow(Object sender) {
 		log.debug("bookmarkTableViewDidClickTableRow");
@@ -655,6 +639,11 @@ public class CDBrowserController implements Observer {
 		}
     }
 	
+    public void insideButtonClicked(Object sender) {
+		log.debug("insideButtonClicked");
+		this.browserTableViewDidClickTableRow(sender);
+    }
+
     public void backButtonClicked(Object sender) {
 		log.debug("backButtonClicked");
 		host.getSession().getPreviousPath().list();
@@ -848,6 +837,15 @@ public class CDBrowserController implements Observer {
 			return this.isMounted() && browserTable.selectedRow() != -1;
         }
         if (sel.equals("refreshButtonClicked:")) {
+			return this.isMounted();
+        }
+        if (sel.equals("insideButtonClicked:")) {
+			return this.isMounted() && browserTable.selectedRow() != -1;
+        }
+        if (sel.equals("upButtonClicked:")) {
+			return this.isMounted();
+        }
+        if (sel.equals("backButtonClicked:")) {
 			return this.isMounted();
         }
         return true;
