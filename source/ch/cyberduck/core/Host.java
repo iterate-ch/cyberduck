@@ -23,74 +23,69 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.ui.ObserverList;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.List;
 import org.apache.log4j.Logger;
 
-public class Host extends Observable {
+public class Host {
     private static Logger log = Logger.getLogger(Host.class);
 
     public Login login;
     private String protocol;//@todo = Preferences.instance().getProperty("connection.protocol.default");
     private int port;// = Integer.parseInt(Preferences.instance().getProperty("connection.port.default"));
     private String name;
-    private String workdir;
+//    private String workdir;
     private HostKeyVerification hostKeyVerification;
     private transient Session session;
 
-    public Host(String protocol, String name, int port, String workdir, Login login) {
+    public Host(String protocol, String name, int port) {
+	this(protocol, name, port, null);
+    }
+    
+    public Host(String protocol, String name, int port, Login login) {
         this.protocol = protocol != null ? protocol : this.protocol;
         this.port = port != -1 ? port : this.port;
 	//@todo extract protocol:// if accidentially added
         this.name = name;
-	this.workdir = workdir != null ? workdir : this.workdir;
+//	this.workdir = workdir != null ? workdir : this.workdir;
         this.login = login != null ? login : this.login;
 //	ObserverList.instance().registerObservable(this);
 	log.debug(this.toString());
     }
 
-    public Host(String protocol, String name, int port, Login login) {
-	this(protocol, name, port, Preferences.instance().getProperty("connection.path.default"), login);
-    }
-    
     public Host(String name, Login login) {
 	this(Preferences.instance().getProperty("connection.protocol.default"), name, Integer.parseInt(Preferences.instance().getProperty("connection.port.default")), login);
     }
 
-    public void callObservers(Object arg) {
-        log.debug("callObservers:"+arg.toString());
-	log.debug(this.countObservers()+" observer(s) known.");
-	this.setChanged();
-	this.notifyObservers(arg);
-    }
-    
-
-    public void openSession() {
-        log.debug("openSession");
-	if(null == session) {
+    public Session getSession() {
+        log.debug("getSession");
+	if(null == this.session) {
 	    if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
 		this.session = new HTTPSession(this);
 	    }
 	    //  @todo      if(this.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
      //            return new HTTPSession(this);
      //        }
-	    if(this.getProtocol().equalsIgnoreCase(Session.FTP)) {
+	    else if(this.getProtocol().equalsIgnoreCase(Session.FTP)) {
 		this.session = new FTPSession(this);
 	    }
-	    if(this.getProtocol().equalsIgnoreCase(Session.SFTP)) {
+	    else if(this.getProtocol().equalsIgnoreCase(Session.SFTP)) {
 		this.session = new SFTPSession(this);
 	    }
+	    else {
+		throw new IllegalArgumentException("Unknown protocol");
+	    }
 	}
-        this.session.connect();
-	this.callObservers(new Message(Message.OPEN, "Session opened."));
+//@todo	this.callObservers(new Message(Message.OPEN, "Session opened."));
+	return this.session;
+//        this.session.mount();
     }
     
+    /*
     public boolean hasValidSession() {
 	return session != null && session.isConnected();//@todo use check() without reconnecting 
     }
+    */
 
     public void closeSession() {
         log.debug("closeSession");
@@ -98,28 +93,22 @@ public class Host extends Observable {
 	    this.session.close();
 	    this.session = null;
 	}
-	this.callObservers(new Message(Message.CLOSE, "Session closed"));
+//@todo	this.callObservers(new Message(Message.CLOSE, "Session closed"));
     }
 
+/*
     public void recycle() {
         log.debug("recycle");
 	this.closeSession();
 	this.openSession();
     }
+    */
     
 //    public boolean isConnected() {
 //	return this.getSession().isConnected();
   //  }    
   
   
-    public void download(Path file) {
-    
-    }
-    
-    public void upload(java.io.File file) {
-    
-    }
-
     // ----------------------------------------------------------
     // Accessor methods
     // ----------------------------------------------------------
@@ -132,9 +121,9 @@ public class Host extends Observable {
 	return this.name;
     }
 
-    public String getWorkdir() {
-	return this.workdir;
-    }
+//    public String getWorkdir() {
+//	return this.workdir;
+  //  }
 
     public int getPort() {
 	return this.port;
@@ -171,6 +160,6 @@ public class Host extends Observable {
     }
     
     public String toString() {
-	return("Host:"+protocol+","+name+","+port+","+workdir+","+login);
+	return("Host:"+protocol+","+name+","+port+","+login);
     }
 }

@@ -113,9 +113,6 @@ public class CDBrowserController implements Observer {
 	super.finalize();
 	log.debug("finalize");
 //	toolbar.setDelegate(null);
-	host.deleteObserver((Observer)this);
-	host.deleteObserver((Observer)browserTable);
-	host.deleteObserver((Observer)pathController);
     }
 
     public NSWindow window() {
@@ -129,9 +126,9 @@ public class CDBrowserController implements Observer {
     
     public void update(Observable o, Object arg) {
 	log.debug("update:"+o+","+arg);
-	if(o instanceof Host) {
+	if(o instanceof Session) {
 	    if(arg instanceof Message) {
-		Host host = (Host)o;
+//		Host host = (Host)o;
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.ERROR)) {
 		    //public static void beginAlertSheet( String title, String defaultButton, String alternateButton, String otherButton, NSWindow docWindow, Object modalDelegate, NSSelector didEndSelector, NSSelector didDismissSelector, Object contextInfo, String message)
@@ -154,14 +151,19 @@ public class CDBrowserController implements Observer {
 		if(msg.getTitle().equals(Message.PROGRESS)) {
 		    statusLabel.setStringValue(msg.getDescription());
 		}
+		if(msg.getTitle().equals(Message.TRANSCRIPT)) {
+		    statusLabel.setStringValue(msg.getDescription());
+		}
 		if(msg.getTitle().equals(Message.OPEN)) {
 		    progressIndicator.startAnimation(this);
 		    mainWindow.setTitle(host.getName());
 		    History.instance().add(host);
 		}
+		/*
 		if(msg.getTitle().equals(Message.CONNECTED)) {
 		    progressIndicator.stopAnimation(this);
 		}
+		 */
 	    }
 	}
     }
@@ -291,8 +293,8 @@ public class CDBrowserController implements Observer {
 
     public void connectFieldPressed(Object sender) {
 	log.debug("connectFieldPressed");
-	Host host = new Host(((NSControl)sender).stringValue(), new CDLoginController(this));
-	this.openConnection(host);
+	Host host = new Host(((NSControl)sender).stringValue(), new CDLoginController(this.window()));
+	this.mount(host);
     }
 
     public void connectButtonPressed(Object sender) {
@@ -308,17 +310,19 @@ public class CDBrowserController implements Observer {
 					      null); //contextInfo
     }
 
-    public void openConnection(Host host) {
+    public void mount(Host host) {
 	this.host = host;
-	host.addObserver((Observer)this);
-	host.addObserver((Observer)browserTable);
-	host.addObserver((Observer)pathController);
-//@todo ?	CDConnectionController controller = new CDConnectionController(host);
-	host.openSession();
+	Session session = host.getSession();
+	
+	session.addObserver((Observer)this);
+	session.addObserver((Observer)browserTable);
+	session.addObserver((Observer)pathController);
+
+	session.mount();
     }
 
-    public void closeConnection(Host host) {
-	host.deleteObservers();
+    public void unmount(Host host) {
+	host.getSession().deleteObservers();
 	host.closeSession();
     }
 
@@ -550,16 +554,15 @@ public class CDBrowserController implements Observer {
 	}
 	return true;
     }
-}
 
 
     // ----------------------------------------------------------
     // Window delegate methods
     // ----------------------------------------------------------
-/*
+
     public boolean windowShouldClose(NSWindow sender) {
 	NSAlertPanel.beginAlertSheet(
-			      "Really close?", //title
+			      "End session?", //title
 			      "Close",// defaultbutton
 			      "Cancel",//alternative button
 			      null,//other button
@@ -575,7 +578,7 @@ public class CDBrowserController implements Observer {
 	  ),// end selector
 			      null, // dismiss selector
 			      sender, // context
-			      "All connections to remote servers will be closed." // message
+			      "The connection to the remote host will be closed." // message
 			      );
 	//@todo return the actual selection
 	return false;
@@ -589,6 +592,6 @@ public class CDBrowserController implements Observer {
 	// if multi window app only close the one window with main.close()
 	sheet.orderOut(null);
 	if(returncode == NSAlertPanel.DefaultReturn)
-	    NSApplication.sharedApplication().terminate(this);
+	    host.closeSession();
     }
-*/
+}

@@ -23,7 +23,7 @@ import java.util.Observer;
 import java.util.Observable;
 import java.util.List;
 import java.util.ArrayList;
-import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.ObserverList;
 import com.apple.cocoa.foundation.*;
@@ -54,7 +54,7 @@ public class CDPathController implements Observer {
     
     public void update(Observable o, Object arg) {
 	log.debug("update:"+o+","+arg);
-	if(o instanceof Host) {
+	if(o instanceof Session) {
 	    if(arg instanceof Path) {
 		Path p = (Path)arg;
 		this.removeAllItems();

@@ -127,18 +127,21 @@ public class HTTPSession extends Session {
 			    HTTPSession.this.log(responseHeaders[i].toExternalForm(), Message.TRANSCRIPT);
 			}
 			if(response == HttpStatus.SC_MOVED_PERMANENTLY || response == HttpStatus.SC_MOVED_TEMPORARILY) {
-			    try {
+			    //@ todo
+//			    try {
+				/*
 				URL url = new URL(GET.getResponseHeader("Location").getValue());
 				HTTPSession.this.close();
 				//@todo url.getQuery()
-				Host host = new Host(url.getProtocol(), url.getHost(), url.getPort(), url.getPath(), null);
-				HTTPFile redirect = new HTTPFile(host.getWorkdir());
-				HTTPFile.this.download();
+				HTTPSession s = new HTTPSession(new Host(url.getProtocol(), url.getHost(), url.getPort());
+				HTTPFile redirect = new HTTPFile(url.getFile());
+				redirect.download();
 				return;
-			    }
-			    catch(MalformedURLException e) {
-				throw new HttpException(HttpStatus.getStatusText(response), response);
-			    }
+				    */
+//			    }
+//			    catch(MalformedURLException e) {
+			    throw new HttpException(HttpStatus.getStatusText(response), response);
+//			    }
 			}
 
 			if(!HttpStatus.isSuccessfulResponse(response)) {
@@ -257,23 +260,37 @@ public class HTTPSession extends Session {
 	}
     }
 
-    
+
     public synchronized void connect() {
-	new Thread() {
-	    public void run() {
 //		host.status.fireActiveEvent();
-		HTTPSession.this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
+	this.callObservers(new Message(Message.OPEN, "Opening session."));
+	HTTPSession.this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
 //		if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
 //		    HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
 //		}
 //		else {
-		HTTP.connect(host.getName(), host.getPort(), false);//@todo implement https
+	HTTP.connect(host.getName(), host.getPort(), false);//@todo implement https
 //		}
-		HTTPSession.this.log("HTTP connection opened", Message.PROGRESS);
-		HTTPFile p = new HTTPFile(host.getWorkdir());
-		p.download();
+	    log("HTTP connection opened", Message.PROGRESS);
+//		HTTPFile p = new HTTPFile(host.getWorkdir());
+//		p.download();
 //		host.status.fireStopEvent();
-	    }
-	}.start();
+    }
+    
+    public void mount() {
+	this.log("Invalid Operation", Message.ERROR);
+    }
+
+    public Path workdir() {
+	this.log("Invalid Operation", Message.ERROR);
+	return null;
+    }
+
+    public void download(Path file) {
+	this.log("Invalid Operation", Message.ERROR);
+    }
+
+    public void upload(java.io.File file) {
+	this.log("Invalid Operation", Message.ERROR);
     }
 }

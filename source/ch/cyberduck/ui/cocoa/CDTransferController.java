@@ -136,9 +136,12 @@ public class CDTransferController implements Observer {
 				   null, // context
 				   msg.getDescription() // message
 				   );
+		    this.stopButton.setEnabled(false);
+		    this.resumeButton.setEnabled(true);
 		    return;
 		}
 		if(msg.getTitle().equals(Message.START)) {
+		    this.resumeButton.setTitle("Resume");
 //		    this.progressBar.startAnimation(this);
 		    return;
 		}
@@ -173,13 +176,15 @@ public class CDTransferController implements Observer {
 	return this.window;
     }
 
-    public void resumeButtonClicked(Object sender) {
+    public void resumeButtonClicked(NSButton sender) {
+	if(sender.title().equals("Resume"))
+	    this.file.status.setResume(true);
 	this.stopButton.setEnabled(true);
 	this.resumeButton.setEnabled(false);
 	this.file.download();
     }
 
-    public void stopButtonClicked(Object sender) {
+    public void stopButtonClicked(NSButton sender) {
 	this.stopButton.setEnabled(false);
 	this.resumeButton.setEnabled(true);
 	this.file.status.setCanceled(true);

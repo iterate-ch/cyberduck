@@ -1,3 +1,5 @@
+package ch.cyberduck.ui.swing;
+
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
  *  http://icu.unizh.ch/~dkocher/
@@ -16,8 +18,6 @@
  *  dkocher@cyberduck.ch
  */
 
-package ch.cyberduck.ui.swing;
-
 import org.apache.log4j.Logger;
 import java.util.Properties;
 import java.io.File;
@@ -28,31 +28,33 @@ import java.awt.Dimension;
 
 import ch.cyberduck.core.Preferences;
 
+/**
+* @version $Id$
+ */
 public class PreferencesImpl extends Preferences { //PreferencesImplSwing
     private static Logger log = Logger.getLogger(Preferences.class);
 
     private static final File PREFS_DIRECTORY = new File(System.getProperty("user.home"), ".cyberduck");
     private static final String PREFERENCES_FILE = "cyberduck.preferences";
-    private static Dimension screenSize = null;
 
-    private Properties defaults;
+    private Properties props;
     
     public PreferencesImpl() {
 	PREFS_DIRECTORY.mkdir();
-	this.defaults = new Properties();
+	this.props = new Properties();
     }
 
     public String getProperty(String property) {
         log.debug("getProperty(" + property + ")");
-        String value = defaults.getProperty(property);
+        String value = props.getProperty(property);
         if(value == null)
-            throw new IllegalArgumentException("No property with key '" + property.toString() + "'");
+            return super.getProperty(property);
         return value;
     }
 
     public void setProperty(String property, String value) {
         log.debug("setProperty(" + property + ", " + value + ")");
-        defaults.put(property, value);
+        props.put(property, value);
     }
 
     public void setProperty(String property, boolean v) {
@@ -61,13 +63,13 @@ public class PreferencesImpl extends Preferences { //PreferencesImplSwing
         if (v) {
             value = "true";
         }
-        defaults.put(property, value);
+        props.put(property, value);
     }
     
     public void setProperty(String property, int v) {
         log.debug("setProperty(" + property + ", " + v + ")");
         String value = String.valueOf(v);
-        defaults.put(property, value);
+        props.put(property, value);
     }
 
     public void load() {
@@ -75,7 +77,7 @@ public class PreferencesImpl extends Preferences { //PreferencesImplSwing
         try {
             File prefs = new File(PREFS_DIRECTORY, PREFERENCES_FILE);
             if (prefs.exists()) {
-                defaults.load(new FileInputStream(prefs));
+                props.load(new FileInputStream(prefs));
             }
             else {
                 log.error("Could not load current preferences.");
@@ -90,20 +92,11 @@ public class PreferencesImpl extends Preferences { //PreferencesImplSwing
         log.debug("store()");
         try {
             FileOutputStream output = new FileOutputStream(new File(PREFS_DIRECTORY, PREFERENCES_FILE));
-            defaults.store(output, "Cyberduck properties - YOU SHOULD NOT EDIT THIS FILE");
+            props.store(output, "Cyberduck properties - YOU SHOULD NOT EDIT THIS FILE");
             output.close();
         }
         catch(IOException e) {
             log.error("Could not save current preferences.\n" + e.getMessage());
         }
     }    
-
-    private String getXLocation(int componentWidth) {
-        return new Integer((screenSize.width/2) - (componentWidth/2)).toString();
-    }
-
-    private String getYLocation(int componentHeight) {
-        return new Integer((screenSize.height/2) - (componentHeight/2)).toString();
-    }
-    
 }

@@ -23,7 +23,7 @@ import java.util.Observable;
 import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
-import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Message;
 import ch.cyberduck.ui.ObserverList;
@@ -123,7 +123,7 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 
     public void update(Observable o, Object arg) {
 	log.debug("update:"+o+","+arg);
-	if(o instanceof Host) {
+	if(o instanceof Session) {
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;
 		// A new session has been opened.
@@ -168,20 +168,19 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
         Draws the alternating shaded light blue lines in the
      NSTableView
      **/
-    public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row)
-    {
-        if (! (view == null || cell == null || column == null))
-        {
-            if (row % 2 == 0)
-            {
-                ((NSTextFieldCell)cell).setDrawsBackground(true);
-                ((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
-            }
-            else
-                ((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
-        }
+    public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
+	if(cell instanceof NSTextFieldCell) {
+	    if (! (view == null || cell == null || column == null)) {
+		if (row % 2 == 0) {
+		    ((NSTextFieldCell)cell).setDrawsBackground(true);
+		    ((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
+		}
+		else
+		    ((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
+	    }
+	}
     }
-
+    
     /*
     public void highlightSelectionInClipRect(NSRect rect) {
 	super.highlightSelectionInClipRect(rect);

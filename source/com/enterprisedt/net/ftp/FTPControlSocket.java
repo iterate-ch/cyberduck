@@ -25,6 +25,9 @@
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.6  2003/05/23 20:22:46  dkocher
+ *        No log message.
+ *
  *        Revision 1.5  2003/04/16 17:24:34  dkocher
  *        No log message.
  *
@@ -474,8 +477,8 @@ import ch.cyberduck.core.Transcript;
       *  @return  reply string
       */
      String readReply() throws IOException {
-	 log.debug("readReply");
          String firstLine = reader.readLine();
+	 log.debug("readReply:"+firstLine);
          if (firstLine == null)
              throw new IOException("Unexpect null reply received");
 
@@ -550,7 +553,7 @@ import ch.cyberduck.core.Transcript;
       *
       */
      FTPReply validateReply(String reply, String[] expectedReplyCodes) throws IOException, FTPException {
-	 log.debug("validateReply");
+	 log.debug("validateReply:"+reply);
 	 Transcript.instance().transcript(reply);
 	 
          // all reply codes are 3 chars long

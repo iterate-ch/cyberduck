@@ -25,6 +25,9 @@
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.6  2003/05/23 20:22:46  dkocher
+ *        No log message.
+ *
  *        Revision 1.5  2003/04/23 13:20:23  dkocher
  *        No log message.
  *
@@ -71,18 +74,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.File;
-
 import java.text.SimpleDateFormat;
 import java.text.ParsePosition;
-
 import java.net.InetAddress;
 import java.net.Socket;
-
 import java.util.Date;
 import java.util.Vector;
 import java.util.Properties;
-
 import org.apache.log4j.Logger;
+import ch.cyberduck.core.Transcript;
 
 
 /**
@@ -328,8 +328,9 @@ public class FTPClient {
      *  @param remoteFile  name of remote file we are writing to
      *  @param  append      true if appending, false otherwise
      */
-    public java.io.Writer putASCII(String remoteFile, boolean append) throws IOException, FTPException {
-	        this.initPut(remoteFile, append);
+//@todo    public java.io.Writer putASCII(String remoteFile, boolean append) throws IOException, FTPException {
+    public java.io.Writer putASCII(String remoteFile) throws IOException, FTPException {
+	        this.initPut(remoteFile, false);
 	        return new OutputStreamWriter(data.getOutputStream());
     }
         /**
@@ -339,8 +340,9 @@ public class FTPClient {
 	 *  @param remoteFile  name of remote file we are writing to
 	 *  @param  append      true if appending, false otherwise
 	 */
-    public java.io.OutputStream putBinary(String remoteFile, boolean append) throws IOException, FTPException {
-	        this.initPut(remoteFile, append);
+//@todo    public java.io.OutputStream putBinary(String remoteFile, boolean append) throws IOException, FTPException {
+    public java.io.OutputStream putBinary(String remoteFile) throws IOException, FTPException {
+	        this.initPut(remoteFile, false);
 	        return data.getOutputStream();
     }
 
@@ -523,6 +525,7 @@ public class FTPClient {
         Vector lines = new Vector();
         String line = null;
         while ((line = in.readLine()) != null) {
+	    Transcript.instance().transcript(line);
             lines.add(line);
         }
 

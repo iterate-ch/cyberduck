@@ -81,7 +81,7 @@ public class FTPSession extends Session {
 			    FTP.setType(FTPTransferType.ASCII);
 			    FTP.chdir(FTPFile.this.getAbsolute());
 			    FTPFile.this.setCache(new FTPParser().parseList(FTPFile.this.getAbsolute(), FTP.dir()));
-			    FTPSession.this.host.callObservers(FTPFile.this);
+			    FTPSession.this.callObservers(FTPFile.this);
 			    FTPSession.this.log("Listing complete", Message.PROGRESS);
 			}
 			catch(FTPException e) {
@@ -94,7 +94,7 @@ public class FTPSession extends Session {
 		}.start();
 	    }
 	    else {
-		FTPSession.this.host.callObservers(FTPFile.this);
+		FTPSession.this.callObservers(FTPFile.this);
 	    }
 	}	
 
@@ -183,165 +183,61 @@ public class FTPSession extends Session {
 	    }
 	}
 
+	public synchronized void changeOwner(String owner) {
+	    log.debug("changeOwner");
+	    try {
+		FTPSession.this.check();
+		FTP.site("chown "+owner+" "+this.getAbsolute());
+	    }
+	    catch(FTPException e) {
+		FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
+	    }
+	    catch(IOException e) {
+		FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+	    }
+	}
+
+	public synchronized void changeGroup(String group) {
+	    log.debug("changeGroup");
+	    try {
+		FTPSession.this.check();
+		FTP.site("chown :"+group+" "+this.getAbsolute());
+	    }
+	    catch(FTPException e) {
+		FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
+	    }
+	    catch(IOException e) {
+		FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+	    }
+	}
+	
         public synchronized void download() {
             log.debug("download");
 	    new Thread() {
 		public void run() {
-		    try {
-			FTPFile.this.status.fireActiveEvent();
-			FTPSession.this.check();
-			if(FTPFile.this.isDirectory())
-			    this.downloadFolder();
-			if(FTPFile.this.isFile())
-			    this.downloadFile();
-		    }
-		    catch(FTPException e) {
-			FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
-		    }
-		    catch(IOException e) {
-			FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
-		    }
-		}
-
-		private void downloadFile() throws IOException {
-		    if(TRANSFERTYPE.equals("binary")) {
-			FTPSession.this.log("Setting transfer mode to BINARY", Message.PROGRESS);
-			FTP.setType(FTPTransferType.BINARY);
-			FTPFile.this.status.setSize((int)(FTP.size(FTPFile.this.getName())));
-			OutputStream out = new FileOutputStream(FTPFile.this.getLocal(), FTPFile.this.status.isResume());
-			if(out == null) {
-			    throw new IOException("Unable to buffer data");
-			}
-			FTPSession.this.log("Opening data stream...", Message.PROGRESS);
-			java.io.InputStream in = FTP.getBinary(FTPFile.this.getName(), FTPFile.this.status.isResume() ? FTPFile.this.status.getCurrent() : 0);
-			if(in == null) {
-			    throw new IOException("Unable opening data stream");
-			}
-			FTPSession.this.log("Downloading "+FTPFile.this.getName()+"...", Message.PROGRESS);
-			FTPFile.this.download(in, out);
-			FTP.validateTransfer();
-		    }
-		    else if(TRANSFERTYPE.equals("ascii")) {
-			FTPSession.this.log("Setting transfer type to ASCII", Message.PROGRESS);
-			FTP.setType(FTPTransferType.ASCII);
-			FTPFile.this.status.setSize((int)(FTP.size(FTPFile.this.getName())));
-			java.io.Writer out = new FileWriter(FTPFile.this.getLocal(), FTPFile.this.status.isResume());
-			if(out == null) {
-			    throw new IOException("Unable to buffer data");
-			}
-			FTPSession.this.log("Opening data stream...", Message.PROGRESS);
-			java.io.Reader in = FTP.getASCII(this.getName(), FTPFile.this.status.isResume() ? FTPFile.this.status.getCurrent() : 0);
-			if(in == null) {
-			    throw new IOException("Unable opening data stream");
-			}
-			FTPSession.this.log("Downloading "+FTPFile.this.getName()+"...", Message.PROGRESS);
-			FTPFile.this.download(in, out);
-			FTP.validateTransfer();
-		    }
-		    else {
-			throw new FTPException("Transfer type not set");
-		    }
-		}
-
-		private void downloadFolder() throws IOException {
-		    java.util.List files = new FTPParser().parseList(FTPFile.this.getAbsolute(), FTP.dir());
-		    File dir = FTPFile.this.getLocal();
-		    dir.mkdir();
-		    java.util.Iterator i = files.iterator();
-		    while(i.hasNext()) {
-			Path r = (Path)i.next();
-			if(r.isDirectory()) {
-			    log.debug("changing directory: "+r.toString());
-			    FTP.chdir(r.getAbsolute());
-			    r.download();
-			}
-			if(r.isFile()) {
-			    log.debug("getting file:"+r.toString());
-			    r.download();
-			}
-		    }
-		    log.debug("upping directory");
-		    FTP.cdup();
+		    FTPSession downloadSession = new FTPSession(host);
+		    downloadSession.connect();
+		    downloadSession.download(FTPFile.this);
+		    
 		}
 	    }.start();
 	}
-	    
-        public synchronized void upload(final java.io.File file) {
+
+	/*
+        public synchronized void upload() {
 	    new Thread() {
 		public void run() {
 		    try {
 			FTPFile.this.status.fireActiveEvent();
-			FTPSession.this.check();
-			if(file.isDirectory())
-			    this.uploadFolder(file);
-			if(file.isFile())
-			    this.uploadFile(file);
+			FTPSession uploadSession = new FTPSession(host);
+			uploadSession.connect();
+			uploadSession.upload(file);
 		    }
-		    catch(FTPException e) {
-			FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
-		    }
-		    catch(IOException e) {
-			FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
-		    }
-		}
-
-		private void uploadFile(java.io.File file) throws IOException {
-//@todo		    FTPFile.this.status.setSize((int)FTPFile.this.getLocal().length());
-		    if(TRANSFERTYPE.equals(FTPTransferType.BINARY)) {
-			FTPSession.this.log("Setting transfer mode to BINARY.", Message.PROGRESS);
-			FTP.setType(FTPTransferType.BINARY);
-			java.io.InputStream in = new FileInputStream(file);
-			if(in == null) {
-			    throw new IOException("Unable to buffer data");
-			}
-
-			FTPSession.this.log("Opening data stream...", Message.PROGRESS);
-
-			java.io.OutputStream out = FTP.putBinary(file.getName());//@todo, FTPFile.this.status.isResume());
-			if(out == null) {
-			    throw new IOException("Unable opening data stream");
-			}
-			FTPSession.this.log("Uploading "+file.getName()+"...", Message.PROGRESS);
-			FTPFile.this.upload(out, in);
-			FTP.validateTransfer();
-		    }
-		    else if(TRANSFERTYPE.equals(FTPTransferType.ASCII)) {
-			FTPSession.this.log("Setting transfer type to ASCII.", Message.PROGRESS);
-			FTP.setType(FTPTransferType.ASCII);
-
-			java.io.Reader in = new FileReader(file);
-			if(in == null) {
-			    throw new IOException("Unable to buffer data");
-			}
-
-			FTPSession.this.log("Opening data stream...", Message.PROGRESS);
-			java.io.Writer out = FTP.putASCII(file.getName());//@todo, FTPFile.this.status.isResume());
-			if(out == null) {
-			    throw new IOException("Unable opening data stream");
-			}
-			FTPSession.this.log("Uploading "+file.getName()+"...", Message.PROGRESS);
-			FTPFile.this.upload(out, in);
-			FTP.validateTransfer();
-		    }
-		    else {
-			throw new FTPException("Transfer type not set");
-		    }
-		}
-
-		private void uploadFolder(java.io.File file) throws IOException {
-		    Path p = FTPFile.this.mkdir(file.getName());
-//		    FTP.mkdir(file.getName());
-//		    FTP.chdir(file.getName());
-		    File[] files = file.listFiles();
-		    for(int i = 0; i < files.length; i++) {
-			p.upload(files[i]);
-//			p = new FTPFile(files[i].getAbsolutePath());
-//			p.upload();
-		    }
-		    FTP.cdup();
 		}
 	    }.start();
 	}
+	     */
+	
 	/*
 	public void setTransferType(String t) {
             this.transfertype = t;
@@ -379,10 +275,10 @@ public class FTPSession extends Session {
 	    this.log("Disconnected", Message.PROGRESS);
 	}
 	catch(FTPException e) {
-	    FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
+	    this.log("FTP Error: "+e.getMessage(), Message.ERROR);
 	}
 	catch(IOException e) {
-	    FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+	    this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
 	finally {
 	    this.setConnected(false);
@@ -390,30 +286,46 @@ public class FTPSession extends Session {
     }
 
     public synchronized void connect() {
-	new Thread() {
-	    public void run() {
 //		host.status.fireActiveEvent();
-		FTPSession.this.log("Opening FTP connection to " + host.getIp()+"...", Message.PROGRESS);
-		try {
-		    if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
-			FTP.setConnectMode(FTPConnectMode.ACTIVE);
-		    }
-		    else {
-			FTP.setConnectMode(FTPConnectMode.PASV);
-		    }
+	this.callObservers(new Message(Message.OPEN, "Opening session."));
+	this.log("Opening FTP connection to " + host.getIp()+"...", Message.PROGRESS);
+	try {
+	    if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
+		FTP.setConnectMode(FTPConnectMode.ACTIVE);
+	    }
+	    else {
+		FTP.setConnectMode(FTPConnectMode.PASV);
+	    }
 //@todo proxy		    if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
 //			FTP.initSOCKS(Preferences.instance().getProperty("connection.proxy.port"), Preferences.instance().getProperty("connection.proxy.host"));
 //		    }
 //		    if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
 //			FTP.initSOCKSAuthentication(Preferences.instance().getProperty("connection.proxy.username"), Preferences.instance().getProperty("connection.proxy.password"));
 //		    }
-		    FTP.connect(host.getName(), host.getPort());
-		    FTPSession.this.log("FTP connection opened", Message.PROGRESS);
-		    FTPSession.this.login();
-		    FTPSession.this.setConnected(true);
-		    FTP.system();
-		    String path = host.getWorkdir().equals(Preferences.instance().getProperty("connection.path.default")) ? FTP.pwd() : host.getWorkdir();
-		    FTPFile home = new FTPFile(path);
+	    FTP.connect(host.getName(), host.getPort());
+	    FTPSession.this.log("FTP connection opened", Message.PROGRESS);
+	    FTPSession.this.login();
+	    FTPSession.this.setConnected(true);
+	    FTP.system();
+//		    String path = host.getWorkdir().equals(Preferences.instance().getProperty("connection.path.default")) ? FTP.pwd() : host.getWorkdir();
+//		    FTPFile home = new FTPFile(path);
+//		    home.list();
+	}
+	catch(FTPException e) {
+	    this.log("FTP Error: "+e.getMessage(), Message.ERROR);
+	}
+	catch(IOException e) {
+	    this.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
+    }
+
+
+    public synchronized void mount() {
+	new Thread() {
+	    public void run() {
+		try {
+		    connect();
+		    FTPFile home = (FTPFile)FTPSession.this.workdir();
 		    home.list();
 		}
 		catch(FTPException e) {
@@ -443,6 +355,155 @@ public class FTPSession extends Session {
 		throw new FTPException("Login as user "+host.login.getUsername()+" failed.");
 	    }
 	}
+    }
+
+    public Path workdir() throws IOException {
+	return new FTPFile(FTP.pwd());
+    }
+
+    public void download(Path file) {
+	log.debug("download:"+file.getName());
+	try {
+	    file.status.fireActiveEvent();
+	    if(file.isDirectory())
+		this.downloadFolder(file);
+	    if(file.isFile())
+		this.downloadFile(file);
+	}
+	catch(FTPException e) {
+	    this.log("FTP Error: "+e.getMessage(), Message.ERROR);
+	}
+	catch(IOException e) {
+	    this.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
+    }
+
+    private void downloadFile(Path file) throws IOException {
+	if(TRANSFERTYPE.equals("binary")) {
+	    this.log("Setting transfer mode to BINARY", Message.PROGRESS);
+	    FTP.setType(FTPTransferType.BINARY);
+	    file.status.setSize((int)(FTP.size(file.getName())));
+	    OutputStream out = new FileOutputStream(file.getLocal(), file.status.isResume());
+	    if(out == null) {
+		throw new IOException("Unable to buffer data");
+	    }
+	    this.log("Opening data stream...", Message.PROGRESS);
+	    java.io.InputStream in = FTP.getBinary(file.getName(), file.status.isResume() ? file.status.getCurrent() : 0);
+	    if(in == null) {
+		throw new IOException("Unable opening data stream");
+	    }
+	    this.log("Downloading "+file.getName()+"...", Message.PROGRESS);
+	    file.download(in, out);
+	    FTP.validateTransfer();
+	}
+	else if(TRANSFERTYPE.equals("ascii")) {
+	    this.log("Setting transfer type to ASCII", Message.PROGRESS);
+	    FTP.setType(FTPTransferType.ASCII);
+	    file.status.setSize((int)(FTP.size(file.getName())));
+	    java.io.Writer out = new FileWriter(file.getLocal(), file.status.isResume());
+	    if(out == null) {
+		throw new IOException("Unable to buffer data");
+	    }
+	    this.log("Opening data stream...", Message.PROGRESS);
+	    java.io.Reader in = FTP.getASCII(file.getName(), file.status.isResume() ? file.status.getCurrent() : 0);
+	    if(in == null) {
+		throw new IOException("Unable opening data stream");
+	    }
+	    this.log("Downloading "+file.getName()+"...", Message.PROGRESS);
+	    file.download(in, out);
+	    FTP.validateTransfer();
+	}
+	else {
+	    throw new FTPException("Transfer type not set");
+	}
+    }
+
+    private void downloadFolder(Path file) throws IOException {
+	java.util.List files = new FTPParser().parseList(file.getAbsolute(), FTP.dir());
+	File dir = file.getLocal();
+	dir.mkdir();
+	java.util.Iterator i = files.iterator();
+	while(i.hasNext()) {
+	    Path p = (Path)i.next();
+	    if(p.isDirectory()) {
+		log.debug("changing directory: "+p.toString());
+		FTP.chdir(p.getAbsolute());
+	    }
+	    log.debug("getting file:"+p.toString());
+	    this.download(p);
+	}
+	log.debug("upping directory");
+	FTP.cdup();
+    }
+
+    public void upload(java.io.File file) {
+	try {
+	    if(file.isDirectory())
+		this.uploadFolder(file);
+	    if(file.isFile())
+		this.uploadFile(file);
+	}
+	catch(FTPException e) {
+	    this.log("FTP Error: "+e.getMessage(), Message.ERROR);
+	}
+	catch(IOException e) {
+	    this.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
+    }
+
+    private void uploadFile(java.io.File file) throws IOException {
+//@todo		    FTPFile.this.status.setSize((int)FTPFile.this.getLocal().length());
+	if(TRANSFERTYPE.equals(FTPTransferType.BINARY)) {
+	    this.log("Setting transfer mode to BINARY.", Message.PROGRESS);
+	    FTP.setType(FTPTransferType.BINARY);
+	    java.io.InputStream in = new FileInputStream(file);
+	    if(in == null) {
+		throw new IOException("Unable to buffer data");
+	    }
+
+	    this.log("Opening data stream...", Message.PROGRESS);
+
+	    java.io.OutputStream out = FTP.putBinary(file.getName());
+	    if(out == null) {
+		throw new IOException("Unable opening data stream");
+	    }
+	    this.log("Uploading "+file.getName()+"...", Message.PROGRESS);
+//@todo	    file.upload(out, in);
+	    FTP.validateTransfer();
+	}
+	else if(TRANSFERTYPE.equals(FTPTransferType.ASCII)) {
+	    this.log("Setting transfer type to ASCII.", Message.PROGRESS);
+	    FTP.setType(FTPTransferType.ASCII);
+
+	    java.io.Reader in = new FileReader(file);
+	    if(in == null) {
+		throw new IOException("Unable to buffer data");
+	    }
+
+	    this.log("Opening data stream...", Message.PROGRESS);
+	    java.io.Writer out = FTP.putASCII(file.getName());
+	    if(out == null) {
+		throw new IOException("Unable opening data stream");
+	    }
+	    this.log("Uploading "+file.getName()+"...", Message.PROGRESS);
+//@todo	    file.upload(out, in);
+	    FTP.validateTransfer();
+	}
+	else {
+	    throw new FTPException("Transfer type not set");
+	}
+    }
+
+    private void uploadFolder(java.io.File file) throws IOException {
+	FTP.mkdir(file.getName());
+	Path p = new FTPFile(FTP.pwd(), file.getName());
+	FTP.chdir(p.getName());
+	File[] files = file.listFiles();
+	for(int i = 0; i < files.length; i++) {
+	    this.upload(files[i]);
+//			p = new FTPFile(files[i].getAbsolutePath());
+	}
+	FTP.cdup();
     }
 
     public void check() throws IOException {

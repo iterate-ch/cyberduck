@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.swing;
+package ch.cyberduck.ui.swing.swing;
 
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.
@@ -20,6 +20,7 @@ package ch.cyberduck.ui.swing;
 
 import javax.swing.JTextArea;
 import ch.cyberduck.core.Transcripter;
+import ch.cyberduck.ui.swing.common.GUIFactory;
 
 /**
 * Singleton text area to append logging messages.
@@ -33,11 +34,15 @@ public class TranscriptImpl implements Transcripter { //TranscriptImplSwing
 	super();
 	this.view = new JTextArea();
 	view.setEditable(true);
-	//         this.setFont(GUIFactory.FONT_MONOSPACED_SMALL);
+	view.setFont(GUIFactory.FONT_MONOSPACED_SMALL);
     }
 
     public void transcript(String text) {
         view.append(text);
         view.setSelectionStart(view.getText().length());
+    }
+    
+    public Object getView() {
+	return this.view;
     }
 }

@@ -48,7 +48,7 @@ public class CDTranscriptImpl implements Transcripter {
     }
 
     public void transcript(String message) {
-	log.debug("transcript:"+message);
+//	log.debug("transcript:"+message);
 	/**
 	* Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
 	 * formatting attributes of the first character of the text it replaces, or of the character immediately

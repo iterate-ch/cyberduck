@@ -72,7 +72,7 @@ public class Transcript {
      * @param text The information to pass to the listeners
       */
      public void transcript(String text) {
-	 log.debug("transcript:"+text);
+//	 log.debug("transcript:"+text);
 	 Iterator i = listeners.iterator();
 	 while(i.hasNext()) {
 	     ((Transcripter)i.next()).transcript(text);

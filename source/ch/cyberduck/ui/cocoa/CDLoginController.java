@@ -53,16 +53,16 @@ public class CDLoginController extends Login {
 	this.sheet = sheet;
     }
 
-    private CDBrowserController controller;
+    private NSWindow parentWindow;
 
-    public CDLoginController(CDBrowserController controller, String user, String pass) {
+    public CDLoginController(NSWindow parentWindow, String user, String pass) {
 	super(user, pass);
-	this.controller = controller;
+	this.parentWindow = parentWindow;
     }
 
-    public CDLoginController(CDBrowserController controller) {
+    public CDLoginController(NSWindow parentWindow) {
 	super();
-	this.controller = controller;
+	this.parentWindow = parentWindow;
     }
     
     public void closeSheet(Object sender) {
@@ -85,7 +85,7 @@ public class CDLoginController extends Login {
 	this.textField.setStringValue(message);
 	NSApplication.sharedApplication().beginSheet(
 					      this.window(), //sheet
-					      controller.window(),
+					      parentWindow,
 					      this, //modalDelegate
 					      new NSSelector(
 			  "loginSheetDidEnd",

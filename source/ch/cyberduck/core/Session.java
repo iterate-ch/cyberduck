@@ -22,11 +22,13 @@ import java.io.*;
 import java.util.Date;
 import ch.cyberduck.core.Preferences;
 import org.apache.log4j.Logger;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * @version $Id$
  */
-public abstract class Session {//extends Thread {
+public abstract class Session extends Observable {
     private static Logger log = Logger.getLogger(Session.class);
 
     public static final String HTTP = "http";
@@ -66,6 +68,13 @@ public abstract class Session {//extends Thread {
         this.log("-------" + host.getIp(), Message.TRANSCRIPT);
     }
 
+    public void callObservers(Object arg) {
+        log.debug("callObservers:"+arg.toString());
+	log.debug(this.countObservers()+" observer(s) known.");
+	this.setChanged();
+	this.notifyObservers(arg);
+    }
+    
     /**
 	* Connect to the remote Host
      * The protocol specific implementation has to  be coded in the subclasses.
@@ -74,6 +83,10 @@ public abstract class Session {//extends Thread {
     public abstract void connect();
 
     /**
+	* Connect to the remote host and mount the home directory
+     */
+    public abstract void mount() ;
+    /**
 	* Close the connecion to the remote host.
 	* The protocol specific implementation has to  be coded in the subclasses.
      * @see Host
@@ -81,12 +94,20 @@ public abstract class Session {//extends Thread {
     public abstract void close();
 
     /**
+	* @return The current working directory (pwd)
+     */
+    public abstract Path workdir() throws IOException ;
+    /**
 	* Assert that the connection to the remote host is still alive. Open connection if needed.
      * @throws IOException The connection to the remote host failed.
      * @see Host
      */
     public abstract void check() throws IOException;
 
+    public abstract void download(Path download);
+
+    public abstract void upload(java.io.File upload);
+    
     /**
      * @return boolean True if the session has not yet been closed. 
      */
@@ -96,7 +117,7 @@ public abstract class Session {//extends Thread {
 
     public void setConnected(boolean connected) {
 	this.connected = connected;
-	host.callObservers(new Message(Message.CONNECTED));
+//	host.callObservers(new Message(Message.CONNECTED));
     }
     
     public void log(String message, String title) {
@@ -104,9 +125,7 @@ public abstract class Session {//extends Thread {
         if(title.equals(Message.TRANSCRIPT)) {
             Transcript.instance().transcript(message);
         }
-	else {
-	    host.callObservers(new Message(title, message));
-	}
+	this.callObservers(new Message(title, message));
 
 	
 /*        if(type.equals(Status.LOG)) {

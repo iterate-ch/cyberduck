@@ -85,13 +85,8 @@ public class CDMainController {
     }
 
     public void newDownloadMenuPressed(Object sender) {
-	/*
-	CDDownloadController controller = new CDDownloadController();
-	controller.window().setMenu(null);
-	controller.window().center();
+	CDDownloadSheet controller = new CDDownloadSheet();
 	controller.window().makeKeyAndOrderFront(null);
-	 */
-	
     }
 
     public void newBrowserMenuPressed(Object sender) {

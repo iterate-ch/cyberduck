@@ -31,13 +31,13 @@ import org.apache.log4j.Logger;
 public class CDConnectionSheet {
     private static Logger log = Logger.getLogger(CDConnectionSheet.class);
 
-    private CDBrowserController controller;
+    private CDBrowserController browser;
     // ----------------------------------------------------------
     // Constructors
     // ----------------------------------------------------------
 
-    public CDConnectionSheet(CDBrowserController controller) {
-	this.controller = controller;
+    public CDConnectionSheet(CDBrowserController browser) {
+	this.browser = browser;
 	log.debug("CDConnectionSheet");
         if (false == NSApplication.loadNibNamed("Connection", this)) {
             log.error("Couldn't load Connection.nib");
@@ -64,10 +64,10 @@ public class CDConnectionSheet {
 	this.hostField = hostField;
     }
     
-    private NSTextField pathField;
-    public void setPathField(NSTextField pathField) {
-	this.pathField = pathField;
-    }
+//    private NSTextField pathField;
+//    public void setPathField(NSTextField pathField) {
+//	this.pathField = pathField;
+//    }
     
     private NSTextField portField;
     public void setPortField(NSTextField portField) {
@@ -103,11 +103,11 @@ public class CDConnectionSheet {
 						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
 						    NSControl.ControlTextDidChangeNotification,
 						    hostField);
-	NSNotificationCenter.defaultCenter().addObserver(
-						    this,
-						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
-						    NSControl.ControlTextDidChangeNotification,
-						    pathField);
+//	NSNotificationCenter.defaultCenter().addObserver(
+//						    this,
+//						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
+//						    NSControl.ControlTextDidChangeNotification,
+//						    pathField);
 	NSNotificationCenter.defaultCenter().addObserver(
 						    this,
 						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
@@ -118,11 +118,10 @@ public class CDConnectionSheet {
 						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
 						    NSControl.ControlTextDidChangeNotification,
 						    usernameField);
-        //@todo this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
-	//@todo this.pathField.setStringValue(Preferences.instance().getProperty("connection.path.default"));
+        this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
 //	this.textInputDidChange(null);
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
-	this.pathField.setStringValue("~");
+//	this.pathField.setStringValue("~");
     }
 
     public void finalize() throws Throwable {
@@ -131,7 +130,6 @@ public class CDConnectionSheet {
         NSNotificationCenter.defaultCenter().removeObserver(this);
     }
 
-    
     public void protocolSelectionChanged(Object sender) {
 	log.debug("protocolSelectionChanged");
 	NSMenuItem selectedItem = protocolPopup.selectedItem();
@@ -142,11 +140,19 @@ public class CDConnectionSheet {
 	if(selectedItem.tag() == Session.HTTP_PORT)
 	    portField.setIntValue(Session.HTTP_PORT);
 	//@todo HTTPS
+	this.textInputDidChange(null);
     }
 
     public void textInputDidChange(NSNotification sender) {
-//	log.debug("textInputDidChange");
-	urlLabel.setStringValue(usernameField.stringValue()+"@"+hostField.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
+	NSMenuItem selectedItem = protocolPopup.selectedItem();
+	String protocol;
+	if(selectedItem.tag() == Session.SSH_PORT)
+	    protocol = Session.SFTP+"://";
+	if(selectedItem.tag() == Session.FTP_PORT)
+	    protocol = Session.FTP+"://";
+	if(selectedItem.tag() == Session.HTTP_PORT)
+	    protocol = Session.HTTP+"://";
+	urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostField.stringValue()+":"+portField.stringValue());
     }
 
 
@@ -155,57 +161,45 @@ public class CDConnectionSheet {
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 	NSApplication.sharedApplication().endSheet(hostField.window(), ((NSButton)sender).tag());
     }
-
+    
     public void connectionSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	log.debug("connectionSheetDidEnd");
 	sheet.orderOut(null);
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
 		int tag = protocolPopup.selectedItem().tag();
-		String protocol = null;
-		int port = -1;
+		Host host = null;
 		switch(tag) {
 		    case(Session.SSH_PORT):
-			protocol = Session.SFTP;
-			port = Session.SSH_PORT;
-			break;
-		    case(Session.FTP_PORT):
-			protocol = Session.FTP;
-			port = Session.FTP_PORT;
-			break;
-		    case(Session.HTTP_PORT):
-			protocol = Session.HTTP;
-			port = Session.HTTP_PORT;
-			break;
-		    //		case(Session.HTTPS_PORT):
-      //		    protocol = Session.HTTPS;
-      //                 port = Session.HTTPS_PORT;
-      //		    break;
-		}
-
-		Host host = new Host(protocol, hostField.stringValue(), port, pathField.stringValue(), new CDLoginController(controller, usernameField.stringValue(), passField.stringValue()));
-
-		if(host.getProtocol().equals(Session.SFTP)) {
-		    try {
-			host.setHostKeyVerification(new CDHostKeyController(controller.window()));
-		    }
-		    catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
+			try {
+			    host = new Host(Session.SFTP, hostField.stringValue(), Session.SSH_PORT,
+		       new CDLoginController(browser.window(), usernameField.stringValue(), passField.stringValue()));
+			    host.setHostKeyVerification(new CDHostKeyController(browser.window()));
+			}
+			    catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
 		//This exception is thrown whenever an exception occurs open or reading from the host file.
-			NSAlertPanel.beginAlertSheet(
-				"Error", //title
-				"OK",// defaultbutton
-				null,//alternative button
-				null,//other button
-				controller.window(), //docWindow
-				null, //modalDelegate
-				null, //didEndSelector
-				null, // dismiss selector
-				null, // context
-				"Could not open or read the host file: "+e.getMessage() // message
-				);
-		    }
+				NSAlertPanel.beginAlertSheet(
+				 "Error", //title
+				 "OK",// defaultbutton
+				 null,//alternative button
+				 null,//other button
+				 browser.window(), //docWindow
+				 null, //modalDelegate
+				 null, //didEndSelector
+				 null, // dismiss selector
+				 null, // context
+				 "Could not open or read the host file: "+e.getMessage() // message
+				 );
+			    }
+			    break;
+		    case(Session.FTP_PORT):
+			host = new Host(Session.FTP, hostField.stringValue(), Session.FTP_PORT, new CDLoginController(browser.window(), usernameField.stringValue(), passField.stringValue()));
+			break;
+		    default:
+			throw new IllegalArgumentException("No protocol selected.");
 		}
-		    controller.openConnection(host);
+
+		    browser.mount(host);
 		    
 	case(NSAlertPanel.AlternateReturn):
 		//

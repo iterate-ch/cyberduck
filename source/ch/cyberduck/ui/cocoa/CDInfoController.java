@@ -64,6 +64,10 @@ public class CDInfoController {//implements Observer {
     public void setSizeField(NSTextField sizeField) {
 	this.sizeField = sizeField;
     }
+    private NSTextField pathField; // IBOutlet
+    public void setPathField(NSTextField pathField) {
+	this.pathField = pathField;
+    }
     private NSBox permissionsBox; // IBOutlet
     public void setPermissionsBox(NSBox permissionsBox) {
 	this.permissionsBox = permissionsBox;
@@ -106,6 +110,7 @@ public class CDInfoController {//implements Observer {
 
     private void init() {
 	this.filenameField.setStringValue(file.getName());
+	this.pathField.setStringValue(file.getParent().getAbsolute());
 	this.groupField.setStringValue(file.attributes.getGroup());
 	this.kindField.setStringValue(file.getKind());
 	this.modifiedField.setStringValue(file.attributes.getModified());
@@ -140,61 +145,43 @@ public class CDInfoController {//implements Observer {
 
 	(NSNotificationCenter.defaultCenter()).addObserver(
 						    this,
-						    new NSSelector("textInputDidEndEditing", new Class[]{NSNotification.class}),
+						    new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
 						    NSControl.ControlTextDidEndEditingNotification,
 						    filenameField);
+	(NSNotificationCenter.defaultCenter()).addObserver(
+						    this,
+						    new NSSelector("ownerInputDidEndEditing", new Class[]{NSNotification.class}),
+						    NSControl.ControlTextDidEndEditingNotification,
+						    ownerField);
+	(NSNotificationCenter.defaultCenter()).addObserver(
+						    this,
+						    new NSSelector("groupInputDidEndEditing", new Class[]{NSNotification.class}),
+						    NSControl.ControlTextDidEndEditingNotification,
+						    groupField);
     }
 
 
-/*    public void update(Observable o, Object arg) {
-	log.debug("update:"+o+","+arg);
-	if(o instanceof Path) {
-	    if(arg instanceof Message) {
-		Message msg = (Message)arg;
-		if(msg.getTitle().equals(Message.SELECTION)) {
-		    this.file = (Path)o;
-		    this.filenameField.setStringValue(file.getName());
-		    this.groupField.setStringValue(file.attributes.getGroup());
-		    this.kindField.setStringValue(file.getKind());
-		    this.modifiedField.setStringValue(file.attributes.getModified());
-		    this.ownerField.setStringValue(file.attributes.getOwner());
-		    this.sizeField.setStringValue(file.status.getSizeAsString());
-
-		    Permission permission = file.attributes.getPermission();
-		    boolean[] ownerPerm = permission.getOwnerPermissions();
-		    boolean[] groupPerm = permission.getGroupPermissions();
-		    boolean[] otherPerm = permission.getOtherPermissions();
-		    //Sets the cell's state to value, which can be NSCell.OnState, NSCell.OffState, or NSCell.MixedState. If necessary, this method also redraws the receiver.
-		    ownerr.setState(ownerPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-		    ownerw.setState(ownerPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-		    ownerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-		    groupr.setState(groupPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-		    groupw.setState(groupPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-		    groupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-		    otherr.setState(otherPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-		    otherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-		    otherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-
-		    permissionsBox.setTitle("Permissions | "+permission.getString()+" ("+permission.getCode()+")");
-
-		    if(file.isFile()) {
-			this.iconImageView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
-		    }
-		    if(file.isDirectory())
-			this.iconImageView.setImage(NSImage.imageNamed("folder.tiff"));
-		}
-	    }
-	}
+    public void finalize() throws Throwable {
+	super.finalize();
+	log.debug("finalize");
+        NSNotificationCenter.defaultCenter().removeObserver(this);
     }
-*/
 
-
-    public void textInputDidEndEditing(NSNotification sender) {
+    public void filenameInputDidEndEditing(NSNotification sender) {
 	log.debug("textInputDidEndEditing");
-	if(file != null)
+	if(filenameField.stringValue() != file.getName())
 	    file.rename(filenameField.stringValue());
     }
+    public void ownerInputDidEndEditing(NSNotification sender) {
+	if(ownerField.stringValue() != file.attributes.getOwner())
+//@todo	    file.changeOwner(ownerField.stringValue());
+    }
+    public void groupInputDidEndEditing(NSNotification sender) {
+	if(groupField.stringValue() != file.attributes.getGroup())
+//@todo	    file.changeGroup(groupField.stringValue());
+    }
 
+    
     public void permissionsSelectionChanged(Object sender) {
 	log.debug("permissionsSelectionChanged");
         boolean[][] p = new boolean[3][3];

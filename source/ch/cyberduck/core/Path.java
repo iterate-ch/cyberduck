@@ -150,7 +150,7 @@ public abstract class Path {// extends Observable {
 
     public abstract void download();
 
-    public abstract void upload(java.io.File file);
+//    public abstract void upload(java.io.File file);
 
     public abstract void changePermissions(int p);
     

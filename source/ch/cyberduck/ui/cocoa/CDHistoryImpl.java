@@ -36,8 +36,10 @@ public class CDHistoryImpl extends History {
 
     public void save() {
 	log.debug("save");
-	NSUserDefaults.standardUserDefaults().setObjectForKey(this.getData(), KEY);
-	NSUserDefaults.standardUserDefaults().synchronize();
+//	NSUserDefaults.standardUserDefaults().setObjectForKey(this.getData(), KEY);
+	//2003-05-23 21:59:33.202 Cyberduck[11903] *** -[NSUserDefaults setObject:forKey:]: Attempt to insert non-property value '[]' of class 'java/util/ArrayList'.
+
+//@todo	NSUserDefaults.standardUserDefaults().synchronize();
     }
 
     public void load() {
