@@ -228,7 +228,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 					this.fireDataChanged();
 			}
 		}
-		if(loaded) {
+		if(visible) {
 			this.statusIndicator.stopAnimation(null);
 			this.setEnabled(true);
 
