@@ -95,7 +95,6 @@ public class SFTPSession extends Session {
 		SSH.addEventHandler(new SshEventAdapter() {
 			public void onSocketTimeout(TransportProtocol transport) {
 				log.debug("onSocketTimeout");
-				//SFTPSession.this.close();
 			}
 
 			public void onDisconnect(TransportProtocol transport) {

@@ -41,7 +41,6 @@ import com.sshtools.j2ssh.authentication.PublicKeyAuthenticationClient;
 import com.sshtools.j2ssh.authentication.SshAuthenticationClient;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
 import com.sshtools.j2ssh.connection.*;
-import com.sshtools.j2ssh.forwarding.ForwardingClient;
 import com.sshtools.j2ssh.net.TransportProvider;
 import com.sshtools.j2ssh.net.TransportProviderFactory;
 import com.sshtools.j2ssh.session.SessionChannelClient;
@@ -126,11 +125,6 @@ public class SshClient {
 	 * successful authentication.
 	 */
 	protected ConnectionProtocol connection;
-
-	/**
-	 * Provides a high level management interface for SSH port forwarding.
-	 */
-	protected ForwardingClient forwarding;
 
 	/**
 	 * The SSH Transport protocol implementation for this SSH Client.
@@ -314,18 +308,6 @@ public class SshClient {
 
 	/**
 	 * <p/>
-	 * Returns the default port forwarding manager.
-	 * </p>
-	 *
-	 * @return This connection's forwarding client
-	 * @since 0.2.0
-	 */
-	public ForwardingClient getForwardingClient() {
-		return forwarding;
-	}
-
-	/**
-	 * <p/>
 	 * Return's a rough guess at the server's EOL setting. This is simply
 	 * derived from the identification string and should not be used as a cast
 	 * iron proof on the EOL setting.
@@ -452,13 +434,6 @@ public class SshClient {
 	    throws IOException {
 		// Do the authentication
 		authenticationState = authentication.authenticate(auth, connection);
-
-		if((authenticationState == AuthenticationProtocolState.COMPLETE) &&
-		    useDefaultForwarding) {
-			// Use some method to synchronize forwardings on the ForwardingClient
-			forwarding.synchronizeConfiguration(transport.getProperties());
-		}
-
 		return authenticationState;
 	}
 
@@ -647,10 +622,6 @@ public class SshClient {
 		authentication.addEventListener(eventHandler);
 		transport.requestService(authentication);
 		connection = new ConnectionProtocol();
-
-		if(useDefaultForwarding) {
-			forwarding = new ForwardingClient(connection);
-		}
 	}
 
 	public void noop() throws IOException {
@@ -954,7 +925,6 @@ public class SshClient {
 	 *
 	 * @exception IOException If an IO error occurs during the operation
 	 *
-	 * @see SftpClient
 	 * @since 0.2.0
 	 */
 //    public SftpClient openSftpClient() throws IOException {
@@ -1051,7 +1021,6 @@ public class SshClient {
 	 * @param cwd The local directory as the base for all local files
 	 * @return An intialized SCP client
 	 * @throws IOException If an IO error occurs during the operation
-	 * @see SftpClient
 	 * @since 0.2.0
 	 */
 	public ScpClient openScpClient(File cwd) throws IOException {

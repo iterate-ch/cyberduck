@@ -33,6 +33,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.connection.ChannelState;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.io.UnsignedInteger64;
@@ -121,7 +122,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	protected synchronized void closeHandle(byte[] handle)
 	    throws IOException {
 		if(!isValidHandle(handle)) {
-			throw new IOException("The handle is invalid!");
+			throw new SshException("The handle is invalid!");
 		}
 
 		// We will remove the handle first so that even if an excpetion occurs
@@ -130,8 +131,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 
 		UnsignedInteger32 requestId = nextRequestId();
 		SshFxpClose msg = new SshFxpClose(requestId, handle);
-		sendMessage(msg);
-		getOKRequestStatus(requestId);
+		this.sendMessage(msg);
+		this.getOKRequestStatus(requestId);
 	}
 
 	/**
@@ -163,17 +164,17 @@ public class SftpSubsystemClient extends SubsystemChannel {
 				file = openDirectory(file.getAbsolutePath());
 
 				if(!isValidHandle(file.getHandle())) {
-					throw new IOException("Failed to open directory");
+					throw new SshException("Failed to open directory");
 				}
 			}
 		}
 		else {
-			throw new IOException("Cannot list children for this file object");
+			throw new SshException("Cannot list children for this file object");
 		}
 
 		UnsignedInteger32 requestId = nextRequestId();
 		SshFxpReadDir msg = new SshFxpReadDir(requestId, file.getHandle());
-		sendMessage(msg);
+		this.sendMessage(msg);
 
 		try {
 			SubsystemMessage reply = messageStore.getMessage(requestId);
@@ -198,11 +199,11 @@ public class SftpSubsystemClient extends SubsystemChannel {
 					return -1;
 				}
 				else {
-					throw new IOException(status.getErrorMessage());
+					throw new SshException(status.getErrorMessage());
 				}
 			}
 			else {
-				throw new IOException("Unexpected server response "+
+				throw new SshException("Unexpected server response "+
 				    reply.getMessageName());
 			}
 		}
@@ -219,8 +220,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	    throws IOException {
 		UnsignedInteger32 requestId = nextRequestId();
 		SshFxpMkdir msg = new SshFxpMkdir(requestId, path, new FileAttributes());
-		sendMessage(msg);
-		getOKRequestStatus(requestId);
+		this.sendMessage(msg);
+		this.getOKRequestStatus(requestId);
 	}
 
 	/**
@@ -277,11 +278,11 @@ public class SftpSubsystemClient extends SubsystemChannel {
 		String absolutePath = getAbsolutePath(path);
 		UnsignedInteger32 requestId = nextRequestId();
 		SubsystemMessage msg = new SshFxpOpenDir(requestId, absolutePath);
-		sendMessage(msg);
+		this.sendMessage(msg);
 		byte[] handle = getHandleResponse(requestId);
 		requestId = nextRequestId();
 		msg = new SshFxpStat(requestId, absolutePath);
-		sendMessage(msg);
+		this.sendMessage(msg);
 		try {
 			SubsystemMessage reply = messageStore.getMessage(requestId);
 			if(reply instanceof SshFxpAttrs) {
@@ -293,10 +294,10 @@ public class SftpSubsystemClient extends SubsystemChannel {
 				return file;
 			}
 			else if(reply instanceof SshFxpStatus) {
-				throw new IOException(((SshFxpStatus)reply).getErrorMessage());
+				throw new SshException(((SshFxpStatus)reply).getErrorMessage());
 			}
 			else {
-				throw new IOException("Unexpected server response "+
+				throw new SshException("Unexpected server response "+
 				    reply.getMessageName());
 			}
 		}
@@ -322,7 +323,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	    throws IOException {
 		UnsignedInteger32 requestId = nextRequestId();
 		SubsystemMessage msg = new SshFxpRealPath(requestId, path);
-		sendMessage(msg);
+		this.sendMessage(msg);
 
 		try {
 			SubsystemMessage reply = messageStore.getMessage(requestId);
@@ -331,16 +332,16 @@ public class SftpSubsystemClient extends SubsystemChannel {
 				SftpFile[] files = ((SshFxpName)reply).getFiles();
 
 				if(files.length != 1) {
-					throw new IOException("Server responded to SSH_FXP_REALPATH with too many files!");
+					throw new SshException("Server responded to SSH_FXP_REALPATH with too many files!");
 				}
 
 				return files[0].getAbsolutePath();
 			}
 			else if(reply instanceof SshFxpStatus) {
-				throw new IOException(((SshFxpStatus)reply).getErrorMessage());
+				throw new SshException(((SshFxpStatus)reply).getErrorMessage());
 			}
 			else {
-				throw new IOException("Unexpected server response "+
+				throw new SshException("Unexpected server response "+
 				    reply.getMessageName());
 			}
 		}
@@ -385,7 +386,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 		UnsignedInteger32 requestId = nextRequestId();
 		SubsystemMessage msg = new SshFxpOpen(requestId, absolutePath,
 		    new UnsignedInteger32(flags), attrs);
-		sendMessage(msg);
+		this.sendMessage(msg);
 
 		byte[] handle = getHandleResponse(requestId);
 		SftpFile file = new SftpFile(absolutePath, null);
@@ -414,10 +415,10 @@ public class SftpSubsystemClient extends SubsystemChannel {
 				return ((SshFxpAttrs)reply).getAttributes();
 			}
 			else if(reply instanceof SshFxpStatus) {
-				throw new IOException(((SshFxpStatus)reply).getErrorMessage());
+				throw new SshException(((SshFxpStatus)reply).getErrorMessage());
 			}
 			else {
-				throw new IOException("Unexpected server response "+
+				throw new SshException("Unexpected server response "+
 				    reply.getMessageName());
 			}
 		}
@@ -443,7 +444,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 			msg = new SshFxpFStat(requestId, file.getHandle());
 		}
 
-		sendMessage(msg);
+		this.sendMessage(msg);
 
 		try {
 			SubsystemMessage reply = messageStore.getMessage(requestId);
@@ -452,10 +453,10 @@ public class SftpSubsystemClient extends SubsystemChannel {
 				return ((SshFxpAttrs)reply).getAttributes();
 			}
 			else if(reply instanceof SshFxpStatus) {
-				throw new IOException(((SshFxpStatus)reply).getErrorMessage());
+				throw new SshException(((SshFxpStatus)reply).getErrorMessage());
 			}
 			else {
-				throw new IOException("Unexpected server response "+
+				throw new SshException("Unexpected server response "+
 				    reply.getMessageName());
 			}
 		}
@@ -477,17 +478,17 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	                                    UnsignedInteger64 offset, byte[] output, int off, int len)
 	    throws IOException {
 		if(!handles.contains(handle)) {
-			throw new IOException("The file handle is invalid!");
+			throw new SshException("The file handle is invalid!");
 		}
 
 		if((output.length-off) < len) {
-			throw new IOException("Output array size is smaller than read length!");
+			throw new SshException("Output array size is smaller than read length!");
 		}
 
 		UnsignedInteger32 requestId = nextRequestId();
 		SshFxpRead msg = new SshFxpRead(requestId, handle, offset,
 		    new UnsignedInteger32(len));
-		sendMessage(msg);
+		this.sendMessage(msg);
 
 		try {
 			SubsystemMessage reply = messageStore.getMessage(requestId);
@@ -505,11 +506,11 @@ public class SftpSubsystemClient extends SubsystemChannel {
 					return -1;
 				}
 				else {
-					throw new IOException(((SshFxpStatus)reply).getErrorMessage());
+					throw new SshException(((SshFxpStatus)reply).getErrorMessage());
 				}
 			}
 			else {
-				throw new IOException("Unexpected server response "+
+				throw new SshException("Unexpected server response "+
 				    reply.getMessageName());
 			}
 		}
@@ -526,8 +527,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	    throws IOException {
 		UnsignedInteger32 requestId = nextRequestId();
 		SshFxpRmdir msg = new SshFxpRmdir(requestId, path);
-		sendMessage(msg);
-		getOKRequestStatus(requestId);
+		this.sendMessage(msg);
+		this.getOKRequestStatus(requestId);
 	}
 
 	/**
@@ -538,8 +539,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	    throws IOException {
 		UnsignedInteger32 requestId = nextRequestId();
 		SshFxpRemove msg = new SshFxpRemove(requestId, filename);
-		sendMessage(msg);
-		getOKRequestStatus(requestId);
+		this.sendMessage(msg);
+		this.getOKRequestStatus(requestId);
 	}
 
 	/**
@@ -551,8 +552,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	    throws IOException {
 		UnsignedInteger32 requestId = nextRequestId();
 		SshFxpRename msg = new SshFxpRename(requestId, oldpath, newpath);
-		sendMessage(msg);
-		getOKRequestStatus(requestId);
+		this.sendMessage(msg);
+		this.getOKRequestStatus(requestId);
 	}
 
 	/**
@@ -567,18 +568,18 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	                                      UnsignedInteger64 offset, byte[] data, int off, int len)
 	    throws IOException {
 		if(!handles.contains(handle)) {
-			throw new IOException("The handle is not valid!");
+			throw new SshException("The handle is not valid!");
 		}
 
 		if((data.length-off) < len) {
-			throw new IOException("Incorrect data array size!");
+			throw new SshException("Incorrect data array size!");
 		}
 
 		UnsignedInteger32 requestId = nextRequestId();
 		SshFxpWrite msg = new SshFxpWrite(requestId, handle, offset, data, off,
 		    len);
-		sendMessage(msg);
-		getOKRequestStatus(requestId);
+		this.sendMessage(msg);
+		this.getOKRequestStatus(requestId);
 	}
 
 	/**
@@ -590,8 +591,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	                                            String linkpath) throws IOException {
 		UnsignedInteger32 requestId = nextRequestId();
 		SubsystemMessage msg = new SshFxpSymlink(requestId, targetpath, linkpath);
-		sendMessage(msg);
-		getOKRequestStatus(requestId);
+		this.sendMessage(msg);
+		this.getOKRequestStatus(requestId);
 	}
 
 	/**
@@ -603,7 +604,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	    throws IOException {
 		UnsignedInteger32 requestId = nextRequestId();
 		SubsystemMessage msg = new SshFxpReadlink(requestId, linkpath);
-		sendMessage(msg);
+		this.sendMessage(msg);
 
 		try {
 			SubsystemMessage reply = messageStore.getMessage(requestId);
@@ -612,16 +613,16 @@ public class SftpSubsystemClient extends SubsystemChannel {
 				SftpFile[] files = ((SshFxpName)reply).getFiles();
 
 				if(files.length != 1) {
-					throw new IOException("Server responded to SSH_FXP_REALLINK with too many files!");
+					throw new SshException("Server responded to SSH_FXP_REALLINK with too many files!");
 				}
 
 				return files[0].getAbsolutePath();
 			}
 			else if(reply instanceof SshFxpStatus) {
-				throw new IOException(((SshFxpStatus)reply).getErrorMessage());
+				throw new SshException(((SshFxpStatus)reply).getErrorMessage());
 			}
 			else {
-				throw new IOException("Unexpected server response "+
+				throw new SshException("Unexpected server response "+
 				    reply.getMessageName());
 			}
 		}
@@ -639,8 +640,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	    throws IOException {
 		UnsignedInteger32 requestId = nextRequestId();
 		SubsystemMessage msg = new SshFxpSetStat(requestId, path, attrs);
-		sendMessage(msg);
-		getOKRequestStatus(requestId);
+		this.sendMessage(msg);
+		this.getOKRequestStatus(requestId);
 	}
 
 	/**
@@ -651,14 +652,14 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	public synchronized void setAttributes(SftpFile file, FileAttributes attrs)
 	    throws IOException {
 		if(!isValidHandle(file.getHandle())) {
-			throw new IOException("The handle is not an open file handle!");
+			throw new SshException("The handle is not an open file handle!");
 		}
 
 		UnsignedInteger32 requestId = nextRequestId();
 		SubsystemMessage msg = new SshFxpFSetStat(requestId, file.getHandle(),
 		    attrs);
-		sendMessage(msg);
-		getOKRequestStatus(requestId);
+		this.sendMessage(msg);
+		this.getOKRequestStatus(requestId);
 	}
 
 	/**
@@ -670,7 +671,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	    throws IOException {
 		FileAttributes attrs = new FileAttributes(); //file.getAttributes();
 		attrs.setPermissions(permissions);
-		setAttributes(file, attrs);
+		this.setAttributes(file, attrs);
 	}
 
 	/**
@@ -682,7 +683,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	    throws IOException {
 		FileAttributes attrs = new FileAttributes(); //file.getAttributes();
 		attrs.setPermissions(new UnsignedInteger32(permissions));
-		setAttributes(file, attrs);
+		this.setAttributes(file, attrs);
 	}
 
 	/**
@@ -694,7 +695,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	    throws IOException {
 		FileAttributes attrs = new FileAttributes();
 		attrs.setPermissions(new UnsignedInteger32(permissions));
-		setAttributes(filename, attrs);
+		this.setAttributes(filename, attrs);
 	}
 
 	/**
@@ -706,7 +707,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	    throws IOException {
 		FileAttributes attrs = new FileAttributes();
 		attrs.setPermissions(permissions);
-		setAttributes(filename, attrs);
+		this.setAttributes(filename, attrs);
 	}
 
 	/**
@@ -723,7 +724,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 
 		boolean result = false;
 		SshFxpInit msg = new SshFxpInit(new UnsignedInteger32(version), null);
-		sendMessage(msg);
+		this.sendMessage(msg);
 
 		// Lets give the sftp subsystem 30 seconds to reply
 		SubsystemMessage reply = null;
@@ -772,10 +773,10 @@ public class SftpSubsystemClient extends SubsystemChannel {
 				return handle;
 			}
 			else if(reply instanceof SshFxpStatus) {
-				throw new IOException(((SshFxpStatus)reply).getErrorMessage());
+				throw new SshException(((SshFxpStatus)reply).getErrorMessage());
 			}
 			else {
-				throw new IOException("Unexpected server response "+
+				throw new SshException("Unexpected server response "+
 				    reply.getMessageName());
 			}
 		}
@@ -798,11 +799,11 @@ public class SftpSubsystemClient extends SubsystemChannel {
 				SshFxpStatus status = (SshFxpStatus)reply;
 
 				if(status.getErrorCode().intValue() != SshFxpStatus.STATUS_FX_OK) {
-					throw new IOException(((SshFxpStatus)reply).getErrorMessage());
+					throw new SshException(((SshFxpStatus)reply).getErrorMessage());
 				}
 			}
 			else {
-				throw new IOException("Unexpected server response "+
+				throw new SshException("Unexpected server response "+
 				    reply.getMessageName());
 			}
 		}

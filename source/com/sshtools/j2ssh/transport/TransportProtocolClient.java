@@ -96,12 +96,12 @@ public class TransportProtocolClient extends TransportProtocolCommon {
 	public void requestService(Service service) throws IOException {
 		// Make sure the service is supported
 		if(service.getState().getValue() != ServiceState.SERVICE_UNINITIALIZED) {
-			throw new IOException("The service instance must be uninitialized");
+			throw new SshException("The service instance must be uninitialized");
 		}
 
 		if((state.getValue() != TransportProtocolState.CONNECTED) &&
 		    (state.getValue() != TransportProtocolState.PERFORMING_KEYEXCHANGE)) {
-			throw new IOException("The transport protocol is not connected");
+			throw new SshException("The transport protocol is not connected");
 		}
 
 		try {

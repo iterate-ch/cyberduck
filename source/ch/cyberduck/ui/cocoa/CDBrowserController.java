@@ -2279,7 +2279,7 @@ public class CDBrowserController extends CDController implements Observer {
 					try {
 						this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
 						    this.promisedDragPaths[i].getName()));
-//						this.promisedDragPaths[i].getLocal().createNewFile();
+						//this.promisedDragPaths[i].getLocal().createNewFile();
 						q.addRoot(this.promisedDragPaths[i]);
 						promisedDragNames.addObject(this.promisedDragPaths[i].getName());
 					}

@@ -33,6 +33,7 @@ import java.io.OutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.sshtools.j2ssh.SshThread;
+import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.connection.ChannelState;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
@@ -107,11 +108,11 @@ public abstract class SubsystemClient implements Runnable {
 		thread = new SshThread(this, name+" subsystem", true);
 
 		if(session == null) {
-			throw new IOException("No valid session is attached to the subsystem!");
+			throw new SshException("No valid session is attached to the subsystem!");
 		}
 
 		if(session.getState().getValue() != ChannelState.CHANNEL_OPEN) {
-			throw new IOException("The session is not open!");
+			throw new SshException("The session is not open!");
 		}
 
 		thread.start();

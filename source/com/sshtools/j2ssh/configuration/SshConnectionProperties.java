@@ -31,7 +31,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.forwarding.ForwardingConfiguration;
 import com.sshtools.j2ssh.transport.cipher.SshCipherFactory;
 import com.sshtools.j2ssh.transport.compression.SshCompressionFactory;
 import com.sshtools.j2ssh.transport.hmac.SshHmacFactory;
@@ -105,9 +104,6 @@ public class SshConnectionProperties {
 
 	/**  */
 	protected int port = 22;
-	protected Map localForwardings = new HashMap();
-	protected Map remoteForwardings = new HashMap();
-	protected boolean forwardingAutoStart = false;
 
 	/**
 	 * Creates a new SshConnectionProperties object.
@@ -196,11 +192,6 @@ public class SshConnectionProperties {
 	 */
 	public String getProxyHost() {
 		return proxyHostname;
-	}
-
-	public void removeAllForwardings() {
-		localForwardings.clear();
-		remoteForwardings.clear();
 	}
 
 	/**
@@ -355,30 +346,6 @@ public class SshConnectionProperties {
 	 */
 	public String getPrefSCEncryption() {
 		return prefDecryption;
-	}
-
-	public Map getLocalForwardings() {
-		return localForwardings;
-	}
-
-	public Map getRemoteForwardings() {
-		return remoteForwardings;
-	}
-
-	public void addLocalForwarding(ForwardingConfiguration cf) {
-		localForwardings.put(cf.getName(), cf);
-	}
-
-	public void addRemoteForwarding(ForwardingConfiguration cf) {
-		remoteForwardings.put(cf.getName(), cf);
-	}
-
-	public boolean getForwardingAutoStartMode() {
-		return forwardingAutoStart;
-	}
-
-	public void setForwardingAutoStartMode(boolean forwardingAutoStart) {
-		this.forwardingAutoStart = forwardingAutoStart;
 	}
 
 	/**

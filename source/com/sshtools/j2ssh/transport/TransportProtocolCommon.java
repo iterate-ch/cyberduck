@@ -1187,14 +1187,14 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 						}
 
 					default: // Exception not allowed
-						throw new IOException("Unexpected transport protocol message");
+						throw new SshException("Unexpected transport protocol message");
 				}
 			}
 			else {
-				throw new IOException("Unexpected message received");
+				throw new SshException("Unexpected message received");
 			}
 		}
-		throw new IOException("The transport protocol disconnected");
+		throw new IOException("The transport protocol has disconnected");
 	}
 
 	/**

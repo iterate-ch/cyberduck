@@ -137,6 +137,8 @@ public class CDFileController extends CDController {
 			}
 		}
 		List l = workdir.list(true, true);
-		return (Path)l.get(l.indexOf(file));
+		if(l.contains(file))
+		   return (Path)l.get(l.indexOf(file));
+		return null;
 	}
 }

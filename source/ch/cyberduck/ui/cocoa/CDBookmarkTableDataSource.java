@@ -120,7 +120,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 				String file = (String)filesList.objectAtIndex(i);
 				// we do accept only bookmark files
 				if(file.indexOf(".duck") != -1) {
-					tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
+					//tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
 					break;
 				}
 			}
@@ -130,7 +130,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			NSPasteboard pboard = NSPasteboard.pasteboardWithName("HostPBoard");
 			if(this.hostPboardChangeCount < pboard.changeCount()) {
 				if(pboard.availableTypeFromArray(new NSArray("HostPBoardType")) != null) {
-					tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
+					//tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
 					return NSDraggingInfo.DragOperationMove;
 				}
 			}
