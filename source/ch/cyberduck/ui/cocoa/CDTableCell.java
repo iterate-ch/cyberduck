@@ -25,7 +25,7 @@ import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSRect;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDTableCell extends NSCell {
 

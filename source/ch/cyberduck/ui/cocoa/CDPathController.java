@@ -31,7 +31,6 @@ import java.util.Observer;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 
@@ -44,7 +43,7 @@ public class CDPathController extends NSObject implements Observer {
     private NSPopUpButton combo;
     private List items = new ArrayList();
     private Path workdir;
-	
+
     public CDPathController(NSPopUpButton combo) {
         log.debug("CDPathController");
         this.combo = combo;
@@ -81,7 +80,7 @@ public class CDPathController extends NSObject implements Observer {
 //					this.removeAllItems();
 //				}
 //			}
-		}
+        }
     }
 
     public int numberOfItems() {

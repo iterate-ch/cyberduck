@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 import ch.cyberduck.ui.LoginController;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class Login {
     private static Logger log = Logger.getLogger(Login.class);
@@ -164,12 +164,12 @@ public class Login {
             reasonable = true;
         }
         if (this.user != null && this.pass != null) {
-			// anonymous login is ok
+            // anonymous login is ok
             if (this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name")) &&
-				this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass"))) {
+                    this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass"))) {
                 reasonable = true;
             }
-			// if both name and pass are custom it is ok
+            // if both name and pass are custom it is ok
             if (!(this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"))) &&
                     !(this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass")))) {
                 reasonable = true;

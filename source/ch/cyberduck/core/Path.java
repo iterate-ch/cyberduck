@@ -186,10 +186,10 @@ public abstract class Path {
         this.getSession().cache().put(this.getAbsolute(), files);
     }
 
-	public void invalidate() {
+    public void invalidate() {
         this.getSession().cache().remove(this.getAbsolute());
     }
-		
+
     /**
      * Request a file listing from the server. Has to be a directory
      */
@@ -212,7 +212,7 @@ public abstract class Path {
 
     /**
      * @param recursive Create intermediate directories as required.  If this option is
-     * not specified, the full path prefix of each operand must already exist
+     *                  not specified, the full path prefix of each operand must already exist
      */
     public abstract void mkdir(boolean recursive);
 
@@ -227,14 +227,14 @@ public abstract class Path {
     public abstract void changePermissions(Permission perm);
 
     public boolean exists() {
-		boolean exists;
+        boolean exists;
         if (this.isRoot()) {
             return true;
         }
-		return this.getParent().list(false, true).contains(this);
+        return this.getParent().list(false, true).contains(this);
     }
 
-	//	public abstract void sync(Local local, boolean recursive, boolean commit, int kind);
+    //	public abstract void sync(Local local, boolean recursive, boolean commit, int kind);
 
     /**
      * @return true if this paths points to '/'
@@ -314,10 +314,10 @@ public abstract class Path {
      *         names, but only plain files.
      */
     private List getDownloadQueue(List queue) {
-		log.debug("Adding "+this.toString()+" to download queue.");
-		queue.add(this);
+        log.debug("Adding " + this.toString() + " to download queue.");
+        queue.add(this);
         if (this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
-			this.status.setSize(0);
+            this.status.setSize(0);
             for (Iterator i = this.list(false, true).iterator(); i.hasNext();) {
                 Path p = (Path)i.next();
                 p.setLocal(new Local(this.getLocal(), p.getName()));
@@ -333,11 +333,11 @@ public abstract class Path {
      *         Does not return any directory names, but only plain files.
      */
     private List getUploadQueue(List queue) {
-		log.debug("Adding "+this.toString()+" to upload queue.");
-		queue.add(this);
+        log.debug("Adding " + this.toString() + " to upload queue.");
+        queue.add(this);
         if (this.getLocal().isDirectory()) {
-			this.attributes.setType(Path.DIRECTORY_TYPE);
-			this.status.setSize(0);
+            this.attributes.setType(Path.DIRECTORY_TYPE);
+            this.status.setSize(0);
             File[] files = this.getLocal().listFiles();
             for (int i = 0; i < files.length; i++) {
                 Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), new Local(files[i].getAbsolutePath()));
@@ -348,8 +348,8 @@ public abstract class Path {
             }
         }
         else if (this.getLocal().isFile()) {
-			this.attributes.setType(Path.FILE_TYPE);
-			//this.attributes.setTimestamp(this.getLocal().lastModified());
+            this.attributes.setType(Path.FILE_TYPE);
+            //this.attributes.setTimestamp(this.getLocal().lastModified());
             this.status.setSize(this.getLocal().length()); //setting the file size to the known size of the local file
         }
         return queue;

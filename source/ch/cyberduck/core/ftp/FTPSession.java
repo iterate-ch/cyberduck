@@ -81,15 +81,15 @@ public class FTPSession extends Session {
         this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
         this.log(host.getIp(), Message.TRANSCRIPT);
         this.FTP = new FTPClient();
-		if(Preferences.instance().getProperty("connection.proxy.useProxy").equals("true")) {
-			this.FTP.initSOCKS(Preferences.instance().getProperty("connection.proxy.host"),
-					  Preferences.instance().getProperty("connection.proxy.port"));
+        if (Preferences.instance().getProperty("connection.proxy.useProxy").equals("true")) {
+            this.FTP.initSOCKS(Preferences.instance().getProperty("connection.proxy.host"),
+                    Preferences.instance().getProperty("connection.proxy.port"));
 //			if(Preferences.instance().getProperty("connection.proxy.useAuthentication").equals("true")) {
 //				this.FTP.initSOCKSAuthentication(Preferences.instance().getProperty("connection.proxy.username"),
 //										Preferences.instance().getProperty("connection.proxy.password"));
 //			}
-		}
-        if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
+        }
+        if (Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
             this.FTP.setConnectMode(FTPConnectMode.ACTIVE);
         }
         else {

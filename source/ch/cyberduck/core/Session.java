@@ -173,14 +173,14 @@ public abstract class Session extends Observable {
     }
 
     public void addPathToHistory(Path p) {
-		if(history.size() > 0) {
-			if(!p.equals(history.get(history.size()-1))) {
-				this.history.add(p);
-			}
-		}
-		else {
-			this.history.add(p);
-		}
+        if (history.size() > 0) {
+            if (!p.equals(history.get(history.size() - 1))) {
+                this.history.add(p);
+            }
+        }
+        else {
+            this.history.add(p);
+        }
     }
 
     public Path getPreviousPath() {
@@ -204,7 +204,7 @@ public abstract class Session extends Observable {
     }
 
     public void log(String message, String title) {
-		log.debug("["+title+"] "+message);
+        log.debug("[" + title + "] " + message);
         if (title.equals(Message.TRANSCRIPT)) {
             this.transcript.log(message);
         }

@@ -17,23 +17,26 @@ package org.apache.commons.net.ftp.parser;
  *  malte@tancred.com
  */
 
+import java.util.Hashtable;
+
+import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
+
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
 
-import java.util.Hashtable;
-import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
-
 public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
-    
+
     public Path parseFTPEntry(Path parent, String entry) {
-        if (!entry.startsWith("+")) return null;
-        
+        if (!entry.startsWith("+")) {
+            return null;
+        }
+
         Path f = PathFactory.createPath(parent.getSession());
 
         int indexOfTab = entry.indexOf("\t");
         if (indexOfTab == -1) {
-			return null;
+            return null;
         }
         // parse name.
         int startName = indexOfTab + 1;
@@ -42,9 +45,9 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
             int i = name.lastIndexOf("\r\n");
             name = name.substring(0, i);
         }
-		if (null == name || name.equals("") || name.equals(".") || name.equals("..")) {
-			return null;
-		}
+        if (null == name || name.equals("") || name.equals(".") || name.equals("..")) {
+            return null;
+        }
         f.setPath(parent.getAbsolute(), name);
         
         // parse facts.
@@ -58,42 +61,48 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
             i = factEnd;
         }
         factContext.conclude();
-        
+
         if (!factContext.hasMayBeRetreivedFact() && !factContext.hasMayCWDToFact()) {
-			return null;
-		}
+            return null;
+        }
         return f;
     }
 
     private static class EPLFEntryParserContext {
         private Hashtable facts;
         private Path path = null;
-        
+
         public EPLFEntryParserContext(Path aPath) {
             super();
             this.facts = new Hashtable();
             this.path = aPath;
         }
-        
+
         protected boolean hasSpecifiedPermissionsFact() {
             return hasFact("up");
         }
-        
+
         protected boolean hasMayBeRetreivedFact() {
             return hasFact("r");
         }
-        
+
         protected boolean hasMayCWDToFact() {
             return hasFact("/");
         }
 
         private boolean hasFact(String factId) {
-            if (facts.containsKey(factId)) return true;
-            else return false;
+            if (facts.containsKey(factId)) {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
 
         protected void handleFact(String fact) {
-            if (fact.length() == 0) return;
+            if (fact.length() == 0) {
+                return;
+            }
 
             // readable file
             if (fact.charAt(0) == 'r') {
@@ -120,7 +129,9 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
                 try {
                     Long size = Long.valueOf(sizeString);
                     path.status.setSize(size.longValue());
-                } catch (NumberFormatException ignored) {}
+                }
+                catch (NumberFormatException ignored) {
+                }
                 return;
             }
             
@@ -133,34 +144,39 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
                     Long stamp = Long.valueOf(timeString);
                     secsSince1970 = stamp.longValue();
                     path.attributes.setTimestamp((long)(secsSince1970 * 1000));
-                } catch (NumberFormatException ignored) {}
+                }
+                catch (NumberFormatException ignored) {
+                }
                 return;
             }
         }
-        
+
         protected void conclude() {
             if (hasMayCWDToFact()) {
                 path.attributes.setType(Path.DIRECTORY_TYPE);
-            } 
-			else if (hasMayBeRetreivedFact()) {
+            }
+            else if (hasMayBeRetreivedFact()) {
                 path.attributes.setType(Path.FILE_TYPE);
             }
-			if (hasSpecifiedPermissionsFact()) 
-				createAndSetSpecifiedPermission();
+            if (hasSpecifiedPermissionsFact()) {
+                createAndSetSpecifiedPermission();
+            }
         }
-        
+
         private void createAndSetSpecifiedPermission() {
             Permission newPermission = createSpecifiedPermission();
-            if (newPermission != null) 
-				path.attributes.setPermission(newPermission);
+            if (newPermission != null) {
+                path.attributes.setPermission(newPermission);
+            }
         }
-        
+
         private Permission createSpecifiedPermission() {
             try {
                 int perm = Integer.valueOf((String)facts.get("up"), 8).intValue();
                 return new Permission(perm);
-            } 
-			catch (NumberFormatException ignored) {}
+            }
+            catch (NumberFormatException ignored) {
+            }
             return null;
         }
     }

@@ -114,15 +114,15 @@ public abstract class Preferences {
         defaults.put("queue.removeItemWhenComplete", "false");
         defaults.put("queue.postProcessItemWhenComplete", "false");
         defaults.put("queue.orderFrontOnTransfer", "true");
-        defaults.put("queue.download.folder", System.getProperty("user.home")+"/Desktop");
+        defaults.put("queue.download.folder", System.getProperty("user.home") + "/Desktop");
         defaults.put("queue.fileExists", "ask");
-		defaults.put("queue.permissions.useDefault", "false");
-		defaults.put("queue.permissions.default", "-rw-r--r--");
+        defaults.put("queue.permissions.useDefault", "false");
+        defaults.put("queue.permissions.default", "-rw-r--r--");
         defaults.put("queue.upload.changePermissions", "true");
         defaults.put("queue.download.changePermissions", "true");
         defaults.put("queue.download.preserveDate", "true");
 
-		//ftp properties
+        //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");
         defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
         defaults.put("ftp.connectmode", "passive");
@@ -131,19 +131,19 @@ public abstract class Preferences {
         defaults.put("ftp.line.separator", "unix");
         defaults.put("ftp.sendSystemCommand", "true");
         defaults.put("ftp.sendExtendedListCommand", "false");
-		
+
         defaults.put("connection.login.name", System.getProperty("user.name"));
         defaults.put("connection.login.useKeychain", "true");
         defaults.put("connection.buffer", "16384"); //in bytes, is 128kbit
         defaults.put("connection.buffer.default", "16384");
         defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
-		defaults.put("connection.proxy.useProxy", Proxy.isSOCKSProxyEnabled() ? "true" : "false");
-		defaults.put("connection.proxy.host", Proxy.getSOCKSProxyHost());
-		defaults.put("connection.proxy.port", ""+Proxy.getSOCKSProxyPort());
-		defaults.put("connection.proxy.useAuthentication", Proxy.isSOCKSAuthenticationEnabled() ? "true" : "false");
-		defaults.put("connection.proxy.username", Proxy.getSOCKSProxyUser());
-		defaults.put("connection.proxy.password", Proxy.getSOCKSProxyPassword());
+        defaults.put("connection.proxy.useProxy", Proxy.isSOCKSProxyEnabled() ? "true" : "false");
+        defaults.put("connection.proxy.host", Proxy.getSOCKSProxyHost());
+        defaults.put("connection.proxy.port", "" + Proxy.getSOCKSProxyPort());
+        defaults.put("connection.proxy.useAuthentication", Proxy.isSOCKSAuthenticationEnabled() ? "true" : "false");
+        defaults.put("connection.proxy.username", Proxy.getSOCKSProxyUser());
+        defaults.put("connection.proxy.password", Proxy.getSOCKSProxyPassword());
 
         defaults.put("http.agent", "Cyberduck/" + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
         defaults.put("http.acceptheader", "*/*");

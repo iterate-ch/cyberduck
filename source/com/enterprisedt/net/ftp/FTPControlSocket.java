@@ -313,37 +313,39 @@ public class FTPControlSocket {
     public static int[] parsePASVResponse(String response) throws FTPException {
         int startIP = 0;
         for (int i = 4; i < response.length(); i++) {
-            if (Character.isDigit(response.charAt(i))) { 
-				startIP = i; 
-				break; 
-			}
+            if (Character.isDigit(response.charAt(i))) {
+                startIP = i;
+                break;
+            }
         }
-        
+
         int i;
         int j = startIP;
-        int parts[] = new int[6];        
+        int parts[] = new int[6];
         for (i = 0; i < 6; i++) {
             StringBuffer buf = new StringBuffer();
             for (; j < response.length(); j++) {
                 char c = response.charAt(j);
                 if (Character.isDigit(c)) {
                     buf.append(c);
-                } 
-				else if (i < 5 && c != ',') {
+                }
+                else if (i < 5 && c != ',') {
                     throw new FTPException("Malformed PASV reply: " + response);
-                } 
-				else {
+                }
+                else {
                     j += 1;
                     break;
                 }
             }
-            if (buf.length() == 0) throw new FTPException("Malformed PASV reply: " + response);
+            if (buf.length() == 0) {
+                throw new FTPException("Malformed PASV reply: " + response);
+            }
             parts[i] = new Integer(buf.toString()).intValue();
         }
         return parts;
     }
-    
-        /**
+
+    /**
      * Send a command to the FTP server and
      * return the server's reply
      *

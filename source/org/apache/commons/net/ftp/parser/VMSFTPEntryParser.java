@@ -108,8 +108,8 @@ public class VMSFTPEntryParser extends RegexFTPFileEntryParserImpl {
             String yr = group(5);
             String hr = group(6);
             String min = group(7);
-			//            String sec = group(8);
-			//            String owner = group(9);
+            //            String sec = group(8);
+            //            String owner = group(9);
             /*
 			 String grp;
 			 String user;
@@ -152,11 +152,11 @@ public class VMSFTPEntryParser extends RegexFTPFileEntryParserImpl {
             cal.set(Calendar.YEAR, new Integer(yr).intValue());
             cal.set(Calendar.HOUR_OF_DAY, new Integer(hr).intValue());
             cal.set(Calendar.MINUTE, new Integer(min).intValue());
-			//            cal.set(Calendar.SECOND, new Integer(sec).intValue());
+            //            cal.set(Calendar.SECOND, new Integer(sec).intValue());
             f.attributes.setTimestamp(cal.getTime());
-			
-			//            f.attributes.setGroup(grp);
-			//            f.attributes.setOwner(user);
+
+            //            f.attributes.setGroup(grp);
+            //            f.attributes.setOwner(user);
             //set group and owner
             //Since I don't need the persmissions on this file (RWED), I'll 
             //leave that for further development. 'Cause it will be a bit 

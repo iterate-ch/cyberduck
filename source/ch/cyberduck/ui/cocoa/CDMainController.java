@@ -22,11 +22,10 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.Observer;
-import java.util.Observable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -39,15 +38,15 @@ public class CDMainController extends NSObject {
     private static final File VERSION_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Version.plist"));
 
     public void awakeFromNib() {
-		NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("applicationShouldSleep", new Class[]{Object.class}),
-														 NSWorkspace.WorkspaceWillSleepNotification,
-														 null);
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("applicationShouldSleep", new Class[]{Object.class}),
+                NSWorkspace.WorkspaceWillSleepNotification,
+                null);
 
-		NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("applicationShouldWake", new Class[]{Object.class}),
-														 NSWorkspace.WorkspaceDidWakeNotification,
-														 null);
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("applicationShouldWake", new Class[]{Object.class}),
+                NSWorkspace.WorkspaceDidWakeNotification,
+                null);
 		
         //@todo performance tests
         this.threadWorkerTimer = new NSTimer(0.2, this, new NSSelector("handleThreadWorkerTimerEvent", new Class[]{NSTimer.class}), null, true);
@@ -146,22 +145,20 @@ public class CDMainController extends NSObject {
     private NSMenu rendezvousMenu;
     private NSObject bookmarkMenuDelegate;
     private NSObject rendezvousMenuDelegate;
-	private Rendezvous rendezvous;
-	
+    private Rendezvous rendezvous;
+
     public void setBookmarkMenu(NSMenu bookmarkMenu) {
         this.bookmarkMenu = bookmarkMenu;
-		this.rendezvousMenu = new NSMenu();
-		this.rendezvousMenu.setAutoenablesItems(false);
+        this.rendezvousMenu = new NSMenu();
+        this.rendezvousMenu.setAutoenablesItems(false);
         NSSelector setDelegateSelector =
                 new NSSelector("setDelegate", new Class[]{Object.class});
         if (setDelegateSelector.implementedByClass(NSMenu.class)) {
             this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
-            this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = 
-											new RendezvousMenuDelegate(this.rendezvous = new Rendezvous()
-																	   )
-											);
+            this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate =
+                    new RendezvousMenuDelegate(this.rendezvous = new Rendezvous()));
         }
-		this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle("Rendezvous"));
+        this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle("Rendezvous"));
 //		this.bookmarkMenu.itemWithTitle("Rendezvous").setEnabled(true);
     }
 
@@ -173,9 +170,9 @@ public class CDMainController extends NSObject {
     private class BookmarkMenuDelegate extends NSObject {
         private Map items = new HashMap();
 
-		public BookmarkMenuDelegate() {
-			super();
-		}
+        public BookmarkMenuDelegate() {
+            super();
+        }
 
         public int numberOfItemsInMenu(NSMenu menu) {
             return BookmarkList.instance().size() + 6; //index 0-3 are static menu items, 4 is sepeartor, 5 is Rendezvous with submenu, 6 is sepearator
@@ -191,12 +188,12 @@ public class CDMainController extends NSObject {
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
 //			log.debug("menuUpdateItemAtIndex"+index);
-			if(index == 4) {
-				item.setEnabled(true);
-				item.setImage(NSImage.imageNamed("rendezvous"));
+            if (index == 4) {
+                item.setEnabled(true);
+                item.setImage(NSImage.imageNamed("rendezvous"));
 //				item.setSubmenu(rendezvousMenu);
-			}
-            if(index > 5) {
+            }
+            if (index > 5) {
                 Host h = BookmarkList.instance().getItem(index - 6);
                 item.setTitle(h.getNickname());
                 item.setTarget(this);
@@ -215,47 +212,47 @@ public class CDMainController extends NSObject {
         }
     }
 
-	private class RendezvousMenuDelegate extends NSObject implements Observer {
+    private class RendezvousMenuDelegate extends NSObject implements Observer {
         private Map items = new HashMap();
-		
-		public RendezvousMenuDelegate(Rendezvous rendezvous) {
-			super();
+
+        public RendezvousMenuDelegate(Rendezvous rendezvous) {
+            super();
 //			this.rendezvous = new Rendezvous();
-			rendezvous.addObserver(this);
-			rendezvous.init();
-		}
-		
-		public void update(final Observable o, final Object arg) {
-			log.debug("update:" + o + "," + arg);
-			ThreadUtilities.instance().invokeLater(new Runnable() {
-				public void run() {
-					if (o instanceof Rendezvous) {
-						if (arg instanceof Message) {
-							Message msg = (Message)arg;
-							Host host = rendezvous.getService((String)msg.getContent());
-							if (msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
-								items.put((String)msg.getContent(),
-										  host
-										  );
-							}
-							if (msg.getTitle().equals(Message.RENDEZVOUS_REMOVE)) {
-								items.remove((String)msg.getContent());
-							}
-						}
-					}
-				}
-			});
-		}
-		
-		public int numberOfItemsInMenu(NSMenu menu) {
-			//log.debug("numberOfItemsInMenu"+menu);
-			if(items.size() > 0)
-				return items.size();
-			return 1;
+            rendezvous.addObserver(this);
+            rendezvous.init();
         }
-		
+
+        public void update(final Observable o, final Object arg) {
+            log.debug("update:" + o + "," + arg);
+            ThreadUtilities.instance().invokeLater(new Runnable() {
+                public void run() {
+                    if (o instanceof Rendezvous) {
+                        if (arg instanceof Message) {
+                            Message msg = (Message)arg;
+                            Host host = rendezvous.getService((String)msg.getContent());
+                            if (msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
+                                items.put((String)msg.getContent(),
+                                        host);
+                            }
+                            if (msg.getTitle().equals(Message.RENDEZVOUS_REMOVE)) {
+                                items.remove((String)msg.getContent());
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        public int numberOfItemsInMenu(NSMenu menu) {
+            //log.debug("numberOfItemsInMenu"+menu);
+            if (items.size() > 0) {
+                return items.size();
+            }
+            return 1;
+        }
+
         /**
-			* Called to let you update a menu item before it is displayed. If your
+         * Called to let you update a menu item before it is displayed. If your
          * numberOfItemsInMenu delegate method returns a positive value,
          * then your menuUpdateItemAtIndex method is called for each item in the menu.
          * You can then update the menu title, image, and so forth for the menu item.
@@ -263,24 +260,24 @@ public class CDMainController extends NSObject {
          * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-			//log.debug("menuUpdateItemAtIndex:"+index);
-			if(items.size() == 0) {
-				sender.setTitle(NSBundle.localizedString("No Rendezvous services available", ""));
-				sender.setEnabled(false);
-				return true;
-			}
-			else {
-				Host h = (Host)items.values().toArray()[index];
-				sender.setTitle(h.getNickname());
-				sender.setTarget(this);
-				sender.setEnabled(true);
-				sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
-				return true;
-			}
+            //log.debug("menuUpdateItemAtIndex:"+index);
+            if (items.size() == 0) {
+                sender.setTitle(NSBundle.localizedString("No Rendezvous services available", ""));
+                sender.setEnabled(false);
+                return true;
+            }
+            else {
+                Host h = (Host)items.values().toArray()[index];
+                sender.setTitle(h.getNickname());
+                sender.setTarget(this);
+                sender.setEnabled(true);
+                sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
+                return true;
+            }
         }
-		
+
         public void rendezvousMenuClicked(NSMenuItem sender) {
-            //log.debug("rendezvousMenuClicked:" + sender);
+//log.debug("rendezvousMenuClicked:" + sender);
             CDBrowserController controller = new CDBrowserController();
             controller.window().makeKeyAndOrderFront(null);
             controller.mount((Host)items.get(sender.title()));
@@ -291,7 +288,7 @@ public class CDMainController extends NSObject {
 //			super.finalize();
 //		}
     }
-	
+
     public void helpMenuClicked(Object sender) {
         NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().pathForResource("Help", "rtfd")).toString());
     }
@@ -529,8 +526,8 @@ public class CDMainController extends NSObject {
             return true;
         }
         if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
-			CDBrowserController controller = new CDBrowserController();
-			controller.window().makeKeyAndOrderFront(null);
+            CDBrowserController controller = new CDBrowserController();
+            controller.window().makeKeyAndOrderFront(null);
             return false;
         }
         return true;
@@ -563,36 +560,36 @@ public class CDMainController extends NSObject {
         if (Preferences.instance().getProperty("update.check").equals("true")) {
             this.checkForUpdate(false);
         }
-		this.rendezvous.init();
-	}
+        this.rendezvous.init();
+    }
 
-	public void applicationShouldSleep(Object o) {
+    public void applicationShouldSleep(Object o) {
         log.debug("applicationShouldSleep");
-		this.rendezvous.quit();
-	}
-	
-	public void applicationShouldWake(Object o) {
+        this.rendezvous.quit();
+    }
+
+    public void applicationShouldWake(Object o) {
         log.debug("applicationShouldWake");
-		this.rendezvous.init();
-	}
-	
+        this.rendezvous.init();
+    }
+
     public int applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
-		return this.checkForMountedBrowsers(app);
+        return this.checkForMountedBrowsers(app);
     }
-	
-	public void applicationWillTerminate(NSNotification notification) {
+
+    public void applicationWillTerminate(NSNotification notification) {
         NSNotificationCenter.defaultCenter().removeObserver(this);
-		//Terminating rendezvous discovery
-		this.rendezvous.quit();
-        //Writing version info
+        //Terminating rendezvous discovery
+        this.rendezvous.quit();
+//Writing version info
         this.saveVersionInfo();
-        //Writing usage info
+//Writing usage info
         Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
-		Preferences.instance().save();
-		BookmarkList.instance().save();
-		QueueList.instance().save();
-	}
+        Preferences.instance().save();
+        BookmarkList.instance().save();
+        QueueList.instance().save();
+    }
 
     // ----------------------------------------------------------
     // AppleScript support (NOT TESTED - FOR FURTURE USE)
@@ -628,42 +625,42 @@ public class CDMainController extends NSObject {
         log.debug("insertInOrderedDocumentsAtIndex" + doc);
         doc.window().makeKeyAndOrderFront(null);
     }
-	
+
     private int checkForMountedBrowsers(NSApplication app) {
         NSArray windows = app.windows();
         int count = windows.count();
         // Determine if there are any open connections
         while (0 != count--) {
             NSWindow window = (NSWindow)windows.objectAtIndex(count);
-			CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-			if (null != controller) {
-				if (controller.isConnected()) {
-					int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
-													   NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
-													   NSBundle.localizedString("Review...", ""), //default
-													   NSBundle.localizedString("Quit Anyway", ""), //alternate
-													   NSBundle.localizedString("Cancel", "")); //other
-					if (choice == NSAlertPanel.AlternateReturn) {
-						// Quit
-						return NSApplication.TerminateNow;
-					}
-					if (choice == NSAlertPanel.OtherReturn) {
-						// Cancel
-						return NSApplication.TerminateCancel;
-					}
-					if (choice == NSAlertPanel.DefaultReturn) {
-						// Review
-						// if at least one window reqested to terminate later, we shall wait
-						CDBrowserController.reviewMountedBrowsers(true);
-						return NSApplication.TerminateLater;
-					}
-				}
-			}
-		}
+            CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+            if (null != controller) {
+                if (controller.isConnected()) {
+                    int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
+                            NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
+                            NSBundle.localizedString("Review...", ""), //default
+                            NSBundle.localizedString("Quit Anyway", ""), //alternate
+                            NSBundle.localizedString("Cancel", "")); //other
+                    if (choice == NSAlertPanel.AlternateReturn) {
+                        // Quit
+                        return NSApplication.TerminateNow;
+                    }
+                    if (choice == NSAlertPanel.OtherReturn) {
+                        // Cancel
+                        return NSApplication.TerminateCancel;
+                    }
+                    if (choice == NSAlertPanel.DefaultReturn) {
+                        // Review
+                        // if at least one window reqested to terminate later, we shall wait
+                        CDBrowserController.reviewMountedBrowsers(true);
+                        return NSApplication.TerminateLater;
+                    }
+                }
+            }
+        }
 //		return CDQueueController.instance().checkForRunningTransfers();
-		return NSApplication.TerminateNow;
+        return NSApplication.TerminateNow;
     }
-	
+
     private String readVersionInfo() {
         if (VERSION_FILE.exists()) {
             NSData plistData = new NSData(VERSION_FILE);

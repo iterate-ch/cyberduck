@@ -74,58 +74,58 @@ public class CDDownloadController extends NSObject implements Controller {
                         new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
                 null); //contextInfo
     }
-	
-	public boolean windowShouldClose(NSWindow sender) {
-		return true;
-	}
+
+    public boolean windowShouldClose(NSWindow sender) {
+        return true;
+    }
 
     public void windowWillClose(NSNotification notification) {
         instances.removeObject(this);
     }
-	
-    public void downloadSheetDidEnd(NSWindow sheet, int returncode, Object context) {
-		this.window().orderOut(null);
-	}
 
-	public void cancelButtonClicked(Object sender) {
+    public void downloadSheetDidEnd(NSWindow sheet, int returncode, Object context) {
+        this.window().orderOut(null);
+    }
+
+    public void cancelButtonClicked(Object sender) {
         NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
     }
-	
-	public void downloadButtonClicked(Object sender) {
+
+    public void downloadButtonClicked(Object sender) {
         log.debug("downloadButtonClicked");
-		try {
-			URL url = new URL(urlField.stringValue());
-			Host host = new Host(url.getProtocol(),
-								 url.getHost(),
-								 url.getPort(),
-								 new Login(url.getHost(), url.getUserInfo(), null));
-			Session session = SessionFactory.createSession(host);
-			String file = url.getFile();
-			if (file.length() > 1) {
-				Path path = PathFactory.createPath(SessionFactory.createSession(host), file);
-				Queue queue = new Queue(Queue.KIND_DOWNLOAD);
-				queue.addRoot(path);
-				QueueList.instance().addItem(queue);
-				CDQueueController.instance().startItem(queue);
-			}
-			else {
-				throw new MalformedURLException("URL must contain reference to a file");
-			}
-			NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
-		}
-		catch (MalformedURLException e) {
-			NSAlertPanel.beginCriticalAlertSheet("Error", //title
-												 "OK", // defaultbutton
-												 null, //alternative button
-												 null, //other button
-												 this.window(), //docWindow
-												 null, //modalDelegate
-												 null, //didEndSelector
-												 null, // dismiss selector
-												 null, // context
-												 e.getMessage() // message
-												 );
-			
-		}
+        try {
+            URL url = new URL(urlField.stringValue());
+            Host host = new Host(url.getProtocol(),
+                    url.getHost(),
+                    url.getPort(),
+                    new Login(url.getHost(), url.getUserInfo(), null));
+            Session session = SessionFactory.createSession(host);
+            String file = url.getFile();
+            if (file.length() > 1) {
+                Path path = PathFactory.createPath(SessionFactory.createSession(host), file);
+                Queue queue = new Queue(Queue.KIND_DOWNLOAD);
+                queue.addRoot(path);
+                QueueList.instance().addItem(queue);
+                CDQueueController.instance().startItem(queue);
+            }
+            else {
+                throw new MalformedURLException("URL must contain reference to a file");
+            }
+            NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
+        }
+        catch (MalformedURLException e) {
+            NSAlertPanel.beginCriticalAlertSheet("Error", //title
+                    "OK", // defaultbutton
+                    null, //alternative button
+                    null, //other button
+                    this.window(), //docWindow
+                    null, //modalDelegate
+                    null, //didEndSelector
+                    null, // dismiss selector
+                    null, // context
+                    e.getMessage() // message
+            );
+
+        }
     }
 }

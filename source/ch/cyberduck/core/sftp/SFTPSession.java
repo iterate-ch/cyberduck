@@ -23,10 +23,9 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
-
 import com.sshtools.j2ssh.SshClient;
 import com.sshtools.j2ssh.SshException;
-import com.sshtools.j2ssh.agent.*;
+import com.sshtools.j2ssh.agent.AgentAuthenticationClient;
 import com.sshtools.j2ssh.authentication.*;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
@@ -109,15 +108,15 @@ public class SFTPSession extends Session {
         // Set the zlib compression
         properties.setPrefSCComp(Preferences.instance().getProperty("ssh.compression"));
         properties.setPrefCSComp(Preferences.instance().getProperty("ssh.compression"));
-		if(Preferences.instance().getProperty("connection.proxy.useProxy").equals("true")) {
-			properties.setTransportProvider(SshConnectionProperties.USE_SOCKS5_PROXY); //todo V4?
-			properties.setProxyHost(Preferences.instance().getProperty("connection.proxy.host"));
-			properties.setProxyPort(Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
+        if (Preferences.instance().getProperty("connection.proxy.useProxy").equals("true")) {
+            properties.setTransportProvider(SshConnectionProperties.USE_SOCKS5_PROXY); //todo V4?
+            properties.setProxyHost(Preferences.instance().getProperty("connection.proxy.host"));
+            properties.setProxyPort(Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
 //			if(Preferences.instance().getProperty("connection.proxy.useAuthentication").equals("true")) {
 //				properties.setProxyUsername(Preferences.instance().getProperty("connection.proxy.username"));
 //				properties.setProxyPassword(Preferences.instance().getProperty("connection.proxy.password"));
 //			}
-		}
+        }
 
         SSH.connect(properties, host.getHostKeyVerificationController());
         this.log("SSH connection opened", Message.PROGRESS);
@@ -133,14 +132,14 @@ public class SFTPSession extends Session {
         this.setConnected(true);
     }
 
-	private int loginUsingAgentAuthentication(final Login credentials) throws IOException {
+    private int loginUsingAgentAuthentication(final Login credentials) throws IOException {
         log.info("Trying ssh-agent authentication...");
         AgentAuthenticationClient agent = new AgentAuthenticationClient();
         agent.setUsername(credentials.getUsername());
 //		agent.setAgent(new SshAgentClient(false, "sftp", SSH.));
-        // Try the authentication
+// Try the authentication
         return SSH.authenticate(agent);
-	}
+    }
 
     private int loginUsingKBIAuthentication(final Login credentials) throws IOException {
         log.info("Trying Keyboard Interactive (PAM) authentication...");
@@ -218,10 +217,9 @@ public class SFTPSession extends Session {
             }
             else {
 //                if (AuthenticationProtocolState.COMPLETE == this.loginUsingAgentAuthentication(credentials) ||
-				if(
-					AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
-					AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) 
-				{
+                if (
+                        AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
+                        AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
                     this.log("Login successful", Message.PROGRESS);
                     credentials.addPasswordToKeychain();
                     return;

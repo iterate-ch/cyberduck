@@ -138,77 +138,77 @@ public class HTTPPath extends Path {
         try {
             log.debug("download:" + this.toString());
             session.check();
-			if(this.attributes.isDirectory()) {
-				this.getLocal().mkdirs();
-			}
-			else {
-				GET = new GetMethod(this.getAbsolute());
-				GET.setUseDisk(false);
-				GET.setFollowRedirects(false);
-				GET.addRequestHeader("Accept", Preferences.instance().getProperty("http.acceptheader"));
-				GET.addRequestHeader("User-Agent", Preferences.instance().getProperty("http.agent"));
-				if (this.status.isResume()) {
-					GET.addRequestHeader("Range", "bytes=" + this.status.getCurrent() + "-");
-				}
-				String v = GET.isHttp11() ? "HTTP/1.1" : "HTTP/1.0";
-				session.log("GET " + this.getAbsolute() + " " + v, Message.TRANSCRIPT);
-				Header[] requestHeaders = GET.getRequestHeaders();
-				for (int i = 0; i < requestHeaders.length; i++) {
-					session.log(requestHeaders[i].toString(), Message.TRANSCRIPT);
-				}
-				int response = session.HTTP.executeMethod(GET);
-				
-				session.log(response + " " + HttpStatus.getStatusText(response), Message.TRANSCRIPT);
-				Header[] responseHeaders = GET.getResponseHeaders();
-				for (int i = 0; i < responseHeaders.length; i++) {
-					session.log(responseHeaders[i].toString(), Message.TRANSCRIPT);
-				}
-				if (!HttpStatus.isSuccessfulResponse(response)) {
-					throw new HttpException(HttpStatus.getStatusText(response), response);
-				}
-				if (this.status.isResume()) {
-					if (GET.getStatusCode() != HttpStatus.SC_PARTIAL_CONTENT) {
-						log.info("Resumption not possible.");
-						//session.log("Resumption not possible.", Message.ERROR);
-						this.status.setCurrent(0);
-						this.status.setResume(false);
-					}
-					else {
-						log.info("Resuming at " + this.status.getCurrent() + ".");
-					}
-				}
-				Header lengthHeader = GET.getResponseHeader("Content-Length");
-				if (lengthHeader != null) {
-					try {
-						this.status.setSize(Integer.parseInt(lengthHeader.getValue()));
-					}
-					catch (NumberFormatException e) {
-						log.error(e.getMessage());
-						this.status.setSize(-1);
-					}
-				}
-				Header rangeHeader = GET.getResponseHeader("Content-Range"); //Content-Range: bytes 21010-47021/47022
-				if (rangeHeader != null) {
-					try {
-						String rangeValue = rangeHeader.getValue();
-						this.status.setSize(Integer.parseInt(rangeValue.substring(rangeValue.indexOf("/") + 1)));
-					}
-					catch (NumberFormatException e) {
-						log.error(e.getMessage());
-						this.status.setSize(-1);
-					}
-				}
-				
-				out = new FileOutputStream(this.getLocal(), this.status.isResume());
-				if (out == null) {
-					throw new IOException("Unable to buffer data");
-				}
-				in = session.HTTP.getInputStream(GET);
-				if (in == null) {
-					throw new IOException("Unable opening data stream");
-				}
-				this.download(in, out);
-			}
+            if (this.attributes.isDirectory()) {
+                this.getLocal().mkdirs();
+            }
+            else {
+                GET = new GetMethod(this.getAbsolute());
+                GET.setUseDisk(false);
+                GET.setFollowRedirects(false);
+                GET.addRequestHeader("Accept", Preferences.instance().getProperty("http.acceptheader"));
+                GET.addRequestHeader("User-Agent", Preferences.instance().getProperty("http.agent"));
+                if (this.status.isResume()) {
+                    GET.addRequestHeader("Range", "bytes=" + this.status.getCurrent() + "-");
+                }
+                String v = GET.isHttp11() ? "HTTP/1.1" : "HTTP/1.0";
+                session.log("GET " + this.getAbsolute() + " " + v, Message.TRANSCRIPT);
+                Header[] requestHeaders = GET.getRequestHeaders();
+                for (int i = 0; i < requestHeaders.length; i++) {
+                    session.log(requestHeaders[i].toString(), Message.TRANSCRIPT);
+                }
+                int response = session.HTTP.executeMethod(GET);
+
+                session.log(response + " " + HttpStatus.getStatusText(response), Message.TRANSCRIPT);
+                Header[] responseHeaders = GET.getResponseHeaders();
+                for (int i = 0; i < responseHeaders.length; i++) {
+                    session.log(responseHeaders[i].toString(), Message.TRANSCRIPT);
+                }
+                if (!HttpStatus.isSuccessfulResponse(response)) {
+                    throw new HttpException(HttpStatus.getStatusText(response), response);
+                }
+                if (this.status.isResume()) {
+                    if (GET.getStatusCode() != HttpStatus.SC_PARTIAL_CONTENT) {
+                        log.info("Resumption not possible.");
+                        //session.log("Resumption not possible.", Message.ERROR);
+                        this.status.setCurrent(0);
+                        this.status.setResume(false);
+                    }
+                    else {
+                        log.info("Resuming at " + this.status.getCurrent() + ".");
+                    }
+                }
+                Header lengthHeader = GET.getResponseHeader("Content-Length");
+                if (lengthHeader != null) {
+                    try {
+                        this.status.setSize(Integer.parseInt(lengthHeader.getValue()));
+                    }
+                    catch (NumberFormatException e) {
+                        log.error(e.getMessage());
+                        this.status.setSize(-1);
+                    }
+                }
+                Header rangeHeader = GET.getResponseHeader("Content-Range"); //Content-Range: bytes 21010-47021/47022
+                if (rangeHeader != null) {
+                    try {
+                        String rangeValue = rangeHeader.getValue();
+                        this.status.setSize(Integer.parseInt(rangeValue.substring(rangeValue.indexOf("/") + 1)));
+                    }
+                    catch (NumberFormatException e) {
+                        log.error(e.getMessage());
+                        this.status.setSize(-1);
+                    }
+                }
+
+                out = new FileOutputStream(this.getLocal(), this.status.isResume());
+                if (out == null) {
+                    throw new IOException("Unable to buffer data");
+                }
+                in = session.HTTP.getInputStream(GET);
+                if (in == null) {
+                    throw new IOException("Unable opening data stream");
+                }
+                this.download(in, out);
+            }
         }
         catch (HttpException e) {
             Header[] responseHeaders = GET.getResponseHeaders();
@@ -222,7 +222,7 @@ public class HTTPPath extends Path {
                     session = new HTTPSession(new Host(redirect.getProtocol(), redirect.getHost(),
                             redirect.getPort(),
                             new Login(redirect.getHost(), redirect.getUserInfo(), null)));
-					this.setPath(redirect.getFile());
+                    this.setPath(redirect.getFile());
                     this.download();
                     return;
                 }
@@ -234,7 +234,7 @@ public class HTTPPath extends Path {
             else {
                 session.log("HTTP Error: " + e.getReplyCode() + " " + e.getMessage(), Message.ERROR);
             }
-			session.log("Idle", Message.STOP);
+            session.log("Idle", Message.STOP);
         }
         catch (IOException e) {
             session.log(e.getMessage(), Message.ERROR);

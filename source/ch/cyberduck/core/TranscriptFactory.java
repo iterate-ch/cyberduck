@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public abstract class TranscriptFactory {
     private static Logger log = Logger.getLogger(TranscriptFactory.class);

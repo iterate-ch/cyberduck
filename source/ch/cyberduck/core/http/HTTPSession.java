@@ -77,16 +77,15 @@ public class HTTPSession extends Session {
         this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
         this.log(host.getIp(), Message.TRANSCRIPT);
         this.HTTP = new HttpClient();
-		if(Preferences.instance().getProperty("connection.proxy.useProxy").equals("true")) {
-			this.HTTP.connect(host.getHostname(), 
-							  host.getPort(), 
-							  Preferences.instance().getProperty("connection.proxy.host"),
-							  Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port"))
-							  );
-		}
-		else {
-			this.HTTP.connect(host.getHostname(), host.getPort(), false);
-		}
+        if (Preferences.instance().getProperty("connection.proxy.useProxy").equals("true")) {
+            this.HTTP.connect(host.getHostname(),
+                    host.getPort(),
+                    Preferences.instance().getProperty("connection.proxy.host"),
+                    Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
+        }
+        else {
+            this.HTTP.connect(host.getHostname(), host.getPort(), false);
+        }
         this.setConnected(true);
         this.log("HTTP connection opened", Message.PROGRESS);
     }

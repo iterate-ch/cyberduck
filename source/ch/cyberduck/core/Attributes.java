@@ -59,9 +59,9 @@ public class Attributes extends Observable {
 
     public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
-        dict.setObjectForKey(this.type+"", "Type");
-		dict.setObjectForKey(this.permission.getAsDictionary(), "Permission");
-		return dict;
+        dict.setObjectForKey(this.type + "", "Type");
+        dict.setObjectForKey(this.permission.getAsDictionary(), "Permission");
+        return dict;
     }
 
     /**
@@ -95,12 +95,12 @@ public class Attributes extends Observable {
     }
 
     public void setType(int type) {
-		log.debug("setType:"+type);
+        log.debug("setType:" + type);
         this.type = type;
     }
 
     public int getType() {
-		log.debug("getType:"+this.type);
+        log.debug("getType:" + this.type);
         return this.type;
     }
 
@@ -111,11 +111,11 @@ public class Attributes extends Observable {
     public boolean isFile() {
         return (this.type & Path.FILE_TYPE) == (Path.FILE_TYPE);
     }
-	
+
     public boolean isSymbolicLink() {
         return (this.type & Path.SYMBOLIC_LINK_TYPE) == (Path.SYMBOLIC_LINK_TYPE);
     }
-	
+
     public void setOwner(String o) {
         this.owner = o;
     }

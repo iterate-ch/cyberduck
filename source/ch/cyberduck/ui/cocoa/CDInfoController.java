@@ -21,9 +21,9 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -139,156 +139,161 @@ public class CDInfoController extends NSObject {
     // ----------------------------------------------------------
 	
     public CDInfoController(Path file) {
-		this.files = new ArrayList();
-		this.files.add(file);
+        this.files = new ArrayList();
+        this.files.add(file);
         instances.addObject(this);
         if (false == NSApplication.loadNibNamed("Info", this)) {
             log.fatal("Couldn't load Info.nib");
         }
     }
-	
-	public CDInfoController(List files) {
+
+    public CDInfoController(List files) {
         this.files = files;
         instances.addObject(this);
         if (false == NSApplication.loadNibNamed("Info", this)) {
             log.fatal("Couldn't load Info.nib");
         }
     }
-	
+
     public void awakeFromNib() {
         log.debug("awakeFromNib");
-		Path file = (Path)this.files.get(0);
+        Path file = (Path)this.files.get(0);
 
         NSPoint origin = this.window.frame().origin();
         this.window.setFrameOrigin(this.window.cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y())));
 
         this.filenameField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
-										  file.getName());
-		if(this.numberOfFiles() > 1) {
-			this.filenameField.setEnabled(false);
-		}
+                file.getName());
+        if (this.numberOfFiles() > 1) {
+            this.filenameField.setEnabled(false);
+        }
         this.pathField.setStringValue(file.getParent().getAbsolute());
         this.groupField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
-									   file.attributes.getGroup());
-		if(this.numberOfFiles() > 1) {
-			this.kindField.setStringValue(NSBundle.localizedString("(Multiple files)", ""));
-		}
-		else {
-			if (file.attributes.isSymbolicLink()) {
-				if (file.attributes.isFile()) {
-					this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (File)", ""));
-				}
-				if (file.attributes.isDirectory()) {
-					this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (Folder)", ""));
-				}
-			}
-			if (file.attributes.isFile()) {
-				this.kindField.setStringValue(NSBundle.localizedString("File", ""));
-			}
-			if (file.attributes.isDirectory()) {
-				this.kindField.setStringValue(NSBundle.localizedString("Folder", ""));
-			}
-			this.kindField.setStringValue(NSBundle.localizedString("Unknown", ""));
-		}
+                file.attributes.getGroup());
+        if (this.numberOfFiles() > 1) {
+            this.kindField.setStringValue(NSBundle.localizedString("(Multiple files)", ""));
+        }
+        else {
+            if (file.attributes.isSymbolicLink()) {
+                if (file.attributes.isFile()) {
+                    this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (File)", ""));
+                }
+                if (file.attributes.isDirectory()) {
+                    this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (Folder)", ""));
+                }
+            }
+            if (file.attributes.isFile()) {
+                this.kindField.setStringValue(NSBundle.localizedString("File", ""));
+            }
+            if (file.attributes.isDirectory()) {
+                this.kindField.setStringValue(NSBundle.localizedString("Folder", ""));
+            }
+            this.kindField.setStringValue(NSBundle.localizedString("Unknown", ""));
+        }
 
         this.modifiedField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
-										  file.attributes.getTimestampAsString());
+                file.attributes.getTimestampAsString());
         this.ownerField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
-									   file.attributes.getOwner());
-		int size = 0;
-		for(Iterator i = files.iterator(); i.hasNext();) {
-			size += ((Path)i.next()).status.getSize();
-		}
+                file.attributes.getOwner());
+        int size = 0;
+        for (Iterator i = files.iterator(); i.hasNext();) {
+            size += ((Path)i.next()).status.getSize();
+        }
         this.sizeField.setStringValue(Status.getSizeAsString(size) + " (" + size + " bytes)");
 
-		{
-			ownerr.setAllowsMixedState(true);
-			ownerr.setEnabled(false);
-			ownerw.setAllowsMixedState(true);
-			ownerw.setEnabled(false);
-			ownerx.setAllowsMixedState(true);
-			ownerx.setEnabled(false);
-			groupr.setAllowsMixedState(true);
-			groupr.setEnabled(false);
-			groupw.setAllowsMixedState(true);
-			groupw.setEnabled(false);
-			groupx.setAllowsMixedState(true);
-			groupx.setEnabled(false);
-			otherr.setAllowsMixedState(true);
-			otherr.setEnabled(false);
-			otherw.setAllowsMixedState(true);
-			otherw.setEnabled(false);
-			otherx.setAllowsMixedState(true);
-			otherx.setEnabled(false);
-		}
-		
-		Permission permission = null;
-		for(Iterator i = files.iterator(); i.hasNext();) {
-			permission = ((Path)i.next()).attributes.getPermission();
-			log.debug("Permission:"+permission);
-			boolean[] ownerPerm = permission.getOwnerPermissions();
-			boolean[] groupPerm = permission.getGroupPermissions();
-			boolean[] otherPerm = permission.getOtherPermissions();
-		
-			this.update(ownerr, ownerPerm[Permission.READ]);
-			this.update(ownerw, ownerPerm[Permission.WRITE]);
-			this.update(ownerx, ownerPerm[Permission.EXECUTE]);
+        {
+            ownerr.setAllowsMixedState(true);
+            ownerr.setEnabled(false);
+            ownerw.setAllowsMixedState(true);
+            ownerw.setEnabled(false);
+            ownerx.setAllowsMixedState(true);
+            ownerx.setEnabled(false);
+            groupr.setAllowsMixedState(true);
+            groupr.setEnabled(false);
+            groupw.setAllowsMixedState(true);
+            groupw.setEnabled(false);
+            groupx.setAllowsMixedState(true);
+            groupx.setEnabled(false);
+            otherr.setAllowsMixedState(true);
+            otherr.setEnabled(false);
+            otherw.setAllowsMixedState(true);
+            otherw.setEnabled(false);
+            otherx.setAllowsMixedState(true);
+            otherx.setEnabled(false);
+        }
 
-			this.update(groupr, groupPerm[Permission.READ]);
-			this.update(groupw, groupPerm[Permission.WRITE]);
-			this.update(groupx, groupPerm[Permission.EXECUTE]);
+        Permission permission = null;
+        for (Iterator i = files.iterator(); i.hasNext();) {
+            permission = ((Path)i.next()).attributes.getPermission();
+            log.debug("Permission:" + permission);
+            boolean[] ownerPerm = permission.getOwnerPermissions();
+            boolean[] groupPerm = permission.getGroupPermissions();
+            boolean[] otherPerm = permission.getOtherPermissions();
 
-			this.update(otherr, otherPerm[Permission.READ]);
-			this.update(otherw, otherPerm[Permission.WRITE]);
-			this.update(otherx, otherPerm[Permission.EXECUTE]);
-		}
+            this.update(ownerr, ownerPerm[Permission.READ]);
+            this.update(ownerw, ownerPerm[Permission.WRITE]);
+            this.update(ownerx, ownerPerm[Permission.EXECUTE]);
+
+            this.update(groupr, groupPerm[Permission.READ]);
+            this.update(groupw, groupPerm[Permission.WRITE]);
+            this.update(groupx, groupPerm[Permission.EXECUTE]);
+
+            this.update(otherr, otherPerm[Permission.READ]);
+            this.update(otherw, otherPerm[Permission.WRITE]);
+            this.update(otherx, otherPerm[Permission.EXECUTE]);
+        }
 		
 //		octalField.setStringValue(""+file.getOctalCode());
-		if(this.numberOfFiles() > 1)
-			permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + NSBundle.localizedString("(Multiple files)", ""));
-		else
-			permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
-		
+        if (this.numberOfFiles() > 1) {
+            permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + NSBundle.localizedString("(Multiple files)", ""));
+        }
+        else {
+            permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
+        }
+
         NSImage fileIcon = null;
-		if(this.numberOfFiles() > 1) {
-			fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
+        if (this.numberOfFiles() > 1) {
+            fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
             fileIcon.setSize(new NSSize(32f, 32f));
-		}
-		else {
-			if (file.attributes.isFile()) {
-				fileIcon = CDIconCache.instance().get(file.getExtension());
-				fileIcon.setSize(new NSSize(32f, 32f));
-			}
-			if (file.attributes.isDirectory()) {
-				fileIcon = NSImage.imageNamed("folder32.tiff");
-			}
-		}
+        }
+        else {
+            if (file.attributes.isFile()) {
+                fileIcon = CDIconCache.instance().get(file.getExtension());
+                fileIcon.setSize(new NSSize(32f, 32f));
+            }
+            if (file.attributes.isDirectory()) {
+                fileIcon = NSImage.imageNamed("folder32.tiff");
+            }
+        }
         this.iconImageView.setImage(fileIcon);
 
         (NSNotificationCenter.defaultCenter()).addObserver(this,
-														   new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
-														   NSControl.ControlTextDidEndEditingNotification,
-														   filenameField);
-		//        (NSNotificationCenter.defaultCenter()).addObserver(this,
-		//														   new NSSelector("octalInputDidEndEditing", new Class[]{NSNotification.class}),
-		//														   NSControl.ControlTextDidEndEditingNotification,
-		//														   octalField);
-	}
-	
-	private void update(NSButton checkbox, boolean condition) {
-		// Sets the cell's state to value, which can be NSCell.OnState, NSCell.OffState, or NSCell.MixedState. 
-		// If necessary, this method also redraws the receiver.
-		log.debug("Checkbox state:"+checkbox.state());
-		log.debug("Should be enabled:"+condition);
-		if((checkbox.state() == NSCell.OffState || !checkbox.isEnabled()) && !condition)
-			checkbox.setState(NSCell.OffState);
-		else if((checkbox.state() == NSCell.OnState || !checkbox.isEnabled()) && condition)
-			checkbox.setState(NSCell.OnState);
-		else
-			checkbox.setState(NSCell.MixedState);
-		checkbox.setEnabled(true);
-		log.debug("New state:"+checkbox.state());
-	}
+                new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidEndEditingNotification,
+                filenameField);
+        //        (NSNotificationCenter.defaultCenter()).addObserver(this,
+        //														   new NSSelector("octalInputDidEndEditing", new Class[]{NSNotification.class}),
+        //														   NSControl.ControlTextDidEndEditingNotification,
+        //														   octalField);
+    }
+
+    private void update(NSButton checkbox, boolean condition) {
+        // Sets the cell's state to value, which can be NSCell.OnState, NSCell.OffState, or NSCell.MixedState.
+        // If necessary, this method also redraws the receiver.
+        log.debug("Checkbox state:" + checkbox.state());
+        log.debug("Should be enabled:" + condition);
+        if ((checkbox.state() == NSCell.OffState || !checkbox.isEnabled()) && !condition) {
+            checkbox.setState(NSCell.OffState);
+        }
+        else if ((checkbox.state() == NSCell.OnState || !checkbox.isEnabled()) && condition) {
+            checkbox.setState(NSCell.OnState);
+        }
+        else {
+            checkbox.setState(NSCell.MixedState);
+        }
+        checkbox.setEnabled(true);
+        log.debug("New state:" + checkbox.state());
+    }
 
     public boolean windowShouldClose(NSWindow sender) {
         return true;
@@ -300,13 +305,13 @@ public class CDInfoController extends NSObject {
         instances.removeObject(this);
     }
 
-	private int numberOfFiles() {
-		return files.size();
-	}
+    private int numberOfFiles() {
+        return files.size();
+    }
 
     public void filenameInputDidEndEditing(NSNotification sender) {
         log.debug("textInputDidEndEditing");
-		Path file = (Path)this.files.get(0);
+        Path file = (Path)this.files.get(0);
         if (!filenameField.stringValue().equals(file.getName())) {
             if (filenameField.stringValue().indexOf('/') == -1) {
                 file.rename(file.getParent().getAbsolute() + "/" + filenameField.stringValue());
@@ -331,12 +336,13 @@ public class CDInfoController extends NSObject {
             }
         }
     }
-	
+
     public void permissionsSelectionChanged(Object sender) {
         log.debug("permissionsSelectionChanged");
         boolean[][] p = new boolean[3][3];
-		if(((NSButton)sender).state() == NSCell.MixedState)
-			((NSButton)sender).setNextState();
+        if (((NSButton)sender).state() == NSCell.MixedState) {
+            ((NSButton)sender).setNextState();
+        }
 
         p[Permission.OWNER][Permission.READ] = (ownerr.state() == NSCell.OnState);
         p[Permission.OWNER][Permission.WRITE] = (ownerw.state() == NSCell.OnState);
@@ -353,13 +359,13 @@ public class CDInfoController extends NSObject {
         Permission permission = new Permission(p);
         permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
         // send the changes to the remote host
-		Path f = null;
-		for(Iterator i = files.iterator(); i.hasNext();) {
-			f = (Path)i.next();
-			f.changePermissions(permission);
+        Path f = null;
+        for (Iterator i = files.iterator(); i.hasNext();) {
+            f = (Path)i.next();
+            f.changePermissions(permission);
 //			f.changePermissions(permission, recursiveCheckbox.state() == NSCell.OnState);
-		}
-		// refresh the file listing so that the observers (if any) get notified of the change
-		f.getParent().list(true);
+        }
+        // refresh the file listing so that the observers (if any) get notified of the change
+        f.getParent().list(true);
     }
 }

@@ -96,7 +96,7 @@ public class CDLoginController extends LoginController {
         this.window.setDelegate(this);
     }
 
-	private Controller windowController;
+    private Controller windowController;
 
     public CDLoginController(Controller windowController) {
         instances.addObject(this);
@@ -118,35 +118,35 @@ public class CDLoginController extends LoginController {
     private boolean tryAgain = false;
 
     public boolean promptUser(final Login l, final String message) {
-		while (windowController.window().attachedSheet() != null) {
-			try {
-				log.debug("Sleeping...");
-				Thread.sleep(1000); //milliseconds
-			}
-			catch (InterruptedException e) {
-				log.error(e.getMessage());
-			}
-		}
-		synchronized(this) {
-			textField.setStringValue(message);
-			userField.setStringValue(l.getUsername());
-			NSApplication.sharedApplication().beginSheet(window, //sheet
-														 windowController.window(),
-														 CDLoginController.this, //modalDelegate
-														 new NSSelector("loginSheetDidEnd",
-																		new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
-														 l); //contextInfo
-			window().makeKeyAndOrderFront(null);
-			while (windowController.window().attachedSheet() != null) {
-				try {
-					log.debug("Sleeping...");
-					Thread.sleep(1000); //milliseconds
-				}
-				catch (InterruptedException e) {
-					log.error(e.getMessage());
-				}
-			}
-		}
+        while (windowController.window().attachedSheet() != null) {
+            try {
+                log.debug("Sleeping...");
+                Thread.sleep(1000); //milliseconds
+            }
+            catch (InterruptedException e) {
+                log.error(e.getMessage());
+            }
+        }
+        synchronized (this) {
+            textField.setStringValue(message);
+            userField.setStringValue(l.getUsername());
+            NSApplication.sharedApplication().beginSheet(window, //sheet
+                    windowController.window(),
+                    CDLoginController.this, //modalDelegate
+                    new NSSelector("loginSheetDidEnd",
+                            new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
+                    l); //contextInfo
+            window().makeKeyAndOrderFront(null);
+            while (windowController.window().attachedSheet() != null) {
+                try {
+                    log.debug("Sleeping...");
+                    Thread.sleep(1000); //milliseconds
+                }
+                catch (InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
         return this.tryAgain;
     }
 

@@ -54,7 +54,7 @@ public class OS400FTPEntryParser extends RegexFTPFileEntryParserImpl {
             if (null == name || name.equals("") || name.equals(".") || name.equals("..")) {
                 return null;
             }
-			
+
             if (typeStr.equalsIgnoreCase("*DIR")) {
                 f.attributes.setType(Path.DIRECTORY_TYPE);
             }

@@ -21,9 +21,9 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
-import org.apache.log4j.Logger;
-
 import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Status;
@@ -36,12 +36,12 @@ public class CDValidatorController extends Validator {
     private static Logger log = Logger.getLogger(CDValidatorController.class);
 
     private static NSMutableArray instances = new NSMutableArray();
-	
-	private Controller windowController;
+
+    private Controller windowController;
 
     public CDValidatorController(Controller windowController, int kind, boolean resume) {
         super(kind, resume);
-		this.windowController = windowController;
+        this.windowController = windowController;
         instances.addObject(this);
         if (false == NSApplication.loadNibNamed("Validator", this)) {
             log.fatal("Couldn't load Validator.nib");
@@ -99,60 +99,60 @@ public class CDValidatorController extends Validator {
      * The resume button has been selected
      */
     private boolean resumeChoosen = false;
-	
+
     public boolean prompt(final Path path) {
-		while (windowController.window().attachedSheet() != null) {
-			try {
-				log.debug("Sleeping...");
-				Thread.sleep(1000); //milliseconds
-			}
-			catch (InterruptedException e) {
-				log.error(e.getMessage());
-			}
-		}
+        while (windowController.window().attachedSheet() != null) {
+            try {
+                log.debug("Sleeping...");
+                Thread.sleep(1000); //milliseconds
+            }
+            catch (InterruptedException e) {
+                log.error(e.getMessage());
+            }
+        }
         if (!applySettingsToAll) {
-			synchronized(this) {
-				resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
-				Path remote = path;
-				List list = path.getParent().list(); //List cache = path.getParent().cache();
-				int i = list.indexOf(path);
-				if(i != -1) {
-					remote = (Path)list.get(i);
-				}
-				String alertText =
-					NSBundle.localizedString("Local", "") + ":\n"
-					+ "\t" + path.getLocal().getAbsolute() + "\n"
-					+ "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(path.getLocal().length()) + "\n"
-					+ "\t" + NSBundle.localizedString("Modified", "") + ": " + path.getLocal().getTimestampAsString() + "\n"
-					+ NSBundle.localizedString("Remote", "") + ":\n"
-					+ "\t" + remote.getAbsolute() + "\n"
-					+ "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(remote.status.getSize()) + "\n"
-					+ "\t" + NSBundle.localizedString("Modified", "") + ": " + remote.attributes.getTimestampAsString() + "\n"
-					;
-				alertTextField.setStringValue(alertText); // message
-				NSImage img = NSWorkspace.sharedWorkspace().iconForFileType(path.getExtension());
-				img.setScalesWhenResized(true);
-				img.setSize(new NSSize(64f, 64f));
-				iconView.setImage(img);
-				CDQueueController.instance().window().makeKeyAndOrderFront(null);
-				NSApplication.sharedApplication().beginSheet(sheet, //sheet
-															 windowController.window(),
-															 CDValidatorController.this, //modalDelegate
-															 new NSSelector("validateSheetDidEnd",
-																			new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
-															 path); //contextInfo
-				CDQueueController.instance().window().makeKeyAndOrderFront(null);
-				// Waiting for user to make choice
-				while (windowController.window().attachedSheet() != null) {
-					try {
-						log.debug("Sleeping...");
-						Thread.sleep(1000); //milliseconds
-					}
-					catch (InterruptedException e) {
-						log.error(e.getMessage());
-					}
-				}
-			}
+            synchronized (this) {
+                resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
+                Path remote = path;
+                List list = path.getParent().list(); //List cache = path.getParent().cache();
+                int i = list.indexOf(path);
+                if (i != -1) {
+                    remote = (Path)list.get(i);
+                }
+                String alertText =
+                        NSBundle.localizedString("Local", "") + ":\n"
+                        + "\t" + path.getLocal().getAbsolute() + "\n"
+                        + "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(path.getLocal().length()) + "\n"
+                        + "\t" + NSBundle.localizedString("Modified", "") + ": " + path.getLocal().getTimestampAsString() + "\n"
+                        + NSBundle.localizedString("Remote", "") + ":\n"
+                        + "\t" + remote.getAbsolute() + "\n"
+                        + "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(remote.status.getSize()) + "\n"
+                        + "\t" + NSBundle.localizedString("Modified", "") + ": " + remote.attributes.getTimestampAsString() + "\n"
+                        ;
+                alertTextField.setStringValue(alertText); // message
+                NSImage img = NSWorkspace.sharedWorkspace().iconForFileType(path.getExtension());
+                img.setScalesWhenResized(true);
+                img.setSize(new NSSize(64f, 64f));
+                iconView.setImage(img);
+                CDQueueController.instance().window().makeKeyAndOrderFront(null);
+                NSApplication.sharedApplication().beginSheet(sheet, //sheet
+                        windowController.window(),
+                        CDValidatorController.this, //modalDelegate
+                        new NSSelector("validateSheetDidEnd",
+                                new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
+                        path); //contextInfo
+                CDQueueController.instance().window().makeKeyAndOrderFront(null);
+                // Waiting for user to make choice
+                while (windowController.window().attachedSheet() != null) {
+                    try {
+                        log.debug("Sleeping...");
+                        Thread.sleep(1000); //milliseconds
+                    }
+                    catch (InterruptedException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+            }
         }
         path.status.setResume(resumeChoosen);
         log.info("File " + path.getName() + " will be included:" + include);

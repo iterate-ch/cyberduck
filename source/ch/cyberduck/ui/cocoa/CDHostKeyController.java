@@ -44,8 +44,8 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
     private String host;
     private SshPublicKey publicKey;
 
-	private Controller windowController;
-	
+    private Controller windowController;
+
     public void windowWillClose(NSNotification notification) {
         instances.removeObject(this);
     }
@@ -58,47 +58,47 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 
     public void onHostKeyMismatch(final String host, final SshPublicKey allowedHostKey, final SshPublicKey actualHostKey) {
         log.debug("onHostKeyMismatch");
-		while (windowController.window().attachedSheet() != null) {
-			try {
-				log.debug("Sleeping...");
-				Thread.sleep(1000); //milliseconds
-			}
-			catch (InterruptedException e) {
-				log.error(e.getMessage());
-			}
-		}
+        while (windowController.window().attachedSheet() != null) {
+            try {
+                log.debug("Sleeping...");
+                Thread.sleep(1000); //milliseconds
+            }
+            catch (InterruptedException e) {
+                log.error(e.getMessage());
+            }
+        }
         this.host = host;
         this.publicKey = actualHostKey;
-		synchronized(this) {
-			windowController.window().makeKeyAndOrderFront(null);
-			NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Host key mismatch:", "") + " " + host, //title
-												 NSBundle.localizedString("Allow", ""), // defaultbutton
-												 NSBundle.localizedString("Deny", ""), //alternative button
-												 isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null, //other button
-												 windowController.window(),
-												 CDHostKeyController.this, //delegate
-												 new NSSelector
-												 ("keyMismatchSheetDidEnd",
-												  new Class[]
-												  {
-													  NSWindow.class, int.class, Object.class
-												  }), // end selector
-												 null, // dismiss selector
-												 null, // context
-												 NSBundle.localizedString("The host key supplied is", "") + ": "
-												 + actualHostKey.getFingerprint() +
-												 "\n" + NSBundle.localizedString("The current allowed key for this host is", "") + " : "
-												 + allowedHostKey.getFingerprint() + "\n" + NSBundle.localizedString("Do you want to allow the host access?", ""));
-			while (windowController.window().attachedSheet() != null) {
-				try {
-					log.debug("Sleeping...");
-					Thread.sleep(1000); //milliseconds
-				}
-				catch (InterruptedException e) {
-					log.error(e.getMessage());
-				}
-			}
-		}
+        synchronized (this) {
+            windowController.window().makeKeyAndOrderFront(null);
+            NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Host key mismatch:", "") + " " + host, //title
+                    NSBundle.localizedString("Allow", ""), // defaultbutton
+                    NSBundle.localizedString("Deny", ""), //alternative button
+                    isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null, //other button
+                    windowController.window(),
+                    CDHostKeyController.this, //delegate
+                    new NSSelector
+                            ("keyMismatchSheetDidEnd",
+                                    new Class[]
+                                    {
+                                        NSWindow.class, int.class, Object.class
+                                    }), // end selector
+                    null, // dismiss selector
+                    null, // context
+                    NSBundle.localizedString("The host key supplied is", "") + ": "
+                    + actualHostKey.getFingerprint() +
+                    "\n" + NSBundle.localizedString("The current allowed key for this host is", "") + " : "
+                    + allowedHostKey.getFingerprint() + "\n" + NSBundle.localizedString("Do you want to allow the host access?", ""));
+            while (windowController.window().attachedSheet() != null) {
+                try {
+                    log.debug("Sleeping...");
+                    Thread.sleep(1000); //milliseconds
+                }
+                catch (InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
     }
 
     public void keyMismatchSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
@@ -109,30 +109,29 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
                 this.allowHost(host, publicKey, false);
             }
             if (returncode == NSAlertPanel.AlternateReturn) {
-				while (windowController.window().attachedSheet() != null) {
-					try {
-						log.debug("Sleeping...");
-						Thread.sleep(1000); //milliseconds
-					}
-					catch (InterruptedException e) {
-						log.error(e.getMessage());
-					}
-				}
-				synchronized(this) {
-					windowController.window().makeKeyAndOrderFront(null);
-					NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Invalid host key", "Alert sheet title"), //title
-														 NSBundle.localizedString("OK", ""), // defaultbutton
-														 null, //alternative button
-														 null, //other button
-														 windowController.window(), //window
-														 null, //delegate
-														 null, //end selector
-														 null, //dismiss selector
-														 null, //context
-														 NSBundle.localizedString("Cannot continue without a valid host key.", "")
-														 );
-					log.info("Cannot continue without a valid host key");
-				}
+                while (windowController.window().attachedSheet() != null) {
+                    try {
+                        log.debug("Sleeping...");
+                        Thread.sleep(1000); //milliseconds
+                    }
+                    catch (InterruptedException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+                synchronized (this) {
+                    windowController.window().makeKeyAndOrderFront(null);
+                    NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Invalid host key", "Alert sheet title"), //title
+                            NSBundle.localizedString("OK", ""), // defaultbutton
+                            null, //alternative button
+                            null, //other button
+                            windowController.window(), //window
+                            null, //delegate
+                            null, //end selector
+                            null, //dismiss selector
+                            null, //context
+                            NSBundle.localizedString("Cannot continue without a valid host key.", ""));
+                    log.info("Cannot continue without a valid host key");
+                }
             }
             if (returncode == NSAlertPanel.OtherReturn) {
                 this.allowHost(host, publicKey, true); // always allow host
@@ -143,47 +142,47 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
         }
     }
 
-	public void onUnknownHost(final String host, 
-							  final SshPublicKey publicKey ) {
+    public void onUnknownHost(final String host,
+                              final SshPublicKey publicKey) {
         log.debug("onUnknownHost");
-		while (windowController.window().attachedSheet() != null) {
-			try {
-				log.debug("Sleeping...");
-				Thread.sleep(1000); //milliseconds
-			}
-			catch (InterruptedException e) {
-				log.error(e.getMessage());
-			}
-		}
+        while (windowController.window().attachedSheet() != null) {
+            try {
+                log.debug("Sleeping...");
+                Thread.sleep(1000); //milliseconds
+            }
+            catch (InterruptedException e) {
+                log.error(e.getMessage());
+            }
+        }
         this.host = host;
         this.publicKey = publicKey;
-		synchronized(this) {
-			windowController.window().makeKeyAndOrderFront(null);
-			NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Unknown host key for", "") + " " + host, //title
-													  NSBundle.localizedString("Allow", ""), // defaultbutton
-													  NSBundle.localizedString("Deny", ""), //alternative button
-													  isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null, //other button
-													  windowController.window(), //window
-													  CDHostKeyController.this, //delegate
-													  new NSSelector
-													  ("unknownHostSheetDidEnd",
-													   new Class[]
-													   {
-														   NSWindow.class, int.class, Object.class
-													   }), // end selector
-													  null, // dismiss selector
-													  null, // context
-													  NSBundle.localizedString("The host is currently unknown to the system. The host key fingerprint is", "") + ": " + publicKey.getFingerprint() + ".");
-			while (windowController.window().attachedSheet() != null) {
-				try {
-					log.debug("Sleeping...");
-					Thread.sleep(1000); //milliseconds
-				}
-				catch (InterruptedException e) {
-					log.error(e.getMessage());
-				}
-			}
-		}
+        synchronized (this) {
+            windowController.window().makeKeyAndOrderFront(null);
+            NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Unknown host key for", "") + " " + host, //title
+                    NSBundle.localizedString("Allow", ""), // defaultbutton
+                    NSBundle.localizedString("Deny", ""), //alternative button
+                    isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null, //other button
+                    windowController.window(), //window
+                    CDHostKeyController.this, //delegate
+                    new NSSelector
+                            ("unknownHostSheetDidEnd",
+                                    new Class[]
+                                    {
+                                        NSWindow.class, int.class, Object.class
+                                    }), // end selector
+                    null, // dismiss selector
+                    null, // context
+                    NSBundle.localizedString("The host is currently unknown to the system. The host key fingerprint is", "") + ": " + publicKey.getFingerprint() + ".");
+            while (windowController.window().attachedSheet() != null) {
+                try {
+                    log.debug("Sleeping...");
+                    Thread.sleep(1000); //milliseconds
+                }
+                catch (InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
     }
 
     public void unknownHostSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
@@ -194,30 +193,30 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
                 this.allowHost(host, publicKey, false); // allow host
             }
             if (returncode == NSAlertPanel.AlternateReturn) {
-				while (windowController.window().attachedSheet() != null) {
-					try {
-						log.debug("Sleeping...");
-						Thread.sleep(1000); //milliseconds
-					}
-					catch (InterruptedException e) {
-						log.error(e.getMessage());
-					}
-				}
-				synchronized(this) {
-					windowController.window().makeKeyAndOrderFront(null);
-					NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Invalid host key", ""), //title
-														 NSBundle.localizedString("OK", ""), // defaultbutton
-														 null, //alternative button
-														 null, //other button
-														 windowController.window(),
-														 CDHostKeyController.this, //delegate
-														 null, // end selector
-														 null, // dismiss selector
-														 null, // context
-														 NSBundle.localizedString("Cannot continue without a valid host key.", "") // message
-														 );
-					log.info("Cannot continue without a valid host key");
-				}
+                while (windowController.window().attachedSheet() != null) {
+                    try {
+                        log.debug("Sleeping...");
+                        Thread.sleep(1000); //milliseconds
+                    }
+                    catch (InterruptedException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+                synchronized (this) {
+                    windowController.window().makeKeyAndOrderFront(null);
+                    NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Invalid host key", ""), //title
+                            NSBundle.localizedString("OK", ""), // defaultbutton
+                            null, //alternative button
+                            null, //other button
+                            windowController.window(),
+                            CDHostKeyController.this, //delegate
+                            null, // end selector
+                            null, // dismiss selector
+                            null, // context
+                            NSBundle.localizedString("Cannot continue without a valid host key.", "") // message
+                    );
+                    log.info("Cannot continue without a valid host key");
+                }
             }
             if (returncode == NSAlertPanel.OtherReturn) {
                 this.allowHost(host, publicKey, true); // always allow host

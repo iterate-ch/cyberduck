@@ -85,8 +85,8 @@ public class Permission {
     }
 
     /**
-     * @param s the access string to parse the permissions from. 
-	 * Must be something between --------- and rwxrwxrwx
+     * @param s the access string to parse the permissions from.
+     *          Must be something between --------- and rwxrwxrwx
      */
     public Permission(String mask) {
         this.mask = mask;
@@ -356,14 +356,14 @@ public class Permission {
         String execute = permissions[EXECUTE] ? "x" : "-";
         return read + write + execute;
     }
-	
-	public boolean equals(Object o) {
+
+    public boolean equals(Object o) {
         if ((o != null) && (o instanceof Permission)) {
-			Permission other = (Permission)o;
-			return this.getOctalCode() == other.getOctalCode();
-		}
-		return false;
-	}
+            Permission other = (Permission)o;
+            return this.getOctalCode() == other.getOctalCode();
+        }
+        return false;
+    }
 
     /*
         public static final int --- = 0; {false, false, false}

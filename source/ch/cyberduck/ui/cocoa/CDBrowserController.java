@@ -57,13 +57,13 @@ public class CDBrowserController extends NSObject implements Controller, Observe
 
     public static CDBrowserController controllerForWindow(NSWindow window) {
         //2004-02-24 23:01:38.648 Cyberduck[1096] warning: can't find Java class for Objective C class (null).  Returning com/apple/cocoa/foundation/NSObject.
-		if(window.isVisible()) {
-			Object delegate = window.delegate();
-			if (delegate != null && delegate instanceof CDBrowserController) {
-				return (CDBrowserController)delegate;
-			}
-		}
-		return null;
+        if (window.isVisible()) {
+            Object delegate = window.delegate();
+            if (delegate != null && delegate instanceof CDBrowserController) {
+                return (CDBrowserController)delegate;
+            }
+        }
+        return null;
     }
 
     private NSTextView logView;
@@ -169,9 +169,9 @@ public class CDBrowserController extends NSObject implements Controller, Observe
             c.setResizable(true);
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
-			//log.info("Using date formatter with scheme "+NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString));
-			c.dataCell().setFormatter(new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), 
-																   true));
+            //log.info("Using date formatter with scheme "+NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString));
+            c.dataCell().setFormatter(new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString),
+                    true));
             this.browserTable.addTableColumn(c);
         }
         if (Preferences.instance().getProperty("browser.columnOwner").equals("true")) {
@@ -212,12 +212,12 @@ public class CDBrowserController extends NSObject implements Controller, Observe
         if (browserModel.numberOfRowsInTableView(browserTable) > 0 && browserTable.numberOfSelectedRows() > 0) {
             Path p = (Path)browserModel.getEntry(browserTable.selectedRow()); //last row selected
             if (p.attributes.isFile() || browserTable.numberOfSelectedRows() > 1) {
-				if(Preferences.instance().getProperty("browser.doubleClickOnFile").equals("edit")) {
-					this.editButtonClicked(sender);
-				}
-				else {
-					this.downloadButtonClicked(sender);
-				}
+                if (Preferences.instance().getProperty("browser.doubleClickOnFile").equals("edit")) {
+                    this.editButtonClicked(sender);
+                }
+                else {
+                    this.downloadButtonClicked(sender);
+                }
             }
             if (p.attributes.isDirectory()) {
                 p.list();
@@ -242,8 +242,7 @@ public class CDBrowserController extends NSObject implements Controller, Observe
 
         // receive drag events from types
         this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]
-															   {NSPasteboard.FilenamesPboardType}
-															   )); //accept bookmark files dragged from the Finder
+        {NSPasteboard.FilenamesPboardType})); //accept bookmark files dragged from the Finder
         this.bookmarkTable.setRowHeight(45f);
 
         NSTableColumn iconColumn = new NSTableColumn();
@@ -484,20 +483,20 @@ public class CDBrowserController extends NSObject implements Controller, Observe
                 break;
         }
     }
-	
-	public void copyURLButtonClicked(Object sender) {
+
+    public void copyURLButtonClicked(Object sender) {
         log.debug("copyURLButtonClicked");
-		Host h = pathController.workdir().getSession().getHost();
-		NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
-		pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
-		if(!pboard.setStringForType(h.getURL(), NSPasteboard.StringPboardType)) {
-			log.error("Error writing URL to NSPasteboard.StringPboardType.");
-		}
+        Host h = pathController.workdir().getSession().getHost();
+        NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
+        pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
+        if (!pboard.setStringForType(h.getURL(), NSPasteboard.StringPboardType)) {
+            log.error("Error writing URL to NSPasteboard.StringPboardType.");
+        }
 //		pboard.declareTypes(new NSArray(NSPasteboard.URLPboardType), null);
 //		if(!pboard.setStringForType(h.getURL(), NSPasteboard.URLPboardType)) {
 //			log.error("Error writing URL to NSPasteboard.URLPboardType.");
 //		}
-	}
+    }
 	
     // ----------------------------------------------------------
     // Browser navigation
@@ -634,17 +633,17 @@ public class CDBrowserController extends NSObject implements Controller, Observe
             Message msg = (Message)arg;
             if (msg.getTitle().equals(Message.ERROR)) {
                 if (window().isVisible()) {
-					NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-														 null, //alternative button
-														 null, //other button
-														 window(), //docWindow
-														 null, //modalDelegate
-														 null, //didEndSelector
-														 null, // dismiss selector
-														 null, // context
-														 (String)msg.getContent() // message
-														 );
+                    NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                            NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+                            null, //alternative button
+                            null, //other button
+                            window(), //docWindow
+                            null, //modalDelegate
+                            null, //didEndSelector
+                            null, // dismiss selector
+                            null, // context
+                            (String)msg.getContent() // message
+                    );
                 }
                 progressIndicator.stopAnimation(this);
                 statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
@@ -734,16 +733,16 @@ public class CDBrowserController extends NSObject implements Controller, Observe
     public void infoButtonClicked(Object sender) {
         log.debug("infoButtonClicked");
         NSEnumerator enum = browserTable.selectedRowEnumerator();
-		List files = new ArrayList();
+        List files = new ArrayList();
         while (enum.hasMoreElements()) {
             int selected = ((Integer)enum.nextElement()).intValue();
-			files.add(browserModel.getEntry(selected));
+            files.add(browserModel.getEntry(selected));
 //            Path path = browserModel.getEntry(selected);
 //            CDInfoController controller = new CDInfoController(path);
 //            controller.window().makeKeyAndOrderFront(null);
         }
-		CDInfoController controller = new CDInfoController(files);
-		controller.window().makeKeyAndOrderFront(null);
+        CDInfoController controller = new CDInfoController(files);
+        controller.window().makeKeyAndOrderFront(null);
     }
 
     public void deleteButtonClicked(Object sender) {
@@ -757,21 +756,21 @@ public class CDBrowserController extends NSObject implements Controller, Observe
             files.add(p);
             alertText.append("\n- " + p.getName());
         }
-		NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Delete", "Alert sheet title"), //title
-											 NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
-											 NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
-											 null, //other button
-											 this.window(), //window
-											 this, //delegate
-											 new NSSelector
-											 ("deleteSheetDidEnd",
-											  new Class[]
-											  {
-												  NSWindow.class, int.class, Object.class
-											  }), // end selector
-											 null, // dismiss selector
-											 files, // contextInfo
-											 alertText.toString());
+        NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Delete", "Alert sheet title"), //title
+                NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
+                NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+                null, //other button
+                this.window(), //window
+                this, //delegate
+                new NSSelector
+                        ("deleteSheetDidEnd",
+                                new Class[]
+                                {
+                                    NSWindow.class, int.class, Object.class
+                                }), // end selector
+                null, // dismiss selector
+                files, // contextInfo
+                alertText.toString());
     }
 
     public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
@@ -868,6 +867,7 @@ public class CDBrowserController extends NSObject implements Controller, Observe
         NSOpenPanel panel = NSOpenPanel.openPanel();
         panel.setCanChooseDirectories(true);
         panel.setCanChooseFiles(true);
+		panel.setCanSelectHiddenExtension(Preferences.instance().getProperty("browser.showHidden").equals("true"));
         panel.setAllowsMultipleSelection(true);
         panel.beginSheetForDirectory(null, null, null, this.window(), this, new NSSelector("uploadPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }
@@ -965,17 +965,17 @@ public class CDBrowserController extends NSObject implements Controller, Observe
                 }
                 catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
                     //This exception is thrown whenever an exception occurs open or reading from the host file.
-					NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-														 null, //alternative button
-														 null, //other button
-														 this.window(), //docWindow
-														 null, //modalDelegate
-														 null, //didEndSelector
-														 null, // dismiss selector
-														 null, // context
-														 NSBundle.localizedString("Could not open or read the host file", "Alert sheet text") + ": " + e.getMessage() // message
-														 );
+                    NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                            NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+                            null, //alternative button
+                            null, //other button
+                            this.window(), //docWindow
+                            null, //modalDelegate
+                            null, //didEndSelector
+                            null, // dismiss selector
+                            null, // context
+                            NSBundle.localizedString("Could not open or read the host file", "Alert sheet text") + ": " + e.getMessage() // message
+                    );
                 }
             }
             host.getLogin().setController(new CDLoginController(this));
@@ -995,56 +995,55 @@ public class CDBrowserController extends NSObject implements Controller, Observe
      */
     public boolean unmount(NSSelector selector, Object context) {
         log.debug("unmount");
-		//this.window().makeKeyAndOrderFront(null);
+        //this.window().makeKeyAndOrderFront(null);
         if (this.isConnected()) {
-			NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + pathController.workdir().getSession().getHost().getHostname(), //title
-												 NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
-												 NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
-												 null, //other button
-												 this.window(), //window
-												 this, //delegate
-												 selector,
-												 null, // dismiss selector
-												 context, // context
-												 NSBundle.localizedString("The connection will be closed.", "Alert sheet text") // message
-												 );
+            NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + pathController.workdir().getSession().getHost().getHostname(), //title
+                    NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
+                    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
+                    null, //other button
+                    this.window(), //window
+                    this, //delegate
+                    selector,
+                    null, // dismiss selector
+                    context, // context
+                    NSBundle.localizedString("The connection will be closed.", "Alert sheet text") // message
+            );
             return false;
         }
         return true;
     }
 
-	public static void reviewMountedBrowsers(boolean proceed) {
-		// Determine if there are any open connections
-		if(proceed) {
-			NSArray windows = NSApplication.sharedApplication().windows();
-			int count = windows.count();
-			log.debug("Number of open windows:"+count);
-			int terminateReturnValue = NSApplication.TerminateNow;
-			while (0 != count--) {
-				NSWindow window = (NSWindow)windows.objectAtIndex(count);
-				CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-				if (null != controller) {
-					log.debug("Window with index number "+count+" has a controller attached");
-					if(!controller.unmount(new NSSelector("terminateReviewSheetDidEnd",
-												   new Class[]{NSWindow.class, int.class, Object.class}),
-									null
-									)) {
-						return; 
-					}
-				}
-			}
-		}
-		// also check if the transfer queue has items running
-		/*
-		if(CDQueueController.instance().checkForRunningTransfers() == NSApplication.TerminateLater) {
-			// the transfer queue must be cancled first and wil then send the application terminate answer event itself
-			NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
-			return;
-		}
-		 */
-		// no running transfer, we quit if the user didn't choose to !procceed
-		NSApplication.sharedApplication().replyToApplicationShouldTerminate(proceed);
-	}
+    public static void reviewMountedBrowsers(boolean proceed) {
+        // Determine if there are any open connections
+        if (proceed) {
+            NSArray windows = NSApplication.sharedApplication().windows();
+            int count = windows.count();
+            log.debug("Number of open windows:" + count);
+            int terminateReturnValue = NSApplication.TerminateNow;
+            while (0 != count--) {
+                NSWindow window = (NSWindow)windows.objectAtIndex(count);
+                CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+                if (null != controller) {
+                    log.debug("Window with index number " + count + " has a controller attached");
+                    if (!controller.unmount(new NSSelector("terminateReviewSheetDidEnd",
+                            new Class[]{NSWindow.class, int.class, Object.class}),
+                            null)) {
+                        return;
+                    }
+                }
+            }
+        }
+        // also check if the transfer queue has items running
+        /*
+        if(CDQueueController.instance().checkForRunningTransfers() == NSApplication.TerminateLater) {
+            // the transfer queue must be cancled first and wil then send the application terminate answer event itself
+            NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
+            return;
+        }
+         */
+        // no running transfer, we quit if the user didn't choose to !procceed
+        NSApplication.sharedApplication().replyToApplicationShouldTerminate(proceed);
+    }
 	
     // ----------------------------------------------------------
     // Window delegate methods
@@ -1056,15 +1055,15 @@ public class CDBrowserController extends NSObject implements Controller, Observe
         );
     }
 
-	public void unmountSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-		sheet.orderOut(null);
-		if (returncode == NSAlertPanel.DefaultReturn) {
-			pathController.workdir().getSession().close();
-		}
-        if (returncode == NSAlertPanel.AlternateReturn) {
-			//
+    public void unmountSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+        sheet.orderOut(null);
+        if (returncode == NSAlertPanel.DefaultReturn) {
+            pathController.workdir().getSession().close();
         }
-	}
+        if (returncode == NSAlertPanel.AlternateReturn) {
+            //
+        }
+    }
 
     public void closeSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         this.unmountSheetDidEnd(sheet, returncode, contextInfo);
@@ -1072,19 +1071,19 @@ public class CDBrowserController extends NSObject implements Controller, Observe
             this.window().close();
         }
         if (returncode == NSAlertPanel.AlternateReturn) {
-			//
+            //
         }
     }
-	
-	public void terminateReviewSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+
+    public void terminateReviewSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         this.closeSheetDidEnd(sheet, returncode, contextInfo);
         if (returncode == NSAlertPanel.DefaultReturn) {
-			CDBrowserController.reviewMountedBrowsers(true);
+            CDBrowserController.reviewMountedBrowsers(true);
         }
         if (returncode == NSAlertPanel.AlternateReturn) {
-			CDBrowserController.reviewMountedBrowsers(false);
+            CDBrowserController.reviewMountedBrowsers(false);
         }
-	}
+    }
 
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose");
@@ -1343,8 +1342,8 @@ public class CDBrowserController extends NSObject implements Controller, Observe
         lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
     }
 
-    private static final NSDictionary TABLE_CELL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[] { lineBreakByTruncatingMiddleParagraph },
-																						 new Object[]{ NSAttributedString.ParagraphStyleAttributeName });
+    private static final NSDictionary TABLE_CELL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
+            new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
     private class CDBrowserTableDataSource extends CDTableDataSource {
         private List fullData;
@@ -1388,8 +1387,8 @@ public class CDBrowserController extends NSObject implements Controller, Observe
                 }
                 else if (identifier.equals("MODIFIED")) {
 //					return new NSGregorianDate();
-                	return new NSGregorianDate((double)p.attributes.getTimestamp().getTime()/1000,
-                								NSDate.DateFor1970);
+                    return new NSGregorianDate((double)p.attributes.getTimestamp().getTime() / 1000,
+                            NSDate.DateFor1970);
                 }
                 else if (identifier.equals("OWNER")) {
                     return new NSAttributedString(p.attributes.getOwner(), TABLE_CELL_PARAGRAPH_DICTIONARY);
@@ -1407,9 +1406,9 @@ public class CDBrowserController extends NSObject implements Controller, Observe
          */
         private Path[] promisedDragPaths;
 
-		// ----------------------------------------------------------
-		// Drop methods
-		// ----------------------------------------------------------
+        // ----------------------------------------------------------
+        // Drop methods
+        // ----------------------------------------------------------
 		
         public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
             log.info("tableViewValidateDrop:row:" + row + ",operation:" + operation);
@@ -1444,50 +1443,50 @@ public class CDBrowserController extends NSObject implements Controller, Observe
             NSPasteboard infoPboard = info.draggingPasteboard();
             if (infoPboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
                 NSArray filesList = (NSArray)infoPboard.propertyListForType(NSPasteboard.FilenamesPboardType);
-				Queue q = new Queue(Queue.KIND_UPLOAD);
-				Session session = pathController.workdir().getSession().copy();
-				for (int i = 0; i < filesList.count(); i++) {
-					log.debug(filesList.objectAtIndex(i));
-					Path p = null;
-					if (row != -1) {
-						p = PathFactory.createPath(session,
-												   this.getEntry(row).getAbsolute(),
-												   new Local((String)filesList.objectAtIndex(i)));
-					}
-					else {
-						p = PathFactory.createPath(session,
-												   pathController.workdir().getAbsolute(),
-												   new Local((String)filesList.objectAtIndex(i)));
-					}
-					q.addRoot(p);
-				}
-				if (q.numberOfRoots() > 0) {
-					QueueList.instance().addItem(q);
-					CDQueueController.instance().startItem(q, (Observer)CDBrowserController.this);
-				}
-				return true;
+                Queue q = new Queue(Queue.KIND_UPLOAD);
+                Session session = pathController.workdir().getSession().copy();
+                for (int i = 0; i < filesList.count(); i++) {
+                    log.debug(filesList.objectAtIndex(i));
+                    Path p = null;
+                    if (row != -1) {
+                        p = PathFactory.createPath(session,
+                                this.getEntry(row).getAbsolute(),
+                                new Local((String)filesList.objectAtIndex(i)));
+                    }
+                    else {
+                        p = PathFactory.createPath(session,
+                                pathController.workdir().getAbsolute(),
+                                new Local((String)filesList.objectAtIndex(i)));
+                    }
+                    q.addRoot(p);
+                }
+                if (q.numberOfRoots() > 0) {
+                    QueueList.instance().addItem(q);
+                    CDQueueController.instance().startItem(q, (Observer)CDBrowserController.this);
+                }
+                return true;
             }
             else if (row != -1 && row < tableView.numberOfRows()) {
                 NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
                 log.debug("availableTypeFromArray:QueuePBoardType: " + pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
                 if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
                     NSArray elements = (NSArray)pboard.propertyListForType("QueuePBoardType");// get the data from pasteboard
-					for (int i = 0; i < elements.count(); i++) {
-						NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-						Path parent = this.getEntry(row);
-						if (parent.attributes.isDirectory()) {
-							Queue q = new Queue(dict);
-							List files = q.getRoots();
-							for (Iterator iter = files.iterator(); iter.hasNext();) {
-								Path p = (Path)iter.next();
-								PathFactory.createPath(parent.getSession(), p.getAbsolute()).rename(parent.getAbsolute() + "/" + p.getName());
-							}
-							tableView.deselectAll(null);
-							pathController.workdir().list(true);
-							return true;
-						}
-					}
-				}
+                    for (int i = 0; i < elements.count(); i++) {
+                        NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
+                        Path parent = this.getEntry(row);
+                        if (parent.attributes.isDirectory()) {
+                            Queue q = new Queue(dict);
+                            List files = q.getRoots();
+                            for (Iterator iter = files.iterator(); iter.hasNext();) {
+                                Path p = (Path)iter.next();
+                                PathFactory.createPath(parent.getSession(), p.getAbsolute()).rename(parent.getAbsolute() + "/" + p.getName());
+                            }
+                            tableView.deselectAll(null);
+                            pathController.workdir().list(true);
+                            return true;
+                        }
+                    }
+                }
             }
             return false;
         }
@@ -1510,17 +1509,17 @@ public class CDBrowserController extends NSObject implements Controller, Observe
             log.debug("tableViewWriteRowsToPasteboard:" + rows);
             if (rows.count() > 0) {
                 this.promisedDragPaths = new Path[rows.count()];
-				// The fileTypes argument is the list of fileTypes being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
+                // The fileTypes argument is the list of fileTypes being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
                 NSMutableArray fileTypes = new NSMutableArray();
                 NSMutableArray queueDictionaries = new NSMutableArray();
-				// declare our dragged type in the paste board
+                // declare our dragged type in the paste board
                 pboard.declareTypes(new NSArray(NSPasteboard.FilesPromisePboardType), null);
                 Queue q = new Queue(Queue.KIND_DOWNLOAD);
                 Session session = pathController.workdir().getSession().copy();
                 for (int i = 0; i < rows.count(); i++) {
                     promisedDragPaths[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue()).copy(session);
                     if (promisedDragPaths[i].attributes.isFile()) {
-						// fileTypes.addObject(NSPathUtilities.FileTypeRegular);
+                        // fileTypes.addObject(NSPathUtilities.FileTypeRegular);
                         if (promisedDragPaths[i].getExtension() != null) {
                             fileTypes.addObject(promisedDragPaths[i].getExtension());
                         }
@@ -1529,7 +1528,7 @@ public class CDBrowserController extends NSObject implements Controller, Observe
                         }
                     }
                     else if (promisedDragPaths[i].attributes.isDirectory()) {
-						// fileTypes.addObject(NSPathUtilities.FileTypeDirectory);
+                        // fileTypes.addObject(NSPathUtilities.FileTypeDirectory);
                         fileTypes.addObject("'fldr'");
                     }
                     else {
@@ -1538,25 +1537,25 @@ public class CDBrowserController extends NSObject implements Controller, Observe
                     q.addRoot(promisedDragPaths[i]);
                 }
                 queueDictionaries.addObject(q.getAsDictionary());
-				// Writing data for private use when the item gets dragged to the transfer queue.
+                // Writing data for private use when the item gets dragged to the transfer queue.
                 NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
                 queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
                 if (queuePboard.setPropertyListForType(queueDictionaries, "QueuePBoardType")) {
                     log.debug("QueuePBoardType data sucessfully written to pasteboard");
                 }
-				
+
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
                 NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
                 NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
-				
+
                 tableView.dragPromisedFilesOfTypes(fileTypes, imageRect, this, true, event);
             }
-			// we return false because we don't want the table to draw the drag image
+            // we return false because we don't want the table to draw the drag image
             return false;
         }
-		
+
         /**
-			* @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
+         * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
          *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
          *         Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
          *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
@@ -1564,14 +1563,14 @@ public class CDBrowserController extends NSObject implements Controller, Observe
          */
         public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
             log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
-			NSMutableArray promisedDragNames = new NSMutableArray();
-			if(null != dropDestination) {
+            NSMutableArray promisedDragNames = new NSMutableArray();
+            if (null != dropDestination) {
                 Queue q = new Queue(Queue.KIND_DOWNLOAD);
                 for (int i = 0; i < promisedDragPaths.length; i++) {
                     try {
-                        //@todo check if the returned path is the trash
+//@todo check if the returned path is the trash
                         this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
-																	 this.promisedDragPaths[i].getName()));
+                                this.promisedDragPaths[i].getName()));
                         q.addRoot(this.promisedDragPaths[i]);
                         promisedDragNames.addObject(this.promisedDragPaths[i].getName());
                     }
@@ -1585,7 +1584,7 @@ public class CDBrowserController extends NSObject implements Controller, Observe
                 }
 //                this.promisedDragPaths = null;
             }
-			return promisedDragNames;
+            return promisedDragNames;
         }
 
 // ----------------------------------------------------------

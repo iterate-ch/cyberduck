@@ -24,7 +24,7 @@ import com.apple.cocoa.application.NSWorkspace;
 import java.util.HashMap;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDIconCache extends HashMap {
     private static CDIconCache instance;

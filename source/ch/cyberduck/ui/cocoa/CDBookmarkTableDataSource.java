@@ -64,14 +64,14 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
         if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
             tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
             NSArray filesList = (NSArray)info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
-			for (int i = 0; i < filesList.count(); i++) {
-				String file = (String)filesList.objectAtIndex(i);
-				// we do accept only bookmark files
-				if (file.indexOf(".duck") != -1) {
-					tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
-					break;
-				}
-			}
+            for (int i = 0; i < filesList.count(); i++) {
+                String file = (String)filesList.objectAtIndex(i);
+                // we do accept only bookmark files
+                if (file.indexOf(".duck") != -1) {
+                    tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
+                    break;
+                }
+            }
             return NSDraggingInfo.DragOperationCopy;
         }
         return NSDraggingInfo.DragOperationNone;
@@ -94,34 +94,34 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
         if (row < tableView.numberOfRows()) {
             if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
                 NSArray filesList = (NSArray)info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
-				Queue q = new Queue(Queue.KIND_UPLOAD);
-				Host h = BookmarkList.instance().getItem(row);
-				Session session = SessionFactory.createSession(h);
-				for (int i = 0; i < filesList.count(); i++) {
-					String filename = (String)filesList.objectAtIndex(i);
-					// Adding a previously exported bookmark file from the Finder
-					if (filename.indexOf(".duck") != -1) {
-						BookmarkList.instance().addItem(BookmarkList.instance().importBookmark(new java.io.File(filename)), row);
-						tableView.reloadData();
-						//tableView.selectRow(row, false);
-						return true;
-					}
-					// drop of a file from the finder > upload to the remote host this bookmark points to
-					Path p = PathFactory.createPath(session,
-													h.getDefaultPath(),
-													new java.io.File(filename).getName());
-					p.setLocal(new Local(filename));
-					q.addRoot(p);
-				}
-				// if anything has been added to the queue then process the queue
-				if (q.numberOfRoots() > 0) {
-					QueueList.instance().addItem(q);
-					CDQueueController.instance().startItem(q);
-					return true;
+                Queue q = new Queue(Queue.KIND_UPLOAD);
+                Host h = BookmarkList.instance().getItem(row);
+                Session session = SessionFactory.createSession(h);
+                for (int i = 0; i < filesList.count(); i++) {
+                    String filename = (String)filesList.objectAtIndex(i);
+                    // Adding a previously exported bookmark file from the Finder
+                    if (filename.indexOf(".duck") != -1) {
+                        BookmarkList.instance().addItem(BookmarkList.instance().importBookmark(new java.io.File(filename)), row);
+                        tableView.reloadData();
+                        //tableView.selectRow(row, false);
+                        return true;
+                    }
+                    // drop of a file from the finder > upload to the remote host this bookmark points to
+                    Path p = PathFactory.createPath(session,
+                            h.getDefaultPath(),
+                            new java.io.File(filename).getName());
+                    p.setLocal(new Local(filename));
+                    q.addRoot(p);
+                }
+                // if anything has been added to the queue then process the queue
+                if (q.numberOfRoots() > 0) {
+                    QueueList.instance().addItem(q);
+                    CDQueueController.instance().startItem(q);
+                    return true;
                 }
             }
         }
-		return false;
+        return false;
     }
 	
     // ----------------------------------------------------------
@@ -153,14 +153,14 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                 promisedDragBookmarks[i] = (Host)BookmarkList.instance().getItem(((Integer)rows.objectAtIndex(i)).intValue());
             }
 
-			if(pboard.setStringForType("duck", NSPasteboard.FilesPromisePboardType)) {
-				log.debug("FilesPromisePboardType data sucessfully written to pasteboard");
-			}
-			
-			NSEvent event = NSApplication.sharedApplication().currentEvent();
-			NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
-			NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
-			tableView.dragPromisedFilesOfTypes(new NSArray("duck"), imageRect, this, true, event);
+            if (pboard.setStringForType("duck", NSPasteboard.FilesPromisePboardType)) {
+                log.debug("FilesPromisePboardType data sucessfully written to pasteboard");
+            }
+
+            NSEvent event = NSApplication.sharedApplication().currentEvent();
+            NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
+            NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
+            tableView.dragPromisedFilesOfTypes(new NSArray("duck"), imageRect, this, true, event);
         }
         // we return false because we don't want the table to draw the drag image
         return false;

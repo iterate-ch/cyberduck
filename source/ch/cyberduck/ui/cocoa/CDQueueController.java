@@ -22,7 +22,6 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import java.util.Iterator;
-import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.log4j.Logger;
@@ -30,7 +29,7 @@ import org.apache.log4j.Logger;
 import ch.cyberduck.core.*;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDQueueController extends NSObject implements Controller {
     private static Logger log = Logger.getLogger(CDQueueController.class);
@@ -45,7 +44,7 @@ public class CDQueueController extends NSObject implements Controller {
     private Observer callback;
 
     private NSToolbar toolbar;
-	
+
     private CDQueueController() {
         instances.addObject(this);
     }
@@ -57,56 +56,56 @@ public class CDQueueController extends NSObject implements Controller {
                 log.fatal("Couldn't load Queue.nib");
             }
         }
-		if(null == instance.window()) {
+        if (null == instance.window()) {
             if (false == NSApplication.loadNibNamed("Queue", instance)) {
                 log.fatal("Couldn't load Queue.nib");
             }
-		}
+        }
         return instance;
     }
-	
-	/*
-	 public int checkForRunningTransfers() {
-		Iterator iter = CDQueueList.instance().iterator();
-		while(iter.hasNext()) {
-			ch.cyberduck.core.Queue q = (ch.cyberduck.core.Queue)iter.next();
-			if(q.isRunning()) {
-				NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Transfers in progress", ""), //title
-													 NSBundle.localizedString("Cancel", ""), // defaultbutton
-													 NSBundle.localizedString("Quit", ""), //alternative button
-													 null, //other button
-													 this.window(), //window
-													 this, //delegate
-													 new NSSelector("checkForRunningTransfersSheetDidEnd",
-																	new Class[]{NSWindow.class, int.class, Object.class}),
-													 null, // dismiss selector
-													 null, // context
-													 NSBundle.localizedString("There are items in the queue currently being transferred. Quit anyway?", "") // message
-													 );
-				return NSApplication.TerminateLater; //break
-			}
-		}
-		return NSApplication.TerminateNow;
-	}
-	
-	public void checkForRunningTransfersSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-        sheet.orderOut(null);
-        if (returncode == NSAlertPanel.AlternateReturn) {
-			this.stopAllButtonClicked(null);
-			NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
-		}
-        if (returncode == NSAlertPanel.DefaultReturn) {
-			NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
-		}
-	}
-	 */
+
+    /*
+     public int checkForRunningTransfers() {
+        Iterator iter = CDQueueList.instance().iterator();
+        while(iter.hasNext()) {
+            ch.cyberduck.core.Queue q = (ch.cyberduck.core.Queue)iter.next();
+            if(q.isRunning()) {
+                NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Transfers in progress", ""), //title
+                                                     NSBundle.localizedString("Cancel", ""), // defaultbutton
+                                                     NSBundle.localizedString("Quit", ""), //alternative button
+                                                     null, //other button
+                                                     this.window(), //window
+                                                     this, //delegate
+                                                     new NSSelector("checkForRunningTransfersSheetDidEnd",
+                                                                    new Class[]{NSWindow.class, int.class, Object.class}),
+                                                     null, // dismiss selector
+                                                     null, // context
+                                                     NSBundle.localizedString("There are items in the queue currently being transferred. Quit anyway?", "") // message
+                                                     );
+                return NSApplication.TerminateLater; //break
+            }
+        }
+        return NSApplication.TerminateNow;
+    }
+
+    public void checkForRunningTransfersSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+sheet.orderOut(null);
+if (returncode == NSAlertPanel.AlternateReturn) {
+            this.stopAllButtonClicked(null);
+            NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
+        }
+if (returncode == NSAlertPanel.DefaultReturn) {
+            NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
+        }
+    }
+     */
 	
     public boolean windowShouldClose(NSWindow sender) {
         return true;
     }
 
     public void windowWillClose(NSNotification notification) {
-		this.window = null;
+        this.window = null;
 //		instances.removeObject(this);
 //		instance = null;
     }
@@ -179,7 +178,7 @@ public class CDQueueController extends NSObject implements Controller {
 
         this.queueTable.sizeToFit();
     }
-	
+
     public void startItem(Queue queue) {
         this.startItem(queue, false);
     }
@@ -200,7 +199,7 @@ public class CDQueueController extends NSObject implements Controller {
             this.window().makeKeyAndOrderFront(null);
         }
 
-		//@todo reference to this.window() may become invalid
+        //@todo reference to this.window() may become invalid
         queue.getRoot().getHost().getLogin().setController(new CDLoginController(this));
         if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
             try {
@@ -209,104 +208,104 @@ public class CDQueueController extends NSObject implements Controller {
             catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
                 this.window().makeKeyAndOrderFront(null);
                 //This exception is thrown whenever an exception occurs open or reading from the host file.
-				NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", ""), //title
-													 NSBundle.localizedString("OK", ""), // defaultbutton
-													 null, //alternative button
-													 null, //other button
-													 this.window(), //docWindow
-													 null, //modalDelegate
-													 null, //didEndSelector
-													 null, // dismiss selector
-													 null, // context
-													 NSBundle.localizedString("Could not open or read the host file", "") + ": " + e.getMessage() // message
-													 );
+                NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", ""), //title
+                        NSBundle.localizedString("OK", ""), // defaultbutton
+                        null, //alternative button
+                        null, //other button
+                        this.window(), //docWindow
+                        null, //modalDelegate
+                        null, //didEndSelector
+                        null, // dismiss selector
+                        null, // context
+                        NSBundle.localizedString("Could not open or read the host file", "") + ": " + e.getMessage() // message
+                );
             }
         }
         queue.start(new CDValidatorController(this, queue.kind(), resumeRequested));
     }
-	
-	public boolean isVisible() {
-		return this.window() != null && this.window().isVisible();
-	}
+
+    public boolean isVisible() {
+        return this.window() != null && this.window().isVisible();
+    }
 
     public void update(Queue observable, Object arg) {
 //		log.debug("update:"+observable+","+arg);
-		if(this.isVisible()) {
-			if (arg instanceof Message) {
-				Message msg = (Message)arg;
-				if (msg.getTitle().equals(Message.PROGRESS)) {// || msg.getTitle().equals(Message.ERROR)) {
-					if (this.window().isVisible()) {
-						if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
-							int row = QueueList.instance().indexOf(observable);
-							NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
-							this.queueTable.setNeedsDisplay(queueRect);
-						}
-					}
-				}
-				else if (msg.getTitle().equals(Message.ERROR)) {
-					while (this.window().attachedSheet() != null) {
-						try {
-							log.debug("Sleeping...");
-							Thread.sleep(1000); //milliseconds
-						}
-						catch (InterruptedException e) {
-							log.error(e.getMessage());
-						}
-					}
-					synchronized(this) {
-						this.window().makeKeyAndOrderFront(null);
-						NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-															 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-															 null, //alternative button
-															 null, //other button
-															 this.window(), //docWindow
-															 null, //modalDelegate
-															 null, //didEndSelector
-															 null, // dismiss selector
-															 null, // context
-															 (String)msg.getContent() // message
-															 );						
-					}
-				}
-				else if (msg.getTitle().equals(Message.DATA)) {
-					if (this.window().isVisible()) {
-						if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
-							int row = QueueList.instance().indexOf(observable);
-							NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
-							this.queueTable.setNeedsDisplay(progressRect);
-						}
-					}
-				}
-				else if (msg.getTitle().equals(Message.QUEUE_START)) {
-					this.toolbar.validateVisibleItems();
-					QueueList.instance().save();
-				}
-				else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
-					this.toolbar.validateVisibleItems();
-					Queue queue = (Queue)observable;
-					if (queue.isComplete()) {
-						if (Queue.KIND_DOWNLOAD == queue.kind()) {
-							if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
-								boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
-								log.debug("Success opening file:" + success);
-							}
-						}
-						if (Queue.KIND_UPLOAD == queue.kind()) {
-							if (callback != null) {
-								log.debug("Telling observable to refresh directory listing");
-								callback.update(null, new Message(Message.REFRESH));
-							}
-						}
-						if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
-							this.queueTable.deselectAll(null);
-							QueueList.instance().removeItem(queue);
-							this.queueTable.reloadData();
-						}
-					}
-					QueueList.instance().save();
-				}
-			}
-		}
+        if (this.isVisible()) {
+            if (arg instanceof Message) {
+                Message msg = (Message)arg;
+                if (msg.getTitle().equals(Message.PROGRESS)) {// || msg.getTitle().equals(Message.ERROR)) {
+                    if (this.window().isVisible()) {
+                        if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
+                            int row = QueueList.instance().indexOf(observable);
+                            NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
+                            this.queueTable.setNeedsDisplay(queueRect);
+                        }
+                    }
+                }
+                else if (msg.getTitle().equals(Message.ERROR)) {
+                    while (this.window().attachedSheet() != null) {
+                        try {
+                            log.debug("Sleeping...");
+                            Thread.sleep(1000); //milliseconds
+                        }
+                        catch (InterruptedException e) {
+                            log.error(e.getMessage());
+                        }
+                    }
+                    synchronized (this) {
+                        this.window().makeKeyAndOrderFront(null);
+                        NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                                NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+                                null, //alternative button
+                                null, //other button
+                                this.window(), //docWindow
+                                null, //modalDelegate
+                                null, //didEndSelector
+                                null, // dismiss selector
+                                null, // context
+                                (String)msg.getContent() // message
+                        );
+                    }
+                }
+                else if (msg.getTitle().equals(Message.DATA)) {
+                    if (this.window().isVisible()) {
+                        if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
+                            int row = QueueList.instance().indexOf(observable);
+                            NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
+                            this.queueTable.setNeedsDisplay(progressRect);
+                        }
+                    }
+                }
+                else if (msg.getTitle().equals(Message.QUEUE_START)) {
+                    this.toolbar.validateVisibleItems();
+                    QueueList.instance().save();
+                }
+                else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+                    this.toolbar.validateVisibleItems();
+                    Queue queue = (Queue)observable;
+                    if (queue.isComplete()) {
+                        if (Queue.KIND_DOWNLOAD == queue.kind()) {
+                            if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
+                                boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+                                log.debug("Success opening file:" + success);
+                            }
+                        }
+                        if (Queue.KIND_UPLOAD == queue.kind()) {
+                            if (callback != null) {
+                                log.debug("Telling observable to refresh directory listing");
+                                callback.update(null, new Message(Message.REFRESH));
+                            }
+                        }
+                        if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
+                            this.queueTable.deselectAll(null);
+                            QueueList.instance().removeItem(queue);
+                            this.queueTable.reloadData();
+                        }
+                    }
+                    QueueList.instance().save();
+                }
+            }
+        }
     }
 
     public void awakeFromNib() {
@@ -407,15 +406,15 @@ public class CDQueueController extends NSObject implements Controller {
         }
     }
 
-	public void stopAllButtonClicked(Object sender) {
-		Iterator iter = CDQueueList.instance().iterator();
-		while(iter.hasNext()) {
-			Queue q = (Queue)iter.next();
-			if(q.isRunning()) {
-				q.cancel();
-			}
-		}
-	}
+    public void stopAllButtonClicked(Object sender) {
+        Iterator iter = CDQueueList.instance().iterator();
+        while (iter.hasNext()) {
+            Queue q = (Queue)iter.next();
+            if (q.isRunning()) {
+                q.cancel();
+            }
+        }
+    }
 
     public void resumeButtonClicked(Object sender) {
         NSEnumerator enum = queueTable.selectedRowEnumerator();
@@ -439,48 +438,48 @@ public class CDQueueController extends NSObject implements Controller {
 
     public void openButtonClicked(Object sender) {
         if (this.queueTable.selectedRow() != -1) {
-			while (this.window().attachedSheet() != null) {
-				try {
-					log.debug("Sleeping...");
-					Thread.sleep(1000); //milliseconds
-				}
-				catch (InterruptedException e) {
-					log.error(e.getMessage());
-				}
-			}
+            while (this.window().attachedSheet() != null) {
+                try {
+                    log.debug("Sleeping...");
+                    Thread.sleep(1000); //milliseconds
+                }
+                catch (InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+            }
             Queue item = QueueList.instance().getItem(this.queueTable.selectedRow());
             Path f = item.getRoot();
             String file = item.getRoot().getLocal().toString();
             if (!NSWorkspace.sharedWorkspace().openFile(file)) {
                 if (item.isComplete()) {
                     NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Could not open the file", ""), //title
-														 NSBundle.localizedString("OK", ""), // defaultbutton
-														 null, //alternative button
-														 null, //other button
-														 this.window(), //docWindow
-														 null, //modalDelegate
-														 null, //didEndSelector
-														 null, // dismiss selector
-														 null, // context
-														 NSBundle.localizedString("Could not open the file", "") + " \""
-														 + file
-														 + "\". " + NSBundle.localizedString("It moved since you downloaded it.", "") // message
-														 );
+                            NSBundle.localizedString("OK", ""), // defaultbutton
+                            null, //alternative button
+                            null, //other button
+                            this.window(), //docWindow
+                            null, //modalDelegate
+                            null, //didEndSelector
+                            null, // dismiss selector
+                            null, // context
+                            NSBundle.localizedString("Could not open the file", "") + " \""
+                            + file
+                            + "\". " + NSBundle.localizedString("It moved since you downloaded it.", "") // message
+                    );
                 }
                 else {
                     NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Could not open the file", ""), //title
-														 NSBundle.localizedString("OK", ""), // defaultbutton
-														 null, //alternative button
-														 null, //other button
-														 this.window(), //docWindow
-														 null, //modalDelegate
-														 null, //didEndSelector
-														 null, // dismiss selector
-														 null, // context
-														 NSBundle.localizedString("Could not open the file", "") + " \""
-														 + file
-														 + "\". " + NSBundle.localizedString("The file has not yet been downloaded.", "") // message
-														 );
+                            NSBundle.localizedString("OK", ""), // defaultbutton
+                            null, //alternative button
+                            null, //other button
+                            this.window(), //docWindow
+                            null, //modalDelegate
+                            null, //didEndSelector
+                            null, // dismiss selector
+                            null, // context
+                            NSBundle.localizedString("Could not open the file", "") + " \""
+                            + file
+                            + "\". " + NSBundle.localizedString("The file has not yet been downloaded.", "") // message
+                    );
                 }
             }
         }
@@ -488,15 +487,15 @@ public class CDQueueController extends NSObject implements Controller {
 
     public void revealButtonClicked(Object sender) {
         if (this.queueTable.selectedRow() != -1) {
-			while (this.window().attachedSheet() != null) {
-				try {
-					log.debug("Sleeping...");
-					Thread.sleep(1000); //milliseconds
-				}
-				catch (InterruptedException e) {
-					log.error(e.getMessage());
-				}
-			}
+            while (this.window().attachedSheet() != null) {
+                try {
+                    log.debug("Sleeping...");
+                    Thread.sleep(1000); //milliseconds
+                }
+                catch (InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+            }
             Queue item = QueueList.instance().getItem(this.queueTable.selectedRow());
             Path f = item.getRoot();
             String file = item.getRoot().getLocal().toString();
@@ -558,7 +557,7 @@ public class CDQueueController extends NSObject implements Controller {
     public boolean validateMenuItem(NSMenuItem item) {
         return this.validateItem(item.action().name());
     }
-	
+
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
             "Resume",
@@ -567,7 +566,7 @@ public class CDQueueController extends NSObject implements Controller {
             "Remove",
             "Clear",
             NSToolbarItem.FlexibleSpaceItemIdentifier,
-			"Open",
+            "Open",
             "Show"
         });
     }
@@ -580,7 +579,7 @@ public class CDQueueController extends NSObject implements Controller {
             "Remove",
             "Clear",
             "Show",
-			"Open",
+            "Open",
             NSToolbarItem.CustomizeToolbarItemIdentifier,
             NSToolbarItem.SpaceItemIdentifier,
             NSToolbarItem.SeparatorItemIdentifier,
@@ -627,7 +626,7 @@ public class CDQueueController extends NSObject implements Controller {
 				 }
 			 return true;
 			 */
-			 }
+        }
         if (identifier.equals("Reload") || identifier.equals("reloadButtonClicked:")) {
             if (this.queueTable.numberOfSelectedRows() == 1) {
                 Queue queue = QueueList.instance().getItem(this.queueTable.selectedRow());
