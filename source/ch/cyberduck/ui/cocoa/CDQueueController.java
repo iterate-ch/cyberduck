@@ -149,9 +149,12 @@ public class CDQueueController extends CDController {
 		// in fact we are not interested in file promises, but because the browser model can only initiate
 		// a drag with tableView.dragPromisedFilesOfTypes(), we listens for those events
 		// and then use the private pasteboard instead.
-		this.queueTable.registerForDraggedTypes(new NSArray(new Object[]{"QueuePBoardType",
-		                                                                 NSPasteboard.StringPboardType,
-		                                                                 NSPasteboard.FilesPromisePboardType}));
+		this.queueTable.registerForDraggedTypes(new NSArray(new Object[]{
+			"QueuePBoardType",
+			NSPasteboard.StringPboardType,
+			NSPasteboard.FilesPromisePboardType}
+															)
+												);
 		this.queueTable.setRowHeight(50f);
 		{
 			NSTableColumn c = new NSTableColumn();

@@ -45,7 +45,7 @@ public class CDTranscriptImpl implements Transcript {
 		this.textView.setRichText(false);
 	}
 
-	private static final NSFont fixedWidthFont = NSFont.userFixedPitchFontOfSize(9.0f);
+	private static final NSFont FIXED_WITH_FONT = NSFont.userFixedPitchFontOfSize(9.0f);
 
 	public void log(final String message) {
 		log.info(message);
@@ -55,7 +55,7 @@ public class CDTranscriptImpl implements Transcript {
 // attributes of the first character in the receiver are used.
 		textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0),
 		    message+"\n"); // @warning very bad performance
-		textView.setFont(fixedWidthFont);
+		textView.setFont(FIXED_WITH_FONT);
 		//textView.scrollRangeToVisible(new NSRange(textView.textStorage().length()-1, 0));
 	}
 }

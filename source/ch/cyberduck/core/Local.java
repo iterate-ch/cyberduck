@@ -162,6 +162,8 @@ public class Local extends File {
 	}
 
 	public long getSize() {
+		if(this.isDirectory())
+			return 0l;
 		return super.length();
 	}
 	
