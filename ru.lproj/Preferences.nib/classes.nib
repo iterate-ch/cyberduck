@@ -1,0 +1,78 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {
+                defaultPermissionsDownloadChanged = id; 
+                defaultPermissionsUploadChanged = id; 
+            }; 
+            CLASS = "ch.cyberduck.ui.cocoa.CDPreferencesController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {
+                alternatingRowBackgroundCheckbox = NSButton; 
+                anonymousField = NSTextField; 
+                autoUpdateCheckbox = NSButton; 
+                bringQueueToFrontCheckbox = NSButton; 
+                bufferField = NSTextField; 
+                chmodDownloadCheckbox = NSButton; 
+                chmodDownloadDefaultCheckbox = NSButton; 
+                chmodUploadCheckbox = NSButton; 
+                chmodUploadDefaultCheckbox = NSButton; 
+                columnModificationCheckbox = NSButton; 
+                columnOwnerCheckbox = NSButton; 
+                columnPermissionsCheckbox = NSButton; 
+                columnSizeCheckbox = NSButton; 
+                concurrentConnectionsField = NSTextField; 
+                concurrentConnectionsTimeoutField = NSTextField; 
+                connectmodeCombobox = NSPopUpButton; 
+                csAuthenticationCombobox = NSPopUpButton; 
+                csEncryptionCombobox = NSPopUpButton; 
+                defaultBufferButton = NSButton; 
+                dgroupr = NSButton; 
+                dgroupw = NSButton; 
+                dgroupx = NSButton; 
+                dotherr = NSButton; 
+                dotherw = NSButton; 
+                dotherx = NSButton; 
+                doubleClickCheckbox = NSButton; 
+                downerr = NSButton; 
+                downerw = NSButton; 
+                downerx = NSButton; 
+                downloadPathButton = NSButton; 
+                downloadPathField = NSTextField; 
+                duplicateCombobox = NSPopUpButton; 
+                editorCombobox = NSPopUpButton; 
+                encodingCombobox = NSPopUpButton; 
+                extensionsField = NSTextField; 
+                horizontalLinesCheckbox = NSButton; 
+                keychainCheckbox = NSButton; 
+                lineEndingCombobox = NSPopUpButton; 
+                listCheckbox = NSButton; 
+                loginField = NSTextField; 
+                newBrowserCheckbox = NSButton; 
+                processCheckbox = NSButton; 
+                protocolCombobox = NSPopUpButton; 
+                publickeyCombobox = NSPopUpButton; 
+                removeFromQueueCheckbox = NSButton; 
+                scAuthenticationCombobox = NSPopUpButton; 
+                scEncryptionCombobox = NSPopUpButton; 
+                showHiddenCheckbox = NSButton; 
+                systCheckbox = NSButton; 
+                transfermodeCombobox = NSPopUpButton; 
+                ugroupr = NSButton; 
+                ugroupw = NSButton; 
+                ugroupx = NSButton; 
+                uotherr = NSButton; 
+                uotherw = NSButton; 
+                uotherx = NSButton; 
+                uownerr = NSButton; 
+                uownerw = NSButton; 
+                uownerx = NSButton; 
+                verticalLinesCheckbox = NSButton; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}
