@@ -72,6 +72,7 @@ public class CDQueueController implements Observer, Validator {
 		* @param kind Tag specifiying if it is a download or upload.
      */
 	public void addTransfer(List roots, int kind) {
+		this.window().makeKeyAndOrderFront(null);
 		Queue queue = new Queue(roots, kind, this);
 		this.queueModel.addEntry(queue);
 		this.queueTable.reloadData();
