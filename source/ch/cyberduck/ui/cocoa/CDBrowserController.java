@@ -1207,21 +1207,20 @@ public class CDBrowserController extends CDController implements Observer {
 			}
 		}
 		if(files.size() > 0) {
-			NSApplication.sharedApplication().beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Delete", "Alert sheet title"), //title
+			this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Delete", "Alert sheet title"), //title
 			    alertText.toString(),
 			    NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
 			    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
 			    null //other button
 			),
-			    this.window(),
-                    files,
+			    this,
 			    new NSSelector
 			        ("deleteSheetDidEnd",
 			            new Class[]
 			            {
 				            NSWindow.class, int.class, Object.class
-			            }) // end selector
-			    );
+			            }), // end selector
+			    files);
 		}
 	}
 
@@ -1585,13 +1584,13 @@ public class CDBrowserController extends CDController implements Observer {
 	public boolean unmount(NSSelector selector, Object context) {
 		log.debug("unmount");
 		if(this.isConnected()) {
-			NSApplication.sharedApplication().beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title")+" "+this.workdir().getSession().getHost().getHostname(), //title
+			this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title")+" "+this.workdir().getSession().getHost().getHostname(), //title
 			    NSBundle.localizedString("The connection will be closed.", "Alert sheet text"), // message
 			    NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
 			    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
 			    null //other button
 			),
-			    this.window(), context, selector);
+			    this, selector, context);
 			return false;
 		}
 		return true;
