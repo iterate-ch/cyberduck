@@ -134,12 +134,16 @@ public class CDQueueController extends NSObject implements Observer {
         this.queueTable.setAllowsColumnReordering(false);
     }
 
-    public void startItem(Queue queue, Observer callback) {
-        this.callback = callback;
-        this.startItem(queue);
+    public void startItem(Queue queue) {
+        this.startItem(queue, false);
     }
 
-    public void startItem(Queue queue) {
+    public void startItem(Queue queue, Observer callback) {
+        this.callback = callback;
+        this.startItem(queue, false);
+    }
+
+    public void startItem(Queue queue, boolean resume) {
         log.info("Starting item:" + queue);
         this.queueTable.reloadData();
         this.queueTable.selectRow(CDQueuesImpl.instance().indexOf(queue), false);
@@ -170,7 +174,7 @@ public class CDQueueController extends NSObject implements Observer {
                 );
             }
         }
-        queue.start(new CDValidatorController(), this);
+        queue.start(new CDValidatorController(resume), this);
     }
 
     public void update(Observable observable, Object arg) {
@@ -305,8 +309,7 @@ public class CDQueueController extends NSObject implements Observer {
         while (enum.hasMoreElements()) {
             Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
             if (!queue.isRunning()) {
-                queue.getRoot().status.setResume(true);
-                this.startItem(queue, null);
+                this.startItem(queue, true);
             }
         }
     }
@@ -316,8 +319,7 @@ public class CDQueueController extends NSObject implements Observer {
         while (enum.hasMoreElements()) {
             Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
             if (!queue.isRunning()) {
-                queue.getRoot().status.setResume(false);
-                this.startItem(queue, null);
+                this.startItem(queue, false);
             }
         }
     }
