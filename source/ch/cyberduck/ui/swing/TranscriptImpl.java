@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.swing.swing;
+package ch.cyberduck.ui.swing;
 
 /*
  *  Copyright (c) 2002 David Kocher. All rights reserved.

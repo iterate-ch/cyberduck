@@ -38,13 +38,14 @@
 	<property name="classes" value="${build}/classes" />
 	<property name="resources" value="${home}/resources" />
 	<property name="doc" value="${home}/doc" />
-	<property name="classpath" value="/System/Library/Java/:${lib}/log4j.jar" /><!--:${lib}/xerces.jar:${lib}/xml.jar:${lib}/ant.jar:${lib}/junit.jar" />-->
-
+	<property name="classpath" value="/System/Library/Java/:${lib}/log4j.jar" />
+	
 	<!-- mac os x properties used by target 'app'-->
 	<property name="app.name" value="Cyberduck" />
 	<property name="app.bundle" value="${build}/${app.name}.app" />
 	<property name="app.contents" value="${app.bundle}/Contents" />
 	<property name="app.resources" value="${app.contents}/Resources" />
+	<property name="app.config" value="${app.resources}/conf" />
 	<property name="app.classes" value="${home}/${build}/intermediates/${app.name}.build/JavaClasses" />
 	<property name="app.jar" value="${app.resources}/Java" />
 	
@@ -77,6 +78,7 @@
 		<echo message="Building ${app.name}..."/>
 		<mkdir dir="${classes}" />
 		<mkdir dir="${build}" />
+		<mkdir dir="${app.config}" />
 	</target>
 
 	<target name="all-modules" depends="core,ftp,ssh,http,cocoa,swing"></target>
@@ -191,9 +193,9 @@
 		</fileset>
 	    </copy>
 
-	    <copy todir="${app.jar}">
+	    <copy todir="${app.config}">
 		<fileset dir="${config}">
-		    <include name="hosts.xml" />
+		    <include name="*.xml"/>
 		</fileset>
 	    </copy>
 	</target>

@@ -423,8 +423,8 @@ public class CDBrowserController implements Observer {
 	toolbar.setDelegate(this);
 	toolbar.setAllowsUserCustomization(true);
 	toolbar.setAutosavesConfiguration(true);
-	toolbar.setDisplayMode(NSToolbar.NSToolbarDisplayModeIconAndLabel);
-	mainWindow.setToolbar(toolbar);
+//	toolbar.setDisplayMode(NSToolbar.NSToolbarDisplayModeIconAndLabel);
+	this.window().setToolbar(toolbar);
     }
 
     

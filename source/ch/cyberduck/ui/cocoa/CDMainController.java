@@ -34,8 +34,8 @@ public class CDMainController {
 	Logger log = Logger.getRootLogger();
 //	log.setLevel(Level.OFF);
 //	log.setLevel(Level.WARN);
-//	log.setLevel(Level.DEBUG);
-	log.setLevel(Level.INFO);
+	log.setLevel(Level.DEBUG);
+//	log.setLevel(Level.INFO);
     }
 
     public void awakeFromNib() {
@@ -87,7 +87,7 @@ public class CDMainController {
 
     public void feedbackMenuClicked(Object sender) {
 	try {
-	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail")+"?subject=Cyberduck Feedback"));
+	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail")+"?subject=Cyberduck"));
 	}
 	catch(java.net.MalformedURLException e) {
 	    e.printStackTrace();

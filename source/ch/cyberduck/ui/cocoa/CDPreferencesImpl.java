@@ -63,6 +63,13 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
         props.setObjectForKey(value, property);
     }
 
+    public void setDefaults() {
+	super.setDefaults();
+//	log.debug(NSBundle.mainBundle().resourcePath());
+//	System.setProperty("sshtools.home", NSBundle.mainBundle().resourcePath());
+	System.setProperty("sshtools.config", NSBundle.mainBundle().resourcePath());
+    }
+
     /**
 	* Overwrite the default values with user props if any.
      */

@@ -91,12 +91,6 @@ public abstract class Preferences {//extends Properties {
 	defaults.put("mail", "mailto:dkocher@cyberduck.ch");
 	defaults.put("donate.url" , "http://www.cyberduck.ch/donate/");
 	defaults.put("website.url" , "http://www.cyberduck.ch/");
-        
-	System.setProperty("sshtools.home", System.getProperty("user.dir"));
-	System.setProperty("sshtools.config", System.getProperty("user.dir"));
-	System.out.println(System.getProperty("sshtools.home"));
-	System.out.println(System.getProperty("sshtools.config"));
-
         defaults.put("laf.default", javax.swing.UIManager.getSystemLookAndFeelClassName());
         //defaults.put("laf.default", javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
 //        defaults.put("bookmarks.default", "My Bookmarks");

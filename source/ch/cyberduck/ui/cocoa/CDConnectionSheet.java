@@ -119,7 +119,7 @@ public class CDConnectionSheet {
 						    NSControl.ControlTextDidChangeNotification,
 						    usernameField);
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
-//	this.textInputDidChange(null);
+//@todo	this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default"));
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
 //	this.pathField.setStringValue("~");
     }
