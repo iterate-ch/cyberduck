@@ -709,14 +709,14 @@ public class CDBrowserController implements Observer {
 	    item.setTarget(this);
 	    item.setAction(new NSSelector("disconnectButtonClicked", new Class[] {Object.class}));
 	}
-	else if (itemIdentifier.equals("Toggle Drawer")) {
-	    item.setLabel("Toggle Drawer");
-	    item.setPaletteLabel("Toggle Drawer");
-	    item.setToolTip("Show connection transcript");
-	    item.setImage(NSImage.imageNamed("transcript.icns"));
-	    item.setTarget(this);
-	    item.setAction(new NSSelector("drawerButtonClicked", new Class[] {Object.class}));
-	}
+//	else if (itemIdentifier.equals("Toggle Drawer")) {
+//	    item.setLabel("Toggle Drawer");
+//	    item.setPaletteLabel("Toggle Drawer");
+//	    item.setToolTip("Show connection transcript");
+//	    item.setImage(NSImage.imageNamed("transcript.icns"));
+//	    item.setTarget(this);
+//	    item.setAction(new NSSelector("drawerButtonClicked", new Class[] {Object.class}));
+//	}
 	else {
 	    // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
 	    // Returning null will inform the toolbar this kind of item is not supported.
@@ -748,11 +748,11 @@ public class CDBrowserController implements Observer {
 
 	 
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer"});
+	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info"});
     }
 
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Up", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Disconnect", "Toggle Drawer", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
+	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Up", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Disconnect", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
     }
 
     public void toolbarWillAddItem(NSNotification notification) {
