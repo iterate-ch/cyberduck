@@ -74,8 +74,12 @@ public class CDConnectionController extends NSObject implements Observer {
     public void setStatusLabel(NSTextField statusLabel) {
 	this.statusLabel = statusLabel;
     }
-    
 
+    private NSMenuItem recentConnectionsMenu;
+    public void setRecentConnectionsMenu(NSMenuItem recentConnectionsMenu) {
+	this.recentConnectionsMenu = recentConnectionsMenu;
+    }
+    
     public CDPathComboBox pathComboBox; // IBOutlet
     public NSTextField pathField; // IBOutlet
     public NSTextField portField; // IBOutlet

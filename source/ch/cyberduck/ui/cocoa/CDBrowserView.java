@@ -52,7 +52,7 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 
     public CDBrowserView(NSRect frame) {
 	super(frame);
-	log.debug("CDBrowserView:"+frame);
+	log.debug("CDBrowserView");
     }
 
     protected CDBrowserView(NSCoder decoder, long token) {
@@ -62,11 +62,12 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
     
     public void encodeWithCoder(NSCoder encoder) {
 	super.encodeWithCoder(encoder);
-	log.debug("CDBrowserView");
+	log.debug("encodeWithCoder");
     }
 
 
     public Object dataSource() {
+	log.debug("dataSource");
 	return this.model;
     }
     
@@ -137,19 +138,18 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 		List cache = ((Path)arg).cache();
 		java.util.Iterator i = cache.iterator();
 		model.clear();
-		this.reloadData();
 		while(i.hasNext()) {
 		    model.addEntry(i.next());
+		    this.reloadData();
 		}
-		this.reloadData();
 	    }
 	}
     }
 
-    
     public void reloadData() {
 	super.reloadData();
-	this.setNeedsDisplay(true);
+//	this.setNeedsDisplay(true);
+	this.display();
     }
     
     // ----------------------------------------------------------
@@ -231,10 +231,10 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	}
     }
 
-    public void viewDidEndLiveResize() {
-	super.viewDidEndLiveResize();
-	this.setNeedsDisplay(true);
-    }
+//    public void viewDidEndLiveResize() {
+//	super.viewDidEndLiveResize();
+//	this.setNeedsDisplay(true);
+  //  }
     
 /*
     public void sort(final String columnIdentifier, final boolean ascending) {

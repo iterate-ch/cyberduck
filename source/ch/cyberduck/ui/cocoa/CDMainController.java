@@ -146,6 +146,7 @@ public class CDMainController extends NSObject {
 //	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
 //	infoWindow.update(path, new Message(Message.SELECTION));
 //	infoWindow.orderFront(this);
+	infoWindow.makeKeyAndOrderFront(this);
     }
 
     public void deleteButtonPressed(NSObject sender) {

@@ -175,5 +175,8 @@ public class CDBrowserTableDataSource extends NSObject {
 	log.debug("removeEntry("+row+")");
 	data.remove(row);
     }
-    
+
+    public int indexOf(Object o) {
+	return data.indexOf(o);
+    }
 }

@@ -95,4 +95,8 @@ public class CDTransferTableDataSource extends NSObject {//implements NSTableVie
 	log.debug("getEntry("+row+")");
 	return this.data.get(row);
     }
+    
+    public int indexOf(Object o) {
+	return data.indexOf(o);
+    }    
 }

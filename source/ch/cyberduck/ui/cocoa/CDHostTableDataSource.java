@@ -87,4 +87,8 @@ public class CDHostTableDataSource extends NSObject {
     public void removeEntry(int row) {
 	data.remove(row);
     }
+
+    public int indexOf(Object o) {
+	return data.indexOf(o);
+    }
 }

@@ -31,7 +31,7 @@ import ch.cyberduck.core.Preferences;
 public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
     private static Logger log = Logger.getLogger(Preferences.class);
 
-    private NSUserDefaults defaults = NSUserDefaults.standardUserDefaults();
+    private NSUserDefaults defaults;
 
     public String getProperty(String property) {
         log.debug("getProperty(" + property + ")");
@@ -63,14 +63,20 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
         defaults.setObjectForKey(value, property);
     }
 
+    /**
+	* Overwrite the default values with user defaults if any.
+     */
     public void load() {
         log.debug("load()");
-	//@todo
-	//defaults.registerDefaults(NSDictionary dictionary)
-
+	defaults = NSUserDefaults.standardUserDefaults();
     }
 
     public void store() {
+	// Saves any modifications to the persistent domains and updates all persistent domains that were not modified to
+	// what is on disk. Returns false if it could not save data to disk. Because synchronize is automatically invoked at
+	// periodic intervals, use this method only if you cannot wait for the automatic synchronization (for example, if your
+	// application is about to exit) or if you want to update user defaults to what is on disk even though you have not made
+	// any changes.
 	defaults.synchronize();
     }
 }

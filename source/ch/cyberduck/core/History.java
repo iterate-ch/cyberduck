@@ -19,94 +19,41 @@ package ch.cyberduck.core;
  */
 
 import org.apache.log4j.Logger;
+import ch.cyberduck.core.Host;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
- * Not yet implemented
+ * Keeps track of recently connected hosts
  * @version $Id$
  */
-public class History extends java.util.ArrayList {
-
+public class History extends ArrayList {
     private static Logger log = Logger.getLogger(History.class);
 
-    public History() {
-        //@todo impl
+    private static History instance;
+
+    private History() {
+	//
     }
 
-    /*
-    public void save() {
-        log.debug("[History] save()");
-        FileOutputStream st1 = null;
-        ObjectOutputStream st2 = null;
-        try {
-            st1 = new FileOutputStream(new File(Cyberduck.PREFS_DIRECTORY, Cyberduck.HISTORY_FILE));
-            st2 = new ObjectOutputStream(st1);
-            java.util.Iterator iterator = this.iterator();
-            while (iterator.hasNext()) {
-                st2.writeObject(iterator.next());
-            }
-        }
-        catch(IOException e) {
-            System.err.println("[History] Problem saving transfer history: " + e.getMessage());
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                if (st1 != null)
-                    st1.close();
-                if (st2 != null)
-                    st2.close();
-            }
-            catch(IOException e) {
-                System.err.println("[History] Problem closing output stream: " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
+    public History instance() {
+        if(null == instance) {
+            String strVendor = System.getProperty("java.vendor");
+            if(strVendor.indexOf("Apple") != -1)
+                instance = new ch.cyberduck.ui.cocoa.CDHistoryImpl();
+            else
+                instance = new ch.cyberduck.ui.swing.HistoryImpl();
+	}
+        return instance;
     }
-    */
 
-    /*
-    public static java.util.List restore() {
-        log.debug("[History] restore()");
-        java.util.List l = new java.util.ArrayList();
-        FileInputStream st1 = null;
-        ObjectInputStream st2 = null;
-        File path = new File(Cyberduck.PREFS_DIRECTORY, Cyberduck.HISTORY_FILE);
-        if (path.exists()) {
-            try {
-                st1 = new FileInputStream(path);
-                st2 = new ObjectInputStream(st1);
-                while(true) {
-                    try {
-                        Bookmark bookmark = (Bookmark)st2.readObject();
-                        l.add(bookmark);
-                    }
-                    catch(ClassNotFoundException e) {
-                        System.err.println("[History] " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                }
-            }
-            catch(EOFException e) {
-                //actually no error. Just the end of the file.
-            }
-            catch(IOException e) {
-                System.err.println("[History] Error while reading from '" + Cyberduck.TABLE_FILE + "':  " + e.getMessage());
-                e.printStackTrace();
-            }
-            finally {
-                try {
-                    if (st1 != null)
-                        st1.close();
-                    if (st2 != null)
-                        st2.close();
-                }
-                catch(IOException e) {
-                    System.err.println("[History] Error while closing output stream: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-        }
-        return l;
-    }
+    /**
+	* Ensure persistency.
      */
+    public abstract void save();
+
+    /**
+	* Read from file into memory.
+     */
+    public abstract List restore();
 }

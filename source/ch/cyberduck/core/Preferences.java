@@ -41,14 +41,7 @@ public abstract class Preferences {//extends Properties {
 
     private static Logger log = Logger.getLogger(Preferences.class);
 
-//    public static File PREFS_DIRECTORY = new File(System.getProperty("user.home"), ".cyberduck");
-//    public static final String PREFERENCES_FILE = "cyberduck.preferences";
-
-    //    private static File PREFS_DIRECTORY = null;
-//    private static final String PREFERENCES_FILE = null;
     private static Preferences current = null;
-//    private static Dimension screenSize = null;
-//    private static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     /**
         * Use #instance instead.
@@ -61,7 +54,7 @@ public abstract class Preferences {//extends Properties {
      * @return The singleton instance of me.
      */
     public static Preferences instance() {
-        if(current == null) {
+        if(null == current) {
             String strVendor = System.getProperty("java.vendor");
             if(strVendor.indexOf("Apple") != -1)
                 current = new ch.cyberduck.ui.cocoa.CDPreferencesImpl();

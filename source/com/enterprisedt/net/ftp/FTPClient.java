@@ -25,6 +25,9 @@
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.5  2003/04/23 13:20:23  dkocher
+ *        No log message.
+ *
  *        Revision 1.4  2003/04/16 17:24:34  dkocher
  *        No log message.
  *
@@ -779,28 +782,28 @@ public class FTPClient {
         throws IOException, FTPException {
 
         String reply = control.sendCommand("HELP " + command);
-        String[] validCodes = {"211", "214"};
-        lastValidReply = control.validateReply(reply, validCodes);
-        return lastValidReply.getReplyText();
-    }
+	    String[] validCodes = {"211", "214"};
+	    lastValidReply = control.validateReply(reply, validCodes);
+	    return lastValidReply.getReplyText();
+	}
 
     /**
-     *  Quit the FTP session
+	*  Quit the FTP session
      *
      */
     public void quit() throws IOException, FTPException {
-
-        try {
-            String reply = control.sendCommand("QUIT");
-            String[] validCodes = {"221", "226"};
-            lastValidReply = control.validateReply(reply, validCodes);
-        }
-        finally { // ensure we clean up the connection
-            control.logout();
-            control = null;
-        }
+	if(control != null) {
+	    try {
+		String reply = control.sendCommand("QUIT");
+		String[] validCodes = {"221", "226"};
+		lastValidReply = control.validateReply(reply, validCodes);
+	    }
+	    finally { // ensure we clean up the connection
+		control.logout();
+		control = null;
+	    }
+	}
     }
-
 }
 
 

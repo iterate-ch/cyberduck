@@ -56,6 +56,7 @@ public class CDTransferView extends NSTableView implements Observer {
     }
 
     public Object dataSource() {
+	log.debug("dataSource");
 	return this.model;
     }    
 

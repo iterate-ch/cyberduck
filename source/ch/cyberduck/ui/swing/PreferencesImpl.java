@@ -29,10 +29,9 @@ import java.awt.Dimension;
 import ch.cyberduck.core.Preferences;
 
 public class PreferencesImpl extends Preferences { //PreferencesImplSwing
-
     private static Logger log = Logger.getLogger(Preferences.class);
 
-    private static File PREFS_DIRECTORY = new File(System.getProperty("user.home"), ".cyberduck");
+    private static final File PREFS_DIRECTORY = new File(System.getProperty("user.home"), ".cyberduck");
     private static final String PREFERENCES_FILE = "cyberduck.preferences";
     private static Dimension screenSize = null;
 

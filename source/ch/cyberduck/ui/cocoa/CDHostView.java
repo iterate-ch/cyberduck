@@ -49,6 +49,7 @@ public class CDHostView extends NSTableView implements Observer {
     }
 
     public Object dataSource() {
+	log.debug("dataSource");
 	return this.model;
     }
 
@@ -58,7 +59,9 @@ public class CDHostView extends NSTableView implements Observer {
 
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
-	this.addTableColumn(new CDImageTableColumn());
+
+	this.addTableColumn(new CDStatusTableColumn());
+	this.addTableColumn(new CDButtonTableColumn());
 	this.setDataSource(model);
 	
 
@@ -69,12 +72,10 @@ public class CDHostView extends NSTableView implements Observer {
 	this.model.addEntry(new Host("ftp", "hostname", 12, null));
 
 
-	if(this.tableColumnWithIdentifier("STATUS") != null)
-	    this.tableColumnWithIdentifier("STATUS").setDataCell(new NSImageCell());
-	/*
-	if(this.tableColumnWithIdentifier("BUTTON") != null)
-	    this.tableColumnWithIdentifier("BUTTON").setDataCell(new CDButtonCell());
-	 */
+//	if(this.tableColumnWithIdentifier("STATUS") != null)
+//	    this.tableColumnWithIdentifier("STATUS").setDataCell(new NSImageCell());
+//	if(this.tableColumnWithIdentifier("BUTTON") != null)
+//	    this.tableColumnWithIdentifier("BUTTON").setDataCell(new CDButtonCell());
 //	this.tableColumnWithIdentifier("HOST").setDataCell(new CDHostCell());
     }
 
@@ -122,7 +123,7 @@ public class CDHostView extends NSTableView implements Observer {
 		if(msg.getTitle().equals(Message.OPEN)) {
 		    model.addEntry(o);
 		    this.reloadData();
-		    this.selectRow();
+		    this.selectRow(model.indexOf(o), false);
 		}
 		if(msg.getTitle().equals(Message.CLOSE)) {
 		    model.removeEntry(o);
@@ -132,9 +133,37 @@ public class CDHostView extends NSTableView implements Observer {
 	}
     }
 
+    class CDStatusTableColumn extends NSTableColumn {
+	public CDStatusTableColumn() {
+	    super();
+	    log.debug("NSTableColumn");
+	}
 
-    class CDImageTableColumn extends NSTableColumn {
-	public CDImageTableColumn() {
+	public Object identifier() {
+	    return "STATUS";
+	}
+	
+	/**
+	* Returns the NSCell object used by the NSTableView to draw values for the receiver. NSTableView
+	 * always calls this method. By default, this method just calls dataCell. Subclassers can override if
+	 * they need to potentially use different cells for different rows. Subclasses should expect this method to be
+	 * invoked with row equal to -1 in cases where no actual row is involved but the table view needs to get
+	 * some generic cell info.
+	 */
+	public NSCell dataCellForRow(int row) {
+	    log.debug("dataCellForRow");
+	    //	    return new CDImageCell(NSImage.imageNamed("reload.tiff"));
+	    Host h = (Host)model.getEntry(row);
+	    if(h.hasValidSession()) {
+		return new NSImageCell(NSImage.imageNamed("blipBlue.tiff"));
+	    }
+	    return new NSImageCell(NSImage.imageNamed("blipGray.tiff"));
+	}
+    }
+	
+	
+    class CDButtonTableColumn extends NSTableColumn {
+	public CDButtonTableColumn() {
 	    super();
 	    log.debug("NSTableColumn");
 	}
@@ -155,14 +184,14 @@ public class CDHostView extends NSTableView implements Observer {
 //	    return new CDImageCell(NSImage.imageNamed("reload.tiff"));
 	    Host h = (Host)model.getEntry(row);
 	    if(h.hasValidSession()) {
-		return new CDImageCell(NSImage.imageNamed("stop.tiff"));
+		return new CDButtonCell(NSImage.imageNamed("stop.tiff"));
 	    }
-	    return new CDImageCell(NSImage.imageNamed("reload.tiff"));
+	    return new CDButtonCell(NSImage.imageNamed("reload.tiff"));
 	}
 
 
-	class CDImageCell extends NSButtonCell {
-	    public CDImageCell(NSImage img) {
+	class CDButtonCell extends NSButtonCell {
+	    public CDButtonCell(NSImage img) {
 		super();
 		this.setImage(img);
 		//	    this.setTransparent(true);
@@ -190,7 +219,6 @@ public class CDHostView extends NSTableView implements Observer {
 		host.deleteObservers();
 	    }
 	}
-
     }
 }
 
