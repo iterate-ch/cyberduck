@@ -11,16 +11,21 @@
 		<key>202</key>
 		<string>225 367 573 291 0 0 1024 746 </string>
 		<key>511</key>
-		<string>346 458 332 108 0 0 1024 746 </string>
+		<string>300 458 423 104 0 0 1024 746 </string>
 		<key>896</key>
 		<string>364 197 296 539 0 0 1024 746 </string>
 		<key>953</key>
-		<string>462 429 187 232 0 0 1024 746 </string>
+		<string>570 493 187 244 0 0 1024 746 </string>
 	</dict>
 	<key>IBFramework Version</key>
 	<string>364.0</string>
 	<key>IBOldestOS</key>
 	<integer>2</integer>
+	<key>IBOpenObjects</key>
+	<array>
+		<integer>953</integer>
+		<integer>511</integer>
+	</array>
 	<key>IBSystem Version</key>
 	<string>7U16</string>
 </dict>

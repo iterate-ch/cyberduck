@@ -3,14 +3,14 @@
         {CLASS = CDTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {
             ACTIONS = {
-                createFileButtonClicked = id; 
                 deleteFileButtonClicked = id; 
                 downloadAsButtonClicked = id; 
                 downloadButtonClicked = id; 
                 editButtonClicked = id; 
+                fileButtonClicked = id; 
                 folderButtonClicked = id; 
                 infoButtonClicked = id; 
-                refreshButtonClicked = id; 
+                reloadButtonClicked = id; 
                 syncButtonClicked = id; 
                 uploadButtonClicked = id; 
             }; 
@@ -22,6 +22,7 @@
             CLASS = "ch.cyberduck.ui.cocoa.CDBrowserController"; 
             LANGUAGE = Java; 
             OUTLETS = {
+                actionPopupButton = NSPopUpButton; 
                 addBookmarkButton = NSButton; 
                 backButton = NSButton; 
                 bookmarkDrawer = NSDrawer; 
