@@ -26,7 +26,7 @@ import javax.swing.*;
 * Singleton text area to append logging messages.
  * @version $Id$
  */
-public class TranscriptImpl implements Transcripter { //TranscriptImplSwing
+public class TranscriptImpl implements Transcripter {
 
     private JTextArea view;
     

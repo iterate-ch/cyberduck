@@ -33,8 +33,8 @@ public class CDMainController {
 	org.apache.log4j.BasicConfigurator.configure();
 	Logger log = Logger.getRootLogger();
 	log.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
-	System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "info");
-	System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
+//	System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "info");
+//	System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
 //	log.setLevel(Level.OFF);
 //	log.setLevel(Level.DEBUG);
 //	log.setLevel(Level.INFO);

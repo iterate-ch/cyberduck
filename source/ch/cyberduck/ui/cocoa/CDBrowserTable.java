@@ -51,44 +51,21 @@ public class CDBrowserTable extends NSTableView {
 	log.debug(e);
     }
 
-
         // ----------------------------------------------------------
     // Drag methods
     // ----------------------------------------------------------
 
-    public void startedDraggingImage(NSImage image, NSPoint point) {
-	log.debug("startedDraggingImage:"+point);
-    }
-
-    public void finishedDraggingImage(NSImage image, NSPoint point, boolean accepted) {
-	log.debug("finishedDraggingImage:"+accepted);
-    }
-
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
 	log.debug("finishedDraggingImage:"+operation);
-	Path p = (Path)browserModel.getEntry(this.selectedRow());
-	p.setLocal(new java.io.File(dropDestination.getPath(), p.getName()));
-	CDTransferController controller = new CDTransferController(p, Queue.KIND_DOWNLOAD);
-	controller.transfer(p.status.isResume());
-    }
-    
-    public boolean ignoreModifierKeysWhileDragging() {
-//	log.debug("ignoreModifierKeysWhileDragging");
-	return true;
-    }
-
-    public boolean verticalMotionCanBeginDrag() {
-	log.debug("verticalMotionCanBeginDrag");
-	return true;
-    }
-
-    public NSImage dragImageForRows(NSArray dragRows, NSEvent dragEvent, NSMutablePoint dragImageOffset) {
-	log.debug("dragImageForRows:"+dragRows);
-	if(dragRows.count() == 1) {
-	    Path p = (Path)browserModel.getEntry(((Integer)dragRows.objectAtIndex(0)).intValue());
-	    return NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
+	if(promisedDragPath != null) {
+	    CDTransferController controller = new CDTransferController(promisedDragPath, Queue.KIND_DOWNLOAD);
+	    controller.transfer(promisedDragPath.status.isResume());
+	    promisedDragPath = null;
 	}
-	return null;
+    }
+
+    public boolean ignoreModifierKeysWhileDragging() {
+	return true;
     }
     
     public int draggingSourceOperationMaskForLocal(boolean local) {
@@ -100,32 +77,7 @@ public class CDBrowserTable extends NSTableView {
 
     }
 
-//    public void mouseDragged(NSEvent event) {
-//	super.mouseDragged(event);
-//	log.debug("mouseDragged:"+event);
-//	if(selectedRow() != -1) {
-//	    Path p = (Path)browserModel.getEntry(selectedRow());
-//	    NSPoint dragPosition = this.convertPointFromView(event.locationInWindow(), null);
-//	    NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
-//	    this.dragPromisedFilesOfTypes(new NSArray(p.getExtension()), imageRect, this, true, event);
-//	}
-//    }
-
-    /**
-	* Implemented by the owner (previously declared in a declareTypes message) to provide promised data.
-	    * The owner receives a pasteboardProvideDataForType message from the sender pasteboard when the data is
-	    * required for a paste operation; type gives the type of data being requested. The requested data should
-	    * be written to sender using the setDataForType, setPropertyListForType, or setStringForType methods.
-	    */
-    public void pasteboardProvideDataForType(NSPasteboard pboard, String type) {
-	log.debug("pasteboardProvideDataForType:"+type);
-	if(type.equals(NSPasteboard.FilesPromisePboardType)) {
-	    Path p = (Path)browserModel.getEntry(selectedRow());
-	    pboard.setStringForType(p.getName(), NSPasteboard.FilesPromisePboardType);
-	}
-    }
-
-    private java.net.URL dropDestination;
+    private Path promisedDragPath;
 
     /**
 	@return the names (not full paths) of the files that the receiver promises to create at dropDestination.
@@ -136,37 +88,12 @@ public class CDBrowserTable extends NSTableView {
      */
     public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
 	log.debug("namesOfPromisedFilesDroppedAtDestination:"+dropDestination);
-	this.dropDestination = dropDestination;
-	Path p = (Path)browserModel.getEntry(this.selectedRow());
-
-	log.debug("namesOfPromisedFilesDroppedAtDestination:return:"+p.getName());
-	return new NSArray(new String[]{p.getName()});
+	this.promisedDragPath = (Path)browserModel.getEntry(this.selectedRow());
+	promisedDragPath.setLocal(new java.io.File(dropDestination.getPath(), promisedDragPath.getName()));
+	return new NSArray(new String[]{promisedDragPath.getName()});
     }
 
-    
-    /**
-     *  Invoked after the released image has been removed from the screen and the previous prepareForDragOperation
-     * message has returned true. draggingInfo contains information about the dragging operation. This method
-     * should do the real work of importing the pasteboard data represented by the image. If the receiver
-     * accepts the data, returns true, otherwise returns false.
-     */
-    public boolean performDragOperation(NSDraggingInfo draggingInfo) {
-	log.debug("performDragOperation:"+draggingInfo);
-	NSPasteboard pboard = draggingInfo.draggingPasteboard();
-	if(pboard.types().containsObject(NSPasteboard.FilesPromisePboardType)) {
-	    NSArray filenames = draggingInfo.namesOfPromisedFilesDroppedAtDestination(dropDestination);
-	    log.debug(filenames);
-
-//	    Path p = (Path)this.getEntry(((Integer)rows.objectAtIndex(this.selectedRow())).intValue());
-//	    p.setLocal(new File(dropDestination.getPath(), p.getName()));
-//	    CDTransferController controller = new CDTransferController(host, p, Queue.KIND_DOWNLOAD);
-//	    controller.transfer(p.status.isResume());
-
-	    return true;
-	}
-	return false;
-    }
-    
+        
         // ----------------------------------------------------------
     // BrowserTable delegate methods
     // ----------------------------------------------------------
@@ -368,8 +295,6 @@ public class CDBrowserTable extends NSTableView {
 	public int tableViewValidateDrop( NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 	    log.debug("tableViewValidateDrop");
 	    tableView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-	//tableView.setDropRowAndDropOperation(tableView.numberOfRows(), NSTableView.DropAbove);
-//	    return NSTableView.DropOn;
 	    return NSTableView.DropAbove;
 	}
 
@@ -402,14 +327,7 @@ public class CDBrowserTable extends NSTableView {
 //		    Path path = parent.copy();
 //		    path.setLocal(new java.io.File(filename));
 		    //TODO TODO TODO TODO TODO
-		
-//		    if(session instanceof ch.cyberduck.core.ftp.FTPSession) {
-//			path = new FTPPath((FTPSession)session, parent.getAbsolute(), new java.io.File(filename));
-//		    }
-//		    else if(session instanceof ch.cyberduck.core.sftp.SFTPSession) {
-//			path = new SFTPPath((SFTPSession)session, parent.getAbsolute(), new java.io.File(filename));
-//		    }
-		
+				
 		    //TODO TODO TODO TODO TODO
 		    //CDTransferController controller = new CDTransferController(host, path, Queue.KIND_UPLOAD);
 		    //controller.transfer(path.status.isResume());
@@ -417,7 +335,6 @@ public class CDBrowserTable extends NSTableView {
 	    }
 	    tableView.reloadData();
 	    tableView.setNeedsDisplay(true);
-// Select the last song.
 	    tableView.selectRow(row+i-1, false);
 	    return true;
 	}
@@ -436,19 +353,20 @@ public class CDBrowserTable extends NSTableView {
 	    */
 	public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
 	    log.debug("tableViewWriteRowsToPasteboard:"+rows);
-	    Path p = (Path)this.getEntry(selectedRow());
+	    Path p = (Path)this.getEntry(((Integer)rows.objectAtIndex(rows.count()-1)).intValue());
 
-//	    pboard.declareTypes(new NSArray(NSPasteboard.FilesPromisePboardType), CDBrowserTable.this);
-//	    pboard.setStringForType(p.getName(), NSPasteboard.FilesPromisePboardType);
-
-	    NSRect rowRect = tableView.convertRectFromView(tableView.rectOfRow(tableView.selectedRow()), tableView);
-	    NSPoint dragPosition = rowRect.origin();	
-
-//	    NSPoint dragPosition = tableView.convertPointFromView(rectOfRow(selectedRow()).origin(), null);
+	    NSEvent event = NSApplication.sharedApplication().currentEvent();
+	    NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
 	    NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
-	    //• 	The typeArray argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
 
-	    CDBrowserTable.this.dragPromisedFilesOfTypes(new NSArray(p.getExtension()), imageRect, CDBrowserTable.this, false, null);
+	    //• 	The typeArray argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
+	    NSArray type;
+	    if(p.isFile()) {
+		CDBrowserTable.this.dragPromisedFilesOfTypes(new NSArray(p.getExtension()), imageRect, CDBrowserTable.this, false, NSApplication.sharedApplication().currentEvent());
+		return false;
+	    }
+	    if(p.isDirectory())
+		CDBrowserTable.this.dragPromisedFilesOfTypes(new NSArray("'fldr'"), imageRect, CDBrowserTable.this, false, NSApplication.sharedApplication().currentEvent());
 	    return false;
 	}
 

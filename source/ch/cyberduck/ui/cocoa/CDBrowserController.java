@@ -204,8 +204,6 @@ public class CDBrowserController implements Observer {
     }
 
     private static final NSColor TABLE_CELL_SHADED_COLOR = NSColor.colorWithCalibratedRGB(0.929f, 0.953f, 0.996f, 1.0f);
-
-
     
     // ----------------------------------------------------------
     // FavoritesTable delegate methods

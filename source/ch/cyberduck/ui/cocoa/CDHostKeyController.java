@@ -40,7 +40,6 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 
     public CDHostKeyController(NSWindow parentWindow) throws InvalidHostFileException {
 	super(System.getProperty("user.home")+"/.ssh/known_hosts");
-//	super(CDPreferencesImpl.instance().getProperty("sshtools.home"));
 	this.parentWindow = parentWindow;
     }
 

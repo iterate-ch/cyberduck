@@ -59,7 +59,6 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
         if (v) {
             value = "true";
         }
-	//NSUserprops.setObjectForKey( Object value, String defaultName)
 	//Sets the value of the default identified by defaultName in the standard application domain. Setting a default has no effect on the value returned by the objectForKey method if the same key exists in a domain that precedes the application domain in the search list.
         this.props.setObjectForKey(value, property);
     }
