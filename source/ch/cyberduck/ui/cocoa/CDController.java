@@ -18,10 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSMutableParagraphStyle;
-import com.apple.cocoa.application.NSParagraphStyle;
-import com.apple.cocoa.application.NSWindow;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
@@ -39,7 +36,7 @@ public abstract class CDController {
 	}
 	
 	protected static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
-																							  new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+																	  new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 	
 	protected void finalize() throws Throwable {
 		log.debug("------------- finalize:"+this.toString());
@@ -79,10 +76,14 @@ public abstract class CDController {
 		}
     }
 
-    public void endSheet() {
+    public void endSheet(int tag) {
         log.debug("endSheet");
         if(this.hasSheet()) {
-            NSApplication.sharedApplication().endSheet(this.window().attachedSheet());
+            NSApplication.sharedApplication().endSheet(this.window().attachedSheet(), tag);
+			this.window().attachedSheet().orderOut(null);
+			synchronized(this) {
+				this.notifyAll();
+			}
         }
     }
 
@@ -118,11 +119,18 @@ public abstract class CDController {
         }
     }
 
+    public void sheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
+        //
+    }
+
     public void beginSheet(NSWindow sheet) {
-		this.beginSheet(sheet, new NSSelector("sheetDidEnd",
-		    new Class[]{NSWindow.class, int.class, Object.class}) // did end selector
-		);
-	}
+        this.beginSheet(sheet, new NSSelector
+                ("sheetDidClose",
+                        new Class[]
+                        {
+                            NSWindow.class, int.class, Object.class
+                        })); // end selector);
+    }
 
 	public void beginSheet(NSWindow sheet, NSSelector endSelector) {
 		this.beginSheet(sheet, endSelector, null);
@@ -151,14 +159,6 @@ public abstract class CDController {
             this.notifyAll();
         }
     }
-
-	public void sheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-		log.debug("sheetDidEnd:"+sheet);
-		sheet.orderOut(null);
-		synchronized(this) {
-			this.notifyAll();
-		}
-	}
 
 	public boolean hasSheet() {
 		return this.window().attachedSheet() != null;

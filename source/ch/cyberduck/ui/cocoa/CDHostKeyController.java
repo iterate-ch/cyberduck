@@ -24,6 +24,7 @@ import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSWindow;
+import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
@@ -39,11 +40,6 @@ import ch.cyberduck.core.Preferences;
  */
 public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 	private static Logger log = Logger.getLogger(CDLoginController.class);
-
-	protected void finalize() throws Throwable {
-		log.debug("------------- finalize:"+this.toString());
-		super.finalize();
-	}
 
 	private static NSMutableArray instances = new NSMutableArray();
 
@@ -100,7 +96,6 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 
 	public void keyMismatchSheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
 		log.debug("keyMismatchSheetDidClose");
-		sheet.orderOut(null);
 		try {
 			if(returncode == NSAlertPanel.DefaultReturn) {
 				this.allowHost(host, publicKey, false);
@@ -120,9 +115,6 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		}
 		catch(InvalidHostFileException e) {
 			log.error(e.getMessage());
-		}
-		synchronized(this.windowController) {
-			this.windowController.notifyAll();
 		}
 	}
 
@@ -151,7 +143,6 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 
 	public void unknownHostSheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
 		log.debug("unknownHostSheetDidClose");
-		sheet.orderOut(null);
 		try {
 			if(returncode == NSAlertPanel.DefaultReturn) {
 				this.allowHost(host, publicKey, false); // allow host
@@ -172,8 +163,9 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		catch(InvalidHostFileException e) {
 			log.error(e.getMessage());
 		}
-		synchronized(this.windowController) {
-			this.windowController.notifyAll();
-		}
 	}
+
+	public void closeSheet(NSButton sender) {
+        this.windowController.endSheet(sender.tag());
+    }	
 }

@@ -113,31 +113,40 @@ public class CDLoginController extends CDController implements LoginController {
 		this.login = login;
 		this.textField.setStringValue(message);
 		this.userField.setStringValue(login.getUsername());
-		this.windowController.beginSheet(window());
+		this.windowController.beginSheet(this.window(),
+										 this,
+										 new NSSelector
+										 ("loginSheetDidClose",
+										  new Class[]
+										  {
+											  NSWindow.class, int.class, Object.class
+										  }), // end selector
+										 null);
 	    this.windowController.waitForSheetEnd();
 		return this.login;
 	}
 
-	public void closeSheet(NSButton sender) {
+	public void loginSheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
 		if(null == userField.objectValue() || userField.objectValue().equals("")) {
 			log.warn("Value of username textfield is null");
 		}
 		if(null == passField.objectValue() || passField.objectValue().equals("")) {
 			log.warn("Value of password textfield is null");
 		}
-		switch(sender.tag()) {
-			case (NSAlertPanel.DefaultReturn):
-				log.info("Updating login credentials...");
-				this.login.setTryAgain(true);
-				this.login.setUsername((String)userField.objectValue());
-				this.login.setPassword((String)passField.objectValue());
-				this.login.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
-				break;
-			case (NSAlertPanel.AlternateReturn):
-				log.info("Cancelling login...");
-				this.login.setTryAgain(false);
-				break;
+		if(returncode == NSAlertPanel.DefaultReturn) {
+			log.info("Updating login credentials...");
+			this.login.setTryAgain(true);
+			this.login.setUsername((String)userField.objectValue());
+			this.login.setPassword((String)passField.objectValue());
+			this.login.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
 		}
-		this.windowController.endSheet();
+		if(returncode == NSAlertPanel.AlternateReturn) {
+			log.info("Cancelling login...");
+			this.login.setTryAgain(false);
+		}
 	}
+
+    public void closeSheet(NSButton sender) {
+        this.windowController.endSheet(sender.tag());
+    }
 }

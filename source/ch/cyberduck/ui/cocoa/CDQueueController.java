@@ -278,7 +278,7 @@ public class CDQueueController extends CDController {
 		if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
 			((ch.cyberduck.core.sftp.SFTPSession)queue.getSession()).setHostKeyVerificationController(new CDHostKeyController(this));
 		}
-        if (queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
+        if (queue.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
             ((ch.cyberduck.core.ftps.FTPSSession)queue.getSession()).setTrustManager(
                     new CDX509TrustManagerController(this));
         }
