@@ -736,10 +736,6 @@ public class CDBrowserController implements Observer {
 		this.mounted = true;
     }
 	
-    public boolean isMounted() {
-		return this.mounted;
-    }
-	
     public void unmount() {
 		log.debug("unmount");
 		if(host != null) {
@@ -812,25 +808,25 @@ public class CDBrowserController implements Observer {
 			return !this.isMounting;
 		}
 		if(label.equals(NSBundle.localizedString("Refresh"))) {
-			return this.isMounted();
+			return this.mounted;
 		}
 		else if(label.equals(NSBundle.localizedString("Download"))) {
-			return this.isMounted() && browserTable.selectedRow() != -1;
+			return this.mounted && browserTable.selectedRow() != -1;
 		}
 		else if(label.equals(NSBundle.localizedString("Upload"))) {
-			return this.isMounted();
+			return this.mounted;
 		}
 		else if(label.equals(NSBundle.localizedString("Delete"))) {
-			return this.isMounted() && browserTable.selectedRow() != -1;
+			return this.mounted && browserTable.selectedRow() != -1;
 		}
 		else if(label.equals(NSBundle.localizedString("New Folder"))) {
-			return this.isMounted();
+			return this.mounted;
 		}
 		else if(label.equals(NSBundle.localizedString("Get Info"))) {
-			return this.isMounted() && browserTable.selectedRow() != -1;
+			return this.mounted && browserTable.selectedRow() != -1;
 		}
 		else if (label.equals(NSBundle.localizedString("Disconnect"))) {
-			return this.isMounted() && host.getSession().isConnected();
+			return this.mounted && host.getSession().isConnected();
 		}
 		return true;
     }
@@ -840,28 +836,28 @@ public class CDBrowserController implements Observer {
         String sel = cell.action().name();
 		log.debug("validateMenuItem:"+sel);
         if (sel.equals("gotoButtonClicked:")) {
-			return this.isMounted();
+			return this.mounted;
         }
         if (sel.equals("infoButtonClicked:")) {
-			return this.isMounted() && browserTable.selectedRow() != -1;
+			return this.mounted && browserTable.selectedRow() != -1;
         }
         if (sel.equals("folderButtonClicked:")) {
-			return this.isMounted();
+			return this.mounted;
         }
         if (sel.equals("deleteButtonClicked:")) {
-			return this.isMounted() && browserTable.selectedRow() != -1;
+			return this.mounted && browserTable.selectedRow() != -1;
         }
         if (sel.equals("refreshButtonClicked:")) {
-			return this.isMounted();
+			return this.mounted;
         }
         if (sel.equals("insideButtonClicked:")) {
-			return this.isMounted() && browserTable.selectedRow() != -1;
+			return this.mounted && browserTable.selectedRow() != -1;
         }
         if (sel.equals("upButtonClicked:")) {
-			return this.isMounted();
+			return this.mounted;
         }
         if (sel.equals("backButtonClicked:")) {
-			return this.isMounted();
+			return this.mounted;
         }
         return true;
     }

@@ -126,7 +126,7 @@ public class Permission {//implements java.io.Serializable {
 		* @return i.e. rwxrwxrwx (777)
      */
     public String toString() {
-		return this.getString()+" ("+this.getCode()+")";
+		return this.getString()+" ("+this.getOctalCode()+")";
     }
 	
     /**
@@ -140,17 +140,24 @@ public class Permission {//implements java.io.Serializable {
     }
 	
     /**
-		* @return The unix equivalent access code like 777
+		* @return The unix equivalent octal access code like 777
      */
-    public int getCode() {
-        String owner = ""+ this.getAccessNumber(this.getOwnerPermissions());
-        String group = ""+ this.getAccessNumber(this.getGroupPermissions());
-        String other = ""+ this.getAccessNumber(this.getOtherPermissions());
+    public int getOctalCode() {
+        String owner = ""+ this.getOctalAccessNumber(this.getOwnerPermissions());
+        String group = ""+ this.getOctalAccessNumber(this.getGroupPermissions());
+        String other = ""+ this.getOctalAccessNumber(this.getOtherPermissions());
         return Integer.parseInt(owner+group+other);
     }
 	
+	public int getDecimalCode() {
+        String owner = ""+ this.getOctalAccessNumber(this.getOwnerPermissions());
+        String group = ""+ this.getOctalAccessNumber(this.getGroupPermissions());
+        String other = ""+ this.getOctalAccessNumber(this.getOtherPermissions());
+        return Integer.parseInt(owner+group+other, 8);
+    }
+	
 	/* 
-		*	0 = no permissions whatsoever; this person cannot read, write, or execute the file 
+	*	0 = no permissions whatsoever; this person cannot read, write, or execute the file 
 	 *	1 = execute only 
 	 *	2 = write only 
 	 *	3 = write and execute (1+2) 
@@ -162,7 +169,7 @@ public class Permission {//implements java.io.Serializable {
 	
     //-rwxrwxrwx
 	
-    private int getAccessNumber(boolean[] permissions) {
+    private int getOctalAccessNumber(boolean[] permissions) {
         if(Arrays.equals(permissions, new boolean[]{false, false, false}))
             return 0;
         if(Arrays.equals(permissions, new boolean[]{false, false, true}))
@@ -182,6 +189,90 @@ public class Permission {//implements java.io.Serializable {
         return -1;
     }
 	
+	public Permission(int decimal) {
+		String octal = Integer.toOctalString(decimal);
+		if(octal.length() != 3)
+			throw new IllegalArgumentException("Permission must be a three digit number");
+		switch(octal.charAt(OWNER)) {
+			case(0) :
+				this.owner = new boolean[]{false, false, false};
+				break;
+			case(1) :
+				this.owner = new boolean[]{false, false, true};
+				break;
+			case(2) :
+				this.owner = new boolean[]{false, true, false};
+				break;
+			case(3) :
+				this.owner = new boolean[]{false, true, true};
+				break;
+			case(4) :
+				this.owner = new boolean[]{true, false, false};
+				break;
+			case(5) :
+				this.owner = new boolean[]{true, false, true};
+				break;
+			case(6) :
+				this.owner = new boolean[]{true, true, false};
+				break;
+			case(7) :
+				this.owner = new boolean[]{true, true, true};
+				break;
+		}
+		switch(octal.charAt(GROUP)) {
+			case(0) :
+				this.group = new boolean[]{false, false, false};
+				break;
+			case(1) :
+				this.group = new boolean[]{false, false, true};
+				break;
+			case(2) :
+				this.group = new boolean[]{false, true, false};
+				break;
+			case(3) :
+				this.group = new boolean[]{false, true, true};
+				break;
+			case(4) :
+				this.group = new boolean[]{true, false, false};
+				break;
+			case(5) :
+				this.group = new boolean[]{true, false, true};
+				break;
+			case(6) :
+				this.group = new boolean[]{true, true, false};
+				break;
+			case(7) :
+				this.group = new boolean[]{true, true, true};
+				break;
+		}
+		switch(octal.charAt(OTHER)) {
+			case(0) :
+				this.other = new boolean[]{false, false, false};
+				break;
+			case(1) :
+				this.other = new boolean[]{false, false, true};
+				break;
+			case(2) :
+				this.other = new boolean[]{false, true, false};
+				break;
+			case(3) :
+				this.other = new boolean[]{false, true, true};
+				break;
+			case(4) :
+				this.other = new boolean[]{true, false, false};
+				break;
+			case(5) :
+				this.other = new boolean[]{true, false, true};
+				break;
+			case(6) :
+				this.other = new boolean[]{true, true, false};
+				break;
+			case(7) :
+				this.other = new boolean[]{true, true, true};
+				break;
+		}
+	}
+		
     private String getAccessString(boolean[] permissions) {
         String read = permissions[READ] ? "r" : "-";
         String write = permissions[WRITE] ? "w" : "-";

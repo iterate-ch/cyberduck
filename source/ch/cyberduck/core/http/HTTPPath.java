@@ -50,7 +50,7 @@ public class HTTPPath extends Path {
 		this.session = session;
     }
 	
-    public HTTPPath(HTTPSession session, String parent, java.io.File file) {
+    public HTTPPath(HTTPSession session, String parent, Local file) {
 		super(parent, file);
 		this.session = session;
     }

@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.Comparator;
-import java.util.Collections;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Queue;
@@ -307,12 +307,11 @@ public class CDBrowserTableDataSource extends CDTableDataSource {//implements NS
 							long p1 = ((Path)o1).status.getSize();
 							long p2 = ((Path)o2).status.getSize();
 							if (p1 > p2)
-								return lower;
-							else if (p1 < p2)
 								return higher;
-							else if (p1 == p2)
+							else if (p1 < p2)
+								return lower;
+							else
 								return 0;
-							return 0;
 						}
 					}
 					);

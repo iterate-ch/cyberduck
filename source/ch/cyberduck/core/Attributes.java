@@ -31,9 +31,7 @@ import org.apache.log4j.Logger;
 public class Attributes extends Observable {
     private static Logger log = Logger.getLogger(Path.class);
 	
-    private Date modified;
-	//    private long modified;
-	
+    private Date modified;	
     private String owner;
     private String group;
     private String mode = "-rwxrwxrwx"; //defaulting to a file

@@ -19,9 +19,14 @@ package ch.cyberduck.core.ftp;
  */
 
 import java.io.*;
-import java.util.*;
+import java.util.List;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Message;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Session;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
 import org.apache.log4j.Logger;
@@ -54,7 +59,7 @@ public class FTPPath extends Path {
      * @param parent The parent directory relative to this file
 	 * @param file The corresponding local file to the remote path
      */
-    public FTPPath(FTPSession session, String parent, java.io.File file) {
+    public FTPPath(FTPSession session, String parent, Local file) {
 		super(parent, file);
 		this.session = session;
     }
@@ -264,7 +269,7 @@ public class FTPPath extends Path {
 			java.util.Iterator i = files.iterator();
 			while(i.hasNext()) {
 				FTPPath p = (FTPPath)i.next();
-				p.setLocal(new File(this.getLocal(), p.getName()));
+				p.setLocal(new Local(this.getLocal(), p.getName()));
 				p.fillDownloadQueue(queue);
 			}
 		}
@@ -332,7 +337,7 @@ public class FTPPath extends Path {
 			session.FTP.mkdir(this.getAbsolute());
 			File[] files = this.getLocal().listFiles();
 			for(int i = 0; i < files.length; i++) {
-				FTPPath p = new FTPPath(this.session, this.getAbsolute(), files[i]);
+				FTPPath p = new FTPPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
 				p.fillUploadQueue(queue);
 			}
 		}
@@ -361,7 +366,8 @@ public class FTPPath extends Path {
 				}
 				this.upload(out, in);
 				this.session.FTP.validateTransfer();
-				this.changePermissions(Integer.parseInt(Integer.toOctalString(this.getLocalPermissions())));
+				this.changePermissions(this.getLocal().attributes.getPermission().getOctalCode());
+//				this.changePermissions(Integer.parseInt(Integer.toOctalString(this.getLocalPermissions())));
 			}
 			else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 				this.session.FTP.setTransferType(FTPTransferType.ASCII);
@@ -376,7 +382,8 @@ public class FTPPath extends Path {
 				}
 				this.upload(out, in);
 				this.session.FTP.validateTransfer();
-				this.changePermissions(Integer.parseInt(Integer.toOctalString(this.getLocalPermissions())));
+				this.changePermissions(this.getLocal().attributes.getPermission().getOctalCode());
+//				this.changePermissions(Integer.parseInt(Integer.toOctalString(this.getLocalPermissions())));
 			}
 			else {
 				throw new FTPException("Transfer mode not set");

@@ -123,11 +123,12 @@ public abstract class Session extends Observable {
 		* @return boolean True if the session has not yet been closed. 
      */
     public boolean isConnected() {
-		//	log.info("Connected:"+connected);
+		log.info("isConnected:"+connected);
 		return this.connected;
     }
 	
     public void setConnected(boolean connected) {
+		log.info("setConnected:"+connected);
 		this.connected = connected;
     }
 	

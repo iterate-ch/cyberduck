@@ -18,8 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.Collection;
-
 import ch.cyberduck.core.Bookmarks;
 import ch.cyberduck.core.Host;
 import com.apple.cocoa.application.*;

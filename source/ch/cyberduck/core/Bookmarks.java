@@ -42,7 +42,7 @@ public abstract class Bookmarks {
     public static final String USERNAME = "Username";
     public static final String PATH = "Path";
 	
-    private Map data = new HashMap();
+    protected Map data = new HashMap();
 	
     public Bookmarks() {
 //		this.load();
@@ -176,10 +176,6 @@ public abstract class Bookmarks {
 			throw new IllegalArgumentException("Host "+name+" not found in Bookmarks.");
 		return result;
     }
-	
-//	public int indexOf(Host bookmark) {
-//		return data.values().indexOf(bookmark);
-//	}
 	
     public Collection values() {
 		return data.values();

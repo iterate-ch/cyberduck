@@ -31,7 +31,7 @@ public abstract class Path {
     private static Logger log = Logger.getLogger(Path.class);
 	
     private String path = null;
-    private java.io.File local = null;
+    private Local local = null;
     protected Path parent = null;
     private List cache = null;
     public Status status = new Status();
@@ -67,7 +67,7 @@ public abstract class Path {
 	 * @param parent The absolute path to the parent directory on the remote host
      * @param file The associated local file
      */
-    public Path(String parent, java.io.File file) {
+    public Path(String parent, Local file) {
 		this.setPath(parent, file);
     }
 	
@@ -78,7 +78,7 @@ public abstract class Path {
      */
     public abstract Path copy(Session session);
 	
-    public void setPath(String parent, java.io.File file) {
+    public void setPath(String parent, Local file) {
 		this.setPath(parent, file.getName());
 		this.setLocal(file);
     }
@@ -220,7 +220,7 @@ public abstract class Path {
 		return this.path;
     }
     
-    public void setLocal(java.io.File file) {
+    public void setLocal(Local file) {
 		log.debug("setLocal:"+file);
 		this.local = file;
     }
@@ -228,25 +228,12 @@ public abstract class Path {
     /**
         * @return The local alias of this path
      */
-    public File getLocal() {
+    public Local getLocal() {
 		//default value if not set explicitly, i.e. with drag and drop
 		if(null == this.local)
-			return new File(Preferences.instance().getProperty("connection.download.folder"), this.getName());
+			return new Local(Preferences.instance().getProperty("connection.download.folder"), this.getName());
 		return this.local;
     }
-	
-	/**
-		* @return octal
-	 * @warning uses cocoa classes
-	 */
-	public int getLocalPermissions() {
-		com.apple.cocoa.foundation.NSDictionary localAttributes = com.apple.cocoa.foundation.NSPathUtilities.fileAttributes(this.getLocal().getAbsolutePath(), true);
-		int localPermissions = ((Integer)localAttributes.objectForKey(com.apple.cocoa.foundation.NSPathUtilities.FilePosixPermissions)).intValue();
-		log.debug("Local file permissions (decimal):"+localPermissions);
-		log.debug("Local file permissions (octal):"+Integer.toOctalString(localPermissions));
-		return localPermissions;
-//		return Integer.toOctalString(localPermissions);
-	}
 	
     /**
 		* @return the extensdion if any

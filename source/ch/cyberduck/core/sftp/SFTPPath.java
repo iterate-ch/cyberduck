@@ -28,7 +28,6 @@ import java.util.List;
 
 import ch.cyberduck.core.*;
 import com.sshtools.j2ssh.SshException;
-import com.sshtools.j2ssh.sftp.FileAttributes;
 import com.sshtools.j2ssh.sftp.SftpFile;
 import com.sshtools.j2ssh.sftp.SftpFileInputStream;
 import com.sshtools.j2ssh.sftp.SftpFileOutputStream;
@@ -53,7 +52,7 @@ public class SFTPPath extends Path {
 		this.session = session;
     }
 	
-    public SFTPPath(SFTPSession session, String parent, java.io.File file) {
+    public SFTPPath(SFTPSession session, String parent, Local file) {
 		super(parent, file);
 		this.session = session;
     }
@@ -271,8 +270,8 @@ public class SFTPPath extends Path {
 		log.debug("changePermissions");
 		try {
 			session.check();
-//			session.SFTP.changePermissions(this.getAbsolute(), permissions);
-			session.SFTP.changePermissions(this.getAbsolute(), this.attributes.getPermission().getString());
+			session.SFTP.changePermissions(this.getAbsolute(), permissions);
+//			session.SFTP.changePermissions(this.getAbsolute(), this.attributes.getPermission().getString());
 		}
 		catch(SshException e) {
 			session.log("SSH Error: "+e.getMessage(), Message.ERROR);
@@ -314,7 +313,7 @@ public class SFTPPath extends Path {
 				java.util.Iterator i = files.iterator();
 				while(i.hasNext()) {
 					SFTPPath p = (SFTPPath)i.next();
-					p.setLocal(new File(this.getLocal(), p.getName()));
+					p.setLocal(new Local(this.getLocal(), p.getName()));
 					p.fillDownloadQueue(queue);
 				}
 			}
@@ -370,7 +369,7 @@ public class SFTPPath extends Path {
 			this.session.SFTP.makeDirectory(this.getAbsolute());//@todo do it here rather than in upload() ?
 			File[] files = this.getLocal().listFiles();
 			for(int i = 0; i < files.length; i++) {
-				SFTPPath p = new SFTPPath(this.session, this.getAbsolute(), files[i]);
+				SFTPPath p = new SFTPPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
 				p.fillUploadQueue(queue);
 			}
 		}
@@ -391,7 +390,7 @@ public class SFTPPath extends Path {
 				throw new IOException("Unable to buffer data");
 			}
 			SftpFile remoteFile = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
-			this.changePermissions(this.getLocalPermissions());
+			this.changePermissions(this.getLocal().attributes.getPermission().getDecimalCode());
 			SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);
 			if(out == null) {
 				throw new IOException("Unable opening data stream");

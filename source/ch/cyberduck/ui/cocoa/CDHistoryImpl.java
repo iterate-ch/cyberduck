@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import java.io.File;
 
-import ch.cyberduck.core.Bookmarks;
+import ch.cyberduck.core.History;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
 /**
