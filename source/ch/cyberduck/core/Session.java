@@ -99,34 +99,30 @@ public abstract class Session extends Observable {
 	 */
 	public synchronized void mount() {
 		this.log("Mounting "+host.getHostname()+"...", Message.PROGRESS);
-		new Thread() {
-			public void run() {
-				try {
-					check();
-					Path home;
-					if(host.hasReasonableDefaultPath()) {
-						if(host.getDefaultPath().charAt(0) != '/') {
-							home = PathFactory.createPath(Session.this, workdir().getAbsolute(), host.getDefaultPath());
-						}
-						else {
-							home = PathFactory.createPath(Session.this, host.getDefaultPath());
-						}
-					}
-					else {
-						home = workdir();
-					}
-					home.list(true);
-					Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl Notification"),
-					    host.getHostname());
+		try {
+			this.check();
+			Path home;
+			if(host.hasReasonableDefaultPath()) {
+				if(host.getDefaultPath().charAt(0) != '/') {
+					home = PathFactory.createPath(this, workdir().getAbsolute(), host.getDefaultPath());
 				}
-				catch(IOException e) {
-					log("IO Error: "+e.getMessage(), Message.ERROR);
-					Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl Notification"),
-					    host.getHostname());
-					close();
+				else {
+					home = PathFactory.createPath(this, host.getDefaultPath());
 				}
 			}
-		}.start();
+			else {
+				home = workdir();
+			}
+			home.list(true);
+			Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl Notification"),
+									host.getHostname());
+		}
+		catch(IOException e) {
+			this.log("IO Error: "+e.getMessage(), Message.ERROR);
+			Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl Notification"),
+									host.getHostname());
+			this.close();
+		}
 	}
 
 	/**

@@ -20,18 +20,13 @@
 				<string>NSCoreSuite.NSApplication</string>
 				<key>ToManyRelationships</key>
 				<dict>
-					<key>orderedDocuments</key>
+					<key>orderedBrowsers</key>
 					<dict>
 						<key>AppleEventCode</key>
 						<string>docu</string>
 						<key>Type</key>
 						<string>ch.cyberduck.ui.cocoa.CDBrowserController</string>
 					</dict>
-				</dict>
-				<key>SupportedCommands</key>
-				<dict>
-					<key>NSCoreSuite.Create</key>
-					<string>newDocument:</string>
 				</dict>
 			</dict>
 			<key>ch.cyberduck.ui.cocoa.CDBrowserController</key>
@@ -55,32 +50,45 @@
 				<key>SupportedCommands</key>
 				<dict>
 					<key>Connect</key>
-					<string>mount:</string>
+					<string>handleMountScriptCommand:</string>
 					<key>Disconnect</key>
-					<string>disconnectButtonClicked:</string>
+					<string>handleDisconnectScriptCommand:</string>
 					<key>CreateFolder</key>
-					<string>folderButtonClicked:</string>
+					<string>handleCreateFolderScriptCommand:</string>
+					<key>CreateFile</key>
+					<string>handleCreateFileScriptCommand:</string>
+					<key>EditFile</key>
+					<string>handleEditFileScriptCommand:</string>
 					<key>DeleteFile</key>
-					<string>deleteButtonClicked:</string>
+					<string>handleDeleteScriptCommand:</string>
 					<key>Download</key>
-					<string>downloadButtonClicked:</string>
+					<string>handleDownloadScriptCommand:</string>
 					<key>Upload</key>
-					<string>uploadButtonClicked:</string>
+					<string>handleUploadScriptCommand:</string>
 					<key>Refresh</key>
-					<string>refreshButtonClicked:</string>
+					<string>handleRefreshScriptCommand:</string>
 					<key>Goto</key>
-					<string>gotoButtonClicked:</string>
+					<string>handleGotoScriptCommand:</string>
 				</dict>
 			</dict>
 		</dict>
 		<key>Commands</key>
 		<dict>
+			<key>NSCoreSuite.Create</key>
+			<dict>
+				<key>AppleEventClassCode</key>
+				<string>core</string>
+				<key>AppleEventCode</key>
+				<string>crel</string>
+				<key>CommandClass</key>
+				<string>ch.cyberduck.ui.cocoa.CDApplescriptabilityController</string>
+			</dict>
 			<key>Connect</key>
 			<dict>
 				<key>AppleEventCode</key>
 				<string>CoCt</string>
 				<key>CommandClass</key>
-				<string>ch.cyberduck.ui.cocoa.CDBrowserController</string>
+				<string>NSScriptCommand</string>
 				<key>Arguments</key>
 				<dict>
 					<key>Protocol</key>

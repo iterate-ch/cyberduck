@@ -618,13 +618,7 @@ public class CDMainController extends NSObject {
 		log.debug("applicationDelegateHandlesKey:"+key);
 		if(key.equals("orderedBrowsers"))
 			return true;
-		if(key.equals("orderedDocuments"))
-			return true;
 		return false;
-	}
-
-	public CDBrowserController newDocument(NSScriptCommand command) {
-		return CDMainController.newDocument();
 	}
 
 	public NSArray orderedBrowsers() {
@@ -635,9 +629,11 @@ public class CDMainController extends NSObject {
 		NSMutableArray orderedDocs = new NSMutableArray();
 		Object curDelegate;
 		for(i = 0; i < c; i++) {
-			curDelegate = ((NSWindow)orderedWindows.objectAtIndex(i)).delegate();
-			if((curDelegate != null) && (curDelegate instanceof CDBrowserController)) {
-				orderedDocs.addObject(curDelegate);
+			if(((NSWindow)orderedWindows.objectAtIndex(i)).isVisible()) {
+				curDelegate = ((NSWindow)orderedWindows.objectAtIndex(i)).delegate();
+				if((curDelegate != null) && (curDelegate instanceof CDBrowserController)) {
+					orderedDocs.addObject(curDelegate);
+				}
 			}
 		}
 		log.debug("orderedBrowsers:"+orderedDocs);
@@ -646,28 +642,6 @@ public class CDMainController extends NSObject {
 
 	public void insertInOrderedBrowsersAtIndex(CDBrowserController doc, int index) {
 		log.debug("insertInOrderedBrowsersAtIndex"+doc);
-		doc.window().makeKeyAndOrderFront(null);
-	}
-
-	public NSArray orderedDocuments() {
-		log.debug("orderedDocuments");
-		NSApplication app = NSApplication.sharedApplication();
-		NSArray orderedWindows = (NSArray)NSKeyValue.valueForKey(app, "orderedWindows");
-		int i, c = orderedWindows.count();
-		NSMutableArray orderedDocs = new NSMutableArray();
-		Object curDelegate;
-		for(i = 0; i < c; i++) {
-			curDelegate = ((NSWindow)orderedWindows.objectAtIndex(i)).delegate();
-			if((curDelegate != null) && (curDelegate instanceof CDBrowserController)) {
-				orderedDocs.addObject(curDelegate);
-			}
-		}
-		log.debug("orderedDocuments:"+orderedDocs);
-		return orderedDocs;
-	}
-
-	public void insertInOrderedDocumentsAtIndex(CDBrowserController doc, int index) {
-		log.debug("insertInOrderedDocumentsAtIndex"+doc);
 		doc.window().makeKeyAndOrderFront(null);
 	}
 

@@ -35,7 +35,11 @@ public class CDApplescriptabilityController extends NSScriptCommand {
 	}
 
 	public Object performDefaultImplementation() {
+		log.debug("performDefaultImplementation");
 		String arg = (String)this.directParameter();
+		if(null == arg) {
+			return CDMainController.newDocument();
+		}
 		log.debug("Received URL from Apple Event:"+arg);
 		try {
 			Host h = Host.parse(arg);

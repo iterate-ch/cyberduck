@@ -48,7 +48,32 @@ public class CDBrowserController extends CDController implements Observer {
 	 * if not referenced here.
 	 */
 	private static NSMutableArray instances = new NSMutableArray();
+
+	// ----------------------------------------------------------
+	// Applescriptability
+	// ----------------------------------------------------------
 	
+	public NSScriptObjectSpecifier objectSpecifier() {
+		log.debug("objectSpecifier");
+		NSArray orderedDocs = (NSArray)NSKeyValue.valueForKey(NSApplication.sharedApplication(), "orderedBrowsers");
+		int index = orderedDocs.indexOfObject(this);
+		if((index >= 0) && (index < orderedDocs.count())) {
+			NSScriptClassDescription desc = (NSScriptClassDescription)NSScriptClassDescription.classDescriptionForClass(NSApplication.class);
+			return new NSIndexSpecifier(desc, null, "orderedBrowsers", index);
+		}
+		return null;
+	}
+		
+	public Object handleMountScriptCommand(NSScriptCommand command) {
+		log.debug("mount:"+command);
+		NSDictionary args = command.evaluatedArguments();
+		Host host = new Host((String)args.objectForKey("Protocol"),
+							 (String)args.objectForKey("Host"));
+		host.setCredentials((String)args.objectForKey("Username"), null);
+		this.mount(host);
+		return this;
+	}
+		
 	// ----------------------------------------------------------
 	// Constructor
 	// ----------------------------------------------------------
@@ -68,19 +93,6 @@ public class CDBrowserController extends CDController implements Observer {
 			}
 		}
 		return null;
-	}
-
-	public NSScriptObjectSpecifier objectSpecifier() {
-		log.debug("objectSpecifier");
-		NSArray orderedDocs = (NSArray)NSKeyValue.valueForKey(NSApplication.sharedApplication(), "orderedDocuments");
-		int index = orderedDocs.indexOfObject(this);
-		if((index >= 0) && (index < orderedDocs.count())) {
-			NSScriptClassDescription desc = (NSScriptClassDescription)NSScriptClassDescription.classDescriptionForClass(NSApplication.class);
-			return new NSIndexSpecifier(desc, null, "orderedDocuments", index);
-		}
-		else {
-			return null;
-		}
 	}
 
 	public static void updateBrowserTableAttributes() {
@@ -250,7 +262,6 @@ public class CDBrowserController extends CDController implements Observer {
 	private NSTableView browserTable; // IBOutlet
 
 	public void setBrowserTable(NSTableView browserTable) {
-		log.debug("setBrowserTable");
 		this.browserTable = browserTable;
 		this.browserTable.setTarget(this);
 		this.browserTable.setDoubleAction(new NSSelector("browserTableRowDoubleClicked", new Class[]{Object.class}));
@@ -1249,19 +1260,8 @@ public class CDBrowserController extends CDController implements Observer {
 		}
 	}
 
-	private Path workdir() {
+	public Path workdir() {
 		return this.workdir;
-	}
-
-	public void mount(NSScriptCommand command) {
-		log.debug("mount:"+command);
-		NSDictionary args = command.evaluatedArguments();
-		Host host = new Host((String)args.objectForKey("Protocol"),
-		    (String)args.objectForKey("Host"),
-		    Integer.parseInt((String)args.objectForKey("Port")),
-		    (String)args.objectForKey("InitialPath"));
-		host.setCredentials((String)args.objectForKey("Username"), null);
-		this.mount(host);
 	}
 
 	public void mount(Host host) {
@@ -1277,14 +1277,18 @@ public class CDBrowserController extends CDController implements Observer {
 			this.window().setRepresentedFilename(bookmark.getAbsolutePath());
 			TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(this.logView));
 
-			Session session = SessionFactory.createSession(host);
+			final Session session = SessionFactory.createSession(host);
 			session.addObserver((Observer)this);
 
 			if(session instanceof ch.cyberduck.core.sftp.SFTPSession) {
 				host.setHostKeyVerificationController(new CDHostKeyController(this));
 			}
 			host.setLoginController(new CDLoginController(this));
-			session.mount();
+//			new Thread() {
+//				public void run() {
+					session.mount();
+//				}
+//			}.start();
 		}
 	}
 

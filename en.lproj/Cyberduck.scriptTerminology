@@ -39,6 +39,13 @@
 		</dict>
 		<key>Commands</key>
 		<dict>
+			<key>NSCoreSuite.Create</key>
+			<dict>
+				<key>Description</key>
+				<string>Open new browser window.</string>
+				<key>Name</key>
+				<string>make new</string>
+			</dict>
 			<key>Connect</key>
 			<dict>
 				<key>Description</key>
@@ -94,49 +101,56 @@
 			<key>Disconnect</key>
 			<dict>
 				<key>Description</key>
-				<string>No description</string>
+				<string>Disconnect from server.</string>
 				<key>Name</key>
 				<string>disconnect</string>
 			</dict>
 			<key>CreateFolder</key>
 			<dict>
 				<key>Description</key>
-				<string>No description</string>
+				<string>Create a new folder.</string>
 				<key>Name</key>
 				<string>create folder</string>
+			</dict>
+			<key>CreateFile</key>
+			<dict>
+				<key>Description</key>
+				<string>Create a new empty file.</string>
+				<key>Name</key>
+				<string>create file</string>
 			</dict>
 			<key>DeleteFile</key>
 			<dict>
 				<key>Description</key>
-				<string>No description</string>
+				<string>Delete file.</string>
 				<key>Name</key>
 				<string>delete file</string>
 			</dict>
 			<key>Refresh</key>
 			<dict>
 				<key>Description</key>
-				<string>No description</string>
+				<string>Refresh directory listing.</string>
 				<key>Name</key>
 				<string>refresh</string>
 			</dict>
 			<key>Download</key>
 			<dict>
 				<key>Description</key>
-				<string>No description</string>
+				<string>Download file.</string>
 				<key>Name</key>
 				<string>download</string>
 			</dict>
 			<key>Upload</key>
 			<dict>
 				<key>Description</key>
-				<string>No description</string>
+				<string>Upload file.</string>
 				<key>Name</key>
 				<string>upload</string>
 			</dict>
 			<key>Goto</key>
 			<dict>
 				<key>Description</key>
-				<string>No description</string>
+				<string>Go to Folder.</string>
 				<key>Name</key>
 				<string>go to</string>
 			</dict>
