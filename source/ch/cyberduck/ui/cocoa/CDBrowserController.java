@@ -52,7 +52,6 @@ public class CDBrowserController extends NSObject implements Controller, Observe
     }
 
     public NSWindow window() {
-		log.debug("******* CONTROLLER WINDOW:"+this.window);
         return this.window;
     }
 
@@ -636,17 +635,17 @@ public class CDBrowserController extends NSObject implements Controller, Observe
             Message msg = (Message)arg;
             if (msg.getTitle().equals(Message.ERROR)) {
                 if (window().isVisible()) {
-                    NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                            NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                            null, //alternative button
-                            null, //other button
-                            window(), //docWindow
-                            null, //modalDelegate
-                            null, //didEndSelector
-                            null, // dismiss selector
-                            null, // context
-                            (String)msg.getContent() // message
-                    );
+					NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+														 null, //alternative button
+														 null, //other button
+														 window(), //docWindow
+														 null, //modalDelegate
+														 null, //didEndSelector
+														 null, // dismiss selector
+														 null, // context
+														 (String)msg.getContent() // message
+														 );
                 }
                 progressIndicator.stopAnimation(this);
                 statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
@@ -759,21 +758,21 @@ public class CDBrowserController extends NSObject implements Controller, Observe
             files.add(p);
             alertText.append("\n- " + p.getName());
         }
-        NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Delete", "Alert sheet title"), //title
-                NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
-                NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
-                null, //other button
-                this.window(), //window
-                this, //delegate
-                new NSSelector
-                        ("deleteSheetDidEnd",
-                                new Class[]
-                                {
-                                    NSWindow.class, int.class, Object.class
-                                }), // end selector
-                null, // dismiss selector
-                files, // contextInfo
-                alertText.toString());
+		NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Delete", "Alert sheet title"), //title
+											 NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
+											 NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+											 null, //other button
+											 this.window(), //window
+											 this, //delegate
+											 new NSSelector
+											 ("deleteSheetDidEnd",
+											  new Class[]
+											  {
+												  NSWindow.class, int.class, Object.class
+											  }), // end selector
+											 null, // dismiss selector
+											 files, // contextInfo
+											 alertText.toString());
     }
 
     public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
@@ -967,17 +966,17 @@ public class CDBrowserController extends NSObject implements Controller, Observe
                 }
                 catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
                     //This exception is thrown whenever an exception occurs open or reading from the host file.
-                    NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                            NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                            null, //alternative button
-                            null, //other button
-                            this.window(), //docWindow
-                            null, //modalDelegate
-                            null, //didEndSelector
-                            null, // dismiss selector
-                            null, // context
-                            NSBundle.localizedString("Could not open or read the host file", "Alert sheet text") + ": " + e.getMessage() // message
-                    );
+					NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+														 null, //alternative button
+														 null, //other button
+														 this.window(), //docWindow
+														 null, //modalDelegate
+														 null, //didEndSelector
+														 null, // dismiss selector
+														 null, // context
+														 NSBundle.localizedString("Could not open or read the host file", "Alert sheet text") + ": " + e.getMessage() // message
+														 );
                 }
             }
             host.getLogin().setController(new CDLoginController(this));
@@ -999,17 +998,17 @@ public class CDBrowserController extends NSObject implements Controller, Observe
         log.debug("unmount");
 		//this.window().makeKeyAndOrderFront(null);
         if (this.isConnected()) {
-            NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + pathController.workdir().getSession().getHost().getHostname(), //title
-                    NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
-                    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
-                    null, //other button
-                    this.window(), //window
-                    this, //delegate
-                    selector,
-                    null, // dismiss selector
-                    context, // context
-                    NSBundle.localizedString("The connection will be closed.", "Alert sheet text") // message
-            );
+			NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + pathController.workdir().getSession().getHost().getHostname(), //title
+												 NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
+												 NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
+												 null, //other button
+												 this.window(), //window
+												 this, //delegate
+												 selector,
+												 null, // dismiss selector
+												 context, // context
+												 NSBundle.localizedString("The connection will be closed.", "Alert sheet text") // message
+												 );
             return false;
         }
         return true;

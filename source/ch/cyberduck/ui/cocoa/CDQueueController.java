@@ -57,6 +57,11 @@ public class CDQueueController extends NSObject implements Controller {
                 log.fatal("Couldn't load Queue.nib");
             }
         }
+		if(null == instance.window()) {
+            if (false == NSApplication.loadNibNamed("Queue", instance)) {
+                log.fatal("Couldn't load Queue.nib");
+            }
+		}
         return instance;
     }
 	
@@ -103,8 +108,9 @@ public class CDQueueController extends NSObject implements Controller {
 
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose");
-		instances.removeObject(this);
-		instance = null;
+		this.window = null;
+//		instances.removeObject(this);
+//		instance = null;
     }
 
     private NSWindow window; // IBOutlet
@@ -115,7 +121,6 @@ public class CDQueueController extends NSObject implements Controller {
     }
 
     public NSWindow window() {
-		log.debug("******* CONTROLLER WINDOW:"+this.window);
         return this.window;
     }
 
@@ -206,17 +211,17 @@ public class CDQueueController extends NSObject implements Controller {
             catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
                 this.window().makeKeyAndOrderFront(null);
                 //This exception is thrown whenever an exception occurs open or reading from the host file.
-                NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", ""), //title
-                        NSBundle.localizedString("OK", ""), // defaultbutton
-                        null, //alternative button
-                        null, //other button
-                        this.window(), //docWindow
-                        null, //modalDelegate
-                        null, //didEndSelector
-                        null, // dismiss selector
-                        null, // context
-                        NSBundle.localizedString("Could not open or read the host file", "") + ": " + e.getMessage() // message
-                );
+				NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", ""), //title
+													 NSBundle.localizedString("OK", ""), // defaultbutton
+													 null, //alternative button
+													 null, //other button
+													 this.window(), //docWindow
+													 null, //modalDelegate
+													 null, //didEndSelector
+													 null, // dismiss selector
+													 null, // context
+													 NSBundle.localizedString("Could not open or read the host file", "") + ": " + e.getMessage() // message
+													 );
             }
         }
         queue.start(new CDValidatorController(queue.kind(), resumeRequested));
