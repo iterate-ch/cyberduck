@@ -25,8 +25,11 @@
  *  Change Log:
  *
  *    $Log$
- *    Revision 1.1  2003/02/10 20:13:12  dkocher
- *    Initial revision
+ *    Revision 1.2  2003/03/21 14:14:43  dkocher
+ *    No log message.
+ *
+ *    Revision 1.1.1.1  2003/02/10 20:13:12  dkocher
+ *    initial import
  *
  *    Revision 1.4  2002/11/19 22:01:25  bruceb
  *    changes for 1.2
@@ -49,7 +52,7 @@ package com.enterprisedt.net.ftp;
  *
  */
 
-import ch.cyberduck.connection.SessionException;
+import ch.cyberduck.core.SessionException;
 
  public class FTPException extends SessionException {
 

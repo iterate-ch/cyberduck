@@ -31,6 +31,8 @@ import ch.cyberduck.core.http.*;
 import ch.cyberduck.core.sftp.*;
 import ch.cyberduck.core.ftp.*;
 
+import ch.cyberduck.ui.cocoa.CDStatusLabel;
+
 import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.transport.InvalidHostFileException;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
@@ -50,12 +52,12 @@ public class CDConnectionController extends NSObject {
     public NSWindow connectionSheet; /* IBOutlet */
     public NSWindow loginSheet; /* IBOutlet */
 
-    public NSSecureTextField passwordField; /* IBOutlet */
     public NSTextField pathField; /* IBOutlet */
     public NSTextField portField; /* IBOutlet */
     public NSPopUpButton protocolPopup; /* IBOutlet */
     public NSTextField hostField; /* IBOutlet */
     public NSTextField usernameField; /* IBOutlet */
+    public NSSecureTextField passwordField; /* IBOutlet */
     public NSTextView logTextView; /* IBOutlet */
     public NSProgressIndicator progressIndicator; /* IBOutlet */
     
@@ -71,7 +73,7 @@ public class CDConnectionController extends NSObject {
     }
 
     public void awakeFromNib() {
-//	log.addAppender(statusLabel);
+	//
     }
 
     private static final int SFTP_TAG = 1;
@@ -90,7 +92,7 @@ public class CDConnectionController extends NSObject {
 		case(FTP_TAG):
 		    protocol = Session.FTP;
 		    break;
-//		case(3):
+//		case(HTTP_TAG):
 //		    protocol = Session.HTTP;
 //		    break;
 	    }
@@ -100,25 +102,20 @@ public class CDConnectionController extends NSObject {
      //NSMenuItem item = menu.getSelectedItem()
      //host = item.
 
-	    log.debug(protocol+","+hostField.stringValue()+","+usernameField.stringValue()+","+passwordField.stringValue());
-		
+//	    log.debug(protocol+","+hostField.stringValue()+","+usernameField.stringValue()+","+passwordField.stringValue());
 	    if(sender instanceof NSTextField) {
-		host = new Host(protocol, ((NSControl)sender).stringValue(), 22, null, null);
+		host = new Host(protocol, ((NSControl)sender).stringValue(), 22, null);
 	    }
 	    if(sender instanceof NSButton) {
 		NSApplication.sharedApplication().endSheet(connectionSheet, NSAlertPanel.AlternateReturn);
-		host = new Host(protocol, hostField.stringValue(), 22, usernameField.stringValue(), passwordField.stringValue());
+		Login login = new CDLogin(usernameField.stringValue(), passwordField.stringValue());
+		host = new Host(protocol, hostField.stringValue(), 22, login);
 	    }
-	    
+	    host.setHostKeyVerification(new CDHostKeyVerification());
 	    mainWindow.setTitle(host.getName());
+	    host.addObserver((Observer)browserTable);
 	    Session session = host.getSession();
-
-	    //@todo new thread to open connection
-	    session.connect();
-	    log.debug("connected.");
-	    session.login();
-	    log.debug("logged in.");
-
+	    session.start();
 	}
 	catch(IOException e) {
 	    log.error(e.toString());
@@ -205,16 +202,54 @@ public class CDConnectionController extends NSObject {
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 	NSApplication.sharedApplication().endSheet(loginSheet, NSAlertPanel.AlternateReturn);
     }
-        
+
+
+    private class CDLogin extends Login {
+	private boolean done;
+	private boolean tryAgain;
+
+	public CDLogin(String u, String p) {
+	    super(u, p);
+	}
+
+	public void loginSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+	    switch(returncode) {
+		case(NSAlertPanel.DefaultReturn):
+		    tryAgain = true;
+		    this.setUsername(null);
+		    this.setPassword(null);
+		case(NSAlertPanel.AlternateReturn):
+		    tryAgain = false;
+	    }
+	    done = true;
+	    sheet.close();
+	}
+
+	public boolean loginFailure() {
+	    log.info("Authentication failed.");
+	    NSApplication.sharedApplication().beginSheet(loginSheet, mainWindow, null,
+						  new NSSelector(
+		       "loginSheetDidEnd",
+		       new Class[] { NSWindow.class, int.class, NSWindow.class }
+		       ),// end selector
+						  null);
+	    while(!done) {
+		try {
+		    Thread.sleep(500); //milliseconds
+		}
+		catch(InterruptedException e) {
+		    e.printStackTrace();
+		}
+	    }
+	    return tryAgain;
+	}	
+    }
+    
     private class CDHostKeyVerification extends HostKeyVerification {
 	private String host;
 	private String fingerprint;
 	
 	private boolean done;
-
-	public boolean isDone() {
-	    return this.done;
-	}
 
 	public CDHostKeyVerification() throws InvalidHostFileException {
 	    super();
@@ -246,7 +281,7 @@ public class CDConnectionController extends NSObject {
 				  this, // context
 				  "Access to the host " + hostname + " is denied from this system" // message
 				  );
-	    while(!this.isDone()) {
+	    while(!this.done) {
 		try {
 		    Thread.sleep(500); //milliseconds
 		}
@@ -281,7 +316,7 @@ public class CDConnectionController extends NSObject {
 				  + actualHostKey +
 				  "The current allowed key for " + host + " is: "
 				  + fingerprint +"\nDo you want to allow the host access?");
-	    while(!this.isDone()) {
+	    while(!this.done) {
 		try {
 		    Thread.sleep(500); //milliseconds
 		}
@@ -315,7 +350,7 @@ public class CDConnectionController extends NSObject {
 				  this, // context
 				  "The host " + host
 				  + " is currently unknown to the system. The host key fingerprint is: " + fingerprint+".");
-	    while(!this.isDone()) {
+	    while(!this.done) {
 		try {
 		    Thread.sleep(500); //milliseconds
 		}

@@ -25,8 +25,11 @@
  *  Change Log:
  *
  *        $Log$
- *        Revision 1.1  2003/02/10 20:13:12  dkocher
- *        Initial revision
+ *        Revision 1.2  2003/03/21 14:14:43  dkocher
+ *        No log message.
+ *
+ *        Revision 1.1.1.1  2003/02/10 20:13:12  dkocher
+ *        initial import
  *
  *        Revision 1.4  2002/11/19 22:01:25  bruceb
  *        changes for 1.2
@@ -55,6 +58,8 @@ import java.net.Socket;
 import java.net.ServerSocket;
 import java.net.InetAddress;
 
+import org.apache.log4j.Logger;
+
 /**
  *  Supports client-side FTP operations
  *
@@ -63,6 +68,8 @@ import java.net.InetAddress;
  *
  */
  public class FTPControlSocket {
+
+     private static Logger log = Logger.getLogger(FTPControlSocket.class);
 
      /**
       *  Revision control id
@@ -89,7 +96,7 @@ import java.net.InetAddress;
       *  Output stream debug is written to, 
       *  stdout by default
       */
-     private PrintWriter log = new PrintWriter(System.out);
+//     private PrintWriter log = new PrintWriter(System.out);
 
      /**
       *  The underlying socket.
@@ -114,10 +121,9 @@ import java.net.InetAddress;
       *
       *   @param   remoteHost   Remote hostname
       */
-     public FTPControlSocket(String remoteHost)
-         throws IOException, FTPException {
-
-         this(remoteHost, CONTROL_PORT);
+     public FTPControlSocket(String remoteHost) throws IOException, FTPException {
+	 this(remoteHost, CONTROL_PORT);
+	 log.debug("FTPControlSocket");
      }
 
 
@@ -129,12 +135,12 @@ import java.net.InetAddress;
       *   @param   remoteHost   Remote hostname
       *   @param   controlPort  port for control stream
       */
-     public FTPControlSocket(String remoteHost, int controlPort)
-         throws IOException, FTPException {
+     public FTPControlSocket(String remoteHost, int controlPort) throws IOException, FTPException {
 
          controlSock = new Socket(remoteHost, controlPort);
          initStreams();
          validateConnection();
+	 log.debug("FTPControlSocket");
      }
 
 
@@ -144,10 +150,9 @@ import java.net.InetAddress;
       *
       *   @param   remoteAddr   Remote inet address
       */
-     public FTPControlSocket(InetAddress remoteAddr)
-         throws IOException, FTPException {
-
+     public FTPControlSocket(InetAddress remoteAddr) throws IOException, FTPException {
          this(remoteAddr, CONTROL_PORT);
+	 log.debug("FTPControlSocket");
      }
 
      /**
@@ -171,9 +176,8 @@ import java.net.InetAddress;
       *   Checks that the standard 220 reply is returned
       *   following the initiated connection
       */
-     private void validateConnection()
-         throws IOException, FTPException {
-
+     private void validateConnection() throws IOException, FTPException {
+	 log.debug("validateConnection");
          String reply = readReply();
          validateReply(reply, "220");
      }
@@ -183,9 +187,8 @@ import java.net.InetAddress;
       *  Obtain the reader/writer streams for this
       *  connection
       */
-     private void initStreams()
-         throws IOException {
-
+     private void initStreams() throws IOException {
+	 log.debug("initStreams");
          // input stream
          InputStream is = controlSock.getInputStream();
          reader = new BufferedReader(new InputStreamReader(is));
@@ -216,13 +219,9 @@ import java.net.InetAddress;
      *
      *   @param millis The length of the timeout, in milliseconds
      */
-    void setTimeout(int millis)
-        throws IOException {
-
+    void setTimeout(int millis) throws IOException {
         if (controlSock == null)
-            throw new IllegalStateException(
-                        "Failed to set timeout - no control socket");
-
+	    throw new IllegalStateException("Failed to set timeout - no control socket");
         controlSock.setSoTimeout(millis);
     }
 
@@ -230,11 +229,10 @@ import java.net.InetAddress;
      /**
       *  Quit this FTP session and clean up.
       */
-     public void logout()
-         throws IOException {
+     public void logout() throws IOException {
 
-         log.flush();
-         log = null;
+         //log.flush();
+         //log = null;
 
          IOException ex = null;
          try {
@@ -443,11 +441,10 @@ import java.net.InetAddress;
       *
       *  @return  reply to the supplied command
       */
-     String sendCommand(String command)
-         throws IOException {
-
-         if (debugResponses)
-             log.println("---> " + command);
+     String sendCommand(String command) throws IOException {
+	 log.debug("sendCommand("+command+")");
+         //if (debugResponses)
+             //log.println("---> " + command);
 
          // send it
          writer.write(command + EOL);
@@ -468,17 +465,16 @@ import java.net.InetAddress;
       *
       *  @return  reply string
       */
-     String readReply()
-         throws IOException {
-
+     String readReply() throws IOException {
+	 log.debug("readReply");
          String firstLine = reader.readLine();
          if (firstLine == null)
              throw new IOException("Unexpect null reply received");
 
          StringBuffer reply = new StringBuffer(firstLine);
 
-         if (debugResponses)
-             log.println(reply.toString());
+         //if (debugResponses)
+             //log.println(reply.toString());
 
          String replyCode = reply.toString().substring(0, 3);
 
@@ -492,8 +488,8 @@ import java.net.InetAddress;
                  if (line == null)
                      throw new IOException("Unexpected null reply received");
 
-                 if (debugResponses)
-                     log.println(line);
+                 //if (debugResponses)
+                     //log.println(line);
 
                  if (line.length() > 3 &&
                      line.substring(0, 3).equals(replyCode) &&
@@ -521,9 +517,8 @@ import java.net.InetAddress;
       *  @param   expectedReplyCode  the reply we expected to receive
       *
       */
-     FTPReply validateReply(String reply, String expectedReplyCode)
-         throws IOException, FTPException {
-
+     FTPReply validateReply(String reply, String expectedReplyCode) throws IOException, FTPException {
+	 log.debug("validateReply");
          // all reply codes are 3 chars long
          String replyCode = reply.substring(0, 3);
          String replyText = reply.substring(4);
@@ -547,9 +542,8 @@ import java.net.InetAddress;
       *  @return  an object encapsulating the server's reply
       *
       */
-     FTPReply validateReply(String reply, String[] expectedReplyCodes)
-         throws IOException, FTPException {
-
+     FTPReply validateReply(String reply, String[] expectedReplyCodes) throws IOException, FTPException {
+	 log.debug("validateReply");
          // all reply codes are 3 chars long
          String replyCode = reply.substring(0, 3);
          String replyText = reply.substring(4);
@@ -581,9 +575,9 @@ import java.net.InetAddress;
       *
       *  @param log  the new logging stream
       */
-     void setLogStream(PrintWriter log) {
-         this.log = log;
-     }
+//     void setLogStream(PrintWriter log) {
+//         this.log = log;
+//     }
  }
 
 

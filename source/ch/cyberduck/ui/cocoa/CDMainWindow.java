@@ -110,6 +110,8 @@ public class CDMainWindow extends NSWindow {//implements Observer {
 
 	this.addToolbarItem(toolbarItems, "Upload", "Upload", "Upload", "Upload file", this, new NSSelector("upload", new Class[] {null}), NSImage.imageNamed("upload.tiff"));
 
+	this.addToolbarItem(toolbarItems, "New Folder", "New Folder", "New Folder", "Create New Folder", this, new NSSelector("mkdir", new Class[] {null}), NSImage.imageNamed("folder.tiff"));
+
 	this.addToolbarItem(toolbarItems, "Get Info", "Get Info", "Get Info", "Show file permissions", this, new NSSelector("showInfo", new Class[] {null}), NSImage.imageNamed("info.tiff"));
 
 	this.addToolbarItem(toolbarItems, "Show Transcript", "Show Transcript", "Show Transcript", "Show connection transcript", this, new NSSelector("showTranscriptDrawer", new Class[] {null}), NSImage.imageNamed("transcript.tiff"));
@@ -141,11 +143,11 @@ public class CDMainWindow extends NSWindow {//implements Observer {
     }
 
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Back", "Refresh", "Download", "Upload", "Delete", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Show Transcript"});
+	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Back", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Show Transcript"});
     }
 
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Back", "Refresh", "Download", "Upload", "Delete", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Show Transcript", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
+	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Back", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Show Transcript", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
     }
 
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {

@@ -25,8 +25,11 @@
  *  Change Log:
  *
  *        $Log$
- *        Revision 1.1  2003/02/10 20:13:12  dkocher
- *        Initial revision
+ *        Revision 1.2  2003/03/21 14:14:43  dkocher
+ *        No log message.
+ *
+ *        Revision 1.1.1.1  2003/02/10 20:13:12  dkocher
+ *        initial import
  *
  *        Revision 1.4  2002/11/19 22:01:25  bruceb
  *        changes for 1.2
@@ -70,6 +73,9 @@ import java.util.Date;
 import java.util.Vector;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
+
 /**
  *  Supports client-side FTP. Most common
  *  FTP operations are present in this class.
@@ -79,6 +85,8 @@ import java.util.Properties;
  *
  */
 public class FTPClient {
+
+    private static Logger log = Logger.getLogger(FTPClient.class);
 
     /**
      *  Revision control id
@@ -137,6 +145,7 @@ public class FTPClient {
      *  @param   controlPort  port for control stream
      */
     public void connect(String remoteHost, int controlPort) throws IOException, FTPException {
+	log.debug("connect");
         this.control = new FTPControlSocket(remoteHost, controlPort);
     }
 
@@ -152,6 +161,8 @@ public class FTPClient {
      */
     public void setTimeout(int millis)
         throws IOException {
+
+	log.debug("setTimeout");
 
         this.timeout = millis;
         control.setTimeout(millis);
@@ -547,9 +558,9 @@ public class FTPClient {
       *
       *  @param log  the new logging stream
       */
-     public void setLogStream(PrintWriter log) {
-         control.setLogStream(log);
-     }
+//     public void setLogStream(PrintWriter log) {
+//         control.setLogStream(log);
+//     }
 
     /**
      *  Get the current transfer type
@@ -763,8 +774,7 @@ public class FTPClient {
      *  Quit the FTP session
      *
      */
-    public void quit()
-        throws IOException, FTPException {
+    public void quit() throws IOException, FTPException {
 
         try {
             String reply = control.sendCommand("QUIT");
