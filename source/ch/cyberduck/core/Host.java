@@ -65,13 +65,12 @@ public class Host extends Observable {
 	    //@todothis.workdir = (Path)arg;
 	this.notifyObservers(arg);
         long end = System.currentTimeMillis();
-	log.debug((end - start)/1000 + " seconds");
+	log.debug((end - start) + " ms");
     }
     
 
-    public Session openSession() {//throws IOException {
+    public void openSession() {
         log.debug("openSession");
-	this.callObservers(new Message(Message.OPEN));
 	if(null == session) {
 	    if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
 		this.session = new HTTPSession(this);
@@ -86,7 +85,12 @@ public class Host extends Observable {
 		this.session = new SFTPSession(this);
 	    }
 	}
-        return this.session;
+        this.session.connect();
+	this.callObservers(new Message(Message.OPEN));
+    }
+    
+    public boolean hasValidSession() {
+	return session != null && session.isConnected();//@todo use check() without reconnecting 
     }
 
     public void closeSession() {

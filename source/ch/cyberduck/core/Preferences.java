@@ -150,7 +150,7 @@ public abstract class Preferences {//extends Properties {
         this.setProperty("interface.multiplewindow", "false");
         this.setProperty("interface.error-dialog", "false");
         //Paths
-        this.setProperty("download.path", System.getProperty("user.dir") + "/");
+        this.setProperty("download.path", System.getProperty("user.dir"));
 
         // font sizes
         String font_small = "10";

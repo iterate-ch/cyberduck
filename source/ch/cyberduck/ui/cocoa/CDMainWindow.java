@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDMainWindow extends NSWindow {//implements Observer {
+public class CDMainWindow extends NSWindow {
     private static Logger log = Logger.getLogger(CDMainWindow.class);
 
     public CDMainWindow() {
@@ -46,11 +46,6 @@ public class CDMainWindow extends NSWindow {//implements Observer {
     public void awakeFromNib() {
 	log.debug("CDMainWindow:awakeFromNib");
 
-/*
-	NSArray columns = connectedView.tableColumns();
-	NSTableColumn c = columns.objectAtIndex(columns.count()-1);
-	c.setDataCell(new CDServerItemView());
-	    */
 	this.setDelegate(this);
     }
 

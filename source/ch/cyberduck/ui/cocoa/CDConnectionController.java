@@ -36,7 +36,6 @@ import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
 import com.sshtools.j2ssh.sftp.*;
 import com.sshtools.j2ssh.*;
-import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 
 /**
@@ -97,7 +96,7 @@ public class CDConnectionController extends NSObject implements Observer {
     }
 
     public void awakeFromNib() {
-	ObserverList.instance().registerObserver((Observer)this);
+	ObserverList.instance().registerObserver(this);
     }
 
     public void recycle(NSObject sender) {
@@ -114,86 +113,75 @@ public class CDConnectionController extends NSObject implements Observer {
     }    
 
     public void connect(NSObject sender) {
-	//@todo thread
 	log.debug("connect");
-//	try {
 
-            // All we need to connect - default values set in Host.class
-            String server = null;
-            String path = null;
-	    String protocol = Preferences.instance().getProperty("connection.protocol.default");
-            int port = -1;
-            Login login = new CDLogin(); //anonymous
+	// All we need to connect - default values set in Host.class
+	String server = null;
+	String path = null;
+	String protocol = Preferences.instance().getProperty("connection.protocol.default");
+	int port = -1;
+	Login login = new CDLogin(); //anonymous
 
-	    //@todo new connection via menu item recent connection
-     //	if(sender instanceof NSMenu
-     //NSMenuItem item = menu.getSelectedItem()
-     //host = item.
-            
-	    if(sender instanceof NSTextField) { //connection initiated from toolbar text field
-                server = ((NSControl)sender).stringValue();
+	//@todo new connection via menu item recent connection
+ //	if(sender instanceof NSMenu
+ //NSMenuItem item = menu.getSelectedItem()
+ //host = item.
+
+	if(sender instanceof NSTextField) { //connection initiated from toolbar text field
+	    server = ((NSControl)sender).stringValue();
+	}
+	if(sender instanceof NSButton) { //connection initiated from connection sheet
+	    NSApplication.sharedApplication().endSheet(connectionSheet, NSAlertPanel.AlternateReturn);
+	    server = hostField.stringValue();
+	    path = pathField.stringValue();
+	    int tag = protocolPopup.selectedItem().tag();
+	    switch(tag) {
+		case(Session.SSH_PORT):
+		    protocol = Session.SFTP;
+		    port = Session.SSH_PORT;
+		    break;
+		case(Session.FTP_PORT):
+		    protocol = Session.FTP;
+		    port = Session.FTP_PORT;
+		    break;
+		case(Session.HTTP_PORT):
+		    protocol = Session.HTTP;
+		    port = Session.HTTP_PORT;
+		    break;
+		    //		case(Session.HTTPS_PORT):
+      //		    protocol = Session.HTTPS;
+      //                 port = Session.HTTPS_PORT;
+      //		    break;
 	    }
-	    if(sender instanceof NSButton) { //connection initiated from connection sheet
-		//if(sender.tag() == )
-		NSApplication.sharedApplication().endSheet(connectionSheet, NSAlertPanel.AlternateReturn);
-                server = hostField.stringValue();
-		path = pathField.stringValue();
-                int tag = protocolPopup.selectedItem().tag();
-                switch(tag) {
-                    case(Session.SSH_PORT):
-                        protocol = Session.SFTP;
-                        port = Session.SSH_PORT;
-                        break;
-                    case(Session.FTP_PORT):
-                        protocol = Session.FTP;
-                        port = Session.FTP_PORT;
-                        break;
-                    case(Session.HTTP_PORT):
-                        protocol = Session.HTTP;
-                        port = Session.HTTP_PORT;
-                        break;
-    //		case(Session.HTTPS_PORT):
-    //		    protocol = Session.HTTPS;
-       //                 port = Session.HTTPS_PORT;
-    //		    break;
-                }
-		login = new CDLogin(usernameField.stringValue(), passwordField.stringValue());
+	    login = new CDLogin(usernameField.stringValue(), passwordField.stringValue());
+	}
+	log.debug(protocol+","+hostField.stringValue()+","+usernameField.stringValue()+","+passwordField.stringValue());
+
+	Host host = new Host(protocol, server, port, path, login);
+
+	if(protocol.equals(Session.SFTP)) {
+	    try {
+		host.setHostKeyVerification(new CDHostKeyVerification());
 	    }
-	    log.debug(protocol+","+hostField.stringValue()+","+usernameField.stringValue()+","+passwordField.stringValue());
-
-	    Host host = new Host(protocol, server, port, path, login);
-	    mainWindow.setTitle(host.getName());
-
-//	    host.addObserver(browserView);
-//	    host.addObserver(hostView);
-//	    host.addObserver(pathComboBox);
-//	    host.addObserver(this);
-	    
-	    Session session = host.openSession();
-
-	    if(protocol.equals(Session.SFTP)) {
-		try {
-		    host.setHostKeyVerification(new CDHostKeyVerification());
-		}
-		catch(InvalidHostFileException e) {
-		    //This exception is thrown whenever an exception occurs open or reading from the host file.
-		    NSAlertPanel.beginAlertSheet(
-				   "Error", //title
-				   "OK",// defaultbutton
-				   null,//alternative button
-				   null,//other button
-				   mainWindow, //docWindow
-				   null, //modalDelegate
-				   null, //didEndSelector
-				   null, // dismiss selector
-				   null, // context
-				   "Could not open or read the host file: "+e.getMessage() // message
-				   );
-		    //@todo run alert sheet?
-		    log.error(e.getMessage());
-		}		
+	    catch(InvalidHostFileException e) {
+		//This exception is thrown whenever an exception occurs open or reading from the host file.
+		NSAlertPanel.beginAlertSheet(
+			       "Error", //title
+			       "OK",// defaultbutton
+			       null,//alternative button
+			       null,//other button
+			       mainWindow, //docWindow
+			       null, //modalDelegate
+			       null, //didEndSelector
+			       null, // dismiss selector
+			       null, // context
+			       "Could not open or read the host file: "+e.getMessage() // message
+			       );
+		//@todo run alert sheet?
+		log.error(e.getMessage());
 	    }
-            session.connect();
+	}
+	host.openSession();
     }
 
 /*
@@ -301,7 +289,6 @@ public class CDConnectionController extends NSObject implements Observer {
 	*/
 	public void loginSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	    log.info("loginSheetDidEnd");
-//	    CDLoginSheet loginSheet = (CDLoginSheet)sheet;
 	    switch(returncode) {
 		case(NSAlertPanel.DefaultReturn):
 		    tryAgain = true;
@@ -320,7 +307,7 @@ public class CDConnectionController extends NSObject implements Observer {
 	    log.info("Authentication failed");
 	    if(loginSheet == null)
 		NSApplication.loadNibNamed("Login", CDConnectionController.this);
-	    loginSheet.makeKeyAndOrderFront(this);//@todo
+//	    loginSheet.makeKeyAndOrderFront(this);//@todo
 //	    loginSheet.setUser(this.getUsername());
 	    NSApplication.sharedApplication().beginSheet(
 						  loginSheet, //sheet

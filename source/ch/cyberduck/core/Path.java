@@ -85,9 +85,13 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
     }
  
     public void callObservers(Message arg) {
-	log.debug("callObservers:"+arg.toString());
+        log.debug("callObservers:"+arg.toString());
+	log.debug(this.countObservers()+" observers known.");
+        long start = System.currentTimeMillis();
 	this.setChanged();
 	this.notifyObservers(arg);
+        long end = System.currentTimeMillis();
+	log.debug((end - start) + " ms");
     }
 
     /**

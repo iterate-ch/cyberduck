@@ -74,11 +74,11 @@ public class SFTPSession extends Session {
 	    return parent;
 	}
 	
-	public void list() {
+	public synchronized void list() {
 	    this.list(this.cache() == null);
 	}
 	
-	public void list(boolean refresh) {
+	public synchronized void list(boolean refresh) {
 	    log.debug("list");
 	    if(refresh) {
 		new Thread() {
@@ -148,7 +148,7 @@ public class SFTPSession extends Session {
 	    }
 	}
 
-	public void delete() {
+	public synchronized void delete() {
 	    log.debug("delete");
 	    try {
 		SFTPSession.this.check();
@@ -186,7 +186,7 @@ public class SFTPSession extends Session {
 	    }
 	}
 
-	public void rename(String filename) {
+	public synchronized void rename(String filename) {
 	    log.debug("rename");
 	    try {
 		SFTPSession.this.check();
@@ -202,7 +202,7 @@ public class SFTPSession extends Session {
 	    }
 	}
 	    
-	public void mkdir(String name) {
+	public synchronized void mkdir(String name) {
 	    log.debug("mkdir");
 	    try {
 		SFTPSession.this.check();
@@ -219,7 +219,7 @@ public class SFTPSession extends Session {
 	    }
 	}
 
-	public void changePermissions(int permissions) {
+	public synchronized void changePermissions(int permissions) {
 	    log.debug("changePermissions");
 	    try {
 		SFTPSession.this.check();
@@ -234,7 +234,7 @@ public class SFTPSession extends Session {
 	    }
 	}
 
-        public void download() {
+        public synchronized void download() {
 	    log.debug("download");
 	    new Thread() {
 		public void run() {
@@ -254,7 +254,7 @@ public class SFTPSession extends Session {
 		    }
 		}
 
-		public void downloadFile() throws IOException {
+		private void downloadFile() throws IOException {
 		    OutputStream out = new FileOutputStream(SFTPFile.this.getLocal(), SFTPFile.this.status.isResume());
 		    if(out == null) {
 			throw new IOException("Unable to buffer data");
@@ -293,7 +293,7 @@ public class SFTPSession extends Session {
 	    }.start();
         }
 
-        public void upload() {
+        public synchronized void upload() {
 	    log.debug("upload");
 	    new Thread() {
 		public void run() {
@@ -345,7 +345,7 @@ public class SFTPSession extends Session {
 	SSH = new SshClient();
     }
 
-    public void close() {
+    public synchronized void close() {
 	try {
 	    if(channel != null) {
 		this.log("Closing SSH Session Channel", Message.PROGRESS);
@@ -366,7 +366,7 @@ public class SFTPSession extends Session {
 ///	host.status.fireStopEvent();
     }
 
-    public void connect() {
+    public synchronized void connect() {
 	new Thread() {
 	    public void run() {
 //		host.status.fireActiveEvent();
@@ -411,7 +411,7 @@ public class SFTPSession extends Session {
 	}.start();
     }
 
-    private void login() throws IOException {
+    private synchronized void login() throws IOException {
 	log.debug("login");
 	// Create a password authentication instance
 	this.log("Authenticating as '"+host.login.getUsername()+"'", Message.PROGRESS);

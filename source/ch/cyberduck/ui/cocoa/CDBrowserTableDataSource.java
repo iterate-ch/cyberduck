@@ -63,7 +63,7 @@ public class CDBrowserTableDataSource extends NSObject {
 	if(identifier.equals("FILENAME"))
 	    return p.getName();
 	if(identifier.equals("SIZE"))
-	    return p.attributes.getSizeAsString();
+	    return p.status.getSizeAsString();
 	if(identifier.equals("MODIFIED"))
 	    return p.attributes.getModified();
 	if(identifier.equals("OWNER"))

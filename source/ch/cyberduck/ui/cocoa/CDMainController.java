@@ -143,9 +143,9 @@ public class CDMainController extends NSObject {
 	log.debug("infoButtonPressed");
 	if(infoWindow == null)
 	    NSApplication.loadNibNamed("Info", this);
-	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
+//	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
 //	infoWindow.update(path, new Message(Message.SELECTION));
-	infoWindow.orderFront(this);
+//	infoWindow.orderFront(this);
     }
 
     public void deleteButtonPressed(NSObject sender) {
@@ -195,7 +195,6 @@ public class CDMainController extends NSObject {
 	log.debug("downloadButtonPressed");
 	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
 	path.download();
-//	connectionController.download(path);
     }
 
     public void uploadButtonPressed(NSObject sender) {
@@ -207,7 +206,7 @@ public class CDMainController extends NSObject {
     /*
     public void backButtonPressed(NSObject sender) {
 	log.debug("backButtonPressed");
-	//History
+	//@todoHistory
     }
      */
 
@@ -224,7 +223,7 @@ public class CDMainController extends NSObject {
 
     public void connectButtonPressed(NSObject sender) {
 	log.debug("connectButtonPressed");
-	mainWindow.makeFirstResponder(connectionSheet);
+//	mainWindow.makeFirstResponder(connectionSheet);
 	NSApplication.sharedApplication().beginSheet(
 					      connectionSheet,//sheet
 					      mainWindow, //docwindow
@@ -250,7 +249,7 @@ public class CDMainController extends NSObject {
     
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
-
+	
 	this.drawer.open();
 	// ----------------------------------------------------------
  // Toolbar

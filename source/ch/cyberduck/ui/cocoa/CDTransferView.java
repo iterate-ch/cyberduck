@@ -47,13 +47,17 @@ public class CDTransferView extends NSTableView implements Observer {
 	super(frame);
     }
 
-    public CDTransferView(NSCoder decoder, long token) {
+    protected CDTransferView(NSCoder decoder, long token) {
 	super(decoder, token);
     }
 
     public void encodeWithCoder(NSCoder encoder) {
 	super.encodeWithCoder(encoder);
     }
+
+    public Object dataSource() {
+	return this.model;
+    }    
 
     public void awakeFromNib() {
 	log.debug("awakeFromNib");

@@ -43,7 +43,7 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
     
     private NSColor sStripeColor = null;
 
-    private CDBrowserTableDataSource model = new CDBrowserTableDataSource();;
+    private CDBrowserTableDataSource model = new CDBrowserTableDataSource();
     
     public CDBrowserView() {
 	super();
@@ -55,7 +55,7 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	log.debug("CDBrowserView:"+frame);
     }
 
-    public CDBrowserView(NSCoder decoder, long token) {
+    protected CDBrowserView(NSCoder decoder, long token) {
 	super(decoder, token);
 	log.debug("CDBrowserView:"+decoder+","+token);
     }
@@ -65,6 +65,11 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	log.debug("CDBrowserView");
     }
 
+
+    public Object dataSource() {
+	return this.model;
+    }
+    
     /**
 	* Gets called multiple times if this class is references from multiple nib files
      */
@@ -93,9 +98,6 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	    this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
 	//this.setIndicatorImage(NSImage.imageNamed("indicator.tiff"), this.tableColumnWithIdentifier("FILENAME"));
 //	this.setIndicatorImage(this._defaultTableHeaderSortImage(), this.tableColumnWithIdentifier("FILENAME"));
-	
-	//    [myTableView setIndicatorImage: [NSTableView _defaultTableHeaderSortImage] inTableColumn: [myTableView tableColumnWithIdentifier: @"cellNumber"]];
-
     }
 
     public void doubleClickAction(NSObject sender) {
@@ -124,34 +126,32 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 		if(msg.getTitle().equals(Message.OPEN)) {
 		    model.clear();
 		    this.reloadData();
-		    this.setNeedsDisplay(true);
 		}
 		// The host's session has been closed.
 		if(msg.getTitle().equals(Message.CLOSE)) {
 		    model.clear();
 		    this.reloadData();
-		    this.setNeedsDisplay(true);
 		}
 	    }
 	    if(arg instanceof Path) {
 		List cache = ((Path)arg).cache();
 		java.util.Iterator i = cache.iterator();
 		model.clear();
+		this.reloadData();
 		while(i.hasNext()) {
 		    model.addEntry(i.next());
 		}
 		this.reloadData();
-		this.setNeedsDisplay(true);
 	    }
 	}
     }
 
-
-  //  public void reloadData() {
-//	super.reloadData();
-//	this.setNeedsDisplay(true);
-   // }    
-
+    
+    public void reloadData() {
+	super.reloadData();
+	this.setNeedsDisplay(true);
+    }
+    
     // ----------------------------------------------------------
     // Drawing methods
     // ----------------------------------------------------------
@@ -230,8 +230,12 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	    }
 	}
     }
-    
 
+    public void viewDidEndLiveResize() {
+	super.viewDidEndLiveResize();
+	this.setNeedsDisplay(true);
+    }
+    
 /*
     public void sort(final String columnIdentifier, final boolean ascending) {
 	final int higher;

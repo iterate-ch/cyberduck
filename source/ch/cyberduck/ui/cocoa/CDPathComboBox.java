@@ -115,7 +115,7 @@ public class CDPathComboBox extends NSPopUpButton implements Observer {
 	log.debug("CDPathComboBox");
     }	
 
-    public CDPathComboBox(NSCoder decoder, long token) {
+    protected CDPathComboBox(NSCoder decoder, long token) {
 	super(decoder, token);
 	log.debug("CDPathComboBox:decoder");
     }

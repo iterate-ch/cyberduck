@@ -124,12 +124,11 @@ public class Status extends Observable implements Serializable {
         log.debug("callObservers:"+arg.toString());
 	log.debug(this.countObservers()+" observers known.");
         long start = System.currentTimeMillis();
- //        long start = System.currentTimeMillis();
         this.setChanged();
 	//@todo        if(this.isSelected())
 	this.notifyObservers(arg);
         long end = System.currentTimeMillis();
-	log.debug((end - start)/1000 + " seconds");
+	log.debug((end - start) + " ms");
     }
 
 //    public void setMessage(String message, String title) {

@@ -94,7 +94,7 @@ public class HTTPSession extends Session {
             HTTPSession.this.log("Invalid Operation", Message.ERROR);
 	}
 
-        public void download() {
+        public synchronized void download() {
 	    new Thread() {
 		public void run() {
 		    GetMethod GET = null;
@@ -248,7 +248,7 @@ public class HTTPSession extends Session {
     }
 	
 
-    public void connect() {
+    public synchronized void connect() {
 	new Thread() {
 	    public void run() {
 //		host.status.fireActiveEvent();

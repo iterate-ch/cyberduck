@@ -44,8 +44,12 @@ public class CDHostView extends NSTableView implements Observer {
 	super(frame);
     }
 
-    public CDHostView(NSCoder decoder, long token) {
+    protected CDHostView(NSCoder decoder, long token) {
 	super(decoder, token);
+    }
+
+    public Object dataSource() {
+	return this.model;
     }
 
     public void encodeWithCoder(NSCoder encoder) {
@@ -54,19 +58,24 @@ public class CDHostView extends NSTableView implements Observer {
 
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
-
+	this.addTableColumn(new CDImageTableColumn());
 	this.setDataSource(model);
+	
 
 	ObserverList.instance().registerObserver((Observer)this);
 
 	this.setDelegate(this);
 	this.setAutoresizesAllColumnsToFit(true);
-	this.model = (CDHostTableDataSource)this.dataSource();
+	this.model.addEntry(new Host("ftp", "hostname", 12, null));
+
+
 	if(this.tableColumnWithIdentifier("STATUS") != null)
-	    this.tableColumnWithIdentifier("STATUS").setDataCell(new NSImageCell());;
+	    this.tableColumnWithIdentifier("STATUS").setDataCell(new NSImageCell());
+	/*
 	if(this.tableColumnWithIdentifier("BUTTON") != null)
-	    this.tableColumnWithIdentifier("BUTTON").setDataCell(new CDButtonCell());;
-//	this.tableColumnWithIdentifier("HOST").setDataCell(new CDHostCell());;
+	    this.tableColumnWithIdentifier("BUTTON").setDataCell(new CDButtonCell());
+	 */
+//	this.tableColumnWithIdentifier("HOST").setDataCell(new CDHostCell());
     }
 
     // ----------------------------------------------------------
@@ -96,11 +105,10 @@ public class CDHostView extends NSTableView implements Observer {
 	}
     }
 
-
-//    public void reloadData() {
-//	super.reloadData();
-//	this.setNeedsDisplay(true);
-//    }    
+    public void reloadData() {
+	super.reloadData();
+	this.setNeedsDisplay(true);
+    }    
     
     // ----------------------------------------------------------
     // Observer interface
@@ -114,17 +122,83 @@ public class CDHostView extends NSTableView implements Observer {
 		if(msg.getTitle().equals(Message.OPEN)) {
 		    model.addEntry(o);
 		    this.reloadData();
-		    this.setNeedsDisplay(true);
+		    this.selectRow();
 		}
 		if(msg.getTitle().equals(Message.CLOSE)) {
 		    model.removeEntry(o);
 		    this.reloadData();
-		    this.setNeedsDisplay(true);
 		}
 	    }
 	}
     }
 
+
+    class CDImageTableColumn extends NSTableColumn {
+	public CDImageTableColumn() {
+	    super();
+	    log.debug("NSTableColumn");
+	}
+
+	public Object identifier() {
+	    return "BUTTON";
+	}
+
+	/**
+	    * Returns the NSCell object used by the NSTableView to draw values for the receiver. NSTableView
+	 * always calls this method. By default, this method just calls dataCell. Subclassers can override if
+	 * they need to potentially use different cells for different rows. Subclasses should expect this method to be
+	 * invoked with row equal to -1 in cases where no actual row is involved but the table view needs to get
+	 * some generic cell info.
+	 */
+	public NSCell dataCellForRow(int row) {
+	    log.debug("dataCellForRow");
+//	    return new CDImageCell(NSImage.imageNamed("reload.tiff"));
+	    Host h = (Host)model.getEntry(row);
+	    if(h.hasValidSession()) {
+		return new CDImageCell(NSImage.imageNamed("stop.tiff"));
+	    }
+	    return new CDImageCell(NSImage.imageNamed("reload.tiff"));
+	}
+
+
+	class CDImageCell extends NSButtonCell {
+	    public CDImageCell(NSImage img) {
+		super();
+		this.setImage(img);
+		//	    this.setTransparent(true);
+  //	    this.setHighlightsBy(NSButtonCell.NoCellMask);
+  //	    this.setGradientType(NSButtonCell.NSGradientNone);
+		this.setControlTint(NSButtonCell.ClearControlTint);
+		this.setBordered(false);
+		this.setTarget(this);
+		this.setAction(new NSSelector("cellClicked", new Class[]{null}));
+		//	    this.setDrawsBackground(false);
+		log.debug("CDImageCell");
+	    }
+
+	    public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
+		super.drawInteriorWithFrameInView(cellFrame, controlView);
+		//	    NSPoint iconPoint = new NSPoint(cellFrame.origin().x(), cellFrame.origin().y());
+  //	    this.image().setSize(new NSSize(32, 32));
+  //	    this.image().compositeToPoint(iconPoint, NSImage.CompositeSourceOver);
+	    }
+
+	    public void cellClicked(NSObject sender) {
+		log.debug("cellClicked");
+		Host host = (Host)model.getEntry(selectedRow());
+		host.closeSession();
+		host.deleteObservers();
+	    }
+	}
+
+    }
+}
+
+
+
+    
+
+    /*
     class CDButtonCell extends NSButtonCell {
 	public CDButtonCell() {
 	    super(NSImage.imageNamed("stop.tiff"));//@todo image dependant on state
@@ -145,6 +219,7 @@ public class CDHostView extends NSTableView implements Observer {
 	    host.deleteObservers();
 	}
     }
+     */
     
     // ----------------------------------------------------------
     // Cell class
@@ -192,4 +267,3 @@ public class CDHostView extends NSTableView implements Observer {
 	}
   }
 	     */
-}

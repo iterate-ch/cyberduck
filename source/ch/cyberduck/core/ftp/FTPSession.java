@@ -70,7 +70,7 @@ public class FTPSession extends Session {
 	* Request a file listing from the server. Has to be a directory
 	* @param
 	*/
-	public void list(boolean refresh) {
+	public synchronized void list(boolean refresh) {
 	    log.debug("list");
 	    if(refresh) {
 		new Thread() {
@@ -98,7 +98,7 @@ public class FTPSession extends Session {
 	    }
 	}	
 
-	public void delete() {
+	public synchronized void delete() {
 	    log.debug("delete");
 	    try {
 		FTPSession.this.check();
@@ -135,7 +135,7 @@ public class FTPSession extends Session {
 	    }
 	}
 
-        public void rename(String filename) {
+        public synchronized void rename(String filename) {
             log.debug("rename");
             try {
 		FTPSession.this.check();
@@ -152,7 +152,7 @@ public class FTPSession extends Session {
 	    }
         }
         
-        public void mkdir(String name) {
+        public synchronized void mkdir(String name) {
             log.debug("mkdir");
             try {
 		FTPSession.this.check();
@@ -169,7 +169,7 @@ public class FTPSession extends Session {
 	    }
 	}
 
-	public void changePermissions(int permissions) {
+	public synchronized void changePermissions(int permissions) {
 	    log.debug("changePermissions");
 	    try {
 		FTPSession.this.check();
@@ -183,7 +183,7 @@ public class FTPSession extends Session {
 	    }
 	}
 
-        public void download() {
+        public synchronized void download() {
             log.debug("download");
 	    new Thread() {
 		public void run() {
@@ -246,28 +246,27 @@ public class FTPSession extends Session {
 		private void downloadFolder() throws IOException {
 		    java.util.List files = new FTPParser().parseList(FTPFile.this.getAbsolute(), FTP.dir());
 		    File dir = FTPFile.this.getLocal();
-		    //log.debug("making directory: "+dir.toString());
 		    dir.mkdir();
 		    java.util.Iterator i = files.iterator();
 		    while(i.hasNext()) {
 			Path r = (Path)i.next();
 			if(r.isDirectory()) {
-			    //log.debug("changing directory: "+r.toString());
+			    log.debug("changing directory: "+r.toString());
 			    FTP.chdir(r.getAbsolute());
 			    r.download();
 			}
 			if(r.isFile()) {
-			    //log.debug("getting file:"+r.toString());
+			    log.debug("getting file:"+r.toString());
 			    r.download();
 			}
 		    }
-		    //log.debug("upping directory");
+		    log.debug("upping directory");
 		    FTP.cdup();
 		}
 	    }.start();
 	}
 	    
-        public void upload() {
+        public synchronized void upload() {
 	    new Thread() {
 		public void run() {
 		    try {
@@ -370,7 +369,7 @@ public class FTPSession extends Session {
 //@todo proxy        System.getProperties().put("proxyPort", Preferences.instance().getProperty("connection.proxy.port"));
     }
 
-    public void close() {
+    public synchronized void close() {
 	try {
 	    if(FTP != null) {
 		this.log("Disconnecting...", Message.PROGRESS);
@@ -387,7 +386,7 @@ public class FTPSession extends Session {
 //	host.status.fireStopEvent();
     }
 
-    public void connect() {
+    public synchronized void connect() {
 	new Thread() {
 	    public void run() {
 //		host.status.fireActiveEvent();
@@ -427,7 +426,7 @@ public class FTPSession extends Session {
 	}.start();
     }
 
-    private void login() throws IOException {
+    private synchronized void login() throws IOException {
 	log.debug("login");
 	try {
 	    this.log("Authenticating as " + host.login.getUsername() + "...", Message.PROGRESS);
