@@ -47,13 +47,11 @@ else
             echo "Updating $language Localization..."
             echo "**********************************"
         
-            # First update the nib file with the modifications in the .strings file. 
+            # Update the nib file with the modifications in the .strings file. 
             # The .strings file is always assumed to be newer - this means that all 
             # modifications should not be made in the .nib file directly but in 
             # the .strings file instead.
             ./updateNibFromStrings.sh $language
-            # Update the localized .strings file with new strings added to to the base (English) version.
-            ./updateStringsFromNib.sh $language
         }
         fi;
     done;
