@@ -10,6 +10,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - Supporting folders with sticky/set-uid/set-gid bits (FTP)
 - Updated Dutch localization
 - Updated French localization
+- Minor performance improvements
 
 2.2b6
 - Preliminary support for Windows, VMS and OS/2 file listings (FTP)
