@@ -74,8 +74,7 @@ public class CDBrowserController implements Observer {
         this.browserTable.setTarget(this);
         this.browserTable.setDoubleAction(new NSSelector("browserTableRowDoubleClicked", new Class[]{Object.class}));
         this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
-        this.browserTable.setDelegate(this);
-//        this.browserTable.setDelegate(this.browserModel);
+        this.browserTable.setDelegate(this.browserModel);
         // receive drag events from types
         this.browserTable.registerForDraggedTypes(new NSArray(new Object[]{
             NSPasteboard.FilenamesPboardType,
@@ -221,8 +220,7 @@ public class CDBrowserController implements Observer {
         this.bookmarkTable.setTarget(this);
         this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableRowDoubleClicked", new Class[]{Object.class}));
         this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
-        this.bookmarkTable.setDelegate(this);
-//        this.bookmarkTable.setDelegate(this.bookmarkModel);
+        this.bookmarkTable.setDelegate(this.bookmarkModel);
         // receive drag events from types
         this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]{"BookmarkPboardType",
                                                                             NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
@@ -1484,25 +1482,4 @@ public class CDBrowserController implements Observer {
             return this.fullData;
         }
     }
-
-	// ----------------------------------------------------------
-	// TableView Delegate methods
-	// ----------------------------------------------------------
-
-	/**
-	* Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
-	 * The delegate can implement this method to disallow selection of particular rows.
-	 */
-	public boolean tableViewShouldSelectRow(NSTableView aTableView, int rowIndex) {
-		return true;
-	}
-
-
-	/**
-	* Returns true to permit aTableView to edit the cell at rowIndex in aTableColumn, false to deny permission.
-	 * The delegate can implemen this method to disallow editing of specific cells.
-	 */
-	public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-		return false;
-	}
 }
