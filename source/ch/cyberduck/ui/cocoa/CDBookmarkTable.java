@@ -30,7 +30,7 @@ import ch.cyberduck.core.BookmarkList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Preferences;
 
-public class CDBookmarkTable extends CDTableView {
+public class CDBookmarkTable extends NSTableView {
     private static Logger log = Logger.getLogger(CDBookmarkTable.class);
 
     public CDBookmarkTable() {

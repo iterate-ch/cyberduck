@@ -30,7 +30,7 @@ import ch.cyberduck.core.QueueList;
 import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Preferences;
 
-public class CDQueueTable extends CDTableView {
+public class CDQueueTable extends NSTableView {
     private static Logger log = Logger.getLogger(CDQueueTable.class);
 	
     public CDQueueTable() {

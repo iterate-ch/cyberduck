@@ -186,7 +186,7 @@ public class CDQueueController extends NSObject implements Observer {
         this.toolbar.setDelegate(this);
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
-        this.window().setToolbar(toolbar);
+        this.window.setToolbar(toolbar);
     }
 
     // ----------------------------------------------------------

@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 public abstract class Path {
     private static Logger log = Logger.getLogger(Path.class);
 
+	private String name = null;
     private String path = null;
     private Local local = null;
     protected Path parent = null;
@@ -194,9 +195,10 @@ public abstract class Path {
     }
 
     protected void setCache(List files) {
-//		Path parent = PathFactory.createPath(this.getSession(), this.getAbsolute(), "..");
-//		parent.attributes.setType(Path.DIRECTORY_TYPE);
-//		files.add(parent);
+		Path parent = this.getParent();
+		parent.setName("..");
+		parent.attributes.setType(Path.DIRECTORY_TYPE);
+		files.add(parent);
         this.getSession().cache().put(this.getAbsolute(), files);
     }
 
@@ -300,17 +302,29 @@ public abstract class Path {
     }
 
     /**
-     * @return The filename if the path is a file
-     *         or the full path if it is a directory
+     * @return the path relative to its parent directory
      */
     public String getName() {
-        String abs = this.getAbsolute();
-        int index = abs.lastIndexOf('/');
-        String name = (index > 0) ? abs.substring(index + 1) : abs.substring(1);
-        index = name.lastIndexOf('?');
-        name = (index > 0) ? name.substring(index + 1) : name;
-        return name;
-    }
+		if(null == name) {
+			String abs = this.getAbsolute();
+			int index = abs.lastIndexOf('/');
+			return (index > 0) ? abs.substring(index + 1) : abs.substring(1);
+			/*
+			String name = (index > 0) ? abs.substring(index + 1) : abs.substring(1);
+			index = name.lastIndexOf('?');
+			name = (index > 0) ? name.substring(index + 1) : name;
+			return name;
+			 */
+		}
+		return this.name;
+	}
+	
+	/**
+		* Manually set the name viewable by the end user; thereby obfuscating the real pathname
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
     /**
      * @return the absolute path name

@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Preferences;
 
-public class CDBrowserTable extends CDTableView {
+public class CDBrowserTable extends NSTableView {
     private static Logger log = Logger.getLogger(CDBrowserTable.class);
 
     public CDBrowserTable() {

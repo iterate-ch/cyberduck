@@ -229,7 +229,7 @@ public class UnixFTPEntryParser extends FTPFileEntryParserImpl {
                 if (Path.SYMBOLIC_LINK_TYPE == type) {
                     int end = name.indexOf(" -> ");
                     // Give up if no link indicator is present
-                    if (end == -1) {
+                    if (-1 == end) {
                         f.setPath(parent.getAbsolute(), name);
                     }
                     else {
