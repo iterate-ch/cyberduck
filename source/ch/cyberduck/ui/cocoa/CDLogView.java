@@ -40,8 +40,10 @@ public class CDLogView extends NSScrollView implements Observer {
 //	log.debug("update");
 	if(o instanceof Status) {
 	    Message msg = (Message)arg;
-	    if(msg.getTitle().equals(Message.TRANSCRIPT))
-		documentView.insertText(msg.toString());
+	    if(msg.getTitle().equals(Message.TRANSCRIPT)) {
+		log.debug("documentView.insertText()");
+		documentView.insertText(msg.getDescription());
+	    }
 	}
     }
 }

@@ -34,6 +34,7 @@ import ch.cyberduck.core.http.*;
 import ch.cyberduck.core.sftp.*;
 import ch.cyberduck.core.ftp.*;
 
+import ch.cyberduck.ui.cocoa.CDPathPopUpButton;
 import ch.cyberduck.ui.cocoa.CDStatusLabel;
 
 import com.sshtools.j2ssh.session.SessionChannelClient;
@@ -55,6 +56,7 @@ public class CDConnectionController extends NSObject implements Observer {
     public NSWindow connectionSheet; /* IBOutlet */
     public NSWindow loginSheet; /* IBOutlet */
 
+    public NSPopUpButton pathPopUpButton;
     public NSTextField statusLabel;
     public NSTextField pathField; /* IBOutlet */
     public NSTextField portField; /* IBOutlet */
@@ -121,6 +123,7 @@ public class CDConnectionController extends NSObject implements Observer {
 	    host.addObserver((CDBrowserView)browserTable);
 	    host.status.addObserver((CDStatusLabel)statusLabel);
 	    host.status.addObserver((CDLogView)logView);
+	    host.status.addObserver((CDPathPopUpButton)pathPopUpButton);
 	    host.status.addObserver((CDProgressWheel)progressIndicator);
 	    host.status.addObserver(this);
 	    
