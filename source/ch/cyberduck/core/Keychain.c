@@ -25,8 +25,8 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(J
 																					 jobject this, 
 																					 jstring service, 
 																					 jstring account) {
-	char		*password;
-	OSStatus		error;
+	char *password;
+	OSStatus error;
 	
     const char *serviceChar = (*env)->GetStringUTFChars(env, service, JNI_FALSE);
     const char *accountChar = (*env)->GetStringUTFChars(env, account, JNI_FALSE);
@@ -37,16 +37,18 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(J
 		if ( error == errSecItemNotFound ) {
 			syslog( LOG_INFO, "Keychain item not found" );
 		} else {
-			syslog( LOG_INFO, "Attempting to retrieve password from keychain return error %d", error );
+			syslog( LOG_INFO, "Attempting to retrieve password from keychain returned error %d", error );
 		}
-		return (*env)->NewStringUTF(env, password);
+		return NULL;
 	}
 	
 	(*env)->ReleaseStringUTFChars(env, service, serviceChar);
-	(*env)->ReleaseStringUTFChars(env, service, accountChar);
+	(*env)->ReleaseStringUTFChars(env, account, accountChar);
 	
+//	jstring value = (*env)->NewStringUTF(env, password);
+//	free( password );
+//	return value;
 	return (*env)->NewStringUTF(env, password);
-//	free ( password );
 }
 
 
@@ -65,11 +67,6 @@ char *getpwdfromkeychain(const char *service,
         syslog( LOG_ERR, "SecKeychainCopyDefault failed" );
         return( NULL );
     }
-    
-	//    if (( password = ( char * )malloc( _PASSWORD_LEN + 1 )) == NULL ) {
-	//      syslog( LOG_ERR, "malloc: %s", strerror( errno ));
-	//        return( NULL );
-	//    }
     
     err = SecKeychainFindGenericPassword( skcref,
 										  strlen( service ), service,
@@ -112,7 +109,7 @@ char *getpwdfromkeychain(const char *service,
     }
     
     password[ len ] = '\0';
-    
+	    
     /* returns malloc'd bytes which must be free'd */
     return( password );
 }
@@ -131,8 +128,8 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain(JNIEnv
 					 passwordChar);
 	
 	(*env)->ReleaseStringUTFChars(env, service, serviceChar);
-	(*env)->ReleaseStringUTFChars(env, service, accountChar);
-	(*env)->ReleaseStringUTFChars(env, service, passwordChar);
+	(*env)->ReleaseStringUTFChars(env, account, accountChar);
+	(*env)->ReleaseStringUTFChars(env, password, passwordChar);
 }
 
 void addpwdtokeychain(const char *service, 

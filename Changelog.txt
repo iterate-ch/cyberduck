@@ -4,10 +4,15 @@ http://cyberduck.ch/
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
 2.2b2
-- Updated Japanese Localization
-- Updated french Localization
-- Updated portuguese Localization
-- Fixed-width font in transcript
+- Updated Japanese localization
+- Updated French localization
+- Updated Portuguese localization
+- Updated Italian localization
+- The log is now written with a fixed-width font
+- Various minor improvements
+
+http://cyberduck.ch/download.php?Cyberduck-2.2beta2.dmg
+http://cyberduck.ch/download.php?cyberduck-src-2.2beta2.tar.gz
 
 2.2b1
 - Keychain integration
@@ -27,8 +32,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - Various improvements and bug fixes
 
 http://cyberduck.ch/download.php?Cyberduck-2.2beta1.dmg
-http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.2beta1.dmg
-http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.2beta1.tar.gz
+http://cyberduck.ch/download.php?cyberduck-src-2.2beta1.tar.gz
 
 2.1
 - Bookmarks can now be edited.
@@ -48,8 +52,7 @@ http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.2beta1.tar.g
 - Smaller changes and bug fixes.
 
 http://cyberduck.ch/download.php?Cyberduck-2.1.dmg
-http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1.dmg
-http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1.tar.gz
+http://cyberduck.ch/download.php?cyberduck-src-2.1.tar.gz
 
 2.1b5
 - HTTP is now supported again. Files can be downloaded from regular web servers.
@@ -61,16 +64,14 @@ http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1.tar.gz
 - Smaller bug fixes
 
 http://cyberduck.ch/download.php?Cyberduck-2.1beta5.dmg
-http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1beta5.dmg
-http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta5.tar.gz
+http://cyberduck.ch/download.php?cyberduck-src-2.1beta5.tar.gz
 
 2.1b4
 - Cyberduck now has the official creator code 'CYCK' and can handle URL events from other applications.
 - Smaller bug fixes.
 
 http://cyberduck.ch/download.php?Cyberduck-2.1beta4.dmg
-http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1beta4.dmg
-http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta4.tar.gz
+http://cyberduck.ch/download.php?cyberduck-src-2.1beta4.tar.gz
 
 2.1b3
 - Localization support
@@ -85,14 +86,12 @@ http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta4.tar.g
 - There is a new command 'Go to folder' for changing the working directory quickly.
 - Many smaller bug fixes.
 
-http://cyberduck.ch/download.php?Cyberduck-2.1beta3.dmg
-http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1beta3.dmg.gz
-http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta3.tar.gz
+http://cyberduck.ch/download.php?Cyberduck-2.1beta3.dmg.gz
+http://cyberduck.ch/download.php?cyberduck-src-2.1beta3.tar.gz
 
 2.1b2
 - SSH (SFTP) support
 - Completly rewritten user interface using the Cocoa Framework
 
-http://cyberduck.ch/download.php?Cyberduck-2.1beta2.dmg
-http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1beta2.dmg.gz
-http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta2.tar.gz
+http://cyberduck.ch/download.php?Cyberduck-2.1beta2.dmg.gz
+http://cyberduck.ch/download.php?cyberduck-src-2.1beta2.tar.gz

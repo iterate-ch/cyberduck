@@ -90,6 +90,9 @@ public abstract class Preferences {
 		defaults.put("website.update", "http://cyberduck.ch/");
 		defaults.put("website.home", "http://cyberduck.ch/");
 
+		defaults.put("bookmarkDrawer.isOpen", "false");
+		defaults.put("logDrawer.isOpen", "false");
+
 		defaults.put("browser.columnIcon", "true");
 		defaults.put("browser.columnFilename", "true");
 		defaults.put("browser.columnSize", "true");

@@ -63,8 +63,9 @@ public class Login {
 
 	public void addPasswordToKeychain() {
 		log.debug("addPasswordToKeychain:" + this.toString());
-		if(this.addToKeychain)
+		if(this.addToKeychain) {
 			this.addPasswordToKeychain(this.service, this.user, this.pass);
+		}
 	}
 
 	private String service;

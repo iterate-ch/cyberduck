@@ -446,7 +446,7 @@ public class CDBrowserController implements Observer {
 	// ----------------------------------------------------------
 
 	private NSDrawer logDrawer; // IBOutlet
-	private static boolean logDrawerOpen;
+//	private static boolean logDrawerOpen;
 
 	public void setLogDrawer(NSDrawer logDrawer) {
 		this.logDrawer = logDrawer;
@@ -454,11 +454,12 @@ public class CDBrowserController implements Observer {
 
 	public void toggleLogDrawer(Object sender) {
 		logDrawer.toggle(this);
-		logDrawerOpen = (logDrawer.state() == NSDrawer.OpenState || logDrawer.state() == NSDrawer.OpeningState);
+		Preferences.instance().setProperty("logDrawer.isOpen", logDrawer.state() == NSDrawer.OpenState || logDrawer.state() == NSDrawer.OpeningState);
+//		logDrawerOpen = logDrawer.state() == NSDrawer.OpenState || logDrawer.state() == NSDrawer.OpeningState;
 	}
 
 	private NSDrawer bookmarkDrawer; // IBOutlet
-	private static boolean bookmarkDrawerOpen;
+//	private static boolean bookmarkDrawerOpen;
 
 	public void setBookmarkDrawer(NSDrawer bookmarkDrawer) {
 		this.bookmarkDrawer = bookmarkDrawer;
@@ -466,7 +467,8 @@ public class CDBrowserController implements Observer {
 
 	public void toggleBookmarkDrawer(Object sender) {
 		bookmarkDrawer.toggle(this);
-		bookmarkDrawerOpen = (bookmarkDrawer.state() == NSDrawer.OpenState || bookmarkDrawer.state() == NSDrawer.OpeningState);
+		Preferences.instance().setProperty("bookmarkDrawer.isOpen", bookmarkDrawer.state() == NSDrawer.OpenState || bookmarkDrawer.state() == NSDrawer.OpeningState);
+//		bookmarkDrawerOpen = bookmarkDrawer.state() == NSDrawer.OpenState || bookmarkDrawer.state() == NSDrawer.OpeningState;
 	}
 
 	// ----------------------------------------------------------
@@ -523,10 +525,13 @@ public class CDBrowserController implements Observer {
 		this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 		this.pathController = new CDPathController(pathPopup);
 		// Drawer states
-		if (logDrawerOpen)
+		if (Preferences.instance().getProperty("logDrawer.isOpen").equals("true")) {
 			this.logDrawer.open();
-		if (bookmarkDrawerOpen)
+		}
+		if (Preferences.instance().getProperty("bookmarkDrawer.isOpen").equals("true")) {
+			this.showBookmarkButton.setState(NSCell.OnState);
 			this.bookmarkDrawer.open();
+		}
 		// Toolbar
 		this.toolbar = new NSToolbar("Cyberduck Toolbar");
 		this.toolbar.setDelegate(this);
