@@ -34,27 +34,16 @@ import ch.cyberduck.core.Status;
 /**
  * @version $Id$
  */
-public class CDInfoController extends NSObject {
+public class CDInfoController extends CDController {
 	private static Logger log = Logger.getLogger(CDInfoController.class);
 
-	private static NSMutableArray instances = new NSMutableArray();
+//	private static NSMutableArray instances = new NSMutableArray();
 
 	private List files;
 
 	// ----------------------------------------------------------
 	// Outlets
 	// ----------------------------------------------------------
-
-	private NSWindow window; //IBOutlet
-
-	public void setWindow(NSWindow window) {
-		this.window = window;
-		this.window.setDelegate(this);
-	}
-
-	public NSWindow window() {
-		return this.window;
-	}
 
 	private NSTextField filenameField; //IBOutlet
 
@@ -140,7 +129,7 @@ public class CDInfoController extends NSObject {
 	public CDInfoController(Path file) {
 		this.files = new ArrayList();
 		this.files.add(file);
-		instances.addObject(this);
+		//instances.addObject(this);
 		if(false == NSApplication.loadNibNamed("Info", this)) {
 			log.fatal("Couldn't load Info.nib");
 		}
@@ -148,7 +137,7 @@ public class CDInfoController extends NSObject {
 
 	public CDInfoController(List files) {
 		this.files = files;
-		instances.addObject(this);
+		//instances.addObject(this);
 		if(false == NSApplication.loadNibNamed("Info", this)) {
 			log.fatal("Couldn't load Info.nib");
 		}
@@ -162,7 +151,7 @@ public class CDInfoController extends NSObject {
 	private static NSPoint cascadedWindowPoint;
 
 	public void awakeFromNib() {
-		log.debug("awakeFromNib");
+		this.window().setReleasedWhenClosed(false);
 		if(null == cascadedWindowPoint) {
 			cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(this.window().frame().origin());
 		}
@@ -272,10 +261,10 @@ public class CDInfoController extends NSObject {
 			
 			//		octalField.setStringValue(""+file.getOctalCode());
 			if(this.numberOfFiles() > 1) {
-				permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+"("+NSBundle.localizedString("Multiple files", "")+")");
+				this.permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+"("+NSBundle.localizedString("Multiple files", "")+")");
 			}
 			else {
-				permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+permission.toString());
+				this.permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+permission.toString());
 			}
 			
 			NSImage fileIcon = null;
@@ -302,8 +291,6 @@ public class CDInfoController extends NSObject {
 	private void update(NSButton checkbox, boolean condition) {
 		// Sets the cell's state to value, which can be NSCell.OnState, NSCell.OffState, or NSCell.MixedState.
 		// If necessary, this method also redraws the receiver.
-		log.debug("Checkbox state:"+checkbox.state());
-		log.debug("Should be enabled:"+condition);
 		if((checkbox.state() == NSCell.OffState || !checkbox.isEnabled()) && !condition) {
 			checkbox.setState(NSCell.OffState);
 		}
@@ -314,17 +301,12 @@ public class CDInfoController extends NSObject {
 			checkbox.setState(NSCell.MixedState);
 		}
 		checkbox.setEnabled(true);
-		log.debug("New state:"+checkbox.state());
-	}
-
-	public boolean windowShouldClose(NSWindow sender) {
-		return true;
 	}
 
 	public void windowWillClose(NSNotification notification) {
 		log.debug("windowWillClose");
-		NSNotificationCenter.defaultCenter().removeObserver(this);
-		instances.removeObject(this);
+//		NSNotificationCenter.defaultCenter().removeObserver(this);
+//		instances.removeObject(this);
 	}
 
 	private int numberOfFiles() {

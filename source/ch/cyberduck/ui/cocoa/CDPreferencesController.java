@@ -32,19 +32,12 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 /**
  * @version $Id$
  */
-public class CDPreferencesController extends NSObject {
+public class CDPreferencesController extends CDController {
 	private static Logger log = Logger.getLogger(CDPreferencesController.class);
 
 	private static CDPreferencesController instance;
 
 	private static NSMutableArray instances = new NSMutableArray();
-
-	private NSWindow window; //IBOutlet
-
-	public void setWindow(NSWindow window) {
-		this.window = window;
-		this.window.setDelegate(this);
-	}
 
 	public static CDPreferencesController instance() {
 		log.debug("instance");
@@ -63,16 +56,8 @@ public class CDPreferencesController extends NSObject {
 
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
-		this.window.center();
+		this.window().center();
 		this.transfermodeComboboxClicked(this.transfermodeCombobox);
-	}
-
-	public NSWindow window() {
-		return this.window;
-	}
-
-	public boolean windowShouldClose(NSWindow sender) {
-		return true;
 	}
 
 	public void windowWillClose(NSNotification notification) {
@@ -698,7 +683,7 @@ public class CDPreferencesController extends NSObject {
 		panel.setCanChooseFiles(false);
 		panel.setCanChooseDirectories(true);
 		panel.setAllowsMultipleSelection(false);
-		panel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+		panel.beginSheetForDirectory(null, null, null, this.window(), this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
 	}
 
 	public void openPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {

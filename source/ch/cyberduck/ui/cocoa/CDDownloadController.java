@@ -58,10 +58,6 @@ public class CDDownloadController extends CDController {
 		controller.beginSheet(this.window());
 	}
 
-	public boolean windowShouldClose(NSWindow sender) {
-		return true;
-	}
-
 	public void windowWillClose(NSNotification notification) {
 		instances.removeObject(this);
 	}

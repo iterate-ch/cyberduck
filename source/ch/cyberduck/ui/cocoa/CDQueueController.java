@@ -65,11 +65,6 @@ public class CDQueueController extends CDController {
 				log.fatal("Couldn't load Queue.nib");
 			}
 		}
-		if(null == instance.window()) {
-			if(false == NSApplication.loadNibNamed("Queue", instance)) {
-				log.fatal("Couldn't load Queue.nib");
-			}
-		}
 		return instance;
 	}
 
@@ -304,6 +299,7 @@ public class CDQueueController extends CDController {
 		this.toolbar.setDelegate(this);
 		this.toolbar.setAllowsUserCustomization(true);
 		this.toolbar.setAutosavesConfiguration(true);
+		this.window().setReleasedWhenClosed(false);
 		this.window().setToolbar(toolbar);
 	}
 

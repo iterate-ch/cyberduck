@@ -92,16 +92,9 @@ public class CDBrowserController extends CDController implements Observer {
 		}
 	}
 	
-	private static NSPoint cascadedWindowPoint;
-	
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
-		if(null == cascadedWindowPoint) {
-			cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(this.window().frame().origin());
-		}
-		else {
-			cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(cascadedWindowPoint);
-		}
+		this.cascade();
 		this.window().setTitle("Cyberduck "+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		this.window().setInitialFirstResponder(quickConnectPopup);
 		// Drawer states
@@ -1648,11 +1641,11 @@ public class CDBrowserController extends CDController implements Observer {
 			return currentData.size();
 		}
 		
-		//		public abstract boolean outlineViewIsItemExpandable(NSOutlineView outlineView, Object item);		
+//		public abstract boolean outlineViewIsItemExpandable(NSOutlineView outlineView, Object item);		
 
 //		public abstract object outlineViewChildOfItem(NSOutlineView outlineView, int index, Object item);
 
-		//		public abstract Object outlineViewObjectValueForItem(NSOutlineView outlineView, NSTableColumn tableColumn, Object item);
+//		public abstract Object outlineViewObjectValueForItem(NSOutlineView outlineView, NSTableColumn tableColumn, Object item);
 
 		public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 			if(row < this.numberOfRowsInTableView(tableView)) {

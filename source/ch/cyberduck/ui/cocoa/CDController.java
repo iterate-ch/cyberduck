@@ -22,6 +22,8 @@ import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSPoint;
 
 import org.apache.log4j.Logger;
 
@@ -50,6 +52,23 @@ public abstract class CDController {
 	
 	public abstract void windowWillClose(NSNotification notification);
 
+	public void cascade() {
+		NSArray windows = NSApplication.sharedApplication().windows();
+		int count = windows.count();
+		if(count != 0) {
+			while(0 != count--) {
+				NSWindow window = (NSWindow)windows.objectAtIndex(count);
+				//				CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+				//				if(null != controller) {
+				NSPoint origin = window.frame().origin();
+				origin = new NSPoint(origin.x(), origin.y()+window.frame().size().height());
+				this.window().setFrameTopLeftPoint(this.window().cascadeTopLeftFromPoint(origin));
+				break;
+				//				}
+			}
+		}
+	}
+	
 	public void endSheet() {
 		log.debug("endSheet");
 		if(this.hasSheet()) {
