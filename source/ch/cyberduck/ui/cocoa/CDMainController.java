@@ -281,10 +281,8 @@ public class CDMainController extends NSObject {
     }
 
     public void newBrowserMenuClicked(Object sender) {
-		log.debug("newBrowserMenuClicked");
         CDBrowserController controller = new CDBrowserController();
 		controller.window().makeKeyAndOrderFront(null);
-		log.debug("newBrowserMenuClicked-init");
     }
 
     public void showTransferQueueClicked(Object sender) {

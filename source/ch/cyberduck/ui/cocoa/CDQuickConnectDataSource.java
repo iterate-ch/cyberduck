@@ -34,20 +34,24 @@ public class CDQuickConnectDataSource { //implements NSComboBox.DataSource, NSTa
     // ----------------------------------------------------------
 
     public int numberOfItemsInComboBox(NSComboBox combo) {
-        return CDHistoryImpl.instance().size();
+//        return CDHistoryImpl.instance().size();
+		return CDBookmarksImpl.instance().size();
     }
 
     public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-        Host h = (Host) CDHistoryImpl.instance().values().toArray()[row];
-        return h.getHostname();
+//        Host h = (Host) CDHistoryImpl.instance().values().toArray()[row];
+//        return h.getHostname();
+		return CDBookmarksImpl.instance().getItem(row).getHostname();
     }
 
     // ----------------------------------------------------------
     // NSTableView.DataSource
     // ----------------------------------------------------------
 
+	/*
     public int numberOfRowsInTableView(NSTableView tableView) {
-        return CDHistoryImpl.instance().values().size();
+//        return CDHistoryImpl.instance().values().size();
+		return CDBookmarksImpl.instance().size();
     }
 
     //getValue()
@@ -55,11 +59,13 @@ public class CDQuickConnectDataSource { //implements NSComboBox.DataSource, NSTa
         if (row < this.numberOfRowsInTableView(tableView)) {
             String identifier = (String) tableColumn.identifier();
             if (identifier.equals("URL")) {
-                Host h = (Host) CDHistoryImpl.instance().getItem(row);
+                Host h = (Host) CDBookmarksImpl.instance().getItem(row);
+//                Host h = (Host) CDHistoryImpl.instance().getItem(row);
                 return h.getHostname();
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
         return null;
     }
+	 */
 }

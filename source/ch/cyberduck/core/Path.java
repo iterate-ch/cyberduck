@@ -313,7 +313,7 @@ public abstract class Path {
 		String name = this.getName();
 		int index = name.lastIndexOf(".");
 		if (index != -1)
-			return name.substring(index, name.length());
+			return name.substring(index+1, name.length());
 		return null;
 	}
 

@@ -53,6 +53,7 @@ public class CDConnectionController extends NSObject implements Observer {
         return this.window;
     }
 
+	/*
     private NSPopUpButton historyPopup;
 
     public void setHistoryPopup(NSPopUpButton historyPopup) {
@@ -75,6 +76,7 @@ public class CDConnectionController extends NSObject implements Observer {
 //		}
         this.selectionChanged(CDHistoryImpl.instance().getItem(historyPopup.indexOfSelectedItem() - 1));
     }
+	 */
 
     private NSPopUpButton bookmarksPopup;
 
@@ -157,10 +159,10 @@ public class CDConnectionController extends NSObject implements Observer {
 
     public void hostSelectionChanged(Object sender) {
         log.debug("hostSelectionChanged:" + sender);
-        int index = hostPopup.indexOfSelectedItem();
-        if (index != -1) {
-            this.selectionChanged(((CDHistoryImpl) CDHistoryImpl.instance()).getItem(index));
-        }
+//        int index = hostPopup.indexOfSelectedItem();
+//        if (index != -1) {
+//          this.selectionChanged(((CDHistoryImpl) CDHistoryImpl.instance()).getItem(index));
+//        }
         this.updateURLLabel(sender);
     }
 

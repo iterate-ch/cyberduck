@@ -664,6 +664,7 @@ public class CDPreferencesController extends NSObject {
         Preferences.instance().setProperty("ftp.anonymous.pass", this.anonymousField.stringValue());
     }
 
+	/*
     private NSTextField historyField; //IBOutlet
 
     public void setHistoryField(NSTextField historyField) {
@@ -684,6 +685,7 @@ public class CDPreferencesController extends NSObject {
             }
         }
     }
+	 */
 
     private NSTextField downloadPathField; //IBOutlet
 

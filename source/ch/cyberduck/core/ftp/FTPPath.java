@@ -297,7 +297,7 @@ public class FTPPath extends Path {
 			log.debug("download:"+this.toString());
 			this.session.check();
 			if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-				if(Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
+				if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
 					this.downloadASCII();
 				}
 				else {

@@ -142,26 +142,28 @@ public class CDBrowserController extends NSObject implements Observer {
     public void quickConnectSelectionChanged(Object sender) {
         log.debug("quickConnectSelectionChanged");
         String input = ((NSControl) sender).stringValue();
-//		if(input.equals("Clear")) {
-//			CDHistoryImpl.instance().clear();
-//			this.quickConnectPopup.reloadData();
-//		}
-        Host host = CDHistoryImpl.instance().getItem(input);
-        if (null == host) {
-            int index;
-            if ((index = input.indexOf('@')) != -1) {
-                host = new Host(input.substring(index + 1, input.length()),
-                        new Login(input.substring(index + 1, input.length()),
-                                input.substring(0, index), null));
-            }
-            else {
-                host = new Host(input, new Login(input, null, null));
-				if(host.getProtocol().equals(Session.FTP))
-					host.getLogin().setUsername(Preferences.instance().getProperty("ftp.anonymous.name"));
-				else
-					host.getLogin().setUsername(Preferences.instance().getProperty("connection.login.name"));
-            }
-        }
+		for(Iterator iter = CDBookmarksImpl.instance().iterator(); iter.hasNext(); ) {
+			Host h = (Host)iter.next();
+			if(h.getHostname().equals(input)) {
+				this.mount(h);
+				return;
+			}
+		}
+		//        Host host = CDHistoryImpl.instance().getItem(input);
+		int index;
+		Host host = null;
+		if ((index = input.indexOf('@')) != -1) {
+			host = new Host(input.substring(index + 1, input.length()),
+							new Login(input.substring(index + 1, input.length()),
+									  input.substring(0, index), null));
+		}
+		else {
+			host = new Host(input, new Login(input, null, null));
+			if(host.getProtocol().equals(Session.FTP))
+				host.getLogin().setUsername(Preferences.instance().getProperty("ftp.anonymous.name"));
+			else
+				host.getLogin().setUsername(Preferences.instance().getProperty("connection.login.name"));
+		}
         this.mount(host);
     }
 
@@ -479,7 +481,7 @@ public class CDBrowserController extends NSObject implements Observer {
             else if (msg.getTitle().equals(Message.OPEN)) {
                 this.statusIcon.setImage(null);
                 this.statusIcon.setNeedsDisplay(true);
-                CDHistoryImpl.instance().addItem(((Session) o).host);
+//                CDHistoryImpl.instance().addItem(((Session) o).host);
 //					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
                 this.toolbar.validateVisibleItems();
             }
