@@ -265,6 +265,7 @@ nl.lproj/Info.nib/keyedobjects.nib -text
 nl.lproj/InfoPlist.strings -text svneol=unset#application/octet-stream
 nl.lproj/Localizable.strings -text
 nl.lproj/Login.nib/keyedobjects.nib -text
+nl.lproj/Login.strings svneol=native#unset
 nl.lproj/Main.nib/keyedobjects.nib -text
 nl.lproj/Preferences.nib/keyedobjects.nib -text
 nl.lproj/Preferences.strings svneol=native#unset

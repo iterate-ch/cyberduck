@@ -50,7 +50,7 @@ public class CDBrowserController implements Observer {
 
 	public static CDBrowserController controllerForWindow(NSWindow window) {
 		//2004-02-24 23:01:38.648 Cyberduck[1096] warning: can't find Java class for Objective C class (null).  Returning com/apple/cocoa/foundation/NSObject.
-        Object delegate = window.delegate();
+		Object delegate = window.delegate();
         if (delegate != null && delegate instanceof CDBrowserController) {
             return (CDBrowserController) delegate;
         } else {

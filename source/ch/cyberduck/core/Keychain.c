@@ -31,7 +31,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(J
     const char *serviceChar = (*env)->GetStringUTFChars(env, service, JNI_FALSE);
     const char *accountChar = (*env)->GetStringUTFChars(env, account, JNI_FALSE);
 	
-	if (( password = getpwdfromkeychain( serviceChar,
+	if (( password = getPwdFromKeychain( serviceChar,
 										 accountChar, 
 										 &error )) == NULL ) {
 		syslog( LOG_INFO, "Attempting to retrieve password from keychain returned error %d", error );
@@ -46,7 +46,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(J
 
 
 
-char *getpwdfromkeychain(const char *service, 
+char *getPwdFromKeychain(const char *service, 
 						 const char *account, 
 						 OSStatus *error ) {
     OSStatus 			err;
@@ -71,39 +71,38 @@ char *getpwdfromkeychain(const char *service,
 			break;
 		case errSecItemNotFound:
 			syslog( LOG_INFO, "Keychain item not found" );
-			free( password );
+			//free( password );
 			return( NULL );
 		case errSecAuthFailed:
 			syslog( LOG_ERR, "Authorization failed." );
-			free( password );
+			//free( password );
 			return( NULL );
 		case errSecNoDefaultKeychain:
         syslog( LOG_INFO, "No default Keychain!" );
-			free( password );
+			//free( password );
 			return( NULL );
 		case errSecBufferTooSmall:
 			/* if the buffer's too small, make it really large and try again */
 			syslog( LOG_INFO, "buffer too small, realloc'ing" );
 			if (( password = ( char * )realloc( password, 4096 )) == NULL ) {
 				syslog( LOG_ERR, "realloc: %s", strerror( errno ));
-				free( password );
+				//free( password );
 				return( NULL );
 			}
 				err = SecKeychainFindGenericPassword( skcref,
 													  strlen( service ), service,
 													  strlen( account ), account, &len, ( void ** )&password, NULL );
 			if ( ! err ) break;
-				free( password );
+				//free( password );
 			return( NULL );
 		default:
 			syslog( LOG_ERR, "unknown error" );
-			free( password );
+			//free( password );
 			return( NULL );
     }
     
     password[ len ] = '\0';
 	    
-    /* returns malloc'd bytes which must be free'd */
     return( password );
 }
 
@@ -116,7 +115,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain(JNIEnv
     const char *accountChar = (*env)->GetStringUTFChars(env, account, JNI_FALSE);
     const char *passwordChar = (*env)->GetStringUTFChars(env, password, JNI_FALSE);
 	
-	addpwdtokeychain(serviceChar, 
+	addPwdToKeychain(serviceChar, 
 					 accountChar, 
 					 passwordChar);
 	
@@ -125,7 +124,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain(JNIEnv
 	(*env)->ReleaseStringUTFChars(env, password, passwordChar);
 }
 
-void addpwdtokeychain(const char *service, 
+void addPwdToKeychain(const char *service, 
 					  const char *account, 
 					  const char *password) {
     OSStatus		err;

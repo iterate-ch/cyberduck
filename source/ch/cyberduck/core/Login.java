@@ -28,6 +28,11 @@ import org.apache.log4j.Logger;
 public class Login {
 	private static Logger log = Logger.getLogger(Login.class);
 	
+	private String service;
+	private String user;
+	private transient String pass;
+	private String privateKeyFile;
+	private LoginController controller;
 	private boolean addToKeychain;
 
 	static {
@@ -51,35 +56,24 @@ public class Login {
 		return this.addToKeychain;
 	}
 
-	//char *getpwdfromkeychain( const char *service, const char *account, OSStatus *error );
 	public native String getPasswordFromKeychain(String service, String account);
 
 	public String getPasswordFromKeychain() {
-//		log.debug("getPasswordFromKeychain:" + this.toString());
 		int pool = NSAutoreleasePool.push();
 		String pass = this.getPasswordFromKeychain(this.service, this.user);
 		NSAutoreleasePool.pop(pool);
 		return pass;
 	}
 
-	//void addpwdtokeychain( const char *service, const char *account, const char *password );
 	public native void addPasswordToKeychain(String service, String account, String password);
 
 	public void addPasswordToKeychain() {
-//		log.debug("addPasswordToKeychain:" + this.toString());
 		if(this.addToKeychain) {
 			int pool = NSAutoreleasePool.push();
 			this.addPasswordToKeychain(this.service, this.user, this.pass);
 			NSAutoreleasePool.pop(pool);
 		}
 	}
-
-	private String service;
-	private String user;
-	private transient String pass;
-	private String privateKeyFile;
-	
-	private LoginController controller;
 
 	/**
 	 * @param service The service to use when looking up the password in the keychain
