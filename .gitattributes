@@ -298,8 +298,10 @@ img/arrowUpBlack.tiff -text
 img/arrowUpBlack16.tiff -text
 img/bookmarks.tiff svneol=native#unset
 img/cancel.tiff -text
+img/certificate.tiff -text
 img/clean.tiff -text
 img/cleanAll.tiff -text
+img/column.tiff -text
 img/connect.tiff svneol=native#unset
 img/deleteFile.tiff -text
 img/disk.tiff svneol=native#unset
@@ -346,11 +348,14 @@ img/folder32.tiff -text
 img/gear.tiff -text
 img/history.tiff -text
 img/info.tiff svneol=native#unset
+img/list.tiff -text
+img/login.tiff -text
 img/multipleDocuments.tiff -text
 img/multipleDocuments32.tiff -text
 img/newfolder.tiff -text
 img/notfound.tiff -text
 img/open.tiff -text
+img/outline.tiff -text
 img/pencil.tiff -text
 img/plus.tiff -text
 img/refresh.tiff svneol=native#unset
