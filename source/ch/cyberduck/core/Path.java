@@ -37,9 +37,9 @@ public abstract class Path {
 	private String path = null;
 	private Local local = null;
 	protected Path parent = null;
-	private List cache = new ArrayList();
+//	private List cache = new ArrayList();
 	public Status status = new Status();
-	public Attributes attributes;
+	public Attributes attributes = new Attributes();
 
     public static final int FILE_TYPE = 0;
     public static final int DIRECTORY_TYPE = 1;
@@ -62,8 +62,12 @@ public abstract class Path {
 	
 	public Path(NSDictionary dict) {
 		log.debug("Path");
-		this.setPath((String) dict.objectForKey("Remote"));
-		this.setLocal(new Local((String)dict.objectForKey("Local")));
+		Object pathObj= dict.objectForKey("Remote");
+		if(pathObj != null)
+			this.setPath((String) pathObj);
+		Object localObj= dict.objectForKey("Local");
+		if(localObj != null)
+			this.setLocal(new Local((String)localObj));
 		Object attributesObj = dict.objectForKey("Attributes");
 		if(attributesObj != null)
 			this.attributes = new Attributes((NSDictionary)attributesObj);
@@ -82,7 +86,7 @@ public abstract class Path {
 	}
 
 	public Path() {
-		this.attributes = new Attributes();
+		//
 	}
 
 	/**
@@ -92,7 +96,6 @@ public abstract class Path {
 	 */
 	public Path(String parent, String name) {
 		this.setPath(parent, name);
-		this.attributes = new Attributes();
 	}
 
 	/**
@@ -102,7 +105,6 @@ public abstract class Path {
 	public Path(String path) {
 		log.debug("Path");
 		this.setPath(path);
-		this.attributes = new Attributes();
 	}
 
 	/**
@@ -114,7 +116,6 @@ public abstract class Path {
 	 */
 	public Path(String parent, Local file) {
 		this.setPath(parent, file);
-		this.attributes = new Attributes();
 	}
 
 	public void setPath(String parent, Local file) {
@@ -155,7 +156,6 @@ public abstract class Path {
 				dirname = "/";
 			else if (index < 0)
 				dirname = "/";
-//				dirname = this.getSession().workdir().getAbsolute();
 			parent = PathFactory.createPath(this.getSession(), dirname);
 		}
 		log.debug("getParent:" + parent);
@@ -173,11 +173,12 @@ public abstract class Path {
 	 * @return My directory listing
 	 */
 	public List cache() {
-		return this.cache;
+		return this.getSession().cache().get(this.getAbsolute());
 	}
 
 	protected void setCache(List files) {
-		this.cache = files;
+		this.getSession().cache().put(this.getAbsolute(), files);
+//		this.cache = files;
 	}
 
 	/**
@@ -342,7 +343,7 @@ public abstract class Path {
 		log.debug("upload(" + writer.toString() + ", " + reader.toString());
 		this.getSession().log("Uploading " + this.getName() + " (ASCII)", Message.PROGRESS);
 		if(this.status.isResume()) {
-			long skipped = skipped = reader.skip(this.status.getCurrent());
+			long skipped = reader.skip(this.status.getCurrent());
 			log.info("Skipping "+skipped+" bytes");
 			if(skipped < this.status.getCurrent())
 				throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
@@ -359,7 +360,7 @@ public abstract class Path {
 		log.debug("upload(" + o.toString() + ", " + i.toString());
 		this.getSession().log("Uploading " + this.getName(), Message.PROGRESS);
 		if(this.status.isResume()) {
-			long skipped = skipped = i.skip(this.status.getCurrent());
+			long skipped = i.skip(this.status.getCurrent());
 			log.info("Skipping "+skipped+" bytes");
 			if(skipped < this.status.getCurrent())
 				throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
@@ -430,8 +431,6 @@ public abstract class Path {
 	private void transfer(java.io.InputStream i, java.io.OutputStream o) throws IOException {
 		BufferedInputStream in = new BufferedInputStream(i);
 		BufferedOutputStream out = new BufferedOutputStream(o);
-
-		// do the retrieving
 		int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
 		byte[] chunk = new byte[chunksize];
 		int amount = 0;
@@ -439,7 +438,6 @@ public abstract class Path {
 		boolean complete = false;
 		// read from socket (bytes) & write to file in chunks
 		while (!complete && !status.isCanceled()) {
-			// Reads up to len bytes of data from the input stream into  an array of bytes.  An attempt is made to read as many as  len bytes, but a smaller number may be read, possibly  zero. The number of bytes actually read is returned as an integer.
 			amount = in.read(chunk, 0, chunksize);
 			if (amount == -1) {
 				complete = true;
@@ -464,9 +462,5 @@ public abstract class Path {
 		if(other instanceof Path)
 			return this.getAbsolute().equals(((Path)other).getAbsolute());
 		return false;
-	}
-	
-	public String toString() {
-		return this.getName()+"["+this.status.getCurrent()+";"+this.status.getSize()+"]";
 	}
 }

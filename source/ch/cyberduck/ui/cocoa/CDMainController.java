@@ -87,7 +87,6 @@ public class CDMainController extends NSObject {
 	private class BookmarkMenuDelegate extends NSObject {
 		private Map items = new HashMap();
 		public int numberOfItemsInMenu(NSMenu menu) {
-			log.debug("numberOfItemsInMenu:"+menu);
 			return CDBookmarksImpl.instance().size()+4; //index 0-3 are static menu items
 		}
 

@@ -36,8 +36,9 @@ public class Permission {
 	private String mask;
 
 	public Permission(NSDictionary dict) {
-		log.debug("Attributes");
-		this.mask = (String)dict.objectForKey("Mask");
+		Object maskObj = dict.objectForKey("Mask");
+		if(maskObj != null)
+			this.mask = (String)maskObj;
 	}
 	
 	public NSDictionary getAsDictionary() {

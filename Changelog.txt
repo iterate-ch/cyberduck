@@ -6,13 +6,16 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 
 2.3b2
 - Much improved queue management (fewer connections)
-- Menu item "Download As..."
+- Menu item 'Download As...'
 - Editing multiple files in the external editor with the same name
 - Resume downloads (SFTP)
 - Resume uploads (SFTP)
 - Resume uploads (FTP)
 - Bookmarks are shown in the menu
 - Toolbar button to remove all completed items from the queue
+- 'Apply to all' checkbox in dialog asking for replace/resume/skip existing files
+- Warning if a duplicate exists is also shown when uploading files
+- Improved caching of directory listings
 - Bug fixes
 
 2.3b1
@@ -54,8 +57,8 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - Updated Japanese localization
 
 2.2b3
-- Caching folder listings
-- Auto-refresh the folder listing after uploading a file
+- Caching directory listings
+- Auto-refresh the directory listing after uploading a file
 - Sending 'LIST -a' to list directories (FTP)
 - Fixed a bug where entries in the queue would be deleted too early
 
@@ -73,7 +76,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - Full Unicode support
 - Choose character encoding for file listings
 - Support for public key authentication (SSH)
-- Live filtering directory listings
+- Live filtering of directory listings
 - Improved Rendezvous support (jmDNS 0.2)
 - Drag files from the browser to the transfer manager
 - Drag links to the transfer manager to start download

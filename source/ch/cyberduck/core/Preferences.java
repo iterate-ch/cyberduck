@@ -114,7 +114,7 @@ public abstract class Preferences {
 		defaults.put("queue.postProcessItemWhenComplete", "false");
 		defaults.put("queue.orderFrontOnTransfer", "true");
 		defaults.put("queue.download.folder", System.getProperty("user.home"));
-		defaults.put("queue.download.duplicate", "ask");
+		defaults.put("queue.fileExists", "ask");
 		defaults.put("queue.upload.changePermissions", "true");
 
 		defaults.put("connection.login.name", System.getProperty("user.name"));

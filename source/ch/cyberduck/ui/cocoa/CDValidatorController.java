@@ -82,7 +82,7 @@ public class CDValidatorController extends Validator {
 			if (false == NSApplication.loadNibNamed("Validator", this)) {
 				log.fatal("Couldn't load Validator.nib");
 			}
-			this.resumeButton.setEnabled(!path.status.isComplete());
+			this.resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
 			String file = null;
 			if (Queue.KIND_DOWNLOAD == kind)
 				file = path.getLocal().getAbsolutePath();
@@ -112,28 +112,25 @@ public class CDValidatorController extends Validator {
 				log.error(e.getMessage());
 			}
 		}
-		path.status.setResume(resume);
 		log.debug("return:" + include);
 		return include;
+		}
+	
+	public void closeSheet(NSButton sender) {
+		this.applyToAll = (applyCheckbox.state() == NSCell.OnState);
+		NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
 
+	/*
     public void resumeActionFired(NSButton sender) {
 		log.debug("resumeActionFired");
-		this.applyToAll = (applyCheckbox.state() == NSCell.OnState);
 		this.resume = true;
 		this.include = true;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
-	
-	public void closeSheet(NSButton sender) {
-		this.applyToAll = (applyCheckbox.state() == NSCell.OnState);
-        NSApplication.sharedApplication().endSheet(this.window, sender.tag());
-	}
 
-	/*
 	public void overwriteActionFired(NSButton sender) {
 		log.debug("overwriteActionFired");
-		this.applyToAll = (applyCheckbox.state() == NSCell.OnState);
 		this.resume = false;
 		this.include = true;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
@@ -141,8 +138,6 @@ public class CDValidatorController extends Validator {
 	
     public void skipActionFired(NSButton sender) {
 		log.debug("skipActionFired");
-		this.applyToAll = (applyCheckbox.state() == NSCell.OnState);
-//		this.resume = false;
 		this.include = false;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
@@ -150,8 +145,6 @@ public class CDValidatorController extends Validator {
 	public void cancelActionFired(NSButton sender) {
 		log.debug("cancelActionFired");
 		this.canceled = true;
-//		this.applyToAll = true;
-//		this.resume = true;
 		this.include = false;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
@@ -159,27 +152,25 @@ public class CDValidatorController extends Validator {
 	
     public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         this.window().close();
-        Path item = (Path) contextInfo;
+		this.applyToAll = (applyCheckbox.state() == NSCell.OnState);
         switch (returncode) {
 			case 0: //Cancel
 				log.debug("Canceled");
-                item.status.setResume(false);
 				this.include = false;
 				this.canceled = true;
                 break;
             case 1://NSAlertPanel.DefaultReturn //Overwrite
 				log.debug("Overwrite");
-                item.status.setResume(false);
+                ((Path) contextInfo).status.setResume(false);
 				this.include = true;
                 break;
             case -1://NSAlertPanel.AlternateReturn: //Resume
 				log.debug("Resume");
-                item.status.setResume(true);
+                ((Path) contextInfo).status.setResume(true);
                 this.include = true;
                 break;
             case 2://NSAlertPanel.OtherReturn: //Skip
 				log.debug("Skipped");
-                item.status.setResume(false);
                 this.include = false;
                 break;
         }

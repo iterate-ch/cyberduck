@@ -108,20 +108,34 @@ public class Queue extends Observable implements Observer { //Thread {
 	}
 	
 	public Queue(NSDictionary dict) {
-		this(Integer.parseInt((String)dict.objectForKey("Kind")));
-		Host host = new Host((NSDictionary) dict.objectForKey("Host"));
-		Session s = SessionFactory.createSession(host);
-		NSArray r = (NSArray) dict.objectForKey("Roots");
-		for (int i = 0; i < r.count(); i++) {
-			this.addRoot(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
-		}
-		NSArray items = (NSArray) dict.objectForKey("Items");
-		if(null != items) {
-			for (int i = 0; i < items.count(); i++) {
-				this.jobs.add(PathFactory.createPath(s, (NSDictionary) items.objectAtIndex(i)));
+		Object kindObj = dict.objectForKey("Kind");
+		if(kindObj != null)
+			this.kind = Integer.parseInt((String)kindObj);
+		Object hostObj = dict.objectForKey("Host");
+		if(hostObj != null) {
+			Host host = new Host((NSDictionary) hostObj);
+			Session s = SessionFactory.createSession(host);
+			Object rootsObj = dict.objectForKey("Roots");
+			if(rootsObj != null) {
+				NSArray r = (NSArray) rootsObj;
+				for (int i = 0; i < r.count(); i++) {
+					this.addRoot(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
+				}
+			}
+			Object itemsObj = dict.objectForKey("Items");
+			if(itemsObj != null) {
+				NSArray items = (NSArray) itemsObj;
+				if(null != items) {
+					for (int i = 0; i < items.count(); i++) {
+						this.jobs.add(PathFactory.createPath(s, (NSDictionary) items.objectAtIndex(i)));
+					}
+				}
 			}
 		}
-		this.status = (String) dict.objectForKey("Status");
+		Object statusObj = dict.objectForKey("Status");
+		if(statusObj != null)
+			this.status = (String) statusObj;
+		this.init();
 	}
 
 	public NSDictionary getAsDictionary() {
@@ -207,7 +221,16 @@ public class Queue extends Observable implements Observer { //Thread {
 						Queue.this.jobs.add((Path)childs.next());
 					}
 				}
-				
+
+//				for (Iterator iter = jobs.iterator() ; iter.hasNext() && !Queue.this.isCanceled(); ) {
+//					Path item = (Path)iter.next();
+//					log.debug("Validating "+item.toString());
+//					if (validator.validate(item)) {
+//						item.status.reset();
+//						Queue.this.run(item);
+//					}
+//				}
+	
 				for (Iterator iter = jobs.iterator() ; iter.hasNext() && !Queue.this.isCanceled(); ) {
 					Path item = (Path)iter.next();
 					log.debug("Validating "+item.toString());
@@ -220,7 +243,7 @@ public class Queue extends Observable implements Observer { //Thread {
 				for (Iterator iter = jobs.iterator() ; iter.hasNext() && !Queue.this.isCanceled(); ) {
 					Queue.this.run((Path)iter.next());
 				}
-				
+
 				Queue.this.running = false;
 				Queue.this.elapsedTimer.stop();
 				Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
@@ -296,7 +319,6 @@ public class Queue extends Observable implements Observer { //Thread {
 	 * @return Number of jobs in the this.
 	 */
 	public int numberOfJobs() {
-//		log.debug("numberOfJobs:"+jobs.size());
 		return this.jobs.size();
 	}
 	
@@ -312,11 +334,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	}
 
 	public String getProgress() {
-		if (this.getCurrentAsString() != null && this.getSizeAsString() != null)
-			return this.getCurrentAsString()
-			    + " of " +
-			    this.getSizeAsString();
-		return "";
+		return this.getCurrentAsString()+" of "+this.getSizeAsString();
 	}
 
 	/**

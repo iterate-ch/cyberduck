@@ -819,32 +819,32 @@ public class CDPreferencesController extends NSObject {
         this.duplicateCombobox.setAction(new NSSelector("duplicateComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.duplicateCombobox.removeAllItems();
         this.duplicateCombobox.addItemsWithTitles(new NSArray(new String[]{ASK_ME_WHAT_TO_DO, OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
-        if (Preferences.instance().getProperty("queue.download.duplicate").equals("ask")) {
+        if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
             this.duplicateCombobox.setTitle(ASK_ME_WHAT_TO_DO);
         }
-        if (Preferences.instance().getProperty("queue.download.duplicate").equals("overwrite")) {
+        if (Preferences.instance().getProperty("queue.fileExists").equals("overwrite")) {
             this.duplicateCombobox.setTitle(OVERWRITE_EXISTING_FILE);
         }
-        else if (Preferences.instance().getProperty("queue.download.duplicate").equals("resume")) {
+        else if (Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
             this.duplicateCombobox.setTitle(TRY_TO_RESUME_TRANSFER);
         }
-        else if (Preferences.instance().getProperty("queue.download.duplicate").equals("similar")) {
+        else if (Preferences.instance().getProperty("queue.fileExists").equals("similar")) {
             this.duplicateCombobox.setTitle(USE_A_SIMILAR_NAME);
         }
     }
 
     public void duplicateComboboxClicked(NSPopUpButton sender) {
         if (sender.selectedItem().title().equals(ASK_ME_WHAT_TO_DO)) {
-            Preferences.instance().setProperty("queue.download.duplicate", "ask");
+            Preferences.instance().setProperty("queue.fileExists", "ask");
         }
         if (sender.selectedItem().title().equals(OVERWRITE_EXISTING_FILE)) {
-            Preferences.instance().setProperty("queue.download.duplicate", "overwrite");
+            Preferences.instance().setProperty("queue.fileExists", "overwrite");
         }
         else if (sender.selectedItem().title().equals(TRY_TO_RESUME_TRANSFER)) {
-            Preferences.instance().setProperty("queue.download.duplicate", "resume");
+            Preferences.instance().setProperty("queue.fileExists", "resume");
         }
         else if (sender.selectedItem().title().equals(USE_A_SIMILAR_NAME)) {
-            Preferences.instance().setProperty("queue.download.duplicate", "similar");
+            Preferences.instance().setProperty("queue.fileExists", "similar");
         }
     }
 

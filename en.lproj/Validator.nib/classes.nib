@@ -1,7 +1,13 @@
 {
     IBClasses = (
         {
-            ACTIONS = {closeSheet = id; }; 
+            ACTIONS = {
+                cancelActionFired = id; 
+                closeSheet = id; 
+                overwriteActionFired = id; 
+                resumeActionFired = id; 
+                skipActionFired = id; 
+            }; 
             CLASS = CDValidatorController; 
             LANGUAGE = Java; 
             OUTLETS = {

@@ -61,8 +61,12 @@ public class Status extends Observable implements Serializable {
 	}
 
 	public Status(NSDictionary dict) {
-		this.size = Integer.parseInt((String)dict.objectForKey("Size"));
-		this.current = Integer.parseInt((String)dict.objectForKey("Current"));
+		Object sizeObj = dict.objectForKey("Size");
+		if(sizeObj != null)
+			this.size = Integer.parseInt((String)sizeObj);
+		Object currentObj = dict.objectForKey("Current");
+		if(currentObj != null)
+			this.current = Integer.parseInt((String)currentObj);
 	}
 	
 	public NSDictionary getAsDictionary() {
@@ -94,7 +98,6 @@ public class Status extends Observable implements Serializable {
 	 * @return length the size of file in bytes.
 	 */
 	public long getSize() {
-//		log.debug(this.toString()+">getSize:"+this.size);
 		return size;
 	}
 
@@ -107,21 +110,24 @@ public class Status extends Observable implements Serializable {
 	 */
 	public static String getSizeAsString(long size) {
 		//@todo fix GB limitation
-		//@todo return correct size
 		if (size < KILO)
 			return size + "B";
-		else if (size < MEGA)
-			return new Double(size / KILO).doubleValue() + "kB";
-		else if (size < GIGA)
-			return new Double(size / MEGA).doubleValue() + "MB";
-		else
-			return new Double(size / GIGA).doubleValue() + "GB";
+		else if (size < MEGA) {
+			String v = String.valueOf((double)size/KILO);
+			return v.substring(0, v.indexOf('.')+2)+"kB";
+		}
+		else if (size < GIGA) {
+			String v = String.valueOf((double)size/MEGA);
+			return v.substring(0, v.indexOf('.')+2)+"MB";
+		}
+		else {
+			String v = String.valueOf((double)size/GIGA);
+			return v.substring(0, v.indexOf('.')+2)+"GB";
+		}
 	}
 
 	public void setComplete(boolean complete) {
 		this.complete = complete;
-//		if (complete)
-//			this.setCurrent(this.getSize());
 	}
 
 	public boolean isComplete() {
@@ -137,7 +143,6 @@ public class Status extends Observable implements Serializable {
 	}
 
 	public long getCurrent() {
-//		log.debug(this.toString()+">getCurrent:"+this.current);
 		return this.current;
 	}
 
@@ -151,8 +156,6 @@ public class Status extends Observable implements Serializable {
 
 	public void setResume(boolean resume) {
 		this.resume = resume;
-//		if (!resume)
-//			this.setCurrent(0);
 	}
 
 	public boolean isResume() {

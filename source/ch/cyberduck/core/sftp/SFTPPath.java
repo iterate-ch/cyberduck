@@ -109,7 +109,8 @@ public class SFTPPath extends Path {
 	}
 	
 	public synchronized List list(boolean refresh, boolean showHidden) {
-		List files = this.cache();
+		List files = this.getSession().cache().get(this.getAbsolute());
+		//		List files = this.cache();
 		session.addPathToHistory(this);
 		if(refresh || files.size() == 0) {
 			files.clear();
@@ -373,7 +374,7 @@ public class SFTPPath extends Path {
 			}
 			if(this.status.isResume()) {
 				this.status.setCurrent(this.getLocal().length());
-				long skipped = skipped = in.skip(this.status.getCurrent());
+				long skipped = in.skip(this.status.getCurrent());
 				log.info("Skipping "+skipped+" bytes");
 				if(skipped < this.status.getCurrent())
 					throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
@@ -421,14 +422,15 @@ public class SFTPPath extends Path {
 			SftpFile p = null;
 			if(this.status.isResume()) {
 				p = this.session.SFTP.openFile(this.getAbsolute(), 
-											   SftpSubsystemClient.OPEN_WRITE | // File open flag, opens the file for writing.
+											   SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
 											   SftpSubsystemClient.OPEN_APPEND); //File open flag, forces all writes to append data at the end of the file.
 			}
-			else
+			else {
 				p = this.session.SFTP.openFile(this.getAbsolute(), 
-											   SftpSubsystemClient.OPEN_CREATE | //File open flag, if specified a new file will be created if one does not  already exist.
+											   SftpSubsystemClient.OPEN_CREATE | //File open flag, if specified a new file will be created if one does not already exist.
 											   SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
-											   SftpSubsystemClient.OPEN_TRUNCATE); //ile open flag, forces an existing file with the same name to be  truncated to zero length when creating a file by specifying OPEN_CREATE.
+											   SftpSubsystemClient.OPEN_TRUNCATE); //File open flag, forces an existing file with the same name to be truncated to zero length when creating a file by specifying OPEN_CREATE.
+			}
 			this.changePermissions(this.getLocal().getPermission(), false);
 			if(this.status.isResume()) {
 				this.status.setCurrent(p.getAttributes().getSize().intValue());
@@ -436,6 +438,12 @@ public class SFTPPath extends Path {
 			SftpFileOutputStream out = new SftpFileOutputStream(p);
 			if (out == null) {
 				throw new IOException("Unable opening data stream");
+			}
+			if(this.status.isResume()) {
+				long skipped = out.skip(this.status.getCurrent());
+				log.info("Skipping "+skipped+" bytes");
+				if(skipped < this.status.getCurrent())
+					throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
 			}
 			this.upload(out, in);
 		}

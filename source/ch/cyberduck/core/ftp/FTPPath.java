@@ -117,7 +117,8 @@ public class FTPPath extends Path {
 	}
 	
 	public synchronized List list(boolean refresh, boolean showHidden) {
-		List files = this.cache();
+		List files = this.getSession().cache().get(this.getAbsolute());
+//		List files = this.cache();
 		session.addPathToHistory(this);
 		if(refresh || files.size() == 0) {
 			files.clear();
@@ -409,6 +410,9 @@ public class FTPPath extends Path {
 			log.debug("upload:"+this.toString());
 			this.session.check();
 			if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+				if(this.status.isResume()) {
+					this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
+				}
 				this.session.FTP.setTransferType(FTPTransferType.BINARY);
 				java.io.InputStream in = new FileInputStream(this.getLocal());
 				if (in == null) {
@@ -417,9 +421,6 @@ public class FTPPath extends Path {
 				java.io.OutputStream out = this.session.FTP.putBinary(this.getAbsolute(), this.status.isResume());
 				if (out == null) {
 					throw new IOException("Unable opening data stream");
-				}
-				if(this.status.isResume()) {
-					this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
 				}
 				this.upload(out, in);
 				if (this.status.isComplete()) {
@@ -433,6 +434,9 @@ public class FTPPath extends Path {
 				}
 			}
 			else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+				if(this.status.isResume()) {
+					this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
+				}
 				this.session.FTP.setTransferType(FTPTransferType.ASCII);
 				java.io.Reader in = new FileReader(this.getLocal());
 				if (in == null) {

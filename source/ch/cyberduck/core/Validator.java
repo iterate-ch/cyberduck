@@ -27,9 +27,10 @@ public abstract class Validator {
 	private static Logger log = Logger.getLogger(Validator.class);
 	
 	protected boolean canceled = false;
-	protected boolean resume = false;
 	protected int kind;
 	
+	private boolean resume = false;
+
 	public Validator(int kind, boolean resume) {
 		this.kind = kind;
 		this.resume = resume;
@@ -58,12 +59,12 @@ public abstract class Validator {
 		}
 		if (exists) {
 			log.debug("File "+path.getName()+" exists");
-			if (Preferences.instance().getProperty("queue.download.duplicate").equals("ask")) {
+			if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
 				log.debug("Prompt user");
 				// @todo Waiting for other alert sheets open to be closed first
 				return this.prompt(path);
 			}
-			else if (Preferences.instance().getProperty("queue.download.duplicate").equals("similar")) {
+			else if (Preferences.instance().getProperty("queue.fileExists").equals("similar")) {
 				log.debug("Using similar name");
 				path.status.setResume(false);
 				if (Queue.KIND_DOWNLOAD == kind) {
@@ -104,17 +105,18 @@ public abstract class Validator {
 				}
 				return true;
 			}
-			else if (Preferences.instance().getProperty("queue.download.duplicate").equals("resume")) {
+			else if (Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
 				log.debug("Resume");
 				path.status.setResume(true);
 				return true;
 			}
-			else if (Preferences.instance().getProperty("queue.download.duplicate").equals("overwrite")) {
+			else if (Preferences.instance().getProperty("queue.fileExists").equals("overwrite")) {
 				log.debug("Overwrite");
 				path.status.setResume(false);
 				return true;
 			}
 		}
+		path.status.setResume(false);
 		return true;
     }
 	

@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  */
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -39,7 +41,13 @@ public abstract class Session extends Observable {
 //	protected ResourceBundle bundle = ResourceBundle.getBundle("core", Locale.getDefault());
 	
 	private Transcript transcript;
+	
+	private Cache cache = new Cache();
 
+	public Cache cache() {
+		return this.cache;
+	}
+		
 	/**
 	 * Default port for http
 	 */
@@ -70,7 +78,7 @@ public abstract class Session extends Observable {
 		return SessionFactory.createSession(this.host);
 	}
 	
-	public Session(Host h) {//, boolean secure) {
+	public Session(Host h) {
 		log.debug("Session(" + h + ")");
 		this.host = h;
 		this.history = new ArrayList();
@@ -129,13 +137,10 @@ public abstract class Session extends Observable {
 	 * @return boolean True if the session has not yet been closed.
 	 */
 	public boolean isConnected() {
-//		log.debug(this.toString());
-//		log.debug("isConnected:"+connected);
 		return this.connected;
 	}
 
 	public void setConnected(boolean connected) {
-		log.debug(this.toString());
 		log.debug("setConnected:" + connected);
 		this.connected = connected;
 	}

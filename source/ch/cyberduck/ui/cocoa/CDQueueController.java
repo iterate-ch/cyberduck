@@ -107,7 +107,7 @@ public class CDQueueController extends NSObject implements Observer {
 
         NSTableColumn progressColumn = new NSTableColumn();
         progressColumn.setIdentifier("PROGRESS");
-        progressColumn.setMinWidth(50f);
+        progressColumn.setMinWidth(80f);
         progressColumn.setWidth(300f);
         progressColumn.setMaxWidth(1000f);
         progressColumn.setEditable(false);
@@ -186,7 +186,6 @@ public class CDQueueController extends NSObject implements Observer {
 					if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
 						int row = CDQueuesImpl.instance().indexOf((Queue) observable);
 						NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
-//						NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
 						this.queueTable.setNeedsDisplay(queueRect);
 					}
 				}
@@ -195,7 +194,6 @@ public class CDQueueController extends NSObject implements Observer {
 				if (this.window.isVisible()) {
 					if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
 						int row = CDQueuesImpl.instance().indexOf((Queue) observable);
-//						NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
 						NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
 						this.queueTable.setNeedsDisplay(progressRect);
 					}
