@@ -189,10 +189,10 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			for(int i = 0; i < rows.count(); i++) {
 				promisedDragBookmarks[i] = (Host)this.getItem(((Integer)rows.objectAtIndex(i)).intValue());
 			}
-
 			if(pboard.setStringForType("duck", NSPasteboard.FilesPromisePboardType)) {
 				log.debug("FilesPromisePboardType data sucessfully written to pasteboard");
 			}
+			pboard.setDataForType(null, NSPasteboard.FilesPromisePboardType);
 
 			NSEvent event = NSApplication.sharedApplication().currentEvent();
 			NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
