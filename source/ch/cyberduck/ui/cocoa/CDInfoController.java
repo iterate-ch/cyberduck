@@ -140,7 +140,7 @@ public class CDInfoController {
 			this.iconImageView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
 		}
 		if(file.isDirectory())
-			this.iconImageView.setImage(NSImage.imageNamed("folder.tiff"));
+			this.iconImageView.setImage(NSImage.imageNamed("folder.icns"));
 		
 		
 		//	ObserverList.instance().registerObserver(this);

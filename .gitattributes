@@ -27,7 +27,8 @@ img/drawerPressed.tiff -text
 img/edit.tiff -text
 img/editPressed.tiff -text
 img/favorites.tiff svneol=native#unset
-img/folder.tiff -text
+img/folder.icns -text
+img/folder16.tiff -text
 img/info.tiff svneol=native#unset
 img/newfolder.icns svneol=native#unset
 img/offline.tiff -text

@@ -264,7 +264,7 @@ public class CDBrowserController implements Observer {
     private NSImageView statusIcon; // IBOutlet
     public void setStatusIcon(NSImageView statusIcon) {
 		this.statusIcon = statusIcon;
-		this.statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
+//		this.statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
 	}
 
     private NSTextField statusLabel; // IBOutlet
@@ -489,20 +489,18 @@ public class CDBrowserController implements Observer {
 					statusLabel.setObjectValue(msg.getContent());
 				}
 				else if(msg.getTitle().equals(Message.OPEN)) {
-					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
-//					progressIndicator.startAnimation(this);
-//					browserModel.clear();
-//					browserTable.reloadData();
-//					mainWindow.setTitle(this.session.getHost().getProtocol()+":"+this.session.getHost().getHostname());
+					this.statusIcon.setImage(null);
+//					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
 				}
 				else if(msg.getTitle().equals(Message.CLOSE)) {
-					this.statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
+//					this.statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
 					progressIndicator.stopAnimation(this);
 				}
 				
 				else if(msg.getTitle().equals(Message.START)) {
 					progressIndicator.startAnimation(this);
-					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
+					this.statusIcon.setImage(null);
+//					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
 				}
 				else if(msg.getTitle().equals(Message.STOP)) {
 					progressIndicator.stopAnimation(this);
@@ -762,7 +760,7 @@ public class CDBrowserController implements Observer {
     public boolean windowShouldClose(NSWindow sender) {
 		if(this.isConnected()) {
 			NSAlertPanel.beginCriticalAlertSheet(
-										NSBundle.localizedString("Disconnect from"+" "+browserModel.workdir().getSession().getHost().getHostname()), //title
+										NSBundle.localizedString("Disconnect from")+" "+browserModel.workdir().getSession().getHost().getHostname(), //title
 										NSBundle.localizedString("Disconnect"),// defaultbutton
 										NSBundle.localizedString("Cancel"),//alternative button
 										null,//other button

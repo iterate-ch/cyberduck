@@ -65,7 +65,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		Path p = (Path)this.data.get(row);
 		if(identifier.equals("TYPE")) {
 			if(p.isDirectory())
-				return NSImage.imageNamed("folder.tiff");
+				return NSImage.imageNamed("folder.icns");
 			return NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
 		}
 		if(identifier.equals("FILENAME")) {

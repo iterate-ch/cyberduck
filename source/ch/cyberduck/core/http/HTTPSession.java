@@ -40,7 +40,6 @@ public class HTTPSession extends Session {
     public HTTPSession(Host h) {
         super(h);
 		//        this.HTTP = new HttpConnection(h.getHostname(), h.getPort());
-        this.HTTP = new HttpClient();
     }
 	
     public synchronized void close() {
@@ -64,6 +63,7 @@ public class HTTPSession extends Session {
     public synchronized void connect() throws IOException {
 		this.callObservers(new Message(Message.OPEN, "Opening session."));
 		this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
+        this.HTTP = new HttpClient();
 		
 		//	this.HTTP.open();
   //	connection = HTTP.getHttpConnectionManager().getConnection(hostConfiguration);
@@ -71,10 +71,10 @@ public class HTTPSession extends Session {
   //		    HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
   //		}
   //		else {
-		HTTP.connect(host.getHostname(), host.getPort(), false);
+		this.HTTP.connect(host.getHostname(), host.getPort(), false);
 		//		}
 		this.setConnected(true);
-		log("HTTP connection opened", Message.PROGRESS);
+		this.log("HTTP connection opened", Message.PROGRESS);
     }
     
     public synchronized void mount() {

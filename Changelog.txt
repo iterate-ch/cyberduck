@@ -7,6 +7,21 @@ Drag and drop is supported for both downloading and uploading files. Just drag t
 File deletion and renaming, checking and changing of permissions is possible with a Finder-like info panel.
 
 2.1
+- Bookmarks can now be edited.
+- Bookmarks can now be saved as a regular file (Drag the bookmarks to the Finder).
+- Bookmarks saved as files can be imported by dropping them on the Bookmarks Drawer.
+- Double clicking a Cyberduck bookmark file in the Finder will open a new browser and connect to the remote site
+- Bookmarks can now be modified
+- Specify an initial directory upon new connection (e.g. public_html instead of the default home).
+- Use keyboard shortcut (commann-up/down) for browsing a directory
+- Uploaded files have the same permissions as locally
+- Updated icon set
+- Remembering sort order while browsing
+- Toolbar icon to toggle Bookmark drawer
+- Updated SSH Core (v0.2.5)
+- Dutch Localization
+- German Localization
+- Smaller changes and bug fixes.
 
 http://cyberduck.ch/download.php?Cyberduck-2.1.dmg
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1.dmg
@@ -20,6 +35,7 @@ http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1.tar.gz
 - The buffer size (the size of download chunks to keep in memory before writing to disk) is now adjustable.
 - Login to anonymous FTP servers where no password is needed is now supported.
 - Smaller bug fixes
+
 http://cyberduck.ch/download.php?Cyberduck-2.1beta5.dmg
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1beta5.dmg
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta5.tar.gz

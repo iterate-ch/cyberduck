@@ -161,14 +161,14 @@ public class CDTransferController implements Observer, Validator {
 				if(root.isFile())
 					fileIconView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(root.getExtension()));
 				else
-					fileIconView.setImage(NSImage.imageNamed("folder.tiff"));
+					fileIconView.setImage(NSImage.imageNamed("folder.icns"));
 				break;
 			case Queue.KIND_UPLOAD:
 				iconView.setImage(NSImage.imageNamed("upload.tiff"));
 				if(root.getLocal().isFile())
 					fileIconView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(root.getExtension()));
 				else
-					fileIconView.setImage(NSImage.imageNamed("folder.tiff"));
+					fileIconView.setImage(NSImage.imageNamed("folder.icns"));
 				break;
 		}
     }
