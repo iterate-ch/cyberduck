@@ -236,7 +236,7 @@ public class FTPPath extends Path {
 	}
 
 	public void changePermissions(Permission perm, boolean recursive) {
-//		log.debug("changePermissions:" + permissions);
+		log.debug("changePermissions:"+perm);
 		String command = recursive ? "chmod -R" : "chmod";
 		try {
 			session.check();
@@ -357,16 +357,13 @@ public class FTPPath extends Path {
 			this.session.FTP.setTransferType(FTPTransferType.BINARY);
 			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
 			if(this.status.isResume()) {
-				//				this.status.setCurrent(this.getLocal().length());
 				this.status.setCurrent(this.getLocal().getTemp().length());
 			}
 			this.getLocal().getParentFile().mkdirs();
-			//				out = new FileOutputStream(this.getLocal(), this.status.isResume());
 			out = new FileOutputStream(this.getLocal().getTemp(), this.status.isResume());
 			if (out == null) {
 				throw new IOException("Unable to buffer data");
 			}
-			//				in = this.session.FTP.getBinary(this.getAbsolute(), this.status.isResume() ? this.getLocal().length() : 0);
 			in = this.session.FTP.getBinary(this.getAbsolute(), this.status.isResume() ? this.getLocal().getTemp().length() : 0);
 			if (in == null) {
 				throw new IOException("Unable opening data stream");
@@ -408,16 +405,13 @@ public class FTPPath extends Path {
 			this.session.FTP.setTransferType(FTPTransferType.ASCII);
 			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
 			if(this.status.isResume()) {
-				//				this.status.setCurrent(this.getLocal().length());
 				this.status.setCurrent(this.getLocal().getTemp().length());
 			}
 			this.getLocal().getParentFile().mkdirs();
-			//				out = new FileWriter(this.getLocal(), this.status.isResume());
 			out = new FileWriter(this.getLocal().getTemp(), this.status.isResume());
 			if (out == null) {
 				throw new IOException("Unable to buffer data");
 			}
-			//				in = this.session.FTP.getASCII(this.getName(), this.status.isResume() ? this.getLocal().length() : 0);
 			in = this.session.FTP.getASCII(this.getName(), this.status.isResume() ? this.getLocal().getTemp().length() : 0);
 			if (in == null) {
 				throw new IOException("Unable opening data stream");

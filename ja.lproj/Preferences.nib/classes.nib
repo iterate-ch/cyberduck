@@ -9,7 +9,8 @@
                 anonymousField = NSTextField; 
                 bringQueueToFrontCheckbox = NSButton; 
                 bufferField = NSTextField; 
-                chmodCheckbox = NSButton; 
+                chmodDownloadCheckbox = NSButton; 
+                chmodUploadCheckbox = NSButton; 
                 columnModificationCheckbox = NSButton; 
                 columnOwnerCheckbox = NSButton; 
                 columnPermissionsCheckbox = NSButton; 

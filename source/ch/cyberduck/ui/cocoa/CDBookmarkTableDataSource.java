@@ -69,6 +69,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
         log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
         NSPasteboard pboard = info.draggingPasteboard();
         if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+			tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
 			return NSDraggingInfo.DragOperationCopy;
 			/*
             Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
@@ -94,6 +95,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
         if (draggedRows != null) {
             NSPasteboard bookmarkPboard = NSPasteboard.pasteboardWithName("BookmarkPBoard");
             if (bookmarkPboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")) != null) {
+				tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
                 return NSDraggingInfo.DragOperationMove;
 //                return NSDraggingInfo.DragOperationGeneric;
             }

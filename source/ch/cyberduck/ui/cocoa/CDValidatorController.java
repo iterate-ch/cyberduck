@@ -87,8 +87,7 @@ public class CDValidatorController extends Validator {
 			if (false == NSApplication.loadNibNamed("Validator", this)) {
 				log.fatal("Couldn't load Validator.nib");
 			}
-			this.resumeButton.setEnabled(this.fileExists);
-//			this.resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
+			this.resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
 			String file = null;
 			if (Queue.KIND_DOWNLOAD == kind)
 				file = path.getLocal().getAbsolutePath();

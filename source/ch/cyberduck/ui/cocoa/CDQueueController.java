@@ -334,7 +334,8 @@ public class CDQueueController extends NSObject implements Observer {
         if (this.queueTable.selectedRow() != -1) {
             Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
 			Path f = item.getRoot();
-			String file = f.status.isComplete() ? item.getRoot().getLocal().toString() : item.getRoot().getLocal().getTemp().toString();
+//			String file = f.status.isComplete() ? item.getRoot().getLocal().toString() : item.getRoot().getLocal().getTemp().toString();
+			String file = item.getRoot().getLocal().toString();
             if (!NSWorkspace.sharedWorkspace().selectFile(file, "")) {
                 if (item.isComplete()) {
                     NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Could not show the file in the Finder", ""), //title

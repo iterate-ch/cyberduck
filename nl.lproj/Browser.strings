@@ -22,6 +22,9 @@
 /* NSMenuItem : <title:Download> (oid:955) */
 "Download" = "Download";
 
+/* NSMenuItem : <title:Download As...> (oid:1054) */
+"Download As..." = "Download As...";
+
 /* NSIBHelpConnector : <title:Edit selected bookmark> (oid:997) */
 "Edit selected bookmark" = "wijzig geselecteerde bladwijzer";
 

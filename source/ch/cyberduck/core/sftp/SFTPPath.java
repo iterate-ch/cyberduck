@@ -362,7 +362,6 @@ public class SFTPPath extends Path {
 			log.debug("download:"+this.toString());
 			this.session.check();
 			this.getLocal().getParentFile().mkdirs();
-//			out = new FileOutputStream(this.getLocal(), this.status.isResume());
 			out = new FileOutputStream(this.getLocal().getTemp(), this.status.isResume());
 			if (out == null) {
 				throw new IOException("Unable to buffer data");
@@ -374,7 +373,6 @@ public class SFTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			if(this.status.isResume()) {
-//				this.status.setCurrent(this.getLocal().length());
 				this.status.setCurrent(this.getLocal().getTemp().length());
 				long skipped = in.skip(this.status.getCurrent());
 				log.info("Skipping "+skipped+" bytes");

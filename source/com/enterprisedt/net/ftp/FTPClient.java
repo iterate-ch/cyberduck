@@ -52,6 +52,9 @@ import org.apache.log4j.Logger;
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.33  2004/04/03 23:36:33  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.32  2004/03/30 18:58:05  dkocher
  *        *** empty log message ***
  *
@@ -284,7 +287,7 @@ public class FTPClient {
 	 *  @modified
 	 */
 	public void validateTransfer() throws IOException, FTPException {
-
+		log.debug("validateTransfer");
 		// check the control response
 		String[] validCodes = {"226", "250"};
 		String reply = control.readReply();

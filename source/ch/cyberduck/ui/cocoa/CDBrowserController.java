@@ -1318,6 +1318,13 @@ public class CDBrowserController extends NSObject implements Observer {
             log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
 			if(isMounted()) {
 				if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+					if (row != -1 && row < tableView.numberOfRows()) {
+						Path selected = this.getEntry(row);
+						if(selected.isDirectory()) {
+							tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
+							return NSDraggingInfo.DragOperationCopy;
+						}
+					}
 					tableView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
 					return NSDraggingInfo.DragOperationCopy;
 				}
@@ -1347,9 +1354,17 @@ public class CDBrowserController extends NSObject implements Observer {
 						Session session = pathController.workdir().getSession().copy();
                         for (int i = 0; i < filesList.count(); i++) {
                             log.debug(filesList.objectAtIndex(i));
-                            Path p = PathFactory.createPath(session,
-                                    pathController.workdir().getAbsolute(),
-                                    new Local((String) filesList.objectAtIndex(i)));
+							Path p = null;
+                            if (row != -1) {
+								p = PathFactory.createPath(session,
+														   this.getEntry(row).getAbsolute(),
+														   new Local((String) filesList.objectAtIndex(i)));
+							}
+							else {
+								p = PathFactory.createPath(session,
+														   pathController.workdir().getAbsolute(),
+														   new Local((String) filesList.objectAtIndex(i)));
+							}
 							q.addRoot(p);
                         }
 						CDQueuesImpl.instance().addItem(q);
@@ -1469,6 +1484,7 @@ public class CDBrowserController extends NSObject implements Observer {
 				Queue q = new Queue(Queue.KIND_DOWNLOAD);
                 for (int i = 0; i < promisedDragPaths.length; i++) {
                     try {
+						//@todo check if the returned path is the trash 
                         this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
                                 this.promisedDragPaths[i].getName()));
 						q.addRoot(this.promisedDragPaths[i]);
@@ -1478,8 +1494,10 @@ public class CDBrowserController extends NSObject implements Observer {
                         log.error(e.getMessage());
                     }
                 }
+				if(q.numberOfRoots() > 0) {
 					CDQueuesImpl.instance().addItem(q);
 					CDQueueController.instance().startItem(q);
+				}
                 this.promisedDragPaths = null;
                 return promisedDragNames;
             }

@@ -181,17 +181,8 @@ public class VMSFTPEntryParser extends FTPFileEntryParserImpl
             {
 				f.attributes.setType(Path.FILE_TYPE);
             }
-            //set FTPFile name
-            //Check also for versions to be returned or not
-            if (isVersioning()) 
-            {
-                f.setPath(parent.getAbsolute(), name);
-            } 
-            else 
-            {
-                name = name.substring(0, name.lastIndexOf(";"));
-                f.setPath(parent.getAbsolute(), name);
-            }
+			name = name.substring(0, name.lastIndexOf(";"));
+			f.setPath(parent.getAbsolute(), name);
             //size is retreived in blocks and needs to be put in bytes
             //for us humans and added to the FTPFile array
             Long theSize = new Long(size);
@@ -253,9 +244,5 @@ public class VMSFTPEntryParser extends FTPFileEntryParserImpl
             line = reader.readLine();
         }
         return (entry.length() == 0 ? null : entry.toString());
-    }
-
-    protected boolean isVersioning() {
-        return false;
     }
 }

@@ -127,7 +127,6 @@ public abstract class Path {
 	 * @param name The relative filename
 	 */
 	public void setPath(String parent, String name) {
-		log.debug("setPath:"+parent+","+name);
 		if (parent.charAt(parent.length() - 1) == '/')
 			this.setPath(parent + name);
 		else
@@ -376,9 +375,9 @@ public abstract class Path {
 		if(this.status.isComplete()) {
 			this.getLocal().getTemp().renameTo(this.getLocal());
 			if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-				Permission p = this.attributes.getPermission();
-				if(p.isUndefined()) {
-					this.getLocal().setPermission(p);
+				Permission perm = this.attributes.getPermission();
+				if(!perm.isUndefined()) {
+					this.getLocal().setPermission(perm);
 				}
 			}
 		}
@@ -396,9 +395,9 @@ public abstract class Path {
 		if(this.status.isComplete()) {
 			this.getLocal().getTemp().renameTo(this.getLocal());
 			if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-				Permission p = this.attributes.getPermission();
-				if(p.isUndefined()) {
-					this.getLocal().setPermission(p);
+				Permission perm = this.attributes.getPermission();
+				if(!perm.isUndefined()) {
+					this.getLocal().setPermission(perm);
 				}
 			}
 		}
@@ -409,6 +408,7 @@ public abstract class Path {
 	 * @param writer The stream to write to
 	 */
 	private void transfer(java.io.Reader reader, java.io.Writer writer) throws IOException {
+		log.debug("transfer(" + reader.toString() + ", " + writer.toString());
 		LineNumberReader in = new LineNumberReader(reader);
 		BufferedWriter out = new BufferedWriter(writer);
 
@@ -435,6 +435,7 @@ public abstract class Path {
 	 * @param o The stream to write to
 	 */
 	private void transfer(java.io.InputStream i, java.io.OutputStream o) throws IOException {
+		log.debug("transfer(" + i.toString() + ", " + o.toString());
 		BufferedInputStream in = new BufferedInputStream(i);
 		BufferedOutputStream out = new BufferedOutputStream(o);
 		int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
