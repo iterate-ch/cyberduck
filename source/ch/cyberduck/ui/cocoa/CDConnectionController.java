@@ -69,7 +69,6 @@ public class CDConnectionController extends CDController {
 
 	public void setHistoryPopup(NSPopUpButton historyPopup) {
 		this.historyPopup = historyPopup;
-		this.history = new CDTableDataSource();
 		this.historyPopup.setImage(NSImage.imageNamed("history.tiff"));
 		this.historyPopup.setToolTip(NSBundle.localizedString("History", ""));
 		File[] files = HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
@@ -79,6 +78,7 @@ public class CDConnectionController extends CDController {
 				return false;
 			}
 		});
+		this.history = new CDTableDataSource();
 		for(int i = 0; i < files.length; i++) {
 			Host h = CDBookmarkTableDataSource.instance().importBookmark(files[i]);
 			history.add(h);
@@ -94,6 +94,7 @@ public class CDConnectionController extends CDController {
 	}
 	
 	private Rendezvous rendezvous;
+	private Observer observer;
 	private NSPopUpButton rendezvousPopup;
 	
 	private void addItemToRendezvousPopup(String item) {
@@ -110,8 +111,8 @@ public class CDConnectionController extends CDController {
 		this.rendezvousPopup.setToolTip(NSBundle.localizedString("Rendezvous", ""));
 		this.rendezvousPopup.setTarget(this);
 		this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionDidChange", new Class[]{Object.class}));
-		this.rendezvous = new Rendezvous();
-		this.rendezvous.addObserver(new Observer() {
+		this.rendezvous = Rendezvous.instance();
+		this.rendezvous.addObserver(this.observer = new Observer() {
 			public void update(final Observable o, final Object arg) {
 				log.debug("update:"+o+","+arg);
 				ThreadUtilities.instance().invokeLater(new Runnable() {
@@ -131,7 +132,11 @@ public class CDConnectionController extends CDController {
 				});
 			}
 		});
-		this.rendezvous.init();
+		String[] cachedServices = this.rendezvous.getServices();
+		for(int i = 0; i < cachedServices.length; i++) {
+			this.addItemToRendezvousPopup(cachedServices[i]);
+		}
+//		this.rendezvous.init();
 	}
 
 	public void rendezvousSelectionDidChange(Object sender) {
@@ -468,8 +473,8 @@ public class CDConnectionController extends CDController {
 	public void closeSheet(NSButton sender) {
 		this.browserController.endSheet();
 		NSNotificationCenter.defaultCenter().removeObserver(this);
-		this.rendezvous.deleteObservers();
-		this.rendezvous.quit();
+		this.rendezvous.deleteObserver(this.observer);
+//		this.rendezvous.quit();
 		switch(sender.tag()) {
 			case (NSAlertPanel.DefaultReturn):
 				Host host = null;

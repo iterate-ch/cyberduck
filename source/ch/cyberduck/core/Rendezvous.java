@@ -44,7 +44,16 @@ public class Rendezvous extends Observable implements ServiceListener {
 	private Map services;
 	private JmDNS jmDNS;
 
-	public Rendezvous() {
+	private static Rendezvous instance;
+	
+	public static Rendezvous instance() {
+		if(null == instance) {
+			instance = new Rendezvous();
+		}
+		return instance;
+	}
+	
+	private Rendezvous() {
 		log.debug("Rendezvous");
 		this.services = new HashMap();
 	}
@@ -90,6 +99,10 @@ public class Rendezvous extends Observable implements ServiceListener {
 	public Host getService(String key) {
 		log.debug("getService:"+key);
 		return (Host)services.get(key);
+	}
+	
+	public String[] getServices() {
+		return (String[])this.services.keySet().toArray(new String[]{});
 	}
 
     /**

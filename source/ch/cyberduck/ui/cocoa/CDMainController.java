@@ -163,7 +163,7 @@ public class CDMainController extends NSObject {
 		if(setDelegateSelector.implementedByClass(NSMenu.class)) {
 			this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
 			this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate =
-			    new RendezvousMenuDelegate(this.rendezvous = new Rendezvous()));
+			    new RendezvousMenuDelegate(this.rendezvous = Rendezvous.instance()));
 		}
 		this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle("Rendezvous"));
 	}
@@ -389,6 +389,15 @@ public class CDMainController extends NSObject {
 		}
 	}
 
+	public void forumMenuClicked(Object sender) {
+		try {
+			NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.forum")));
+		}
+		catch(java.net.MalformedURLException e) {
+			log.error(e.getMessage());
+		}
+	}
+	
 	public void donateMenuClicked(Object sender) {
 		try {
 			NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.donate")));
@@ -560,7 +569,7 @@ public class CDMainController extends NSObject {
 			CDBrowserController controller = CDBrowserController.controllerForWindow(window);
 			if(null != controller) {
 				if(controller.isConnected()) {
-					if(Preferences.instance().getBoolean("browser.confirmQuit")) {
+					if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
 						int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
 						    NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
 						    NSBundle.localizedString("Review...", ""), //default
