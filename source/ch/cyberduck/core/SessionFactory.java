@@ -37,6 +37,9 @@ public abstract class SessionFactory {
 			try {
 				// Load dynamically
 				Class.forName("ch.cyberduck.core."+id+"."+id.toUpperCase()+"Session");
+				//				Class.forName("ch.cyberduck.core."+id+"."
+//							  +Preferences.instance().getProperty(id+".implementation")
+//							  +"."+id.toUpperCase()+"Session");
 			}
 			catch(ClassNotFoundException e) {
 				throw new RuntimeException("No class for type: "+id);

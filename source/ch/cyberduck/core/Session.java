@@ -186,6 +186,7 @@ public abstract class Session extends Observable {
 		log.debug("setClosed");
 		SessionPool.instance().release(this);
 		this.callObservers(new Message(Message.CLOSE, "Session closed."));
+		this.cache().clear();
 		this.connected = false;
 	}
 

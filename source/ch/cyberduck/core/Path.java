@@ -189,12 +189,19 @@ public abstract class Path {
 	public List list(boolean refresh, boolean showHidden) {
 		return this.list(Preferences.instance().getProperty("browser.charset.encoding"), refresh, showHidden);
 	}
+
+	public List list(boolean refresh, boolean showHidden, boolean notifyObservers) {
+		return this.list(Preferences.instance().getProperty("browser.charset.encoding"), refresh, showHidden, notifyObservers);
+	}
 	
 	/**
-	 * Request a file listing from the server. Has to be a directory
+	 * Request a file listing from the server. Has to be a directory.
 	 */
-	public abstract List list(String encoding, boolean refresh, boolean showHidden);
+	public List list(String encoding, boolean refresh, boolean showHidden) {
+		return this.list(encoding, refresh, showHidden, true);
+	}
 
+	public abstract List list(String encoding, boolean refresh, boolean showHidden, boolean notifyObservers);
 
 	/**
 	 * Remove this file from the remote host. Does not affect

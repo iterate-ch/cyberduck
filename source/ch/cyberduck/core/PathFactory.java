@@ -71,6 +71,9 @@ public abstract class PathFactory {
 			try {
 				// Load dynamically
 				Class.forName("ch.cyberduck.core."+id+"."+id.toUpperCase()+"Path");
+//				Class.forName("ch.cyberduck.core."+id+"."
+//							  +Preferences.instance().getProperty(id+".implementation")
+//							  +"."+id.toUpperCase()+"Path");
 			}
 			catch(ClassNotFoundException e) {
 				throw new RuntimeException("No class for type: "+id);

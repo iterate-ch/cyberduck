@@ -371,10 +371,8 @@ public class TransportProtocolClient extends TransportProtocolCommon {
 
 		// We have a valid key so verify it against the allowed hosts
 		String host;
-
 		try {
 			InetAddress addr = InetAddress.getByName(properties.getHost());
-
 			if(!addr.getHostAddress().equals(properties.getHost())) {
 				host = addr.getHostName()+","+addr.getHostAddress();
 			}
@@ -390,7 +388,6 @@ public class TransportProtocolClient extends TransportProtocolCommon {
 
 		if(!hosts.verifyHost(host, pk)) {
 			log.info("The host key was not accepted");
-
 			return false;
 		}
 

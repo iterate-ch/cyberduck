@@ -653,7 +653,7 @@ public class FTPClient {
 					control.log(line, false);
 					lines.addElement(line);
 				}
-				closeDataSocket();
+				this.closeDataSocket();
 				
 				// check the control response
 				String[] validCodes2 = {"226", "250"};
@@ -667,7 +667,7 @@ public class FTPClient {
 				}
 			}
 			else { // 450 or 550 - still need to close data socket
-				closeDataSocket();
+				this.closeDataSocket();
 			}
 			return result;
 		}

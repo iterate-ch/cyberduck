@@ -89,6 +89,9 @@ public abstract class Preferences {
 
 		defaults.put("update.check", "true");
 
+//		defaults.put("sftp.implementation", "j2ssh");
+//		defaults.put("ftp.implementation", "enterprisedt");
+		
 		defaults.put("bookmarkDrawer.isOpen", "false");
 		defaults.put("logDrawer.isOpen", "false");
 

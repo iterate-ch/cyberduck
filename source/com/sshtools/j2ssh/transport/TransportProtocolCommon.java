@@ -843,16 +843,15 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 	 */
 	protected void startBinaryPacketProtocol() throws IOException {
 		// Send our Kex Init
-		sendKeyExchangeInit();
+		this.sendKeyExchangeInit();
 
 		SshMessage msg;
 
 		// Perform a transport protocol message loop
 		while(state.getValue() != TransportProtocolState.DISCONNECTED) {
-			log.debug("tansport protocol loop running with state "+state.getValue());
 			// Process incoming messages returning any transport protocol
 			// messages to be handled here
-			msg = processMessages();
+			msg = this.processMessages();
 
 			if(log.isDebugEnabled()) {
 				log.debug("Received "+msg.getMessageName());
@@ -862,35 +861,30 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 				case SshMsgKexInit.SSH_MSG_KEX_INIT:
 					{
 						onMsgKexInit((SshMsgKexInit)msg);
-
 						break;
 					}
 
 				case SshMsgDisconnect.SSH_MSG_DISCONNECT:
 					{
 						onMsgDisconnect((SshMsgDisconnect)msg);
-
 						break;
 					}
 
 				case SshMsgIgnore.SSH_MSG_IGNORE:
 					{
 						onMsgIgnore((SshMsgIgnore)msg);
-
 						break;
 					}
 
 				case SshMsgUnimplemented.SSH_MSG_UNIMPLEMENTED:
 					{
 						onMsgUnimplemented((SshMsgUnimplemented)msg);
-
 						break;
 					}
 
 				case SshMsgDebug.SSH_MSG_DEBUG:
 					{
 						onMsgDebug((SshMsgDebug)msg);
-
 						break;
 					}
 

@@ -111,7 +111,7 @@ public class FTPPath extends Path {
 		return this.session;
 	}
 
-	public List list(String encoding, boolean refresh, boolean showHidden) {
+	public List list(String encoding, boolean refresh, boolean showHidden, boolean notifyObservers) {
 		synchronized(session) {
 			List files = session.cache().get(this.getAbsolute());
 			session.addPathToHistory(this);
@@ -145,7 +145,9 @@ public class FTPPath extends Path {
 					return files;
 				}
 			}
-			session.callObservers(this);
+			if(notifyObservers) {
+				session.callObservers(this);
+			}
 			return files;
 		}
 	}
@@ -255,7 +257,7 @@ public class FTPPath extends Path {
 					session.FTP.delete(this.getName());
 				}
 				else if(this.attributes.isDirectory()) {
-					List files = this.list(true, true);
+					List files = this.list(true, true, false);
 					java.util.Iterator iterator = files.iterator();
 					Path file = null;
 					while(iterator.hasNext()) {
@@ -299,7 +301,7 @@ public class FTPPath extends Path {
 					session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
 					session.FTP.site(command+" "+perm.getOctalCode()+" "+this.getAbsolute());
 					if(recursive) {
-						List files = this.list(false, true);
+						List files = this.list(false, true, false);
 						java.util.Iterator iterator = files.iterator();
 						Path file = null;
 						while(iterator.hasNext()) {

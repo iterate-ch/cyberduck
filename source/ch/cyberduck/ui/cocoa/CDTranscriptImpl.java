@@ -55,16 +55,16 @@ public class CDTranscriptImpl implements Transcript {
 	public void layoutManagerDidCompleteLayoutForTextContainer(NSLayoutManager layoutManager, 
 															   NSTextContainer textContainer, 
 															   boolean finished) {
-		if(this.textView.window().isVisible()) {
+		if(finished && this.textView.window().isVisible()) {
 			this.textView.scrollRangeToVisible(new NSRange(this.textView.textStorage().length(), 0));
 		}
 	}
 		
 	public void log(final String message) {
 		log.info(message);
-		this.textView.layoutManager().setDelegate(this);
 		ThreadUtilities.instance().invokeLater(new Runnable() {
 			public void run() {
+				textView.layoutManager().setDelegate(CDTranscriptImpl.this);
 				// Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
 				// formatting attributes of the first character of the text it replaces, or of the character immediately
 				// before aRange if the range's length is 0. If the range's location is 0, the formatting

@@ -148,7 +148,7 @@ public class SFTPSession extends Session {
 		kbi.setKBIRequestHandler(new KBIRequestHandler() {
 			public void showPrompts(String name,
 			                        String instructions,
-			                        KBIPrompt[] prompts) throws IOException {
+			                        KBIPrompt[] prompts) {
 				log.info(name);
 				log.info(instructions);
 				if(prompts != null) {

@@ -77,7 +77,6 @@ public abstract class AbstractKnownHostsKeyVerification
 	public AbstractKnownHostsKeyVerification(String knownhosts)
 	    throws InvalidHostFileException {
 		InputStream in = null;
-
 		try {
 			//  If no host file is supplied, or there is not enough permission to load
 			//  the file, then just create an empty list.
@@ -85,54 +84,50 @@ public abstract class AbstractKnownHostsKeyVerification
 				if(System.getSecurityManager() != null) {
 					AccessController.checkPermission(new FilePermission(knownhosts, "read"));
 				}
-
 				//  Load the hosts file. Do not worry if fle doesnt exist, just disable
 				//  save of
 				File f = new File(knownhosts);
-
 				if(f.exists()) {
 					in = new FileInputStream(f);
-
 					BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 					String line;
-
 					while((line = reader.readLine()) != null) {
+						String host = null;
+						String algorithm = null;
+						String key = null;
 						StringTokenizer tokens = new StringTokenizer(line, " ");
-						String host = (String)tokens.nextElement();
-						String algorithm = (String)tokens.nextElement();
-						String key = (String)tokens.nextElement();
-						SshPublicKey pk = SshKeyPairFactory.decodePublicKey(Base64.decode(key));
-
-						/*if (host.indexOf(",") > -1) {
-						   host = host.substring(0, host.indexOf(","));
-						 }*/
-						putAllowedKey(host, pk);
-
-						//allowedHosts.put(host + "#" + pk.getAlgorithmName(), pk);
+						if(tokens.hasMoreTokens())
+							host = (String)tokens.nextElement();
+						if(tokens.hasMoreTokens())
+							algorithm = (String)tokens.nextElement();
+						if(tokens.hasMoreTokens()) {
+							key = (String)tokens.nextElement();
+							SshPublicKey pk = SshKeyPairFactory.decodePublicKey(Base64.decode(key));
+							/*if (host.indexOf(",") > -1) {
+								host = host.substring(0, host.indexOf(","));
+							}*/
+							this.putAllowedKey(host, pk);
+						}
 					}
-
 					reader.close();
-					hostFileWriteable = f.canWrite();
+					this.hostFileWriteable = f.canWrite();
 				}
 				else {
 					// Try to create the file and its parents if necersary
 					f.getParentFile().mkdirs();
-
 					if(f.createNewFile()) {
 						FileOutputStream out = new FileOutputStream(f);
 						out.write(toString().getBytes());
 						out.close();
-						hostFileWriteable = true;
+						this.hostFileWriteable = true;
 					}
 					else {
-						hostFileWriteable = false;
+						this.hostFileWriteable = false;
 					}
 				}
-
 				if(!hostFileWriteable) {
 					log.warn("Host file is not writeable.");
 				}
-
 				this.knownhosts = knownhosts;
 			}
 		}
@@ -165,7 +160,7 @@ public abstract class AbstractKnownHostsKeyVerification
 	 * @since 0.2.0
 	 */
 	public boolean isHostFileWriteable() {
-		return hostFileWriteable;
+		return this.hostFileWriteable;
 	}
 
 	/**
@@ -221,7 +216,7 @@ public abstract class AbstractKnownHostsKeyVerification
 
 		// Put the host into the allowed hosts list, overiding any previous
 		// entry
-		putAllowedKey(host, pk);
+		this.putAllowedKey(host, pk);
 
 		//allowedHosts.put(host, pk);
 		// If we always want to allow then save the host file with the
@@ -259,13 +254,10 @@ public abstract class AbstractKnownHostsKeyVerification
 	 */
 	public void removeAllowedHost(String host) {
 		Iterator it = allowedHosts.keySet().iterator();
-
 		while(it.hasNext()) {
 			StringTokenizer tokens = new StringTokenizer((String)it.next(), ",");
-
 			while(tokens.hasMoreElements()) {
 				String name = (String)tokens.nextElement();
-
 				if(name.equals(host)) {
 					allowedHosts.remove(name);
 				}
@@ -378,7 +370,6 @@ public abstract class AbstractKnownHostsKeyVerification
 		if(!allowedHosts.containsKey(host)) {
 			allowedHosts.put(host, new HashMap());
 		}
-
 		Map map = (Map)allowedHosts.get(host);
 		map.put(key.getAlgorithmName(), key);
 	}
