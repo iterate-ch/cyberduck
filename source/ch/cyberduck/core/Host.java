@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 /*
- *  Copyright (c) 2002 David Kocher. All rights reserved.
- *  http://icu.unizh.ch/~dkocher/
+ *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 import java.io.Serializable;
+import java.net.URL;
 
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.http.HTTPSession;
@@ -26,15 +27,22 @@ import ch.cyberduck.core.sftp.SFTPSession;
 
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 
-public class Host implements Serializable {
+public class Host implements Cloneable {
     private static Logger log = Logger.getLogger(Host.class);
 
-    public transient Login login;
     private String protocol;
     private int port;
     private String name;
-    private transient HostKeyVerification hostKeyVerification;
-    private transient Session session;
+    private HostKeyVerification hostKeyVerification;
+    private Session session;
+    private Login login;
+
+    public Host(URL url) {
+	this.protocol = url.getProtocol();
+	this.name = url.getHost();
+	this.port = url.getPort();
+	//@todo
+    }
 
     public Host(String protocol, String name, int port) {
 	this(protocol, name, port, null);
@@ -105,17 +113,32 @@ public class Host implements Serializable {
     public Login getLogin() {
 	return this.login;
     }
-    
+
+    public String getProtocol() {
+	return this.protocol;
+    }
+
+    private void setProtocol(String protocol) {
+	log.debug("setProtocol"+protocol);
+	this.protocol = protocol;
+    }
+
     public String getName() {
 	return this.name;
     }
 
-//    public String getWorkdir() {
-//	return this.workdir;
-  //  }
+    private void setName(String name) {
+	log.debug("setName"+name);
+	this.name = name;
+    }
 
     public int getPort() {
 	return this.port;
+    }
+
+    private void setPort(int port) {
+	log.debug("setPort"+port);
+	this.port = port;
     }
 
     //ssh specific
@@ -127,10 +150,15 @@ public class Host implements Serializable {
 	return this.hostKeyVerification;
     }
 
-    
-    public String getProtocol() {
-	return this.protocol;
-    }
+//    public URL getURL() {
+//	try {
+//	    return new URL(this.toString());
+//	}
+//	catch(java.net.MalformedURLException e) {
+//	    log.error(e.getMessage());
+//	}
+//	return null;
+//  }
 
     /**
 	* @return The IP address of the remote host if available
@@ -148,6 +176,8 @@ public class Host implements Serializable {
     }
     
     public String toString() {
-	return("Host:"+protocol+","+name+","+port+","+login);
+	//@todo getlogin name
+	return this.getProtocol()+"://"+this.getName()+":"+this.getPort();
+//	return("Host:"+protocol+","+name+","+port+","+login);
     }
 }

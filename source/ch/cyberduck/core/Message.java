@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 /*
- *  Copyright (c) 2002 David Kocher. All rights reserved.
- *  http://icu.unizh.ch/~dkocher/
+ *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,14 +37,14 @@ public class Message {//{implements java.io.Serializable {
 
     // connection state of host
     public static final String OPEN = "OPEN";
-//    public static final String CONNECTED = "CONNECTED";
     public static final String CLOSE = "CLOSE";
 
     // connection state of file
     public static final String START = "START";
     public static final String STOP = "STOP";
     public static final String COMPLETE = "COMPLETE";
-//    public static final String CURRENT = new String("CURRENT");
+
+    public static final String RENDEZVOUS = "RENDEZVOUS";
     
     /**
     * @param t The title of the mesage
