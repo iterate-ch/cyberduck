@@ -99,6 +99,17 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 	return instance;
 }
 
+- (id)init
+{
+	if (self = [super init]) {
+		[[NSDistributedNotificationCenter defaultCenter] addObserver:self 
+															selector:@selector(registerGrowlWithContext:) 
+																name:GROWL_IS_READY 
+															  object:nil];
+	}
+	return self;
+}
+
 - (void)dealloc
 {
 	[instance release];
@@ -117,13 +128,14 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 
 - (void)registerGrowl
 {
-	if(NSClassFromString(@"GrowlAppBridge") != nil) 
-	{ 
-		if([NSClassFromString(@"GrowlAppBridge") isGrowlRunning]) 
-		{
-			[self registerGrowlWithContext: nil];
-		}
-	}
+	[self registerGrowlWithContext: nil];
+//	if(NSClassFromString(@"GrowlAppBridge") != nil) 
+//	{
+//		if([NSClassFromString(@"GrowlAppBridge") isGrowlRunning])
+//		{
+//			[self registerGrowlWithContext: nil];
+//		}
+//	}
 }
 
 - (void)registerGrowlWithContext:(void*)context
@@ -155,7 +167,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 																	   object:nil
 																	 userInfo:registrationDict];
 	}
-	registered = YES;
+//	registered = YES;
 }
 
 - (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImageName:(NSString *) image
