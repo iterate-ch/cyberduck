@@ -25,8 +25,11 @@ img/up.tiff svneol=native#unset
 img/upload.tiff svneol=native#unset
 lib/ext/ant.jar -text
 lib/ext/junit.jar -text
+lib/http.jar -text
 lib/j2ssh.jar svneol=native#unset
+lib/jrendezvous.jar -text
 lib/log4j.jar svneol=native#unset
+lib/logging.jar -text
 source/ch/cyberduck/Attic/connection/.DS_Store svneol=native#unset
 source/ch/cyberduck/Attic/connection/ftp/.DS_Store svneol=native#unset
 source/ch/cyberduck/Attic/connection/http/.DS_Store svneol=native#unset
