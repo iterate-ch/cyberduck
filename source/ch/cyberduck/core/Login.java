@@ -26,16 +26,22 @@ package ch.cyberduck.core;
  */
 
 public abstract class Login {
-    private String user = "anonymous"; //@todo use preferences
-    private transient String pass = "anonymous@mail.tld";
-    
+    private String user = Preferences.instance().getProperty("connection.login.anonymous.name");
+    private transient String pass = Preferences.instance().getProperty("connection.login.anonymous.pass");
+
+    /**
+	* New instance with default values. (anonymous login)
+     */
+    public Login() {
+
+    }
+
+    /**
+	* 
+     */
     public Login(String user, String pass) {
 	this.user = user;
 	this.pass = pass;
-    }
-
-    public String getPassword() {
-	return this.pass;
     }
 
     public String getUsername() {
@@ -46,6 +52,10 @@ public abstract class Login {
 	this.user = u;
     }
 
+    public String getPassword() {
+	return this.pass;
+    }
+    
     public void setPassword(String p) {
 	this.pass = p;
     }

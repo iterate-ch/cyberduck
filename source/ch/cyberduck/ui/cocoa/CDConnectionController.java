@@ -52,24 +52,24 @@ public class CDConnectionController extends NSObject implements Observer {
 
     private static Logger log = Logger.getLogger(CDConnectionController.class);
 
-    public NSWindow mainWindow; /* IBOutlet */
-    public NSWindow connectionSheet; /* IBOutlet */
-    public NSWindow loginSheet; /* IBOutlet */
+    public NSWindow mainWindow;
+    public NSWindow connectionSheet;
+    public NSWindow loginSheet;
 
     public NSPopUpButton pathPopUpButton;
     public NSTextField statusLabel;
-    public NSTextField pathField; /* IBOutlet */
-    public NSTextField portField; /* IBOutlet */
-    public NSPopUpButton protocolPopup; /* IBOutlet */
-    public NSTextField hostField; /* IBOutlet */
-    public NSTextField usernameField; /* IBOutlet */
-    public NSSecureTextField passwordField; /* IBOutlet */
-    public NSTextView logView; /* IBOutlet */
-    public NSProgressIndicator progressIndicator; /* IBOutlet */
+    public NSTextField pathField;
+    public NSTextField portField;
+    public NSPopUpButton protocolPopup;
+    public NSTextField hostField;
+    public NSTextField usernameField;
+    public NSSecureTextField passwordField;
+    public NSTextView logView;
+    public NSProgressIndicator progressIndicator;
     
-    public NSTableView browserTable;  /* IBOutlet */
+    public NSTableView browserTable; 
 
-    //public NSView connectedListView; /* IBOutlet */
+    //public NSView connectedListView;
 
     private CDConnectionController controller = this;
     
@@ -84,43 +84,74 @@ public class CDConnectionController extends NSObject implements Observer {
 
     public void connect(NSObject sender) {
 	log.debug("connect");
-	try {
+//	try {
+
+            // All we need to connect - default values set in Host.class
 	    Host host = null;
+            String server = null;
+            String path = null;
 	    String protocol = null;
-	    int tag = protocolPopup.selectedItem().tag();
-	    switch(tag) {
-		case(Session.SSH_PORT):
-		    protocol = Session.SFTP;
-		    break;
-		case(Session.FTP_PORT):
-		    protocol = Session.FTP;
-		    break;
-		case(Session.HTTP_PORT):
-		    protocol = Session.HTTP;
-		    break;
-//		case(Session.HTTPS_PORT):
-//		    protocol = Session.HTTPS;
-//		    break;
-	    }
+            int port = -1;
+            Login login = new CDLogin();
 
 	    //@todo new connection via menu item recent connection
      //	if(sender instanceof NSMenu
      //NSMenuItem item = menu.getSelectedItem()
      //host = item.
-
-//	    log.debug(protocol+","+hostField.stringValue()+","+usernameField.stringValue()+","+passwordField.stringValue());
-	    if(sender instanceof NSTextField) {
-		host = new Host(protocol, ((NSControl)sender).stringValue(), 22, null);
+            
+	    if(sender instanceof NSTextField) { //connection initiated from toolbar text field
+                server = ((NSControl)sender).stringValue();
 	    }
-	    if(sender instanceof NSButton) {
+	    if(sender instanceof NSButton) { //connection initiated from connection sheet
 		NSApplication.sharedApplication().endSheet(connectionSheet, NSAlertPanel.AlternateReturn);
-		Login login = new CDLogin(usernameField.stringValue(), passwordField.stringValue());
-		host = new Host(protocol, hostField.stringValue(), 22, login);
+                server = hostField.stringValue();
+                int tag = protocolPopup.selectedItem().tag();
+                switch(tag) {
+                    case(Session.SSH_PORT):
+                        protocol = Session.SFTP;
+                        port = Session.SSH_PORT;
+                        try {
+                            host.setHostKeyVerification(new CDHostKeyVerification());
+                        }
+                        catch(InvalidHostFileException e) {
+                            //This exception is thrown whenever an exception occurs open or reading from the host file.
+                            NSAlertPanel.beginAlertSheet(
+                                                            "Error", //title
+                                                            "OK",// defaultbutton
+                                                            null,//alternative button
+                                                            null,//other button
+                                                            mainWindow, //docWindow
+                                                            null, //modalDelegate
+                                                            null, //didEndSelector
+                                                            null, // dismiss selector
+                                                            null, // context
+                                                            "Could not open or read the host file: "+e.getMessage() // message
+                                                            );
+                            //@todo run alert sheet?
+                            log.error(e.getMessage());
+                        }
+                        break;
+                    case(Session.FTP_PORT):
+                        protocol = Session.FTP;
+                        port = Session.FTP_PORT;
+                        break;
+                    case(Session.HTTP_PORT):
+                        protocol = Session.HTTP;
+                        port = Session.HTTP_PORT;
+                        break;
+    //		case(Session.HTTPS_PORT):
+    //		    protocol = Session.HTTPS;
+       //                 port = Session.HTTPS_PORT;
+    //		    break;
+                }
+		login = new CDLogin(usernameField.stringValue(), passwordField.stringValue());
 	    }
+	    log.debug(protocol+","+hostField.stringValue()+","+usernameField.stringValue()+","+passwordField.stringValue());
+            
+            host = new Host(protocol, server, port, path, login);
 	    host.status.fireActiveEvent();
-
 	    mainWindow.setTitle(host.getName());
-	    
+
 	    host.addObserver((CDBrowserView)browserTable);
 	    host.addObserver((CDPathPopUpButton)pathPopUpButton);
 	    host.status.addObserver((CDStatusLabel)statusLabel);
@@ -129,14 +160,12 @@ public class CDConnectionController extends NSObject implements Observer {
 	    host.status.addObserver(this);
 	    
 	    Session session = host.getSession();
-	    //@todo only when sftp
-	    if(protocol.equals(Session.SFTP))
-		host.setHostKeyVerification(new CDHostKeyVerification());
-	    session.start();
-	}
-	catch(IOException e) {
-	    log.error(e.toString());
-	}
+
+            session.start();
+//	}
+//	catch(IOException e) {
+//	    log.error(e.toString());
+//	}
 	//	connectedListView.addSubview(new CDConnectedItemView(host));
 //	connectedListView.setNeedsDisplay(true);
 
@@ -181,6 +210,10 @@ public class CDConnectionController extends NSObject implements Observer {
 	private boolean done;
 	private boolean tryAgain;
 
+        public CDLogin() {
+            super();
+        }
+        
 	public CDLogin(String u, String p) {
 	    super(u, p);
 	}
@@ -189,11 +222,15 @@ public class CDConnectionController extends NSObject implements Observer {
 	    CDLoginSheet loginSheet = (CDLoginSheet)sheet;
 	    switch(returncode) {
 		case(NSAlertPanel.DefaultReturn):
+                    log.debug("NSAlertPanel.DefaultReturn");
 		    tryAgain = true;
 		    this.setUsername(loginSheet.getUser());///@todo
 		    this.setPassword(loginSheet.getPass());
+                    break;
 		case(NSAlertPanel.AlternateReturn):
+                    log.debug("NSAlertPanel.AlternateReturn");
 		    tryAgain = false;
+                    break;
 	    }
 	    done = true;
 	    sheet.close();

@@ -260,10 +260,10 @@ public class SFTPSession extends Session {
 
     private void login() throws IOException {
 	// Create a password authentication instance
-	this.log("Authenticating as '"+host.getUsername()+"'", Message.PROGRESS);
+	this.log("Authenticating as '"+host.login.getUsername()+"'", Message.PROGRESS);
 	PasswordAuthentication auth = new PasswordAuthentication();
-	auth.setUsername(host.getUsername());
-	auth.setPassword(host.getPassword());
+	auth.setUsername(host.login.getUsername());
+	auth.setPassword(host.login.getPassword());
 
 	// Try the authentication
 	int result = SSH.authenticate(auth);

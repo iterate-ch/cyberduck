@@ -25,6 +25,9 @@
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.3  2003/03/28 00:00:28  dkocher
+ *        No log message.
+ *
  *        Revision 1.2  2003/03/21 14:14:43  dkocher
  *        No log message.
  *
@@ -472,12 +475,10 @@ import org.apache.log4j.Logger;
              throw new IOException("Unexpect null reply received");
 
          StringBuffer reply = new StringBuffer(firstLine);
-
          //if (debugResponses)
              //log.println(reply.toString());
 
          String replyCode = reply.toString().substring(0, 3);
-
          // check for multiline response and build up
          // the reply
          if (reply.charAt(3) == '-') {
@@ -518,7 +519,7 @@ import org.apache.log4j.Logger;
       *
       */
      FTPReply validateReply(String reply, String expectedReplyCode) throws IOException, FTPException {
-	 log.debug("validateReply");
+	 log.debug("validateReply:"+reply);
          // all reply codes are 3 chars long
          String replyCode = reply.substring(0, 3);
          String replyText = reply.substring(4);

@@ -149,6 +149,7 @@ public class Preferences extends Properties {
 
 	//	System.out.println("Working directory:"+System.getProperty("user.dir"));
 	this.setProperty("cyberduck.version", "2.1");
+        this.setProperty("cyberduck.uses", "0");
 	this.setProperty("cyberduck.donate", "true");
         
 	System.setProperty("sshtools.home", System.getProperty("user.dir"));
@@ -205,7 +206,8 @@ public class Preferences extends Properties {
         this.setProperty("connection.log.file", "cyberduck.connection.log");
         this.setProperty("connection.buffer", "4096");
         this.setProperty("connection.log.speech", "false");
-        this.setProperty("connection.protocol.default", "sftp");
+        this.setProperty("connection.port.default", "21");
+        this.setProperty("connection.protocol.default", "ftp");
 //        this.setProperty("connection.transfertype.default", "binary");
         this.setProperty("connection.timeout", "2"); // seconds
         this.setProperty("connection.timeout.default", "2"); // seconds
@@ -215,12 +217,13 @@ public class Preferences extends Properties {
         this.setProperty("connection.proxy.authenticate", "false");
         this.setProperty("connection.proxy.username", "user");
         this.setProperty("connection.proxy.password", "pass");
+
+        this.setProperty("connection.login.name", System.getProperty("user.name"));
+        this.setProperty("connection.login.anonymous.name", "anonymous");
+        this.setProperty("connection.login.anonymous.pass", "user@domain.tld");
         
         //ftp properties
         this.setProperty("ftp.showHidden", "false");
-        this.setProperty("ftp.login.name", System.getProperty("user.name"));
-        this.setProperty("ftp.login.anonymous.name", "anonymous");
-        this.setProperty("ftp.login.anonymous.pass", "anonymous");
         this.setProperty("ftp.active", "true");
         this.setProperty("ftp.passive", "false");
         this.setProperty("ftp.listing.showType", "true");

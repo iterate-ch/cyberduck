@@ -30,8 +30,9 @@ import java.io.IOException;
 //import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.http.HTTPSession;
 
-import ch.cyberduck.core.Path;
+//import ch.cyberduck.core.Path;
 
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 
@@ -42,27 +43,26 @@ import org.apache.log4j.Logger;
 
 public class Host extends Observable {
 
-    public Status status;
-    
-    private String protocol;
+    public Status status = new Status();
+    public Login login;
+    private String protocol = Preferences.instance().getProperty("connection.protocol.default");
+    private int port = Integer.parseInt(Preferences.instance().getProperty("connection.port.default"));
     private String name;
-    private Path path;
-    private Login login;
-    private int port;
-
+//    private Path path;
+    private String path;
+    
     private HostKeyVerification hostKeyVerification;
 
     private transient Session session;
 
     private static Logger log = Logger.getLogger(Host.class);
 
-    public Host(String protocol, String name, int port, Path path, Login login) {
-	this.status = new Status();
-	this.protocol = protocol;
-	this.name = name;
-	this.port = port;
+    public Host(String protocol, String name, int port, String path, Login login) {
+        this.protocol = protocol != null ? protocol : this.protocol;
+        this.port = port != -1 ? port : this.port;
+        this.name = name;
 	this.path = path;
-	this.login = login;
+        this.login = login != null ? login : this.login;
 	
     }
 
@@ -76,22 +76,22 @@ public class Host extends Observable {
     }
 
 //    public Session getSession(TransferAction action) throws IOException {
-    public Session getSession() throws IOException {
+    public Session getSession() {//throws IOException {
         log.debug("getSession");
 //        if(this.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
-//            return new HTTPSession(this, action);
+//            return new HTTPSession(this);
 //        }
-//        if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
-//            return new HTTPSession(this, action);
-//        }
-
+        if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
+            return new HTTPSession(this);
+        }
 	if(this.getProtocol().equalsIgnoreCase(Session.FTP)) {
             return new FTPSession(this);//, action);
         }
         if(this.getProtocol().equalsIgnoreCase(Session.SFTP)) {
             return new SFTPSession(this);//, action);
         }
-        throw new IOException("Unknown protocol '" + protocol + " '.");
+        return null;
+//        throw new IOException("Unknown protocol '" + protocol + " '.");
     }
 
     public Login getLogin() {
@@ -102,28 +102,12 @@ public class Host extends Observable {
 	return this.name;
     }
 
-    public Path getPath() {
+    public String getPath() { //public Path getPath()
 	return this.path;
     }
     
     public int getPort() {
 	return this.port;
-    }
-
-    public void setUsername(String u) {
-	this.login.setUsername(u);
-    }
-
-    public String getUsername() {
-	return this.login.getUsername();
-    }
-
-    public void setPassword(String p) {
-	this.login.setPassword(p);
-    }
-
-    public String getPassword() {
-	return this.login.getPassword();
     }
 
     //ssh specific

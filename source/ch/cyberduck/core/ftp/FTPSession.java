@@ -217,8 +217,8 @@ public class FTPSession extends Session {
 
     private void login() throws IOException {
 	try {
-	    this.log("Authenticating as " + host.getUsername() + "...", Message.PROGRESS);
-	    FTP.login(host.getUsername(), host.getPassword());
+	    this.log("Authenticating as " + host.login.getUsername() + "...", Message.PROGRESS);
+	    FTP.login(host.login.getUsername(), host.login.getPassword());
 	    this.log("Login successfull.", Message.PROGRESS);
 	}
 	catch(FTPException e) {
