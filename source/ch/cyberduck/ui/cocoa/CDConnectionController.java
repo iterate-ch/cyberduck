@@ -26,6 +26,9 @@ import com.apple.cocoa.application.*;
 
 import java.io.IOException;
 
+import java.util.Observer;
+import java.util.Observable;
+
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.http.*;
 import ch.cyberduck.core.sftp.*;
@@ -62,8 +65,10 @@ public class CDConnectionController extends NSObject {
     public NSProgressIndicator progressIndicator; /* IBOutlet */
     
     public NSTextField statusLabel; /* IBOutlet */
+
     public NSTableView browserTable;  /* IBOutlet */
-    public NSView connectedListView; /* IBOutlet */
+
+    //public NSView connectedListView; /* IBOutlet */
 
     private CDConnectionController controller = this;
     

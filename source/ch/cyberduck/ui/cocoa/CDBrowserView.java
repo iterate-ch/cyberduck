@@ -25,7 +25,7 @@ public class CDBrowserView extends NSTableView implements Observer {
 
     public void update(Observable o, Object arg) {
 	log.debug("update");
-	if(o instanceof Path) {
+//	if(o instanceof Path) {
 	    java.util.List files = (java.util.List)arg;
 	    java.util.Iterator i = files.iterator();
 	    CDBrowserTableDataSource browserTableDataSource = (CDBrowserTableDataSource)this.dataSource();
@@ -35,6 +35,6 @@ public class CDBrowserView extends NSTableView implements Observer {
 		this.reloadData();
 	    }
 	    //this.reloadData();
-	}
+//	}
     }
 }
