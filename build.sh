@@ -14,6 +14,12 @@
 #  Bug fixes, suggestions and comments should be sent to:
 #  dkocher@cyberduck.ch
 
-#!/bin/sh
-        
-xcodebuild -target $1 -buildstyle Deployment
+#!/bin/bash
+
+target="$1";
+
+if [ "$target" == "" ] ; then
+	target="all";
+fi;
+	
+xcodebuild -target $target -buildstyle Deployment
