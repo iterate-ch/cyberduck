@@ -3,7 +3,6 @@
         {
             ACTIONS = {
                 cancelActionFired = id; 
-                closeSheet = id; 
                 overwriteActionFired = id; 
                 resumeActionFired = id; 
                 skipActionFired = id; 

@@ -8,21 +8,24 @@
 	<string>Cyberduck-2.3.3.dmg</string>
 	<key>comment</key>
         <string>Changelog:
-2.3.4
-- [Feature] Norwegian Localization
-- [Feature] Growl notification support (see http://growl.info)
+2.4
+- [Feature] Synchronization
 - [Feature] Refactored transfer queue
+- [Feature] Growl notification support (see http://growl.info)
+- [Feature] Support for Novell Netware file listings (FTP)
+- [Feature] Apply permissions recursively (FTP)
+- [Feature] Norwegian Localization
 - [Feature] Updated toolbar icons
 - [Feature] Added BBedit Lite to the list of supported editors
 - [Feature] Move remote files with copy & paste
 - [Feature] Put remote files into the transfer queue with copy & paste
 - [Feature] Provide a proxy-icon for the connection in the title bar. The icon can then be dragged to the Bookmark drawer or to the Finder as a .duck file.
-- [Feature] Support for Novell Netware file listings (FTP)
-- [Feature] Apply permissions recursively (FTP)
 - [Bugfix] Bookmark drawer icon has no text-only equivalent
 - [Bugfix] Tabbing between browser and filter box
 - [Bugfix] Quick Connect Field has initial focus
 - [Bugfix] HTTP download broken
+- [Feature] Read bookmarks from "/Library/Application Support/Cyberduck/"
+ instead of the individual user bookmarks file if available
 
 2.3.3
 - [Bugfix] Correctly parsing symbolic links

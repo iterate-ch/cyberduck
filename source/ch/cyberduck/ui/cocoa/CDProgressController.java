@@ -129,6 +129,11 @@ public class CDProgressController extends NSObject implements Observer {
 		return this.highlighted;
 	}
 		
+	
+	// ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
+	
 	private NSTextField filenameField; // IBOutlet
 	
 	public void setFilenameField(NSTextField filenameField) {

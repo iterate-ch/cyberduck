@@ -57,6 +57,7 @@ public class Local extends File {
     }
 	
 //	public NSFileWrapper getWrapper() {
+	// @todo jnilib to access file wrapper
 //		return new NSFileWrapper(this.getTemp().getAbsolutePath(), false);
 //		//this.getWrapper().setIcon(NSImage.imageNamed(img));
 //	}

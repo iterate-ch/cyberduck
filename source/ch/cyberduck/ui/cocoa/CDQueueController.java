@@ -42,6 +42,10 @@ public class CDQueueController extends NSObject implements Observer, CDControlle
 
     private NSToolbar toolbar;
 
+	// ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
+	
 	private NSTextField urlField;
 	
 	public void setUrlField(NSTextField urlField) {
@@ -147,6 +151,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 	
     private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
 																						 new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+
 	private void updateLabels() {
 		if(this.queueTable.selectedRow() != -1) {
 			Queue q = this.queueModel.getItem(this.queueTable.selectedRow());
@@ -249,6 +254,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 	
 	private void reloadQueueTable() {
         log.debug("reloadQueueTable");
+		this.queueTable.deselectAll(null);
 		while (this.queueTable.subviews().count() > 0) {
 			((NSView)this.queueTable.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
 		}
@@ -256,9 +262,11 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 		this.tableViewSelectionChange();
 	}
 
-	public void addItem(Queue queue) {
+	private void addItem(Queue queue) {
 		this.queueModel.addItem(queue);
 		this.reloadQueueTable();
+		this.queueTable.selectRow(this.queueModel.size()-1, false); 
+		this.queueTable.scrollRowToVisible(this.queueModel.size()-1);
 	}
 	
     public void startItem(Queue queue) {
@@ -267,10 +275,8 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 
     public void startItem(Queue queue, boolean resumeRequested) {
         log.info("Starting item:" + queue);
+		this.addItem(queue);
 		queue.addObserver(this);
-		int row = this.queueModel.indexOf(queue);
-		this.queueTable.selectRow(row, false); this.queueTable.scrollRowToVisible(row);
-
         if (Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
             this.window().makeKeyAndOrderFront(null);
         }

@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public abstract class Queue extends Observable implements Observer {
-    private static Logger log = Logger.getLogger(Queue.class);
+    protected static Logger log = Logger.getLogger(Queue.class);
 
 	private Validator validator;
 	private Worker worker;
@@ -44,22 +44,31 @@ public abstract class Queue extends Observable implements Observer {
      */
     private Observer callback;
 	
-    public Queue(Observer callback) {
-		this.callback = callback;
-		this.worker = new Worker(this);
-    }
-
-    /**
-     * Creating an empty queue containing no items. Items have to be added later
+	/**
+		* Creating an empty queue containing no items. Items have to be added later
      * using the <code>addRoot</code> method.
 	 */
     public Queue() {
 		this.worker = new Worker(this);
     }
+		
+    public Queue(Observer callback) {
+		this();
+		this.callback = callback;
+    }
+	
+	public Queue(Path root) {
+		this(root, null);
+	}
 
-	public static final int KIND_DOWNLOAD = 1;
-	public static final int KIND_UPLOAD = 2;
-	public static final int KIND_SYNC = 4;
+	public Queue(Path root, Observer callback) {
+		this(callback);
+		this.addRoot(root);
+	}
+
+	public static final int KIND_DOWNLOAD = 0;
+	public static final int KIND_UPLOAD = 1;
+	public static final int KIND_SYNC = 2;
 
     public static Queue createQueue(NSDictionary dict) {
 		Queue q = null;
@@ -67,20 +76,19 @@ public abstract class Queue extends Observable implements Observer {
         if (kindObj != null) {
             int kind = Integer.parseInt((String)kindObj);
 			switch(kind) {
-				case KIND_DOWNLOAD:
+				case Queue.KIND_DOWNLOAD:
 					q = new DownloadQueue();
 					break;
-				case KIND_UPLOAD:
+				case Queue.KIND_UPLOAD:
 					q = new UploadQueue();
 					break;
-				case KIND_SYNC:
+				case Queue.KIND_SYNC:
 					q = new SyncQueue();
 					break;
 				default:
 					throw new IllegalArgumentException("Unknown queue");
 			}
 		}
-//		this.worker = new Worker(this);
         Object hostObj = dict.objectForKey("Host");
         if (hostObj != null) {
             Host host = new Host((NSDictionary)hostObj);
@@ -107,7 +115,6 @@ public abstract class Queue extends Observable implements Observer {
 
     public NSMutableDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
-//        dict.setObjectForKey(this.worker.size() + "", "Size");
         dict.setObjectForKey(this.getRoot().getHost().getAsDictionary(), "Host");
         NSMutableArray r = new NSMutableArray();
         for (Iterator iter = this.roots.iterator(); iter.hasNext();) {
@@ -191,23 +198,8 @@ public abstract class Queue extends Observable implements Observer {
 	
 	private Timer progress;
 
-	protected void init() {
+	private boolean init() {
 		this.reset();
-		for (Iterator i = this.getRoots().iterator(); i.hasNext() && !this.worker.isCanceled(); ) {
-			Path p = (Path)i.next();
-			log.debug("Iterating over childs of " + p);
-			Iterator childs = this.getChilds(new ArrayList(), p).iterator();
-			while (childs.hasNext() && !worker.isCanceled()) {
-				Path child = (Path)childs.next();
-				log.debug("Validating " + child.toString());
-				if (this.validator.validate(child)) {
-					child.status.reset();
-					this.size += child.status.getSize();
-					log.debug("Adding " + child.getName() + " as child to queue.");
-					this.addJob(child);
-				}
-			}
-		}
 		this.progress = new Timer(500,
 								  new java.awt.event.ActionListener() {
 									  int i = 0;
@@ -237,6 +229,22 @@ public abstract class Queue extends Observable implements Observer {
 									  }
 								  }
 								  );
+		this.validator.start();
+		for (Iterator i = this.getRoots().iterator(); i.hasNext() && !this.worker.isCanceled(); ) {
+			Path p = (Path)i.next();
+			log.debug("Iterating over childs of " + p);
+			Iterator childs = this.getChilds(new ArrayList(), p).iterator();
+			while (childs.hasNext() && !worker.isCanceled()) {
+				Path child = (Path)childs.next();
+				log.debug("Validating " + child.toString());
+				if (this.validator.validate(child)) {
+					child.status.reset();
+					this.size += child.status.getSize();
+					this.addJob(child);
+				}
+			}
+		}
+		return this.validator.stop();
 	}
 	
 	protected abstract void process(Path p);
@@ -284,15 +292,16 @@ public abstract class Queue extends Observable implements Observer {
 			
 			this.queue.getRoot().getSession().addObserver(this.queue);
 			this.queue.getRoot().getSession().cache().clear();
-			this.queue.init();
-			progress.start();
-			for (Iterator iter = jobs.iterator(); iter.hasNext() && !canceled; ) {
-				Path job = (Path)iter.next();
-				job.status.addObserver(queue);
-				process(job);
-				job.status.deleteObserver(queue);
+			if(this.queue.init()) {
+				progress.start();
+				for (Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
+					Path job = (Path)iter.next();
+					job.status.addObserver(queue);
+					process(job);
+					job.status.deleteObserver(queue);
+				}
+				progress.stop();
 			}
-			progress.stop();
 			
 			this.queue.getRoot().getSession().close();
 			this.queue.getRoot().getSession().deleteObserver(this.queue);

@@ -30,6 +30,15 @@ public abstract class AbstractValidator implements Validator {
 		this.resumeRequested = resumeRequested;
 	}
 	
+	public void start() {
+		// subclasses can override
+	}
+
+	public boolean stop() {
+		// subclasses can override
+		return true;
+	}
+
 	public boolean validate(Path path) {
         log.debug("validate:" + path);
 		if (path.attributes.isDirectory()) {

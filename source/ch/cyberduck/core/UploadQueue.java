@@ -43,6 +43,7 @@ public class UploadQueue extends Queue {
     }
 	
 	protected List getChilds(List list, Path p) {
+		log.debug("getChilds:"+p);
         list.add(p);
         if (p.getLocal().isDirectory()) {
             p.attributes.setType(Path.DIRECTORY_TYPE);

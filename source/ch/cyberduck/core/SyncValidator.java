@@ -31,11 +31,11 @@ public class SyncValidator extends AbstractValidator {
     }
 	
 	public boolean validate(Path path) {
-		return this.exists(path);
+		return !path.modificationDate().equals(path.getLocal().getTimestamp());
 	}		
 	
 	protected boolean exists(Path path) {
-		return path.exists() && path.getLocal().exists();
+		return path.remote.exists() || path.local.exists();
 	}
 	
 	protected void proposeFilename(Path path) {

@@ -131,6 +131,11 @@ public class HTTPPath extends Path {
         session.log("Invalid Operation", Message.ERROR);
     }
 
+	public synchronized java.util.Date modificationDate() {
+        session.log("Invalid Operation", Message.ERROR);
+		return null;
+	}
+	
     public synchronized void download() {
         InputStream in = null;
         OutputStream out = null;

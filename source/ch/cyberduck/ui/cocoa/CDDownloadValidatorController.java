@@ -36,4 +36,15 @@ public class CDDownloadValidatorController extends CDValidatorController impleme
         }
 		this.validator = new DownloadValidator(resume);
     }
+	
+	public boolean validate(Path p) {
+        if (!this.isCanceled()) {
+			if(this.validator.validate(p)) {
+				return true;
+			}
+			return this.prompt(p);
+        }
+        log.info("Canceled " + p.getName() + " - no further validation needed");
+        return false;
+	}	
 }

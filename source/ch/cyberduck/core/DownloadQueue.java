@@ -35,6 +35,7 @@ public class DownloadQueue extends Queue {
     }
 	
 	protected List getChilds(List list, Path p) {
+		log.debug("getChilds:"+p);
         list.add(p);
         if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
             p.status.setSize(0);

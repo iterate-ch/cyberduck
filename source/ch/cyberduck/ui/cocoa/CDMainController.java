@@ -175,7 +175,7 @@ public class CDMainController extends NSObject {
 //			log.debug("menuUpdateItemAtIndex"+index);
             if (index == 4) {
                 item.setEnabled(true);
-                item.setImage(NSImage.imageNamed("rendezvous16"));
+                item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
             }
             if (index > 5) {
                 Host h = CDBookmarkTableDataSource.instance().getItem(index - 6);
@@ -482,7 +482,10 @@ public class CDMainController extends NSObject {
 	 */
     public boolean applicationOpenUntitledFile(NSApplication app) {
         log.debug("applicationOpenUntitledFile");
-		return this.newDocument() != null;
+        if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
+			return this.newDocument() != null;
+		}
+		return false;
     }
 
 	public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {

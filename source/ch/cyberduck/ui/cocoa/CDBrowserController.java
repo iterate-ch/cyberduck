@@ -240,7 +240,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                 this.browserTable.setGridStyleMask(NSTableView.GridNone);
             }
         }
-		
         // ading table columns
         if (Preferences.instance().getProperty("browser.columnIcon").equals("true")) {
             NSTableColumn c = new NSTableColumn();
@@ -537,7 +536,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 
     public void setAddBookmarkButton(NSButton addBookmarkButton) {
         this.addBookmarkButton = addBookmarkButton;
-        this.addBookmarkButton.setImage(NSImage.imageNamed("add.tiff"));
+        this.addBookmarkButton.setImage(NSImage.imageNamed("add"));
         this.addBookmarkButton.setAlternateImage(NSImage.imageNamed("addPressed.tiff"));
         this.addBookmarkButton.setTarget(this);
         this.addBookmarkButton.setAction(new NSSelector("addBookmarkButtonClicked", new Class[]{Object.class}));
@@ -781,69 +780,90 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 		Session session = pathController.workdir().getSession().copy();
 		NSEnumerator enum = browserTable.selectedRowEnumerator();
 		while (enum.hasMoreElements()) {
-			while (this.window().attachedSheet() != null) {
-				try {
-					log.debug("Sleeping...");
-					Thread.sleep(1000); //milliseconds
-				}
-				catch (InterruptedException e) {
-					log.error(e.getMessage());
-				}
-			}
-			synchronized (this) {
-				Path path = ((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session);
-				NSSavePanel panel = NSSavePanel.savePanel();
+			Path path = ((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session);
+			NSSavePanel panel = NSSavePanel.savePanel();
+			NSSelector setMessageSelector =
+				new NSSelector("setMessage", new Class[]{String.class});
+			if (setMessageSelector.implementedByClass(NSOpenPanel.class)) {
 				panel.setMessage(NSBundle.localizedString("Download the selected file to...", ""));
-				panel.setNameFieldLabel(NSBundle.localizedString("Download As:", ""));
-				panel.setPrompt(NSBundle.localizedString("Download", ""));
-				panel.setTitle("Download");
-				panel.setCanCreateDirectories(true);
-				panel.beginSheetForDirectory(null,
-											 path.getLocal().getName(),
-											 this.window(),
-											 this,
-											 new NSSelector("saveAsPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
-											 path);
 			}
+			NSSelector setNameFieldLabelSelector =
+				new NSSelector("setNameFieldLabel", new Class[]{String.class});
+			if (setNameFieldLabelSelector.implementedByClass(NSOpenPanel.class)) {
+				panel.setNameFieldLabel(NSBundle.localizedString("Download As:", ""));
+			}
+			panel.setPrompt(NSBundle.localizedString("Download", ""));
+			panel.setTitle(NSBundle.localizedString("Download", ""));
+			panel.setCanCreateDirectories(true);
+			panel.beginSheetForDirectory(null,
+										 path.getLocal().getName(),
+										 this.window(),
+										 this,
+										 new NSSelector("saveAsPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
+										 path);
 		}
     }
 	
     public void saveAsPanelDidEnd(NSSavePanel sheet, int returnCode, Object contextInfo) {
         switch (returnCode) {
             case (NSAlertPanel.DefaultReturn):
-                {
-                    String filename = null;
-                    if ((filename = sheet.filename()) != null) {
-                        Path path = (Path)contextInfo;
-                        path.setLocal(new Local(filename));
-                        Queue queue = new DownloadQueue();
-                        queue.addRoot(path);
-						CDQueueController.instance().addItem(queue);
-                        CDQueueController.instance().startItem(queue);
-                    }
+				String filename = null;
+				if ((filename = sheet.filename()) != null) {
+					Path path = (Path)contextInfo;
+					path.setLocal(new Local(filename));
+					Queue queue = new DownloadQueue();
+					queue.addRoot(path);
+					CDQueueController.instance().startItem(queue);
+				}
                     break;
-                }
             case (NSAlertPanel.AlternateReturn):
-                {
-                    break;
-                }
+				break;
         }
     }
 	
 	public void syncButtonClicked(Object sender) {
         log.debug("syncButtonClicked");
         NSOpenPanel panel = NSOpenPanel.openPanel();
-        panel.setCanChooseDirectories(true);
-        panel.setCanChooseFiles(true);
+		Path workdir = pathController.workdir();
+		Path selection = workdir.copy(workdir.getSession().copy());
+		if(browserTable.numberOfSelectedRows() == 1) {
+			selection = this.browserModel.getEntry(browserTable.selectedRow()).copy(workdir.getSession().copy());
+		}
+        panel.setCanChooseDirectories(selection.attributes.isDirectory());
+        panel.setCanChooseFiles(selection.attributes.isFile());
+		panel.setCanCreateDirectories(true);
         panel.setAllowsMultipleSelection(false);
-        panel.beginSheetForDirectory(null, null, null, this.window(), this, new NSSelector("syncPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+        NSSelector setMessageSelector =
+			new NSSelector("setMessage", new Class[]{String.class});
+        if (setMessageSelector.implementedByClass(NSOpenPanel.class)) {
+			panel.setMessage(NSBundle.localizedString("Synchronize","")
+							 +" "+selection.getName()+" "
+							 +NSBundle.localizedString("with","")+"...");
+		}
+		panel.setPrompt(NSBundle.localizedString("Choose", ""));
+		panel.setTitle(NSBundle.localizedString("Synchronize", ""));
+        panel.beginSheetForDirectory(null, 
+									 null, 
+									 null, 
+									 this.window(), //parent window
+									 this, 
+									 new NSSelector("syncPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), 
+									 selection //context info
+									 );
 	}
 
 	public void syncPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
         sheet.orderOut(null);
         switch (returnCode) {
             case (NSAlertPanel.DefaultReturn):
-				break;
+				Path selection = (Path)contextInfo;
+                if(sheet.filenames().count() > 0) {
+					Path sync = selection.copy(selection.getSession().copy());
+					sync.setLocal(new Local((String)sheet.filenames().lastObject()));
+					Queue q = new SyncQueue((Observer)this); q.addRoot(sync);
+					CDQueueController.instance().startItem(q);
+				}
+                break;
             case (NSAlertPanel.AlternateReturn):
                 break;
 		}
@@ -857,7 +877,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 			Path path = ((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session);
 			q.addRoot(path);
 		}
-		CDQueueController.instance().addItem(q);
 		CDQueueController.instance().startItem(q);
     }
 
@@ -867,7 +886,16 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         panel.setCanChooseDirectories(true);
         panel.setCanChooseFiles(true);
         panel.setAllowsMultipleSelection(true);
-        panel.beginSheetForDirectory(null, null, null, this.window(), this, new NSSelector("uploadPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+		panel.setPrompt(NSBundle.localizedString("Upload", ""));
+		panel.setTitle(NSBundle.localizedString("Upload", ""));
+        panel.beginSheetForDirectory(null, 
+									 null, 
+									 null, 
+									 this.window(), 
+									 this, 
+									 new NSSelector("uploadPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), 
+									 null
+									 );
     }
 
     public void uploadPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
@@ -885,7 +913,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                     item.setPath(workdir.getAbsolute(), new Local((String)enumerator.nextElement()));
                     q.addRoot(item);
                 }
-				CDQueueController.instance().addItem(q);
 				CDQueueController.instance().startItem(q);
                 break;
             case (NSAlertPanel.AlternateReturn):
@@ -1300,6 +1327,9 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         if (identifier.equals("Upload") || identifier.equals("downloadButtonClicked:")) {
             return this.isMounted();
         }
+        if (identifier.equals("Synchronize") || identifier.equals("syncButtonClicked:")) {
+            return this.isMounted() && browserTable.numberOfSelectedRows() <= 1;
+        }
         if (identifier.equals("Download As") || identifier.equals("downloadAsButtonClicked:")) {
             return this.isMounted() && browserTable.numberOfSelectedRows() == 1;
         }
@@ -1389,6 +1419,15 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             item.setAction(new NSSelector("uploadButtonClicked", new Class[]{Object.class}));
             return item;
         }
+        if (itemIdentifier.equals("Synchronize")) {
+            item.setLabel(NSBundle.localizedString("Synchronize", "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString("Sync", "Toolbar item"));
+            item.setToolTip(NSBundle.localizedString("Synchronize local with remote files", "Toolbar item tooltip"));
+            item.setImage(NSImage.imageNamed("sync.tiff"));
+            item.setTarget(this);
+            item.setAction(new NSSelector("syncButtonClicked", new Class[]{Object.class}));
+            return item;
+        }
         if (itemIdentifier.equals("Get Info")) {
             item.setLabel(NSBundle.localizedString("Get Info", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Get Info", "Toolbar item"));
@@ -1457,6 +1496,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             "Refresh",
             "Get Info",
             "Edit",
+			"Synchronize",
             "Download",
             "Upload",
             NSToolbarItem.FlexibleSpaceItemIdentifier,
@@ -1470,6 +1510,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             "Bookmarks",
             "Quick Connect",
             "Refresh",
+			"Synchronize",
             "Download",
             "Upload",
             "Edit",
@@ -1616,7 +1657,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                     q.addRoot(p);
                 }
                 if (q.numberOfRoots() > 0) {
-                    CDQueueController.instance().addItem(q);
 					CDQueueController.instance().startItem(q);
                 }
                 return true;
@@ -1732,7 +1772,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                     }
                 }
                 if (q.numberOfRoots() > 0) {
-                    CDQueueController.instance().addItem(q);
                     CDQueueController.instance().startItem(q);
                 }
             }

@@ -25,5 +25,9 @@ public interface Validator {
 	
 //    public boolean prompt(Path path);
 	
+	public void start();
+	
+	public boolean stop();
+	
 	public boolean validate(Path path);
 }

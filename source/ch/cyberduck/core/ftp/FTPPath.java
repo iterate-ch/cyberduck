@@ -238,10 +238,27 @@ public class FTPPath extends Path {
             session.log("IO Error: " + e.getMessage(), Message.ERROR);
         }
     }
-
-    public synchronized void changePermissions(Permission perm, boolean recursive) {
-        log.debug("changePermissions:" + perm);
-        String command = "chmod";
+	
+	public synchronized java.util.Date modificationDate() {
+        try {
+            session.check();
+			this.attributes.setTimestamp(this.session.FTP.modtime(this.getAbsolute()));
+			session.log("Idle", Message.STOP);
+		}
+		catch (FTPException e) {
+			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
+		}
+		catch (IOException e) {
+			session.log("IO Error: " + e.getMessage(), Message.ERROR);
+		}
+		finally {
+			return this.attributes.getTimestamp();
+		}
+	}
+	
+	public synchronized void changePermissions(Permission perm, boolean recursive) {
+		log.debug("changePermissions:" + perm);
+		String command = "chmod";
         try {
             session.check();
             if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
@@ -275,7 +292,7 @@ public class FTPPath extends Path {
     public synchronized void download() {
         try {
             log.debug("download:" + this.toString());
-            if (!this.attributes.isDirectory()) {
+            if (this.attributes.isFile()) {
                 session.check();
                 if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
                     if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
@@ -460,7 +477,7 @@ public class FTPPath extends Path {
     public synchronized void upload() {
         log.debug("upload:" + this.toString());
         try {
-            if (!this.attributes.isDirectory()) {
+            if (this.attributes.isFile()) { //@todo getLocal()?
                 session.check();
                 if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
                     if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {

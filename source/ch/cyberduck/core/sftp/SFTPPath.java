@@ -258,6 +258,23 @@ public class SFTPPath extends Path {
         }
     }
 
+	public synchronized java.util.Date modificationDate() {
+        try {
+            session.check();
+			//@todo
+			session.log("Idle", Message.STOP);
+        }
+        catch (SshException e) {
+            session.log("SSH Error: " + e.getMessage(), Message.ERROR);
+        }
+		catch (IOException e) {
+			session.log("IO Error: " + e.getMessage(), Message.ERROR);
+		}
+		finally {
+			return this.attributes.getTimestamp();
+		}
+	}
+	
     public synchronized void changePermissions(Permission perm, boolean recursive) {
         log.debug("changePermissions");
         try {

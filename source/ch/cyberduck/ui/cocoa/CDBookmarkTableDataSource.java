@@ -34,10 +34,19 @@ import ch.cyberduck.core.*;
 public class CDBookmarkTableDataSource extends CDTableDataSource {
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
-	private static final File BOOKMARKS_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Favorites.plist"));
+	private static final File BOOKMARKS_FILE_USER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Favorites.plist"));
+	private static final File BOOKMARKS_FILE_SYSTEM = new File("/Library/Application Support/Cyberduck/Favorites.plist");
+	
+	private static final File BOOKMARKS_FILE;
 	
     static {
-        BOOKMARKS_FILE.getParentFile().mkdir();
+		if(BOOKMARKS_FILE_SYSTEM.exists()) {
+			BOOKMARKS_FILE = BOOKMARKS_FILE_SYSTEM;
+		}
+		else {
+			BOOKMARKS_FILE_USER.getParentFile().mkdir();
+			BOOKMARKS_FILE = BOOKMARKS_FILE_USER;
+		}
     }
 	
 	private static CDBookmarkTableDataSource instance;
@@ -63,7 +72,6 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 
     private static NSImage documentIcon = NSImage.imageNamed("cyberduck-document.icns");
 
-    //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
         if (row < this.numberOfRowsInTableView(tableView)) {
             String identifier = (String)tableColumn.identifier();
@@ -139,8 +147,6 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                 }
                 // if anything has been added to the queue then process the queue
                 if (q.numberOfRoots() > 0) {
-//                    QueueList.instance().addItem(q);
-                    CDQueueController.instance().addItem(q);
                     CDQueueController.instance().startItem(q);
                     return true;
                 }

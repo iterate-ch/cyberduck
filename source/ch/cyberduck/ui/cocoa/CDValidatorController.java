@@ -44,6 +44,10 @@ public abstract class CDValidatorController implements Validator {
         instances.addObject(this);
     }
 
+    // ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
+
     private NSImageView iconView; // IBOutlet
 
     public void setIconView(NSImageView iconView) {
@@ -68,14 +72,14 @@ public abstract class CDValidatorController implements Validator {
         this.resumeButton = resumeButton;
     }
 
-    private NSWindow window; // IBOutlet
+    private NSPanel window; // IBOutlet
 
-    public void setWindow(NSWindow window) {
+    public void setWindow(NSPanel window) {
         this.window = window;
         this.window.setDelegate(this);
     }
 
-    public NSWindow window() {
+    public NSPanel window() {
         return this.window;
     }
 
@@ -111,16 +115,16 @@ public abstract class CDValidatorController implements Validator {
      */
     private boolean resumeChoosen = false;
 
-	public boolean validate(Path p) {
-        if (!this.isCanceled()) {
-			if(this.validator.validate(p)) {
-				return true;
-			}
-			return this.prompt(p);
-        }
-        log.info("Canceled " + p.getName() + " - no further validation needed");
-        return false;
+	public void start() {
+		// subclasses can override
 	}
+	
+	public boolean stop() {
+		// subclasses can override
+		return true;
+	}
+	
+	public abstract boolean validate(Path p);
 		
     public boolean prompt(final Path path) {
         while (windowController.window().attachedSheet() != null) {
@@ -155,6 +159,7 @@ public abstract class CDValidatorController implements Validator {
                 img.setScalesWhenResized(true);
                 img.setSize(new NSSize(64f, 64f));
                 iconView.setImage(img);
+				windowController.window().makeKeyAndOrderFront(null);
                 NSApplication.sharedApplication().beginSheet(this.window(), //sheet
                         windowController.window(),
                         CDValidatorController.this, //modalDelegate

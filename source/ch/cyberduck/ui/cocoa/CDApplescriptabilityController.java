@@ -56,8 +56,6 @@ public class CDApplescriptabilityController extends NSScriptCommand {
 					log.debug("Assume downloading");
 					Queue queue = new DownloadQueue();
 					queue.addRoot(p);
-					CDQueueController.instance().addItem(queue);
-					//                    QueueList.instance().addItem(queue);
 					CDQueueController.instance().startItem(queue);
 				}
 			}

@@ -37,7 +37,10 @@ public abstract class Path {
     private static Logger log = Logger.getLogger(Path.class);
 
     private String path = null;
-    private Local local = null;
+	
+    public Local local = null;
+	public Path remote = this;
+	
     public Status status = new Status();
     public Attributes attributes = new Attributes();
 
@@ -54,14 +57,13 @@ public abstract class Path {
      * @return A copy of me with a new session
      */
     public Path copy(Session s) {
-        Path copy = PathFactory.createPath(s, this.getAbsolute());
+        Path copy = PathFactory.createPath(s, this.getAbsolute()); //@todo session.copy()
         copy.attributes = this.attributes;
         copy.status.setSize(this.status.getSize());
         return copy;
     }
 
     public Path(NSDictionary dict) {
-        log.debug("Path");
         Object pathObj = dict.objectForKey("Remote");
         if (pathObj != null) {
             this.setPath((String)pathObj);
@@ -173,15 +175,15 @@ public abstract class Path {
      * @throws NullPointerException if session is not initialized
      */
     public List cache() {
-        return this.getSession().cache().get(this.getAbsolute());
+        return this.getSession().cache().get(this.remote.getAbsolute());
     }
 
     protected void setCache(List files) {
-        this.getSession().cache().put(this.getAbsolute(), files);
+        this.getSession().cache().put(this.remote.getAbsolute(), files);
     }
 
     public void invalidate() {
-        this.getSession().cache().remove(this.getAbsolute());
+        this.getSession().cache().remove(this.remote.getAbsolute());
     }
 
     /**
@@ -215,6 +217,8 @@ public abstract class Path {
      */
     public abstract void rename(String newFilename);
 
+	public abstract java.util.Date modificationDate();
+
     /**
      * @param recursive Include subdirectories and files
      */
@@ -222,7 +226,7 @@ public abstract class Path {
 
     public boolean exists() {
         boolean exists;
-        if (this.isRoot()) {
+        if (this.remote.isRoot()) {
             return true;
         }
         return this.getParent().list(false, true).contains(this);
@@ -232,14 +236,14 @@ public abstract class Path {
      * @return true if this paths points to '/'
      */
     public boolean isRoot() {
-        return this.getAbsolute().equals("/") || this.getAbsolute().indexOf('/') == -1;
+        return this.remote.getAbsolute().equals("/") || this.remote.getAbsolute().indexOf('/') == -1;
     }
 
     /**
      * @return the path relative to its parent directory
      */
     public String getName() {
-        String abs = this.getAbsolute();
+        String abs = this.remote.getAbsolute();
         int index = abs.lastIndexOf('/');
         return (index > 0) ? abs.substring(index + 1) : abs.substring(1);
     }
@@ -252,7 +256,6 @@ public abstract class Path {
     }
 
     public void setLocal(Local file) {
-        log.debug("setLocal:" + file);
         this.local = file;
     }
 
@@ -262,7 +265,7 @@ public abstract class Path {
     public Local getLocal() {
         //default value if not set explicitly, i.e. with drag and drop
         if (null == this.local) {
-            return new Local(Preferences.instance().getProperty("queue.download.folder"), this.getName());
+            return new Local(Preferences.instance().getProperty("queue.download.folder"), this.remote.getName());
         }
         return this.local;
     }
@@ -424,18 +427,29 @@ public abstract class Path {
 	public void sync(boolean recursive) {
 		log.debug("sync:"+recursive);
         try {
-            this.getSession().check();
             if (this.attributes.isFile()) {
+				this.getSession().check();
 				if(this.getLocal().getTimestamp().before(this.attributes.getTimestamp())) {
-					this.download();
+					if(this.remote.exists()) {
+						this.download();
+					}
+					else if(this.local.exists()) {
+						this.upload();
+					}
 				}
 				else if(this.getLocal().getTimestamp().after(this.attributes.getTimestamp())) {
-					this.upload();
+					if(this.local.exists()) {
+						this.upload();
+					}
+					else if(this.remote.exists()) {
+						this.download();
+					}
 				}
 				else if(this.getLocal().getTimestamp().equals(this.attributes.getTimestamp())) {
 					// no sync needed
 				}
             }
+			/*
             else if (this.attributes.isDirectory()) {
 				if(recursive) {
 					List files = this.list(false, true);
@@ -447,6 +461,7 @@ public abstract class Path {
 					}
 				}
             }
+			 */
             this.getSession().log("Idle", Message.STOP);
         }
         catch (IOException e) {
