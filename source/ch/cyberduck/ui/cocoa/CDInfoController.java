@@ -21,6 +21,10 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Path;
@@ -35,7 +39,8 @@ public class CDInfoController extends NSObject {
 
     private static NSMutableArray instances = new NSMutableArray();
 
-    private Path file;
+//    private Path file;
+    private List files;
 	
     // ----------------------------------------------------------
     // Outlets
@@ -88,6 +93,12 @@ public class CDInfoController extends NSObject {
         this.sizeField = sizeField;
     }
 
+//	private NSTextField octalField; //IBOutlet
+//	
+//  public void setOctalField(NSTextField octalField) {
+//        this.octalField = octalField;
+//    }
+	
     private NSTextField pathField; //IBOutlet
 
     public void setPathField(NSTextField pathField) {
@@ -100,12 +111,12 @@ public class CDInfoController extends NSObject {
         this.permissionsBox = permissionsBox;
     }
 
-    private NSButton recursiveCheckbox;
-
-    public void setRecursiveCheckbox(NSButton recursiveCheckbox) {
-        this.recursiveCheckbox = recursiveCheckbox;
-        this.recursiveCheckbox.setState(NSCell.OffState);
-    }
+//    private NSButton recursiveCheckbox;
+//
+//    public void setRecursiveCheckbox(NSButton recursiveCheckbox) {
+//        this.recursiveCheckbox = recursiveCheckbox;
+//        this.recursiveCheckbox.setState(NSCell.OffState);
+//    }
 
     public NSButton ownerr; //IBOutlet
     public NSButton ownerw; //IBOutlet
@@ -128,72 +139,115 @@ public class CDInfoController extends NSObject {
     // ----------------------------------------------------------
 	
     public CDInfoController(Path file) {
-        this.file = file;
+		this.files = new ArrayList();
+		this.files.add(file);
         instances.addObject(this);
         if (false == NSApplication.loadNibNamed("Info", this)) {
             log.fatal("Couldn't load Info.nib");
         }
     }
-
+	
+	public CDInfoController(List files) {
+        this.files = files;
+        instances.addObject(this);
+        if (false == NSApplication.loadNibNamed("Info", this)) {
+            log.fatal("Couldn't load Info.nib");
+        }
+    }
+	
     public void awakeFromNib() {
         log.debug("awakeFromNib");
+		Path file = (Path)this.files.get(0);
+
         NSPoint origin = this.window.frame().origin();
         this.window.setFrameOrigin(this.window.cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y())));
 
-        this.filenameField.setStringValue(this.file.getName());
-        this.pathField.setStringValue(this.file.getParent().getAbsolute());
-        this.groupField.setStringValue(this.file.attributes.getGroup());
-		if (this.file.attributes.isSymbolicLink()) {
-			if (this.file.attributes.isFile()) {
-				this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (File)", ""));
+        this.filenameField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
+										  file.getName());
+		if(this.numberOfFiles() > 1) {
+			this.filenameField.setEnabled(false);
+		}
+        this.pathField.setStringValue(file.getParent().getAbsolute());
+        this.groupField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
+									   file.attributes.getGroup());
+		if(this.numberOfFiles() > 1) {
+			this.kindField.setStringValue(NSBundle.localizedString("(Multiple files)", ""));
+		}
+		else {
+			if (file.attributes.isSymbolicLink()) {
+				if (file.attributes.isFile()) {
+					this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (File)", ""));
+				}
+				if (file.attributes.isDirectory()) {
+					this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (Folder)", ""));
+				}
 			}
-			if (this.file.attributes.isDirectory()) {
-				this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (Folder)", ""));
+			if (file.attributes.isFile()) {
+				this.kindField.setStringValue(NSBundle.localizedString("File", ""));
 			}
+			if (file.attributes.isDirectory()) {
+				this.kindField.setStringValue(NSBundle.localizedString("Folder", ""));
+			}
+			this.kindField.setStringValue(NSBundle.localizedString("Unknown", ""));
 		}
-		if (this.file.attributes.isFile()) {
-			this.kindField.setStringValue(NSBundle.localizedString("File", ""));
-		}
-		if (this.file.attributes.isDirectory()) {
-			this.kindField.setStringValue(NSBundle.localizedString("Folder", ""));
-		}
-		this.kindField.setStringValue(NSBundle.localizedString("Unknown", ""));
 		
-        this.modifiedField.setStringValue(this.file.attributes.getTimestampAsString());
-        this.ownerField.setStringValue(this.file.attributes.getOwner());
-        this.sizeField.setStringValue(Status.getSizeAsString(this.file.status.getSize()) + " (" + this.file.status.getSize() + " bytes)");
+        this.modifiedField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
+										  file.attributes.getTimestampAsString());
+        this.ownerField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
+									   file.attributes.getOwner());
+		int size = 0;
+		for(Iterator i = files.iterator(); i.hasNext();) {
+			size += ((Path)i.next()).status.getSize();
+		}
+        this.sizeField.setStringValue(Status.getSizeAsString(size) + " (" + size + " bytes)");
 
-        Permission permission = this.file.attributes.getPermission();
-        boolean[] ownerPerm = permission.getOwnerPermissions();
-        boolean[] groupPerm = permission.getGroupPermissions();
-        boolean[] otherPerm = permission.getOtherPermissions();
-        //Sets the cell's state to value, which can be NSCell.OnState, NSCell.OffState, or NSCell.MixedState. If necessary, this method also redraws the receiver.
-        ownerr.setState(ownerPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-        ownerw.setState(ownerPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-        ownerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-        groupr.setState(groupPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-        groupw.setState(groupPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-        groupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-        otherr.setState(otherPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-        otherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-        otherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+		Permission permission = null;
+		for(Iterator i = files.iterator(); i.hasNext();) {
+			permission = file.attributes.getPermission();
+			boolean[] ownerPerm = permission.getOwnerPermissions();
+			boolean[] groupPerm = permission.getGroupPermissions();
+			boolean[] otherPerm = permission.getOtherPermissions();
+			// Sets the cell's state to value, which can be NSCell.OnState, NSCell.OffState, or NSCell.MixedState. 
+			// If necessary, this method also redraws the receiver.
+			ownerr.setState(ownerPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+			ownerw.setState(ownerPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+			ownerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+			groupr.setState(groupPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+			groupw.setState(groupPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+			groupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+			otherr.setState(otherPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+			otherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+			otherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+		}
+		
+//		octalField.setStringValue(""+file.getOctalCode());
 
         permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
 
         NSImage fileIcon = null;
-        if (this.file.attributes.isFile()) {
-            fileIcon = CDIconCache.instance().get(this.file.getExtension());
+		if(this.numberOfFiles() > 1) {
+			fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
             fileIcon.setSize(new NSSize(32f, 32f));
-        }
-        if (this.file.attributes.isDirectory()) {
-            fileIcon = NSImage.imageNamed("folder32.tiff");
-        }
+		}
+		else {
+			if (file.attributes.isFile()) {
+				fileIcon = CDIconCache.instance().get(file.getExtension());
+				fileIcon.setSize(new NSSize(32f, 32f));
+			}
+			if (file.attributes.isDirectory()) {
+				fileIcon = NSImage.imageNamed("folder32.tiff");
+			}
+		}
         this.iconImageView.setImage(fileIcon);
 
         (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidEndEditingNotification,
-                filenameField);
+														   new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
+														   NSControl.ControlTextDidEndEditingNotification,
+														   filenameField);
+		//        (NSNotificationCenter.defaultCenter()).addObserver(this,
+		//														   new NSSelector("octalInputDidEndEditing", new Class[]{NSNotification.class}),
+		//														   NSControl.ControlTextDidEndEditingNotification,
+		//														   octalField);
         //		(NSNotificationCenter.defaultCenter()).addObserver(this,
         //				new NSSelector("ownerInputDidEndEditing", new Class[]{NSNotification.class}),
         //				NSControl.ControlTextDidEndEditingNotification,
@@ -214,17 +268,21 @@ public class CDInfoController extends NSObject {
         instances.removeObject(this);
     }
 
+	private int numberOfFiles() {
+		return files.size();
+	}
 
     public void filenameInputDidEndEditing(NSNotification sender) {
         log.debug("textInputDidEndEditing");
-        if (!filenameField.stringValue().equals(this.file.getName())) {
+		Path file = (Path)this.files.get(0);
+        if (!filenameField.stringValue().equals(file.getName())) {
             if (filenameField.stringValue().indexOf('/') == -1) {
-                this.file.rename(this.file.getParent().getAbsolute() + "/" + filenameField.stringValue());
+                file.rename(file.getParent().getAbsolute() + "/" + filenameField.stringValue());
                 // refresh the file listing so that the observers (if any) get notified of the change
-                this.file.getParent().list(true);
+                file.getParent().list(true);
             }
             else if (filenameField.stringValue().length() == 0) {
-                filenameField.setStringValue(this.file.getName());
+                filenameField.setStringValue(file.getName());
             }
             else {
                 NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
@@ -241,21 +299,23 @@ public class CDInfoController extends NSObject {
             }
         }
     }
-
-    //		public void ownerInputDidEndEditing(NSNotification sender) {
-    //			log.debug("ownerInputDidEndEditing");
-    //			if (!ownerField.stringValue().equals(this.file.attributes.getOwner())) {
-    //				this.file.changeOwner(ownerField.stringValue(), recursiveCheckbox.state() == NSCell.OnState);
-    //			}
-    //		}
-
-    //		public void groupInputDidEndEditing(NSNotification sender) {
-    //			log.debug("groupInputDidEndEditing");
-    //			if (!groupField.stringValue().equals(this.file.attributes.getGroup())) {
-    //				this.file.changeGroup(groupField.stringValue(), recursiveCheckbox.state() == NSCell.OnState);
-    //			}
-    //		}
-
+	
+/*	public void octalInputDidEndEditing(NSNotification sender) {
+        log.debug("octalInputDidEndEditing");
+        Permission permission = new Permission(Integer.parseInt(ocalField.stringValue()));
+		permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
+		// send the changes to the remote host
+		Iterator i = files.iterator();
+		Path f = null;
+		while(i.hasNext()) {
+			f = (Path)i.next();
+			f.changePermissions(permission);
+		}
+		// refresh the file listing so that the observers (if any) get notified of the change
+		f.getParent().list(true);
+	}
+*/
+	
     public void permissionsSelectionChanged(Object sender) {
         log.debug("permissionsSelectionChanged");
         boolean[][] p = new boolean[3][3];
@@ -272,11 +332,15 @@ public class CDInfoController extends NSObject {
         p[Permission.OTHER][Permission.EXECUTE] = (otherx.state() == NSCell.OnState);
 
         Permission permission = new Permission(p);
-
-        // send the changes to the remote host
-        this.file.changePermissions(permission, recursiveCheckbox.state() == NSCell.OnState);
         permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
+        // send the changes to the remote host
+		Path f = null;
+		for(Iterator i = files.iterator(); i.hasNext();) {
+			f = (Path)i.next();
+			f.changePermissions(permission);
+//			f.changePermissions(permission, recursiveCheckbox.state() == NSCell.OnState);
+		}
 		// refresh the file listing so that the observers (if any) get notified of the change
-		this.file.getParent().list(true);
+		f.getParent().list(true);
     }
 }

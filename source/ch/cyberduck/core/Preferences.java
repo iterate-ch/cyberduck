@@ -119,6 +119,8 @@ public abstract class Preferences {
         defaults.put("queue.orderFrontOnTransfer", "true");
         defaults.put("queue.download.folder", System.getProperty("user.home"));
         defaults.put("queue.fileExists", "ask");
+		defaults.put("queue.permissions.useDefault", "false");
+		defaults.put("queue.permissions.default", "rw-r--r--");
         defaults.put("queue.upload.changePermissions", "true");
         defaults.put("queue.download.changePermissions", "true");
         defaults.put("queue.download.preserveDate", "true");

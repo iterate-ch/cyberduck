@@ -116,6 +116,9 @@ public class Permission {
         this.mask = "-" + getString();
     }
 
+//	public Permission(int octal) {
+//		
+//	}
 
     public Permission(int decimal) {
 //		log.debug("Permission(decimal):"+decimal);
@@ -353,6 +356,14 @@ public class Permission {
         String execute = permissions[EXECUTE] ? "x" : "-";
         return read + write + execute;
     }
+	
+	public boolean equals(Object o) {
+        if ((o != null) && (o instanceof Permission)) {
+			Permission other = (Permission)o;
+			return this.getOctalCode() == other.getOctalCode();
+		}
+		return false;
+	}
 
     /*
         public static final int --- = 0; {false, false, false}

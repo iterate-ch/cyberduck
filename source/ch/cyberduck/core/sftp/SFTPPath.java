@@ -163,7 +163,6 @@ public class SFTPPath extends Path {
                         }
                     }
                 }
-                this.setCache(files);
                 session.log("Idle", Message.STOP);
             }
             catch (SshException e) {
@@ -172,8 +171,9 @@ public class SFTPPath extends Path {
             catch (IOException e) {
                 session.log("IO Error: " + e.getMessage(), Message.ERROR);
             }
-            finally {
-                if (workingDirectory != null) {
+			finally {
+				this.setCache(files);
+				if (workingDirectory != null) {
                     try {
                         workingDirectory.close();
                     }
@@ -278,7 +278,7 @@ public class SFTPPath extends Path {
         }
     }
 
-    public synchronized void changePermissions(Permission perm, boolean recursive) {
+    public synchronized void changePermissions(Permission perm) {
         log.debug("changePermissions");
         try {
             session.check();
@@ -394,9 +394,15 @@ public class SFTPPath extends Path {
 				}
 				this.upload(out, in);
 				if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
-					Permission perm = this.getLocal().getPermission();
-					if (!perm.isUndefined()) {
-						this.changePermissions(perm, false);
+					if(Preferences.instance().getProperty("queue.permissions.useDefault").equals("true")) {
+						Permission perm = new Permission(Preferences.instance().getProperty("queue.permissions.default"));
+						this.changePermissions(perm);
+					}
+					else {
+						Permission perm = this.getLocal().getPermission();
+						if (!perm.isUndefined()) {
+							this.changePermissions(perm);
+						}
 					}
 				}
 			}

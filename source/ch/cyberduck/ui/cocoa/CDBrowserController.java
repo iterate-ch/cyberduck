@@ -736,12 +736,16 @@ public class CDBrowserController extends NSObject implements Observer {
     public void infoButtonClicked(Object sender) {
         log.debug("infoButtonClicked");
         NSEnumerator enum = browserTable.selectedRowEnumerator();
+		List files = new ArrayList();
         while (enum.hasMoreElements()) {
             int selected = ((Integer)enum.nextElement()).intValue();
-            Path path = browserModel.getEntry(selected);
-            CDInfoController controller = new CDInfoController(path);
-            controller.window().makeKeyAndOrderFront(null);
+			files.add(browserModel.getEntry(selected));
+//            Path path = browserModel.getEntry(selected);
+//            CDInfoController controller = new CDInfoController(path);
+//            controller.window().makeKeyAndOrderFront(null);
         }
+		CDInfoController controller = new CDInfoController(files);
+		controller.window().makeKeyAndOrderFront(null);
     }
 
     public void deleteButtonClicked(Object sender) {

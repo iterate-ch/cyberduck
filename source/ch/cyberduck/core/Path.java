@@ -185,10 +185,6 @@ public abstract class Path {
     }
 
     protected void setCache(List files) {
-//		Path parent = this.getParent();
-//		parent.setName("..");
-//		parent.attributes.setType(Path.DIRECTORY_TYPE);
-//		files.add(parent);
         this.getSession().cache().put(this.getAbsolute(), files);
     }
 
@@ -230,7 +226,7 @@ public abstract class Path {
     /**
      * @param recursive Include subdirectories and files
      */
-    public abstract void changePermissions(Permission perm, boolean recursive);
+    public abstract void changePermissions(Permission perm);
 
     public boolean exists() {
 		boolean exists;

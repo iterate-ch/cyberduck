@@ -142,7 +142,6 @@ public class FTPPath extends Path {
                         }
                     }
                 }
-                this.setCache(files);
                 session.log("Idle", Message.STOP);
             }
             catch (FTPException e) {
@@ -151,6 +150,9 @@ public class FTPPath extends Path {
             catch (IOException e) {
                 session.log("IO Error: " + e.getMessage(), Message.ERROR);
             }
+			finally {
+				this.setCache(files);
+			}
         }
 		session.callObservers(this);
         return files;
@@ -245,7 +247,7 @@ public class FTPPath extends Path {
         }
     }
 
-    public synchronized void changePermissions(Permission perm, boolean recursive) {
+    public synchronized void changePermissions(Permission perm) {
         log.debug("changePermissions:" + perm);
         String command = "chmod";
         try {
@@ -460,9 +462,15 @@ public class FTPPath extends Path {
 					throw new FTPException("Transfer mode not set");
 				}
 				if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
-					Permission perm = this.getLocal().getPermission();
-					if (!perm.isUndefined()) {
-						this.changePermissions(perm, false);
+					if(Preferences.instance().getProperty("queue.permissions.useDefault").equals("true")) {
+						Permission perm = new Permission(Preferences.instance().getProperty("queue.permissions.default"));
+						this.changePermissions(perm);
+					}
+					else {
+						Permission perm = this.getLocal().getPermission();
+						if (!perm.isUndefined()) {
+							this.changePermissions(perm);
+						}
 					}
 				}
 			}
