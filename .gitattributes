@@ -111,6 +111,8 @@ en.lproj/Preferences.strings svneol=native#unset
 en.lproj/Progress.nib/keyedobjects.nib -text
 en.lproj/Queue.nib/keyedobjects.nib -text
 en.lproj/Queue.strings svneol=native#unset
+en.lproj/Sync.nib/keyedobjects.nib -text
+en.lproj/Sync.strings svneol=native#unset
 en.lproj/Update.nib/keyedobjects.nib -text
 en.lproj/Update.strings svneol=native#unset
 en.lproj/Validator.nib/keyedobjects.nib -text
