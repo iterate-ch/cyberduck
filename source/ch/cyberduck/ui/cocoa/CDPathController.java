@@ -41,6 +41,11 @@ public class CDPathController implements Observer {
     public CDPathController(NSPopUpButton combo) {
 	log.debug("CDPathController");
 	this.combo = combo;
+	this.init();
+    }
+
+    private void init() {
+	this.removeAllItems();
     }
 
     public void finalize() throws Throwable {

@@ -175,6 +175,7 @@ public class CDPreferencesController {
     public void downloadPathButtonClicked(NSButton sender) {
 	NSOpenPanel panel = new NSOpenPanel();
 	panel.setCanChooseFiles(false);
+	panel.setCanChooseDirectories(true);
 	panel.setAllowsMultipleSelection(false);
 	panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window(), this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }

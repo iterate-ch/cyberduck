@@ -91,7 +91,7 @@ public class CDBrowserController implements Observer {
 
 //    private NSMutableDictionary toolbarItems;
 
-    private CDConnectionSheet connectionSheet;
+//    private CDConnectionSheet connectionSheet;
     private CDPathController pathController;
 
     private NSToolbarItem pathItem;
@@ -128,9 +128,8 @@ public class CDBrowserController implements Observer {
 	browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
 	browserTable.setIndicatorImage(NSImage.imageNamed("NSAscendingSortIndicator"), browserTable.tableColumnWithIdentifier("FILENAME"));
 
-
 	pathController = new CDPathController(pathPopup);
-	connectionSheet = new CDConnectionSheet(this);
+//	connectionSheet = new CDConnectionSheet(this);
 
 	this.setupToolbar();
     }
@@ -387,10 +386,11 @@ public class CDBrowserController implements Observer {
 
     public void connectButtonClicked(Object sender) {
 	log.debug("connectButtonClicked");
+	CDConnectionSheet sheet = new CDConnectionSheet(this);
 	NSApplication.sharedApplication().beginSheet(
-					      connectionSheet.window(),//sheet
+					      sheet.window(),//sheet
 					      mainWindow, //docwindow
-					      connectionSheet, //modal delegate
+					      sheet, //modal delegate
 					      new NSSelector(
 		      "connectionSheetDidEnd",
 		      new Class[] { NSWindow.class, int.class, NSWindow.class }
