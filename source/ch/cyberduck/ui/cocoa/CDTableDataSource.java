@@ -50,8 +50,6 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 	 */
 	public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
 		return false;
-		//if(tableColumn.identifier().equals("FILENAME"))
-		//	return true;
 	}
 	
     // ----------------------------------------------------------

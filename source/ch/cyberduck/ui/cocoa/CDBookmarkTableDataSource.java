@@ -53,8 +53,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                 return documentIcon;
             }
             if (identifier.equals("BOOKMARK")) {
-                return ((Host) CDBookmarksImpl.instance().getItem(row)).getNickname();
-//                return (Host) CDBookmarksImpl.instance().getItem(row);
+                return (Host) CDBookmarksImpl.instance().getItem(row);
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }

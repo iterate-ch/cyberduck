@@ -58,7 +58,7 @@ public class CDBrowserController extends NSObject implements Observer {
 	public static CDBrowserController controllerForWindow(NSWindow window) {
 		//2004-02-24 23:01:38.648 Cyberduck[1096] warning: can't find Java class for Objective C class (null).  Returning com/apple/cocoa/foundation/NSObject.
 		Object delegate = window.delegate();
-        if (delegate != null && delegate instanceof CDBrowserController) {
+      if (delegate != null && delegate instanceof CDBrowserController) {
             return (CDBrowserController) delegate;
         } else {
             return null;
@@ -581,9 +581,9 @@ public class CDBrowserController extends NSObject implements Observer {
     }
 	
     public void awakeFromNib() {
-        NSPoint origin = this.window().frame().origin();
-        this.window().setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
-        this.window().setFrameOrigin(new NSPoint(origin.x() + OFFSET, origin.y() - OFFSET));
+        NSPoint origin = this.window.frame().origin();
+        this.window.setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
+        this.window.setFrameOrigin(new NSPoint(origin.x() + OFFSET, origin.y() - OFFSET));
         this.pathController = new CDPathController(pathPopup);
         // Drawer states
         if (Preferences.instance().getProperty("logDrawer.isOpen").equals("true")) {
@@ -598,8 +598,8 @@ public class CDBrowserController extends NSObject implements Observer {
         this.toolbar.setDelegate(this);
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
-        this.window().setToolbar(toolbar);
-        this.window().makeFirstResponder(quickConnectPopup);
+        this.window.setToolbar(toolbar);
+        this.window.makeFirstResponder(quickConnectPopup);
     }
 
 
@@ -1633,6 +1633,12 @@ public class CDBrowserController extends NSObject implements Observer {
             tableView.reloadData();
         }
 
+		public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
+			if(tableColumn.identifier().equals("FILENAME"))
+				return true;
+			return false;
+		}
+		
         // ----------------------------------------------------------
         // Data access
         // ----------------------------------------------------------
