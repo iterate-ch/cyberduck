@@ -41,10 +41,6 @@ public class CDQueueTable extends CDTableView {
         super(frame);
     }
 	
-	protected CDQueueTable(boolean a, int b) {
-        super(a, b);
-    }
-	
     protected CDQueueTable(NSCoder decoder, long token) {
         super(decoder, token);
     }

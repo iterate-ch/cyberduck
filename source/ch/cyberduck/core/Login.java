@@ -67,14 +67,7 @@ public class Login {
 	
     public void addPasswordToKeychain() {
         if (this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
-			//			if(null == this.getPasswordFromKeychain()) {
-			//				log.info("Adding password to keychain");
 			this.addPasswordToKeychain(this.getServiceName(), this.getUsername(), this.getPassword());
-			//			}
-			//			else {
-			//				log.info("Updating password in keychain");
-			//				this.changePasswordInKeychain(this.getServiceName(), this.getUsername(), this.getPassword());
-			//			}
         }
     }
 	

@@ -31,10 +31,6 @@ public class CDTableView extends NSTableView {
         super(frame);
     }
 
-	protected CDTableView(boolean a, int b) {
-        super(a, b);
-    }
-	
     protected CDTableView(NSCoder decoder, long token) {
         super(decoder, token);
     }

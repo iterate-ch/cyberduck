@@ -36,10 +36,6 @@ public class CDBrowserTable extends CDTableView {
         super(frame);
     }
 
-	protected CDBrowserTable(boolean a, int b) {
-        super(a, b);
-    }
-	
     protected CDBrowserTable(NSCoder decoder, long token) {
         super(decoder, token);
     }
@@ -176,7 +172,7 @@ public class CDBrowserTable extends CDTableView {
 				if (filename.toLowerCase().startsWith(chars)) {
 					this.selectRow(i, false);
 					this.scrollRowToVisible(i);
-//					return;
+					return;
 				}
 			}
 		}

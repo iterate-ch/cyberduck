@@ -41,10 +41,6 @@ public class CDBookmarkTable extends CDTableView {
         super(frame);
     }
 
-	protected CDBookmarkTable(boolean a, int b) {
-        super(a, b);
-    }
-	
     protected CDBookmarkTable(NSCoder decoder, long token) {
         super(decoder, token);
     }
@@ -87,7 +83,7 @@ public class CDBookmarkTable extends CDTableView {
         bookmarkColumn.setDataCell(new CDBookmarkCell());
         this.addTableColumn(bookmarkColumn);
 
-// setting appearance attributes
+		// setting appearance attributes
         this.setAutoresizesAllColumnsToFit(true);
         NSSelector setUsesAlternatingRowBackgroundColorsSelector =
                 new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
@@ -101,7 +97,7 @@ public class CDBookmarkTable extends CDTableView {
         }
         this.setAutoresizesAllColumnsToFit(true);
 
-// selection properties
+		// selection properties
         this.setAllowsMultipleSelection(false);
         this.setAllowsEmptySelection(true);
         this.setAllowsColumnReordering(false);
@@ -118,7 +114,7 @@ public class CDBookmarkTable extends CDTableView {
             if (h.getNickname().toLowerCase().startsWith(chars)) {
                 this.selectRow(i, false);
                 this.scrollRowToVisible(i);
-//                return;
+                return;
             }
         }
 		super.keyDown(event);

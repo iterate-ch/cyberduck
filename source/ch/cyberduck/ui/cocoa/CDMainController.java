@@ -65,6 +65,26 @@ public class CDMainController extends NSObject {
         this.donationSheet = donationSheet;
     }
 	
+	private NSButton neverShowDonationCheckbox; 
+
+	public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
+        this.neverShowDonationCheckbox = neverShowDonationCheckbox;
+        this.neverShowDonationCheckbox.setTarget(this);
+        this.neverShowDonationCheckbox.setAction(new NSSelector("neverShowDonationCheckboxClicked", new Class[]{NSButton.class}));
+        this.neverShowDonationCheckbox.setState(Preferences.instance().getProperty("donate").equals("true") ? NSCell.OnState : NSCell.OffState);
+    }
+	
+	public void neverShowDonationCheckboxClicked(NSButton sender) {
+        switch (sender.state()) {
+            case NSCell.OnState:
+                Preferences.instance().setProperty("donate", "false");
+                break;
+            case NSCell.OffState:
+                Preferences.instance().setProperty("donate", "true");
+                break;
+        }
+    }
+	
 	private NSButton autoUpdateCheckbox;
 	
     public void setAutoUpdateCheckbox(NSButton autoUpdateCheckbox) {
@@ -250,17 +270,6 @@ public class CDMainController extends NSObject {
         }
         catch (java.net.MalformedURLException e) {
             log.error(e.getMessage());
-        }
-    }
-
-    public void neverShowDonationSheetAgain(NSButton sender) {
-        switch (sender.state()) {
-            case NSCell.OnState:
-                Preferences.instance().setProperty("donate", "false");
-                break;
-            case NSCell.OffState:
-                Preferences.instance().setProperty("donate", "true");
-                break;
         }
     }
 

@@ -7,7 +7,9 @@
 	<key>IBEditorPositions</key>
 	<dict>
 		<key>103</key>
-		<string>171 520 445 44 0 0 1024 746 </string>
+		<string>44 590 445 44 0 0 1024 746 </string>
+		<key>250</key>
+		<string>293 397 117 49 0 0 1024 746 </string>
 	</dict>
 	<key>IBFramework Version</key>
 	<string>349.0</string>

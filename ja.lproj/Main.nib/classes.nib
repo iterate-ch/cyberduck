@@ -40,7 +40,7 @@
             }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDMainController"; 
             LANGUAGE = Java; 
-            OUTLETS = {bookmarkMenu = NSMenu; }; 
+            OUTLETS = {bookmarkMenu = NSMenu; dockMenu = NSMenu; }; 
             SUPERCLASS = NSObject; 
         }
     ); 
