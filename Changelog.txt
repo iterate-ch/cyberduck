@@ -7,6 +7,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 2.4
 - [Localize] Swedish Localization
 - [Feature] Additional encryption ciphers supported (SFTP)
+- [Feature] Action dropdown menu in toolbar
 - [Bugfix] Rendezvous implementation updated 
 - [Bugfix] Folder to synchronize not selectable in some cases
 - [Bugfix] Fallback to default directory when specified directory doesn't exist

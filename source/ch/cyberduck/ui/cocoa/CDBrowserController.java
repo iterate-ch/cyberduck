@@ -799,6 +799,16 @@ public class CDBrowserController extends CDController implements Observer {
 		}
 	}
 
+	private NSPopUpButton actionPopupButton; // IBOutlet
+	
+	public void setActionPopupButton(NSPopUpButton actionPopupButton) {
+		this.actionPopupButton = actionPopupButton;
+		this.actionPopupButton.setPullsDown(true);
+		this.actionPopupButton.setAutoenablesItems(true);
+		this.actionPopupButton.itemAtIndex(0).setImage(NSImage.imageNamed("gear.tiff"));
+	}
+	
+	
 	private NSTextField searchField; // IBOutlet
 
 	public void setSearchField(NSTextField searchField) {
@@ -1522,6 +1532,7 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 	
 	private void init(Host host) {
+		this.workdir = null;
 		TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(this.logView));
 		this.window().setTitle(host.getProtocol()+":"+host.getCredentials().getUsername()+"@"+host.getHostname());
 		File bookmark = new File(HISTORY_FOLDER+"/"+host.getHostname()+".duck");
@@ -1856,6 +1867,14 @@ public class CDBrowserController extends CDController implements Observer {
 			item.setAction(new NSSelector("toggleBookmarkDrawer", new Class[]{Object.class}));
 			return item;
 		}
+		if (itemIdentifier.equals("Tools")) {
+            item.setLabel(NSBundle.localizedString("Action", "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString("Action", "Toolbar item"));
+            item.setView(actionPopupButton);
+            item.setMinSize(actionPopupButton.frame().size());
+            item.setMaxSize(actionPopupButton.frame().size());
+            return item;
+		}
 		if(itemIdentifier.equals("Quick Connect")) {
 			item.setLabel(NSBundle.localizedString("Quick Connect", "Toolbar item"));
 			item.setPaletteLabel(NSBundle.localizedString("Quick Connect", "Toolbar item"));
@@ -2003,6 +2022,7 @@ public class CDBrowserController extends CDController implements Observer {
 			"New Connection",
 			"Bookmarks",
 			"Quick Connect",
+			"Tools",
 			"Refresh",
 			"Encoding",
 			"Synchronize",

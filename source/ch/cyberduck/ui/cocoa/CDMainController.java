@@ -373,6 +373,7 @@ public class CDMainController extends NSObject {
 								updateLabel.setStringValue("Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is out of date. The current version is", "Alert sheet text")+" "+latestVersionNumber+".");
 								updateText.replaceCharactersInRange(new NSRange(updateText.textStorage().length(), 0), comment);
 								updateSheet.setTitle(filename);
+								updateSheet.center();
 								updateSheet.makeKeyAndOrderFront(null);
 							}
 						}
