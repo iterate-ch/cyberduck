@@ -26,8 +26,8 @@ import java.util.List;
 public interface Validator {
 
 	public void validate(Queue q);
-	
+
 	public List getValidated();
-	
+
 	public boolean isCanceled();
 }

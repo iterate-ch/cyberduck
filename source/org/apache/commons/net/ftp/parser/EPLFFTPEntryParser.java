@@ -27,158 +27,158 @@ import ch.cyberduck.core.Permission;
 
 public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
 
-    public Path parseFTPEntry(Path parent, String entry) {
-        if (!entry.startsWith("+")) {
-            return null;
-        }
+	public Path parseFTPEntry(Path parent, String entry) {
+		if(!entry.startsWith("+")) {
+			return null;
+		}
 
-        Path f = PathFactory.createPath(parent.getSession());
+		Path f = PathFactory.createPath(parent.getSession());
 
-        int indexOfTab = entry.indexOf("\t");
-        if (indexOfTab == -1) {
-            return null;
-        }
-        // parse name.
-        int startName = indexOfTab + 1;
-        String name = entry.substring(startName);
-        if (name.endsWith("\r\n")) {
-            int i = name.lastIndexOf("\r\n");
-            name = name.substring(0, i);
-        }
-        if (null == name || name.equals("") || name.equals(".") || name.equals("..")) {
-            return null;
-        }
-        f.setPath(parent.getAbsolute(), name);
-        
-        // parse facts.
-        int i;
-        int endFacts = startName - 2; // first char of name -> tab -> end of last fact.
-        EPLFEntryParserContext factContext = new EPLFEntryParserContext(f);
-        for (i = 1; i < endFacts; i++) {
-            int factEnd = entry.indexOf(",", i);
-            String fact = entry.substring(i, factEnd);
-            factContext.handleFact(fact);
-            i = factEnd;
-        }
-        factContext.conclude();
+		int indexOfTab = entry.indexOf("\t");
+		if(indexOfTab == -1) {
+			return null;
+		}
+		// parse name.
+		int startName = indexOfTab+1;
+		String name = entry.substring(startName);
+		if(name.endsWith("\r\n")) {
+			int i = name.lastIndexOf("\r\n");
+			name = name.substring(0, i);
+		}
+		if(null == name || name.equals("") || name.equals(".") || name.equals("..")) {
+			return null;
+		}
+		f.setPath(parent.getAbsolute(), name);
 
-        if (!factContext.hasMayBeRetreivedFact() && !factContext.hasMayCWDToFact()) {
-            return null;
-        }
-        return f;
-    }
+		// parse facts.
+		int i;
+		int endFacts = startName-2; // first char of name -> tab -> end of last fact.
+		EPLFEntryParserContext factContext = new EPLFEntryParserContext(f);
+		for(i = 1; i < endFacts; i++) {
+			int factEnd = entry.indexOf(",", i);
+			String fact = entry.substring(i, factEnd);
+			factContext.handleFact(fact);
+			i = factEnd;
+		}
+		factContext.conclude();
 
-    private static class EPLFEntryParserContext {
-        private Hashtable facts;
-        private Path path = null;
+		if(!factContext.hasMayBeRetreivedFact() && !factContext.hasMayCWDToFact()) {
+			return null;
+		}
+		return f;
+	}
 
-        public EPLFEntryParserContext(Path aPath) {
-            super();
-            this.facts = new Hashtable();
-            this.path = aPath;
-        }
+	private static class EPLFEntryParserContext {
+		private Hashtable facts;
+		private Path path = null;
 
-        protected boolean hasSpecifiedPermissionsFact() {
-            return hasFact("up");
-        }
+		public EPLFEntryParserContext(Path aPath) {
+			super();
+			this.facts = new Hashtable();
+			this.path = aPath;
+		}
 
-        protected boolean hasMayBeRetreivedFact() {
-            return hasFact("r");
-        }
+		protected boolean hasSpecifiedPermissionsFact() {
+			return hasFact("up");
+		}
 
-        protected boolean hasMayCWDToFact() {
-            return hasFact("/");
-        }
+		protected boolean hasMayBeRetreivedFact() {
+			return hasFact("r");
+		}
 
-        private boolean hasFact(String factId) {
-            if (facts.containsKey(factId)) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
+		protected boolean hasMayCWDToFact() {
+			return hasFact("/");
+		}
 
-        protected void handleFact(String fact) {
-            if (fact.length() == 0) {
-                return;
-            }
+		private boolean hasFact(String factId) {
+			if(facts.containsKey(factId)) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
 
-            // readable file
-            if (fact.charAt(0) == 'r') {
-                facts.put("r", "");
-                return;
-            }
+		protected void handleFact(String fact) {
+			if(fact.length() == 0) {
+				return;
+			}
 
-            // readable directory
-            if (fact.charAt(0) == '/') {
-                facts.put("/", "");
-                return;
-            }
+			// readable file
+			if(fact.charAt(0) == 'r') {
+				facts.put("r", "");
+				return;
+			}
 
-            // specified permissions
-            if (fact.startsWith("up")) {
-                facts.put("up", fact.substring(2));
-                return;
-            }
+			// readable directory
+			if(fact.charAt(0) == '/') {
+				facts.put("/", "");
+				return;
+			}
 
-            // size fact
-            if (fact.charAt(0) == 's') {
-                String sizeString = fact.substring(1);
-                facts.put("s", sizeString);
-                try {
-                    Long size = Long.valueOf(sizeString);
-                    path.attributes.setSize(size.longValue());
+			// specified permissions
+			if(fact.startsWith("up")) {
+				facts.put("up", fact.substring(2));
+				return;
+			}
+
+			// size fact
+			if(fact.charAt(0) == 's') {
+				String sizeString = fact.substring(1);
+				facts.put("s", sizeString);
+				try {
+					Long size = Long.valueOf(sizeString);
+					path.attributes.setSize(size.longValue());
 				}
-				catch (NumberFormatException e) {
+				catch(NumberFormatException e) {
 					// intentionally do nothing
 				}
-                return;
-            }
-            
-            // modification time fact
-            if (fact.charAt(0) == 'm') {
-                String timeString = fact.substring(1);
-                facts.put("m", timeString);
-                long secsSince1970 = 0;
-                try {
-                    Long stamp = Long.valueOf(timeString);
-                    secsSince1970 = stamp.longValue();
-                    path.attributes.setTimestamp((long)(secsSince1970 * 1000));
-                }
-                catch (NumberFormatException ignored) {
-                }
-                return;
-            }
-        }
+				return;
+			}
 
-        protected void conclude() {
-            if (hasMayCWDToFact()) {
-                path.attributes.setType(Path.DIRECTORY_TYPE);
-            }
-            else if (hasMayBeRetreivedFact()) {
-                path.attributes.setType(Path.FILE_TYPE);
-            }
-            if (hasSpecifiedPermissionsFact()) {
-                createAndSetSpecifiedPermission();
-            }
-        }
+			// modification time fact
+			if(fact.charAt(0) == 'm') {
+				String timeString = fact.substring(1);
+				facts.put("m", timeString);
+				long secsSince1970 = 0;
+				try {
+					Long stamp = Long.valueOf(timeString);
+					secsSince1970 = stamp.longValue();
+					path.attributes.setTimestamp((long)(secsSince1970*1000));
+				}
+				catch(NumberFormatException ignored) {
+				}
+				return;
+			}
+		}
 
-        private void createAndSetSpecifiedPermission() {
-            Permission newPermission = createSpecifiedPermission();
-            if (newPermission != null) {
-                path.attributes.setPermission(newPermission);
-            }
-        }
+		protected void conclude() {
+			if(hasMayCWDToFact()) {
+				path.attributes.setType(Path.DIRECTORY_TYPE);
+			}
+			else if(hasMayBeRetreivedFact()) {
+				path.attributes.setType(Path.FILE_TYPE);
+			}
+			if(hasSpecifiedPermissionsFact()) {
+				createAndSetSpecifiedPermission();
+			}
+		}
 
-        private Permission createSpecifiedPermission() {
-            try {
-                int perm = Integer.valueOf((String)facts.get("up"), 8).intValue();
-                return new Permission(perm);
-            }
-            catch (NumberFormatException ignored) {
-            }
-            return null;
-        }
-    }
+		private void createAndSetSpecifiedPermission() {
+			Permission newPermission = createSpecifiedPermission();
+			if(newPermission != null) {
+				path.attributes.setPermission(newPermission);
+			}
+		}
+
+		private Permission createSpecifiedPermission() {
+			try {
+				int perm = Integer.valueOf((String)facts.get("up"), 8).intValue();
+				return new Permission(perm);
+			}
+			catch(NumberFormatException ignored) {
+			}
+			return null;
+		}
+	}
 }

@@ -19,8 +19,6 @@ package ch.cyberduck.core;
  */
 
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import org.apache.log4j.Logger;
 

@@ -181,7 +181,7 @@ class TransportProtocolOutputStream {
 		catch(IOException ioe) {
 			if(transport.getState().getValue() != TransportProtocolState.DISCONNECTED) {
 				throw new TransportProtocolException("IO Error on socket: "+
-													 ioe.getMessage());
+				    ioe.getMessage());
 			}
 		}
 	}

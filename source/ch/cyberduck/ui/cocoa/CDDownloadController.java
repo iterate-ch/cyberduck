@@ -19,13 +19,13 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
 
-import com.apple.cocoa.application.*;
+import com.apple.cocoa.application.NSAlertPanel;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSButton;
+import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
 
@@ -62,22 +62,18 @@ public class CDDownloadController extends CDController {
 	public void windowWillClose(NSNotification notification) {
 		instances.removeObject(this);
 	}
-	
+
 	public void cancelButtonClicked(Object sender) {
 		log.debug("cancelButtonClicked");
 		NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
 	}
-	
+
 	public void downloadButtonClicked(Object sender) {
 		log.debug("downloadButtonClicked");
 		try {
-			URL url = new URL(URLDecoder.decode(urlField.stringValue(), "UTF-8"));
-			Host host = new Host(url.getProtocol(),
-								 url.getHost(),
-								 url.getPort());
-			host.setCredentials(url.getUserInfo(), null);
+			Host host = Host.parse(urlField.stringValue());
 			Session session = SessionFactory.createSession(host);
-			String file = url.getFile();
+			String file = host.getDefaultPath();
 			if(file.length() > 1) {
 				Path path = PathFactory.createPath(SessionFactory.createSession(host), file);
 				Queue queue = new DownloadQueue();
@@ -89,34 +85,18 @@ public class CDDownloadController extends CDController {
 			}
 			NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
 		}
-		catch(java.io.UnsupportedEncodingException e) {
-			log.error(e.getMessage());
-		}
-		catch(IllegalArgumentException e) {
-			NSAlertPanel.beginCriticalAlertSheet("Error", //title
-												 "OK", // defaultbutton
-												 null, //alternative button
-												 null, //other button
-												 this.window(), //docWindow
-												 null, //modalDelegate
-												 null, //didEndSelector
-												 null, // dismiss selector
-												 null, // context
-												 e.getMessage() // message
-												 );
-		}
 		catch(MalformedURLException e) {
 			NSAlertPanel.beginCriticalAlertSheet("Error", //title
-												 "OK", // defaultbutton
-												 null, //alternative button
-												 null, //other button
-												 this.window(), //docWindow
-												 null, //modalDelegate
-												 null, //didEndSelector
-												 null, // dismiss selector
-												 null, // context
-												 e.getMessage() // message
-												 );
+			    "OK", // defaultbutton
+			    null, //alternative button
+			    null, //other button
+			    this.window(), //docWindow
+			    null, //modalDelegate
+			    null, //didEndSelector
+			    null, // dismiss selector
+			    null, // context
+			    e.getMessage() // message
+			);
 		}
 	}
 }

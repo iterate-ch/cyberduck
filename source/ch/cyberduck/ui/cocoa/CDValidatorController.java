@@ -19,9 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import java.util.Iterator;
-import java.util.Observer;
-import java.util.Observable;
-import java.util.List;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -53,13 +50,13 @@ public abstract class CDValidatorController extends AbstractValidator {
 		    NSTableView.TableViewSelectionDidChangeNotification,
 		    this.fileTableView);
 	}
-	
+
 	public void validate(Queue q) {
-		for(Iterator iter = q.getChilds().iterator(); iter.hasNext() && !this.isCanceled(); ) {
+		for(Iterator iter = q.getChilds().iterator(); iter.hasNext() && !this.isCanceled();) {
 			Path child = (Path)iter.next();
 			log.debug("Validating:"+child);
 			if(this.validate(child, q.isResumeRequested())) {
-				log.info("Adding "+child+" to final set.");				
+				log.info("Adding "+child+" to final set.");
 				this.validatedList.add(child);
 			}
 		}
@@ -74,15 +71,15 @@ public abstract class CDValidatorController extends AbstractValidator {
 			this.windowController.waitForSheetEnd();
 		}
 	}
-	
+
 	protected abstract void load();
-	
+
 	protected boolean hasPrompt = false;
-	
+
 	protected boolean hasPrompt() {
 		return this.hasPrompt;
 	}
-	
+
 	protected void prompt(Path p) {
 		if(!this.hasPrompt()) {
 			this.windowController.beginSheet(this.window());
@@ -94,7 +91,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.workList.add(p);
 		this.fireDataChanged();
 	}
-	
+
 	protected void adjustFilename(Path path) {
 		//
 	}
@@ -244,13 +241,13 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 
 	protected NSButton cancelButton; // IBOutlet
-	
+
 	public void setCancelButton(NSButton cancelButton) {
 		this.cancelButton = cancelButton;
 		this.cancelButton.setTarget(this);
 		this.cancelButton.setAction(new NSSelector("cancelActionFired", new Class[]{Object.class}));
 	}
-	
+
 	private NSPanel window; // IBOutlet
 
 	public void setWindow(NSPanel window) {
@@ -405,7 +402,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 				}
 				if(identifier.equals("FILENAME")) {
 					return new NSAttributedString(p.getRemote().getName(),
-												  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+					    CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 				}
 				if(identifier.equals("TYPEAHEAD")) {
 					return p.getRemote().getName();
@@ -413,12 +410,12 @@ public abstract class CDValidatorController extends AbstractValidator {
 				if(identifier.equals("REMOTE")) {
 					if(p.getRemote().exists()) {
 						if(p.attributes.isFile()) {
-							return new NSAttributedString(Status.getSizeAsString(p.attributes.getSize())+", "+p.attributes.getTimestampAsShortString(), 
-														  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+							return new NSAttributedString(Status.getSizeAsString(p.attributes.getSize())+", "+p.attributes.getTimestampAsShortString(),
+							    CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 						}
 						if(p.attributes.isDirectory()) {
-							return new NSAttributedString(p.attributes.getTimestampAsShortString(), 
-														  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+							return new NSAttributedString(p.attributes.getTimestampAsShortString(),
+							    CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 						}
 					}
 					return null;
@@ -426,12 +423,12 @@ public abstract class CDValidatorController extends AbstractValidator {
 				if(identifier.equals("LOCAL")) {
 					if(p.getLocal().exists()) {
 						if(p.attributes.isFile()) {
-							return new NSAttributedString(Status.getSizeAsString(p.getLocal().getSize())+", "+p.getLocal().getTimestampAsShortString(), 
-														  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+							return new NSAttributedString(Status.getSizeAsString(p.getLocal().getSize())+", "+p.getLocal().getTimestampAsShortString(),
+							    CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 						}
 						if(p.attributes.isDirectory()) {
-							return new NSAttributedString(p.getLocal().getTimestampAsShortString(), 
-														  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+							return new NSAttributedString(p.getLocal().getTimestampAsShortString(),
+							    CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 						}
 					}
 					return null;

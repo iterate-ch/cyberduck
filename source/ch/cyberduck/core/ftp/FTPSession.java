@@ -75,17 +75,17 @@ public class FTPSession extends Session {
 			this.setClosed();
 		}
 	}
-	
+
 	public synchronized void connect(String encoding) throws IOException {
 		this.log("Opening FTP connection to "+host.getIp()+"...", Message.PROGRESS);
 		this.setConnected();
 		this.log("=====================================", Message.TRANSCRIPT);
 		this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
 		this.log(host.getIp(), Message.TRANSCRIPT);
-		this.FTP = new FTPClient(host.getHostname(), 
-								 host.getPort(), 
-								 Preferences.instance().getInteger("connection.timeout"), //timeout 
-								 encoding);
+		this.FTP = new FTPClient(host.getHostname(),
+		    host.getPort(),
+		    Preferences.instance().getInteger("connection.timeout"), //timeout
+		    encoding);
 		this.FTP.setMessageListener(new FTPMessageListener() {
 			public void logCommand(String cmd) {
 				FTPSession.this.log(cmd, Message.TRANSCRIPT);
@@ -99,11 +99,11 @@ public class FTPSession extends Session {
 		if(Proxy.isSOCKSProxyEnabled()) {
 			log.info("Using SOCKS Proxy");
 			this.FTP.initSOCKS(Proxy.getSOCKSProxyPort(),
-							   Proxy.getSOCKSProxyHost());
+			    Proxy.getSOCKSProxyHost());
 			if(Proxy.isSOCKSAuthenticationEnabled()) {
 				log.info("Using SOCKS Proxy Authentication");
 				this.FTP.initSOCKSAuthentication(Proxy.getSOCKSProxyUser(),
-												 Proxy.getSOCKSProxyPassword());
+				    Proxy.getSOCKSProxyPassword());
 			}
 		}
 		if(Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
@@ -146,7 +146,7 @@ public class FTPSession extends Session {
 			throw new FTPException("Login as user "+host.getCredentials().getUsername()+" failed.");
 		}
 	}
-	
+
 	public synchronized Path workdir() {
 		try {
 			this.check();
@@ -161,7 +161,7 @@ public class FTPSession extends Session {
 		}
 		return null;
 	}
-	
+
 	public synchronized void noop() throws IOException {
 		this.FTP.noop();
 	}

@@ -28,7 +28,6 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Status;
 
@@ -148,7 +147,7 @@ public class CDInfoController extends CDController {
 		this.files = files;
 		this.init();
 	}
-	
+
 	private static NSPoint cascadedWindowPoint;
 
 	public void awakeFromNib() {
@@ -161,18 +160,18 @@ public class CDInfoController extends CDController {
 		}
 		this.init();
 	}
-	
+
 	private void init() {
 		if(this.files.size() > 0) {
 			Path file = (Path)this.files.get(0);
 			this.filenameField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
-											  file.getName());
+			                                  file.getName());
 			if(this.numberOfFiles() > 1) {
 				this.filenameField.setEnabled(false);
 			}
 			this.pathField.setStringValue(file.getParent().getAbsolute());
 			this.groupField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
-										   file.attributes.getGroup());
+			                               file.attributes.getGroup());
 			if(this.numberOfFiles() > 1) {
 				this.kindField.setStringValue("("+NSBundle.localizedString("Multiple files", "")+")");
 			}
@@ -195,25 +194,25 @@ public class CDInfoController extends CDController {
 					this.kindField.setStringValue(NSBundle.localizedString("Unknown", ""));
 				}
 			}
-			
+
 			try {
 				NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
 				String timestamp = formatter.stringForObjectValue(new NSGregorianDate((double)file.attributes.getTimestamp().getTime()/1000,
-																					  NSDate.DateFor1970));
+				    NSDate.DateFor1970));
 				this.modifiedField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
-												  timestamp);
+				                                  timestamp);
 			}
 			catch(NSFormatter.FormattingException e) {
 				log.error(e.toString());
 			}
 			this.ownerField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
-										   file.attributes.getOwner());
+			                               file.attributes.getOwner());
 			int size = 0;
 			for(Iterator i = files.iterator(); i.hasNext();) {
 				size += ((Path)i.next()).attributes.getSize();
 			}
 			this.sizeField.setStringValue(Status.getSizeAsString(size)+" ("+size+" bytes)");
-			
+
 			{
 				ownerr.setAllowsMixedState(true);
 				ownerr.setEnabled(false);
@@ -234,7 +233,7 @@ public class CDInfoController extends CDController {
 				otherx.setAllowsMixedState(true);
 				otherx.setEnabled(false);
 			}
-			
+
 			Permission permission = null;
 			for(Iterator i = files.iterator(); i.hasNext();) {
 				permission = ((Path)i.next()).attributes.getPermission();
@@ -242,15 +241,15 @@ public class CDInfoController extends CDController {
 				boolean[] ownerPerm = permission.getOwnerPermissions();
 				boolean[] groupPerm = permission.getGroupPermissions();
 				boolean[] otherPerm = permission.getOtherPermissions();
-				
+
 				this.update(ownerr, ownerPerm[Permission.READ]);
 				this.update(ownerw, ownerPerm[Permission.WRITE]);
 				this.update(ownerx, ownerPerm[Permission.EXECUTE]);
-				
+
 				this.update(groupr, groupPerm[Permission.READ]);
 				this.update(groupw, groupPerm[Permission.WRITE]);
 				this.update(groupx, groupPerm[Permission.EXECUTE]);
-				
+
 				this.update(otherr, otherPerm[Permission.READ]);
 				this.update(otherw, otherPerm[Permission.WRITE]);
 				this.update(otherx, otherPerm[Permission.EXECUTE]);
@@ -263,7 +262,7 @@ public class CDInfoController extends CDController {
 			else {
 				this.permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+permission.toString());
 			}
-			
+
 			NSImage fileIcon = null;
 			if(this.numberOfFiles() > 1) {
 				fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
@@ -283,10 +282,10 @@ public class CDInfoController extends CDController {
 			//														   NSControl.ControlTextDidEndEditingNotification,
 			//														   octalField);
 			(NSNotificationCenter.defaultCenter()).addObserver(this,
-															   new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
-															   NSControl.ControlTextDidEndEditingNotification,
-															   filenameField);		
-			
+			    new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
+			    NSControl.ControlTextDidEndEditingNotification,
+			    filenameField);
+
 		}
 	}
 
@@ -353,19 +352,19 @@ public class CDInfoController extends CDController {
 		if(((NSButton)sender).state() == NSCell.MixedState) {
 			((NSButton)sender).setState(NSCell.OnState);
 		}
-		
+
 		p[Permission.OWNER][Permission.READ] = (ownerr.state() == NSCell.OnState);
 		p[Permission.OWNER][Permission.WRITE] = (ownerw.state() == NSCell.OnState);
 		p[Permission.OWNER][Permission.EXECUTE] = (ownerx.state() == NSCell.OnState);
-		
+
 		p[Permission.GROUP][Permission.READ] = (groupr.state() == NSCell.OnState);
 		p[Permission.GROUP][Permission.WRITE] = (groupw.state() == NSCell.OnState);
 		p[Permission.GROUP][Permission.EXECUTE] = (groupx.state() == NSCell.OnState);
-		
+
 		p[Permission.OTHER][Permission.READ] = (otherr.state() == NSCell.OnState);
 		p[Permission.OTHER][Permission.WRITE] = (otherw.state() == NSCell.OnState);
 		p[Permission.OTHER][Permission.EXECUTE] = (otherx.state() == NSCell.OnState);
-		
+
 		final Permission permission = new Permission(p);
 		permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+permission.toString());
 		new Thread() {

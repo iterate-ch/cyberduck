@@ -21,75 +21,78 @@ package ch.cyberduck.ui.cocoa;
 import java.util.List;
 
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDFileController extends CDController {
 	private static Logger log = Logger.getLogger(CDFileController.class);
-	
+
 	private static NSMutableArray instances = new NSMutableArray();
-		
+
 	private NSTextField filenameField; //IBOutlet
-	
+
 	public void setFilenameField(NSTextField filenameField) {
 		this.filenameField = filenameField;
 	}
-	
+
 	public void awakeFromNib() {
 		this.window().setReleasedWhenClosed(true);
 	}
-	
+
 	public CDFileController() {
 		instances.addObject(this);
 		if(false == NSApplication.loadNibNamed("File", this)) {
 			log.fatal("Couldn't load File.nib");
 		}
 	}
-	
+
 	public void windowWillClose(NSNotification notification) {
 		instances.removeObject(this);
 	}
-	
+
 	public void createButtonClicked(NSButton sender) {
 		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 		if(filenameField.stringValue().indexOf('/') != -1) {
 			NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-													  NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-													  null, //alternative button
-													  null, //other button
-													  this.window(), //docWindow
-													  null, //modalDelegate
-													  null, //didEndSelector
-													  null, // dismiss selector
-													  null, // context
-													  NSBundle.localizedString("Invalid character in filename.", "") // message
-													  );
+			    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+			    null, //alternative button
+			    null, //other button
+			    this.window(), //docWindow
+			    null, //modalDelegate
+			    null, //didEndSelector
+			    null, // dismiss selector
+			    null, // context
+			    NSBundle.localizedString("Invalid character in filename.", "") // message
+			);
 		}
-		else if (filenameField.stringValue().length() == 0) {
+		else if(filenameField.stringValue().length() == 0) {
 			//
-        }
-        else {
-            NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
-        }
+		}
+		else {
+			NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+		}
 	}
-	
+
 	public void cancelButtonClicked(NSButton sender) {
 		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
 	}
-	
+
 	public void editButtonClicked(NSButton sender) {
 		this.createButtonClicked(sender);
 	}
-	
+
 	public void newFileSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
 		log.debug("newFileSheetDidEnd");
 		sheet.orderOut(null);
@@ -107,7 +110,7 @@ public class CDFileController extends CDController {
 				break;
 		}
 	}
-	
+
 	private Path create(Path workdir, String filename) {
 		Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), new Local(NSPathUtilities.temporaryDirectory(), filename));
 		if(!file.getRemote().exists()) {

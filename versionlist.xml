@@ -12,9 +12,11 @@
 - [Bugfix] Deleting more than 10 files at once
 - [Bugfix] Typing in transfer window causes crash
 - [Bugfix] Transcript causes crash
-- [Bugfix] Files longer than 2GB
+- [Bugfix] Reporting correct file size for large files
 - [Bugfix] Disable resume on ASCII tranfers (FTP)
 - [Bugfix] Incompatiblity with Filezilla Server (FTP)
+- [Bugfix] Synchronizing current working directory
+- [Bugfix] Graceful failure on SSH connection problems
 
 2.4b2
 - [Feature] Allow the selection of files in the browser by typing more than just the first character of the filename

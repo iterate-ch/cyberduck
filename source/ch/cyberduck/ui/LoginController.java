@@ -22,11 +22,11 @@ import ch.cyberduck.core.Login;
 
 public interface LoginController {
 
-    /**
-     * Call this to allow the user to reenter the new login credentials.
-     * A concrete sublcass could eg. display a panel.
-     *
-     * @param explanation Any additional information why the login failed.
-     */
-    public Login promptUser(Login login, String explanation);
+	/**
+	 * Call this to allow the user to reenter the new login credentials.
+	 * A concrete sublcass could eg. display a panel.
+	 *
+	 * @param explanation Any additional information why the login failed.
+	 */
+	public Login promptUser(Login login, String explanation);
 }

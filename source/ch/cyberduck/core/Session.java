@@ -19,11 +19,7 @@ package ch.cyberduck.core;
  */
 
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
+import java.util.*;
 
 import com.apple.cocoa.foundation.NSBundle;
 
@@ -69,7 +65,7 @@ public abstract class Session extends Observable {
 		log.debug("------------- finalize");
 		super.finalize();
 	}
-	
+
 	public Session copy() {
 		return SessionFactory.createSession(this.host);
 	}
@@ -118,7 +114,6 @@ public abstract class Session extends Observable {
 					}
 					else {
 						home = workdir();
-						//host.setDefaultPath(home);
 					}
 					home.list(true);
 					Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl Notification"),
@@ -177,24 +172,23 @@ public abstract class Session extends Observable {
 	public boolean isAuthenticated() {
 		return this.authenticated;
 	}
-	
+
 	private Timer keepAliveTimer = null;
-	
+
 	public synchronized void setConnected() throws IOException {
 		log.debug("setConnected");
 		SessionPool.instance().add(this, Preferences.instance().getBoolean("connection.pool.force"));
 		this.callObservers(new Message(Message.OPEN, "Session opened."));
 		this.connected = true;
 	}
-	
+
 	public synchronized void setAuthenticated() {
 		this.authenticated = true;
 		if(Preferences.instance().getBoolean("connection.keepalive")) {
 			this.keepAliveTimer = new Timer();
 			this.keepAliveTimer.scheduleAtFixedRate(new KeepAliveTask(),
-													Preferences.instance().getInteger("connection.keepalive.interval"),
-													Preferences.instance().getInteger("connection.keepalive.interval")
-													);
+			    Preferences.instance().getInteger("connection.keepalive.interval"),
+			    Preferences.instance().getInteger("connection.keepalive.interval"));
 		}
 	}
 
@@ -208,14 +202,14 @@ public abstract class Session extends Observable {
 		this.cache().clear();
 		this.release();
 	}
-	
+
 	private void release() {
-		this.host.setLoginController(null);
-		this.host.setHostKeyVerificationController(null);
+//		this.host.setLoginController(null);
+//		this.host.setHostKeyVerificationController(null);
 		SessionPool.instance().release(this);
 		System.gc(); //@todo
 	}
-	
+
 	private class KeepAliveTask extends TimerTask {
 		public void run() {
 			try {

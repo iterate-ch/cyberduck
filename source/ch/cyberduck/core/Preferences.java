@@ -41,7 +41,7 @@ public abstract class Preferences {
 		System.setProperty("networkaddress.cache.ttl", "10");
 		System.setProperty("networkaddress.cache.negative.ttl", "5");
 	}
-	
+
 	/**
 	 * @return The singleton instance of me.
 	 */
@@ -165,7 +165,7 @@ public abstract class Preferences {
 		defaults.put("connection.timeout", "20000");
 		defaults.put("connection.keepalive", "false");
 		defaults.put("connection.keepalive.interval", "30000");
-		
+
 		defaults.put("http.agent", "Cyberduck/"+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		defaults.put("http.acceptheader", "*/*");
 

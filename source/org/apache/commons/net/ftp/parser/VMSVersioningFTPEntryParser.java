@@ -44,98 +44,98 @@ import ch.cyberduck.core.Path;
  */
 public class VMSVersioningFTPEntryParser extends VMSFTPEntryParser {
 
-    private Perl5Matcher _preparse_matcher_;
-    private Pattern _preparse_pattern_;
-    private static final String PRE_PARSE_REGEX =
-            "(.*);([0-9]+)\\s*.*";
+	private Perl5Matcher _preparse_matcher_;
+	private Pattern _preparse_pattern_;
+	private static final String PRE_PARSE_REGEX =
+	    "(.*);([0-9]+)\\s*.*";
 
-    /**
-     * Constructor for a VMSFTPEntryParser object.  Sets the versioning member
-     * to the supplied value.
-     *
-     * @throws IllegalArgumentException Thrown if the regular expression is unparseable.  Should not be seen
-     *                                  under normal conditions.  It it is seen, this is a sign that
-     *                                  <code>REGEX</code> is  not a valid regular expression.
-     */
-    public VMSVersioningFTPEntryParser() {
-        super();
-        try {
-            _preparse_matcher_ = new Perl5Matcher();
-            _preparse_pattern_ = new Perl5Compiler().compile(PRE_PARSE_REGEX);
-        }
-        catch (MalformedPatternException e) {
-            throw new IllegalArgumentException("Unparseable regex supplied:  " + PRE_PARSE_REGEX);
-        }
+	/**
+	 * Constructor for a VMSFTPEntryParser object.  Sets the versioning member
+	 * to the supplied value.
+	 *
+	 * @throws IllegalArgumentException Thrown if the regular expression is unparseable.  Should not be seen
+	 *                                  under normal conditions.  It it is seen, this is a sign that
+	 *                                  <code>REGEX</code> is  not a valid regular expression.
+	 */
+	public VMSVersioningFTPEntryParser() {
+		super();
+		try {
+			_preparse_matcher_ = new Perl5Matcher();
+			_preparse_pattern_ = new Perl5Compiler().compile(PRE_PARSE_REGEX);
+		}
+		catch(MalformedPatternException e) {
+			throw new IllegalArgumentException("Unparseable regex supplied:  "+PRE_PARSE_REGEX);
+		}
 
-    }
+	}
 
 
-    private class NameVersion {
-        String name;
-        int versionNumber;
+	private class NameVersion {
+		String name;
+		int versionNumber;
 
-        NameVersion(String name, String vers) {
-            this.name = name;
-            this.versionNumber = Integer.parseInt(vers);
-        }
-    }
+		NameVersion(String name, String vers) {
+			this.name = name;
+			this.versionNumber = Integer.parseInt(vers);
+		}
+	}
 
-    /**
-     * Implement hook provided for those implementers (such as
-     * VMSVersioningFTPEntryParser, and possibly others) which return
-     * multiple files with the same name to remove the duplicates ..
-     *
-     * @param original Original list
-     * @return Original list purged of duplicates
-     */
-    public List preParse(Path parent, List original) {
-        original = super.preParse(parent, original);
-        HashMap existingEntries = new HashMap();
-        ListIterator iter = original.listIterator();
-        while (iter.hasNext()) {
-            String entry = ((String)iter.next()).trim();
-            MatchResult result = null;
-            if (_preparse_matcher_.matches(entry, _preparse_pattern_)) {
-                result = _preparse_matcher_.getMatch();
-                String name = result.group(1);
-                String version = result.group(2);
-                NameVersion nv = new NameVersion(name, version);
-                NameVersion existing = (NameVersion)existingEntries.get(name);
-                if (null != existing) {
-                    if (nv.versionNumber < existing.versionNumber) {
-                        iter.remove();  // removal removes from original list.
-                        continue;
-                    }
-                }
-                existingEntries.put(name, nv);
-            }
+	/**
+	 * Implement hook provided for those implementers (such as
+	 * VMSVersioningFTPEntryParser, and possibly others) which return
+	 * multiple files with the same name to remove the duplicates ..
+	 *
+	 * @param original Original list
+	 * @return Original list purged of duplicates
+	 */
+	public List preParse(Path parent, List original) {
+		original = super.preParse(parent, original);
+		HashMap existingEntries = new HashMap();
+		ListIterator iter = original.listIterator();
+		while(iter.hasNext()) {
+			String entry = ((String)iter.next()).trim();
+			MatchResult result = null;
+			if(_preparse_matcher_.matches(entry, _preparse_pattern_)) {
+				result = _preparse_matcher_.getMatch();
+				String name = result.group(1);
+				String version = result.group(2);
+				NameVersion nv = new NameVersion(name, version);
+				NameVersion existing = (NameVersion)existingEntries.get(name);
+				if(null != existing) {
+					if(nv.versionNumber < existing.versionNumber) {
+						iter.remove();  // removal removes from original list.
+						continue;
+					}
+				}
+				existingEntries.put(name, nv);
+			}
 
-        }
-        // we've now removed all entries less than with less than the largest
-        // version number for each name that were listed after the largest.
-        // we now must remove those with smaller than the largest version number
-        // for each name that were found before the largest
-        while (iter.hasPrevious()) {
-            String entry = ((String)iter.previous()).trim();
-            MatchResult result = null;
-            if (_preparse_matcher_.matches(entry, _preparse_pattern_)) {
-                result = _preparse_matcher_.getMatch();
-                String name = result.group(1);
-                String version = result.group(2);
-                NameVersion nv = new NameVersion(name, version);
-                NameVersion existing = (NameVersion)existingEntries.get(name);
-                if (null != existing) {
-                    if (nv.versionNumber < existing.versionNumber) {
-                        iter.remove(); // removal removes from original list.
-                    }
-                }
-            }
+		}
+		// we've now removed all entries less than with less than the largest
+		// version number for each name that were listed after the largest.
+		// we now must remove those with smaller than the largest version number
+		// for each name that were found before the largest
+		while(iter.hasPrevious()) {
+			String entry = ((String)iter.previous()).trim();
+			MatchResult result = null;
+			if(_preparse_matcher_.matches(entry, _preparse_pattern_)) {
+				result = _preparse_matcher_.getMatch();
+				String name = result.group(1);
+				String version = result.group(2);
+				NameVersion nv = new NameVersion(name, version);
+				NameVersion existing = (NameVersion)existingEntries.get(name);
+				if(null != existing) {
+					if(nv.versionNumber < existing.versionNumber) {
+						iter.remove(); // removal removes from original list.
+					}
+				}
+			}
 
-        }
-        return original;
-    }
+		}
+		return original;
+	}
 
-    protected boolean isVersioning() {
-        return true;
-    }
+	protected boolean isVersioning() {
+		return true;
+	}
 }

@@ -30,10 +30,10 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 public class UploadQueue extends Queue {
 
 	/**
-	* The observer to notify when an upload is complete
+	 * The observer to notify when an upload is complete
 	 */
 	private Observer callback;
-	
+
 	public UploadQueue() {
 		//
 	}
@@ -42,7 +42,7 @@ public class UploadQueue extends Queue {
 		this.callback = callback;
 		this.addRoot(root);
 	}
-		
+
 	public UploadQueue(java.util.Observer callback) {
 		this.callback = callback;
 	}
@@ -66,7 +66,7 @@ public class UploadQueue extends Queue {
 			}
 		}
 	}
-	
+
 	protected List getChilds(List childs, Path p) {
 		childs.add(p);
 		if(p.attributes.isDirectory()) {
@@ -81,14 +81,14 @@ public class UploadQueue extends Queue {
 		}
 		return childs;
 	}
-	
+
 	protected void reset() {
 		this.size = 0;
 		for(java.util.Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
 			this.size += ((Path)iter.next()).getLocal().getSize();
 		}
 	}
-	
+
 	protected void process(Path p) {
 		p.upload();
 	}

@@ -348,7 +348,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 		}
 		log.info("The Transport Protocol has been stopped");
 	}
-	
+
 	/**
 	 * @param msg
 	 * @param sender

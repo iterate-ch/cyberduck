@@ -20,7 +20,6 @@ package org.apache.commons.net.ftp.parser;
 import java.io.IOException;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
-
 import com.enterprisedt.net.ftp.FTPException;
 
 /**
@@ -35,77 +34,77 @@ import com.enterprisedt.net.ftp.FTPException;
  */
 public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFactory {
 
-    /**
-     * This default implementation of the FTPFileEntryParserFactory
-     *
-     * @param key a string containing (case-insensitively) one of the
-     *            following keywords:
-     *            <ul>
-     *            <li><code>unix</code></li>
-     *            <li><code>windows</code></li>
-     *            <li><code>os/2</code></li>
-     *            <li><code>vms</code></li>
-     *            </ul>
-     * @return the FTPFileEntryParser corresponding to the supplied key.
-     * @see FTPFileEntryParser
-     */
-    public FTPFileEntryParser createFileEntryParser(String key) throws IOException {
-        String ukey = null;
-        if (null != key) {
-            ukey = key.toUpperCase();
-            if (ukey.indexOf("UNIX") >= 0) {
-                return createUnixFTPEntryParser();
-            }
-            else if (ukey.indexOf("VMS") >= 0) {
-                throw new FTPException("\"" + key + "\" is not currently a supported system. Think about a good motivation for the author of this sofware to write an appropriate parser. See Help > Send Feedback menu.");
-                //return createVMSFTPEntryParser();
-            }
-            else if (ukey.indexOf("NETWARE") >= 0) {
-                return createNetwareFTPEntryParser();
-            }
-            else if (ukey.indexOf("WINDOWS") >= 0) {
-                return createNTFTPEntryParser();
-            }
-            else if (ukey.indexOf("OS/2") >= 0) {
-                return createOS2FTPEntryParser();
-            }
-            else if (ukey.indexOf("OS/400") >= 0) {
-                return createOS400FTPEntryParser();
-            }
-        }
-        return new UnixFTPEntryParser();
-    }
+	/**
+	 * This default implementation of the FTPFileEntryParserFactory
+	 *
+	 * @param key a string containing (case-insensitively) one of the
+	 *            following keywords:
+	 *            <ul>
+	 *            <li><code>unix</code></li>
+	 *            <li><code>windows</code></li>
+	 *            <li><code>os/2</code></li>
+	 *            <li><code>vms</code></li>
+	 *            </ul>
+	 * @return the FTPFileEntryParser corresponding to the supplied key.
+	 * @see FTPFileEntryParser
+	 */
+	public FTPFileEntryParser createFileEntryParser(String key) throws IOException {
+		String ukey = null;
+		if(null != key) {
+			ukey = key.toUpperCase();
+			if(ukey.indexOf("UNIX") >= 0) {
+				return createUnixFTPEntryParser();
+			}
+			else if(ukey.indexOf("VMS") >= 0) {
+				throw new FTPException("\""+key+"\" is not currently a supported system. Think about a good motivation for the author of this sofware to write an appropriate parser. See Help > Send Feedback menu.");
+				//return createVMSFTPEntryParser();
+			}
+			else if(ukey.indexOf("NETWARE") >= 0) {
+				return createNetwareFTPEntryParser();
+			}
+			else if(ukey.indexOf("WINDOWS") >= 0) {
+				return createNTFTPEntryParser();
+			}
+			else if(ukey.indexOf("OS/2") >= 0) {
+				return createOS2FTPEntryParser();
+			}
+			else if(ukey.indexOf("OS/400") >= 0) {
+				return createOS400FTPEntryParser();
+			}
+		}
+		return new UnixFTPEntryParser();
+	}
 
-    public FTPFileEntryParser createUnixFTPEntryParser() {
-        return new UnixFTPEntryParser();
-    }
-	
-    public FTPFileEntryParser createNetwareFTPEntryParser() {
-        return new NetwareFTPEntryParser();
-    }
-	
-    public FTPFileEntryParser createVMSVersioningFTPEntryParser() {
-        return new VMSVersioningFTPEntryParser();
-    }
+	public FTPFileEntryParser createUnixFTPEntryParser() {
+		return new UnixFTPEntryParser();
+	}
 
-    public FTPFileEntryParser createNTFTPEntryParser() {
-        return new CompositeFileEntryParser(new FTPFileEntryParser[]
-        {
-            new NTFTPEntryParser(),
-            new UnixFTPEntryParser()
-        });
-    }
+	public FTPFileEntryParser createNetwareFTPEntryParser() {
+		return new NetwareFTPEntryParser();
+	}
 
-    public FTPFileEntryParser createOS2FTPEntryParser() {
-        return new OS2FTPEntryParser();
-    }
+	public FTPFileEntryParser createVMSVersioningFTPEntryParser() {
+		return new VMSVersioningFTPEntryParser();
+	}
 
-    public FTPFileEntryParser createOS400FTPEntryParser() {
-        return new CompositeFileEntryParser(new FTPFileEntryParser[]
-        {
-            new OS400FTPEntryParser(),
-            new UnixFTPEntryParser()
-        });
-    }
+	public FTPFileEntryParser createNTFTPEntryParser() {
+		return new CompositeFileEntryParser(new FTPFileEntryParser[]
+		{
+			new NTFTPEntryParser(),
+			new UnixFTPEntryParser()
+		});
+	}
+
+	public FTPFileEntryParser createOS2FTPEntryParser() {
+		return new OS2FTPEntryParser();
+	}
+
+	public FTPFileEntryParser createOS400FTPEntryParser() {
+		return new CompositeFileEntryParser(new FTPFileEntryParser[]
+		{
+			new OS400FTPEntryParser(),
+			new UnixFTPEntryParser()
+		});
+	}
 }
 

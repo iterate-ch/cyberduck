@@ -157,7 +157,7 @@ public class FTPPath extends Path {
 			session.FTP.chdir(this.getAbsolute());
 		}
 	}
-	
+
 	public void mkdir(boolean recursive) {
 		synchronized(session) {
 			log.debug("mkdir:"+this.getName());
@@ -183,7 +183,7 @@ public class FTPPath extends Path {
 			}
 		}
 	}
-	
+
 	public void rename(String filename) {
 		synchronized(session) {
 			log.debug("rename:"+filename);
@@ -204,7 +204,7 @@ public class FTPPath extends Path {
 			}
 		}
 	}
-	
+
 	public void reset() {
 		synchronized(session) {
 			if(this.attributes.isFile() && this.attributes.isUndefined()) {
@@ -245,7 +245,7 @@ public class FTPPath extends Path {
 			}
 		}
 	}
-	
+
 	public void delete() {
 		synchronized(session) {
 			log.debug("delete:"+this.toString());
@@ -286,7 +286,7 @@ public class FTPPath extends Path {
 			}
 		}
 	}
-	
+
 	public void changePermissions(Permission perm, boolean recursive) {
 		synchronized(session) {
 			log.debug("changePermissions:"+perm);
@@ -322,7 +322,7 @@ public class FTPPath extends Path {
 			}
 		}
 	}
-	
+
 	public void download() {
 		synchronized(session) {
 			log.debug("download:"+this.toString());
@@ -379,7 +379,7 @@ public class FTPPath extends Path {
 			}
 		}
 	}
-	
+
 	private void downloadBinary() throws IOException {
 		InputStream in = null;
 		OutputStream out = null;
@@ -458,14 +458,14 @@ public class FTPPath extends Path {
 //				this.status.setCurrent(this.getLocal().getSize());
 //			}
 			out = new FromNetASCIIOutputStream(new FileOutputStream(this.getLocal(), false),
-																	//this.status.isResume()),
-																	lineSeparator);
+			    //this.status.isResume()),
+			    lineSeparator);
 			if(out == null) {
 				throw new IOException("Unable to buffer data");
 			}
 			in = new FromNetASCIIInputStream(session.FTP.get(this.getAbsolute(), 0),
-											 //			    this.status.isResume() ? this.getLocal().getSize() : 0),
-											 lineSeparator);
+			    //			    this.status.isResume() ? this.getLocal().getSize() : 0),
+			    lineSeparator);
 			if(in == null) {
 				throw new IOException("Unable opening data stream");
 			}
@@ -511,7 +511,7 @@ public class FTPPath extends Path {
 			}
 		}
 	}
-	
+
 	public void upload() {
 		synchronized(session) {
 			log.debug("upload:"+this.toString());
@@ -577,7 +577,7 @@ public class FTPPath extends Path {
 			}
 		}
 	}
-	
+
 	private void uploadBinary() throws IOException {
 		InputStream in = null;
 		OutputStream out = null;

@@ -84,7 +84,8 @@ public class Editor {
 			else {
 				proposal = filename+"-"+no;
 			}
-		} while(this.file.getLocal().exists());
+		}
+		while(this.file.getLocal().exists());
 		this.file.download();
 		if(this.file.status.isComplete()) {
 			this.edit(this.file.getLocal().getAbsolute());

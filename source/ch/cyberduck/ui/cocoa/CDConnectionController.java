@@ -388,26 +388,26 @@ public class CDConnectionController extends CDController implements Observer {
 					case (Session.SSH_PORT):
 						// SFTP has been selected as the protocol to connect with
 						host = new Host(Session.SFTP,
-										hostPopup.stringValue(),
-										Integer.parseInt(portField.stringValue()),
-										pathField.stringValue());
+						    hostPopup.stringValue(),
+						    Integer.parseInt(portField.stringValue()),
+						    pathField.stringValue());
 						host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
 						break;
 					case (Session.FTP_PORT):
 						// FTP has been selected as the protocol to connect with
 						host = new Host(Session.FTP,
-										hostPopup.stringValue(),
-										Integer.parseInt(portField.stringValue()),
-										pathField.stringValue());
+						    hostPopup.stringValue(),
+						    Integer.parseInt(portField.stringValue()),
+						    pathField.stringValue());
 						host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
 						break;
 					default:
 						throw new IllegalArgumentException("No protocol selected.");
 				}
-					if(pkCheckbox.state() == NSCell.OnState) {
-						host.getCredentials().setPrivateKeyFile(pkLabel.stringValue());
-					}
-					browserController.mount(host);
+				if(pkCheckbox.state() == NSCell.OnState) {
+					host.getCredentials().setPrivateKeyFile(pkLabel.stringValue());
+				}
+				browserController.mount(host);
 				break;
 			case (NSAlertPanel.AlternateReturn):
 				break;

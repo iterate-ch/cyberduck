@@ -20,10 +20,10 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSWindow;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSSelector;
 import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
 
@@ -53,8 +53,8 @@ public abstract class CDController {
 
 	public boolean windowShouldClose(NSWindow sender) {
 		return true;
-	}	
-	
+	}
+
 	public abstract void windowWillClose(NSNotification notification);
 
 	public void cascade() {
@@ -70,20 +70,22 @@ public abstract class CDController {
 			}
 		}
 	}
-	
+
 	public void endSheet() {
 		log.debug("endSheet");
 		if(this.hasSheet()) {
 			NSApplication.sharedApplication().endSheet(this.window().attachedSheet());
 		}
 	}
-	
+
 	public void waitForSheetEnd() {
 		log.debug("waitForSheetEnd");
 		synchronized(this) {
 			while(this.hasSheet()) {
 				try {
-					log.debug("Sleeping:waitForSheetEnd..."); this.wait(); log.debug("Awakened:waitForSheetEnd");
+					log.debug("Sleeping:waitForSheetEnd...");
+					this.wait();
+					log.debug("Awakened:waitForSheetEnd");
 				}
 				catch(InterruptedException e) {
 					log.error(e.getMessage());
@@ -91,13 +93,15 @@ public abstract class CDController {
 			}
 		}
 	}
-	
+
 	public void waitForSheetDisplay(NSWindow sheet) {
 		log.debug("waitForSheetDisplay:"+sheet);
 		synchronized(this) {
 			while(this.window().attachedSheet() != sheet) {
 				try {
-					log.debug("Sleeping:waitForSheetDisplay..."); this.wait(); log.debug("Awakened:waitForSheetDisplay");
+					log.debug("Sleeping:waitForSheetDisplay...");
+					this.wait();
+					log.debug("Awakened:waitForSheetDisplay");
 				}
 				catch(InterruptedException e) {
 					log.error(e.getMessage());
@@ -105,17 +109,17 @@ public abstract class CDController {
 			}
 		}
 	}
-	
+
 	public void beginSheet(NSWindow sheet) {
 		this.beginSheet(sheet, new NSSelector("sheetDidEnd",
-									   new Class[]{NSWindow.class, int.class, Object.class}) // did end selector
-						);
+		    new Class[]{NSWindow.class, int.class, Object.class}) // did end selector
+		);
 	}
-	
+
 	public void beginSheet(NSWindow sheet, NSSelector endSelector) {
 		this.beginSheet(sheet, endSelector, null);
 	}
-	
+
 	public void beginSheet(NSWindow sheet, NSSelector endSelector, Object contextInfo) {
 		this.beginSheet(sheet, this, endSelector, contextInfo);
 	}
@@ -126,10 +130,10 @@ public abstract class CDController {
 			this.waitForSheetEnd();
 			this.window().makeKeyAndOrderFront(null);
 			NSApplication.sharedApplication().beginSheet(sheet, //sheet
-														 this.window(),
-														 delegate, //modalDelegate
-														 endSelector, // did end selector
-														 contextInfo); //contextInfo
+			    this.window(),
+			    delegate, //modalDelegate
+			    endSelector, // did end selector
+			    contextInfo); //contextInfo
 			this.window().makeKeyAndOrderFront(null);
 			this.notifyAll();
 		}

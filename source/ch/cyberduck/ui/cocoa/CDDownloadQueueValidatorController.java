@@ -73,7 +73,7 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
 		}
 		return false;
 	}
-	
+
 	protected void adjustFilename(Path path) {
 		String parent = path.getLocal().getParent();
 		String filename = path.getLocal().getName();

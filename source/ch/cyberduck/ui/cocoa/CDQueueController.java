@@ -24,7 +24,6 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.growl.Growl;
 
 /**
  * @version $Id$
@@ -152,9 +151,7 @@ public class CDQueueController extends CDController {
 		this.queueTable.registerForDraggedTypes(new NSArray(new Object[]{
 			"QueuePBoardType",
 			NSPasteboard.StringPboardType,
-			NSPasteboard.FilesPromisePboardType}
-															)
-												);
+			NSPasteboard.FilesPromisePboardType}));
 		this.queueTable.setRowHeight(50f);
 		{
 			NSTableColumn c = new NSTableColumn();
@@ -167,7 +164,7 @@ public class CDQueueController extends CDController {
 			c.setDataCell(new CDIconCell());
 			this.queueTable.addTableColumn(c);
 		}
-		
+
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("PROGRESS");
@@ -207,16 +204,16 @@ public class CDQueueController extends CDController {
 			Queue q = this.queueModel.getItem(this.queueTable.selectedRow());
 			if(q.numberOfRoots() == 1) {
 				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()+"/"+q.getRoot().getAbsolute(),
-																			  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 				this.localField.setAttributedStringValue(new NSAttributedString(q.getRoot().getLocal().getAbsolute(),
-																				TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 			}
 			else {
 				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL(),
-																			  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 				this.localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiple files", ""),
-																				//				    +" ("+q.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
-																				TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+				    //				    +" ("+q.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
+				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 			}
 		}
 		else {
@@ -241,7 +238,7 @@ public class CDQueueController extends CDController {
 		this.queueTable.reloadData();
 		this.tableViewSelectionChange();
 	}
-	
+
 	public void removeItem(Queue queue) {
 		this.queueModel.removeItem(queue);
 		this.reloadQueueTable();
@@ -260,7 +257,7 @@ public class CDQueueController extends CDController {
 		this.addItem(queue);
 		this.startItem(queue, false);
 	}
-	
+
 	private void startItem(Queue queue, boolean resumeRequested) {
 		queue.addObserver(new java.util.Observer() {
 			public void update(final java.util.Observable o, final Object arg) {

@@ -6,9 +6,13 @@
 		<string>Cyberduck</string>
 		<key>AppleEventCode</key>
 		<string>CYCK</string>
+		<key>UsedFeatures</key>
+		<array>
+			<string>UnnamedArguments</string>
+		</array>
 		<key>Classes</key>
 		<dict>
-			<key>Cyberduck</key>
+			<key>NSApplication</key>
 			<dict>
 				<key>AppleEventCode</key>
 				<string>capp</string>
@@ -21,9 +25,7 @@
 						<key>AppleEventCode</key>
 						<string>docu</string>
 						<key>Type</key>
-						<string>Browser</string>
-						<key>ReadOnly</key>
-						<string>NO</string>
+						<string>ch.cyberduck.ui.cocoa.CDBrowserController</string>
 					</dict>
 				</dict>
 				<key>SupportedCommands</key>
@@ -32,7 +34,7 @@
 					<string>newDocument:</string>
 				</dict>
 			</dict>
-			<key>Browser</key>
+			<key>ch.cyberduck.ui.cocoa.CDBrowserController</key>
 			<dict>
 				<key>AppleEventCode</key>
 				<string>docu</string>
@@ -78,7 +80,7 @@
 				<key>AppleEventCode</key>
 				<string>CoCt</string>
 				<key>CommandClass</key>
-				<string>NSScriptCommand</string>
+				<string>ch.cyberduck.ui.cocoa.CDBrowserController</string>
 				<key>Arguments</key>
 				<dict>
 					<key>Protocol</key>

@@ -26,11 +26,11 @@ import com.apple.cocoa.foundation.NSDictionary;
 
 import org.apache.log4j.Logger;
 import com.sshtools.j2ssh.SshException;
+import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.sftp.SftpFile;
 import com.sshtools.j2ssh.sftp.SftpFileInputStream;
 import com.sshtools.j2ssh.sftp.SftpFileOutputStream;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
-import com.sshtools.j2ssh.io.UnsignedInteger32;
 
 import ch.cyberduck.core.*;
 
@@ -92,11 +92,11 @@ public class SFTPPath extends Path {
 		super(dict);
 		this.session = s;
 	}
-	
+
 	public Session getSession() {
 		return this.session;
 	}
-	
+
 	public List list(String encoding, boolean refresh, boolean showHidden, boolean notifyObservers) {
 		synchronized(session) {
 			List files = session.cache().get(this.getAbsolute());
@@ -195,7 +195,7 @@ public class SFTPPath extends Path {
 			}
 		}
 	}
-	
+
 	public void rename(String filename) {
 		synchronized(session) {
 			log.debug("rename:"+filename);
@@ -216,7 +216,7 @@ public class SFTPPath extends Path {
 			}
 		}
 	}
-	
+
 	public void reset() {
 		synchronized(session) {
 			if(this.attributes.isFile() && this.attributes.isUndefined()) {
@@ -241,7 +241,7 @@ public class SFTPPath extends Path {
 			}
 		}
 	}
-	
+
 	public void delete() {
 		synchronized(session) {
 			log.debug("delete:"+this.toString());
@@ -280,7 +280,7 @@ public class SFTPPath extends Path {
 			}
 		}
 	}
-	
+
 	public void changePermissions(Permission perm, boolean recursive) {
 		synchronized(session) {
 			log.debug("changePermissions");
@@ -391,7 +391,7 @@ public class SFTPPath extends Path {
 			}
 		}
 	}
-	
+
 	public void upload() {
 		synchronized(session) {
 			log.debug("upload:"+this.toString());
@@ -407,14 +407,14 @@ public class SFTPPath extends Path {
 					SftpFile f = null;
 					if(this.status.isResume()) {
 						f = session.SFTP.openFile(this.getAbsolute(),
-												  SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
-												  SftpSubsystemClient.OPEN_APPEND); //File open flag, forces all writes to append data at the end of the file.
+						    SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
+						    SftpSubsystemClient.OPEN_APPEND); //File open flag, forces all writes to append data at the end of the file.
 					}
 					else {
 						f = session.SFTP.openFile(this.getAbsolute(),
-												  SftpSubsystemClient.OPEN_CREATE | //File open flag, if specified a new file will be created if one does not already exist.
-												  SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
-												  SftpSubsystemClient.OPEN_TRUNCATE); //File open flag, forces an existing file with the same name to be truncated to zero length when creating a file by specifying OPEN_CREATE.
+						    SftpSubsystemClient.OPEN_CREATE | //File open flag, if specified a new file will be created if one does not already exist.
+						    SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
+						    SftpSubsystemClient.OPEN_TRUNCATE); //File open flag, forces an existing file with the same name to be truncated to zero length when creating a file by specifying OPEN_CREATE.
 					}
 					if(this.status.isResume()) {
 						this.status.setCurrent(f.getAttributes().getSize().intValue());
@@ -445,7 +445,7 @@ public class SFTPPath extends Path {
 					}
 					if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
 						f.getAttributes().setTimes(f.getAttributes().getAccessedTime(),
-												   new UnsignedInteger32(this.getLocal().getTimestamp().getTime()/1000));
+						    new UnsignedInteger32(this.getLocal().getTimestamp().getTime()/1000));
 						session.SFTP.setAttributes(f, f.getAttributes());
 					}
 				}

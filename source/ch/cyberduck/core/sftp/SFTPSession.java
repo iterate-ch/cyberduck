@@ -218,7 +218,7 @@ public class SFTPSession extends Session {
 			}
 			else {
 				if(AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
-				   AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
+				    AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
 					this.log("Login successful", Message.PROGRESS);
 					credentials.addInternetPasswordToKeychain();
 					this.setAuthenticated();
@@ -253,7 +253,7 @@ public class SFTPSession extends Session {
 	public synchronized void noop() throws IOException {
 		this.SSH.noop();
 	}
-		
+
 	public synchronized void check() throws IOException {
 		this.log("Working", Message.START);
 		//		this.log("Checking connection...", Message.PROGRESS);

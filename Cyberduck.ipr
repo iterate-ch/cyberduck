@@ -211,6 +211,12 @@
     <option enabled="false" />
   </component>
   <component name="WebRootContainer" />
+  <component name="copyright">
+    <option name="body" value="/*&#10; * Copyright (c) $today.year Your Corporation. All Rights Reserved.&#10; */" />
+    <option name="location" value="1" />
+    <option name="remove" value="true" />
+    <option name="replace" value="2" />
+  </component>
   <component name="libraryTable" />
   <component name="uidesigner-configuration">
     <option name="INSTRUMENT_CLASSES" value="true" />

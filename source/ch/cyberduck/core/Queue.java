@@ -18,8 +18,11 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import javax.swing.Timer;
-import java.util.*;
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Observable;
 
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -38,13 +41,13 @@ public abstract class Queue extends Observable {
 		log.debug("------------- finalize");
 		super.finalize();
 	}
-		
+
 	private Worker worker;
 	private List roots;
 
 	protected long size;
 	protected long current;
-	
+
 	/**
 	 * Creating an empty queue containing no items. Items have to be added later
 	 * using the <code>addRoot</code> method.
@@ -127,11 +130,11 @@ public abstract class Queue extends Observable {
 	public void addRoot(Path item) {
 		this.roots.add(item);
 	}
-	
+
 	public Path getRoot() {
 		return (Path)roots.get(0);
 	}
-	
+
 	public Session getSession() {
 		return this.getRoot().getSession();
 	}
@@ -139,7 +142,7 @@ public abstract class Queue extends Observable {
 	public Host getHost() {
 		return this.getSession().getHost();
 	}
-		
+
 	public String getName() {
 		String name = "";
 		for(Iterator iter = this.roots.iterator(); iter.hasNext();) {
@@ -162,7 +165,7 @@ public abstract class Queue extends Observable {
 		this.setChanged();
 		this.notifyObservers(arg);
 	}
-	
+
 	public List getChilds() {
 		List childs = new ArrayList();
 		for(Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext();) {
@@ -176,15 +179,15 @@ public abstract class Queue extends Observable {
 	protected abstract void process(Path p);
 
 	private boolean resumeRequested;
-	
+
 	public boolean isResumeRequested() {
 		return this.resumeRequested;
 	}
-	
+
 	public List getJobs() {
 		return this.worker.getJobs();
 	}
-	
+
 	/**
 	 * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
 	 */
@@ -206,45 +209,45 @@ public abstract class Queue extends Observable {
 			this.queue = queue;
 			this.validator = validator;
 		}
-		
+
 		public List getJobs() {
 			return this.jobs;
 		}
-				
+
 		private void init() {
 			this.running = true;
 			this.progress = new Timer(500,
-									  new java.awt.event.ActionListener() {
-										  int i = 0;
-										  long current;
-										  long last;
-										  long[] speeds = new long[8];
-										  
-										  public void actionPerformed(java.awt.event.ActionEvent e) {
-											  long diff = 0;
-											  current = getCurrent(); // Bytes
-											  if(current <= 0) {
-												  setSpeed(0);
-											  }
-											  else {
-												  speeds[i] = (current-last)*2; // Bytes per second
-												  i++;
-												  last = current;
-												  if(i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
-													  i = 0;
-												  }
-												  for(int k = 0; k < speeds.length; k++) {
-													  diff = diff+speeds[k]; // summe der differenzen zwischen einer halben sekunde
-												  }
-												  setSpeed((diff/speeds.length)); //Bytes per second
-											  }
-											  
-										  }
-									  });
+			    new java.awt.event.ActionListener() {
+				    int i = 0;
+				    long current;
+				    long last;
+				    long[] speeds = new long[8];
+
+				    public void actionPerformed(java.awt.event.ActionEvent e) {
+					    long diff = 0;
+					    current = getCurrent(); // Bytes
+					    if(current <= 0) {
+						    setSpeed(0);
+					    }
+					    else {
+						    speeds[i] = (current-last)*2; // Bytes per second
+						    i++;
+						    last = current;
+						    if(i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
+							    i = 0;
+						    }
+						    for(int k = 0; k < speeds.length; k++) {
+							    diff = diff+speeds[k]; // summe der differenzen zwischen einer halben sekunde
+						    }
+						    setSpeed((diff/speeds.length)); //Bytes per second
+					    }
+
+				    }
+			    });
 			this.progress.start();
 			this.queue.callObservers(new Message(Message.QUEUE_START));
 		}
-		
+
 		public void run() {
 			this.init();
 			this.validator.validate(this.queue);
@@ -252,10 +255,10 @@ public abstract class Queue extends Observable {
 				if(this.validator.getValidated().size() > 0) {
 					this.jobs = this.validator.getValidated();
 					this.queue.reset();
-					for(Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
+					for(Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled();) {
 						((Path)iter.next()).status.reset();
 					}
-					for(Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
+					for(Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled();) {
 						this.queue.process((Path)iter.next());
 					}
 				}
@@ -265,16 +268,15 @@ public abstract class Queue extends Observable {
 			}
 			this.finish();
 		}
-				
+
 		private void finish() {
 			this.running = false;
 			this.progress.stop();
 			this.queue.getRoot().getSession().close();
 			this.queue.callObservers(new Message(Message.QUEUE_STOP));
 			this.jobs = null;
-			Queue.this.worker = null;
 		}
-		
+
 		protected void cancel() {
 			if(this.isInitialized()) {
 				for(Iterator iter = this.jobs.iterator(); iter.hasNext();) {
@@ -291,14 +293,14 @@ public abstract class Queue extends Observable {
 		protected boolean isRunning() {
 			return this.running;
 		}
-		
+
 		protected boolean isInitialized() {
 			return this.getJobs() != null;
 		}
 	}
 
 	protected abstract void reset();
-	
+
 	public void cancel() {
 		this.worker.cancel();
 	}
@@ -306,12 +308,12 @@ public abstract class Queue extends Observable {
 	public boolean isCanceled() {
 		return this.worker.isCanceled();
 	}
-	
+
 	public boolean isInitialized() {
 		return this.getSize() != 0;
 //		return this.worker.isInitialized();
 	}
-	
+
 	/**
 	 * @return True if this queue's thread is running
 	 */
@@ -330,7 +332,7 @@ public abstract class Queue extends Observable {
 	public long getSize() {
 		return this.size; //cached value
 	}
-		
+
 	public String getSizeAsString() {
 		return Status.getSizeAsString(this.getSize());
 	}

@@ -38,10 +38,10 @@ public abstract class Path {
 		log.debug("------------- finalize");
 		super.finalize();
 	}
-		
+
 	private String path = null;
 	private Local local = null;
-	
+
 	public Status status = new Status();
 	public Attributes attributes = new Attributes();
 
@@ -149,9 +149,9 @@ public abstract class Path {
 	}
 
 	public abstract void reset();
-	
+
 	private Path parent;
-	
+
 	/*
 	 * @return My parent directory
 	 */
@@ -169,7 +169,7 @@ public abstract class Path {
 		}
 		return this.parent;
 	}
-	
+
 	/**
 	 * @throws NullPointerException if session is not initialized
 	 */
@@ -186,9 +186,9 @@ public abstract class Path {
 	}
 
 	public List list(boolean refresh) {
-		return this.list(Preferences.instance().getProperty("browser.charset.encoding"), 
-				  refresh,
-				  Preferences.instance().getBoolean("browser.showHidden"));
+		return this.list(Preferences.instance().getProperty("browser.charset.encoding"),
+		    refresh,
+		    Preferences.instance().getBoolean("browser.showHidden"));
 	}
 
 	public List list(boolean refresh, boolean showHidden) {
@@ -198,7 +198,7 @@ public abstract class Path {
 	public List list(boolean refresh, boolean showHidden, boolean notifyObservers) {
 		return this.list(Preferences.instance().getProperty("browser.charset.encoding"), refresh, showHidden, notifyObservers);
 	}
-	
+
 	/**
 	 * Request a file listing from the server. Has to be a directory.
 	 */
@@ -222,7 +222,7 @@ public abstract class Path {
 	public void mkdir() {
 		this.mkdir(false);
 	}
-	
+
 	/**
 	 * @param recursive Create intermediate directories as required.  If this option is
 	 *                  not specified, the full path prefix of each operand must already exist
@@ -456,7 +456,7 @@ public abstract class Path {
 	public boolean exists() {
 		return this.getParent().list(false, true).contains(this);
 	}
-		
+
 	public boolean equals(Object other) {
 		if(other instanceof Path) {
 			return this.getAbsolute().equals(((Path)other).getAbsolute());

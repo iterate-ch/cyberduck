@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -124,13 +123,9 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 			if(droppedText != null) {
 				log.info("NSPasteboard.StringPboardType:"+droppedText);
 				try {
-					URL url = new URL(droppedText);
-					String file = url.getFile();
+					Host h = Host.parse(droppedText);
+					String file = h.getDefaultPath();
 					if(file.length() > 1) {
-						Host h = new Host(url.getProtocol(),
-										  url.getHost(),
-										  url.getPort());
-						h.setCredentials(url.getUserInfo(), null);
 						Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
 						Queue q = new DownloadQueue();
 						q.addRoot(p);

@@ -18,13 +18,15 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import java.net.MalformedURLException;
+
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
-import ch.cyberduck.ui.LoginController;
-
 import org.apache.log4j.Logger;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
+
+import ch.cyberduck.ui.LoginController;
 
 public class Host {
 	private static Logger log = Logger.getLogger(Host.class);
@@ -50,7 +52,7 @@ public class Host {
 		log.debug("------------- finalize");
 		super.finalize();
 	}
-	
+
 	public Host(NSDictionary dict) {
 		Object protocolObj = dict.objectForKey(Host.PROTOCOL);
 		if(protocolObj != null) {
@@ -96,19 +98,19 @@ public class Host {
 
 	public Host copy() {
 		Host copy = new Host(this.getProtocol(),
-							 this.getHostname(),
-							 this.getPort(), 
-							 this.getDefaultPath());
+		    this.getHostname(),
+		    this.getPort(),
+		    this.getDefaultPath());
 		copy.setCredentials(this.login.getUsername(), this.login.getPassword());
 		return copy;
 	}
-	
+
 	/**
 	 * For internal use only.
 	 *
 	 * @param url Must be in the format protocol://user@hostname:portnumber
 	 */
-	public Host(String url) throws java.net.MalformedURLException {
+	private Host(String url) throws java.net.MalformedURLException {
 		try {
 			this.protocol = url.substring(0, url.indexOf("://"));
 			this.hostname = url.substring(url.indexOf("@")+1, url.lastIndexOf(":"));
@@ -140,7 +142,7 @@ public class Host {
 	public Host(String protocol, String hostname) {
 		this(protocol, hostname, getDefaultPort(protocol));
 	}
-	
+
 	/**
 	 * @param protocol The protocol to use, must be either Session.HTTP, Session.FTP or Session.SFTP
 	 * @param hostname The hostname of the server
@@ -158,8 +160,71 @@ public class Host {
 		this.setNickname(nickname);
 		this.setDefaultPath(defaultpath);
 		this.setCredentials(null, null);
-		
 		log.debug(this.toString());
+	}
+
+	public static Host parse(String input) throws MalformedURLException {
+		if(null == input || input.length() == 0)
+			throw new MalformedURLException("No hostname given");
+		int begin = 0;
+		int cut = 0;
+		String protocol = Preferences.instance().getProperty("connection.protocol.default");
+		if(input.indexOf("://", begin) != -1) {
+			cut = input.indexOf("://", begin);
+			protocol = input.substring(begin, cut);
+			begin += protocol.length()+3;
+		}
+		String username = null;
+		if(protocol.equals(Session.FTP)) {
+			username = Preferences.instance().getProperty("ftp.anonymous.name");
+		}
+		else if(protocol.equals(Session.SFTP)) {
+			username = Preferences.instance().getProperty("connection.login.name");
+		}
+		else {
+			throw new MalformedURLException("Unknown protocol: "+protocol);
+		}
+		if(input.indexOf('@', begin) != -1) {
+			cut = input.indexOf('@', begin);
+			username = input.substring(begin, cut);
+			begin += username.length()+1;
+		}
+		String hostname = null;
+		hostname = input.substring(begin, input.length());
+		String path = null;
+		int port = getDefaultPort(protocol);
+		if(input.indexOf(':', begin) != -1) {
+			cut = input.indexOf(':', begin);
+			hostname = input.substring(begin, cut);
+			begin += hostname.length()+1;
+			try {
+				String portString;
+				if(input.indexOf('/', begin) != -1) {
+					portString = input.substring(begin, input.indexOf('/', begin));
+				}
+				else {
+					portString = input.substring(begin, input.length());
+				}
+				port = Integer.parseInt(portString);
+				begin += portString.length()+1;
+				path = input.substring(begin, input.length());
+			}
+			catch(NumberFormatException e) {
+				throw new MalformedURLException("Invalid port number given");
+			}
+		}
+		else if(input.indexOf('/', begin) != -1) {
+			cut = input.indexOf('/', begin);
+			hostname = input.substring(begin, cut);
+			begin += hostname.length()+1;
+			path = input.substring(begin, input.length());
+		}
+		Host h = new Host(protocol,
+		    hostname,
+		    port,
+		    path);
+		h.setCredentials(username, null);
+		return h;
 	}
 
 	// ----------------------------------------------------------
@@ -206,18 +271,17 @@ public class Host {
 	public void setCredentials(Login login) {
 		this.login = login;
 	}
-	
+
 	public void setCredentials(String username, String password) {
-		this.setCredentials(username, 
-							password, 
-							Preferences.instance().getBoolean("connection.login.useKeychain")
-							);
+		this.setCredentials(username,
+		    password,
+		    Preferences.instance().getBoolean("connection.login.useKeychain"));
 	}
-		
+
 	public void setCredentials(String username, String password, boolean addToKeychain) {
 		this.setCredentials(new Login(this, username, password, addToKeychain));
 	}
-	
+
 	public Login getCredentials() {
 		return this.login;
 	}
@@ -274,7 +338,7 @@ public class Host {
 	public void setLoginController(LoginController c) {
 		this.getCredentials().setController(c);
 	}
-	
+
 	//ssh specific
 	public void setHostKeyVerificationController(HostKeyVerification h) {
 		this.hostKeyVerification = h;

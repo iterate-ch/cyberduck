@@ -19,13 +19,10 @@ package ch.cyberduck.core;
  */
 
 import java.io.File;
-import java.util.Date;
 import java.util.Calendar;
-import java.io.IOException;
+import java.util.Date;
 
 import com.apple.cocoa.foundation.*;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSFileWrapper;
 
 import org.apache.log4j.Logger;
 
@@ -65,7 +62,7 @@ public class Local extends File {
 		super(path);
 //		this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
-	
+
 	public String getAbsolute() {
 		return super.getAbsolutePath();
 	}
@@ -106,15 +103,16 @@ public class Local extends File {
 	
 	/**
 	 * @return true if the provided path is an alias.
-     */
+	 */
 //	private native boolean isAlias(String path);
-	
-    /**
+
+	/**
 	 * Resolves an alias path.
-     * @return the same path if the provided path is not an alias.
-     */
+	 *
+	 * @return the same path if the provided path is not an alias.
+	 */
 //	private native String resolveAlias(String aliasPath);
-	
+
 //	public void setProgress(float progress) {
 //		this.wrapper.setIcon(NSImage.imageNamed("download0.icns"));
 //	}
@@ -138,7 +136,7 @@ public class Local extends File {
 		c.clear(Calendar.SECOND);
 		return c;
 	}
-	
+
 	private static final NSGregorianDateFormatter longDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
 	private static final NSGregorianDateFormatter shortDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), false);
 
@@ -154,7 +152,7 @@ public class Local extends File {
 		}
 		return null;
 	}
-	
+
 	public String getTimestampAsShortString() {
 		try {
 			return shortDateFormatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
@@ -174,7 +172,7 @@ public class Local extends File {
 			return 0l;
 		return super.length();
 	}
-	
+
 	public boolean equals(Object other) {
 		if(other instanceof Local) {
 			return this.getAbsolutePath().equals(((Local)other).getAbsolutePath());// && this.attributes.getTimestamp().equals(((Local)other).attributes.getTimestamp());

@@ -32,7 +32,7 @@ public abstract class AbstractValidator implements Validator {
 	protected List validatedList = new ArrayList();
 	protected List workList = new ArrayList();
 	protected List promptList = new ArrayList();
-		
+
 	/**
 	 * The user canceled this request, no further validation should be taken
 	 */
@@ -63,7 +63,7 @@ public abstract class AbstractValidator implements Validator {
 		}
 		throw new IllegalArgumentException(p.getName()+" is neither file nor directory");
 	}
-	
+
 	protected boolean validateFile(Path path, boolean resumeRequested) {
 		if(resumeRequested) { // resume existing files independant of settings in preferences
 			path.status.setResume(this.isExisting(path));
@@ -88,7 +88,7 @@ public abstract class AbstractValidator implements Validator {
 				log.info("Changed local name to "+path.getName());
 				return true;
 			}
-			if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
+			if(Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
 				log.debug("Apply validation rule to ask:"+path.getName());
 				this.prompt(path);
 				return false;
@@ -100,12 +100,12 @@ public abstract class AbstractValidator implements Validator {
 			return true;
 		}
 	}
-	
+
 	protected abstract boolean validateDirectory(Path path);
 
 	public List getValidated() {
 		return this.validatedList;
 	}
-		
+
 	protected abstract void adjustFilename(Path path);
 }

@@ -18,13 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.Date;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Observable;
 
-import org.apache.log4j.Logger;
-
 import com.apple.cocoa.foundation.*;
+
+import org.apache.log4j.Logger;
 
 /**
  * Attributes of a remote directory or file.
@@ -35,7 +35,7 @@ public class Attributes extends Observable {
 	private static Logger log = Logger.getLogger(Attributes.class);
 
 	/**
-	* The file length
+	 * The file length
 	 */
 	private long size = -1;
 	private Date modified = null;
@@ -47,7 +47,7 @@ public class Attributes extends Observable {
 	public Attributes() {
 		super();
 	}
-	
+
 	public boolean isUndefined() {
 		return this.modified == null || this.size == -1;
 	}
@@ -66,19 +66,19 @@ public class Attributes extends Observable {
 	}
 
 	/**
-		* @param size the size of file in bytes.
+	 * @param size the size of file in bytes.
 	 */
 	public void setSize(long size) {
 		this.size = size;
 	}
-	
+
 	/**
-		* @return length the size of file in bytes.
+	 * @return length the size of file in bytes.
 	 */
 	public long getSize() {
 		return this.size;
 	}
-		
+
 	/**
 	 * Set the modfication returned by ftp directory listings
 	 */
@@ -93,7 +93,7 @@ public class Attributes extends Observable {
 	public Date getTimestamp() {
 		return this.modified;
 	}
-	
+
 	public Calendar getTimestampAsCalendar() {
 		Calendar c = Calendar.getInstance();
 		if(this.getTimestamp() != null) {
@@ -103,12 +103,12 @@ public class Attributes extends Observable {
 		c.clear(Calendar.SECOND);
 		return c;
 	}
-	
+
 	private static final NSGregorianDateFormatter longDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
 	private static final NSGregorianDateFormatter shortDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), false);
-	
+
 	/**
-		* @return the modification date of this file
+	 * @return the modification date of this file
 	 */
 	public String getTimestampAsString() {
 		if(this.getTimestamp() != null) {
@@ -121,7 +121,7 @@ public class Attributes extends Observable {
 		}
 		return NSBundle.localizedString("Unknown", "");
 	}
-	
+
 	public String getTimestampAsShortString() {
 		if(this.getTimestamp() != null) {
 			try {

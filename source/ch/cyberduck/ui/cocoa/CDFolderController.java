@@ -22,7 +22,6 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
@@ -53,7 +52,7 @@ public class CDFolderController extends CDController {
 	public void awakeFromNib() {
 		this.window().setReleasedWhenClosed(true);
 	}
-		
+
 	public void windowWillClose(NSNotification notification) {
 		instances.removeObject(this);
 	}
@@ -73,12 +72,12 @@ public class CDFolderController extends CDController {
 			    NSBundle.localizedString("Invalid character in folder name.", "") // message
 			);
 		}
-		else if (folderField.stringValue().length() == 0) {
+		else if(folderField.stringValue().length() == 0) {
 			//
-        }
-        else {
-            NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
-        }
+		}
+		else {
+			NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+		}
 	}
 
 	public void cancelButtonClicked(NSButton sender) {

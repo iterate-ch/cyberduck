@@ -47,9 +47,9 @@ import com.sshtools.j2ssh.net.TransportProviderFactory;
 import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
+import com.sshtools.j2ssh.transport.SshMsgIgnore;
 import com.sshtools.j2ssh.transport.TransportProtocolClient;
 import com.sshtools.j2ssh.transport.TransportProtocolState;
-import com.sshtools.j2ssh.transport.SshMsgIgnore;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import com.sshtools.j2ssh.util.State;
 

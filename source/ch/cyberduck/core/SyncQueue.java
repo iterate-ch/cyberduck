@@ -19,9 +19,9 @@ package ch.cyberduck.core;
  */
 
 import java.io.File;
-import java.util.Observer;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Observer;
 
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
@@ -31,23 +31,23 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 public class SyncQueue extends Queue {
 
 	/**
-	* The observer to notify when an upload is complete
+	 * The observer to notify when an upload is complete
 	 */
 	private Observer callback;
-	
+
 	public SyncQueue() {
 		//
 	}
-	
+
 	public SyncQueue(Path root, Observer callback) {
 		this.callback = callback;
 		this.addRoot(root);
 	}
-	
+
 	public SyncQueue(java.util.Observer callback) {
 		this.callback = callback;
 	}
-	
+
 	public NSMutableDictionary getAsDictionary() {
 		NSMutableDictionary dict = super.getAsDictionary();
 		dict.setObjectForKey(Queue.KIND_SYNC+"", "Kind");
@@ -67,7 +67,7 @@ public class SyncQueue extends Queue {
 			}
 		}
 	}
-	
+
 	private void addLocalChilds(List childs, Path root) {
 		if(root.getLocal().exists()) {
 			if(!childs.contains(root)) {
@@ -105,7 +105,7 @@ public class SyncQueue extends Queue {
 		this.addLocalChilds(childs, root);
 		return childs;
 	}
-	
+
 	protected void reset() {
 		this.size = 0;
 		for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {

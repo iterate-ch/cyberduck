@@ -73,7 +73,7 @@ public abstract class AbstractKnownHostsKeyVerification
 	public AbstractKnownHostsKeyVerification() {
 		super();
 	}
-	
+
 	public void setKnownHostFile(String knownhosts) throws InvalidHostFileException {
 		InputStream in = null;
 		try {

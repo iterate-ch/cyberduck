@@ -27,30 +27,30 @@ package ch.cyberduck.core;
  */
 public class Message {
 
-	public static final String TRANSCRIPT	= "TRANSCRIPT";
-	public static final String PROGRESS		= "PROGRESS";
-	public static final String ERROR		= "ERROR";
-	public static final String DATA			= "DATA";
+	public static final String TRANSCRIPT = "TRANSCRIPT";
+	public static final String PROGRESS = "PROGRESS";
+	public static final String ERROR = "ERROR";
+	public static final String DATA = "DATA";
 
 	// connection state of host
-	public static final String OPEN			= "OPEN";
-	public static final String CLOSE		= "CLOSE";
+	public static final String OPEN = "OPEN";
+	public static final String CLOSE = "CLOSE";
 
 	// connection state of file
-	public static final String START		= "START";
-	public static final String STOP			= "STOP";
-	public static final String REFRESH		= "REFRESH";
+	public static final String START = "START";
+	public static final String STOP = "STOP";
+	public static final String REFRESH = "REFRESH";
 
-	public static final String QUEUE_START	= "QUEUE_START";
-	public static final String QUEUE_STOP	= "QUEUE_STOP";
+	public static final String QUEUE_START = "QUEUE_START";
+	public static final String QUEUE_STOP = "QUEUE_STOP";
 
 	public static final String RENDEZVOUS_ADD = "RENDEZVOUS_ADD";
 	public static final String RENDEZVOUS_REMOVE = "RENDEZVOUS_REMOVE";
 
-	
+
 	private String title;
 	private Object content;
-		
+
 	/**
 	 * @param t The title of the mesage
 	 * @param d The description of the mesage

@@ -19,9 +19,9 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.NSFont;
-import com.apple.cocoa.application.NSTextView;
 import com.apple.cocoa.application.NSLayoutManager;
 import com.apple.cocoa.application.NSTextContainer;
+import com.apple.cocoa.application.NSTextView;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSRange;
@@ -49,18 +49,18 @@ public class CDTranscriptImpl implements Transcript {
 		this.textView.setRichText(false);
 		this.textView.layoutManager().setBackgroundLayoutEnabled(false);
 	}
-	
+
 	private static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
-																					new Object[]{NSAttributedString.FontAttributeName});
-	
-	public void layoutManagerDidCompleteLayoutForTextContainer(NSLayoutManager layoutManager, 
-															   NSTextContainer textContainer, 
-															   boolean finished) {
+	    new Object[]{NSAttributedString.FontAttributeName});
+
+	public void layoutManagerDidCompleteLayoutForTextContainer(NSLayoutManager layoutManager,
+	                                                           NSTextContainer textContainer,
+	                                                           boolean finished) {
 		if(finished && this.textView.window().isVisible()) {
 			this.textView.scrollRangeToVisible(new NSRange(this.textView.textStorage().length(), 0));
 		}
 	}
-		
+
 	public void log(final String message) {
 		log.info(message);
 		ThreadUtilities.instance().invokeLater(new Runnable() {
@@ -71,7 +71,7 @@ public class CDTranscriptImpl implements Transcript {
 				// before aRange if the range's length is 0. If the range's location is 0, the formatting
 				// attributes of the first character in the receiver are used.
 				textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0),
-																new NSAttributedString(message+"\n", FIXED_WITH_FONT_ATTRIBUTES));
+				    new NSAttributedString(message+"\n", FIXED_WITH_FONT_ATTRIBUTES));
 			}
 		});
 	}

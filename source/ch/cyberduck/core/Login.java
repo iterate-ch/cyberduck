@@ -67,14 +67,14 @@ public class Login {
 	}
 
 	/**
-		* @see #getInternetPasswordFromKeychain
+	 * @see #getInternetPasswordFromKeychain
 	 */
 	public native String getInternetPasswordFromKeychain(String protocol, String serviceName, int port, String user);
 
 	public String getInternetPasswordFromKeychain() {
 		return this.getInternetPasswordFromKeychain(this.protocol, this.serviceName, this.port, this.getUsername());
 	}
-	
+
 	/**
 	 * @see #getPasswordFromKeychain
 	 */
@@ -96,26 +96,26 @@ public class Login {
 	}
 
 	/**
-		* @see #addInternetPasswordToKeychain
+	 * @see #addInternetPasswordToKeychain
 	 */
 	public native void addInternetPasswordToKeychain(String protocol, String serviceName, int port, String user, String password);
-	
+
 	public void addInternetPasswordToKeychain() {
 		if(this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
 			this.addInternetPasswordToKeychain(this.protocol, this.serviceName, this.port, this.getUsername(), this.getPassword());
 		}
 	}
-	
+
 	/**
 	 * @param serviceName The service to use when looking up the password in the keychain
 	 * @param user        Login with this username
 	 * @param pass        Passphrase
 	 */
 	public Login(Host h, String user, String pass) {
-		this(h, 
-			 user, 
-			 pass, 
-			 false);
+		this(h,
+		    user,
+		    pass,
+		    false);
 	}
 
 	/**
@@ -236,7 +236,7 @@ public class Login {
 	}
 
 	private boolean tryAgain;
-	
+
 	public boolean tryAgain() {
 		return this.tryAgain;
 	}
@@ -244,7 +244,7 @@ public class Login {
 	public void setTryAgain(boolean v) {
 		this.tryAgain = v;
 	}
-	
+
 	/**
 	 * @return true if the user hasn't canceled the login process. If false is returned,
 	 *         no more attempts should be made and the connection closed.

@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.apple.cocoa.application.NSApplication;
 
@@ -71,7 +70,7 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 		//Directory already exists; do not include as this would throw "file already exists"
 		return false;
 	}
-	
+
 	protected void adjustFilename(Path path) {
 		String parent = path.getParent().getAbsolute();
 		String filename = path.getName();

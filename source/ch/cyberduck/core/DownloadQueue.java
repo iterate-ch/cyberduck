@@ -52,7 +52,7 @@ public class DownloadQueue extends Queue {
 			this.size += ((Path)iter.next()).attributes.getSize();
 		}
 	}
-			
+
 	protected void process(Path p) {
 		p.download();
 	}

@@ -20,11 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
@@ -62,14 +60,14 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
 	public void awakeFromNib() {
 		super.awakeFromNib();
-		
+
 		this.mirrorRadioCell.setTarget(this);
 		this.mirrorRadioCell.setAction(new NSSelector("mirrorCellClicked", new Class[]{Object.class}));
 		this.uploadRadioCell.setTarget(this);
 		this.uploadRadioCell.setAction(new NSSelector("uploadCellClicked", new Class[]{Object.class}));
 		this.downloadRadioCell.setTarget(this);
 		this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
-		
+
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("NEW");
@@ -82,7 +80,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			c.setDataCell(new NSImageCell());
 			c.dataCell().setAlignment(NSText.CenterTextAlignment);
 			this.fileTableView.addTableColumn(c);
-		}		
+		}
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("TYPE");
@@ -95,7 +93,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			c.setDataCell(new NSImageCell());
 			c.dataCell().setAlignment(NSText.CenterTextAlignment);
 			this.fileTableView.addTableColumn(c);
-		}		
+		}
 	}
 
 	protected boolean validateFile(Path p, boolean resume) {
@@ -109,7 +107,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		}
 		return false;
 	}
-	
+
 	protected boolean validateDirectory(Path p) {
 		p.attributes.setSize(0);
 		if(p.getRemote().exists() && p.getLocal().exists()) {
@@ -121,15 +119,15 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			if(!p.getRemote().exists()) {
 				p.getSession().cache().put(p.getAbsolute(), new ArrayList());
 			}
-			this.prompt(p); 
+			this.prompt(p);
 			return false;
 		}
 	}
-	
+
 	protected boolean isExisting(Path p) {
 		return p.getRemote().exists() || p.getLocal().exists();
 	}
-	
+
 	protected void setEnabled(boolean enabled) {
 		this.syncButton.setEnabled(enabled);
 	}
@@ -219,7 +217,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			this.uploadCellClicked(null);
 		}
 	}
-		
+
 	private static final NSImage ARROW_UP_ICON = NSImage.imageNamed("arrowUp16.tiff");
 	private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDown16.tiff");
 	private static final NSImage PLUS_ICON = NSImage.imageNamed("plus.tiff");

@@ -108,7 +108,7 @@ public class CDLoginController extends CDController implements LoginController {
 	}
 
 	private Login login;
-	
+
 	public Login promptUser(final Login login, final String message) {
 		this.login = login;
 		this.textField.setStringValue(message);

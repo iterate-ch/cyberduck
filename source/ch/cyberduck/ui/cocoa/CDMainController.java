@@ -132,20 +132,18 @@ public class CDMainController extends NSObject {
 	public void setUpdateText(NSTextView updateText) {
 		this.updateText = updateText;
 	}
-	
+
 	private NSMenu encodingMenu;
-	
+
 	public void setEncodingMenu(NSMenu encodingMenu) {
 		this.encodingMenu = encodingMenu;
 		this.encodingMenu.setAutoenablesItems(true);
 		java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
 		java.util.Iterator iterator = charsets.values().iterator();
 		while(iterator.hasNext()) {
-			this.encodingMenu.addItem(new NSMenuItem(
-													 ((java.nio.charset.Charset)iterator.next()).name(),
-									  new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
-									  ""
-									  ));
+			this.encodingMenu.addItem(new NSMenuItem(((java.nio.charset.Charset)iterator.next()).name(),
+			    new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
+			    ""));
 		}
 	}
 
@@ -554,40 +552,40 @@ public class CDMainController extends NSObject {
 
 	public int applicationShouldTerminate(NSApplication app) {
 		log.debug("applicationShouldTerminate");
-			NSArray windows = app.windows();
-			int count = windows.count();
-			// Determine if there are any open connections
-			while(0 != count--) {
-				NSWindow window = (NSWindow)windows.objectAtIndex(count);
-				CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-				if(null != controller) {
-					if(controller.isConnected()) {
-						if(Preferences.instance().getBoolean("browser.confirmQuit")) {
-							int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
-															   NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
-															   NSBundle.localizedString("Review...", ""), //default
-															   NSBundle.localizedString("Quit Anyway", ""), //alternate
-															   NSBundle.localizedString("Cancel", "")); //other
-							if(choice == NSAlertPanel.AlternateReturn) {
-								// Quit
-								return CDQueueController.applicationShouldTerminate(app);
-							}
-							if(choice == NSAlertPanel.OtherReturn) {
-								// Cancel
-								return NSApplication.TerminateCancel;
-							}
-							if(choice == NSAlertPanel.DefaultReturn) {
-								// Review
-								// if at least one window reqested to terminate later, we shall wait
-								return CDBrowserController.applicationShouldTerminate(app);
-							}
+		NSArray windows = app.windows();
+		int count = windows.count();
+		// Determine if there are any open connections
+		while(0 != count--) {
+			NSWindow window = (NSWindow)windows.objectAtIndex(count);
+			CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+			if(null != controller) {
+				if(controller.isConnected()) {
+					if(Preferences.instance().getBoolean("browser.confirmQuit")) {
+						int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
+						    NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
+						    NSBundle.localizedString("Review...", ""), //default
+						    NSBundle.localizedString("Quit Anyway", ""), //alternate
+						    NSBundle.localizedString("Cancel", "")); //other
+						if(choice == NSAlertPanel.AlternateReturn) {
+							// Quit
+							return CDQueueController.applicationShouldTerminate(app);
 						}
-						else {
-							controller.unmount();	
+						if(choice == NSAlertPanel.OtherReturn) {
+							// Cancel
+							return NSApplication.TerminateCancel;
 						}
+						if(choice == NSAlertPanel.DefaultReturn) {
+							// Review
+							// if at least one window reqested to terminate later, we shall wait
+							return CDBrowserController.applicationShouldTerminate(app);
+						}
+					}
+					else {
+						controller.unmount();
 					}
 				}
 			}
+		}
 		return CDQueueController.applicationShouldTerminate(app);
 	}
 
@@ -628,7 +626,7 @@ public class CDMainController extends NSObject {
 	public CDBrowserController newDocument(NSScriptCommand command) {
 		return CDMainController.newDocument();
 	}
-	
+
 	public NSArray orderedBrowsers() {
 		log.debug("orderedBrowsers");
 		NSApplication app = NSApplication.sharedApplication();
@@ -650,7 +648,7 @@ public class CDMainController extends NSObject {
 		log.debug("insertInOrderedBrowsersAtIndex"+doc);
 		doc.window().makeKeyAndOrderFront(null);
 	}
-	
+
 	public NSArray orderedDocuments() {
 		log.debug("orderedDocuments");
 		NSApplication app = NSApplication.sharedApplication();
@@ -667,7 +665,7 @@ public class CDMainController extends NSObject {
 		log.debug("orderedDocuments:"+orderedDocs);
 		return orderedDocs;
 	}
-	
+
 	public void insertInOrderedDocumentsAtIndex(CDBrowserController doc, int index) {
 		log.debug("insertInOrderedDocumentsAtIndex"+doc);
 		doc.window().makeKeyAndOrderFront(null);

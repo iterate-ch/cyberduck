@@ -64,15 +64,15 @@ public class CDPreferencesController extends CDController {
 			boolean[] ownerPerm = p.getOwnerPermissions();
 			boolean[] groupPerm = p.getGroupPermissions();
 			boolean[] otherPerm = p.getOtherPermissions();
-			
+
 			uownerr.setState(ownerPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
 			uownerw.setState(ownerPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
 			uownerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-			
+
 			ugroupr.setState(groupPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
 			ugroupw.setState(groupPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
 			ugroupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-			
+
 			uotherr.setState(otherPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
 			uotherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
 			uotherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
@@ -82,20 +82,20 @@ public class CDPreferencesController extends CDController {
 			boolean[] ownerPerm = p.getOwnerPermissions();
 			boolean[] groupPerm = p.getGroupPermissions();
 			boolean[] otherPerm = p.getOtherPermissions();
-			
+
 			downerr.setState(ownerPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
 			downerw.setState(ownerPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
 			downerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-			
+
 			dgroupr.setState(groupPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
 			dgroupw.setState(groupPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
 			dgroupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-			
+
 			dotherr.setState(otherPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
 			dotherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
 			dotherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
 		}
-}
+	}
 
 	public void windowWillClose(NSNotification notification) {
 		NSNotificationCenter.defaultCenter().removeObserver(this);
@@ -136,7 +136,7 @@ public class CDPreferencesController extends CDController {
 		this.editorCombobox.removeAllItems();
 		java.util.Map editors = Editor.SUPPORTED_EDITORS;
 		NSSelector absolutePathForAppBundleWithIdentifierSelector =
-			new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
+		    new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
 		java.util.Iterator editorNames = editors.keySet().iterator();
 		java.util.Iterator editorIdentifiers = editors.values().iterator();
 		while(editorNames.hasNext()) {
@@ -148,7 +148,7 @@ public class CDPreferencesController extends CDController {
 		}
 		this.editorCombobox.setTitle(Preferences.instance().getProperty("editor.name"));
 	}
-	
+
 	public void editorComboboxClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
 		Preferences.instance().setProperty("editor.bundleIdentifier", (String)Editor.SUPPORTED_EDITORS.get(sender.titleOfSelectedItem()));
@@ -254,8 +254,8 @@ public class CDPreferencesController extends CDController {
 		this.chmodUploadDefaultCheckbox.setAction(new NSSelector("chmodUploadDefaultCheckboxClicked", new Class[]{NSButton.class}));
 		this.chmodUploadDefaultCheckbox.setState(Preferences.instance().getBoolean("queue.upload.permissions.useDefault") ? NSCell.OnState : NSCell.OffState);
 		this.chmodUploadDefaultCheckbox.setEnabled(Preferences.instance().getBoolean("queue.upload.changePermissions"));
-		boolean enabled = Preferences.instance().getBoolean("queue.upload.changePermissions") 
-			&& Preferences.instance().getBoolean("queue.upload.permissions.useDefault");
+		boolean enabled = Preferences.instance().getBoolean("queue.upload.changePermissions")
+		    && Preferences.instance().getBoolean("queue.upload.permissions.useDefault");
 		this.uownerr.setEnabled(enabled);
 		this.uownerw.setEnabled(enabled);
 		this.uownerx.setEnabled(enabled);
@@ -324,8 +324,8 @@ public class CDPreferencesController extends CDController {
 		this.chmodDownloadDefaultCheckbox.setAction(new NSSelector("chmodDownloadDefaultCheckboxClicked", new Class[]{NSButton.class}));
 		this.chmodDownloadDefaultCheckbox.setState(Preferences.instance().getBoolean("queue.download.permissions.useDefault") ? NSCell.OnState : NSCell.OffState);
 		this.chmodDownloadDefaultCheckbox.setEnabled(Preferences.instance().getBoolean("queue.download.changePermissions"));
-		boolean enabled = Preferences.instance().getBoolean("queue.download.changePermissions") 
-			&& Preferences.instance().getBoolean("queue.download.permissions.useDefault");
+		boolean enabled = Preferences.instance().getBoolean("queue.download.changePermissions")
+		    && Preferences.instance().getBoolean("queue.download.permissions.useDefault");
 		this.downerr.setEnabled(enabled);
 		this.downerw.setEnabled(enabled);
 		this.downerx.setEnabled(enabled);
@@ -416,14 +416,14 @@ public class CDPreferencesController extends CDController {
 	}
 
 	private NSButton preserveModificationDownloadCheckbox; //IBOutlet
-	
+
 	public void setPreserveModificationDownloadCheckbox(NSButton preserveModificationDownloadCheckbox) {
 		this.preserveModificationDownloadCheckbox = preserveModificationDownloadCheckbox;
 		this.preserveModificationDownloadCheckbox.setTarget(this);
 		this.preserveModificationDownloadCheckbox.setAction(new NSSelector("preserveModificationDownloadCheckboxClicked", new Class[]{NSButton.class}));
 		this.preserveModificationDownloadCheckbox.setState(Preferences.instance().getBoolean("queue.download.preserveDate") ? NSCell.OnState : NSCell.OffState);
 	}
-	
+
 	public void preserveModificationDownloadCheckboxClicked(NSButton sender) {
 		switch(sender.state()) {
 			case NSCell.OnState:
@@ -436,14 +436,14 @@ public class CDPreferencesController extends CDController {
 	}
 
 	private NSButton preserveModificationUploadCheckbox; //IBOutlet
-	
+
 	public void setPreserveModificationUploadCheckbox(NSButton preserveModificationUploadCheckbox) {
 		this.preserveModificationUploadCheckbox = preserveModificationUploadCheckbox;
 		this.preserveModificationUploadCheckbox.setTarget(this);
 		this.preserveModificationUploadCheckbox.setAction(new NSSelector("preserveModificationUploadCheckboxClicked", new Class[]{NSButton.class}));
 		this.preserveModificationUploadCheckbox.setState(Preferences.instance().getBoolean("queue.upload.preserveDate") ? NSCell.OnState : NSCell.OffState);
 	}
-	
+
 	public void preserveModificationUploadCheckboxClicked(NSButton sender) {
 		switch(sender.state()) {
 			case NSCell.OnState:
@@ -454,7 +454,7 @@ public class CDPreferencesController extends CDController {
 				break;
 		}
 	}
-	
+
 	private NSButton horizontalLinesCheckbox; //IBOutlet
 
 	public void setHorizontalLinesCheckbox(NSButton horizontalLinesCheckbox) {
@@ -621,7 +621,7 @@ public class CDPreferencesController extends CDController {
 
 		publickeyCombobox.setTitle(Preferences.instance().getProperty("ssh.publickey"));
 	}
-	
+
 	public void publickeyComboboxClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("ssh.publickey", sender.titleOfSelectedItem());
 	}
@@ -892,14 +892,14 @@ public class CDPreferencesController extends CDController {
 	}
 
 	private NSButton keepAliveCheckbox; //IBOutlet
-	
+
 	public void setKeepAliveCheckbox(NSButton keepAliveCheckbox) {
 		this.keepAliveCheckbox = keepAliveCheckbox;
 		this.keepAliveCheckbox.setTarget(this);
 		this.keepAliveCheckbox.setAction(new NSSelector("keepAliveCheckboxClicked", new Class[]{NSButton.class}));
 		this.keepAliveCheckbox.setState(Preferences.instance().getBoolean("connection.keepalive") ? NSCell.OnState : NSCell.OffState);
 	}
-	
+
 	public void keepAliveCheckboxClicked(NSButton sender) {
 		switch(sender.state()) {
 			case NSCell.OnState:
@@ -910,9 +910,9 @@ public class CDPreferencesController extends CDController {
 				break;
 		}
 	}
-	
+
 	private NSTextField keepAliveIntervalField; //IBOutlet
-	
+
 	public void setKeepAliveIntervalField(NSTextField keepAliveIntervalField) {
 		this.keepAliveIntervalField = keepAliveIntervalField;
 		try {
@@ -923,11 +923,11 @@ public class CDPreferencesController extends CDController {
 			log.error(e.getMessage());
 		}
 		NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("keepAliveIntervalFieldDidChange", new Class[]{NSNotification.class}),
-														 NSControl.ControlTextDidChangeNotification,
-														 this.keepAliveIntervalField);
+		    new NSSelector("keepAliveIntervalFieldDidChange", new Class[]{NSNotification.class}),
+		    NSControl.ControlTextDidChangeNotification,
+		    this.keepAliveIntervalField);
 	}
-	
+
 	public void keepAliveIntervalFieldDidChange(NSNotification sender) {
 		try {
 			int i = Integer.parseInt(this.keepAliveIntervalField.stringValue());
@@ -937,7 +937,7 @@ public class CDPreferencesController extends CDController {
 			log.error(e.getMessage());
 		}
 	}
-			
+
 	private NSTextField userAgentField; //IBOutlet
 
 	public void setUserAgentField(NSTextField userAgentField) {

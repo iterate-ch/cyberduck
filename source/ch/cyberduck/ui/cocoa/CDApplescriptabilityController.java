@@ -17,9 +17,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import java.net.URL;
-import java.net.URLDecoder;
-
 import com.apple.cocoa.foundation.NSScriptCommand;
 import com.apple.cocoa.foundation.NSScriptCommandDescription;
 
@@ -41,29 +38,16 @@ public class CDApplescriptabilityController extends NSScriptCommand {
 		String arg = (String)this.directParameter();
 		log.debug("Received URL from Apple Event:"+arg);
 		try {
-			URL url = new URL(URLDecoder.decode(arg, "UTF-8"));
-			String file = url.getFile();
-			log.debug("File:"+file);
-			Host h = new Host(url.getProtocol(),
-			    url.getHost(),
-			    url.getPort(),
-			    url.getPath());
-			h.setCredentials(url.getUserInfo(), null);
-			if(file.length() > 1) {
-				Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
-				// we assume a file has an extension
-				if(null != p.getExtension()) {
-					Queue q = new DownloadQueue();
-					q.addRoot(p);
-					CDQueueController.instance().startItem(q);
-					return null;
-				}
+			Host h = Host.parse(arg);
+			if(h.getDefaultPath().length() > 1 && h.getDefaultPath().indexOf('.') != -1) {
+				Path p = PathFactory.createPath(SessionFactory.createSession(h), h.getDefaultPath());
+				Queue q = new DownloadQueue();
+				q.addRoot(p);
+				CDQueueController.instance().startItem(q);
+				return null;
 			}
 			CDBrowserController controller = new CDBrowserController();
 			controller.mount(h);
-		}
-		catch(java.io.UnsupportedEncodingException e) {
-			log.error(e.getMessage());
 		}
 		catch(java.net.MalformedURLException e) {
 			log.error(e.getMessage());

@@ -30,33 +30,33 @@ import ch.cyberduck.core.Path;
  * @author Mario Ivankovits <mario@ops.co.at>
  */
 public class CompositeFileEntryParser extends FTPFileEntryParserImpl {
-    private final FTPFileEntryParser[] ftpFileEntryParsers;
-    private FTPFileEntryParser cachedFtpFileEntryParser;
+	private final FTPFileEntryParser[] ftpFileEntryParsers;
+	private FTPFileEntryParser cachedFtpFileEntryParser;
 
-    public CompositeFileEntryParser(FTPFileEntryParser[] ftpFileEntryParsers) {
-        super();
-        this.cachedFtpFileEntryParser = null;
-        this.ftpFileEntryParsers = ftpFileEntryParsers;
-    }
+	public CompositeFileEntryParser(FTPFileEntryParser[] ftpFileEntryParsers) {
+		super();
+		this.cachedFtpFileEntryParser = null;
+		this.ftpFileEntryParsers = ftpFileEntryParsers;
+	}
 
-    public Path parseFTPEntry(Path parent, String listEntry) {
-        if (cachedFtpFileEntryParser != null) {
-            Path matched = cachedFtpFileEntryParser.parseFTPEntry(parent, listEntry);
-            if (matched != null) {
-                return matched;
-            }
-        }
-        else {
-            for (int iterParser = 0; iterParser < ftpFileEntryParsers.length; iterParser++) {
-                FTPFileEntryParser ftpFileEntryParser = ftpFileEntryParsers[iterParser];
+	public Path parseFTPEntry(Path parent, String listEntry) {
+		if(cachedFtpFileEntryParser != null) {
+			Path matched = cachedFtpFileEntryParser.parseFTPEntry(parent, listEntry);
+			if(matched != null) {
+				return matched;
+			}
+		}
+		else {
+			for(int iterParser = 0; iterParser < ftpFileEntryParsers.length; iterParser++) {
+				FTPFileEntryParser ftpFileEntryParser = ftpFileEntryParsers[iterParser];
 
-                Path matched = ftpFileEntryParser.parseFTPEntry(parent, listEntry);
-                if (matched != null) {
-                    cachedFtpFileEntryParser = ftpFileEntryParser;
-                    return matched;
-                }
-            }
-        }
-        return null;
-    }
+				Path matched = ftpFileEntryParser.parseFTPEntry(parent, listEntry);
+				if(matched != null) {
+					cachedFtpFileEntryParser = ftpFileEntryParser;
+					return matched;
+				}
+			}
+		}
+		return null;
+	}
 }
