@@ -82,7 +82,7 @@ public class Attributes extends Observable {
     /**
 	* @return The unix access permissions including the the first bit
      */
-    protected String getMode() {
+    public String getMode() {
 	return this.access;
     }
 

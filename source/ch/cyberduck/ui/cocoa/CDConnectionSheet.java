@@ -27,12 +27,27 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDConnectionSheet extends NSPanel {
+public class CDConnectionSheet {//extends NSPanel {
     private static Logger log = Logger.getLogger(CDConnectionSheet.class);
 
     // ----------------------------------------------------------
+    // Constructors
+    // ----------------------------------------------------------
+
+    public CDConnectionSheet() {
+	super();
+	log.debug("CDConnectionSheet");
+    }
+    
+    // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
+
+    private NSWindow sheet;
+    public void setSheet(NSWindow sheet) {
+	this.sheet = sheet;
+    }
+    
     
     private NSPopUpButton protocolPopup;    
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
@@ -52,40 +67,44 @@ public class CDConnectionSheet extends NSPanel {
     private NSTextField portField;
     public void setPortField(NSTextField portField) {
 	this.portField = portField;
+//	this.portField.setDelegate(new NumberInputVerifier());
     }
+
+    /*
+    class NumberInputVerifier extends NSObject {
+	public boolean textShouldBeginEditing(NSText input) {
+	    try {
+		Integer.parseInt(input.string());
+		return true;
+	    }
+	    catch(NumberFormatException e) {
+		return false;
+	    }
+	}
+    }
+     */
 
     private NSTextField usernameField;
     public void setUsernameField(NSTextField usernameField) {
 	this.usernameField = usernameField;
     }
 
+    private NSTextField passField;
+    public void setPassField(NSTextField passField) {
+	this.passField = passField;
+    }
+    
     private NSTextField urlLabel;
     public void setUrlLabel(NSTextField urlLabel) {
 	this.urlLabel = urlLabel;
     }
 
-    // ----------------------------------------------------------
-    // Constructors
-    // ----------------------------------------------------------
-    
-    public CDConnectionSheet() {
-	super();
-	log.debug("CDConnectionSheet");
+    public NSWindow window() {
+	return this.sheet;
     }
-
-    public CDConnectionSheet(NSRect contentRect, int styleMask, int backingType, boolean defer) {
-	super(contentRect, styleMask, backingType, defer);
-	log.debug("CDConnectionSheet");
-    }
-
-    public CDConnectionSheet(NSRect contentRect, int styleMask, int bufferingType, boolean defer, NSScreen aScreen) {
-	super(contentRect, styleMask, bufferingType, defer, aScreen);
-	log.debug("CDConnectionSheet");
-    }
-
+        
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
-//	this.urlLabel.setStringValue("");
 	// Notify the textInputDidChange() method if the user types.
 	(NSNotificationCenter.defaultCenter()).addObserver(
 						    this,
@@ -107,8 +126,8 @@ public class CDConnectionSheet extends NSPanel {
 						    new NSSelector("textInputDidChange", new Class[]{NSNotification.class}),
 						    NSControl.ControlTextDidChangeNotification,
 						    usernameField);
-        this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
-        this.pathField.setStringValue(Preferences.instance().getProperty("connection.path.default"));
+        //@todo this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
+	//@todo this.pathField.setStringValue(Preferences.instance().getProperty("connection.path.default"));
 	this.textInputDidChange(null);
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
 	this.pathField.setStringValue("~");
@@ -117,8 +136,9 @@ public class CDConnectionSheet extends NSPanel {
     public void closeSheet(NSObject sender) {
 	log.debug("closeSheet");
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-	NSApplication.sharedApplication().endSheet(this, ((NSButton)sender).tag());
+	NSApplication.sharedApplication().endSheet(hostNameField.window(), ((NSButton)sender).tag());
     }
+
     
     public void protocolSelectionChanged(NSObject sender) {
 	log.debug("protocolSelectionChanged");
@@ -136,20 +156,20 @@ public class CDConnectionSheet extends NSPanel {
 	log.debug("textInputDidChange");
 	urlLabel.setStringValue(usernameField.stringValue()+"@"+hostNameField.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
     }
-    
-    public void textDidBeginEditing(NSNotification aNotification) {
-	log.debug("textDidBeginEditing");
-    }
-    
-    public void textDidChange(NSNotification aNotification) {
-	log.debug("textDidChange");
-    }
 
-    public void textDidEndEditing(NSNotification aNotification) {
-	log.debug("textDidEndEditing");
-    }
+//    public void textDidBeginEditing(NSNotification aNotification) {
+//	log.debug("textDidBeginEditing");
+  //  }
+    
+ //   public void textDidChange(NSNotification aNotification) {
+//	log.debug("textDidChange");
+  //  }
 
-    public void finalize() {
-	(NSNotificationCenter.defaultCenter()).removeObserver(this);
-    }
+    //public void textDidEndEditing(NSNotification aNotification) {
+	//log.debug("textDidEndEditing");
+//    }
+
+  //  public void finalize() {
+//	(NSNotificationCenter.defaultCenter()).removeObserver(this);
+  //  }
 }

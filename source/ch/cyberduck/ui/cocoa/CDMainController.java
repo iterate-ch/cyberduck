@@ -43,29 +43,9 @@ public class CDMainController extends NSObject {
 	this.mainWindow = mainWindow;
     }
 		
-    private CDInfoWindow infoWindow; // IBOutlet
-    public void setInfoWindow(CDInfoWindow infoWindow) {
-	this.infoWindow = infoWindow;
-    }
-    
-    private CDPreferencesWindow preferencesWindow; // IBOutlet
-    public void setPreferencesWindow(CDPreferencesWindow preferencesWindow) {
-	this.preferencesWindow = preferencesWindow;
-    }
-    
-    private CDFolderSheet newfolderSheet; // IBOutlet
-    public void setNewfolderSheet(CDFolderSheet newfolderSheet) {
-	this.newfolderSheet = newfolderSheet;
-    }
-    
     private NSPanel donationSheet; // IBOutlet
     public void setDonationSheet(NSPanel donationSheet) {
 	this.donationSheet = donationSheet;
-    }
-    
-    private CDConnectionSheet connectionSheet; // IBOutlet
-    public void setConnectionSheet(CDConnectionSheet connectionSheet) {
-	this.connectionSheet = connectionSheet;
     }
     
     private NSTextField quickConnectField; // IBOutlet
@@ -111,44 +91,44 @@ public class CDMainController extends NSObject {
 
     public void folderButtonPressed(NSObject sender) {
         log.debug("folderButtonPressed");
-	if(newfolderSheet == null)
-	    NSApplication.loadNibNamed("Folder", this);
+	CDFolderSheet sheet = new CDFolderSheet();
+	NSApplication.loadNibNamed("Folder", sheet);
 	NSApplication.sharedApplication().beginSheet(
-					      newfolderSheet,//sheet
+					      sheet.window(),//sheet
 					      mainWindow, //docwindow
-					      this, //delegate
+					      this, //modal delegate
 					      new NSSelector(
 			  "newfolderSheetDidEnd",
-			  new Class[] { NSWindow.class, int.class, Object.class }
+			  new Class[] { NSPanel.class, int.class, Object.class }
 			  ),// did end selector
 					      null); //contextInfo
     }
 
-    public void newfolderSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+    public void newfolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
         log.debug("newfolderSheetDidEnd");
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
 		Path parent = (Path)pathComboBox.getItem(pathComboBox.numberOfItems()-1);
-		parent.mkdir(newfolderSheet.getValue());
+		parent.mkdir(((CDFolderSheet)sheet).getValue());
 	    case(NSAlertPanel.AlternateReturn):
 		//
 	}
-	sheet.close();
+	sheet.orderOut(this);
     }
 
-    public void closeNewfolderSheet(NSObject sender) {
-        log.debug("closeNewfolderSheet");
-	NSApplication.sharedApplication().endSheet(newfolderSheet, ((NSButton)sender).tag());
+
+    public void newBrowserButtonPressed(NSObject sender) {
+
     }
-    
+
+
     public void infoButtonPressed(NSObject sender) {
 	log.debug("infoButtonPressed");
 	if(infoWindow == null)
 	    NSApplication.loadNibNamed("Info", this);
 //	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
 //	infoWindow.update(path, new Message(Message.SELECTION));
-//	infoWindow.makeKeyAndOrderFront(this);
-	infoWindow.orderFront(this);
+	infoWindow.makeKeyAndOrderFront(mainWindow);
     }
 
     public void deleteButtonPressed(NSObject sender) {
@@ -177,7 +157,7 @@ public class CDMainController extends NSObject {
 
     public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
 	log.debug("deleteSheetDidEnd");
-	sheet.close();
+	sheet.orderOut(this);
 	switch(returnCode) {
 	    case(NSAlertPanel.DefaultReturn):
 		Path path = (Path)contextInfo;
@@ -185,7 +165,7 @@ public class CDMainController extends NSObject {
 	    case(NSAlertPanel.AlternateReturn):
 		//
 	}
-	sheet.close();
+	sheet.orderOut(this);
     }
 
     public void refreshButtonPressed(NSObject sender) {
@@ -197,13 +177,15 @@ public class CDMainController extends NSObject {
     public void downloadButtonPressed(NSObject sender) {
 	log.debug("downloadButtonPressed");
 	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
-	path.download();
+	CDTransferController controller = new CDTransferController(path);
+	controller.download();
     }
 
     public void uploadButtonPressed(NSObject sender) {
 	log.debug("uploadButtonPressed");
 	// @todo drag and drop
- //	connectionController.upload(path);
+//	CDTransferController controller = new CDTransferController(path);
+//	controller.upload();
     }
 
     /*
@@ -224,30 +206,51 @@ public class CDMainController extends NSObject {
 	drawer.toggle(mainWindow);
     }
 
+    public void connectFieldPressed(NSObject sender) {
+	log.debug("connectFieldPressed");
+	server = ((NSControl)sender).stringValue();
+
+    }
+
+    public void connectMenuPressed(NSObject sender) {
+	log.debug("connectMenuPressed");
+	this.connectButtonPressed(sender);
+    }
+
     public void connectButtonPressed(NSObject sender) {
 	log.debug("connectButtonPressed");
-//	mainWindow.makeFirstResponder(connectionSheet);
+	CDConnectionSheet sheet = new CDConnectionSheet();
+	NSApplication.loadNibNamed("Connection", this);
 	NSApplication.sharedApplication().beginSheet(
-					      connectionSheet,//sheet
+					      sheet.window(),//sheet
 					      mainWindow, //docwindow
-					      this, //delegate
+					      this, //modal delegate
 					      new NSSelector(
-			  "connectionSheetDidEnd",
-			  new Class[] { NSWindow.class, int.class, NSWindow.class }
-			  ),// did end selector
+		      "connectionSheetDidEnd",
+		      new Class[] { NSWindow.class, int.class, NSWindow.class }
+		      ),// did end selector
 					      null); //contextInfo
     }
 
     public void connectionSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	log.debug("connectionSheetDidEnd");
-	sheet.close();
+	switch(returncode) {
+	    case(NSAlertPanel.DefaultReturn):
+		
+
+
+	    case(NSAlertPanel.AlternateReturn):
+		//
+	}
+	sheet.orderOut(this);
     }
     
-    public void preferencesButtonPressed(NSObject sender) {
-	log.debug("preferencesButtonPressed");
+
+    public void preferencesMenuPressed(NSObject sender) {
+	log.debug("preferencesMenuPressed");
 	if(null == preferencesWindow)
 	    NSApplication.loadNibNamed("Preferences", this);
-        preferencesWindow.orderFront(this);
+	preferencesWindow.makeKeyAndOrderFront(mainWindow);
     }
     
     public void awakeFromNib() {
@@ -361,6 +364,8 @@ public class CDMainController extends NSObject {
     
     public int applicationShouldTerminate(NSObject sender) {
 	log.debug("applicationShouldTerminate");
+	//@todo             NSArray windows = NSApplication.sharedApplication().windows();
+
 	Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses"))+1);
         Preferences.instance().save();
 	History.instance().save();
@@ -389,7 +394,7 @@ public class CDMainController extends NSObject {
     
     public void donationSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	log.debug("donationSheetDidEnd");
-	sheet.close();
+	sheet.orderOut(this);
         NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
     }
     

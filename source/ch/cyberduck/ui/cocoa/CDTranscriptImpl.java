@@ -57,5 +57,9 @@ public class CDTranscriptImpl extends NSObject implements Transcripter {
 	textView.replaceCharactersInRange(new NSRange(l, 0), message+"\n");
 	textView.scrollRangeToVisible(new NSRange(l, message.length()));
 
-    }    
+    }
+
+    public Object getView() {
+	return textView;
+    }
 }

@@ -25,25 +25,25 @@ import ch.cyberduck.core.Preferences;
 
 /**
 * Concrete subclass using the Cocoao Preferences classes.
-* @see com.apple.cocoa.foundation.NSUserDefaults
+* @see com.apple.cocoa.foundation.NSUserprops
 * @version $Id$
 */
 public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
     private static Logger log = Logger.getLogger(Preferences.class);
 
-    private NSUserDefaults defaults = NSUserDefaults.standardUserDefaults();
+    private NSUserDefaults props = NSUserDefaults.standardUserDefaults();
 
     public String getProperty(String property) {
         log.debug("getProperty(" + property + ")");
-        String value = (String)defaults.objectForKey(property);
+        String value = (String)props.objectForKey(property);
         if(value == null)
-            throw new IllegalArgumentException("No property with key '" + property.toString() + "'");
+            return super.getProperty(property);
         return value;
     }
 
     public void setProperty(String property, String value) {
         log.debug("setProperty(" + property + ", " + value + ")");
-        defaults.setObjectForKey(value, property);
+        props.setObjectForKey(value, property);
     }
 
     public void setProperty(String property, boolean v) {
@@ -52,31 +52,31 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
         if (v) {
             value = "true";
         }
-	//NSUserDefaults.setObjectForKey( Object value, String defaultName)
+	//NSUserprops.setObjectForKey( Object value, String defaultName)
 	//Sets the value of the default identified by defaultName in the standard application domain. Setting a default has no effect on the value returned by the objectForKey method if the same key exists in a domain that precedes the application domain in the search list.
-        defaults.setObjectForKey(value, property);
+        props.setObjectForKey(value, property);
     }
 
     public void setProperty(String property, int v) {
         log.debug("setProperty(" + property + ", " + v + ")");
         String value = String.valueOf(v);
-        defaults.setObjectForKey(value, property);
+        props.setObjectForKey(value, property);
     }
 
     /**
-	* Overwrite the default values with user defaults if any.
+	* Overwrite the default values with user props if any.
      */
     public void load() {
         log.debug("load()");
-	defaults = NSUserDefaults.standardUserDefaults();
+	props = NSUserDefaults.standardUserDefaults();
     }
 
     public void save() {
 	// Saves any modifications to the persistent domains and updates all persistent domains that were not modified to
 	// what is on disk. Returns false if it could not save data to disk. Because synchronize is automatically invoked at
 	// periodic intervals, use this method only if you cannot wait for the automatic synchronization (for example, if your
-	// application is about to exit) or if you want to update user defaults to what is on disk even though you have not made
+	// application is about to exit) or if you want to update user props to what is on disk even though you have not made
 	// any changes.
-	defaults.synchronize();
+	props.synchronize();
     }
 }

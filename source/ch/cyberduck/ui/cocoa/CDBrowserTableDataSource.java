@@ -39,10 +39,6 @@ public class CDBrowserTableDataSource extends NSObject {
 	log.debug("CDBrowserTableDataSource");
     }
 
-    public void awakeFromNib() {
-	//
-    }
-
     public int numberOfRowsInTableView(NSTableView tableView) {
 	return data.size();
     }

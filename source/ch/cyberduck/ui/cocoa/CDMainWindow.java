@@ -44,7 +44,7 @@ public class CDMainWindow extends NSWindow {
     }
 
     public void awakeFromNib() {
-	log.debug("CDMainWindow:awakeFromNib");
+	log.debug("awakeFromNib");
 
 	this.setDelegate(this);
     }
@@ -82,7 +82,7 @@ public class CDMainWindow extends NSWindow {
 
     public void quitSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	// if multi window app only close the one window with main.close()
-        sheet.close();
+	sheet.orderOut(this);
 	if(returncode == NSAlertPanel.DefaultReturn)
 	    NSApplication.sharedApplication().terminate(this);
     }

@@ -36,8 +36,10 @@ public class CDFavoritesImpl extends Favorites {
 
     public void save() {
 	log.debug("save");
-	NSUserDefaults.standardUserDefaults().setObjectForKey(this.getData(), KEY);
-	NSUserDefaults.standardUserDefaults().synchronize();
+//	NSArchiver.archiveRootObjectToFile( this.getData(), String path)
+
+//	NSUserDefaults.standardUserDefaults().setObjectForKey(this.getData(), KEY);
+//	NSUserDefaults.standardUserDefaults().synchronize();
     }
 
     public void load() {

@@ -152,12 +152,11 @@ public class FTPSession extends Session {
 	    }
         }
         
-        public synchronized void mkdir(String name) {
+        public synchronized Path mkdir(String name) {
             log.debug("mkdir");
             try {
 		FTPSession.this.check();
 		FTPSession.this.log("Make directory "+name, Message.PROGRESS);
-//                FTP.mkdir(this.getName());
                 FTP.mkdir(name);
 		this.list(true);
             }
@@ -167,6 +166,7 @@ public class FTPSession extends Session {
 	    catch(IOException e) {
 		FTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	    }
+	    return new FTPFile(this.getAbsolute(), name);
 	}
 
 	public synchronized void changePermissions(int permissions) {
@@ -266,16 +266,16 @@ public class FTPSession extends Session {
 	    }.start();
 	}
 	    
-        public synchronized void upload() {
+        public synchronized void upload(final java.io.File file) {
 	    new Thread() {
 		public void run() {
 		    try {
 			FTPFile.this.status.fireActiveEvent();
 			FTPSession.this.check();
-			if(FTPFile.this.getLocal().isDirectory())
-			    this.uploadFolder();
-			if(FTPFile.this.getLocal().isFile())
-			    this.uploadFile();
+			if(file.isDirectory())
+			    this.uploadFolder(file);
+			if(file.isFile())
+			    this.uploadFile(file);
 		    }
 		    catch(FTPException e) {
 			FTPSession.this.log("FTP Error: "+e.getMessage(), Message.ERROR);
@@ -285,23 +285,23 @@ public class FTPSession extends Session {
 		    }
 		}
 
-		private void uploadFile() throws IOException {
-		    FTPFile.this.status.setSize((int)FTPFile.this.getLocal().length());
+		private void uploadFile(java.io.File file) throws IOException {
+//@todo		    FTPFile.this.status.setSize((int)FTPFile.this.getLocal().length());
 		    if(TRANSFERTYPE.equals(FTPTransferType.BINARY)) {
 			FTPSession.this.log("Setting transfer mode to BINARY.", Message.PROGRESS);
 			FTP.setType(FTPTransferType.BINARY);
-			java.io.InputStream in = new FileInputStream(FTPFile.this.getLocal());
+			java.io.InputStream in = new FileInputStream(file);
 			if(in == null) {
 			    throw new IOException("Unable to buffer data");
 			}
 
 			FTPSession.this.log("Opening data stream...", Message.PROGRESS);
 
-			java.io.OutputStream out = FTP.putBinary(FTPFile.this.getName(), FTPFile.this.status.isResume());
+			java.io.OutputStream out = FTP.putBinary(file.getName());//@todo, FTPFile.this.status.isResume());
 			if(out == null) {
 			    throw new IOException("Unable opening data stream");
 			}
-			FTPSession.this.log("Uploading "+FTPFile.this.getName()+"...", Message.PROGRESS);
+			FTPSession.this.log("Uploading "+file.getName()+"...", Message.PROGRESS);
 			FTPFile.this.upload(out, in);
 			FTP.validateTransfer();
 		    }
@@ -309,17 +309,17 @@ public class FTPSession extends Session {
 			FTPSession.this.log("Setting transfer type to ASCII.", Message.PROGRESS);
 			FTP.setType(FTPTransferType.ASCII);
 
-			java.io.Reader in = new FileReader(FTPFile.this.getLocal());
+			java.io.Reader in = new FileReader(file);
 			if(in == null) {
 			    throw new IOException("Unable to buffer data");
 			}
 
 			FTPSession.this.log("Opening data stream...", Message.PROGRESS);
-			java.io.Writer out = FTP.putASCII(FTPFile.this.getName(), FTPFile.this.status.isResume());
+			java.io.Writer out = FTP.putASCII(file.getName());//@todo, FTPFile.this.status.isResume());
 			if(out == null) {
 			    throw new IOException("Unable opening data stream");
 			}
-			FTPSession.this.log("Uploading "+FTPFile.this.getName()+"...", Message.PROGRESS);
+			FTPSession.this.log("Uploading "+file.getName()+"...", Message.PROGRESS);
 			FTPFile.this.upload(out, in);
 			FTP.validateTransfer();
 		    }
@@ -328,16 +328,17 @@ public class FTPSession extends Session {
 		    }
 		}
 
-		private void uploadFolder() throws IOException {
-		    FTP.mkdir(FTPFile.this.getName());
-		    FTP.chdir(FTPFile.this.getName());
-		    File[] files = FTPFile.this.getLocal().listFiles();
-		    Path p;
+		private void uploadFolder(java.io.File file) throws IOException {
+		    Path p = FTPFile.this.mkdir(file.getName());
+//		    FTP.mkdir(file.getName());
+//		    FTP.chdir(file.getName());
+		    File[] files = file.listFiles();
 		    for(int i = 0; i < files.length; i++) {
-			p = new FTPFile(files[i].getAbsolutePath());
-			p.upload();
+			p.upload(files[i]);
+//			p = new FTPFile(files[i].getAbsolutePath());
+//			p.upload();
 		    }
-		    FTP.cdup();		    
+		    FTP.cdup();
 		}
 	    }.start();
 	}

@@ -41,7 +41,6 @@ public class Message {//{implements java.io.Serializable {
     public static final String OPEN = "OPEN";
     public static final String CONNECTED = "CONNECTED";
     public static final String CLOSE = "CLOSE";
-
     public static final String SELECTION="SELECTION";
 
     public static final String START = "START";

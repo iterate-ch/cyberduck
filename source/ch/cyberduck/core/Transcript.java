@@ -47,6 +47,13 @@ public class Transcript {
      }
 
     /**
+	* Must be overwritten by the subclass if it has a view widget
+     */
+    public Object getView() {
+	return null;
+    }
+
+    /**
     * @param l Add this Transripter to the list of listeners
     */
     public void addListener(Transcripter l) {

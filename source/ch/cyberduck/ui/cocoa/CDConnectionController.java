@@ -42,12 +42,11 @@ import ch.cyberduck.ui.cocoa.CDPathComboBox;
 /**
 * @version $Id$
 */
-public class CDConnectionController extends NSObject implements Observer {
+public class CDConnectionController implements Observer {
     private static Logger log = Logger.getLogger(CDConnectionController.class);
 
-
     // ----------------------------------------------------------
-    // Outlets from CDMainWindow
+    // Outlets
     // ----------------------------------------------------------
     
     private CDMainWindow mainWindow; // IBOutlet
@@ -55,16 +54,6 @@ public class CDConnectionController extends NSObject implements Observer {
 	this.mainWindow = mainWindow;
     }
 
-    private CDConnectionSheet connectionSheet; // IBOutlet
-    public void setConnectionSheet(CDConnectionSheet connectionSheet) {
-	this.connectionSheet = connectionSheet;
-    }
-
-    private CDLoginSheet loginSheet; // IBOutlet
-    public void setLoginSheet(CDLoginSheet loginSheet) {
-	this.loginSheet = loginSheet;
-    }
-    
     private NSProgressIndicator progressIndicator; // IBOutlet
     public void setProgressIndicator(NSProgressIndicator progressIndicator) {
 	this.progressIndicator = progressIndicator;
@@ -76,19 +65,15 @@ public class CDConnectionController extends NSObject implements Observer {
 	this.statusLabel = statusLabel;
     }
 
-
-    // ----------------------------------------------------------
-    // Outlets from CDConnectionSheet
-    // ----------------------------------------------------------
+    private CDPathComboBox pathComboBox; // IBOutlet
+    public void setPathComboBox(CDPathComboBox pathComboBox) {
+	this.pathComboBox = pathComboBox;
+    }
     
-    public CDPathComboBox pathComboBox; // IBOutlet
-    public NSTextField pathField; // IBOutlet
-    public NSTextField portField; // IBOutlet
-    public NSPopUpButton protocolPopup; // IBOutlet
-    public NSTextField hostField; // IBOutlet
-    //@todo remove
     public NSTextField usernameField; // IBOutlet
     public NSTextField passwordField; // IBOutlet
+
+    
     public NSTextView logView; // IBOutlet
     
 //    public CDBrowserView browserView; // IBOutlet
@@ -104,20 +89,20 @@ public class CDConnectionController extends NSObject implements Observer {
 	log.debug("CDConnectionController");
     }
 
-    public void recycle(NSObject sender) {
+    public void recycle() {
 	log.debug("recycle");
 	Host host = (Host)((CDHostTableDataSource)hostView.dataSource()).getEntry(hostView.selectedRow());
 	host.recycle();
     }
 
-    public void disconnect(NSObject sender) {
+    public void disconnect() {
 	log.debug("disconnect");
 	Host host = (Host)((CDHostTableDataSource)hostView.dataSource()).getEntry(hostView.selectedRow());
 	host.closeSession();
 	host.deleteObservers();
     }    
-
-    public void connect(NSObject sender) {
+/*
+    public void connect() {
 	log.debug("connect");
 
 	// All we need to connect - default values set in Host.class
@@ -128,20 +113,19 @@ public class CDConnectionController extends NSObject implements Observer {
 	Login login = new CDLogin(); //anonymous
 
 	//connection initiated from menu item "recent connections"
-	if(sender instanceof NSMenuItem) {
-	    log.debug("New connection from \"Recent Connections\"");
-	    NSMenuItem item = (NSMenuItem)sender;
-	    Host h = History.instance().get(item.title());
-	    h.openSession();
-	    return;
-	}
+//	if(sender instanceof NSMenuItem) {
+//	    log.debug("New connection from \"Recent Connections\"");
+//	    NSMenuItem item = (NSMenuItem)sender;
+//	    Host h = History.instance().get(item.title());
+//	    h.openSession();
+//	    return;
+//	}
 	if(sender instanceof NSTextField) { //connection initiated from toolbar text field
 	    log.debug("New connection from \"Quick Connect\"");
 	    server = ((NSControl)sender).stringValue();
 	}
 	if(sender instanceof NSButton) { //connection initiated from connection sheet
 	    log.debug("New connection from \"Connection Sheet\"");
-	    NSApplication.sharedApplication().endSheet(connectionSheet, NSAlertPanel.AlternateReturn);
 	    server = hostField.stringValue();
 	    path = pathField.stringValue();
 	    int tag = protocolPopup.selectedItem().tag();
@@ -193,22 +177,7 @@ public class CDConnectionController extends NSObject implements Observer {
 	}
 	host.openSession();
     }
-
-/*
-    public void download(Path download) {
-	log.debug("download:"+download);
-	((CDTransferTableDataSource)transferView.dataSource()).addEntry(download);
-	download.addObserver(transferView);
-	download.download();
-    }
-
-    public void upload(Path upload) {
-	log.debug("upload:"+upload);
-	((CDTransferTableDataSource)transferView.dataSource()).addEntry(upload);
-	upload.addObserver(transferView);
-	upload.upload();
-    }
- */
+*/
 
     public void update(Observable o, Object arg) {
 	//	log.debug("update:"+arg);
@@ -288,13 +257,11 @@ public class CDConnectionController extends NSObject implements Observer {
 
 	public boolean loginFailure(String message) {
 	    log.info("Authentication failed");
-	    if(loginSheet == null)
-		NSApplication.loadNibNamed("Login", CDConnectionController.this);
-//	    loginSheet.makeKeyAndOrderFront(this);//@todo
-//@todo	    loginSheet.setUser(this.getUsername());
-	    loginSheet.setExplanation(message);
+	    CDLoginController controller = new CDLoginController();
+	    NSApplication.loadNibNamed("Login", controller);
+	    controller.setExplanation(message);
 	    NSApplication.sharedApplication().beginSheet(
-						  loginSheet, //sheet
+						  controller.window(), //sheet
 						  mainWindow, //docWindow
 						  this, //modalDelegate
 						  new NSSelector(
@@ -440,7 +407,7 @@ public class CDConnectionController extends NSObject implements Observer {
 
 	public void deniedHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	    log.debug("deniedHostSheetDidEnd");
-	    sheet.close();
+	    sheet.orderOut(this);
 	    done = true;
 	}
 
@@ -450,7 +417,7 @@ public class CDConnectionController extends NSObject implements Observer {
 		if(returncode == NSAlertPanel.DefaultReturn)
 		    allowHost(host, fingerprint, false);
 		if(returncode == NSAlertPanel.AlternateReturn) {
-		    sheet.close();
+		    sheet.orderOut(this);
 		    NSAlertPanel.beginInformationalAlertSheet(
 						"Invalid host key", //title
 						"OK",// defaultbutton
@@ -466,7 +433,7 @@ public class CDConnectionController extends NSObject implements Observer {
 		    log.info("Cannot continue without a valid host key");
 		}
 		if(returncode == NSAlertPanel.OtherReturn)
-		    sheet.close();
+		    sheet.orderOut(this);
 		done = true;
 	    }
 	    catch(InvalidHostFileException e) {
@@ -480,7 +447,7 @@ public class CDConnectionController extends NSObject implements Observer {
 		if(returncode == NSAlertPanel.DefaultReturn)
 		    allowHost(host, fingerprint, false); // allow host
 		if(returncode == NSAlertPanel.AlternateReturn) {
-		    sheet.close();
+		    sheet.orderOut(this);
 		    NSAlertPanel.beginInformationalAlertSheet(
 					    "Invalid host key", //title
 					    "OK",// defaultbutton

@@ -31,8 +31,8 @@ import ch.cyberduck.ui.ObserverList;
 /**
 * @version $Id$
  */
-public class CDInfoWindow extends NSPanel implements Observer {
-    private static Logger log = Logger.getLogger(CDInfoWindow.class);
+public class CDInfoController implements Observer {
+    private static Logger log = Logger.getLogger(CDInfoController.class);
 
     // ----------------------------------------------------------
     // Outlets
@@ -90,16 +90,6 @@ public class CDInfoWindow extends NSPanel implements Observer {
     
     public CDInfoWindow() {
 	super();
-	log.debug("CDInfoWindow");
-    }
-
-    public CDInfoWindow(NSRect contentRect, int styleMask, int backingType, boolean defer) {
-	super(contentRect, styleMask, backingType, defer);
-	log.debug("CDInfoWindow");
-    }
-
-    public CDInfoWindow(NSRect contentRect, int styleMask, int bufferingType, boolean defer, NSScreen aScreen) {
-	super(contentRect, styleMask, bufferingType, defer, aScreen);
 	log.debug("CDInfoWindow");
     }
 
@@ -182,5 +172,9 @@ public class CDInfoWindow extends NSPanel implements Observer {
 	
 	selectedPath.changePermissions(permission.getCode());
 	permissionsBox.setTitle("Permissions | "+permission.getString()+" ("+permission.getCode()+")");
+    }
+
+    public void showWindow() {
+
     }
 }

@@ -25,29 +25,52 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDFolderSheet {
-    private static Logger log = Logger.getLogger(CDLoginSheet.class);
+public class CDLoginController {
+    private static Logger log = Logger.getLogger(CDLoginController.class);
+
+    // ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
+    
+    private NSTextField userField;
+    public void setUserField(NSTextField userField) {
+	this.userField = userField;
+    }
+
+    private NSTextField textField;
+    public void setTextField(NSTextField textField) {
+	this.textField = textField;
+    }
+    
+    private NSSecureTextField passField;
+    public void setPassField(NSSecureTextField passField) {
+	this.passField = passField;
+    }
 
     private NSWindow sheet;
     public void setSheet(NSWindow sheet) {
 	this.sheet = sheet;
     }
-
-    private NSTextField folderField; /* IBOutlet */
-    public void setFolderField(NSTextField folderField) {
-	this.folderField = folderField;
-    }
-
-    public void window() {
-	return this.sheet;
-    }
     
     public void closeSheet(NSObject sender) {
+	log.debug("closeSheet");
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 	NSApplication.sharedApplication().endSheet(this, ((NSButton)sender).tag());
     }
+    
+    public void setExplanation(String text) {
+	this.textField.setStringValue(text);
+    }
 
-    public String getValue() {
-	return folderField.stringValue();
+    public String user() {
+	return userField.stringValue();
+    }
+
+    public String pass() {
+	return passField.stringValue();
+    }
+
+    public NSWindow window() {
+	return this.sheet();
     }
 }

@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
  * A path is a remote directory or file.
  * @version $Id$
  */
-public abstract class Path extends Observable {//implements Serializable {//, Transferable {
+public abstract class Path extends Observable {
     private static Logger log = Logger.getLogger(Path.class);
 
     protected String name = null;
@@ -99,6 +99,22 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
      */
     public abstract Path getParent();
 
+    /*
+    public Path getPreviousPath() {
+        Cyberduck.DEBUG("Content of path history:"+pathHistory.toString());
+        int size = pathHistory.size();
+        if((size != -1) && (size > 1)) {
+            Path p = (Path)pathHistory.get(size-2);
+            //delete the fetched path - otherwise we produce a loop
+            pathHistory.remove(size-1);
+            pathHistory.remove(size-2);
+            return p;
+        }
+        return this.getCurrentPath();
+    }
+     */
+    
+
     public List cache() {
 	log.debug("cache");
 	return this.cache;
@@ -122,7 +138,7 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
     *	Create a new directory inside me
     * @param folder The relative name of the new folder
     */
-    public abstract void mkdir(String folder);
+    public abstract Path mkdir(String folder);
     
 //    public abstract void touch(String file);
 
@@ -130,7 +146,7 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
 
     public abstract void download();
 
-    public abstract void upload();
+    public abstract void upload(java.io.File file);
 
     public abstract void changePermissions(int p);
     

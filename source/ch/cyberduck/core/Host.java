@@ -37,7 +37,7 @@ public class Host extends Observable {
     private String protocol = Preferences.instance().getProperty("connection.protocol.default");
     private int port = Integer.parseInt(Preferences.instance().getProperty("connection.port.default"));
     private String name;
-    private String workdir = Preferences.instance().getProperty("connection.path.default");
+    private String workdir;
     private HostKeyVerification hostKeyVerification;
     private transient Session session;
 
@@ -53,7 +53,11 @@ public class Host extends Observable {
     }
 
     public Host(String protocol, String name, int port, Login login) {
-	this(protocol, name, port, null, login);
+	this(protocol, name, port, Preferences.instance().getProperty("connection.path.default"), login);
+    }
+    
+    public Host(String name, Login login) {
+	this(Preferences.instance().getProperty("connection.protocol.default"), name, Integer.parseInt(Preferences.instance().getProperty("connection.port.default")), login);
     }
 
     public void callObservers(Object arg) {

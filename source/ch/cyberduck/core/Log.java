@@ -29,7 +29,6 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class Log {
-
     private static Logger log = Logger.getLogger(Log.class);
 
     StringBuffer buffer;

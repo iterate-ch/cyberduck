@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class Queue extends Thread {
-
     private static Logger log = Logger.getLogger(Queue.class);
 
     java.util.Vector connections = new java.util.Vector();
