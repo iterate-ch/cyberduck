@@ -401,7 +401,6 @@ public abstract class Path {
 			}
 			else {
 				out.write(line, 0, line.length());
-				out.newLine();
 				out.flush();
 				this.status.setCurrent(current += line.getBytes().length);
 			}
