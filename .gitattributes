@@ -5,11 +5,14 @@ img/back.tiff svneol=native#unset
 img/connect.tiff svneol=native#unset
 img/delete.tiff svneol=native#unset
 img/download.tiff svneol=native#unset
+img/favorite.tiff svneol=native#unset
 img/folder.tiff -text
 img/info.tiff svneol=native#unset
 img/network.tiff svneol=native#unset
 img/newfolder.icns svneol=native#unset
+img/reload.tiff svneol=native#unset
 img/server.tiff svneol=native#unset
+img/stop.tiff svneol=native#unset
 img/transcript.tiff svneol=native#unset
 img/upload.tiff svneol=native#unset
 lib/ext/ant.jar -text

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Iterator;
 import org.apache.log4j.Logger;
 import ch.cyberduck.core.History;
+import ch.cyberduck.core.Host;
 
 /**
 * @version $Id$
@@ -34,16 +35,18 @@ public class CDHistoryImpl extends History {
     private static final String KEY = "history";
 
     public void save() {
-	NSUserDefaults.standardUserDefaults().setObjectForKey(this, KEY);
+	log.debug("save");
+	NSUserDefaults.standardUserDefaults().setObjectForKey(this.getData(), KEY);
 	NSUserDefaults.standardUserDefaults().synchronize();
     }
 
     public void load() {
+	log.debug("load");
 	List list = (List)NSUserDefaults.standardUserDefaults().objectForKey(KEY);
 	if(list != null) {
 	    Iterator i = list.iterator();
 	    while(i.hasNext())
-		this.add(i.next());
+		this.addHost((Host)i.next());
 	}
     }
 }

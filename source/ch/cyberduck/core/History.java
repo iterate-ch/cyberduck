@@ -23,16 +23,19 @@ import ch.cyberduck.core.Host;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Observer;
+import java.util.Observable;
 import org.apache.log4j.Logger;
 
 /**
  * Keeps track of recently connected hosts
  * @version $Id$
  */
-public abstract class History extends ArrayList {
+public abstract class History extends Observable {
     private static Logger log = Logger.getLogger(History.class);
 
     private static History instance;
+    private List data;
 
     public History() {
 	//
@@ -51,6 +54,16 @@ public abstract class History extends ArrayList {
         return instance;
     }
 
+    public void callObservers(Object arg) {
+        log.debug("callObservers:"+arg.toString());
+	log.debug(this.countObservers()+" observers known.");
+        long start = System.currentTimeMillis();
+	this.setChanged();
+	this.notifyObservers(arg);
+        long end = System.currentTimeMillis();
+	log.debug((end - start) + " ms");
+    }
+    
     /**
 	* Ensure persistency.
      */
@@ -61,8 +74,13 @@ public abstract class History extends ArrayList {
      */
     public abstract void load();
 
+    public void addHost(Host h) {
+	data.add(h);
+	this.callObservers(h);
+    }
+    
     public Host getHost(String name) {
-	Iterator i = this.iterator();
+	Iterator i = data.iterator();
 	Host h;
 	while(i.hasNext()) {
 	    h = (Host)i.next();
@@ -70,9 +88,17 @@ public abstract class History extends ArrayList {
 		return h;
 	}
 	throw new IllegalArgumentException("Host "+name+" not found in History.");
-    }	
+    }
+
+    public Iterator iterator() {
+	return data.iterator();
+    }
 
     public void setDefaults() {
 	//@todo add any default hosts?
+    }
+
+    public List getData() {
+	return data;
     }
 }

@@ -52,7 +52,7 @@ public class CDHostView extends NSTableView implements Observer {
 	return this.model;
     }
 
-    public void encodeWithCoder(NSCoder encoder) {
+    protected void encodeWithCoder(NSCoder encoder) {
 	super.encodeWithCoder(encoder);
     }
 

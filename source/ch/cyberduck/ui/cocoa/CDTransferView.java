@@ -51,7 +51,7 @@ public class CDTransferView extends NSTableView implements Observer {
 	super(decoder, token);
     }
 
-    public void encodeWithCoder(NSCoder encoder) {
+    protected void encodeWithCoder(NSCoder encoder) {
 	super.encodeWithCoder(encoder);
     }
 

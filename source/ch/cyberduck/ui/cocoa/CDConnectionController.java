@@ -76,12 +76,6 @@ public class CDConnectionController extends NSObject implements Observer {
 	this.statusLabel = statusLabel;
     }
 
-    private NSMenu recentConnectionsMenu;
-    private NSMenuItem recentConnectionsMenuItem;
-    public void setRecentConnectionsMenuItem(NSMenuItem recentConnectionsMenuItem) {
-	this.recentConnectionsMenuItem = recentConnectionsMenuItem;
-    }
-
 
     // ----------------------------------------------------------
     // Outlets from CDConnectionSheet
@@ -103,14 +97,6 @@ public class CDConnectionController extends NSObject implements Observer {
 
     public void awakeFromNib() {
 	ObserverList.instance().registerObserver(this);
-	recentConnectionsMenuItem.setSubmenu(recentConnectionsMenu = new NSMenu());
-	List hosts = History.instance();
-	Iterator i = hosts.iterator();
-	while(i.hasNext()) {
-	    Host h = (Host)i.next();
-	    // Adds a new item with title aString, action aSelector, and key equivalent keyEquiv to the end of the receiver. Returns the new menu item. If you do not want the menu item to have a key equivalent, keyEquiv should be an empty string and not null.
-	    recentConnectionsMenu.addItem(h.getName(), new NSSelector("connect", new Class[] {null}), "");
-	}
     }    
   
     public CDConnectionController() {
@@ -251,7 +237,7 @@ public class CDConnectionController extends NSObject implements Observer {
 		}
 		if(msg.getTitle().equals(Message.OPEN)) {
 		    progressIndicator.startAnimation(this);
-		    History.instance().add(host);
+		    History.instance().addHost(host);
 		}
 		if(msg.getTitle().equals(Message.CONNECTED)) {
 		    progressIndicator.stopAnimation(this);

@@ -120,7 +120,7 @@ public class CDPathComboBox extends NSPopUpButton implements Observer {
 	log.debug("CDPathComboBox:decoder");
     }
 
-    public void encodeWithCoder(NSCoder encoder) {
+    protected void encodeWithCoder(NSCoder encoder) {
 	super.encodeWithCoder(encoder);
 //	encoder.encodeObject(items);
 	log.debug("encodeWithCoder");

@@ -63,7 +63,7 @@ public class FTPSession extends Session {
 	}
 	
 	public void list() {
-	    return list(this.cache() == null);
+	    this.list(this.cache() == null);
 	}
 	
 	/**

@@ -60,7 +60,7 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	log.debug("CDBrowserView:"+decoder+","+token);
     }
     
-    public void encodeWithCoder(NSCoder encoder) {
+    protected void encodeWithCoder(NSCoder encoder) {
 	super.encodeWithCoder(encoder);
 	log.debug("encodeWithCoder");
     }
