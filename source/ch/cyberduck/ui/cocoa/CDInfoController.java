@@ -301,14 +301,6 @@ public class CDInfoController extends CDController {
 															   new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
 															   NSControl.ControlTextDidEndEditingNotification,
 															   filenameField);
-			(NSNotificationCenter.defaultCenter()).addObserver(this,
-															   new NSSelector("groupInputDidEndEditing", new Class[]{NSNotification.class}),
-															   NSControl.ControlTextDidEndEditingNotification,
-															   groupField);
-			(NSNotificationCenter.defaultCenter()).addObserver(this,
-															   new NSSelector("ownerInputDidEndEditing", new Class[]{NSNotification.class}),
-															   NSControl.ControlTextDidEndEditingNotification,
-															   ownerField);
 			
 		}
 	}
@@ -336,40 +328,6 @@ public class CDInfoController extends CDController {
 
 	private int numberOfFiles() {
 		return files.size();
-	}
-	
-	public void groupInputDidEndEditing(NSNotification sender) {
-		new Thread() {
-			public void run() {
-				// send the changes to the remote host
-				Path f = null;
-				for(Iterator i = files.iterator(); i.hasNext();) {
-					f = (Path)i.next();
-					if(!groupField.stringValue().equals(f.attributes.getGroup())) {
-						f.changeGroup(groupField.stringValue(), recursiveCheckbox.state() == NSCell.OnState);
-					}
-				}
-				// refresh the file listing so that the observers (if any) get notified of the change
-				f.getParent().list(true);
-			}
-		}.start();
-	}
-
-	public void ownerInputDidEndEditing(NSNotification sender) {
-		new Thread() {
-			public void run() {
-				// send the changes to the remote host
-				Path f = null;
-				for(Iterator i = files.iterator(); i.hasNext();) {
-					f = (Path)i.next();
-					if(!ownerField.stringValue().equals(f.attributes.getOwner())) {
-						f.changeOwner(ownerField.stringValue(), recursiveCheckbox.state() == NSCell.OnState);
-					}
-				}
-				// refresh the file listing so that the observers (if any) get notified of the change
-				f.getParent().list(true);
-			}
-		}.start();
 	}
 	
 	public void filenameInputDidEndEditing(NSNotification sender) {
@@ -427,6 +385,7 @@ public class CDInfoController extends CDController {
         }
         final Permission permission = this.getPermissionFromSelection();
         permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+permission.toString());
+		this.applyButtonClicked(sender);
     }
 
 	public void applyButtonClicked(Object sender) {

@@ -55,6 +55,9 @@ public class DownloadQueue extends Queue {
 															 "Growl Notification"),
 									this.getName());
 		}
+		else {
+			this.callObservers(new Message(Message.QUEUE_STOP));
+		}
 	}
 	
 	protected List getChilds(List childs, Path p) {

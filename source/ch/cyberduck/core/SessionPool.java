@@ -51,7 +51,7 @@ public class SessionPool extends Hashtable {
 	/**
 	 * @return The number of free slots in the connection pool for @param h
 	 */
-	public int getSize(Host h) {
+	public synchronized int getSize(Host h) {
 		String key = h.getURL();
 		if(this.containsKey(key))
 			return Preferences.instance().getInteger("connection.pool.max")-((List)this.get(key)).size();

@@ -1139,13 +1139,18 @@ public class CDBrowserController extends CDController implements Observer {
 				int selected = ((Integer)enum.nextElement()).intValue();
 				files.add(browserModel.getEntry(selected));
 			}
-			if(null == this.inspector) {
-				this.inspector = new CDInfoController(files);
-			}
-			else {
-				inspector.setFiles(files);
-			}
-			inspector.window().makeKeyAndOrderFront(null);
+            if (Preferences.instance().getBoolean("browser.info.isInspector")) {
+                if (null == this.inspector) {
+                    this.inspector = new CDInfoController();
+                }
+				this.inspector.setFiles(files);
+                this.inspector.window().makeKeyAndOrderFront(null);
+            }
+            else {
+                CDInfoController c = new CDInfoController();
+				c.setFiles(files);
+                c.window().makeKeyAndOrderFront(null);
+            }
 		}
 	}
 

@@ -73,6 +73,9 @@ public class UploadQueue extends Queue {
 				callback.update(null, new Message(Message.REFRESH));
 			}
 		}
+		else {
+			this.callObservers(new Message(Message.QUEUE_STOP));
+		}
 	}
 
 	protected List getChilds(List childs, Path p) {

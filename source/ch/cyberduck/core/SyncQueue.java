@@ -74,7 +74,9 @@ public class SyncQueue extends Queue {
 				callback.update(null, new Message(Message.REFRESH));
 			}
 		}
-		this.callObservers(new Message(Message.QUEUE_STOP));
+		else {
+			this.callObservers(new Message(Message.QUEUE_STOP));
+		}
 	}
 
 	private void addLocalChilds(List childs, Path p) {

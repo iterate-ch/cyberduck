@@ -296,6 +296,10 @@ public class CDMainController extends NSObject {
 		this.checkForUpdate(true);
 	}
 
+	private boolean isStableVersion(String versionNumber) {
+		return versionNumber.indexOf('b') == -1;
+	}
+	
 	public void checkForUpdate(final boolean verbose) {
 		ThreadUtilities.instance().invokeLater(new Runnable() {
 			public void run() {
@@ -309,34 +313,34 @@ public class CDMainController extends NSObject {
 				try {
 					String currentVersionNumber = (String)NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
 					log.info("Current version:"+currentVersionNumber);
-
+					
 					NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.update.xml")));
 					if(null == data) {
 						if(verbose) {
 							NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Error", "Alert sheet title"), //title
-							    NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text"),
-							    NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
-							    null, //alternative button
-							    null//other button
-							);
+														  NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text"),
+														  NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
+														  null, //alternative button
+														  null//other button
+														  );
 						}
 						return;
 					}
 					String[] errorString = new String[]{null};
 					Object propertyListFromXMLData =
 					    NSPropertyListSerialization.propertyListFromData(data,
-					        NSPropertyListSerialization.PropertyListImmutable,
-					        new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-					        errorString);
+																		 NSPropertyListSerialization.PropertyListImmutable,
+																		 new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+																		 errorString);
 					if(errorString[0] != null || null == propertyListFromXMLData) {
 						log.error("Version info could not be retrieved: "+errorString[0]);
 						if(verbose) {
 							NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Error", "Alert sheet title"), //title
-							    NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text")+" ("+errorString[0]+")",
-							    NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
-							    null, //alternative button
-							    null//other button
-							);
+														  NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text")+" ("+errorString[0]+")",
+														  NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
+														  null, //alternative button
+														  null//other button
+														  );
 						}
 					}
 					else {
@@ -346,27 +350,29 @@ public class CDMainController extends NSObject {
 						log.info("Latest version:"+latestVersionNumber);
 						String filename = (String)entries.objectForKey("file");
 						String comment = (String)entries.objectForKey("comment");
-
+						
 						if(currentVersionNumber.equals(latestVersionNumber)) {
 							if(verbose) {
 								NSAlertPanel.runInformationalAlert(NSBundle.localizedString("No update", "Alert sheet title"), //title
-								    NSBundle.localizedString("No newer version available.", "Alert sheet text")+" Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is up to date.", "Alert sheet text"),
-								    "OK", // defaultbutton
-								    null, //alternative button
-								    null//other button
-								);
+																   NSBundle.localizedString("No newer version available.", "Alert sheet text")+" Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is up to date.", "Alert sheet text"),
+																   "OK", // defaultbutton
+																   null, //alternative button
+																   null//other button
+																   );
 							}
 						}
 						else {
-							// Update available, show update dialog
-							if(false == NSApplication.loadNibNamed("Update", CDMainController.this)) {
-								log.fatal("Couldn't load Update.nib");
-								return;
+							if(! (!verbose && isStableVersion(currentVersionNumber) && !isStableVersion(latestVersionNumber))) {
+								// Update available, show update dialog
+								if(false == NSApplication.loadNibNamed("Update", CDMainController.this)) {
+									log.fatal("Couldn't load Update.nib");
+									return;
+								}
+								updateLabel.setStringValue("Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is out of date. The current version is", "Alert sheet text")+" "+latestVersionNumber+".");
+								updateText.replaceCharactersInRange(new NSRange(updateText.textStorage().length(), 0), comment);
+								updateSheet.setTitle(filename);
+								updateSheet.makeKeyAndOrderFront(null);
 							}
-							updateLabel.setStringValue("Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is out of date. The current version is", "Alert sheet text")+" "+latestVersionNumber+".");
-							updateText.replaceCharactersInRange(new NSRange(updateText.textStorage().length(), 0), comment);
-							updateSheet.setTitle(filename);
-							updateSheet.makeKeyAndOrderFront(null);
 						}
 					}
 				}
@@ -379,7 +385,7 @@ public class CDMainController extends NSObject {
 			}
 		});
 	}
-
+	
 	public void websiteMenuClicked(Object sender) {
 		try {
 			NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.home")));
