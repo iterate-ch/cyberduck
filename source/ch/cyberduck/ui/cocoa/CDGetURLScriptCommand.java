@@ -47,6 +47,8 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
                     url.getHost(),
                     url.getPort(),
                     new Login(url.getHost(), url.getUserInfo(), null));
+			if(h.getProtocol().equals(Session.FTP))
+				h.setLogin(new Login(h.getHostname(), Preferences.instance().getProperty("ftp.anonymous.name"), null));
             if (file.length() > 1) {
                 Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
                 // we assume a file has an extension

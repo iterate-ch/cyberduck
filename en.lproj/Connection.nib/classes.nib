@@ -6,6 +6,7 @@
             CLASS = "ch.cyberduck.ui.cocoa.CDConnectionSheet"; 
             LANGUAGE = Java; 
             OUTLETS = {
+                anonymousCheckbox = NSButton; 
                 bookmarksPopup = NSPopUpButton; 
                 historyPopup = NSPopUpButton; 
                 hostPopup = NSComboBox; 

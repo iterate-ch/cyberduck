@@ -170,7 +170,7 @@ public class NTFTPEntryParser extends FTPFileEntryParserImpl
 				f.attributes.setType(Path.FILE_TYPE);
                 if (null != size)
                 {
-                    f.status.setSize(new Integer(size).intValue());
+					f.status.setSize(Long.parseLong(size));
                 }
             }
             return (f);

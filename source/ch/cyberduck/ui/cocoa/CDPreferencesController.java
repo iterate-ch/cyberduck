@@ -95,23 +95,55 @@ public class CDPreferencesController extends NSObject {
 
 	/*
 	private NSPopUpButton defaultHostCombobox;
+	private Map defaultHosts = new HashMap();
 	
 	public void setDefaultHostCombobox(NSPopUpButton defaultHostCombobox) {
 		this.defaultHostCombobox = defaultHostCombobox;
+        this.defaultHostCombobox.removeAllItems();
         this.defaultHostCombobox.setTarget(this);
         this.defaultHostCombobox.setAction(new NSSelector("defaultHostComboboxClicked", new Class[]{NSPopUpButton.class}));
-        this.defaultHostCombobox.removeAllItems();
 		this.defaultHostCombobox.addItem(NSBundle.localizedString("Empty Browser", ""));
 		for(int i = 0; i < CDBookmarksImpl.instance().size(); i++) {
-			this.defaultHostCombobox.addItem(CDBookmarksImpl.instance().getItem(i));
+			Host  h = CDBookmarksImpl.instance().getItem(i);
+			this.defaultHostCombobox.addItem(h.getNickname());
+			this.defaultHosts.put();
 		}
-		this.defaultHostCombobox.setTitle(Preferences.instance().getProperty("connection.host.default"));
+		NSData plistData = new NSData(Preferences.instance().getProperty("connection.host.default"));
+		String[] errorString = new String[]{null};
+		Object propertyListFromXMLData =
+			NSPropertyListSerialization.propertyListFromData(plistData,
+															 NSPropertyListSerialization.PropertyListImmutable,
+															 new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+															 errorString);
+		if (errorString[0] != null) {
+			log.error("Problem reading default host: " + errorString[0]);
+		}
+		else {
+			log.debug("Successfully default host: " + propertyListFromXMLData);
+		}
+		if (propertyListFromXMLData instanceof NSDictionary) {
+			NSDictionary dict = (NSDictionary)propertyListFromXMLData;
+			Host selected = new Host(dict.objectForKey("connection.host.default"));
+			this.defaultHostCombobox.setTitle(selected.getNickname());
+		}
 	}
-	
-	public void defaultHostComboboxClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("connection.host.default", sender.titleOfSelectedItem());
-    }
 	 */
+	
+	/*
+	public void defaultHostComboboxClicked(NSPopUpButton sender) {
+		Host h = this.defaultHosts.get(sender);
+		NSDictionary dict = host.getAsDictionary();
+		NSMutableData plistData = new NSMutableData();
+		String[] errorString = new String[]{null};
+		plistData.appendData(NSPropertyListSerialization.dataFromPropertyList(
+																			   dict,
+																			   NSPropertyListSerialization.PropertyListXMLFormat,
+																			   errorString)
+							  );
+		String defaultHost = new String(plistData.bytes(0, data.length()));
+        Preferences.instance().setProperty("connection.host.default", defaultHost);
+    }
+	*/
 	
 	private NSPopUpButton editorCombobox;
 	
@@ -656,7 +688,7 @@ public class CDPreferencesController extends NSObject {
     public void loginFieldDidChange(NSNotification sender) {
         Preferences.instance().setProperty("connection.login.name", this.loginField.stringValue());
     }
-
+		
     private NSButton keychainCheckbox; //IBOutlet
 
     public void setKeychainCheckbox(NSButton keychainCheckbox) {

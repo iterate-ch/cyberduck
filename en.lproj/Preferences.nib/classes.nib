@@ -18,7 +18,6 @@
                 csAuthenticationCombobox = NSPopUpButton; 
                 csEncryptionCombobox = NSPopUpButton; 
                 defaultBufferButton = NSButton; 
-                defaultHostCombobox = NSPopUpButton; 
                 downloadPathButton = NSButton; 
                 downloadPathField = NSTextField; 
                 duplicateCombobox = NSPopUpButton; 

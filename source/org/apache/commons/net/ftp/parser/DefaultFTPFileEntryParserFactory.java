@@ -94,6 +94,8 @@ public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFacto
 				return new NTFTPEntryParser();
 			} else if (ukey.indexOf("OS/2") >= 0) {
 				return new OS2FTPEntryParser();
+			} else if (ukey.indexOf("OS/400") >= 0) {
+				return new OS400FTPEntryParser();
 			}
 		}
 		return new UnixFTPEntryParser();

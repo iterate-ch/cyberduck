@@ -87,10 +87,24 @@ public class UnixFTPEntryParser extends FTPFileEntryParserImpl
     
     /**
      * this is the regular expression used by this parser.
+	 * 	  r   the file is readable
+	 *    w   the file is writable
+	 *    x   the file is executable
+	 *    -   the indicated permission is not granted
+	 *    L   mandatory	locking	occurs during access (the set-group-ID bit is
+													  *        on and the group execution bit is off)
+	 *    s   the set-user-ID or set-group-ID bit is on, and the corresponding
+	 *        user or group execution bit is also on
+	 *    S   undefined	bit-state (the set-user-ID bit is on and the user
+								   *        execution	bit is off)
+	 *    t   the 1000 (octal) bit, or sticky bit, is on [see chmod(1)], and
+	 *        execution	is on
+	 *    T   the 1000 bit is turned on, and execution is off (undefined bit-
+															   *        state)
      */
     private static final String REGEX =
         "([bcdlf-])"
-        + "(((r|-)(w|-)(x|-|s))((r|-)(w|-)(x|-|s))((r|-)(w|-)(x|-|t)))\\s+"
+        + "(((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-])))\\s+"
         + "(\\d+)\\s+"
         + "(\\S+)\\s+"
         + "(?:(\\S+)\\s+)?"
@@ -196,7 +210,7 @@ public class UnixFTPEntryParser extends FTPFileEntryParserImpl
 
             try
             {
-				f.status.setSize(Integer.parseInt(filesize));
+				f.status.setSize(Long.parseLong(filesize));
             }
             catch (NumberFormatException e)
             {

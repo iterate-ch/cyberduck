@@ -48,18 +48,17 @@ updateNibFromStrings() {
     cp -R $language.lproj/$nibfile.bak/CVS $language.lproj/$nibfile/CVS
 }
 
-#udpateStringsFromNib() {
-#    for nibfile in `ls $language.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; do
-#        nib=`basename $nibfile .nib`
-#    
-#        echo "Updating $nib.strings in $language.lproj..."
-#        
-#        mv $language.lproj/$nib.strings $language.lproj/$nib.strings.bak
-#        nibtool --previous English.lproj/$nibfile \
-#                --incremental $language.lproj/$nibfile \
-#                --localizable-strings English.lproj/$nibfile > $language.lproj/$nib.strings
-#    done;
-#}
+udpateStringsFromNib() {
+    nib=`basename $nibfile .nib`
+    
+    echo "Updating $nib.strings in $language.lproj..."
+        
+    rm $language.lproj/$nib.strings.bak
+    mv $language.lproj/$nib.strings $language.lproj/$nib.strings.bak
+    nibtool --previous English.lproj/$nibfile \
+            --incremental $language.lproj/$nibfile \
+            --localizable-strings English.lproj/$nibfile > $language.lproj/$nib.strings
+}
 
 language="all";
 nibfile="all";

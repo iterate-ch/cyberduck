@@ -1053,6 +1053,9 @@ public class CDBrowserController extends NSObject implements Observer {
         if (sel.equals("downloadButtonClicked:")) {
             return this.isMounted() && browserTable.selectedRow() != -1;
         }
+        if (sel.equals("downloadAsButtonClicked:")) {
+            return this.isMounted() && browserTable.selectedRow() != -1;
+        }
         if (sel.equals("insideButtonClicked:")) {
             return this.isMounted() && browserTable.selectedRow() != -1;
         }

@@ -22,6 +22,8 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import java.io.File;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -75,48 +77,48 @@ public class CDMainController extends NSObject {
     }
 	
 	private NSMenu bookmarkMenu;
+	private NSObject bookmarkMenuDelegate;
 	
 	public void setBookmarkMenu(NSMenu bookmarkMenu) {
 		this.bookmarkMenu = bookmarkMenu;
-//		this.bookmarkMenu.setDelegate(new BookmarkMenuDelegate());
-//		for(int i = 0; i < CDBookmarksImpl.instance().size(); i++) {
-//			Host h = CDBookmarksImpl.instance().getItem(i);
-//			NSMenuItem item = new NSMenuItem(h.getNickname(),
-//											 new NSSelector("bookmarkMenuClicked", new Class[]{Object.class}),
-//											 "");
-//			this.bookmarkMenu.addItem(item);
-//		}
+		this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
 	}
 	
-	private class BookmarkMenuDelegate {
+	private class BookmarkMenuDelegate extends NSObject {
+		private Map items = new HashMap();
 		public int numberOfItemsInMenu(NSMenu menu) {
-			return CDBookmarksImpl.instance().size();
+			log.debug("numberOfItemsInMenu:"+menu);
+			return CDBookmarksImpl.instance().size()+4; //index 0-3 are static menu items
 		}
 
 		/**
-*		Called when a menu is about to be displayed at the start of a tracking session so the delegate
-		* can modify the menu. You can change the menu by adding, removing or modifying menu items. 
-		 * Be sure to set the proper enable state for any new menu items. If populating the menu will
-		 * take a long time, implement numberOfItemsInMenu and menuUpdateItemAtIndex instead.
-*/
-		public void menuNeedsUpdate(NSMenu menu) {
-			log.debug("menuNeedsUpdate:"+menu);
-		}
-
-		/**
-		* Called to let you update a menu item before it is displayed. If your numberOfItemsInMenu delegate method returns a positive value, then your menuUpdateItemAtIndex method is called for each item in the menu. You can then update the menu title, image, and so forth for the menu item. Return true to continue the process. If you return false, your menuUpdateItemAtIndex is not called again. In that case, it is your responsibility to trim any extra items from the menu.
+		* Called to let you update a menu item before it is displayed. If your 
+		 * numberOfItemsInMenu delegate method returns a positive value, 
+		 * then your menuUpdateItemAtIndex method is called for each item in the menu. 
+		 * You can then update the menu title, image, and so forth for the menu item. 
+		 * Return true to continue the process. If you return false, your menuUpdateItemAtIndex 
+		 * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
 		 */
 		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-			log.debug("menuUpdateItemAtIndex"+item);
+//			log.debug("menuUpdateItemAtIndex"+index);
+			if(index > 3) {
+				Host h = CDBookmarksImpl.instance().getItem(index-4);
+				item.setTitle(h.getNickname());
+				item.setTarget(this);
+				item.setAction(new NSSelector("bookmarkMenuClicked", new Class[]{Object.class}));
+				items.put(item, h);
+			}
 			return true;
 		}
-	
-	}
-	
-	public void bookmarkMenuClicked(Object sender) {
-		log.debug("bookmarkMenuClicked:"+sender);
-	}
 
+		public void bookmarkMenuClicked(Object sender) {
+			log.debug("bookmarkMenuClicked:"+sender);
+			CDBrowserController controller = new CDBrowserController();
+			controller.window().makeKeyAndOrderFront(null);
+			controller.mount((Host)items.get(sender));
+		}
+	}
+	
     public void helpMenuClicked(Object sender) {
         NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().pathForResource("Help", "rtfd")).toString());
     }
@@ -330,16 +332,26 @@ public class CDMainController extends NSObject {
         //        NSApplication.sharedApplication().setServicesProvider(this);
         log.info("Available localizations:" + NSBundle.mainBundle().localizations());
         if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
+			CDBrowserController controller = new CDBrowserController();
+			controller.window().makeKeyAndOrderFront(null);
 			if (!Preferences.instance().getProperty("connection.host.default").equals(NSBundle.localizedString("Empty Browser", ""))) {
-				
+				try {
+					controller.mount(new Host(Preferences.instance().getProperty("connection.host.default")));
+				}
+				catch(java.net.MalformedURLException e) {
+					log.error(e.getMessage());
+				}
 			}
-            this.newBrowserMenuClicked(null);
         }
         if (Preferences.instance().getProperty("queue.openByDefault").equals("true")) {
             this.showTransferQueueClicked(null);
         }
 		int uses = Integer.parseInt(Preferences.instance().getProperty("uses"));
-        if (uses > 5 && Preferences.instance().getProperty("donate").equals("true")) {
+		String v = this.readVersionInfo();
+		if(null == v || !v.equals(NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion"))) {
+			Preferences.instance().setProperty("donate", "true");
+		}
+        if (Preferences.instance().getProperty("donate").equals("true")) {
             if (false == NSApplication.loadNibNamed("Donate", this)) {
                 log.fatal("Couldn't load Donate.nib");
             }
@@ -407,22 +419,42 @@ public class CDMainController extends NSObject {
 		return true;
 	}
 	
+	private String readVersionInfo() {
+		if(VERSION_FILE.exists()) {
+			NSData plistData = new NSData(VERSION_FILE);
+			String[] errorString = new String[]{null};
+			Object propertyListFromXMLData =
+				NSPropertyListSerialization.propertyListFromData(plistData,
+																 NSPropertyListSerialization.PropertyListImmutable,
+																 new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+																 errorString);
+			if (errorString[0] != null) {
+				log.error("Problem reading version file: " + errorString[0]);
+			}
+			else {
+				log.debug("Successfully read version info: " + propertyListFromXMLData);
+			}
+			if (propertyListFromXMLData instanceof NSDictionary) {
+				NSDictionary dict = (NSDictionary)propertyListFromXMLData;
+				return (String) dict.objectForKey("Version");
+			}
+		}
+		return null;
+	}
+	
 	private void saveVersionInfo() {
         try {
-            NSMutableArray list = new NSMutableArray();
             NSMutableDictionary dict = new NSMutableDictionary();
             dict.setObjectForKey((String)NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion"), "Version");
-            list.addObject(dict);
             NSMutableData collection = new NSMutableData();
             String[] errorString = new String[]{null};
             collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
-                                                                                   list,
+                                                                                   dict,
                                                                                    NSPropertyListSerialization.PropertyListXMLFormat,
                                                                                    errorString)
                                   );
             if (errorString[0] != null)
                 log.error("Problem writing version file: " + errorString[0]);
-			
             if (collection.writeToURL(VERSION_FILE.toURL(), true))
                 log.info("Version file sucessfully saved to :" + VERSION_FILE.toString());
             else

@@ -257,6 +257,7 @@ lib/oro.jar -text
 nl.lproj/Bookmark.nib/keyedobjects.nib -text
 nl.lproj/Browser.nib/keyedobjects.nib -text
 nl.lproj/Connection.nib/keyedobjects.nib -text
+nl.lproj/Connection.strings svneol=native#unset
 nl.lproj/Donate.nib/keyedobjects.nib -text
 nl.lproj/Download.nib/keyedobjects.nib -text
 nl.lproj/Folder.nib/keyedobjects.nib -text

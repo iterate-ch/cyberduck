@@ -203,12 +203,37 @@ public class CDConnectionController extends NSObject implements Observer {
 //        this.keychainCheckbox.setState(Preferences.instance().getProperty("connection.login.useKeychain").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
 
+	private NSButton anonymousCheckbox; //IBOutlet
+	
+    public void setAnonymousCheckbox(NSButton anonymousCheckbox) {
+        this.anonymousCheckbox = anonymousCheckbox;
+        this.anonymousCheckbox.setTarget(this);
+        this.anonymousCheckbox.setAction(new NSSelector("anonymousCheckboxClicked", new Class[]{NSButton.class}));
+        this.anonymousCheckbox.setState(NSCell.OffState);
+    }
+	
+    public void anonymousCheckboxClicked(NSButton sender) {
+        switch (sender.state()) {
+            case NSCell.OnState:
+				this.usernameField.setEnabled(false);
+				this.usernameField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.name"));
+				this.passField.setEnabled(false);
+                break;
+            case NSCell.OffState:
+				this.usernameField.setEnabled(true);
+				this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
+				this.passField.setEnabled(true);
+                break;
+        }
+    }
+	
     private NSButton pkCheckbox;
 
     public void setPkCheckbox(NSButton pkCheckbox) {
         this.pkCheckbox = pkCheckbox;
         this.pkCheckbox.setTarget(this);
         this.pkCheckbox.setAction(new NSSelector("pkCheckboxSelectionChanged", new Class[]{Object.class}));
+        this.pkCheckbox.setState(NSCell.OffState);
     }
 
     public void pkCheckboxSelectionChanged(Object sender) {

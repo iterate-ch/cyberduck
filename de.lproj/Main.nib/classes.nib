@@ -6,6 +6,7 @@
                 backButtonClicked = id; 
                 connectButtonClicked = id; 
                 deleteButtonClicked = id; 
+                downloadAsButtonClicked = id; 
                 downloadButtonClicked = id; 
                 editBookmarkButtonClicked = id; 
                 editButtonClicked = id; 
@@ -39,7 +40,8 @@
             }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDMainController"; 
             LANGUAGE = Java; 
-            SUPERCLASS = "java.lang.Object"; 
+            OUTLETS = {bookmarkMenu = NSMenu; }; 
+            SUPERCLASS = NSObject; 
         }
     ); 
     IBVersion = 1; 

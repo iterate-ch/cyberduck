@@ -140,7 +140,7 @@ public class EnterpriseUnixFTPEntryParser extends FTPFileEntryParserImpl
 			f.attributes.setGroup(grp);
 			try
 			{
-                f.status.setSize(Integer.parseInt(filesize));
+				f.status.setSize(Long.parseLong(filesize));
             }
             catch (NumberFormatException e)
             {
