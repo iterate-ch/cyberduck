@@ -72,7 +72,13 @@ public class CDConnectionController extends CDController {
 		this.history = new CDTableDataSource();
 		this.historyPopup.setImage(NSImage.imageNamed("history.tiff"));
 		this.historyPopup.setToolTip(NSBundle.localizedString("History", ""));
-		File[] files = HISTORY_FOLDER.listFiles();
+		File[] files = HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				if(name.endsWith(".duck"))
+					return true;
+				return false;
+			}
+		});
 		for(int i = 0; i < files.length; i++) {
 			Host h = CDBookmarkTableDataSource.instance().importBookmark(files[i]);
 			history.add(h);
@@ -136,6 +142,7 @@ public class CDConnectionController extends CDController {
 
 	public void setProtocolPopup(NSPopUpButton protocolPopup) {
 		this.protocolPopup = protocolPopup;
+		this.protocolPopup.setEnabled(true);
 		this.protocolPopup.removeAllItems();
 		this.protocolPopup.addItemsWithTitles(new NSArray(new String[] {FTP_STRING, SFTP_STRING}));
 		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
