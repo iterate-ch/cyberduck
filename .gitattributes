@@ -144,14 +144,12 @@ img/eject.tiff -text
 img/folder.tiff -text
 img/folder16.tiff -text
 img/folder32.tiff -text
-img/gear.tiff -text
 img/gearMenu.tiff -text
 img/history.tiff -text
 img/info.tiff svneol=native#unset
 img/newfolder.tiff -text
 img/offline.tiff -text
 img/online.tiff -text
-img/pause.tiff -text
 img/refresh.tiff svneol=native#unset
 img/reload.tiff svneol=native#unset
 img/remove.tiff svneol=native#unset
@@ -166,8 +164,6 @@ img/stripe.tiff -text
 img/stripeGray.tiff -text
 img/stripeWhite.tiff -text
 img/symlink.tiff -text
-img/triangleLeft.tiff -text
-img/triangleRight.tiff -text
 img/up.tiff svneol=native#unset
 img/uploadFile.tiff -text
 it.lproj/Bookmark.nib/keyedobjects.nib -text
