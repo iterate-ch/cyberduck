@@ -14,7 +14,7 @@
 [OPEN] Kerberos (GSSAPI) Authentication
 [OPEN] Grouping bookmarks
 -- Scheduled for 2.5
-[OPEN] NSSegmentedControl in toolbar view to switch view
+[DONE] NSSegmentedControl in toolbar view to switch view
 [DONE] Outline View in browser window
 [DONE] Column View in browser window
 [DONE] Set character encoding per bookmark
