@@ -324,6 +324,7 @@ img/run.tiff -text
 img/stop.tiff svneol=native#unset
 img/symlink.tiff -text
 img/sync32.tiff -text
+img/transparent.tiff -text
 img/uploadFile.tiff -text
 it.lproj/Bookmark.nib/keyedobjects.nib -text
 it.lproj/Bookmark.strings svneol=native#unset

@@ -101,13 +101,13 @@ updateNibFromStrings() {
     if($force == true); then
 	{
 		# force update
-		echo "*** Updating $nib... (force)"
+		echo "*** Updating $nib... (force) in $language..."
 		nibtool --write $language/$nibfile --dictionary $language/$nib.strings English.lproj/$nibfile
 	}
     else
 	{
 		# incremental update
-		echo "*** Updating $nib... (incremental)"
+		echo "*** Updating $nib... (incremental) in $language..."
 		nibtool --write $language/$nibfile \
 				--incremental $language/$nibfile.bak \
 				--dictionary $language/$nib.strings English.lproj/$nibfile
