@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionPool;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
