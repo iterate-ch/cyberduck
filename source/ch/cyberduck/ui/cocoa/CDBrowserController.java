@@ -62,44 +62,101 @@ public class CDBrowserController implements Observer {
     private NSTableView browserTable; // IBOutlet
     public void setBrowserTable(NSTableView browserTable) {
 	this.browserTable = browserTable;
+	this.browserTable.setDataSource(browserModel = new CDBrowserTableDataSource());
+	this.browserTable.setDelegate(this);
+	this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
+	this.browserTable.setTarget(this);
+	this.browserTable.setDrawsGrid(false);
+	this.browserTable.setAutoresizesAllColumnsToFit(true);
+	this.browserTable.setDoubleAction(new NSSelector("browserTableViewDidClickTableRow", new Class[] {Object.class}));
+	this.browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
+	this.browserTable.setAutosaveTableColumns(true);
     }
 
-    private CDBrowserTableDataSource browserModel;
+    private NSTableView favoritesTable; // IBOutlet
+    public void setFavoritesTable(NSTableView favoritesTable) {
+	this.favoritesTable = favoritesTable;
+	this.favoritesTable.setDataSource(CDFavoritesImpl.instance());
+//	this.favoritesTable.setDelegate(this);
+	this.favoritesTable.setTarget(this);
+	this.favoritesTable.setDrawsGrid(false);
+	this.favoritesTable.setAutoresizesAllColumnsToFit(true);
+	this.favoritesTable.setDoubleAction(new NSSelector("favoritesTableViewDidClickTableRow", new Class[] {Object.class}));
+	this.favoritesTable.setAutosaveTableColumns(true);
+    }
     
-    private NSTextField quickConnectField; // IBOutlet
-    public void setQuickConnectField(NSTextField quickConnectField) {
-	this.quickConnectField = quickConnectField;
-	this.quickConnectField.setTarget(this);
-	this.quickConnectField.setAction(new NSSelector("connectFieldClicked", new Class[] { Object.class } ));
+    private CDBrowserTableDataSource browserModel;
+
+    private NSComboBox quickConnectPopup;
+    public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
+	this.quickConnectPopup = quickConnectPopup;
+	this.quickConnectPopup.setTarget(this);
+	this.quickConnectPopup.setAction(new NSSelector("quickConnectSelectionChanged", new Class[] {Object.class}));
+	this.quickConnectPopup.setUsesDataSource(true);
+	this.quickConnectPopup.setDataSource(CDHistoryImpl.instance());
+    }
+    
+//    private NSTextField quickConnectField; // IBOutlet
+  //  public void setQuickConnectField(NSTextField quickConnectField) {
+//	this.quickConnectField = quickConnectField;
+//	this.quickConnectField.setTarget(this);
+//	this.quickConnectField.setAction(new NSSelector("connectFieldClicked", new Class[] { Object.class } ));
+  //  }
+
+    private NSButton addFavoriteButton; // IBOutlet
+    public void setAddFavoriteButton(NSButton addFavoriteButton) {
+	this.addFavoriteButton = addFavoriteButton;
+	this.addFavoriteButton.setImage(NSImage.imageNamed("add.tiff"));
+	this.addFavoriteButton.setAlternateImage(NSImage.imageNamed("addPressed.tiff"));
+	this.addFavoriteButton.setTarget(this);
+	this.addFavoriteButton.setAction(new NSSelector("addFavoriteButtonClicked", new Class[] {Object.class}));
     }
 
+    private NSButton removeFavoriteButton; // IBOutlet
+    public void setRemoveFavoriteButton(NSButton removeFavoriteButton) {
+	this.removeFavoriteButton = removeFavoriteButton;
+	this.removeFavoriteButton.setImage(NSImage.imageNamed("remove.tiff"));
+	this.removeFavoriteButton.setAlternateImage(NSImage.imageNamed("removePressed.tiff"));
+	this.removeFavoriteButton.setTarget(this);
+	this.removeFavoriteButton.setAction(new NSSelector("removeFavoriteButtonClicked", new Class[] {Object.class}));
+    }
+    
     private NSButton upButton; // IBOutlet
     public void setUpButton(NSButton upButton) {
 	this.upButton = upButton;
 	this.upButton.setImage(NSImage.imageNamed("up.tiff"));
+	this.upButton.setTarget(this);
+	this.upButton.setAction(new NSSelector("upButtonClicked", new Class[] {Object.class}));
     }
 
     private NSButton backButton; // IBOutlet
     public void setBackButton(NSButton backButton) {
 	this.backButton = backButton;
 	this.backButton.setImage(NSImage.imageNamed("back.tiff"));
+	this.backButton.setTarget(this);
+	this.backButton.setAction(new NSSelector("backButtonClicked", new Class[] {Object.class}));
     }
-    
+
     private NSPopUpButton pathPopup; // IBOutlet
     public void setPathPopup(NSPopUpButton pathPopup) {
 	this.pathPopup = pathPopup;
     }
 
-    private NSBox pathBox; // IBOutlet
-    public void setPathBox(NSBox pathBox) {
-	this.pathBox = pathBox;
-    }
+//    private NSBox pathBox; // IBOutlet
+//  public void setPathBox(NSBox pathBox) {
+//	this.pathBox = pathBox;
+//    }
     
-    private NSDrawer drawer; // IBOutlet
-    public void setDrawer(NSDrawer drawer) {
-	this.drawer = drawer;
+    private NSDrawer logDrawer; // IBOutlet
+    public void setLogDrawer(NSDrawer drawer) {
+	this.logDrawer = drawer;
     }
 
+    private NSDrawer favoritesDrawer; // IBOutlet
+    public void setFavoritesDrawer(NSDrawer drawer) {
+	this.favoritesDrawer = drawer;
+    }
+    
     private NSProgressIndicator progressIndicator; // IBOutlet
     public void setProgressIndicator(NSProgressIndicator progressIndicator) {
 	this.progressIndicator = progressIndicator;
@@ -123,7 +180,8 @@ public class CDBrowserController implements Observer {
     
 //    private CDConnectionSheet connectionSheet;
     private CDPathController pathController;
-
+//    private CDFavoritesController favoritesController;
+    
     private NSToolbar toolbar;
 
     /**
@@ -148,31 +206,41 @@ public class CDBrowserController implements Observer {
     private void init() {
 	log.debug("init");
 
-	browserTable.setDataSource(browserModel = new CDBrowserTableDataSource());
-	browserTable.setDelegate(this);
-	browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
-	browserTable.setTarget(this);
-	browserTable.setDrawsGrid(false);
-	browserTable.setAutoresizesAllColumnsToFit(true);
-	browserTable.setDoubleAction(new NSSelector("tableViewDidClickTableRow", new Class[] {Object.class}));
-	browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
-	browserTable.setAutosaveTableColumns(true);
+//	this.backButton = new CDPopUpImage(NSImage.imageNamed("connect.tiff"), NSImage.imageNamed("arrow.tiff"));
+//	this.backButton.setShowsSelectedItem(true);
+
+	/* Add some items to pop's menu */
+//	this.backButton.addItemWithTitle("http://www.scotlandsoftware.com/",
+//				  NSImage.imageNamed("back.tiff"),
+//				  this,
+//				  new NSSelector("backButtonClicked", new Class[]{Object.class})
+//				  );
+//
+//	this.backButton.addSeparator();
+
+	
 
 //	connectionSheet = new CDConnectionSheet(this);
 	pathController = new CDPathController(pathPopup);
-
-	pathPopup.setTarget(pathController);
-	pathPopup.setAction(new NSSelector("selectionChanged", new Class[] { Object.class } ));
+//	favoritesController = new CDFavoritesController(favoritesTable);
 
 	this.setupToolbar();
     }
 
+    public void favoritesTableViewDidClickTableRow(Object sender) {
+	log.debug("favoritesTableViewDidClickTableRow");
+	if(favoritesTable.clickedRow() != -1) { //table header clicked
+	    Host host = (Host)CDFavoritesImpl.instance().values().toArray()[favoritesTable.clickedRow()];
+	    this.mount(host);
+	}
+    }
+    
     // ----------------------------------------------------------
     // BrowserTable delegate methods
     // ----------------------------------------------------------
 
-    public void tableViewDidClickTableRow(Object sender) {
-	log.debug("tableViewDidClickTableRow");
+    public void browserTableViewDidClickTableRow(Object sender) {
+	log.debug("browserTableViewDidClickTableRow");
 	if(browserTable.clickedRow() != -1) { //table header clicked
 	    Path p = (Path)browserModel.getEntry(browserTable.clickedRow());
 	    if(p.isFile()) {
@@ -350,7 +418,6 @@ public class CDBrowserController implements Observer {
 				   msg.getDescription() // message
 				   );
 		    progressIndicator.stopAnimation(this);
-		    //@tdodo use attributed string???
 		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
 		}
 		
@@ -399,17 +466,32 @@ public class CDBrowserController implements Observer {
     }
     
 
+    public void addFavoriteButtonClicked(Object sender) {
+	if(this.host != null) {
+	    CDFavoritesImpl.instance().addItem(host);
+	    this.favoritesTable.reloadData();
+	}
+    }
+
+    public void removeFavoriteButtonClicked(Object sender) {
+	int row = favoritesTable.selectedRow();
+	if(row != -1) {
+	    CDFavoritesImpl.instance().removeItem(CDFavoritesImpl.instance().values().toArray()[row].toString());
+	    this.favoritesTable.reloadData();
+	}
+    }
+    
     // ----------------------------------------------------------
     // Selector methods for the toolbar items
     // ----------------------------------------------------------
-
-    public void toggleDrawer(Object sender) {
-	drawer.toggle(this);
+    
+    public void toggleLogDrawer(Object sender) {
+	logDrawer.toggle(this);
     }
 
-//    public void changePathButtonClicked(Object sender) {
-//
-//  }
+    public void toggleFavoritesDrawer(Object sender) {
+	favoritesDrawer.toggle(this);
+    }
     
     public void folderButtonClicked(Object sender) {
         log.debug("folderButtonClicked");
@@ -498,7 +580,7 @@ public class CDBrowserController implements Observer {
 	while(enum.hasMoreElements()) {
 	    int selected = ((Integer)enum.nextElement()).intValue();
 	    path = (Path)browserModel.getEntry(selected);
-	    CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
+	    CDTransferController controller = new CDTransferController(host, path, Queue.KIND_DOWNLOAD);
 	    controller.transfer(path.status.isResume());
 	}
     }
@@ -531,7 +613,7 @@ public class CDBrowserController implements Observer {
 		    else if(session instanceof ch.cyberduck.core.sftp.SFTPSession) {
 			path = new SFTPPath((SFTPSession)session, parent.getAbsolute(), new java.io.File(filename));
 		    }
-		    CDTransferController controller = new CDTransferController(path, Queue.KIND_UPLOAD);
+		    CDTransferController controller = new CDTransferController(host, path, Queue.KIND_UPLOAD);
 		    controller.transfer(path.status.isResume());
 		}
 		break;
@@ -555,31 +637,19 @@ public class CDBrowserController implements Observer {
     
     public void drawerButtonClicked(Object sender) {
 	log.debug("drawerButtonClicked");
-	drawer.toggle(mainWindow);
+	logDrawer.toggle(mainWindow);
     }
 
-    public void connectFieldClicked(Object sender) {
-	log.debug("connectFieldClicked");
-	Host host = new Host(((NSControl)sender).stringValue(), new Login());
-	if(host.getProtocol().equals(Session.SFTP)) {
-	    try {
-		host.setHostKeyVerificationController(new CDHostKeyController(this.window()));
-	    }
-	    catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
-		//This exception is thrown whenever an exception occurs open or reading from the host file.
-		NSAlertPanel.beginCriticalAlertSheet(
-			       "Error", //title
-			       "OK",// defaultbutton
-			       null,//alternative button
-			       null,//other button
-			       this.window(), //docWindow
-			       null, //modalDelegate
-			       null, //didEndSelector
-			       null, // dismiss selector
-			       null, // context
-			       "Could not open or read the host file: "+e.getMessage() // message
-			       );
-	    }
+    public void quickConnectSelectionChanged(Object sender) {
+	log.debug("quickConnectSelectionChanged");
+	String input = ((NSControl)sender).stringValue();
+	Host host = CDHistoryImpl.instance().getItem(input);
+	if(null == host) {
+	    int index;
+	    if((index = input.indexOf('@')) != -1)
+		host = new Host(input.substring(index+1, input.length()), new Login(input.substring(0, index)));
+	    else
+		host = new Host(input, new Login());
 	}
 	this.mount(host);
     }
@@ -601,18 +671,38 @@ public class CDBrowserController implements Observer {
 
     public void disconnectButtonClicked(Object sender) {
 	this.unmount();
-	//@todo show disconnected state in gui
     }
 
     public void mount(Host host) {
 	this.unmount();
-
 	this.host = host;
+
+	if(host.getProtocol().equals(Session.SFTP)) {
+	    try {
+		host.setHostKeyVerificationController(new CDHostKeyController(this.window()));
+	    }
+	    catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
+		//This exception is thrown whenever an exception occurs open or reading from the host file.
+		NSAlertPanel.beginCriticalAlertSheet(
+				       "Error", //title
+				       "OK",// defaultbutton
+				       null,//alternative button
+				       null,//other button
+				       this.window(), //docWindow
+				       null, //modalDelegate
+				       null, //didEndSelector
+				       null, // dismiss selector
+				       null, // context
+				       "Could not open or read the host file: "+e.getMessage() // message
+				       );
+	    }
+	}
+	
+	CDHistoryImpl.instance().addItem(host);
 	//oops- ugly
 	this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
 	
-	Session session = host.getSession();
-	
+	Session session = host.getSession();	
 	session.addObserver((Observer)this);
 	session.addObserver((Observer)pathController);
 
@@ -655,29 +745,21 @@ public class CDBrowserController implements Observer {
 	    item.setTarget(this);
 	    item.setAction(new NSSelector("connectButtonClicked", new Class[] {Object.class}));
 	}
-	else if (itemIdentifier.equals("Path")) {
-	    item.setLabel("Path");
-	    item.setPaletteLabel("Path");
-	    item.setToolTip("Change working directory");
-	    item.setView(pathBox);
-	    item.setMinSize(pathBox.frame().size());
-	    item.setMaxSize(pathBox.frame().size());
-	}
+//	else if (itemIdentifier.equals("Path")) {
+//	    item.setLabel("Path");
+//	    item.setPaletteLabel("Path");
+//	    item.setToolTip("Change working directory");
+//	    item.setView(pathBox);
+//	    item.setMinSize(pathBox.frame().size());
+//	    item.setMaxSize(pathBox.frame().size());
+//	}
 	else if (itemIdentifier.equals("Quick Connect")) {
 	    item.setLabel("Quick Connect");
 	    item.setPaletteLabel("Quick Connect");
 	    item.setToolTip("Connect to host");
-	    item.setView(quickConnectField);
-	    item.setMinSize(quickConnectField.frame().size());
-	    item.setMaxSize(quickConnectField.frame().size());
-	}
-	else if (itemIdentifier.equals("Back")) {
-	    item.setLabel("Back");
-	    item.setPaletteLabel("Back");
-	    item.setToolTip("Show previous directory");
-	    item.setImage(NSImage.imageNamed("back.tiff"));
-	    item.setTarget(this);
-	    item.setAction(new NSSelector("backButtonClicked", new Class[] {Object.class}));
+	    item.setView(quickConnectPopup);
+	    item.setMinSize(quickConnectPopup.frame().size());
+	    item.setMaxSize(quickConnectPopup.frame().size());
 	}
 	else if (itemIdentifier.equals("Refresh")) {
 	    item.setLabel("Refresh");
@@ -735,14 +817,6 @@ public class CDBrowserController implements Observer {
 	    item.setTarget(this);
 	    item.setAction(new NSSelector("disconnectButtonClicked", new Class[] {Object.class}));
 	}
-//	else if (itemIdentifier.equals("Toggle Drawer")) {
-//	    item.setLabel("Toggle Drawer");
-//	    item.setPaletteLabel("Toggle Drawer");
-//	    item.setToolTip("Show connection transcript");
-//	    item.setImage(NSImage.imageNamed("transcript.icns"));
-//	    item.setTarget(this);
-//	    item.setAction(new NSSelector("drawerButtonClicked", new Class[] {Object.class}));
-//	}
 	else {
 	    // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
 	    // Returning null will inform the toolbar this kind of item is not supported.
@@ -774,11 +848,11 @@ public class CDBrowserController implements Observer {
 
 	 
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Path", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info"});
+	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Quick Connect", "Refresh", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Download", "Upload"});
     }
 
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Disconnect", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
+	return new NSArray(new Object[] {"New Connection", "Quick Connect", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", "Disconnect", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier, NSToolbarItem.SeparatorItemIdentifier, NSToolbarItem.FlexibleSpaceItemIdentifier, });
     }
 
 //    public void toolbarWillAddItem(NSNotification notification) {
@@ -808,13 +882,9 @@ public class CDBrowserController implements Observer {
     public boolean validateToolbarItem(NSToolbarItem item) {
 //	log.debug("validateToolbarItem:"+item.label());
 	String label = item.label();
-	backButton.setEnabled(pathController.numberOfItems() > 0); //todo host.getSession().getHistory().size() > 0
+	backButton.setEnabled(pathController.numberOfItems() > 0);
 	upButton.setEnabled(pathController.numberOfItems() > 0);
 	pathPopup.setEnabled(pathController.numberOfItems() > 0);
-//not called because it is a custom view
-	//if(label.equals("Path")) {
-//	    return pathController.numberOfItems() > 0;
-//	}
 	if(label.equals("Refresh")) {
 	    return pathController.numberOfItems() > 0;
 	}
@@ -848,7 +918,7 @@ public class CDBrowserController implements Observer {
 	if(host != null) {
 	    if(host.getSession().isConnected()) {
 		NSAlertPanel.beginCriticalAlertSheet(
-			       "End session?", //title
+			       "Close session?", //title
 			       "Close",// defaultbutton
 			       "Cancel",//alternative button
 			       null,//other button
@@ -864,9 +934,8 @@ public class CDBrowserController implements Observer {
 	   ),// end selector
 			       null, // dismiss selector
 			       null, // context
-			       "The connection to the remote host will be closed." // message
+			       "The connection to the host "+host.getName()+" will be closed." // message
 			       );
-	//@todo return the actual selection
 		return false;
 	    }
 	}
@@ -897,7 +966,6 @@ public class CDBrowserController implements Observer {
 	log.debug("validateMenuItem:"+aCell);
         String sel = aCell.action().name();
 	log.debug("validateMenuItem:"+sel);
-
         if (sel.equals("infoButtonClicked:")) {
 	    return browserTable.selectedRow() != -1;
         }
@@ -960,12 +1028,16 @@ public class CDBrowserController implements Observer {
     // ----------------------------------------------------------
 
 	/**
-	    * Used by tableView to determine a valid drop target. info contains details on this dragging operation. The proposed
-	 * location is row is and action is operation. Based on the mouse position, the table view will suggest a proposed drop location.
-	 * This method must return a value that indicates which dragging operation the data source will perform. The data source may
-	 * "retarget" a drop if desired by calling setDropRowAndDropOperation and returning something other than NSDraggingInfo.
-	 * DragOperationNone. One may choose to retarget for various reasons (e.g. for better visual feedback when inserting into a sorted
-								       * position).
+	    * Used by tableView to determine a valid drop target. info contains details on this dragging
+	 * operation. The proposed
+	 * location is row is and action is operation. Based on the mouse position, the table view
+	 * will suggest a proposed drop location.
+	 * This method must return a value that indicates which dragging operation the data source will
+	 * perform. The data source may
+	 * "retarget" a drop if desired by calling setDropRowAndDropOperation and returning something other than
+	 * NSDraggingInfo.
+	 * DragOperationNone. One may choose to retarget for various reasons (e.g. for better visual
+								       * feedback when inserting into a sorted position).
 	 */
 	public int tableViewValidateDrop( NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 	    log.debug("tableViewValidateDrop");
@@ -983,7 +1055,7 @@ public class CDBrowserController implements Observer {
 	 * incorporate the data from the dragging pasteboard at this time.
 	 */
 	public boolean tableViewAcceptDrop( NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-	    log.debug("tableViewAcceptDrop");
+	    log.debug("tableViewAcceptDrop:"+row+","+operation);
 	    if(host != null) {
 	// Get the drag-n-drop pasteboard
 		NSPasteboard pasteboard = info.draggingPasteboard();
@@ -1007,7 +1079,7 @@ public class CDBrowserController implements Observer {
 		    else if(session instanceof ch.cyberduck.core.sftp.SFTPSession) {
 			path = new SFTPPath((SFTPSession)session, parent.getAbsolute(), new java.io.File(filename));
 		    }
-		    CDTransferController controller = new CDTransferController(path, Queue.KIND_UPLOAD);
+		    CDTransferController controller = new CDTransferController(host, path, Queue.KIND_UPLOAD);
 		    controller.transfer(path.status.isResume());
 		}
 		tableView.reloadData();
@@ -1027,6 +1099,7 @@ public class CDBrowserController implements Observer {
 	    *@param rows is the list of row numbers that will be participating in the drag.
 	    */
 	public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
+	    log.debug("tableViewAcceptDrop:"+rows);
 //	    if(rows.count() > 1)
 //		return false;
 //
@@ -1039,16 +1112,50 @@ public class CDBrowserController implements Observer {
 //	    [self dragImage:iconImage at:dragPoint offset:NSMakeSize(0,0)
 //	       event:event
 //	  pasteboard:pb source:self slideBack:YES];
-	//@todo
+
 //	Path p = (Path)this.getEntry(((Integer)rows.objectAtIndex(0)).intValue());
-//	pboard.declareTypes(new NSArray(NSPasteboard.FilenamesPboardType), null);
-//	pboard.setStringForType(p.getLocal().toString(), NSPasteboard.FilenamesPboardType);
+//	pboard.declareTypes(new NSArray(NSPasteboard.FilesPromisePboardType), null);
+//	pboard.setStringForType(p.getLocal().toString(), NSPasteboard.FilesPromisePboardType);
 
 	    return false;
 	}
 
+	/**
+	    * This method is the only NSDraggingSource method that must be implemented by the source object. It should
+	 * return a mask, built by combining the allowed dragging operations listed in NSDraggingInfo's "Constants",
+	 * using the C bitwise OR operator. You should use this mask to indicate which types of dragging operations the
+	 * source object will allow to be performed on the dragged image's data. A true value for isLocal indicates
+	 * that the candidate destination object (the window or view over which the dragged image is currently poised)
+	 * is in the same application as the source, while a false value indicates that the destination object is in a
+	 * different application.
+*/
 
-	
+	public int draggingSourceOperationMaskForLocal(boolean isLocal) {
+	    log.debug("draggingSourceOperationMaskForLocal:"+isLocal);
+        // Return one of the following:
+        // NSDragOperation{Copy, Link, Generic, Private, Move,
+        //                 Delete, Every, None}
+//	    if (isLocal) {
+//		return NSDraggingInfo.DragOperationNone; //suport local drags (inthte same table view) in the future to move files onthe remote host
+//	    }
+//	    else {
+	    return NSDraggingInfo.DragOperationNone; 
+	}
+
+	/*
+	 * Returns the names (not full paths) of the files that the receiver promises to create at dropDestination.
+	 * This method is invoked when the drop has been accepted by the destination and the destination, in the case
+	 * of another Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination.
+	 * For long operations, you can cache dropDestination and defer the creation of the files until the
+	 * finishedDraggingImage method to avoid blocking the destination application.
+	 */
+	public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
+	    log.debug("draggingSourceOperationMaskForLocal:"+dropDestination);
+	    //return new NSArray();
+	    return null;
+	}
+
+
     // ----------------------------------------------------------
     // Data access
     // ----------------------------------------------------------

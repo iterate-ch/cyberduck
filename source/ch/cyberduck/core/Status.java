@@ -61,9 +61,7 @@ public class Status extends Observable implements Serializable {
      * bytes.
      */
     public Status () {
-//        calendar.set(Calendar.HOUR, 0);
-  //      calendar.set(Calendar.MINUTE, 0);
-//	calendar.set(Calendar.SECOND, 0);
+	super();
     }
 
     /**
@@ -116,8 +114,6 @@ public class Status extends Observable implements Serializable {
 	}
     }
     
-
-    // ZUSTAENDE
     public void setComplete(boolean b) {
         this.complete = b;
     }
@@ -125,22 +121,8 @@ public class Status extends Observable implements Serializable {
         return this.complete;
     }    
     
-//    private void setStopped(boolean b) {
-  //      this.stopped = b;
-  //  }
-    //public boolean isStopped() {
-      //  return this.stopped;
-   // } 
-
     public void setCanceled(boolean b) {
 	canceled = b;
-//	if(this.currentSpeedTimer != null)
-//	    this.currentSpeedTimer.stop();
-//	if(this.overallSpeedTimer != null)
-//	    this.overallSpeedTimer.stop();
-//	if(this.chronoTimer != null)
-//	    this.chronoTimer.stop();
-//	this.fireStopEvent();
     }
 
     public boolean isCancled() {
@@ -222,24 +204,6 @@ public class Status extends Observable implements Serializable {
 	//        log.debug("setCurrent(" + c + ")");
 	this.current = c;
 	this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of " + Status.parseDouble(this.getSize()/1024) + " kBytes."));
-/*
-	if(this.getSpeed() <= 0 && this.getOverall() <= 0) {
-	    this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of " + Status.parseDouble(this.getSize()/1024) + " kBytes."));
-	}
-	else {
-	    if(this.getOverall() <= 0) {
-		this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of "
-		    + Status.parseDouble(this.getSize()/1024) + " kBytes. Current: " +
-		    + Status.parseDouble(this.getSpeed()/1024) + "kB/s.")); //\n" + this.getTimeLeftMessage());
-	    }
-	    else {
-		this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of "
-		    + Status.parseDouble(this.getSize()/1024) + " kBytes. Current: "
-		    + Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
-		    + Status.parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
-	    }
-	}
- */
     }
 
 
@@ -270,106 +234,4 @@ public class Status extends Observable implements Serializable {
     public boolean isResume() {
 	return this.resume;
     }
-
-/*
-    public void reset() {
-	this.speed = 0;
-	this.overall = 0;
-	this.current = this.isResume() ? current : 0;
-	if(overallSpeedTimer == null) {
-	    overallSpeedTimer = new Timer(4000,
-				   new ActionListener() {
-				       Vector overall = new Vector();
-				       double current;
-				       double last;
-				       public void actionPerformed(ActionEvent e) {
-					   current = getCurrent();
-					   if(current <= 0) {
-					       setOverall(0);
-					   }
-					   else {
-					       overall.add(new Double((current - last)/4)); // bytes transferred for the last 4 seconds
-					       Iterator iterator = overall.iterator();
-					       double sum = 0;
-					       while(iterator.hasNext()) {
-						   Double s = (Double)iterator.next();
-						   sum = sum + s.doubleValue();
-					       }
-					       setOverall((sum/overall.size()));
-					       last = current;
-					       //                        log.debug("overallSpeed " + sum/overall.size()/1024 + " KBytes/sec");
-					   }
-				       }
-				   }
-				   );
-	}
-
-	if(currentSpeedTimer == null) {
-	    currentSpeedTimer = new Timer(500,
-				   new ActionListener() {
-				       int i = 0;
-				       int current;
-				       int last;
-				       int[] speeds = new int[8];
-				       public void actionPerformed(ActionEvent e) {
-					   int diff = 0;
-					   current = getCurrent();
-					   if(current <= 0) {
-					       setSpeed(0);
-					   }
-					   else {
-					       speeds[i] = (current - last)*(2); i++; last = current;
-					       if(i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
-						   i = 0;
-					       }
-
-					       for (int k = 0; k < speeds.length; k++) {
-						   diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
-					       }
-
-					       //                        log.debug("currentSpeed " + diff/speeds.length/1024 + " KBytes/sec");
-					       setSpeed((diff/speeds.length));
-					   }
-				       }
-				   }
-				   );
-	}
-*/
-
-	/*
-	 if(timeLeftTimer == null) {
-	     timeLeftTimer = new Timer(1000,
-			    new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				    setTimeLeft((int)((getSize() - getCurrent())/getSpeed()));
-				}
-			    }
-			    );
-	 }
-	 */
-    }
-
-/*
-    private void setTimeLeft(int seconds) {
-        this.left = seconds;
-    }
-    private int getTimeLeft() {
-        return this.left;
-    }
-
-    private String getTimeLeftMessage() {
-        int s = this.getTimeLeft();
-        String message = "";
-        //@todo: implementation of better 'time left' management.
-        if(s != -1) {
-            if(s >= 60) {
-                message = (int)s/60 + " minutes remaining.";
-            }
-            else {
-                message = s + " seconds remaining.";
-            }
-        }
-        return message;
-    }
- */
-//}
+}

@@ -33,9 +33,9 @@ public class Host {
     private String protocol;
     private int port;
     private String name;
-    private HostKeyVerification hostKeyVerification;
-    private Session session;
-    private Login login;
+    private transient HostKeyVerification hostKeyVerification;
+    private transient Session session;
+    private transient Login login;
 
     public Host(String url) {
 	this.setURL(url);
@@ -168,10 +168,6 @@ public class Host {
     // Accessor methods
     // ----------------------------------------------------------
 
-    public void setLoginController(Login login) {
-	this.login = login;
-    }
-    
     public Login getLogin() {
 	return this.login;
     }

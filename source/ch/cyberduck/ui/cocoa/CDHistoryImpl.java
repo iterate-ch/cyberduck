@@ -18,8 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Favorites;
+import ch.cyberduck.core.History;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Preferences;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -30,24 +31,24 @@ import java.util.Iterator;
 /**
 * @version $Id$
  */
-public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSource {
-    private static Logger log = Logger.getLogger(CDFavoritesImpl.class);
+public class CDHistoryImpl extends History { //implements NSComboBox.DataSource {
+    private static Logger log = Logger.getLogger(CDHistoryImpl.class);
 
-    private static Favorites instance;
+    private static History instance;
 
-    private static final File FAVORTIES_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Favorites.plist"));
+    private static final File HISTORY_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History.plist"));
 
     static {
-	FAVORTIES_FILE.getParentFile().mkdir();
+	HISTORY_FILE.getParentFile().mkdir();
     }
 
-    private CDFavoritesImpl() {
+    private CDHistoryImpl() {
 	super();
     }
 
-    public static Favorites instance() {
+    public static History instance() {
 	if(null == instance) {
-	    instance = new CDFavoritesImpl();
+	    instance = new CDHistoryImpl();
 	}
 	return instance;
     }
@@ -58,17 +59,20 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
 	    Iterator i = super.getIterator();
 
 	    NSMutableArray data = new NSMutableArray();
-	    while(i.hasNext()) {
+	    int no = 0;
+	    int size = Integer.parseInt(Preferences.instance().getProperty("history.size"));
+	    while(i.hasNext() && no < size) {
 		data.addObject(((Host)i.next()).getURL());
+		no++;
 	    }
 	    NSMutableData collection = new NSMutableData();
 	    collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(data));
-
+	    
 	    // data is written to a backup location, and then, assuming no errors occur, the backup location is renamed to the specified name
-	    if(collection.writeToURL(FAVORTIES_FILE.toURL(), true))
-		log.info("Favorites sucessfully saved in :"+FAVORTIES_FILE.toString());
+	    if(collection.writeToURL(HISTORY_FILE.toURL(), true))
+		log.info("History sucessfully saved in :"+ HISTORY_FILE.toString());
 	    else
-		log.error("Error saving Favorites in :"+FAVORTIES_FILE.toString());
+		log.error("Error saving History in :"+ HISTORY_FILE.toString());
 	}
 	catch(java.net.MalformedURLException e) {
 	    log.error(e.getMessage());
@@ -77,12 +81,12 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
 
     public void load() {
 	log.debug("load");
-	if(FAVORTIES_FILE.exists()) {
-	    log.info("Found Favorites file: "+FAVORTIES_FILE.toString());
+	if(HISTORY_FILE.exists()) {
+	    log.info("Found History file: "+ HISTORY_FILE.toString());
 
-	    NSData plistData = new NSData(FAVORTIES_FILE);
+	    NSData plistData = new NSData(HISTORY_FILE);
 	    NSArray entries = (NSArray)NSPropertyListSerialization.propertyListFromXMLData(plistData);
-	    log.info("Successfully read Favorites: "+entries);
+	    log.info("Successfully read History: "+entries);
 	    java.util.Enumeration i = entries.objectEnumerator();
 	    while(i.hasMoreElements()) {
 		this.addItem(new Host((String)i.nextElement()));
@@ -90,6 +94,23 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
 	}
     }
 
+    public Host getItemAtIndex(int row) {
+	return (Host)this.values().toArray()[row];
+    }
+
+    // ----------------------------------------------------------
+    // NSComboBox.DataSource
+    // ----------------------------------------------------------
+
+    public int numberOfItemsInComboBox(NSComboBox combo) {
+	return this.values().size();
+    }
+
+    public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
+	Host h = (Host)this.values().toArray()[row];
+	return h.getName();
+    }
+    
     // ----------------------------------------------------------
     // NSTableView.DataSource
     // ----------------------------------------------------------
@@ -104,16 +125,8 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
 	String identifier = (String)tableColumn.identifier();
 	if(identifier.equals("URL")) {
 	    Host h = (Host)this.values().toArray()[row];
-	    return h.getURL();
+	    return h.getName();
 	}
 	throw new IllegalArgumentException("Unknown identifier: "+identifier);
-    }
-    
-    //setValue()
-    public void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row) {
-	log.debug("tableViewSetObjectValueForLocation:"+row);
-	Host h = (Host)this.values().toArray()[row];
-	h.setURL((String)value);
-	this.addItem(h);
     }
 }

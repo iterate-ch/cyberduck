@@ -116,70 +116,6 @@ public class CDConnectionController {
 	this.hostPopup.setDataSource(CDHistoryImpl.instance());
     }
 
-    /*
-    private class HostDataSource implements NSComboBox.DataSource {
-	private List data = new ArrayList();
-
-	public void addItem(NSComboBox aComboBox, Object o) {
-	    log.debug("HostDataSource:addItem:"+o);
-	    this.data.add(0, o);
-	    aComboBox.reloadData();
-	}
-	*/
-
-	/**
-	    * An NSComboBox, aComboBox, uses this method to perform incremental-or "smart"-searches when the user types into the text field. Your implementation should return the first complete string that starts with uncompletedString.
-	 As the user types in the text field, the receiver uses this method to search for items from the pop-up list that start with what the user has typed. The receiver adds the new text to the end of the field and selects the new text, so when the user types another character, it replaces the new text.
-	 */
-//	public String comboBoxCompletedString(NSComboBox aComboBox, String uncompletedString) {
-//	    log.debug("comboBoxCompletedString:"+uncompletedString);
-//	    Iterator i = data.iterator();
-//	    while(i.hasNext()) {
-//		String h = ((Host)i.next()).getName();
-//		if(h.startsWith(uncompletedString))
-//		    return h;
-//	    }
-//	    return null;
-//	}
-//
-
-    /*
-	public int comboBoxIndexOfItem( NSComboBox combo, String aString) {
-	    log.debug("comboBoxIndexOfItem:"+aString);
-	    Iterator i = data.iterator();
-	    int index = -1;
-	    while(i.hasNext()) {
-		index++;
-		if(i.next().toString().equals(aString))
-		    return index;
-	    }
-	    return index;
-	}
-     */
-
-//	public Object getItem(int index) {
-//	    return data.get(index);
-//	}
-
-	/**
-	    * Implement this method to return the object that corresponds to the item at index in aComboBox
-	 */
-//	public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int index) {
-//	    //log.debug("comboBoxObjectValueForItemAtIndex:"+index);
-//	    return ((Host)data.get(index)).getName();
-//	}
-
-//	public int numberOfItemsInComboBox(NSComboBox combo) {
-//	    //log.debug("numberOfItemsInComboBox");
-//	    return data.size();
-//	}
-
-//	public void clear(NSComboBox aComboBox) {
-//	    this.data.clear();
-//	    aComboBox.reloadData();
-//	}
-//    }
-
 //    private NSTextField hostField;
   //  public void setHostField(NSTextField hostField) {
 //	this.hostField = hostField;
@@ -285,11 +221,14 @@ public class CDConnectionController {
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
 //	this.pathField.setStringValue("~");
     }
-		
+
     public void hostSelectionChanged(Object sender) {
 	log.debug("hostSelectionChanged:"+sender);
-	this.updateFields(((CDHistoryImpl)CDHistoryImpl.instance()).getItemAtIndex(hostPopup.indexOfSelectedItem()));
-	this.updateLabel(sender);
+	int index = hostPopup.indexOfSelectedItem();
+	if(index != -1) {
+	    this.updateFields(((CDHistoryImpl)CDHistoryImpl.instance()).getItemAtIndex(index));
+	    this.updateLabel(sender);
+	}
     }
 
     public void favoritesSelectionChanged(Object sender) {
@@ -321,7 +260,7 @@ public class CDConnectionController {
 //	Host selectedItem = (Host)hostDataSource.comboBoxObjectValueForItemAtIndex(hostPopup, hostPopup.indexOfSelectedItem());
 	this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals("ftp") ? FTP_STRING : SFTP_STRING);
 	//should not be called when usesDataSource is set to YES
-//	this.hostPopup.selectItemWithObjectValue(selectedItem.getName());
+	this.hostPopup.selectItemWithObjectValue(selectedItem.getName());
 //	this.hostField.setStringValue(selectedItem.getName());
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
 	this.usernameField.setStringValue(selectedItem.getLogin().getUsername());
@@ -354,27 +293,10 @@ public class CDConnectionController {
 		Host host = null;
 		switch(tag) {
 		    case(Session.SSH_PORT):
-			try {
-			    host = new Host(Session.SFTP, hostPopup.stringValue(), Integer.parseInt(portField.stringValue()), new Login(usernameField.stringValue(), passField.stringValue()));
+			host = new Host(Session.SFTP, hostPopup.stringValue(), Integer.parseInt(portField.stringValue()), new Login(usernameField.stringValue(), passField.stringValue()));
 //			    host = new Host(Session.SFTP, hostField.stringValue(), Integer.parseInt(portField.stringValue()), new Login(usernameField.stringValue(), passField.stringValue()));
-			    host.setHostKeyVerificationController(new CDHostKeyController(browser.window()));
-			}
-			    catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
-		//This exception is thrown whenever an exception occurs open or reading from the host file.
-				NSAlertPanel.beginCriticalAlertSheet(
-				 "Error", //title
-				 "OK",// defaultbutton
-				 null,//alternative button
-				 null,//other button
-				 browser.window(), //docWindow
-				 null, //modalDelegate
-				 null, //didEndSelector
-				 null, // dismiss selector
-				 null, // context
-				 "Could not open or read the host file: "+e.getMessage() // message
-				 );
-			    }
-			    break;
+
+			break;
 		    case(Session.FTP_PORT):
 			host = new Host(Session.FTP, hostPopup.stringValue(), Integer.parseInt(portField.stringValue()), new Login(usernameField.stringValue(), passField.stringValue()));
 //			host = new Host(Session.FTP, hostField.stringValue(), Integer.parseInt(portField.stringValue()), new Login(usernameField.stringValue(), passField.stringValue()));
@@ -382,9 +304,9 @@ public class CDConnectionController {
 		    default:
 			throw new IllegalArgumentException("No protocol selected.");
 		}
-		browser.mount(host);
-		    
-	case(NSAlertPanel.AlternateReturn):
+		    browser.mount(host);
+
+	    case(NSAlertPanel.AlternateReturn):
 		//
 	}
     }

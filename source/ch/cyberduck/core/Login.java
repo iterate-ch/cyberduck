@@ -39,6 +39,7 @@ public class Login {
 	}
 	else {
 	    this.user = l;
+	    this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 	}
     }
 

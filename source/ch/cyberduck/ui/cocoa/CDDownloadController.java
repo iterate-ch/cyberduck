@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Login;
 import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.*;
@@ -77,7 +78,6 @@ public class CDDownloadController {
     }
     
     public void closeSheet(NSButton sender) {
-	//@ todo url field
 	switch(sender.tag()) {
 	    case(NSAlertPanel.DefaultReturn):
 		URL url = null;
@@ -85,11 +85,12 @@ public class CDDownloadController {
 		    url = new URL(urlField.stringValue());
 		    this.window().orderOut(null);
 		    String protocol = url.getProtocol();
-		    String host = url.getHost();
+		    String hostname = url.getHost();
 		    String file = url.getPath();
 		    Path path = null;
+		    Host host = null;
 		    Session session = null;
-		    CDTransferController controller = new CDTransferController(Queue.KIND_DOWNLOAD);
+//		    CDTransferController controller = new CDTransferController(Queue.KIND_DOWNLOAD);
 		    if(protocol.equals(Session.FTP)) {
 			String userinfo = url.getUserInfo();
 			String user = Preferences.instance().getProperty("ftp.anonymous.name");
@@ -101,19 +102,16 @@ public class CDDownloadController {
 				pass = userinfo.substring(i + 1);
 			    }
 			}
-
-			//@todo attach logincontroller to transfer window
-			session = new FTPSession(new Host(Session.FTP, host, url.getPort(), new CDLoginController(controller.window(), user, pass)));
+			session = new FTPSession(host = new Host(Session.FTP, hostname, url.getPort(), new Login(user, pass)));
 			path = new FTPPath((FTPSession)session, file);
 		    }
 		    else if (protocol.equals(Session.HTTP)) {
 //@todo			this.setServerPath(a.getPath() + "?" + a.getQuery());
-			session = new HTTPSession(new Host(Session.HTTP, host, url.getPort(), new CDLoginController(this.window())));
+			session = new HTTPSession(host = new Host(Session.HTTP, hostname, url.getPort(), new Login()));
 			path = new HTTPPath((HTTPSession)session, file);
 		    }
-			//@todo HTTPS
-			//@todo SCP
-		    controller.setPath(path);
+//		    controller.setPath(path);
+		    CDTransferController controller = new CDTransferController(host, path, Queue.KIND_DOWNLOAD);
 		    controller.transfer(path.status.isResume());
 		}
 		catch(MalformedURLException e) {

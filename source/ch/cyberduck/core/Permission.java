@@ -85,13 +85,6 @@ public class Permission {//implements java.io.Serializable {
     	this.other[EXECUTE] = p[OTHER][EXECUTE];
     }
 
-    /*
-     //@todo
-    public Permission(int p) {
-
-    }
-     */
-
     /**
      * @return a thee-dimensional boolean array representing read, write
      * and execute permissions (in that order) of the file owner.

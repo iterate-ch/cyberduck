@@ -239,11 +239,9 @@ public class CDMainController {
 	}
     }
 
-
 //    public boolean applicationOpenFile (NSApplication app, String filename) {
 	//
   //  }
-
 
     public int applicationShouldTerminate (NSApplication app) {
 	log.debug("applicationShouldTerminate");
@@ -255,6 +253,7 @@ public class CDMainController {
 	Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses"))+1);
         Preferences.instance().save();
 	CDFavoritesImpl.instance().save();
+	CDHistoryImpl.instance().save();
 
 	/*
 	if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {

@@ -194,21 +194,6 @@ public class FTPPath extends Path {
 	return new FTPPath(session, this.getAbsolute(), name);
     }
 
-//    public int size() {
-//	try {
-//	    session.check();
-//	    //@todo ouch,upload?
-//	    this.status.setSize((int)(session.FTP.size(this.getAbsolute())));
-//	}
-//	catch(FTPException e) {
-//	    session.log("FTP Error: "+e.getMessage(), Message.ERROR);
-//	}
-//	catch(IOException e) {
-//	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
-//	}
-//	return status.getSize();
-  //  }
-
     public void changePermissions(int permissions) {
 	log.debug("changePermissions:"+permissions);
 	try {

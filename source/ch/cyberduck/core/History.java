@@ -30,17 +30,17 @@ import java.util.Observer;
 import ch.cyberduck.core.Host;
 
 /**
-* Keeps track of user bookmarks
- * The hosts are stored in a hashmap where host.getURL() is the key
+* Keeps track of recently connected hosts.
+  * The hosts are stored in a hashmap where host.getName() is the key
  * @see ch.cyberduck.core.Host
  * @version $Id$
  */
-public abstract class Favorites extends Observable {
-    private static Logger log = Logger.getLogger(Favorites.class);
-    
+public abstract class History extends Observable {
+    private static Logger log = Logger.getLogger(History.class);
+
     private Map data = new HashMap();
 
-    public Favorites() {
+    public History() {
 	this.load();
     }
 
@@ -49,7 +49,7 @@ public abstract class Favorites extends Observable {
 	this.setChanged();
 	this.notifyObservers(null);
     }
-    
+
     /**
 	* Write data to file.
      */
@@ -62,7 +62,7 @@ public abstract class Favorites extends Observable {
 
     public void addItem(Host h) {
 	log.debug("addItem:"+h);
-	this.data.put(h.getURL(), h);
+	this.data.put(h.getName(), h);
 	this.callObservers(h);
     }
 
@@ -77,8 +77,10 @@ public abstract class Favorites extends Observable {
      */
     public Host getItem(String name) {
 	Host result =  (Host)this.data.get(name);
-	if(null == result)
-	    throw new IllegalArgumentException("Host "+name+" not found in Favorites.");
+	if(null == result) {
+	    log.info("Host "+name+" not found in History.");
+// throw new IllegalArgumentException("Host "+name+" not found in History.");
+	}
 	return result;
     }
 

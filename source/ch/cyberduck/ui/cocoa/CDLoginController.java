@@ -65,6 +65,9 @@ public class CDLoginController extends LoginController {
 	this.login = login;
 	this.parentWindow = parentWindow;
 	allDocuments.addObject(this);
+        if (false == NSApplication.loadNibNamed("Login", this)) {
+            log.fatal("Couldn't load Login.nib");
+        }
     }
 
 //    public CDLoginController(NSWindow parentWindow) {
@@ -83,19 +86,28 @@ public class CDLoginController extends LoginController {
 	return this.sheet;
     }
 
-    public void windowWillClose(NSNotification notification) {
-	this.window().setDelegate(null);
-	allDocuments.removeObject(this);
+    public void finalize() {
+	//this.window().setDelegate(null);
+	//allDocuments.removeObject(this);
     }
+    
+//    public void windowWillClose(NSNotification notification) {
+//	this.window().setDelegate(null);
+//	allDocuments.removeObject(this);
+//    }
 
     private boolean done;
     private boolean tryAgain;
 
+    /**
+	* @return True if the user has choosen to try again with new credentials
+     */
     public boolean loginFailure(String message) {
 	log.info("Authentication failed");
-	NSApplication.loadNibNamed("Login", this);
+	this.done = false;
 	this.textField.setStringValue(message);
 	this.userField.setStringValue(login.getUsername());
+	log.debug("Begin sheet.");
 	NSApplication.sharedApplication().beginSheet(
 					      this.window(), //sheet
 					      parentWindow,
@@ -105,6 +117,7 @@ public class CDLoginController extends LoginController {
 			  new Class[] { NSWindow.class, int.class, NSWindow.class }
 			  ),// did end selector
 					      null); //contextInfo
+//	log.debug("Ordering front sheet window");
 	this.window().makeKeyAndOrderFront(null);
 	while(!done) {
 	    try {
@@ -119,21 +132,21 @@ public class CDLoginController extends LoginController {
 
     /**
 	* Selector method from
-     * @see loginFailure
+     * @see #loginFailure
      */
     public void loginSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	log.info("loginSheetDidEnd");
 	this.window().orderOut(null);
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
-		tryAgain = true;
+		this.tryAgain = true;
 		this.login.setUsername(userField.stringValue());
 		this.login.setPassword(passField.stringValue());
 		break;
 	    case(NSAlertPanel.AlternateReturn):
-		tryAgain = false;
+		this.tryAgain = false;
 		break;
 	}
-	done = true;
+	this.done = true;
     }
 }

@@ -31,36 +31,29 @@ import java.util.Hashtable;
 public abstract class Preferences {//extends Properties {
     private static Logger log = Logger.getLogger(Preferences.class);
 //    private static java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-
+    
     private static Preferences current = null;
     private Hashtable defaults;
 
     /**
-        * Use #instance instead.
-     */
-    public Preferences() {
-        super();
-    }
-
-    /**
-     * @return The singleton instance of me.
+	* @return The singleton instance of me.
      */
     public static Preferences instance() {
 	log.debug("instance");
-        if(null == current) {
-            String strVendor = System.getProperty("java.vendor");
+	if(null == current) {
+	    String strVendor = System.getProperty("java.vendor");
             if(strVendor.indexOf("Apple") != -1)
 		current = new ch.cyberduck.ui.cocoa.CDPreferencesImpl();
 	    else
 		current = new ch.cyberduck.ui.swing.PreferencesImpl();
-            current.setDefaults();
+	    current.setDefaults();
             current.load();
-        }
+	}
         return current;
     }
 
-/**
-*	@param property The name of the property to overwrite
+    /**
+	*	@param property The name of the property to overwrite
 * 	@param value The new vlaue 
 */
     public abstract void setProperty(String property, String value);
@@ -98,6 +91,7 @@ public abstract class Preferences {//extends Properties {
 	defaults.put("browser.opendefault", "true");
 	defaults.put("browser.showHidden", "false");
 	defaults.put("transfer.close", "false");
+	defaults.put("history.size", "4"); //@todo
 
 //        defaults.put("laf.default", javax.swing.UIManager.getSystemLookAndFeelClassName());
         //defaults.put("laf.default", javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
@@ -151,11 +145,11 @@ public abstract class Preferences {//extends Properties {
         //defaults.put("connection.log", "true");
 //        defaults.put("connection.log.file", "cyberduck.connection.log");
 //        defaults.put("connection.buffer", "512");
-//        defaults.put("connection.buffer", "1024");
+        defaults.put("connection.buffer", "1024");
 //        defaults.put("connection.buffer", "2048");
 //        defaults.put("connection.buffer", "4096");
 //        defaults.put("connection.buffer", "8192");
-        defaults.put("connection.buffer", "16384");
+//        defaults.put("connection.buffer", "16384");
 //        defaults.put("connection.log.speech", "false");
         defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
@@ -189,8 +183,8 @@ public abstract class Preferences {//extends Properties {
         //frame sizes
  //       defaults.put("frame.width", "560");
    //     defaults.put("frame.height", "480");
-//     @todo   defaults.put("frame.x", getXLocation(560));
-//@todo        defaults.put("frame.y", getYLocation(480));
+//       defaults.put("frame.x", getXLocation(560));
+//        defaults.put("frame.y", getYLocation(480));
     //    defaults.put("transcriptdialog.width", "520");
       //  defaults.put("transcriptdialog.height", "550");
 //        defaults.put("transcriptdialog.x", getXLocation(520));
@@ -213,7 +207,7 @@ public abstract class Preferences {//extends Properties {
 /**
 	* Should be overriden by the implementation and only called if the property
  * can't be found in the users's defaults table
-* @pram property The property to query.
+* @param property The property to query.
 *	@return The value of the property
 */
     public String getProperty(String property) {
@@ -233,14 +227,11 @@ public abstract class Preferences {//extends Properties {
      */
     public abstract void load();
 
-    private String getXLocation(int componentWidth) {
-	return null;
+//    private String getXLocation(int componentWidth) {
 //        return new Integer((screenSize.width/2) - (componentWidth/2)).toString();
-    }
+ //   }
 
-    private String getYLocation(int componentHeight) {
-	return null;
-  //@todo      return new Integer((screenSize.height/2) - (componentHeight/2)).toString();
-    }
-    
+//    private String getYLocation(int componentHeight) {
+  //      return new Integer((screenSize.height/2) - (componentHeight/2)).toString();
+  //  }
 }

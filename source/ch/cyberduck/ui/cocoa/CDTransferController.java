@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Status;
@@ -36,10 +37,6 @@ import java.util.Observer;
  */
 public class CDTransferController implements Observer {
     private static Logger log = Logger.getLogger(CDTransferController.class);
-
-    private int kind;
-    private Path file;
-    private Queue queue;
 
     // ----------------------------------------------------------
     // Outlets
@@ -128,31 +125,29 @@ public class CDTransferController implements Observer {
 
     private static NSMutableArray allDocuments = new NSMutableArray();
 
+    private int kind;
+    private Path file;
+    private Host host;
+    private Queue queue;
+    
     /**
 	* @param kind Tag specifiying if it is a download or upload.
      */
-    public CDTransferController(Path file, int kind) {
+    public CDTransferController(Host host, Path file, int kind) {
 	allDocuments.addObject(this);
-	this.setPath(file);
+	this.host = host;
+	this.file = file;
 	this.kind = kind;
+	this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
         if (false == NSApplication.loadNibNamed("Transfer", this)) {
             log.fatal("Couldn't load Transfer.nib");
             return;
         }
-//@todo	this.init();
-    }
-
-    public CDTransferController(int kind) {
-	this(null, kind);
-    }
-
-    public void setPath(Path file) {
-	this.file = file;
     }
     
     private void init() {
 	log.debug("init");
-	this.urlField.setAttributedStringValue(new NSAttributedString(file.getAbsolute())); //@todo url
+	this.urlField.setAttributedStringValue(new NSAttributedString(host.getURL()+file.getAbsolute()));
 	this.fileField.setAttributedStringValue(new NSAttributedString(file.getLocal().toString()));
 	this.window().setTitle(file.getName());
 	this.progressField.setAttributedStringValue(new NSAttributedString(""));
@@ -266,11 +261,12 @@ public class CDTransferController implements Observer {
 		this.totalProgressBar.setDoubleValue(totalProgressBar.maxValue());
 		this.progressField.setAttributedStringValue(new NSAttributedString("Complete"));
 		if(Queue.KIND_DOWNLOAD == kind) {
-			//@todo temp path name
-			//path.getLocalTemp().renameTo(path.getLocal());
 		    if(1 == queue.numberOfJobs()) {
-			if(Preferences.instance().getProperty("connection.download.postprocess").equals("true") && queue.numberOfJobs() == 1) {
+			if(Preferences.instance().getProperty("connection.download.postprocess").equals("true")) {
 			    NSWorkspace.sharedWorkspace().openFile(file.getLocal().toString());
+			}
+			if(Preferences.instance().getProperty("transfer.close").equals("true")) {
+			    this.window.close();
 			}
 		    }
 		}
@@ -288,7 +284,7 @@ public class CDTransferController implements Observer {
 				       null, // context
 				       msg.getDescription() // message
 				       );
-		this.stopButtonClicked(null);
+		this.queue.cancel();
 		this.progressField.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
 	    }
 	    else if(msg.getTitle().equals(Message.PROGRESS)) {
@@ -371,7 +367,6 @@ public class CDTransferController implements Observer {
 	//is upload
 	if(Queue.KIND_UPLOAD == this.kind) {
 	    this.file.status.setResume(resume);
-//@todo	    this.file.status.setResume(false);
 	    return true;
 	}
 	//is download

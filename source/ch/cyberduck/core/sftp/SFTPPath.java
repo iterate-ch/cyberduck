@@ -313,7 +313,7 @@ public class SFTPPath extends Path {
 		throw new IOException("Unable to buffer data");
 	    }
 	    SftpFile p = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-	    this.status.setCurrent(0);//@todo implmenet resume for sftp
+	    this.status.setCurrent(0); // sftp resume not possible
 //	    this.status.setSize(p.getAttributes().getSize().intValue());
 	    session.log("Opening data stream...", Message.PROGRESS);
 	    SftpFileInputStream in = new SftpFileInputStream(p);
@@ -374,7 +374,7 @@ public class SFTPPath extends Path {
 	    session.log("Opening data stream...", Message.PROGRESS);
 	    SftpFile remoteFile = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
 	    FileAttributes attrs = remoteFile.getAttributes();
-	    //@ todo default permissions
+	    //@ todo default upload permissions
 	    attrs.setPermissions("rw-r--r--");
 	    session.SFTP.setAttributes(remoteFile, attrs);
 	    SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);

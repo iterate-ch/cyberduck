@@ -20,24 +20,28 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
-import com.sshtools.j2ssh.transport.AbstractHostKeyVerification;
+//import com.sshtools.j2ssh.transport.AbstractHostKeyVerification;
+import com.sshtools.j2ssh.transport.AbstractKnownHostsKeyVerification;
 import com.sshtools.j2ssh.transport.InvalidHostFileException;
+import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import org.apache.log4j.Logger;
+
+import ch.cyberduck.core.Preferences;
 
 /**
 * @version $Id$
  * Concrete Coccoa implementation of a SSH HostKeyVerification
  */
-public class CDHostKeyController extends AbstractHostKeyVerification {
+public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
     private String host;
-    private String fingerprint;
+    private SshPublicKey publicKey;
     private boolean done;
     private NSWindow mainWindow;
 
     public CDHostKeyController(NSWindow mainWindow) throws InvalidHostFileException {
-	super();
+	super(CDPreferencesImpl.instance().getProperty("sshtools.home"));
 	this.mainWindow = mainWindow;
     }
 
@@ -47,41 +51,41 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
   //  }
     
 
-    public void onDeniedHost(String hostname) {
-	log.info("onDeniedHost");
-	NSAlertPanel.beginCriticalAlertSheet(
-					   "Access denied", //title
-					   "OK",// defaultbutton
-					   null,//alternative button
-					   null,//other button
-					   mainWindow,
-					   this, //delegate
-					   new NSSelector
-					   (
-	 "deniedHostSheetDidEnd",
-	 new Class[]
-	 {
-	     NSWindow.class, int.class, NSWindow.class
-	 }
-	 ),// end selector
-					   null, // dismiss selector
-					   null, // context
-					   "Access to the host " + hostname + " is denied from this system" // message
-					   );
-	while(!this.done) {
-	    try {
-		Thread.sleep(500); //milliseconds
-	    }
-	    catch(InterruptedException e) {
-		log.error(e.getMessage());
-	    }
-	}
-    }
+//    public void onDeniedHost(String hostname) {
+//	log.info("onDeniedHost");
+//	NSAlertPanel.beginCriticalAlertSheet(
+//					   "Access denied", //title
+//					   "OK",// defaultbutton
+//					   null,//alternative button
+//					   null,//other button
+//					   mainWindow,
+//					   this, //delegate
+//					   new NSSelector
+//					   (
+//	 "deniedHostSheetDidEnd",
+//	 new Class[]
+//	 {
+//	     NSWindow.class, int.class, NSWindow.class
+//	 }
+//	 ),// end selector
+//					   null, // dismiss selector
+//					   null, // context
+//					   "Access to the host " + hostname + " is denied from this system" // message
+//					   );
+//	while(!this.done) {
+//	    try {
+//		Thread.sleep(500); //milliseconds
+//	    }
+//	    catch(InterruptedException e) {
+//		log.error(e.getMessage());
+//	    }
+//	}
+//  }
 
-    public void onHostKeyMismatch(String host, String fingerprint, String actualHostKey) {
+    public void onHostKeyMismatch(String host, SshPublicKey allowedHostKey, SshPublicKey actualHostKey) {
 	log.info("onHostKeyMismatch");
 	this.host = host;
-	this.fingerprint = fingerprint;
+	this.publicKey = actualHostKey;
 	NSAlertPanel.beginCriticalAlertSheet(
 					   "Host key mismatch", //title
 					   "Allow",// defaultbutton
@@ -100,9 +104,9 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 					   null, // dismiss selector
 					   null, // context
 					   "The host key supplied by " + host + " is: "
-					   + actualHostKey +
-					   "\nThe current allowed key for " + host + " is: "
-					   + fingerprint +"\nDo you want to allow the host access?");
+					   + actualHostKey.getFingerprint() +
+					   "\nThe current allowed key for is: "
+					   + allowedHostKey.getFingerprint() +"\nDo you want to allow the host access?");
 	while(!this.done) {
 	    try {
 		Thread.sleep(500); //milliseconds
@@ -114,10 +118,10 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
     }
 
 
-    public void onUnknownHost(String host, String fingerprint) {
+    public void onUnknownHost(String host, SshPublicKey publicKey) {
 	log.info("onUnknownHost");
 	this.host = host;
-	this.fingerprint = fingerprint;
+	this.publicKey = publicKey;
 	NSAlertPanel.beginInformationalAlertSheet(
 					   "Unknown host", //title
 					   "Allow",// defaultbutton
@@ -136,7 +140,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 					   null, // dismiss selector
 					   null, // context
 					   "The host " + host
-					   + " is currently unknown to the system. The host key fingerprint is: " + fingerprint+".");
+					   + " is currently unknown to the system. The host key fingerprint is: " + publicKey.getFingerprint()+".");
 	while(!this.done) {
 	    try {
 		Thread.sleep(500); //milliseconds
@@ -148,18 +152,18 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
     }
 
 
-    public void deniedHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	log.info("deniedHostSheetDidEnd");
-	sheet.orderOut(null);
-	done = true;
-    }
+//    public void deniedHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+//	log.info("deniedHostSheetDidEnd");
+//	sheet.orderOut(null);
+//	done = true;
+//  }
 
     public void keyMismatchSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	log.info("keyMismatchSheetDidEnd");
 	sheet.orderOut(null);
 	try {
 	    if(returncode == NSAlertPanel.DefaultReturn)
-		allowHost(host, fingerprint, false);
+		allowHost(host, publicKey, false);
 	    if(returncode == NSAlertPanel.AlternateReturn) {
 		NSAlertPanel.beginCriticalAlertSheet(
 					    "Invalid host key", //title
@@ -176,7 +180,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 		log.info("Cannot continue without a valid host key");
 	    }
 	    if(returncode == NSAlertPanel.OtherReturn) {
-		allowHost(host, fingerprint, true); // always allow host
+		allowHost(host, publicKey, true); // always allow host
 	    }
 	    done = true;
 	}
@@ -190,7 +194,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 	sheet.orderOut(null);
 	try {
 	    if(returncode == NSAlertPanel.DefaultReturn)
-		allowHost(host, fingerprint, false); // allow host
+		allowHost(host, publicKey, false); // allow host
 	    if(returncode == NSAlertPanel.AlternateReturn) {
 		NSAlertPanel.beginCriticalAlertSheet(
 					    "Invalid host key", //title
@@ -207,7 +211,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 		log.info("Cannot continue without a valid host key");
 	    }
 	    if(returncode == NSAlertPanel.OtherReturn)
-		allowHost(host, fingerprint, true); // always allow host
+		allowHost(host, publicKey, true); // always allow host
 	    done = true;
 	}
 	catch(InvalidHostFileException e) {

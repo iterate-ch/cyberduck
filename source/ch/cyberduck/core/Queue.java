@@ -76,6 +76,8 @@ public class Queue extends Observable implements Observer { //Thread {
      */
     private int size = -1;
 
+    private int left = 0;
+
     Calendar calendar = Calendar.getInstance();
 
     /**
@@ -107,7 +109,6 @@ public class Queue extends Observable implements Observer { //Thread {
         files.add(file);
     }
 
-    
     private String parseTime(int t) {
 	if(t > 9) {
 	    return String.valueOf(t);
@@ -222,9 +223,18 @@ public class Queue extends Observable implements Observer { //Thread {
 					      }
 					      
 				       }
-				   }
+				      }
 				      );
 		currentSpeedTimer.start();
+
+		Timer timeLeftTimer = new Timer(1000,
+				  new ActionListener() {
+				      public void actionPerformed(ActionEvent e) {
+					  setTimeLeft((int)((candidate.status.getSize() - candidate.status.getCurrent())/getSpeed()));
+				      }
+				  }
+				  );
+		timeLeftTimer.start();
 
 		//Iterating over all the files in the queue
 		Iterator i = files.iterator();
@@ -316,6 +326,8 @@ public class Queue extends Observable implements Observer { //Thread {
      */
     public int getCurrent() {
 	//@todo is it worth? ouch, calculating...
+	return candidate.status.getCurrent();
+	/*
 	int current = 0;
 	Iterator i = files.iterator();
 	Path file = null;
@@ -323,8 +335,9 @@ public class Queue extends Observable implements Observer { //Thread {
 	    file = (Path)i.next();
 	    current = current + file.status.getCurrent();
 	}
+	 */
 //	log.debug("getCurrent:"+current);
-	return current;
+//	return current;
     }
 
     /**
@@ -339,26 +352,27 @@ public class Queue extends Observable implements Observer { //Thread {
 
 	this.callObservers(new Message(Message.SPEED, "Current: "
 				+ Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
-				+ Status.parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
-	//@todo duplicated code
-//	if(this.getSpeed() <= 0 && this.getOverall() <= 0) {
-//	    this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of " + Status.parseDouble(this.getSize()/1024) + " kBytes."));
-//	}
-//	else {
-//	    if(this.getOverall() <= 0) {
-//		this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of "
-//				 + Status.parseDouble(this.getSize()/1024) + " kBytes. Current: " +
-//				 + Status.parseDouble(this.getSpeed()/1024) + "kB/s.")); //\n" + this.getTimeLeftMessage());
-//	    }
-//	    else {
-//	this.callObservers(new Message(Message.SPEED, Status.parseDouble(this.getCurrent()/1024) + " of "
-//				+ Status.parseDouble(this.getSize()/1024) + " kBytes. Current: "
-//				+ Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
-//				+ Status.parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
-//	    }
-//	}
+				+ Status.parseDouble(this.getOverall()/1024) + " kB/s. "+this.getTimeLeft()));
     }
 
+    private void setTimeLeft(int seconds) {
+        this.left = seconds;
+    }
+
+    private String getTimeLeft() {
+        String message = "";
+        //@todo: implementation of better 'time left' management.
+        if(this.left != -1) {
+            if(this.left >= 60) {
+                message = (int)this.left/60 + " minutes remaining.";
+            }
+            else {
+                message = this.left + " seconds remaining.";
+            }
+        }
+        return message;
+    }
+    
     /**
 	* @return double bytes per seconds transfered since the connection has been opened
      */
@@ -371,23 +385,6 @@ public class Queue extends Observable implements Observer { //Thread {
 
 	this.callObservers(new Message(Message.SPEED, "Current: "
 				+ Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
-				+ Status.parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
-	    
-//	if(this.getSpeed() <= 0 && this.getOverall() <= 0) {
-//	    this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of " + Status.parseDouble(this.getSize()/1024) + " kBytes."));
-//	}
-//	else {
-//	    if(this.getOverall() <= 0) {
-//		this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of "
-//				 + Status.parseDouble(this.getSize()/1024) + " kBytes. Current: " +
-//				 + Status.parseDouble(this.getSpeed()/1024) + "kB/s.")); //\n" + this.getTimeLeftMessage());
-//	    }
-//	    else {
-//		this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of "
-//				 + Status.parseDouble(this.getSize()/1024) + " kBytes. Current: "
-//				 + Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
-//				 + Status.parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
-//	    }
-//	}
+				+ Status.parseDouble(this.getOverall()/1024) + " kB/s. "+this.getTimeLeft()));
     }
 }
