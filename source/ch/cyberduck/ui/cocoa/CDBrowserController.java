@@ -486,7 +486,6 @@ public class CDBrowserController extends CDController implements Observer {
 		log.debug("bookmarkTableRowDoubleClicked");
 		if(this.bookmarkTable.selectedRow() != -1) {
 			this.mount((Host)bookmarkModel.getItem(bookmarkTable.selectedRow()));
-			this.toggleBookmarkDrawer(null);
 		}
 	}
 
