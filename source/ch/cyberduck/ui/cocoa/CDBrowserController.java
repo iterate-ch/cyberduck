@@ -125,7 +125,7 @@ public class CDBrowserController implements Observer {
 			c.setIdentifier("SIZE");
 			c.setMinWidth(50f);
 			c.setWidth(80f);
-			c.setMaxWidth(200f);
+			c.setMaxWidth(100f);
 			c.setResizable(true);
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.RightTextAlignment);

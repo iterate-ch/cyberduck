@@ -148,7 +148,7 @@ img/gear.tiff -text
 img/gearMenu.tiff -text
 img/history.tiff -text
 img/info.tiff svneol=native#unset
-img/newfolder.icns svneol=native#unset
+img/newfolder.tiff -text
 img/offline.tiff -text
 img/online.tiff -text
 img/pause.tiff -text
