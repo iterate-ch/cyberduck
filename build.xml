@@ -1,4 +1,4 @@
-<!-- 
+<!--
  *  Simple Ant (http://jakarta.apache.org/ant) build script for Cyberduck
  *
  *  $Header$
@@ -26,34 +26,34 @@
 
 	<property file="build.properties"/>
 
-	<property name="debug" value="on" />
+	<property name="debug" value="on"/>
 
 	<!-- set global properties for this build -->
-	<property name="home" value="." />
-	<property name="build" value="${home}/build" />
-	<property name="config" value="${home}/config" />
-	<property name="img" value="${home}/img" />
-	<property name="lib" value="${home}/lib" />
-	<property name="source" value="${home}/source" />
-	<property name="classes" value="${build}/classes" />
-	<property name="resources" value="${home}/resources" />
-	<property name="doc" value="${home}/doc" />
+	<property name="home" value="."/>
+	<property name="build" value="${home}/build"/>
+	<property name="config" value="${home}/config"/>
+	<property name="img" value="${home}/img"/>
+	<property name="lib" value="${home}/lib"/>
+	<property name="source" value="${home}/source"/>
+	<property name="classes" value="${build}/classes"/>
+	<property name="resources" value="${home}/resources"/>
+	<property name="doc" value="${home}/doc"/>
 
 	<path id="classpath">
-	    <pathelement location="/System/Library/Java"/>
-	    <fileset dir="${lib}">
+		<pathelement location="/System/Library/Java"/>
+		<fileset dir="${lib}">
 			<include name="*.jar"/>
-	    </fileset>
+		</fileset>
 	</path>
-		
+
 	<!-- mac os x properties-->
-	<property name="app.name" value="Cyberduck" />
-	<property name="app.bundle" value="${build}/${app.name}.app" />
-	<property name="app.contents" value="${app.bundle}/Contents" />
-	<property name="app.resources" value="${app.contents}/Resources" />
-	<property name="app.classes" value="${home}/${build}/intermediates/${app.name}.build/JavaClasses" />
-	<property name="app.jar" value="${app.resources}/Java" />
-		
+	<property name="app.name" value="Cyberduck"/>
+	<property name="app.bundle" value="${build}/${app.name}.app"/>
+	<property name="app.contents" value="${app.bundle}/Contents"/>
+	<property name="app.resources" value="${app.contents}/Resources"/>
+	<property name="app.classes" value="${home}/${build}/intermediates/${app.name}.build/JavaClasses"/>
+	<property name="app.jar" value="${app.resources}/Java"/>
+
 	<target name="init" depends="manifest">
 		<tstamp/>
 		<echo message="ant version:   ${ant.version}"/>
@@ -68,188 +68,131 @@
 		<echo message="IMPORTANT NOTE: YOU HAVE TO RUN THE BUILD TASK 'app' IN XCODE FIRST!"/>
 		<echo message=""/>
 		<echo message="Building ${app.name}..."/>
-		<mkdir dir="${classes}" />
-		<mkdir dir="${build}" />
-	    <copy todir="${app.jar}">
-		<fileset dir="${lib}">
-		    <include name="*.jar" />
-		</fileset>
-	    </copy>
+		<mkdir dir="${classes}"/>
+		<mkdir dir="${build}"/>
 	</target>
 
-	<target name="build" depends="build-cocoa,build-core,build-ftp-module,build-http-module" description="Compile, jar and copy to application bundle"></target>
-	
-	<target name="build-core" depends="init">
-	    <mkdir dir="${classes}/core" />
-            <javac 
-            debug="${debug}"
-            deprecation="on"
-            srcdir="${source}" 
-            destdir="${classes}/core"
-            includes="ch/cyberduck/core/**">
-            <classpath refid="classpath"/>
-	    </javac>
-	    
-	    <jar jarfile="${build}/core.jar"
-            update="yes"
-            manifest="${build}/MANIFEST.MF">
-            <fileset dir="${classes}/core">
-                <include name="ch/cyberduck/core/**/*.class"/>
-            </fileset>
-	    </jar>
 
-	    <copy todir="${app.jar}">
-		<fileset dir="${build}">
-		    <include name="core.jar" />
-		</fileset>
-	    </copy>
-	</target>
-	
-	<target name="build-cocoa" depends="init">
-	    <mkdir dir="${classes}/cocoa" />
-	    <javac 
-		debug="${debug}"
-		deprecation="on"
-		srcdir="${source}" 
-		destdir="${classes}/cocoa"
-		includes="ch/cyberduck/ui/cocoa/**">
-		<classpath refid="classpath"/>
-	    </javac>
-	    
-	    <jar jarfile="${build}/cocoa.jar"
-		update="yes"
-		manifest="${build}/MANIFEST.MF">
-		<fileset dir="${classes}/cocoa/">
-		    <include name="ch/cyberduck/ui/*.class"/>
-		    <include name="ch/cyberduck/ui/cocoa/**/*.class"/>
-		</fileset>
-	    </jar>
-	    
-	    <copy todir="${app.jar}">
-		<fileset dir="${build}">
-		    <include name="cocoa.jar" />
-		</fileset>
-	    </copy>
-	    
-	    <replace
-		dir="${app.contents}"
-		token="*version*" 
-		value="${cyberduck.version.major}.${cyberduck.version.minor}"
-		summary="true">
-		<include name="*.plist"/>
-	    </replace>
+	<target name="build" depends="archive" description="Compile, jar and copy to application bundle"> 
+		<copy todir="${app.jar}">
+			<fileset dir="${build}">
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="${app.jar}">
+			<fileset dir="${lib}">
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="${app.jar}">
+			<fileset dir="${build}">
+				<include name="*.dylib"/>
+				<include name="*.jnilib"/>
+			</fileset>
+		</copy>
+		<antcall target="repace-tokens"/>
 	</target>
 
-<!--
-	<target name="ssh" depends="init">
-	    <mkdir dir="${classes}/ssh" />
-	    <javac 
-		debug="${debug}"
-		deprecation="on"
-		srcdir="${source}" 
-		destdir="${classes}/ssh"
-		includes="com/sshtools/j2ssh/**">
-		<classpath refid="classpath"/>
-	    </javac>
-	    
-	    <jar jarfile="${build}/ssh.jar"
-		update="yes">
-		<fileset dir="${classes}/ssh">
-		    <include name="com/sshtools/j2ssh/**/*.class"/>
-		</fileset>
-	    </jar>
 
-	    <copy todir="${app.jar}">
-		<fileset dir="${build}">
-		    <include name="ssh.jar" />
-		</fileset>
-	    </copy>
+	<target name="repace-tokens">
+		<replace
+			dir="${app.contents}"
+			token="*version*"
+			value="${cyberduck.version.major}.${cyberduck.version.minor}"
+			summary="true">
+			<include name="*.plist"/>
+		</replace>
 	</target>
--->
 
-	<target name="build-ftp-module" depends="init">
-	    <mkdir dir="${classes}/ftp" />
-	    <javac 
-		debug="${debug}"
-		deprecation="on"
-		srcdir="${source}" 
-		destdir="${classes}/ftp"
-		includes="com/enterprisedt/**">
-		<classpath refid="classpath"/>
-	    </javac>
-	    
-	    <jar jarfile="${build}/ftp.jar"
-		update="yes"
-		manifest="${build}/MANIFEST.MF">
-		<fileset dir="${classes}/ftp">
-		    <include name="com/enterprisedt/**/*.class"/>
-		</fileset>
-	    </jar>
 
-	    <copy todir="${app.jar}">
-		<fileset dir="${build}">
-		    <include name="ftp.jar" />
-		</fileset>
-	    </copy>
+	<target name="headers" description="Generate header files for JNI">
+		<javah 
+			outputFile="${source}/ch/cyberduck/core/Login.h"
+			classpath="${classes}">
+			<class name="ch.cyberduck.core.Login"/>
+		</javah>
 	</target>
-	
-	<target name="build-http-module" depends="init">
-	    <mkdir dir="${classes}/http" />
-	    <javac 
-		debug="${debug}"
-		deprecation="on"
-		srcdir="${source}" 
-		destdir="${classes}/http"
-		includes="org/apache/commons/httpclient/**">
-		<classpath refid="classpath"/>
-	    </javac>
-	    
-	    <jar jarfile="${build}/http.jar"
-		update="yes">
-		<fileset dir="${classes}/http">
-		    <include name="org/apache/commons/httpclient/**/*.class"/>
-		</fileset>
-	    </jar>
-
-	    <copy todir="${app.jar}">
-		<fileset dir="${build}">
-		    <include name="http.jar" />
-		</fileset>
-	    </copy>
+  
+  
+	<target name="compile" depends="init" description="Compile the source tree">
+		<javac
+			debug="${debug}"
+			deprecation="on"
+			srcdir="${source}"
+			destdir="${classes}">
+			<classpath refid="classpath"/>
+		</javac>
+		<antcall target="headers"/>
 	</target>
+  
+  
+	<target name="archive" depends="compile, manifest" description="Create .jar files of the compiled classes">
+		<jar jarfile="${build}/cocoa.jar"
+			update="yes"
+			manifest="${build}/MANIFEST.MF">
+			<fileset dir="${classes}/">
+				<include name="ch/cyberduck/ui/*.class"/>
+				<include name="ch/cyberduck/ui/cocoa/**/*.class"/>
+			</fileset>
+		</jar>
+		<jar jarfile="${build}/core.jar"
+			update="yes"
+			manifest="${build}/MANIFEST.MF">
+			<fileset dir="${classes}">
+				<include name="ch/cyberduck/core/**/*.class"/>
+			</fileset>
+		</jar>
+		<jar jarfile="${build}/ftp.jar"
+			update="yes"
+			manifest="${build}/MANIFEST.MF">
+			<fileset dir="${classes}">
+				<include name="com/enterprisedt/**/*.class"/>
+			</fileset>
+		</jar>
+		<jar jarfile="${build}/http.jar"
+			update="yes">
+			<fileset dir="${classes}">
+				<include name="org/apache/commons/httpclient/**/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+  
 
 	<target name="doc" depends="init" description="Generate Javadoc">
-		<mkdir dir="${doc}" />
+		<mkdir dir="${doc}"/>
 		<javadoc packagenames="ch.cyberduck.*"
-		           sourcepath="${source}"
-		           destdir="${doc}"
-		           author="true"
-		           version="true"
-		           use="true"
-		           windowtitle="${app.name} API"
-		           doctitle="${app.name}"
-		           bottom="Copyright (c) 2003 David Kocher. Enjoy ${app.name}!">
-		    <classpath refid="classpath"/>
-		  </javadoc>
+			sourcepath="${source}"
+			destdir="${doc}"
+			author="true"
+			version="true"
+			use="true"
+			windowtitle="${app.name} API"
+			doctitle="${app.name}"
+			bottom="Copyright (c) 2003 David Kocher. Enjoy ${app.name}!">
+			<classpath refid="classpath"/>
+		</javadoc>
 	</target>
-	
+
+
 	<target name="clean" description="Delete compiled classes and jar files">
-		<delete dir="${classes}" />
-		<delete file="${build}/cocoa.jar" />
-		<delete file="${build}/swing.jar" />
-		<delete file="${build}/core.jar" />
-		<delete file="${build}/ftp.jar" />
-		<delete file="${build}/http.jar" />
+		<delete dir="${classes}"/>
+		<delete dir="${build}/Cyberduck.build"/>
+		<delete file="${build}/cocoa.jar"/>
+		<delete file="${build}/swing.jar"/>
+		<delete file="${build}/core.jar"/>
+		<delete file="${build}/ftp.jar"/>
+		<delete file="${build}/http.jar"/>
 	</target>
-	
+
+
 	<target name="manifest">
-	  <manifest file="${build}/MANIFEST.MF">
-		<attribute name="Built-By" value="${user.name}"/>
-		    <attribute name="Specification-Title" value="Cyberduck"/>
-		    <attribute name="Specification-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-		    <attribute name="Specification-Vendor" value="David Kocher"/>
-		    <attribute name="Implementation-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/> 
-	    </manifest>
+		<manifest file="${build}/MANIFEST.MF">
+			<attribute name="Built-By" value="${user.name}"/>
+			<attribute name="Specification-Title" value="Cyberduck"/>
+			<attribute name="Specification-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
+			<attribute name="Specification-Vendor" value="David Kocher"/>
+			<attribute name="Implementation-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
+		</manifest>
 	</target>
 </project>
 
