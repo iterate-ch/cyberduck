@@ -42,7 +42,7 @@
 - (void)keyDown:(NSEvent *)event
 {
 	NSString *str = [event characters];
-	char key = [str length]?[str characterAtIndex:0]:'\0';
+	char key = [str length] ? [str characterAtIndex:0] : '\0';
 	
 	if (key == NSCarriageReturnCharacter || key == NSEnterCharacter) {
         if ([[self target] respondsToSelector:[self doubleAction]]) {
@@ -131,6 +131,10 @@
 - (NSTableColumn *)_typeAheadSelectionColumn
 {
 	return [[NSTableColumn alloc] initWithIdentifier:@"TYPEAHEAD"];
+}
+
+- (NSImage *)dragImageForRows:(NSArray *)dragRows event:(NSEvent *)dragEvent dragImageOffset:(NSPointPointer)dragImageOffset {
+	return [[NSImage alloc] initByReferencingFile: @"transparent.tiff"];
 }
 
 @end

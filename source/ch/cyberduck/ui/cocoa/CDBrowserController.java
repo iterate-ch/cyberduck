@@ -1478,7 +1478,6 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void copy(Object sender) {
 		if(browserTable.selectedRow() != -1) {
-			NSMutableArray queueDictionaries = new NSMutableArray();
 			Session session = this.workdir().getSession().copy();
 			Queue q = new DownloadQueue();
 			NSEnumerator enum = browserTable.selectedRowEnumerator();
@@ -1486,11 +1485,10 @@ public class CDBrowserController extends CDController implements Observer {
 				Path path = this.browserModel.getEntry(((Integer)enum.nextElement()).intValue());
 				q.addRoot(path.copy(session));
 			}
-			queueDictionaries.addObject(q.getAsDictionary());
 			// Writing data for private use when the item gets dragged to the transfer queue.
 			NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
 			queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
-			if(queuePboard.setPropertyListForType(queueDictionaries, "QueuePBoardType")) {
+			if(queuePboard.setPropertyListForType(new NSArray(q.getAsDictionary()), "QueuePBoardType")) {
 				log.debug("QueuePBoardType data sucessfully written to pasteboard");
 			}
 			Path p = this.browserModel.getEntry(browserTable.selectedRow());
@@ -2215,24 +2213,19 @@ public class CDBrowserController extends CDController implements Observer {
 				// The fileTypes argument is the list of fileTypes being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
 				NSMutableArray fileTypes = new NSMutableArray();
 				NSMutableArray queueDictionaries = new NSMutableArray();
-				// declare our dragged type in the paste board
-				pboard.declareTypes(new NSArray(NSPasteboard.FilesPromisePboardType), null);
-				pboard.setDataForType(null, NSPasteboard.FilesPromisePboardType);
 				Queue q = new DownloadQueue();
 				Session session = workdir().getSession().copy();
 				for(int i = 0; i < rows.count(); i++) {
 					promisedDragPaths[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue()).copy(session);
 					if(promisedDragPaths[i].attributes.isFile()) {
-						// fileTypes.addObject(NSPathUtilities.FileTypeRegular);
 						if(promisedDragPaths[i].getExtension() != null) {
 							fileTypes.addObject(promisedDragPaths[i].getExtension());
 						}
 						else {
-							fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
+							fileTypes.addObject(NSPathUtilities.FileTypeRegular);
 						}
 					}
 					else if(promisedDragPaths[i].attributes.isDirectory()) {
-						// fileTypes.addObject(NSPathUtilities.FileTypeDirectory);
 						fileTypes.addObject("'fldr'");
 					}
 					else {
@@ -2240,24 +2233,24 @@ public class CDBrowserController extends CDController implements Observer {
 					}
 					q.addRoot(promisedDragPaths[i]);
 				}
-				queueDictionaries.addObject(q.getAsDictionary());
+
 				// Writing data for private use when the item gets dragged to the transfer queue.
 				NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
 				queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
-				if(queuePboard.setPropertyListForType(queueDictionaries, "QueuePBoardType")) {
+				if(queuePboard.setPropertyListForType(new NSArray(q.getAsDictionary()), "QueuePBoardType")) {
 					log.debug("QueuePBoardType data sucessfully written to pasteboard");
 				}
-
+				
 				NSEvent event = NSApplication.sharedApplication().currentEvent();
 				NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
 				NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
-
 				tableView.dragPromisedFilesOfTypes(fileTypes, imageRect, this, true, event);
 			}
-			// we return false because we don't want the table to draw the drag image
+			// @see http://www.cocoabuilder.com/archive/message/cocoa/2003/5/15/81424
 			return true;
 		}
 
+		// @see http://www.cocoabuilder.com/archive/message/2004/10/5/118857
 		public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
 			log.debug("finishedDraggingImage:"+operation);
 			NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes(null, null);

@@ -65,8 +65,6 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 		return instance;
 	}
 
-	private int draggedRow = -1; // keep track of which row got dragged
-
 	public int numberOfRowsInTableView(NSTableView tableView) {
 		return this.size();
 	}
@@ -166,6 +164,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 					if(filename.indexOf(".duck") != -1) {
 						this.add(row, this.importBookmark(new java.io.File(filename)));
 						tableView.reloadData();
+						tableView.selectRow(row, false);
 						return true;
 					}
 					// drop of a file from the finder > upload to the remote host this bookmark points to
@@ -197,6 +196,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 								this.remove(this.indexOf(h));
 								this.add(row, h);
 								tableView.reloadData();
+								tableView.selectRow(row, false);
 							}
 							this.hostPboardChangeCount++;
 							return true;
@@ -212,11 +212,24 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	// Drag methods
 	// ----------------------------------------------------------
 
+	// @see http://www.cocoabuilder.com/archive/message/2004/10/5/118857
+	public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
+		log.debug("finishedDraggingImage:"+operation);
+		NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes(null, null);
+	}
+	
+	public int draggingSourceOperationMaskForLocal(boolean local) {
+		log.debug("draggingSourceOperationMaskForLocal:"+local);
+		if(local)
+			return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
+		return NSDraggingInfo.DragOperationCopy;
+	}
+		
 	/**
 	 * The files dragged from the favorits drawer to the Finder --> bookmark files
 	 */
 	private Host[] promisedDragBookmarks;
-	private java.io.File[] promisedDragBookmarksFiles;
+	private java.io.File[] promisedDragBookmarksFileDestination;
 
 	/**
 	 * Invoked by tableView after it has been determined that a drag should begin, but before the drag has been started.
@@ -225,52 +238,49 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	 *
 	 * @param rows is the list of row numbers that will be participating in the drag.
 	 * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard
-	 *         (data, owner, and so on).
+	 * (data, owner, and so on).
 	 */
 	public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
 		log.debug("tableViewWriteRowsToPasteboard:"+rows);
 		if(rows.count() > 0) {
-			this.draggedRow = ((Integer)rows.objectAtIndex(0)).intValue();
 			this.promisedDragBookmarks = new Host[rows.count()];
-			this.promisedDragBookmarksFiles = new java.io.File[rows.count()];
+			this.promisedDragBookmarksFileDestination = new java.io.File[rows.count()];
+			NSMutableArray promisedDragBookmarksAsDictionary = new NSMutableArray();
 			for(int i = 0; i < rows.count(); i++) {
 				promisedDragBookmarks[i] = (Host)this.get(((Integer)rows.objectAtIndex(i)).intValue());
+				promisedDragBookmarksAsDictionary.addObject(promisedDragBookmarks[i].getAsDictionary());
 			}
+			
 			// Writing data for private use for moving bookmarks.
 			NSPasteboard hostPboard = NSPasteboard.pasteboardWithName("HostPBoard");
 			hostPboard.declareTypes(new NSArray("HostPBoardType"), null);
-			if(hostPboard.setPropertyListForType(new NSArray(promisedDragBookmarks[0].getAsDictionary()), "HostPBoardType")) {
+			if(hostPboard.setPropertyListForType(promisedDragBookmarksAsDictionary, "HostPBoardType")) {
 				log.debug("HostPBoardType data sucessfully written to pasteboard");
 			}
-			if(pboard.setStringForType("duck", NSPasteboard.FilesPromisePboardType)) {
-				log.debug("FilesPromisePboardType data sucessfully written to pasteboard");
-			}
-			pboard.setDataForType(null, NSPasteboard.FilesPromisePboardType);
-
+			
 			NSEvent event = NSApplication.sharedApplication().currentEvent();
 			NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
 			NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
 			tableView.dragPromisedFilesOfTypes(new NSArray("duck"), imageRect, this, true, event);
 		}
-		// we return false because we don't want the table to draw the drag image
-		return false;
+		return true;
 	}
 
 	/**
 	 * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-	 *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-	 *         Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
-	 *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
-	 *         blocking the destination application.
+	 * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+	 * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
+	 * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
+	 * blocking the destination application.
 	 */
 	public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
 		log.debug("namesOfPromisedFilesDroppedAtDestination:"+dropDestination);
 		NSMutableArray promisedDragNames = new NSMutableArray();
 		for(int i = 0; i < promisedDragBookmarks.length; i++) {
 			try {
-				promisedDragBookmarksFiles[i] = new java.io.File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"),
+				promisedDragBookmarksFileDestination[i] = new java.io.File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"),
 				    promisedDragBookmarks[i].getNickname()+".duck");
-				this.exportBookmark(promisedDragBookmarks[i], promisedDragBookmarksFiles[i]);
+				this.exportBookmark(promisedDragBookmarks[i], promisedDragBookmarksFileDestination[i]);
 				promisedDragNames.addObject(promisedDragBookmarks[i].getNickname()+".duck");
 			}
 			catch(java.io.UnsupportedEncodingException e) {
