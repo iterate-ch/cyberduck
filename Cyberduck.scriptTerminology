@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>Classes</key>
+		<dict>
+			<key>Browser</key>
+			<dict>
+				<key>Description</key>
+				<string>A Browser</string>
+				<key>Name</key>
+				<string>document</string>
+				<key>PluralName</key>
+				<string>documents</string>
+			</dict>
+			<key>NSApplication</key>
+				<dict>
+				<key>Description</key>
+				<string>Cyberduck's top level scripting object.</string>
+				<key>Name</key>
+				<string>application</string>
+				<key>PluralName</key>
+				<string>applications</string>
+			</dict>
+		</dict>
+		<key>Commands</key>
+		<dict>
+			<key>Connect</key>
+			<dict>
+				<key>Description</key>
+				<string>Connect to a specified server.</string>
+				<key>Name</key>
+				<string>connect</string>
+			</dict>
+
+			<key>Upload</key>
+			<dict>
+				<key>Description</key>
+				<string>Upload a file to the remote host.</string>
+				<key>Name</key>
+				<string>upload</string>
+			</dict>
+			<key>GetURL</key>
+			<dict>
+				<key>Description</key>
+				<string>Open a URL</string>
+				<key>Name</key>
+				<string>getURL</string>
+			</dict>
+			<key>OpenURL</key>
+			<dict>
+				<key>Description</key>
+				<string>Open a URL</string>
+				<key>Name</key>
+				<string>openURL</string>
+			</dict>
+		</dict>
+		<key>Description</key>
+		<string>AppleScript commands and classes specific to Cyberduck</string>
+		<key>Name</key>
+		<string>Cyberduck Suite</string>
+	</dict>
+</plist>
