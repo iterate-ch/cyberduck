@@ -9,12 +9,14 @@ change<?xml version="1.0" encoding="UTF-8"?>
 	<key>comment</key>
         <string>Changelog:
 2.4b4
-- [Bugfix] Drag and drop operations
+- [Bugfix] Dragging files to the Finder
+- [Bugfix] Reordering bookmarks
 - [Bugfix] SSH exception handling (SFTP)
 - [Bugfix] Bookmark selection in connection dialog
 - [Bugfix] Items in transfer window not removed
 - [Bugfix] Deleting more than one bookmark at once
-- [Bugfix] Corrupted resource file in zh_TW localization
+- [Bugfix] Corrupted resource files in Chinese localization
+- [Bugfix] Corrupted resource files in Japanese localization
 
 2.4b3
 - [Localize] Russian Localization

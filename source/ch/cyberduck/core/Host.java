@@ -365,10 +365,18 @@ public class Host {
 	 * @return The URL of the remote host including user login hostname and port
 	 */
 	public String getURL() {
-		return this.getProtocol()+"://"+this.getCredentials().getUsername()+"@"+this.getHostname()+":"+this.getPort();//+"/"+this.getDefaultPath();
+		return this.getProtocol()+"://"+this.getCredentials().getUsername()+"@"+this.getHostname()+":"+this.getPort();
 	}
 
 	public boolean equals(Object other) {
+		if(other instanceof Host) {
+			Host o = (Host)other;
+			return this.getProtocol().equals(o.getProtocol())
+				&& this.getCredentials().getUsername().equals(o.getCredentials().getUsername())
+				&& this.getHostname().equals(o.getHostname())
+				&& this.getPort() == o.getPort()
+				&& this.getDefaultPath().equals(o.getDefaultPath());
+		}
 		return this.toString().equals(other.toString());
 	}
 }

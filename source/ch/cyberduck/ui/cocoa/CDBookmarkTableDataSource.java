@@ -188,8 +188,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 						if(o != null) {
 							NSArray elements = (NSArray)o;
 							for(int i = 0; i < elements.count(); i++) {
-								NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-								Host h = new Host(dict);
+								Host h = new Host((NSDictionary)elements.objectAtIndex(i));
 								this.remove(this.indexOf(h));
 								this.add(row, h);
 								tableView.reloadData();

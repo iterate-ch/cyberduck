@@ -5,12 +5,14 @@ Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
 2.4b4
-- [Bugfix] Drag and drop operations
+- [Bugfix] Dragging files to the Finder
+- [Bugfix] Reordering bookmarks
 - [Bugfix] SSH exception handling (SFTP)
 - [Bugfix] Bookmark selection in connection dialog
 - [Bugfix] Items in transfer window not removed
 - [Bugfix] Deleting more than one bookmark at once
-- [Bugfix] Corrupted resource file in zh_TW localization
+- [Bugfix] Corrupted resource files in Chinese localization
+- [Bugfix] Corrupted resource files in Japanese localization
 
 2.4b3
 - [Localize] Russian Localization
