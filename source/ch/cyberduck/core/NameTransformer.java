@@ -45,24 +45,24 @@ public class NameTransformer {
 		if(Preferences.instance().getProperty("queue.transformer.keepsFilenameExtensions").equals("true")) {
 			maxLength -= NSPathUtilities.pathExtension(transformName).length()+1;
 		}
-		log.debug("transformByHonoringMaxLength fileLen: " + fileLen);
+		log.debug("transformByHonoringMaxLength fileLen: "+fileLen);
 		if(maxLength <= 0) {
 			log.debug("NameTransformer maxLength <= 0. Skipping force length");
 		} 
 		else if(fileLen > maxLength) {
-			log.debug("NameTransformer forcing length: " + maxLength + " by deleting from middle");
+			log.debug("NameTransformer forcing length: "+maxLength+" by deleting from middle");
 			int delta = fileLen - maxLength;
-			log.debug("transformByHonoringMaxLength delta: " + delta);
+			log.debug("transformByHonoringMaxLength delta: "+delta);
 			int frontLen = (fileLen / 2) - (delta / 2);
-			log.debug("transformByHonoringMaxLength frontLen: " + frontLen);
+			log.debug("transformByHonoringMaxLength frontLen: "+frontLen);
 			
 			String front = transformName.substring(0, frontLen);
 			
-			int backStart = frontLen + delta;
-			log.debug("transformByHonoringMaxLength backStart: " + backStart);
+			int backStart = frontLen+delta;
+			log.debug("transformByHonoringMaxLength backStart: "+backStart);
 			String back = transformName.substring(backStart);
 			log.debug("transformByHonoringMaxLength: name was - "+transformName);
-			transformName = front + back;
+			transformName = front+back;
 			log.debug("NameTransformer forced length: "+transformName);
 		}
 		return transformName;
@@ -76,16 +76,16 @@ public class NameTransformer {
 		log.debug("NameTransformer preparing to transform: "+transformName);
 		
 		String prefixString = Preferences.instance().getProperty("queue.transformer.prefixString");
-		log.debug("NameTransformer prefixString = " + prefixString);
+		log.debug("NameTransformer prefixString = "+prefixString);
 		
 		String appendString = Preferences.instance().getProperty("queue.transformer.appendString");
-		log.debug("NameTransformer appendString = " + appendString);
+		log.debug("NameTransformer appendString = "+appendString);
 		
 		String replaceSearchString = Preferences.instance().getProperty("queue.transformer.replaceSearchString");
-		log.debug("NameTransformer replaceSearchString = " + replaceSearchString);
+		log.debug("NameTransformer replaceSearchString = "+replaceSearchString);
 		
 		String replaceWithString = Preferences.instance().getProperty("queue.transformer.replaceWithString");
-		log.debug("NameTransformer replaceWithString = " + replaceWithString);
+		log.debug("NameTransformer replaceWithString = "+replaceWithString);
 		
 		if(replaceSearchString != null) {
 			boolean replaceAll = Preferences.instance().getProperty("queue.transformer.replaceAllOccurances").equals("true");
@@ -101,7 +101,7 @@ public class NameTransformer {
 		}
 		if(appendString != null) {
 			log.debug("NameTransformer adding suffix: "+transformName);
-			transformName = transformName + appendString;
+			transformName = transformName+appendString;
 			log.debug("NameTransformer done adding suffix: "+transformName);
 		}
 		
@@ -118,7 +118,7 @@ public class NameTransformer {
 
 		String illegalCharacters = Preferences.instance().getProperty("queue.transformer.illegalCharacters");
 		if(illegalCharacters != null) {
-			log.debug("NameTransformer illegalCharacters = " + illegalCharacters);
+			log.debug("NameTransformer illegalCharacters = "+illegalCharacters);
 			char[] illegalChar = illegalCharacters.toCharArray();
 			char substituteChar = '~';
 			boolean canSubstitute = false;
@@ -127,7 +127,7 @@ public class NameTransformer {
 			if(substituteCharacter != null && substituteCharacter.length() > 0) {
 				canSubstitute = true;
 				substituteChar = substituteCharacter.toCharArray()[0];
-				log.debug("NameTransformer substituteChar is: " + substituteChar);
+				log.debug("NameTransformer substituteChar is: "+substituteChar);
 			}
 			
 			for(int index = 0; index < illegalChar.length; index++) {
@@ -136,9 +136,9 @@ public class NameTransformer {
 					transformName = transformName.replace(illegalChar[index], substituteChar);
 				} else {
 					String rString = illegalCharacters.substring(index, 1);
-					log.debug("NameTransformer replacing: " + rString);
+					log.debug("NameTransformer replacing: "+rString);
 					transformName = replaceStringWithString(transformName, rString, null);
-					log.debug("NameTransformer replacing: " + rString);
+					log.debug("NameTransformer replacing: "+rString);
 				}
 			}
 		}
@@ -146,20 +146,20 @@ public class NameTransformer {
 	}
 
 	private String replaceStringWithString(String transformName, String searchString, String replaceString) {
-		log.debug("NameTransformer replacing: " + searchString + " with: " + replaceString);
+		log.debug("NameTransformer replacing: "+searchString+" with: "+replaceString);
 		int index = transformName.indexOf(searchString);
 		if(index > -1) {
 			String front = transformName.substring(0, index);
-			String back = transformName.substring(index + searchString.length());
+			String back = transformName.substring(index+searchString.length());
 			
-			log.debug("NameTransformer front: " + front);
-			log.debug("NameTransformer back: " + back);
+			log.debug("NameTransformer front: "+front);
+			log.debug("NameTransformer back: "+back);
 			
 			if(replaceString != null) {
-				transformName = front + replaceString + back;
+				transformName = front+replaceString+back;
 			}
 			else {
-				transformName = front + back;
+				transformName = front+back;
 			}
 			log.debug("NameTransformer done replace: "+transformName);
 		} 
