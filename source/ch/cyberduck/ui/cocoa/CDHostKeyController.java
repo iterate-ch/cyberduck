@@ -49,7 +49,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 
     public void onDeniedHost(String hostname) {
 	log.debug("onDeniedHost");
-	NSAlertPanel.beginInformationalAlertSheet(
+	NSAlertPanel.beginCriticalAlertSheet(
 					   "Access denied", //title
 					   "OK",// defaultbutton
 					   null,//alternative button
@@ -192,7 +192,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 	    if(returncode == NSAlertPanel.DefaultReturn)
 		allowHost(host, fingerprint, false); // allow host
 	    if(returncode == NSAlertPanel.AlternateReturn) {
-		NSAlertPanel.beginInformationalAlertSheet(
+		NSAlertPanel.beginCriticalAlertSheet(
 					    "Invalid host key", //title
 					    "OK",// defaultbutton
 					    null,//alternative button

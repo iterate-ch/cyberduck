@@ -95,7 +95,7 @@ public class FTPSession extends Session {
 	public synchronized void delete() {
 	    log.debug("delete");
 	    try {
-		//FTPSession.this.check();
+		FTPSession.this.check();
 		if(this.isDirectory()) {
 		    FTP.chdir(this.getAbsolute());
 		    List files = new FTPParser().parseList(this.getAbsolute(), FTP.dir());
@@ -493,7 +493,6 @@ public class FTPSession extends Session {
     public void check() throws IOException {
 	log.debug("check");
 	if(!FTP.isAlive()) {
-	  //  host.recycle();
 	    this.setConnected(false);
 	    this.connect();
 	    while(true) {
@@ -524,11 +523,12 @@ public class FTPSession extends Session {
 		    Path p = parseListLine(parent, line);
 		    String filename = p.getName();
 		    if(!(filename.equals(".") || filename.equals(".."))) {
-//@todo			if(filename.charAt(0) == '.' && !showHidden) {
-			    //p.attributes.setVisible(false);
-//			}
-//			else
-			    parsedList.add(p);
+			if(!showHidden) {
+			    if(filename.charAt(0) == '.') {
+				p.attributes.setVisible(false);
+			    }
+			}
+			parsedList.add(p);
 		    }
 		}
 	    }
@@ -682,6 +682,7 @@ public class FTPSession extends Session {
 		p.attributes.setPermission(new Permission(access));
 		p.status.setSize(Integer.parseInt(size));
 
+		/*
 		if(isLink(line)) {
 		    // the following lines are the most ugly. I just don't know how I can be sure
       // a link is a directory or a file. Now I look if there's a '.' and if we have execute rights.
@@ -714,6 +715,7 @@ public class FTPSession extends Session {
 			    p.setPath(path + link);
 		    }
 		}
+		*/
 		return p;
 	    }
 	    catch(NoSuchElementException e) {

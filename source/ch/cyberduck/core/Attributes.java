@@ -37,25 +37,20 @@ public class Attributes extends Observable {
     private String group;
     private String access;
     private Permission permission;
-    //	private boolean visible = true;
+    private boolean visible = true;
 
     /**
 	* @param visible If this path should be shown in the directory listing
      */
-    /*
      public void setVisible(boolean visible) {
 	 this.visible = visible;
      }
-     */
     /**
 	* @return If this path is shown in the directory listing
      */
-    /*
      public boolean isVisible() {
 	 return this.visible;
      }
-     */
-
 
     /**
 	* Set the modfication returned by ftp directory listings

@@ -94,6 +94,8 @@ public abstract class Preferences {//extends Properties {
         
 	System.setProperty("sshtools.home", System.getProperty("user.dir"));
 	System.setProperty("sshtools.config", System.getProperty("user.dir"));
+	System.out.println(System.getProperty("sshtools.home"));
+	System.out.println(System.getProperty("sshtools.config"));
 
         defaults.put("laf.default", javax.swing.UIManager.getSystemLookAndFeelClassName());
         //defaults.put("laf.default", javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());

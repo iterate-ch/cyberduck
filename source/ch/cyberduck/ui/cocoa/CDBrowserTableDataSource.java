@@ -155,21 +155,22 @@ public class CDBrowserTableDataSource implements NSTableView.DataSource {
 	this.data.clear();
     }
 
-    public void addEntry(Object entry, int row) {
+    public void addEntry(Path entry, int row) {
 //	log.debug("addEntry:"+entry);
 	this.data.add(row, entry);
     }
 
-    public void addEntry(Object entry) {
+    public void addEntry(Path entry) {
 //	log.debug("addEntry:"+entry);
-	this.data.add(entry);
+	if(entry.attributes.isVisible())
+	    this.data.add(entry);
     }
     
     public Object getEntry(int row) {
 	return this.data.get(row);
     }
 
-    public void removeEntry(Object o) {
+    public void removeEntry(Path o) {
 	data.remove(data.indexOf(o));
     }
 
@@ -177,7 +178,7 @@ public class CDBrowserTableDataSource implements NSTableView.DataSource {
 	data.remove(row);
     }
 
-    public int indexOf(Object o) {
+    public int indexOf(Path o) {
 	return data.indexOf(o);
     }
 }

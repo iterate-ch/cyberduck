@@ -115,6 +115,11 @@ public class CDPreferencesController {
 	
     }
 
+    public void finalize() throws Throwable {
+	super.finalize();
+	NSNotificationCenter.defaultCenter().removeObserver(this);
+    }
+
 
     public void textInputDidChange(NSNotification sender) {
 

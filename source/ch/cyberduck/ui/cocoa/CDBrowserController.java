@@ -141,7 +141,7 @@ public class CDBrowserController implements Observer {
     
     public void browserRowClicked(Object sender) {
 	log.debug("browserRowClicked");
-        Path p = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.clickedRow());
+        Path p = (Path)model.getEntry(browserTable.clickedRow());
 	if(p.isFile()) {
 	    CDTransferController controller = new CDTransferController(p);
 	    controller.download();
@@ -227,7 +227,7 @@ public class CDBrowserController implements Observer {
 		    statusLabel.setStringValue(msg.getDescription());
 		}
 		else if(msg.getTitle().equals(Message.OPEN)) {
-		    ((CDBrowserTableDataSource)browserTable.dataSource()).clear();
+		    model.clear();
 		    browserTable.reloadData();
 
 		    progressIndicator.startAnimation(this);
@@ -235,7 +235,7 @@ public class CDBrowserController implements Observer {
 		    History.instance().add(host);
 		}
 		else if(msg.getTitle().equals(Message.CLOSE)) {
-		    ((CDBrowserTableDataSource)browserTable.dataSource()).clear();
+		    model.clear();
 		    browserTable.reloadData();
 
 		    progressIndicator.stopAnimation(this);
@@ -245,9 +245,9 @@ public class CDBrowserController implements Observer {
 		java.util.List cache = ((Path)arg).cache();
 		java.util.Iterator i = cache.iterator();
 //		log.debug("List size:"+cache.size());
-		((CDBrowserTableDataSource)browserTable.dataSource()).clear();
+		model.clear();
 		while(i.hasNext()) {
-		    ((CDBrowserTableDataSource)browserTable.dataSource()).addEntry(i.next());
+		    model.addEntry((Path)i.next());
 		}
 		browserTable.reloadData();
 	    }	    
@@ -281,7 +281,7 @@ public class CDBrowserController implements Observer {
     public void infoButtonClicked(Object sender) {
 	log.debug("infoButtonClicked");
 	if(browserTable.selectedRow() != -1) {
-	    Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
+	    Path path = (Path)model.getEntry(browserTable.selectedRow());
 	    CDInfoController controller = new CDInfoController(path);
 	    controller.window().makeKeyAndOrderFront(null);
 	}
@@ -289,8 +289,8 @@ public class CDBrowserController implements Observer {
 
     public void deleteButtonClicked(Object sender) {
 	log.debug("deleteButtonClicked");
-	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
-	NSAlertPanel.beginInformationalAlertSheet(
+	Path path = (Path)model.getEntry(browserTable.selectedRow());
+	NSAlertPanel.beginCriticalAlertSheet(
 					   "Delete", //title
 					   "Delete",// defaultbutton
 					   "Cancel",//alternative button
@@ -331,7 +331,7 @@ public class CDBrowserController implements Observer {
 
     public void downloadButtonClicked(Object sender) {
 	log.debug("downloadButtonClicked");
-	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
+	Path path = (Path)model.getEntry(browserTable.selectedRow());
 	CDTransferController controller = new CDTransferController(path);
 	controller.download();
     }

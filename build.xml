@@ -31,6 +31,7 @@
 	<!-- set global properties for this build -->
 	<property name="home" value="." />
 	<property name="build" value="${home}/build" />
+	<property name="config" value="${home}/config" />
 	<property name="img" value="${home}/img" />
 	<property name="lib" value="${home}/lib" />
 	<property name="source" value="${home}/source" />
@@ -187,6 +188,12 @@
 	    <copy todir="${app.jar}">
 		<fileset dir="${build}">
 		    <include name="ssh.jar" />
+		</fileset>
+	    </copy>
+
+	    <copy todir="${app.jar}">
+		<fileset dir="${config}">
+		    <include name="hosts.xml" />
 		</fileset>
 	    </copy>
 	</target>

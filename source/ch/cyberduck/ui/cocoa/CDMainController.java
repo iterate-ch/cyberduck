@@ -32,10 +32,10 @@ public class CDMainController {
     static {
 	org.apache.log4j.BasicConfigurator.configure();
 	Logger log = Logger.getRootLogger();
-	log.setLevel(Level.OFF);
+//	log.setLevel(Level.OFF);
 //	log.setLevel(Level.WARN);
 //	log.setLevel(Level.DEBUG);
-//	log.setLevel(Level.INFO);
+	log.setLevel(Level.INFO);
     }
 
     public void awakeFromNib() {

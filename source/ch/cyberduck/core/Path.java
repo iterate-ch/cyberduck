@@ -86,18 +86,6 @@ public abstract class Path {// extends Observable {
         this.path = pathname.trim();
     }
 
-    /*
-    public void callObservers(Message arg) {
-        log.debug("callObservers:"+arg.toString());
-	log.debug(this.countObservers()+" observers known.");
-        long start = System.currentTimeMillis();
-	this.setChanged();
-	this.notifyObservers(arg);
-        long end = System.currentTimeMillis();
-	log.debug((end - start) + " ms");
-    }
-     */
-
     /**
 	* @return my parent directory
      */
@@ -151,15 +139,9 @@ public abstract class Path {// extends Observable {
 //    public abstract void upload(java.io.File file);
 
     public abstract void changePermissions(int p);
-    
-    /**
-	* Overwrite this is in the implementation to determine the file type uppon the
-     * server response.
-     * @return true even if the file doesn't exist on the local filesystem
-     * but seems to be a file because there isn't a '/' at
-     * the end of the path.
-     */
 
+    public abstract void changeOwner(String owner);
+    
 
     public boolean isFile() {
 	return this.attributes.getMode().charAt(0) == '-';
@@ -183,34 +165,6 @@ public abstract class Path {// extends Observable {
 	return "Unknown";
     }
     
-
-    /* bad code
-    public boolean isFile() {
-        String path = this.toString();
-        if(path.lastIndexOf('/') == path.length() - 1) {
-            return false;
-        }
-        return true;
-    }
-     */
-
-    /**
-	* Overwrite this is in the implementation to determine the file type uppon the
-     * server response.
-     * @return true  even if the directory doesn't exist on the local filesystem
-     * but seems to be a directory because it ends with '/'
-     */
-    /* bad code
-    public boolean isDirectory() {
-//        log.debug("[Path] isDirectory()");
-        String path = this.toString();
-        if(path.lastIndexOf('/') == path.length() - 1) {
-            return true;
-        }
-        return false;
-    }
-     */
-
     /**
         * @return true if this paths points to '/'
      */
