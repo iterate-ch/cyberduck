@@ -39,6 +39,10 @@ public class CDBrowserTableDataSource extends NSObject {
 	log.debug("CDBrowserTableDataSource");
     }
 
+    public void awakeFromNib() {
+	//
+    }
+
     public int numberOfRowsInTableView(NSTableView tableView) {
 	return data.size();
     }
@@ -76,7 +80,56 @@ public class CDBrowserTableDataSource extends NSObject {
 	p.rename((String)value);
     }
 
+
+    // ----------------------------------------------------------
+    // Drop methods
+    // ----------------------------------------------------------
+    
+    /**
+      * Used by tableView to determine a valid drop target. info contains details on this dragging operation. The proposed
+    * location is row is and action is operation. Based on the mouse position, the table view will suggest a proposed drop location.
+    * This method must return a value that indicates which dragging operation the data source will perform. The data source may
+    * "retarget" a drop if desired by calling setDropRowAndDropOperation and returning something other than NSDraggingInfo.
+    * DragOperationNone. One may choose to retarget for various reasons (e.g. for better visual feedback when inserting into a sorted
+    * position).
+    */
+    public int tableViewValidateDrop( NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+	log.debug("tableViewValidateDrop");
+	tableView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+	//tableView.setDropRowAndDropOperation(tableView.numberOfRows(), NSTableView.DropAbove);
+	return NSTableView.DropAbove;
+    }
+
+    /**
+	* Invoked by tableView when the mouse button is released over a table view that previously decided to allow a drop. info
+     * contains details on this dragging operation. The proposed location is row and action is operation. The data source should
+     * incorporate the data from the dragging pasteboard at this time.
+     */
+    public boolean tableViewAcceptDrop( NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+	log.debug("tableViewAcceptDrop");
+	// Get the drag-n-drop pasteboard
+	NSPasteboard pasteboard = info.draggingPasteboard();
+	// What type of data are we going to allow to be dragged?  The pasteboard
+ // might contain different formats
+	NSArray formats = new NSArray(NSPasteboard.FileContentsPboardType);
+
+	// find the best match of the types we'll accept and what's actually on the pasteboard
+	// In the file format type that we're working with, get all data on the pasteboard
+	NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
+	// Insert the MP3 filenames into our songs array
+	int i = 0;
+	for(i; i < filesList.count(); i++) {
+	    log.debug(filesList.objectAtIndex(i));
+	    //data.addEntry(fileseList.objectAtIndex(i), row+i);
+	}
+	tableView.reloadData();
+	// Select the last song.
+	tableView.selectRow(row+i-1, false);
+	return true;
+    }
+    
     public void clear() {
+	log.debug("clear");
 	this.data.clear();
     }
 

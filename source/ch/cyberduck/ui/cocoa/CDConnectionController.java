@@ -131,7 +131,7 @@ public class CDConnectionController extends NSObject implements Observer {
 	    mainWindow.setTitle(host.getName());
 
 	    host.addObserver(browserView);
-	    host.addObserver(transferView);
+//	    host.addObserver(transferView);
 	    host.addObserver(hostView);
 	    host.addObserver(pathComboBox);
 	    host.addObserver(this);
@@ -161,6 +161,21 @@ public class CDConnectionController extends NSObject implements Observer {
 		}		
 	    }
             session.connect();
+    }
+
+
+    public void download(Path download) {
+	log.debug("download:"+download);
+	((CDTransferTableDataSource)transferView.dataSource()).addEntry(download);
+	download.addObserver(transferView);
+	download.download();
+    }
+
+    public void upload(Path upload) {
+	log.debug("upload:"+upload);
+	((CDTransferTableDataSource)transferView.dataSource()).addEntry(upload);
+	upload.addObserver(transferView);
+	upload.upload();
     }
 
     public void update(Observable o, Object arg) {
@@ -218,14 +233,14 @@ public class CDConnectionController extends NSObject implements Observer {
 		}
 	    }
 	     */
-	    if(arg instanceof Path) {
-		List cache = ((Path)arg).cache();
-		java.util.Iterator i = cache.iterator();
-		while(i.hasNext()) {
-		    //((Path)i.next()).addObserver(infoWindow);
-		    ((Path)i.next()).addObserver(transferView);
-		}
-	    }
+//	    if(arg instanceof Path) {
+//		List cache = ((Path)arg).cache();
+//		java.util.Iterator i = cache.iterator();
+//		while(i.hasNext()) {
+//		    //((Path)i.next()).addObserver(infoWindow);
+//		    ((Path)i.next()).addObserver(transferView);
+//		}
+//	    }
 	}
     }
     
@@ -246,7 +261,7 @@ public class CDConnectionController extends NSObject implements Observer {
 	* @see loginFailure
 	*/
 	public void loginSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	    log.info("loginSheetDidEnd:"+sheet+":"+returncode+":"+main);
+	    log.info("loginSheetDidEnd");
 //	    CDLoginSheet loginSheet = (CDLoginSheet)sheet;
 	    switch(returncode) {
 		case(NSAlertPanel.DefaultReturn):

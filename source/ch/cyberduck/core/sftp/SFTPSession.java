@@ -75,7 +75,7 @@ public class SFTPSession extends Session {
 	}
 	
 	public void list() {
-	    this.list(false);
+	    this.list(this.cache() == null);
 	}
 	
 	public void list(boolean refresh) {
@@ -366,51 +366,53 @@ public class SFTPSession extends Session {
 	host.status.fireStopEvent();
     }
 
-public void connect() {
-    new Thread() {
-	public void run() {
-	    host.status.fireActiveEvent();
-	    SFTPSession.this.log("Opening SSH connection to " + host.getIp()+"...", Message.PROGRESS);
-	    try {
-/*
-import com.sshtools.j2ssh.configuration.SshConnectionProperties
- SshConnectionProperties properties = new SshConnectionProperties();
- properties.setHost("firestar");
- properties.setPort(22);
- ssh.connect(properties);
+    public void connect() {
+	new Thread() {
+	    public void run() {
+		host.status.fireActiveEvent();
+		SFTPSession.this.log("Opening SSH connection to " + host.getIp()+"...", Message.PROGRESS);
+		try {
+/*@todo
+		    import com.sshtools.j2ssh.configuration.SshConnectionProperties
+		    SshConnectionProperties properties = new SshConnectionProperties();
+		    properties.setHost("firestar");
+		    properties.setPort(22);
 
- // Sets the prefered client->server encryption cipher
- properties.setPrefCSEncryption("blowfish-cbc");
- // Sets the preffered server->client encryption cipher
- properties.setPrefSCEncryption("3des-cbc");
+		    // Sets the prefered client->server encryption cipher
+		    properties.setPrefCSEncryption("blowfish-cbc");
+		    // Sets the preffered server->client encryption cipher
+		    properties.setPrefSCEncryption("3des-cbc");
 
- // Sets the preffered client->server message authenticaiton
- properties.setPrefCSMac("hmac-sha1");
- // Sets the preffered server->client message authentication
- properties.setPrefSCMac("hmac-md5");
- */
-		SSH.connect(host.getName(), host.getHostKeyVerification());
-		HTTPSession.this.log("SSH connection opened", Message.PROGRESS);
-		SFTPSession.this.log(SSH.getServerId(), Message.TRANSCRIPT);
-		SFTPSession.this.login();
-		String path = host.getWorkdir().equals(Preferences.instance().getProperty("connection.path.default")) ? SFTP.getDefaultDirectory() : host.getWorkdir();
-		SFTPFile home = new SFTPFile(path);
-		home.list();
+		    // Sets the preffered client->server message authenticaiton
+		    properties.setPrefCSMac("hmac-sha1");
+		    // Sets the preffered server->client message authentication
+		    properties.setPrefSCMac("hmac-md5");
+
+		    ssh.connect(properties, host.getHostKeyVerification());
+*/
+		    SSH.connect(host.getName(), host.getHostKeyVerification());
+		    SFTPSession.this.log("SSH connection opened", Message.PROGRESS);
+		    SFTPSession.this.log(SSH.getServerId(), Message.TRANSCRIPT);
+		    SFTPSession.this.login();
+		    String path = host.getWorkdir().equals(Preferences.instance().getProperty("connection.path.default")) ? SFTP.getDefaultDirectory() : host.getWorkdir();
+		    SFTPFile home = new SFTPFile(path);
+		    home.list();
+		}
+		catch(SshException e) {
+		    SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+		    SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+		finally {
+		    host.status.fireStopEvent();
+		}
 	    }
-	    catch(SshException e) {
-		SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
-	    }
-	    catch(IOException e) {
-		SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
-	    }
-	    finally {
-		host.status.fireStopEvent();
-	    }
-	}
-    }.start();
-}
+	}.start();
+    }
 
     private void login() throws IOException {
+	log.debug("login");
 	// Create a password authentication instance
 	this.log("Authenticating as '"+host.login.getUsername()+"'", Message.PROGRESS);
 	PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
@@ -443,13 +445,9 @@ import com.sshtools.j2ssh.configuration.SshConnectionProperties
     }
     
     public void check() throws IOException {
-/*
-	TransportProtocolState state = ssh.getConnectionState();
- if (state.getValue()==TransportProtocolState.DISCONNECTED) {
-     System.out.println("Transport protocol has disconnected!");
- }
- */
+	log.debug("check");
 	if(!SSH.isConnected()) {
+	    host.recycle();
 	    this.connect();
 	}
     }

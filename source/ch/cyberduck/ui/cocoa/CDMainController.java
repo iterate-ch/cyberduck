@@ -32,20 +32,72 @@ import org.apache.log4j.Logger;
 public class CDMainController extends NSObject {
     private static Logger log = Logger.getLogger(CDMainController.class);
 
-    public CDMainWindow mainWindow; // IBOutlet
-    public CDInfoWindow infoWindow; // IBOutlet
-    public CDPreferencesWindow preferencesWindow; // IBOutlet
-    public CDFolderSheet newfolderSheet; // IBOutlet
-    public NSPanel donationSheet; // IBOutlet
-    public CDConnectionSheet connectionSheet; // IBOutlet
+    // ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
+    
+    private CDMainWindow mainWindow; // IBOutlet
+    public void setMainWindow(CDMainWindow mainWindow) {
+	this.mainWindow = mainWindow;
+    }
+		
+    private CDInfoWindow infoWindow; // IBOutlet
+    public void setInfoWindow(CDInfoWindow infoWindow) {
+	this.infoWindow = infoWindow;
+    }
+    
+    private CDPreferencesWindow preferencesWindow; // IBOutlet
+    public void setPreferencesWindow(CDPreferencesWindow preferencesWindow) {
+	this.preferencesWindow = preferencesWindow;
+    }
+    
+    private CDFolderSheet newfolderSheet; // IBOutlet
+    public void setNewfolderSheet(CDFolderSheet newfolderSheet) {
+	this.newfolderSheet = newfolderSheet;
+    }
+    
+    private NSPanel donationSheet; // IBOutlet
+    public void setDonationSheet(NSPanel donationSheet) {
+	this.donationSheet = donationSheet;
+    }
+    
+    private CDConnectionSheet connectionSheet; // IBOutlet
+    public void setConnectionSheet(CDConnectionSheet connectionSheet) {
+	this.connectionSheet = connectionSheet;
+    }
+    
+    private NSTextField quickConnectField; // IBOutlet
+    public void setQuickConnectField(NSTextField quickConnectField) {
+	this.quickConnectField = quickConnectField;
+    }
+    
+    private CDPathComboBox pathComboBox; // IBOutlet
+    public void setPathComboBox(CDPathComboBox pathComboBox) {
+	this.pathComboBox = pathComboBox;
+    }
 
-    public NSTextField quickConnectField; // IBOutlet
-    public CDPathComboBox pathComboBox; // IBOutlet
-    public NSDrawer drawer; // IBOutlet
-    public NSTableView browserTable; // IBOutlet
+    private NSDrawer drawer; // IBOutlet
+    public void setDrawer(NSDrawer drawer) {
+	this.drawer = drawer;
+    }
 
+    private NSTableView browserTable; // IBOutlet
+    public void setBrowserTable(NSTableView browserTable) {
+	this.browserTable = browserTable;
+    }
+
+    private CDConnectionController connectionController; // IBOutlet
+    public void setConnectionController(CDConnectionController connectionController) {
+	this.connectionController = connectionController;
+    }
+    
+    
     private NSMutableDictionary toolbarItems;
 
+    // ----------------------------------------------------------
+    // Constructor
+    // ----------------------------------------------------------
+    
     public CDMainController() {
 	super();
 	log.debug("CDMainController");
@@ -97,7 +149,7 @@ public class CDMainController extends NSObject {
 	if(infoWindow == null)
 	    NSApplication.loadNibNamed("Info", this);
 	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
-	((CDInfoWindow)infoWindow).update(path, new Message(Message.SELECTION));
+//@todo	((CDInfoWindow)infoWindow).update(path, new Message(Message.SELECTION));
 	infoWindow.orderFront(this);
     }
 
@@ -147,12 +199,14 @@ public class CDMainController extends NSObject {
     public void downloadButtonPressed(NSObject sender) {
 	log.debug("downloadButtonPressed");
 	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
-	path.download();
+//	path.download();
+	connectionController.download(path);
     }
 
     public void uploadButtonPressed(NSObject sender) {
 	log.debug("uploadButtonPressed");
 	// @todo drag and drop
+ //	connectionController.upload(path);
     }
 
     /*
@@ -176,7 +230,6 @@ public class CDMainController extends NSObject {
     public void connectButtonPressed(NSObject sender) {
 	log.debug("connectButtonPressed");
 	mainWindow.makeFirstResponder(connectionSheet);
-	//NSApplication.beginSheet( NSWindow sheet, NSWindow docWindow, Object modalDelegate, NSSelector didEndSelector, Object contextInfo)
 	NSApplication.sharedApplication().beginSheet(
 					      connectionSheet,//sheet
 					      mainWindow, //docwindow

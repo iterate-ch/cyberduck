@@ -56,6 +56,9 @@ public class CDHostTableDataSource extends NSObject {
 	    //@todo 
 	    return NSImage.imageNamed("blipBlue.tiff");
 	}
+	if(identifier.equals("BUTTON")) {
+	    return NSImage.imageNamed("stop.tiff");
+	}
 	return h.getName();	
     }
 

@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 import java.util.Observer;
 import java.util.Observable;
 import java.util.List;
-import ch.cyberduck.core.Path.FileStatus;
+import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -87,14 +87,27 @@ public class CDTransferView extends NSTableView implements Observer {
     }
 
     public void update(Observable o, Object arg) {
-	if(o instanceof FileStatus) {
+	if(o instanceof Status) {
+	    log.debug("instanceof Status:"+o.toString());
 	    if(arg instanceof Message) {
+		log.debug("instanceof Message:"+arg.toString());
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.DATA))
-                  //  return new JProgressBar(bookmark.status.getProgressModel());
-		    this.reloadData();
+		    //  return new JProgressBar(bookmark.status.getProgressModel());
+		    this.reloadData(); //@todo inefficient?
+//		if(msg.getTitle().equals(Message.START)) {
+//		    model.addEntry(o);
+//		    this.reloadData();
+//		}
+		if(msg.getTitle().equals(Message.STOP)) {
+		    if(Preferences.instance().getProperty("files.removeCompleted").equals("true")) {
+			model.removeEntry(o);
+			this.reloadData();
+		    }
+		}
 	    }
 	}
+	/*
 	if(o instanceof Path) {
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;
@@ -110,6 +123,7 @@ public class CDTransferView extends NSTableView implements Observer {
 		}
 	    }
 	}
+	 */
     }
 	
 

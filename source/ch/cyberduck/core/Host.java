@@ -67,6 +67,17 @@ public class Host extends Observable {
 	    //@todothis.workdir = (Path)arg;
 	this.notifyObservers(arg);
     }
+    
+    public void deleteObserver(Observer o) {
+	this.status.deleteObserver(o);
+	super.deleteObserver(o);
+    }
+
+    public void deleteObservers() {
+	this.status.deleteObservers();
+	super.deleteObservers();
+    }
+
 
     public Session openSession() {//throws IOException {
         log.debug("openSession");

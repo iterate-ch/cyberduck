@@ -33,6 +33,10 @@ import ch.cyberduck.core.Permission;
 public class CDInfoWindow extends NSPanel implements Observer {
     private static Logger log = Logger.getLogger(CDInfoWindow.class);
 
+    // ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
+    
     public NSTextField filenameField; // IBOutlet
     public NSTextField groupField; // IBOutlet
     public NSTextField kindField; // IBOutlet
@@ -55,6 +59,10 @@ public class CDInfoWindow extends NSPanel implements Observer {
 
     private Path selectedPath;
 
+    // ----------------------------------------------------------
+    // Constructors
+    // ----------------------------------------------------------
+    
     public CDInfoWindow() {
 	super();
 	log.debug("CDInfoWindow");

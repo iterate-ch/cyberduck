@@ -28,8 +28,15 @@ import org.apache.log4j.Logger;
 public class CDSplitView extends NSSplitView {
     private static Logger log = Logger.getLogger(CDSplitView.class);
 
-    public NSView browserView;
-    public NSView transferView;
+    private NSView browserView;
+    public void setBrowserView(browserView) {
+	this.browserView = browserView;
+    }
+    
+    private NSView transferView;
+    public void setBrowserView(transferView) {
+	this.transferView = transferView;
+    }
     
     public CDSplitView() {
 	super();

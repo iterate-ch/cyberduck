@@ -33,12 +33,13 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDBrowserView extends NSTableView implements Observer, NSDraggingDestination {
+public class CDBrowserView extends NSTableView implements Observer {//, NSDraggingDestination {
     private static Logger log = Logger.getLogger(CDBrowserView.class);
 
-    private static final float STRIPE_RED = (float)(237.0 / 255.0);
-    private static final float STRIPE_GREEN = (float)(243.0 / 255.0);
-    private static final float STRIPE_BLUE = (float)(254.0 / 255.0);
+    private static final float STRIPE_RED = (float)(237.0/255.0);
+    private static final float STRIPE_GREEN = (float)(243.0/255.0);
+    private static final float STRIPE_BLUE = (float)(254.0/255.0);
+    
     private NSColor sStripeColor = null;
     
     private CDBrowserTableDataSource model;
@@ -65,12 +66,16 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
     
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
+	// Registering for File Drops
+	this.registerForDraggedTypes(new NSArray(NSPasteboard.FileContentsPboardType));
+	
 	this.model = (CDBrowserTableDataSource)this.dataSource();
 	this.setDelegate(this);
 	this.setTarget(this);
 	this.setDrawsGrid(false);
 	this.setAutoresizesAllColumnsToFit(true);
-//	this.setIntercellSpacing(NSSize.ZeroSize);
+
+	//	this.setIntercellSpacing(NSSize.ZeroSize);
         this.setDoubleAction(new NSSelector("doubleClickAction", new Class[] {null}));
 	//By setting the drop row to -1, the entire table is highlighted instead of just a single row.
 	//this.setDropRowAndDropOperation(-1, NSTableView.DropOn);
@@ -237,7 +242,7 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 
 
     // ----------------------------------------------------------
-    // NSDraggingDestination interface methods
+    // NSDraggingDestination interface methods -OBSOLETE already implemented in superclass
     // ----------------------------------------------------------
 
     /**
@@ -245,6 +250,7 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
      * pointer enters the destination's bounds rectangle (if it is a view object) or its frame
      * rectangle (if it is a window object).
      */
+    /*
     public int draggingEntered(NSDraggingInfo sender) {
 	log.debug("draggingEntered");
 	return NSDraggingInfo.DragOperationCopy;
@@ -264,12 +270,14 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	log.debug("draggingExited");
 	//
     }
+     */
 
     /**
 	* Invoked when the image is released, if the most recent draggingEntered or draggingUpdated message
      * returned an acceptable drag-operation value. Returns true if the receiver agrees to perform the drag operation
      * and false if not. Use sender to obtain details about the dragging operation.
      */
+    /*
     public boolean prepareForDragOperation(NSDraggingInfo sender)  {
 	log.debug("prepareForDragOperation");
 	NSPasteboard pasteboard = sender.draggingPasteboard();
@@ -277,6 +285,7 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	    return true;
 	return false;
     }
+     */
 
     /**
 	* Invoked after the released image has been removed from the screen and the previous prepareForDragOperation message
@@ -284,6 +293,7 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
      * represented by the image. If the destination accepts the data, it returns true; otherwise it returns false. The default is
      * to return false. Use sender to obtain details about the dragging operation.
      */
+    /*
     public boolean performDragOperation(NSDraggingInfo sender) {
 	log.debug("performDragOperation");
 	NSPasteboard pasteboard = sender.draggingPasteboard();
@@ -302,6 +312,7 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	
 	return true;
     }
+     */
 
     /**
 	* Invoked when the dragging operation is complete and the previous performDragOperation returned true. The destination
@@ -309,8 +320,10 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
      * now that it has incorporated the dragged data. This message is the last message sent from sender to the destination
      * during a dragging session.
      */
+    /*
     public void concludeDragOperaton(NSDraggingInfo sender) {
 	log.debug("concludeDragOperaton");
 	//
     }
+     */
 }

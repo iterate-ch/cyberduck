@@ -28,10 +28,16 @@ import org.apache.log4j.Logger;
 public class CDLoginSheet extends NSPanel {
     private static Logger log = Logger.getLogger(CDLoginSheet.class);
 
-//@todo
-    public NSTextField userField;
-    public NSSecureTextField passField;
+    private NSTextField userField;
+    public void setUserField(userField) {
+	this.userField = userField;
+    }
 
+    private NSSecureTextField passField;
+    public void setPassField(passField) {
+	this.passField = passField;
+    }
+    
     public CDLoginSheet() {
 	super();
     }

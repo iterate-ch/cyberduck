@@ -40,13 +40,12 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public abstract class Path extends Observable {//implements Serializable {//, Transferable {
-
     private static Logger log = Logger.getLogger(Path.class);
 
     protected String name = null;
     protected String path = null;
     protected Path parent = null;
-    private List cache;
+    private List cache = null;
     public FileStatus status = new FileStatus();
     public Attributes attributes = new Attributes();
 
@@ -82,6 +81,7 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
     }
 
     public void addObserver(Observer o) {
+	log.debug("addObserver:"+o);
 	this.status.addObserver(o);
 	this.attributes.addObserver(o);
 	super.addObserver(o);
@@ -94,12 +94,14 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
     }
 
     public void deleteObserver(Observer o) {
+	log.debug("deleteObserver:"+o);
 	this.status.deleteObserver(o);
 	this.attributes.deleteObserver(o);
 	super.deleteObserver(o);
     }
 
     public void deleteObservers() {
+	log.debug("deleteObservers");
 	this.status.deleteObservers();
 	this.attributes.deleteObservers();
 	super.deleteObservers();
@@ -112,15 +114,12 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
     public abstract Path getParent();
 
     public List cache() {
+	log.debug("cache");
 	return this.cache;
     }
 
     public void setCache(List files) {
-	if(this.cache != null) {
-	    Iterator i = this.cache.iterator();
-	    while(i.hasNext())
-		((Observable)i.next()).deleteObservers();
-	}
+	log.debug("setCache");
 	this.cache = files;
     }
     
@@ -536,14 +535,14 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
 
 	public void fireActiveEvent() {
 	    super.fireActiveEvent();
-	    Path.this.callObservers(new Message(Message.START));
+//	    Path.this.callObservers(new Message(Message.START));
 	    this.overallSpeedTimer.start();
 	    this.currentSpeedTimer.start();
 	}
 
 	public void fireStopEvent() {
 	    super.fireStopEvent();
-	    Path.this.callObservers(new Message(Message.STOP));
+//	    Path.this.callObservers(new Message(Message.STOP));
 	    if(this.currentSpeedTimer != null)
 		this.currentSpeedTimer.stop();
 	    if(this.overallSpeedTimer != null)
@@ -554,7 +553,7 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
 
 	public void fireCompleteEvent() {
 	    super.fireCompleteEvent();
-	    Path.this.callObservers(new Message(Message.COMPLETE));
+//	    Path.this.callObservers(new Message(Message.COMPLETE));
 	    this.currentSpeedTimer.stop();
 	    this.overallSpeedTimer.stop();
             this.setResume(false);
@@ -571,7 +570,6 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
 				    double current;
 				    double last;
 				    public void actionPerformed(ActionEvent e) {
-					//                    log.debug("overallSpeedTimer:actionPerformed()");
 					current = getCurrent();
 					if(current <= 0) {
 					    setOverall(0);
@@ -601,7 +599,6 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
 				    int last;
 				    int[] speeds = new int[8];
 				    public void actionPerformed(ActionEvent e) {
-					//                    log.debug("currentSpeedTimer:actionPerformed()");
 					int diff = 0;
 					current = getCurrent();
 					if(current <= 0) {

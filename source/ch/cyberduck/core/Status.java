@@ -117,6 +117,7 @@ public class Status extends Observable implements Serializable {
      */
     public void callObservers(Object arg) {
         log.debug("callObservers:"+arg.toString());
+	log.debug(this.countObservers()+" known.");
  //        long start = System.currentTimeMillis();
         this.setChanged();
 	//@todo        if(this.isSelected())
@@ -198,7 +199,7 @@ public class Status extends Observable implements Serializable {
         this.setComplete(false);
         this.setStopped(false);
 //        this.chronoTimer.start();
-	this.callObservers(new Message(Message.START));
+	this.callObservers(new Message(Message.START, "Starting Session"));
     }
 
     /**
@@ -210,7 +211,7 @@ public class Status extends Observable implements Serializable {
         //if(this.chronoTimer != null)
           //  this.chronoTimer.stop();
 	this.setStopped(true);
-	this.callObservers(new Message(Message.STOP));
+	this.callObservers(new Message(Message.STOP, "Stopping Session"));
     }
 
 /**
@@ -221,7 +222,7 @@ public class Status extends Observable implements Serializable {
 //        this.chronoTimer.stop();
 	this.setStopped(true);
 	this.setComplete(true);
-	this.callObservers(new Message(Message.COMPLETE));
+	this.callObservers(new Message(Message.COMPLETE, "Completed Session"));
     }
 
  /*

@@ -30,41 +30,43 @@ import org.apache.log4j.Logger;
 public class CDConnectionSheet extends NSPanel {
     private static Logger log = Logger.getLogger(CDConnectionSheet.class);
 
+    // ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
+    
     private NSPopUpButton protocolPopup;    
-
-    public void setProtocolPopup(NSTextField protocolPopup) {
+    public void setProtocolPopup(NSPopUpButton protocolPopup) {
 	this.protocolPopup = protocolPopup;
     }
 
     private NSTextField hostNameField;
-    
     public void setHostNameField(NSTextField hostNameField) {
 	this.hostNameField = hostNameField;
     }
     
     private NSTextField pathField;
-
     public void setPathField(NSTextField pathField) {
 	this.pathField = pathField;
     }
     
     private NSTextField portField;
-
     public void setPortField(NSTextField portField) {
 	this.portField = portField;
     }
 
     private NSTextField usernameField;
-
     public void setUsernameField(NSTextField usernameField) {
 	this.usernameField = usernameField;
     }
 
     private NSTextField urlLabel;
-
     public void setUrlLabel(NSTextField urlLabel) {
 	this.urlLabel = urlLabel;
     }
+
+    // ----------------------------------------------------------
+    // Constructors
+    // ----------------------------------------------------------
     
     public CDConnectionSheet() {
 	super();

@@ -63,7 +63,7 @@ public class FTPSession extends Session {
 	}
 	
 	public void list() {
-	    this.list(false);
+	    this.list(this.cache() == null);
 	}
 	
 	/**
@@ -427,6 +427,7 @@ public class FTPSession extends Session {
     }
 
     private void login() throws IOException {
+	log.debug("login");
 	try {
 	    this.log("Authenticating as " + host.login.getUsername() + "...", Message.PROGRESS);
 	    FTP.login(host.login.getUsername(), host.login.getPassword());
@@ -445,7 +446,9 @@ public class FTPSession extends Session {
     }
 
     public void check() throws IOException {
+	log.debug("check");
 	if(!FTP.isAlive()) {
+	    host.recycle();
 	    this.connect();
 	    //while(!FTP.isAlive())
 		//

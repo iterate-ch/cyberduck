@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 public class CDFolderSheet extends NSPanel {
 
     private NSTextField folderField; /* IBOutlet */
-
     public void setFolderField(NSTextField folderField) {
 	this.folderField = folderField;
     }

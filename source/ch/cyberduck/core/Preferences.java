@@ -220,7 +220,7 @@ public abstract class Preferences {//extends Properties {
  //        this.setProperty("ftp.passive", "false");
 
 	//listing properties
-        this.setProperty("listing.listing.showHidden", "false");
+        this.setProperty("listing.showHidden", "false");
 //        this.setProperty("listing.showType", "true");
   //      this.setProperty("listing.showFilenames", "true");
     //    this.setProperty("listing.showSize", "true");
