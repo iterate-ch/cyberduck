@@ -123,9 +123,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 
     public void windowWillClose(NSNotification notification) {
 		this.queueModel.save();
-        this.window = null;
-//		instances.removeObject(this);
-//		instance = null;
+//        this.window = null;
     }
 
     private NSWindow window; // IBOutlet
@@ -153,15 +151,19 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 	private void updateLabels() {
 		if(this.queueTable.selectedRow() != -1) {
 			Queue q = this.queueModel.getItem(this.queueTable.selectedRow());
-			this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()+q.getRoot().getAbsolute(), 
-																		  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-			if (q.numberOfRoots() == 1)
+			if (q.numberOfRoots() == 1) {
+				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()+q.getRoot().getAbsolute(), 
+																			  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 				this.localField.setAttributedStringValue(new NSAttributedString(q.getRoot().getLocal().getAbsolute(),
 																				TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-			else
+			}
+			else {
+				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL(), 
+																			  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 				this.localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiples files", "")
 																				+" ("+q.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
 																				TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+			}
 		}
 		else {
 			this.urlField.setStringValue("");
@@ -304,10 +306,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     public void update(Observable observable, Object arg) {
 		if (arg instanceof Message) {
 			Message msg = (Message)arg;
-			if (msg.getTitle().equals(Message.PROGRESS)) {
-				this.updateLabels();
-			}
-			else if (msg.getTitle().equals(Message.ERROR)) {
+			if (msg.getTitle().equals(Message.ERROR)) {
 				while (this.window().attachedSheet() != null) {
 					try {
 						log.debug("Sleeping...");
@@ -340,15 +339,18 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 				Queue queue = (Queue)observable;
 				if (queue.isComplete()) {
 					if (Queue.KIND_DOWNLOAD == queue.kind()) {
-						Growl.instance().notify(NSBundle.localizedString("Download complete", "Growl Notification"), 
-												queue.getRoot().getName());
+						Growl.instance().notify(NSBundle.localizedString("Download complete", 
+																		 "Growl Notification"), 
+												queue.getName());
 						if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
 							boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
 							log.debug("Success opening file:" + success);
 						}
 					}
 					if (Queue.KIND_UPLOAD == queue.kind()) {
-						Growl.instance().notify(NSBundle.localizedString("Upload complete", "Growl Notification"), queue.getRoot().getName());
+						Growl.instance().notify(NSBundle.localizedString("Upload complete", 
+																		 "Growl Notification"), 
+												queue.getName());
 					}
 					if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
 						this.queueModel.removeItem(queue);

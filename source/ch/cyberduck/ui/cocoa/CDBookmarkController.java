@@ -252,7 +252,7 @@ public class CDBookmarkController extends NSObject {
 
     private void updateFields() {
         this.window.setTitle(this.host.getNickname());
-        this.urlField.setStringValue(this.host.getURL());
+        this.urlField.setStringValue(this.host.getURL()+host.getDefaultPath());
         this.hostField.setStringValue(this.host.getHostname());
         this.portField.setStringValue("" + this.host.getPort());
         this.nicknameField.setStringValue(this.host.getNickname());

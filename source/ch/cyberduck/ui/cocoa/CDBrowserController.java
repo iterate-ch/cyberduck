@@ -541,7 +541,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         Host h = pathController.workdir().getSession().getHost();
         NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
         pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
-        if (!pboard.setStringForType(h.getURL(), NSPasteboard.StringPboardType)) {
+        if (!pboard.setStringForType(h.getURL()+h.getDefaultPath(), NSPasteboard.StringPboardType)) {
             log.error("Error writing URL to NSPasteboard.StringPboardType.");
         }
     }
@@ -629,7 +629,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
     public void awakeFromNib() {
         log.debug("awakeFromNib");
 		this.window().setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
-		this.window().makeFirstResponder(quickConnectPopup);
+		this.window().setInitialFirstResponder(quickConnectPopup);
         this.pathController = new CDPathController(pathPopup);
         // Drawer states
         if (Preferences.instance().getProperty("logDrawer.isOpen").equals("true")) {
@@ -656,7 +656,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             browserModel.sort(selectedColumn, browserModel.isSortedAscending());
             browserTable.reloadData();
             toolbar.validateVisibleItems();
-			// this.window().makeFirstResponder(browserTable);
+			this.window().makeFirstResponder(browserTable);
         }
         else if (arg instanceof Message) {
             Message msg = (Message)arg;

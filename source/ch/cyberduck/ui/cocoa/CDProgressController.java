@@ -36,13 +36,19 @@ public class CDProgressController extends NSObject implements Observer {
     private static Logger log = Logger.getLogger(CDProgressController.class);
 		
 	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
+	private static NSMutableParagraphStyle lineBreakByTruncatingTailParagraph = new NSMutableParagraphStyle();
 	
     static {
         lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
+        lineBreakByTruncatingTailParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
     }
 	
     private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
 																							  new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+    private static final NSDictionary TRUNCATE_TAIL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingTailParagraph},
+																							  new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+
+	
 	private Queue queue;
 	
 	public CDProgressController(Queue queue) {
@@ -56,6 +62,8 @@ public class CDProgressController extends NSObject implements Observer {
 	
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
+		this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
+																		   TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
 		this.updateProgressfield();
 		this.updateProgressbar();
 	}
@@ -95,8 +103,6 @@ public class CDProgressController extends NSObject implements Observer {
 	}
 	
 	private void updateProgressfield() {
-		this.filenameField.setAttributedStringValue(new NSAttributedString(queue.getRoot().getName(),
-																		   TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 		this.progressField.setAttributedStringValue(new NSAttributedString(queue.getStatusText(),
 																		   TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 	}
@@ -158,7 +164,7 @@ public class CDProgressController extends NSObject implements Observer {
 	
 	public void setProgressSubview(NSView progressView) {
 		this.progressView = progressView;
-		this.progressView.setToolTip(this.queue.getRoot().getAbsolute());
+//		this.progressView.setToolTip(this.queue.getRoot().getHost().getURL());
 	}
 	
 	public NSView view() {
