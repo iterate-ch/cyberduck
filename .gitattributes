@@ -177,6 +177,7 @@ it.lproj/Main.strings svneol=native#unset
 it.lproj/Preferences.nib/keyedobjects.nib -text
 it.lproj/Preferences.strings svneol=native#unset
 it.lproj/Queue.nib/keyedobjects.nib -text
+it.lproj/Queue.strings svneol=native#unset
 it.lproj/Update.nib/keyedobjects.nib -text
 it.lproj/Update.strings svneol=native#unset
 ja.lproj/Bookmark.nib/keyedobjects.nib -text
