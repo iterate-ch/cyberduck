@@ -49,9 +49,6 @@ public class CDBookmarkController {
 	}
 
 	public NSWindow window() {
-		if(false == NSApplication.loadNibNamed("Bookmark", this)) {
-			log.fatal("Couldn't load Bookmark.nib");
-		}
 		return this.window;
 	}
 	
@@ -121,9 +118,11 @@ public class CDBookmarkController {
 	// ----------------------------------------------------------
 
 	public CDBookmarkController(Host bookmark) {
-		log.debug("CDBookmarkController:" + bookmark);
 		this.host = bookmark;
 		instances.addObject(this);
+		if(false == NSApplication.loadNibNamed("Bookmark", this)) {
+			log.fatal("Couldn't load Bookmark.nib");
+		}
 	}
 
 	public void awakeFromNib() {

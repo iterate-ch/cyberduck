@@ -48,9 +48,6 @@ public class CDInfoController {
 	}
 
 	public NSWindow window() {
-		if(false == NSApplication.loadNibNamed("Info", this)) {
-			log.fatal("Couldn't load Info.nib");
-		}
 		return this.window;
 	}
 	
@@ -132,9 +129,11 @@ public class CDInfoController {
 	// ----------------------------------------------------------
 
 	public CDInfoController(Path file) {
-		log.debug("CDInfoController:" + file);
 		this.file = file;
 		instances.addObject(this);
+		if(false == NSApplication.loadNibNamed("Info", this)) {
+			log.fatal("Couldn't load Info.nib");
+		}
 	}
 
 	public void awakeFromNib() {

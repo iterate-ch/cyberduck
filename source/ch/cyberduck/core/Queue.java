@@ -336,13 +336,11 @@ public class Queue extends Observable implements Observer { //Thread {
 	}
 
 	private long calculateCurrentSize() {
-		//		if(this.isRunning()) {
 		long value = 0;
 		Iterator elements = jobs.iterator();
 		while (elements.hasNext()) {
 			value += ((Path) elements.next()).status.getCurrent();
 		}
-		//		}
 		if (value > 0)
 			this.current = value;
 		return this.current;

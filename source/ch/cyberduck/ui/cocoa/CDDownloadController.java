@@ -44,9 +44,6 @@ public class CDDownloadController {
 	}
 
 	public NSWindow window() {
-		if (false == NSApplication.loadNibNamed("Download", this)) {
-			log.fatal("Couldn't load Download.nib");
-		}
 		return this.window;
 	}
 
@@ -60,6 +57,9 @@ public class CDDownloadController {
 
 	public CDDownloadController() {
 		instances.addObject(this);
+		if (false == NSApplication.loadNibNamed("Download", this)) {
+			log.fatal("Couldn't load Download.nib");
+		}
 	}
 
 	public void awakeFromNib() {

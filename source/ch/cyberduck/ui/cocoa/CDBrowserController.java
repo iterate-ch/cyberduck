@@ -45,9 +45,6 @@ public class CDBrowserController implements Observer {
 	}
 
 	public NSWindow window() {
-		if (false == NSApplication.loadNibNamed("Browser", this)) {
-			log.fatal("Couldn't load Browser.nib");
-		}
 		return this.window;
 	}
 
@@ -512,6 +509,9 @@ public class CDBrowserController implements Observer {
 
 	public CDBrowserController() {
 		instances.addObject(this);
+		if (false == NSApplication.loadNibNamed("Browser", this)) {
+			log.fatal("Couldn't load Browser.nib");
+		}
 	}
 
 	public void awakeFromNib() {

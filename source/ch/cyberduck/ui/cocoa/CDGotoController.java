@@ -47,9 +47,6 @@ public class CDGotoController {
 	}
 
 	public NSWindow window() {
-		if (false == NSApplication.loadNibNamed("Goto", this)) {
-			log.fatal("Couldn't load Goto.nib");
-		}
 		return this.window;
 	}
 
@@ -60,6 +57,9 @@ public class CDGotoController {
 	public CDGotoController(Path current) {
 		this.current = current;
 		instances.addObject(this);
+		if (false == NSApplication.loadNibNamed("Goto", this)) {
+			log.fatal("Couldn't load Goto.nib");
+		}
 	}
 
 	public void windowWillClose(NSNotification notification) {

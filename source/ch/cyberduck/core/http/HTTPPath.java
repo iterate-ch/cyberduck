@@ -169,7 +169,7 @@ public class HTTPPath extends Path {
 			if (!this.isFile())
 				throw new IOException("Download must be a file.");
 			this.session.check();
-			GET = new GetMethod(this.getAbsolute()); //@todo encode url
+			GET = new GetMethod(this.getAbsolute());
 			GET.setUseDisk(false);
 			GET.setFollowRedirects(false);
 			GET.addRequestHeader("Accept", Preferences.instance().getProperty("http.acceptheader"));

@@ -77,14 +77,14 @@ public class CDLoginController implements LoginController {
 	private static NSMutableArray instances = new NSMutableArray();
 
 	public CDLoginController(NSWindow parentWindow) {
-		this.parentWindow = parentWindow;
 		instances.addObject(this);
-	}
-
-	public NSWindow window() {
+		this.parentWindow = parentWindow;
 		if (false == NSApplication.loadNibNamed("Login", this)) {
 			log.fatal("Couldn't load Login.nib");
 		}
+	}
+
+	public NSWindow window() {
 		return this.window;
 	}
 

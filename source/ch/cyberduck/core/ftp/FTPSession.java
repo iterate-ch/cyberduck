@@ -92,12 +92,6 @@ public class FTPSession extends Session {
 		else {
 			this.FTP.setConnectMode(FTPConnectMode.PASV);
 		}
-		//@todo proxy		    if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
-		//			FTP.initSOCKS(Preferences.instance().getProperty("connection.proxy.port"), Preferences.instance().getProperty("connection.proxy.host"));
-		//		    }
-		//		    if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
-		//			FTP.initSOCKSAuthentication(Preferences.instance().getProperty("connection.proxy.username"), Preferences.instance().getProperty("connection.proxy.password"));
-		//		    }
 		this.FTP.connect(host.getHostname(), host.getPort());
 		this.log("FTP connection opened", Message.PROGRESS);
 		this.login();

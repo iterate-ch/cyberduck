@@ -49,9 +49,6 @@ public class CDFolderController {
 	}
 
 	public NSWindow window() {
-		if (false == NSApplication.loadNibNamed("Folder", this)) {
-			log.fatal("Couldn't load Folder.nib");
-		}
 		return this.window;
 	}
 
@@ -59,6 +56,9 @@ public class CDFolderController {
 
 	public CDFolderController() {
 		instances.addObject(this);
+		if (false == NSApplication.loadNibNamed("Folder", this)) {
+			log.fatal("Couldn't load Folder.nib");
+		}
 	}
 
 	public void windowWillClose(NSNotification notification) {

@@ -33,7 +33,7 @@ public class Permission {
 	private static Logger log = Logger.getLogger(Permission.class);
 
 	private static final String DEFAULT_MASK = "-rw-r--r--"; //defaulting to a file
-		private String mask;
+	private String mask;
 
 	public Permission(NSDictionary dict) {
 		log.debug("Attributes");
@@ -97,7 +97,6 @@ public class Permission {
 	 * @param p A 3*3 boolean array representing read, write and execute permissions
 	 * by owner, group and others. (1,1) is the owner's read permission
 	 */
-	/*
 	public Permission(boolean[][] p) {
 		this.owner[READ] = p[OWNER][READ];
 		this.owner[WRITE] = p[OWNER][WRITE];
@@ -111,8 +110,8 @@ public class Permission {
 		this.other[WRITE] = p[OTHER][WRITE];
 		this.other[EXECUTE] = p[OTHER][EXECUTE];
 //		log.debug("Permission:"+this.toString());
+		this.mask = "-"+getString();
 	}
-	 */
 
 
 	public Permission(int decimal) {

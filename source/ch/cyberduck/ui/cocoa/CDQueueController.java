@@ -54,12 +54,10 @@ public class CDQueueController implements Observer, Validator {
 	}
 
 	private CDQueueController() {
-		log.debug("CDQueueController");
 		instances.addObject(this);
 	}
 
 	public void windowWillClose(NSNotification notification) {
-		log.debug("windowWillClose");
 		instances.removeObject(this);
 		instance = null;
 	}
