@@ -20,7 +20,9 @@ package ch.cyberduck.ui;
 
 import ch.cyberduck.core.Login;
 
-public interface LoginController {
+public abstract class LoginController {
+
+//	protected Login login;
 
 	/**
 	 * Call this to allow the user to reenter the new login credentials.
@@ -28,6 +30,6 @@ public interface LoginController {
 	 * @return true If we whould try again with new login
 	 * @param explanation Any additional information why the login failed.
 	 */
-	public boolean loginFailure(Login login, String explanation);
+	public abstract boolean promptUser(Login login, String explanation);
 
 }

@@ -28,7 +28,10 @@
 
 	<property name="debug" value="on"/>
 	<property name="home" value="."/>
+    <property name="unittests" value="${home}/test"/>
 	<property name="build" value="${home}/build"/>
+    <property name="build.unittests" value="${build}/unittests" />
+    <property name="build.unittests.reports" value="${build}/unittests/junit_reports" />
 	<property name="config" value="${home}/config"/>
 	<property name="img" value="${home}/img"/>
 	<property name="lib" value="${home}/lib"/>
@@ -37,7 +40,17 @@
 	<property name="resources" value="${home}/resources"/>
 	<property name="doc" value="${home}/doc"/>
 
-	<path id="classpath">
+    <path id="test.classpath">
+        <path refid="build.classpath"/>
+        <pathelement location="${classes}"/>
+        <pathelement location="${build.unittests}"/>
+		<fileset dir="${build}">
+			<include name="*.jar"/>
+			<include name="*.jnilib"/>
+		</fileset>
+    </path>
+
+	<path id="build.classpath">
 		<pathelement location="/System/Library/Java"/>
 		<fileset dir="${lib}">
 			<include name="*.jar"/>
@@ -66,8 +79,10 @@
 		<echo message="IMPORTANT NOTE: YOU HAVE TO RUN THE BUILD TASK 'app' IN XCODE FIRST!"/>
 		<echo message=""/>
 		<echo message="Building ${app.name}..."/>
-		<mkdir dir="${classes}"/>
 		<mkdir dir="${build}"/>
+		<mkdir dir="${build.unittests}"/>
+		<mkdir dir="${build.unittests.reports}"/>
+		<mkdir dir="${classes}"/>
 	</target>
 
 
@@ -155,7 +170,7 @@
 			deprecation="on"
 			srcdir="${source}"
 			destdir="${classes}">
-			<classpath refid="classpath"/>
+			<classpath refid="build.classpath"/>
 		</javac>
 		<antcall target="headers"/>
 	</target>
@@ -211,7 +226,7 @@
 			windowtitle="${app.name} API"
 			doctitle="${app.name}"
 			bottom="Copyright (c) 2003 David Kocher. Enjoy ${app.name}!">
-			<classpath refid="classpath"/>
+			<classpath refid="build.classpath"/>
 		</javadoc>
 	</target>
 
@@ -235,5 +250,28 @@
 			<attribute name="Specification-Vendor" value="David Kocher"/>
 			<attribute name="Implementation-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
 		</manifest>
+	</target>
+	
+	
+	<target name="junit" depends="compile" description="Runs all test cases">
+        <javac
+            debug="${debug}"
+            deprecation="on"
+            srcdir="${unittests}"
+            destdir="${build.unittests}"
+            includes="**/*.java">
+            <classpath refid="test.classpath"/>
+        </javac>
+        <junit fork="yes" printsummary="on" filtertrace="on" haltonfailure="no" showoutput="yes">
+            <classpath refid="test.classpath"/>
+            <formatter type="plain" usefile="false"/>
+            <formatter type="xml" extension=".xml" usefile="true" />
+            <batchtest todir="${build.unittests.reports}">
+                <fileset dir="${build.unittests}">
+                    <include name="**/*Test*.class"/>
+                    <exclude name="**/AllTests.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
 	</target>
 </project>

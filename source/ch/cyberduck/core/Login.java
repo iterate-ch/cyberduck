@@ -26,18 +26,28 @@ import org.apache.log4j.Logger;
 
 public class Login {
 	private static Logger log = Logger.getLogger(Login.class);
+	
+	private boolean addToKeychain;
 
 	static {
 		// Ensure native keychain library is loaded
-//        System.loadLibrary("Keychain");
 		try {
 			NSBundle bundle = NSBundle.mainBundle();
 			String lib = bundle.resourcePath() + "/Java/" + "libKeychain.jnilib";
+			log.debug("Locating libKeychain.jnilib at '"+lib+"'");
 			System.load(lib);
 		}
 		catch (UnsatisfiedLinkError e) {
 			log.error("Could not load the Keychain library:" + e.getMessage());
 		}
+	}
+	
+	public void setUseKeychain(boolean addToKeychain) {
+		this.addToKeychain = addToKeychain;
+	}
+	
+	public boolean usesKeychain() {
+		return this.addToKeychain;
 	}
 
 	//char *getpwdfromkeychain( const char *service, const char *account, OSStatus *error );
@@ -53,7 +63,8 @@ public class Login {
 
 	public void addPasswordToKeychain() {
 		log.debug("addPasswordToKeychain:" + this.toString());
-		this.addPasswordToKeychain(this.service, this.user, this.pass);
+		if(this.addToKeychain)
+			this.addPasswordToKeychain(this.service, this.user, this.pass);
 	}
 
 	private String service;
@@ -85,17 +96,15 @@ public class Login {
 
 	public Login(String service, String user, String pass, boolean addToKeychain) {
 		this.service = service;
+		this.addToKeychain = addToKeychain;
 		if (null == user || user.equals(""))
 			this.user = Preferences.instance().getProperty("ftp.anonymous.name");
 		else
 			this.user = user;
-//		if (null == pass || pass.equals(""))
-//			this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
-//		else
-		this.pass = pass;
-		if (addToKeychain) {
-			this.addPasswordToKeychain();
-		}
+		if (null == pass || pass.equals(""))
+			this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+		else
+			this.pass = pass;
 	}
 
 	/**
@@ -111,13 +120,12 @@ public class Login {
 			}
 			else {
 				this.user = l;
-				this.pass = null;
-//				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 			}
 		}
 		else {
 			this.user = Preferences.instance().getProperty("ftp.anonymous.name");
-//			this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+			this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 		}
 	}
 
@@ -143,21 +151,42 @@ public class Login {
 			reasonable = true;
 		if (this.user != null && this.pass != null) {
 			// anonymous login is ok
-			if (this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name")) && this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass")))
+			if (this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name")) && 
+				this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass")))
 				reasonable = true;
 			// if both name and pass are custom it is ok
-			if (!(this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"))) && !(this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass"))))
+			if (!(this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"))) && 
+				!(this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass"))))
 				reasonable = true;
 		}
 		log.debug("hasReasonableValues:"+reasonable);
 		return reasonable;
+	}
+	
+	public boolean check() {
+		if (!this.hasReasonableValues()) {
+			if (Preferences.instance().getProperty("connection.login.useKeychain").equals("true")) {
+				log.info("Searching keychain for password...");
+				String passFromKeychain = this.getPasswordFromKeychain();
+				if (null == passFromKeychain || passFromKeychain.equals("")) {
+					return controller.promptUser(this, "The username or password does not seem reasonable.");
+				}
+				else {
+					this.pass = passFromKeychain;
+					return true;
+				}
+			}
+			else
+				return controller.promptUser(this, "The username or password does not seem reasonable.");
+		}
+		return true;
 	}
 
 	/**
 	 * @pre controller != null
 	 */
 	public boolean promptUser(String message) {
-		return controller.loginFailure(this, message);
+		return this.controller.promptUser(this, message);
 	}
 
 	public String getUsername() {
@@ -169,19 +198,6 @@ public class Login {
 	}
 
 	public String getPassword() {
-		if (!this.hasReasonableValues()) {
-			if (Preferences.instance().getProperty("connection.login.useKeychain").equals("true")) {
-				log.info("Searching keychain for password...");
-				String passFromKeychain = this.getPasswordFromKeychain();
-				if (null == passFromKeychain || passFromKeychain.equals("")) {
-					this.promptUser("The username or password does not seem reasonable.");
-				}
-				else
-					this.pass = passFromKeychain;
-			}
-			else
-				this.promptUser("The username or password does not seem reasonable.");
-		}
 		return this.pass;
 	}
 
@@ -191,5 +207,9 @@ public class Login {
 
 	public void setController(LoginController lc) {
 		this.controller = lc;
+	}
+	
+	public String toString() {
+		return this.user+":"+this.pass;
 	}
 }

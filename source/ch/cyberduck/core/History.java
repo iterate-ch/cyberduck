@@ -42,12 +42,14 @@ public abstract class History {
 	public abstract void load();
 
 	public void addItem(Host h) {
-		if (this.size() == Integer.parseInt(Preferences.instance().getProperty("history.size"))) {
+		if (this.size() >= Integer.parseInt(Preferences.instance().getProperty("history.size"))) {
 			if (this.size() > 0)
 				this.removeItem(0);
 		}
-		this.data.put(h.getHostname(), h);
-		this.save();
+		if(Integer.parseInt(Preferences.instance().getProperty("history.size")) > 0) {
+			this.data.put(h.getHostname(), h);
+			this.save();
+		}
 	}
 
 	public void removeItem(int index) {

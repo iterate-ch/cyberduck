@@ -73,15 +73,7 @@ public class HTTPSession extends Session {
 		this.callObservers(new Message(Message.OPEN, "Opening session."));
 		this.log("Opening HTTP connection to " + host.getIp() + "...", Message.PROGRESS);
 		this.HTTP = new HttpClient();
-
-		//	this.HTTP.open();
-		//	connection = HTTP.getHttpConnectionManager().getConnection(hostConfiguration);
-		//		if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
-		//		    HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
-		//		}
-		//		else {
 		this.HTTP.connect(host.getHostname(), host.getPort(), false);
-		//		}
 		this.setConnected(true);
 		this.log("HTTP connection opened", Message.PROGRESS);
 	}
@@ -96,12 +88,6 @@ public class HTTPSession extends Session {
 		if (null == HTTP || !HTTP.isAlive()) {
 			this.setConnected(false);
 			this.connect();
-//			while (true) {
-//				if (this.isConnected())
-//					return;
-//				this.log("Waiting for connection...", Message.PROGRESS);
-//				Thread.yield();
-//			}
 		}
 	}
 

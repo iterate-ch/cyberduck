@@ -153,48 +153,52 @@ public class SFTPSession extends Session {
 			}
 		}.start();
 	}
-
+	
 	private synchronized void login() throws IOException {
 		log.debug("login");
-		this.log("Authenticating as '" + host.getLogin().getUsername() + "'", Message.PROGRESS);
+		Login credentials = host.getLogin();
 		if (host.getLogin().usesPasswordAuthentication()) {// password authentication
-			PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
-			auth.setUsername(host.getLogin().getUsername());
-			auth.setPassword(host.getLogin().getPassword());
-
-			// Try the authentication
-			int result = SSH.authenticate(auth);
-			//	this.log(SSH.getAuthenticationBanner(100), Message.TRANSCRIPT);
-			if (AuthenticationProtocolState.COMPLETE == result) {
-				this.log("Login successfull", Message.PROGRESS);
-			}
-			else {
-				this.log("Login failed", Message.PROGRESS);
-				String explanation = null;
-				if (AuthenticationProtocolState.PARTIAL == result)
-					explanation = "Authentication as user " + host.getLogin().getUsername() + " succeeded but another authentication method is required.";
-				else //(AuthenticationProtocolState.FAILED == result)
-					explanation = "Authentication as user " + host.getLogin().getUsername() + " failed.";
-				if (host.getLogin().promptUser(explanation))
-					this.login();
+			if(credentials.check()) {
+				this.log("Authenticating as '" + credentials.getUsername() + "'", Message.PROGRESS);
+				
+				PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
+				auth.setUsername(credentials.getUsername());
+				auth.setPassword(credentials.getPassword());
+				
+				// Try the authentication
+				int result = SSH.authenticate(auth);
+				if (AuthenticationProtocolState.COMPLETE == result) {
+					credentials.addPasswordToKeychain();
+					this.log("Login successfull", Message.PROGRESS);
+				}
 				else {
-					throw new SshException("Login as user " + host.getLogin().getUsername() + " failed.");
+					this.log("Login failed", Message.PROGRESS);
+					String explanation = null;
+					if (AuthenticationProtocolState.PARTIAL == result)
+						explanation = "Authentication as user " + credentials.getUsername() + " succeeded but another authentication method is required.";
+					else //(AuthenticationProtocolState.FAILED == result)
+						explanation = "Authentication as user " + credentials.getUsername() + " failed.";
+					if (credentials.promptUser(explanation))
+						this.login();
+					else {
+						throw new SshException("Login as user " + credentials.getUsername() + " failed.");
+					}
 				}
 			}
 		}
-		else if (host.getLogin().usesPublicKeyAuthentication()) {//public key authentication
+		else if (credentials.usesPublicKeyAuthentication()) {//public key authentication
 			PublicKeyAuthenticationClient pk = new PublicKeyAuthenticationClient();
-			pk.setUsername(host.getLogin().getUsername());
+			pk.setUsername(credentials.getUsername());
 			// Get the private key file
-			SshPrivateKeyFile keyFile = SshPrivateKeyFile.parse(new java.io.File(host.getLogin().getPrivateKeyFile()));
+			SshPrivateKeyFile keyFile = SshPrivateKeyFile.parse(new java.io.File(credentials.getPrivateKeyFile()));
 			// If the private key is passphrase protected then ask for the passphrase
 			String passphrase = null;
 			if (keyFile.isPassphraseProtected()) {
-				if (host.getLogin().promptUser("The Private Key is password protected. Enter the passphrase for the key file '" + host.getLogin().getPrivateKeyFile() + "'.")) {
-					passphrase = host.getLogin().getPassword();
+				if (host.getLogin().promptUser("The Private Key is password protected. Enter the passphrase for the key file '" + credentials.getPrivateKeyFile() + "'.")) {
+					passphrase = credentials.getPassword();
 				}
 				else {
-					throw new SshException("Login as user " + host.getLogin().getUsername() + " failed.");
+					throw new SshException("Login as user " + credentials.getUsername() + " failed.");
 				}
 			}
 			// Get the key
@@ -208,7 +212,7 @@ public class SFTPSession extends Session {
 			}
 			else {
 				this.log("Login failed", Message.PROGRESS);
-				throw new SshException("Login as user " + host.getLogin().getUsername() + " failed.");
+				throw new SshException("Login as user " + credentials.getUsername() + " failed.");
 			}
 		}
 		else {
@@ -236,12 +240,6 @@ public class SFTPSession extends Session {
 			this.setConnected(false);
 			this.close();
 			this.connect();
-//			while (true) {
-//				if (this.isConnected())
-//					return;
-//				this.log("Waiting for connection...", Message.PROGRESS);
-//				Thread.yield();
-//			}
 		}
 	}
 

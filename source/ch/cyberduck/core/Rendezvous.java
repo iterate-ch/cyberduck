@@ -103,7 +103,7 @@ public class Rendezvous extends Observable implements ServiceListener {
 			log.debug("Rendezvous Server Name:" + info.getServer());
 
 			//Host(String hostname, int port, Login login, String nickname)
-			Host h = new Host(info.getServer(), info.getPort(), new Login(Preferences.instance().getProperty("connection.login.name")));
+			Host h = new Host(info.getServer(), info.getPort(), new Login(info.getServer(), Preferences.instance().getProperty("connection.login.name")));
 
 			String identifier = info.getServer() + " (" + Host.getDefaultProtocol(info.getPort()).toUpperCase() + ")";
 

@@ -287,7 +287,9 @@ public class CDBrowserController implements Observer {
 		if (null == host) {
 			int index;
 			if ((index = input.indexOf('@')) != -1)
-				host = new Host(input.substring(index + 1, input.length()), new Login(input.substring(index + 1, input.length()), input.substring(0, index)));
+				host = new Host(input.substring(index + 1, input.length()), 
+								new Login(input.substring(index + 1, input.length()), 
+										  input.substring(0, index)));
 			else
 				host = new Host(input, new Login(input));
 		}
@@ -386,7 +388,7 @@ public class CDBrowserController implements Observer {
 			item = new Host(h.getProtocol(), h.getHostname(), h.getPort(), h.getLogin(), h.getDefaultPath());
 		}
 		else {
-			item = new Host("", new Login(""));
+			item = new Host("", new Login(""));//@todo change
 		}
 		CDBookmarksImpl.instance().addItem(item);
 		CDBookmarkController controller = new CDBookmarkController(item);

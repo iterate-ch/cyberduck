@@ -1111,9 +1111,9 @@ public class SshClient {
      * @see SftpClient
      * @since 0.2.0
      */
-    public SftpClient openSftpClient() throws IOException {
-        return openSftpClient(null);
-    }
+//    public SftpClient openSftpClient() throws IOException {
+//        return openSftpClient(null);
+//    }
 
     /**
      * <p>
@@ -1127,24 +1127,24 @@ public class SshClient {
      *
      * @throws IOException
      */
-    public SftpClient openSftpClient(ChannelEventListener eventListener)
-        throws IOException {
-        SftpClient sftp = new SftpClient(this, eventListener);
-        activeSftpClients.add(sftp);
-
-        return sftp;
-    }
+//    public SftpClient openSftpClient(ChannelEventListener eventListener)
+//        throws IOException {
+//        SftpClient sftp = new SftpClient(this, eventListener);
+//        activeSftpClients.add(sftp);
+//
+//        return sftp;
+//    }
 
     /**
      * Determine if there are existing sftp clients open
      *
      * @return
      */
-    public boolean hasActiveSftpClient() {
-        synchronized (activeSftpClients) {
-            return activeSftpClients.size() > 0;
-        }
-    }
+//    public boolean hasActiveSftpClient() {
+//        synchronized (activeSftpClients) {
+//            return activeSftpClients.size() > 0;
+//        }
+//    }
 
     /**
      * Get an active sftp client
@@ -1154,15 +1154,15 @@ public class SshClient {
      * @throws IOException
      * @throws SshException
      */
-    public SftpClient getActiveSftpClient() throws IOException {
-        synchronized (activeSftpClients) {
-            if (activeSftpClients.size() > 0) {
-                return (SftpClient) activeSftpClients.get(0);
-            } else {
-                throw new SshException("There are no active SFTP clients");
-            }
-        }
-    }
+//    public SftpClient getActiveSftpClient() throws IOException {
+//        synchronized (activeSftpClients) {
+//            if (activeSftpClients.size() > 0) {
+//                return (SftpClient) activeSftpClients.get(0);
+//            } else {
+//                throw new SshException("There are no active SFTP clients");
+//            }
+//        }
+//    }
 
     /**
      * <p>

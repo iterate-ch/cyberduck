@@ -95,7 +95,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 					URL url = new URL(droppedText);
 					String file = url.getFile();
 					if (file.length() > 1) {
-						Host h = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()));
+						Host h = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getHost(), url.getUserInfo()));
 						Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
 						// we assume a file has an extension
 						if (null != p.getExtension()) {

@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class CDLoginController implements LoginController {
+public class CDLoginController extends LoginController {
 	private static Logger log = Logger.getLogger(CDLoginController.class);
 
 	// ----------------------------------------------------------
@@ -92,17 +92,14 @@ public class CDLoginController implements LoginController {
 		instances.removeObject(this);
 	}
 
-	private boolean done;
-	private boolean tryAgain;
-
-	/**
-	 * @return True if the user has choosen to try again with new credentials
-	 */
-	public boolean loginFailure(Login login, String message) {
-		log.debug("Authentication failed:" + login.toString());
+	private boolean done = false;
+	private boolean tryAgain = false;
+	
+	public boolean promptUser(Login l, String message) {
+		log.debug("promptUser:" + l.toString());//todo remove
 		this.done = false;
 		this.textField.setStringValue(message);
-		this.userField.setStringValue(login.getUsername());
+		this.userField.setStringValue(l.getUsername());
 		NSApplication.sharedApplication().beginSheet(
 		    this.window, //sheet
 		    parentWindow,
@@ -111,7 +108,7 @@ public class CDLoginController implements LoginController {
 		        "loginSheetDidEnd",
 		        new Class[]{NSWindow.class, int.class, Object.class}
 		    ), // did end selector
-		    login); //contextInfo
+		    l); //contextInfo
 		this.window.makeKeyAndOrderFront(null);
 		while (!done) {
 			try {
@@ -122,7 +119,7 @@ public class CDLoginController implements LoginController {
 				log.error(e.getMessage());
 			}
 		}
-		return tryAgain;
+		return this.tryAgain;
 	}
 
 	public void closeSheet(NSButton sender) {
@@ -138,17 +135,14 @@ public class CDLoginController implements LoginController {
 	 * @see #loginFailure
 	 */
 	public void loginSheetDidEnd(NSWindow sheet, int returncode, Object context) {
+		log.debug("loginSheetDidEnd");
 		this.window.orderOut(null);
-		Login login = (Login) context;
-		log.debug("loginSheetDidEnd:" + login.toString());
 		switch (returncode) {
 			case (NSAlertPanel.DefaultReturn):
 				this.tryAgain = true;
-				login.setUsername(userField.stringValue());
-				login.setPassword(passField.stringValue());
-				if (keychainCheckbox.state() == NSCell.OnState) {
-					login.addPasswordToKeychain();
-				}
+				((Login)context).setUsername(userField.stringValue());
+				((Login)context).setPassword(passField.stringValue());
+				((Login)context).setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
 				break;
 			case (NSAlertPanel.AlternateReturn):
 				this.tryAgain = false;

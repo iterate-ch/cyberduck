@@ -244,7 +244,7 @@ public class HTTPPath extends Path {
 				log.info("Processing redirect");
 				try {
 					URL redirect = new URL(GET.getResponseHeader("Location").getValue());
-					this.session = new HTTPSession(new Host(redirect.getProtocol(), redirect.getHost(), redirect.getPort(), new Login(redirect.getUserInfo())));
+					this.session = new HTTPSession(new Host(redirect.getProtocol(), redirect.getHost(), redirect.getPort(), new Login(redirect.getHost(), redirect.getUserInfo())));
 					this.setPath(redirect.getFile());
 					this.download();
 					return;

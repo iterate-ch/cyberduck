@@ -43,7 +43,7 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
 			URL url = new URL(arg);
 			String file = url.getFile();
 			log.debug("File:" + file);
-			Host h = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()), url.getPath());
+			Host h = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getHost(), url.getUserInfo()));
 			if (file.length() > 1) {
 				Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
 				// we assume a file has an extension

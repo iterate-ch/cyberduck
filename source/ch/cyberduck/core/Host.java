@@ -74,7 +74,6 @@ public class Host {
 
 	/**
 	 * For internal use only.
-	 * @deprecated
 	 * @param url Must be in the format protocol://user@hostname:portnumber
 	 */
 	public Host(String url) throws java.net.MalformedURLException {
@@ -82,7 +81,7 @@ public class Host {
 			this.protocol = url.substring(0, url.indexOf("://"));
 			this.hostname = url.substring(url.indexOf("@") + 1, url.lastIndexOf(":"));
 			this.port = Integer.parseInt(url.substring(url.lastIndexOf(":") + 1, url.length()));
-			this.login = new Login(url.substring(url.indexOf("://") + 3, url.lastIndexOf("@")));
+			this.login = new Login(hostname, url.substring(url.indexOf("://") + 3, url.lastIndexOf("@")));
 			this.nickname = this.getLogin().getUsername() + "@" + this.getHostname();
 		}
 		catch (NumberFormatException e) {

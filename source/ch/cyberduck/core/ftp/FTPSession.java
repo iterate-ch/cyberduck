@@ -132,9 +132,13 @@ public class FTPSession extends Session {
 	private synchronized void login() throws IOException {
 		log.debug("login");
 		try {
-			this.log("Authenticating as " + host.getLogin().getUsername() + "...", Message.PROGRESS);
-			this.FTP.login(host.getLogin().getUsername(), host.getLogin().getPassword());
-			this.log("Login successfull", Message.PROGRESS);
+			Login credentials = host.getLogin();
+			if(credentials.check()) {
+				this.log("Authenticating as " + host.getLogin().getUsername() + "...", Message.PROGRESS);
+				this.FTP.login(credentials.getUsername(), credentials.getPassword());
+				credentials.addPasswordToKeychain();
+				this.log("Login successfull", Message.PROGRESS);
+			}
 		}
 		catch (FTPException e) {
 			this.log("Login failed", Message.PROGRESS);
@@ -168,12 +172,6 @@ public class FTPSession extends Session {
 		if (null == this.FTP || !this.FTP.isAlive()) {
 			this.setConnected(false);
 			this.connect();
-//			while (true) {
-//				if (this.isConnected())
-//					return;
-//				this.log(bundle.getString("Waiting for connection..."), Message.PROGRESS);
-//				Thread.yield();
-//			}
 		}
 	}
 
