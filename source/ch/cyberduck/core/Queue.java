@@ -284,7 +284,6 @@ public abstract class Queue extends Observable {
 	
 	public boolean isComplete() {
 		return this.getSize() == this.getCurrent();
-//		return !(this.getSize() == 0 && this.getCurrent() == 0) && (this.getSize() == this.getCurrent());
 	}
 	
 	public long getSize() {

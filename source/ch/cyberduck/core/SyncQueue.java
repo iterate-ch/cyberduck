@@ -18,12 +18,15 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observer;
+
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 /**
  * @version $Id$
@@ -64,6 +67,9 @@ public class SyncQueue extends Queue {
 			Message msg = (Message)arg;
 			if(msg.getTitle().equals(Message.QUEUE_STOP)) {
 				if(this.isComplete()) {
+					Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
+																	 "Growl Notification"),
+											this.getName());
 					if(callback != null) {
 						callback.update(null, new Message(Message.REFRESH));
 					}

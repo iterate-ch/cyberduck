@@ -18,10 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.util.Iterator;
 import java.util.List;
+
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 /**
  * @version $Id$
@@ -42,6 +45,20 @@ public class DownloadQueue extends Queue {
 		return dict;
 	}
 
+	public void callObservers(Object arg) {
+		super.callObservers(arg);
+		if(arg instanceof Message) {
+			Message msg = (Message)arg;
+			if(msg.getTitle().equals(Message.QUEUE_STOP)) {
+				if(this.isComplete()) {
+					Growl.instance().notify(NSBundle.localizedString("Download complete",
+																	 "Growl Notification"),
+											this.getName());
+				}
+			}
+		}
+	}
+	
 	protected List getChilds(List childs, Path p) {
 		childs.add(p);
 		if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {

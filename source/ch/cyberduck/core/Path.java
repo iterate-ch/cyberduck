@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
@@ -26,8 +25,6 @@ import java.io.*;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
-import ch.cyberduck.ui.cocoa.growl.Growl;
 
 /**
  * A path is a remote directory or file.
@@ -329,9 +326,6 @@ public abstract class Path {
 			}
 		}
 		this.transfer(reader, writer);
-		Growl.instance().notify(NSBundle.localizedString("Upload complete",
-														 "Growl Notification"),
-								this.getName());
 	}
 
 	/**
@@ -353,9 +347,6 @@ public abstract class Path {
 			}
 		}
 		this.transfer(i, o);
-		Growl.instance().notify(NSBundle.localizedString("Upload complete",
-														 "Growl Notification"),
-								this.getName());
 	}
 
 	/**
@@ -371,9 +362,6 @@ public abstract class Path {
 		this.getSession().log("Downloading "+this.getName()+" (ASCII)", Message.PROGRESS);
 		this.transfer(reader, writer);
 		//this.getLocal().getTemp().renameTo(this.getLocal());
-		Growl.instance().notify(NSBundle.localizedString("Download complete",
-														 "Growl Notification"),
-								this.getName());
 	}
 
 	/**
@@ -389,9 +377,6 @@ public abstract class Path {
 		this.getSession().log("Downloading "+this.getName(), Message.PROGRESS);
 		this.transfer(i, o);
 		//this.getLocal().getTemp().renameTo(this.getLocal());
-		Growl.instance().notify(NSBundle.localizedString("Download complete",
-														 "Growl Notification"),
-								this.getName());
 	}
 
 	/**
