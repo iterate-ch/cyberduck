@@ -18,20 +18,17 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.sshtools.j2ssh.transport.InvalidHostFileException;
-
-import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.application.NSAlertPanel;
+import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSSelector;
 
-import javax.net.ssl.X509TrustManager;
-import javax.net.ssl.TrustManager;
 import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
 import java.security.KeyStoreException;
-import java.security.cert.X509Certificate;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 import org.apache.log4j.Logger;
 
@@ -48,15 +45,17 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
     private boolean allowServerCertificate = false;
     private boolean allowClientCertificate = false;
 
-    public CDX509TrustManagerController(CDController windowController, KeyStore keystore) {
+    private KeyStore keystore = null;
+
+    public CDX509TrustManagerController(CDController windowController) {
         this.windowController = windowController;
         try {
-            this.init(keystore);
+            this.init(keystore = KeyStore.getInstance(KeyStore.getDefaultType()));
         }
-        catch(NoSuchAlgorithmException e) {
+        catch (NoSuchAlgorithmException e) {
             log.error(e.getMessage());
         }
-        catch(KeyStoreException e) {
+        catch (KeyStoreException e) {
             log.error(e.getMessage());
         }
     }
@@ -66,16 +65,16 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
             super.checkClientTrusted(x509Certificates, authType);
             this.allowClientCertificate = true;
         }
-        catch(CertificateException e) {
+        catch (CertificateException e) {
             String cert = "";
-            if(x509Certificates.length > 0)
+            if (x509Certificates.length > 0)
                 cert = x509Certificates[0].toString();
             NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Certificate", ""), //title
-                    NSBundle.localizedString("There is a problem with the client certificate. Reason:", "")+e.getMessage()
-                    +"\n"+cert,
+                    NSBundle.localizedString("There is a problem with the client certificate. Reason:", "") + e.getMessage()
+                    + "\n" + cert,
                     NSBundle.localizedString("Disconnect", ""), // defaultbutton
-                    NSBundle.localizedString("Continue", ""),//alternate button
-                    null); // other button
+                    NSBundle.localizedString("Continue", ""), //alternate button
+                    NSBundle.localizedString("Always", "")); // other button
             this.windowController.beginSheet(sheet,
                     this, //delegate
                     new NSSelector
@@ -84,9 +83,9 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                                     {
                                         NSWindow.class, int.class, Object.class
                                     }), // end selector
-                    null);
+                    x509Certificates[0]);
             this.windowController.waitForSheetEnd();
-            if(!allowClientCertificate) {
+            if (!allowClientCertificate) {
                 throw e;
             }
         }
@@ -94,33 +93,42 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
     public void clientCertificateAlertSheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
-        if(returncode == NSAlertPanel.DefaultReturn) {
+        if (returncode == NSAlertPanel.DefaultReturn) {
             this.allowClientCertificate = false;
         }
-        if(returncode == NSAlertPanel.AlternateReturn) {
+        if (returncode == NSAlertPanel.AlternateReturn) {
             this.allowClientCertificate = true;
         }
-        synchronized(this.windowController) {
+        if (returncode == NSAlertPanel.OtherReturn) {
+            try {
+                X509Certificate cert = (X509Certificate)contextInfo;
+                this.keystore.setCertificateEntry(cert.getSubjectDN().getName(), cert);
+            }
+            catch(KeyStoreException e) {
+                log.error(e.getMessage());
+            }
+        }
+        synchronized (this.windowController) {
             this.windowController.notifyAll();
         }
     }
 
 
-    public void checkServerTrusted(X509Certificate[] x509Certificates, String authType) throws CertificateException{
+    public void checkServerTrusted(X509Certificate[] x509Certificates, String authType) throws CertificateException {
         try {
             super.checkServerTrusted(x509Certificates, authType);
             this.allowServerCertificate = true;
         }
-        catch(CertificateException e) {
+        catch (CertificateException e) {
             String cert = "";
-            if(x509Certificates.length > 0)
+            if (x509Certificates.length > 0)
                 cert = x509Certificates[0].toString();
             NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Certificate", ""), //title
-                    NSBundle.localizedString("There is a problem with the client certificate. Reason:", "")+e.getMessage()
-                    +"\n"+cert,
+                    NSBundle.localizedString("There is a problem with the client certificate. Reason:", "") + e.getMessage()
+                    + "\n" + cert,
                     NSBundle.localizedString("Disconnect", ""), // defaultbutton
-                    NSBundle.localizedString("Continue", ""),//alternate button
-                    null); // other button
+                    NSBundle.localizedString("Continue", ""), //alternate button
+                    NSBundle.localizedString("Always", "")); // other button
             this.windowController.beginSheet(sheet,
                     this, //delegate
                     new NSSelector
@@ -129,9 +137,9 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                                     {
                                         NSWindow.class, int.class, Object.class
                                     }), // end selector
-                    null);
+                    x509Certificates[0]);
             this.windowController.waitForSheetEnd();
-            if(!allowServerCertificate) {
+            if (!allowServerCertificate) {
                 throw e;
             }
         }
@@ -139,13 +147,22 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
     public void serverCertificateAlertSheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
-        if(returncode == NSAlertPanel.DefaultReturn) {
+        if (returncode == NSAlertPanel.DefaultReturn) {
             this.allowServerCertificate = false;
         }
-        if(returncode == NSAlertPanel.AlternateReturn) {
+        if (returncode == NSAlertPanel.AlternateReturn) {
             this.allowServerCertificate = true;
         }
-        synchronized(this.windowController) {
+        if (returncode == NSAlertPanel.OtherReturn) {
+            try {
+                X509Certificate cert = (X509Certificate)contextInfo;
+                this.keystore.setCertificateEntry(cert.getSubjectDN().getName(), cert);
+            }
+            catch(KeyStoreException e) {
+                log.error(e.getMessage());
+            }
+        }
+        synchronized (this.windowController) {
             this.windowController.notifyAll();
         }
     }
