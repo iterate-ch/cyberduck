@@ -89,11 +89,11 @@ public class CDBrowserController implements Observer {
 //		log.debug("sortByFilenames:"+o);
 //	}
 	
-    private CDBookmarkTableDataSource favoritesModel;
+    private CDBookmarkTableDataSource bookmarkModel;
     private NSTableView bookmarkTable; // IBOutlet
     public void setBookmarkTable(NSTableView bookmarkTable) {
 		this.bookmarkTable = bookmarkTable;
-		this.bookmarkTable.setDataSource(this.favoritesModel = new CDBookmarkTableDataSource());
+		this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
 		this.bookmarkTable.setTarget(this);
 		this.bookmarkTable.setDelegate(this);
 		this.bookmarkTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));

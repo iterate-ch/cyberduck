@@ -318,14 +318,17 @@ public class CDBrowserTableDataSource {//implements NSTableView.DataSource {
 		log.debug("namesOfPromisedFilesDroppedAtDestination:"+dropDestination);
 		NSMutableArray promisedDragNames = new NSMutableArray();
 		for(int i = 0; i < promisedDragPaths.length; i++) {
-			promisedDragPaths[i].setLocal(new java.io.File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), promisedDragPaths[i].getName()));
-			promisedDragNames.addObject(promisedDragPaths[i].getName());
+			try {
+				promisedDragPaths[i].setLocal(new java.io.File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), promisedDragPaths[i].getName()));
+				promisedDragNames.addObject(promisedDragPaths[i].getName());
+			}
+			catch(java.io.UnsupportedEncodingException e) {
+				log.error(e.getMessage());	
+			}
 		}
 		return promisedDragNames;
     }
-    
-    
-    
+        
     // ----------------------------------------------------------
     // Data access
     // ----------------------------------------------------------
@@ -363,4 +366,4 @@ public class CDBrowserTableDataSource {//implements NSTableView.DataSource {
     public List list() {
 		return this.data;
     }
-			}    
+}    

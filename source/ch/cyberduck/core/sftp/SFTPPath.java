@@ -363,6 +363,9 @@ public class SFTPPath extends Path {
 			com.apple.cocoa.foundation.NSDictionary localAttributes = com.apple.cocoa.foundation.NSPathUtilities.fileAttributes(this.getLocal().getAbsolutePath(), true);
 			int localPermissions = ((Integer)localAttributes.objectForKey(com.apple.cocoa.foundation.NSPathUtilities.FilePosixPermissions)).intValue();
 			log.debug("***Local file permissions:"+localPermissions);
+			log.debug("Integer.parseInt(localPermissions, 8):"+Integer.parseInt(""+localPermissions, 8));
+			log.debug("Integer.parseInt(localPermissions, 8) ^ 0777):"+(Integer.parseInt(""+localPermissions, 8) ^ 0777));
+			
 				
    			remoteAttributes.setPermissions("rw-r--r--"); //todo
    			this.session.SFTP.setAttributes(remoteFile, remoteAttributes);

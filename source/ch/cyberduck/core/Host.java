@@ -119,7 +119,7 @@ public class Host {
     }
 	
 	public boolean hasReasonableDefaultPath() {
-		boolean reasonable = this.defaultpath != null && this.defaultpath != "" && this.defaultpath != Path.HOME;
+		boolean reasonable = this.defaultpath != null && !this.defaultpath.equals("") && !this.defaultpath.equals(Path.HOME);
         log.debug("hasReasonableDefaultPath:"+reasonable+"("+defaultpath+")");
 		return reasonable;
 	}
