@@ -1907,6 +1907,9 @@ public class CDBrowserController extends CDController implements Observer {
             if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
                 ((ch.cyberduck.core.sftp.SFTPSession) session).setHostKeyVerificationController(new CDHostKeyController(this));
             }
+            if (session instanceof ch.cyberduck.core.ftps.FTPSSession) {
+                ((ch.cyberduck.core.ftps.FTPSSession) session).setTrustManager(new CDX509TrustManagerController(this, null));
+            }
             host.setLoginController(new CDLoginController(this));
             new Thread("Session") {
                 public void run() {

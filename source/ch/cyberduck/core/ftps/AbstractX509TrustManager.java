@@ -66,7 +66,7 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
     private X509TrustManager standardTrustManager = null;
 
     protected void init(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
-        TrustManagerFactory factory = TrustManagerFactory.getInstance("SunX509");
+        TrustManagerFactory factory = TrustManagerFactory.getInstance("SunX509"); //todo get apple keychain
         factory.init(keystore);
         TrustManager[] trustmanagers = factory.getTrustManagers();
         if (trustmanagers.length == 0) {
@@ -86,23 +86,24 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
                 log.info("X509Certificate[" + i + "]=" + x509Certificates[i]);
             }
         }
-        if ((x509Certificates != null) && (x509Certificates.length == 1)) {
-            X509Certificate certificate = x509Certificates[0];
-            try {
-                certificate.checkValidity();
-            }
-            catch (CertificateExpiredException e) {
-                log.warn(e.toString());
-                throw e;
-            }
-            catch (CertificateNotYetValidException e) {
-                log.warn(e.toString());
-                throw e;
-            }
-        }
-        else {
-            this.standardTrustManager.checkServerTrusted(x509Certificates, authType);
-        }
+        this.standardTrustManager.checkServerTrusted(x509Certificates, authType);
+//        if ((x509Certificates != null) && (x509Certificates.length == 1)) {
+//            X509Certificate certificate = x509Certificates[0];
+//            try {
+//                certificate.checkValidity();
+//            }
+//            catch (CertificateExpiredException e) {
+//                log.warn(e.toString());
+//                throw e;
+//            }
+//            catch (CertificateNotYetValidException e) {
+//                log.warn(e.toString());
+//                throw e;
+//            }
+//        }
+//        else {
+//            this.standardTrustManager.checkServerTrusted(x509Certificates, authType);
+//        }
     }
 
     public X509Certificate[] getAcceptedIssuers() {

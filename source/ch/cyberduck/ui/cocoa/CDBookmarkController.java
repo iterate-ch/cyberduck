@@ -35,8 +35,9 @@ public class CDBookmarkController extends CDController {
 
 	private static NSMutableArray instances = new NSMutableArray();
 
-	private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)", "");
-	private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
+    private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer Protocol)", "");
+    private static final String FTP_SSL_STRING = NSBundle.localizedString("FTP-SSL (FTP over TLS/SSL)", "");
+    private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
 
 	private Host host;
 
@@ -56,7 +57,7 @@ public class CDBookmarkController extends CDController {
 		this.protocolPopup = protocolPopup;
 		this.protocolPopup.setEnabled(true);
 		this.protocolPopup.removeAllItems();
-		this.protocolPopup.addItemsWithTitles(new NSArray(new String[] {FTP_STRING, SFTP_STRING}));
+		this.protocolPopup.addItemsWithTitles(new NSArray(new String[] {FTP_STRING, FTP_SSL_STRING, SFTP_STRING}));
 		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
 		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalent("f");
 		this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
@@ -71,10 +72,14 @@ public class CDBookmarkController extends CDController {
 			this.host.setProtocol(Session.SFTP);
 			this.host.setPort(Session.SSH_PORT);
 		}
-		if(sender.selectedItem().title().equals(FTP_STRING)) {
-			this.host.setProtocol(Session.FTP);
+		if(sender.selectedItem().title().equals(FTP_SSL_STRING)) {
+			this.host.setProtocol(Session.FTP_SSL);
 			this.host.setPort(Session.FTP_PORT);
 		}
+        if(sender.selectedItem().title().equals(FTP_SSL_STRING)) {
+            this.host.setProtocol(Session.FTP);
+            this.host.setPort(Session.FTP_PORT);
+        }
 		this.updateFields();
 	}
 
@@ -315,7 +320,15 @@ public class CDBookmarkController extends CDController {
 		this.nicknameField.setStringValue(this.host.getNickname());
 		this.pathField.setStringValue(this.host.getDefaultPath());
 		this.usernameField.setStringValue(this.host.getCredentials().getUsername());
-		this.protocolPopup.setTitle(this.host.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
+        if(this.host.getProtocol().equals(Session.FTP)) {
+            this.protocolPopup.setTitle(FTP_STRING);
+        }
+        if(this.host.getProtocol().equals(Session.FTP_SSL)) {
+            this.protocolPopup.setTitle(FTP_SSL_STRING);
+        }
+        if(this.host.getProtocol().equals(Session.SFTP)) {
+            this.protocolPopup.setTitle(SFTP_STRING);
+        }
 		this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Session.FTP));
 		this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Session.SFTP));
 		if(this.host.getCredentials().usesPublicKeyAuthentication()) {
