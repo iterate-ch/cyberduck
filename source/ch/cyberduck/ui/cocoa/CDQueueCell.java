@@ -45,6 +45,18 @@ public class CDQueueCell extends CDTableCell {
 	public static NSMenu defaultMenu() {
 		return new NSMenu("Queue Item");
 	}
+	
+	private static final NSImage arrowUpIcon = NSImage.imageNamed("arrowUp.tiff");
+	private static final NSImage arrowDownIcon = NSImage.imageNamed("arrowDown.tiff");
+	private static final NSImage folderIcon = NSImage.imageNamed("folder.icns");
+	
+	static {
+		arrowUpIcon.setSize(new NSSize(32f, 32f));
+		arrowDownIcon.setSize(new NSSize(32f, 32f));
+	}
+
+	private NSImage fileIcon = null;
+	private NSImage arrowIcon = null;
 
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
@@ -54,22 +66,20 @@ public class CDQueueCell extends CDTableCell {
 			NSSize cellSize = cellFrame.size();
 			
 			// drawing file icon
-			NSImage fileIcon = null;
-			NSImage arrowIcon = null;
 			switch (queue.kind()) {
 				case Queue.KIND_DOWNLOAD:
-					arrowIcon = NSImage.imageNamed("arrowDown.tiff");
+					arrowIcon = arrowDownIcon;
 					if (queue.getRoot().isFile())
 						fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
 					else if (queue.getRoot().isDirectory())
-						fileIcon = NSImage.imageNamed("folder.icns");
+						fileIcon = folderIcon;
 					break;
 				case Queue.KIND_UPLOAD:
-					arrowIcon = NSImage.imageNamed("arrowUp.tiff");
+					arrowIcon = arrowUpIcon;
 					if (queue.getRoot().getLocal().isFile())
 						fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
 					else if (queue.getRoot().getLocal().isDirectory())
-						fileIcon = NSImage.imageNamed("folder.icns");
+						fileIcon = folderIcon;
 					break;
 			}
 			
@@ -77,8 +87,8 @@ public class CDQueueCell extends CDTableCell {
 			final float SPACE = 5;
 			
 			if(fileIcon != null) {
+//				fileIcon.setScalesWhenResized(true);
 				fileIcon.setSize(new NSSize(32f, 32f));
-				arrowIcon.setSize(new NSSize(32f, 32f));
 				
 				fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE, cellPoint.y() + 32 + SPACE), NSImage.CompositeSourceOver);
 				arrowIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE * 2, cellPoint.y() + 32 + SPACE * 2), NSImage.CompositeSourceOver);

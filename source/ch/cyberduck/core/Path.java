@@ -224,15 +224,23 @@ public abstract class Path {
 	 * @return The file type
 	 */
 	public String getKind() {
+		if (this.isLink())
+			return "Symbolic Link";
 		if (this.isFile())
 			return "File";
 		if (this.isDirectory())
 			return "Folder";
-		if (this.isLink())
-			return "Link";
 		return "Unknown";
 	}
-
+	
+//	public byte[] getIcon() {
+//		return this.icon;
+//	}
+//
+//	public void setIcon(byte[] icon) {
+//		this.icon = icon;
+//	}
+	
 	/**
 	 * @return true if this paths points to '/'
 	 */

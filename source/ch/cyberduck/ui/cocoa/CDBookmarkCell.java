@@ -30,7 +30,7 @@ import com.apple.cocoa.foundation.NSSize;
 
 public class CDBookmarkCell extends CDTableCell {
 	private Host bookmark;
-	private NSImage image = NSImage.imageNamed("cyberduck-document.icns");
+//	private static final NSImage image = NSImage.imageNamed("cyberduck-document.icns");
 
 	public void setObjectValue(Object bookmark) {
 		this.bookmark = (Host) bookmark;

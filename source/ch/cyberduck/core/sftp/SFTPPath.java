@@ -159,7 +159,11 @@ public class SFTPPath extends Path {
 		log.debug("delete:" + this.toString());
 		try {
 			session.check();
-			if (this.isDirectory()) {
+			if (this.isFile() || this.isLink()) {
+				session.log("Deleting " + this.getName(), Message.PROGRESS);
+				session.SFTP.removeFile(this.getAbsolute());
+			}
+			else if (this.isDirectory()) {
 				List files = this.list(false, true);
 				java.util.Iterator iterator = files.iterator();
 				Path file = null;
@@ -176,10 +180,6 @@ public class SFTPPath extends Path {
 				session.SFTP.openDirectory(this.getParent().getAbsolute());
 				session.log("Deleting " + this.getName(), Message.PROGRESS);
 				session.SFTP.removeDirectory(this.getAbsolute());
-			}
-			if (this.isFile()) {
-				session.log("Deleting " + this.getName(), Message.PROGRESS);
-				session.SFTP.removeFile(this.getAbsolute());
 			}
 		}
 		catch (SshException e) {

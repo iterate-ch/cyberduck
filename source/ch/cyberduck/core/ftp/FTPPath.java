@@ -132,7 +132,11 @@ public class FTPPath extends Path {
 		log.debug("delete:" + this.toString());
 		try {
 			session.check();
-			if (this.isDirectory()) {
+			if (this.isFile() || this.isLink()) {
+				session.log("Deleting " + this.getName(), Message.PROGRESS);
+				session.FTP.delete(this.getName());
+			}
+			else if (this.isDirectory()) {
 				session.FTP.chdir(this.getAbsolute());
 				List files = this.list(true, true);
 				java.util.Iterator iterator = files.iterator();
@@ -150,10 +154,6 @@ public class FTPPath extends Path {
 				session.FTP.cdup();
 				session.log("Deleting " + this.getName(), Message.PROGRESS);
 				session.FTP.rmdir(this.getName());
-			}
-			if (this.isFile()) {
-				session.log("Deleting " + this.getName(), Message.PROGRESS);
-				session.FTP.delete(this.getName());
 			}
 		}
 		catch (FTPException e) {

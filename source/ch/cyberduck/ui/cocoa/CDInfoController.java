@@ -167,11 +167,16 @@ public class CDInfoController {
 
 		permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.getString() + " (" + permission.getOctalCode() + ")");
 
+		NSImage fileIcon = null;
 		if(file.isFile()) {
-			this.iconImageView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
+			this.iconImageView.setImage(fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
 		}
-		if(file.isDirectory())
-			this.iconImageView.setImage(NSImage.imageNamed("folder.icns"));
+		if(file.isDirectory()) {
+			this.iconImageView.setImage(fileIcon = NSImage.imageNamed("folder.tiff"));
+		}
+//		if(file.isLink()) {
+//			NSImage symlinkIcon = NSImage.imageNamed("symlink.tiff")
+//		}
 
 		(NSNotificationCenter.defaultCenter()).addObserver(
 		    this,

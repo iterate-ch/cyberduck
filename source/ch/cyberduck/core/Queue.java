@@ -243,7 +243,8 @@ public class Queue extends Observable implements Observer { //Thread {
 	public void cancel() {
 		if(this.isRunning()) {
 			this.running = false;
-			currentJob.status.setCanceled(true);
+			if(currentJob != null)
+				currentJob.status.setCanceled(true);
 		}
 	}
 
@@ -320,13 +321,11 @@ public class Queue extends Observable implements Observer { //Thread {
 	}
 
 	private long calculateTotalSize() {
-		//		if(this.isRunning()) {
 		long value = 0;
-		Iterator elements = jobs.iterator();
+		Iterator elements = jobs.iterator(); //@todo performance
 		while (elements.hasNext()) {
 			value += ((Path) elements.next()).status.getSize();
 		}
-		//		}
 		if (value > 0)
 			this.size = value;
 		return this.size;
@@ -347,7 +346,7 @@ public class Queue extends Observable implements Observer { //Thread {
 
 	private long calculateCurrentSize() {
 		long value = 0;
-		Iterator elements = jobs.iterator();
+		Iterator elements = jobs.iterator(); //@todo performance
 		while (elements.hasNext()) {
 			value += ((Path)elements.next()).status.getCurrent();
 		}
@@ -357,7 +356,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	}
 
 	public String getCurrentAsString() {
-		if (this.getCurrent() != -1) //@todo performance
+		if (this.getCurrent() != -1)
 			return Status.getSizeAsString(this.getCurrent());
 		return null;
 	}
@@ -367,10 +366,11 @@ public class Queue extends Observable implements Observer { //Thread {
 	 */
 	public String getSpeedAsString() {
 		if (this.isRunning())
-			return Status.getSizeAsString(this.getSpeed()) + "/sec";
+			if (this.getSpeed() > -1)
+				return Status.getSizeAsString(this.getSpeed()) + "/sec";
 		return "";
 	}
-
+	
 	/**
 	 @return The bytes being processed per second
 	 */
@@ -380,7 +380,7 @@ public class Queue extends Observable implements Observer { //Thread {
 
 	private void setSpeed(long s) {
 		this.speed = s;
-		this.callObservers(new Message(Message.DATA));
+//		this.callObservers(new Message(Message.DATA));
 	}
 
 	private void setTimeLeft(int seconds) {

@@ -36,6 +36,9 @@ public class CDProgressCell extends CDTableCell {
 	public void setObjectValue(Object queue) {
 		this.queue = (Queue) queue;
 	}
+	
+	private static final NSImage stripeGrayIcon = NSImage.imageNamed("stripeGray.tiff");
+	private static final NSImage stripeWhiteIcon = NSImage.imageNamed("stripe.tiff");
 
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
@@ -52,7 +55,6 @@ public class CDProgressCell extends CDTableCell {
 				progress = (float) ((float) queue.getCurrent() / (float) queue.getSize());
 			else
 				progress = 0;
-			//		log.debug("progress:"+progress);
 			float PROGRESS_WIDTH = progress * (cellSize.width() - SPACE * 2);
 			if (PROGRESS_WIDTH < 0)
 				PROGRESS_WIDTH = 0;
@@ -71,9 +73,6 @@ public class CDProgressCell extends CDTableCell {
 											new NSAttributedString((int) (progress * 100) + "%"
 																   + " - " +
 																   queue.getProgress(),
-																   //															   queue.getCurrentAsString()
-																   //															   +" of "+
-																   //															   queue.getSizeAsString(),
 																   normalFont),
 											new NSRect(cellPoint.x() + SPACE,
 													   cellPoint.y() + cellSize.height() / 2 - PROGRESS_HEIGHT / 2 - 10 - SPACE,
@@ -99,13 +98,11 @@ public class CDProgressCell extends CDTableCell {
 			else
 				NSColor.lightGrayColor().set();
 			NSBezierPath.strokeRect(barRect);
-			//		NSBezierPath.fillRect(barRectFilled);
 			if (highlighted)
 				NSColor.whiteColor().set();
-			//			NSColor.colorWithPatternImage(NSImage.imageNamed("stripeWhite.tiff")).set();
 			else
-				NSColor.colorWithPatternImage(NSImage.imageNamed("stripeGray.tiff")).set();
-			NSColor.colorWithPatternImage(NSImage.imageNamed("stripe.tiff")).set();
+				NSColor.colorWithPatternImage(stripeGrayIcon).set();
+			NSColor.colorWithPatternImage(stripeWhiteIcon).set();
 			NSBezierPath.fillRect(barRectFilled);
 		}
 	}

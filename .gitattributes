@@ -141,8 +141,9 @@ img/drawerPressed.tiff -text
 img/edit.tiff -text
 img/editPressed.tiff -text
 img/eject.tiff -text
-img/folder.icns -text
+img/folder.tiff -text
 img/folder16.tiff -text
+img/folder32.tiff -text
 img/gear.tiff -text
 img/gearMenu.tiff -text
 img/history.tiff -text
@@ -164,6 +165,7 @@ img/stop.tiff svneol=native#unset
 img/stripe.tiff -text
 img/stripeGray.tiff -text
 img/stripeWhite.tiff -text
+img/symlink.tiff -text
 img/triangleLeft.tiff -text
 img/triangleRight.tiff -text
 img/up.tiff svneol=native#unset

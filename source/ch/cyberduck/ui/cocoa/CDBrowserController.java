@@ -1082,7 +1082,7 @@ public class CDBrowserController implements Observer {
 			item.setLabel(NSBundle.localizedString("New Folder", "Toolbar item"));
 			item.setPaletteLabel(NSBundle.localizedString("New Folder", "Toolbar item"));
 			item.setToolTip(NSBundle.localizedString("Create New Folder", "Toolbar item tooltip"));
-			item.setImage(NSImage.imageNamed("newfolder.icns"));
+			item.setImage(NSImage.imageNamed("newfolder.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("folderButtonClicked", new Class[]{Object.class}));
 		}
@@ -1161,10 +1161,15 @@ public class CDBrowserController implements Observer {
 				Path p = (Path) this.currentData.get(row);
 				if (identifier.equals("TYPE")) {
 					NSImage icon;
-					if (p.isDirectory())
-						icon = NSImage.imageNamed("folder16.tiff");
-					else
-						icon = NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
+					if(p.isLink()) {
+						icon = NSImage.imageNamed("symlink.tiff");
+					}
+					else {
+						if (p.isDirectory())
+							icon = NSImage.imageNamed("folder16.tiff");
+						else
+							icon = NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
+					}
 					icon.setSize(new NSSize(16f, 16f));
 					return icon;
 				}
