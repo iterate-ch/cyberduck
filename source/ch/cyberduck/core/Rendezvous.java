@@ -30,85 +30,91 @@ import java.util.Observable;
  */
 public class Rendezvous extends Observable implements com.strangeberry.rendezvous.ServiceListener {
     private static Logger log = Logger.getLogger(Rendezvous.class);
-
-    private static Rendezvous instance;
-    private static String[] serviceTypes = new String[]{"_ftp._tcp.local.", "_ssh._tcp.local."};
-
+	
+//    private static Rendezvous instance;
+    private static final String[] serviceTypes = new String[]{"_ftp._tcp.local.", "_ssh._tcp.local."};
+	
     private Map services;
-
-    private Rendezvous() {
-	log.debug("Rendezvous");
-	this.services = new HashMap();
+	private com.strangeberry.rendezvous.Rendezvous rendezvous;
+	
+    public Rendezvous() {
+		log.debug("Rendezvous");
+		this.services = new HashMap();
     }
-
+	
     public void init() {
-	try {
-	    for(int i = 0; i < serviceTypes.length; i++) {
-		com.strangeberry.rendezvous.Rendezvous rendezvous = new com.strangeberry.rendezvous.Rendezvous();
-		log.info("Adding Rendezvous service listener for "+serviceTypes[i]);
-		rendezvous.addServiceListener(serviceTypes[i], this);
-	    }
-	}
-	catch(IOException e) {
-	    log.error(e.getMessage());
-	}
+		try {
+			for(int i = 0; i < serviceTypes.length; i++) {
+				this.rendezvous = new com.strangeberry.rendezvous.Rendezvous();
+				log.info("Adding Rendezvous service listener for "+serviceTypes[i]);
+				this.rendezvous.addServiceListener(serviceTypes[i], this);
+			}
+		}
+		catch(IOException e) {
+			log.error(e.getMessage());
+		}
     }
-
-    public static Rendezvous instance() {
-	log.debug("instance");
-	if(null == instance) {
-	    instance = new Rendezvous();
+	
+	public void quit() {
+		log.info("Removing Rendezvous service listener");
+		this.rendezvous.removeServiceListener(this);
 	}
-	return instance;
-    }
-
+	
+//    public static Rendezvous instance() {
+//		log.debug("instance");
+//		if(null == instance) {
+//			instance = new Rendezvous();
+//		}
+//		return instance;
+//    }
+	
     public void callObservers(Message arg) {
-	log.debug("callObservers:"+arg);
-	this.setChanged();
-	this.notifyObservers(arg);
+		log.debug("callObservers:"+arg);
+		this.setChanged();
+		this.notifyObservers(arg);
     }
-
+	
     public Object getService(String key) {
-	log.debug("getService:"+key);
-	return services.get(key);
-  }
-
+		log.debug("getService:"+key);
+		return services.get(key);
+	}
+	
     /**
-	* This method is called when rendezvous discovers a service
+		* This method is called when rendezvous discovers a service
      * for the first time. Only its name and type are known. We can
      * now request the service information.
      * @param type something like _ftp._tcp.local.
      */
     public void addService(com.strangeberry.rendezvous.Rendezvous rendezvous, String type, String name) {
-	log.debug("addService:"+name+","+type);
-	rendezvous.requestServiceInfo(type, name);
+		log.debug("addService:"+name+","+type);
+		this.rendezvous.requestServiceInfo(type, name);
     }
-
+	
     /**
-	* This method is called when the ServiceInfo record is resolved.
+		* This method is called when the ServiceInfo record is resolved.
      * The ServiceInfo.getURL() constructs an http url given the addres,
      * port, and path properties found in the ServiceInfo record.
      */
     public void resolveService(com.strangeberry.rendezvous.Rendezvous rendezvous, String type, String name, com.strangeberry.rendezvous.ServiceInfo info) {
-	if (info != null) {
-	    log.debug("resolveService:"+name+","+type+","+info);
-	    Host h = new Host(info.getName()+".local.", info.getPort(), new Login(Preferences.instance().getProperty("connection.login.name"))); //todo fix .local.
-	    this.services.put(h.getURL(), h);
-	    log.debug(info.toString());
-//	    log.debug(rendezvous.getInterface());
-	    this.callObservers(new Message(Message.RENDEZVOUS, h));
-	}
-	else {
-	    log.error("Failed to resolve "+name+" with type "+type);
-	}
+		if (info != null) {
+			log.debug("resolveService:"+name+","+type+","+info);
+			Host h = new Host(info.getName()+".local.", info.getPort(), new Login(Preferences.instance().getProperty("connection.login.name"))); //todo fix .local.
+			this.services.put(h.getURL(), h);
+			log.debug(info.toString());
+			//	    log.debug(rendezvous.getInterface());
+			this.callObservers(new Message(Message.RENDEZVOUS, h));
+		}
+		else {
+			log.error("Failed to resolve "+name+" with type "+type);
+		}
     }
-
+	
     /**
-	* This method is called when a service is no longer available.
+		* This method is called when a service is no longer available.
      */
     public void removeService(com.strangeberry.rendezvous.Rendezvous rendezvous, String type, String name) {
-	log.debug("removeService:"+name);
-	this.services.remove(name+".local.");
-//	this.callObservers(new Message(Message.RENDEZVOUS, this.services.get(name+".local.")));
+		log.debug("removeService:"+name);
+		this.services.remove(name+".local.");
+		//	this.callObservers(new Message(Message.RENDEZVOUS, this.services.get(name+".local.")));
     }
 }

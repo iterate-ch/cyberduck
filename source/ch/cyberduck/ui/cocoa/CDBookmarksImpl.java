@@ -45,6 +45,7 @@ public class CDBookmarksImpl extends Bookmarks { //implements NSTableView.DataSo
 	
     private CDBookmarksImpl() {
 		super();
+		this.load();
     }
 	
     public static Bookmarks instance() {
@@ -53,4 +54,12 @@ public class CDBookmarksImpl extends Bookmarks { //implements NSTableView.DataSo
 		}
 		return instance;
     }
+	
+	public void save() {
+		this.save(FAVORTIES_FILE);
+	}
+	
+	public void load() {
+		this.load(FAVORTIES_FILE);
+	}
 }

@@ -279,8 +279,8 @@ public class CDMainController {
   //	}
 		Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses"))+1);
         Preferences.instance().save();
-		CDBookmarksImpl.instance().save();
-		CDHistoryImpl.instance().save();
+		((CDBookmarksImpl)CDBookmarksImpl.instance()).save();
+		((CDHistoryImpl)CDHistoryImpl.instance()).save();
 		
 		if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
 			if (false == NSApplication.loadNibNamed("Donate", this)) {

@@ -186,7 +186,7 @@ public class CDBrowserController implements Observer {
     private NSTextField statusLabel; // IBOutlet
     public void setStatusLabel(NSTextField statusLabel) {
 		this.statusLabel = statusLabel;
-		statusLabel.setAttributedStringValue(new NSAttributedString((NSBundle.localizedString("Idle"))));
+		statusLabel.setObjectValue(NSBundle.localizedString("Idle"));
     }
 	
     /**
@@ -396,15 +396,15 @@ public class CDBrowserController implements Observer {
 										  );
 					progressIndicator.stopAnimation(this);
 //					statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
-					statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
+					statusLabel.setObjectValue(msg.getContent());
 				}
 				// update status label
 				else if(msg.getTitle().equals(Message.PROGRESS)) {
-					statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
+					statusLabel.setObjectValue(msg.getContent());
 					statusLabel.display();
 				}
 				else if(msg.getTitle().equals(Message.TRANSCRIPT)) {
-					statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
+					statusLabel.setObjectValue(msg.getContent());
 				}
 				else if(msg.getTitle().equals(Message.OPEN)) {
 					progressIndicator.startAnimation(this);
@@ -425,7 +425,7 @@ public class CDBrowserController implements Observer {
 				}
 				else if(msg.getTitle().equals(Message.STOP)) {
 					progressIndicator.stopAnimation(this);
-					statusLabel.setAttributedStringValue(new NSAttributedString((NSBundle.localizedString("Idle"))));
+					statusLabel.setObjectValue(NSBundle.localizedString("Idle"));
 					//@todo enable toolbar
 				}
 			}

@@ -18,6 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.*;
+
 import ch.cyberduck.core.Bookmarks;
 
 import java.io.File;
@@ -37,6 +39,7 @@ public class CDHistoryImpl extends Bookmarks {
 	
 	private CDHistoryImpl() {
 		super();
+		this.load();
     }
 	
     public static Bookmarks instance() {

@@ -53,7 +53,7 @@ public class CDTransferController implements Observer, Validator {
     private NSTextField clockField;
     public void setClockField(NSTextField clockField) {
 		this.clockField = clockField;
-		this.clockField.setAttributedStringValue(new NSAttributedString("00:00"));
+		this.clockField.setObjectValue("00:00");
     }
     
     private NSTextField fileField;
@@ -64,13 +64,13 @@ public class CDTransferController implements Observer, Validator {
     private NSTextField progressField;
     public void setProgressField(NSTextField progressField) {
 		this.progressField = progressField;
-		this.progressField.setAttributedStringValue(new NSAttributedString(""));
+		this.progressField.setObjectValue("");
     }
     
     private NSTextField fileDataField;
     public void setFileDataField(NSTextField fileDataField) {
 		this.fileDataField = fileDataField;
-		this.fileDataField.setAttributedStringValue(new NSAttributedString(""));
+		this.fileDataField.setObjectValue("");
     }
 	
     private NSProgressIndicator totalProgressBar;
@@ -149,8 +149,8 @@ public class CDTransferController implements Observer, Validator {
     private void init() {
 		this.window().setTitle(root.getName());
 		this.window().display();
-		this.urlField.setAttributedStringValue(new NSAttributedString(host.getURL()+root.getAbsolute()));
-		this.fileField.setAttributedStringValue(new NSAttributedString(root.getLocal().toString()));
+		this.urlField.setObjectValue(host.getURL()+root.getAbsolute());
+		this.fileField.setObjectValue(root.getLocal().toString());
 		switch(kind) {
 			case Queue.KIND_DOWNLOAD:
 				iconView.setImage(NSImage.imageNamed("download.tiff"));
@@ -192,24 +192,24 @@ public class CDTransferController implements Observer, Validator {
 					this.totalProgressBar.setIndeterminate(true);
 					this.totalProgressBar.startAnimation(null);
 				}
-				this.fileDataField.setAttributedStringValue(new NSAttributedString(
-																	   (status.getCurrent()/1024)+
-																	   " "+NSBundle.localizedString("of")+
-																	   " "+(status.getSize()/1024)+"kB ("+
-																	   (queue.getCurrent()/1024)+" of "+
-																	   (queue.getSize()/1024)+"kB "+NSBundle.localizedString("Total")+"), "+
-																	   Status.parseLong(queue.getSpeed()/1024) + "kB/s, "+queue.getTimeLeft()
-																	   ));
+				this.fileDataField.setObjectValue(
+									  (status.getCurrent()/1024)+
+									  " "+NSBundle.localizedString("of")+
+									  " "+(status.getSize()/1024)+"kB ("+
+									  (queue.getCurrent()/1024)+" of "+
+									  (queue.getSize()/1024)+"kB "+NSBundle.localizedString("Total")+"), "+
+									  Status.parseLong(queue.getSpeed()/1024) + "kB/s, "+queue.getTimeLeft()
+									  );
 				this.fileDataField.setNeedsDisplay(true);
 			}
 			// CLOCK
 			else if(msg.getTitle().equals(Message.CLOCK)) {
-				this.clockField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
+				this.clockField.setObjectValue(msg.getContent());
 				this.clockField.display();
 			}
 			// PROGRESS
 			else if(msg.getTitle().equals(Message.PROGRESS)) {
-				this.progressField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
+				this.progressField.setObjectValue(msg.getContent());
 				this.progressField.display();
 			}
 			// START
@@ -236,8 +236,6 @@ public class CDTransferController implements Observer, Validator {
 			else if(msg.getTitle().equals(Message.STOP)) {
 				log.debug("STOP");
 				this.totalProgressBar.stopAnimation(null);
-				
-				//		this.progressField.setAttributedStringValue(new NSAttributedString("Idle"));
 				this.stopButton.setEnabled(false);
 				this.resumeButton.setEnabled(true);
 				this.reloadButton.setEnabled(true);
@@ -245,7 +243,7 @@ public class CDTransferController implements Observer, Validator {
 			// COMPLETE
 			else if(msg.getTitle().equals(Message.COMPLETE)) {
 				log.debug("COMPLETE");
-				this.progressField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Complete")));
+				this.progressField.setObjectValue(NSBundle.localizedString("Complete"));
 				this.progressField.setNeedsDisplay(true);
 				if(0 == queue.remainingJobs()) {
 					if(Preferences.instance().getProperty("transfer.close").equals("true")) {
@@ -279,7 +277,7 @@ public class CDTransferController implements Observer, Validator {
 				this.stopButton.setEnabled(false);
 				this.resumeButton.setEnabled(true);
 				this.reloadButton.setEnabled(true);
-				this.progressField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
+				this.progressField.setObjectValue(msg.getContent());
 				this.progressField.setNeedsDisplay(true);
 			}
 		}

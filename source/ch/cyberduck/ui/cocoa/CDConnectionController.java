@@ -35,7 +35,7 @@ import java.util.Observer;
 /**
 * @version $Id$
  */
-public class CDConnectionController {
+public class CDConnectionController implements Observer {
     private static Logger log = Logger.getLogger(CDConnectionController.class);
 	
     private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)");
@@ -54,47 +54,54 @@ public class CDConnectionController {
 		return this.sheet;
     }
     
-    private NSPopUpButton favoritesPopup;
-    public void setFavoritesPopup(NSPopUpButton favoritesPopup) {
-		this.favoritesPopup = favoritesPopup;
-		this.favoritesPopup.setImage(NSImage.imageNamed("favorites.tiff"));
+    private NSPopUpButton bookmarksPopup;
+    public void setFavoritesPopup(NSPopUpButton bookmarksPopup) {
+		this.bookmarksPopup = bookmarksPopup;
+		this.bookmarksPopup.setImage(NSImage.imageNamed("favorites.tiff"));
 		
-		CDBookmarksImpl.instance().load();
-		Iterator i = CDBookmarksImpl.instance().getIterator();
+//		CDBookmarksImpl.instance().load();
+		Iterator i = CDBookmarksImpl.instance().iterator();
 		while(i.hasNext())
-			favoritesPopup.addItem(i.next().toString());
+			bookmarksPopup.addItem(i.next().toString());
 		
-		this.favoritesPopup.setTarget(this);
-		this.favoritesPopup.setAction(new NSSelector("favoritesSelectionChanged", new Class[] {Object.class}));
+		this.bookmarksPopup.setTarget(this);
+		this.bookmarksPopup.setAction(new NSSelector("bookmarksSelectionChanged", new Class[] {Object.class}));
     }
     
+	public void bookmarksSelectionChanged(Object sender) {
+		log.debug("bookmarksSelectionChanged:"+sender);
+		this.updateFields(CDBookmarksImpl.instance().getItem(bookmarksPopup.titleOfSelectedItem()));
+		this.updateLabel(sender);
+    }
+	
+	private Rendezvous rendezvous;
     private NSPopUpButton rendezvousPopup;
-    private RendezvousDataSource rendezvousDataSource;
+//    private RendezvousDataSource rendezvousDataSource;
     public void setRendezvousPopup(NSPopUpButton rendezvousPopup) {
 		this.rendezvousPopup = rendezvousPopup;
 		this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous.tiff"));
 		this.rendezvousPopup.setTarget(this);
 		this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionChanged", new Class[] {Object.class}));
-		this.rendezvousDataSource = new RendezvousDataSource();
-		Rendezvous.instance().addObserver(rendezvousDataSource);
-		Rendezvous.instance().init();
+		this.rendezvous = new Rendezvous();
+		this.rendezvous.addObserver(this);
+		this.rendezvous.init();
     }
 	
-    private class RendezvousDataSource implements Observer {
-		public void update(Observable o, Object arg) {
-			log.debug("update:"+o+","+arg);
-			if(o instanceof Rendezvous) {
-				if(arg instanceof Message) {
-					Message msg = (Message)arg;
-					rendezvousPopup.addItem(((Host)msg.getContent()).getURL());
-					//		    Map s = ((Rendezvous)o).getServices();
-	 //		    Iterator i = s.values().iterator();
-  //		    while(i.hasNext())
-  //			rendezvousPopup.addItem(((Host)i.next()).getURL());
-				}
+	public void rendezvousSelectionChanged(Object sender) {
+		log.debug("rendezvousSelectionChanged:"+sender);
+		this.updateFields((Host)rendezvous.getService(rendezvousPopup.titleOfSelectedItem()));
+		this.updateLabel(sender);
+    }
+	
+	public void update(Observable o, Object arg) {
+		log.debug("update:"+o+","+arg);
+		if(o instanceof Rendezvous) {
+			if(arg instanceof Message) {
+				Message msg = (Message)arg;
+				rendezvousPopup.addItem(((Host)msg.getContent()).getURL());
 			}
 		}
-    }
+	}
 	
     private NSPopUpButton protocolPopup;
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
@@ -103,6 +110,12 @@ public class CDConnectionController {
 		this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[] {Object.class}));
     }
 	
+	public void protocolSelectionChanged(Object sender) {
+		log.debug("protocolSelectionChanged:"+sender);
+		this.portField.setIntValue(protocolPopup.selectedItem().tag());
+		this.updateLabel(sender);
+    }
+		
     private NSComboBox hostPopup;
     public void setHostPopup(NSComboBox hostPopup) {
 		this.hostPopup = hostPopup;
@@ -110,6 +123,15 @@ public class CDConnectionController {
 		this.hostPopup.setAction(new NSSelector("hostSelectionChanged", new Class[] {Object.class}));
 		this.hostPopup.setUsesDataSource(true);
 		this.hostPopup.setDataSource(CDHistoryImpl.instance());
+    }
+	
+	public void hostSelectionChanged(Object sender) {
+		log.debug("hostSelectionChanged:"+sender);
+		int index = hostPopup.indexOfSelectedItem();
+		if(index != -1) {
+			this.updateFields(((CDHistoryImpl)CDHistoryImpl.instance()).getItemAtIndex(index));
+		}
+		this.updateLabel(sender);
     }
 	
     private NSTextField pathField;
@@ -192,34 +214,6 @@ public class CDConnectionController {
 		//	this.pathField.setStringValue("~");
     }
 	
-    public void hostSelectionChanged(Object sender) {
-		log.debug("hostSelectionChanged:"+sender);
-		int index = hostPopup.indexOfSelectedItem();
-		if(index != -1) {
-			this.updateFields(((CDHistoryImpl)CDHistoryImpl.instance()).getItemAtIndex(index));
-		}
-		this.updateLabel(sender);
-    }
-	
-    public void favoritesSelectionChanged(Object sender) {
-		log.debug("favoritesSelectionChanged:"+sender);
-		this.updateFields(CDBookmarksImpl.instance().getItem(favoritesPopup.titleOfSelectedItem()));
-		this.updateLabel(sender);
-    }
-	
-    public void rendezvousSelectionChanged(Object sender) {
-		log.debug("rendezvousSelectionChanged:"+sender);
-		Object selectedItem = Rendezvous.instance().getService(rendezvousPopup.titleOfSelectedItem());
-		this.updateFields((Host)selectedItem);
-		this.updateLabel(sender);
-    }
-    
-    public void protocolSelectionChanged(Object sender) {
-		log.debug("protocolSelectionChanged:"+sender);
-		this.portField.setIntValue(protocolPopup.selectedItem().tag());
-		this.updateLabel(sender);
-    }
-	
     public void updateFields(Host selectedItem) {
 		log.debug("updateFields:"+selectedItem);
 		this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
@@ -240,8 +234,10 @@ public class CDConnectionController {
 	
     public void closeSheet(NSButton sender) {
 		log.debug("closeSheet");
-        NSNotificationCenter.defaultCenter().removeObserver(this);
-		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
+        NSNotificationCenter.defaultCenter().removeObserver(this);	
+		rendezvous.deleteObserver(this);
+		rendezvous.quit();
+	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
     

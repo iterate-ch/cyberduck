@@ -46,7 +46,7 @@ public abstract class Bookmarks {
     private Map data = new HashMap();
 	
     public Bookmarks() {
-		this.load();
+//		this.load();
     }
 	
 	private Host getFromDictionary(NSDictionary dict) {
@@ -102,10 +102,6 @@ public abstract class Bookmarks {
 		}
 	}
 	
-	public void save() {
-		this.save(FAVORTIES_FILE);
-	}
-	
 	/**
 		* Saves this collection of bookmarks in to a file to the users's application support directory
 	 * in a plist xml format
@@ -115,7 +111,7 @@ public abstract class Bookmarks {
 		if(Preferences.instance().getProperty("favorites.save").equals("true")) {
 			try {
 				NSMutableArray list = new NSMutableArray();
-				Iterator i = super.getIterator();
+				Iterator i = this.iterator();
 				while(i.hasNext()) {
 					Host bookmark = (Host)i.next();
 					list.addObject(this.getAsDictionary(bookmark));
@@ -133,10 +129,6 @@ public abstract class Bookmarks {
 			}
 		}
     }
-	
-	public void load() {
-		this.load(FAVORTIES_FILE);
-	}
 	
 	/**
 		* Deserialize all the bookmarks saved previously in the users's application support directory
@@ -198,7 +190,7 @@ public abstract class Bookmarks {
 		return data.values();
     }
 	
-    public Iterator getIterator() {
+    public Iterator iterator() {
 		return data.values().iterator();
     }
 	
