@@ -154,135 +154,149 @@ public class CDInfoController extends NSObject {
 		}
 	}
 
+	public void setFiles(List files) {
+		this.files = files;
+		this.init();
+	}
+	
+	private static NSPoint cascadedWindowPoint;
+
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
-		Path file = (Path)this.files.get(0);
-
-		NSPoint origin = this.window.frame().origin();
-		this.window.setFrameOrigin(this.window.cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y())));
-
-		this.filenameField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
-		                                  file.getName());
-		if(this.numberOfFiles() > 1) {
-			this.filenameField.setEnabled(false);
-		}
-		this.pathField.setStringValue(file.getParent().getAbsolute());
-		this.groupField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
-		                               file.attributes.getGroup());
-		if(this.numberOfFiles() > 1) {
-			this.kindField.setStringValue("("+NSBundle.localizedString("Multiple files", "")+")");
+		if(null == cascadedWindowPoint) {
+			cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(this.window().frame().origin());
 		}
 		else {
-			if(file.attributes.isSymbolicLink()) {
-				if(file.attributes.isFile()) {
-					this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (File)", ""));
-				}
-				if(file.attributes.isDirectory()) {
-					this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (Folder)", ""));
-				}
+			cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(cascadedWindowPoint);
+		}
+		this.init();
+		(NSNotificationCenter.defaultCenter()).addObserver(this,
+														   new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
+														   NSControl.ControlTextDidEndEditingNotification,
+														   filenameField);		
+	}
+	
+	private void init() {
+		if(this.files.size() > 0) {
+			Path file = (Path)this.files.get(0);
+			this.filenameField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
+											  file.getName());
+			if(this.numberOfFiles() > 1) {
+				this.filenameField.setEnabled(false);
 			}
-			else if(file.attributes.isFile()) {
-				this.kindField.setStringValue(NSBundle.localizedString("File", ""));
-			}
-			else if(file.attributes.isDirectory()) {
-				this.kindField.setStringValue(NSBundle.localizedString("Folder", ""));
+			this.pathField.setStringValue(file.getParent().getAbsolute());
+			this.groupField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
+										   file.attributes.getGroup());
+			if(this.numberOfFiles() > 1) {
+				this.kindField.setStringValue("("+NSBundle.localizedString("Multiple files", "")+")");
 			}
 			else {
-				this.kindField.setStringValue(NSBundle.localizedString("Unknown", ""));
+				if(file.attributes.isSymbolicLink()) {
+					if(file.attributes.isFile()) {
+						this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (File)", ""));
+					}
+					if(file.attributes.isDirectory()) {
+						this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (Folder)", ""));
+					}
+				}
+				else if(file.attributes.isFile()) {
+					this.kindField.setStringValue(NSBundle.localizedString("File", ""));
+				}
+				else if(file.attributes.isDirectory()) {
+					this.kindField.setStringValue(NSBundle.localizedString("Folder", ""));
+				}
+				else {
+					this.kindField.setStringValue(NSBundle.localizedString("Unknown", ""));
+				}
 			}
-		}
-
-		try {
-			NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
-			String timestamp = formatter.stringForObjectValue(new NSGregorianDate((double)file.attributes.getTimestamp().getTime()/1000,
-			    NSDate.DateFor1970));
-			this.modifiedField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
-			                                  timestamp);
-		}
-		catch(NSFormatter.FormattingException e) {
-			log.error(e.toString());
-		}
-		this.ownerField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
-		                               file.attributes.getOwner());
-		int size = 0;
-		for(Iterator i = files.iterator(); i.hasNext();) {
-			size += ((Path)i.next()).getSize();
-		}
-		this.sizeField.setStringValue(Status.getSizeAsString(size)+" ("+size+" bytes)");
-
-		{
-			ownerr.setAllowsMixedState(true);
-			ownerr.setEnabled(false);
-			ownerw.setAllowsMixedState(true);
-			ownerw.setEnabled(false);
-			ownerx.setAllowsMixedState(true);
-			ownerx.setEnabled(false);
-			groupr.setAllowsMixedState(true);
-			groupr.setEnabled(false);
-			groupw.setAllowsMixedState(true);
-			groupw.setEnabled(false);
-			groupx.setAllowsMixedState(true);
-			groupx.setEnabled(false);
-			otherr.setAllowsMixedState(true);
-			otherr.setEnabled(false);
-			otherw.setAllowsMixedState(true);
-			otherw.setEnabled(false);
-			otherx.setAllowsMixedState(true);
-			otherx.setEnabled(false);
-		}
-
-		Permission permission = null;
-		for(Iterator i = files.iterator(); i.hasNext();) {
-			permission = ((Path)i.next()).attributes.getPermission();
-			log.debug("Permission:"+permission);
-			boolean[] ownerPerm = permission.getOwnerPermissions();
-			boolean[] groupPerm = permission.getGroupPermissions();
-			boolean[] otherPerm = permission.getOtherPermissions();
-
-			this.update(ownerr, ownerPerm[Permission.READ]);
-			this.update(ownerw, ownerPerm[Permission.WRITE]);
-			this.update(ownerx, ownerPerm[Permission.EXECUTE]);
-
-			this.update(groupr, groupPerm[Permission.READ]);
-			this.update(groupw, groupPerm[Permission.WRITE]);
-			this.update(groupx, groupPerm[Permission.EXECUTE]);
-
-			this.update(otherr, otherPerm[Permission.READ]);
-			this.update(otherw, otherPerm[Permission.WRITE]);
-			this.update(otherx, otherPerm[Permission.EXECUTE]);
-		}
-		
-//		octalField.setStringValue(""+file.getOctalCode());
-		if(this.numberOfFiles() > 1) {
-			permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+"("+NSBundle.localizedString("Multiple files", "")+")");
-		}
-		else {
-			permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+permission.toString());
-		}
-
-		NSImage fileIcon = null;
-		if(this.numberOfFiles() > 1) {
-			fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
-		}
-		else {
-			if(file.attributes.isFile()) {
-				fileIcon = CDIconCache.instance().get(file.getExtension());
-				fileIcon.setSize(new NSSize(32f, 32f));
+			
+			try {
+				NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
+				String timestamp = formatter.stringForObjectValue(new NSGregorianDate((double)file.attributes.getTimestamp().getTime()/1000,
+																					  NSDate.DateFor1970));
+				this.modifiedField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
+												  timestamp);
 			}
-			if(file.attributes.isDirectory()) {
-				fileIcon = NSImage.imageNamed("folder32.tiff");
+			catch(NSFormatter.FormattingException e) {
+				log.error(e.toString());
 			}
+			this.ownerField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
+										   file.attributes.getOwner());
+			int size = 0;
+			for(Iterator i = files.iterator(); i.hasNext();) {
+				size += ((Path)i.next()).getSize();
+			}
+			this.sizeField.setStringValue(Status.getSizeAsString(size)+" ("+size+" bytes)");
+			
+			{
+				ownerr.setAllowsMixedState(true);
+				ownerr.setEnabled(false);
+				ownerw.setAllowsMixedState(true);
+				ownerw.setEnabled(false);
+				ownerx.setAllowsMixedState(true);
+				ownerx.setEnabled(false);
+				groupr.setAllowsMixedState(true);
+				groupr.setEnabled(false);
+				groupw.setAllowsMixedState(true);
+				groupw.setEnabled(false);
+				groupx.setAllowsMixedState(true);
+				groupx.setEnabled(false);
+				otherr.setAllowsMixedState(true);
+				otherr.setEnabled(false);
+				otherw.setAllowsMixedState(true);
+				otherw.setEnabled(false);
+				otherx.setAllowsMixedState(true);
+				otherx.setEnabled(false);
+			}
+			
+			Permission permission = null;
+			for(Iterator i = files.iterator(); i.hasNext();) {
+				permission = ((Path)i.next()).attributes.getPermission();
+				log.debug("Permission:"+permission);
+				boolean[] ownerPerm = permission.getOwnerPermissions();
+				boolean[] groupPerm = permission.getGroupPermissions();
+				boolean[] otherPerm = permission.getOtherPermissions();
+				
+				this.update(ownerr, ownerPerm[Permission.READ]);
+				this.update(ownerw, ownerPerm[Permission.WRITE]);
+				this.update(ownerx, ownerPerm[Permission.EXECUTE]);
+				
+				this.update(groupr, groupPerm[Permission.READ]);
+				this.update(groupw, groupPerm[Permission.WRITE]);
+				this.update(groupx, groupPerm[Permission.EXECUTE]);
+				
+				this.update(otherr, otherPerm[Permission.READ]);
+				this.update(otherw, otherPerm[Permission.WRITE]);
+				this.update(otherx, otherPerm[Permission.EXECUTE]);
+			}
+			
+			//		octalField.setStringValue(""+file.getOctalCode());
+			if(this.numberOfFiles() > 1) {
+				permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+"("+NSBundle.localizedString("Multiple files", "")+")");
+			}
+			else {
+				permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+permission.toString());
+			}
+			
+			NSImage fileIcon = null;
+			if(this.numberOfFiles() > 1) {
+				fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
+			}
+			else {
+				if(file.attributes.isFile()) {
+					fileIcon = CDIconCache.instance().get(file.getExtension());
+					fileIcon.setSize(new NSSize(32f, 32f));
+				}
+				if(file.attributes.isDirectory()) {
+					fileIcon = NSImage.imageNamed("folder32.tiff");
+				}
+			}
+			this.iconImageView.setImage(fileIcon);
+			//        (NSNotificationCenter.defaultCenter()).addObserver(this,
+			//														   new NSSelector("octalInputDidEndEditing", new Class[]{NSNotification.class}),
+			//														   NSControl.ControlTextDidEndEditingNotification,
+			//														   octalField);
 		}
-		this.iconImageView.setImage(fileIcon);
-
-		(NSNotificationCenter.defaultCenter()).addObserver(this,
-		    new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
-		    NSControl.ControlTextDidEndEditingNotification,
-		    filenameField);
-		//        (NSNotificationCenter.defaultCenter()).addObserver(this,
-		//														   new NSSelector("octalInputDidEndEditing", new Class[]{NSNotification.class}),
-		//														   NSControl.ControlTextDidEndEditingNotification,
-		//														   octalField);
 	}
 
 	private void update(NSButton checkbox, boolean condition) {

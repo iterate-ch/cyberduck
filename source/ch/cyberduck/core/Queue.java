@@ -201,12 +201,14 @@ public abstract class Queue extends Observable {
 			this.init();
 			this.validator.validate(queue);
 			if(!this.validator.isCanceled()) {
-				this.jobs = this.validator.getResult();
-				for(Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
-					((Path)iter.next()).status.reset();
-				}
-				for(Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
-					this.queue.process((Path)iter.next());
+				if(this.validator.getResult().size() > 0) {
+					this.jobs = this.validator.getResult();
+					for(Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
+						((Path)iter.next()).status.reset();
+					}
+					for(Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
+						this.queue.process((Path)iter.next());
+					}
 				}
 			}
 			else {

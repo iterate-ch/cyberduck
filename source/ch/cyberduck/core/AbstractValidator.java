@@ -44,6 +44,21 @@ public abstract class AbstractValidator implements Validator {
 	protected List validated = new ArrayList();
 	protected List workset = new ArrayList();
 
+	private void transformName(Path path) {
+		// if using name transformation, transform this name!
+		if(Preferences.instance().getProperty("queue.useTransformer").equals("true")) {
+//			log.debug("Preparing to transform name: " + path.getName());
+			String newName = NameTransformer.instance().transform(path.getName());
+			if(!newName.equals(path.getName())) {
+//				log.debug("New name is: " + newName);
+				path.setPath(path.getParent().getAbsolute(), newName);
+			} 
+			else {
+//				log.debug("Name not changed: "+path.getName());
+			}
+		}
+	}		
+	
 	protected abstract void prompt(Path p);
 
 	protected boolean validate(Path p, boolean resume) {

@@ -124,10 +124,16 @@ public class CDBookmarkController extends CDController {
 		}
 	}
 
+	private static NSPoint cascadedWindowPoint;
+
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
-		NSPoint origin = this.window().frame().origin();
-		this.window().setFrameOrigin(this.window().cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y())));
+		if(null == cascadedWindowPoint) {
+			cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(this.window().frame().origin());
+		}
+		else {
+			cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(cascadedWindowPoint);
+		}
 		this.window().setTitle(this.host.getNickname());
 		// Live editing of values
 		(NSNotificationCenter.defaultCenter()).addObserver(this,

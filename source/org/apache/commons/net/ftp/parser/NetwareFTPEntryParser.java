@@ -33,7 +33,7 @@ public class NetwareFTPEntryParser extends RegexFTPFileEntryParserImpl {
      * to determine which month is matched by the parser
      */
     private static final String MONTHS =
-	"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)";
+	"(Jan|Feb|Mar|Apr|May|Mai|Jun|Jul|Aug|Sep|Oct|Okt|Nov|Dec|Dez)";
 	
     /**
 	 - [RWCEAFMS]          0                       1593 Feb 18 16:36 00README	 

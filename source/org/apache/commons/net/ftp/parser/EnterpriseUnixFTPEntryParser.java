@@ -43,7 +43,7 @@ public class EnterpriseUnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
      * to determine <b>which</b> month has been matched by the parser.
      */
     private static final String MONTHS =
-            "(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)";
+	"(Jan|Feb|Mar|Apr|May|Mai|Jun|Jul|Aug|Sep|Oct|Okt|Nov|Dec|Dez)";
 
     /**
      * this is the regular expression used by this parser.

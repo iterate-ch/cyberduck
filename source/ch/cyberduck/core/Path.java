@@ -44,8 +44,6 @@ public abstract class Path {
 	public Status status = new Status();
 	public Attributes attributes = new Attributes();
 
-	private boolean exists = false;
-
 	public static final int FILE_TYPE = 1;
 	public static final int DIRECTORY_TYPE = 2;
 	public static final int SYMBOLIC_LINK_TYPE = 4;
@@ -153,7 +151,7 @@ public abstract class Path {
 		* @param size the size of file in bytes.
 	 */
 	public void setSize(long size) {
-		log.debug("setSize:"+size);
+//		log.debug("setSize:"+size);
 		this.size = size;
 	}
 	
@@ -236,12 +234,20 @@ public abstract class Path {
 	public abstract void changePermissions(Permission perm, boolean recursive);
 
 	public boolean exists() {
+		return this.getParent().list(false, true).contains(this);
+	}
+
+	/*
+	public boolean exists(boolean returnFalseIfSizeIsZero) {
 		if(this.isRoot()) {
 			return true;
 		}
-		this.exists = this.getParent().list(false, true).contains(this);
-		return this.exists;
+		if(returnFalseIfSizeIsZero) {
+			return this.getParent().list(false, true).contains(this) && this.getSize() > 0;
+		}
+		return this.getParent().list(false, true).contains(this);
 	}
+	 */
 
 	/**
 	 * @return true if this paths points to '/'
@@ -441,7 +447,6 @@ public abstract class Path {
 	}
 
 	public void sync() {
-		//@todo catch file sizes == 0
 		if(this.getRemote().exists() && this.getLocal().exists()) {
 			if(this.getLocal().getTimestamp().before(this.attributes.getTimestamp())) {
 				this.download();

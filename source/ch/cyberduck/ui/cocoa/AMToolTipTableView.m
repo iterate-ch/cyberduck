@@ -16,9 +16,6 @@
  *  dkocher@cyberduck.ch
  *  Created by Andreas on Fri Oct 18 2002.
  *  Copyright (c) 2002 Andreas Mayer. All rights reserved.
- * 
- *  Includes Type-Ahead functionality from the OmniGroup AppKit Framework
- *  Copyright 1997-2004 Omni Development, Inc.  All rights reserved.
  */
 
 #import "AMToolTipTableView.h"
@@ -35,6 +32,11 @@
 	[super init];
 	regionList = [[NSMutableDictionary alloc] initWithCapacity:20];
 	return self;
+}
+
+- (void)awakeFromNib
+{
+	
 }
 
 - (void)dealloc
@@ -62,8 +64,14 @@
 	NSTableColumn *typeAheadColumn = [self _typeAheadSelectionColumn];
 	if (typeAheadColumn != nil && ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:firstCharacter] || (![[NSCharacterSet controlCharacterSet] characterIsMember:firstCharacter]))) {
 
-		int rowIndex;
-		for (rowIndex = 0; rowIndex < [[self dataSource] numberOfRowsInTableView: self]; rowIndex++) {
+//		int rowIndex;
+		int count = [[self dataSource] numberOfRowsInTableView:self];
+		int startIndex = [self selectedRow];
+		int rowIndex = startIndex < count - 1 ? startIndex : -1;
+		rowIndex++;
+		
+//		for (rowIndex = 0; rowIndex < [[self dataSource] numberOfRowsInTableView: self]; rowIndex++) {
+		for (; rowIndex < count; rowIndex++) {
 			NSAttributedString *name = [[self dataSource] tableView:self 
 							   objectValueForTableColumn:typeAheadColumn
 													 row:rowIndex];
@@ -71,6 +79,11 @@
 				[self selectRow:rowIndex byExtendingSelection:NO];
 				[self scrollRowToVisible:rowIndex];
 				return;
+			}
+			if(rowIndex == count - 1 && (startIndex == -1 || startIndex > 0)) {
+				count = startIndex;
+				rowIndex = -1;
+				startIndex = 0;
 			}
 		}
 	}

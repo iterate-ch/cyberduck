@@ -226,8 +226,8 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	// NSTableView.DataSource
 	// ----------------------------------------------------------
 	
-	private static final NSImage ARROW_UP_ICON = NSImage.imageNamed("arrowUpBlack16.tiff");
-	private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDownBlack16.tiff");
+	private static final NSImage ARROW_UP_ICON = NSImage.imageNamed("arrowUp16.tiff");
+	private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDown16.tiff");
 	private static final NSImage PLUS_ICON = NSImage.imageNamed("plus.tiff");
 
 	public int numberOfRowsInTableView(NSTableView tableView) {

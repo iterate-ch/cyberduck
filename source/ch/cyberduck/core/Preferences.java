@@ -102,9 +102,11 @@ public abstract class Preferences {
 		defaults.put("browser.verticalLines", "false");
 		defaults.put("browser.horizontalLines", "true");
 		defaults.put("browser.openByDefault", "true");
+		defaults.put("browser.confirmQuit", "true");
 		defaults.put("browser.showHidden", "false");
 		defaults.put("browser.charset.encoding", "ISO-8859-1");
 		defaults.put("browser.doubleclick.edit", "false");
+		defaults.put("browser.info.isInspector", "false");
 
 		defaults.put("editor.name", "SubEthaEdit");
 		defaults.put("editor.bundleIdentifier", "de.codingmonkeys.SubEthaEdit");
@@ -124,10 +126,20 @@ public abstract class Preferences {
 		defaults.put("queue.download.changePermissions", "false");
 		defaults.put("queue.download.permissions.useDefault", "false");
 		defaults.put("queue.download.permissions.default", "rw-r--r--");
-
 		defaults.put("queue.download.preserveDate", "true");
+		defaults.put("queue.useTransformer", "false");
 
-		//ftp properties
+		defaults.put("queue.transformer.maxLength", "-1");
+		defaults.put("queue.transformer.keepsFilenameExtensions", "true");
+		defaults.put("queue.transformer.prefixString", "");
+		defaults.put("queue.transformer.appendString", "");
+		defaults.put("queue.transformer.replaceSearchString", "");
+		defaults.put("queue.transformer.replaceWithString", "");
+		defaults.put("queue.transformer.replaceAllOccurances", "true");
+		defaults.put("queue.transformer.illegalCharacters", "");
+		defaults.put("queue.transformer.substituteCharacter", "");
+
+			//ftp properties
 		defaults.put("ftp.anonymous.name", "anonymous");
 		defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
 		defaults.put("ftp.connectmode", "passive");

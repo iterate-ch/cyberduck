@@ -32,7 +32,6 @@ public class Proxy {
 		try {
 			NSBundle bundle = NSBundle.mainBundle();
 			String lib = bundle.resourcePath()+"/Java/"+"libProxy.jnilib";
-			log.debug("Locating libProxy.jnilib at '"+lib+"'");
 			System.load(lib);
 		}
 		catch(UnsatisfiedLinkError e) {

@@ -112,12 +112,13 @@ public class SyncQueue extends Queue {
 		return childs;
 	}
 
-	//@todo
+	//@todo localgetsize vs. remotegetsize
+	//cache value upon validation
 	public long getSize() {
 		if(/*this.worker.isRunning() && */this.worker.isInitialized()) {
 			long size = 0;
 			for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
-				size += ((Path)iter.next()).getSize(); //@todo
+				size += ((Path)iter.next()).getSize();
 			}
 			this.size = size;
 		}

@@ -369,9 +369,12 @@ public abstract class CDValidatorController extends AbstractValidator {
 				else {
 					this.localField.setStringValue("-");
 				}
-				if(p.getRemote().exists()) { //@todo
+				if(p.getRemote().exists()) {
 					this.urlField.setAttributedStringValue(new NSAttributedString(p.getRemote().getHost().getURL()+p.getRemote().getAbsolute(),
 					    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+				}
+				else {
+					this.urlField.setStringValue("-");
 				}
 			}
 		}
@@ -427,7 +430,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 				}
 				if(identifier.equals("TOOLTIP")) {
 					StringBuffer tooltip = new StringBuffer();
-					if(p.exists()) { //@todo
+					if(p.getRemote().exists()) {
 						tooltip.append(NSBundle.localizedString("Remote", "")+":\n"
 						    +"  "+Status.getSizeAsString(p.getSize())+"\n"
 						    +"  "+p.attributes.getTimestampAsString());

@@ -538,35 +538,40 @@ public class CDMainController extends NSObject {
 
 	public int applicationShouldTerminate(NSApplication app) {
 		log.debug("applicationShouldTerminate");
-		NSArray windows = app.windows();
-		int count = windows.count();
-		// Determine if there are any open connections
-		while(0 != count--) {
-			NSWindow window = (NSWindow)windows.objectAtIndex(count);
-			CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-			if(null != controller) {
-				if(controller.isConnected()) {
-					int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
-					    NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
-					    NSBundle.localizedString("Review...", ""), //default
-					    NSBundle.localizedString("Quit Anyway", ""), //alternate
-					    NSBundle.localizedString("Cancel", "")); //other
-					if(choice == NSAlertPanel.AlternateReturn) {
-						// Quit
-						return CDQueueController.applicationShouldTerminate(app);
-					}
-					if(choice == NSAlertPanel.OtherReturn) {
-						// Cancel
-						return NSApplication.TerminateCancel;
-					}
-					if(choice == NSAlertPanel.DefaultReturn) {
-						// Review
-						// if at least one window reqested to terminate later, we shall wait
-						return CDBrowserController.applicationShouldTerminate(app);
+			NSArray windows = app.windows();
+			int count = windows.count();
+			// Determine if there are any open connections
+			while(0 != count--) {
+				NSWindow window = (NSWindow)windows.objectAtIndex(count);
+				CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+				if(null != controller) {
+					if(controller.isConnected()) {
+						if(Preferences.instance().getProperty("browser.confirmQuit").equals("true")) {
+							int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
+															   NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
+															   NSBundle.localizedString("Review...", ""), //default
+															   NSBundle.localizedString("Quit Anyway", ""), //alternate
+															   NSBundle.localizedString("Cancel", "")); //other
+							if(choice == NSAlertPanel.AlternateReturn) {
+								// Quit
+								return CDQueueController.applicationShouldTerminate(app);
+							}
+							if(choice == NSAlertPanel.OtherReturn) {
+								// Cancel
+								return NSApplication.TerminateCancel;
+							}
+							if(choice == NSAlertPanel.DefaultReturn) {
+								// Review
+								// if at least one window reqested to terminate later, we shall wait
+								return CDBrowserController.applicationShouldTerminate(app);
+							}
+						}
+						else {
+							controller.unmount();	
+						}
 					}
 				}
 			}
-		}
 		return CDQueueController.applicationShouldTerminate(app);
 	}
 
