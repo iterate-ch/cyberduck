@@ -260,13 +260,13 @@ public class Permission {
 	 * @return i.e. rwxrwxrwx (777)
 	 */
 	public String toString() {
-		return this.getString() + " (" + this.getOctalCode() + ")";
+		return this.getMask() + " (" + this.getOctalCode() + ")";
 	}
 
 	/**
 	 * @return The unix equivalent access string like rwxrwxrwx
 	 */
-	public String getString() {
+	private String getString() {
 		String owner = this.getAccessString(this.getOwnerPermissions());
 		String group = this.getAccessString(this.getGroupPermissions());
 		String other = this.getAccessString(this.getOtherPermissions());
