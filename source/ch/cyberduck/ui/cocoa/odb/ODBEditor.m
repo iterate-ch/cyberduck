@@ -121,39 +121,39 @@ static ODBEditor	*_sharedODBEditor;
 	return _editorBundleIdentifier;
 }
 
-- (void)abortEditingFile:(NSString *)path
-{
-	if (nil == [_filesBeingEdited objectForKey: path])
-		NSLog(@"ODBEditor: No active editing session for \"%@\"", path);
-	
-	[_filesBeingEdited removeObjectForKey: path];
-}
+//- (void)abortEditingFile:(NSString *)path
+//{
+//	if (nil == [_filesBeingEdited objectForKey: path])
+//		NSLog(@"ODBEditor: No active editing session for \"%@\"", path);
+//	
+//	[_filesBeingEdited removeObjectForKey: path];
+//}
 
-- (void)abortAllEditingSessionsForClient:(id)client
-{
-	BOOL			found = NO;
-	NSEnumerator	*enumerator = [_filesBeingEdited objectEnumerator];
-	NSMutableArray  *keysToRemove = [NSMutableArray array];
-	NSDictionary	*dictionary = nil;
-	
-	while (nil != (dictionary = [enumerator nextObject]))
-	{
-		id  iterClient = [[dictionary objectForKey: ODBEditorNonRetainedClient] nonretainedObjectValue];
-		
-		if (iterClient == client)
-		{
-			found = YES;
-			[keysToRemove addObject: [dictionary objectForKey: ODBEditorFileName]];
-		}
-	}
-	
-	[_filesBeingEdited removeObjectsForKeys: keysToRemove];
-	
-	if (! found)
-	{
-		NSLog(@"ODBEditor: No active editing session for \"%@\"", client);
-	}
-}
+//- (void)abortAllEditingSessionsForClient:(id)client
+//{
+//	BOOL			found = NO;
+//	NSEnumerator	*enumerator = [_filesBeingEdited objectEnumerator];
+//	NSMutableArray  *keysToRemove = [NSMutableArray array];
+//	NSDictionary	*dictionary = nil;
+//	
+//	while (nil != (dictionary = [enumerator nextObject]))
+//	{
+//		id  iterClient = [[dictionary objectForKey: ODBEditorNonRetainedClient] nonretainedObjectValue];
+//		
+//		if (iterClient == client)
+//		{
+//			found = YES;
+//			[keysToRemove addObject: [dictionary objectForKey: ODBEditorFileName]];
+//		}
+//	}
+//
+//	[_filesBeingEdited removeObjectsForKeys: keysToRemove];
+//	
+//	if (! found)
+//	{
+//		NSLog(@"ODBEditor: No active editing session for \"%@\"", client);
+//	}
+//}
 
 - (BOOL)editFile:(NSString *)path options:(NSDictionary *)options forClient:(id)client context:(void *)context
 {
@@ -278,7 +278,7 @@ static ODBEditor	*_sharedODBEditor;
 	}
 	else
 	{
-		NSLog(@"Got ODB editor event for unknown file.");
+		NSLog(@"handleModifiedFileEvent: Got ODB editor event for unknown file.");
 	}
 }
 
@@ -298,13 +298,13 @@ static ODBEditor	*_sharedODBEditor;
 		id			client = [[dictionary objectForKey: ODBEditorNonRetainedClient] nonretainedObjectValue];
 		void		*context = [[dictionary objectForKey: ODBEditorClientContext] pointerValue];
 		[client odbEditor: self didClosefile: fileName context: context];
+		NSLog(@"Remove \"%@\" from files being edited", fileName);
+		[_filesBeingEdited removeObjectForKey: fileName];
 	}
 	else
 	{
-		NSLog(@"Got ODB editor event for unknown file.");
+		NSLog(@"handleClosedFileEvent: Got ODB editor event for unknown file.");
 	}
-	
-	[_filesBeingEdited removeObjectForKey: fileName];
 }
 
 @end

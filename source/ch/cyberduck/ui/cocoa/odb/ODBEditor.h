@@ -32,8 +32,8 @@ extern NSString * const ODBEditorCustomPathKey;
 - (void)setEditorBundleIdentifier:(NSString *)bundleIdentifier;
 - (NSString *)editorBundleIdentifier;
 
-- (void)abortEditingFile:(NSString *)path;
-- (void)abortAllEditingSessionsForClient:(id)client;
+//- (void)abortEditingFile:(NSString *)path;
+//- (void)abortAllEditingSessionsForClient:(id)client;
 
 	// NOTE that client is never retained - it is your reponsibility to
 	// make sure the client sticks around and abort editing for that client

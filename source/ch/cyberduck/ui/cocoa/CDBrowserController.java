@@ -1419,6 +1419,16 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public boolean validateToolbarItem(NSToolbarItem item) {
 		//	log.debug("validateToolbarItem:"+item.label());
+		if(item.itemIdentifier().equals("Edit")) {
+			NSSelector absolutePathForAppBundleWithIdentifierSelector =
+			    new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
+			if(absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
+				String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(Preferences.instance().getProperty("editor.bundleIdentifier"));
+				if(editorPath != null) {
+					item.setImage(NSWorkspace.sharedWorkspace().iconForFile(editorPath));
+				}
+			}
+		}
 		boolean enabled = pathPopupItems.size() > 0;
 		this.backButton.setEnabled(enabled);
 		this.upButton.setEnabled(enabled);
