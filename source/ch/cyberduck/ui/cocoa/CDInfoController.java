@@ -192,9 +192,18 @@ public class CDInfoController extends NSObject {
 				this.kindField.setStringValue(NSBundle.localizedString("Unknown", ""));
 			}
         }
-
-        this.modifiedField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
-                file.attributes.getTimestampAsString());
+		
+		try {
+			NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
+			String timestamp = formatter.stringForObjectValue(new NSGregorianDate((double)file.attributes.getTimestamp().getTime()/1000, 
+																				  NSDate.DateFor1970)
+															  );
+			this.modifiedField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
+											  timestamp);
+		}
+		catch(NSFormatter.FormattingException e) {
+			log.error(e.toString());
+		}
         this.ownerField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
                 file.attributes.getOwner());
         int size = 0;

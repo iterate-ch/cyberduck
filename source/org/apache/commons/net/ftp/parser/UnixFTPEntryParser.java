@@ -61,17 +61,16 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
      * state)
      */
     private static final String REGEX =
-            "([bcdlf-])"
+			"([bcdlfmpSs-])"
             + "(((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-])))\\s+"
             + "(\\d+)?\\s*"
             + "(\\S+)\\s+"
             + "(?:(\\S+)\\s+)?"
-            + "(\\d+)\\s+"
-            + MONTHS + "\\s+"
+            + "(\\d+)?\\s"
+            + MONTHS+"\\s+"
             + "((?:[0-9])|(?:[0-2][0-9])|(?:3[0-1]))\\s+"
-            + "((\\d\\d\\d\\d)|((?:[01]?\\d)|(?:2[0123])):([012345]\\d))\\s"
+            + "((\\d{4})|((?:[01]?\\d)|(?:2[0123])):([012345]\\d))\\s+"
             + "(\\S+)(\\s*.*)";
-
 
     /**
      * The sole constructor for a UnixFTPEntryParser object.
@@ -104,7 +103,6 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
         if (entry.startsWith("+")) {
             return new EPLFFTPEntryParser().parseFTPEntry(parent, entry);
         }
-
         if (matches(entry)) {
             String typeStr = group(1);
             String permStr = group(2);
@@ -112,11 +110,11 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
             String usr = group(16);
             String grp = group(17);
             String filesize = group(18);
-            String mo = group(19);
-            String da = group(20);
-            String yr = group(22);
-            String hr = group(23);
-            String min = group(24);
+			String mo = group(19);
+			String da = group(20);
+			String yr = group(22);
+			String hr = group(23);
+			String min = group(24);
             String name = group(25);
             if (null == name || name.equals("") || name.equals(".") || name.equals("..")) {
                 return null;

@@ -109,7 +109,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 					while (this.window().attachedSheet() != null) {
 						try {
 							log.debug("Sleeping...");
-							Thread.sleep(1000); //milliseconds
+							this.wait();
 						}
 						catch (InterruptedException e) {
 							log.error(e.getMessage());
@@ -123,8 +123,8 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 														 null, //other button
 														 window(), //docWindow
 														 null, //modalDelegate
-														 null, //didEndSelector
-														 null, // dismiss selector
+														 null, //didEndSelector new NSSelector("alertSheetDidClose", new Class[]{Object.class})
+														 null, // dismissSelector
 														 null, // context
 														 (String)msg.getContent() // message
 														 );
@@ -174,6 +174,10 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             }
         }
     }
+	
+//	public void alertSheetDidClose(Object sender) {
+//		this.notifyAll();
+//	}
 	
     // ----------------------------------------------------------
     // Outlets
@@ -818,9 +822,9 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 				if ((filename = sheet.filename()) != null) {
 					Path path = (Path)contextInfo;
 					path.setLocal(new Local(filename));
-					Queue queue = new DownloadQueue();
-					queue.addRoot(path);
-					CDQueueController.instance().startItem(queue);
+					Queue q = new DownloadQueue();
+					q.addRoot(path);
+					CDQueueController.instance().startItem(q);
 				}
                     break;
             case (NSAlertPanel.AlternateReturn):

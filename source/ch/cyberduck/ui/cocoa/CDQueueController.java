@@ -113,6 +113,10 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     }
      */
 	
+	public void alertSheetDidClose(Object sender) {
+		this.notifyAll();
+	}
+	
 	public void windowDidBecomeKey(NSNotification notification) {
 		this.tableViewSelectionChange();
 	}
@@ -269,13 +273,13 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 	}
 	
     public void startItem(Queue queue) {
+		this.addItem(queue);
         this.startItem(queue, false);
     }
 
-    public void startItem(Queue queue, boolean resumeRequested) {
+    private void startItem(Queue queue, boolean resumeRequested) {
         log.info("Starting item:" + queue);
-		this.addItem(queue);
-		queue.addObserver(this);
+		queue.addObserver(this); //@todo delete observer
         if (Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
             this.window().makeKeyAndOrderFront(null);
         }
@@ -327,7 +331,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 				while (this.window().attachedSheet() != null) {
 					try {
 						log.debug("Sleeping...");
-						Thread.sleep(1000); //milliseconds
+						this.wait();
 					}
 					catch (InterruptedException e) {
 						log.error(e.getMessage());
@@ -340,7 +344,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 														 null, //other button
 														 this.window(), //docWindow
 														 null, //modalDelegate
-														 null, //didEndSelector
+														 new NSSelector("alertSheetDidClose", new Class[]{Object.class}), //didEndSelector
 														 null, // dismiss selector
 														 null, // context
 														 (String)msg.getContent() // message
