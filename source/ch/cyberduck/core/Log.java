@@ -62,8 +62,7 @@ public class Log {
             bw.flush();
         }
         catch (IOException e) {
-            System.out.println("Error: " + e.getMessage());
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         finally {
             try {
@@ -72,9 +71,8 @@ public class Log {
                 if(bw != null)
                     bw.close();
             }
-            catch(IOException close) {
-                System.err.println("[Log] Error: " + close.getMessage());
-                close.printStackTrace();
+            catch(IOException io) {
+                log.error(io.getMessage());
             }
         }
     }

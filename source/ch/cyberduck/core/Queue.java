@@ -55,8 +55,7 @@ public class Queue extends Thread {
                         thread.join();
                     }
                     catch(InterruptedException e) {
-                        log.debug("[Queue] ERROR: Failed joining last connection.");
-                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
                 }
             }
