@@ -229,24 +229,11 @@ public abstract class Queue extends Observable implements Observer {
 									  }
 								  }
 								  );
-		if(this.validator.start()) {
-			//@todo move to validator
-			for (Iterator i = this.getRoots().iterator(); i.hasNext(); ) {
-				Path p = (Path)i.next();
-				log.debug("Iterating over childs of " + p);
-				Iterator childs = this.getChilds(new ArrayList(), p).iterator();
-				while (childs.hasNext() && !worker.isCanceled()) {
-					Path child = (Path)childs.next();
-					log.debug("Validating " + child.toString());
-					if (this.validator.validate(child)) {
-						child.status.reset();
-						this.size += child.status.getSize();
-						this.addJob(child);
-					}
-				}
-			}
+		this.jobs = this.validator.validate(this);
+		for (Iterator iter = jobs.iterator(); iter.hasNext();) {
+			this.size += ((Path)iter.next()).status.getSize();
 		}
-		return this.validator.stop();
+		return !this.isCanceled();
 	}
 	
 	protected abstract void process(Path p);

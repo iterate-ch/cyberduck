@@ -18,16 +18,15 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Queue;
+
+import java.util.List;
+
 /**
 * @version $Id$
  */
 public interface Validator {
 	
-    public boolean prompt(Path path);
-	
-	public boolean start();
-	
-	public boolean stop();
-	
-	public boolean validate(Path path);
+	public List validate(Queue q);
+
 }

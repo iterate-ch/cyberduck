@@ -84,10 +84,10 @@ public class Editor {
                 proposal = filename + "-" + no;
             }
         }
-        while (this.file.getLocal().exists());
+        while (this.file.local.exists());
         this.file.download();
         if (this.file.status.isComplete()) {
-            this.edit(this.file.getLocal().getAbsolute());
+            this.edit(this.file.local.getAbsolute());
         }
     }
 
@@ -95,7 +95,7 @@ public class Editor {
 
     public void didCloseFile() {
         log.debug("didCloseFile:"+this.file);
-        this.file.getLocal().delete();
+        this.file.local.delete();
         instances.removeObject(this);
     }
 

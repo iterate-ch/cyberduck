@@ -796,7 +796,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 			panel.setTitle(NSBundle.localizedString("Download", ""));
 			panel.setCanCreateDirectories(true);
 			panel.beginSheetForDirectory(null,
-										 path.getLocal().getName(),
+										 path.local.getName(),
 										 this.window(),
 										 this,
 										 new NSSelector("saveAsPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),

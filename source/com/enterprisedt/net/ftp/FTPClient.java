@@ -54,11 +54,6 @@ public class FTPClient {
     public static String cvsId = "@(#)$Id$";
     
     /**
-	* Default transfer buffer size
-	*/
-    final private static int DEFAULT_BUFFER_SIZE = 4096;
-    
-    /**
 		* Default encoding used for control data
 		*/
     final private static String DEFAULT_ENCODING 
@@ -107,16 +102,6 @@ public class FTPClient {
 		*  Can be used to cancel a transfer
 		*/
     private boolean cancelTransfer = false;
-    
-    /**
-		* Size of transfer buffers
-		*/
-    private int transferBufferSize = DEFAULT_BUFFER_SIZE;
-    
-    /**
-		* Locale for date parsing
-		*/
-    private Locale listingLocale = Locale.getDefault();
     
     /**
 		* Message listener
@@ -382,26 +367,6 @@ public class FTPClient {
 			control.setMessageListener(listener);
     }
 	
-    /**
-		* Set the size of the buffers used in writing to and reading from
-		* the data sockets
-		* 
-		* @param size  new size of buffer
-		*/
-    public void setTransferBufferSize(int size) {
-        transferBufferSize = size;
-    }
-    
-    /**
-		* Get the size of the buffers used in writing to and reading from
-		* the data sockets
-		* 
-		* @return  transfer buffer size
-		*/
-    public int getTransferBufferSize() {
-        return transferBufferSize;
-    }
-    
     /**
 		*  Cancels the current transfer. Generally called from a separate
 		*  thread. Note that this may leave partially written files on the
@@ -787,14 +752,6 @@ public class FTPClient {
 			return result.toString();
 		}
     
-    /**
-		* Set the locale for date parsing of dir listings
-		* 
-		* @param locale    new locale to use
-		*/
-    public void setParserLocale(Locale locale) {
-        listingLocale = locale;
-    }
     
     /**
 		*  List current directory's contents as an array of strings of

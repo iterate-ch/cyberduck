@@ -6,12 +6,12 @@
             CLASS = "ch.sudo.cyberduck.ui.cocoa.CDSyncValidatorController"; 
             LANGUAGE = Java; 
             OUTLETS = {
-                createFilesCheckbox = NSButton; 
                 downloadRadioCell = NSButtonCell; 
                 fileTableView = NSTableView; 
                 localField = NSTextField; 
                 statusIndicator = NSProgressIndicator; 
                 syncButton = NSButton; 
+                syncRadioCell = id; 
                 uploadRadioCell = NSButtonCell; 
                 urlField = NSTextField; 
                 window = NSWindow; 

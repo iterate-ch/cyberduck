@@ -39,10 +39,10 @@ public class CDDownloadValidatorController extends CDValidatorController {
 	
 	protected boolean validateDirectory(Path path) {
         // directory won't need validation, will get created if missing otherwise ignored
-		path.local.mkdirs();
-		if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
+		if(!path.local.exists())
+			path.local.mkdirs();
+		if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true"))
 			path.getLocal().setLastModified(path.attributes.getTimestamp().getTime());
-		}
         return false;
     }
 		

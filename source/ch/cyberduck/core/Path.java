@@ -424,46 +424,20 @@ public abstract class Path {
         this.status.setComplete(complete);
     }
 
-	public void sync(boolean recursive) {
-		log.debug("sync:"+recursive);
+	public void sync() {
         try {
-            if (this.attributes.isFile()) {
-				this.getSession().check();
-				if(this.getLocal().getTimestamp().before(this.attributes.getTimestamp())) {
-					if(this.remote.exists()) {
-						this.download();
-					}
-					else if(this.local.exists()) {
-						this.upload();
-					}
-				}
-				else if(this.getLocal().getTimestamp().after(this.attributes.getTimestamp())) {
-					if(this.local.exists()) {
-						this.upload();
-					}
-					else if(this.remote.exists()) {
-						this.download();
-					}
-				}
-				else if(this.getLocal().getTimestamp().equals(this.attributes.getTimestamp())) {
-					// no sync needed
-				}
-            }
-			/*
-            else if (this.attributes.isDirectory()) {
-				if(recursive) {
-					List files = this.list(false, true);
-					java.util.Iterator iterator = files.iterator();
-					Path file = null;
-					while (iterator.hasNext()) {
-						file = (Path)iterator.next();
-						file.sync(recursive);
-					}
-				}
-            }
-			 */
-            this.getSession().log("Idle", Message.STOP);
-        }
+			this.getSession().check();
+			if(this.getLocal().getTimestamp().before(this.attributes.getTimestamp())) {
+				this.download();
+			}
+			else if(this.getLocal().getTimestamp().after(this.attributes.getTimestamp())) {
+				this.upload();
+			}
+			else if(this.getLocal().getTimestamp().equals(this.attributes.getTimestamp())) {
+				// no sync needed
+			}
+			this.getSession().log("Idle", Message.STOP);
+		}
         catch (IOException e) {
             this.getSession().log("IO Error: " + e.getMessage(), Message.ERROR);
         }

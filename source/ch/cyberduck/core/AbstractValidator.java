@@ -20,6 +20,10 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
+import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
+
 /**
  * @version $Id$
  */
@@ -43,15 +47,29 @@ public abstract class AbstractValidator implements Validator {
 		this.isCanceled = c;
 	}
 		
-	public abstract boolean start();
-
-	public abstract boolean stop();
-	
-	public abstract boolean prompt(Path p);
+	protected abstract boolean prompt(Path p);
 	
 	protected abstract boolean exists(Path p);
 	
-	public boolean validate(Path p) {
+	public List validate(Queue q) {
+		List l = new ArrayList();
+		for (Iterator i = q.getRoots().iterator(); i.hasNext(); ) {
+			Path p = (Path)i.next();
+			log.debug("Iterating over childs of " + p);
+			List tree = q.getChilds(new ArrayList(), p);
+			for(Iterator childs = tree.iterator(); childs.hasNext();) {
+				Path child = (Path)childs.next();
+				log.debug("Validating " + child.toString());
+				if (this.validate(child)) {
+					child.status.reset();
+					l.add(child);
+				}
+			}
+		}
+		return l;
+	}
+	
+	protected boolean validate(Path p) {
         if (!this.isCanceled()) {
 			if (p.attributes.isDirectory()) {
 				return this.validateDirectory(p);
@@ -64,7 +82,7 @@ public abstract class AbstractValidator implements Validator {
 		log.info("Canceled " + p.getName() + " - no further validation needed");
 		return false;
 	}
-	
+		
 	protected boolean validateFile(Path path) {
         if (this.isResumeRequested()) {
             boolean fileExists = this.exists(path);

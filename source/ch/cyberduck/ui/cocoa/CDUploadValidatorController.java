@@ -37,9 +37,8 @@ public class CDUploadValidatorController extends CDValidatorController {
 	
 	protected boolean validateDirectory(Path path) {
         // directory won't need validation, will get created if missing otherwise ignored
-		if (!path.remote.exists()) {
+		if (!path.remote.exists())
 			path.mkdir(false);
-		}
         return false;
     }
 	

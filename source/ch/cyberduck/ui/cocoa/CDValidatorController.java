@@ -101,15 +101,7 @@ public abstract class CDValidatorController extends AbstractValidator {
      */
     private boolean resumeChoosen = false;
 		
-	public boolean start() {
-		return true;
-	}
-	
-	public boolean stop() {
-		return true;
-	}
-		
-    public boolean prompt(final Path path) {
+    protected boolean prompt(final Path path) {
         while (windowController.window().attachedSheet() != null) {
             try {
                 log.debug("Sleeping...");

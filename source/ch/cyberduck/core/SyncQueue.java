@@ -44,39 +44,43 @@ public class SyncQueue extends Queue {
     }
 	
 	protected List getChilds(List list, Path p) {
-		if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
-			for (Iterator i = p.list(false, true).iterator(); i.hasNext();) {
-				Path child = (Path)i.next();
-				child.setLocal(new Local(p.getLocal(), child.getName()));
-				this.getChilds(list, child);
+		if(p.remote.exists()) {
+			if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
+				for (Iterator i = p.list(false, true).iterator(); i.hasNext();) {
+					Path child = (Path)i.next();
+					child.setLocal(new Local(p.getLocal(), child.getName()));
+					this.getChilds(list, child);
+				}
+			}
+			else if (p.attributes.isFile()) {
+				list.add(p);
+				return list;
 			}
 		}
-		else if (p.attributes.isFile()) {
-			list.add(p);
+		if(p.local.exists()) {
+			if (p.local.isDirectory()) {
+				p.attributes.setType(Path.DIRECTORY_TYPE);
+				p.status.setSize(0);
+				File[] files = p.getLocal().listFiles();
+				for (int i = 0; i < files.length; i++) {
+					Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
+					// users complaining about .DS_Store files getting uploaded. It should be apple fixing their crappy file system, but whatever.
+					if (!child.getName().equals(".DS_Store")) {
+						this.getChilds(list, child);
+					}
+				}
+			}
+			else if (p.local.isFile()) {
+				p.attributes.setType(Path.FILE_TYPE);
+				p.status.setSize(p.getLocal().length()); //setting the file size to the known size of the local file
+				list.add(p);
+				return list;
+			}
 		}
-		/*
-		 if (p.getLocal().isDirectory()) {
-			 child.attributes.setType(Path.DIRECTORY_TYPE);
-			 child.status.setSize(0);
-			 File[] files = p.getLocal().listFiles();
-			 for (int i = 0; i < files.length; i++) {
-				 Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
-				 // users complaining about .DS_Store files getting uploaded. It should be apple fixing their crappy file system, but whatever.
-				 if (!child.getName().equals(".DS_Store")) {
-					 this.getChilds(list, child);
-				 }
-			 }
-		 }
-		 else if (p.getLocal().isFile()) {
-			 p.attributes.setType(Path.FILE_TYPE);
-			 p.status.setSize(p.getLocal().length()); //setting the file size to the known size of the local file
-			 list.add(p);
-		 }
-		 */
 		return list;
 	}
 	
 	protected void process(Path p) {
-		p.sync(true);
+		p.sync();
 	}	
 }

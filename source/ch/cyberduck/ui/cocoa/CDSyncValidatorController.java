@@ -21,10 +21,11 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
-import ch.cyberduck.core.Validator;
+import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Path;
 
 import java.util.List;
+import java.util.Iterator;
 import java.util.ArrayList;
 
 /**
@@ -42,25 +43,21 @@ public class CDSyncValidatorController extends CDValidatorController {
 	public void awakeFromNib() {
 		this.fileTableView.setDelegate(this);
 		this.fileTableView.setDataSource(this);
+		this.fileTableView.sizeToFit();
         this.uploadRadioCell.setTarget(this);
         this.uploadRadioCell.setAction(new NSSelector("reloadData", new Class[]{}));
         this.downloadRadioCell.setTarget(this);
         this.downloadRadioCell.setAction(new NSSelector("reloadData", new Class[]{}));
 	}
 	
-	public void reloadData() {
-		this.fileTableView.deselectAll(null);
-		this.fileTableView.reloadData();
-	}
-
 	// ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
 	
-	private NSButton createFilesCheckbox;
+	private NSButtonCell mirrorRadioCell;
 	
-	public void setCreateFilesCheckbox(NSButton createFilesCheckbox) {
-		this.createFilesCheckbox = createFilesCheckbox;
+	public void setSyncRadioCell(NSButtonCell mirrorRadioCell) {
+		this.mirrorRadioCell = mirrorRadioCell;
 	}
 
 	private NSButtonCell downloadRadioCell;
@@ -119,50 +116,64 @@ public class CDSyncValidatorController extends CDValidatorController {
         sheet.close();
 	}
 	
-	private List remoteCandidates = new ArrayList();
-	private List localCandidates = new ArrayList();
+	private List candidates = new ArrayList();
+	private List workset = new ArrayList();
 
-	protected boolean validateDirectory(Path path) {
-		return false;
-	}
-	
-	protected boolean validateFile(Path p) {
-		if(!p.modificationDate().equals(p.getLocal().getTimestamp())) {
-			//if(createFilesCheckbox.state() == NSCell.OnState) //@todo
-			if(p.remote.exists()) {
-				this.remoteCandidates.add(p);
+	public void reloadData() {
+		this.fileTableView.deselectAll(null);
+		this.workset = new ArrayList();
+		for(Iterator i = this.candidates.iterator(); i.hasNext(); ) {
+			Path p = (Path)i.next();
+			if(mirrorRadioCell.state() == NSCell.OnState) {
+				this.workset.add(p);
+				continue;
 			}
-			if(p.local.exists()) {
-				this.localCandidates.add(p);
+			if(downloadRadioCell.state() == NSCell.OnState) {
+				if(p.remote.exists())
+					this.workset.add(p);
+				continue;
 			}
-			this.reloadData();
-			return true;
+			if(uploadRadioCell.state() == NSCell.OnState) {
+				if(p.local.exists())
+					this.workset.add(p);
+				continue;
+			}
 		}
-		return false;
-	}
-		
-	public boolean start() {
-		this.statusIndicator.startAnimation(null);
-		return this.prompt(null);
+		this.fileTableView.reloadData();
 	}
 	
-	public boolean stop() {
+	public List validate(Queue q) {
+		this.statusIndicator.startAnimation(null);
+		this.prompt(null);
+		this.candidates = super.validate(q);
+		this.reloadData();
 		this.statusIndicator.stopAnimation(null);
 		this.syncButton.setEnabled(true);
-		// Waiting for user to make choice
 		while (windowController.window().attachedSheet() != null) {
 			try {
 				log.debug("Sleeping...");
+				//block the caller thread
 				Thread.sleep(1000); //milliseconds
 			}
 			catch (InterruptedException e) {
 				log.error(e.getMessage());
 			}
 		}
-		return !this.isCanceled();
- 	}
+		return workset;
+	}
 	
-	public boolean prompt(Path ignored) {
+	protected boolean validateFile(Path p) {
+		this.reloadData(); //@todo should be after return statement
+		return !p.modificationDate().equals(p.getLocal().getTimestamp());
+	}
+	
+	protected boolean validateDirectory(Path path) {
+		if(!path.local.exists())
+			path.local.mkdirs();
+		return false;
+	}
+	
+	protected boolean prompt(Path ignored) {
         while (windowController.window().attachedSheet() != null) {
             try {
                 log.debug("Sleeping...");
@@ -203,13 +214,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 	
 	public void tableViewSelectionDidChange(NSNotification notification) {
 		if(this.fileTableView.selectedRow() != -1) {
-			Path p = null;
-			if(downloadRadioCell.state() == NSCell.OnState) {
-				p = (Path)this.remoteCandidates.get(this.fileTableView.selectedRow());
-			}
-			if(uploadRadioCell.state() == NSCell.OnState) {
-				p = (Path)this.localCandidates.get(this.fileTableView.selectedRow());
-			}
+			Path p = (Path)this.workset.get(this.fileTableView.selectedRow());
 			if(p != null) {
 				this.urlField.setAttributedStringValue(new NSAttributedString(p.getHost().getURL()+p.getAbsolute(), 
 																			  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
@@ -224,13 +229,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 	}
 	
 	public int numberOfRowsInTableView(NSTableView tableView) {
-		if(downloadRadioCell.state() == NSCell.OnState) {
-			return remoteCandidates.size();
-		}
-		if(uploadRadioCell.state() == NSCell.OnState) {
-			return localCandidates.size();
-		}
-		return 0;
+		return workset.size();
     }
 	
 	private static final NSImage arrowUpIcon = NSImage.imageNamed("up.tiff");
@@ -244,13 +243,7 @@ public class CDSyncValidatorController extends CDValidatorController {
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
         if (row < numberOfRowsInTableView(tableView)) {
             String identifier = (String)tableColumn.identifier();
-			Path p = null;
-			if(downloadRadioCell.state() == NSCell.OnState) {
-				p = (Path)this.remoteCandidates.get(row);
-			}
-			if(uploadRadioCell.state() == NSCell.OnState) {
-				p = (Path)this.localCandidates.get(row);
-			}
+			Path p = (Path)this.workset.get(row);
 			if(p != null) {
 				if (identifier.equals("TYPE")) {
 					if(p.getLocal().getTimestamp().before(p.attributes.getTimestamp())) {
