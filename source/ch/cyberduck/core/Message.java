@@ -26,7 +26,7 @@ package ch.cyberduck.core;
 public class Message {//{implements java.io.Serializable {
 
     private String title;
-    private String description;
+    private Object content;
 
     public static final String TRANSCRIPT = "TRANSCRIPT";
     public static final String PROGRESS = "PROGRESS";
@@ -50,9 +50,9 @@ public class Message {//{implements java.io.Serializable {
     * @param t The title of the mesage
     * @param d The description of the mesage
      */
-    public Message(String title, String description) {
+    public Message(String title, Object content) {
         this.title = title;
-        this.description = description;
+        this.content = content;
     }
 
     /**
@@ -60,18 +60,18 @@ public class Message {//{implements java.io.Serializable {
      */
     public Message(String title) {
         this.title = title;
-	this.description = null;
+	this.content = null;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public String getDescription() {
-        return description;
+    public Object getContent() {
+        return content;
     }
     
     public String toString() {
-        return this.getTitle()+":"+this.getDescription();
+        return this.getTitle()+":"+this.getContent();
     }
 }

@@ -306,9 +306,12 @@ public abstract class Path {// extends Observable {
 
     public abstract void upload();
 
-    public abstract void fillDownloadQueue(Queue queue, Session session);
+    public abstract void fillQueue(Queue queue, Session session, int kind);
 
-    public abstract void fillUploadQueue(Queue queue, Session session);
+
+//    public abstract void fillDownloadQueue(Queue queue, Session session);
+
+//    public abstract void fillUploadQueue(Queue queue, Session session);
 
 
     // ----------------------------------------------------------
@@ -363,17 +366,17 @@ public abstract class Path {// extends Observable {
         LineNumberReader in = new LineNumberReader(reader);
         BufferedWriter out = new BufferedWriter(writer);
 
-        this.status.setCanceled(false);
-        this.status.setComplete(false);
+        this.status.reset();
 
 	int current = this.status.getCurrent();
-        boolean complete = false;
+//        boolean complete = false;
         // read/write a line at a time
         String line = null;
-        while (!complete && !this.status.isCancled()) {
+        while (!status.isComplete() && !status.isCanceled()) {
             line = in.readLine();
             if(line == null) {
-                complete = true;
+		this.status.setComplete(true);
+//                complete = true;
             }
             else {
                 this.status.setCurrent(current += line.getBytes().length);
@@ -381,7 +384,7 @@ public abstract class Path {// extends Observable {
                 out.newLine();
             }
         }
-	this.status.setComplete(complete);
+//	this.status.setComplete(complete);
 //        this.eof(complete);
         // close streams
         if(in != null) {
@@ -401,28 +404,28 @@ public abstract class Path {// extends Observable {
         BufferedInputStream in = new BufferedInputStream(new DataInputStream(i));
         BufferedOutputStream out = new BufferedOutputStream(new DataOutputStream(o));
 
-	this.status.setCanceled(false);
-        this.status.setComplete(false);
+        this.status.reset();
 
         // do the retrieving
         int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
         byte[] chunk = new byte[chunksize];
         int amount = 0;
         int current = this.status.getCurrent();
-        boolean complete = false;
+//        boolean complete = false;
 
         // read from socket (bytes) & write to file in chunks
-        while (!complete && !this.status.isCancled()) {
+        while (!status.isComplete() && !status.isCanceled()) {
             amount = in.read(chunk, 0, chunksize);
             if(amount == -1) {
-                complete = true;
+		this.status.setComplete(true);
+//                complete = true;
             }
             else {
                 this.status.setCurrent(current += amount);
                 out.write(chunk, 0, amount);
             }
         }
-	this.status.setComplete(complete);
+//	this.status.setComplete(complete);
 //        this.eof(complete);
         // close streams
         if(in != null) {

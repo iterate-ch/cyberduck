@@ -116,7 +116,11 @@ public class Status extends Observable implements Serializable {
     
     public void setComplete(boolean b) {
         this.complete = b;
+	this.callObservers(new Message(Message.COMPLETE));
+	if(complete)
+	    this.setCurrent(this.getSize());
     }
+    
     public boolean isComplete() {
         return this.complete;
     }    
@@ -125,9 +129,16 @@ public class Status extends Observable implements Serializable {
 	canceled = b;
     }
 
-    public boolean isCancled() {
+    public boolean isCanceled() {
 	return canceled;
     }
+
+//    public void reset() {
+//	this.current = this.isResume() ? current : 0;
+//	//this.size = size;
+//	this.canceled = false;
+//	this.complete = false;
+//    }
 
     /**
 	* Notify that the connection has been opened.
@@ -233,5 +244,11 @@ public class Status extends Observable implements Serializable {
     
     public boolean isResume() {
 	return this.resume;
+    }
+
+
+    public void reset() {
+	this.complete = false;
+	this.canceled = false;
     }
 }

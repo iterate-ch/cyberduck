@@ -77,11 +77,11 @@ public abstract class Preferences {//extends Properties {
 
 	this.defaults = new Hashtable();
 
-//	defaults.put("logger.level", "DEBUG");
-	defaults.put("logger.level", "INFO");
-//	defaults.put("logger.level", "WARN");
-//	defaults.put("logger.level", "ERROR");
-//	defaults.put("logger.level", "FATAL");
+	defaults.put("logging", "DEBUG");
+//	defaults.put("logging", "INFO");
+//	defaults.put("logging", "WARN");
+//	defaults.put("logging", "ERROR");
+//	defaults.put("logging", "FATAL");
 
 	//	System.out.println("Working directory:"+System.getProperty("user.dir"));
 	defaults.put("version", "2.1");
@@ -90,9 +90,9 @@ public abstract class Preferences {//extends Properties {
 	defaults.put("mail", "mailto:dkocher@cyberduck.ch");
 //	defaults.put("website.donate" , "http://www.cyberduck.ch/donate/");
 	defaults.put("website.donate" , "https://www.paypal.com/xclick/business=dkocher%40cyberduck.ch&item_name=Cyberduck&item_number=Cyberduck");
-	defaults.put("website.xml" , "http://update.cyberduck.ch/versionlist.xml");
-	defaults.put("website.update" , "http://www.cyberduck.ch");
-	defaults.put("website.home" , "http://www.cyberduck.ch/");
+	defaults.put("website.update.xml" , "http://update.cyberduck.ch/versionlist.xml");
+	defaults.put("website.update" , "http://cyberduck.ch/");
+	defaults.put("website.home" , "http://cyberduck.ch/");
 	defaults.put("browser.opendefault", "true");
 	defaults.put("browser.showHidden", "false");
 	defaults.put("transfer.close", "false");
@@ -102,8 +102,8 @@ public abstract class Preferences {//extends Properties {
         defaults.put("connection.download.folder", System.getProperty("user.home"));
         defaults.put("connection.download.duplicate.ask", "true");
   //      defaults.put("connection.duplicate.similar", "false");
-      //  defaults.put("connection.duplicate.resume", "false");
-      //  defaults.put("connection.duplicate.overwrite", "false");
+	defaults.put("connection.duplicate.resume", "false");
+	defaults.put("connection.duplicate.overwrite", "false");
 	
 	//        defaults.put("laf.default", javax.swing.UIManager.getSystemLookAndFeelClassName());
         //defaults.put("laf.default", javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
