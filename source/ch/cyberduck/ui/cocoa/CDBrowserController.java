@@ -2294,10 +2294,9 @@ public class CDBrowserController extends CDController implements Observer {
 				}
 				if(q.numberOfRoots() > 0) {
 					CDQueueController.instance().startItem(q);
-					return promisedDragNames;
 				}
 			}
-			return null;
+			return promisedDragNames;
 		}
 
 		// ----------------------------------------------------------

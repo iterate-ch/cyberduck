@@ -271,7 +271,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 				promisedDragBookmarksFiles[i] = new java.io.File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"),
 				    promisedDragBookmarks[i].getNickname()+".duck");
 				this.exportBookmark(promisedDragBookmarks[i], promisedDragBookmarksFiles[i]);
-				promisedDragNames.addObject(promisedDragBookmarks[i].getNickname());
+				promisedDragNames.addObject(promisedDragBookmarks[i].getNickname()+".duck");
 			}
 			catch(java.io.UnsupportedEncodingException e) {
 				log.error(e.getMessage());
