@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica-Oblique;
 \f3\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;}
-\vieww14860\viewh18440\viewkind0
+\vieww16060\viewh18560\viewkind0
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\fs24 \cf0      {{\NeXTGraphic cyberduck-application.icns \width2560 \height2560
@@ -24,7 +24,7 @@
 \f1\b \cf0 \'a5	What does Cyberduck cost?\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 	This program is free. Free software is a matter of the users' freedom to run, copy, distribute, study, change and improve the software. If you find this program useful, please consider making a donation to support future development. It will motivate me to improve the application further!\
+\f0\b0 \cf0 	This program is free. Free software is a matter of the users' freedom to run, copy, distribute, study, change and improve the software. If you find this program useful, please consider making a donation. A donation would not only demonstrate your appreciation of this software, but also help to advance development in the future.\
 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
@@ -42,22 +42,38 @@
 \'a5	
 \f1\b Why isn't there a <insert your preferred language here> localization?
 \f0\b0 \
-	Because nobody has written one yet. Why not doing it yourself? It's easy and you don't need any programming skills. Contact me and I'll send you the relevant files. Current available localizations are English, Dutch, German, French, Italian, Japanese, Korean, Portuguese and Spanish.\
+	Because nobody has written one yet. Why not doing it yourself? It's easy and you don't need any programming skills. Contact me and I'll send you the relevant files. Current available localizations are 
+\f2\i English, Dutch, German, French, Italian, Japanese, Korean, Portuguese and Spanish
+\f0\i0 .\
 
 \f1\b \
 \'a5	How do I submit a bug report?\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 	Write an email to dkocher@cyberduck.ch with a description what you have a done and what went wrong. It would help if you can include the crash report and also all the files with the pattern ~/Library/Logs/JavaNativeCrash_pid(****).log\
+\f0\b0 \cf0 	Write an email to 
+\f2\i <mailto:bugs@cyberduck.ch>
+\f0\i0  with a description what you have a done and what went wrong. It would help if you can include the crash report and also all the files with the pattern ~/Library/Logs/JavaNativeCrash_pid(****).log\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 \
-\'a5	What protocols does Cyberduck support?
-\f0\b0 \
-	FTP (File Transfer Protocol) and SFTP (Secure Shell File Transfer Protocol). You can download files with HTTP, too.\
-\
+\'a5	Where does Cyberduck store its preferences?\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b \'a5	How do I open a new connection?
+\f0\b0 \cf0 	~/Library/Application Support/Cyberduck\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 	
+\f0\b0 ~/Library/Preferences/ch.sudo.cyberduck.plist\
+
+\f1\b \
+
+\fs48 	Cyberduck How-to\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0\fs24 \cf0 \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \'a5	OPENING CONNECTIONS
 \f0\b0 \
 	There are several options:\
 	
@@ -94,39 +110,49 @@
 \f0\b0  Double click a Cyberduck bookmark file in the Finder.\
 \
 
-\f1\b \'a5	How do I add a new bookmark?\
+\f1\b 	Does Cyberduck support Rendezvous/Zeroconf?
+\f0\b0 \
+	In the 'New Connection' Dialog look at the Rendezvous icon in the top left corner. You will get a list with FTP/SFTP servers supporting Rendezvous on your local network.\
+	\
+	{{\NeXTGraphic 1__#$!@%!#__Pasted Graphic 1.tiff \width9140 \height1560
+}¬}
+\f0\fs24 \
+\
+\
+
+\f1\b \'a5	BOOKMARK MANAGEMENT\
+	How do I add a new bookmark?\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 	
-\f0\b0 Select 'Show Bookmark Drawer (\'f0-B)' form the 'View' menu. Click the plus button to add the host connected to in this browser window to the Bookmarks. An editor window will open where you can further adjust the bookmark properties (i.e. nickname).\
+\f0\b0 \cf0 	Select 'Show Bookmark Drawer (\'f0-B)' form the 'View' menu. Click the plus button to add the host connected to in this browser window to the Bookmarks. An editor window will open where you can further adjust the bookmark properties (i.e. nickname).\
 \
 	{{\NeXTGraphic Pasted Graphic 3.tiff \width4280 \height2040
 }¬}
 \f0\fs24 \
 \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b \'a5	How do I edit a bookmarks?\
-\
+\f1\b \cf0 	How do I edit a bookmarks?\
 	
 \f0\b0 Open the Bookmark Drawer and click the 'Edit selected bookmark' button. A small window where you can edit the bookmark's properties will appear.
 \f1\b \
 \
-\'a5	How do I export a bookmark?\
-\
+	How do I export a bookmark?\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	Drag the bookmark from the Bookmark Drawer anywhere to the Finder (e.g. the Desktop). You can double click the document in the Finder to open a new connection to the server specified in the bookmark.\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \
 	{{\NeXTGraphic Pasted Graphic 4.tiff \width4280 \height2040
 }¬}
 \f1\fs24 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0 \cf0 	\
-	Drag the bookmark from the Bookmark Drawer anywhere to the Finder (e.g. the Desktop). You can double click the document in the Finder to open a new connection to the server specified in the bookmark.\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b \cf0 	\
-\'a5	Can I import a bookmark again?
+\f1\b \cf0 	Can I import a bookmark again?
 \f0\b0 \
 	Just drag the bookmark file from the Finder to the Bookmark drawer.\
 \
@@ -134,13 +160,117 @@
 }¬}
 \f0\fs24 \
 \
+\
 
-\f1\b \'a5	What is public key authentication?\
+\f1\b \'a5	TRANSFER MANAGEMENT (QUEUE)\
+	How can I download a file or folder?\
+	\
+	{{\NeXTGraphic Pasted Graphic 9.tiff \width5720 \height2880
+}¬}
+\f1\fs24 \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 \
+	Select the files to download in the browser window and press the 'Download' toolbar button. Or double click the the file. And last but not least just drag the file(s) or folder(s) to the desired download location in the Finder. A new transfer window will open and show you the transfer progress.\
+\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 	How do I queue a file to be downloaded later?\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	Drag the file from the browser to the Transfer Queue (\'f0-T) window.\
+\
+	{{\NeXTGraphic 1__#$!@%!#__Pasted Graphic 3.tiff \width10740 \height1740
+}¬}
+\f0\fs24 \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \
+	How can I upload a file or folder?\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	Either click the 'Upload' toolbar button and select the files to upload in the file chooser dialog or - much simpler -  just drag the files from the Finder into the browser window. You can drag multiple files as well as directories.\
+\
+	{{\NeXTGraphic Pasted Graphic 8.tiff \width5720 \height2880
+}¬}
+\f0\fs24 \
+\
+	You can also upload files without first opening a connection to a server by dropping the file(s) onto a bookmark item in the bookmark drawer.\
+\
+	{{\NeXTGraphic Pasted Graphic 7.png \width4360 \height1760
+}¬}
+\f0\fs24 \
+\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 	Can I transfer files between two remote hosts?\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	No, this is not possible for now. \
+	\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 	How do I download file with HTTP (from a web server)?\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	Select 'New Download (\'f0-D)' from the 'File' Menu. Enter an URL (or drag it e.g. from a web browser) pointing to a file. You can also drag an URL directly to the Transfer Queue to initiate the transfer (e.g. from Safari).\
+\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 	Can I move files on a remote host?\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	Yes, just drag the items into another folder as you would in the Finder.\
+	\
+	{{\NeXTGraphic 1__#$!@%!#__Pasted Graphic.tiff \width9640 \height1900
+}¬}
+\f0\fs24 \
+\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \'a5	EDITING FILES\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	You can edit a file just as a local file by clicking the 'Edit' toolbar button or by choosing 'Open in Editor (\'f0-J)' in the 'File' Menu. The file will be downloaded to the user's temporary directory and opened with the preferred editor. (Supported editors include SubEthaEdit, BBEdit and TextWrangler. Set your preferred editor in the Preferences). The file will be uploaded to the server everytime you choose 'Save' in the Editor application. The file is not changed on the server if you just close the document without saving.\
+\
+	{{\NeXTGraphic Pasted Graphic 6.tiff \width3960 \height2040
+}¬}
+\f0\fs24 \
+\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 	How do I change a filename?
+\f0\b0 \
+	Select the file to rename and choose 'Info (\'f0-I)' from the 'File' menu or press the 'Get Info' toolbar button. Simply enter the new name in the very top field. \
+\
+
+\f1\b 	How do I change the permissions on a particular file?
+\f0\b0 \
+	Select the file in the browser and choose 'Info (\'f0-I)' from the 'File' menu.\
+\
+
+\f1\b 	Can I change permissions recursivly?
+\f0\b0 \
+	No, this is not possible for now. \
+\
+
+\f1\b 	Can I change permissions on multiple files?
+\f0\b0 \
+	No, this is not possible for now. \
+\
+
+\f1\b 	Can I change the owner of a file?
+\f0\b0 \
+	No, this is not possible for now. \
+\
+\
+
+\f1\b \'a5	SSH PUBLIC KEY AUTHENTICATION\
 	
 \f0\b0 Public-key authentication allows you to connect to a remote server without sending your password over the Internet. Public-key authentication uses two keys, a private key that only you have--it should be kept in a secure place and protected with a password. And the public key, which is placed on the server you wish to gain access to, usually by the system administrator when your account is set up.\
 	\
 
-\f1\b \'a5	How do I configure public key authentication?\
+\f1\b 	How do I configure public key authentication?\
 	
 \f0\b0 1. Run the command 'ssh-keygen' from the Terminal to generate a public/private pair of keys. They will be put in your directory ~/.ssh, though you will probably be asked to approve or change this location.\
 	When you generate the keys you will be asked for a 'passphrase'. If you use a passphrase then you will have to enter it each time you use the keys for authentication. That is, you will have to type in the pass phrase everytime you log in, just as you would with a password.\
@@ -158,133 +288,26 @@
 
 \f0 \cf0 	3. In the Connection Dialog or the Bookmark editor in Cyberduck select 'Use Public Key Authentication' and select the private key in your .ssh directory.\
 \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 \'a5	How can I download a file or folder?\
-	\
-	{{\NeXTGraphic Pasted Graphic 9.tiff \width5720 \height2880
-}¬}
-\f1\fs24 \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 \
-	Select the files to download in the browser window and press the 'Download' toolbar button. Or double click the the file. And last but not least just drag the file(s) or folder(s) to the desired download location in the Finder. A new transfer window will open and show you the transfer progress.\
 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b \cf0 \'a5	How do I queue a file to be downloaded later?\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	Drag the file from the browser to the Transfer Queue (\'f0-T) window.\
-\
-	{{\NeXTGraphic 1__#$!@%!#__Pasted Graphic 3.tiff \width10740 \height1740
-}¬}
-\f0\fs24 \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 \
-\'a5	How can I upload a file or folder?\
-\
-	{{\NeXTGraphic Pasted Graphic 6.tiff \width4880 \height1680
-}¬}
-\f0\b0\fs24 \
-\
-	Either click the 'Upload' toolbar button and select the files to upload in the file chooser dialog or - much simpler -  just drag the files from the Finder into the browser window. You can drag multiple files as well as directories.\
-\
-	{{\NeXTGraphic Pasted Graphic 8.tiff \width5720 \height2880
-}¬}
-\f0\fs24 \
-\
-	You can also upload files without first opening a connection to a server by dropping the file(s) onto a bookmark item in the bookmark drawer.\
-\
-	{{\NeXTGraphic Pasted Graphic 7.png \width4360 \height1760
-}¬}
-\f0\fs24 \
-\
-
-\f1\b \'a5	Can I transfer files between two remote hosts?\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	No, this is not possible for now. \
-	\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 \'a5	Can I move files on a remote host?\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	Yes, just drag the items into another folder as you would in the Finder.\
-	\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 \'a5	Can I edit a file on the server without manually downloading?\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	You can edit a file just as a local file by clicking the 'Edit' toolbar button or by choosing 'Open in Editor (\'f0-J)' in the 'File' Menu. The file will be downloaded to the user's temporary directory and opened with the preferred editor. (Supported editors include SubEthaEdit, BBEdit and TextWrangler. Set your preferred editor in the Preferences). The file will be uploaded to the server everytime you choose 'Save' in the Editor application. The file is not changed on the server if you just close the document without saving.\
-\
-	{{\NeXTGraphic 1__#$!@%!#__Pasted Graphic 6.tiff \width3960 \height2040
-}¬}
-\f0\fs24 \
-\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 \'a5	How do I change a filename?
-\f0\b0 \
-	Select the file to rename and choose 'Info (\'f0-I)' from the 'File' menu or press the 'Get Info' toolbar button. Simply enter the new name in the very top field. \
-\
-
-\f1\b \'a5	How do I change the permissions on a particular file?
-\f0\b0 \
-	Select the file in the browser and choose 'Info (\'f0-I)' from the 'File' menu.\
-\
-
-\f1\b \'a5	Can I change permissions recursivly?
-\f0\b0 \
-	No, this is not possible for now. \
-\
-
-\f1\b \'a5	Can I change permissions on multiple files?
-\f0\b0 \
-	No, this is not possible for now. \
-\
-
-\f1\b \'a5	Can I change the owner of a file?
-\f0\b0 \
-	No, this is not possible for now. \
-\
-
-\f1\b \'a5	Does Cyberduck support Rendezvous/Zeroconf?
-\f0\b0 \
-	\
-	{{\NeXTGraphic 1__#$!@%!#__Pasted Graphic 1.tiff \width9140 \height1560
-}¬}
-\f0\fs24 \
-\
-	In the 'New Connection' Dialog look at the Rendezvous icon in the top left corner. You will get a list with FTP/SFTP servers supporting Rendezvous on your local network.\
-	\
-
-\f1\b \'a5	I try to open a new SSH connection but I just get the spinning progress bar. In the Console.app I can read 'java.lang.NegativeArraySizeException at com.sshtools.j2ssh.io.ByteArrayReader.readString(ByteArrayReader.java:164)'\
+\f1\b \cf0 \'a5	KNOWN PROBLEMS\
+	I try to open a new SSH connection but I just get the spinning progress bar. In the Console.app I can read 'java.lang.NegativeArraySizeException at com.sshtools.j2ssh.io.ByteArrayReader.readString(ByteArrayReader.java:164)'\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0 \cf0 	Delete all SSH1 keys in ~/.ssh/known_hosts\
 	\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b \cf0 \'a5	When I upload a file I get the error 'SITE chmod 664: command not understood'\
+\f1\b \cf0 	When I upload a file I get the error 'SITE chmod 664: command not understood'\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0 \cf0 	Uncheck the option 'FTP > Adjust file permissions on upload' in the Preferences\
 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b \cf0 \'a5	In the dialog asking to allow the host key I cannot choose to always remember the host key. The host key isn't written in the  ~/.ssh/known_hosts file\
+\f1\b \cf0 	In the dialog asking to allow the host key I cannot choose to always remember the host key. The host key isn't written in the  ~/.ssh/known_hosts file\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0 \cf0 	There is either no write permission to the  ~/.ssh/known_hosts file or there are incompatible keys stored. Delete the file and try again.\
-\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 \'a5	How do I download file with HTTP (from a web server)?\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	Select 'New Download (\'f0-D)' from the 'File' Menu. Enter an URL (or drag it e.g. from a web browser) pointing to a file. You can also drag an URL directly to the Transfer Queue.\
 }

@@ -100,6 +100,6 @@ public class Editor extends NSObject {
     public void didModifyFile() {
         log.debug("didModifyFile:");
         this.file.upload();
-        this.file.getParent().list(true);
+//        this.file.getParent().list(true);
     }
 }
