@@ -3,11 +3,17 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.4</string>
+	<string>2.4.1</string>
 	<key>file</key>
-	<string>Cyberduck-2.4.dmg</string>
+	<string>Cyberduck-2.4.1.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.4.1
+- [Localize] Hungarian Localization
+- [Bugfix] Modification date changed when uploading files from the external editor
+- [Bugfix] Browser window could lock up when reconnecting and login was needed 
+- [Feature] Disconnect item in menubar
+
 2.4
 - [Localize] Swedish Localization
 - [Feature] Additional encryption ciphers supported (SFTP)
