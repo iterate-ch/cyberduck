@@ -285,6 +285,7 @@ img/reveal.tiff -text
 img/run.tiff -text
 img/stop.tiff svneol=native#unset
 img/symlink.tiff -text
+img/sync.tiff -text
 img/up.tiff svneol=native#unset
 img/uploadFile.tiff -text
 it.lproj/Bookmark.nib/keyedobjects.nib -text
