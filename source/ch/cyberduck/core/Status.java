@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSBundle;
 
+import java.math.BigDecimal;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -29,92 +31,98 @@ import org.apache.log4j.Logger;
  *
  * @version $Id$
  */
-public class Status /*extends Observable*/ {
-	private static Logger log = Logger.getLogger(Status.class);
+public class Status {
+    private static Logger log = Logger.getLogger(Status.class);
 
-	/**
-	 * Download is resumable
-	 */
-	private boolean resume = false;
-	/**
-	 * The number of transfered bytes. Must be less or equals size.
-	 */
-	private long current = 0;
-	/**
-	 * Indiciating wheter the transfer has been cancled by the user.
-	 */
-	private boolean canceled;
-	/**
-	 * Indicates that the last action has been completed.
-	 */
-	private boolean complete = false;
+    /**
+     * Download is resumable
+     */
+    private boolean resume = false;
+    /**
+     * The number of transfered bytes. Must be less or equals size.
+     */
+    private long current = 0;
+    /**
+     * Indiciating wheter the transfer has been cancled by the user.
+     */
+    private boolean canceled;
+    /**
+     * Indicates that the last action has been completed.
+     */
+    private boolean complete = false;
 
-	private static final long KILO = 1024l; //2^10
-	private static final long MEGA = 1048576l; // 2^20
-	private static final long GIGA = 1073741824l; // 2^30
+    private static final double KILO = 1024; //2^10
+    private static final double MEGA = 1048576; // 2^20
+    private static final double GIGA = 1073741824; // 2^30
 
-	/**
-	 * @return The size of the file
-	 */
-	public static String getSizeAsString(long size) {
-		if(-1 == size) {
-			return NSBundle.localizedString("Unknown size", "");
-		}
-		if(size < KILO) {
-			return size+"B";
-		}
-		if(size < MEGA) {
-			return String.valueOf(size/KILO)+"kB";
-		}
-		if(size < GIGA) {
-			return String.valueOf(size/MEGA)+"MB";
-		}
-		else {
-			return String.valueOf(size/GIGA)+"GB";
-		}
-	}
+    /**
+     * @return The size of the file
+     */
+    public static String getSizeAsString(double size) {
+        if (-1 == size) {
+            return NSBundle.localizedString("Unknown size", "");
+        }
+        if (size < KILO) {
+            return (int) size + "B";
+        }
+        if (size < MEGA) {
+            return new BigDecimal(size).divide(new BigDecimal(KILO),
+                    1,
+                    BigDecimal.ROUND_HALF_UP).toString() + "kB";
+        }
+        if (size < GIGA) {
+            return new BigDecimal(size).divide(new BigDecimal(MEGA),
+                    1,
+                    BigDecimal.ROUND_HALF_UP).toString() + "MB";
+        }
+        else {
+            return new BigDecimal(size).divide(new BigDecimal(GIGA),
+                    1,
+                    BigDecimal.ROUND_HALF_UP).toString() + "GB";
+        }
+    }
 
-	public void setComplete(boolean complete) {
-		this.complete = complete;
-		log.info("------------------- Complete:"+this.getCurrent());
-	}
+    public void setComplete(boolean complete) {
+        this.complete = complete;
+        log.info("------------------- Complete:" + this.getCurrent());
+    }
 
-	public boolean isComplete() {
-		return this.complete;
-	}
+    public boolean isComplete() {
+        return this.complete;
+    }
 
-	public void setCanceled(boolean b) {
-		canceled = b;
-	}
+    public void setCanceled(boolean b) {
+        canceled = b;
+    }
 
-	public boolean isCanceled() {
-		return canceled;
-	}
+    public boolean isCanceled() {
+        return canceled;
+    }
 
-	public long getCurrent() {
-		return this.current;
-	}
+    public long getCurrent() {
+        return this.current;
+    }
 
-	/**
-	 * @param current The currently transfered bytes
-	 */
-	public void setCurrent(long current) {
-		this.current = current;
-	}
+    /**
+     * @param current The currently transfered bytes
+     */
+    public void setCurrent(long current) {
+        this.current = current;
+    }
 
-	public void setResume(boolean resume) {
-		log.info("setResume:"+resume);
-		this.resume = resume;
-	}
+    public void setResume(boolean resume) {
+        log.info("setResume:" + resume);
+        this.resume = resume;
+    }
 
-	public boolean isResume() {
-		return this.resume;
-	}
+    public boolean isResume() {
+        return this.resume;
+    }
 
-	public void reset() {
-		log.debug("reset (resume="+resume+")");
-		this.complete = false;
-		this.canceled = false;
-		this.setCurrent(this.isResume() ? this.getCurrent() : 0);
-	}
+    public void reset() {
+        log.debug("reset (resume=" + resume + ")");
+        this.complete = false;
+        this.canceled = false;
+        this.setCurrent(this.isResume() ? this.getCurrent() : 0);
+    }
 }

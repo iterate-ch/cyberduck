@@ -184,7 +184,6 @@ public class CDBrowserController extends CDController implements Observer {
 		return new Integer(0);
 	}
 	
-
 	public Object handleCreateFileScriptCommand(NSScriptCommand command) {
 		log.debug("handleCreateFileScriptCommand:"+command);
 		if(this.isMounted()) {
@@ -1213,17 +1212,13 @@ public class CDBrowserController extends CDController implements Observer {
 				final List files = (List)contextInfo;
 				if(files.size() > 0) {
 					this.browserTable.deselectAll(null);
-					new Thread("Session") {
-						public void run() {
-							Iterator i = files.iterator();
-							Path p = null;
-							while(i.hasNext()) {
-								p = (Path)i.next();
-								p.delete();
-							}
-							p.getParent().list(encoding, true, showHiddenFiles);
-						}
-					}.start();
+					Iterator i = files.iterator();
+					Path p = null;
+					while(i.hasNext()) {
+						p = (Path)i.next();
+						p.delete();
+					}
+					p.getParent().list(encoding, true, showHiddenFiles);
 				}
 				break;
 			case (NSAlertPanel.AlternateReturn):
@@ -2212,7 +2207,6 @@ public class CDBrowserController extends CDController implements Observer {
 				this.promisedDragPaths = new Path[rows.count()];
 				// The fileTypes argument is the list of fileTypes being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
 				NSMutableArray fileTypes = new NSMutableArray();
-				NSMutableArray queueDictionaries = new NSMutableArray();
 				Queue q = new DownloadQueue();
 				Session session = workdir().getSession().copy();
 				for(int i = 0; i < rows.count(); i++) {
@@ -2340,8 +2334,8 @@ public class CDBrowserController extends CDController implements Observer {
 				Collections.sort(this.values(),
 				    new Comparator() {
 					    public int compare(Object o1, Object o2) {
-						    long p1 = ((Path)o1).attributes.getSize();
-						    long p2 = ((Path)o2).attributes.getSize();
+						    double p1 = ((Path)o1).attributes.getSize();
+						    double p2 = ((Path)o2).attributes.getSize();
 						    if(p1 > p2) {
 							    return higher;
 						    }

@@ -34,6 +34,8 @@ import com.sshtools.j2ssh.transport.publickey.SshKeyPair;
 import com.sshtools.j2ssh.transport.publickey.SshKeyPairFactory;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 
+import com.sshtools.ext.jzlib.JZlib;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -46,11 +48,10 @@ import java.util.Map;
  * @version $Revision$
  */
 public class TransportProtocolClient extends TransportProtocolCommon {
-    /**  */
+
     protected SshPublicKey pk;
     private HostKeyVerification hosts;
     private Map services = new HashMap();
-    //private SshMessageStore ms = new SshMessageStore();
 
     /**
      * Creates a new TransportProtocolClient object.
@@ -71,7 +72,6 @@ public class TransportProtocolClient extends TransportProtocolCommon {
         // Setup our private message store, we wont be registering any direct messages
         getMessageStore().registerMessage(SshMsgServiceAccept.SSH_MSG_SERVICE_ACCEPT,
                 SshMsgServiceAccept.class);
-        //this.addMessageStore(ms);
     }
 
     /**
@@ -342,18 +342,21 @@ public class TransportProtocolClient extends TransportProtocolCommon {
         hmac.init(macSCKey);
         algorithmsIn.setHmac(hmac);
 
-        SshCompression compression = SshCompressionFactory.newInstance(incomingCompInUse);
-        if (compression != null) {
-            compression.init(SshCompression.INFLATER, 6);
-            algorithmsIn.setCompression(compression);
-        }
+		{
+			SshCompression compression = SshCompressionFactory.newInstance(incomingCompInUse);
+			if (compression != null) {
+				compression.init(SshCompression.INFLATER, JZlib.Z_DEFAULT_COMPRESSION);
+				algorithmsIn.setCompression(compression);
+			}
+		}
 
-        compression = SshCompressionFactory.newInstance(outgoingCompInUse);
-        if (compression != null) {
-            compression.init(SshCompression.DEFLATER, 6);
-            algorithmsOut.setCompression(compression);
-        }
-
+		{
+			SshCompression compression = SshCompressionFactory.newInstance(outgoingCompInUse);
+			if (compression != null) {
+				compression.init(SshCompression.DEFLATER, JZlib.Z_DEFAULT_COMPRESSION);
+				algorithmsOut.setCompression(compression);
+			}
+		}
     }
 
     /**
