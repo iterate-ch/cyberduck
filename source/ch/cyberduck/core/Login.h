@@ -7,24 +7,30 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* Inaccessible static: log */
-/* Inaccessible static: class_00024ch_00024cyberduck_00024core_00024Login */
-/*
- * Class:     ch_cyberduck_core_Login
- * Method:    getPasswordFromKeychain
- * Signature: (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain
-  (JNIEnv *, jobject, jstring, jstring);
-
-/*
- * Class:     ch_cyberduck_core_Login
- * Method:    addPasswordToKeychain
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain
-  (JNIEnv *, jobject, jstring, jstring, jstring);
-
+	/*
+	 * Class:     ch_cyberduck_core_Login
+	 * Method:    getInternetPasswordFromKeychain
+	 * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String)Ljava/lang/String;
+	 */
+	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getInternetPasswordFromKeychain
+	(JNIEnv *, jobject, jstring, jstring, jstring);
+	
+	/*
+	 * Class:     ch_cyberduck_core_Login
+	 * Method:    getPasswordFromKeychain
+	 * Signature: (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	 */
+	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain
+		(JNIEnv *, jobject, jstring, jstring);
+	
+	/*
+	 * Class:     ch_cyberduck_core_Login
+	 * Method:    addPasswordToKeychain
+	 * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	 */
+	JNIEXPORT void JNICALL Java_ch_cyberduck_core_Login_addPasswordToKeychain
+		(JNIEnv *, jobject, jstring, jstring, jstring);
+	
 #ifdef __cplusplus
 }
 #endif

@@ -52,6 +52,7 @@ public abstract class SubsystemClient implements Runnable {
     private OutputStream out;
     private Thread thread;
     private String name;
+	private String encoding;
     private StartStopState state = new StartStopState(StartStopState.STOPPED);
 
     /**  */
@@ -65,22 +66,16 @@ public abstract class SubsystemClient implements Runnable {
      *
      * @param name
      */
-    public SubsystemClient(String name) {
-        this.name = name;
-        messageStore = new SubsystemMessageStore();
+    public SubsystemClient(String name, String encoding) {
+        this(name, new SubsystemMessageStore(encoding), encoding);
     }
-
-    /**
-     * Creates a new SubsystemClient object.
-     *
-     * @param name
-     * @param messageStore
-     */
-    public SubsystemClient(String name, SubsystemMessageStore messageStore) {
+	
+    public SubsystemClient(String name, SubsystemMessageStore messageStore, String encoding) {
         this.name = name;
         this.messageStore = messageStore;
+		this.encoding = encoding;
     }
-
+	
     /**
      * @return
      */
@@ -149,7 +144,7 @@ public abstract class SubsystemClient implements Runnable {
             log.debug("Sending " + msg.getMessageName() + " subsystem message");
         }
 
-        byte[] msgdata = msg.toByteArray();
+        byte[] msgdata = msg.toByteArray(this.encoding);
 
         // Write the message length
         out.write(ByteArrayWriter.encodeInt(msgdata.length));

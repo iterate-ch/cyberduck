@@ -48,16 +48,17 @@ public abstract class SubsystemChannel extends Channel {
     protected SubsystemMessageStore messageStore;
     DynamicBuffer buffer = new DynamicBuffer();
     int nextMessageLength = -1;
+	private String encoding;
     private Transcript transcript;
 
-    public SubsystemChannel(String name) {
-        this.name = name;
-        this.messageStore = new SubsystemMessageStore();
+    public SubsystemChannel(String name, String encoding) {
+		this(name, new SubsystemMessageStore(encoding), encoding);
     }
 
-    public SubsystemChannel(String name, SubsystemMessageStore messageStore) {
+    public SubsystemChannel(String name, SubsystemMessageStore messageStore, String encoding) {
         this.name = name;
         this.messageStore = messageStore;
+		this.encoding = encoding;
         this.transcript = TranscriptFactory.getImpl(name); //@todo get proper logger
     }
 
@@ -71,7 +72,7 @@ public abstract class SubsystemChannel extends Channel {
             log.debug("Sending " + msg.getMessageName() + " subsystem message");
         }
 
-        byte[] msgdata = msg.toByteArray();
+        byte[] msgdata = msg.toByteArray(encoding);
 
         // Write the message length
         sendChannelData(ByteArrayWriter.encodeInt(msgdata.length));

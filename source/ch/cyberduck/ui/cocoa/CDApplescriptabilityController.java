@@ -47,8 +47,8 @@ public class CDApplescriptabilityController extends NSScriptCommand {
 			Host h = new Host(url.getProtocol(),
 			    url.getHost(),
 			    url.getPort(),
-			    new Login(url.getHost(), url.getUserInfo(), null),
 			    url.getPath());
+			h.setCredentials(url.getUserInfo(), null);
 			if(file.length() > 1) {
 				Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
 				// we assume a file has an extension

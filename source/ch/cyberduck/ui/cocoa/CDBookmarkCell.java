@@ -56,7 +56,7 @@ public class CDBookmarkCell extends CDTableCell {
 
 			NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(), boldFont),
 			    new NSRect(cellPoint.x(), cellPoint.y()+1, cellSize.width()-5, cellSize.height()));
-			NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getLogin().getUsername(), tinyFont),
+			NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getCredentials().getUsername(), tinyFont),
 			    new NSRect(cellPoint.x(), cellPoint.y()+14, cellSize.width()-5, cellSize.height()));
 			NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getHostname()+"/"+bookmark.getDefaultPath(), tinyFont),
 			    new NSRect(cellPoint.x(), cellPoint.y()+27, cellSize.width()-5, cellSize.height()));

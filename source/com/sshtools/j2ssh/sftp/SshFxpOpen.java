@@ -28,7 +28,6 @@ package com.sshtools.j2ssh.sftp;
 
 import java.io.IOException;
 
-import ch.cyberduck.core.Codec;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
@@ -118,8 +117,7 @@ public class SshFxpOpen extends SubsystemMessage implements MessageRequestId {
     public void constructMessage(ByteArrayReader bar)
             throws IOException, InvalidMessageException {
         id = bar.readUINT32();
-        filename = Codec.decode(bar.readString());
-//        filename = bar.readString();
+        filename = bar.readString();
         pflags = bar.readUINT32();
         attrs = new FileAttributes(bar);
     }
@@ -139,8 +137,7 @@ public class SshFxpOpen extends SubsystemMessage implements MessageRequestId {
     public void constructByteArray(ByteArrayWriter baw)
             throws IOException, InvalidMessageException {
         baw.writeUINT32(id);
-        baw.writeString(new String(Codec.encode(filename)));
-//        baw.writeString(filename);
+        baw.writeString(filename);
         baw.writeUINT32(pflags);
         baw.writeBinaryString(attrs.toByteArray());
     }

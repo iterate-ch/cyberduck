@@ -30,12 +30,16 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 
+import ch.cyberduck.core.Codec;
 
 /**
  * @author $author$
  * @version $Revision$
  */
 public class ByteArrayReader extends ByteArrayInputStream {
+	
+	private String encoding;
+	
     /**
      * Creates a new ByteArrayReader object.
      *
@@ -45,6 +49,11 @@ public class ByteArrayReader extends ByteArrayInputStream {
         super(data);
     }
 
+	public ByteArrayReader(byte[] data, String encoding) {
+        super(data);
+		this.encoding = encoding;
+    }
+	
     /**
      * @param data
      * @param start
@@ -125,7 +134,8 @@ public class ByteArrayReader extends ByteArrayInputStream {
         byte[] chars = new byte[(int)len];
         System.arraycopy(data, start + 4, chars, 0, len);
 
-        return new String(chars);
+		return Codec.decode(chars);
+//        return new String(chars);
     }
 
     /**
@@ -137,6 +147,7 @@ public class ByteArrayReader extends ByteArrayInputStream {
         byte[] raw = new byte[(int)len];
         read(raw);
 
-        return new String(raw);
+		return Codec.decode(raw);
+//        return new String(raw);
     }
 }

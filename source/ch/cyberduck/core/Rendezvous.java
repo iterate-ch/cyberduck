@@ -113,10 +113,10 @@ public class Rendezvous extends Observable implements ServiceListener {
 
 			//Host(String hostname, int port, Login login, String nickname)
 			Host h = new Host(info.getServer(),
-			    info.getPort(),
-			    new Login(info.getServer(), Preferences.instance().getProperty("connection.login.name"), null));
+			    info.getPort());
+			h.setCredentials(Preferences.instance().getProperty("connection.login.name"), null);
 			if(h.getProtocol().equals(Session.FTP)) {
-				h.setLogin(new Login(info.getServer(), null, null)); //use anonymous login for FTP
+				h.setCredentials(null, null); //use anonymous login for FTP
 			}
 
 			String identifier = info.getServer()+" ("+Host.getDefaultProtocol(info.getPort()).toUpperCase()+")";

@@ -92,19 +92,6 @@ public class UploadQueue extends Queue {
 		}
 	}
 	
-	public long getSize() {
-		if(/*this.worker.isRunning() && */this.worker.isInitialized()) {
-			/*
-			long size = 0;
-			for(java.util.Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
-				size += ((Path)iter.next()).getLocal().getSize();
-			}
-			this.size = size;
-			 */
-		}
-		return this.size; //cached value
-	}	
-
 	protected void process(Path p) {
 		p.upload();
 	}

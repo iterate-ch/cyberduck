@@ -1180,8 +1180,8 @@ public class SshClient {
      *                     opened
      * @since 0.2.0
      */
-    public SftpSubsystemClient openSftpChannel() throws IOException {
-        return openSftpChannel(null);
+    public SftpSubsystemClient openSftpChannel(String encoding) throws IOException {
+        return openSftpChannel(null, encoding);
     }
 
     /**
@@ -1192,9 +1192,9 @@ public class SshClient {
      * @throws IOException
      * @throws SshException
      */
-    public SftpSubsystemClient openSftpChannel(ChannelEventListener eventListener) throws IOException {
+    public SftpSubsystemClient openSftpChannel(ChannelEventListener eventListener, String encoding) throws IOException {
         SessionChannelClient session = openSessionChannel(eventListener);
-        SftpSubsystemClient sftp = new SftpSubsystemClient();
+        SftpSubsystemClient sftp = new SftpSubsystemClient(encoding);
 
         if (!openChannel(sftp)) {
             throw new SshException("The SFTP subsystem failed to start");

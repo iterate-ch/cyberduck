@@ -90,7 +90,6 @@ public class CDLoginController extends CDController implements LoginController {
 	public void setKeychainCheckbox(NSButton keychainCheckbox) {
 		this.keychainCheckbox = keychainCheckbox;
 		this.keychainCheckbox.setState(NSCell.OffState);
-//        this.keychainCheckbox.setState(Preferences.instance().getProperty("connection.login.useKeychain").equals("true") ? NSCell.OnState : NSCell.OffState);
 	}
 
 	private CDController windowController;

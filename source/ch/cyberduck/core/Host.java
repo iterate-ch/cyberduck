@@ -54,9 +54,9 @@ public class Host {
 			this.setHostname((String)hostnameObj);
 			Object usernameObj = dict.objectForKey(Host.USERNAME);
 			if(usernameObj != null) {
-				this.setLogin(new Login((String)dict.objectForKey(Host.HOSTNAME), (String)usernameObj, null));
+				this.setCredentials((String)usernameObj, null);
 			}
-			this.getLogin().setPrivateKeyFile((String)dict.objectForKey(Host.KEYFILE));
+			this.getCredentials().setPrivateKeyFile((String)dict.objectForKey(Host.KEYFILE));
 		}
 		Object portObj = dict.objectForKey(Host.PORT);
 		if(portObj != null) {
@@ -79,14 +79,23 @@ public class Host {
 		dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
 		dict.setObjectForKey(this.getHostname(), Host.HOSTNAME);
 		dict.setObjectForKey(this.getPort()+"", Host.PORT);
-		dict.setObjectForKey(this.getLogin().getUsername(), Host.USERNAME);
+		dict.setObjectForKey(this.getCredentials().getUsername(), Host.USERNAME);
 		dict.setObjectForKey(this.getDefaultPath(), Host.PATH);
-		if(this.getLogin().getPrivateKeyFile() != null) {
-			dict.setObjectForKey(this.getLogin().getPrivateKeyFile(), Host.KEYFILE);
+		if(this.getCredentials().getPrivateKeyFile() != null) {
+			dict.setObjectForKey(this.getCredentials().getPrivateKeyFile(), Host.KEYFILE);
 		}
 		return dict;
 	}
 
+	public Host copy() {
+		Host copy = new Host(this.getProtocol(),
+							 this.getHostname(),
+							 this.getPort(), 
+							 this.getDefaultPath(),
+							 this.getNickname());
+		return copy;
+	}
+	
 	/**
 	 * For internal use only.
 	 *
@@ -97,8 +106,8 @@ public class Host {
 			this.protocol = url.substring(0, url.indexOf("://"));
 			this.hostname = url.substring(url.indexOf("@")+1, url.lastIndexOf(":"));
 			this.port = Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length()));
-			this.login = new Login(hostname, url.substring(url.indexOf("://")+3, url.lastIndexOf("@")), null);
-			this.nickname = this.getLogin().getUsername()+"@"+this.getHostname();
+			this.setCredentials(url.substring(url.indexOf("://")+3, url.lastIndexOf("@")), null);
+			this.nickname = this.getCredentials().getUsername()+"@"+this.getHostname();
 		}
 		catch(NumberFormatException e) {
 			log.error(e.getMessage());
@@ -112,50 +121,44 @@ public class Host {
 	}
 
 	/**
-	 * New host with the default protocol and port
-	 *
-	 * @param hostname The hostname of the server
-	 * @param login    The login credentials to use
-	 */
-	public Host(String hostname, Login login) {
-		this(Preferences.instance().getProperty("connection.protocol.default"), hostname, Integer.parseInt(Preferences.instance().getProperty("connection.port.default")), login);
-	}
-
-	/**
 	 * New host with the default protocol for this port
 	 *
 	 * @param hostname The hostname of the server
-	 * @param login    The login credentials to use
+	 * @param port     The port number to connect to
 	 */
-	public Host(String hostname, int port, Login login) {
-		this(getDefaultProtocol(port), hostname, port, login);
+	public Host(String hostname, int port) {
+		this(getDefaultProtocol(port), hostname, port);
 	}
 
+	public Host(String protocol, String hostname) {
+		this(protocol, hostname, getDefaultPort(protocol));
+	}
+	
 	/**
 	 * @param protocol The protocol to use, must be either Session.HTTP, Session.FTP or Session.SFTP
 	 * @param hostname The hostname of the server
 	 * @param port     The port number to connect to
 	 * @param login    The login credentials to use
 	 */
-	public Host(String protocol, String hostname, int port, Login login) {
-		this(protocol, hostname, port, login, "", null);
+	public Host(String protocol, String hostname, int port) {
+		this(protocol, hostname, port, "", null);
 	}
 
-	public Host(String protocol, String hostname, int port, Login login, String defaultpath) {
-		this(protocol, hostname, port, login, defaultpath, null);
+	public Host(String protocol, String hostname, int port, String defaultpath) {
+		this(protocol, hostname, port, defaultpath, null);
 	}
 
 	public Host(String hostname, int port, Login login, String nickname) {
-		this(getDefaultProtocol(port), hostname, port, login, "", nickname);
+		this(getDefaultProtocol(port), hostname, port, "", nickname);
 	}
 
-	public Host(String protocol, String hostname, int port, Login login, String defaultpath, String nickname) {
+	public Host(String protocol, String hostname, int port, String defaultpath, String nickname) {
 		this.setProtocol(protocol);
 		this.setPort(port);
 		this.setHostname(hostname);
-		this.setLogin(login);
 		this.setNickname(nickname);
 		this.setDefaultPath(defaultpath);
+		this.setCredentials(null, null);
 		log.debug(this.toString());
 	}
 
@@ -202,11 +205,22 @@ public class Host {
 	// Accessor methods
 	// ----------------------------------------------------------
 
-	public void setLogin(Login login) {
+	public void setCredentials(Login login) {
 		this.login = login;
 	}
-
-	public Login getLogin() {
+	
+	public void setCredentials(String username, String password) {
+		this.setCredentials(username, 
+							password, 
+							Preferences.instance().getProperty("connection.login.useKeychain").equals("true")
+							);
+	}
+		
+	public void setCredentials(String username, String password, boolean addToKeychain) {
+		this.setCredentials(new Login(this, username, password, addToKeychain));
+	}
+	
+	public Login getCredentials() {
 		return this.login;
 	}
 
@@ -290,7 +304,7 @@ public class Host {
 	 * @return The URL of the remote host including user login hostname and port
 	 */
 	public String getURL() {
-		return this.getProtocol()+"://"+this.getLogin().getUsername()+"@"+this.getHostname()+":"+this.getPort();//+"/"+this.getDefaultPath();
+		return this.getProtocol()+"://"+this.getCredentials().getUsername()+"@"+this.getHostname()+":"+this.getPort();//+"/"+this.getDefaultPath();
 	}
 
 	public boolean equals(Object other) {

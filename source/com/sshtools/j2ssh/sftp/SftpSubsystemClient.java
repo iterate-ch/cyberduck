@@ -87,9 +87,9 @@ public class SftpSubsystemClient extends SubsystemChannel {
     /**
      * Creates a new SftpSubsystemClient object.
      */
-    public SftpSubsystemClient() {
+    public SftpSubsystemClient(String encoding) {
         // We will use our own message store implementation
-        super("sftp", new SftpMessageStore());
+        super("sftp", new SftpMessageStore(encoding), encoding);
         messageStore = (SftpMessageStore)super.messageStore;
         registerMessages();
     }

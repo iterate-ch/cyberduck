@@ -34,8 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sshtools.j2ssh.SshException;
-import com.sshtools.j2ssh.agent.AgentSocketChannel;
-import com.sshtools.j2ssh.agent.SshAgentClient;
 import com.sshtools.j2ssh.connection.*;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
@@ -136,45 +134,6 @@ public class SessionChannelClient extends IOChannel {
 
         return connection.sendChannelRequest(this, "env", true,
                 baw.toByteArray());
-    }
-
-    /**
-     * @return
-     * @throws IOException
-     * @throws SshException
-     * @throws InvalidChannelException
-     */
-    public boolean requestAgentForwarding() throws IOException {
-        log.info("Requesting agent forwarding for the session");
-
-        if (System.getProperty("sshtools.agent") == null) {
-            throw new SshException("Agent not found! 'sshtools.agent' system property should identify the agent location");
-        }
-
-        boolean success = connection.sendChannelRequest(this, "auth-agent-req",
-                true, null);
-
-        if (success) {
-            // Allow an Agent Channel to be opened
-            connection.addChannelFactory(AgentSocketChannel.AGENT_FORWARDING_CHANNEL,
-                    new ChannelFactory() {
-                        public Channel createChannel(String channelType,
-                                                     byte[] requestData) throws InvalidChannelException {
-                            try {
-                                AgentSocketChannel channel = new AgentSocketChannel(false);
-                                Socket socket = SshAgentClient.connectAgentSocket(System.getProperty("sshtools.agent") /*, 5*/);
-                                channel.bindSocket(socket);
-
-                                return channel;
-                            }
-                            catch (Exception ex) {
-                                throw new InvalidChannelException(ex.getMessage());
-                            }
-                        }
-                    });
-        }
-
-        return success;
     }
 
     /**

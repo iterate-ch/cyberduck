@@ -19,16 +19,14 @@
 
 #include <Keychain.h>
 
-/*
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getInternetPasswordFromKeychain(JNIEnv *env, 
 																					   jobject this, 
-																					   jstring jServer, 
-																					   jstring jAccount,
 																					   jstring jProtocol,
-																					   jint port) {
+																					   jstring jServer, 
+																					   jstring jAccount) {
+    const char *protocol = (*env)->GetStringUTFChars(env, jProtocol, JNI_FALSE); //todo
     const char *server = (*env)->GetStringUTFChars(env, jServer, JNI_FALSE);
     const char *account = (*env)->GetStringUTFChars(env, jAccount, JNI_FALSE);
-    const char *protocol = (*env)->GetStringUTFChars(env, jProtocol, JNI_FALSE);
     char *pass;
     UInt32 passLength;
 	
@@ -41,8 +39,8 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getInternetPasswordFromKe
 											account, 
 											0, 
 											NULL, 
-											port, 
-											protocol, 
+											0, 
+											kSecProtocolTypeFTP, 
 											kSecAuthenticationTypeDefault, 
 											&passLength, 
 											(void**)&pass, 
@@ -76,7 +74,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getInternetPasswordFromKe
 			return(NULL);
     }
 }
-*/
+
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(JNIEnv *env, 
 																			   jobject this, 

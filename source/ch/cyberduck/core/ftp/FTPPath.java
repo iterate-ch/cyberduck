@@ -111,7 +111,7 @@ public class FTPPath extends Path {
 		return this.session;
 	}
 
-	public synchronized List list(boolean refresh, boolean showHidden) {
+	public synchronized List list(String encoding, boolean refresh, boolean showHidden) {
 		List files = session.cache().get(this.getAbsolute());
 		session.addPathToHistory(this);
 		if(refresh || null == files) {
@@ -121,7 +121,7 @@ public class FTPPath extends Path {
 				session.check();
 				session.FTP.setTransferType(FTPTransferType.ASCII);
 				session.FTP.chdir(this.getAbsolute());
-				String[] lines = session.FTP.dir();
+				String[] lines = session.FTP.dir(encoding);
 				for(int i = 0; i < lines.length; i++) {
 					Path p = session.parser.parseFTPEntry(this, lines[i]);
 					if(p != null) {
@@ -136,11 +136,10 @@ public class FTPPath extends Path {
 			}
 			catch(FTPException e) {
 				session.log("FTP Error: "+e.getMessage(), Message.ERROR);
-				return files;
 			}
 			catch(IOException e) {
 				session.log("IO Error: "+e.getMessage(), Message.ERROR);
-				return files;
+				session.close();
 			}
 		}
 		session.callObservers(this);
@@ -171,6 +170,7 @@ public class FTPPath extends Path {
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+			session.close();
 		}
 	}
 
@@ -189,6 +189,7 @@ public class FTPPath extends Path {
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+			session.close();
 		}
 	}
 
@@ -227,6 +228,7 @@ public class FTPPath extends Path {
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+			session.close();
 		}
 	}
 	
@@ -260,6 +262,7 @@ public class FTPPath extends Path {
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+			session.close();
 		}
 	}
 	
@@ -314,6 +317,7 @@ public class FTPPath extends Path {
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+			session.close();
 		}
 	}
 
@@ -322,14 +326,6 @@ public class FTPPath extends Path {
 		OutputStream out = null;
 		try {
 			session.FTP.setTransferType(FTPTransferType.BINARY);
-//			try {
-//				session.log("Determining file size...", Message.PROGRESS);
-//				this.setSize(session.FTP.size(this.getAbsolute()));
-//			}
-//			catch(FTPException e) {
-//				log.error(e.getMessage());
-//				//ignore; SIZE command not recognized
-//			}
 			if(this.status.isResume()) {
 				this.status.setCurrent(this.getLocal().getSize());
 			}
@@ -399,14 +395,6 @@ public class FTPPath extends Path {
 				lineSeparator = DOS_LINE_SEPARATOR;
 			}
 			session.FTP.setTransferType(FTPTransferType.ASCII);
-//			try {
-//				session.log("Determining file size...", Message.PROGRESS);
-//				this.setSize(session.FTP.size(this.getAbsolute()));
-//			}
-//			catch(FTPException e) {
-//				log.error(e.getMessage());
-//				//ignore; SIZE command not recognized
-//			}
 			if(this.status.isResume()) {
 				this.status.setCurrent(this.getLocal().getSize());
 			}
@@ -519,6 +507,7 @@ public class FTPPath extends Path {
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+			session.close();
 		}
 	}
 
@@ -534,6 +523,7 @@ public class FTPPath extends Path {
 				catch(FTPException e) {
 					log.error(e.getMessage());
 					//ignore; SIZE command not recognized
+					this.status.setCurrent(0);
 				}
 			}
 			in = new FileInputStream(this.getLocal());
@@ -599,6 +589,7 @@ public class FTPPath extends Path {
 				catch(FTPException e) {
 					log.error(e.getMessage());
 					//ignore; SIZE command not recognized
+					this.status.setCurrent(0);
 				}
 			}
 			in = new ToNetASCIIInputStream(new FileInputStream(this.getLocal()));

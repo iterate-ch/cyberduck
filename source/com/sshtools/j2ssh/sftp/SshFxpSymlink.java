@@ -26,7 +26,6 @@
  */
 package com.sshtools.j2ssh.sftp;
 
-import ch.cyberduck.core.Codec;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
@@ -119,9 +118,7 @@ public class SshFxpSymlink extends SubsystemMessage implements MessageRequestId 
             throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         baw.writeUINT32(id);
-        baw.writeString(new String(Codec.encode(linkpath)));
-        //        baw.writeString(linkpath);
-        baw.writeString(new String(Codec.encode(targetpath)));
-        //        baw.writeString(targetpath);
+                baw.writeString(linkpath);
+        baw.writeString(targetpath);
     }
 }

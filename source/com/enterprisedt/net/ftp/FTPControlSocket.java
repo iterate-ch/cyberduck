@@ -420,51 +420,81 @@ import java.util.Vector;
 
          // create the socket
          return newPassiveDataSocket(ipAddress, port);
-     }
-
-	/**
-	 * Constructs a new <code>FTPDataSocket</code> object (client mode) and connect
-	 * to the given remote host and port number.
-	 * 
-	 * @param remoteHost Remote host to connect to.
-	 * @param port Remote port to connect to.
-	 * @return A new <code>FTPDataSocket</code> object (client mode) which is
-	 * connected to the given server.
-	 * @throws IOException Thrown if no TCP/IP connection could be made. 
-	 */
-	protected FTPDataSocket newPassiveDataSocket(String remoteHost, int port) 
-		throws IOException {
-	            
-        return new FTPPassiveDataSocket(new Socket(remoteHost, port));
 	}
-
-    /**
-     * Constructs a new <code>FTPDataSocket</code> object (server mode) which will
-     * listen on the given port number.
-     * 
-     * @param port Remote port to listen on.
-     * @return A new <code>FTPDataSocket</code> object (server mode) which is
-     *         configured to listen on the given port.
-     * @throws IOException Thrown if an error occurred when creating the socket. 
-     */
+	 
+	 /*
+	 private int[] parsePASVResponse(String response)  throws FTPException {
+		 int startIP = 0;
+		 for (int i = 4; i < response.length(); i++) {
+			 if (Character.isDigit(response.charAt(i))) { startIP = i; break; }
+		 }
+		 
+		 int i;
+		 int j = startIP;
+		 int parts[] = new int[6];        
+		 for (i = 0; i < 6; i++) {
+			 StringBuffer buf = new StringBuffer();
+			 for (; j < response.length(); j++) {
+				 char c = response.charAt(j);
+				 if (Character.isDigit(c)) {
+					 buf.append(c);
+				 } else if (i < 5 && c != ',') {
+					 throw new FTPException("Malformed PASV reply: " + response);
+				 } else {
+					 j += 1;
+					 break;
+				 }
+			 }
+			 if (buf.length() == 0) throw new FTPException("Malformed PASV reply: " + response);
+			 parts[i] = new Integer(buf.toString()).intValue();
+		 }
+		 return parts;
+	 }
+	  */
+	 
+	 /**
+		 * Constructs a new <code>FTPDataSocket</code> object (client mode) and connect
+		 * to the given remote host and port number.
+		 * 
+		 * @param remoteHost Remote host to connect to.
+		 * @param port Remote port to connect to.
+		 * @return A new <code>FTPDataSocket</code> object (client mode) which is
+		 * connected to the given server.
+		 * @throws IOException Thrown if no TCP/IP connection could be made. 
+		 */
+	 protected FTPDataSocket newPassiveDataSocket(String remoteHost, int port) 
+		 throws IOException {
+	            
+			 return new FTPPassiveDataSocket(new Socket(remoteHost, port));
+		 }
+	 
+	 /**
+		 * Constructs a new <code>FTPDataSocket</code> object (server mode) which will
+		 * listen on the given port number.
+		 * 
+		 * @param port Remote port to listen on.
+		 * @return A new <code>FTPDataSocket</code> object (server mode) which is
+		 *         configured to listen on the given port.
+		 * @throws IOException Thrown if an error occurred when creating the socket. 
+		 */
      protected FTPDataSocket newActiveDataSocket(int port) 
-    	throws IOException {
-    		
-    	return new FTPActiveDataSocket(new ServerSocket(port));
-     }
+		 throws IOException {
+			 
+			 return new FTPActiveDataSocket(new ServerSocket(port));
+		 }
      
      /**
-      *  Send a command to the FTP server and
-      *  return the server's reply as a structured
-      *  reply object
-      * 
-      *  @param command   command to send
-      *
-      *  @return  reply to the supplied command
-      */
+		 *  Send a command to the FTP server and
+		 *  return the server's reply as a structured
+		 *  reply object
+		 * 
+		 *  @param command   command to send
+		 *
+		 *  @return  reply to the supplied command
+		 */
      public FTPReply sendCommand(String command)
          throws IOException {
-         
+			 
          writeCommand(command);
          
          // and read the result

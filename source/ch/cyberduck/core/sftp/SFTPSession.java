@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 import com.sshtools.j2ssh.SshClient;
 import com.sshtools.j2ssh.SshEventAdapter;
 import com.sshtools.j2ssh.SshException;
-import com.sshtools.j2ssh.agent.AgentAuthenticationClient;
 import com.sshtools.j2ssh.authentication.*;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
@@ -63,7 +62,7 @@ public class SFTPSession extends Session {
 			if(this.SFTP != null) {
 				this.log("Disconnecting...", Message.PROGRESS);
 				this.SFTP.close();
-				this.host.getLogin().setPassword(null);
+				this.host.getCredentials().setPassword(null);
 				this.SFTP = null;
 			}
 			if(this.SSH != null) {
@@ -74,11 +73,9 @@ public class SFTPSession extends Session {
 		}
 		catch(SshException e) {
 			log.error("SSH Error: "+e.getMessage());
-//            this.log("SSH Error: " + e.getMessage(), Message.ERROR);
 		}
 		catch(IOException e) {
 			log.error("IO Error: "+e.getMessage());
-//            this.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
 		finally {
 			this.log("Disconnected", Message.PROGRESS);
@@ -86,7 +83,7 @@ public class SFTPSession extends Session {
 		}
 	}
 
-	public synchronized void connect() throws IOException {
+	public synchronized void connect(String encoding) throws IOException {
 		this.log("Opening SSH connection to "+host.getIp()+"...", Message.PROGRESS);
 		this.setConnected();
 		this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
@@ -133,25 +130,21 @@ public class SFTPSession extends Session {
 		}
 
 		SSH.connect(properties, host.getHostKeyVerificationController());
-		this.log("SSH connection opened", Message.PROGRESS);
-		String id = SSH.getServerId();
-		this.host.setIdentification(id);
-		this.log(id, Message.TRANSCRIPT);
-
-		log.info(SSH.getAvailableAuthMethods(host.getLogin().getUsername()));
-		this.login();
-		this.log("Starting SFTP subsystem...", Message.PROGRESS);
-		this.SFTP = SSH.openSftpChannel();
-		this.log("SFTP subsystem ready", Message.PROGRESS);
-	}
-
-	private int loginUsingAgentAuthentication(final Login credentials) throws IOException {
-		log.info("Trying ssh-agent authentication...");
-		AgentAuthenticationClient agent = new AgentAuthenticationClient();
-		agent.setUsername(credentials.getUsername());
-//		agent.setAgent(new SshAgentClient(false, "sftp", SSH.));
-// Try the authentication
-		return SSH.authenticate(agent);
+		log.debug("********");
+		if(SSH.isConnected()) {
+			this.log("SSH connection opened", Message.PROGRESS);
+			String id = SSH.getServerId();
+			this.host.setIdentification(id);
+			this.log(id, Message.TRANSCRIPT);
+			log.info(SSH.getAvailableAuthMethods(host.getCredentials().getUsername()));
+			this.login();
+			this.log("Starting SFTP subsystem...", Message.PROGRESS);
+			this.SFTP = SSH.openSftpChannel(encoding);
+			this.log("SFTP subsystem ready", Message.PROGRESS);
+		}
+		else {
+			this.close();
+		}
 	}
 
 	private int loginUsingKBIAuthentication(final Login credentials) throws IOException {
@@ -197,8 +190,8 @@ public class SFTPSession extends Session {
 		if(keyFile.isPassphraseProtected()) {
 			passphrase = credentials.getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
 			if(null == passphrase || passphrase.equals("")) {
-				host.setLogin(credentials.promptUser("The Private Key is password protected. Enter the passphrase for the key file '"+credentials.getPrivateKeyFile()+"'."));
-				if(host.getLogin().tryAgain()) {
+				host.setCredentials(credentials.promptUser("The Private Key is password protected. Enter the passphrase for the key file '"+credentials.getPrivateKeyFile()+"'."));
+				if(host.getCredentials().tryAgain()) {
 					passphrase = credentials.getPassword();
 					if(keyFile.isPassphraseProtected()) {
 						if(credentials.usesKeychain()) {
@@ -219,7 +212,7 @@ public class SFTPSession extends Session {
 
 	private synchronized void login() throws IOException {
 		log.debug("login");
-		Login credentials = host.getLogin();
+		Login credentials = host.getCredentials();
 		if(credentials.check()) {
 			this.log("Authenticating as '"+credentials.getUsername()+"'", Message.PROGRESS);
 			if(credentials.usesPublicKeyAuthentication()) {
@@ -238,13 +231,16 @@ public class SFTPSession extends Session {
 				}
 			}
 			this.log("Login failed", Message.PROGRESS);
-			host.setLogin(credentials.promptUser("Authentication for user "+credentials.getUsername()+" failed."));
-			if(host.getLogin().tryAgain()) {
+			host.setCredentials(credentials.promptUser("Authentication for user "+credentials.getUsername()+" failed."));
+			if(host.getCredentials().tryAgain()) {
 				this.login();
 			}
 			else {
 				throw new SshException("Login as user "+credentials.getUsername()+" canceled.");
 			}
+		}
+		else {
+			throw new IOException("Login as user "+host.getCredentials().getUsername()+" failed.");
 		}
 	}
 

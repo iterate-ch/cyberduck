@@ -34,8 +34,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 
-//import ch.cyberduck.core.Codec;
-
 /**
  * @author $author$
  * @version $Revision$
@@ -114,7 +112,6 @@ public class PasswordAuthenticationClient extends SshAuthenticationClient {
         ByteArrayWriter baw = new ByteArrayWriter();
         baw.write(0);
         baw.writeString(password);
-//		baw.writeString(new String(Codec.encode(password)));
 
         SshMsgUserAuthRequest msg = new SshMsgUserAuthRequest(getUsername(),
                 serviceToStart, "password", baw.toByteArray());
@@ -130,9 +127,7 @@ public class PasswordAuthenticationClient extends SshAuthenticationClient {
                 baw = new ByteArrayWriter();
                 baw.write(1);
                 baw.writeString(password);
-//				baw.writeString(new String(Codec.encode(password)));
                 baw.writeString(newpassword);
-//				baw.writeString(new String(Codec.encode(newpassword)));
                 msg = new SshMsgUserAuthRequest(getUsername(), serviceToStart,
                         "password", baw.toByteArray());
                 authentication.sendMessage(msg);

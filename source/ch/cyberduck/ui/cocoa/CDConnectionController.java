@@ -199,7 +199,6 @@ public class CDConnectionController extends CDController implements Observer {
 	public void setKeychainCheckbox(NSButton keychainCheckbox) {
 		this.keychainCheckbox = keychainCheckbox;
 		this.keychainCheckbox.setState(NSCell.OffState);
-		//        this.keychainCheckbox.setState(Preferences.instance().getProperty("connection.login.useKeychain").equals("true") ? NSCell.OnState : NSCell.OffState);
 	}
 
 	private NSButton anonymousCheckbox; //IBOutlet
@@ -348,11 +347,9 @@ public class CDConnectionController extends CDController implements Observer {
 	 * is avaialble for this hostname
 	 */
 	public void getPasswordFromKeychain(Object sender) {
-		if(hostPopup.stringValue() != null &&
-		    !hostPopup.stringValue().equals("") &&
-		    usernameField.stringValue() != null &&
-		    !usernameField.stringValue().equals("")) {
-			Login l = new Login(hostPopup.stringValue(), usernameField.stringValue(), null);
+		if(hostPopup.stringValue() != null && !hostPopup.stringValue().equals("") &&
+		    usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
+			Login l = new Login(new Host(hostPopup.stringValue(), protocolPopup.selectedItem().tag()), usernameField.stringValue(), null);
 			String passFromKeychain = l.getPasswordFromKeychain();
 			if(passFromKeychain != null && !passFromKeychain.equals("")) {
 				log.info("Password for "+usernameField.stringValue()+" found in Keychain");
@@ -371,11 +368,11 @@ public class CDConnectionController extends CDController implements Observer {
 		this.hostPopup.setStringValue(selectedItem.getHostname());
 		this.pathField.setStringValue(selectedItem.getDefaultPath());
 		this.portField.setIntValue(protocolPopup.selectedItem().tag());
-		this.usernameField.setStringValue(selectedItem.getLogin().getUsername());
+		this.usernameField.setStringValue(selectedItem.getCredentials().getUsername());
 		this.pkCheckbox.setEnabled(selectedItem.getProtocol().equals(Session.SFTP));
-		if(selectedItem.getLogin().getPrivateKeyFile() != null) {
+		if(selectedItem.getCredentials().getPrivateKeyFile() != null) {
 			this.pkCheckbox.setState(NSCell.OnState);
-			this.pkLabel.setStringValue(selectedItem.getLogin().getPrivateKeyFile());
+			this.pkLabel.setStringValue(selectedItem.getCredentials().getPrivateKeyFile());
 		}
 		else {
 			this.pkCheckbox.setState(NSCell.OffState);
@@ -415,22 +412,22 @@ public class CDConnectionController extends CDController implements Observer {
 						host = new Host(Session.SFTP,
 										hostPopup.stringValue(),
 										Integer.parseInt(portField.stringValue()),
-										new Login(hostPopup.stringValue(), usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState),
 										pathField.stringValue());
+						host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
 						break;
 					case (Session.FTP_PORT):
 						// FTP has been selected as the protocol to connect with
 						host = new Host(Session.FTP,
 										hostPopup.stringValue(),
 										Integer.parseInt(portField.stringValue()),
-										new Login(hostPopup.stringValue(), usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState),
 										pathField.stringValue());
+						host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
 						break;
 					default:
 						throw new IllegalArgumentException("No protocol selected.");
 				}
 					if(pkCheckbox.state() == NSCell.OnState) {
-						host.getLogin().setPrivateKeyFile(pkLabel.stringValue());
+						host.getCredentials().setPrivateKeyFile(pkLabel.stringValue());
 					}
 					browserController.mount(host);
 				break;

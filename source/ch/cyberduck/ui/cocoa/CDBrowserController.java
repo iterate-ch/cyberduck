@@ -154,7 +154,7 @@ public class CDBrowserController extends CDController implements Observer {
 				statusLabel.display();
 			}
 			else if(msg.getTitle().equals(Message.REFRESH)) {
-				refreshButtonClicked(null);
+				reloadButtonClicked(null);
 			}
 			else if(msg.getTitle().equals(Message.OPEN)) {
 				progressIndicator.startAnimation(this);
@@ -369,7 +369,7 @@ public class CDBrowserController extends CDController implements Observer {
 		if(this.browserModel.numberOfRowsInTableView(browserTable) > 0 && browserTable.numberOfSelectedRows() > 0) {
 			Path p = (Path)this.browserModel.getEntry(browserTable.selectedRow()); //last row selected
 			if(p.attributes.isDirectory()) {
-				p.list();
+				p.list(false, this.showHiddenFiles);
 			}
 			if(p.attributes.isFile() || browserTable.numberOfSelectedRows() > 1) {
 				if(Preferences.instance().getProperty("browser.doubleclick.edit").equals("true")) {
@@ -496,17 +496,20 @@ public class CDBrowserController extends CDController implements Observer {
 		int index;
 		Host host = null;
 		if((index = input.indexOf('@')) != -1) {
-			host = new Host(input.substring(index+1, input.length()),
-			    new Login(input.substring(index+1, input.length()),
-			        input.substring(0, index), null));
+			host = new Host(Preferences.instance().getProperty("connection.protocol.default"),
+							input.substring(index+1, input.length()),
+							Integer.parseInt(Preferences.instance().getProperty("connection.port.default")));
+			host.setCredentials(input.substring(0, index), null);
 		}
 		else {
-			host = new Host(input, new Login(input, null, null));
+			host = new Host(Preferences.instance().getProperty("connection.protocol.default"),
+							input,
+							Integer.parseInt(Preferences.instance().getProperty("connection.port.default")));
 			if(host.getProtocol().equals(Session.FTP)) {
-				host.getLogin().setUsername(Preferences.instance().getProperty("ftp.anonymous.name"));
+				host.getCredentials().setUsername(Preferences.instance().getProperty("ftp.anonymous.name"));
 			}
 			else {
-				host.getLogin().setUsername(Preferences.instance().getProperty("connection.login.name"));
+				host.getCredentials().setUsername(Preferences.instance().getProperty("connection.login.name"));
 			}
 		}
 		this.mount(host);
@@ -587,17 +590,15 @@ public class CDBrowserController extends CDController implements Observer {
 		this.bookmarkDrawer.open();
 		Host item;
 		if(this.isMounted()) {
-			Host h = this.workdir().getSession().getHost();
-			item = new Host(h.getProtocol(),
-			    h.getHostname(),
-			    h.getPort(),
-			    new Login(h.getHostname(), h.getLogin().getUsername(), h.getLogin().getPassword()),
-			    this.workdir().getAbsolute());
+			item = this.workdir().getSession().getHost().copy();
+			item.setDefaultPath(this.workdir().getAbsolute());
 		}
 		else {
-			item = new Host("", new Login("", null, null));
+			item = new Host(Preferences.instance().getProperty("connection.protocol.default"),
+							"localhost",
+							Integer.parseInt(Preferences.instance().getProperty("connection.port.default")));
 		}
-		bookmarkModel.addItem(item);
+		this.bookmarkModel.addItem(item);
 		this.bookmarkTable.reloadData();
 		this.bookmarkTable.selectRow(bookmarkModel.indexOf(item), false);
 		this.bookmarkTable.scrollRowToVisible(bookmarkModel.indexOf(item));
@@ -668,7 +669,7 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void pathPopupSelectionChanged(Object sender) {
 		Path p = (Path)pathPopupItems.get(pathPopupButton.indexOfSelectedItem());
-		p.list();
+		p.list(false, this.showHiddenFiles);
 	}
 
 	private void addPathToPopup(Path p) {
@@ -682,6 +683,42 @@ public class CDBrowserController extends CDController implements Observer {
 		}
 	}
 
+	private String encoding = Preferences.instance().getProperty("browser.charset.encoding");
+		
+	private NSPopUpButton encodingPopup;
+	
+	public void setEncodingPopup(NSPopUpButton encodingPopup) {
+		this.encodingPopup = encodingPopup;
+		this.encodingPopup.setTarget(this);
+		this.encodingPopup.setAction(new NSSelector("encodingButtonClicked", new Class[]{NSPopUpButton.class}));
+		this.encodingPopup.removeAllItems();
+		java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
+		String[] items = new String[charsets.size()];
+		java.util.Iterator iterator = charsets.values().iterator();
+		int i = 0;
+		while(iterator.hasNext()) {
+			items[i] = ((java.nio.charset.Charset)iterator.next()).name();
+			i++;
+		}
+		this.encodingPopup.addItemsWithTitles(new NSArray(items));
+		this.encodingPopup.setTitle(Preferences.instance().getProperty("browser.charset.encoding"));
+	}
+	
+	public void encodingButtonClicked(Object sender) {
+		if(sender instanceof NSMenuItem) {
+			this.encoding = ((NSMenuItem)sender).title();
+			this.encodingPopup.setTitle(this.encoding);
+		}
+		if(sender instanceof NSPopUpButton) {
+			this.encoding = encodingPopup.titleOfSelectedItem();
+		}
+		log.info("Encoding changed to:"+this.encoding);
+		if(this.isMounted()) {
+			this.workdir().getSession().close();
+			this.reloadButtonClicked(sender);
+		}
+	}
+	
 	// ----------------------------------------------------------
 	// Drawers
 	// ----------------------------------------------------------
@@ -859,7 +896,7 @@ public class CDBrowserController extends CDController implements Observer {
 						p = (Path)i.next();
 						p.delete();
 					}
-					p.getParent().list(true);
+					p.getParent().list(true, this.showHiddenFiles);
 				}
 				break;
 			case (NSAlertPanel.AlternateReturn):
@@ -867,10 +904,12 @@ public class CDBrowserController extends CDController implements Observer {
 		}
 	}
 
-	public void refreshButtonClicked(Object sender) {
-		log.debug("refreshButtonClicked");
-		this.browserTable.deselectAll(sender);
-		this.workdir().list(true);
+	public void reloadButtonClicked(Object sender) {
+		log.debug("reloadButtonClicked");
+		if(this.isMounted()) {
+			this.browserTable.deselectAll(sender);
+			this.workdir().list(encoding, true, this.showHiddenFiles);
+		}
 	}
 
 	public void downloadAsButtonClicked(Object sender) {
@@ -1021,12 +1060,12 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void backButtonClicked(Object sender) {
 		log.debug("backButtonClicked");
-		this.workdir().getSession().getPreviousPath().list();
+		this.workdir().getSession().getPreviousPath().list(false, this.showHiddenFiles);
 	}
 
 	public void upButtonClicked(Object sender) {
 		log.debug("upButtonClicked");
-		this.workdir().getParent().list();
+		this.workdir().getParent().list(false, this.showHiddenFiles);
 	}
 
 	public void connectButtonClicked(Object sender) {
@@ -1039,6 +1078,17 @@ public class CDBrowserController extends CDController implements Observer {
 		this.unmount(new NSSelector("unmountSheetDidEnd",
 		    new Class[]{NSWindow.class, int.class, Object.class}), null // end selector
 		);
+	}
+	
+	private boolean showHiddenFiles = Preferences.instance().getProperty("browser.showHidden").equals("true");
+		
+	public void showHiddenFilesClicked(Object sender) {
+		if(sender instanceof NSMenuItem) {
+			NSMenuItem item = (NSMenuItem)sender;
+			this.showHiddenFiles = item.state() == NSCell.OnState ? false : true;
+			item.setState(this.showHiddenFiles ? NSCell.OnState : NSCell.OffState);
+			this.workdir().list(true, this.showHiddenFiles);
+		}
 	}
 
 	public boolean isMounted() {
@@ -1069,7 +1119,7 @@ public class CDBrowserController extends CDController implements Observer {
 						Path p = (Path)iter.next();
 						PathFactory.createPath(workdir.getSession(), p.getAbsolute()).rename(workdir.getAbsolute()+"/"+p.getName());
 						p.getParent().invalidate();
-						workdir.list(true);
+						workdir.list(true, this.showHiddenFiles);
 					}
 				}
 				pboard.setPropertyListForType(null, "QueuePBoardType");
@@ -1130,12 +1180,12 @@ public class CDBrowserController extends CDController implements Observer {
 		Host host = new Host((String)args.objectForKey("Protocol"),
 		    (String)args.objectForKey("Host"),
 		    Integer.parseInt((String)args.objectForKey("Port")),
-		    new Login((String)args.objectForKey("Host"), (String)args.objectForKey("Username"), (String)args.objectForKey("Password"), false),
 		    (String)args.objectForKey("InitialPath"));
+		host.setCredentials((String)args.objectForKey("Username"), null);
 		this.mount(host);
 	}
 
-	public void mount(final Host host) {
+	public void mount(Host host) {
 		log.debug("mount:"+host);
 		if(this.unmount(new NSSelector("mountSheetDidEnd",
 		    new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
@@ -1164,9 +1214,11 @@ public class CDBrowserController extends CDController implements Observer {
 					    null, //alternative button
 					    null //other button
 					));
+					session.close();
+					return;
 				}
 			}
-			host.getLogin().setController(new CDLoginController(this));
+			host.getCredentials().setController(new CDLoginController(this));
 			session.mount();
 		}
 	}
@@ -1348,6 +1400,12 @@ public class CDBrowserController extends CDController implements Observer {
 			else
 				item.setTitle(NSBundle.localizedString("Copy", "Menu item"));
 		}
+		if(item.action().name().equals("showHiddenFilesClicked:")) {
+			item.setState(this.showHiddenFiles ? NSCell.OnState : NSCell.OffState);
+		}
+		if(item.action().name().equals("encodingButtonClicked:")) {
+			item.setState(this.encoding.equals(item.title()) ? NSCell.OnState : NSCell.OffState);
+		}
 		return this.validateItem(item.action().name());
 	}
 
@@ -1360,6 +1418,12 @@ public class CDBrowserController extends CDController implements Observer {
 			return this.isMounted()
 			    && pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null
 			    && pboard.propertyListForType("QueuePBoardType") != null;
+		}
+		if(identifier.equals("showHiddenFilesClicked:")) {
+			return this.isMounted();
+		}
+		if(identifier.equals("Encoding") || identifier.equals("encodingButtonClicked:")) {
+			return this.isMounted();
 		}
 		if(identifier.equals("addBookmarkButtonClicked:")) {
 			return true;
@@ -1398,7 +1462,7 @@ public class CDBrowserController extends CDController implements Observer {
 		if(identifier.equals("Delete") || identifier.equals("deleteButtonClicked:")) {
 			return this.isMounted() && browserTable.selectedRow() != -1;
 		}
-		if(identifier.equals("Refresh") || identifier.equals("refreshButtonClicked:")) {
+		if(identifier.equals("Refresh") || identifier.equals("reloadButtonClicked:")) {
 			return this.isMounted();
 		}
 		if(identifier.equals("Download") || identifier.equals("downloadButtonClicked:")) {
@@ -1453,6 +1517,7 @@ public class CDBrowserController extends CDController implements Observer {
 		this.upButton.setEnabled(enabled);
 		this.pathPopupButton.setEnabled(enabled);
 		this.searchField.setEnabled(enabled);
+		this.encodingPopup.setEnabled(enabled);
 		return this.validateItem(item.itemIdentifier());
 	}
 
@@ -1485,13 +1550,22 @@ public class CDBrowserController extends CDController implements Observer {
 			item.setMaxSize(quickConnectPopup.frame().size());
 			return item;
 		}
+		if(itemIdentifier.equals("Encoding")) {
+			item.setLabel(NSBundle.localizedString("Encoding", "Toolbar item"));
+			item.setPaletteLabel(NSBundle.localizedString("Encoding", "Toolbar item"));
+			item.setToolTip(NSBundle.localizedString("Character Encoding", "Toolbar item tooltip"));
+			item.setView(encodingPopup);
+			item.setMinSize(encodingPopup.frame().size());
+			item.setMaxSize(encodingPopup.frame().size());
+			return item;
+		}
 		if(itemIdentifier.equals("Refresh")) {
 			item.setLabel(NSBundle.localizedString("Refresh", "Toolbar item"));
 			item.setPaletteLabel(NSBundle.localizedString("Refresh", "Toolbar item"));
 			item.setToolTip(NSBundle.localizedString("Refresh directory listing", "Toolbar item tooltip"));
 			item.setImage(NSImage.imageNamed("reload.tiff"));
 			item.setTarget(this);
-			item.setAction(new NSSelector("refreshButtonClicked", new Class[]{Object.class}));
+			item.setAction(new NSSelector("reloadButtonClicked", new Class[]{Object.class}));
 			return item;
 		}
 		if(itemIdentifier.equals("Download")) {
@@ -1603,6 +1677,7 @@ public class CDBrowserController extends CDController implements Observer {
 			"Bookmarks",
 			"Quick Connect",
 			"Refresh",
+			"Encoding",
 			"Synchronize",
 			"Download",
 			"Upload",
@@ -1777,7 +1852,7 @@ public class CDBrowserController extends CDController implements Observer {
 								PathFactory.createPath(parent.getSession(), p.getAbsolute()).rename(parent.getAbsolute()+"/"+p.getName());
 							}
 							tableView.deselectAll(null);
-							workdir().list(true);
+							workdir().list(true, showHiddenFiles);
 							return true;
 						}
 					}

@@ -132,11 +132,27 @@ public class CDMainController extends NSObject {
 	public void setUpdateText(NSTextView updateText) {
 		this.updateText = updateText;
 	}
+	
+	private NSMenu encodingMenu;
+	
+	public void setEncodingMenu(NSMenu encodingMenu) {
+		this.encodingMenu = encodingMenu;
+		this.encodingMenu.setAutoenablesItems(true);
+		java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
+		java.util.Iterator iterator = charsets.values().iterator();
+		while(iterator.hasNext()) {
+			this.encodingMenu.addItem(new NSMenuItem(
+													 ((java.nio.charset.Charset)iterator.next()).name(),
+									  new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
+									  ""
+									  ));
+		}
+	}
 
 	private NSMenu bookmarkMenu;
 	private NSMenu rendezvousMenu;
-	private NSObject bookmarkMenuDelegate;
-	private NSObject rendezvousMenuDelegate;
+	private Object bookmarkMenuDelegate;
+	private Object rendezvousMenuDelegate;
 	private Rendezvous rendezvous;
 
 	public void setBookmarkMenu(NSMenu bookmarkMenu) {
@@ -154,7 +170,7 @@ public class CDMainController extends NSObject {
 		this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle("Rendezvous"));
 	}
 
-	private class BookmarkMenuDelegate extends NSObject {
+	private class BookmarkMenuDelegate {
 		private Map items = new HashMap();
 
 		public BookmarkMenuDelegate() {

@@ -31,6 +31,7 @@ public class Login {
 	private static Logger log = Logger.getLogger(Login.class);
 
 	private String serviceName;
+	private String protocol;
 	private String user;
 	private transient String pass;
 	private String privateKeyFile;
@@ -65,12 +66,21 @@ public class Login {
 	}
 
 	/**
+		* @see #getInternetPasswordFromKeychain
+	 */
+	public native String getInternetPasswordFromKeychain(String protocol, String serviceName, String account);
+
+	public String getInternetPasswordFromKeychain() {
+		return this.getInternetPasswordFromKeychain(this.protocol, this.serviceName, this.getUsername());
+	}
+	
+	/**
 	 * @see #getPasswordFromKeychain
 	 */
 	public native String getPasswordFromKeychain(String serviceName, String account);
 
 	public String getPasswordFromKeychain() {
-		return this.getPasswordFromKeychain(this.getServiceName(), this.getUsername());
+		return this.getPasswordFromKeychain(this.serviceName, this.getUsername());
 	}
 
 	/**
@@ -80,7 +90,7 @@ public class Login {
 
 	public void addPasswordToKeychain() {
 		if(this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
-			this.addPasswordToKeychain(this.getServiceName(), this.getUsername(), this.getPassword());
+			this.addPasswordToKeychain(this.serviceName, this.getUsername(), this.getPassword());
 		}
 	}
 
@@ -89,8 +99,11 @@ public class Login {
 	 * @param user        Login with this username
 	 * @param pass        Passphrase
 	 */
-	public Login(String serviceName, String user, String pass) {
-		this(serviceName, user, pass, Preferences.instance().getProperty("connection.login.useKeychain").equals("true"));
+	public Login(Host h, String user, String pass) {
+		this(h, 
+			 user, 
+			 pass, 
+			 false);
 	}
 
 	/**
@@ -99,8 +112,9 @@ public class Login {
 	 * @param pass                    Passphrase
 	 * @param shouldBeAddedToKeychain if the credential should be added to the keychain uppon successful login
 	 */
-	public Login(String serviceName, String user, String pass, boolean shouldBeAddedToKeychain) {
-		this.serviceName = serviceName;
+	public Login(Host h, String user, String pass, boolean shouldBeAddedToKeychain) {
+		this.serviceName = h.getHostname();
+		this.protocol = h.getProtocol();
 		this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
 		this.init(user, pass);
 	}
@@ -188,7 +202,8 @@ public class Login {
 		if(!this.hasReasonableValues()) {
 			if(Preferences.instance().getProperty("connection.login.useKeychain").equals("true")) {
 				log.info("Searching keychain for password...");
-				String passFromKeychain = this.getPasswordFromKeychain();
+				String passFromKeychain = this.getInternetPasswordFromKeychain();
+//				String passFromKeychain = this.getPasswordFromKeychain();
 				if(null == passFromKeychain || passFromKeychain.equals("")) {
 					return this.promptUser("The username or password does not seem reasonable.").tryAgain();
 				}
@@ -237,10 +252,6 @@ public class Login {
 
 	public void setPassword(String pass) {
 		this.init(this.getUsername(), pass);
-	}
-
-	public String getServiceName() {
-		return this.serviceName;
 	}
 
 	public void setController(LoginController lc) {

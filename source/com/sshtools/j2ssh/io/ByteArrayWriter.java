@@ -30,16 +30,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 
+import ch.cyberduck.core.Codec;
 
 /**
  * @author $author$
  * @version $Revision$
  */
 public class ByteArrayWriter extends ByteArrayOutputStream {
-    /**
-     * Creates a new ByteArrayWriter object.
-     */
+	
+	private String encoding;
+	
     public ByteArrayWriter() {
+		//
+    }
+
+    public ByteArrayWriter(String encoding) {
+		this.encoding = encoding;
     }
 
     /**
@@ -153,14 +159,14 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
      * @param str
      * @throws IOException
      */
-    public void writeString(String str) throws IOException {
-        if (str == null) {
+    public void writeString(String s) throws IOException {
+        if (s == null) {
             writeInt(0);
         }
         else {
-            writeInt(str.getBytes().length);
-            write(str.getBytes());
-//            write(str.getBytes("US-ASCII"));
+			byte[] b = Codec.encode(s, encoding);
+            writeInt(b.length);
+			write(b);
         }
     }
 }

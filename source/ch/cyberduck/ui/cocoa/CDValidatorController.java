@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import java.util.Iterator;
+import java.util.Observer;
 import java.util.Observable;
 import java.util.List;
 
@@ -32,7 +33,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public abstract class CDValidatorController extends AbstractValidator {
+public abstract class CDValidatorController extends AbstractValidator implements Observer {
 	protected static Logger log = Logger.getLogger(CDValidatorController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -48,9 +49,20 @@ public abstract class CDValidatorController extends AbstractValidator {
 		    this.fileTableView);
 	}
 	
+	public void update(Observable o, Object arg) {
+		if(arg instanceof Message) {
+			Message msg = (Message)arg;
+			if(msg.getTitle().equals(Message.ERROR)) {
+				this.setCanceled(true);
+			}
+		}
+	}
+	
 	public void validate(Queue q) {
+		q.getRoot().getSession().addObserver(this);
 		for(Iterator iter = q.getChilds().iterator(); iter.hasNext() && !this.isCanceled(); ) {
 			Path child = (Path)iter.next();
+			log.debug("Validating:"+child);
 			if(this.validate(child, q.isResumeRequested())) {
 				this.validated.add(child);
 			}
@@ -58,9 +70,11 @@ public abstract class CDValidatorController extends AbstractValidator {
 				this.fireDataChanged();
 			}
 		}
+		q.getRoot().getSession().deleteObserver(this);
 		if(this.visible && !this.isCanceled()) {
 			this.statusIndicator.stopAnimation(null);
 			this.setEnabled(true);
+			this.fileTableView.sizeToFit();
 			CDQueueController.instance().waitForSheet();
 		}
 	}
@@ -237,7 +251,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.fileTableView.setAllowsColumnResizing(true);
 		this.fileTableView.setAllowsColumnSelection(false);
 		this.fileTableView.setAllowsColumnReordering(true);
-		this.fileTableView.sizeToFit();
+//		this.fileTableView.sizeToFit();
 	}
 
 	protected NSButton skipButton; // IBOutlet

@@ -53,20 +53,7 @@ public class DownloadQueue extends Queue {
 			this.size += ((Path)iter.next()).getSize();
 		}
 	}
-		
-	public long getSize() {
-		if(/*this.worker.isRunning() && */this.worker.isInitialized()) {
-			/*
-			long size = 0;
-			for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
-				size += ((Path)iter.next()).getSize();
-			}
-			this.size = size;
-			 */
-		}
-		return this.size; //cached value
-	}
-	
+			
 	protected void process(Path p) {
 		p.download();
 	}

@@ -29,16 +29,21 @@
 #include <Security/SecKeychain.h>
 #include <Security/SecKeychainItem.h>
 
+/*
+char *getInternetPwdFromKeychain(const char *service, 
+								 const char *account,
+								 SecKeychainItemRef itemRef);
+
 char *getPwdFromKeychain(const char *service, 
 						 const char *account,
-						 SecKeychainItemRef itemRef);//, OSStatus *error);
+						 SecKeychainItemRef itemRef);
 
 void addPwdToKeychain(const char *service, 
 					  const char *account, 
 					  const char *password);
 
-void changePwdInKeychain (const char *service, 
-						  const char *account, 
-						  const char *password,
-						  SecKeychainItemRef itemRef);
-	
+void changePwdInKeychain(const char *service, 
+						 const char *account, 
+						 const char *password,
+						 SecKeychainItemRef itemRef);
+*/

@@ -47,7 +47,8 @@ class SftpMessageStore extends SubsystemMessageStore {
     /**
      * Creates a new SftpMessageStore object.
      */
-    public SftpMessageStore() {
+    public SftpMessageStore(String encoding) {
+		super(encoding);
         this.transcript = TranscriptFactory.getImpl(this.toString()); //@todo get proper log
     }
 

@@ -26,7 +26,6 @@
  */
 package com.sshtools.j2ssh.sftp;
 
-import ch.cyberduck.core.Codec;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
@@ -72,8 +71,7 @@ public class SshFxpStat extends SubsystemMessage implements MessageRequestId {
             throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         id = bar.readUINT32();
-        path = Codec.decode(bar.readString());
-//        path = bar.readString();
+        path = bar.readString();
     }
 
     /**
@@ -108,7 +106,6 @@ public class SshFxpStat extends SubsystemMessage implements MessageRequestId {
             throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         baw.writeUINT32(id);
-        baw.writeString(new String(Codec.encode(path)));
-        //        baw.writeString(path);
+        baw.writeString(path);
     }
 }

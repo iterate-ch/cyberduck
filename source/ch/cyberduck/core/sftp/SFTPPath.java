@@ -96,7 +96,7 @@ public class SFTPPath extends Path {
 		return this.session;
 	}
 
-	public synchronized List list(boolean refresh, boolean showHidden) {
+	public synchronized List list(String encoding, boolean refresh, boolean showHidden) {
 		List files = session.cache().get(this.getAbsolute());
 		session.addPathToHistory(this);
 		if(refresh || null == files) {
@@ -147,11 +147,10 @@ public class SFTPPath extends Path {
 			}
 			catch(SshException e) {
 				session.log("SSH Error: "+e.getMessage(), Message.ERROR);
-				return files;
 			}
 			catch(IOException e) {
 				session.log("IO Error: "+e.getMessage(), Message.ERROR);
-				return files;
+				session.close();
 			}
 			finally {
 				if(workingDirectory != null) {
@@ -195,6 +194,7 @@ public class SFTPPath extends Path {
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+			session.close();
 		}
 	}
 
@@ -213,6 +213,7 @@ public class SFTPPath extends Path {
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+			session.close();
 		}
 	}
 
@@ -249,6 +250,7 @@ public class SFTPPath extends Path {
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+			session.close();
 		}
 	}
 
@@ -281,6 +283,7 @@ public class SFTPPath extends Path {
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+			session.close();
 		}
 	}
 
@@ -338,6 +341,7 @@ public class SFTPPath extends Path {
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+			session.close();
 		}
 		finally {
 			try {
@@ -419,6 +423,7 @@ public class SFTPPath extends Path {
 		}
 		catch(IOException e) {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+			session.close();
 		}
 		finally {
 			try {

@@ -313,8 +313,10 @@ public abstract class Queue extends Observable {
 		return !(this.getSize() == 0 && this.getCurrent() == 0) && (this.getSize() == this.getCurrent());
 	}
 
-	public abstract long getSize();
-
+	public long getSize() {
+		return this.size; //cached value
+	}
+		
 	public String getSizeAsString() {
 		return Status.getSizeAsString(this.getSize());
 	}

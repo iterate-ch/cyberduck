@@ -81,10 +81,9 @@ public abstract class SubsystemMessage {
      * @param data
      * @throws InvalidMessageException
      */
-    public void fromByteArray(byte[] data) throws InvalidMessageException {
+    public void fromByteArray(byte[] data, String encoding) throws InvalidMessageException {
         try {
-            ByteArrayReader bar = new ByteArrayReader(data);
-
+            ByteArrayReader bar = new ByteArrayReader(data, encoding);
             if (bar.available() > 0) {
                 type = bar.read();
                 constructMessage(bar);
@@ -102,11 +101,11 @@ public abstract class SubsystemMessage {
      * @return
      * @throws InvalidMessageException
      */
-    public byte[] toByteArray() throws InvalidMessageException {
+    public byte[] toByteArray(String encoding) throws InvalidMessageException {
         try {
-            ByteArrayWriter baw = new ByteArrayWriter();
+            ByteArrayWriter baw = new ByteArrayWriter(encoding);
             baw.write(type);
-            constructByteArray(baw);
+            this.constructByteArray(baw);
 
             return baw.toByteArray();
         }

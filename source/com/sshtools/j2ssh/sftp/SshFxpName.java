@@ -26,7 +26,6 @@
  */
 package com.sshtools.j2ssh.sftp;
 
-import ch.cyberduck.core.Codec;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
@@ -95,8 +94,7 @@ public class SshFxpName extends SubsystemMessage implements MessageRequestId {
         String longname;
 
         for (int i = 0; i < files.length; i++) {
-//            shortname = bar.readString();
-            shortname = Codec.decode(bar.readString());
+            shortname = bar.readString();
             longname = bar.readString();
             files[i] = new SftpFile(shortname, new FileAttributes(bar));
         }
@@ -122,10 +120,8 @@ public class SshFxpName extends SubsystemMessage implements MessageRequestId {
         baw.writeUINT32(id);
         baw.writeUINT32(new UnsignedInteger32(files.length));
 
-//        SftpFile file;
         for (int i = 0; i < files.length; i++) {
-            baw.writeString(new String(Codec.encode(files[i].getAbsolutePath())));
-//            baw.writeString(files[i].getAbsolutePath());
+			baw.writeString(files[i].getAbsolutePath());
             baw.writeString(files[i].getLongname());
             baw.write(files[i].getAttributes().toByteArray());
         }

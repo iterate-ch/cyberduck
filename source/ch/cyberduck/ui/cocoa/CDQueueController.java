@@ -272,7 +272,7 @@ public class CDQueueController extends CDController {
 		if(Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
 			this.window().makeKeyAndOrderFront(null);
 		}
-		queue.getRoot().getHost().getLogin().setController(new CDLoginController(this));
+		queue.getRoot().getHost().getCredentials().setController(new CDLoginController(this));
 		if(queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
 			try {
 				queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(this));
@@ -285,6 +285,8 @@ public class CDQueueController extends CDController {
 				    null, //alternative button
 				    null //other button
 				));
+				queue.getRoot().getSession().close();
+				return;
 			}
 		}
 		queue.start(resumeRequested);
@@ -380,10 +382,7 @@ public class CDQueueController extends CDController {
 	public void queueTableRowDoubleClicked(Object sender) {
 		if(this.queueTable.selectedRow() != -1) {
 			Queue item = this.queueModel.getItem(this.queueTable.selectedRow());
-			if(item.isComplete())
-				this.revealButtonClicked(sender);
-			else
-				this.resumeButtonClicked(sender);
+			this.resumeButtonClicked(sender);
 		}
 	}
 

@@ -186,7 +186,7 @@ public class CDBookmarkController extends CDController {
 		else {
 			this.pkCheckbox.setState(NSCell.OffState);
 			this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
-			this.host.getLogin().setPrivateKeyFile(null);
+			this.host.getCredentials().setPrivateKeyFile(null);
 		}
 	}
 
@@ -200,14 +200,14 @@ public class CDBookmarkController extends CDController {
 					java.util.Enumeration enumerator = selected.objectEnumerator();
 					while(enumerator.hasMoreElements()) {
 						String pk = (String)enumerator.nextElement();
-						this.host.getLogin().setPrivateKeyFile(pk);
+						this.host.getCredentials().setPrivateKeyFile(pk);
 						this.pkLabel.setStringValue(pk);
 					}
 					break;
 				}
 			case (NSAlertPanel.AlternateReturn):
 				{
-					this.host.getLogin().setPrivateKeyFile(null);
+					this.host.getCredentials().setPrivateKeyFile(null);
 					this.pkCheckbox.setState(NSCell.OffState);
 					this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
 					break;
@@ -241,7 +241,7 @@ public class CDBookmarkController extends CDController {
 
 	public void usernameInputDidEndEditing(NSNotification sender) {
 		log.debug("usernameInputDidEndEditing");
-		this.host.getLogin().setUsername(usernameField.stringValue());
+		this.host.getCredentials().setUsername(usernameField.stringValue());
 		this.updateFields();
 	}
 
@@ -252,12 +252,12 @@ public class CDBookmarkController extends CDController {
 		this.portField.setStringValue(""+this.host.getPort());
 		this.nicknameField.setStringValue(this.host.getNickname());
 		this.pathField.setStringValue(this.host.getDefaultPath());
-		this.usernameField.setStringValue(this.host.getLogin().getUsername());
+		this.usernameField.setStringValue(this.host.getCredentials().getUsername());
 		this.protocolPopup.setTitle(this.host.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Session.SFTP));
-		if(this.host.getLogin().usesPublicKeyAuthentication()) {
+		if(this.host.getCredentials().usesPublicKeyAuthentication()) {
 			this.pkCheckbox.setState(NSCell.OnState);
-			this.pkLabel.setStringValue(this.host.getLogin().getPrivateKeyFile());
+			this.pkLabel.setStringValue(this.host.getCredentials().getPrivateKeyFile());
 		}
 		else {
 			this.pkCheckbox.setState(NSCell.OffState);

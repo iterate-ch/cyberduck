@@ -161,12 +161,6 @@ public class FTPClient {
 		}
     
     /**
-		*  Default constructor for use by subclasses
-		*/
-    protected FTPClient() {
-    }
-    
-    /**
 		* Checks if the client has connected to the server and throws an exception if it hasn't.
 		* This is only intended to be used by subclasses
 		* 
@@ -611,79 +605,7 @@ public class FTPClient {
 			else
 				return false;
 		}
-	
-	
-    /**
-		*  List a directory's contents
-		*
-		*  @param  dirname  the name of the directory (<b>not</b> a file mask)
-		*  @return a string containing the line separated
-		*          directory listing
-		*  @deprecated  As of FTP 1.1, replaced by {@link #dir(String)}
-	*/
-    public String list(String dirname)
-        throws IOException, FTPException {
-			
-			return list(dirname, false);
-		}
-	
-	
-    /**
-		*  List a directory's contents as one string. A detailed
-		*  listing is available, otherwise just filenames are provided.
-		*  The detailed listing varies in details depending on OS and
-		*  FTP server.
-		*
-		*  @param  dirname  the name of the directory(<b>not</b> a file mask)
-		*  @param  full     true if detailed listing required
-		*                   false otherwise
-		*  @return a string containing the line separated
-		*          directory listing
-		*  @deprecated  As of FTP 1.1, replaced by {@link #dir(String,boolean)}
-	*/
-    public String list(String dirname, boolean full)
-        throws IOException, FTPException {
-			
-			String[] list = dir(dirname, full);
-			
-			StringBuffer result = new StringBuffer();
-			String sep = System.getProperty("line.separator");
-			
-			// loop thru results and make into one string
-			for (int i = 0; i < list.length; i++) {
-				result.append(list[i]);
-				result.append(sep);
-			}
-			
-			return result.toString();
-		}
-    
-    
-    /**
-		*  List current directory's contents as an array of strings of
-		*  filenames.
-		*
-		*  @return  an array of current directory listing strings
-		*/
-    public String[] dir()
-        throws IOException, FTPException {
-			
-			return dir(null, true);
-		}
-	
-    /**
-		*  List a directory's contents as an array of strings of filenames.
-		*
-		*  @param   dirname  name of directory OR filemask
-		*  @return  an array of directory listing strings
-		*/
-    public String[] dir(String dirname)
-        throws IOException, FTPException {
-			
-			return dir(dirname, true);
-		}
-	
-	
+		
     /**
 		*  List a directory's contents as an array of strings. A detailed
 		*  listing is available, otherwise just filenames are provided.
@@ -691,12 +613,9 @@ public class FTPClient {
 		*  FTP server. Note that a full listing can be used on a file
 		*  name to obtain information about a file
 		*
-		*  @param  dirname  name of directory OR filemask
-		*  @param  full     true if detailed listing required
-		*                   false otherwise
 		*  @return  an array of directory listing strings
 		*/
-    public String[] dir(String dirname, boolean full)
+    public String[] dir(String encoding)
         throws IOException, FTPException {
 			
 			checkConnection(true);
@@ -707,21 +626,12 @@ public class FTPClient {
 			
 			// send the retrieve command
 			String command;
-			if (full) {
-				if (Preferences.instance().getProperty("ftp.sendExtendedListCommand").equals("true")) {
-					command = "LIST -a ";
-				}
-				else {
-					command = "LIST ";
-				}
+			if (Preferences.instance().getProperty("ftp.sendExtendedListCommand").equals("true")) {
+				command = "LIST -a ";
 			}
 			else {
-				command = "NLST ";
+				command = "LIST ";
 			}
-			if (dirname != null) {
-				command += dirname;
-			}
-			
 			// some FTP servers bomb out if NLST has whitespace appended
 			command = command.trim();
 			FTPReply reply = control.sendCommand(command);
@@ -740,7 +650,7 @@ public class FTPClient {
 			if (!replyCode.equals("450") && !replyCode.equals("550")) {
 				// get a character input stream to read data from .
 				LineNumberReader in = new LineNumberReader(new InputStreamReader(data.getInputStream(),
-																				 Preferences.instance().getProperty("browser.charset.encoding")));
+																				 encoding));
 				
 				// read a line at a time
 				Vector lines = new Vector();    

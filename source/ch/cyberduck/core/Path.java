@@ -199,13 +199,19 @@ public abstract class Path {
 	}
 
 	public List list(boolean refresh) {
-		return this.list(refresh, Preferences.instance().getProperty("browser.showHidden").equals("true"));
+		return this.list(Preferences.instance().getProperty("browser.charset.encoding"), 
+				  refresh,
+				  Preferences.instance().getProperty("browser.showHidden").equals("true"));
 	}
 
+	public List list(boolean refresh, boolean showHidden) {
+		return this.list(Preferences.instance().getProperty("browser.charset.encoding"), refresh, showHidden);
+	}
+	
 	/**
 	 * Request a file listing from the server. Has to be a directory
 	 */
-	public abstract List list(boolean refresh, boolean showHidden);
+	public abstract List list(String encoding, boolean refresh, boolean showHidden);
 
 
 	/**

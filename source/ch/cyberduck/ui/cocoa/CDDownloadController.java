@@ -72,9 +72,9 @@ public class CDDownloadController extends CDController {
 		try {
 			URL url = new URL(URLDecoder.decode(urlField.stringValue(), "UTF-8"));
 			Host host = new Host(url.getProtocol(),
-			    url.getHost(),
-			    url.getPort(),
-			    new Login(url.getHost(), url.getUserInfo(), null));
+								 url.getHost(),
+								 url.getPort());
+			host.setCredentials(url.getUserInfo(), null);
 			Session session = SessionFactory.createSession(host);
 			String file = url.getFile();
 			if(file.length() > 1) {

@@ -190,16 +190,23 @@ public class CDPreferencesController extends CDController {
 	}
 
 	public void chmodUploadCheckboxClicked(NSButton sender) {
+		boolean enabled = false;
 		switch(sender.state()) {
 			case NSCell.OnState:
-				Preferences.instance().setProperty("queue.upload.changePermissions", true);
-				this.chmodUploadDefaultCheckbox.setEnabled(true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("queue.upload.changePermissions", false);
-				this.chmodUploadDefaultCheckbox.setEnabled(false);
+				enabled = true;
 				break;
 		}
+		Preferences.instance().setProperty("queue.upload.changePermissions", enabled);
+		this.chmodUploadDefaultCheckbox.setEnabled(enabled);
+		this.uownerr.setEnabled(enabled);
+		this.uownerw.setEnabled(enabled);
+		this.uownerx.setEnabled(enabled);
+		this.ugroupr.setEnabled(enabled);
+		this.ugroupw.setEnabled(enabled);
+		this.ugroupx.setEnabled(enabled);
+		this.uotherr.setEnabled(enabled);
+		this.uotherw.setEnabled(enabled);
+		this.uotherx.setEnabled(enabled);
 	}
 
 	private NSButton chmodUploadDefaultCheckbox; //IBOutlet
@@ -209,8 +216,9 @@ public class CDPreferencesController extends CDController {
 		this.chmodUploadDefaultCheckbox.setTarget(this);
 		this.chmodUploadDefaultCheckbox.setAction(new NSSelector("chmodUploadDefaultCheckboxClicked", new Class[]{NSButton.class}));
 		this.chmodUploadDefaultCheckbox.setState(Preferences.instance().getProperty("queue.upload.permissions.useDefault").equals("true") ? NSCell.OnState : NSCell.OffState);
-		boolean enabled = Preferences.instance().getProperty("queue.upload.changePermissions").equals("true");
-		this.chmodUploadDefaultCheckbox.setEnabled(enabled);
+		this.chmodUploadDefaultCheckbox.setEnabled(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true"));
+		boolean enabled = Preferences.instance().getProperty("queue.upload.changePermissions").equals("true") 
+			&& Preferences.instance().getProperty("queue.upload.permissions.useDefault").equals("true");
 		this.uownerr.setEnabled(enabled);
 		this.uownerw.setEnabled(enabled);
 		this.uownerx.setEnabled(enabled);
@@ -252,16 +260,23 @@ public class CDPreferencesController extends CDController {
 	}
 
 	public void chmodDownloadCheckboxClicked(NSButton sender) {
+		boolean enabled = false;
 		switch(sender.state()) {
 			case NSCell.OnState:
-				Preferences.instance().setProperty("queue.download.changePermissions", true);
-				this.chmodDownloadDefaultCheckbox.setEnabled(true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("queue.download.changePermissions", false);
-				this.chmodDownloadDefaultCheckbox.setEnabled(false);
+				enabled = true;
 				break;
 		}
+		Preferences.instance().setProperty("queue.download.changePermissions", enabled);
+		this.chmodDownloadDefaultCheckbox.setEnabled(enabled);
+		this.downerr.setEnabled(enabled);
+		this.downerw.setEnabled(enabled);
+		this.downerx.setEnabled(enabled);
+		this.dgroupr.setEnabled(enabled);
+		this.dgroupw.setEnabled(enabled);
+		this.dgroupx.setEnabled(enabled);
+		this.dotherr.setEnabled(enabled);
+		this.dotherw.setEnabled(enabled);
+		this.dotherx.setEnabled(enabled);
 	}
 
 	private NSButton chmodDownloadDefaultCheckbox; //IBOutlet
@@ -271,8 +286,9 @@ public class CDPreferencesController extends CDController {
 		this.chmodDownloadDefaultCheckbox.setTarget(this);
 		this.chmodDownloadDefaultCheckbox.setAction(new NSSelector("chmodDownloadDefaultCheckboxClicked", new Class[]{NSButton.class}));
 		this.chmodDownloadDefaultCheckbox.setState(Preferences.instance().getProperty("queue.download.permissions.useDefault").equals("true") ? NSCell.OnState : NSCell.OffState);
-		boolean enabled = Preferences.instance().getProperty("queue.download.changePermissions").equals("true");
-		this.chmodDownloadDefaultCheckbox.setEnabled(enabled);
+		this.chmodDownloadDefaultCheckbox.setEnabled(Preferences.instance().getProperty("queue.download.changePermissions").equals("true"));
+		boolean enabled = Preferences.instance().getProperty("queue.download.changePermissions").equals("true") 
+			&& Preferences.instance().getProperty("queue.download.permissions.useDefault").equals("true");
 		this.downerr.setEnabled(enabled);
 		this.downerw.setEnabled(enabled);
 		this.downerx.setEnabled(enabled);

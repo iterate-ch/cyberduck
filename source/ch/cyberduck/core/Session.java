@@ -97,7 +97,11 @@ public abstract class Session extends Observable {
 	 *
 	 * @see Host
 	 */
-	public abstract void connect() throws IOException;
+	public abstract void connect(String encoding) throws IOException;
+
+	public synchronized void connect() throws IOException {
+		this.connect(Preferences.instance().getProperty("browser.charset.encoding"));
+	}
 
 	/**
 	 * Connect to the remote host and mount the home directory
@@ -111,24 +115,25 @@ public abstract class Session extends Observable {
 					Path home;
 					if(host.hasReasonableDefaultPath()) {
 						if(host.getDefaultPath().charAt(0) != '/') {
-							home = PathFactory.createPath(Session.this, Session.this.workdir().getAbsolute(), host.getDefaultPath());
+							home = PathFactory.createPath(Session.this, workdir().getAbsolute(), host.getDefaultPath());
 						}
 						else {
 							home = PathFactory.createPath(Session.this, host.getDefaultPath());
 						}
 					}
 					else {
-						home = Session.this.workdir();
+						home = workdir();
 						//host.setDefaultPath(home);
 					}
 					home.list(true);
 					Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl Notification"),
-					    Session.this.host.getHostname());
+					    host.getHostname());
 				}
 				catch(IOException e) {
-					Session.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+					log("IO Error: "+e.getMessage(), Message.ERROR);
 					Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl Notification"),
-					    Session.this.host.getHostname());
+					    host.getHostname());
+					close();
 				}
 			}
 		}.start();

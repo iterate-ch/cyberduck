@@ -128,9 +128,9 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 					String file = url.getFile();
 					if(file.length() > 1) {
 						Host h = new Host(url.getProtocol(),
-						    url.getHost(),
-						    url.getPort(),
-						    new Login(url.getHost(), url.getUserInfo(), null));
+										  url.getHost(),
+										  url.getPort());
+						h.setCredentials(url.getUserInfo(), null);
 						Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
 						Queue q = new DownloadQueue();
 						q.addRoot(p);

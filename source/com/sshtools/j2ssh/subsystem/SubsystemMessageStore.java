@@ -58,10 +58,13 @@ public class SubsystemMessageStore {
     protected Map registeredMessages = new HashMap();
     private OpenClosedState state = new OpenClosedState(OpenClosedState.OPEN);
 
+	private String encoding;
+	
     /**
      * Creates a new SubsystemMessageStore object.
      */
-    public SubsystemMessageStore() {
+    public SubsystemMessageStore(String encoding) {
+		this.encoding = encoding;
     }
 
     /**
@@ -95,7 +98,7 @@ public class SubsystemMessageStore {
             }
 
             SubsystemMessage msg = (SubsystemMessage)impl.newInstance();
-            msg.fromByteArray(msgdata);
+            msg.fromByteArray(msgdata, encoding);
             addMessage(msg);
 
             return;
