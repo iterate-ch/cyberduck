@@ -184,6 +184,7 @@ public class HTTPPath extends Path {
 				session.log(requestHeaders[i].toString(), Message.TRANSCRIPT);
 			}
 			int response = session.HTTP.executeMethod(GET);
+			
 			session.log(response + " " + HttpStatus.getStatusText(response), Message.TRANSCRIPT);
 			Header[] responseHeaders = GET.getResponseHeaders();
 			for (int i = 0; i < responseHeaders.length; i++) {

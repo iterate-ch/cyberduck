@@ -82,7 +82,6 @@ public class Attributes extends Observable {
 	 */
 	public String getModified() {
 		return (DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)).format(this.modified);
-		//	return (DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)).format(new Date(this.modified));
 	}
 
 	public Date getModifiedDate() {
@@ -90,7 +89,6 @@ public class Attributes extends Observable {
 	}
 
 	public void setPermission(Permission p) {
-//		log.debug("setPermission:"+p);
 		this.permission = p;
 	}
 

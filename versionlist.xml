@@ -3,13 +3,13 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.1</string>
+	<string>2.2b1</string>
 	<key>file</key>
-	<string>Cyberduck-2.1.dmg</string>
+	<string>Cyberduck-2.2beta1.dmg</string>
 	<key>comment</key>
         <string>Changelog:
 2.2b1
-- Keychain integration (Saving passwords)
+- Keychain integration
 - New file transfer manager
 - Full Unicode support
 - Support for public key authentication (SSH)
@@ -22,6 +22,7 @@
 - Italian Localization
 - Portuguese Localization
 - Spanish Localization
+- French Localization
 - Various improvements and bug fixes
 
 2.1

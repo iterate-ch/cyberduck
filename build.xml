@@ -30,19 +30,19 @@
 	<property name="home" value="."/>
     <property name="unittests" value="${home}/test"/>
 	<property name="build" value="${home}/build"/>
+	<property name="build.classes" value="${build}/classes"/>
     <property name="build.unittests" value="${build}/unittests" />
     <property name="build.unittests.reports" value="${build}/unittests/junit_reports" />
 	<property name="config" value="${home}/config"/>
 	<property name="img" value="${home}/img"/>
 	<property name="lib" value="${home}/lib"/>
 	<property name="source" value="${home}/source"/>
-	<property name="classes" value="${build}/classes"/>
 	<property name="resources" value="${home}/resources"/>
 	<property name="doc" value="${home}/doc"/>
 
     <path id="test.classpath">
         <path refid="build.classpath"/>
-        <pathelement location="${classes}"/>
+        <pathelement location="${build.classes}"/>
         <pathelement location="${build.unittests}"/>
 		<fileset dir="${build}">
 			<include name="*.jar"/>
@@ -80,9 +80,10 @@
 		<echo message=""/>
 		<echo message="Building ${app.name}..."/>
 		<mkdir dir="${build}"/>
+		<mkdir dir="${build.classes}"/>
 		<mkdir dir="${build.unittests}"/>
 		<mkdir dir="${build.unittests.reports}"/>
-		<mkdir dir="${classes}"/>
+        <mkdir dir="${build.unittests.reports}/html"/>
 	</target>
 
 
@@ -158,7 +159,7 @@
 	<target name="headers" description="Generate header files for JNI">
 		<javah 
 			outputFile="${source}/ch/cyberduck/core/Login.h"
-			classpath="${classes}">
+			classpath="${build.classes}">
 			<class name="ch.cyberduck.core.Login"/>
 		</javah>
 	</target>
@@ -169,7 +170,7 @@
 			debug="${debug}"
 			deprecation="on"
 			srcdir="${source}"
-			destdir="${classes}">
+			destdir="${build.classes}">
 			<classpath refid="build.classpath"/>
 		</javac>
 		<antcall target="headers"/>
@@ -180,7 +181,7 @@
 		<jar jarfile="${build}/cocoa.jar"
 			update="yes"
 			manifest="${build}/MANIFEST.MF">
-			<fileset dir="${classes}/">
+			<fileset dir="${build.classes}/">
 				<include name="ch/cyberduck/ui/*.class"/>
 				<include name="ch/cyberduck/ui/cocoa/**/*.class"/>
 			</fileset>
@@ -188,27 +189,27 @@
 		<jar jarfile="${build}/core.jar"
 			update="yes"
 			manifest="${build}/MANIFEST.MF">
-			<fileset dir="${classes}">
+			<fileset dir="${build.classes}">
 				<include name="**/*.jnilib"/>
 				<include name="ch/cyberduck/core/**/*.class"/>
 			</fileset>
 		</jar>
 		<jar jarfile="${build}/j2ssh.jar"
 			update="yes">
-			<fileset dir="${classes}">
+			<fileset dir="${build.classes}">
 				<include name="com/sshtools/j2ssh/**/*.class"/>
 			</fileset>
 		</jar>
 		<jar jarfile="${build}/ftp.jar"
 			update="yes"
 			manifest="${build}/MANIFEST.MF">
-			<fileset dir="${classes}">
+			<fileset dir="${build.classes}">
 				<include name="com/enterprisedt/**/*.class"/>
 			</fileset>
 		</jar>
 		<jar jarfile="${build}/http.jar"
 			update="yes">
-			<fileset dir="${classes}">
+			<fileset dir="${build.classes}">
 				<include name="org/apache/commons/httpclient/**/*.class"/>
 			</fileset>
 		</jar>
@@ -232,7 +233,7 @@
 
 
 	<target name="clean" description="Delete compiled classes and jar files">
-		<delete dir="${classes}"/>
+		<delete dir="${build.classes}"/>
 		<delete dir="${build}/Cyberduck.build"/>
 		<delete file="${build}/cocoa.jar"/>
 		<delete file="${build}/swing.jar"/>
@@ -273,5 +274,11 @@
                 </fileset>
             </batchtest>
         </junit>
+        <junitreport todir="${build.unittests.reports}/html">
+            <fileset dir="${build.unittests.reports}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${build.unittests.reports}/html"/>
+        </junitreport>
 	</target>
 </project>

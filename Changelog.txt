@@ -1,15 +1,35 @@
 FTP and SFTP Browser for Mac OS X
 http://cyberduck.ch/
 
-Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL. 
-Cyberduck features the same intuitive interface for both FTP and SFTP browsing. Cyberduck is now Mac only, 
-with a completly rewritten user interface using the Cocoa Framework. 	
-You can open connections to multiple servers thanks to its document based interface. A bookmark manager 
+Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
+Cyberduck features the same intuitive interface for both FTP and SFTP browsing. 
+You can open connections to multiple servers with its document based interface. A bookmark manager 
 allows you to store frequently-used servers. Bookmarks can be exported as a regular file by dragging them to the Finder.
 Drag and drop is supported for both downloading and uploading files. Just drag the file(s) or folder from the Finder 
 to the browser window or vice versa to start the transfer. 
 File deletion and renaming, checking and changing of permissions is possible with a Finder-like info panel. 
-Rendezvous is supported.
+Rendezvous is supported. Keychain integration.
+
+2.2b1
+- Keychain integration
+- New file transfer manager
+- Full Unicode support
+- Support for public key authentication (SSH)
+- Live filtering directory listings
+- Improved Rendezvous support (jmDNS 0.2)
+- Drag files from the browser to the transfer manager
+- Drag links to the transfer manager to start download
+- Browser can be customized to show/hide certain columns
+- Japanese Localization
+- Italian Localization
+- Portuguese Localization
+- Spanish Localization
+- French Localization
+- Various improvements and bug fixes
+
+http://cyberduck.ch/download.php?Cyberduck-2.2beta1.dmg
+http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.2beta1.dmg
+http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.2beta1.tar.gz
 
 2.1
 - Bookmarks can now be edited.
@@ -32,7 +52,7 @@ http://cyberduck.ch/download.php?Cyberduck-2.1.dmg
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1.dmg
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1.tar.gz
 
-2.1beta5
+2.1b5
 - HTTP is now supported again. Files can be downloaded from regular web servers.
 - Cyberduck can now be configured as the default FTP helper application. See "http://www.monkeyfood.com/software/moreInternet/". This seems to work with Safari and Internet Explorer.
 - Dragging files to the Finder is now more reliable.
@@ -45,7 +65,7 @@ http://cyberduck.ch/download.php?Cyberduck-2.1beta5.dmg
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1beta5.dmg
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta5.tar.gz
 
-2.1beta4
+2.1b4
 - Cyberduck now has the official creator code 'CYCK' and can handle URL events from other applications.
 - Smaller bug fixes.
 
@@ -53,7 +73,7 @@ http://cyberduck.ch/download.php?Cyberduck-2.1beta4.dmg
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1beta4.dmg
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta4.tar.gz
 
-2.1beta3
+2.1b3
 - Localization support
 - Files and foldes can now be dragged to the Finder to download them.
 - Windows do now no more stack exactly on the top of prior one.
@@ -70,7 +90,7 @@ http://cyberduck.ch/download.php?Cyberduck-2.1beta3.dmg
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1beta3.dmg.gz
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta3.tar.gz
 
-2.1beta2
+2.1b2
 - SSH (SFTP) support
 - Completly rewritten user interface using the Cocoa Framework
 

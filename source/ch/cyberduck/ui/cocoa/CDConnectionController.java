@@ -120,7 +120,6 @@ public class CDConnectionController implements Observer {
 					rendezvousPopup.addItem((String) msg.getContent());
 				if (msg.getTitle().equals(Message.RENDEZVOUS_REMOVE))
 					rendezvousPopup.removeItemWithTitle((String) msg.getContent());
-//				rendezvousPopup.addItem(((Host)msg.getContent()).getURL());
 			}
 		}
 	}
