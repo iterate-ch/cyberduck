@@ -30,7 +30,7 @@ import java.io.File;
 * @see com.apple.cocoa.foundation.NSUserDefaults
 * @version $Id$
 */
-public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
+public class CDPreferencesImpl extends Preferences {
     private static Logger log = Logger.getLogger(CDPreferencesImpl.class);
     
     private NSUserDefaults props = NSUserDefaults.standardUserDefaults();

@@ -202,9 +202,10 @@ public abstract class Path {
      */
     public String getName() {
 	String abs = this.getAbsolute();
-	int index = abs.lastIndexOf("/");
+	int index = abs.lastIndexOf('/');
 	String name = (index > 0) ? abs.substring(index + 1) : abs.substring(1);
-//	name = (index > 0) ? abs.substring(index + 1) : abs;
+	index = name.lastIndexOf('?');
+	name = (index > 0) ? name.substring(index + 1) : name;
 	return name;
     }
 
@@ -228,6 +229,7 @@ public abstract class Path {
         * @return The local alias of this path
      */
     public File getLocal() {
+	//default value if not set explicitly, i.e. with drag and drop
 	if(null == this.local)
 	    return new File(Preferences.instance().getProperty("connection.download.folder"), this.getName());
 	return this.local;

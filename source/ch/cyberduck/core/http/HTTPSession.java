@@ -34,34 +34,27 @@ import java.io.IOException;
 public class HTTPSession extends Session {
     private static Logger log = Logger.getLogger(Session.class);
 
-//    protected HttpClient HTTP;
-
-//    private HostConfiguration hostConfiguration;
-//    private HttpConnectionManager connectionManager;
-    protected HttpConnection HTTP;
+    protected HttpClient HTTP;
+//    protected HttpConnection HTTP;
 
     public HTTPSession(Host h) {
         super(h);
-        this.HTTP = new HttpConnection(h.getHostname(), h.getPort());
-//        this.HTTP = new HttpClient();
-//	this.connectionManager = new SimpleHttpConnectionManager();
-//	this.hostConfiguration = new HostConfiguration();
-//	this.hostConfiguration.setHost(h.getName(), h.getPort());
-//	this.HTTP.setHostConfiguration(hostConfiguration);
+//        this.HTTP = new HttpConnection(h.getHostname(), h.getPort());
+        this.HTTP = new HttpClient();
     }
 
     public synchronized void close() {
 	this.callObservers(new Message(Message.CLOSE, "Closing session."));
-//	try {
-	    this.HTTP.close();
+	try {
+	    this.HTTP.quit();
 //	    this.connectionManager.releaseConnection(this.connection);
-//	}
-//	catch(IOException e) {
-//	    log.error(e.getMessage());
-//	}
-//	finally {
+	}
+	catch(IOException e) {
+	    log.error(e.getMessage());
+	}
+	finally {
 	    this.setConnected(false);
-//	}
+	}
     }
 
     public Session copy() {
@@ -72,13 +65,13 @@ public class HTTPSession extends Session {
 	this.callObservers(new Message(Message.OPEN, "Opening session."));
 	this.log("Opening HTTP connection to " + host.getIp() +"...", Message.PROGRESS);
 
-	this.HTTP.open();
+//	this.HTTP.open();
 //	connection = HTTP.getHttpConnectionManager().getConnection(hostConfiguration);
 //		if(Preferences.instance().getProperty("connection.proxy").equals("true")) {
 //		    HTTP.connect(host.getName(), host.getPort(), Preferences.instance().getProperty("connection.proxy.host"), Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
 //		}
 //		else {
-//	HTTP.connect(host.getName(), host.getPort(), false);
+	HTTP.connect(host.getHostname(), host.getPort(), false);
 //		}
 	this.setConnected(true);
 	log("HTTP connection opened", Message.PROGRESS);
@@ -89,10 +82,9 @@ public class HTTPSession extends Session {
     }
 
     public void check() throws IOException {
-	this.log("Working", Message.START);
 	log.debug("check");
-
-	if(!HTTP.isOpen()) {
+	this.log("Working", Message.START);
+	if(!HTTP.isAlive()) {
 	    this.setConnected(false);
 	    this.connect();
 	    while(true) {
@@ -102,16 +94,6 @@ public class HTTPSession extends Session {
 		Thread.yield();
 	    }
 	}
-//	if(!HTTP.isAlive()) {
-//	    this.setConnected(false);
-//	    this.connect();
-//	    while(true) {
-//		if(this.isConnected())
-//		    return;
-//		this.log("Waiting for connection...", Message.PROGRESS);
-//		Thread.yield();
-//	    }
-//	}
     }    
 
     public Path workdir() {

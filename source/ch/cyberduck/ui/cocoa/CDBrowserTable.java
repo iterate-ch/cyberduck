@@ -262,7 +262,7 @@ public class CDBrowserTable extends NSTableView implements Observer {
 			((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
 		    }
 		    else {
-			((NSTextFieldCell)cell).setDrawsBackground(false);
+//			((NSTextFieldCell)cell).setDrawsBackground(false);
 			((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
 		    }
 		}

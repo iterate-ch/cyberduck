@@ -8,6 +8,15 @@
 	<string>Cyberduck-2.1beta4.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.1beta5
+- HTTP is now supported again. Files can be downloaded from regular web servers.
+- Cyberduck can now be configured as the default FTP helper application. See "http://www.monkeyfood.com/software/moreInternet/". This seems to work with Safari and Internet Explorer.
+- Dragging files to the Finder is now more reliable.
+- The transfer panel does now close again if defined so in the preferences.
+- The buffer size (the size of download chunks to keep in memory before writing to disk) is now adjustable.
+- Login to anonymous FTP servers where no password is needed is now supported.
+- Smaller bug fixes
+
 2.1beta4
 - Cyberduck now has the official creator code 'CYCK' and can handle URL events from other applications. See "http://www.monkeyfood.com/software/moreInternet/" to configure Cyberduck as the default FTP helper application.
 - Smaller bug fixes.
@@ -24,6 +33,10 @@
 - If multiples have been selected to transfer, Cyberduck now puts them in the same queue and opens only one connection to the server.
 - There is a new command 'Go to folder' for changing the working directory quickly.
 - Many smaller bug fixes.
+
+2.1beta2
+- SSH (SFTP) support
+- Completly rewritten user interface using the Cocoa Framework
         </string>
     </dict>
 </plist>

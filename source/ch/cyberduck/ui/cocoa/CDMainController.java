@@ -261,6 +261,7 @@ public class CDMainController {
 		return NSApplication.TerminateNow;
 	    }
 	    this.donationSheet.setTitle(NSBundle.localizedString("Donate!"));
+	    this.donationSheet.center();
 	    this.donationSheet.makeKeyAndOrderFront(null);
 	    return NSApplication.TerminateLater;
 	}

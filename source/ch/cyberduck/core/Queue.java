@@ -181,6 +181,9 @@ public class Queue extends Observable implements Observer { //Thread {
 	    }
 	    roots[i].getSession().deleteObserver(this);
 	}
+//	for(int i = 0; i < roots.length; i ++) {
+//	    roots[i].getSession().close();
+//	}
     }
 
     /**
@@ -197,7 +200,6 @@ public class Queue extends Observable implements Observer { //Thread {
 		process();
 		elapsedTimer.stop();
 		stopped = true;
-//		session.close();
 	    }
 	}.start();
     }
@@ -259,6 +261,13 @@ public class Queue extends Observable implements Observer { //Thread {
 	* @return The cummulative file size of all files remaining in the queue
      */
     public long getSize() {
+	if(this.size < 0)
+	    this.size = this.calculateTotalSize();
+	return this.size;
+//	return this.calculateTotalSize();
+    }
+
+    public long calculateTotalSize() {
 	long value = 0;
 	for(int i = 0; i < jobs.length; i ++) {
 	    Iterator elements = jobs[i].iterator();
@@ -266,20 +275,21 @@ public class Queue extends Observable implements Observer { //Thread {
 		value += ((Path)elements.next()).status.getSize();
 	    }
 	}
+	log.debug("calculateTotalSize:"+value);
 	return value;
     }
 
-//    private int calculateCurrentSize() {
-//	int value = 0;
-//	for(int i = 0; i < jobs.length; i ++) {
-//	    Iterator elements = jobs[i].iterator();
-//	    while(elements.hasNext()) {
-//		value += ((Path)elements.next()).status.getCurrent();
-//	    }
-//	}
-//	log.debug("calculateCurrenSize:"+value);
-//	return value;
-//    }
+    private int calculateCurrentSize() {
+	int value = 0;
+	for(int i = 0; i < jobs.length; i ++) {
+	    Iterator elements = jobs[i].iterator();
+	    while(elements.hasNext()) {
+		value += ((Path)elements.next()).status.getCurrent();
+	    }
+	}
+	log.debug("calculateCurrentSize:"+value);
+	return value;
+    }
 	
     /**
 	* @return The number of bytes already processed.
@@ -346,7 +356,7 @@ public class Queue extends Observable implements Observer { //Thread {
 //}
 
 private void reset() {
-    this.size = 0;
+    this.size = -1;
     this.current = 0;
     this.speed = 0;
 //    this.overall = 0;
@@ -422,7 +432,7 @@ private void init() {
 					 );
      */
 
-    this.progressTimer = new Timer(1000,
+    this.progressTimer = new Timer(500,
 					new ActionListener() {
 					    int i = 0;
 					    long current;
@@ -435,10 +445,9 @@ private void init() {
 						    setSpeed(0);
 						}
 						else {
-						    speeds[i] = (current - last); // Bytes per second
+						    speeds[i] = (current - last)*2; // Bytes per second
 						    i++; last = current;
-//						    speeds[i] = (current - last)*2; i++; last = current;
-						    if(i == 4) { // wir wollen immer den schnitt der letzten vier sekunden
+						    if(i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
 							i = 0;
 						    }
 						    for (int k = 0; k < speeds.length; k++) {

@@ -520,36 +520,26 @@ public abstract class HttpMethodBase implements HttpMethod {
                         }
                         else if("https".equalsIgnoreCase(url.getProtocol())) {
                             if(!connection.isSecure()) {
-                                log.info("Server is attempting to convert an HTTP request to an HTTPS one, which is currently not supported. Returning " + statusCode + ".");
-//                                throw new HttpException("Server is attempting to convert an HTTP request to an HTTPS one, which is currently not supported.");
-                                break;
+                                throw new HttpException("Server is attempting to convert an HTTP request to an HTTPS one, which is currently not supported.", statusCode);
                             }
                         }
                         if(!connection.getHost().equalsIgnoreCase(url.getHost())) {
-                            log.info("Server is attempting to redirect a different host, which is currently not supported. Returning " + statusCode + ".");
-//                                throw new HttpException("Server is attempting to redirect a different host, which is currently not supported.");
-                                break;
+                                throw new HttpException("Server is attempting to redirect a different host, which is currently not supported.", statusCode);
                         }
                         if(url.getPort() == -1) {
                             if(connection.isSecure()) {
                                 if(connection.getPort() != 443) {
-                                    log.info("Server is attempting to redirect a different port, which is currently not supported. Returning " + statusCode + ".");
-//                                    throw new HttpException("Server is attempting to redirect a different port, which is currently not supported.");
-                                break;
+                                    throw new HttpException("Server is attempting to redirect a different port, which is currently not supported.", statusCode);
                                 }
                             }
                             else {
                                 if(connection.getPort() != 80) {
-                                    log.info("Server is attempting to redirect a different port, which is currently not supported. Returning " + statusCode + ".");
-//                                    throw new HttpException("Server is attempting to redirect a different port, which is currently not supported.");
-                                break;
+                                    throw new HttpException("Server is attempting to redirect a different port, which is currently not supported.", statusCode);
                                 }
                             }
                         }
                         else if(connection.getPort() != url.getPort()) {
-                            log.info("Server is attempting to redirect a different port, which is currently not supported. Returning " + statusCode + ".");
-//                            throw new HttpException("Server is attempting to redirect a different port, which is currently not supported.");
-                                break;
+                            throw new HttpException("Server is attempting to redirect a different port, which is currently not supported.", statusCode);
                         }
                         String absolutePath = url.getPath();
                         if(null == absolutePath) {

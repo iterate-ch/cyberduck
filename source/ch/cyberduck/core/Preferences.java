@@ -86,7 +86,7 @@ public abstract class Preferences {
 //	defaults.put("logging", "FATAL");
 	defaults.put("rendezvous.logging", "0");
 
-	defaults.put("version", "2.1");
+//	defaults.put("version", "2.1");
         defaults.put("uses", "0");
 	defaults.put("donate", "true");
 	defaults.put("mail", "mailto:dkocher@cyberduck.ch");
@@ -112,8 +112,8 @@ public abstract class Preferences {
         //defaults.put("files.encode", "true");
 	defaults.put("connection.download.postprocess", "false");
         //Connection
-        defaults.put("connection.buffer", "32768");
-	defaults.put("connection.buffer.default", "32768");
+        defaults.put("connection.buffer", "4096");
+	defaults.put("connection.buffer.default", "4096");
 	defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
 //        defaults.put("connection.path.default", "~");
@@ -123,6 +123,9 @@ public abstract class Preferences {
         defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
 	defaults.put("ftp.connectmode", "passive");
         defaults.put("ftp.transfermode", "binary");
+
+	defaults.put("http.agent", "Cyberduck/2.1");
+	defaults.put("http.acceptheader", "*/*");
 
 	defaults.put("ssh.knownhosts", System.getProperty("user.home")+"/.ssh/known_hosts");
 

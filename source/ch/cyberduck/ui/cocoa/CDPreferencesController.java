@@ -111,6 +111,14 @@ public class CDPreferencesController {
 	    log.error(e.getMessage());
 	}
     }
+
+    private NSTextField userAgentField;
+    public void setUserAgentField(NSTextField userAgentField) {
+	log.debug("setUserAgentField");
+	this.userAgentField = userAgentField;
+	this.userAgentField.setStringValue(Preferences.instance().getProperty("http.agent"));
+	log.debug("setUserAgentField-end");
+    }
     
     private NSTextField anonymousField;
     public void setAnonymousField(NSTextField anonymousField) {
@@ -346,6 +354,10 @@ public class CDPreferencesController {
 
     private CDPreferencesController() {
 	allDocuments.addObject(this);
+    }
+
+    public void awakeFromNib() {
+	this.window.center();
     }
 
     public NSWindow window() {

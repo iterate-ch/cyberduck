@@ -181,11 +181,17 @@ public class CDTransferController implements Observer, Validator {
 	    // CURRENT
 	    if(msg.getTitle().equals(Message.DATA)) {
 		Status status = (Status)msg.getContent();
-		this.totalProgressBar.setIndeterminate(false);
-		this.totalProgressBar.setMinValue(0);
-		this.totalProgressBar.setDoubleValue((double)queue.getCurrent());
-		this.totalProgressBar.setMaxValue(queue.getSize());
+		if(queue.getCurrent() > 0 && queue.getSize() > 0) {
+		    this.totalProgressBar.setIndeterminate(false);
+		    this.totalProgressBar.setMinValue(0);
+		    this.totalProgressBar.setDoubleValue((double)queue.getCurrent());
+		    this.totalProgressBar.setMaxValue(queue.getSize());
 
+		}
+		else {
+		    this.totalProgressBar.setIndeterminate(true);
+		    this.totalProgressBar.startAnimation(null);
+		}
 		this.fileDataField.setAttributedStringValue(new NSAttributedString(
 								     (status.getCurrent()/1024)+
 								     " "+NSBundle.localizedString("of")+
@@ -250,9 +256,9 @@ public class CDTransferController implements Observer, Validator {
 			    NSWorkspace.sharedWorkspace().openFile(root.getLocal().toString());
 			}
 		    }
-		    if(Queue.KIND_UPLOAD == kind) {
+//		    if(Queue.KIND_UPLOAD == kind) {
 //			this.root.getParent().list();
-		    }
+//		    }
 		}
 	    }
 	    else if(msg.getTitle().equals(Message.ERROR)) {

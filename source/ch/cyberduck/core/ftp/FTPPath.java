@@ -298,7 +298,6 @@ public class FTPPath extends Path {
 		}
 //		this.session.log("Opening data stream...", Message.PROGRESS);
 		java.io.InputStream in = this.session.FTP.getBinary(this.getAbsolute(), this.status.isResume() ? this.getLocal().length() : 0);
-//		java.io.InputStream in = this.session.FTP.getBinary(this.getAbsolute(), this.status.isResume() ? this.status.getCurrent() : 0);
 		if(in == null) {
 		    throw new IOException("Unable opening data stream");
 		}

@@ -67,9 +67,11 @@
 		<echo message=" available targets are:"/>
 		<echo message=""/>
 		<echo message="   all-modules --> build all modules"/>
-		<echo message="   core --> build cyberduck-core"/>
-		<echo message="   cocoa --> build cocoa gui classes"/>
-		<echo message="   ftp --> build ftp tool library"/>
+		<echo message="   build-core --> build cyberduck-build-core"/>
+		<echo message="   build-cocoa --> build build-cocoa gui classes"/>
+		<echo message="   build-ssh-module --> build ssh client library"/>
+		<echo message="   build-http-module --> build http client library"/>
+		<echo message="   build-ftp-module --> build ftp client library"/>
 		<echo message="   ---------------------------------------------------------------"/>
 	</target>
 	
@@ -85,9 +87,9 @@
 	    </copy>
 	</target>
 
-	<target name="all-modules" depends="core,ftp,cocoa"></target>
+	<target name="build-all-modules" depends="build-cocoa,build-core,build-ftp-module,build-http-module"></target>
 	
-	<target name="core" depends="init">
+	<target name="build-core" depends="init">
 	    <mkdir dir="${classes}/core" />
 	    <javac 
 		debug="${debug}"
@@ -113,7 +115,7 @@
 	    </copy>
 	</target>
 	
-	<target name="cocoa" depends="init">
+	<target name="build-cocoa" depends="init">
 	    <mkdir dir="${classes}/cocoa" />
 	    <javac 
 		debug="${debug}"
@@ -144,8 +146,7 @@
 		token="*version*" 
 		value="${cyberduck.version.major}.${cyberduck.version.minor}"
 		summary="true">
-		<include name="**/*.strings"/>
-		<include name="**/*.plist"/>
+		<include name="*.plist"/>
 	    </replace>
 	</target>
 
@@ -173,16 +174,10 @@
 		    <include name="ssh.jar" />
 		</fileset>
 	    </copy>
-
-	    <copy todir="${app.config}">
-		<fileset dir="${config}">
-		    <include name="*.xml"/>
-		</fileset>
-	    </copy>
 	</target>
 -->
 
-	<target name="ftp" depends="init">
+	<target name="build-ftp-module" depends="init">
 	    <mkdir dir="${classes}/ftp" />
 	    <javac 
 		debug="${debug}"
@@ -208,8 +203,7 @@
 	    </copy>
 	</target>
 	
-	<!--
-	<target name="http" depends="init">
+	<target name="build-http-module" depends="init">
 	    <mkdir dir="${classes}/http" />
 	    <javac 
 		debug="${debug}"
@@ -233,7 +227,6 @@
 		</fileset>
 	    </copy>
 	</target>
-	-->
 
 	<target name="doc" depends="init">
 		<mkdir dir="${doc}" />
@@ -267,7 +260,6 @@
 		    <attribute name="Specification-Vendor" value="David Kocher"/>
 		    <attribute name="Implementation-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/> 
 	    </manifest>
-
 	</target>
 </project>
 

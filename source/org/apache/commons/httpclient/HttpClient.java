@@ -137,8 +137,8 @@ public class HttpClient {
      * @param host the host to connect to
      * @param port the port to connect to
      */
-    public void connect(String host, int port) {
-        connect(host,port,false);
+    public void connect(String host, int port) throws IOException {
+        this.connect(host,port,false);
     }
 
     /**
@@ -148,11 +148,12 @@ public class HttpClient {
      * @param port the port to connect to
      * @param https when <code>true</code>, create an HTTPS session
      */
-    public void connect(String host, int port, boolean https) {
+    public void connect(String host, int port, boolean https) throws IOException {
         if(log.isDebugEnabled()) {
             log.debug("HttpClient.connect(String,int,boolean): Host:" + host + " Port:" + port + " HTTPS:" + https);
         }
         connection = new HttpConnection(host,port,https);
+	connection.open();
     }
 
     /**
@@ -163,8 +164,8 @@ public class HttpClient {
      * @param port the port to connect to
      * @param creds the default credentials to use
      */
-    public void connect(String host, int port, Credentials creds) {
-        connect(host,port,creds,false);
+    public void connect(String host, int port, Credentials creds) throws IOException {
+        this.connect(host,port,creds,false);
     }
 
 
@@ -177,12 +178,11 @@ public class HttpClient {
      * @param creds the default credentials to use
      * @param https when <code>true</code>, create an HTTPS session
      */
-    public void connect(String host, int port, Credentials creds,
-                             boolean https) {
+    public void connect(String host, int port, Credentials creds, boolean https) throws IOException {
         log.debug("HttpClient.connect(String,int,Credentials,boolean): Host:" +
                   host + " Port:" + port + " Credentials:" + creds +
                   " HTTPS:" + https);
-        getState().setCredentials(null,creds);
+        this.getState().setCredentials(null,creds);
         connection = new HttpConnection(host,port,https);
     }
 
@@ -197,14 +197,14 @@ public class HttpClient {
      * @param url the {@link URL URL} from which the protocol, host,
      *            and port of the session are determined
      */
-    public void connect(URL url) {
+    public void connect(URL url) throws IOException {
       if("https".equalsIgnoreCase(url.getProtocol())) {
-        connect(url.getHost(), url.getPort() == -1 ? 443
-                     : url.getPort(),true);
-      } else if("http".equalsIgnoreCase(url.getProtocol())) {
-        connect(url.getHost(), url.getPort() == -1 ? 80
-                     : url.getPort(),false);
-      } else {
+        this.connect(url.getHost(), url.getPort() == -1 ? 443 : url.getPort(),true);
+      }
+	else if("http".equalsIgnoreCase(url.getProtocol())) {
+        this.connect(url.getHost(), url.getPort() == -1 ? 80 : url.getPort(),false);
+      }
+	else {
           throw new IllegalArgumentException("Protocol " + url.getProtocol()
                                              + " not supported in URL " + url);
       }
@@ -222,9 +222,9 @@ public class HttpClient {
      * @param url the {@link URL URL} from which the protocol, host,
      *            and port of the session are determined
      */
-    public void connect(URL url, Credentials creds) {
-        getState().setCredentials(null,creds);
-        connect(url);
+    public void connect(URL url, Credentials creds) throws IOException {
+        this.getState().setCredentials(null,creds);
+        this.connect(url);
     }
 
 
@@ -237,9 +237,9 @@ public class HttpClient {
      * @param proxyhost the proxy host to connect via
      * @param proxyport the proxy port to connect via
      */
-    public void connect(String host, int port,
-                             String proxyhost, int proxyport) {
+    public void connect(String host, int port, String proxyhost, int proxyport)  throws IOException {
         connection = new HttpConnection(proxyhost,proxyport,host,port,false);
+	connection.open();
     }
 
     /**

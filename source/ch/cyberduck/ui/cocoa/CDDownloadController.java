@@ -77,9 +77,7 @@ public class CDDownloadController {
 		URL url = null;
 		try {
 		    url = new URL(urlField.stringValue());
-		    this.window().orderOut(null);
 		    Host host = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()));
-//		    Host host = new Host(urlField.stringValue()); //todo (protocol, host, port,
 		    Session session = host.getSession();
 		    Path path = null;
 		    String file = url.getFile();
@@ -90,6 +88,7 @@ public class CDDownloadController {
 			else if(host.getProtocol().equals(Session.HTTP)) {
 			    path = new HTTPPath((HTTPSession)session, file);
 			}
+			this.window().orderOut(null);
 			CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
 			controller.transfer();
 		    }
