@@ -11,6 +11,7 @@
 2.2b1
 - Keychain integration (Saving passwords)
 - New file transfer manager
+- Full Unicode support
 - Support for public key authentication (SSH)
 - Live filtering directory listings
 - Improved Rendezvous support (jmDNS 0.2)
@@ -18,7 +19,6 @@
 - Drag files from the browser to the transfer manager
 - Drag links to the transfer manager to start download
 - Browser can be customized to show/hide certain columns
-- Properly decoding Unicode characters in filenames
 - Japanese Localization
 - Italian Localization
 - Portuguese Localization

@@ -32,7 +32,8 @@ import org.apache.log4j.Logger;
 public class Permission {
 	private static Logger log = Logger.getLogger(Permission.class);
 
-	private String mask = "-rwxrwxrwx"; //defaulting to a file
+	private static final String DEFAULT_MASK = "-rw-r--r--"; //defaulting to a file
+		private String mask;
 
 	public Permission(NSDictionary dict) {
 		log.debug("Attributes");
@@ -75,6 +76,10 @@ public class Permission {
 	private boolean[] owner = new boolean[3];
 	private boolean[] group = new boolean[3];
 	private boolean[] other = new boolean[3];
+	
+	public Permission() {
+		this(DEFAULT_MASK);
+	}
 
 	/**
 	 * @param s the access string to parse the permissions from.
@@ -92,6 +97,7 @@ public class Permission {
 	 * @param p A 3*3 boolean array representing read, write and execute permissions
 	 * by owner, group and others. (1,1) is the owner's read permission
 	 */
+	/*
 	public Permission(boolean[][] p) {
 		this.owner[READ] = p[OWNER][READ];
 		this.owner[WRITE] = p[OWNER][WRITE];
@@ -106,6 +112,7 @@ public class Permission {
 		this.other[EXECUTE] = p[OTHER][EXECUTE];
 //		log.debug("Permission:"+this.toString());
 	}
+	 */
 
 
 	public Permission(int decimal) {
@@ -192,6 +199,7 @@ public class Permission {
 				this.other = new boolean[]{true, true, true};
 				break;
 		}
+		this.mask = "-"+getString();
 //		log.debug("Permission:"+this.toString());
 	}
 
