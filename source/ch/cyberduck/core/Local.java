@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import java.io.File;
 import java.util.Date;
+import java.util.Calendar;
 import java.io.IOException;
 
 import com.apple.cocoa.foundation.*;
@@ -130,8 +131,15 @@ public class Local extends File {
 		log.debug("Setting permissions on local file suceeded:"+success);
 	}
 
+	public Calendar getTimestampAsCalendar() {
+		Calendar c = Calendar.getInstance();
+		c.setTime(this.getTimestamp());
+		c.clear(Calendar.MILLISECOND);
+		c.clear(Calendar.SECOND);
+		return c;
+	}
+	
 	private static final NSGregorianDateFormatter longDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
-
 	private static final NSGregorianDateFormatter shortDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), false);
 
 	/**

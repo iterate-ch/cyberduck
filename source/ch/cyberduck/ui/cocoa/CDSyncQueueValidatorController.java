@@ -98,7 +98,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
 	protected boolean validateFile(Path p, boolean resume) {
 		if(p.getRemote().exists() && p.getLocal().exists()) {
-			if(!(p.getRemote().attributes.getTimestamp().equals(p.getLocal().getTimestamp()))) {
+			if(!(p.getRemote().attributes.getTimestampAsCalendar().equals(p.getLocal().getTimestampAsCalendar()))) {
 				this.prompt(p);
 			}
 		}
@@ -248,6 +248,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 					if(!(p.getRemote().exists() && p.getLocal().exists())) {
 						return PLUS_ICON;
 					}
+					return null;
 				}
 				return super.tableViewObjectValueForLocation(tableView, tableColumn, row);
 			}

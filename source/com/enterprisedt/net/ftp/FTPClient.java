@@ -650,6 +650,7 @@ public class FTPClient {
 				Vector lines = new Vector();
 				String line = null;
 				while((line = readLine(in)) != null) {
+					control.log(line, false);
 					lines.addElement(line);
 				}
 				closeDataSocket();

@@ -387,13 +387,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 			String identifier = (String)tableColumn.identifier();
 			Path p = (Path)this.workList.get(row);
 			if(p != null) {
-				if(identifier.equals("FILENAME")) {
-					return new NSAttributedString(p.getRemote().getName(),
-												  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
-				}
-				if(identifier.equals("TYPEAHEAD")) {
-					return p.getRemote().getName();
-				}
 				if(identifier.equals("ICON")) {
 					if(p.attributes.isDirectory()) {
 						return FOLDER_ICON;
@@ -404,6 +397,13 @@ public abstract class CDValidatorController extends AbstractValidator {
 						return icon;
 					}
 					return NSImage.imageNamed("notfound.tiff");
+				}
+				if(identifier.equals("FILENAME")) {
+					return new NSAttributedString(p.getRemote().getName(),
+												  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+				}
+				if(identifier.equals("TYPEAHEAD")) {
+					return p.getRemote().getName();
 				}
 				if(identifier.equals("REMOTE")) {
 					if(p.getRemote().exists()) {

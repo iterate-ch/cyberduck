@@ -592,7 +592,7 @@ public class FTPControlSocket {
 	 * @param msg   message to log
 	 * @param reply true if a response, false otherwise
 	 */
-	private void log(String msg, boolean command) {
+	protected void log(String msg, boolean command) {
 		if(msg.startsWith("PASS"))
 			msg = "PASS ********";
 		if(messageListener != null)

@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import java.util.Date;
+import java.util.Calendar;
 import java.util.Observable;
 
 import org.apache.log4j.Logger;
@@ -91,6 +92,14 @@ public class Attributes extends Observable {
 
 	public Date getTimestamp() {
 		return this.modified;
+	}
+	
+	public Calendar getTimestampAsCalendar() {
+		Calendar c = Calendar.getInstance();
+		c.setTime(this.getTimestamp());
+		c.clear(Calendar.MILLISECOND);
+		c.clear(Calendar.SECOND);
+		return c;
 	}
 	
 	private static final NSGregorianDateFormatter longDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
