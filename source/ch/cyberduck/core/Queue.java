@@ -180,10 +180,10 @@ public class Queue extends Observable implements Observer { //Thread {
 		}
 	    }
 	    roots[i].getSession().deleteObserver(this);
+	    if(this.isEmpty())
+		roots[i].getSession().close();
+		
 	}
-//	for(int i = 0; i < roots.length; i ++) {
-//	    roots[i].getSession().close();
-//	}
     }
 
     /**
