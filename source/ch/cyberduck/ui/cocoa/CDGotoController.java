@@ -20,7 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSNotification;
 import org.apache.log4j.Logger;
 
 /**

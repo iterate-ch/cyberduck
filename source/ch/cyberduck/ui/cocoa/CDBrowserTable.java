@@ -18,13 +18,18 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.ftp.FTPPath;
+import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.sftp.SFTPPath;
+import ch.cyberduck.core.sftp.SFTPSession;
 import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
+
 import java.util.*;
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.ftp.*;
-import ch.cyberduck.core.sftp.*;
 
 /**
 * @version $Id$

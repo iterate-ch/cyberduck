@@ -20,10 +20,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.ftp.FTPPath;
-import ch.cyberduck.core.http.HTTPPath;
-import ch.cyberduck.core.sftp.SFTPPath;
-
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 import org.apache.log4j.Logger;
 

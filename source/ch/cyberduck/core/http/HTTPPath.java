@@ -18,14 +18,10 @@ package ch.cyberduck.core.http;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Login;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Session;
-import org.apache.commons.httpclient.*;
+import ch.cyberduck.core.*;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
@@ -33,8 +29,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 import java.net.URL;
+import java.util.List;
 
 /**
 * @version $Id$

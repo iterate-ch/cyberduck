@@ -18,13 +18,23 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Login;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.ftp.FTPPath;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.http.HTTPPath;
 import ch.cyberduck.core.http.HTTPSession;
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSAlertPanel;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSButton;
+import com.apple.cocoa.application.NSTextField;
+import com.apple.cocoa.application.NSWindow;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSPoint;
 import org.apache.log4j.Logger;
 
 import java.net.MalformedURLException;

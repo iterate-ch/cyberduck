@@ -62,15 +62,15 @@
 
 package org.apache.commons.httpclient.methods;
 
-import java.io.*;
-import java.net.URLEncoder;
-
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.log.Log;
 import org.apache.commons.httpclient.log.LogSource;
+
+import java.io.*;
+import java.net.URLEncoder;
 
 /**
  * GET Method.

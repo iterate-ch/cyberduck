@@ -20,12 +20,15 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSNotificationCenter;
+import com.apple.cocoa.foundation.NSSelector;
 import com.strangeberry.rendezvous.ServiceInfo;
 import org.apache.log4j.Logger;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 

@@ -17,17 +17,18 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
-import com.apple.cocoa.application.*;
-
-import org.apache.log4j.Logger;
-import java.net.URL;
-
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Login;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.ftp.FTPPath;
 import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.ui.cocoa.CDBrowserController;
-import ch.cyberduck.ui.cocoa.CDTransferController;
+import com.apple.cocoa.foundation.NSScriptCommand;
+import com.apple.cocoa.foundation.NSScriptCommandDescription;
+import org.apache.log4j.Logger;
+
+import java.net.URL;
 
 /**
 * @author Stuart A. Malone

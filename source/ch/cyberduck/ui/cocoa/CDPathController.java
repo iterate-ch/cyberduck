@@ -20,8 +20,10 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSPopUpButton;
+import com.apple.cocoa.application.NSView;
+import com.apple.cocoa.foundation.NSSelector;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;

@@ -62,13 +62,12 @@
 
 package org.apache.commons.httpclient;
 
+import org.apache.commons.httpclient.log.Log;
+import org.apache.commons.httpclient.log.LogSource;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.log.Log;
-import org.apache.commons.httpclient.log.LogSource;
 
 /**
  * <p>

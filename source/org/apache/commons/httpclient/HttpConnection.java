@@ -62,6 +62,9 @@
 
 package org.apache.commons.httpclient;
 
+import org.apache.commons.httpclient.log.Log;
+import org.apache.commons.httpclient.log.LogSource;
+
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
@@ -70,9 +73,6 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.net.SocketException;
-
-import org.apache.commons.httpclient.log.Log;
-import org.apache.commons.httpclient.log.LogSource;
 
 /**
  * <p>
