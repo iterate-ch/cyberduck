@@ -4,6 +4,9 @@ package ch.cyberduck.ui.cocoa;
 
 import java.util.Observer;
 import java.util.Observable;
+import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -16,10 +19,6 @@ import org.apache.log4j.Logger;
 public class CDBrowserView extends NSTableView implements Observer {
     private static Logger log = Logger.getLogger(CDBrowserView.class);
 
-    public CDBrowserView(NSCoder decoder, long token) {
-	super(decoder, token);
-    }
-
     public CDBrowserView() {
 	super();
     }
@@ -28,8 +27,20 @@ public class CDBrowserView extends NSTableView implements Observer {
 	super(frame);
     }
 
+    public CDBrowserView(NSCoder decoder, long token) {
+	super(decoder, token);
+    }
+    
+    public void encodeWithCoder(NSCoder encoder) {
+	super.encodeWithCoder(encoder);
+    }
+    
     public void awakeFromNib() {
+	this.setDelegate(this);
 	this.setTarget(this);
+	this.setAutoresizesAllColumnsToFit(true);
+//	this.setIndicatorImage(NSImage.imageNamed("file.tiff"), this.tableColumnWithIdentifier("FILENAME"))
+
     }
 
     public void mouseUp(NSEvent event) {
@@ -38,11 +49,11 @@ public class CDBrowserView extends NSTableView implements Observer {
 	    
 	}
     }
-    
-    public void encodeWithCoder(NSCoder encoder) {
-	super.encodeWithCoder(encoder);
-    }
 
+    public Object dataSource() {
+	return super.dataSource();
+    }
+    
     public void update(Observable o, Object arg) {
 	log.debug("update");
 	if(o instanceof Host) {
@@ -105,5 +116,34 @@ public class CDBrowserView extends NSTableView implements Observer {
     public void tableViewSelectionDidChange(NSNotification notification) {
 	log.debug("tableViewSelectionDidChange");
 	//	NSTableView table = (NSTableView)notification.object(); // Returns the object associated with the receiver. This is often the object that posted this notification
+    }
+
+    public void sort(final String columnIdentifier, final boolean ascending) {
+	final int higher;
+	final int lower;
+	if(ascending) {
+	    higher = 1;
+	    lower = -1;
+	}
+	else {
+	    higher = -1;
+	    lower = 1;
+	}
+	if(columnIdentifier.equals("FILENAME")) {
+	    Collections.sort((List)this.dataSource(),
+		      new Comparator() {
+			  public int compare(Object o1, Object o2) {
+			      Path p1 = (Path) o1;
+			      Path p2 = (Path) o2;
+			      if(ascending) {
+				  return p1.getName().compareTo(p2.getName());
+			      }
+			      else {
+				  return -p1.getName().compareTo(p2.getName());
+			      }
+			  }
+		      }
+		      );
+	}
     }
 }

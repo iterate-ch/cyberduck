@@ -26,7 +26,7 @@ public class CDProgressWheel extends NSProgressIndicator implements Observer {
     }
 
     public void update(Observable o, Object arg) {
-//	log.debug("update:"+arg);
+	log.debug("update:"+arg);
 	if(o instanceof Status) {
 	    Message msg = (Message)arg;
 	    if(msg.getTitle().equals(Message.ACTIVE)) {
@@ -46,5 +46,4 @@ public class CDProgressWheel extends NSProgressIndicator implements Observer {
     public void encodeWithCoder(NSCoder encoder) {
 	super.encodeWithCoder(encoder);
     }
-    
 }

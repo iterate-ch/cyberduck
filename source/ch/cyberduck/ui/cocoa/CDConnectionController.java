@@ -82,9 +82,6 @@ public class CDConnectionController extends NSObject implements Observer {
 	//
     }
 
-    private static final int SFTP_TAG = 1;
-    private static final int FTP_TAG = 2;
-
     public void connect(NSObject sender) {
 	log.debug("connect");
 	try {
@@ -92,14 +89,17 @@ public class CDConnectionController extends NSObject implements Observer {
 	    String protocol = null;
 	    int tag = protocolPopup.selectedItem().tag();
 	    switch(tag) {
-		case(SFTP_TAG):
+		case(Session.SSH_PORT):
 		    protocol = Session.SFTP;
 		    break;
-		case(FTP_TAG):
+		case(Session.FTP_PORT):
 		    protocol = Session.FTP;
 		    break;
-//		case(HTTP_TAG):
-//		    protocol = Session.HTTP;
+		case(Session.HTTP_PORT):
+		    protocol = Session.HTTP;
+		    break;
+//		case(Session.HTTPS_PORT):
+//		    protocol = Session.HTTPS;
 //		    break;
 	    }
 
@@ -177,12 +177,6 @@ public class CDConnectionController extends NSObject implements Observer {
 	}
     }
 
-    public void closeLoginSheet(NSObject sender) {
-	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-	NSApplication.sharedApplication().endSheet(loginSheet, NSAlertPanel.AlternateReturn);
-    }
-
-
     private class CDLogin extends Login {
 	private boolean done;
 	private boolean tryAgain;
@@ -192,11 +186,12 @@ public class CDConnectionController extends NSObject implements Observer {
 	}
 
 	public void loginSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+	    CDLoginSheet loginSheet = (CDLoginSheet)sheet;
 	    switch(returncode) {
 		case(NSAlertPanel.DefaultReturn):
 		    tryAgain = true;
-		    this.setUsername(null);///@todo
-		    this.setPassword(null);
+		    this.setUsername(loginSheet.getUser());///@todo
+		    this.setPassword(loginSheet.getPass());
 		case(NSAlertPanel.AlternateReturn):
 		    tryAgain = false;
 	    }
@@ -207,12 +202,16 @@ public class CDConnectionController extends NSObject implements Observer {
 	public boolean loginFailure() {
 	    log.info("Authentication failed.");
 	    mainWindow.makeFirstResponder(loginSheet);
-	    NSApplication.sharedApplication().beginSheet(loginSheet, mainWindow, this,
+	    //NSApplication.beginSheet( NSWindow sheet, NSWindow docWindow, Object modalDelegate, NSSelector didEndSelector, Object contextInfo)
+	    NSApplication.sharedApplication().beginSheet(
+						  loginSheet, //sheet
+						  mainWindow, //docWindow
+						  this, //modalDelegate
 						  new NSSelector(
 		       "loginSheetDidEnd",
 		       new Class[] { NSWindow.class, int.class, NSWindow.class }
-		       ),// end selector
-						  this);
+		       ),// did end selector
+						  null); //contextInfo
 	    while(!done) {
 		try {
 		    Thread.sleep(500); //milliseconds

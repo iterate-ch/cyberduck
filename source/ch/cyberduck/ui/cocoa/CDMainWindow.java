@@ -36,16 +36,6 @@ public class CDMainWindow extends NSWindow {//implements Observer {
 
     private static Logger log = Logger.getLogger(CDMainWindow.class);
 
-    //public NSPopUpButton favoritePopUpButton;
-    public NSWindow connectionSheet; /* IBOutlet */
-    public NSTextField quickConnectField; /* IBOutlet */
-    public NSPopUpButton pathPopUpButton; /* IBOutlet */
-    public NSDrawer drawer; /* IBOutlet */
-
-//    public NSTextField statusLabel; /* IBOutlet */
-
-    private NSMutableDictionary toolbarItems;
-
     public CDMainWindow() {
 	super();
 	log.debug("CDMainWindow");
@@ -67,9 +57,11 @@ public class CDMainWindow extends NSWindow {//implements Observer {
     /**
       * @return The string that appears in the title bar of the receiver.
       */
+    /*
     public String title() {
 	return "Connected to <host>";
     }
+     */
 	
 
     public void awakeFromNib() {
@@ -83,122 +75,7 @@ public class CDMainWindow extends NSWindow {//implements Observer {
 	this.setDelegate(this);
 
 
-	// ----------------------------------------------------------
- // Toolbar
- // ----------------------------------------------------------
-	
-	NSToolbar toolbar = new NSToolbar("mainToolbar");
-	this.toolbarItems = new NSMutableDictionary();
-
-	this.addToolbarItem(toolbarItems, "New Connection", "New Connection", "New Connection", "Connect to host", this, new NSSelector("openConnectionSheet", new Class[] {null}), NSImage.imageNamed("server.tiff"));
-
-	this.addToolbarItem(toolbarItems, "Back", "Back", "Back", "Show parent directory", this, new NSSelector("back", new Class[] {null}), NSImage.imageNamed("back.tiff"));
-
-	//    private void addToolbarItem(NSMutableDictionary toolbarItems, String identifier, String label, String paletteLabel, String toolTip, Object target, NSSelector action, NSImage image) {
-
-	this.addToolbarItem(toolbarItems, "Path", "Path", "Path", "Change working directory", this, null, null);
-	NSToolbarItem pathPopUpButtonItem = (NSToolbarItem)toolbarItems.objectForKey("Path");
-	pathPopUpButtonItem.setView(pathPopUpButton);
-	pathPopUpButtonItem.setMinSize(pathPopUpButton.frame().size());
-	pathPopUpButtonItem.setMaxSize(pathPopUpButton.frame().size());
-
-	this.addToolbarItem(toolbarItems, "Quick Connect", "Quick Connect", "Quick Connect", "Connect to host", this, null, null);
-	NSToolbarItem quickConnectItem = (NSToolbarItem)toolbarItems.objectForKey("Quick Connect");
-	quickConnectItem.setView(quickConnectField);
-	quickConnectItem.setMinSize(quickConnectField.frame().size());
-	quickConnectItem.setMaxSize(quickConnectField.frame().size());
-
-
-	/*
-	this.addToolbarItem(toolbarItems, "Favorites", "Favorites", "Favorites", null, this, null, null);
-	
-	NSToolbarItem favoriteItem = (NSToolbarItem)toolbarItems.objectForKey("Favorites");
-	favoriteItem.setView(favoritePopUpButton);
-	favoriteItem.setMinSize(favoritePopUpButton.frame().size());
-	favoriteItem.setMaxSize(favoritePopUpButton.frame().size());
- */
-
-	this.addToolbarItem(toolbarItems, "Refresh", "Refresh", "Refresh", "Refresh directory listing", this, new NSSelector("refreshListing", new Class[] {null}), NSImage.imageNamed("refresh.tiff"));
-
-	this.addToolbarItem(toolbarItems, "Download", "Download", "Download", "Download file", this, new NSSelector("download", new Class[] {null}), NSImage.imageNamed("download.tiff"));
-
-	this.addToolbarItem(toolbarItems, "Upload", "Upload", "Upload", "Upload file", this, new NSSelector("upload", new Class[] {null}), NSImage.imageNamed("upload.tiff"));
-
-	this.addToolbarItem(toolbarItems, "New Folder", "New Folder", "New Folder", "Create New Folder", this, new NSSelector("mkdir", new Class[] {null}), NSImage.imageNamed("folder.tiff"));
-
-	this.addToolbarItem(toolbarItems, "Get Info", "Get Info", "Get Info", "Show file permissions", this, new NSSelector("showInfo", new Class[] {null}), NSImage.imageNamed("info.tiff"));
-
-	this.addToolbarItem(toolbarItems, "Toggle Drawer", "Toggle Drawer", "Toggle Drawer", "Show connection transcript", this, new NSSelector("showTranscriptDrawer", new Class[] {NSObject.class}), NSImage.imageNamed("transcript.tiff"));
-
-	this.addToolbarItem(toolbarItems, "Delete", "Delete", "Delete", "Delete file", this, new NSSelector("deleteFile", new Class[] {null}), NSImage.imageNamed("delete.tiff"));
-
-	toolbar.setDelegate(this);
-	toolbar.setAllowsUserCustomization(true);
-	toolbar.setAutosavesConfiguration(true);
-	this.setToolbar(toolbar);
     }
-
-
-    // ----------------------------------------------------------
-    // Toolbar delegate methods
-    // ----------------------------------------------------------
-
-    private void addToolbarItem(NSMutableDictionary toolbarItems, String identifier, String label, String paletteLabel, String toolTip, Object target, NSSelector action, NSImage image) {
-	NSToolbarItem item = new NSToolbarItem(identifier);
-	item.setLabel(label);
-	item.setPaletteLabel(paletteLabel);
-	item.setToolTip(toolTip);
-	item.setImage(image);
-	item.setTarget(target);
-	item.setAction(action);
-	item.setEnabled(true);
-
-	toolbarItems.setObjectForKey(item, identifier);
-    }
-
-    public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Back", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer"});
-    }
-
-    public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Back", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
-    }
-
-    public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
-	return (NSToolbarItem)toolbarItems.objectForKey(itemIdentifier);
-    }
-
-    public boolean validateToolbarItem(NSToolbarItem item) {
-	return true;
-    }
-
-    public void showTranscriptDrawer(NSObject sender) {
-	drawer.toggle(this);
-    }
-
-    public void openConnectionSheet(NSObject sender) {
-	this.makeFirstResponder(connectionSheet);
-	NSApplication.sharedApplication().beginSheet(connectionSheet, this, this,
-					      new NSSelector
-					      (
-	    "connectionSheetDidEnd",
-	    new Class[]
-	    {
-		NSWindow.class, int.class, NSWindow.class
-	    }
-	    ),// end selector
-					      this);
-    }
-
-    public void closeConnectionSheet(NSObject sender) {
-	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-	NSApplication.sharedApplication().endSheet(connectionSheet, NSAlertPanel.AlternateReturn);
-    }
-
-    public void connectionSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	sheet.close();
-    }
-
 
     // ----------------------------------------------------------
     // Window delegate methods
