@@ -799,58 +799,62 @@ public class CDBrowserController extends CDController implements Observer {
 	
 	public void infoButtonClicked(Object sender) {
 		log.debug("infoButtonClicked");
-		NSEnumerator enum = browserTable.selectedRowEnumerator();
-		List files = new ArrayList();
-		while(enum.hasMoreElements()) {
-			int selected = ((Integer)enum.nextElement()).intValue();
-			files.add(browserModel.getEntry(selected));
-		}
-		if(Preferences.instance().getProperty("browser.info.isInspector").equals("true")) {
-			if(null == this.inspector) {
-				this.inspector = new CDInfoController(files);
-			} 
-			else {
-				inspector.setFiles(files);
+		if(browserTable.selectedRow() != -1) {
+			NSEnumerator enum = browserTable.selectedRowEnumerator();
+			List files = new ArrayList();
+			while(enum.hasMoreElements()) {
+				int selected = ((Integer)enum.nextElement()).intValue();
+				files.add(browserModel.getEntry(selected));
 			}
-			inspector.window().makeKeyAndOrderFront(null);
-		}
-		else {
-			CDInfoController controller = new CDInfoController(files);
-			controller.window().makeKeyAndOrderFront(null);
+			if(Preferences.instance().getProperty("browser.info.isInspector").equals("true")) {
+				if(null == this.inspector) {
+					this.inspector = new CDInfoController(files);
+				} 
+				else {
+					inspector.setFiles(files);
+				}
+				inspector.window().makeKeyAndOrderFront(null);
+			}
+			else {
+				CDInfoController controller = new CDInfoController(files);
+				controller.window().makeKeyAndOrderFront(null);
+			}
 		}
 	}
 		
 	public void deleteButtonClicked(Object sender) {
 		log.debug("deleteButtonClicked");
-		NSEnumerator enum = browserTable.selectedRowEnumerator();
-		Vector files = new Vector();
-		StringBuffer alertText = new StringBuffer(NSBundle.localizedString("Really delete the following files? This cannot be undone.", "Confirm deleting files."));
-		int i = 0;
-		while(i < 10 && enum.hasMoreElements()) {
-			int selected = ((Integer)enum.nextElement()).intValue();
-			Path p = (Path)browserModel.getEntry(selected);
-			files.add(p);
-			alertText.append("\n- "+p.getName());
-			i++;
+		if(browserTable.selectedRow() != -1) {
+			NSEnumerator enum = browserTable.selectedRowEnumerator();
+			Vector files = new Vector();
+			StringBuffer alertText = new StringBuffer(NSBundle.localizedString("Really delete the following files? This cannot be undone.", "Confirm deleting files."));
+			int i = 0;
+			while(i < 10 && enum.hasMoreElements()) {
+				int selected = ((Integer)enum.nextElement()).intValue();
+				Path p = (Path)browserModel.getEntry(selected);
+				files.add(p);
+				alertText.append("\n- "+p.getName());
+				i++;
+			}
+			if(enum.hasMoreElements()) {
+				alertText.append("\n- (...)");
+			}
+			NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Delete", "Alert sheet title"), //title
+												 NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
+												 NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+												 null, //other button
+												 this.window(), //window
+												 this, //delegate
+												 new NSSelector
+												 ("deleteSheetDidEnd",
+												  new Class[]
+												  {
+													  NSWindow.class, int.class, Object.class
+												  }), // end selector
+												 null, // dismiss selector
+												 files, // contextInfo
+												 alertText.toString());
 		}
-		if(enum.hasMoreElements()) {
-			alertText.append("\n- (...)");
-		}
-		NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Delete", "Alert sheet title"), //title
-		    NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
-		    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
-		    null, //other button
-		    this.window(), //window
-		    this, //delegate
-		    new NSSelector
-		        ("deleteSheetDidEnd",
-		            new Class[]
-		            {
-			            NSWindow.class, int.class, Object.class
-		            }), // end selector
-		    null, // dismiss selector
-		    files, // contextInfo
-		    alertText.toString());
 	}
 
 	public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
