@@ -92,6 +92,9 @@ public class EnterpriseUnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
             String hr = group(21);
             String min = group(22);
             String name = group(23);
+            if (null == name || name.equals(".") || name.equals("..")) {
+                return (null);
+            }
 
             f.attributes.setType(Path.FILE_TYPE);
             f.attributes.setOwner(usr);

@@ -99,18 +99,34 @@ public class NTFTPEntryParser extends RegexFTPFileEntryParserImpl {
             }
 
             Calendar cal = Calendar.getInstance();
+            cal.clear();
+
             //set the calendar
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MINUTE, minutes);
-            cal.set(Calendar.HOUR, hour);
             cal.set(Calendar.YEAR, year);
             cal.set(Calendar.DATE, day);
             cal.set(Calendar.MONTH, month);
             int ap = Calendar.AM;
-            if ("P".equals(ampm)) {
+            if ("P".equals(ampm))
+            {
                 ap = Calendar.PM;
+                if (hour != 12) {
+                    hour += 12;
+                }
+            } else if (hour == 12) {
+                hour = 0;
             }
-            cal.set(Calendar.AM_PM, ap);
+
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MINUTE, minutes);
+
+            // Using Calendar.HOUR_OF_DAY instead of Calendar.HOUR
+            // since the latter has proven to be unreliable.
+            // see bug 27085
+
+            //          cal.set(Calendar.AM_PM, ap);
+            cal.set(Calendar.HOUR_OF_DAY, hour);
+
+            cal.getTimeInMillis();
             f.attributes.setTimestamp(cal.getTime());
 
             if ("<DIR>".equals(dirString)) {

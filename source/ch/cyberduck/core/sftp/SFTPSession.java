@@ -25,9 +25,7 @@ import org.apache.log4j.Logger;
 import ch.cyberduck.core.*;
 import com.sshtools.j2ssh.SshClient;
 import com.sshtools.j2ssh.SshException;
-import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
-import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
-import com.sshtools.j2ssh.authentication.PublicKeyAuthenticationClient;
+import com.sshtools.j2ssh.authentication.*;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
@@ -126,11 +124,61 @@ public class SFTPSession extends Session {
 
     private synchronized void login() throws IOException {
         log.debug("login");
-        Login credentials = host.getLogin();
-//		List authMethods = SSH.getAvailableAuthMethods(credentials.getUsername());
-
-        if (host.getLogin().usesPasswordAuthentication()) {// password authentication
-            if (credentials.check()) {
+        final Login credentials = host.getLogin();
+		//@todo
+		if(credentials.usesKBIAuthentication()) {
+			log.info("Trying KBI authentication");
+            if(credentials.check()) {
+				KBIAuthenticationClient kbi = new KBIAuthenticationClient();
+				kbi.setUsername(credentials.getUsername());
+				kbi.setKBIRequestHandler(new KBIRequestHandler() {
+					public void showPrompts(String name, 
+											String instructions,
+											KBIPrompt[] prompts) throws IOException {
+												log.info(name);
+												log.info(instructions);
+												if (prompts != null) {
+													for (int i = 0; i < prompts.length; i++) {
+														log.info(prompts[i].getPrompt());
+														//							prompts[i].setResponse(response);
+													}
+												}
+												if (credentials.promptUser("Authentication as user " + credentials.getUsername() + " failed. The server told us: "+instructions)) {
+													SFTPSession.this.login();
+												}
+												else {
+													throw new SshException("Login as user " + credentials.getUsername() + " canceled.");
+												}
+											}
+				});
+				// Try the authentication
+				int result = SSH.authenticate(kbi);
+				if (AuthenticationProtocolState.COMPLETE == result) {
+					this.log("Login successful", Message.PROGRESS);
+					credentials.addPasswordToKeychain();
+				}
+				else {
+					this.log("Login failed", Message.PROGRESS);
+					if (AuthenticationProtocolState.PARTIAL == result) {
+						throw new SshException("Authentication as user " + credentials.getUsername() + " succeeded but another authentication method is required.");
+					}
+					else if (AuthenticationProtocolState.FAILED == result) {
+						if (credentials.promptUser("Authentication as user " + credentials.getUsername() + " failed.")) {
+							this.login();
+						}
+						else {
+							throw new SshException("Login as user " + credentials.getUsername() + " canceled.");
+						}
+					}
+					else {
+						throw new SshException("Login as user " + credentials.getUsername() + " failed for an unknown reason.");
+					}
+				}			
+			}
+		}
+        else if(credentials.usesPasswordAuthentication()) {// password authentication
+			log.info("Trying Password authentication");
+            if(credentials.check()) {
                 this.log("Authenticating as '" + credentials.getUsername() + "'", Message.PROGRESS);
 
                 PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
@@ -163,6 +211,7 @@ public class SFTPSession extends Session {
             }
         }
         else if (credentials.usesPublicKeyAuthentication()) {//public key authentication
+			log.info("Trying Public Key authentication");
             PublicKeyAuthenticationClient pk = new PublicKeyAuthenticationClient();
             pk.setUsername(credentials.getUsername());
             // Get the private key file

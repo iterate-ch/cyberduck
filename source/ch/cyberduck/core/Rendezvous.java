@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
+import javax.jmdns.ServiceTypeListener;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,10 +35,11 @@ import org.apache.log4j.Logger;
 public class Rendezvous extends Observable implements ServiceListener {
     private static Logger log = Logger.getLogger(Rendezvous.class);
 
-    private static final String[] serviceTypes = new String[]{
+    private static final String[] serviceTypes = new String[] {
         "_sftp._tcp.local.",
-        "_ftp._tcp.local.",
-        "_ssh._tcp.local."};
+        "_ssh._tcp.local.",
+        "_ftp._tcp.local."
+	};
 
     private Map services;
     private JmDNS jmDNS;
@@ -90,9 +92,9 @@ public class Rendezvous extends Observable implements ServiceListener {
      *
      * @param type something like _ftp._tcp.local.
      */
-    public void addService(JmDNS jmDNS, String type, String name) {
+    public void addService(JmDNS j, String type, String name) {
         log.debug("addService:" + name + "," + type);
-        this.jmDNS.requestServiceInfo(type, name);
+        j.requestServiceInfo(type, name);
     }
 
     /**
@@ -103,8 +105,8 @@ public class Rendezvous extends Observable implements ServiceListener {
     public void resolveService(JmDNS jmDNS, String type, String name, ServiceInfo info) {
         if (info != null) {
             log.debug("resolveService:" + name + "," + type + "," + info);
-            log.debug("Rendezvous Service Name:" + info.getName());
-            log.debug("Rendezvous Server Name:" + info.getServer());
+            log.info("Rendezvous Service Name:" + info.getName());
+            log.info("Rendezvous Server Name:" + info.getServer());
 
             //Host(String hostname, int port, Login login, String nickname)
             Host h = new Host(info.getServer(),
@@ -112,7 +114,8 @@ public class Rendezvous extends Observable implements ServiceListener {
                     new Login(info.getServer(), null, null));
 
             String identifier = info.getServer() + " (" + Host.getDefaultProtocol(info.getPort()).toUpperCase() + ")";
-
+			//@todo dont't rely on standard port numbers
+			
             this.services.put(identifier, h);
             this.callObservers(new Message(Message.RENDEZVOUS_ADD, identifier));
         }
@@ -124,9 +127,9 @@ public class Rendezvous extends Observable implements ServiceListener {
     /**
      * This method is called when a service is no longer available.
      */
-    public void removeService(JmDNS jmDNS, String type, String name) {
+    public void removeService(JmDNS j, String type, String name) {
         log.debug("removeService:" + name);
-        ServiceInfo info = jmDNS.getServiceInfo(type, name);
+        ServiceInfo info = j.getServiceInfo(type, name);
         if (info != null) {
             String identifier = info.getServer() + " (" + Host.getDefaultProtocol(info.getPort()).toUpperCase() + ")";
             this.services.remove(identifier);

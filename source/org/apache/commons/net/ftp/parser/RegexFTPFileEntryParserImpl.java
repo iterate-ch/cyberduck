@@ -16,18 +16,24 @@
 package org.apache.commons.net.ftp.parser;
 
 import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
-import org.apache.oro.text.regex.*;
+import org.apache.oro.text.regex.MalformedPatternException;
+import org.apache.oro.text.regex.MatchResult;
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.PatternMatcher;
+import org.apache.oro.text.regex.Perl5Compiler;
+import org.apache.oro.text.regex.Perl5Matcher;
 
 /**
  * This abstract class implements both the older FTPFileListParser and
  * newer FTPFileEntryParser interfaces with default functionality.
  * All the classes in the parser subpackage inherit from this.
- * <p/>
+ *
  * This is the base for all regular based FTPFileEntryParser
  *
  * @author Steve Cohen <scohen@apache.org>
  */
-public abstract class RegexFTPFileEntryParserImpl extends FTPFileEntryParserImpl {
+public abstract class RegexFTPFileEntryParserImpl extends FTPFileEntryParserImpl
+{
     /**
      * internal pattern the matcher tries to match, representing a file
      * entry
@@ -49,23 +55,29 @@ public abstract class RegexFTPFileEntryParserImpl extends FTPFileEntryParserImpl
     /**
      * The constructor for a RegexFTPFileEntryParserImpl object.
      *
-     * @param regex The regular expression with which this object is
-     *              initialized.
-     * @throws IllegalArgumentException Thrown if the regular expression is unparseable.  Should not be seen in
-     *                                  normal conditions.  It it is seen, this is a sign that a subclass has
-     *                                  been created with a bad regular expression.   Since the parser must be
-     *                                  created before use, this means that any bad parser subclasses created
-     *                                  from this will bomb very quickly,  leading to easy detection.
+     * @param regex  The regular expression with which this object is
+     * initialized.
+     *
+     * @exception IllegalArgumentException
+     * Thrown if the regular expression is unparseable.  Should not be seen in
+     * normal conditions.  It it is seen, this is a sign that a subclass has
+     * been created with a bad regular expression.   Since the parser must be
+     * created before use, this means that any bad parser subclasses created
+     * from this will bomb very quickly,  leading to easy detection.
      */
-    public RegexFTPFileEntryParserImpl(String regex) {
+    public RegexFTPFileEntryParserImpl(String regex)
+    {
         super();
 
-        try {
+        try
+        {
             _matcher_ = new Perl5Matcher();
-            pattern = new Perl5Compiler().compile(regex);
+            pattern   = new Perl5Compiler().compile(regex);
         }
-        catch (MalformedPatternException e) {
-            throw new IllegalArgumentException("Unparseable regex supplied:  " + regex);
+        catch (MalformedPatternException e)
+        {
+            throw new IllegalArgumentException (
+                                                "Unparseable regex supplied:  " + regex);
         }
     }
 
@@ -77,9 +89,11 @@ public abstract class RegexFTPFileEntryParserImpl extends FTPFileEntryParserImpl
      * @param s the String to be matched
      * @return true if s matches this object's regular expression.
      */
-    public boolean matches(String s) {
+    public boolean matches(String s)
+    {
         this.result = null;
-        if (_matcher_.matches(s.trim(), this.pattern)) {
+        if (_matcher_.matches(s.trim(), this.pattern))
+        {
             this.result = _matcher_.getMatch();
         }
         return null != this.result;
@@ -91,8 +105,10 @@ public abstract class RegexFTPFileEntryParserImpl extends FTPFileEntryParserImpl
      *
      * @return the number of groups() in the internal MatchResult.
      */
-    public int getGroupCnt() {
-        if (this.result == null) {
+    public int getGroupCnt()
+    {
+        if (this.result == null)
+        {
             return 0;
         }
         return this.result.groups();
@@ -103,12 +119,15 @@ public abstract class RegexFTPFileEntryParserImpl extends FTPFileEntryParserImpl
      * method.
      *
      * @param matchnum match group number to be retrieved
+     *
      * @return the content of the <code>matchnum'th<code> group of the internal
      *         match or null if this method is called without a match having
      *         been made.
      */
-    public String group(int matchnum) {
-        if (this.result == null) {
+    public String group(int matchnum)
+    {
+        if (this.result == null)
+        {
             return null;
         }
         return this.result.group(matchnum);
@@ -120,11 +139,13 @@ public abstract class RegexFTPFileEntryParserImpl extends FTPFileEntryParserImpl
      *
      * @return a string shows each match group by number.
      */
-    public String getGroupsAsString() {
+    public String getGroupsAsString()
+    {
         StringBuffer b = new StringBuffer();
-        for (int i = 1; i <= this.result.groups(); i++) {
+        for (int i = 1; i <= this.result.groups(); i++)
+        {
             b.append(i).append(") ").append(this.result.group(i))
-                    .append(System.getProperty("line.separator"));
+                .append(System.getProperty("line.separator"));
         }
         return b.toString();
 

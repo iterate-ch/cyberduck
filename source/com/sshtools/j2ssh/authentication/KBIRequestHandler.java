@@ -26,6 +26,7 @@
  */
 package com.sshtools.j2ssh.authentication;
 
+import java.io.IOException;
 
 /**
  * @author $author$
@@ -37,5 +38,5 @@ public interface KBIRequestHandler {
      * @param instruction
      * @param prompts
      */
-    public void showPrompts(String name, String instruction, KBIPrompt[] prompts);
+    public void showPrompts(String name, String instruction, KBIPrompt[] prompts) throws IOException;
 }

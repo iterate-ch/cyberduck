@@ -46,6 +46,7 @@ public class CDBrowserTable extends NSTableView {
 
     public void awakeFromNib() {
         log.debug("awakeFromNib");
+		/*
         // receive drag events from types
         this.registerForDraggedTypes(new NSArray(new Object[]{
             "QueuePboardType",
@@ -159,6 +160,7 @@ public class CDBrowserTable extends NSTableView {
         this.setAllowsMultipleSelection(true);
         this.setAllowsEmptySelection(true);
         this.setAllowsColumnReordering(true);
+		*/
     }
 
     public void keyDown(NSEvent event) {

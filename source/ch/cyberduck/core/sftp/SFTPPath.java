@@ -184,7 +184,7 @@ public class SFTPPath extends Path {
         return files;
     }
 
-    public void cwdir() {
+    public synchronized void cwdir() {
         try {
             session.check();
             session.SFTP.openDirectory(this.getParent().getAbsolute());
@@ -224,7 +224,7 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void rename(String filename) {
+    public synchronized void rename(String filename) {
         log.debug("rename:" + filename);
         try {
             session.check();
@@ -245,7 +245,7 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void delete() {
+    public synchronized void delete() {
         log.debug("delete:" + this.toString());
         try {
             session.check();
@@ -284,7 +284,7 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void changePermissions(Permission perm, boolean recursive) {
+    public synchronized void changePermissions(Permission perm, boolean recursive) {
         log.debug("changePermissions");
         try {
             session.check();
@@ -302,7 +302,7 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void download() {
+    public synchronized void download() {
         InputStream in = null;
         OutputStream out = null;
         try {
@@ -363,7 +363,7 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void upload() {
+    public synchronized void upload() {
         InputStream in = null;
         SftpFileOutputStream out = null;
         try {

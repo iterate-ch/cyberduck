@@ -129,6 +129,10 @@ public class Login {
         return !this.usesPublicKeyAuthentication();
     }
 
+	public boolean usesKBIAuthentication() {
+		return false; //@todo
+	}
+		
     public void setPrivateKeyFile(String file) {
         this.privateKeyFile = file;
     }

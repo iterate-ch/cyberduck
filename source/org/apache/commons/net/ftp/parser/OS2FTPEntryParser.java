@@ -80,6 +80,9 @@ public class OS2FTPEntryParser extends RegexFTPFileEntryParserImpl {
             String hr = group(7);
             String min = group(8);
             String name = group(9);
+            if (null == name || name.equals(".") || name.equals("..")) {
+                return (null);
+            }
 
             //is it a DIR or a file
             if (dirString.trim().equals("DIR") || attrib.trim().equals("DIR")) {
@@ -113,7 +116,6 @@ public class OS2FTPEntryParser extends RegexFTPFileEntryParserImpl {
             cal.set(Calendar.YEAR, year);
             cal.set(Calendar.DATE, day);
             cal.set(Calendar.MONTH, month);
-//            f.setTimestamp(cal);
             f.attributes.setTimestamp(cal.getTime());
 
             //set the name

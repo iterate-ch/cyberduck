@@ -102,41 +102,36 @@ public class HTTPPath extends Path {
         return this.list(false);
     }
 
-    public List list(boolean refresh) {
+    public synchronized List list(boolean refresh) {
         return this.list(refresh, Preferences.instance().getProperty("browser.showHidden").equals("true"));
     }
 
-    public List list(boolean notifyobservers, boolean showHidden) {
+    public synchronized List list(boolean notifyobservers, boolean showHidden) {
         session.log("Invalid Operation", Message.ERROR);
         return null;
     }
 
-    public void delete() {
+    public synchronized void delete() {
         session.log("Invalid Operation", Message.ERROR);
     }
 
-    public void cwdir() {
+    public synchronized void cwdir() {
         session.log("Invalid Operation", Message.ERROR);
     }
 
-    public void mkdir(boolean recursive) {
+    public synchronized void mkdir(boolean recursive) {
         session.log("Invalid Operation", Message.ERROR);
     }
 
-    public void rename(String filename) {
+    public synchronized void rename(String filename) {
         session.log("Invalid Operation", Message.ERROR);
     }
 
-    public void changePermissions(Permission perm, boolean recursive) {
+    public synchronized void changePermissions(Permission perm, boolean recursive) {
         session.log("Invalid Operation", Message.ERROR);
     }
 
-    protected List getUploadQueue(List queue) {
-        queue.add(this);
-        return queue;
-    }
-
-    public void download() {
+    public synchronized void download() {
         InputStream in = null;
         OutputStream out = null;
         GetMethod GET = null;
@@ -254,15 +249,7 @@ public class HTTPPath extends Path {
         }
     }
 
-    public void upload() {
+    public synchronized void upload() {
         throw new IllegalArgumentException("HTTP PUT not supported");
-    }
-
-    public boolean isFile() {
-        return true;
-    }
-
-    public boolean isDirectory() {
-        return false;
     }
 }

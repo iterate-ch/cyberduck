@@ -99,6 +99,9 @@ public class VMSFTPEntryParser extends RegexFTPFileEntryParserImpl {
         if (matches(entry)) {
             Path f = PathFactory.createPath(parent.getSession());
             String name = group(1);
+            if (null == name || name.equals(".") || name.equals("..")) {
+                return (null);
+            }
             String size = group(2);
             String day = group(3);
             String mo = group(4);

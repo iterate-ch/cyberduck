@@ -30,7 +30,7 @@ public class OS400FTPEntryParser extends RegexFTPFileEntryParserImpl {
             + "(\\d+)\\s+"				// size
             + "(\\d\\d)/(\\d\\d)/(\\d\\d)\\s+" // year/month/day
             + "([0-2][0-9]):([0-5][0-9]):([0-5][0-9])\\s+" // hour:minutes:seconds
-            + "(\\*\\S+)\\s+"				// *STMF/*DIR
+            + "(\\*\\S+)\\s+"				// 
             + "(\\S+/?)\\s*";				// filename
 
     public OS400FTPEntryParser() {
@@ -51,6 +51,9 @@ public class OS400FTPEntryParser extends RegexFTPFileEntryParserImpl {
             String sec = group(8);
             String typeStr = group(9);
             String name = group(10);
+            if (null == name || name.equals(".") || name.equals("..")) {
+                return (null);
+            }
 
             if (typeStr.equalsIgnoreCase("*DIR")) {
                 f.attributes.setType(Path.DIRECTORY_TYPE);

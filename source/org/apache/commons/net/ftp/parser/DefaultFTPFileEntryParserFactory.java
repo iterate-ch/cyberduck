@@ -100,7 +100,11 @@ public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFacto
     }
 
     public FTPFileEntryParser createOS400FTPEntryParser() {
-        return new OS400FTPEntryParser();
+        return new CompositeFileEntryParser(new FTPFileEntryParser[]
+        {
+            new OS400FTPEntryParser(),
+            new UnixFTPEntryParser()
+        });
     }
 }
 

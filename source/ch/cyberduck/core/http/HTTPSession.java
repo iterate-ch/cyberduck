@@ -81,11 +81,7 @@ public class HTTPSession extends Session {
         this.log("HTTP connection opened", Message.PROGRESS);
     }
 
-    public synchronized void mount() {
-        this.log("Invalid Operation", Message.ERROR);
-    }
-
-    public void check() throws IOException {
+    public synchronized void check() throws IOException {
         log.debug(this.toString() + ":check");
         this.log("Working", Message.START);
 //		this.log("Checking connection...", Message.PROGRESS);
@@ -95,7 +91,7 @@ public class HTTPSession extends Session {
         }
     }
 
-    public Path workdir() {
+    public synchronized Path workdir() {
         this.log("Invalid Operation", Message.ERROR);
         return null;
     }

@@ -136,11 +136,9 @@ public class FTPPath extends Path {
                     Path p = parser.parseFTPEntry(this, lines[i]);
                     if (p != null) {
                         String filename = p.getName();
-                        if (!(filename.equals(".") || filename.equals(".."))) {
-                            if (!(filename.charAt(0) == '.') || showHidden) {
-                                files.add(p);
-                            }
-                        }
+						if (!(filename.charAt(0) == '.') || showHidden) {
+							files.add(p);
+						}
                     }
                 }
 
@@ -160,7 +158,7 @@ public class FTPPath extends Path {
         return files;
     }
 	
-    public void cwdir() {
+    public synchronized void cwdir() {
         try {
             session.check();
             session.FTP.chdir(this.getAbsolute());
@@ -176,7 +174,7 @@ public class FTPPath extends Path {
         }
     }
 
-    public void mkdir(boolean recursive) {
+    public synchronized void mkdir(boolean recursive) {
         log.debug("mkdir:" + this.getName());
         try {
             if (recursive) {
@@ -200,7 +198,7 @@ public class FTPPath extends Path {
         }
     }
 
-    public void rename(String filename) {
+    public synchronized void rename(String filename) {
         log.debug("rename:" + filename);
         try {
             session.check();
@@ -221,7 +219,7 @@ public class FTPPath extends Path {
         }
     }
 
-    public void delete() {
+    public synchronized void delete() {
         log.debug("delete:" + this.toString());
         try {
             session.check();
@@ -261,7 +259,7 @@ public class FTPPath extends Path {
         }
     }
 
-    public void changePermissions(Permission perm, boolean recursive) {
+    public synchronized void changePermissions(Permission perm, boolean recursive) {
         log.debug("changePermissions:" + perm);
         String command = "chmod";
         try {
@@ -280,7 +278,7 @@ public class FTPPath extends Path {
         }
     }
 
-    public void download() {
+    public synchronized void download() {
         try {
             log.debug("download:" + this.toString());
             session.check();
@@ -457,7 +455,7 @@ public class FTPPath extends Path {
         }
     }
 
-    public void upload() {
+    public synchronized void upload() {
         log.debug("upload:" + this.toString());
         try {
             session.check();
