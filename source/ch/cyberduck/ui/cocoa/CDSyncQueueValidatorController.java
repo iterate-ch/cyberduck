@@ -19,10 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSSize;
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSAttributedString;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,12 +28,7 @@ import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SyncQueue;
-import ch.cyberduck.core.Validator;
-import ch.cyberduck.core.ValidatorFactory;
+import ch.cyberduck.core.*;
 
 /**
  * @version $Id$

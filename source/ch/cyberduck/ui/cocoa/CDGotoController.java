@@ -22,14 +22,14 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.Path;
 
 /**
  * @version $Id$

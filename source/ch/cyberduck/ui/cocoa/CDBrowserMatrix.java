@@ -21,11 +21,9 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
-import java.util.Iterator;
+import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
-
-import org.apache.log4j.Logger;
 
 /**
 * @version $Id$

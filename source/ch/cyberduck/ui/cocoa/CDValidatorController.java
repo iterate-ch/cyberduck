@@ -27,7 +27,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.AbstractValidator;
-import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Status;

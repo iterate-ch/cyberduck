@@ -23,8 +23,8 @@ import com.sshtools.j2ssh.transport.InvalidHostFileException;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 
 import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.application.NSButton;
+import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;

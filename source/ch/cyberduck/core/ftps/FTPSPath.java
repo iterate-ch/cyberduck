@@ -32,7 +32,7 @@ import ch.cyberduck.core.ftp.FTPPath;
 public class FTPSPath extends FTPPath {
 
     static {
-        PathFactory.addFactory(Session.FTP_SSL, new Factory());
+        PathFactory.addFactory(Session.FTP_TLS, new Factory());
     }
 
     private static class Factory extends PathFactory {

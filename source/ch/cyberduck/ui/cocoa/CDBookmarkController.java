@@ -50,9 +50,11 @@ public class CDBookmarkController extends CDController {
 
 	public void setProtocolPopup(NSPopUpButton protocolPopup) {
 		this.protocolPopup = protocolPopup;
-		this.protocolPopup.setEnabled(true);
+        this.protocolPopup.setEnabled(true);
 		this.protocolPopup.removeAllItems();
-		this.protocolPopup.addItemsWithTitles(new NSArray(new String[] {Session.FTP_STRING, Session.FTP_SSL_STRING, Session.FTP_STRING}));
+		this.protocolPopup.addItemsWithTitles(new NSArray(new String[] {Session.FTP_STRING,
+                                                                        Session.FTP_SSL_STRING,
+                                                                        Session.SFTP_STRING}));
 		this.protocolPopup.itemWithTitle(Session.FTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
 		this.protocolPopup.itemWithTitle(Session.FTP_STRING).setKeyEquivalent("f");
 		this.protocolPopup.itemWithTitle(Session.SFTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
@@ -63,15 +65,15 @@ public class CDBookmarkController extends CDController {
 
 	public void protocolSelectionChanged(NSPopUpButton sender) {
 		log.debug("protocolSelectionChanged:"+sender);
-		if(sender.selectedItem().title().equals(Session.SFTP_STRING)) {
+		if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
 			this.host.setProtocol(Session.SFTP);
 			this.host.setPort(Session.SSH_PORT);
 		}
-		if(sender.selectedItem().title().equals(Session.FTP_SSL_STRING)) {
-			this.host.setProtocol(Session.FTP_SSL);
+		if(protocolPopup.selectedItem().title().equals(Session.FTP_SSL_STRING)) {
+			this.host.setProtocol(Session.FTP_TLS);
 			this.host.setPort(Session.FTP_PORT);
 		}
-        if(sender.selectedItem().title().equals(Session.FTP_SSL_STRING)) {
+        if(protocolPopup.selectedItem().title().equals(Session.FTP_SSL_STRING)) {
             this.host.setProtocol(Session.FTP);
             this.host.setPort(Session.FTP_PORT);
         }
@@ -306,6 +308,7 @@ public class CDBookmarkController extends CDController {
 	}
 
 	private void updateFields() {
+
 		this.window().setTitle(this.host.getNickname());
 		this.urlField.setStringValue(this.host.getURL()+host.getDefaultPath());
 		this.hostField.setStringValue(this.host.getHostname());
@@ -316,7 +319,7 @@ public class CDBookmarkController extends CDController {
         if(this.host.getProtocol().equals(Session.FTP)) {
             this.protocolPopup.setTitle(Session.FTP_STRING);
         }
-        if(this.host.getProtocol().equals(Session.FTP_SSL)) {
+        if(this.host.getProtocol().equals(Session.FTP_TLS)) {
             this.protocolPopup.setTitle(Session.FTP_SSL_STRING);
         }
         if(this.host.getProtocol().equals(Session.SFTP)) {

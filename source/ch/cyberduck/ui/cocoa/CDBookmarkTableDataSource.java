@@ -24,7 +24,6 @@ import com.apple.cocoa.foundation.*;
 import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 

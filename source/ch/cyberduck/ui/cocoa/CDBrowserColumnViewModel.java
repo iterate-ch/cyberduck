@@ -18,14 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
-
-import java.util.*;
+import com.apple.cocoa.application.NSBrowser;
+import com.apple.cocoa.application.NSBrowserCell;
+import com.apple.cocoa.application.NSTableColumn;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
 
 /**
  * @version $Id$

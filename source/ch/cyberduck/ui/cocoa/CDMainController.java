@@ -22,14 +22,19 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Message;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Rendezvous;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 public class CDMainController extends NSObject {

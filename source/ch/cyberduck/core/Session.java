@@ -35,7 +35,7 @@ public abstract class Session extends Observable {
 
 	public static final String SFTP = "sftp";
 	public static final String FTP = "ftp";
-	public static final String FTP_SSL = "ftps";
+	public static final String FTP_TLS = "ftps";
 
     public static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer Protocol)", "");
     public static final String FTP_SSL_STRING = NSBundle.localizedString("FTP-SSL (FTP over TLS/SSL)", "");

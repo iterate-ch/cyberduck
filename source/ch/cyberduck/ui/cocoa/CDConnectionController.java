@@ -22,15 +22,14 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import java.io.File;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.Collection;
 
 /**
  * @version $Id$
@@ -206,7 +205,7 @@ public class CDConnectionController extends CDController {
 			this.hostPopup.setStringValue(h.getHostname());
 			if(h.getProtocol().equals(Session.FTP))
 				this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
-			if(h.getProtocol().equals(Session.FTP_SSL))
+			if(h.getProtocol().equals(Session.FTP_TLS))
 				this.protocolPopup.selectItemWithTitle(Session.FTP_SSL_STRING);
 			if(h.getProtocol().equals(Session.SFTP))
 				this.protocolPopup.selectItemWithTitle(Session.SFTP_STRING);
@@ -464,7 +463,7 @@ public class CDConnectionController extends CDController {
 				protocol = Session.FTP;
 			}
             else if(protocolPopup.selectedItem().title().equals(Session.FTP_SSL_STRING)) {
-                protocol = Session.FTP_SSL;
+                protocol = Session.FTP_TLS;
             }
 			else {
 				protocol = Preferences.instance().getProperty("connection.protocol.default");
@@ -494,7 +493,7 @@ public class CDConnectionController extends CDController {
             this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
             this.portField.setIntValue(Session.FTP_PORT);
         }
-        if(selectedItem.getProtocol().equals(Session.FTP_SSL)) {
+        if(selectedItem.getProtocol().equals(Session.FTP_TLS)) {
             this.protocolPopup.selectItemWithTitle(Session.FTP_SSL_STRING);
             this.portField.setIntValue(Session.FTP_PORT);
         }
@@ -527,7 +526,7 @@ public class CDConnectionController extends CDController {
 			protocol = Session.FTP+"://";
 		}
 		if(protocolPopup.selectedItem().title().equals(Session.FTP_SSL_STRING)) {
-			protocol = Session.FTP_SSL+"://";
+			protocol = Session.FTP_TLS+"://";
 		}
 		urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostPopup.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
 	}
@@ -566,7 +565,7 @@ public class CDConnectionController extends CDController {
 				}
 				else if(protocolPopup.selectedItem().title().equals(Session.FTP_SSL_STRING)) {
 					// FTP has been selected as the protocol to connect with
-					host = new Host(Session.FTP_SSL,
+					host = new Host(Session.FTP_TLS,
 									hostPopup.stringValue(),
 									Integer.parseInt(portField.stringValue()),
 									pathField.stringValue());

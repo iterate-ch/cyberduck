@@ -23,7 +23,10 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Message;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Queue;
 
 /**
  * @version $Id$

@@ -18,16 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSAlertPanel;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSPanel;
+import com.apple.cocoa.foundation.NSPathUtilities;
 
 import java.util.List;
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.HiddenFilesFilter;
-import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**

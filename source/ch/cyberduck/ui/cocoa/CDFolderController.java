@@ -27,10 +27,10 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.HiddenFilesFilter;
 import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
 
 /**
  * @version $Id$

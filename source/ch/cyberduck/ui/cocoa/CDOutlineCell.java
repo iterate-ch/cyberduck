@@ -18,10 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSTextFieldCell;
+import com.apple.cocoa.application.NSView;
+import com.apple.cocoa.foundation.NSCoder;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSSize;
 
-import com.apple.cocoa.foundation.*;
-import com.apple.cocoa.application.*;
+import org.apache.log4j.Logger;
 
 public class CDOutlineCell extends NSTextFieldCell {
 	private static Logger log = Logger.getLogger(CDOutlineCell.class);

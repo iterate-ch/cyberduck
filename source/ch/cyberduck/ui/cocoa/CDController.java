@@ -18,7 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSMutableParagraphStyle;
+import com.apple.cocoa.application.NSParagraphStyle;
+import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
@@ -120,7 +123,7 @@ public abstract class CDController {
     }
 
     public void sheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
-        //
+        this.endSheet(returncode);
     }
 
     public void beginSheet(NSWindow sheet) {

@@ -115,6 +115,7 @@ public class CDPreferencesController extends CDController {
 	private static final String WINDOWS_LINE_ENDINGS = NSBundle.localizedString("Windows Line Endings (CRLF)", "");
 
 	private static final String PROTOCOL_FTP = "FTP";
+    private static final String PROTOCOL_FTP_SSL = "FTP-TLS";
 	private static final String PROTOCOL_SFTP = "SFTP";
 
 	private static final String ASK_ME_WHAT_TO_DO = NSBundle.localizedString("Ask me what to do", "");

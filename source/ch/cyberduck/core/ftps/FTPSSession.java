@@ -37,7 +37,7 @@ public class FTPSSession extends FTPSession {
     private static Logger log = Logger.getLogger(FTPSSession.class);
 
     static {
-        SessionFactory.addFactory(Session.FTP_SSL, new Factory());
+        SessionFactory.addFactory(Session.FTP_TLS, new Factory());
     }
 
     private static class Factory extends SessionFactory {
