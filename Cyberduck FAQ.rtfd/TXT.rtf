@@ -32,7 +32,7 @@
 	
 \f0\b0 Cyberduck has been written and is maintained by 
 \f2\i David Kocher <mailto:dkocher@cyberduck.ch>
-\f0\i0 . It does include third party libraries. See the credits. \
+\f0\i0 . It does include third party libraries. Many have contributed localizations. See the credits. \
 
 \f1\b \
 \'a5	I think Cyberduck is really cool and I would like to make the author happy. What options do I have?
@@ -43,7 +43,7 @@
 \f1\b Why isn't there a <insert your preferred language here> localization?
 \f0\b0 \
 	Because nobody has written one yet. Why not doing it yourself? It's easy and you don't need any programming skills. Contact me and I'll send you the relevant files. Current available localizations are 
-\f2\i English, Dutch, German, French, Italian, Japanese, Korean, Chinese (Traditional and Simplified), Portuguese, Spanish and Finnish
+\f2\i English, Dutch, German, French, Italian, Japanese, Korean, Chinese (Traditional and Simplified), Portuguese, Spanish, Finnish, Slovak and Czech
 \f0\i0 .\
 
 \f1\b \
@@ -92,7 +92,7 @@
 	
 \f1\b b)
 \f0\b0  Type in the name of the server directly in to the 'Quick Connect' field in the toolbar. The text field will autocomplete from bookmarked hosts. You can enter a string in the format <user>@<host>, i.e. david@host.cyberduck.ch. It will use the default protocol defined in the application preferences.\
-	You can however not enter a URL.\
+	You can however not enter a full qualified URL.\
 	\
 	{{\NeXTGraphic Pasted Graphic 1.tiff \width6520 \height1760
 }¬}
@@ -245,7 +245,7 @@
 \f1\b \cf0 \'a5	EDITING FILES\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 	You can edit a file just as a local file by clicking the 'Edit' toolbar button or by choosing 'Open in Editor (\'f0-J)' in the 'File' Menu. The file will be downloaded to the user's temporary directory and opened with the preferred editor. (Supported editors include SubEthaEdit, BBEdit and TextWrangler. Set your preferred editor in the Preferences). The file will be uploaded to the server everytime you choose 'Save' in the Editor application. The file is not changed on the server if you just close the document without saving.\
+\f0\b0 \cf0 	You can edit a file just as a local file by clicking the 'Edit' toolbar button or by choosing 'Open in Editor (\'f0-J)' in the 'File' Menu. The file will be downloaded to the user's temporary directory and opened with the preferred editor. (Supported editors include SubEthaEdit, BBEdit, TextWrangler and Text-Edit Plus). Set your preferred editor in the Preferences. The file will be uploaded to the server everytime you choose 'Save' in the Editor application. The file is not changed on the server if you just close the document without saving.\
 \
 	{{\NeXTGraphic Pasted Graphic 6.tiff \width3960 \height2040
 }¬}
@@ -263,20 +263,10 @@
 	Select the file in the browser and choose 'Info (\'f0-I)' from the 'File' menu. You can also select multiple files at once.\
 \
 
-\f1\b 	Can I change the owner of a file?
-\f0\b0 \
-	No, this is not possible for now. \
-\
-
 \f1\b \'a5	PROXY SERVERS\
 	What proxy servers does Cyberduck support?
 \f0\b0 \
-	SOCKS 4/5.\
-\
-
-\f1\b 	Where do I change the proxy settings?
-\f0\b0 \
-	Cyberduck reads the settings made in the System Preferences.\
+	In theory SOCKS 4/5. This feature has not been tested. You can adjust the proxy settings in the System Preferences.\
 \
 
 \f1\b \'a5	SSH PUBLIC KEY AUTHENTICATION\
@@ -305,8 +295,13 @@
 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b \cf0 \'a5	KNOWN PROBLEMS\
-	The server does only allow one single connection; I can't download any files\
+\f1\b\fs48 \cf0 	Known Problems\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0\fs24 \cf0 \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 	The server does only allow one single connection; I can't download any files\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0 \cf0 	Close the connection in the browser first using the 'Disconnect' toolbar item. Then double click the file to download.\
@@ -337,5 +332,5 @@
 \f1\b \cf0 	In the dialog asking to allow the host key I cannot choose to always remember the host key. The host key isn't written in the  ~/.ssh/known_hosts file\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 	There is either no write permission to the  ~/.ssh/known_hosts file or there are incompatible keys stored. Delete the file and try again.\
+\f0\b0 \cf0 	There is either no write permission to the  ~/.ssh/known_hosts file or there are incompatible keys stored. Delete the file or remove any SSH1 keys and try again.\
 }
