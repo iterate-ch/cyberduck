@@ -99,6 +99,7 @@ public class SFTPSession extends Session {
 
 			public void onDisconnect(TransportProtocol transport) {
 				log.debug("onDisconnect");
+				SFTPSession.this.close();
 			}
 		});
 		SshConnectionProperties properties = new SshConnectionProperties();

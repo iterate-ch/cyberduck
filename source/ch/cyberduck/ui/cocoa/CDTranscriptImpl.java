@@ -20,6 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSFont;
 import com.apple.cocoa.application.NSTextView;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSRange;
 
 import org.apache.log4j.Logger;
@@ -44,8 +46,9 @@ public class CDTranscriptImpl implements Transcript {
 		this.textView.setUsesFontPanel(false);
 		this.textView.setRichText(false);
 	}
-
-	private static final NSFont FIXED_WITH_FONT = NSFont.userFixedPitchFontOfSize(9.0f);
+	
+	private static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
+																					new Object[]{NSAttributedString.FontAttributeName});
 	
 	public void log(final String message) {
 		log.info(message);
@@ -56,11 +59,10 @@ public class CDTranscriptImpl implements Transcript {
 				// before aRange if the range's length is 0. If the range's location is 0, the formatting
 				// attributes of the first character in the receiver are used.
 				textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0),
-																message+"\n"); //@warning very bad performance
-				textView.setFont(FIXED_WITH_FONT);
-				// if(textView.window().isVisible()) {
-				//  	textView.scrollRangeToVisible(new NSRange(textView.textStorage().length(), 0));
-				// }
+																new NSAttributedString(message+"\n", FIXED_WITH_FONT_ATTRIBUTES)); //@warning very bad performance
+//				if(textView.window().isVisible()) {
+//				  	textView.scrollRangeToVisible(new NSRange(textView.textStorage().length(), 0));
+//				}
 			}
 		});
 	}
