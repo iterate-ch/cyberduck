@@ -27,6 +27,7 @@ import java.util.*;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
@@ -239,8 +240,9 @@ public class CDBrowserController extends CDController implements Observer {
 			for(Iterator i = new SyncQueue(path).getChilds().iterator(); i.hasNext(); ) {
 				((Path)i.next()).sync();
 			}
-            //			Queue queue = new SyncQueue(path);
-			//			queue.process(false, false);
+			Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
+															 "Growl Notification"),
+									path.getName());
 		}
 		return null;
 	}
@@ -264,8 +266,9 @@ public class CDBrowserController extends CDController implements Observer {
 			for(Iterator i = new DownloadQueue(path).getChilds().iterator(); i.hasNext(); ) {
 				((Path)i.next()).download();
 			}
-            //			Queue queue = new DownloadQueue(path);
-			//			queue.processs(false, false);
+			Growl.instance().notify(NSBundle.localizedString("Download complete",
+															 "Growl Notification"),
+									path.getName());
 		}
 		return null;
 	}
@@ -289,8 +292,9 @@ public class CDBrowserController extends CDController implements Observer {
 			for(Iterator i = new UploadQueue(path).getChilds().iterator(); i.hasNext(); ) {
 				((Path)i.next()).upload();
 			}
-			//			Queue queue = new UploadQueue(path);
-			//			queue.processs(false, false);
+			Growl.instance().notify(NSBundle.localizedString("Upload complete",
+															 "Growl Notification"),
+									path.getName());
 		}
 		return null;
 	}
@@ -1412,9 +1416,10 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 
 	public void disconnectButtonClicked(Object sender) {
-		this.unmount(new NSSelector("unmountSheetDidEnd",
-		    new Class[]{NSWindow.class, int.class, Object.class}), null // end selector
-		);
+		this.unmount();
+//		this.unmount(new NSSelector("unmountSheetDidEnd",
+//		    new Class[]{NSWindow.class, int.class, Object.class}), null // end selector
+//		);
 	}
 
 	private boolean showHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
@@ -1812,7 +1817,7 @@ public class CDBrowserController extends CDController implements Observer {
 		if(identifier.equals("copyURLButtonClicked:")) {
 			return this.isMounted();
 		}
-		if(identifier.equals("Disconnect")) {
+		if(identifier.equals("Disconnect") || identifier.equals("disconnectButtonClicked:")) {
 			return this.isMounted() && this.workdir().getSession().isConnected();
 		}
 		return true; // by default everything is enabled
