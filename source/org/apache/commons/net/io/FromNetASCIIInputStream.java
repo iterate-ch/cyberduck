@@ -36,15 +36,19 @@ import ch.cyberduck.core.Preferences;
  */
 
 public final class FromNetASCIIInputStream extends PushbackInputStream {
-    static final boolean _noConversionRequired;
+    static boolean _noConversionRequired;
     static String _lineSeparator;
-    static final byte[] _lineSeparatorBytes;
+    static byte[] _lineSeparatorBytes;
 
     private static final String DOS_LINE_SEPARATOR = "\r\n";
     private static final String MAC_LINE_SEPARATOR = "\r";
     private static final String UNIX_LINE_SEPARATOR = "\n";
 
     static {
+		init();
+	}
+		
+	public static void init() {
         _lineSeparator = System.getProperty("line.separator"); //default value
         if (Preferences.instance().getProperty("ftp.line.separator").equals("unix")) {
             _lineSeparator = UNIX_LINE_SEPARATOR;

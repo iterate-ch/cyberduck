@@ -66,11 +66,6 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
         }
     }
 	
-//	public boolean isDocumentEdited() {
-//		log.debug("isDocumentEdited");
-//		return this.isConnected();
-//	}
-
     private NSTextView logView;
 
     public void setLogView(NSTextView logView) {

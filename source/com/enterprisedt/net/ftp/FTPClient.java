@@ -49,6 +49,9 @@ import ch.cyberduck.core.TranscriptFactory;
  *          Change Log:
  *          <p/>
  *          $Log$
+ *          Revision 1.39  2004/04/10 16:55:57  dkocher
+ *          *** empty log message ***
+ *
  *          Revision 1.38  2004/04/07 20:26:17  dkocher
  *          *** empty log message ***
  *
@@ -398,6 +401,7 @@ public class FTPClient {
 //	}
     public java.io.InputStream getASCII(String remoteFile, long resume) throws IOException, FTPException {
         this.initGet(remoteFile, resume);
+		FromNetASCIIInputStream.init();
         return new FromNetASCIIInputStream(data.getInputStream());
     }
 

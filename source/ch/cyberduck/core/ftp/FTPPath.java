@@ -453,7 +453,7 @@ public class FTPPath extends Path {
                     this.uploadBinary();
                 }
             }
-            if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+            else if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
                 this.uploadBinary();
             }
             else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
