@@ -70,6 +70,10 @@ public class CDPathController implements Observer {
 	    log.error("Unknown argument of type'"+arg.getClass()+"'");
     }
 
+//    public void clear() {
+//	this.items.clear();
+//    }
+
     public int numberOfItems() {
 	return items.size();
     }

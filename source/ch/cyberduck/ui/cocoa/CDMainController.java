@@ -82,8 +82,8 @@ public class CDMainController {
 	    NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.update.xml")));
 	    if(null == data) {
 		NSAlertPanel.runCriticalAlert(
-				     NSBundle.localizedString("Error"), //title
-				     NSBundle.localizedString("There was a problem checking for an update. Please try again later."),
+				     NSBundle.localizedString(NSBundle.localizedString("Error")), //title
+				     NSBundle.localizedString(NSBundle.localizedString("There was a problem checking for an update. Please try again later.")),
 				     NSBundle.localizedString("OK"),// defaultbutton
 				     null,//alternative button
 				     null//other button
@@ -93,7 +93,7 @@ public class CDMainController {
 	    log.debug(data.length() +" bytes.");
 	    NSDictionary entries = (NSDictionary)NSPropertyListSerialization.propertyListFromXMLData(data);
 	    if(null == entries)
-		log.error(NSBundle.localizedString("Version info could not be retrieved."));
+		log.error("Version info could not be retrieved.");
 	    else
 		log.info(entries.toString());
 
@@ -213,7 +213,6 @@ public class CDMainController {
         NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
     }
 
-
     public void preferencesMenuClicked(Object sender) {
 	CDPreferencesController controller = CDPreferencesController.instance();
 	controller.window().makeKeyAndOrderFront(null);
@@ -269,19 +268,8 @@ public class CDMainController {
 		log.fatal("Couldn't load Donate.nib");
 		return NSApplication.TerminateNow;
 	    }
-	    this.donationSheet.setTitle("Donate after "+Preferences.instance().getProperty("uses")+" uses!");
+	    this.donationSheet.setTitle(NSBundle.localizedString("Donate!"));
 	    this.donationSheet.makeKeyAndOrderFront(null);
-
-//	    app.runModalForWindow(donationSheet);
-//	    NSApplication.sharedApplication().beginSheet(
-//						  donationSheet,//sheet
-//						  null, //docwindow
-//						  this, //modal delegate
-//						  new NSSelector(
-//		       "donationSheetDidEnd",
-//		       new Class[] { NSWindow.class, int.class, NSWindow.class }
-//		       ),// did end selector
-//						  null); //contextInfo
 	    return NSApplication.TerminateLater;
 	}
 	return NSApplication.TerminateNow;

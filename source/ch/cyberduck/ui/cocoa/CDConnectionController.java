@@ -35,8 +35,8 @@ import java.util.Observer;
 public class CDConnectionController {
     private static Logger log = Logger.getLogger(CDConnectionController.class);
 
-    private static final String FTP_STRING = "FTP (File Transfer)";
-    private static final String SFTP_STRING = "SFTP (SSH Secure File Transfer)";
+    private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)");
+    private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)");
     
     // ----------------------------------------------------------
     // Outlets
@@ -89,11 +89,7 @@ public class CDConnectionController {
 //		    while(i.hasNext())
 //			rendezvousPopup.addItem(((Host)i.next()).getURL());
 		}
-		else
-		    log.error("Unknown argument of type'"+arg.getClass()+"'");
 	    }
-	    else
-		log.error("Unknown argument of type'"+arg.getClass()+"'");
 	}
     }
 

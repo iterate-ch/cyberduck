@@ -39,8 +39,6 @@ public class CDTransferController implements Observer, Validator {
     private NSWindow window;
     public void setWindow(NSWindow window) {
 	this.window = window;
-	NSPoint origin = this.window.frame().origin();
-	this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
     }
 
     public NSWindow window() {
@@ -114,27 +112,34 @@ public class CDTransferController implements Observer, Validator {
     private Path root;
     private Host host;
     private Queue queue;
+    private Session session;
 
-    public CDTransferController(Path[] roots, int kind) {
+    public CDTransferController(Session session, Path[] items, int kind) {
 	allDocuments.addObject(this);
-	if(roots.length < 1)
-	    throw new IllegalArgumentException("No transfer to process");
-	this.roots = roots;
+	this.session = session;
+	this.kind = kind;
+	this.roots = new Path[items.length];
+	// copy all paths with new session
+	for(int i = 0; i < roots.length; i++) {
+	    roots[i]  = items[i].copy(session);
+	}
+	this.queue = new Queue(roots, this.kind, this);
+	this.queue.addObserver(this);
 	this.root = roots[0];
 	this.host = root.getHost();
-	this.kind = kind;
+	this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
+
         if (false == NSApplication.loadNibNamed("Transfer", this)) {
             log.fatal("Couldn't load Transfer.nib");
             return;
         }
-	this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
     }	
     
     /**
 	* @param kind Tag specifiying if it is a download or upload.
      */
-    public CDTransferController(Path root, int kind) {
-	this(new Path[]{root}, kind);
+    public CDTransferController(Session session, Path root, int kind) {
+	this(session, new Path[]{root}, kind);
     }
 
     /**
@@ -142,12 +147,15 @@ public class CDTransferController implements Observer, Validator {
      */
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
+	NSPoint origin = this.window.frame().origin();
+	this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 	this.init();
 	this.window().makeKeyAndOrderFront(null);
     }
 
     private void init() {
-	this.window().setTitle(root.getName()+" ("+(queue.processedJobs()+1)+" of "+queue.numberOfJobs());
+	this.window().setTitle(root.getName());
+//	this.window().setTitle(root.getName()+" ("+(queue.processedJobs()+1)+" of "+queue.numberOfJobs());
 	this.window().display();
 	this.urlField.setAttributedStringValue(new NSAttributedString(host.getURL()+root.getAbsolute()));
 	this.fileField.setAttributedStringValue(new NSAttributedString(root.getLocal().toString()));
@@ -188,9 +196,9 @@ public class CDTransferController implements Observer, Validator {
 
 		this.fileDataField.setAttributedStringValue(new NSAttributedString(
 				Status.parseDouble(status.getCurrent()/1024)+
-				" of "+Status.parseDouble(status.getSize()/1024)+"kB ("+
+				" "+NSBundle.localizedString("of")+" "+Status.parseDouble(status.getSize()/1024)+"kB ("+
 				Status.parseDouble(queue.getCurrent()/1024)+" of "+
-				Status.parseDouble(queue.getSize()/1024)+"kB Total), "+
+				Status.parseDouble(queue.getSize()/1024)+"kB "+NSBundle.localizedString("Total")+"), "+
 				Status.parseDouble(queue.getSpeed()/1024) + "kB/s, "+queue.getTimeLeft()
 		    ));
 		this.fileDataField.setNeedsDisplay(true);
@@ -225,7 +233,7 @@ public class CDTransferController implements Observer, Validator {
 	    }
 	    // COMPLETE
 	    else if(msg.getTitle().equals(Message.COMPLETE)) {
-		this.progressField.setAttributedStringValue(new NSAttributedString("Complete"));
+		this.progressField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Complete")));
 		this.progressField.setNeedsDisplay(true);
 		if(0 == queue.remainingJobs()) {
 		    if(Preferences.instance().getProperty("transfer.close").equals("true")) {
@@ -237,14 +245,14 @@ public class CDTransferController implements Observer, Validator {
 			}
 		    }
 		    if(Queue.KIND_UPLOAD == kind) {
-			//todo refresh listing
+//			this.root.getParent().list();
 		    }
 		}
 	    }
 	    else if(msg.getTitle().equals(Message.ERROR)) {
 		NSAlertPanel.beginCriticalAlertSheet(
-				       "Error", //title
-				       "OK",// defaultbutton
+				       NSBundle.localizedString("Error"), //title
+				       NSBundle.localizedString("OK"),// defaultbutton
 				       null,//alternative button
 				       null,//other button
 				       this.window(), //docWindow
@@ -259,8 +267,6 @@ public class CDTransferController implements Observer, Validator {
 		this.progressField.setNeedsDisplay(true);
 	    }
 	}
-	else
-	    log.error("Unknown argument of type'"+arg.getClass()+"'");
     }
 
     private boolean proceed;
@@ -275,7 +281,7 @@ public class CDTransferController implements Observer, Validator {
 	this.proceed = false;
 	log.debug("validate:"+path+","+resume);
 	if(Queue.KIND_DOWNLOAD == kind) {
-	    log.debug("Validating download");
+	    log.debug("validating download");
 	    if(resume) {
 		log.debug("resume:true");
 		if(path.status.isComplete()) {
@@ -311,13 +317,13 @@ public class CDTransferController implements Observer, Validator {
 		log.debug("resume:false");
 		if(path.getLocal().exists()) {
 		    log.debug("local path exists:true");
-		    if(Preferences.instance().getProperty("connection.download.duplicate.ask").equals("true")) {
-			log.debug("duplicate:ask:true");
+		    if(Preferences.instance().getProperty("download.duplicate").equals("ask")) {
+			log.debug("download.duplicate:ask");
 			NSAlertPanel.beginCriticalAlertSheet(
-					"File exists", //title
-					"Resume",// defaultbutton
-					"Cancel",//alternative button
-					"Overwrite",//other button
+					NSBundle.localizedString("File exists"), //title
+					NSBundle.localizedString("Resume"),// defaultbutton
+					NSBundle.localizedString("Cancel"),//alternative button
+					NSBundle.localizedString("Overwrite"),//other button
 					this.window(),
 					this, //delegate
 					new NSSelector
@@ -330,7 +336,7 @@ public class CDTransferController implements Observer, Validator {
       ),// end selector
 					null, // dismiss selector
 					path, // context
-					"The file "+path.getName()+" alredy exists in "+path.getLocal().getParent()+"." // message
+					NSBundle.localizedString("The file")+" "+path.getName()+" "+NSBundle.localizedString("alredy exists in")+" "+path.getLocal().getParent()+"." // message
 					);
 			while(!done) {
 			    try {
@@ -341,14 +347,34 @@ public class CDTransferController implements Observer, Validator {
 				log.error(e.getMessage());
 			    }
 			}
+			log.debug("return:"+proceed);
 			return proceed;
 		    }
-		    else if(Preferences.instance().getProperty("connection.download.duplicate.resume").equals("true")) {
+		    else if(Preferences.instance().getProperty("download.duplicate").equals("similar")) {
+			log.debug("download.duplicate:similar");
+			path.status.setResume(false);
+			String fn = null;
+			String filename = path.getLocal().getAbsolutePath();
+			int no = 1;
+			int index = filename.lastIndexOf(".");
+			do {
+			    fn = filename.substring(0, index) + "_" + no + filename.substring(index);
+			    path.setLocal(new java.io.File(fn));
+			    no++;
+			}
+			while(path.getLocal().exists());
+			this.init();
+			log.debug("return:true");
+			return true;
+		    }
+		    else if(Preferences.instance().getProperty("download.duplicate").equals("resume")) {
+			log.debug("download.duplicate:resume");
 			path.status.setResume(true);
 			log.debug("return:true");
 			return true;
 		    }
-		    else if(Preferences.instance().getProperty("connection.download.duplicate.overwrite").equals("true")) {
+		    else if(Preferences.instance().getProperty("download.duplicate").equals("overwrite")) {
+			log.debug("download.duplicate:overwrite");
 			path.status.setResume(false);
 			log.debug("return:true");
 			return true;
@@ -364,14 +390,12 @@ public class CDTransferController implements Observer, Validator {
 	    log.debug("return:true");
 	    return true;
 	}
-	log.error("Argument must be either UPLOAD or DOWNLOAD");
 	return false;
     }
 
     public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
 	log.debug("validateSheetDidEnd:"+returncode+","+contextInfo);
-	sheet.orderOut(null);
-	this.window().makeKeyAndOrderFront(null);
+	sheet.close();
 	Path path = (Path)contextInfo;
 	switch(returncode) {
 	    case NSAlertPanel.DefaultReturn : //Resume
@@ -395,9 +419,7 @@ public class CDTransferController implements Observer, Validator {
      * @return boolean Return false if validation fails. I.e. the file already exists.
      */
     public void transfer() {
-	this.queue = new Queue(roots, this.kind, this);
-	this.queue.addObserver(this);
-	this.queue.start();
+	this.queue.start(session);
     }
     
     public void windowWillClose(NSNotification notification) {
@@ -436,9 +458,9 @@ public class CDTransferController implements Observer, Validator {
 	log.debug("windowShouldClose");
 	if(!queue.isStopped()) {
 	    NSAlertPanel.beginCriticalAlertSheet(
-					       "Cancel transfer?", //title
-					       "Stop",// defaultbutton
-					       "Cancel",//alternative button
+					       NSBundle.localizedString("Cancel transfer?"), //title
+					       NSBundle.localizedString("Stop"),// defaultbutton
+					       NSBundle.localizedString("Cancel"=,//alternative button
 					       null,//other button
 					       this.window(),
 					       this, //delegate
@@ -452,10 +474,11 @@ public class CDTransferController implements Observer, Validator {
 	     ),// end selector
 					       null, // dismiss selector
 					       null, // context
-					       "Closing this window will stop the file transfer" // message
+					       NSBundle.localizedString("Closing this window will stop the file transfer") // message
 					       );
 	    return false;	    
 	}
+	queue.deleteObserver(this);
 	return true;
     }
 

@@ -105,7 +105,7 @@ public class Host {
         log.debug("closeSession");
 	if(session != null) {
 	    this.session.close();
-	    this.session = null;
+//TODO testme	    this.session = null;
 	}
     }
 

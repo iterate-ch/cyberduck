@@ -23,7 +23,6 @@ import ch.cyberduck.core.Permission;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
-//import ch.cyberduck.ui.ObserverList;
 
 /**
 * @version $Id$
@@ -40,8 +39,6 @@ public class CDInfoController {//implements Observer {
     private NSWindow window;
     public void setWindow(NSWindow window) {
 	this.window = window;
-	NSPoint origin = this.window.frame().origin();
-	this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
     }
     
     private NSTextField filenameField; // IBOutlet
@@ -111,6 +108,8 @@ public class CDInfoController {//implements Observer {
 
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
+	NSPoint origin = this.window.frame().origin();
+	this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 
 	this.filenameField.setStringValue(file.getName());
 	this.pathField.setStringValue(file.getParent().getAbsolute());
@@ -135,7 +134,7 @@ public class CDInfoController {//implements Observer {
 	otherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
 	otherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
 
-	permissionsBox.setTitle("Permissions | "+permission.getString()+" ("+permission.getCode()+")");
+	permissionsBox.setTitle(NSBundle.localizedString("Permissions")+" | "+permission.getString()+" ("+permission.getCode()+")");
 
 	if(file.isFile()) {
 	    this.iconImageView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
@@ -201,7 +200,7 @@ public class CDInfoController {//implements Observer {
 	file.attributes.setPermission(permission);
 	
 	file.changePermissions(permission.getCode());
-	permissionsBox.setTitle("Permissions | "+permission.getString()+" ("+permission.getCode()+")");
+	permissionsBox.setTitle(NSBundle.localizedString("Permissions")+" | "+permission.getString()+" ("+permission.getCode()+")");
     }
 
     public NSWindow window() {

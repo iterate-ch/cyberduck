@@ -27,7 +27,7 @@ import java.util.List;
  * A path is a remote directory or file.
  * @version $Id$
  */
-public abstract class Path {// extends Observable {
+public abstract class Path {
     private static Logger log = Logger.getLogger(Path.class);
 
     private String name = null;
@@ -73,6 +73,10 @@ public abstract class Path {// extends Observable {
 	this.setPath(parent, file);
     }
 
+    public abstract Path copy();
+    
+    public abstract Path copy(Session s);
+
     public void setPath(String parent, java.io.File file) {
 	this.setPath(parent, file.getName());
 	this.setLocal(file);
@@ -95,9 +99,6 @@ public abstract class Path {// extends Observable {
      */
     public void setPath(String pathname) {
 //	log.debug("setPath:"+pathname);
-//	if(pathname.charAt(pathname.length()-1) == '/')
-//	    pathname = pathname.substring(0, pathname.length()-2);
-//        this.path = pathname.trim();
         this.path = pathname;
     }
 
@@ -303,7 +304,8 @@ public abstract class Path {// extends Observable {
 
     public abstract void upload();
 
-    public abstract void fillQueue(List queue, Session session, int kind);
+    public abstract void fillQueue(List queue, int kind);
+//    public abstract void fillQueue(List queue, Session session, int kind);
 
 
     // ----------------------------------------------------------
@@ -360,7 +362,7 @@ public abstract class Path {// extends Observable {
 
         this.status.reset();
 
-	int current = this.status.getCurrent();
+	long current = this.status.getCurrent();
 //        boolean complete = false;
         // read/write a line at a time
         String line = null;
@@ -401,8 +403,8 @@ public abstract class Path {// extends Observable {
         // do the retrieving
         int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
         byte[] chunk = new byte[chunksize];
-        int amount = 0;
-        int current = this.status.getCurrent();
+        long amount = 0;
+        long current = this.status.getCurrent();
 //        boolean complete = false;
 
         // read from socket (bytes) & write to file in chunks
@@ -414,7 +416,7 @@ public abstract class Path {// extends Observable {
             }
             else {
                 this.status.setCurrent(current += amount);
-                out.write(chunk, 0, amount);
+                out.write(chunk, 0, (int)amount);
             }
         }
 //	this.status.setComplete(complete);
@@ -428,22 +430,6 @@ public abstract class Path {// extends Observable {
             out.close();
         }
     }
-
-    /**
-	* Do some cleanup if transfer has been completed
-     */
-//    private void eof(boolean complete) {
-//	log.debug("eof:"+complete);
-  //      if(complete) {
-//            this.status.setCurrent(this.status.getSize());
-    //        this.status.fireCompleteEvent();
-//        }
-//        else {
-  //          this.status.fireStopEvent();
-    //    }
-    //}
-
-    public abstract Path copy();
     
     public String toString() {
 	return this.getAbsolute();

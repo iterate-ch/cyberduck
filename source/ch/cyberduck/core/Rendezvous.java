@@ -71,11 +71,7 @@ public class Rendezvous extends Observable implements com.strangeberry.rendezvou
     public Object getService(String key) {
 	log.debug("getService:"+key);
 	return services.get(key);
-    }
-
-//    public Map getServices() {
-//	return this.services;
-//  }
+  }
 
     /**
 	* This method is called when rendezvous discovers a service
@@ -96,11 +92,10 @@ public class Rendezvous extends Observable implements com.strangeberry.rendezvou
     public void resolveService(com.strangeberry.rendezvous.Rendezvous rendezvous, String type, String name, com.strangeberry.rendezvous.ServiceInfo info) {
 	if (info != null) {
 	    log.debug("resolveService:"+name+","+type+","+info);
-	    Host h = new Host(info.getName()+".local.", info.getPort(), new Login()); //todo fix .local.
+	    Host h = new Host(info.getName()+".local.", info.getPort(), new Login(Preferences.instance().getProperty("connection.login.name"))); //todo fix .local.
 	    this.services.put(h.getURL(), h);
 	    log.debug(info.toString());
 //	    log.debug(rendezvous.getInterface());
-	    //todo this.callObservers(new Message(Message.RENDEZVOUS, host));
 	    this.callObservers(new Message(Message.RENDEZVOUS, h));
 	}
 	else {
@@ -113,7 +108,7 @@ public class Rendezvous extends Observable implements com.strangeberry.rendezvou
      */
     public void removeService(com.strangeberry.rendezvous.Rendezvous rendezvous, String type, String name) {
 	log.debug("removeService:"+name);
-	//@todothis.services.remove(services.indexOf(name));
-	this.callObservers(new Message(Message.RENDEZVOUS, "Rendezvous service removed: "+name));
+	this.services.remove(name+".local.");
+//	this.callObservers(new Message(Message.RENDEZVOUS, this.services.get(name+".local.")));
     }
 }

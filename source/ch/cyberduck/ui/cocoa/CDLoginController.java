@@ -101,7 +101,6 @@ public class CDLoginController implements LoginController {
 	this.done = false;
 	this.textField.setStringValue(message);
 	this.userField.setStringValue(login.getUsername());
-	log.debug("Begin sheet.");
 	NSApplication.sharedApplication().beginSheet(
 					      this.window(), //sheet
 					      parentWindow,

@@ -60,7 +60,15 @@ public class FTPPath extends Path {
     }
 
     public Path copy() {
-	return new FTPPath(this.session, this.getAbsolute());
+	return this.copy(this.session);
+    }
+
+    public Path copy(Session s) {
+	FTPPath copy = new FTPPath((FTPSession)s, this.getAbsolute());
+	copy.setLocal(this.getLocal());
+	copy.attributes = this.attributes;
+	copy.status = this.status;
+	return copy;
     }
     
     public Path getParent() {
@@ -240,9 +248,10 @@ public class FTPPath extends Path {
 	return this.session;
     }
 
-    public void fillQueue(List queue, Session session, int kind) {
+    public void fillQueue(List queue, int kind) {
+//    public void fillQueue(List queue, Session session, int kind) {
 	try {
-	    this.session = (FTPSession)session;
+//	    this.session = (FTPSession)session;
 	    this.session.check();
 	    switch(kind) {
 		case Queue.KIND_DOWNLOAD:

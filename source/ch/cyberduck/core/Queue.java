@@ -98,6 +98,7 @@ public class Queue extends Observable implements Observer { //Thread {
     private int timeLeft;
     
     public Queue(Path[] roots, int kind, Validator validator) {
+	log.debug("Queue:"+roots+","+kind);
 	this.roots = roots;
 	this.jobs = new ArrayList[roots.length];
 	this.kind = kind;
@@ -137,13 +138,11 @@ public class Queue extends Observable implements Observer { //Thread {
 
     private void process() {
 	log.debug("process");
-	Session session = roots[roots.length-1].getSession().copy();
-	session.addObserver(Queue.this);
 
 	for(int i = 0; i < roots.length; i ++) {
 	    jobs[i] = new ArrayList();
 	    log.debug("Filling queue of root element "+roots[i]);
-	    roots[i].fillQueue(jobs[i], session, kind);
+	    roots[i].fillQueue(jobs[i], kind);
 	}
 	
 	for(int i = 0; i < roots.length; i ++) {
@@ -154,16 +153,9 @@ public class Queue extends Observable implements Observer { //Thread {
 		this.progressTimer.start();
 		this.leftTimer.start();
 
-		this.processedJobs++;
-
 		this.candidate = (Path)elements.next();
 		this.candidate.status.addObserver(this);
 
-		String content = null;
-//		if(KIND_DOWNLOAD == kind)
-//		    content = "Downloading "+candidate.getName()+" ("+(this.processedJobs()+1)+" of "+(this.numberOfJobs())+")";
-//		else
-//		    content = "Uploading "+candidate.getName()+" ("+(this.processedJobs()+1)+" of "+(this.numberOfJobs())+")";
 		this.callObservers(new Message(Message.PROGRESS, KIND_DOWNLOAD == kind ? "Downloading "+candidate.getName()+" ("+(this.processedJobs()+1)+" of "+(this.numberOfJobs())+")" : "Uploading "+candidate.getName()+" ("+(this.processedJobs())+" of "+(this.numberOfJobs())+")"));
 
 		if(this.validator.validate(candidate, kind)) {
@@ -177,6 +169,7 @@ public class Queue extends Observable implements Observer { //Thread {
 			    break;
 		    }
 		    if(candidate.status.isComplete()) {
+			this.processedJobs++;
 			current += candidate.status.getCurrent();
 		    }
 		}
@@ -186,27 +179,25 @@ public class Queue extends Observable implements Observer { //Thread {
 		this.leftTimer.stop();
 	    }
 	}
-
-	if(this.numberOfJobs() == this.processedJobs())
-	    session.close(); //todo session might be null
-	session.deleteObserver(Queue.this);
     }
 
     /**
 	* Process the queue. All files will be downloaded or uploaded rerspectively.
      * @param resume If false finish all non finished items in the queue. If true refill the queue with all the childs from the parent Path and restart
      */
-    public void start() {
+    public void start(final Session session) {
 	log.debug("start");
 	this.reset();
 	new Thread() {
 	    public void run() {
+		session.addObserver(Queue.this);
 		stopped = false;
 		elapsedTimer.start();
-//		prepare();
 		process();
 		elapsedTimer.stop();
 		stopped = true;
+		session.close();
+		session.deleteObserver(Queue.this);
 	    }
 	}.start();
     }
@@ -284,7 +275,7 @@ public class Queue extends Observable implements Observer { //Thread {
     /**
 	* @return The number of bytes already processed.
      */
-    public int getCurrent() {
+    public long getCurrent() {
 	return this.current + candidate.status.getCurrent();
     }
 
@@ -413,11 +404,11 @@ private void init() {
     this.progressTimer = new Timer(500,
 					new ActionListener() {
 					    int i = 0;
-					    int current;
-					    int last;
-					    int[] speeds = new int[8];
+					    long current;
+					    long last;
+					    long[] speeds = new long[8];
 					    public void actionPerformed(ActionEvent e) {
-						int diff = 0;
+						long diff = 0;
 						current = candidate.status.getCurrent();
 						if(current <= 0) {
 						    setSpeed(0);

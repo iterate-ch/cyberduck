@@ -63,6 +63,8 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	log.debug("awakeFromNib");
 	this.setDataSource(this.browserModel = new CDBrowserTableDataSource());
 	this.setDelegate(this.browserDelegate = new CDBrowserTableDelegate());
+	this.setTarget(this);
+	this.setDoubleAction(new NSSelector("browserTableViewDidClickTableRow", new Class[] {Object.class}));
 	this.setDrawsGrid(false);
 	this.setAutoresizesAllColumnsToFit(true);
 	this.setAutosaveTableColumns(true);
@@ -87,7 +89,61 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	}
     }
 
-	    
+    public boolean performKeyEquivalent(NSEvent e) {
+	log.debug(e);
+	if(e.modifierFlags() == NSEvent.CommandKeyMask) {
+	//left arrow key
+//60871 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.4 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=123
+//	60871 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - character:?
+	//up arrow key
+//	61063 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.6 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=126
+//	61063 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - character:?
+	    if(e.keyCode() == 126) {
+		if(this.workdir != null) {
+		    this.workdir.getParent().list();
+		    return true;
+		}
+	    }
+	//down arrow key
+//	61254 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.7 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=125
+//	61255 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - character:?
+	    if(e.keyCode() == 125) {
+		this.browserTableViewDidClickTableRow(e);
+		return true;
+	    }
+	//right arrow key
+//	61438 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - keyDown:NSEvent: type=KeyDown loc=(-666,951) time=166571.9 flags=0xa00000 win=0 winNum=256625 ctxt=0x2ad57 chars="?" unmodchars="?" repeat=0 keyCode=124
+//	61438 [main] DEBUG ch.cyberduck.ui.cocoa.CDBrowserTable  - character:?
+	}
+	return super.performKeyEquivalent(e);
+    }
+
+    public void keyUp(NSEvent e) {
+	if(e.keyCode() == 36) //where is the static variable for the return key?!
+	    this.browserTableViewDidClickTableRow(e);
+    }
+
+    public void browserTableViewDidClickTableRow(Object sender) {
+	log.debug("browserTableViewDidClickTableRow:"+sender);
+//	if(this.clickedRow() != -1) { //table header clicked
+	if(this.numberOfSelectedRows() > 0) {
+//	    p = (Path)browserModel.getEntry(this.clickedRow());
+	    Path p = (Path)browserModel.getEntry(this.selectedRow()); //last row selected 
+	    if(p.isFile() || this.numberOfSelectedRows() > 1) {
+		NSEnumerator enum = this.selectedRowEnumerator();
+		List items = new ArrayList();
+		while(enum.hasMoreElements()) {
+		    items.add(browserModel.getEntry(((Integer)enum.nextElement()).intValue()));
+		}
+		CDTransferController controller = new CDTransferController(this.workdir.getSession().copy(), (Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
+		controller.transfer();
+	    }
+	    if(p.isDirectory())
+		p.list();
+	}
+    }
+    
+
         // ----------------------------------------------------------
     // Drag methods
     // ----------------------------------------------------------
@@ -95,7 +151,7 @@ public class CDBrowserTable extends NSTableView implements Observer {
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
 	log.debug("finishedDraggingImage:"+operation);
 	if(promisedDragPaths != null) {
-	    CDTransferController controller = new CDTransferController(promisedDragPaths, Queue.KIND_DOWNLOAD);
+	    CDTransferController controller = new CDTransferController(this.workdir.getSession().copy(), promisedDragPaths, Queue.KIND_DOWNLOAD);
 	    controller.transfer();
 	    promisedDragPaths = null;
 	}
@@ -203,8 +259,8 @@ public class CDBrowserTable extends NSTableView implements Observer {
 		Collections.sort(browserModel.list(),
 		   new Comparator() {
 		       public int compare(Object o1, Object o2) {
-			   int p1 = ((Path)o1).status.getSize();
-			   int p2 = ((Path)o2).status.getSize();
+			   long p1 = ((Path)o1).status.getSize();
+			   long p2 = ((Path)o2).status.getSize();
 			   if (p1 > p2)
 			       return lower;
 			   else if (p1 < p2)
@@ -248,14 +304,16 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	}
 
 	public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
-	    if(cell instanceof NSTextFieldCell) {
-		if (! (view == null || cell == null || column == null)) {
+	    if (view != null && cell != null && column != null) {
+		if(cell instanceof NSTextFieldCell) {
 		    if (row % 2 == 0) {
 			((NSTextFieldCell)cell).setDrawsBackground(true);
 			((NSTextFieldCell)cell).setBackgroundColor(TABLE_CELL_SHADED_COLOR);
 		    }
-		    else
+		    else {
+			((NSTextFieldCell)cell).setDrawsBackground(false);
 			((NSTextFieldCell)cell).setBackgroundColor(view.backgroundColor());
+		    }
 		}
 	    }
 	}
@@ -366,11 +424,11 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	    Path[] roots = new Path[filesList.count()];
 	    for(int i = 0; i < filesList.count(); i++) {
 		log.debug(filesList.objectAtIndex(i));
-		roots[i] = ((CDBrowserTable)tableView).workdir().copy();
+		roots[i] = ((CDBrowserTable)tableView).workdir.copy();
 		roots[i].setPath(roots[i].getAbsolute(), new java.io.File((String)filesList.objectAtIndex(i)));
 	    }
 
-	    CDTransferController controller = new CDTransferController(roots, Queue.KIND_UPLOAD);
+	    CDTransferController controller = new CDTransferController(workdir().getSession().copy(), roots, Queue.KIND_UPLOAD);
 	    controller.transfer();
 	    
 //	    tableView.reloadData();
@@ -404,30 +462,19 @@ public class CDBrowserTable extends NSTableView implements Observer {
 			types.addObject(NSPathUtilities.FileTypeUnknown);
 		}
 		else if(roots[i].isDirectory()) {
-//		    types.addObject(NSPathUtilities.FileTypeDirectory);
 		    types.addObject("'fldr'");
 		}
 		else
 		    types.addObject(NSPathUtilities.FileTypeUnknown);
 	    }
 
-	    //@todo multiple files
 	    NSEvent event = NSApplication.sharedApplication().currentEvent();
 	    NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
 	    NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
 
 	    CDBrowserTable.this.dragPromisedFilesOfTypes(types, imageRect, CDBrowserTable.this, true, event);
 
-	    //• 	The typeArray argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
-//	    NSArray type;
-//	    if(p.isFile()) {
-//		CDBrowserTable.this.dragPromisedFilesOfTypes(new NSArray(p.getExtension()), imageRect, CDBrowserTable.this, false, NSApplication.sharedApplication().currentEvent());
-//		return false;
-//	    }
-//	    if(p.isDirectory())
-//		CDBrowserTable.this.dragPromisedFilesOfTypes(new NSArray("'fldr'"), imageRect, CDBrowserTable.this, false, NSApplication.sharedApplication().currentEvent());
-//	    return false;
-
+	    // The types argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
 	    return false;
 	}
 

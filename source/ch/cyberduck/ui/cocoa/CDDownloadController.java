@@ -36,9 +36,9 @@ import java.net.URL;
 public class CDDownloadController {
     private static Logger log = Logger.getLogger(CDDownloadController.class);
 
-    private NSWindow sheet;
-    public void setSheet(NSWindow sheet) {
-	this.sheet = sheet;
+    private NSWindow window;
+    public void setwindow(NSWindow window) {
+	this.window = window;
     }
 
     private NSTextField urlField;
@@ -57,11 +57,13 @@ public class CDDownloadController {
     }
 
     public NSWindow window() {
-	return this.sheet;
+	return this.window;
     }
 
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
+	NSPoint origin = this.window.frame().origin();
+	this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
     }
 
     public void windowWillClose(NSNotification notification) {
@@ -69,7 +71,7 @@ public class CDDownloadController {
 	allDocuments.removeObject(this);
     }
     
-    public void closeSheet(NSButton sender) {
+    public void closewindow(NSButton sender) {
 	switch(sender.tag()) {
 	    case(NSAlertPanel.DefaultReturn):
 		URL url = null;
@@ -100,8 +102,7 @@ public class CDDownloadController {
 			session = new HTTPSession(host = new Host(Session.HTTP, hostname, url.getPort(), new Login()));
 			path = new HTTPPath((HTTPSession)session, file);
 		    }
-//		    controller.setPath(path);
-		    CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
+		    CDTransferController controller = new CDTransferController(session.copy(), path, Queue.KIND_DOWNLOAD);
 		    controller.transfer();
 		}
 		catch(MalformedURLException e) {

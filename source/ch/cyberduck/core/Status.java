@@ -37,11 +37,11 @@ public class Status extends Observable implements Serializable {
     /**
 	* The file length
      */
-    private int size = -1;
+    private long size = -1;
     /**
 	* The number of transfered bytes. Must be less or equals size.
      */
-    private int current = 0;
+    private long current = 0;
     /**
 	* Indiciating wheter the transfer has been cancled by the user.
      */
@@ -77,7 +77,7 @@ public class Status extends Observable implements Serializable {
     /**
 	* @param size the size of file in bytes.
      */
-    public void setSize(int size) {
+    public void setSize(long size) {
 	//	log.debug("setSize:"+size);
 	this.size = size;
     }
@@ -85,7 +85,7 @@ public class Status extends Observable implements Serializable {
     /**
 	* @return length the size of file in bytes.
      */
-    public int getSize() {
+    public long getSize() {
 //	log.debug("getSize:"+size);
 	return size;
     }
@@ -131,13 +131,6 @@ public class Status extends Observable implements Serializable {
 	return canceled;
     }
 
-//    public void reset() {
-//	this.current = this.isResume() ? current : 0;
-//	//this.size = size;
-//	this.canceled = false;
-//	this.complete = false;
-//    }
-
 
 //    public BoundedRangeModel getProgressModel() {
 //	DefaultBoundedRangeModel m = null;
@@ -153,16 +146,16 @@ public class Status extends Observable implements Serializable {
 //	return m;
   //  }
 
-    public int getCurrent() {
+    public long getCurrent() {
 	return current;
     }
 
     /**
-	* @param c The currently transfered bytes
+	* @param current The currently transfered bytes
      */
-    public void setCurrent(int c) {
+    public void setCurrent(long current) {
 	//        log.debug("setCurrent(" + c + ")");
-	this.current = c;
+	this.current = current;
 	this.callObservers(new Message(Message.DATA, this));
 //	this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of " + Status.parseDouble(this.getSize()/1024) + " kBytes."));
     }

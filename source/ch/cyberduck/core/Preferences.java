@@ -104,10 +104,11 @@ public abstract class Preferences {
 
         defaults.put("connection.login.name", System.getProperty("user.name"));
         defaults.put("connection.download.folder", System.getProperty("user.home"));
-        defaults.put("connection.download.duplicate.ask", "true");
-  //      defaults.put("connection.duplicate.similar", "false");
-	defaults.put("connection.duplicate.resume", "false");
-	defaults.put("connection.duplicate.overwrite", "false");
+//        defaults.put("download.duplicate.ask", "true");
+//	defaults.put("download.duplicate.similar", "false");
+//	defaults.put("download.duplicate.resume", "false");
+//	defaults.put("download.duplicate.overwrite", "false");
+	defaults.put("download.duplicate", "ask");
 	
         //defaults.put("files.encode", "true");
 	defaults.put("connection.download.postprocess", "false");
@@ -122,6 +123,8 @@ public abstract class Preferences {
         defaults.put("ftp.anonymous.pass", "user@domain.net");
 	defaults.put("ftp.connectmode", "passive");
         defaults.put("ftp.transfermode", "binary");
+
+	defaults.put("ssh.knownhosts", System.getProperty("user.home")+"/.ssh/known_hosts"));
 
 //@todo	defaults.put("ssh.encryption", "aes128-cbc");
 //@todo	defaults.put("ssh.encryption.authentication", "hmac-md5");

@@ -32,70 +32,77 @@ public class CDPreferencesController {
 
     private static CDPreferencesController instance;
 
-    private static String CONNECTMODE_ACTIVE = "Active";
-    private static String CONNECTMODE_PASSIVE = "Passive";
-    private static String TRANSFERMODE_BINARY = "Binary";
-    private static String TRANSFERMODE_ASCII = "ASCII";
-    private static String PROTOCOL_FTP = "FTP";
-    private static String PROTOCOL_SFTP = "SFTP";
+    private static final String CONNECTMODE_ACTIVE = NSBundle.localizedString("Active");
+    private static final String CONNECTMODE_PASSIVE = NSBundle.localizedString("Passive");
+    
+    private static final String TRANSFERMODE_BINARY = NSBundle.localizedString("Binary");
+    private static final String TRANSFERMODE_ASCII = NSBundle.localizedString("ASCII");
+
+    private static final String PROTOCOL_FTP = NSBundle.localizedString("FTP");
+    private static final String PROTOCOL_SFTP = NSBundle.localizedString("SFTP");
+
+    private static final String ASK_ME_WHAT_TO_DO = NSBundle.localizedString("Ask me what to do");
+    private static final String OVERWRITE_EXISTING_FILE = NSBundle.localizedString("Overwrite existing file");
+    private static final String TRY_TO_RESUME_TRANSFER = NSBundle.localizedString("Try to resume transfer");
+    private static final String USE_A_SIMILAR_NAME = NSBundle.localizedString("Use similar name");
     
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
 
-    private NSButtonCell duplicateAskmeCheckbox;
-    public void setDuplicateAskmeCheckbox(NSButtonCell duplicateAskmeCheckbox) {
-	this.duplicateAskmeCheckbox = duplicateAskmeCheckbox;
-	this.duplicateAskmeCheckbox.setTarget(this);
-	this.duplicateAskmeCheckbox.setAction(new NSSelector("duplicateAskmeCheckboxClicked", new Class[] {NSButtonCell.class}));
-    }
+//    private NSButtonCell duplicateAskmeCheckbox;
+//    public void setDuplicateAskmeCheckbox(NSButtonCell duplicateAskmeCheckbox) {
+//	this.duplicateAskmeCheckbox = duplicateAskmeCheckbox;
+//	this.duplicateAskmeCheckbox.setTarget(this);
+//	this.duplicateAskmeCheckbox.setAction(new NSSelector("duplicateAskmeCheckboxClicked", new Class[] {NSCell.class}));
+//    }
 
-    public void duplicateAskmeCheckboxClicked(NSButtonCell sender) {
-	switch(sender.state()) {
-	    case NSCell.OnState:
-		Preferences.instance().setProperty("connection.duplicate.ask", "true");
-		break;
-	    case NSCell.OffState:
-		Preferences.instance().setProperty("connection.duplicate.ask", "false");
-		break;
-	}
-    }
+//    public void duplicateAskmeCheckboxClicked(NSCell sender) {
+//	switch(sender.state()) {
+//	    case NSCell.OnState:
+//		Preferences.instance().setProperty("connection.duplicate.ask", "true");
+//		break;
+//	    case NSCell.OffState:
+//		Preferences.instance().setProperty("connection.duplicate.ask", "false");
+//		break;
+//	}
+//    }
 
-    private NSButtonCell duplicateOverwriteCheckbox;
-    public void setDuplicateOverwriteCheckbox(NSButtonCell duplicateOverwriteCheckbox) {
-	this.duplicateOverwriteCheckbox = duplicateOverwriteCheckbox;
-	this.duplicateOverwriteCheckbox.setTarget(this);
-	this.duplicateOverwriteCheckbox.setAction(new NSSelector("duplicateOverwriteCheckboxClicked", new Class[] {NSButtonCell.class}));
-    }
+//    private NSButtonCell duplicateOverwriteCheckbox;
+//    public void setDuplicateOverwriteCheckbox(NSButtonCell duplicateOverwriteCheckbox) {
+//	this.duplicateOverwriteCheckbox = duplicateOverwriteCheckbox;
+//	this.duplicateOverwriteCheckbox.setTarget(this);
+//	this.duplicateOverwriteCheckbox.setAction(new NSSelector("duplicateOverwriteCheckboxClicked", new Class[] {NSCell.class}));
+//    }
 
-    public void duplicateOverwriteCheckboxClicked(NSButtonCell sender) {
-	switch(sender.state()) {
-	    case NSCell.OnState:
-		Preferences.instance().setProperty("connection.duplicate.overwrite", "true");
-		break;
-	    case NSCell.OffState:
-		Preferences.instance().setProperty("connection.duplicate.overwrite", "false");
-		break;
-	}
-    }
+//    public void duplicateOverwriteCheckboxClicked(NSCell sender) {
+//	switch(sender.state()) {
+//	    case NSCell.OnState:
+//		Preferences.instance().setProperty("connection.duplicate.overwrite", "true");
+//		break;
+//	    case NSCell.OffState:
+//		Preferences.instance().setProperty("connection.duplicate.overwrite", "false");
+//		break;
+//	}
+//    }
 
-    private NSButtonCell duplicateResumeCheckbox;
-    public void setDuplicateResumeCheckbox(NSButtonCell duplicateResumeCheckbox) {
-	this.duplicateResumeCheckbox = duplicateResumeCheckbox;
-	this.duplicateResumeCheckbox.setTarget(this);
-	this.duplicateResumeCheckbox.setAction(new NSSelector("duplicateResumeCheckboxClicked", new Class[] {NSButtonCell.class}));
-    }
+//   private NSButtonCell duplicateResumeCheckbox;
+//    public void setDuplicateResumeCheckbox(NSButtonCell duplicateResumeCheckbox) {
+//	this.duplicateResumeCheckbox = duplicateResumeCheckbox;
+//	this.duplicateResumeCheckbox.setTarget(this);
+//	this.duplicateResumeCheckbox.setAction(new NSSelector("duplicateResumeCheckboxClicked", new Class[] {NSCell.class}));
+//    }
 
-    public void duplicateResumeCheckboxClicked(NSButtonCell sender) {
-	switch(sender.state()) {
-	    case NSCell.OnState:
-		Preferences.instance().setProperty("connection.duplicate.resume", "true");
-		break;
-	    case NSCell.OffState:
-		Preferences.instance().setProperty("connection.duplicate.resume", "false");
-		break;
-	}
-    }
+//    public void duplicateResumeCheckboxClicked(NSCell sender) {
+//	switch(sender.state()) {
+//	    case NSCell.OnState:
+//		Preferences.instance().setProperty("connection.duplicate.resume", "true");
+//		break;
+//	    case NSCell.OffState:
+//		Preferences.instance().setProperty("connection.duplicate.resume", "false");
+//		break;
+//	}
+//    }
 
     private NSButton downloadPathButton;
     public void setDownloadPathButton(NSButton downloadPathButton) {
@@ -232,6 +239,33 @@ public class CDPreferencesController {
 	}
     }
 
+    private NSPopUpButton duplicateCombo;
+    public void setDuplicateCombo(NSPopUpButton duplicateCombo) {
+	this.duplicateCombo = duplicateCombo;
+	this.duplicateCombo.setTarget(this);
+	this.duplicateCombo.setAction(new NSSelector("duplicateComboClicked", new Class[] {NSPopUpButton.class}));
+	this.duplicateCombo.removeAllItems();	
+	this.duplicateCombo.addItemsWithTitles(new NSArray(new String[]{ASK_ME_WHAT_TO_DO, OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
+	if(Preferences.instance().getProperty("download.duplicate").equals("ask"))
+	    this.duplicateCombo.setTitle(ASK_ME_WHAT_TO_DO);
+	else if(Preferences.instance().getProperty("download.duplicate").equals("overwrite"))
+	    this.duplicateCombo.setTitle(OVERWRITE_EXISTING_FILE);
+	else if(Preferences.instance().getProperty("download.duplicate").equals("resume"))
+	    this.duplicateCombo.setTitle(TRY_TO_RESUME_TRANSFER);
+	else if(Preferences.instance().getProperty("download.duplicate").equals("similar"))
+	    this.duplicateCombo.setTitle(USE_A_SIMILAR_NAME);
+    }
+
+    public void duplicateComboClicked(NSPopUpButton sender) {
+	if(sender.selectedItem().title().equals(ASK_ME_WHAT_TO_DO))
+	    Preferences.instance().setProperty("download.duplicate", "ask");
+	else if(sender.selectedItem().title().equals(OVERWRITE_EXISTING_FILE))
+	    Preferences.instance().setProperty("download.duplicate", "overwrite");
+	else if(sender.selectedItem().title().equals(TRY_TO_RESUME_TRANSFER))
+	    Preferences.instance().setProperty("download.duplicate", "resume");
+	else if(sender.selectedItem().title().equals(USE_A_SIMILAR_NAME))
+	    Preferences.instance().setProperty("download.duplicate", "similar");
+    }
 
     private NSPopUpButton transfermodeCombo;
     public void setTransfermodeCombo(NSPopUpButton transfermodeCombo) {

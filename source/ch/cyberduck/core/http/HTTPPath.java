@@ -52,7 +52,15 @@ public class HTTPPath extends Path {
     }
 
     public Path copy() {
-	return new HTTPPath(this.session, this.getAbsolute());
+	return this.copy(this.session);
+    }
+    
+    public Path copy(Session s) {
+	HTTPPath copy = new HTTPPath((HTTPSession)s, this.getAbsolute());
+	copy.setLocal(this.getLocal());
+	copy.attributes = this.attributes;
+	copy.status = this.status;
+	return copy;
     }
     
     public Path getParent() {
@@ -107,9 +115,10 @@ public class HTTPPath extends Path {
 	session.log("Invalid Operation", Message.ERROR);
     }
 
-    public void fillQueue(List queue, Session session, int kind) {
+    public void fillQueue(List queue, int kind) {
+//    public void fillQueue(List queue, Session session, int kind) {
 	try {
-	    this.session = (HTTPSession)session;
+//	    this.session = (HTTPSession)session;
 	    this.session.check();
 	    switch(kind) {
 		case Queue.KIND_DOWNLOAD:
@@ -253,13 +262,8 @@ public class HTTPPath extends Path {
 	}
     finally {
 	session.log("Idle", Message.STOP);
-//            try {
 	GET.releaseConnection();
 	session.close();
-//	    }
-//	    catch(IOException e) {
-//		session.log(e.getMessage(), Message.ERROR);
-//	    }
     }
 }
 
