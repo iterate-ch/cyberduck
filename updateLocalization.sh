@@ -34,36 +34,36 @@ update() {
 }
 
 updateNibFromStrings() {
-    rm -rf $language.lproj/$nibfile.bak
-    mv $language.lproj/$nibfile $language.lproj/$nibfile.bak
+    rm -rf $language/$nibfile.bak
+    mv $language/$nibfile $language/$nibfile.bak
 
     if($force == true); then
         {
             # force update
             echo "Updating $nib... (force)"
-            nibtool --write $language.lproj/$nibfile --dictionary $language.lproj/$nib.strings English.lproj/$nibfile
+            nibtool --write $language/$nibfile --dictionary $language/$nib.strings English.lproj/$nibfile
         }
     else
         {
             # incremental update
             echo "Updating $nib... (incremental)"
-            nibtool --write $language.lproj/$nibfile \
-                    --incremental $language.lproj/$nibfile.bak \
-                    --dictionary $language.lproj/$nib.strings English.lproj/$nibfile
+            nibtool --write $language/$nibfile \
+                    --incremental $language/$nibfile.bak \
+                    --dictionary $language/$nib.strings English.lproj/$nibfile
         
         }
     fi;
-    cp -R $language.lproj/$nibfile.bak/CVS $language.lproj/$nibfile/CVS
+    cp -R $language/$nibfile.bak/CVS $language/$nibfile/CVS
 }
 
 udpateStringsFromNib() {
-    echo "Updating $nib.strings in $language.lproj..."
+    echo "Updating $nib.strings in $language..."
         
-    rm $language.lproj/$nib.strings.bak
-    mv $language.lproj/$nib.strings $language.lproj/$nib.strings.bak
+    rm $language/$nib.strings.bak
+    mv $language/$nib.strings $language/$nib.strings.bak
     nibtool --previous English.lproj/$nibfile \
-            --incremental $language.lproj/$nibfile \
-            --localizable-strings English.lproj/$nibfile > $language.lproj/$nib.strings
+            --incremental $language/$nibfile \
+            --localizable-strings English.lproj/$nibfile > $language/$nib.strings
 }
 
 language="all";
@@ -105,14 +105,13 @@ if [ "$language" = "all" ] ; then
     {
         echo "*** Updating all localizations...";
         for lproj in `ls . | grep lproj`; do
-            language=`basename $lproj .lproj`
-            
-            if [ $language != "English" ]; then
+            language=$lproj;
+			if [ $language != "English.lproj" ]; then
             {
                 echo "*** Updating $language Localization...";
                 if [ "$nibfile" = "all" ] ; then
                     echo "*** Updating all NIBs...";
-                    for nibfile in `ls $language.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; do
+                    for nibfile in `ls $language | grep .nib | grep -v ~.nib | grep -v .bak`; do
                         nib=`basename $nibfile .nib`
                         nibtool --localizable-strings English.lproj/$nibfile > English.lproj/$nib.strings
                         update;
@@ -137,15 +136,15 @@ if [ "$language" != "all" ] ; then
         echo "*** Updating $language Localization...";
         if [ "$nibfile" = "all" ] ; then
             echo "*** Updating all NIBs...";
-            for nibfile in `ls $language.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; do
-                nib=`basename $nibfile .nib`
+            for nibfile in `ls $language | grep .nib | grep -v ~.nib | grep -v .bak`; do
+                nib=`basename $nibfile .nib`;
                 nibtool --localizable-strings English.lproj/$nibfile > English.lproj/$nib.strings
                 update;
             done;
         fi;
         if [ "$nibfile" != "all" ] ; then
         {
-            nib=`basename $nibfile .nib`
+            nib=`basename $nibfile .nib`;
             nibtool --localizable-strings English.lproj/$nibfile > English.lproj/$nib.strings
             update;
         }

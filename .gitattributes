@@ -431,6 +431,7 @@ no.lproj/Folder.strings svneol=native#unset
 no.lproj/Goto.nib/keyedobjects.nib -text
 no.lproj/Goto.strings svneol=native#unset
 no.lproj/Info.nib/keyedobjects.nib -text
+no.lproj/Info.strings svneol=native#unset
 no.lproj/InfoPlist.strings svneol=native#unset
 no.lproj/Localizable.strings svneol=native#unset
 no.lproj/Login.nib/keyedobjects.nib -text
@@ -493,6 +494,7 @@ sk.lproj/Folder.strings svneol=native#unset
 sk.lproj/Goto.nib/keyedobjects.nib -text
 sk.lproj/Goto.strings svneol=native#unset
 sk.lproj/Info.nib/keyedobjects.nib -text
+sk.lproj/Info.strings svneol=native#unset
 sk.lproj/InfoPlist.strings svneol=native#unset
 sk.lproj/Localizable.strings svneol=native#unset
 sk.lproj/Login.nib/keyedobjects.nib -text
