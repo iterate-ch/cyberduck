@@ -365,7 +365,7 @@ public class GetMethod extends HttpMethodBase {
                 dir.mkdirs();
                 String tempFileName = null;
                 if (tempFile == null) {
-                    String encodedPath = URLEncoder.encode(getPath());
+                    String encodedPath = URLEncoder.encode(getPath(), "utf-8");
                     int length = encodedPath.length();
                     if (length > 240) {
                         encodedPath =

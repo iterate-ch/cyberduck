@@ -59,8 +59,8 @@ public class CDConnectionController {
 		this.favoritesPopup = favoritesPopup;
 		this.favoritesPopup.setImage(NSImage.imageNamed("favorites.tiff"));
 		
-		CDFavoritesImpl.instance().load();
-		Iterator i = CDFavoritesImpl.instance().getIterator();
+		CDBookmarksImpl.instance().load();
+		Iterator i = CDBookmarksImpl.instance().getIterator();
 		while(i.hasNext())
 			favoritesPopup.addItem(i.next().toString());
 		
@@ -203,7 +203,7 @@ public class CDConnectionController {
 	
     public void favoritesSelectionChanged(Object sender) {
 		log.debug("favoritesSelectionChanged:"+sender);
-		this.updateFields(CDFavoritesImpl.instance().getItem(favoritesPopup.titleOfSelectedItem()));
+		this.updateFields(CDBookmarksImpl.instance().getItem(favoritesPopup.titleOfSelectedItem()));
 		this.updateLabel(sender);
     }
 	

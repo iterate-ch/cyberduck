@@ -85,27 +85,27 @@ public class CDBrowserController implements Observer {
 		}
     }
 	
-	
 //	public void sortByFilenames(NSTableView table, Object o) {
 //		log.debug("sortByFilenames:"+o);
 //	}
 	
-    private CDFavoritesTableDataSource favoritesModel;
-    private NSTableView favoritesTable; // IBOutlet
-    public void setFavoritesTable(NSTableView favoritesTable) {
-		this.favoritesTable = favoritesTable;
-		this.favoritesTable.setDataSource(this.favoritesModel = new CDFavoritesTableDataSource());
-		this.favoritesTable.setTarget(this);
-		this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
-//		this.favoritesTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
-		this.favoritesTable.tableColumnWithIdentifier("FAVORITE").setDataCell(new CDFavoriteCell());
-		this.favoritesTable.setDoubleAction(new NSSelector("favoritesTableViewDidClickTableRow", new Class[] {Object.class}));
+    private CDBookmarkTableDataSource favoritesModel;
+    private NSTableView bookmarkTable; // IBOutlet
+    public void setBookmarkTable(NSTableView bookmarkTable) {
+		this.bookmarkTable = bookmarkTable;
+		this.bookmarkTable.setDataSource(this.favoritesModel = new CDBookmarkTableDataSource());
+		this.bookmarkTable.setTarget(this);
+		this.bookmarkTable.setDelegate(this);
+		this.bookmarkTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
+//		this.bookmarkTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
+		this.bookmarkTable.tableColumnWithIdentifier("FAVORITE").setDataCell(new CDBookmarkCell());
+		this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableViewDidClickTableRow", new Class[] {Object.class}));
     }
 
-	public void favoritesTableViewDidClickTableRow(Object sender) {
-		log.debug("favoritesTableViewDidClickTableRow");
-		if(favoritesTable.clickedRow() != -1) { //table header clicked
-			Host host = (Host)CDFavoritesImpl.instance().values().toArray()[favoritesTable.clickedRow()];
+	public void bookmarkTableViewDidClickTableRow(Object sender) {
+		log.debug("bookmarkTableViewDidClickTableRow");
+		if(bookmarkTable.clickedRow() != -1) { //table header clicked
+			Host host = (Host)CDBookmarksImpl.instance().values().toArray()[bookmarkTable.clickedRow()];
 			this.mount(host);
 		}
     }
@@ -118,54 +118,41 @@ public class CDBrowserController implements Observer {
 		this.quickConnectPopup.setUsesDataSource(true);
 		this.quickConnectPopup.setDataSource(CDHistoryImpl.instance());
     }
-	
-	//	private class QuickConnectDatasource implements NSComboBox.DataSource {
- //		private History history = CDHistoryImpl.instance();
- //		private Favorites favorites = CDFavoritesImpl.instance();
- //		
- //		public int numberOfItemsInComboBox(NSComboBox combo) {
- //			return history.values().size() + favorites.values().size();
- //		}
- //		
- //		public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
- //			return null;
- //		}		
- //	}
-    
-    private NSButton showFavoriteButton; // IBOutlet
-    public void setShowFavoriteButton(NSButton showFavoriteButton) {
-		this.showFavoriteButton = showFavoriteButton;
-		this.showFavoriteButton.setImage(NSImage.imageNamed("drawer.tiff"));
-		this.showFavoriteButton.setAlternateImage(NSImage.imageNamed("drawerPressed.tiff"));
-		this.showFavoriteButton.setTarget(this);
-		this.showFavoriteButton.setAction(new NSSelector("toggleFavoritesDrawer", new Class[] {Object.class}));
+	    
+    private NSButton showBookmarkButton; // IBOutlet
+    public void setShowBookmarkButton(NSButton showBookmarkButton) {
+		this.showBookmarkButton = showBookmarkButton;
+		this.showBookmarkButton.setImage(NSImage.imageNamed("drawer.tiff"));
+		this.showBookmarkButton.setAlternateImage(NSImage.imageNamed("drawerPressed.tiff"));
+		this.showBookmarkButton.setTarget(this);
+		this.showBookmarkButton.setAction(new NSSelector("toggleBookmarkDrawer", new Class[] {Object.class}));
     }
 
-    private NSButton editFavoriteButton; // IBOutlet
-    public void setEditFavoriteButton(NSButton editFavoriteButton) {
-		this.editFavoriteButton = editFavoriteButton;
-		this.editFavoriteButton.setImage(NSImage.imageNamed("edit.tiff"));
-		this.editFavoriteButton.setAlternateImage(NSImage.imageNamed("editPressed.tiff"));
-		this.editFavoriteButton.setTarget(this);
-		this.editFavoriteButton.setAction(new NSSelector("editFavoriteButtonClicked", new Class[] {Object.class}));
+    private NSButton editBookmarkButton; // IBOutlet
+    public void setEditBookmarkButton(NSButton editBookmarkButton) {
+		this.editBookmarkButton = editBookmarkButton;
+		this.editBookmarkButton.setImage(NSImage.imageNamed("edit.tiff"));
+		this.editBookmarkButton.setAlternateImage(NSImage.imageNamed("editPressed.tiff"));
+		this.editBookmarkButton.setTarget(this);
+		this.editBookmarkButton.setAction(new NSSelector("editBookmarkButtonClicked", new Class[] {Object.class}));
     }
 	
-    private NSButton addFavoriteButton; // IBOutlet
-    public void setAddFavoriteButton(NSButton addFavoriteButton) {
-		this.addFavoriteButton = addFavoriteButton;
-		this.addFavoriteButton.setImage(NSImage.imageNamed("add.tiff"));
-		this.addFavoriteButton.setAlternateImage(NSImage.imageNamed("addPressed.tiff"));
-		this.addFavoriteButton.setTarget(this);
-		this.addFavoriteButton.setAction(new NSSelector("addFavoriteButtonClicked", new Class[] {Object.class}));
+    private NSButton addBookmarkButton; // IBOutlet
+    public void setAddBookmarkButton(NSButton addBookmarkButton) {
+		this.addBookmarkButton = addBookmarkButton;
+		this.addBookmarkButton.setImage(NSImage.imageNamed("add.tiff"));
+		this.addBookmarkButton.setAlternateImage(NSImage.imageNamed("addPressed.tiff"));
+		this.addBookmarkButton.setTarget(this);
+		this.addBookmarkButton.setAction(new NSSelector("addBookmarkButtonClicked", new Class[] {Object.class}));
     }
 	
-    private NSButton removeFavoriteButton; // IBOutlet
-    public void setRemoveFavoriteButton(NSButton removeFavoriteButton) {
-		this.removeFavoriteButton = removeFavoriteButton;
-		this.removeFavoriteButton.setImage(NSImage.imageNamed("remove.tiff"));
-		this.removeFavoriteButton.setAlternateImage(NSImage.imageNamed("removePressed.tiff"));
-		this.removeFavoriteButton.setTarget(this);
-		this.removeFavoriteButton.setAction(new NSSelector("removeFavoriteButtonClicked", new Class[] {Object.class}));
+    private NSButton removeBookmarkButton; // IBOutlet
+    public void setRemoveBookmarkButton(NSButton removeBookmarkButton) {
+		this.removeBookmarkButton = removeBookmarkButton;
+		this.removeBookmarkButton.setImage(NSImage.imageNamed("remove.tiff"));
+		this.removeBookmarkButton.setAlternateImage(NSImage.imageNamed("removePressed.tiff"));
+		this.removeBookmarkButton.setTarget(this);
+		this.removeBookmarkButton.setAction(new NSSelector("removeBookmarkButtonClicked", new Class[] {Object.class}));
     }
     
     private NSButton upButton; // IBOutlet
@@ -190,13 +177,13 @@ public class CDBrowserController implements Observer {
     }
 	
     private NSDrawer logDrawer; // IBOutlet
-    public void setLogDrawer(NSDrawer drawer) {
-		this.logDrawer = drawer;
+    public void setLogDrawer(NSDrawer logDrawer) {
+		this.logDrawer = logDrawer;
     }
 	
-    private NSDrawer favoritesDrawer; // IBOutlet
-    public void setFavoritesDrawer(NSDrawer drawer) {
-		this.favoritesDrawer = drawer;
+    private NSDrawer bookmarkDrawer; // IBOutlet
+    public void setBookmarkDrawer(NSDrawer bookmarkDrawer) {
+		this.bookmarkDrawer = bookmarkDrawer;
     }
     
     private NSProgressIndicator progressIndicator; // IBOutlet
@@ -206,6 +193,11 @@ public class CDBrowserController implements Observer {
 		this.progressIndicator.setUsesThreadedAnimation(true);
     }
 	
+    private NSImageView statusIcon; // IBOutlet
+    public void setStatusIcon(NSImageView statusIcon) {
+		this.statusIcon = statusIcon;
+	}
+
     private NSTextField statusLabel; // IBOutlet
     public void setStatusLabel(NSTextField statusLabel) {
 		this.statusLabel = statusLabel;
@@ -272,10 +264,10 @@ public class CDBrowserController implements Observer {
 			item.setTarget(this);
 			item.setAction(new NSSelector("connectButtonClicked", new Class[] {Object.class}));
 		}
-		else if (itemIdentifier.equals(NSBundle.localizedString("Favorites"))) {
-			item.setView(showFavoriteButton);
-			item.setMinSize(showFavoriteButton.frame().size());
-			item.setMaxSize(showFavoriteButton.frame().size());
+		else if (itemIdentifier.equals(NSBundle.localizedString("Bookmarks"))) {
+			item.setView(showBookmarkButton);
+			item.setMinSize(showBookmarkButton.frame().size());
+			item.setMaxSize(showBookmarkButton.frame().size());
 		}
 		else if (itemIdentifier.equals(NSBundle.localizedString("Quick Connect"))) {
 			item.setLabel(NSBundle.localizedString("Quick Connect"));
@@ -354,13 +346,13 @@ public class CDBrowserController implements Observer {
 		return new NSArray(new Object[] {
 			NSBundle.localizedString("New Connection"), 
 			NSToolbarItem.SeparatorItemIdentifier, 
-			NSBundle.localizedString("Favorites"), 
+			NSBundle.localizedString("Bookmarks"), 
 			NSBundle.localizedString("Quick Connect"), 
 			NSBundle.localizedString("Refresh"), 
 			NSBundle.localizedString("Get Info"), 
-			NSToolbarItem.FlexibleSpaceItemIdentifier, 
 			NSBundle.localizedString("Download"), 
 			NSBundle.localizedString("Upload"), 
+			NSToolbarItem.FlexibleSpaceItemIdentifier, 
 			NSBundle.localizedString("Disconnect")
 		});
 	}
@@ -368,7 +360,7 @@ public class CDBrowserController implements Observer {
 	public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
 		return new NSArray(new Object[] {
 			NSBundle.localizedString("New Connection"), 
-			NSBundle.localizedString("Favorites"), 
+			NSBundle.localizedString("Bookmarks"), 
 			NSBundle.localizedString("Quick Connect"), 
 			NSBundle.localizedString("Refresh"), 
 			NSBundle.localizedString("Download"), 
@@ -418,6 +410,7 @@ public class CDBrowserController implements Observer {
 										  (String)msg.getContent() // message
 										  );
 					progressIndicator.stopAnimation(this);
+					statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
 					statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
 				}
 				// update status label
@@ -436,10 +429,12 @@ public class CDBrowserController implements Observer {
 					mainWindow.setTitle(host.getProtocol()+":"+host.getHostname());
 				}
 				else if(msg.getTitle().equals(Message.CLOSE)) {
+					statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
 					progressIndicator.stopAnimation(this);
 				}
 				
 				else if(msg.getTitle().equals(Message.START)) {
+					statusIcon.setImage(NSImage.imageNamed("online.tiff"));
 					progressIndicator.startAnimation(this);
 					//@todo disable toolbar
 				}
@@ -453,30 +448,37 @@ public class CDBrowserController implements Observer {
     }
     
 	// ----------------------------------------------------------
-	// Manage favorites
+	// Manage Bookmarks
 	// ----------------------------------------------------------
 	
-    public void editFavoriteButtonClicked(Object sender) {
-		int row = favoritesTable.selectedRow();
-		if(row != -1) {
-			Host item = CDFavoritesImpl.instance().getItem(CDFavoritesImpl.instance().values().toArray()[row].toString());
-			CDFavoriteController controller = new CDFavoriteController(item);
+    public void editBookmarkButtonClicked(Object sender) {
+		int row = bookmarkTable.selectedRow();
+		if(row != -1) { //todo disable button instead
+			Host item = CDBookmarksImpl.instance().getItem(CDBookmarksImpl.instance().values().toArray()[row].toString());
+			CDBookmarkController controller = new CDBookmarkController(item);
 			controller.window().makeKeyAndOrderFront(null);
 		}
     }
 	
-    public void addFavoriteButtonClicked(Object sender) {
+    public void addBookmarkButtonClicked(Object sender) {
 		if(this.host != null) {
-			CDFavoritesImpl.instance().addItem(host);
-			this.favoritesTable.reloadData();
+			CDBookmarksImpl.instance().addItem(host);
+			this.bookmarkTable.reloadData();
+		}
+		else {
+			Host h = new Host("", new Login());
+			CDBookmarksImpl.instance().addItem(h);
+			this.bookmarkTable.reloadData();
+//			this.bookmarkTable.selectRow(CDBookmarksImpl.instance().indexOf(h), true);
+//			this.editBookmarkButtonClicked(null);
 		}
     }
 	
-    public void removeFavoriteButtonClicked(Object sender) {
-		int row = favoritesTable.selectedRow();
-		if(row != -1) {
-			CDFavoritesImpl.instance().removeItem(CDFavoritesImpl.instance().values().toArray()[row].toString());
-			this.favoritesTable.reloadData();
+    public void removeBookmarkButtonClicked(Object sender) {
+		int row = bookmarkTable.selectedRow();
+		if(row != -1) { //todo disable button instead
+			CDBookmarksImpl.instance().removeItem(CDBookmarksImpl.instance().values().toArray()[row].toString());
+			this.bookmarkTable.reloadData();
 		}
     }
 	
@@ -488,8 +490,8 @@ public class CDBrowserController implements Observer {
 		logDrawer.toggle(this);
     }
 	
-    public void toggleFavoritesDrawer(Object sender) {
-		favoritesDrawer.toggle(this);
+    public void toggleBookmarkDrawer(Object sender) {
+		bookmarkDrawer.toggle(this);
     }
 	
     public void gotoButtonClicked(Object sender) {
@@ -800,6 +802,7 @@ public class CDBrowserController implements Observer {
 		backButton.setEnabled(pathController.numberOfItems() > 0);
 		upButton.setEnabled(pathController.numberOfItems() > 0);
 		pathPopup.setEnabled(pathController.numberOfItems() > 0);
+//todo		statusIcon.setImage(NSImage.imageNamed("offline.tiff");
 		if(label.equals(NSBundle.localizedString("New Connection"))) {
 			return !this.isMounting;
 		}

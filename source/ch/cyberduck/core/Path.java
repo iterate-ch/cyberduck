@@ -220,11 +220,8 @@ public abstract class Path {
 		return this.path;
     }
     
-	//    public String getAbsoluteEncoded(String path) {
- //      return java.net.URLEncoder.encode(this.getAbsolute());//, "utf-8");
- //  }
-	
     public void setLocal(java.io.File file) {
+		log.debug("setLocal:"+file);
 		this.local = file;
     }
     
@@ -382,6 +379,5 @@ public abstract class Path {
     
     public String toString() {
 		return this.getAbsolute();
-		//        return "Local:"+this.getLocal().toString()+",Remote:"+this.getAbsolute();
     }
 }

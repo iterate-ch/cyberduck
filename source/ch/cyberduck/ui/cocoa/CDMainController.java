@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Favorites;
+import ch.cyberduck.core.Bookmarks;
 import ch.cyberduck.core.Login;
 import ch.cyberduck.core.Host;
 import com.apple.cocoa.application.*;
@@ -241,12 +241,12 @@ public class CDMainController {
 			if(propertyListFromXMLData instanceof NSDictionary) {
 				NSDictionary a = (NSDictionary)propertyListFromXMLData;
 				   Host host = new Host(
-				(String)a.objectForKey(Favorites.PROTOCOL), 
-				(String)a.objectForKey(Favorites.NICKNAME),
-				(String)a.objectForKey(Favorites.HOSTNAME), 
-				Integer.parseInt((String)a.objectForKey(Favorites.PORT)),
-				new Login((String)a.objectForKey(Favorites.USERNAME)),
-				(String)a.objectForKey(Favorites.PATH)
+				(String)a.objectForKey(Bookmarks.PROTOCOL), 
+				(String)a.objectForKey(Bookmarks.NICKNAME),
+				(String)a.objectForKey(Bookmarks.HOSTNAME), 
+				Integer.parseInt((String)a.objectForKey(Bookmarks.PORT)),
+				new Login((String)a.objectForKey(Bookmarks.USERNAME)),
+				(String)a.objectForKey(Bookmarks.PATH)
 						 );
 				   CDBrowserController controller = newBrowserMenuClicked(null);
 				   controller.mount(host);
@@ -279,7 +279,7 @@ public class CDMainController {
   //	}
 		Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses"))+1);
         Preferences.instance().save();
-		CDFavoritesImpl.instance().save();
+		CDBookmarksImpl.instance().save();
 		CDHistoryImpl.instance().save();
 		
 		if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
