@@ -87,7 +87,7 @@ public class Queue extends Observable implements Observer { //Thread {
     }
 
     public void callObservers(Message arg) {
-	log.debug(this.countObservers()+" observers known.");
+//	log.debug(this.countObservers()+" observers known.");
         this.setChanged();
 	this.notifyObservers(arg);
     }
@@ -230,9 +230,9 @@ public class Queue extends Observable implements Observer { //Thread {
 		candidate = null;
 		while(i.hasNext() && !isStopped()) {
 		    candidate = (Path)i.next();
-		    callObservers(new Message(Message.PROGRESS, "Downloading "+this.getName()+" ("+remainingJobs()+1+" of "+numberOfJobs()+")"));
+		    callObservers(new Message(Message.PROGRESS, "Downloading "+candidate.getName()+" ("+(completedJobs()+1)+" of "+numberOfJobs()+")"));
 		    candidate.status.addObserver(Queue.this);
-		    candidate.getSession().addObserver(Queue.this);
+//		    candidate.getSession().addObserver(Queue.this);
 		    switch(kind) {
 			case KIND_DOWNLOAD:
 			    candidate.download();
@@ -245,7 +245,7 @@ public class Queue extends Observable implements Observer { //Thread {
 			callObservers(new Message(Message.COMPLETE));
 		    }
 		    candidate.status.deleteObserver(Queue.this);
-		    candidate.getSession().deleteObserver(Queue.this);
+//		    candidate.getSession().deleteObserver(Queue.this);
 		    completedJobs++;
 		}
 
@@ -261,6 +261,7 @@ public class Queue extends Observable implements Observer { //Thread {
     }
     
     public void cancel() {
+	this.stopped = true;
 	candidate.status.setCanceled(true);
     }
 
@@ -284,7 +285,11 @@ public class Queue extends Observable implements Observer { //Thread {
 	* The number of remaining items to be processed in the queue.
      */
     public int remainingJobs() {
-	return this.numberOfJobs() - completedJobs;
+	return this.numberOfJobs() - this.completedJobs;
+    }
+
+    public int completedJobs() {
+	return this.completedJobs;
     }
 
     /**

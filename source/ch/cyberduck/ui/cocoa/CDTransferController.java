@@ -147,8 +147,6 @@ public class CDTransferController implements Observer {
 
     public void setPath(Path file) {
 	this.file = file;
-//	file.status.addObserver(this);
-//	file.getSession().addObserver(this);
     }
     
     private void init() {
@@ -159,6 +157,7 @@ public class CDTransferController implements Observer {
 	this.progressField.setAttributedStringValue(new NSAttributedString(""));
 	this.fileDataField.setAttributedStringValue(new NSAttributedString(""));
 	this.totalDataField.setAttributedStringValue(new NSAttributedString(""));
+	this.speedField.setAttributedStringValue(new NSAttributedString(""));
 	this.clockField.setAttributedStringValue(new NSAttributedString("00:00"));
 	switch(kind) {
 	    case Queue.KIND_DOWNLOAD:
@@ -175,22 +174,11 @@ public class CDTransferController implements Observer {
 	super.finalize();
     }
 
-//    public void transfer(final boolean resume) {
-//	this.init();
-//	this.window().setTitle(file.getName());
-//
-//	totalProgressBar.startAnimation(null);
-////	this.fileProgressBar.startAnimation(null);
-
-//	this.window().makeKeyAndOrderFront(null);
-//	if(validate(resume))
-//	    this.transfer();
-  //  }
 
     public void transfer(final boolean resume) {
 	this.init();
 	this.window().setTitle(file.getName());
-	totalProgressBar.startAnimation(null);
+	this.totalProgressBar.startAnimation(null);
 	this.window().makeKeyAndOrderFront(null);
 	queue = new Queue(file, kind);
 	queue.addObserver(this);
@@ -248,9 +236,11 @@ public class CDTransferController implements Observer {
 	    }
 	    else if(msg.getTitle().equals(Message.SPEED)) {
 		this.speedField.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
+		this.speedField.display();
 	    }
 	    else if(msg.getTitle().equals(Message.CLOCK)) {
 		this.clockField.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
+		this.clockField.display();
 	    }
 	    else if(msg.getTitle().equals(Message.START)) {
 		this.totalProgressBar.setIndeterminate(false);
@@ -305,6 +295,7 @@ public class CDTransferController implements Observer {
 	    }
 	    else if(msg.getTitle().equals(Message.PROGRESS)) {
 		this.progressField.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
+		this.progressField.display();
 	    }
 	}
     }

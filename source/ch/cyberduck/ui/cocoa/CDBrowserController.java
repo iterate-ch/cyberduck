@@ -238,8 +238,8 @@ public class CDBrowserController implements Observer {
 	    Collections.sort(browserModel.list(),
 				new Comparator() {
 				    public int compare(Object o1, Object o2) {
-					int p1 = ((Path)o1).getSize();
-					int p2 = ((Path)o2).getSize();
+					int p1 = ((Path)o1).status.getSize();
+					int p2 = ((Path)o2).status.getSize();
 					if (p1 > p2) {
 					    return lower;
 					}
@@ -349,15 +349,15 @@ public class CDBrowserController implements Observer {
 				   );
 		    progressIndicator.stopAnimation(this);
 		    //@tdodo use attributed string???
-		    statusLabel.setStringValue(msg.getDescription());
+		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
 		}
 		
 		// update status label
 		else if(msg.getTitle().equals(Message.PROGRESS)) {
-		    statusLabel.setStringValue(msg.getDescription());
+		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
 		}
 		else if(msg.getTitle().equals(Message.TRANSCRIPT)) {
-		    statusLabel.setStringValue(msg.getDescription());
+		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
 		}
 		
 		else if(msg.getTitle().equals(Message.OPEN)) {
@@ -378,7 +378,7 @@ public class CDBrowserController implements Observer {
 		}
 		else if(msg.getTitle().equals(Message.STOP)) {
 		    progressIndicator.stopAnimation(this);
-		    statusLabel.setStringValue("Idle");
+		    statusLabel.setAttributedStringValue(new NSAttributedString(("Idle")));
 		    //@todo enable toolbar
 		}
 	    }
@@ -927,7 +927,7 @@ public class CDBrowserController implements Observer {
 	    if(identifier.equals("FILENAME"))
 		return p.getName();
 	    else if(identifier.equals("SIZE"))
-		return p.getSizeAsString();
+		return p.status.getSizeAsString();
 	    else if(identifier.equals("MODIFIED"))
 		return p.attributes.getModified();
 	    else if(identifier.equals("OWNER"))
