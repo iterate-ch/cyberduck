@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDBookmarkTableDataSource extends CDTableDataSource {//implements NSTableView.DataSource {
+public class CDBookmarkTableDataSource {//implements NSTableView.DataSource {
     private static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 	
 	Bookmarks bookmarks = CDBookmarksImpl.instance();
@@ -190,8 +190,4 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {//implements N
 		}
 		return promisedDragNames;
     }
-	
-	public Collection values() {
-		return this.bookmarks.values();
-    }	
 }	

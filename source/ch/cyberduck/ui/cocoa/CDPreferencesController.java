@@ -83,13 +83,13 @@ public class CDPreferencesController {
     private static final String aes128_cbc = "aes128-cbc";
     private static final String cast128_cbc = "cast128-cbc";
 	
-    private NSPopUpButton CSEncryptionCombo;
-    public void setCSEncryptionCombo(NSPopUpButton CSEncryptionCombo) {
-		this.CSEncryptionCombo = CSEncryptionCombo;
-		this.CSEncryptionCombo.setTarget(this);
-		this.CSEncryptionCombo.setAction(new NSSelector("CSEncryptionComboClicked", new Class[] {NSPopUpButton.class}));
-		this.CSEncryptionCombo.removeAllItems();
-		this.CSEncryptionCombo.addItemsWithTitles(
+    private NSPopUpButton csEncryptionCombo;
+    public void setCsEncryptionCombo(NSPopUpButton csEncryptionCombo) {
+		this.csEncryptionCombo = csEncryptionCombo;
+		this.csEncryptionCombo.setTarget(this);
+		this.csEncryptionCombo.setAction(new NSSelector("csEncryptionComboClicked", new Class[] {NSPopUpButton.class}));
+		this.csEncryptionCombo.removeAllItems();
+		this.csEncryptionCombo.addItemsWithTitles(
 											new NSArray(new String[]{
 												"Default",
 												des_cbc, 
@@ -103,20 +103,20 @@ public class CDPreferencesController {
 												cast128_cbc
 											}));
 		
-		CSEncryptionCombo.setTitle(Preferences.instance().getProperty("ssh.CSEncryption"));
+		csEncryptionCombo.setTitle(Preferences.instance().getProperty("ssh.CSEncryption"));
     }
     
-    public void CSEncryptionComboClicked(NSPopUpButton sender) {
+    public void csEncryptionComboClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("ssh.CSEncryption", sender.titleOfSelectedItem());
     }    
     
-    private NSPopUpButton SCEncryptionCombo;
-    public void setSCEncryptionCombo(NSPopUpButton SCEncryptionCombo) {
-		this.SCEncryptionCombo = SCEncryptionCombo;
-		this.SCEncryptionCombo.setTarget(this);
-		this.SCEncryptionCombo.setAction(new NSSelector("SCEncryptionComboClicked", new Class[] {NSPopUpButton.class}));
-		this.SCEncryptionCombo.removeAllItems();
-		this.SCEncryptionCombo.addItemsWithTitles(
+    private NSPopUpButton scEncryptionCombo;
+    public void setScEncryptionCombo(NSPopUpButton scEncryptionCombo) {
+		this.scEncryptionCombo = scEncryptionCombo;
+		this.scEncryptionCombo.setTarget(this);
+		this.scEncryptionCombo.setAction(new NSSelector("scEncryptionComboClicked", new Class[] {NSPopUpButton.class}));
+		this.scEncryptionCombo.removeAllItems();
+		this.scEncryptionCombo.addItemsWithTitles(
 											new NSArray(new String[]{
 												"Default",
 												des_cbc, 
@@ -130,10 +130,10 @@ public class CDPreferencesController {
 												cast128_cbc
 											}));
 		
-		SCEncryptionCombo.setTitle(Preferences.instance().getProperty("ssh.SCEncryption"));
+		scEncryptionCombo.setTitle(Preferences.instance().getProperty("ssh.SCEncryption"));
     }
     
-    public void SCEncryptionComboClicked(NSPopUpButton sender) {
+    public void scEncryptionComboClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("ssh.SCEncryption", sender.titleOfSelectedItem());
     }    
 	
@@ -144,13 +144,13 @@ public class CDPreferencesController {
     private static final String hmac_md5 = "hmac-md5";
     private static final String hmac_md5_96 = "hmac-md5-96";
     
-    private NSPopUpButton SCAuthenticationCombo;
-    public void setSCAuthenticationCombo(NSPopUpButton SCAuthenticationCombo) {
-		this.SCAuthenticationCombo = SCAuthenticationCombo;
-		this.SCAuthenticationCombo.setTarget(this);
-		this.SCAuthenticationCombo.setAction(new NSSelector("SCAuthenticationComboClicked", new Class[] {NSPopUpButton.class}));
-		this.SCAuthenticationCombo.removeAllItems();
-		this.SCAuthenticationCombo.addItemsWithTitles(
+    private NSPopUpButton scAuthenticationCombo;
+    public void setScAuthenticationCombo(NSPopUpButton scAuthenticationCombo) {
+		this.scAuthenticationCombo = scAuthenticationCombo;
+		this.scAuthenticationCombo.setTarget(this);
+		this.scAuthenticationCombo.setAction(new NSSelector("scAuthenticationComboClicked", new Class[] {NSPopUpButton.class}));
+		this.scAuthenticationCombo.removeAllItems();
+		this.scAuthenticationCombo.addItemsWithTitles(
 												new NSArray(new String[]{
 													"Default",
 													hmac_sha1,
@@ -159,21 +159,21 @@ public class CDPreferencesController {
 													hmac_md5_96
 												}));
 		
-		SCAuthenticationCombo.setTitle(Preferences.instance().getProperty("ssh.SCAuthentication"));
+		scAuthenticationCombo.setTitle(Preferences.instance().getProperty("ssh.SCAuthentication"));
     }
     
-    public void SCAuthenticationComboClicked(NSPopUpButton sender) {
+    public void scAuthenticationComboClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("ssh.SCAuthentication", sender.titleOfSelectedItem());
     }    
 	
     
-    private NSPopUpButton CSAuthenticationCombo;
-    public void setCSAuthenticationCombo(NSPopUpButton CSAuthenticationCombo) {
-		this.CSAuthenticationCombo = CSAuthenticationCombo;
-		this.CSAuthenticationCombo.setTarget(this);
-		this.CSAuthenticationCombo.setAction(new NSSelector("CSAuthenticationComboClicked", new Class[] {NSPopUpButton.class}));
-		this.CSAuthenticationCombo.removeAllItems();
-		this.CSAuthenticationCombo.addItemsWithTitles(
+    private NSPopUpButton csAuthenticationCombo;
+    public void setCsAuthenticationCombo(NSPopUpButton csAuthenticationCombo) {
+		this.csAuthenticationCombo = csAuthenticationCombo;
+		this.csAuthenticationCombo.setTarget(this);
+		this.csAuthenticationCombo.setAction(new NSSelector("csAuthenticationComboClicked", new Class[] {NSPopUpButton.class}));
+		this.csAuthenticationCombo.removeAllItems();
+		this.csAuthenticationCombo.addItemsWithTitles(
 												new NSArray(new String[]{
 													"Default",
 													hmac_sha1,
@@ -182,10 +182,10 @@ public class CDPreferencesController {
 													hmac_md5_96
 												}));
 		
-		CSAuthenticationCombo.setTitle(Preferences.instance().getProperty("ssh.CSAuthentication"));
+		csAuthenticationCombo.setTitle(Preferences.instance().getProperty("ssh.CSAuthentication"));
     }
     
-    public void CSAuthenticationComboClicked(NSPopUpButton sender) {
+    public void csAuthenticationComboClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("ssh.CSAuthentication", sender.titleOfSelectedItem());
     }    
 	

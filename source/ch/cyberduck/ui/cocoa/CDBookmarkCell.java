@@ -49,8 +49,7 @@ public class CDBookmarkCell extends NSCell {
 		NSDictionary boldFont;
 		NSDictionary tinyFont;
 		// cell is selected (white font)
-		if (this.isHighlighted()) {
-//		if (this.isHighlighted() && this.highlightColorWithFrameInView(cellFrame, controlView).equals(NSColor.secondarySelectedControlColor())) {
+		if (this.isHighlighted() && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(NSColor.secondarySelectedControlColor())) {
 			boldFont = new NSDictionary(
 							   new Object[]{
 								   NSFont.boldSystemFontOfSize(11.0f), 

@@ -40,7 +40,7 @@ public class CDTransferController implements Observer, Validator {
     // Outlets
     // ----------------------------------------------------------
 	
-    private NSWindow window;
+    private NSWindow window; // IBOutlet
     public void setWindow(NSWindow window) {
 		this.window = window;
     }
@@ -49,62 +49,62 @@ public class CDTransferController implements Observer, Validator {
 		return this.window;
     }
     
-    private NSTextField urlField;
+    private NSTextField urlField; // IBOutlet
     public void setUrlField(NSTextField urlField) {
 		this.urlField = urlField;
     }
 	
-    private NSTextField clockField;
+    private NSTextField clockField; // IBOutlet
     public void setClockField(NSTextField clockField) {
 		this.clockField = clockField;
 		this.clockField.setObjectValue("00:00");
     }
     
-    private NSTextField fileField;
+    private NSTextField fileField; // IBOutlet
     public void setFileField(NSTextField fileField) {
 		this.fileField = fileField;
     }
 	
-    private NSTextField progressField;
+    private NSTextField progressField; // IBOutlet
     public void setProgressField(NSTextField progressField) {
 		this.progressField = progressField;
 		this.progressField.setObjectValue("");
     }
     
-    private NSTextField fileDataField;
+    private NSTextField fileDataField; // IBOutlet
     public void setFileDataField(NSTextField fileDataField) {
 		this.fileDataField = fileDataField;
 		this.fileDataField.setObjectValue("");
     }
 	
-    private NSProgressIndicator totalProgressBar;
+    private NSProgressIndicator totalProgressBar; // IBOutlet
     public void setTotalProgressBar(NSProgressIndicator totalProgressBar) {
 		this.totalProgressBar = totalProgressBar;
 		this.totalProgressBar.setIndeterminate(true);
 		this.totalProgressBar.setUsesThreadedAnimation(true);
     }
 	
-    private NSButton stopButton;
+    private NSButton stopButton; // IBOutlet
     public void setStopButton(NSButton stopButton) {
 		this.stopButton = stopButton;
     }
 	
-    private NSButton resumeButton;
+    private NSButton resumeButton; // IBOutlet
     public void setResumeButton(NSButton resumeButton) {
 		this.resumeButton = resumeButton;
     }
 	
-    private NSButton reloadButton;
+    private NSButton reloadButton; // IBOutlet
     public void setReloadButton(NSButton reloadButton) {
 		this.reloadButton = reloadButton;
     }
     
-    public NSImageView iconView;
+    public NSImageView iconView; // IBOutlet
     public void setIconView(NSImageView iconView) {
 		this.iconView = iconView;
     }
 	
-    public NSImageView fileIconView;
+    public NSImageView fileIconView; // IBOutlet
     public void setFileIconView(NSImageView fileIconView) {
 		this.fileIconView = fileIconView;
     }
@@ -222,6 +222,7 @@ public class CDTransferController implements Observer, Validator {
 				this.totalProgressBar.setIndeterminate(true);
 				this.totalProgressBar.startAnimation(null);
 				
+				this.stopButton.setStringValue("Close");
 				this.stopButton.setEnabled(true);
 				this.resumeButton.setEnabled(false);
 				this.reloadButton.setEnabled(false);
@@ -278,7 +279,8 @@ public class CDTransferController implements Observer, Validator {
 										 );
 				this.queue.cancel();
 				this.totalProgressBar.stopAnimation(null);
-				this.stopButton.setEnabled(false);
+				this.stopButton.setStringValue("Close");
+				this.stopButton.setEnabled(true);
 				this.resumeButton.setEnabled(true);
 				this.reloadButton.setEnabled(true);
 				this.progressField.setObjectValue(msg.getContent());

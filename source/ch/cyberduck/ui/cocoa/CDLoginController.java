@@ -36,22 +36,22 @@ public class CDLoginController implements LoginController {
     // Outlets
     // ----------------------------------------------------------
     
-    private NSTextField userField;
+    private NSTextField userField; // IBOutlet
     public void setUserField(NSTextField userField) {
 	this.userField = userField;
     }
 
-    private NSTextField textField;
+    private NSTextField textField; // IBOutlet
     public void setTextField(NSTextField textField) {
 	this.textField = textField;
     }
     
-    private NSSecureTextField passField;
+    private NSSecureTextField passField; // IBOutlet
     public void setPassField(NSSecureTextField passField) {
 	this.passField = passField;
     }
 
-    private NSWindow sheet;
+    private NSWindow sheet; // IBOutlet
     public void setSheet(NSWindow sheet) {
 	this.sheet = sheet;
     }

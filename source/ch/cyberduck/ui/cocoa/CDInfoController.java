@@ -36,7 +36,7 @@ public class CDInfoController {
     // Outlets
     // ----------------------------------------------------------
 	
-    private NSWindow window;
+    private NSWindow window; // IBOutlet
     public void setWindow(NSWindow window) {
 		this.window = window;
     }
@@ -84,7 +84,7 @@ public class CDInfoController {
     public NSButton otherw; // IBOutlet
     public NSButton otherx; // IBOutlet
 	
-    private NSImageView iconImageView;
+    private NSImageView iconImageView; // IBOutlet
     public void setIconImageView(NSImageView iconImageView) {
 		this.iconImageView = iconImageView;
     }

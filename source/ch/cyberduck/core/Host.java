@@ -243,4 +243,8 @@ public class Host {
     public String getURL() {
 		return this.getProtocol()+"://"+this.getLogin().getUsername()+"@"+this.getHostname()+":"+this.getPort()+"/"+this.getDefaultPath();
     }
+	
+	public void compare(Object o) {
+		log.info("*******************compare");
+	}
 }

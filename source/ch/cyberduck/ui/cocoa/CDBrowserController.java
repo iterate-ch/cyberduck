@@ -41,13 +41,12 @@ public class CDBrowserController implements Observer {
     }
 		
     private CDBrowserTableDataSource browserModel;
-	private CDTableDelegate browserTableDelegate;
     private NSTableView browserTable; // IBOutlet
     public void setBrowserTable(NSTableView browserTable) {
 		this.browserTable = browserTable;
 		this.browserTable.setTarget(this);
 		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
-		this.browserTable.setDelegate(this.browserTableDelegate = new CDBrowserTableDataDelegate());
+		this.browserTable.setDelegate(this.browserModel);
 		this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
 //		this.browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
 		this.browserTable.setDoubleAction(new NSSelector("browserTableViewDidClickTableRow", new Class[] {Object.class}));
@@ -62,7 +61,7 @@ public class CDBrowserController implements Observer {
 				List items = new ArrayList();
 				Session session = browserModel.workdir().getSession().copy();
 				while(enum.hasMoreElements()) {
-					items.add(browserModel.getEntry(((Integer)enum.nextElement()).intValue()).copy(session));
+					items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
 				}
 				CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
 				controller.transfer();
@@ -73,19 +72,34 @@ public class CDBrowserController implements Observer {
     }
 	
     private CDBookmarkTableDataSource bookmarkModel;
-	private CDTableDelegate bookmarkTableDelegate;
     private NSTableView bookmarkTable; // IBOutlet
     public void setBookmarkTable(NSTableView bookmarkTable) {
 		this.bookmarkTable = bookmarkTable;
 		this.bookmarkTable.setTarget(this);
 		this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
-		this.bookmarkTable.setDelegate(this.bookmarkTableDelegate = new CDBookmarkTableDataDelegate());
+		this.bookmarkTable.setDelegate(this.bookmarkModel);
 		this.bookmarkTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
 //		this.bookmarkTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
 		this.bookmarkTable.tableColumnWithIdentifier("FAVORITE").setDataCell(new CDBookmarkCell());
 		this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableViewDidClickTableRow", new Class[] {Object.class}));
     }
+	
+	public void sortByFilenames(Object o) {
+		log.info("0******sortByFilenames**********");
+	}
 
+	public void sortByFilenames(NSTableView tableView, NSArray sortDescriptors) {
+		log.info("1******sortByFilenames**********");
+	}
+
+	public void sortByFilenames(NSTableView tableView, NSSortDescriptor sortDescriptors) {
+		log.info("2******sortByFilenames**********");
+	}
+
+	public void sortByFilenames(NSSortDescriptor sortDescriptors) {
+		log.info("3******sortByFilenames**********");
+	}
+	
 	public void bookmarkTableViewDidClickTableRow(Object sender) {
 		log.debug("bookmarkTableViewDidClickTableRow");
 		if(bookmarkTable.clickedRow() != -1) { //table header clicked
@@ -391,6 +405,9 @@ public class CDBrowserController implements Observer {
 				while(i.hasNext()) {
 					browserModel.addEntry((Path)i.next());
 				}
+				NSTableColumn selectedColumn = browserModel.selectedColumn() != null ? browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
+				browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
+				browserModel.sort(selectedColumn, browserModel.isSortedAscending());
 				browserTable.reloadData();
 			}
 			if(arg instanceof Message) {
@@ -597,7 +614,7 @@ public class CDBrowserController implements Observer {
 		Session session = browserModel.workdir().getSession().copy();
 		List items = new ArrayList();
 		while(enum.hasMoreElements()) {
-			items.add(browserModel.getEntry(((Integer)enum.nextElement()).intValue()).copy(session));
+			items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
 		}
 		CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
 		controller.transfer();

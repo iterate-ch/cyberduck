@@ -14,6 +14,7 @@
 /* CDConnectionController - Connection.nib */
 "FTP (File Transfer)" = "FTP (File Transfer)";
 "SFTP (SSH Secure File Transfer)" = "SFTP (SSH Secure File Transfer)";
+"Quick Connect" = "Quick Connect";
 
 /* CDTransferController - Transfer.nib */
 "of" = "of";

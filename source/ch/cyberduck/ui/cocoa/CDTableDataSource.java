@@ -18,7 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
@@ -27,12 +29,30 @@ import com.apple.cocoa.application.NSTableView;
 * @version $Id$
  */
 public abstract class CDTableDataSource {//implements NSTableView.DataSource {
-
-	public abstract Collection values();
 	
 	public abstract int numberOfRowsInTableView(NSTableView tableView);
 	
 //	public abstract void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row);
 	
 	public abstract Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row);
+		
+	// ----------------------------------------------------------
+ // TableView Delegate methods
+ // ----------------------------------------------------------
+	
+	/**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
+		* The delegate can implement this method to disallow selection of particular rows.
+		*/
+	public  boolean tableViewShouldSelectRow(NSTableView aTableView, int rowIndex) {
+		return true;
+	}
+	
+	
+	/**	Returns true to permit aTableView to edit the cell at rowIndex in aTableColumn, false to deny permission.
+		*The delegate can implemen this method to disallow editing of specific cells.
+		*/
+	public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
+		return false;
+	}
+	
 }
