@@ -208,9 +208,8 @@ public abstract class Queue extends Observable {
         }
     }
 
-    private boolean init(boolean resumeRequested, boolean shouldValidate) {
-        throws IOException
-        {
+    private boolean init(boolean resumeRequested, boolean shouldValidate)
+        throws IOException {
             this.canceled = false;
             this.running = true;
             this.validator = ValidatorFactory.createValidator(this.getClass());
