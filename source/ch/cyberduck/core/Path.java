@@ -214,6 +214,8 @@ public abstract class Path {
 	 */
 	public abstract void changePermissions(Permission perm, boolean recursive);
 	
+	public abstract boolean exists();
+
 	public boolean isFile() {
 		if (this.attributes.isSymbolicLink())
 			return this.linksToFile();

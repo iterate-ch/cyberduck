@@ -127,6 +127,10 @@ public class HTTPPath extends Path {
 		return null;
 	}
 
+	public boolean exists() {
+		return false;
+	}
+	
 	public void delete() {
 		session.log("Invalid Operation", Message.ERROR);
 	}

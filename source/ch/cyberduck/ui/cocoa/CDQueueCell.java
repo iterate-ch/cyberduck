@@ -65,30 +65,30 @@ public class CDQueueCell extends CDTableCell {
             switch (queue.kind()) {
                 case Queue.KIND_DOWNLOAD:
                     arrowIcon = arrowDownIcon;
-                    if (queue.getRoot().isFile()) {
+					if (queue.getRoot().isFile()) {
 						fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
-                    }
-					else if (queue.getRoot().isDirectory()) {
-						fileIcon = folderIcon;
 					}
-					break;
+						else if (queue.getRoot().isDirectory()) {
+							fileIcon = folderIcon;
+						}
+						break;
                 case Queue.KIND_UPLOAD:
                     arrowIcon = arrowUpIcon;
-                    if (queue.getRoot().getLocal().isFile()) {
+					if (queue.getRoot().getLocal().isFile()) {
 						if(queue.getRoot().getLocal().exists()) {
 							fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
 						}
 						else { 
 							fileIcon = notFoundIcon;
 						}
-                    }
-					else if (queue.getRoot().getLocal().isDirectory()) {
-						fileIcon = folderIcon;
 					}
-					else { 
-						fileIcon = notFoundIcon;
-					}
-					break;
+						else if (queue.getRoot().getLocal().isDirectory()) {
+							fileIcon = folderIcon;
+						}
+						else { 
+							fileIcon = notFoundIcon;
+						}
+						break;
             }
 			
             final float BORDER = 40;
@@ -111,7 +111,7 @@ public class CDQueueCell extends CDTableCell {
                             cellSize.width() - BORDER - SPACE,
                             cellSize.height()));
 			// number of files of queue item
-            NSGraphics.drawAttributedString(new NSAttributedString("("+queue.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
+            NSGraphics.drawAttributedString(new NSAttributedString("("+queue.numberOfRoots()+" "+NSBundle.localizedString("files", "")+")",
 																   tinyFontRight),
 											new NSRect(cellPoint.x() + BORDER + SPACE,
 													   cellPoint.y() + SPACE,

@@ -74,6 +74,10 @@ public class Queue extends Observable implements Observer { //Thread {
 	 */
 	private Path currentJob;
 
+	public Path getCurrentJob() {
+		return this.currentJob;
+	}
+	
 	/**
 		* The root of the queue; either the file itself or the parent directory of all files
 	 */
@@ -85,13 +89,6 @@ public class Queue extends Observable implements Observer { //Thread {
 	 */
 	public Path getRoot() {
 		return (Path)roots.get(0);
-		/*
-		if(null != root)
-			return this.root;
-		if(null != currentJob)
-			return this.currentJob;
-		return (Path)jobs.get(0);
-		 */
 	}
 
 	/**
@@ -142,7 +139,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		Session s = SessionFactory.createSession(host);
 		NSArray r = (NSArray) dict.objectForKey("Roots");
 		for (int i = 0; i < r.count(); i++) {
-			this.roots.add(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
+			this.add(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
 		}
 //		NSArray items = (NSArray) dict.objectForKey("Items");
 //		if(null != items) {
@@ -180,6 +177,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	public void add(Path item) {
 		log.debug("add:"+item);
 		this.roots.add(item);
+		this.currentJob = item;
 //		this.root = item;
 //		for (Iterator iter = item.getChilds(Queue.this.kind).iterator() ; iter.hasNext() ;) {
 //			Queue.this.jobs.add((Path)iter.next());
@@ -233,9 +231,7 @@ public class Queue extends Observable implements Observer { //Thread {
 				
 				Queue.this.getRoot().getSession().addObserver(Queue.this);
 				for (Iterator i = roots.iterator() ; i.hasNext() && !Queue.this.isCanceled(); ) {
-					log.debug("*");
 					for (Iterator k = ((Path)i.next()).getChilds(Queue.this.kind).iterator() ; k.hasNext() && !Queue.this.isCanceled();) {
-						log.debug("-");
 						Queue.this.jobs.add((Path)k.next());
 					}
 				}
@@ -351,9 +347,10 @@ public class Queue extends Observable implements Observer { //Thread {
 	 * @return Number of jobs in the this.
 	 */
 	public int numberOfJobs() {
+//		log.debug("numberOfJobs:"+jobs.size());
 		return this.jobs.size();
 	}
-
+	
 	/**
 	 * @return rue if all items in the this have been processed sucessfully.
 	 */

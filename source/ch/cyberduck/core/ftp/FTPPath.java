@@ -158,6 +158,26 @@ public class FTPPath extends Path {
 		return files;
 	}
 	
+	/**
+		* @return true if the file exists
+	 */
+	public boolean exists() {
+		try {
+			session.check();
+			session.FTP.stat(this.getAbsolute());
+			return true;
+		}
+		catch(FTPException e) {
+			if(e.isNegativeTransient()) //450 File not available
+				return false;
+			return true;
+		}
+		catch (IOException e) {
+			session.log("IO Error: " + e.getMessage(), Message.ERROR);
+			return false;
+		}
+	}
+	
 	public void delete() {
 		log.debug("delete:" + this.toString());
 		try {
@@ -291,12 +311,13 @@ public class FTPPath extends Path {
 	}
 	
 	public List getChilds(int kind) {
+		List childs = new ArrayList();
 		try {
 			switch (kind) {
 				case Queue.KIND_DOWNLOAD:
-					return this.getDownloadQueue();
+					childs = this.getDownloadQueue(childs);
 				case Queue.KIND_UPLOAD:
-					return this.getUploadQueue();
+					childs = this.getUploadQueue(childs);
 			}
 		}
 		catch (FTPException e) {
@@ -305,11 +326,7 @@ public class FTPPath extends Path {
 		catch (IOException e) {
 			session.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
-		return null;
-	}
-	
-	private List getDownloadQueue() throws IOException {
-		return this.getDownloadQueue(new ArrayList());
+		return childs;
 	}
 	
 	private List getDownloadQueue(List queue) throws IOException {
@@ -391,13 +408,10 @@ public class FTPPath extends Path {
 		}
 	}
 
-	private List getUploadQueue() throws IOException {
-		return this.getUploadQueue(new ArrayList());
-	}
-	
 	private List getUploadQueue(List queue) throws IOException {
 		if (this.getLocal().isDirectory()) {
 			this.session.check();
+//			if(!this.exists())
 			session.FTP.mkdir(this.getAbsolute());
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
@@ -426,7 +440,10 @@ public class FTPPath extends Path {
 				if (in == null) {
 					throw new IOException("Unable to buffer data");
 				}
-				java.io.OutputStream out = this.session.FTP.putBinary(this.getAbsolute(), false);
+				if(this.status.isResume()) {
+					log.info("Skipping "+in.skip(this.status.getCurrent())+" bytes");
+				}
+				java.io.OutputStream out = this.session.FTP.putBinary(this.getAbsolute(), this.status.isResume());
 				if (out == null) {
 					throw new IOException("Unable opening data stream");
 				}
@@ -446,7 +463,10 @@ public class FTPPath extends Path {
 				if (in == null) {
 					throw new IOException("Unable to buffer data");
 				}
-				java.io.Writer out = this.session.FTP.putASCII(this.getAbsolute(), false);
+				if(this.status.isResume()) {
+					log.info("Skipping "+in.skip(this.status.getCurrent())+" bytes");
+				}
+				java.io.Writer out = this.session.FTP.putASCII(this.getAbsolute(), this.status.isResume());
 				if (out == null) {
 					throw new IOException("Unable opening data stream");
 				}
@@ -455,7 +475,7 @@ public class FTPPath extends Path {
 					this.session.FTP.validateTransfer();
 				if(status.isCanceled()) {
 					this.session.FTP.abor();
-				}				
+				}
 				if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
 					this.changePermissions(this.getLocal().getPermission(), false);
 				}

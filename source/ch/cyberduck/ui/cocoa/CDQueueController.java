@@ -216,6 +216,7 @@ public class CDQueueController extends NSObject implements Observer {
                     }
                     if (Queue.KIND_UPLOAD == queue.kind()) {
                         if (callback != null) {
+							log.debug("Telling observable to refresh directory listing");
                             callback.update(observable, new Message(Message.REFRESH));
                         }
                     }

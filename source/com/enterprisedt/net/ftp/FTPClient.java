@@ -52,6 +52,9 @@ import org.apache.log4j.Logger;
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.31  2004/03/24 16:28:09  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.30  2004/03/21 15:40:23  dkocher
  *        *** empty log message ***
  *
@@ -767,10 +770,10 @@ public class FTPClient {
 	
 	
 	/**
-		* This command shall cause a status response to be sent over
+	 * This command shall cause a status response to be sent over
 	 * the control connection in the form of a reply.  The command
 	 * may be sent during a file transfer (along with the Telnet IP
-	* and Synch signals--see the Section on FTP Commands) in which
+	 * and Synch signals--see the Section on FTP Commands) in which
 	 * case the server will respond with the status of the
 	 * operation in progress, or it may be sent between file
 	 * transfers.  In the latter case, the command may have an

@@ -99,7 +99,8 @@ public class CDDownloadController extends NSObject {
                     String file = url.getFile();
                     if (file.length() > 1) {
                         Path path = PathFactory.createPath(SessionFactory.createSession(host), file);
-                        Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
+                        Queue queue = new Queue(Queue.KIND_DOWNLOAD);
+						queue.add(path);
                         CDQueuesImpl.instance().addItem(queue);
                         CDQueueController.instance().startItem(queue);
                     }

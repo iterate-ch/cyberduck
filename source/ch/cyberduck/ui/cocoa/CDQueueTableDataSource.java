@@ -106,7 +106,8 @@ public class CDQueueTableDataSource extends CDTableDataSource {
                         Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
                         // we assume a file has an extension
                         if (null != p.getExtension()) {
-                            Queue q = new Queue(p, Queue.KIND_DOWNLOAD);
+                            Queue q = new Queue(Queue.KIND_DOWNLOAD);
+							q.add(p);
                             if (row != -1) {
                                 CDQueuesImpl.instance().addItem(q, row);
                                 tableView.reloadData();

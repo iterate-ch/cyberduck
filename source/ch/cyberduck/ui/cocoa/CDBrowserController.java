@@ -1345,7 +1345,7 @@ public class CDBrowserController extends NSObject implements Observer {
 							q.add(p);
                         }
 							CDQueuesImpl.instance().addItem(q);
-							CDQueueController.instance().startItem(q);
+							CDQueueController.instance().startItem(q, (Observer) CDBrowserController.this);
                         return true;
                     }
                 }
