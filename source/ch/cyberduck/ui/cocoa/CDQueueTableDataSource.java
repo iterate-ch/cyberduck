@@ -69,6 +69,15 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 		throw new IllegalArgumentException("Unknown identifier: "+identifier);
 	}
 	
+	//setValue()
+	public void tableViewSetObjectValueForLocation(NSTableView tableView, Object object, NSTableColumn tableColumn, int row) {
+		String identifier = (String)tableColumn.identifier();
+		if(identifier.equals("REMOVE")) {
+			this.removeEntry(row);
+			tableView.reloadData();
+		}
+	}
+	
 	public void addEntry(Queue element) {
 		this.data.add(element);
 	}

@@ -22,7 +22,7 @@
  *  dkocher@cyberduck.ch
  -->
 
-<project name="Cyberduck" default="usage" basedir=".">
+<project name="Cyberduck" default="build" basedir=".">
 
 	<property file="build.properties"/>
 
@@ -42,7 +42,7 @@
 	<path id="classpath">
 	    <pathelement location="/System/Library/Java"/>
 	    <fileset dir="${lib}">
-		<include name="*.jar"/>
+			<include name="*.jar"/>
 	    </fileset>
 	</path>
 		
@@ -53,8 +53,9 @@
 	<property name="app.resources" value="${app.contents}/Resources" />
 	<property name="app.classes" value="${home}/${build}/intermediates/${app.name}.build/JavaClasses" />
 	<property name="app.jar" value="${app.resources}/Java" />
-	
-	<target name="usage">
+		
+	<target name="init" depends="manifest">
+		<tstamp/>
 		<echo message="ant version:   ${ant.version}"/>
 		<echo message="java version:  ${ant.java.version}"/>
 		<echo message=""/>
@@ -64,19 +65,8 @@
 		<echo message="   project source:	${source}"/>
 		<echo message="   ---------------------------------------------------------------"/>
 		<echo message=""/>
-		<echo message=" available targets are:"/>
+		<echo message="IMPORTANT NOTE: YOU HAVE TO RUN THE BUILD TASK 'app' IN XCODE FIRST!"/>
 		<echo message=""/>
-		<echo message="   all-modules --> build all modules"/>
-		<echo message="   build-core --> build cyberduck-build-core"/>
-		<echo message="   build-cocoa --> build build-cocoa gui classes"/>
-		<echo message="   build-ssh-module --> build ssh client library"/>
-		<echo message="   build-http-module --> build http client library"/>
-		<echo message="   build-ftp-module --> build ftp client library"/>
-		<echo message="   ---------------------------------------------------------------"/>
-	</target>
-	
-	<target name="init" depends="manifest">
-		<tstamp/>
 		<echo message="Building ${app.name}..."/>
 		<mkdir dir="${classes}" />
 		<mkdir dir="${build}" />
@@ -87,7 +77,7 @@
 	    </copy>
 	</target>
 
-	<target name="build-all-modules" depends="build-cocoa,build-core,build-ftp-module,build-http-module"></target>
+	<target name="build" depends="build-cocoa,build-core,build-ftp-module,build-http-module"></target>
 	
 	<target name="build-core" depends="init">
 	    <mkdir dir="${classes}/core" />

@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSWorkspace;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -73,8 +74,16 @@ public abstract class Bookmarks {
 	public Host importBookmark(java.io.File file) {
 		log.info("Importing bookmark from "+file);
 		NSData plistData = new NSData(file);
-		Object propertyListFromXMLData = NSPropertyListSerialization.propertyListFromXMLData(plistData);
-		log.info("Successfully read bookmark file: "+propertyListFromXMLData);
+		String[] errorString = new String[]{null};
+		Object propertyListFromXMLData = 
+			NSPropertyListSerialization.propertyListFromData(plistData, 
+															 NSPropertyListSerialization.PropertyListImmutable,
+															 new int[]{NSPropertyListSerialization.PropertyListXMLFormat}, 
+															 errorString);
+		if(errorString[0]!=null)
+			log.error("Problem reading bookmark file: "+errorString[0]);
+		else
+			log.info("Successfully read bookmark file: "+propertyListFromXMLData);
 		if(propertyListFromXMLData instanceof NSDictionary) {
 			return getFromDictionary((NSDictionary)propertyListFromXMLData);
 		}
@@ -86,9 +95,20 @@ public abstract class Bookmarks {
 		try {
 			log.info("Exporting bookmark "+bookmark+" to "+file);
 			NSMutableData collection = new NSMutableData();
-			collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(this.getAsDictionary(bookmark)));
-			if(collection.writeToURL(file.toURL(), true))
+//			public static NSData dataFromPropertyList(Object plist, int format, String[] errorString)
+			String[] errorString = new String[]{null};
+			collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
+												 this.getAsDictionary(bookmark),
+												 NSPropertyListSerialization.PropertyListXMLFormat, 
+																				   errorString)
+					  );
+			if(errorString[0]!=null)
+				log.error("Problem writing bookmark file: "+errorString[0]);
+				//collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(this.getAsDictionary(bookmark)));
+			if(collection.writeToURL(file.toURL(), true)) {
 				log.info("Bookmarks sucessfully saved in :"+file.toString());
+				NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolutePath());
+			}
 			else
 				log.error("Error saving Bookmarks in :"+file.toString());
 		}
@@ -112,7 +132,15 @@ public abstract class Bookmarks {
 					list.addObject(this.getAsDictionary(bookmark));
 				}
 				NSMutableData collection = new NSMutableData();
-				collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(list));
+				String[] errorString = new String[]{null};
+				collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
+																					   list,
+																					   NSPropertyListSerialization.PropertyListXMLFormat, 
+																					   errorString)
+									  );
+				//				collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(list));
+				if(errorString[0]!=null)
+					log.error("Problem writing bookmark file: "+errorString[0]);
 				
 				if(collection.writeToURL(f.toURL(), true))
 					log.info("Bookmarks sucessfully saved to :"+f.toString());
@@ -133,8 +161,16 @@ public abstract class Bookmarks {
 		if(f.exists()) {
 			log.info("Found Bookmarks file: "+f.toString());			
 			NSData plistData = new NSData(f);
-			Object propertyListFromXMLData = NSPropertyListSerialization.propertyListFromXMLData(plistData);
-			log.info("Successfully read Bookmarks: "+propertyListFromXMLData);
+			String[] errorString = new String[]{null};
+			Object propertyListFromXMLData = 
+				NSPropertyListSerialization.propertyListFromData(plistData, 
+																 NSPropertyListSerialization.PropertyListImmutable,
+																 new int[]{NSPropertyListSerialization.PropertyListXMLFormat}, 
+																 errorString);
+			if(errorString[0]!=null)
+				log.error("Problem reading bookmark file: "+errorString[0]);
+			else
+				log.info("Successfully read Bookmarks: "+propertyListFromXMLData);
 			if(propertyListFromXMLData instanceof NSArray) {
 				NSArray entries = (NSArray)propertyListFromXMLData;
 				java.util.Enumeration i = entries.objectEnumerator();

@@ -112,7 +112,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		this.roots = roots;
 		this.kind = kind;
 		this.validator = validator;
-//		this.currentJob = (Path)roots.get(0);
+		this.currentJob = (Path)roots.get(0);
     }
     
     /**
@@ -224,10 +224,6 @@ public class Queue extends Observable implements Observer { //Thread {
 			}
 		}.start();
     }
-	
-	//    public void stop() {
- //
- //    }
 	
 	//    public void resume() {
  //

@@ -40,12 +40,14 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 //		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 		String identifier = (String)tableColumn.identifier();
+		if(identifier.equals("STATUS")) {
+			return NSImage.imageNamed("cyberduck-document.icns");
+		}
 		if(identifier.equals("ICON")) {
 			return NSImage.imageNamed("cyberduck-document.icns");
 		}
-		if(identifier.equals("FAVORITE")) {
-			Host h = (Host)bookmarks.values().toArray()[row];
-			return h;
+		if(identifier.equals("BOOKMARK")) {
+			return (Host)bookmarks.values().toArray()[row];
 		}
 		throw new IllegalArgumentException("Unknown identifier: "+identifier);
 	}

@@ -59,7 +59,7 @@ public class CDQueueController implements Observer, Validator {
 		this.queueTable.setTarget(this);
 		this.queueTable.setDataSource(this.queueModel = new CDQueueTableDataSource());
 		this.queueTable.setDelegate(this.queueModel);
-		this.queueTable.tableColumnWithIdentifier("REMOVE").setDataCell(new NSActionCell());
+//		this.queueTable.tableColumnWithIdentifier("REMOVE").setDataCell(new NSActionCell());
 //		this.queueTable.tableColumnWithIdentifier("ICON").setDataCell(new CDImageCell());
 		this.queueTable.tableColumnWithIdentifier("DATA").setDataCell(new CDQueueCell());
 		this.queueTable.tableColumnWithIdentifier("PROGRESS").setDataCell(new CDProgressCell());
@@ -78,6 +78,9 @@ public class CDQueueController implements Observer, Validator {
 	public void addTransfer(List roots, int kind) {
 		this.window().makeKeyAndOrderFront(null);
 		Queue queue = new Queue(roots, kind, this);
+//		CDQueueElementController elementController = new CDQueueElementController(queue);
+//		this.queueModel.addEntry(elementController);
+//		queue.addObserver(elementController);
 		this.queueModel.addEntry(queue);
 		this.queueTable.reloadData();
 		queue.addObserver(this);
@@ -103,6 +106,18 @@ public class CDQueueController implements Observer, Validator {
 										 (String)msg.getContent() // message
 										 );
 			}
+//			if(msg.getTitle().equals(Message.COMPLETE)) {
+//				if(0 == queue.remainingJobs()) {
+//					if(Preferences.instance().getProperty("transfer.close").equals("true")) {
+//						this.window.close();
+//					}
+//					if(Queue.KIND_DOWNLOAD == kind) {
+//						if(Preferences.instance().getProperty("connection.download.postprocess").equals("true")) {
+//							NSWorkspace.sharedWorkspace().openFile(root.getLocal().toString());
+//						}
+//					}
+//				}
+//			}
 		}
 	}
 	
@@ -162,6 +177,13 @@ public class CDQueueController implements Observer, Validator {
 			item.setTarget(this);
 			item.setAction(new NSSelector("revealButtonClicked", new Class[] {Object.class}));
 		}
+		if (itemIdentifier.equals(NSBundle.localizedString("Remove"))) {
+			item.setLabel(NSBundle.localizedString("Remove"));
+			item.setPaletteLabel(NSBundle.localizedString("Remove"));
+			item.setImage(NSImage.imageNamed("remove.tiff"));
+			item.setTarget(this);
+			item.setAction(new NSSelector("removeButtonClicked", new Class[] {Object.class}));
+		}
 		return item;
 	}
 	
@@ -171,29 +193,67 @@ public class CDQueueController implements Observer, Validator {
 	}
 	
 	public void resumeButtonClicked(Object sender) {
-		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
-		Iterator i = item.getRoots().iterator();
-		while(i.hasNext()) {
-			Path p = (Path)i.next();
-			p.status.setResume(true);
+		//		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+		NSEnumerator enum = queueTable.selectedRowEnumerator();
+		while(enum.hasMoreElements()) {
+			Queue item = (Queue)this.queueModel.getEntry(((Integer)enum.nextElement()).intValue());
+			Iterator i = item.getRoots().iterator();
+			while(i.hasNext()) {
+				Path p = (Path)i.next();
+				p.status.setResume(true);
+			}
+			item.start();
 		}
-		item.start();
 	}
 	
 	public void reloadButtonClicked(Object sender) {
-		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
-		Iterator i = item.getRoots().iterator();
-		while(i.hasNext()) {
-			Path p = (Path)i.next();
-			p.status.setResume(false);
+		//		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+		NSEnumerator enum = queueTable.selectedRowEnumerator();
+		while(enum.hasMoreElements()) {
+			Queue item = (Queue)this.queueModel.getEntry(((Integer)enum.nextElement()).intValue());
+			Iterator i = item.getRoots().iterator();
+			while(i.hasNext()) {
+				Path p = (Path)i.next();
+				p.status.setResume(false);
+			}
+			item.start();
 		}
-		item.start();
 	}
-	
+
 	public void revealButtonClicked(Object sender) {
-		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
-		if(item.isInitialized())
-			NSWorkspace.sharedWorkspace().selectFile(item.getCurrentJob().getLocal().toString(), "");
+//		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+		NSEnumerator enum = queueTable.selectedRowEnumerator();
+		while(enum.hasMoreElements()) {
+			Queue item = (Queue)this.queueModel.getEntry(((Integer)enum.nextElement()).intValue());
+			if(item.isInitialized()) {
+				if(!NSWorkspace.sharedWorkspace().selectFile(item.getCurrentJob().getLocal().toString(), "")) {
+					NSAlertPanel.beginCriticalAlertSheet(
+														 NSBundle.localizedString("Could not show the file in the Finder"), //title
+														 NSBundle.localizedString("OK"),// defaultbutton
+														 null,//alternative button
+														 null,//other button
+														 this.window(), //docWindow
+														 null, //modalDelegate
+														 null, //didEndSelector
+														 null, // dismiss selector
+														 null, // context
+														 "Could not show the file \""+item.getCurrentJob().getLocal().toString()+"\" in the Finder because it moved since you downloaded it." // message
+														 );
+				}
+			}
+		}
+    }	
+
+	public void removeButtonClicked(Object sender) {
+//		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+		NSEnumerator enum = queueTable.selectedRowEnumerator();
+		int i = 0;
+		while(enum.hasMoreElements()) {
+//			Queue item = (Queue)this.queueModel.getEntry(((Integer)enum.nextElement()).intValue());
+			this.queueModel.removeEntry(((Integer)enum.nextElement()).intValue()-i);
+			i++;
+		}
+		this.queueTable.reloadData();
     }	
 	
 	public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
@@ -201,7 +261,8 @@ public class CDQueueController implements Observer, Validator {
 			NSBundle.localizedString("Stop"),
 			NSBundle.localizedString("Resume"),
 			NSBundle.localizedString("Reload"),
-			NSBundle.localizedString("Reveal in Finder")
+			NSBundle.localizedString("Reveal in Finder"),
+			NSBundle.localizedString("Remove")
 		});
 	}
 
@@ -210,7 +271,8 @@ public class CDQueueController implements Observer, Validator {
 			NSBundle.localizedString("Stop"),
 			NSBundle.localizedString("Resume"),
 			NSBundle.localizedString("Reload"),
-			NSBundle.localizedString("Reveal in Finder")
+			NSBundle.localizedString("Reveal in Finder"),
+			NSBundle.localizedString("Remove")
 		});
 	}
 	
@@ -220,14 +282,14 @@ public class CDQueueController implements Observer, Validator {
 		if(label.equals(NSBundle.localizedString("Stop"))) {
 			if(this.queueTable.selectedRow() != -1) {
 				Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
-				return !queue.isCanceled();
+				return queue.isRunning();
 			}
 			return false;
 		}
 		if(label.equals(NSBundle.localizedString("Resume"))) {
 			if(this.queueTable.selectedRow() != -1) {
 				Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
-				return !queue.isRunning() && !(queue.remainingJobs() == 0);
+				return queue.isCanceled() && !(queue.remainingJobs() == 0);
 			}
 			return false;
 		}
@@ -239,7 +301,14 @@ public class CDQueueController implements Observer, Validator {
 			return false;
 		}
 		if(label.equals(NSBundle.localizedString("Reveal in Finder"))) {
-			return this.queueTable.selectedRow() != -1;
+			return this.queueTable.numberOfSelectedRows() == 1;
+		}
+		if(label.equals(NSBundle.localizedString("Remove"))) {
+			if(this.queueTable.selectedRow() != -1) {
+				Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+				return queue.isCanceled();
+			}
+			return false;
 		}
 		return true;
 	}

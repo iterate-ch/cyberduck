@@ -61,8 +61,7 @@ public class CDConnectionController implements Observer {
     
 	public void bookmarksSelectionChanged(Object sender) {
 		log.debug("bookmarksSelectionChanged:"+sender);
-		this.updateFields(CDBookmarksImpl.instance().getItem(bookmarksPopup.indexOfSelectedItem()-1));
-//		this.updateFields(CDBookmarksImpl.instance().getItem(bookmarksPopup.titleOfSelectedItem()));
+		this.updateFields(CDBookmarksImpl.instance().getItem(bookmarksPopup.indexOfSelectedItem()));
 		this.updateLabel(sender);
     }
 	
@@ -89,7 +88,11 @@ public class CDConnectionController implements Observer {
 		if(o instanceof Rendezvous) {
 			if(arg instanceof Message) {
 				Message msg = (Message)arg;
-				rendezvousPopup.addItem(((Host)msg.getContent()).getURL());
+				if(msg.getTitle().equals(Message.RENDEZVOUS_ADD))
+					rendezvousPopup.addItem((String)msg.getContent());
+				if(msg.getTitle().equals(Message.RENDEZVOUS_REMOVE))
+					rendezvousPopup.removeItemWithTitle((String)msg.getContent());
+//				rendezvousPopup.addItem(((Host)msg.getContent()).getURL());
 			}
 		}
 	}
@@ -264,13 +267,14 @@ public class CDConnectionController implements Observer {
 												   NSControl.ControlTextDidChangeNotification,
 												   usernameField);
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
-		this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals("ftp") ? FTP_STRING : SFTP_STRING);
+		this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.portField.setIntValue(protocolPopup.selectedItem().tag());
-		this.pkCheckbox.setEnabled(Preferences.instance().getProperty("connection.protocol.default").equals("sftp"));
+		this.pkCheckbox.setEnabled(Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP));
     }
 	
     public void updateFields(Host selectedItem) {
 		log.debug("updateFields:"+selectedItem);
+		log.debug("Protocol of selected item:"+selectedItem.getProtocol());
 		this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.hostPopup.setStringValue(selectedItem.getHostname());
 		this.pathField.setStringValue(selectedItem.getDefaultPath());

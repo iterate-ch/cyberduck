@@ -62,16 +62,16 @@ public class CDBrowserController implements Observer {
 			Path p = (Path)browserModel.getEntry(browserTable.selectedRow()); //last row selected 
 			if(p.isFile() || browserTable.numberOfSelectedRows() > 1) {
 				NSEnumerator enum = browserTable.selectedRowEnumerator();
-				List items = new ArrayList();
+//				List items = new ArrayList();
 				if(this.isMounted()) {
-					Session session = browserModel.workdir().getSession().copy();
+//					Session session = browserModel.workdir().getSession().copy();
 					while(enum.hasMoreElements()) {
-						items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
+						Session session = browserModel.workdir().getSession().copy();
+//						items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
+						CDQueueController.instance().addTransfer(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session), 
+																 Queue.KIND_DOWNLOAD);
 					}
-					CDQueueController.instance().addTransfer(items, Queue.KIND_DOWNLOAD);
-//					controller.addTransfer((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
-//					CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
-//					controller.transfer();
+//					CDQueueController.instance().addTransfer(items, Queue.KIND_DOWNLOAD);
 				}
 			}
 			if(p.isDirectory())
@@ -89,7 +89,7 @@ public class CDBrowserController implements Observer {
 		this.bookmarkTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
 //		this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]{NSPasteboard.FilenamesPboardType, NSPasteboard.pasteboardWithName("BookmarkPboardType")}));
 //		this.bookmarkTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
-		this.bookmarkTable.tableColumnWithIdentifier("FAVORITE").setDataCell(new CDBookmarkCell());
+		this.bookmarkTable.tableColumnWithIdentifier("BOOKMARK").setDataCell(new CDBookmarkCell());
 		this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkRowClicked", new Class[] {Object.class}));
 		(NSNotificationCenter.defaultCenter()).addObserver(
 													 this,
@@ -666,14 +666,15 @@ public class CDBrowserController implements Observer {
     public void downloadButtonClicked(Object sender) {
 		log.debug("downloadButtonClicked");
 		NSEnumerator enum = browserTable.selectedRowEnumerator();
-		Session session = browserModel.workdir().getSession().copy();
-		List items = new ArrayList();
+//		Session session = browserModel.workdir().getSession().copy();
+//		List items = new ArrayList();
 		while(enum.hasMoreElements()) {
-			items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
+			Session session = browserModel.workdir().getSession().copy();
+//			items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
+			CDQueueController.instance().addTransfer(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session), 
+													 Queue.KIND_DOWNLOAD);
 		}
-		CDQueueController.instance().addTransfer(items, Queue.KIND_DOWNLOAD);
-//		CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
-//		controller.transfer();
+//		CDQueueController.instance().addTransfer(items, Queue.KIND_DOWNLOAD);
     }
     
     public void uploadButtonClicked(Object sender) {
@@ -693,16 +694,17 @@ public class CDBrowserController implements Observer {
 				// selected files on the local filesystem
 				NSArray selected = sheet.filenames();
 				java.util.Enumeration enumerator = selected.objectEnumerator();
-				List items = new ArrayList();
-				Session session = parent.getSession().copy();
+//				List items = new ArrayList();
+//				Session session = parent.getSession().copy();
 				while (enumerator.hasMoreElements()) {
+					Session session = parent.getSession().copy();
 					Path item = parent.copy(session);
 					item.setPath(parent.getAbsolute(), new Local((String)enumerator.nextElement()));
-					items.add(item);
+//					items.add(item);
+					CDQueueController.instance().addTransfer(item, 
+															 Queue.KIND_UPLOAD);
 				}
-				CDQueueController.instance().addTransfer(items, Queue.KIND_UPLOAD);
-//				CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_UPLOAD);
-//				controller.transfer();
+//				CDQueueController.instance().addTransfer(items, Queue.KIND_UPLOAD);
 				break;
 			}
 			case(NSPanel.CancelButton): {

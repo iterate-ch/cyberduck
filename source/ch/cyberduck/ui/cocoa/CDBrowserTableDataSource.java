@@ -71,21 +71,15 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		String identifier = (String)tableColumn.identifier();
 		Path p = (Path)this.currentData.get(row);
 		if(identifier.equals("TYPE")) {
+			NSImage icon;
 			if(p.isDirectory())
-				return NSImage.imageNamed("folder.icns");
-			return NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
+				icon = NSImage.imageNamed("folder16.tiff");
+			else
+				icon = NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
+			icon.setSize(new NSSize(16f, 16f));
+			return icon;
 		}
 		if(identifier.equals("FILENAME")) {
-//			try {
-//				log.debug("***as is: "+p.getName());
-//				log.debug("***iso>utf: "+new String(p.getName().getBytes("ISO-8859-1"), "UTF-8").toString());
-//				log.debug("***latin1>utf: "+new String(p.getName().getBytes("ISO-Latin-1"), "UTF-8").toString());
-//				log.debug("***rawcurrentData>unicode: "+new String(p.getName().getBytes("RAWDATA"), "UTF-8").toString());
-//				return new String(p.getName().getBytes("ISO-8859-1"), "UTF-8").toString();
-//			}
-//			catch(java.io.UnsupportedEncodingException e) {
-//				log.error(e.getMessage());	
-//			}
 			return p.getName();
 		}
 		else if(identifier.equals("SIZE"))
@@ -150,19 +144,20 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		// find the best match of the types we'll accept and what's actually on the pasteboard
   // In the file format type that we're working with, get all data on the pasteboard
 		NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
-//		Path[] roots = new Path[filesList.count()];
-		List roots = new ArrayList();
-		Session session = this.workdir().getSession().copy();
+//		List roots = new ArrayList();
+//		Session session = this.workdir().getSession().copy();
 		for(int i = 0; i < filesList.count(); i++) {
+			Session session = this.workdir().getSession().copy();
 			log.debug(filesList.objectAtIndex(i));
+			Path p = null;
 			if(this.workdir() instanceof FTPPath)
-				roots.add(new FTPPath((FTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i))));
+				p = new FTPPath((FTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i)));
 			if(this.workdir() instanceof SFTPPath)
-				roots.add(new SFTPPath((SFTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i))));
+				p = new SFTPPath((SFTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i)));
+			CDQueueController.instance().addTransfer(p, 
+													 Queue.KIND_UPLOAD);
 		}
-		CDQueueController.instance().addTransfer(roots, Queue.KIND_UPLOAD);
-//		CDTransferController controller = new CDTransferController(roots, Queue.KIND_UPLOAD);
-//		controller.transfer();
+//		CDQueueController.instance().addTransfer(roots, Queue.KIND_UPLOAD);
 		return true;
     }
     
@@ -180,12 +175,13 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		*/
     public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
 		log.debug("tableViewWriteRowsToPasteboard:"+rows);
-		Session session = this.workdir().getSession().copy(); //new
+//		Session session = this.workdir().getSession().copy();
 		if(rows.count() > 0) {
 			this.promisedDragPaths = new Path[rows.count()];
 			// The types argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
 			NSMutableArray types = new NSMutableArray();
 			for(int i = 0; i < rows.count(); i++) {
+				Session session = this.workdir().getSession().copy();
 				promisedDragPaths[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue()).copy(session);
 				if(promisedDragPaths[i].isFile()) {
 					if(promisedDragPaths[i].getExtension() != null)
@@ -214,9 +210,12 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		log.debug("finishedDraggingImage:"+operation);
 		if(! (NSDraggingInfo.DragOperationNone == operation)) {
 			if(promisedDragPaths != null) {
-				CDQueueController.instance().addTransfer(Arrays.asList(promisedDragPaths), Queue.KIND_DOWNLOAD);
-//				CDTransferController controller = new CDTransferController(promisedDragPaths, Queue.KIND_DOWNLOAD);
-//				controller.transfer();
+				for(int i = 0; i < promisedDragPaths.length; i++) {
+					CDQueueController.instance().addTransfer(promisedDragPaths[i], 
+															 Queue.KIND_DOWNLOAD);
+				}
+
+				//				CDQueueController.instance().addTransfer(Arrays.asList(promisedDragPaths), Queue.KIND_DOWNLOAD);
 				promisedDragPaths = null;
 			}
 		}

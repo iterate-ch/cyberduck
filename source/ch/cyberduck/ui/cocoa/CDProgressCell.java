@@ -37,19 +37,51 @@ public class CDProgressCell extends NSCell {
 	
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 //		log.debug("drawInteriorWithFrameInView");
-		//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and 
-  //coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
-  //invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.
-//		controlView.lockFocus();
 
+		NSMutableParagraphStyle paragraphStyle = new NSMutableParagraphStyle();
+		paragraphStyle.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle()); 
+		paragraphStyle.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
+
+		NSDictionary tinyFont;
+		// cell is selected (white font)
+		if (this.isHighlighted() && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(NSColor.secondarySelectedControlColor())) {
+			tinyFont = new NSDictionary(
+							   new Object[]{
+								   NSFont.systemFontOfSize(10.0f), 
+								   NSColor.whiteColor(),
+								   paragraphStyle},
+							   new Object[]{
+								   NSAttributedString.FontAttributeName, 
+								   NSAttributedString.ForegroundColorAttributeName, 
+								   NSAttributedString.ParagraphStyleAttributeName}
+							   );
+			//			NSGraphics.fillRectListWithColors(new NSRect[]{new NSRect(cellPoint.x()-2, cellSize.height(), cellSize.width()+2, 1)}, new NSColor[]{NSColor.whiteColor()});
+		}
+		// cell is not selected (black font)
+		else {
+			tinyFont = new NSDictionary(
+							   new Object[]{
+								   NSFont.systemFontOfSize(10.0f), 
+								   NSColor.darkGrayColor(),
+								   paragraphStyle},
+							   new Object[]{
+								   NSAttributedString.FontAttributeName, 
+								   NSAttributedString.ForegroundColorAttributeName, 
+								   NSAttributedString.ParagraphStyleAttributeName}
+							   );
+			//			NSGraphics.fillRectListWithColors(new NSRect[]{new NSRect(cellPoint.x()-2, cellSize.height(), cellSize.width()+2, 1)}, new NSColor[]{NSColor.darkGrayColor()});
+		}
+
+		
 		NSPoint cellPoint = cellFrame.origin();
 		NSSize cellSize = cellFrame.size();	
 		
 		float progressHeight = 10;
-		float progressWidth = (float)((float)queue.getCurrent()/(float)queue.getSize()*(cellSize.width()-10));
+		float progress = (float)((float)queue.getCurrent()/(float)queue.getSize());
+		float progressWidth = progress*(cellSize.width()-10);
 		
-		NSRect barRect = new NSRect(cellPoint.x()+5, cellSize.height()/2-progressHeight/2, cellSize.width()-10, progressHeight);
-		NSRect barRectFilled = new NSRect(cellPoint.x()+5, cellSize.height()/2-progressHeight/2, progressWidth, progressHeight);
+		NSRect barRect = new NSRect(cellPoint.x()+5, cellPoint.y()+cellSize.height()/2-progressHeight/2, cellSize.width()-10, progressHeight);
+		NSRect barRectFilled = new NSRect(cellPoint.x()+5, cellPoint.y()+cellSize.height()/2-progressHeight/2, progressWidth, progressHeight);
 
 		// cell is selected (white graphic)
 		if (this.isHighlighted() && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(NSColor.secondarySelectedControlColor())) {
@@ -59,9 +91,20 @@ public class CDProgressCell extends NSCell {
 		else {
 			NSColor.lightGrayColor().set();
 		}
+
+		//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and 
+  //coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
+  //invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.
+		controlView.lockFocus();
+		
 		NSBezierPath.strokeRect(barRect);
 		NSBezierPath.fillRect(barRectFilled);
+
+		NSGraphics.drawAttributedString(
+								  new NSAttributedString((int)(progress*100)+"%", tinyFont), 
+								  new NSRect(cellPoint.x()+5, cellPoint.y()+cellSize.height()/2+progressHeight+3, cellSize.width()-10, cellSize.height())
+								  );
 		
-//		controlView.unlockFocus();
+		controlView.unlockFocus();
 	}
 }

@@ -63,10 +63,6 @@ public class CDQueueCell extends NSCell {
 	
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 ///		log.debug("drawInteriorWithFrameInView");
-//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and 
-//coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
-//invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.
-//		controlView.lockFocus();
 		
 		NSPoint cellPoint = cellFrame.origin();
 		NSSize cellSize = cellFrame.size();	
@@ -129,7 +125,12 @@ public class CDQueueCell extends NSCell {
 //			NSGraphics.fillRectListWithColors(new NSRect[]{new NSRect(cellPoint.x()-2, cellSize.height(), cellSize.width()+2, 1)}, new NSColor[]{NSColor.darkGrayColor()});
 		}
 		
-		if(queue.isInitialized()) {
+		//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and 
+  //coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
+  //invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.
+		controlView.lockFocus();
+
+//		if(queue.isInitialized()) {
 			// drawing file icon
 			NSImage fileIcon = null;
 			NSImage arrowIcon = null;
@@ -152,21 +153,23 @@ public class CDQueueCell extends NSCell {
 			
 			fileIcon.setSize(new NSSize(32f, 32f));
 			arrowIcon.setSize(new NSSize(32f, 32f));
-//			float alpha = (float)(queue.getCurrent()/queue.getSize());
-//			fileIcon.dissolveToPoint(new NSPoint(cellPoint.x(), cellPoint.y()+32+1), alpha);
-			fileIcon.compositeToPoint(new NSPoint(cellPoint.x(), cellPoint.y()+32+1), NSImage.CompositeSourceOver);
-			arrowIcon.compositeToPoint(new NSPoint(cellPoint.x()+4, cellPoint.y()+32+4+1), NSImage.CompositeSourceOver);
+			
+			final int BORDER = 40;
+			final int SPACE = 5;
+
+			fileIcon.compositeToPoint(new NSPoint(cellPoint.x()+SPACE, cellPoint.y()+32+SPACE), NSImage.CompositeSourceOver);
+			arrowIcon.compositeToPoint(new NSPoint(cellPoint.x()+SPACE*2, cellPoint.y()+32+SPACE*2), NSImage.CompositeSourceOver);
 
 			 // drawing path properties
-   // local file
+			// local file
 			NSGraphics.drawAttributedString(
 								   new NSAttributedString(queue.getCurrentJob().getName(), boldFont), 
-								   new NSRect(cellPoint.x()+40, cellPoint.y()+1, cellSize.width()-5, cellSize.height())
+								   new NSRect(cellPoint.x()+BORDER, cellPoint.y()+SPACE, cellSize.width()-BORDER, cellSize.height())
 								   );
 			// remote url
 			NSGraphics.drawAttributedString(
 								   new NSAttributedString(queue.getCurrentJob().getHost().getURL()+queue.getCurrentJob().getAbsolute(), tinyFont),
-								   new NSRect(cellPoint.x()+40, cellPoint.y()+20, cellSize.width()-5, cellSize.height())
+								   new NSRect(cellPoint.x()+BORDER, cellPoint.y()+20, cellSize.width()-BORDER, cellSize.height())
 								   );
 			// drawing status
 			NSGraphics.drawAttributedString(
@@ -178,14 +181,14 @@ public class CDQueueCell extends NSCell {
 								  queue.getSizeAsString()+" "+NSBundle.localizedString("Total")+"), "+
 								  queue.getSpeedAsString()+", "+queue.getTimeLeft(),
 								  tinyFont),
-								   new NSRect(cellPoint.x()+40, cellPoint.y()+33, cellSize.width()-5, cellSize.height())
+								   new NSRect(cellPoint.x()+BORDER, cellPoint.y()+33, cellSize.width()-BORDER, cellSize.height())
 								   );
 			if(queue.isEmpty()) {
 				NSGraphics.drawAttributedString(
 									new NSAttributedString(
 								queue.getElapsedTime()+" "+"Complete ("+(queue.completedJobs())+" of "+(queue.numberOfJobs())+")", 
 								tinyFont),
-									new NSRect(cellPoint.x()+40, cellPoint.y()+46, cellSize.width()-5, cellSize.height())
+									new NSRect(cellPoint.x()+BORDER, cellPoint.y()+46, cellSize.width()-BORDER, cellSize.height())
 									);
 			}
 			else {
@@ -195,10 +198,10 @@ public class CDQueueCell extends NSCell {
 								  queue.getElapsedTime()+" "+"Downloading "+queue.getCurrentJob().getName()+" ("+(queue.completedJobs())+" of "+(queue.numberOfJobs())+")" : 
 								  queue.getElapsedTime()+" "+"Uploading "+queue.getCurrentJob().getName()+" ("+(queue.completedJobs())+" of "+(queue.numberOfJobs())+")", 
 								  tinyFont),
-								   new NSRect(cellPoint.x()+40, cellPoint.y()+46, cellSize.width()-5, cellSize.height())
+								   new NSRect(cellPoint.x()+BORDER, cellPoint.y()+46, cellSize.width()-5, cellSize.height())
 								   );
 			}
-		}
-//		controlView.unlockFocus();
+//		}
+		controlView.unlockFocus();
 	}	
 }

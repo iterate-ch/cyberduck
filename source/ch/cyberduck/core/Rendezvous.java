@@ -24,17 +24,20 @@ import java.util.Map;
 import java.util.Observable;
 import org.apache.log4j.Logger;
 
+import javax.jmdns.ServiceListener;
+import javax.jmdns.ServiceInfo;
+import javax.jmdns.JmDNS;
+
 /**
 * @version $Id$
  */
-public class Rendezvous extends Observable implements javax.jmdns.ServiceListener {
+public class Rendezvous extends Observable implements ServiceListener {
     private static Logger log = Logger.getLogger(Rendezvous.class);
 	
-//    private static Rendezvous instance;
     private static final String[] serviceTypes = new String[]{"_sftp._tcp.local.", "_ftp._tcp.local.", "_ssh._tcp.local."};
 	
     private Map services;
-	private javax.jmdns.JmDNS jmDNS;
+	private JmDNS jmDNS;
 	
     public Rendezvous() {
 		log.debug("Rendezvous");
@@ -44,7 +47,7 @@ public class Rendezvous extends Observable implements javax.jmdns.ServiceListene
     public void init() {
 		try {
 			for(int i = 0; i < serviceTypes.length; i++) {
-				this.jmDNS = new javax.jmdns.JmDNS();
+				this.jmDNS = new JmDNS();
 				log.info("Adding Rendezvous service listener for "+serviceTypes[i]);
 				this.jmDNS.addServiceListener(serviceTypes[i], this);
 			}
@@ -84,7 +87,7 @@ public class Rendezvous extends Observable implements javax.jmdns.ServiceListene
      * now request the service information.
      * @param type something like _ftp._tcp.local.
      */
-    public void addService(javax.jmdns.JmDNS jmDNS, String type, String name) {
+    public void addService(JmDNS jmDNS, String type, String name) {
 		log.debug("addService:"+name+","+type);
 		this.jmDNS.requestServiceInfo(type, name);
     }
@@ -94,13 +97,21 @@ public class Rendezvous extends Observable implements javax.jmdns.ServiceListene
      * The ServiceInfo.getURL() constructs an http url given the addres,
      * port, and path properties found in the ServiceInfo record.
      */
-    public void resolveService(javax.jmdns.JmDNS jmDNS, String type, String name, javax.jmdns.ServiceInfo info) {
+    public void resolveService(JmDNS jmDNS, String type, String name, ServiceInfo info) {
 		if (info != null) {
 			log.debug("resolveService:"+name+","+type+","+info);
-			Host h = new Host(info.getName(), info.getServer(), info.getPort(), new Login(Preferences.instance().getProperty("connection.login.name"))); //todo fix .local.
-			this.services.put(h.getURL(), h);
-			log.debug(info.toString());
-			this.callObservers(new Message(Message.RENDEZVOUS, h));
+			log.debug("Rendezvous Service Name:"+info.getName());
+			log.debug("Rendezvous Server Name:"+info.getServer());
+
+			//Host(String hostname, int port, Login login, String nickname)
+			Host h = new Host(info.getServer(), info.getPort(), new Login(Preferences.instance().getProperty("connection.login.name"))); 
+
+			String identifier = info.getServer()+" ("+Host.getDefaultProtocol(info.getPort()).toUpperCase()+")";
+
+			this.services.put(identifier, h);
+//			this.services.put(h.getURL(), h);
+//			log.debug(info.toString());
+			this.callObservers(new Message(Message.RENDEZVOUS_ADD, identifier));
 		}
 		else {
 			log.error("Failed to resolve "+name+" with type "+type);
@@ -110,9 +121,11 @@ public class Rendezvous extends Observable implements javax.jmdns.ServiceListene
     /**
 		* This method is called when a service is no longer available.
      */
-    public void removeService(javax.jmdns.JmDNS jmDNS, String type, String name) {
+    public void removeService(JmDNS jmDNS, String type, String name) {
 		log.debug("removeService:"+name);
-		this.services.remove(name+".local.");
-		//	this.callObservers(new Message(Message.RENDEZVOUS, this.services.get(name+".local.")));
+		ServiceInfo info = jmDNS.getServiceInfo(type, name);
+		String identifier = info.getServer()+" ("+Host.getDefaultProtocol(info.getPort()).toUpperCase()+")";
+		this.services.remove(identifier);
+		this.callObservers(new Message(Message.RENDEZVOUS_REMOVE, identifier));
     }
 }

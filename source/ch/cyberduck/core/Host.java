@@ -134,7 +134,7 @@ public class Host {
 //		}
 //    }
 	
-    private static String getDefaultProtocol(int port) {
+    protected static String getDefaultProtocol(int port) {
 		switch(port) {
 			case Session.HTTP_PORT:
 				return Session.HTTP;

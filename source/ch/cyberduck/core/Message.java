@@ -44,7 +44,8 @@ public class Message {//{implements java.io.Serializable {
     public static final String STOP = "STOP";
     public static final String COMPLETE = "COMPLETE";
 	
-    public static final String RENDEZVOUS = "RENDEZVOUS";
+    public static final String RENDEZVOUS_ADD = "RENDEZVOUS_ADD";
+    public static final String RENDEZVOUS_REMOVE = "RENDEZVOUS_REMOVE";
     
     /**
 		* @param t The title of the mesage
