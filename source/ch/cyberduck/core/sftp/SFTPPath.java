@@ -132,15 +132,27 @@ public class SFTPPath extends Path {
 							p.attributes.setGroup(x.getAttributes().getGID().toString());
 							p.status.setSize(x.getAttributes().getSize().intValue());
 							p.attributes.setTimestamp(Long.parseLong(x.getAttributes().getModifiedTime().toString()) * 1000L);
-							if(x.getAttributes().isFile())
-								p.attributes.setType(Path.FILE_TYPE);
-							else if(x.getAttributes().isDirectory())
+//							if(x.getAttributes().isFile()) {
+//								p.attributes.setType(Path.FILE_TYPE);
+//							}
+//							else if(x.getAttributes().isDirectory()) {
+//								p.attributes.setType(Path.DIRECTORY_TYPE);
+//							}
+//							else if(x.getAttributes().isLink()) {
+//								p.attributes.setType(Path.SYMBOLIC_LINK_TYPE);
+//							}
+//							else {
+//								p.attributes.setType(Path.FILE_TYPE);
+//							}
+							//hack
+							String permStr = x.getAttributes().getPermissionsString();
+							if(permStr.charAt(0) == 'd')
 								p.attributes.setType(Path.DIRECTORY_TYPE);
-							else if(x.getAttributes().isLink())
+							else if(permStr.charAt(0) == 'l')
 								p.attributes.setType(Path.SYMBOLIC_LINK_TYPE);
 							else
 								p.attributes.setType(Path.FILE_TYPE);
-							p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
+							p.attributes.setPermission(new Permission(permStr));
 							files.add(p);
 						}
 					}

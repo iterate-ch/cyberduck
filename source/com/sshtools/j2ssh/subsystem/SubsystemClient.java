@@ -163,8 +163,8 @@ public abstract class SubsystemClient implements Runnable {
      * @throws InvalidMessageException
      * @throws IOException
      */
-    protected void sendMessage(SubsystemMessage msg)
-        throws InvalidMessageException, IOException {
+    protected void sendMessage(SubsystemMessage msg) throws InvalidMessageException, IOException {
+		
         if (log.isDebugEnabled()) {
             log.debug("Sending " + msg.getMessageName() + " subsystem message");
         }

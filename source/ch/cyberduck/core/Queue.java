@@ -149,15 +149,18 @@ public class Queue extends Observable implements Observer { //Thread {
 	}
 
 	public void update(Observable o, Object arg) {
-		//Forwarding all messages from the current file's status to my observers
 		if (arg instanceof Message) {
 			Message msg = (Message) arg;
-			if (msg.getTitle().equals(Message.PROGRESS))
+			if (msg.getTitle().equals(Message.PROGRESS)) {
 				this.status = (String) msg.getContent();
-			if (msg.getTitle().equals(Message.ERROR))
+				this.callObservers(arg);
+			}
+			if (msg.getTitle().equals(Message.ERROR)) {
 				this.error = " : "+(String) msg.getContent();
+				this.callObservers(arg);
+			}
 		}
-		this.callObservers(arg);
+//		this.callObservers(arg);
 	}
 
 	private void process() {
@@ -351,7 +354,6 @@ public class Queue extends Observable implements Observer { //Thread {
 		}
 		if (value > 0)
 			this.current = value;
-		log.debug("Current:"+current);
 		return this.current;
 	}
 
@@ -385,7 +387,7 @@ public class Queue extends Observable implements Observer { //Thread {
 
 	private void setTimeLeft(int seconds) {
 		this.timeLeft = seconds;
-		this.callObservers(new Message(Message.PROGRESS));
+//		this.callObservers(new Message(Message.PROGRESS));
 	}
 
 	public String getTimeLeft() {
@@ -461,7 +463,7 @@ public class Queue extends Observable implements Observer { //Thread {
 						    calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), seconds);
 					    }
 				    }
-				    Queue.this.callObservers(new Message(Message.CLOCK));
+				    Queue.this.callObservers(new Message(Message.PROGRESS));
 			    }
 		    }
 		);

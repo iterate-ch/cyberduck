@@ -177,17 +177,27 @@ public class CDQueueController implements Observer, Validator {
 //		log.debug("update:"+observable+","+arg);
         if (arg instanceof Message) {
             Message msg = (Message) arg;
-
-            if (this.window.isVisible()) {
-                if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
-                    int row = CDQueuesImpl.instance().indexOf((Queue) observable);
-                    NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
-                    NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
-                    this.queueTable.setNeedsDisplay(queueRect.rectByUnioningRect(progressRect));
-                }
-            }
-
-            if (msg.getTitle().equals(Message.QUEUE_START)) {
+            if (msg.getTitle().equals(Message.PROGRESS) || msg.getTitle().equals(Message.ERROR)) {
+				if (this.window.isVisible()) {
+					if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
+						int row = CDQueuesImpl.instance().indexOf((Queue) observable);
+						NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
+//						NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
+						this.queueTable.setNeedsDisplay(queueRect);
+					}
+				}
+			}
+            else if (msg.getTitle().equals(Message.DATA)) {
+				if (this.window.isVisible()) {
+					if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
+						int row = CDQueuesImpl.instance().indexOf((Queue) observable);
+//						NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
+						NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
+						this.queueTable.setNeedsDisplay(progressRect);
+					}
+				}
+			}
+            else if (msg.getTitle().equals(Message.QUEUE_START)) {
                 this.toolbar.validateVisibleItems();
             }
             else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
@@ -211,9 +221,6 @@ public class CDQueueController implements Observer, Validator {
                         this.queueTable.reloadData();
                     }
                 }
-            }
-            else if (msg.getTitle().equals(Message.ERROR)) {
-                this.toolbar.validateVisibleItems();
             }
         }
     }

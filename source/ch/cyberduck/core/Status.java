@@ -131,7 +131,7 @@ public class Status extends Observable implements Serializable {
 	 */
 	public void setCurrent(long current) {
 		this.current = current;
-		this.callObservers(new Message(Message.DATA, this));
+		this.callObservers(new Message(Message.DATA));
 	}
 
 	public void setResume(boolean resume) {
