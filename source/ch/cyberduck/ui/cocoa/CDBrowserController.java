@@ -74,6 +74,21 @@ public class CDBrowserController extends CDController implements Observer {
 		return null;
 	}
 	
+	public Object handleListScriptCommand(NSScriptCommand command) {
+		if(this.isMounted()) {
+			NSDictionary args = command.evaluatedArguments();
+			Path path = PathFactory.createPath(this.workdir().getSession(), 
+											   this.workdir().getAbsolute(), 
+											   (String)args.objectForKey("Path"));
+			NSMutableArray result = new NSMutableArray();
+			for(Iterator i = path.list().iterator(); i.hasNext(); ) {
+				result.addObject(((Path)i.next()).getName());
+			}
+			return result;
+		}
+		return null;
+	}
+	
 	public Object handleDisconnectScriptCommand(NSScriptCommand command) {
 		this.unmount();
 		return null;

@@ -73,6 +73,8 @@
 					<string>handleDisconnectScriptCommand:</string>
 					<key>Refresh</key>
 					<string>handleRefreshScriptCommand:</string>
+					<key>List</key>
+					<string>handleListScriptCommand:</string>
 					<key>Goto</key>
 					<string>handleGotoScriptCommand:</string>
 					<key>CreateFolder</key>
