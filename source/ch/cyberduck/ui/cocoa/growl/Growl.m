@@ -17,8 +17,6 @@
  */
 
 #import "Growl.h"
-#import "GrowlDefines.h"
-#import <GrowlAppBridge/GrowlApplicationBridge.h>
 
 // Simple utility to convert java strings to NSStrings
 NSString *convertToNSString(JNIEnv *env, jstring javaString)
@@ -36,15 +34,6 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     converted = [NSString stringWithCharacters:unichars length:(*env)->GetStringLength(env, javaString)]; // auto-released
     (*env)->ReleaseStringChars(env, javaString, unichars);
     return converted;
-}
-
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_launch(
-																  JNIEnv *env, 
-																  jobject this)
-{
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	[[Growl defaultInstance] launchGrowl];
-	[pool release];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_register(
@@ -101,14 +90,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 
 - (id)init
 {
-	self = [super init];
-	if (self) {
-		[[NSDistributedNotificationCenter defaultCenter] addObserver:self 
-															selector:@selector(registerGrowlWithContext:) 
-																name:GROWL_IS_READY 
-															  object:nil];
-	}
-	return self;
+	return [super init];
 }
 
 - (void)dealloc
@@ -117,30 +99,50 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 	[super dealloc];
 }
 
-- (void)launchGrowl
+- (void)registerGrowl
 {
-	if(NSClassFromString(@"GrowlAppBridge") != nil) 
-	{ 
-		[NSClassFromString(@"GrowlAppBridge") launchGrowlIfInstalledNotifyingTarget:self
-																		   selector:@selector(registerGrowl:)
-																			context:nil];
+	[GrowlApplicationBridge setGrowlDelegate:self];
+}
+
+- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImageName:(NSString *) image
+{
+	[self notifyGrowl: title withDescription:description withImage:[NSImage imageNamed:image]];
+}
+
+- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImage:(NSImage *) image
+{
+	if(registered) {
+		[GrowlApplicationBridge notifyWithTitle:title
+									description:description
+							   notificationName:title
+									   iconData:[image TIFFRepresentation]
+									   priority:0
+									   isSticky:NO
+								   clickContext:nil];
 	}
 }
 
-- (void)registerGrowl
+- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description
 {
-	[self registerGrowlWithContext: nil];
-//	if(NSClassFromString(@"GrowlAppBridge") != nil) 
-//	{
-//		if([NSClassFromString(@"GrowlAppBridge") isGrowlRunning])
-//		{
-//			[self registerGrowlWithContext: nil];
-//		}
-//	}
+	if(registered) {
+		[GrowlApplicationBridge notifyWithTitle:title
+									description:description
+							   notificationName:title
+									   iconData:nil
+									   priority:0
+									   isSticky:NO
+								   clickContext:nil];
+	}
 }
 
-- (void)registerGrowlWithContext:(void*)context
-{
+#pragma mark Growl Delegate methods
+
+- (NSString *)applicationNameForGrowl {
+	return @"Cyberduck";
+}
+
+- (NSDictionary *)registrationDictionaryForGrowl {
+
 	NSArray *allNotifications = [NSArray arrayWithObjects:
 		GROWL_DOWNLOAD_COMPLETE,
 		GROWL_UPLOAD_COMPLETE,
@@ -159,55 +161,15 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 		nil];
 	
 	NSDictionary *registrationDict = [NSDictionary dictionaryWithObjectsAndKeys:
-		@"Cyberduck", GROWL_APP_NAME,
 		allNotifications, GROWL_NOTIFICATIONS_ALL,
 		defaultNotifications, GROWL_NOTIFICATIONS_DEFAULT,
 		nil];
 	
-	[[NSDistributedNotificationCenter defaultCenter] postNotificationName:GROWL_APP_REGISTRATION
-																   object:nil
-																 userInfo:registrationDict];
+	return registrationDict;
+}
+
+- (void)growlIsReady {
 	registered = YES;
-}
-
-- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImageName:(NSString *) image
-{
-	[self notifyGrowl: title withDescription:description withImage:[NSImage imageNamed:image]];
-}
-
-- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImage:(NSImage *) image
-{
-	if(registered) {
-		NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:
-			title, GROWL_NOTIFICATION_NAME,
-			title, GROWL_NOTIFICATION_TITLE,
-			[image TIFFRepresentation], GROWL_NOTIFICATION_ICON,
-			description, GROWL_NOTIFICATION_DESCRIPTION,
-			@"Cyberduck", GROWL_APP_NAME,
-			nil];
-		
-		[[NSDistributedNotificationCenter defaultCenter]
-										postNotificationName: GROWL_NOTIFICATION
-													  object: nil
-													userInfo: event];
-	}
-}
-
-- (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description
-{
-	if(registered) {
-		NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:
-			title, GROWL_NOTIFICATION_NAME,
-			title, GROWL_NOTIFICATION_TITLE,
-			description, GROWL_NOTIFICATION_DESCRIPTION,
-			@"Cyberduck", GROWL_APP_NAME,
-			nil];
-		
-		[[NSDistributedNotificationCenter defaultCenter]
-										postNotificationName: GROWL_NOTIFICATION
-													  object: nil
-													userInfo: event];
-	}
 }
 
 @end

@@ -50,8 +50,6 @@ public class Growl {
 		return instance;
 	}
 
-	public native void launch();
-
 	public native void register();
 
 	public native void notify(String title, String description);

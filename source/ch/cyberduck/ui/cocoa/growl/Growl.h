@@ -30,14 +30,6 @@ extern "C" {
 
 	/*
 	 * Class:     ch_cyberduck_ui_cocoa_growl_Growl
-	 * Method:    launch
-	 * Signature: ()V
-	 */
-	JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_launch
-	(JNIEnv *, jobject);
-
-	/*
-	 * Class:     ch_cyberduck_ui_cocoa_growl_Growl
 	 * Method:    register
 	 * Signature: ()V
 	 */
@@ -66,18 +58,17 @@ extern "C" {
 #endif
 
 #import <Cocoa/Cocoa.h>
+#import <Growl/Growl.h>
 
 static id instance;
 
-@interface Growl : NSObject {
+@interface Growl : NSObject<GrowlApplicationBridgeDelegate> {
 	BOOL registered;
 }
 
 + (id)defaultInstance;
 
-- (void)launchGrowl;
 - (void)registerGrowl;
-- (void)registerGrowlWithContext:(void*)context;
 - (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImageName:(NSString *) image;
 - (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImage:(NSImage *) image;
 - (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description;
