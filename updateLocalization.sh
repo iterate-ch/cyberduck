@@ -86,7 +86,7 @@ do
             shift;
             nibfile=$1
         ;;
-        -force) 
+        -f | --force) 
             shift;
             force=true
         ;;

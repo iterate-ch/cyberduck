@@ -564,25 +564,21 @@ public class CDBrowserController extends NSObject implements Observer {
 
     private NSToolbar toolbar;
 
-    private static int OFFSET = 0;
-
     // ----------------------------------------------------------
     // Constructor
     // ----------------------------------------------------------
 
     public CDBrowserController() {
         instances.addObject(this);
-        OFFSET = +16;
         if (false == NSApplication.loadNibNamed("Browser", this)) {
             log.fatal("Couldn't load Browser.nib");
         }
-        log.debug("offset:" + OFFSET);
     }
 
     public void awakeFromNib() {
         NSPoint origin = this.window.frame().origin();
         this.window.setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
-        this.window.setFrameOrigin(new NSPoint(origin.x() + OFFSET, origin.y() - OFFSET));
+        this.window.setFrameOrigin(this.window.cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y())));
         this.pathController = new CDPathController(pathPopup);
         // Drawer states
         if (Preferences.instance().getProperty("logDrawer.isOpen").equals("true")) {
@@ -1016,7 +1012,6 @@ public class CDBrowserController extends NSObject implements Observer {
 
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose");
-        OFFSET = -16;
         if (this.isMounted()) {
             pathController.workdir().getSession().deleteObserver((Observer)this);
             pathController.workdir().getSession().deleteObserver((Observer)pathController);

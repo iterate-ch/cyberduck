@@ -47,6 +47,11 @@ public class Login {
         }
     }
 
+	/**
+		* Use this to define if passwords should be added to the keychain
+	 * @param shouldBeAddedToKeychain If true, the password of the login is added to the keychain uppon 
+	 * successfull login
+	 */
     public void setUseKeychain(boolean shouldBeAddedToKeychain) {
         this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
     }
@@ -55,12 +60,18 @@ public class Login {
         return this.shouldBeAddedToKeychain;
     }
 
+	/**
+		* @see #getPasswordFromKeychain
+	 */
     public native String getPasswordFromKeychain(String serviceName, String account);
 
     public String getPasswordFromKeychain() {
         return this.getPasswordFromKeychain(this.getServiceName(), this.getUsername());
     }
 
+	/**
+		* @see #addPasswordToKeychain
+	 */
     public native void addPasswordToKeychain(String serviceName, String account, String password);
 
     public void addPasswordToKeychain() {
@@ -121,18 +132,16 @@ public class Login {
         return this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"));
     }
 
+	/**
+		* SSH specific
+	 * @return true if public key authentication should be used. This is the case, if a 
+	 * private key file has been specified
+	 * @see #setPrivateKeyFile
+	 */
     public boolean usesPublicKeyAuthentication() {
         return this.privateKeyFile != null;
     }
 
-    public boolean usesPasswordAuthentication() {
-        return !this.usesPublicKeyAuthentication();
-    }
-
-//	public boolean usesKBIAuthentication() {
-//		return false; //@todo
-//	}
-		
     public void setPrivateKeyFile(String file) {
         this.privateKeyFile = file;
     }
@@ -141,6 +150,9 @@ public class Login {
         return this.privateKeyFile;
     }
 
+	/**
+		* Checks if both username and password qualify for a possible reasonable login attempt
+	 */
     public boolean hasReasonableValues() {
         boolean reasonable = false;
         if (this.usesPublicKeyAuthentication()) {
@@ -163,7 +175,9 @@ public class Login {
     }
 
     /**
-     * @return
+     * @return true if reasonable values have been found localy or 
+	 * in the keychain or the user was prompted to
+	 * for the credentials and new values got entered.
      */
     public boolean check() {
         if (!this.hasReasonableValues()) {
@@ -186,7 +200,8 @@ public class Login {
     }
 
     /**
-     * @return
+     * @return true if the user hasn't canceled the login process. If false is returned, 
+	 * no more attempts should be made and the connection closed.
      * @pre controller != null
      */
     public boolean promptUser(String message) {
