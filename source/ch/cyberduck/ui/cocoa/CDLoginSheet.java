@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDLoginSheet extends NSWindow {
+public class CDLoginSheet extends NSPanel {
     private static Logger log = Logger.getLogger(CDLoginSheet.class);
 
     public NSTextField userField;

@@ -59,7 +59,7 @@ public class CDLogView extends NSTextView implements Observer {
 	if(o instanceof Status) {
 	    Message msg = (Message)arg;
 	    if(msg.getTitle().equals(Message.TRANSCRIPT)) {
-                log.debug("update");
+//                log.debug("update");
 
 		/**
 		* Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the

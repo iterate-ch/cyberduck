@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDConnectionSheet extends NSWindow {
+public class CDConnectionSheet extends NSPanel {
 
     private static Logger log = Logger.getLogger(CDConnectionSheet.class);
 

@@ -42,33 +42,42 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
     
     public CDBrowserView() {
 	super();
+	log.debug("CDBrowserView");
     }
 
     public CDBrowserView(NSRect frame) {
 	super(frame);
+	log.debug("CDBrowserView");
     }
 
     public CDBrowserView(NSCoder decoder, long token) {
 	super(decoder, token);
+	log.debug("CDBrowserView");
     }
     
     public void encodeWithCoder(NSCoder encoder) {
 	super.encodeWithCoder(encoder);
+	log.debug("CDBrowserView");
     }
     
     public void awakeFromNib() {
+	log.debug("awakeFromNib");
 	this.setDelegate(this);
 	this.setTarget(this);
+	this.setIntercellSpacing(NSSize.ZeroSize);
         this.setDoubleAction(new NSSelector("doubleClickAction", new Class[] {null}));
-	this.setAutoresizesAllColumnsToFit(true);
 	//By setting the drop row to -1, the entire table is highlighted instead of just a single row.
-	this.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+
+	//this.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+	
+//	this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());;
 
 	//	this.setIndicatorImage(NSImage.imageNamed("file.tiff"), this.tableColumnWithIdentifier("FILENAME"))
 
     }
 
     public void doubleClickAction(NSObject sender) {
+	log.debug("doubleClickAction");
         CDBrowserTableDataSource browserTableDataSource = (CDBrowserTableDataSource)this.dataSource();
         Path p = (Path)browserTableDataSource.getEntry(this.clickedRow());
         p.list();
@@ -115,25 +124,33 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 	* The delegate can modify the display attributes of a cell to alter the appearance of the cell.
 	* Because aCell is reused for every row in aTableColumn, the delegate must set the display attributes both when drawing special cells and when drawing normal cells.
 	*/
-    /*
-    public void tableViewWillDisplayCell(NSTableView browserTable, Object c, NSTableColumn tableColumn, int row) {
+    public void tableViewWillDisplayCell(NSTableView browserTable, Object cell, NSTableColumn tableColumn, int row) {
+	log.debug("tableViewWillDisplayCell:"+row);
 	String identifier = (String)tableColumn.identifier();
-	CDBrowserTableDataSource ds = (CDBrowserTableDataSource)this.dataSource();
+//	CDBrowserTableDataSource ds = (CDBrowserTableDataSource)browserTable.dataSource();
+	if(identifier.equals("TYPE"))
+	    tableColumn.setDataCell(new NSImageCell());
+//	    tableColumn.dataCell().setImage(new NSImage());
+
 //@todo throws null pointer fo ds ???
-        Path p = (Path)ds.tableViewObjectValueForLocation(browserTable, tableColumn, row);
-	NSTextFieldCell cell = (NSTextFieldCell)c;
-	cell.setDrawsBackground(true);
-	if (row%2 == 0) {
-	    cell.setBackgroundColor(NSColor.blueColor());
-	}
-	if(identifier.equals("TYPE")) {
-	    if(p.isFile())
-	       cell.setImage(NSImage.imageNamed("file.tiff"));
-	    if(p.isDirectory())
-		cell.setImage(NSImage.imageNamed("folder.tiff"));
-	}
+//        Path p = (Path)ds.tableViewObjectValueForLocation(browserTable, tableColumn, row);
+	//if(identifier.equals("TYPE")) {
+	//    browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());;
+//	    if(p.isFile())
+//		typeColumn.setDataCell(new NSImageCell(NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension())));
+//	    if(p.isDirectory())
+//		typeColumn.setDataCell(new NSImageCell(NSImage.imageNamed("folder.tiff")));
+	//}
+	//else {
+	/*
+	    NSTextFieldCell textCell = (NSTextFieldCell)cell;
+	    if (row % 2 == 0) {
+		textCell.setDrawsBackground(true);
+		textCell.setBackgroundColor(NSColor.lightGrayColor());
+	    }
+	 */
+	//}
     }
-     */
 
     /**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
 	* The delegate can implement this method to disallow selection of particular rows.

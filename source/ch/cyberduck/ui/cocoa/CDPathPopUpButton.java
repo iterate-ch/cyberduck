@@ -89,11 +89,12 @@ public class CDPathPopUpButton extends NSPopUpButton implements Observer {
 
     public CDPathPopUpButton(NSCoder decoder, long token) {
 	super(decoder, token);
-	log.debug("CDPathPopUpButton");
+	log.debug("CDPathPopUpButton:decoder");
     }
 
     public void encodeWithCoder(NSCoder encoder) {
 	super.encodeWithCoder(encoder);
+//	encoder.encodeObject(items);
 	log.debug("encodeWithCoder");
     }    
 }
