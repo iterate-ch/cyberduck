@@ -129,7 +129,6 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	}
 	
 	protected void setEnabled(boolean enabled) {
-		this.cancelButton.setEnabled(enabled);
 		this.syncButton.setEnabled(enabled);
 	}
 

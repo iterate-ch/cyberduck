@@ -207,22 +207,24 @@ public class SFTPPath extends Path {
 	}
 	
 	public void reset() {
-		if(this.exists()) {
-			try {
-				session.check();
-				session.log("Getting timestamp of "+this.getName(), Message.PROGRESS);
-				SftpFile f = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-				this.attributes.setTimestamp(Long.parseLong(f.getAttributes().getModifiedTime().toString())*1000L);
-				session.log("Getting size of "+this.getName(), Message.PROGRESS);
-				this.attributes.setSize(f.getAttributes().getSize().longValue());
-				f.close();
-			}
-			catch(SshException e) {
-				session.log("SSH Error: "+e.getMessage(), Message.ERROR);
-			}
-			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
-				session.close();
+		if(this.attributes.isFile()) {
+			if(this.exists()) {
+				try {
+					session.check();
+					session.log("Getting timestamp of "+this.getName(), Message.PROGRESS);
+					SftpFile f = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
+					this.attributes.setTimestamp(Long.parseLong(f.getAttributes().getModifiedTime().toString())*1000L);
+					session.log("Getting size of "+this.getName(), Message.PROGRESS);
+					this.attributes.setSize(f.getAttributes().getSize().longValue());
+					f.close();
+				}
+				catch(SshException e) {
+					session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+				}
+				catch(IOException e) {
+					session.log("IO Error: "+e.getMessage(), Message.ERROR);
+					session.close();
+				}
 			}
 		}
 	}

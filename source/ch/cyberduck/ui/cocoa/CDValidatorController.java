@@ -33,7 +33,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public abstract class CDValidatorController extends AbstractValidator implements Observer {
+public abstract class CDValidatorController extends AbstractValidator {
 	private static Logger log = Logger.getLogger(CDValidatorController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -52,17 +52,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 		    this.fileTableView);
 	}
 	
-	public void update(Observable o, Object arg) {
-		if(arg instanceof Message) {
-			Message msg = (Message)arg;
-			if(msg.getTitle().equals(Message.ERROR)) {
-				this.setCanceled(true); //@todo
-			}
-		}
-	}
-	
 	public void validate(Queue q) {
-		q.getRoot().getSession().addObserver(this);
 		for(Iterator iter = q.getChilds().iterator(); iter.hasNext() && !this.isCanceled(); ) {
 			Path child = (Path)iter.next();
 			log.info("Validating:"+child);
@@ -70,36 +60,37 @@ public abstract class CDValidatorController extends AbstractValidator implements
 				log.info("Adding "+child+" to final set.");				
 				this.validatedList.add(child);
 			}
-			if(this.visible) {
+			if(this.hasPrompt()) {
 				this.fireDataChanged();
 			}
 		}
-		q.getRoot().getSession().deleteObserver(this);
-		if(this.visible) {
-			if(!this.isCanceled()) { //@todo
-				this.statusIndicator.stopAnimation(null);
-				this.setEnabled(true);
-				this.fileTableView.sizeToFit();
-				this.infoLabel.setStringValue(this.workList.size()+" "+NSBundle.localizedString("files", ""));
-				this.windowController.waitForSheet();
-			}
-			else {
-				this.windowController.endSheet();
-			}
+		if(this.isCanceled()) {
+			return;
+		}
+		if(this.hasPrompt()) {
+			this.statusIndicator.stopAnimation(null);
+			this.setEnabled(true);
+			this.fileTableView.sizeToFit();
+			this.infoLabel.setStringValue(this.workList.size()+" "+NSBundle.localizedString("files", ""));
+			this.windowController.waitForSheet();
 		}
 	}
 	
 	protected abstract void load();
 	
-	protected boolean visible = false;
+	protected boolean hasPrompt = false;
+	
+	protected boolean hasPrompt() {
+		return this.hasPrompt;
+	}
 	
 	protected void prompt(Path p) {
 		p.reset();
-		if(!this.visible) {
+		if(!this.hasPrompt()) {
 			this.load();
 			this.windowController.beginSheet(this.window());
 			this.statusIndicator.startAnimation(null);
-			this.visible = true;
+			this.hasPrompt = true;
 		}
 		this.promptList.add(p);
 		this.workList.add(p);
@@ -257,7 +248,6 @@ public abstract class CDValidatorController extends AbstractValidator implements
 	
 	public void setCancelButton(NSButton cancelButton) {
 		this.cancelButton = cancelButton;
-		this.cancelButton.setEnabled(false);
 		this.cancelButton.setTarget(this);
 		this.cancelButton.setAction(new NSSelector("cancelActionFired", new Class[]{Object.class}));
 	}
@@ -274,7 +264,6 @@ public abstract class CDValidatorController extends AbstractValidator implements
 	}
 
 	protected void setEnabled(boolean enabled) {
-		this.cancelButton.setEnabled(enabled); //@todo
 		this.overwriteButton.setEnabled(enabled);
 		this.resumeButton.setEnabled(enabled);
 		this.skipButton.setEnabled(enabled);

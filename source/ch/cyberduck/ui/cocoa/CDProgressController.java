@@ -103,7 +103,7 @@ public class CDProgressController extends NSObject implements Observer {
 													true); //repeating
 						ThreadUtilities.instance().invokeLater(new Runnable() {
 							public void run() {
-								NSRunLoop.currentRunLoop().addTimerForMode(this.progressTimer, 
+								NSRunLoop.currentRunLoop().addTimerForMode(progressTimer, 
 																		   NSRunLoop.DefaultRunLoopMode);
 							}
 						});

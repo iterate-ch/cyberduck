@@ -196,38 +196,40 @@ public class FTPPath extends Path {
 	}
 	
 	public void reset() {
-		if(this.exists()) {
-			try {
-				session.check();
-				session.log("Getting timestamp of "+this.getName(), Message.PROGRESS);
-				this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()));
-				session.log("Getting size of "+this.getName(), Message.PROGRESS);
-				if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-					if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
+		if(this.attributes.isFile()) {
+			if(this.exists()) {
+				try {
+					session.check();
+					session.log("Getting timestamp of "+this.getName(), Message.PROGRESS);
+					this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()));
+					session.log("Getting size of "+this.getName(), Message.PROGRESS);
+					if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+						if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
+							session.FTP.setTransferType(FTPTransferType.ASCII);
+						}
+						else {
+							session.FTP.setTransferType(FTPTransferType.BINARY);
+						}
+					}
+					else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+						session.FTP.setTransferType(FTPTransferType.BINARY);
+					}
+					else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 						session.FTP.setTransferType(FTPTransferType.ASCII);
 					}
 					else {
-						session.FTP.setTransferType(FTPTransferType.BINARY);
+						throw new FTPException("Transfer type not set");
 					}
+					this.attributes.setSize(session.FTP.size(this.getAbsolute()));
 				}
-				else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
-					session.FTP.setTransferType(FTPTransferType.BINARY);
+				catch(FTPException e) {
+					log.error(e.getMessage());
+					//ignore
 				}
-				else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
-					session.FTP.setTransferType(FTPTransferType.ASCII);
+				catch(IOException e) {
+					session.log("IO Error: "+e.getMessage(), Message.ERROR);
+					session.close();
 				}
-				else {
-					throw new FTPException("Transfer type not set");
-				}
-				this.attributes.setSize(session.FTP.size(this.getAbsolute()));
-			}
-			catch(FTPException e) {
-				log.error(e.getMessage());
-				//ignore
-			}
-			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
-				session.close();
 			}
 		}
 	}
