@@ -97,7 +97,7 @@ public class CDProgressController extends NSObject implements Observer {
 				this.alertIcon.setHidden(false);
 			}
 			else if(msg.getTitle().equals(Message.QUEUE_START)) {
-				this.progressBar.setIndeterminate(true);
+				log.debug("------------- QUEUE_START");
 				this.progressBar.startAnimation(null);
 				this.errorText = new StringBuffer();
 				this.alertIcon.setHidden(true);
@@ -114,10 +114,10 @@ public class CDProgressController extends NSObject implements Observer {
 				});
 			}
 			else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
+				log.debug("------------- QUEUE_STOP");
 				this.updateProgressbar();
 				this.updateProgressfield();
 				this.progressBar.stopAnimation(null);
-				this.progressBar.setIndeterminate(false);
 				if(queue.isComplete() && !queue.isCanceled()) {
 					if(queue instanceof DownloadQueue) {
 						if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
@@ -137,14 +137,16 @@ public class CDProgressController extends NSObject implements Observer {
 	}
 
 	private void updateProgressbar() {
-		if(queue.isInitialized() && queue.getSize() != 0) {
-			double progressValue = queue.getCurrent()/queue.getSize();
+		if(queue.isInitialized()) {
 			this.progressBar.setIndeterminate(false);
-			this.progressBar.setMinValue(0);
-			this.progressBar.setMaxValue((double)queue.getSize());
-			this.progressBar.setDoubleValue((double)queue.getCurrent());
+			if(queue.getSize() != -1) {
+				double progressValue = queue.getCurrent()/queue.getSize();
+				this.progressBar.setMinValue(0);
+				this.progressBar.setMaxValue((double)queue.getSize());
+				this.progressBar.setDoubleValue((double)queue.getCurrent());
+			}
 		}
-		else {
+		else if(queue.isRunning()) {
 			this.progressBar.setIndeterminate(true);
 		}
 	}

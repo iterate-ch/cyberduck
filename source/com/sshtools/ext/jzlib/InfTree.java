@@ -34,7 +34,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.sshtools.ext.jzlib;
 
-final class InfTree{
+final class InfTree {
 
   static final private int MANY=1440;
 

@@ -34,7 +34,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.sshtools.ext.jzlib;
 
-final class InfBlocks{
+final class InfBlocks {
   static final private int MANY=1440;
 
   // And'ing with mask[n] masks the lower n bits

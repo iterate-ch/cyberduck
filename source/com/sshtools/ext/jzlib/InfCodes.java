@@ -34,7 +34,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.sshtools.ext.jzlib;
 
-final class InfCodes{
+final class InfCodes {
 
   static final private int[] inflate_mask = {
     0x00000000, 0x00000001, 0x00000003, 0x00000007, 0x0000000f,

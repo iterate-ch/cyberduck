@@ -143,10 +143,9 @@ public class SshKeyPairFactory {
      * @param encoded
      * @return
      * @throws InvalidSshKeyException
-     * @throws AlgorithmNotSupportedException
      */
     public static SshPublicKey decodePublicKey(byte[] encoded)
-            throws InvalidSshKeyException, AlgorithmNotSupportedException {
+            throws InvalidSshKeyException {
         try {
             ByteArrayReader bar = new ByteArrayReader(encoded);
             String algorithm = bar.readString();

@@ -28,6 +28,7 @@ package com.sshtools.j2ssh.transport;
 
 import com.sshtools.j2ssh.transport.publickey.SshKeyPairFactory;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
+import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
 import com.sshtools.j2ssh.util.Base64;
 
 import java.io.*;
@@ -99,20 +100,27 @@ public abstract class AbstractKnownHostsKeyVerification
 						String algorithm = null;
 						String key = null;
 						StringTokenizer tokens = new StringTokenizer(line, " ");
-						if(tokens.hasMoreTokens())
+						if(tokens.hasMoreTokens()) {
 							host = (String)tokens.nextElement();
-						if(tokens.hasMoreTokens())
+//                            if (host.indexOf(",") > -1) {
+//                                host = host.substring(0, host.indexOf(","));
+//                            }
+                        }
+						if(tokens.hasMoreTokens()) {
 							algorithm = (String)tokens.nextElement();
+                        }
 						if(tokens.hasMoreTokens()) {
 							key = (String)tokens.nextElement();
-							SshPublicKey pk = SshKeyPairFactory.decodePublicKey(Base64.decode(key));
-							/*if (host.indexOf(",") > -1) {
-								host = host.substring(0, host.indexOf(","));
-							}*/
-							this.putAllowedKey(host, pk);
-						}
-					}
-					reader.close();
+                            try {
+                                SshPublicKey pk = SshKeyPairFactory.decodePublicKey(Base64.decode(key));
+                                this.putAllowedKey(host, pk);
+                            }
+                            catch(InvalidSshKeyException e) {
+                                log.warn("Invalid key in "+knownhosts+":"+e.getMessage());
+                            }
+                        }
+                    }
+                    reader.close();
 					this.hostFileWriteable = f.canWrite();
 				}
 				else {
