@@ -79,7 +79,7 @@ public abstract class Preferences {
         defaults.put("logging", "WARN");
         defaults.put("uses", "0");
         defaults.put("donate", "true");
-        defaults.put("mail", "mailto:dkocher@cyberduck.ch");
+        defaults.put("mail", "mailto:feedback@cyberduck.ch");
         defaults.put("website.donate", "http://cyberduck.ch/donate/");
         defaults.put("website.update.xml", "http://update.cyberduck.ch/versionlist.xml");
         defaults.put("website.update", "http://cyberduck.ch/");

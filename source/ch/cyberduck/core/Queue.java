@@ -30,11 +30,6 @@ import ch.cyberduck.ui.cocoa.CDQueueController;
 import org.apache.log4j.Logger;
 
 /**
- * Used to this multiple connections. <code>this.start()</code> will
- * start the the connections in the order the have been added to me.
- * Useful for actions where the order of the taken actions
- * is important, i.e. deleting directories or uploading directories.
- *
  * @version $Id$
  */
 public class Queue implements Observer { //Thread {
@@ -178,11 +173,6 @@ public class Queue implements Observer { //Thread {
         return this.kind;
     }
 
-//    public void callObservers(Object arg) {
-//        this.setChanged();
-//        this.notifyObservers(arg);
-//    }
-
     public void update(Observable o, Object arg) {
         if (arg instanceof Message) {
             Message msg = (Message)arg;
@@ -204,7 +194,7 @@ public class Queue implements Observer { //Thread {
      * Process the queue. All files will be downloaded or uploaded rerspectively.
      *
      * @param validator A callback class where the user can decide what to do if
-     * the file already exists at the download location
+     * the file already exists at the download or upload location respectively
      */
     public synchronized void start(final Validator validator) {
         log.debug("start");
@@ -218,7 +208,6 @@ public class Queue implements Observer { //Thread {
                 Queue.this.running = true;
                 Queue.this.canceled = false;
 				CDQueueController.instance().update(Queue.this, new Message(Message.QUEUE_START));
-//                Queue.this.callObservers(new Message(Message.QUEUE_START, Queue.this));
 
                 Queue.this.getRoot().getSession().addObserver(Queue.this);
                 Queue.this.getRoot().getSession().cache().clear();
@@ -268,7 +257,6 @@ public class Queue implements Observer { //Thread {
                 Queue.this.running = false;
                 Queue.this.elapsedTimer.stop();
 				CDQueueController.instance().update(Queue.this, new Message(Message.QUEUE_STOP));
-//                Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
 
                 NSAutoreleasePool.pop(mypool);
             }
@@ -302,7 +290,6 @@ public class Queue implements Observer { //Thread {
      */
     private boolean isCanceled() {
         return this.canceled;
-//        return !this.isRunning();
     }
 
     public int numberOfRoots() {
