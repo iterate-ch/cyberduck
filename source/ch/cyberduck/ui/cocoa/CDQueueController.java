@@ -144,6 +144,8 @@ public class CDQueueController implements Observer, Validator {
 	public void startItem(Queue queue) {
 		this.queueTable.reloadData();
 		this.queueTable.selectRow(CDQueuesImpl.instance().indexOf(queue), false);
+		this.queueTable.scrollRowToVisible(CDQueuesImpl.instance().indexOf(queue));
+
 		this.window.makeKeyAndOrderFront(null);
 		queue.getRoot().getHost().getLogin().setController(new CDLoginController(this.window));
 		if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {

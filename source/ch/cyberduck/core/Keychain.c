@@ -34,11 +34,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(J
 	if (( password = getpwdfromkeychain( serviceChar,
 										 accountChar, 
 										 &error )) == NULL ) {
-		if ( error == errSecItemNotFound ) {
-			syslog( LOG_INFO, "Keychain item not found" );
-		} else {
-			syslog( LOG_INFO, "Attempting to retrieve password from keychain returned error %d", error );
-		}
+		syslog( LOG_INFO, "Attempting to retrieve password from keychain returned error %d", error );
 		return NULL;
 	}
 	

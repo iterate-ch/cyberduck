@@ -116,8 +116,8 @@ public abstract class Preferences {
 		defaults.put("connection.login.name", System.getProperty("user.name"));
 		defaults.put("connection.login.useKeychain", "true");
 
-		defaults.put("connection.buffer", "1024");
-		defaults.put("connection.buffer.default", "1024");
+		defaults.put("connection.buffer", "16384"); //in bytes, is 128kbit
+		defaults.put("connection.buffer.default", "16384");
 		defaults.put("connection.port.default", "21");
 		defaults.put("connection.protocol.default", "ftp");
 
@@ -129,7 +129,7 @@ public abstract class Preferences {
 		defaults.put("ftp.sendSystemCommand", "true");
 		defaults.put("ftp.sendExtendedListCommand", "true");
 
-		defaults.put("http.agent", "Cyberduck/2.1");
+		defaults.put("http.agent", "Cyberduck/2.2");
 		defaults.put("http.agent", "Cyberduck/" + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		defaults.put("http.acceptheader", "*/*");
 

@@ -190,9 +190,9 @@ public class Queue extends Observable implements Observer { //Thread {
 				this.progressTimer.stop();
 				this.leftTimer.stop();
 			}
-			if (this.isEmpty()) {
-				root.getSession().close();
-			}
+//			if (this.isEmpty()) {
+//				root.getSession().close();
+//			}
 		}
 	}
 
@@ -211,18 +211,24 @@ public class Queue extends Observable implements Observer { //Thread {
 				Queue.this.addObserver(observer);
 
 				root.getSession().addObserver(Queue.this);
+
+				elapsedTimer.start();
 				running = true;
 				callObservers(new Message(Message.QUEUE_START, Queue.this));
-				elapsedTimer.start();
+
 				jobs = new ArrayList();
 				if (validator.validate(root, kind)) {
 					log.debug("Filling this of root element " + root);
 					root.fillQueue(jobs, kind);
 					process();
 				}
+				
 				elapsedTimer.stop();
 				running = false;
 				callObservers(new Message(Message.QUEUE_STOP, Queue.this));
+
+				root.getSession().close();
+
 				root.getSession().deleteObserver(Queue.this);
 				
 				Queue.this.deleteObserver(observer);

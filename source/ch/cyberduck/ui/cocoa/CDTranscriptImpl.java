@@ -21,19 +21,18 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Transcript;
 import ch.cyberduck.core.Transcripter;
 
+import com.apple.cocoa.application.NSScrollView;
 import com.apple.cocoa.application.NSClipView;
 import com.apple.cocoa.application.NSTextView;
 import com.apple.cocoa.application.NSFont;
+import com.apple.cocoa.foundation.NSRect;
 import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRange;
-
-import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public class CDTranscriptImpl implements Transcripter {
-	private static Logger log = Logger.getLogger(CDTranscriptImpl.class);
 
 	private NSTextView textView;
 
@@ -44,18 +43,15 @@ public class CDTranscriptImpl implements Transcripter {
 
 	public CDTranscriptImpl() {
 		super();
-		log.debug("CDTranscriptImpl");
 	}
 
 	public void awakeFromNib() {
-		log.debug("awakeFromNib");
 		textView.setEditable(true);
 		textView.setSelectable(true);
 		Transcript.instance().addListener(this);
 	}
 
 	public void transcript(String message) {
-		//	log.debug("transcript:"+message);
 		/**
 		 * Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
 		 * formatting attributes of the first character of the text it replaces, or of the character immediately
@@ -64,17 +60,12 @@ public class CDTranscriptImpl implements Transcripter {
 		 */
 		NSRange range = new NSRange(textView.string().length(), 0);
 		this.textView.replaceCharactersInRange(range, message + "\n");
-		NSClipView clip = (NSClipView) this.textView.superview();
-		clip.scrollToPoint(clip.constrainScrollPoint(new NSPoint(0f, this.textView.bounds().height() + 100f)));
-
-		//	this.textView.scrollRangeToVisible(range);
-		//	this.textView.scrollRangeToVisible(new NSRange(textView.string().length(), message.length()-1));
-
+		this.textView.scrollRangeToVisible(range);
 	}
 
 	public void clearLogButtonClicked(Object sender) {
-		//	this.textView.selectAll();
-		//	this.textView.delete();
+//		this.textView.selectAll(null);
+//		this.textView.delete(null);
 	}
 
 	public Object getView() {

@@ -210,7 +210,8 @@ public class FTPPath extends Path {
 		String command = recursive ? "chmod -R" : "chmod";
 		try {
 			session.check();
-			session.FTP.site(command+" "+perm.getOctalCode()+" \""+this.getAbsolute()+"\"");
+//			session.FTP.site(command+" "+perm.getOctalCode()+" \""+this.getAbsolute()+"\""); //some server support it (proftpd), others don't (lukemftpd)
+			session.FTP.site(command+" "+perm.getOctalCode()+" "+this.getAbsolute());
 		}
 		catch (FTPException e) {
 			session.log("FTP Error: " + e.getMessage(), Message.ERROR);

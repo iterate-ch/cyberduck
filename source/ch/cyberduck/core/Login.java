@@ -80,7 +80,7 @@ public class Login {
 	 */
 	public Login(String service) {
 		this(service,
-		    Preferences.instance().getProperty("ftp.anonymous.name"),
+		    Preferences.instance().getProperty("connection.login.name"),
 			 null,
 //		    Preferences.instance().getProperty("ftp.anonymous.pass"),
 		    false);
@@ -99,11 +99,12 @@ public class Login {
 		this.service = service;
 		this.addToKeychain = addToKeychain;
 		if (null == user || user.equals(""))
-			this.user = Preferences.instance().getProperty("ftp.anonymous.name");
+			this.user = Preferences.instance().getProperty("connection.login.name");
 		else
 			this.user = user;
 		if (null == pass || pass.equals(""))
-			this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+			this.pass = null;
+		//				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 		else
 			this.pass = pass;
 	}
@@ -121,12 +122,14 @@ public class Login {
 			}
 			else {
 				this.user = l;
-				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+				this.pass = null;
+//				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 			}
 		}
 		else {
-			this.user = Preferences.instance().getProperty("ftp.anonymous.name");
-			this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+			this.user = Preferences.instance().getProperty("connection.login.name");
+			this.pass = null;
+//			this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 		}
 	}
 
