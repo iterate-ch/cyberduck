@@ -74,6 +74,7 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
 	log.debug("setDefaults");
 	this.setProperty("sshtools.home", NSBundle.mainBundle().resourcePath());
 	System.setProperty("sshtools.home", NSBundle.mainBundle().resourcePath());
+	log.info(NSBundle.mainBundle().resourcePath());
 //	this.setProperty("sshtools.home", APP_SUPPORT_DIR.toString());
 //	System.setProperty("sshtools.home", APP_SUPPORT_DIR.toString());
     }

@@ -35,7 +35,7 @@ public class PreferencesImpl extends Preferences { //PreferencesImplSwing
 
     private static final File PREFS_DIRECTORY = new File(System.getProperty("user.home"), ".cyberduck");
     private static final String PREFERENCES_FILE = "cyberduck.preferences";
-
+    
     private Properties props;
     
     public PreferencesImpl() {
@@ -44,7 +44,7 @@ public class PreferencesImpl extends Preferences { //PreferencesImplSwing
     }
 
     public String getProperty(String property) {
-        log.info("getProperty(" + property + ")");
+        log.debug("getProperty(" + property + ")");
         String value = props.getProperty(property);
         if(value == null)
             return super.getProperty(property);
@@ -52,12 +52,12 @@ public class PreferencesImpl extends Preferences { //PreferencesImplSwing
     }
 
     public void setProperty(String property, String value) {
-        log.info("setProperty(" + property + ", " + value + ")");
+        log.debug("setProperty(" + property + ", " + value + ")");
         props.put(property, value);
     }
 
     public void setProperty(String property, boolean v) {
-        log.info("setProperty(" + property + ", " + v + ")");
+        log.debug("setProperty(" + property + ", " + v + ")");
         String value = "false";
         if (v) {
             value = "true";
@@ -66,7 +66,7 @@ public class PreferencesImpl extends Preferences { //PreferencesImplSwing
     }
     
     public void setProperty(String property, int v) {
-        log.info("setProperty(" + property + ", " + v + ")");
+        log.debug("setProperty(" + property + ", " + v + ")");
         String value = String.valueOf(v);
         props.put(property, value);
     }
