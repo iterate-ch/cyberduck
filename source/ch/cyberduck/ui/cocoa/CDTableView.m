@@ -57,7 +57,9 @@
         }
     }
 	
-	if ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] || (![[NSCharacterSet controlCharacterSet] characterIsMember:key])) {
+	if ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] && 
+		(![[NSCharacterSet controlCharacterSet] characterIsMember:key])) {
+		
 		[select_string appendString:[event charactersIgnoringModifiers]];
 		if([select_string length] == 1) {
 			[self selectRow];

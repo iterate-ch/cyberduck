@@ -36,7 +36,7 @@ public abstract class Session extends Observable {
 	public static final String SFTP = "sftp";
 	public static final String FTP = "ftp";
 
-	private Transcript transcript;
+//	private Transcript transcript;
 
 	private Cache cache = new Cache();
 
@@ -74,7 +74,7 @@ public abstract class Session extends Observable {
 		log.debug("Session("+h+")");
 		this.host = h;
 		this.history = new ArrayList();
-		this.transcript = TranscriptFactory.getImpl(host.getHostname());
+//		this.transcript = TranscriptFactory.getImpl(host.getHostname());
 	}
 
 	public void callObservers(Object arg) {
@@ -247,7 +247,8 @@ public abstract class Session extends Observable {
 
 	public void log(String message, String title) {
 		if(title.equals(Message.TRANSCRIPT)) {
-			this.transcript.log(message);
+//			this.transcript.log(message);
+			TranscriptFactory.getImpl(host.getHostname()).log(message);
 		}
 		else {
 			this.callObservers(new Message(title, message));

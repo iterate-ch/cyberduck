@@ -53,7 +53,7 @@ public class CDTranscriptImpl implements Transcript {
 	private static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
 	    new Object[]{NSAttributedString.FontAttributeName});
 
-	public synchronized void layoutManagerDidCompleteLayoutForTextContainer(NSLayoutManager layoutManager,
+	public void layoutManagerDidCompleteLayoutForTextContainer(NSLayoutManager layoutManager,
 	                                                           NSTextContainer textContainer,
 	                                                           boolean finished) {
 		if(finished && this.textView.window().isVisible()) {

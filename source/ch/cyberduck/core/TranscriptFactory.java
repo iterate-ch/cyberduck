@@ -30,6 +30,8 @@ public abstract class TranscriptFactory {
 	private static Logger log = Logger.getLogger(TranscriptFactory.class);
 
 	private static Map transcripts = new HashMap();
+	
+	private static final Transcript DEFAULT = new DefaultTranscript();
 
 	public static void addImpl(String host, Transcript impl) {
 		transcripts.put(host, impl);
@@ -42,7 +44,7 @@ public abstract class TranscriptFactory {
 	public static Transcript getImpl(String host) {
 		Transcript impl = (Transcript)transcripts.get(host);
 		if(null == impl) {
-			return new DefaultTranscript();
+			return DEFAULT;
 		}
 		return impl;
 	}

@@ -1212,7 +1212,7 @@ public class CDBrowserController extends CDController implements Observer {
 				final List files = (List)contextInfo;
 				if(files.size() > 0) {
 					this.browserTable.deselectAll(null);
-					new Thread() {
+					new Thread("Session") {
 						public void run() {
 							Iterator i = files.iterator();
 							Path p = null;

@@ -129,8 +129,7 @@ public abstract class CDController {
         synchronized(this) {
             if(!Thread.currentThread().getName().equals("Session") && this.hasSheet()) {
                 log.warn("Cannot display sheet because the window is already displaying a sheet running on the main thread");
-                log.info("Displaying dialog instead of sheet");
-                sheet.makeKeyAndOrderFront(this);
+                //sheet.makeKeyAndOrderFront(this);
                 return;
             }
             this.waitForSheetEnd();
