@@ -125,6 +125,35 @@
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 \
+\'a5	I cannot sync files because the modifcation date differs as the server lives in a different time zone!\
+	
+\f0\b0 Currently you have to set the time zone of the server manually using the following command:
+\f3 	defaults write ch.sudo.cyberduck queue.sync.timezone <timezone>\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0 \cf0 	You can get a list of valid <timezone> values at 
+\f2\i http://cvs.cyberduck.ch/*checkout*/cyberduck-cocoa/TIMEZONES?rev=HEAD&content-type=text/plain
+\f0\i0 \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \
+\'a5	I don't want to synchronize files if only e.g. the minutes differ in the timestamp!\
+	
+\f0\b0 You can configure Cberduck to ignore certain values when comparing the modification date of files. Open a Terminal.app and type:\
+		
+\f3 defaults write ch.sudo.cyberduck queue.sync.ignore.second true\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0 \cf0 		
+\f3 defaults write ch.sudo.cyberduck queue.sync.ignore.minute true\
+
+\f0 		
+\f3 defaults write ch.sudo.cyberduck queue.sync.ignore.hour false\
+
+\f0 	By default, milliseconds and seconds are ignored.\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \
 \
 
 \fs48 	Cyberduck How-to\
