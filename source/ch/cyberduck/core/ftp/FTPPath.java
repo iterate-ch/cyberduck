@@ -464,16 +464,21 @@ public class FTPPath extends Path {
                     throw new FTPException("Transfer mode not set");
                 }
                 if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
-                    if (Preferences.instance().getProperty("queue.permissions.useDefault").equals("true")) {
-                        Permission perm = new Permission(Preferences.instance().getProperty("queue.permissions.default"));
-                        this.changePermissions(perm);
-                    }
-                    else {
-                        Permission perm = this.getLocal().getPermission();
-                        if (!perm.isUndefined()) {
-                            this.changePermissions(perm);
-                        }
-                    }
+					try {
+						if (Preferences.instance().getProperty("queue.permissions.useDefault").equals("true")) {
+							Permission perm = new Permission(Preferences.instance().getProperty("queue.permissions.default"));
+							session.FTP.site("CHMOD "+perm.getOctalCode()+" "+this.getAbsolute());
+						}
+						else {
+							Permission perm = this.getLocal().getPermission();
+							if (!perm.isUndefined()) {
+								session.FTP.site("CHMOD "+perm.getOctalCode()+" "+this.getAbsolute());
+							}
+						}
+					}
+					catch (FTPException e) {
+						Preferences.instance().setProperty("queue.upload.changePermissions", "false");
+					}
                 }
             }
             session.log("Idle", Message.STOP);
