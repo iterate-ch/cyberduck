@@ -64,9 +64,9 @@ public class Host {
 	log.debug(this.toString());
     }
 
-//    public Host(String hostname, int port, Login login) {
-//	this(getDefaultProtocol(port), hostname, port, login);
-//    }
+    public Host(String hostname, int port, Login login) {
+	this(getDefaultProtocol(port), hostname, port, login);
+    }
     
     public Host(String protocol, String hostname, int port, Login login) {
         this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");

@@ -119,6 +119,17 @@ public class CDPreferencesController {
 	panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window(), this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }
 
+    private NSButton defaultBufferButton;
+    public void setDefaultBufferButton(NSButton defaultBufferButton) {
+	this.defaultBufferButton = defaultBufferButton;
+	this.defaultBufferButton.setTarget(this);
+	this.defaultBufferButton.setAction(new NSSelector("defaultBufferButtonClicked", new Class[] {NSButton.class}));
+    }
+
+    public void defaultBufferButtonClicked(NSButton sender) {
+	Preferences.instance().setProperty("connection.buffer", Preferences.instance().getProperty("connection.buffer.default"));
+    }
+
     private NSTextField bufferField;
     public void setBufferField(NSTextField bufferField) {
 	this.bufferField = bufferField;

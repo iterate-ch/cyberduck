@@ -119,7 +119,8 @@ public abstract class Preferences {
 	defaults.put("connection.download.postprocess", "false");
         //Connection
         defaults.put("connection.buffer", "1024");
-        defaults.put("connection.port.default", "21");
+	defaults.put("connection.buffer.default", "1024");
+	defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
 //        defaults.put("connection.path.default", "~");
         
