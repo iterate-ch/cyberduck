@@ -154,7 +154,6 @@ public class HTTPPath extends Path {
 	public Queue getQueue(int kind) {
 		log.debug("fillQueue:" + kind + "," + kind);
 		try {
-			this.session.check();
 			switch (kind) {
 				case Queue.KIND_DOWNLOAD:
 					return this.getDownloadQueue();

@@ -46,9 +46,9 @@ public class Attributes extends Observable {
 
 	public Attributes(NSDictionary dict) {
 		log.debug("Attributes");
-		Object permObj = dict.objectForKey("Permission");
-		if(permObj != null)
-			this.permission = new Permission((NSDictionary)permObj);
+//		Object permObj = dict.objectForKey("Permission");
+//		if(permObj != null)
+//			this.permission = new Permission((NSDictionary)permObj);
 		Object typeObj = dict.objectForKey("Type");
 		if(typeObj != null)
 			this.type = Integer.parseInt((String)typeObj);
@@ -57,7 +57,7 @@ public class Attributes extends Observable {
 	
 	public NSDictionary getAsDictionary() {
 		NSMutableDictionary dict = new NSMutableDictionary();
-		dict.setObjectForKey(this.permission.getAsDictionary(), "Permission");
+//		dict.setObjectForKey(this.permission.getAsDictionary(), "Permission");
 		dict.setObjectForKey(this.type+"", "Type");
 		return dict;
 	}

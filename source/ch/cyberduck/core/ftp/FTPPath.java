@@ -291,7 +291,6 @@ public class FTPPath extends Path {
 	
 	public Queue getQueue(int kind) {
 		try {
-			this.session.check();
 			switch (kind) {
 				case Queue.KIND_DOWNLOAD:
 					return this.getDownloadQueue();
@@ -314,6 +313,7 @@ public class FTPPath extends Path {
 	
 	private Queue getDownloadQueue(Queue queue) throws IOException {
 		if (this.isDirectory()) {
+			this.session.check();
 			List files = this.list(false, true);
 			java.util.Iterator i = files.iterator();
 			while (i.hasNext()) {

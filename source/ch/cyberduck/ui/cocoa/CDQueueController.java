@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.FTPPath;
 
-public class CDQueueController extends NSObject implements Observer, Validator {
+public class CDQueueController extends NSObject implements Observer {
     private static Logger log = Logger.getLogger(CDQueueController.class);
 
     private static CDQueueController instance;
@@ -170,7 +170,7 @@ public class CDQueueController extends NSObject implements Observer, Validator {
                 );
             }
         }
-        queue.start(this, this);
+        queue.start(new CDValidatorController(), this);
     }
 
     public void update(Observable observable, Object arg) {
@@ -514,146 +514,5 @@ public class CDQueueController extends NSObject implements Observer, Validator {
             return true;
         }
         return true;
-    }
-
-    private boolean proceed;
-    private boolean done = true;
-
-    /**
-     * @return true if validation suceeded, false if !proceed
-     */
-    public boolean validate(Path path, int kind) {
-        boolean resume = path.status.isResume();
-        this.proceed = false;
-        log.debug("validate:" + path + "," + resume);
-        if (Queue.KIND_DOWNLOAD == kind) {
-            log.debug("validating download");
-            if (resume) {
-                log.debug("resume:true");
-                if (path.status.isComplete()) {
-                    log.debug("complete:true");
-                    log.debug("return:true");
-                    return true;
-                }
-                else if (!path.status.isComplete()) {
-                    log.debug("complete:false");
-                    path.status.setResume(path.getLocal().exists());
-                    log.debug("return:true");
-                    return true;
-                }
-            }
-            if (!resume) {
-                log.debug("resume:false");
-                if (path.getLocal().exists()) {
-                    log.debug("local path exists:true");
-                    if (Preferences.instance().getProperty("queue.download.duplicate").equals("ask")) {
-                        log.debug("queue.download.duplicate:ask");
-                        // Waiting for other alert sheets open to be closed first
-                        while (!done) {
-                            try {
-                                log.debug("Sleeping...");
-                                Thread.sleep(1000); //milliseconds
-                            }
-                            catch (InterruptedException e) {
-                                log.error(e.getMessage());
-                            }
-                        }
-                        this.done = false;
-                        this.window().makeKeyAndOrderFront(null);
-                        NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("File exists", ""), //title
-                                NSBundle.localizedString("Overwrite", ""), // defaultbutton
-                                NSBundle.localizedString("Cancel", ""), //alternative button
-                                path.status.isComplete() ? null : NSBundle.localizedString("Resume", ""), //other button
-                                this.window,
-                                this, //delegate
-                                new NSSelector
-                                        ("validateSheetDidEnd",
-                                                new Class[]
-                                                {
-                                                    NSWindow.class, int.class, Object.class
-                                                }), // end selector
-                                null, // dismiss selector
-                                path, // context
-                                NSBundle.localizedString("The file", "") + " '" + path.getName() + "' " + NSBundle.localizedString("alredy exists in", "") + " " + path.getLocal().getParent() // message
-                        );
-                        // Waiting for user to make choice
-                        while (!done) {
-                            try {
-                                log.debug("Sleeping...");
-                                Thread.sleep(1000); //milliseconds
-                            }
-                            catch (InterruptedException e) {
-                                log.error(e.getMessage());
-                            }
-                        }
-                        log.debug("return:" + proceed);
-                        return proceed;
-                    }
-                    else if (Preferences.instance().getProperty("queue.download.duplicate").equals("similar")) {
-                        log.debug("queue.download.duplicate:similar");
-                        path.status.setResume(false);
-                        String proposal = null;
-                        String parent = path.getLocal().getParent();
-                        String filename = path.getLocal().getName();
-                        int no = 1;
-                        int index = filename.lastIndexOf(".");
-                        while (path.getLocal().exists()) {
-                            if (index != -1) {
-                                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
-                            }
-                            else {
-                                proposal = filename + "-" + no;
-                            }
-                            path.setLocal(new Local(parent, proposal));
-                            no++;
-                        }
-                        log.debug("return:true");
-                        return true;
-                    }
-                    else if (Preferences.instance().getProperty("queue.download.duplicate").equals("resume")) {
-                        log.debug("queue.download.duplicate:resume");
-                        path.status.setResume(true);
-                        log.debug("return:true");
-                        return true;
-                    }
-                    else if (Preferences.instance().getProperty("queue.download.duplicate").equals("overwrite")) {
-                        log.debug("queue.download.duplicate:overwrite");
-                        path.status.setResume(false);
-                        log.debug("return:true");
-                        return true;
-                    }
-                }
-                log.debug("local path exists:false");
-                log.debug("return:true");
-                return true;
-            }
-        }
-        else if (Queue.KIND_UPLOAD == kind) {
-            log.debug("Validating upload");
-            path.status.setResume(false);
-            log.debug("return:true");
-            return true;
-        }
-        return false;
-    }
-
-    public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-        log.debug("validateSheetDidEnd:" + returncode + "," + contextInfo);
-        sheet.close();
-        Path item = (Path) contextInfo;
-        switch (returncode) {
-            case NSAlertPanel.DefaultReturn: //Overwrite
-                item.status.setResume(false);
-                proceed = true;
-                break;
-            case NSAlertPanel.AlternateReturn: //Cancel
-                proceed = false;
-                break;
-            case NSAlertPanel.OtherReturn: //Resume
-                item.status.setResume(true);
-                proceed = true;
-                break;
-        }
-        this.done = true;
     }
 }

@@ -218,30 +218,32 @@ public class Queue extends Observable implements Observer { //Thread {
 	 */
 	public void start(final Validator validator, final Observer observer) {
 		log.debug("start");
-		this.completedJobs = 0;
-		this.processedJobs = 0;
-		this.error = "";
+		this.init();
 		
 		new Thread() {
 			public void run() {
 				Queue.this.addObserver(observer);
+				
 				Queue.this.elapsedTimer.start();
 				Queue.this.running = true;
 
 				callObservers(new Message(Message.QUEUE_START, Queue.this));
-				
+				Queue.this.getRoot().getSession().addObserver(Queue.this);
+
 				for (Iterator iter = jobs.iterator() ; iter.hasNext() && !Queue.this.isCanceled(); ) {
 					Path item = (Path)iter.next();
 					if (validator.validate(item, Queue.this.kind)) {
 						Queue.this.run(item);
 					}
 				}
-				
-				Queue.this.getRoot().getSession().close();
+								
+				Queue.this.elapsedTimer.stop();
+				Queue.this.running = false;
 				Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
 
-				Queue.this.running = false;
-				Queue.this.elapsedTimer.stop();
+				Queue.this.getRoot().getSession().close();
+				Queue.this.getRoot().getSession().deleteObserver(Queue.this);
+
 				Queue.this.deleteObserver(observer);
 			}
 		}.start();
@@ -252,24 +254,22 @@ public class Queue extends Observable implements Observer { //Thread {
 		this.leftTimer.start();
 		
 		this.currentJob = job;
-		this.currentJob.getSession().addObserver(this);
-		this.currentJob.status.addObserver(this);
+		job.status.addObserver(this);
 		
 		this.processedJobs++;
 		switch (kind) {
 			case KIND_DOWNLOAD:
-				currentJob.download();
+				job.download();
 				break;
 			case KIND_UPLOAD:
-				currentJob.upload();
+				job.upload();
 				break;
 		}
-		if (currentJob.status.isComplete()) {
+		if (job.status.isComplete()) {
 			this.completedJobs++;
 		}
 		
-		this.currentJob.getSession().deleteObserver(this);
-		this.currentJob.status.deleteObserver(this);
+		job.status.deleteObserver(this);
 		
 		this.progressTimer.stop();
 		this.leftTimer.stop();
@@ -471,6 +471,16 @@ public class Queue extends Observable implements Observer { //Thread {
 
 	private void init() {
 		log.debug("init");
+		
+		for (Iterator iter = jobs.iterator(); iter.hasNext(); ) {
+			Path item = (Path)iter.next();
+			item.status.reset();
+		}
+
+		this.completedJobs = 0;
+		this.processedJobs = 0;
+		this.error = "";
+		
 		this.calendar.set(Calendar.HOUR, 0);
 		this.calendar.set(Calendar.MINUTE, 0);
 		this.calendar.set(Calendar.SECOND, 0);

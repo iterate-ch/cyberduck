@@ -67,6 +67,10 @@ public abstract class History {
         return (Host) this.data.get(key);
     }
 
+//	public int indexOf(Object o) {
+//		return this.values().indexOf(o);
+//	}
+	
     public void clear() {
         this.data.clear();
     }

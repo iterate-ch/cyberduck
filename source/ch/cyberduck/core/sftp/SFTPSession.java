@@ -54,12 +54,6 @@ public class SFTPSession extends Session {
 	protected SftpSubsystemClient SFTP;
 	private SshClient SSH;
 
-	/**
-	 * @param client The client to use which does implement the ftp protocol
-	 * @param action The <code>TransferAction</code> to execute after the connection has been opened
-	 * @param transfer The <code>Bookmark</code> object
-	 * @param secure If the connection is secure
-	 */
 	public SFTPSession(Host h) {
 		super(h);
 	}
@@ -135,7 +129,8 @@ public class SFTPSession extends Session {
 		new Thread() {
 			public void run() {
 				try {
-					connect();
+					//					connect();
+					check();
 					Path home;
 					if (host.hasReasonableDefaultPath()) {
 						if (host.getDefaultPath().charAt(0) != '/')

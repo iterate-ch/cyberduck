@@ -143,5 +143,6 @@ public class Status extends Observable implements Serializable {
 	public void reset() {
 		this.complete = false;
 		this.canceled = false;
+		this.current = 0;
 	}
 }

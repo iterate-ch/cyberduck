@@ -93,6 +93,26 @@ public class CDPreferencesController extends NSObject {
     // Outlets
     // ----------------------------------------------------------
 
+	/*
+	private NSPopUpButton defaultHostCombobox;
+	
+	public void setDefaultHostCombobox(NSPopUpButton defaultHostCombobox) {
+		this.defaultHostCombobox = defaultHostCombobox;
+        this.defaultHostCombobox.setTarget(this);
+        this.defaultHostCombobox.setAction(new NSSelector("defaultHostComboboxClicked", new Class[]{NSPopUpButton.class}));
+        this.defaultHostCombobox.removeAllItems();
+		this.defaultHostCombobox.addItem(NSBundle.localizedString("Empty Browser", ""));
+		for(int i = 0; i < CDBookmarksImpl.instance().size(); i++) {
+			this.defaultHostCombobox.addItem(CDBookmarksImpl.instance().getItem(i));
+		}
+		this.defaultHostCombobox.setTitle(Preferences.instance().getProperty("connection.host.default"));
+	}
+	
+	public void defaultHostComboboxClicked(NSPopUpButton sender) {
+        Preferences.instance().setProperty("connection.host.default", sender.titleOfSelectedItem());
+    }
+	 */
+	
 	private NSPopUpButton editorCombobox;
 	
 	public void setEditorCombobox(NSPopUpButton editorCombobox) {
@@ -690,9 +710,11 @@ public class CDPreferencesController extends NSObject {
         switch (sender.state()) {
             case NSCell.OnState:
                 Preferences.instance().setProperty("browser.openByDefault", true);
+//				this.defaultHostCombobox.setEnabled(true);
                 break;
             case NSCell.OffState:
                 Preferences.instance().setProperty("browser.openByDefault", false);
+//				this.defaultHostCombobox.setEnabled(false);
                 break;
         }
     }

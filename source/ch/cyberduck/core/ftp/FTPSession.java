@@ -47,12 +47,6 @@ public class FTPSession extends Session {
 
 	protected FTPClient FTP;
 
-	/**
-	 * @param client The client to use which does implement the ftp protocol
-	 * @param action The <code>TransferAction</code> to execute after the connection has been opened
-	 * @param transfer The <code>Bookmark</code> object
-	 * @param secure If the connection is secure
-	 */
 	public FTPSession(Host h) {
 		super(h);
 	}
@@ -106,7 +100,8 @@ public class FTPSession extends Session {
 		new Thread() {
 			public void run() {
 				try {
-					connect();
+//					connect();
+					check();
 					Path home;
 					if (host.hasReasonableDefaultPath()) {
 						if (host.getDefaultPath().charAt(0) != '/')

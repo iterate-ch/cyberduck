@@ -322,7 +322,6 @@ public class SFTPPath extends Path {
 
 	public Queue getQueue(int kind) {
 		try {
-			this.session.check();
 			switch (kind) {
 				case Queue.KIND_DOWNLOAD:
 					return this.getDownloadQueue();
@@ -345,8 +344,8 @@ public class SFTPPath extends Path {
 	
 	private Queue getDownloadQueue(Queue queue) throws IOException {
 		try {
-			this.session.check();
 			if (isDirectory()) {
+				this.session.check();
 				List files = this.list(false, true);
 				java.util.Iterator i = files.iterator();
 				while (i.hasNext()) {

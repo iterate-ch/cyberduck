@@ -274,13 +274,20 @@ public class CDBrowserController extends NSObject implements Observer {
     public void bookmarkSelectionDidChange(NSNotification notification) {
         editBookmarkButton.setEnabled(bookmarkTable.numberOfSelectedRows() == 1);
         removeBookmarkButton.setEnabled(bookmarkTable.numberOfSelectedRows() == 1);
+        if (this.bookmarkTable.selectedRow() != -1) {
+            Host host = (Host) CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow());
+            this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
+			this.mount(host);
+		}			
     }
 
     public void bookmarkTableRowDoubleClicked(Object sender) {
         log.debug("bookmarkTableRowDoubleClicked");
         if (this.bookmarkTable.selectedRow() != -1) {
             Host host = (Host) CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow());
-            this.mount(host);
+			CDBrowserController controller = new CDBrowserController();
+			controller.window().makeKeyAndOrderFront(null);
+            controller.mount(host);
         }
     }
 
@@ -781,13 +788,12 @@ public class CDBrowserController extends NSObject implements Observer {
 	}
 
 
-	public void saveAsPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
+	public void saveAsPanelDidEnd(NSSavePanel sheet, int returnCode, Object contextInfo) {
 		switch (returnCode) {
 			case (NSAlertPanel.DefaultReturn):
 			{
-				NSArray selected = sheet.filenames(); //returning absolute paths
-				String filename;
-				if ((filename = (String) selected.lastObject()) != null) {
+				String filename = null;
+				if ((filename = sheet.filename()) != null) {
 					Path path  = (Path)contextInfo;
 					path.setLocal(new Local(filename));
 					//				Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
@@ -906,20 +912,21 @@ public class CDBrowserController extends NSObject implements Observer {
 
     public void mount(Host host) {
         log.debug("mount:" + host);
-        if (this.unmount(new NSSelector("mountSheetDidEnd",
-                new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
-        )) {
+//        if (this.unmount(new NSSelector("mountSheetDidEnd",
+//										new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
+//						 )) {
+            this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
+            pathController.removeAllItems();
+            browserModel.clear();
+            browserTable.reloadData();
+			
             TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(logView));
-
+			
             Session session = SessionFactory.createSession(host);
             session.addObserver((Observer) this);
             session.addObserver((Observer) pathController);
 
             progressIndicator.startAnimation(this);
-            pathController.removeAllItems();
-            browserModel.clear();
-            browserTable.reloadData();
-            this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
 
             if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
                 try {
@@ -942,7 +949,7 @@ public class CDBrowserController extends NSObject implements Observer {
             }
             host.getLogin().setController(new CDLoginController(this.window));
             session.mount();
-        }
+//        }
     }
 
     public void mountSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
