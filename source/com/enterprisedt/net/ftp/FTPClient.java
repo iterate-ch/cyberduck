@@ -131,8 +131,9 @@ public class FTPClient {
 	 *                    (pass in 0 for no timeout)
 	 * @param encoding    character encoding used for data
 	 */
-	public FTPClient(String remoteHost, int controlPort, int timeout, String encoding) throws IOException, FTPException {
-		this(InetAddress.getByName(remoteHost), controlPort, timeout, encoding);
+	public FTPClient(String remoteHost, int controlPort, int timeout, String encoding,
+					 FTPMessageListener listener) throws IOException, FTPException {
+		this(InetAddress.getByName(remoteHost), controlPort, timeout, encoding, listener);
 	}
 
 	/**
@@ -147,12 +148,16 @@ public class FTPClient {
 	 *                    (pass in 0 for no timeout)
 	 * @param encoding    character encoding used for data
 	 */
-	public FTPClient(InetAddress remoteAddr, int controlPort, int timeout, String encoding) throws IOException, FTPException {
-		if(controlPort < 0)
+	public FTPClient(InetAddress remoteAddr, int controlPort, int timeout, String encoding,
+					 FTPMessageListener listener) throws IOException, FTPException 
+	{
+		if(controlPort < 0) {
 			controlPort = FTPControlSocket.CONTROL_PORT;
-		this.initialize(new FTPControlSocket(remoteAddr, controlPort, timeout, encoding, null));
+		}
+		this.messageListener = listener;
+		this.initialize(new FTPControlSocket(remoteAddr, controlPort, timeout, encoding, listener));
 	}
-
+	
 	/**
 	 * Checks if the client has connected to the server and throws an exception if it hasn't.
 	 * This is only intended to be used by subclasses
@@ -185,6 +190,13 @@ public class FTPClient {
 		}
 	}
 
+	public void interrupt() throws IOException {
+		if(null == this.control) {
+			return;
+		}
+		this.control.getSocket().close();
+	}
+	
 	/**
 	 * Set the control socket explicitly
 	 *
@@ -192,7 +204,6 @@ public class FTPClient {
 	 */
 	protected void initialize(FTPControlSocket control) {
 		this.control = control;
-		control.setMessageListener(messageListener);
 	}
 
 	/**
@@ -240,17 +251,6 @@ public class FTPClient {
 	 */
 	public void setConnectMode(FTPConnectMode mode) {
 		connectMode = mode;
-	}
-
-	/**
-	 * Set a listener that handles all FTP messages
-	 *
-	 * @param listener message listener
-	 */
-	public void setMessageListener(FTPMessageListener listener) {
-		this.messageListener = listener;
-		if(control != null)
-			control.setMessageListener(listener);
 	}
 
 	/**
@@ -978,6 +978,3 @@ public class FTPClient {
 		}
 	}
 }
-
-
-

@@ -111,9 +111,13 @@ public class FTPControlSocket {
 		this.controlSock = controlSock;
 		this.messageListener = messageListener;
 
-		setTimeout(timeout);
-		initStreams(encoding);
-		validateConnection();
+		this.setTimeout(timeout);
+		this.initStreams(encoding);
+		this.validateConnection();
+	}
+	
+	protected Socket getSocket() {
+		return this.controlSock;
 	}
 
 	/**
@@ -183,16 +187,6 @@ public class FTPControlSocket {
 			throw new IllegalStateException("Failed to set timeout - no control socket");
 
 		controlSock.setSoTimeout(millis);
-	}
-
-
-	/**
-	 * Set a listener that handles all FTP messages
-	 *
-	 * @param listener message listener
-	 */
-	public void setMessageListener(FTPMessageListener listener) {
-		this.messageListener = listener;
 	}
 
 	/**
