@@ -49,12 +49,12 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 //		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 		String identifier = (String)tableColumn.identifier();
 		Queue item = this.getEntry(row);
-		if(identifier.equals("ICON")) {
-			if(item.kind() == Queue.KIND_DOWNLOAD)
-				return NSImage.imageNamed("download.tiff");
-			if(item.kind() == Queue.KIND_UPLOAD)
-				return NSImage.imageNamed("upload.tiff");
-		}
+//		if(identifier.equals("ICON")) {
+//			if(item.kind() == Queue.KIND_DOWNLOAD)
+//				return NSImage.imageNamed("download.tiff");
+//			if(item.kind() == Queue.KIND_UPLOAD)
+//				return NSImage.imageNamed("upload.tiff");
+//		}
 		if(identifier.equals("DATA")) {
 			return this.getEntry(row);
 		}

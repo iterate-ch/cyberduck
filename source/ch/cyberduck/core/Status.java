@@ -102,11 +102,11 @@ public class Status extends Observable implements Serializable {
 		else if(size < KILO)
 			return size + " B";
 		else if(size < MEGA)
-			return new Long(size/KILO).intValue() + " KB";
+			return new Long(size/KILO).intValue() + "kB";
 		else if(size < GIGA)
-			return new Long(size/MEGA).intValue() + " MB";
+			return new Long(size/MEGA).intValue() + "MB";
 		else
-			return new Long(size/GIGA).intValue() + " GB";
+			return new Long(size/GIGA).intValue() + "GB";
     }
     
     public void setComplete(boolean b) {

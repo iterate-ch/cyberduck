@@ -402,8 +402,8 @@ public class CDPreferencesController {
 		this.duplicateCombo.setAction(new NSSelector("duplicateComboClicked", new Class[] {NSPopUpButton.class}));
 		this.duplicateCombo.removeAllItems();	
 		this.duplicateCombo.addItemsWithTitles(new NSArray(new String[]{ASK_ME_WHAT_TO_DO, OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
-		//	if(Preferences.instance().getProperty("download.duplicate").equals("ask"))
-  //	    this.duplicateCombo.setTitle(ASK_ME_WHAT_TO_DO);
+		if(Preferences.instance().getProperty("download.duplicate").equals("ask"))
+			this.duplicateCombo.setTitle(ASK_ME_WHAT_TO_DO);
 		if(Preferences.instance().getProperty("download.duplicate").equals("overwrite"))
 			this.duplicateCombo.setTitle(OVERWRITE_EXISTING_FILE);
 		else if(Preferences.instance().getProperty("download.duplicate").equals("resume"))
@@ -413,8 +413,8 @@ public class CDPreferencesController {
     }
 	
     public void duplicateComboClicked(NSPopUpButton sender) {
-		//	if(sender.selectedItem().title().equals(ASK_ME_WHAT_TO_DO))
-  //	    Preferences.instance().setProperty("download.duplicate", "ask");
+		if(sender.selectedItem().title().equals(ASK_ME_WHAT_TO_DO))
+			Preferences.instance().setProperty("download.duplicate", "ask");
 		if(sender.selectedItem().title().equals(OVERWRITE_EXISTING_FILE))
 			Preferences.instance().setProperty("download.duplicate", "overwrite");
 		else if(sender.selectedItem().title().equals(TRY_TO_RESUME_TRANSFER))

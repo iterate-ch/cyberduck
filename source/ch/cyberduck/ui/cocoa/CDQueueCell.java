@@ -39,6 +39,14 @@ public class CDQueueCell extends NSCell {
     
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 //		log.debug("drawInteriorWithFrameInView");
+//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and 
+//coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
+//invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.
+		controlView.lockFocus();
+		
+		NSPoint cellPoint = cellFrame.origin();
+		NSSize cellSize = cellFrame.size();	
+
 		NSMutableParagraphStyle paragraphStyle = new NSMutableParagraphStyle();
 		paragraphStyle.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle()); 
 		paragraphStyle.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
@@ -69,6 +77,7 @@ public class CDQueueCell extends NSCell {
 								   NSAttributedString.ForegroundColorAttributeName, 
 								   NSAttributedString.ParagraphStyleAttributeName}
 							   );
+			NSGraphics.fillRectListWithColors(new NSRect[]{new NSRect(cellPoint.x()-2, cellSize.height(), cellSize.width()+2, 1)}, new NSColor[]{NSColor.whiteColor()});
 		}
 		// cell is not selected (black font)
 		else {
@@ -93,15 +102,8 @@ public class CDQueueCell extends NSCell {
 								   NSAttributedString.ForegroundColorAttributeName, 
 								   NSAttributedString.ParagraphStyleAttributeName}
 							   );
+			NSGraphics.fillRectListWithColors(new NSRect[]{new NSRect(cellPoint.x()-2, cellSize.height(), cellSize.width()+2, 1)}, new NSColor[]{NSColor.darkGrayColor()});
 		}
-
-		//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and 
-  //coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
-  //invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.
-		controlView.lockFocus();
-		
-		NSPoint cellPoint = cellFrame.origin();
-		NSSize cellSize = cellFrame.size();	
 		
 		if(queue.isInitialized()) {
 			// drawing file icon
@@ -126,45 +128,62 @@ public class CDQueueCell extends NSCell {
 			
 			fileIcon.setSize(new NSSize(32f, 32f));
 			arrowIcon.setSize(new NSSize(32f, 32f));
-//			fileIcon.compositeToPoint(new NSPoint(cellPoint.x(), cellPoint.y()+16+1), NSImage.CompositeSourceOver);
-			float alpha = (float)(queue.getCurrent()/queue.getSize());
-			fileIcon.dissolveToPoint(new NSPoint(cellPoint.x(), cellPoint.y()+32f+1), alpha);
-			arrowIcon.compositeToPoint(new NSPoint(cellPoint.x(), cellPoint.y()+32f+1), NSImage.CompositeSourceOver);
+//			float alpha = (float)(queue.getCurrent()/queue.getSize());
+//			fileIcon.dissolveToPoint(new NSPoint(cellPoint.x(), cellPoint.y()+32f+1), alpha);
+			fileIcon.compositeToPoint(new NSPoint(cellPoint.x(), cellPoint.y()+32f+1), NSImage.CompositeSourceOver);
+			arrowIcon.compositeToPoint(new NSPoint(cellPoint.x()+4, cellPoint.y()+32f+4+1), NSImage.CompositeSourceOver);
 				
 			// drawing path properties
    // local file
 			NSGraphics.drawAttributedString(
 								   new NSAttributedString(queue.getCurrentJob().getName(), boldFont), 
-								   new NSRect(cellPoint.x()+36, cellPoint.y()+1, cellSize.width()-5, cellSize.height())
+								   new NSRect(cellPoint.x()+40, cellPoint.y()+1, cellSize.width()-5, cellSize.height())
 								   );
 			// remote url
 			NSGraphics.drawAttributedString(
 								   new NSAttributedString(queue.getCurrentJob().getHost().getURL()+queue.getCurrentJob().getAbsolute(), tinyFont),
-								   new NSRect(cellPoint.x()+36, cellPoint.y()+20, cellSize.width()-5, cellSize.height())
+								   new NSRect(cellPoint.x()+40, cellPoint.y()+20, cellSize.width()-5, cellSize.height())
 								   );
 			// drawing status
 			NSGraphics.drawAttributedString(
 								   new NSAttributedString(
-								  queue.getCurrentJob().status.getCurrent()/1024+
+								  Status.getSizeAsString(queue.getCurrentJob().status.getCurrent())+
 								  " "+NSBundle.localizedString("of")+
-								  " "+(queue.getCurrentJob().status.getSize()/1024)+"kB ("+
+								  " "+Status.getSizeAsString(queue.getCurrentJob().status.getSize())+" ("+
 								  queue.getCurrentAsString()+" of "+
-								  queue.getSizeAsString()+""+NSBundle.localizedString("Total")+") - "+
-								  queue.getSpeedAsString()+" - "+queue.getTimeLeft(),
+								  queue.getSizeAsString()+" "+NSBundle.localizedString("Total")+"), "+
+								  queue.getSpeedAsString()+", "+queue.getTimeLeft(),
 								  tinyFont),
-								   new NSRect(cellPoint.x()+36, cellPoint.y()+33, cellSize.width()-5, cellSize.height())
+								   new NSRect(cellPoint.x()+40, cellPoint.y()+33, cellSize.width()-5, cellSize.height())
 								   );
-			
+			if(queue.isEmpty()) {
+				NSGraphics.drawAttributedString(
+									new NSAttributedString(
+								"Complete ("+(queue.completedJobs())+" of "+(queue.numberOfJobs())+")", 
+								tinyFont),
+									new NSRect(cellPoint.x()+40, cellPoint.y()+46, cellSize.width()-5, cellSize.height())
+									);
+			}
+			else {
 			NSGraphics.drawAttributedString(
 								   new NSAttributedString(
 								  Queue.KIND_DOWNLOAD == queue.kind() ? 
-								  "Downloading "+queue.getCurrentJob().getName()+" ("+(queue.completedJobs()+1)+" of "+(queue.numberOfJobs())+")" : 
-								  "Uploading "+queue.getCurrentJob().getName()+" ("+(queue.completedJobs()+1)+" of "+(queue.numberOfJobs())+")", 
+								  "Downloading "+queue.getCurrentJob().getName()+" ("+(queue.completedJobs())+" of "+(queue.numberOfJobs())+")" : 
+								  "Uploading "+queue.getCurrentJob().getName()+" ("+(queue.completedJobs())+" of "+(queue.numberOfJobs())+")", 
 								  tinyFont),
-								   new NSRect(cellPoint.x()+36, cellPoint.y()+46, cellSize.width()-5, cellSize.height())
+								   new NSRect(cellPoint.x()+40, cellPoint.y()+46, cellSize.width()-5, cellSize.height())
 								   );
+			}
+			
+			// drawing progress bar
+//controlView.addSubview (Indicator); 
+			
+//Indicator.setIndeterminate (false); 
+//Indicator.startAnimation (null); 
+// Indicator.setFrame (cellFrame); 
+//Indicator.displayRect (cellFrame); 
+			
 		}
-		NSGraphics.fillRectList(new NSRect[]{new NSRect(cellPoint.x(), cellSize.height(), cellSize.width()+1, 1)});
 		controlView.unlockFocus();
 	}	
 }

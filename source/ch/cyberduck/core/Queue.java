@@ -259,7 +259,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		* @return Number of remaining items to be processed in the queue.
      */
     public int remainingJobs() {
-		log.debug("remainingJobs:");
+//		log.debug("remainingJobs:");
 		return this.numberOfJobs() - this.completedJobs();
     }
 	
@@ -267,7 +267,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		* @return Number of completed (totally transferred) items in the queue.
      */
     public int completedJobs() {
-		log.debug("completedJobs:"+completedJobs);
+//		log.debug("completedJobs:"+completedJobs);
 		return this.completedJobs;
     }
 
@@ -275,12 +275,12 @@ public class Queue extends Observable implements Observer { //Thread {
 		* @return Number of jobs in the queue.
      */
     public int numberOfJobs() {
-		int no = 0;
+		int value = 0;
 		for(int i = 0; i < jobs.length; i ++) {
-			no += this.jobs[i].size();
+			value += this.jobs[i].size();
 		}
-		log.debug("numberOfJobs:"+no);
-		return no;
+//		log.debug("numberOfJobs:"+value);
+		return value;
     }
 	
     /**
@@ -348,7 +348,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		* @return double current bytes/second
      */
     public String getSpeedAsString() {
-		return Status.getSizeAsString(this.getSpeed());
+		return Status.getSizeAsString(this.getSpeed())+"/sec";
     }
 	
 	public long getSpeed() {

@@ -58,8 +58,9 @@ public class CDQueueController implements Observer, Validator {
 		this.queueTable.setTarget(this);
 		this.queueTable.setDataSource(this.queueModel = new CDQueueTableDataSource());
 		this.queueTable.setDelegate(this.queueModel);
-		this.queueTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
+//		this.queueTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
 		this.queueTable.tableColumnWithIdentifier("DATA").setDataCell(new CDQueueCell());
+		this.queueTable.setDoubleAction(new NSSelector("revealButtonClicked", new Class[] {Object.class}));
     }
 	
 	public void addTransfer(Path root, int kind) {
@@ -99,7 +100,7 @@ public class CDQueueController implements Observer, Validator {
 	}
 	
 	public void awakeFromNib() {
-		this.window().setTitle("Transfer Manager");
+		this.window().setTitle("Transfer Queue");
 		this.toolbar = new NSToolbar("Queue Toolbar");
 		this.toolbar.setDelegate(this);
 		this.toolbar.setAllowsUserCustomization(true);
@@ -108,8 +109,8 @@ public class CDQueueController implements Observer, Validator {
 	}		
 	
 	// ----------------------------------------------------------
- // Toolbar Delegate
- // ----------------------------------------------------------
+ 	// Toolbar Delegate
+ 	// ----------------------------------------------------------
     
 	public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {		
 		NSToolbarItem item = new NSToolbarItem(itemIdentifier);
@@ -169,7 +170,7 @@ public class CDQueueController implements Observer, Validator {
 		item.start();
 	}
 	
-	public void revealButtonClicked(NSButton sender) {
+	public void revealButtonClicked(Object sender) {
 		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
 		if(item.isInitialized())
 			NSWorkspace.sharedWorkspace().selectFile(item.getCurrentJob().getLocal().toString(), "");
@@ -193,20 +194,29 @@ public class CDQueueController implements Observer, Validator {
 		});
 	}
 	
-	public boolean validateToolbarItem(NSToolbarItem item) {
+    public boolean validateToolbarItem(NSToolbarItem item) {
 //		log.debug("validateToolbarItem:"+item.label());
 		String label = item.label();
 		if(label.equals(NSBundle.localizedString("Stop"))) {
-			Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
-			return this.queueTable.selectedRow() != -1 && !queue.isCanceled();
+			if(this.queueTable.selectedRow() != -1) {
+				Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+				return !queue.isCanceled();
+			}
+			return false;
 		}
 		if(label.equals(NSBundle.localizedString("Resume"))) {
-			Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
-			return this.queueTable.selectedRow() != -1 && !queue.isRunning() && !(queue.remainingJobs() == 0);
+			if(this.queueTable.selectedRow() != -1) {
+				Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+				return !queue.isRunning() && !(queue.remainingJobs() == 0);
+			}
+			return false;
 		}
 		if(label.equals(NSBundle.localizedString("Reload"))) {
-			Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
-			return this.queueTable.selectedRow() != -1 && !queue.isRunning();
+			if(this.queueTable.selectedRow() != -1) {
+				Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+				return !queue.isRunning();
+			}
+			return false;
 		}
 		if(label.equals(NSBundle.localizedString("Reveal in Finder"))) {
 			return this.queueTable.selectedRow() != -1;
