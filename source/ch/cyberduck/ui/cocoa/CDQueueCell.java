@@ -26,45 +26,15 @@ import ch.cyberduck.core.Queue;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
-import org.apache.log4j.Logger;
-
 public class CDQueueCell extends CDTableCell {
-	private static Logger log = Logger.getLogger(CDQueueCell.class);
-
 	private Queue queue;
 	
 	public void setObjectValue(Object queue) {
-//		log.debug("setObjectValue:"+queue);
 		this.queue = (Queue)queue;
     }
-    
-// catch key events when subclassing nstableview
-//	public void keyDown(NSEvent event) {
-//		log.debug("keyDown:"+event);
-//		String keys = event.characters();
-//		if (keys.length()==1 && keys.charAt(0)==NSText.DeleteCharacter) {
-//			log.debug("delete event!");
-//		}
-//		else	
-//			super.keyDown(event);
-//	}
-		
-	// ---------------------------------------------------------
- 	//  Context Menu
- 	// ---------------------------------------------------------
-	
-	//	public NSMenu menuForEvent(NSEvent event, NSRect cellFrame, NSView aView) {
-// does not seem to work
-//	public NSMenu menu() {
-//		log.debug("menu");
-//		NSMenu menu = new NSMenu();
-//		menu.addItem("Stop", new NSSelector("stopButtonClicked", new Class[] {Object.class}), "");
-//		return menu;
-//	}
-	
+    	
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
-///		log.debug("drawInteriorWithFrameInView");
 		
 		NSPoint cellPoint = cellFrame.origin();
 		NSSize cellSize = cellFrame.size();	
@@ -120,29 +90,12 @@ public class CDQueueCell extends CDTableCell {
 												   cellSize.width()-BORDER-SPACE, 
 												   cellSize.height())
 										);
-		// drawing status
-/*		NSGraphics.drawAttributedString(
-										new NSAttributedString(
-															   queue.getCurrentAsString()
-															   +" of "+
-															   queue.getSizeAsString()
-															   +" - "+//NSBundle.localizedString("Total")+"), "+
-															   queue.getTimeLeft(),
-															   tinyFont),
-										new NSRect(cellPoint.x()+BORDER+SPACE, 
-												   cellPoint.y()+33, 
-												   cellSize.width()-BORDER-SPACE, 
-												   cellSize.height())
-										);
-*/
-		
 		NSGraphics.drawAttributedString(
 										new NSAttributedString(
 															   queue.getStatus(),
 															   tinyFont),
 										new NSRect(cellPoint.x()+BORDER+SPACE, 
 												   cellPoint.y()+33, 
-//												   cellPoint.y()+46, 
 												   cellSize.width()-BORDER-SPACE, 
 												   cellSize.height())
 										);

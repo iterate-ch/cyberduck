@@ -23,21 +23,15 @@ import ch.cyberduck.core.Queue;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
-import org.apache.log4j.Logger;
-
 public class CDProgressCell extends CDTableCell {
-	private static Logger log = Logger.getLogger(CDProgressCell.class);
-	
 	private Queue queue;
 	
 	public void setObjectValue(Object queue) {
-//		log.debug("setObjectValue:"+queue);
 		this.queue = (Queue)queue;
     }
 	
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
-//		log.debug("drawInteriorWithFrameInView");
 
 		NSPoint cellPoint = cellFrame.origin();
 		NSSize cellSize = cellFrame.size();	

@@ -21,25 +21,14 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Host;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
-import org.apache.log4j.Logger;
 
 public class CDBookmarkCell extends CDTableCell {
-	private static Logger log = Logger.getLogger(CDBookmarkCell.class);
-
 	private Host bookmark;
 	private	NSImage image = NSImage.imageNamed("cyberduck-document.icns");
 	
 	public void setObjectValue(Object bookmark) {
-//		log.debug("setObjectValue:"+bookmark);
 		this.bookmark = (Host)bookmark;
     }
-	
-	public NSMenu menu() {
-		log.debug("menu");
-		NSMenu menu = new NSMenu();
-		menu.addItem("Delete", new NSSelector("deleteButtonClicked", new Class[] {Object.class}), "");
-		return menu;
-	}
 	
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
