@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSObject;
@@ -42,7 +43,7 @@ public class CDFolderController extends NSObject {
         this.window.setDelegate(this);
     }
 
-    private NSTextField folderField; /* IBOutlet */
+    private NSTextField folderField; //IBOutlet
 
     public void setFolderField(NSTextField folderField) {
         this.folderField = folderField;
@@ -62,20 +63,35 @@ public class CDFolderController extends NSObject {
     public void windowWillClose(NSNotification notification) {
         instances.removeObject(this);
     }
-
+	
     public void closeSheet(Object sender) {
         // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-        NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
-    }
+		if(folderField.stringValue().indexOf('/') == -1) {
+			NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
+		}
+		else {
+			NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+													  NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+													  null, //alternative button
+													  null, //other button
+													  this.window(), //docWindow
+													  null, //modalDelegate
+													  null, //didEndSelector
+													  null, // dismiss selector
+													  null, // context
+													  NSBundle.localizedString("Invalid character in folder name.", "") // message
+													  );
+		}
+	}
 
     public void newfolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
         log.debug("newfolderSheetDidEnd");
-        sheet.orderOut(null);
+		sheet.orderOut(null);
         switch (returncode) {
             case (NSAlertPanel.DefaultReturn):
-                ((Path) contextInfo).mkdir(folderField.stringValue());
-                ((Path) contextInfo).list(true);
-                break;
+				((Path) contextInfo).getSession().mkdir(((Path) contextInfo).getAbsolute()+"/"+folderField.stringValue());
+				((Path) contextInfo).list(true);
+				break;
             case (NSAlertPanel.AlternateReturn):
                 break;
         }

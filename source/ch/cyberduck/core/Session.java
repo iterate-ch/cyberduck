@@ -31,10 +31,11 @@ import org.apache.log4j.Logger;
 public abstract class Session extends Observable {
     private static Logger log = Logger.getLogger(Session.class);
 
+    public static final String SFTP = "sftp";
     public static final String HTTP = "http";
     public static final String HTTPS = "https";
     public static final String FTP = "ftp";
-    public static final String SFTP = "sftp";
+    public static final String FTPS = "ftps";
 
     private Transcript transcript;
 
@@ -52,6 +53,10 @@ public abstract class Session extends Observable {
      * Default port for ftp
      */
     public static final int FTP_PORT = 21;
+    /**
+		* Default port for ftp-ssl
+     */
+    public static final int FTPS_PORT = 990;
     /**
      * Default port for ssh
      */
@@ -153,6 +158,8 @@ public abstract class Session extends Observable {
      */
     public abstract void check() throws IOException;
 
+	public abstract void mkdir(String absolute);
+		
     public abstract void rename(String oldFilename, String newFilename);
 
     /**

@@ -137,11 +137,6 @@ public class HTTPPath extends Path {
         session.log("Invalid Operation", Message.ERROR);
     }
 
-    public Path mkdir(String name) {
-        session.log("Invalid Operation", Message.ERROR);
-        return null;
-    }
-
     public void changePermissions(Permission perm, boolean recursive) {
         session.log("Invalid Operation", Message.ERROR);
     }

@@ -69,6 +69,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 					NSArray filesList = (NSArray) o;
 					for (int i = 0; i < filesList.count(); i++) {
 						String file = (String) filesList.objectAtIndex(i);
+						// we do accept only bookmark files
 						if (file.indexOf(".duck") != -1) {
 							tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
 							break;
@@ -79,9 +80,12 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
             return NSDraggingInfo.DragOperationCopy;
         }
         if (draggedRows != null) {
+			// Reordering of the elements in the table view is supported
+			// We declare our own pasteboard to hold the data temporarly
             NSPasteboard bookmarkPboard = NSPasteboard.pasteboardWithName("BookmarkPBoard");
             if (bookmarkPboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")) != null) {
                 tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
+				tableView.deselectAll(null);
                 return NSDraggingInfo.DragOperationMove;
             }
         }
@@ -110,23 +114,28 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                         Session session = SessionFactory.createSession(h);
                         for (int i = 0; i < filesList.count(); i++) {
                             String filename = (String) filesList.objectAtIndex(i);
+							// Adding a previously exportetd bookmark file from the Finder
                             if (filename.indexOf(".duck") != -1) {
                                 BookmarkList.instance().addItem(BookmarkList.instance().importBookmark(new java.io.File(filename)), row);
 								tableView.reloadData();
-                                //@todo tableView.selectRow(row, false);
+                                tableView.selectRow(row, false);
                             }
-                            else {
-                                Path p = PathFactory.createPath(session,
-                                        h.getDefaultPath(),
-                                        new java.io.File(filename).getName());
+							// drop of a file from the finder > upload to the remote host this bookmark
+							// points to
+							else {
+								Path p = PathFactory.createPath(session,
+																h.getDefaultPath(),
+																new java.io.File(filename).getName());
                                 p.setLocal(new Local(filename));
                                 q.addRoot(p);
                             }
                         }
+						// if anything has been added to the queue then process the queue
                         if (q.numberOfRoots() > 0) {
                             QueueList.instance().addItem(q);
                             CDQueueController.instance().startItem(q);
                         }
+						// the drag was sucessfull
                         return true;
                     }
                 }
@@ -140,24 +149,19 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                     if (o != null) {
                         if (o instanceof NSArray) {
                             for (int i = 0; i < draggedRows.count(); i++) {
+								// remove the bookmark item from its old location
                                 BookmarkList.instance().removeItem(((Integer) draggedRows.objectAtIndex(i)).intValue());
-                                //							tableView.reloadData();
                             }
                             NSArray elements = (NSArray) o;
                             for (int i = 0; i < elements.count(); i++) {
                                 NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                                 if (row != -1 && row < BookmarkList.instance().size() - 1) {
                                     BookmarkList.instance().addItem(new Host(dict), row);
-                                    tableView.reloadData();
-                                    //								tableView.selectRow(row, false);
-                                }
-                                else {
-                                    BookmarkList.instance().addItem(new Host(dict));
-                                    tableView.reloadData();
-                                    //								tableView.selectRow(tableView.numberOfRows() - 1, false);
-                                }
+								}
                             }
                             draggedRows = null;
+							tableView.reloadData();
+							tableView.selectRow(row, false);
                             return true;
                         }
                     }
@@ -221,10 +225,10 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 
     /**
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-     *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-     *         Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
-     *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
-     *         blocking the destination application.
+     * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+     * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
+     * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
+     * blocking the destination application.
      */
     public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);

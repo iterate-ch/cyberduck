@@ -124,7 +124,6 @@ public abstract class Validator {
                 }
                 else {//if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
                     log.debug("*** Prompting user on " + path.getName());
-                    // @todo Waiting for other alert sheets open to be closed first
                     return this.prompt(path);
                 }
             }

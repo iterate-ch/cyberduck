@@ -100,7 +100,7 @@ public class CDBrowserTable extends NSTableView {
             c.setWidth(250f);
             c.setMaxWidth(1000f);
             c.setResizable(true);
-            c.setEditable(false);
+            c.setEditable(false); //@todo allow filename editing
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             this.addTableColumn(c);

@@ -127,9 +127,7 @@ public class FTPPath extends Path {
                 session.check();
                 session.FTP.setTransferType(FTPTransferType.ASCII);
                 session.FTP.chdir(this.getAbsolute());
-
                 FTPFileEntryParser parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(session.host.getIdentification());
-
                 String[] lines = session.FTP.dir();
                 for (int i = 0; i < lines.length; i++) {
                     Path p = parser.parseFTPEntry(this, lines[i]);
@@ -196,25 +194,6 @@ public class FTPPath extends Path {
         finally {
             session.log("Idle", Message.STOP);
         }
-    }
-
-    public Path mkdir(String name) {
-        log.debug("mkdir:" + name);
-        try {
-            session.check();
-            session.log("Make directory " + name, Message.PROGRESS);
-            session.FTP.mkdir(this.getAbsolute() + "/" + name);
-        }
-        catch (FTPException e) {
-            session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            session.log("Idle", Message.STOP);
-        }
-        return PathFactory.createPath(session, this.getAbsolute(), name);
     }
 
     public void changePermissions(Permission perm, boolean recursive) {
@@ -340,12 +319,6 @@ public class FTPPath extends Path {
                 }
             }
         }
-        catch (FTPException e) {
-            this.session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            this.session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
         finally {
             session.log("Idle", Message.STOP);
             try {
@@ -358,6 +331,7 @@ public class FTPPath extends Path {
             }
             catch (IOException e) {
                 log.error(e.getMessage());
+				e.printStackTrace();
             }
         }
     }
@@ -414,12 +388,6 @@ public class FTPPath extends Path {
                 }
             }
         }
-        catch (FTPException e) {
-            this.session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            this.session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
         finally {
             session.log("Idle", Message.STOP);
             try {
@@ -432,6 +400,7 @@ public class FTPPath extends Path {
             }
             catch (IOException e) {
                 log.error(e.getMessage());
+				e.printStackTrace();
             }
         }
     }
@@ -441,7 +410,7 @@ public class FTPPath extends Path {
         try {
             this.session.check();
             if (!this.getParent().exists()) {
-                this.getParent().getParent().mkdir(this.getParent().getName());
+                this.session.mkdir(this.getParent().getParent().getAbsolute()+"/"+this.getParent().getName());
             }
             if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
                 if (Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
@@ -472,7 +441,7 @@ public class FTPPath extends Path {
         }
     }
 
-    private void uploadBinary() {
+    private void uploadBinary() throws IOException {
         InputStream in = null;
         OutputStream out = null;
         try {
@@ -507,12 +476,6 @@ public class FTPPath extends Path {
                 }
             }
         }
-        catch (FTPException e) {
-            this.session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            this.session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
         finally {
             session.log("Idle", Message.STOP);
             try {
@@ -525,6 +488,7 @@ public class FTPPath extends Path {
             }
             catch (IOException e) {
                 log.error(e.getMessage());
+				e.printStackTrace();
             }
         }
     }
@@ -567,12 +531,6 @@ public class FTPPath extends Path {
                 }
             }
         }
-        catch (FTPException e) {
-            this.session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            this.session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
         finally {
             session.log("Idle", Message.STOP);
             try {
@@ -585,6 +543,7 @@ public class FTPPath extends Path {
             }
             catch (IOException e) {
                 log.error(e.getMessage());
+				e.printStackTrace();
             }
         }
     }

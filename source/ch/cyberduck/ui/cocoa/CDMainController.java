@@ -173,6 +173,13 @@ public class CDMainController extends NSObject {
 	public void checkForUpdate(final boolean verbose) {
         new Thread() {
             public void run() {
+				// An autorelease pool is used to manage Foundation’s autorelease mechanism for 
+				// Objective-C objects. NSAutoreleasePool provides Java applications access to 
+				// autorelease pools. Typically it is not necessary for Java applications to 
+				// use NSAutoreleasePools since Java manages garbage collection. However, some 
+				// situations require an autorelease pool; for instance, if you start off a thread 
+				// that calls Cocoa, there won’t be a top-level pool.
+				int mypool = NSAutoreleasePool.push();
                 try {
                     String currentVersionNumber = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
                     log.info("Current version:" + currentVersionNumber);
@@ -200,7 +207,6 @@ public class CDMainController extends NSObject {
 						if(verbose) {
 							NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Error", "Alert sheet title"), //title
 														  NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text")+" ("+errorString[0]+")",
-														  //													  NSBundle.localizedString("Update check failed. Version info could not be retrieved", "Alert sheet text") + ": " + errorString[0],
 														  NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
 														  null, //alternative button
 														  null//other button
@@ -241,6 +247,9 @@ public class CDMainController extends NSObject {
                 catch (Exception e) {
                     log.error(e.getMessage());
                 }
+				finally {
+					NSAutoreleasePool.pop(mypool);
+				}
             }
         }.start();
     }
@@ -426,7 +435,7 @@ public class CDMainController extends NSObject {
     }
 	
     // ----------------------------------------------------------
-    // AppleScript support
+    // AppleScript support (NOT TESTED - FOR FURTURE USE)
     // ----------------------------------------------------------
 
 	public boolean applicationDelegateHandlesKey(NSApplication application, String key) {
@@ -454,7 +463,6 @@ public class CDMainController extends NSObject {
         return orderedDocs;
     }
 	
-	// @todo
 	public void insertInOrderedDocumentsAtIndex(CDBrowserController doc, int index) {
         log.debug("insertInOrderedDocumentsAtIndex"+doc);
         doc.window().makeKeyAndOrderFront(null);

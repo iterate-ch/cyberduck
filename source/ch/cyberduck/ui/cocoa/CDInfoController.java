@@ -211,11 +211,12 @@ public class CDInfoController extends NSObject {
 	public void filenameInputDidEndEditing(NSNotification sender) {
 		log.debug("textInputDidEndEditing");
 		if (!filenameField.stringValue().equals(this.file.getName())) {
-			//@todo chdir
 			if(filenameField.stringValue().indexOf('/') == -1) {
 				this.file.getSession().rename(this.file.getAbsolute(), filenameField.stringValue());
+				// adjust the path of the local reference
 				this.file.setPath(this.file.getParent().getAbsolute(), filenameField.stringValue());
-				this.file.getParent().list(true); //@todo
+				// refresh the file listing so that the observers (if any) get notified of the change
+				this.file.getParent().list(true);
 			}
 			else {
 				NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
@@ -264,6 +265,7 @@ public class CDInfoController extends NSObject {
 		
 		Permission permission = new Permission(p);
 		
+		// send the changes to the remote host
 		this.file.changePermissions(permission, recursiveCheckbox.state() == NSCell.OnState);
 		permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
 	}

@@ -31,7 +31,7 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 /**
  * @version $Id$
  */
-public class CDBrowserController extends NSObject implements Observer { //@todo
+public class CDBrowserController extends NSObject implements Observer {
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
     /**
@@ -503,11 +503,12 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
     public void update(Observable o, Object arg) {
         log.debug("update:" + o + "," + arg);
         if (arg instanceof Path) {
-            browserModel.setData(((Path) arg).cache());
+            this.browserModel.setData(((Path) arg).cache());
             NSTableColumn selectedColumn = browserModel.selectedColumn() != null ? browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
-            browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
-            browserModel.sort(selectedColumn, browserModel.isSortedAscending());
-            browserTable.reloadData();
+            this.browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
+            this.browserModel.sort(selectedColumn, browserModel.isSortedAscending());
+            this.browserTable.reloadData();
+			this.browserTable.setNeedsDisplay(true);
             this.toolbar.validateVisibleItems();
 			this.window.makeFirstResponder(browserTable);
         }
@@ -548,7 +549,7 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
                 this.statusIcon.setNeedsDisplay(true);
 //                CDHistoryImpl.instance().addItem(((Session) o).host);
                 this.toolbar.validateVisibleItems();
-				this.window().setDocumentEdited(true); //@todo
+				this.window().setDocumentEdited(true);
             }
             else if (msg.getTitle().equals(Message.CLOSE)) {
 				this.window().setDocumentEdited(false);
@@ -671,7 +672,8 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
 
     public void refreshButtonClicked(Object sender) {
         log.debug("refreshButtonClicked");
-        pathController.workdir().list(true);
+		this.browserTable.deselectAll(sender);
+        this.pathController.workdir().list(true);
     }
 
     public void downloadAsButtonClicked(Object sender) {
@@ -918,9 +920,9 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
             pathController.workdir().getSession().deleteObserver((Observer) pathController);
         }
         NSNotificationCenter.defaultCenter().removeObserver(this);
-        instances.removeObject(this);
         this.bookmarkDrawer.close();
         this.logDrawer.close();
+        instances.removeObject(this);
     }
 
     public boolean validateMenuItem(_NSObsoleteMenuItemProtocol cell) {
@@ -1293,8 +1295,8 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
 								for (Iterator iter = files.iterator(); iter.hasNext();) {
 									Path p = (Path) iter.next();
 									newParentFolder.getSession().rename(p.getAbsolute(), newParentFolder.getAbsolute()+"/"+p.getName());
-//									p.rename(newParentFolder.getAbsolute()+"/"+p.getName());
 								}
+								tableView.deselectAll(null);
 								pathController.workdir().list(true);
 								return true;
 							}

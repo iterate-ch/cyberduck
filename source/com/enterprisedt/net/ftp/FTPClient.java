@@ -462,6 +462,7 @@ public class FTPClient {
             }
             catch (IOException ignore) {
                 log.error(ignore.getMessage());
+				ignore.printStackTrace();
             }
 
             // check the control response

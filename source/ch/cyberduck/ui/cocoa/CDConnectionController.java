@@ -36,6 +36,7 @@ public class CDConnectionController extends NSObject implements Observer {
     private static Logger log = Logger.getLogger(CDConnectionController.class);
 	
     private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)", "");
+//    private static final String FTP_SSL_STRING = NSBundle.localizedString("FTP-SSL (File Transfer over TLS/SSL)", "");
     private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
 	
     // ----------------------------------------------------------
@@ -343,6 +344,10 @@ public class CDConnectionController extends NSObject implements Observer {
         this.pkCheckbox.setEnabled(Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP));
     }
 	
+	/**
+	 * Updating the password field with the actual password if any 
+	 * is avaialble for this hostname
+	 */
     public void getPasswordFromKeychain(Object sender) {
         if (hostPopup.stringValue() != null &&
 			!hostPopup.stringValue().equals("") &&
@@ -387,12 +392,18 @@ public class CDConnectionController extends NSObject implements Observer {
         else if (selectedItem.tag() == Session.FTP_PORT) {
             protocol = Session.FTP + "://";
         }
+		/*
+        else if (selectedItem.tag() == Session.FTPS_PORT) {
+            protocol = Session.FTPS + "://";
+        }
+		 */
         urlLabel.setStringValue(protocol + usernameField.stringValue() + "@" + hostPopup.stringValue() + ":" + portField.stringValue() + "/" + pathField.stringValue());
     }
 	
     public void closeSheet(NSButton sender) {
         log.debug("closeSheet");
         NSNotificationCenter.defaultCenter().removeObserver(this);
+		// Rendezvous should not eat ressources if there is no need to do so
         this.rendezvous.deleteObserver(this);
         this.rendezvous.quit();
         // Ends a document modal session by specifying the window window, window. Also passes along a returnCode to the delegate.
@@ -404,10 +415,15 @@ public class CDConnectionController extends NSObject implements Observer {
         window.orderOut(null);
         switch (returncode) {
             case (NSAlertPanel.DefaultReturn):
+				// Every item in the protocol popup has a tag
+				// The value of the tag is the default port number for the protocol selected
+				// Even if another port is manually entered, we still want to connect with the
+				// appropriate protocol
                 int tag = protocolPopup.selectedItem().tag();
                 Host host = null;
                 switch (tag) {
                     case (Session.SSH_PORT):
+						// SFTP has been selected as the protocol to connect with
                         host = new Host(Session.SFTP,
 										hostPopup.stringValue(),
 										Integer.parseInt(portField.stringValue()),
@@ -415,19 +431,30 @@ public class CDConnectionController extends NSObject implements Observer {
 										pathField.stringValue());
                         break;
                     case (Session.FTP_PORT):
+						// FTP has been selected as the protocol to connect with
                         host = new Host(Session.FTP,
 										hostPopup.stringValue(),
 										Integer.parseInt(portField.stringValue()),
 										new Login(hostPopup.stringValue(), usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState),
 										pathField.stringValue());
                         break;
+						/*
+                    case (Session.FTPSSL_PORT):
+						// FTP-SSL has been selected as the protocol to connect with
+                        host = new Host(Session.FTP,
+										hostPopup.stringValue(),
+										Integer.parseInt(portField.stringValue()),
+										new Login(hostPopup.stringValue(), usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState),
+										pathField.stringValue());
+                        break;
+						 */
                     default:
                         throw new IllegalArgumentException("No protocol selected.");
                 }
-					if (pkCheckbox.state() == NSCell.OnState) {
-						host.getLogin().setPrivateKeyFile(pkLabel.stringValue());
-					}
-					browser.mount(host);
+				if (pkCheckbox.state() == NSCell.OnState) {
+					host.getLogin().setPrivateKeyFile(pkLabel.stringValue());
+				}
+				browser.mount(host);
                 break;
             case (NSAlertPanel.AlternateReturn):
                 break;

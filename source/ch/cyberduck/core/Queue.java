@@ -22,6 +22,7 @@ import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSMutableDictionary;
+import com.apple.cocoa.foundation.NSAutoreleasePool;
 
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
@@ -216,6 +217,8 @@ public class Queue extends Observable implements Observer { //Thread {
         this.jobs.clear();
         new Thread() {
             public void run() {
+				int mypool = NSAutoreleasePool.push();
+
                 Queue.this.addObserver(observer);
 
                 Queue.this.elapsedTimer.start();
@@ -256,6 +259,8 @@ public class Queue extends Observable implements Observer { //Thread {
                 Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
 
                 Queue.this.deleteObserver(observer);
+				
+				NSAutoreleasePool.pop(mypool);
             }
         }.start();
     }

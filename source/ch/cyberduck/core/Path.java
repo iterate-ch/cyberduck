@@ -218,24 +218,6 @@ public abstract class Path {
      */
     public abstract void delete();
 
-    /**
-     * Create a new directory inside me on the remote host
-     *
-     * @param folder The relative name of the new folder
-     */
-    public abstract Path mkdir(String folder); //@todo move to Session.java
-
-//    public void rename(String parent, String filename) {
-//        if (parent.charAt(parent.length() - 1) == '/') {
-//            this.rename(parent + filename);
-//        }
-//        else {
-//            this.rename(parent + "/" + filename);
-//        }
-//    }
-
-//    public abstract void rename(String filename);
-
     public abstract void changeOwner(String owner, boolean recursive);
 
     public abstract void changeGroup(String group, boolean recursive);
@@ -400,7 +382,10 @@ public abstract class Path {
             File[] files = this.getLocal().listFiles();
             for (int i = 0; i < files.length; i++) {
                 Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), new Local(files[i].getAbsolutePath()));
-                p.getUploadQueue(queue);
+				// users complaining about .DS_Store files getting uploaded. It should be apple fixing their crappy file system, but whatever.
+				if(!p.getName().equals(".DS_Store")) {
+					p.getUploadQueue(queue);
+				}
             }
         }
         else if (this.getLocal().isFile()) {

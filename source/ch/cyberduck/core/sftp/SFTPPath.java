@@ -220,25 +220,6 @@ public class SFTPPath extends Path {
         }
     }
 
-    public Path mkdir(String name) {
-        log.debug("mkdir:" + name);
-        try {
-            session.check();
-            session.log("Make directory " + name, Message.PROGRESS);
-            session.SFTP.makeDirectory(this.getAbsolute() + "/" + name);
-        }
-        catch (SshException e) {
-            session.log("SSH Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            session.log("Idle", Message.STOP);
-        }
-        return PathFactory.createPath(session, this.getAbsolute(), name);
-    }
-
     public void changeOwner(String uid, boolean recursive) {
         //@todo assert uid is a number
         log.debug("changeOwner:" + uid);
@@ -346,6 +327,7 @@ public class SFTPPath extends Path {
                 }
             }
             catch (IOException e) {
+				e.printStackTrace();
                 log.error(e.getMessage());
             }
         }
@@ -358,7 +340,7 @@ public class SFTPPath extends Path {
             log.debug("upload:" + this.toString());
             this.session.check();
             if (!this.getParent().exists()) {
-                this.getParent().getParent().mkdir(this.getParent().getName());
+                this.session.mkdir(this.getParent().getParent().getAbsolute()+"/"+this.getParent().getName());
             }
             in = new FileInputStream(this.getLocal());
             if (in == null) {
@@ -417,6 +399,7 @@ public class SFTPPath extends Path {
             }
             catch (IOException e) {
                 log.error(e.getMessage());
+				e.printStackTrace();
             }
         }
     }

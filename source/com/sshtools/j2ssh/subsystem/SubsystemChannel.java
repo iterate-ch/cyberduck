@@ -39,6 +39,8 @@ import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.DynamicBuffer;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 
+import ch.cyberduck.core.TranscriptFactory;
+import ch.cyberduck.core.Transcript;
 
 public abstract class SubsystemChannel extends Channel {
     private static Log log = LogFactory.getLog(SubsystemChannel.class);
@@ -47,6 +49,7 @@ public abstract class SubsystemChannel extends Channel {
     protected SubsystemMessageStore messageStore;
     DynamicBuffer buffer = new DynamicBuffer();
     int nextMessageLength = -1;
+	private Transcript transcript;
 
     public SubsystemChannel(String name) {
         this.name = name;
@@ -56,6 +59,7 @@ public abstract class SubsystemChannel extends Channel {
     public SubsystemChannel(String name, SubsystemMessageStore messageStore) {
         this.name = name;
         this.messageStore = messageStore;
+		this.transcript = TranscriptFactory.getImpl(name); //@todo get proper logger
     }
 
     public String getChannelType() {
@@ -63,7 +67,7 @@ public abstract class SubsystemChannel extends Channel {
     }
 
     protected void sendMessage(SubsystemMessage msg) throws InvalidMessageException, IOException {
-        //@todo write to log
+		transcript.log("> "+msg.getMessageName());
         if (log.isDebugEnabled()) {
             log.debug("Sending " + msg.getMessageName() + " subsystem message");
         }

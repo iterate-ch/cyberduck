@@ -113,7 +113,6 @@ public class Status extends Observable implements Serializable {
      * @return The size of the file
      */
     public static String getSizeAsString(long size) {
-        //@todo fix GB limitation
         if (size < KILO) {
             return size + "B";
         }

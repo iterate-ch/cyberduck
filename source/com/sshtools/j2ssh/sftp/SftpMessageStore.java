@@ -36,15 +36,20 @@ import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.subsystem.SubsystemMessageStore;
 import com.sshtools.j2ssh.util.OpenClosedState;
 
+import ch.cyberduck.core.TranscriptFactory;
+import ch.cyberduck.core.Transcript;
 
 class SftpMessageStore extends SubsystemMessageStore {
     /**  */
     public static Log log = LogFactory.getLog(SftpMessageStore.class);
+	
+	private Transcript transcript;
 
     /**
      * Creates a new SftpMessageStore object.
      */
     public SftpMessageStore() {
+		this.transcript = TranscriptFactory.getImpl(this.toString()); //@todo get proper log
     }
 
     /**
@@ -68,7 +73,7 @@ class SftpMessageStore extends SubsystemMessageStore {
                     if (msg instanceof MessageRequestId) {
                         if (((MessageRequestId) msg).getId().equals(requestId)) {
                             messages.remove(msg);
-                            //@todo write to log
+							this.transcript.log("< "+msg.getMessageName());
                             return msg;
                         }
                     }
