@@ -54,6 +54,20 @@ public class SyncQueue extends Queue {
 		return dict;
 	}
 
+	public void callObservers(Object arg) {
+		super.callObservers(arg);
+		if(arg instanceof Message) {
+			Message msg = (Message)arg;
+			if(msg.getTitle().equals(Message.QUEUE_STOP)) {
+				if(this.isComplete()) {
+					if(callback != null) {
+						callback.update(null, new Message(Message.REFRESH));
+					}
+				}
+			}
+		}
+	}
+	
 	private void addLocalChilds(List childs, Path root) {
 		if(root.getLocal().exists()) {
 			if(root.attributes.isDirectory()) {
@@ -98,6 +112,17 @@ public class SyncQueue extends Queue {
 		return childs;
 	}
 
+	public long getSize() {
+		if(this.worker.isRunning() && this.worker.isInitialized()) {
+			long size = 0;
+			for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
+				size += ((Path)iter.next()).getSize(); //@todo
+			}
+			this.size = size;
+		}
+		return this.size; //cached value
+	}
+	
 	protected void process(Path p) {
 		p.sync();
 	}

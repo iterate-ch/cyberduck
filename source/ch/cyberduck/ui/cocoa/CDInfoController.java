@@ -206,7 +206,7 @@ public class CDInfoController extends NSObject {
 		                               file.attributes.getOwner());
 		int size = 0;
 		for(Iterator i = files.iterator(); i.hasNext();) {
-			size += ((Path)i.next()).status.getSize();
+			size += ((Path)i.next()).getSize();
 		}
 		this.sizeField.setStringValue(Status.getSizeAsString(size)+" ("+size+" bytes)");
 

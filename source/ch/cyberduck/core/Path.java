@@ -36,7 +36,11 @@ public abstract class Path {
 
 	private String path = null;
 	private Local local = null;
-
+	/**
+		* The file length
+	 */
+	private long size = -1;
+	
 	public Status status = new Status();
 	public Attributes attributes = new Attributes();
 
@@ -143,10 +147,22 @@ public abstract class Path {
 
 	public void setPath(String p) {
 		this.path = p;
-//		this.local = new Local(Preferences.instance().getProperty("queue.download.folder"), 
-//							   this.getName());
 	}
 
+	/**
+		* @param size the size of file in bytes.
+	 */
+	public void setSize(long size) {
+		this.size = size;
+	}
+	
+	/**
+		* @return length the size of file in bytes.
+	 */
+	public long getSize() {
+		return this.size;
+	}
+		
 	/**
 	 * @return My parent directory
 	 */
@@ -439,7 +455,6 @@ public abstract class Path {
 		else if(this.getLocal().exists()) {
 			this.upload();
 		}
-		this.getSession().log("Idle", Message.STOP);
 	}
 
 	public boolean equals(Object other) {

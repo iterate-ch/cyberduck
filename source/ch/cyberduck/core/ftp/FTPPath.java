@@ -228,36 +228,6 @@ public class FTPPath extends Path {
 			session.log("IO Error: "+e.getMessage(), Message.ERROR);
 		}
 	}
-
-//	public synchronized java.util.Date modificationDate() {
-//		try {
-//			this.attributes.setTimestamp(this.session.FTP.modtime(this.getAbsolute()));
-//		}
-//		catch(FTPException e) {
-//			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
-//		}
-//		catch(IOException e) {
-//			session.log("IO Error: "+e.getMessage(), Message.ERROR);
-//		}
-//		finally {
-//			return this.attributes.getTimestamp();
-//		}
-//	}
-//
-//	public synchronized long size() {
-//        try {
-//			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
-//		}
-//		catch (FTPException e) {
-////			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-//		}
-//		catch (IOException e) {
-////			session.log("IO Error: " + e.getMessage(), Message.ERROR);
-//		}
-//		finally {
-//			return this.status.getSize();
-//		}
-//	}
 	
 	public synchronized void changePermissions(Permission perm, boolean recursive) {
 		log.debug("changePermissions:"+perm);
@@ -331,10 +301,10 @@ public class FTPPath extends Path {
 				}
 			}
 			if(this.attributes.isDirectory()) {
-				   this.getLocal().mkdir();
+				this.getLocal().mkdir();
 			}
 			if(Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
-				this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+//				this.getLocal().setLastModified(this.attributes.getTimestamp().getTime()); //@todo
 			}
 			session.log("Idle", Message.STOP);
 		}
@@ -351,6 +321,14 @@ public class FTPPath extends Path {
 		OutputStream out = null;
 		try {
 			session.FTP.setTransferType(FTPTransferType.BINARY);
+			try {
+				session.log("Determining file size...", Message.PROGRESS);
+				this.setSize(session.FTP.size(this.getAbsolute()));
+			}
+			catch(FTPException e) {
+				log.error(e.getMessage());
+				//ignore; SIZE command not recognized
+			}
 			if(this.status.isResume()) {
 				this.status.setCurrent(this.getLocal().getSize());
 			}
@@ -408,18 +386,26 @@ public class FTPPath extends Path {
 	private void downloadASCII() throws IOException {
 		InputStream in = null;
 		OutputStream out = null;
-		String lineSeparator = System.getProperty("line.separator"); //default value
-		if(Preferences.instance().getProperty("ftp.line.separator").equals("unix")) {
-			lineSeparator = UNIX_LINE_SEPARATOR;
-		}
-		else if(Preferences.instance().getProperty("ftp.line.separator").equals("mac")) {
-			lineSeparator = MAC_LINE_SEPARATOR;
-		}
-		else if(Preferences.instance().getProperty("ftp.line.separator").equals("win")) {
-			lineSeparator = DOS_LINE_SEPARATOR;
-		}
 		try {
+			String lineSeparator = System.getProperty("line.separator"); //default value
+			if(Preferences.instance().getProperty("ftp.line.separator").equals("unix")) {
+				lineSeparator = UNIX_LINE_SEPARATOR;
+			}
+			else if(Preferences.instance().getProperty("ftp.line.separator").equals("mac")) {
+				lineSeparator = MAC_LINE_SEPARATOR;
+			}
+			else if(Preferences.instance().getProperty("ftp.line.separator").equals("win")) {
+				lineSeparator = DOS_LINE_SEPARATOR;
+			}
 			session.FTP.setTransferType(FTPTransferType.ASCII);
+			try {
+				session.log("Determining file size...", Message.PROGRESS);
+				this.setSize(session.FTP.size(this.getAbsolute()));
+			}
+			catch(FTPException e) {
+				log.error(e.getMessage());
+				//ignore; SIZE command not recognized
+			}
 			if(this.status.isResume()) {
 				this.status.setCurrent(this.getLocal().getSize());
 			}
@@ -483,6 +469,7 @@ public class FTPPath extends Path {
 		try {
 			session.check();
 			if(this.attributes.isFile()) {
+				this.setSize(this.getLocal().getSize());
 				if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
 					if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
 						this.uploadASCII();
@@ -514,6 +501,7 @@ public class FTPPath extends Path {
 						}
 					}
 					catch(FTPException e) {
+						log.error(e.getMessage());
 						// catch chmodding exceptions and change the preferences as the server doesn't seem to support CHMOD
 						Preferences.instance().setProperty("queue.upload.changePermissions", "false");
 					}
@@ -538,7 +526,13 @@ public class FTPPath extends Path {
 		try {
 			session.FTP.setTransferType(FTPTransferType.BINARY);
 			if(this.status.isResume()) {
-				this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
+				try {
+					this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
+				}
+				catch(FTPException e) {
+					log.error(e.getMessage());
+					//ignore; SIZE command not recognized
+				}
 			}
 			in = new FileInputStream(this.getLocal());
 			if(in == null) {
@@ -597,7 +591,13 @@ public class FTPPath extends Path {
 		try {
 			session.FTP.setTransferType(FTPTransferType.ASCII);
 			if(this.status.isResume()) {
-				this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
+				try {
+					this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
+				}
+				catch(FTPException e) {
+					log.error(e.getMessage());
+					//ignore; SIZE command not recognized
+				}
 			}
 			in = new ToNetASCIIInputStream(new FileInputStream(this.getLocal()));
 			if(in == null) {

@@ -36,7 +36,6 @@ public class CDConnectionController extends NSObject implements Observer {
 	private static Logger log = Logger.getLogger(CDConnectionController.class);
 
 	private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)", "");
-//    private static final String FTP_SSL_STRING = NSBundle.localizedString("FTP-SSL (File Transfer over TLS/SSL)", "");
 	private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
 
 	// ----------------------------------------------------------

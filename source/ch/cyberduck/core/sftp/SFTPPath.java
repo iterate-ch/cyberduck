@@ -119,7 +119,7 @@ public class SFTPPath extends Path {
 							Path p = PathFactory.createPath(session, this.getAbsolute(), x.getFilename());
 							p.attributes.setOwner(x.getAttributes().getUID().toString());
 							p.attributes.setGroup(x.getAttributes().getGID().toString());
-							p.status.setSize(x.getAttributes().getSize().intValue());
+							p.setSize(x.getAttributes().getSize().intValue());
 							p.attributes.setTimestamp(Long.parseLong(x.getAttributes().getModifiedTime().toString())*1000L);
 							String permStr = x.getAttributes().getPermissionsString();
 							if(permStr.charAt(0) == 'd') {
@@ -328,7 +328,7 @@ public class SFTPPath extends Path {
 				this.getLocal().mkdir();
 			}
 			if(Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
-				this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+//				this.getLocal().setLastModified(this.attributes.getTimestamp().getTime()); //@todo
 			}
 			session.log("Idle", Message.STOP);
 		}

@@ -71,7 +71,7 @@ public class CDFileController extends CDController {
 													  null, //didEndSelector
 													  null, // dismiss selector
 													  null, // context
-													  NSBundle.localizedString("Invalid character in file name.", "") // message
+													  NSBundle.localizedString("Invalid character in filename.", "") // message
 													  );
 		}
 		else if (filenameField.stringValue().length() == 0) {

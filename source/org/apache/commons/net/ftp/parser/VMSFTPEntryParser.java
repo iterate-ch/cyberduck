@@ -139,10 +139,15 @@ public class VMSFTPEntryParser extends RegexFTPFileEntryParserImpl {
             f.setPath(parent.getAbsolute(), name);
             //size is retreived in blocks and needs to be put in bytes
             //for us humans and added to the FTPFile array
-            Long theSize = new Long(size);
-            long sizeInBytes = theSize.longValue() * longBlock;
-            f.status.setSize(sizeInBytes);
-
+			try {
+				Long theSize = new Long(size);
+				long sizeInBytes = theSize.longValue() * longBlock;
+				f.setSize(sizeInBytes);
+			}
+			catch (NumberFormatException e) {
+				// intentionally do nothing
+			}
+			
             //set the date
             Calendar cal = Calendar.getInstance();
             cal.clear();

@@ -91,7 +91,7 @@ public class NetwareFTPEntryParser extends RegexFTPFileEntryParserImpl {
             f.attributes.setOwner(user);
 			
             try {
-                f.status.setSize(Long.parseLong(filesize));
+                f.setSize(Long.parseLong(filesize));
             }
             catch (NumberFormatException e) {
                 // intentionally do nothing

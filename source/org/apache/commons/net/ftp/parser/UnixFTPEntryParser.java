@@ -144,7 +144,7 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
             f.attributes.setGroup(grp);
 
             try {
-                f.status.setSize(Long.parseLong(filesize));
+                f.setSize(Long.parseLong(filesize));
             }
             catch (NumberFormatException e) {
                 // intentionally do nothing

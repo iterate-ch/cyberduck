@@ -47,24 +47,12 @@ public abstract class CDValidatorController extends AbstractValidator {
 		    NSTableView.TableViewSelectionDidChangeNotification,
 		    this.fileTableView);
 	}
-
-	public synchronized void update(Observable observable, Object arg) {
-		if(arg instanceof Message) {
-			Message msg = (Message)arg;
-			if(msg.getTitle().equals(Message.ERROR)) {
-				if(CDQueueController.instance().hasSheet()) {
-					NSApplication.sharedApplication().endSheet(this.window());
-				}
-			}
-		}
-	}
 	
 	public List validate(Queue q) {
-		q.addObserver(this);
 		synchronized(CDQueueController.instance()) {
 			for(Iterator iter = q.getChilds().iterator(); iter.hasNext() && !this.isCanceled(); ) {
 				Path child = (Path)iter.next();
-				if(this.validate(child, q.isResume())) {
+				if(this.validate(child, q.isResumeRequested())) {
 					this.validated.add(child);
 				}
 				if(this.visible) {
@@ -85,10 +73,49 @@ public abstract class CDValidatorController extends AbstractValidator {
 				}
 			}
 		}
-		q.deleteObserver(this);
 		return this.getResult();
 	}
 
+	protected boolean validateFile(Path path, boolean resumeRequested) {
+		if(resumeRequested) { // resume existing files independant of settings in preferences
+			path.status.setResume(this.isExisting(path));
+			return true;
+		}
+		// When overwriting file anyway we don't have to check if the file already exists
+		if(Preferences.instance().getProperty("queue.fileExists").equals("overwrite")) {
+			log.info("Apply validation rule to overwrite file "+path.getName());
+			path.status.setResume(false);
+			return true;
+		}
+		if(this.isExisting(path)) {
+			if(Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
+				log.debug("Apply validation rule to resume:"+path.getName());
+				path.status.setResume(true);
+				return true;
+			}
+			if(Preferences.instance().getProperty("queue.fileExists").equals("similar")) {
+				log.debug("Apply validation rule to apply similar name:"+path.getName());
+				path.status.setResume(false);
+				this.adjustFilename(path);
+				log.info("Changed local name to "+path.getName());
+				return true;
+			}
+			if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
+				log.debug("Apply validation rule to ask:"+path.getName());
+				List parentListing = path.getParent().list(false, true);
+				Path current = (Path)parentListing.get(parentListing.indexOf(path));
+				current.setLocal(path.getLocal());
+				this.prompt(current);
+				return false;
+			}
+			throw new IllegalArgumentException("No rules set to validate transfers");
+		}
+		else {
+			path.status.setResume(false);
+			return true;
+		}
+	}
+	
 	protected abstract List getResult();
 
 	protected abstract void load();
@@ -113,7 +140,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 	// Outlets
 	// ----------------------------------------------------------
 	
-	private NSTextField infoLabel; // IBOutlet
+	protected NSTextField infoLabel; // IBOutlet
 
 	public void setInfoLabel(NSTextField infoLabel) {
 		this.infoLabel = infoLabel;
@@ -381,20 +408,32 @@ public abstract class CDValidatorController extends AbstractValidator {
 					return NSImage.imageNamed("notfound.tiff");
 				}
 				if(identifier.equals("REMOTE")) {
-					if(p.getRemote().exists())
-						return new NSAttributedString(Status.getSizeAsString(p.status.getSize())+", "+p.attributes.getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+					if(p.getRemote().exists()) {
+						if(p.attributes.isFile()) {
+							return new NSAttributedString(Status.getSizeAsString(p.getSize())+", "+p.attributes.getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+						}
+						if(p.attributes.isDirectory()) {
+							return new NSAttributedString(p.attributes.getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+						}
+					}
 					return null;
 				}
 				if(identifier.equals("LOCAL")) {
-					if(p.getLocal().exists())
-						return new NSAttributedString(Status.getSizeAsString(p.getLocal().getSize())+", "+p.getLocal().getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+					if(p.getLocal().exists()) {
+						if(p.attributes.isFile()) {
+							return new NSAttributedString(Status.getSizeAsString(p.getLocal().getSize())+", "+p.getLocal().getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+						}
+						if(p.attributes.isDirectory()) {
+							return new NSAttributedString(p.getLocal().getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+						}
+					}
 					return null;
 				}
 				if(identifier.equals("TOOLTIP")) {
 					StringBuffer tooltip = new StringBuffer();
 					if(p.exists()) { //@todo
 						tooltip.append(NSBundle.localizedString("Remote", "")+":\n"
-						    +"  "+Status.getSizeAsString(p.status.getSize())+"\n"
+						    +"  "+Status.getSizeAsString(p.getSize())+"\n"
 						    +"  "+p.attributes.getTimestampAsString());
 					}
 					if(p.getRemote().exists() && p.getLocal().exists())

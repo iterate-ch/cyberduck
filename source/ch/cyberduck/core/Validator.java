@@ -19,12 +19,11 @@ package ch.cyberduck.core;
  */
 
 import java.util.List;
-import java.util.Observer;
 
 /**
  * @version $Id$
  */
-public interface Validator extends Observer {
+public interface Validator {
 
 	/**
 	 * @return true if validatino was successfull, false if canceled by the user for whatever reason

@@ -22,11 +22,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSObject;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -43,6 +39,8 @@ public class CDProgressController extends NSObject implements Observer {
 	private StringBuffer errorText;
 //	private StringBuffer tooltip;
 
+	private NSTimer progressTimer;
+	
 	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
 	private static NSMutableParagraphStyle lineBreakByTruncatingTailParagraph = new NSMutableParagraphStyle();
 
@@ -64,70 +62,86 @@ public class CDProgressController extends NSObject implements Observer {
 		this.queue.addObserver(this);
 		this.queue.getRoot().getSession().addObserver(this);
 		//@todo this.queue.deleteObserver(this);
+		//@todo this.queue.getRoot().getSession().deleteObserver(this);
 		if(false == NSApplication.loadNibNamed("Progress", this)) {
 			log.fatal("Couldn't load Progress.nib");
 		}
 	}
-
+	
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
 		this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
-		    TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
+																		   TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
 		this.updateProgressfield();
 	}
-
-	public void update(Observable o, Object arg) {
+	
+	public void update(NSTimer t) {
+		this.updateProgressbar();
+		this.updateProgressfield();
+//		this.update((Observable)t.userInfo(), new Message(Message.DATA));
+	}
+	
+	public void update(final Observable o, final Object arg) {
 		if(arg instanceof Message) {
-			Message msg = (Message)arg;
-			if(msg.getTitle().equals(Message.DATA)) {
-				this.updateProgressbar();
-				this.updateProgressfield();
-			}
-			else if(msg.getTitle().equals(Message.PROGRESS)) {
-				this.statusText = (String)msg.getContent();
-				this.updateProgressfield();
-			}
-			else if(msg.getTitle().equals(Message.ERROR)) {
-				this.errorText.append("\n"+(String)msg.getContent());
-				this.alertIcon.setHidden(false);
-			}
-			else if(msg.getTitle().equals(Message.QUEUE_START)) {
-				this.progressBar.setIndeterminate(true);
-				this.progressBar.startAnimation(null);
-				this.errorText = new StringBuffer();
-				this.alertIcon.setHidden(true);
-			}
-			else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
-				this.progressBar.setIndeterminate(false);
-				this.progressBar.stopAnimation(null);
-				if(this.queue.isComplete() && !this.queue.isCanceled()) {
-					if(this.queue instanceof DownloadQueue) {
-						Growl.instance().notify(NSBundle.localizedString("Download complete",
-																		 "Growl Notification"),
-												this.queue.getName());
-						if(Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
-							boolean success = NSWorkspace.sharedWorkspace().openFile(this.queue.getRoot().getLocal().toString());
-							log.debug("Success opening file:"+success);
+			ThreadUtilities.instance().invokeLater(new Runnable() {
+				public void run() {
+					Message msg = (Message)arg;
+					if(msg.getTitle().equals(Message.PROGRESS)) {
+						statusText = (String)msg.getContent();
+						updateProgressfield();
+					}
+					else if(msg.getTitle().equals(Message.ERROR)) {
+						errorText.append("\n"+(String)msg.getContent());
+						alertIcon.setHidden(false);
+					}
+					else if(msg.getTitle().equals(Message.QUEUE_START)) {
+						progressBar.setIndeterminate(true);
+						progressBar.startAnimation(null);
+						errorText = new StringBuffer();
+						alertIcon.setHidden(true);
+						progressTimer = new NSTimer(0.5, //seconds
+														 CDProgressController.this, //target
+														 new NSSelector("update", new Class[]{NSTimer.class}),
+														 getQueue(), //userInfo
+														 true); //repeating
+						NSRunLoop.currentRunLoop().addTimerForMode(progressTimer, NSRunLoop.DefaultRunLoopMode);
+					}
+					else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
+						updateProgressbar();
+						updateProgressfield();
+						progressBar.stopAnimation(null);
+						progressBar.setIndeterminate(false);
+						if(queue.isComplete() && !queue.isCanceled()) {
+							if(queue instanceof DownloadQueue) {
+								Growl.instance().notify(NSBundle.localizedString("Download complete",
+																				 "Growl Notification"),
+														queue.getName());
+								if(Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
+									boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+									log.debug("Success opening file:"+success);
+								}
+							}
+							if(queue instanceof UploadQueue) {
+								Growl.instance().notify(NSBundle.localizedString("Upload complete",
+																				 "Growl Notification"),
+														queue.getName());
+							}
+							if(queue instanceof SyncQueue) {
+								Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
+																				 "Growl Notification"),
+														queue.getName());
+							}
+							if(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
+								CDQueueController.instance().removeItem(queue);
+							}
 						}
-					}
-					if(this.queue instanceof UploadQueue) {
-						Growl.instance().notify(NSBundle.localizedString("Upload complete",
-																		 "Growl Notification"),
-												this.queue.getName());
-					}
-					if(this.queue instanceof SyncQueue) {
-						Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
-																		 "Growl Notification"),
-												this.queue.getName());
-					}
-					if(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
-						CDQueueController.instance().removeItem(this.queue);
+						progressTimer.invalidate();
 					}
 				}
-			}
+			});
 		}
 	}
-
+	
 	private void updateProgressbar() {
 		if(queue.isInitialized()) {
 			double progressValue = queue.getCurrent()/queue.getSize();
@@ -140,7 +154,7 @@ public class CDProgressController extends NSObject implements Observer {
 			this.progressBar.setIndeterminate(true);
 		}
 	}
-
+	
 	private void updateProgressfield() {
 		this.progressField.setAttributedStringValue(new NSAttributedString(this.getProgressText(),
 		    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
@@ -156,7 +170,7 @@ public class CDProgressController extends NSObject implements Observer {
 			return this.queue.getCurrentAsString()
 			+" of "+this.queue.getSizeAsString()+"  "+this.statusText;
 		}
-		return "(Unknown size)  "+this.statusText;
+		return "("+NSBundle.localizedString("Unknown size", "")+")  "+this.statusText;
 	}	
 	
 	private String getErrorText() {

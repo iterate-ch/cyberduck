@@ -53,7 +53,7 @@ public class CDMainController extends NSObject {
 		    NSWorkspace.WorkspaceDidWakeNotification,
 		    null);
 
-		this.threadWorkerTimer = new NSTimer(0.5, //seconds
+		this.threadWorkerTimer = new NSTimer(0.2, //seconds
 		    this, //target
 		    new NSSelector("handleThreadWorkerTimerEvent", new Class[]{NSTimer.class}),
 		    null, //userInfo
@@ -65,7 +65,7 @@ public class CDMainController extends NSObject {
 	private NSTimer threadWorkerTimer;
 
 	private void handleThreadWorkerTimerEvent(NSTimer t) {
-		//log.debug("handleThreadWorkerTimerEvent");
+		//@todo use this.sleep(); this.notify()
 		Runnable item;
 		while((item = ThreadUtilities.instance().next()) != null) {
 			item.run();
@@ -74,8 +74,7 @@ public class CDMainController extends NSObject {
 
 	static {
 		BasicConfigurator.configure();
-		Logger log = Logger.getRootLogger();
-		log.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
+		Logger.getLogger("ch.cyberduck").setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 	}
 
 	// ----------------------------------------------------------
@@ -601,17 +600,16 @@ public class CDMainController extends NSObject {
 
 	public static CDBrowserController newDocument() {
 		CDBrowserController controller = new CDBrowserController();
-		controller.window().makeKeyAndOrderFront(null);
-		NSPoint origin = controller.window().frame().origin();
 		if(null == cascadedWindowPoint) {
-			cascadedWindowPoint = new NSPoint(origin.x(), origin.y());
+			cascadedWindowPoint = controller.window().cascadeTopLeftFromPoint(NSPoint.fromString(Preferences.instance().getProperty("NSWindow Frame Browser")));
 		}
-		controller.window().setFrameTopLeftPoint(cascadedWindowPoint);
-		// move point for next window
-		cascadedWindowPoint = controller.window().cascadeTopLeftFromPoint(cascadedWindowPoint);
+		else {
+			cascadedWindowPoint = controller.window().cascadeTopLeftFromPoint(cascadedWindowPoint);
+		}
+		controller.window().makeKeyAndOrderFront(null);
 		return controller;
 	}
-
+		
 	public NSArray orderedDocuments() {
 		log.debug("orderedDocuments");
 		NSApplication app = NSApplication.sharedApplication();

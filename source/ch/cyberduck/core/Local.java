@@ -65,10 +65,6 @@ public class Local extends File {
 //		this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
 
-	public long size() {
-		return this.length();
-	}
-
 	public String getAbsolute() {
 		return super.getAbsolutePath();
 	}

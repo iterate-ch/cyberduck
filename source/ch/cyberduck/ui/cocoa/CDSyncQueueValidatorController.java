@@ -24,6 +24,7 @@ import java.util.List;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
@@ -98,7 +99,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	protected boolean validateFile(Path p, boolean resume) {
 		log.debug("validateFile:"+p);
 		if(p.getRemote().exists() && p.getLocal().exists()) {
-			if (!(p.status.getSize() == p.getLocal().size())) {
+			if (!(p.getRemote().getSize() == p.getLocal().getSize())) {
 				this.prompt(p);
 			}
 		}
@@ -110,9 +111,12 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	
 	protected boolean validateDirectory(Path p) {
 		if(p.getRemote().exists() && p.getLocal().exists()) {
+			//Do not include as it exists both locally and on the server
 			return false;
 		}
 		else {
+			//List the directory in the validation window that the user sees it will get created
+			p.setSize(0);
 			this.prompt(p);
 			if(!p.getRemote().exists()) {
 				p.getSession().cache().put(p.getAbsolute(), new ArrayList());
@@ -167,6 +171,11 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		}
 	}
 
+	protected void reloadTable() {
+		this.fileTableView.reloadData();
+		this.infoLabel.setStringValue(this.validated.size()+" "+NSBundle.localizedString("files", ""));
+	}
+	
 	protected void fireDataChanged() {
 		this.mirrorCellClicked(null);
 		this.downloadCellClicked(null);

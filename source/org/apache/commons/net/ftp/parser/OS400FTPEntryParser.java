@@ -65,7 +65,7 @@ public class OS400FTPEntryParser extends RegexFTPFileEntryParserImpl {
             f.attributes.setOwner(usr);
 
             try {
-                f.status.setSize(Long.parseLong(filesize));
+                f.setSize(Long.parseLong(filesize));
             }
             catch (NumberFormatException e) {
                 // intentionally do nothing

@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 public abstract class Queue extends Observable {
 	protected static Logger log = Logger.getLogger(Queue.class);
 
-	private Worker worker;
+	protected Worker worker;
 	protected long size;
 	protected long current;
 	private List roots;
@@ -150,11 +150,8 @@ public abstract class Queue extends Observable {
 	}
 	
 	private void reset(List jobs) {
-		this.size = 0;
 		for(Iterator iter = jobs.iterator(); iter.hasNext();) {
-			Path p = (Path)iter.next();
-			p.status.reset();
-			this.size += p.status.getSize();
+			((Path)iter.next()).status.reset();
 		}
 	}
 
@@ -170,17 +167,21 @@ public abstract class Queue extends Observable {
 
 	protected abstract void process(Path p);
 
-	private boolean resume;
+	private boolean resumeRequested;
 	
-	public boolean isResume() {
-		return this.resume;
+	public boolean isResumeRequested() {
+		return this.resumeRequested;
+	}
+	
+	public List getJobs() {
+		return this.worker.getJobs();
 	}
 	
 	/**
 	 * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
 	 */
-	public void start(boolean resume) {
-		this.resume = resume;
+	public void start(boolean resumeRequested) {
+		this.resumeRequested = resumeRequested;
 		this.worker = new Worker(this, ValidatorFactory.createValidator(this.getClass()));
 		this.worker.start();
 	}
@@ -208,14 +209,7 @@ public abstract class Queue extends Observable {
 			if(!this.validator.isCanceled()) {
 				this.queue.reset(this.jobs);
 				for(Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
-					final Path job = (Path)iter.next();
-					job.status.addObserver(new Observer() {
-						public void update(Observable o, Object arg) {
-							Queue.this.callObservers(arg);
-						}
-					}
-										   );
-					this.queue.process(job);
+					this.queue.process((Path)iter.next());
 				}
 			}
 			else {
@@ -316,9 +310,7 @@ public abstract class Queue extends Observable {
 		return !(this.getSize() == 0 && this.getCurrent() == 0) && (this.getSize() == this.getCurrent());
 	}
 
-	public long getSize() {
-		return this.size;
-	}
+	public abstract long getSize();
 
 	public String getSizeAsString() {
 		return Status.getSizeAsString(this.getSize());

@@ -144,29 +144,6 @@ public class CDQueueController extends CDController {
 	private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
 	    new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
-	private void updateLabels() {
-		if(this.queueTable.selectedRow() != -1) {
-			Queue q = this.queueModel.getItem(this.queueTable.selectedRow());
-			if(q.numberOfRoots() == 1) {
-				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()+"/"+q.getRoot().getAbsolute(),
-				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-				this.localField.setAttributedStringValue(new NSAttributedString(q.getRoot().getLocal().getAbsolute(),
-				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-			}
-			else {
-				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL(),
-				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-				this.localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiples files", ""),
-//				    +" ("+q.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
-				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-			}
-		}
-		else {
-			this.urlField.setStringValue("");
-			this.localField.setStringValue("");
-		}
-	}
-
 	public void setQueueTable(NSTableView queueTable) {
 		this.queueTable = queueTable;
 		this.queueTable.setTarget(this);
@@ -219,7 +196,6 @@ public class CDQueueController extends CDController {
 		this.queueTable.setAllowsMultipleSelection(true);
 		this.queueTable.setAllowsEmptySelection(true);
 		this.queueTable.setAllowsColumnReordering(false);
-
 		this.queueTable.sizeToFit();
 	}
 
@@ -229,7 +205,26 @@ public class CDQueueController extends CDController {
 			this.queueModel.getController(i).setHighlighted(this.queueTable.isRowSelected(i) && key);
 		}
 		this.toolbar.validateVisibleItems();
-		this.updateLabels();
+		if(this.queueTable.selectedRow() != -1) {
+			Queue q = this.queueModel.getItem(this.queueTable.selectedRow());
+			if(q.numberOfRoots() == 1) {
+				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()+"/"+q.getRoot().getAbsolute(),
+																			  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+				this.localField.setAttributedStringValue(new NSAttributedString(q.getRoot().getLocal().getAbsolute(),
+																				TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+			}
+			else {
+				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL(),
+																			  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+				this.localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiples files", ""),
+																				//				    +" ("+q.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
+																				TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+			}
+		}
+		else {
+			this.urlField.setStringValue("");
+			this.localField.setStringValue("");
+		}
 	}
 
 	public void tableViewSelectionIsChanging(NSNotification notification) {
@@ -238,10 +233,6 @@ public class CDQueueController extends CDController {
 
 	public void tableViewSelectionDidChange(NSNotification notification) {
 		this.tableViewSelectionChange();
-	}
-
-	public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn column, int row) {
-//		boolean highlighted = ((NSCell)cell).isHighlighted() && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(NSColor.secondarySelectedControlColor());
 	}
 
 	private void reloadQueueTable() {
@@ -269,9 +260,20 @@ public class CDQueueController extends CDController {
 		this.addItem(queue);
 		this.startItem(queue, false);
 	}
-
+	
 	private void startItem(Queue queue, boolean resumeRequested) {
-//		queue.addObserver(this);
+		queue.addObserver(new java.util.Observer() {
+			public void update(final java.util.Observable o, final Object arg) {
+				Message msg = (Message)arg;
+				if(msg.getTitle().equals(Message.QUEUE_START)) {
+					toolbar.validateVisibleItems();
+				}
+				if(msg.getTitle().equals(Message.QUEUE_STOP)) {
+					toolbar.validateVisibleItems();
+					o.deleteObserver(this);
+				}
+			}
+		});
 		if(Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
 			this.window().makeKeyAndOrderFront(null);
 		}
@@ -298,7 +300,6 @@ public class CDQueueController extends CDController {
 	}
 
 	public void awakeFromNib() {
-		log.debug("awakeFromNib");
 		this.toolbar = new NSToolbar("Queue Toolbar");
 		this.toolbar.setDelegate(this);
 		this.toolbar.setAllowsUserCustomization(true);
@@ -423,7 +424,6 @@ public class CDQueueController extends CDController {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		while(enum.hasMoreElements()) {
 			Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
-//			queue.reset();
 			if(!queue.isRunning()) {
 				this.startItem(queue, true);
 			}
@@ -434,7 +434,6 @@ public class CDQueueController extends CDController {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		while(enum.hasMoreElements()) {
 			Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
-//			queue.reset();
 			if(!queue.isRunning()) {
 				this.startItem(queue, false);
 			}
@@ -598,14 +597,14 @@ public class CDQueueController extends CDController {
 			return true;
 		}
 		if(identifier.equals("Resume") || identifier.equals("resumeButtonClicked:")) {
-			if(this.queueTable.numberOfSelectedRows() == 1) {
+			if(this.queueTable.numberOfSelectedRows() > 0) {
 				Queue queue = this.queueModel.getItem(this.queueTable.selectedRow());
 				return !queue.isRunning() && !queue.isComplete();
 			}
 			return false;
 		}
 		if(identifier.equals("Reload") || identifier.equals("reloadButtonClicked:")) {
-			if(this.queueTable.numberOfSelectedRows() == 1) {
+			if(this.queueTable.numberOfSelectedRows() > 0) {
 				Queue queue = this.queueModel.getItem(this.queueTable.selectedRow());
 				return !queue.isRunning();
 			}

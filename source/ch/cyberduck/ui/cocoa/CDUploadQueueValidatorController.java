@@ -59,8 +59,8 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 
 	public List getResult() {
 		List result = new ArrayList();
-		result.addAll(this.validated);
-		result.addAll(this.workset);
+		result.addAll(this.validated); //Include the files where there is no conflict
+		result.addAll(this.workset); //Include the files that have been manually validated
 		return result;
 	}
 
@@ -70,9 +70,12 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 
 	protected boolean validateDirectory(Path path) {
 		if(!path.getRemote().exists()) {
+			//Directory does not exist yet; include so it will be created on the server
 			path.getSession().cache().put(path.getAbsolute(), new ArrayList());
+			path.setSize(0);
 			return true;
 		}
+		//Directory already exists; do not include as this would throw "file already exists"
 		return false;
 	}
 	

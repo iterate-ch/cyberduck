@@ -108,21 +108,25 @@ public class CDPreferencesController extends NSObject {
 
 	public void setEditorCombobox(NSPopUpButton editorCombobox) {
 		this.editorCombobox = editorCombobox;
+		this.editorCombobox.setAutoenablesItems(false);
 		this.editorCombobox.setTarget(this);
 		this.editorCombobox.setAction(new NSSelector("editorComboboxClicked", new Class[]{NSPopUpButton.class}));
 		this.editorCombobox.removeAllItems();
 		java.util.Map editors = Editor.SUPPORTED_EDITORS;
-		String[] items = new String[editors.size()];
-		java.util.Iterator iterator = editors.keySet().iterator();
-		int i = 0;
-		while(iterator.hasNext()) {
-			items[i] = (String)iterator.next();
-			i++;
+		NSSelector absolutePathForAppBundleWithIdentifierSelector =
+			new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
+		java.util.Iterator editorNames = editors.keySet().iterator();
+		java.util.Iterator editorIdentifiers = editors.values().iterator();
+		while(editorNames.hasNext()) {
+			String editor = (String)editorNames.next();
+			this.editorCombobox.addItem(editor);
+			if(absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
+				this.editorCombobox.itemWithTitle(editor).setEnabled(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier((String)editorIdentifiers.next()) != null);
+			}
 		}
-		this.editorCombobox.addItemsWithTitles(new NSArray(items));
 		this.editorCombobox.setTitle(Preferences.instance().getProperty("editor.name"));
 	}
-
+	
 	public void editorComboboxClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
 		Preferences.instance().setProperty("editor.bundleIdentifier", (String)Editor.SUPPORTED_EDITORS.get(sender.titleOfSelectedItem()));
@@ -211,15 +215,6 @@ public class CDPreferencesController extends NSObject {
 				this.chmodUploadDefaultCheckbox.setEnabled(false);
 				break;
 		}
-		this.uownerr.setEnabled(sender.state() == NSCell.OnState);
-		this.uownerw.setEnabled(sender.state() == NSCell.OnState);
-		this.uownerx.setEnabled(sender.state() == NSCell.OnState);
-		this.ugroupr.setEnabled(sender.state() == NSCell.OnState);
-		this.ugroupw.setEnabled(sender.state() == NSCell.OnState);
-		this.ugroupx.setEnabled(sender.state() == NSCell.OnState);
-		this.uotherr.setEnabled(sender.state() == NSCell.OnState);
-		this.uotherw.setEnabled(sender.state() == NSCell.OnState);
-		this.uotherx.setEnabled(sender.state() == NSCell.OnState);
 	}
 
 	private NSButton chmodUploadDefaultCheckbox; //IBOutlet
@@ -251,6 +246,15 @@ public class CDPreferencesController extends NSObject {
 				Preferences.instance().setProperty("queue.upload.permissions.useDefault", false);
 				break;
 		}
+		this.uownerr.setEnabled(sender.state() == NSCell.OnState);
+		this.uownerw.setEnabled(sender.state() == NSCell.OnState);
+		this.uownerx.setEnabled(sender.state() == NSCell.OnState);
+		this.ugroupr.setEnabled(sender.state() == NSCell.OnState);
+		this.ugroupw.setEnabled(sender.state() == NSCell.OnState);
+		this.ugroupx.setEnabled(sender.state() == NSCell.OnState);
+		this.uotherr.setEnabled(sender.state() == NSCell.OnState);
+		this.uotherw.setEnabled(sender.state() == NSCell.OnState);
+		this.uotherx.setEnabled(sender.state() == NSCell.OnState);
 	}
 
 	private NSButton chmodDownloadCheckbox; //IBOutlet
@@ -273,15 +277,6 @@ public class CDPreferencesController extends NSObject {
 				this.chmodDownloadDefaultCheckbox.setEnabled(false);
 				break;
 		}
-		this.downerr.setEnabled(sender.state() == NSCell.OnState);
-		this.downerw.setEnabled(sender.state() == NSCell.OnState);
-		this.downerx.setEnabled(sender.state() == NSCell.OnState);
-		this.dgroupr.setEnabled(sender.state() == NSCell.OnState);
-		this.dgroupw.setEnabled(sender.state() == NSCell.OnState);
-		this.dgroupx.setEnabled(sender.state() == NSCell.OnState);
-		this.dotherr.setEnabled(sender.state() == NSCell.OnState);
-		this.dotherw.setEnabled(sender.state() == NSCell.OnState);
-		this.dotherx.setEnabled(sender.state() == NSCell.OnState);
 	}
 
 	private NSButton chmodDownloadDefaultCheckbox; //IBOutlet
@@ -313,6 +308,15 @@ public class CDPreferencesController extends NSObject {
 				Preferences.instance().setProperty("queue.download.permissions.useDefault", false);
 				break;
 		}
+		this.downerr.setEnabled(sender.state() == NSCell.OnState);
+		this.downerw.setEnabled(sender.state() == NSCell.OnState);
+		this.downerx.setEnabled(sender.state() == NSCell.OnState);
+		this.dgroupr.setEnabled(sender.state() == NSCell.OnState);
+		this.dgroupw.setEnabled(sender.state() == NSCell.OnState);
+		this.dgroupx.setEnabled(sender.state() == NSCell.OnState);
+		this.dotherr.setEnabled(sender.state() == NSCell.OnState);
+		this.dotherw.setEnabled(sender.state() == NSCell.OnState);
+		this.dotherx.setEnabled(sender.state() == NSCell.OnState);
 	}
 
 	public NSButton downerr; //IBOutlet
@@ -902,16 +906,16 @@ public class CDPreferencesController extends NSObject {
 		this.doubleClickCheckbox = doubleClickCheckbox;
 		this.doubleClickCheckbox.setTarget(this);
 		this.doubleClickCheckbox.setAction(new NSSelector("doubleClickCheckboxClicked", new Class[]{NSButton.class}));
-		this.doubleClickCheckbox.setState(Preferences.instance().getProperty("browser.doubleClickOnFile").equals("true") ? NSCell.OnState : NSCell.OffState);
+		this.doubleClickCheckbox.setState(Preferences.instance().getProperty("browser.doubleclick.edit").equals("true") ? NSCell.OnState : NSCell.OffState);
 	}
 
 	public void doubleClickCheckboxClicked(NSButton sender) {
 		switch(sender.state()) {
 			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.doubleClickOnFile", "edit");
+				Preferences.instance().setProperty("browser.doubleclick.edit", "true");
 				break;
 			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.doubleClickOnFile", "download");
+				Preferences.instance().setProperty("browser.doubleclick.edit", "false");
 				break;
 		}
 	}

@@ -128,10 +128,11 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
                 facts.put("s", sizeString);
                 try {
                     Long size = Long.valueOf(sizeString);
-                    path.status.setSize(size.longValue());
-                }
-                catch (NumberFormatException ignored) {
-                }
+                    path.setSize(size.longValue());
+				}
+				catch (NumberFormatException e) {
+					// intentionally do nothing
+				}
                 return;
             }
             

@@ -18,9 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.io.Serializable;
-import java.util.Observable;
-
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
@@ -33,17 +30,13 @@ import org.apache.log4j.Logger;
  *
  * @version $Id$
  */
-public class Status extends Observable implements Serializable {
+public class Status /*extends Observable*/ {
 	private static Logger log = Logger.getLogger(Status.class);
 
 	/**
 	 * Download is resumable
 	 */
-	private transient boolean resume = false;
-	/**
-	 * The file length
-	 */
-	private long size = -1;
+	private boolean resume = false;
 	/**
 	 * The number of transfered bytes. Must be less or equals size.
 	 */
@@ -56,37 +49,6 @@ public class Status extends Observable implements Serializable {
 	 * Indicates that the last action has been completed.
 	 */
 	private boolean complete = false;
-
-	public Status() {
-		super();
-	}
-
-	/**
-	 * Notify all observers
-	 *
-	 * @param arg The message to send to the observers
-	 * @see ch.cyberduck.core.Message
-	 */
-	public void callObservers(Message arg) {
-		//			log.debug("callObservers:"+arg);
-		//			log.debug(this.countObservers()+" observer(s) known.");
-		this.setChanged();
-		this.notifyObservers(arg);
-	}
-
-	/**
-	 * @param size the size of file in bytes.
-	 */
-	public void setSize(long size) {
-		this.size = size;
-	}
-
-	/**
-	 * @return length the size of file in bytes.
-	 */
-	public long getSize() {
-		return this.size;
-	}
 
 	private static final long KILO = 1024; //2^10
 	private static final long MEGA = 1048576; // 2^20
@@ -118,12 +80,6 @@ public class Status extends Observable implements Serializable {
 
 	public void setComplete(boolean complete) {
 		this.complete = complete;
-		if(complete) {
-			if(this.getCurrent() < this.getSize()) {
-				log.warn("Item marked as complete, but current is "+this.getCurrent()+" and total is "+this.getSize());
-			}
-			this.setCurrent(this.getSize());
-		}
 	}
 
 	public boolean isComplete() {
@@ -147,7 +103,6 @@ public class Status extends Observable implements Serializable {
 	 */
 	public void setCurrent(long current) {
 		this.current = current;
-		this.callObservers(new Message(Message.DATA));
 	}
 
 	public void setResume(boolean resume) {
@@ -160,13 +115,9 @@ public class Status extends Observable implements Serializable {
 	}
 
 	public void reset() {
-		if(log.isDebugEnabled()) {
-			log.debug("reset (resume="+resume+")");
-		}
+		log.debug("reset (resume="+resume+")");
 		this.complete = false;
 		this.canceled = false;
-		if(!this.isResume()) {
-			this.setCurrent(0);
-		}
+		this.setCurrent(this.isResume() ? this.getCurrent() : 0);
 	}
 }

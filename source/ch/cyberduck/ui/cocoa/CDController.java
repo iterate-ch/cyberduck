@@ -57,11 +57,11 @@ public abstract class CDController {
 		}
 	}
 
-	public void beginSheet(NSWindow sheet) {
+	public synchronized void beginSheet(NSWindow sheet) {
 		this.beginSheet(sheet, false);
 	}
 
-	public void beginSheet(NSWindow sheet, boolean force) {
+	public synchronized void beginSheet(NSWindow sheet, boolean force) {
 		if(force) this.endSheet();
 		log.debug("beginSheet");
 		try {

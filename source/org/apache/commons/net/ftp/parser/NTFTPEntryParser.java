@@ -135,7 +135,12 @@ public class NTFTPEntryParser extends RegexFTPFileEntryParserImpl {
             else {
                 f.attributes.setType(Path.FILE_TYPE);
                 if (null != size) {
-                    f.status.setSize(Long.parseLong(size));
+					try {
+						f.setSize(Long.parseLong(size));
+					}
+					catch (NumberFormatException e) {
+						// intentionally do nothing
+					}
                 }
             }
             return (f);

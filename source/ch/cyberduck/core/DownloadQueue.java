@@ -37,7 +37,7 @@ public class DownloadQueue extends Queue {
 	protected List getChilds(List list, Path p) {
 		list.add(p);
 		if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
-			p.status.setSize(0);
+			p.setSize(0);
 			for(Iterator i = p.list(false, true).iterator(); i.hasNext();) {
 				Path child = (Path)i.next();
 				child.setLocal(new Local(p.getLocal(), child.getName()));
@@ -47,6 +47,17 @@ public class DownloadQueue extends Queue {
 		return list;
 	}
 
+	public long getSize() {
+		if(this.worker.isRunning() && this.worker.isInitialized()) {
+			long size = 0;
+			for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
+				size += ((Path)iter.next()).getSize();
+			}
+			this.size = size;
+		}
+		return this.size; //cached value
+	}
+	
 	protected void process(Path p) {
 		p.download();
 	}

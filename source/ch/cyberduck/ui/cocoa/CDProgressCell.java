@@ -50,9 +50,11 @@ public class CDProgressCell extends CDTableCell {
 
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
-		this.subview.setFrame(cellFrame);
-		if(this.subview.superview() != controlView) {
-			controlView.addSubview(this.subview);
+		if(this.subview != null) {
+			this.subview.setFrame(cellFrame);
+			if(this.subview.superview() != controlView) {
+				controlView.addSubview(this.subview);
+			}
 		}
 	}
 }
