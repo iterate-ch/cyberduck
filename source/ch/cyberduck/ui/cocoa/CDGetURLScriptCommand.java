@@ -62,7 +62,6 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
 	catch(java.net.MalformedURLException e) {
 	    log.error(e.getMessage());
 	}
-	log.debug("return");
 	return null;
     }
 }
