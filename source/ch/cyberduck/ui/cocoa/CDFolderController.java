@@ -64,12 +64,9 @@ public class CDFolderController extends NSObject {
         instances.removeObject(this);
     }
 	
-    public void closeSheet(Object sender) {
+    public void createButtonClicked(Object sender) {
         // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-		if(folderField.stringValue().indexOf('/') == -1) {
-			NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
-		}
-		else {
+		if(folderField.stringValue().indexOf('/') != -1) {
 			NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
 													  NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
 													  null, //alternative button
@@ -82,6 +79,16 @@ public class CDFolderController extends NSObject {
 													  NSBundle.localizedString("Invalid character in folder name.", "") // message
 													  );
 		}
+		else if(folderField.stringValue().length() == 0) {
+//			folderField.setStringValue(this.file.getName());
+		}
+		else {
+			NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
+		}
+	}
+	
+	public void cancelButtonClicked(Object sender) {
+		NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
 	}
 
     public void newfolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {

@@ -210,12 +210,20 @@ public abstract class Path {
     public abstract void delete();
 
 	/**
+		* Changes the session's working directory to this path
+	 */
+	public abstract void cwdir();
+
+	/**
 		* @param recursive Create intermediate directories as required.  If this option is
 	 * not specified, the full path prefix of each operand must already
 	 * exist
 	 */
 	public abstract void mkdir(boolean recursive);
 	
+	/**
+		* @param newFilename Should be an absolute path
+	 */
     public abstract void rename(String newFilename);
 	
     /**
@@ -299,7 +307,7 @@ public abstract class Path {
 //	}
 
     /**
-     * @return the absolute path name
+     * @return the absolute path name, e.g. /home/user/filename
      */
     public String getAbsolute() {
         //log.debug("getAbsolute:"+this.path);
@@ -356,6 +364,10 @@ public abstract class Path {
         return childs;
     }
 
+	/**
+		* @return All childs of the local file representation and the file itself. Does not return any directory
+	 names, but only plain files.
+	 */
     private List getDownloadQueue(List queue) {
         if (this.isDirectory()) {
             for (Iterator i = this.list(false, true).iterator(); i.hasNext();) {
@@ -370,6 +382,11 @@ public abstract class Path {
         return queue;
     }
 
+	/**
+		* @return The path itself and all files included if this path denotes a directory (recursive for all
+																						   subsequent directories)
+	 Does not return any directory names, but only plain files.
+	 */
     private List getUploadQueue(List queue) {
         if (this.getLocal().isDirectory()) {
             File[] files = this.getLocal().listFiles();

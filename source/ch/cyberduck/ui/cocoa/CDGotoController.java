@@ -67,11 +67,20 @@ public class CDGotoController extends NSObject {
         instances.removeObject(this);
     }
 
-    public void closeSheet(Object sender) {
-        // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-        NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
+    public void goButtonClicked(Object sender) {
+		if(folderField.stringValue().length() == 0) {
+			//			folderField.setStringValue(this.file.getName());
+		}
+		else {
+			// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
+			NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
+		}
     }
 
+	public void cancelButtonClicked(Object sender) {
+		NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
+	}
+	
     public void gotoSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
         log.debug("gotoSheetDidEnd");
         sheet.orderOut(null);

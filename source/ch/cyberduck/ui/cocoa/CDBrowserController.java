@@ -1160,6 +1160,21 @@ public class CDBrowserController extends NSObject implements Observer {
     private static final NSImage folderIcon = NSImage.imageNamed("folder16.tiff");
     private static final NSImage notFoundIcon = NSImage.imageNamed("notfound.tiff");
 
+	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
+	
+	static {
+		lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
+	}
+
+	private static final NSDictionary TABLE_CELL_PARAGRAPH_DICTIONARY= new NSDictionary(new Object[]
+																			 {
+																				 lineBreakByTruncatingMiddleParagraph
+																			 },
+																			 new Object[]{
+																				 NSAttributedString.ParagraphStyleAttributeName
+																			 } //keys
+																			 );
+	
     private class CDBrowserTableDataSource extends CDTableDataSource {
         private List fullData;
         private List currentData;
@@ -1172,7 +1187,7 @@ public class CDBrowserController extends NSObject implements Observer {
         public int numberOfRowsInTableView(NSTableView tableView) {
             return currentData.size();
         }
-
+		
         public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
             if (row < this.numberOfRowsInTableView(tableView)) {
                 String identifier = (String) tableColumn.identifier();
@@ -1195,19 +1210,19 @@ public class CDBrowserController extends NSObject implements Observer {
                     return icon;
                 }
                 else if (identifier.equals("FILENAME")) {
-                    return p.getName();
+					return new NSAttributedString(p.getName(), TABLE_CELL_PARAGRAPH_DICTIONARY);
                 }
                 else if (identifier.equals("SIZE")) {
-                    return Status.getSizeAsString(p.status.getSize());
+					return new NSAttributedString(Status.getSizeAsString(p.status.getSize()), TABLE_CELL_PARAGRAPH_DICTIONARY);
                 }
                 else if (identifier.equals("MODIFIED")) {
-                    return p.attributes.getTimestampAsString();
+					return new NSAttributedString(p.attributes.getTimestampAsString(), TABLE_CELL_PARAGRAPH_DICTIONARY);
                 }
                 else if (identifier.equals("OWNER")) {
-                    return p.attributes.getOwner();
+					return new NSAttributedString(p.attributes.getOwner(), TABLE_CELL_PARAGRAPH_DICTIONARY);
                 }
                 else if (identifier.equals("PERMISSIONS")) {
-                    return p.attributes.getPermission().toString();
+					return new NSAttributedString(p.attributes.getPermission().toString(), TABLE_CELL_PARAGRAPH_DICTIONARY);
                 }
                 throw new IllegalArgumentException("Unknown identifier: " + identifier);
             }
@@ -1301,8 +1316,7 @@ public class CDBrowserController extends NSObject implements Observer {
 								List files = q.getRoots();
 								for (Iterator iter = files.iterator(); iter.hasNext();) {
 									Path p = (Path) iter.next();
-///									p.rename(parent.getAbsolute()+"/"+p.getName());
-									PathFactory.createPath(parent.getSession(), p.getAbsolute(), p.getName()).rename(parent.getAbsolute()+"/"+p.getName());
+									PathFactory.createPath(parent.getSession(), p.getAbsolute()).rename(parent.getAbsolute()+"/"+p.getName());
 								}
 								tableView.deselectAll(null);
 								pathController.workdir().list(true);

@@ -181,6 +181,22 @@ public class SFTPPath extends Path {
         session.callObservers(this);
         return files;
     }
+	
+	public void cwdir() {
+        try {
+            session.check();
+			session.SFTP.openDirectory(this.getParent().getAbsolute());
+        }
+        catch (SshException e) {
+            session.log("SSH Error: " + e.getMessage(), Message.ERROR);
+        }
+        catch (IOException e) {
+            session.log("IO Error: " + e.getMessage(), Message.ERROR);
+        }
+        finally {
+            session.log("Idle", Message.STOP);
+        }
+	}
 
 	public void mkdir(boolean recursive) {
         log.debug("mkdir:"+this.getName());
@@ -206,13 +222,14 @@ public class SFTPPath extends Path {
         }
     }
 	
-    public void rename(String newFilename) {
-        log.debug("rename:"+newFilename);
+    public void rename(String filename) {
+        log.debug("rename:"+filename);
         try {
             session.check();
-            session.log("Renaming " + this.getName() + " to " + newFilename, Message.PROGRESS);
-            session.SFTP.renameFile(this.getAbsolute(), newFilename);
-			this.setPath(this.getParent().getAbsolute(), newFilename);
+            session.log("Renaming " + this.getName() + " to " + filename, Message.PROGRESS);
+            session.SFTP.renameFile(this.getAbsolute(), filename);
+			this.setPath(filename);
+//			this.setPath(this.getParent().getAbsolute(), filename);
 			this.getParent().invalidate();
         }
         catch (SshException e) {

@@ -168,7 +168,8 @@ public class CDBrowserTable extends NSTableView {
 		if(ds instanceof CDTableDataSource) {
 			CDTableDataSource model = (CDTableDataSource)ds;
 			for (int i = 0; i < model.numberOfRowsInTableView(this); i++) {
-				String filename = (String) model.tableViewObjectValueForLocation(this, this.tableColumnWithIdentifier("FILENAME"), i);
+				NSAttributedString s = (NSAttributedString) model.tableViewObjectValueForLocation(this, this.tableColumnWithIdentifier("FILENAME"), i);
+				String filename = s.stringReference().string();
 				if (filename.toLowerCase().startsWith(chars)) {
 					this.selectRow(i, false);
 					this.scrollRowToVisible(i);

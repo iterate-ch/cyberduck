@@ -115,6 +115,10 @@ public class HTTPPath extends Path {
         session.log("Invalid Operation", Message.ERROR);
     }
 
+	public void cwdir() {
+		session.log("Invalid Operation", Message.ERROR);
+	}
+
 	public void mkdir(boolean recursive) {
 		session.log("Invalid Operation", Message.ERROR);
 	}

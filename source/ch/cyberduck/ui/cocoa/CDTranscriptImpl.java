@@ -47,10 +47,9 @@ public class CDTranscriptImpl implements Transcript {
         // formatting attributes of the first character of the text it replaces, or of the character immediately
         // before aRange if the range's length is 0. If the range's location is 0, the formatting
         // attributes of the first character in the receiver are used.
-		int l = textView.textStorage().length();
-		this.textView.textStorage().replaceCharactersInRange(new NSRange(l, 0), 
+		this.textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0), 
 															 message + "\n"); // @warning very bad performance
 		this.textView.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
-        this.textView.scrollRangeToVisible(new NSRange(l, 0));
+        this.textView.scrollRangeToVisible(new NSRange(textView.textStorage().length(), 0));
     }
 }

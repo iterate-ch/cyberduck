@@ -156,6 +156,22 @@ public class FTPPath extends Path {
         session.callObservers(this);
         return files;
     }
+	
+	public void cwdir() {
+        try {
+            session.check();
+			session.FTP.chdir(this.getAbsolute());
+        }
+        catch (FTPException e) {
+            session.log("FTP Error: " + e.getMessage(), Message.ERROR);
+        }
+        catch (IOException e) {
+            session.log("IO Error: " + e.getMessage(), Message.ERROR);
+        }
+        finally {
+            session.log("Idle", Message.STOP);
+        }
+	}
 
 	public void mkdir(boolean recursive) {
         log.debug("mkdir:"+this.getName());
@@ -181,13 +197,14 @@ public class FTPPath extends Path {
         }
     }
 	
-    public void rename(String newFilename) {
-        log.debug("rename:"+newFilename);
+    public void rename(String filename) {
+        log.debug("rename:"+filename);
         try {
             session.check();
-            session.log("Renaming " + this.getName() + " to " + newFilename, Message.PROGRESS);
-            session.FTP.rename(this.getName(), newFilename);
-			this.setPath(this.getParent().getAbsolute(), newFilename);
+            session.log("Renaming " + this.getName() + " to " + filename, Message.PROGRESS);
+            session.FTP.rename(this.getAbsolute(), filename);
+			this.setPath(filename);
+//			this.setPath(this.getParent().getAbsolute(), filename);
 			this.getParent().invalidate();
         }
         catch (FTPException e) {

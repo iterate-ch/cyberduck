@@ -208,9 +208,13 @@ public class CDInfoController extends NSObject {
 		log.debug("textInputDidEndEditing");
 		if (!filenameField.stringValue().equals(this.file.getName())) {
 			if(filenameField.stringValue().indexOf('/') == -1) {
-				this.file.rename(filenameField.stringValue());
+				//this.file.getParent().cwdir();
+				this.file.rename(this.file.getParent().getAbsolute()+"/"+filenameField.stringValue());
 				// refresh the file listing so that the observers (if any) get notified of the change
 				this.file.getParent().list(true);
+			}
+			else if(filenameField.stringValue().length() == 0) {
+				filenameField.setStringValue(this.file.getName());
 			}
 			else {
 				NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
