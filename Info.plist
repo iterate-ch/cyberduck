@@ -20,7 +20,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Cyberduck</string>
 	<key>CFBundleGetInfoString</key>
-	<string>Cyberduck java*version*</string>
+	<string>Cyberduck *version*</string>
 	<key>CFBundleIconFile</key>
 	<string>cyberduck-application</string>
 	<key>CFBundleIdentifier</key>
