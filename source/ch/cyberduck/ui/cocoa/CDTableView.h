@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2004 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 Whitney Young. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -19,9 +19,8 @@
 #import <Cocoa/Cocoa.h>
 
 @interface CDTableView : NSTableView {
-
+	NSMutableString *select_string;
+	NSTimer *select_timer;
 }
-
-- (void)awakeFromNib;
 
 @end

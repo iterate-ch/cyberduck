@@ -84,6 +84,9 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			if(identifier.equals("BOOKMARK")) {
 				return this.getItem(row);
 			}
+			if(identifier.equals("FILENAME")) {
+				return this.getItem(row).getHostname();
+			}
 //			if(identifier.equals("TOOLTIP")) {
 //				Host h = this.getItem(row);
 //				return h.getURL()+h.getDefaultPath();

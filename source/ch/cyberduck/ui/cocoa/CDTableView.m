@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2004 David Kocher. All rights reserved.
+ *  Copyright (c) 2004 Whitney Young. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -20,35 +20,30 @@
 
 @interface CDTableView (Private)
 - (NSTableColumn *)_typeAheadSelectionColumn;
+- (void)passSelectString:(NSTimer *)sender;
 @end
 
 @implementation CDTableView
 
-- (id)init
-{
-	[super init];
-	return self;
-}
-
 - (void)awakeFromNib
 {
-	
+	select_string = [[NSMutableString alloc] init];
+	select_timer = nil;
 }
 
 - (void)dealloc
 {
+	[select_string release];
+	[select_timer release];
 	[super dealloc];
 }
 
-- (void)keyDown:(NSEvent *)theEvent;
+- (void)keyDown:(NSEvent *)event
 {
-    NSString *characters;
-    unichar key;
+	NSString *str = [event characters];
+	char key = [str length]?[str characterAtIndex:0]:'\0';
 	
-    characters = [theEvent characters];
-    key = [characters characterAtIndex:0];
-	
-    if (key == NSCarriageReturnCharacter || key == NSEnterCharacter) {
+	if (key == NSCarriageReturnCharacter || key == NSEnterCharacter) {
         if ([[self target] respondsToSelector:[self doubleAction]]) {
             [[self target] performSelector:[self doubleAction] withObject:self];
             return;
@@ -61,36 +56,80 @@
         }
     }
 	
-	NSTableColumn *typeAheadColumn = [self _typeAheadSelectionColumn];
-	if (typeAheadColumn != nil && ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] || (![[NSCharacterSet controlCharacterSet] characterIsMember:key]))) {
-		int count = [[self dataSource] numberOfRowsInTableView:self];
-		int startIndex = [self selectedRow];
-		int rowIndex = startIndex < count - 1 ? startIndex : -1;
-		rowIndex++;
-		for (; rowIndex < count; rowIndex++) {
-			NSAttributedString *name = [[self dataSource] tableView:self 
-							   objectValueForTableColumn:typeAheadColumn
-													 row:rowIndex];
-			if ([[[name string] lowercaseString] hasPrefix: characters]) {
-				[self selectRow:rowIndex byExtendingSelection:NO];
-				[self scrollRowToVisible:rowIndex];
-				return;
-			}
-			if(rowIndex == count - 1 && (startIndex == -1 || startIndex > 0)) {
-				count = startIndex;
-				rowIndex = -1;
-				startIndex = 0;
+	if ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] || (![[NSCharacterSet controlCharacterSet] characterIsMember:key]))
+	{
+		[select_string appendString:[event charactersIgnoringModifiers]];
+		[select_timer invalidate];
+		select_timer = [NSTimer scheduledTimerWithTimeInterval:0.4
+														target:self 
+													  selector:@selector(passSelectString:) 
+													  userInfo:nil 
+													   repeats:NO];
+	} 
+	else 
+	{
+		[super keyDown:event];
+	}
+}
+
+- (void)passSelectString:(NSTimer *)sender
+{
+	[select_timer invalidate];
+	select_timer = nil;
+	
+	int row = -1;
+	int to_index = 0;
+	int smallest_difference = -1;
+	int counter;
+	NSString *compare = [select_string lowercaseString];
+	for (counter = 0; counter < [self numberOfRows]; counter++)
+	{
+		NSString *object = [[[[self dataSource] tableView:self 
+								objectValueForTableColumn:[self _typeAheadSelectionColumn] 
+													  row:counter] string] lowercaseString];
+		if (to_index < [object length] && to_index < [compare length] + 1)
+		{
+			if (object && [[object substringToIndex:to_index] isEqualToString:[compare substringToIndex:to_index]])			
+			{
+				char one = [compare characterAtIndex:to_index];
+				char two = (to_index == [object length])?' ':[object characterAtIndex:to_index];
+				int difference = abs(one - two);
+				if (difference == 0)
+				{
+					while (difference == 0)
+					{
+						to_index++;
+						if (to_index == [compare length] || to_index == [object length] + 1) { break; } // if we hava an exact match
+						one = [compare characterAtIndex:to_index];
+						two = (to_index == [object length])?' ':[object characterAtIndex:to_index];
+						difference = abs(one - two);
+					}
+					smallest_difference = -1;
+					row = counter;
+					if (to_index == [compare length] || to_index == [object length] + 1) { break; } // if we hava an exact match
+				} else if (smallest_difference == -1 || difference < smallest_difference)
+				{
+					smallest_difference = difference;
+					row = counter;
+				}
 			}
 		}
 	}
-	[super keyDown:theEvent];
+	if (row != -1) {
+		[self selectRow:row byExtendingSelection:NO];
+		[self scrollRowToVisible:row];
+	}
+	
+	[select_string setString:@""];
 }
 
 - (NSString *)view:(NSView *)view stringForToolTip:(NSToolTipTag)tag point:(NSPoint)point userData:(void *)data
 {
 	// ask our data source for the tool tip
-	if ([[self dataSource] respondsToSelector:@selector(tableView:objectValueForTableColumn:row:)]) {
-		if ([self rowAtPoint:point] >= 0) {
+	if ([[self dataSource] respondsToSelector:@selector(tableView:objectValueForTableColumn:row:)]) 
+	{
+		if ([self rowAtPoint:point] >= 0) 
+		{
 			return [[self dataSource] tableView:self 
 					  objectValueForTableColumn:[[NSTableColumn alloc] initWithIdentifier:@"TOOLTIP"] 
 											row:[self rowAtPoint:point]];
