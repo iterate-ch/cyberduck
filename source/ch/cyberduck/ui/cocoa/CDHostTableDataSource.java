@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDFavoriteTableDataSource extends NSObject {
+public class CDHostTableDataSource extends NSObject {
     private static Logger log = Logger.getLogger(CDFavoriteTableDataSource.class);
 
     private NSMutableArray data;
