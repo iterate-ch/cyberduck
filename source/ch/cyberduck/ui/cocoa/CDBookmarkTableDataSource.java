@@ -19,10 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -42,6 +39,8 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 
 	private static final File BOOKMARKS_FILE;
 
+	private int hostPboardChangeCount = NSPasteboard.pasteboardWithName("HostPBoard").changeCount();
+
 	static {
 		if(BOOKMARKS_FILE_SYSTEM.exists()) {
 			BOOKMARKS_FILE = BOOKMARKS_FILE_SYSTEM;
@@ -53,8 +52,6 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	}
 
 	private static CDBookmarkTableDataSource instance;
-
-	private List data = new ArrayList();
 
 	private CDBookmarkTableDataSource() {
 		this.load();
@@ -73,6 +70,24 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 		return this.size();
 	}
 
+	public void sort(NSTableColumn tableColumn, final boolean ascending) {
+		final int higher = ascending ? 1 : -1;
+		final int lower = ascending ? -1 : 1;
+		if(tableColumn.identifier().equals("BOOKMARK")) {
+			Collections.sort(this,
+							 new Comparator() {
+								 public int compare(Object o1, Object o2) {
+									 Host h1 = (Host)o1;
+									 Host h2 = (Host)o2;
+									 if(ascending) {
+										 return h1.getHostname().compareToIgnoreCase(h2.getHostname());
+									 }
+									 return -h1.getHostname().compareToIgnoreCase(h2.getHostname());
+								 }
+							 });
+		}
+	}
+	
 	private static NSImage documentIcon = NSImage.imageNamed("cyberduck-document.icns");
 
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
@@ -82,10 +97,10 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 				return documentIcon;
 			}
 			if(identifier.equals("BOOKMARK")) {
-				return this.getItem(row);
+				return this.get(row);
 			}
 			if(identifier.equals("TYPEAHEAD")) {
-				return this.getItem(row).getHostname();
+				return ((Host)this.get(row)).getHostname();
 			}
 			throw new IllegalArgumentException("Unknown identifier: "+identifier);
 		}
@@ -112,6 +127,15 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			}
 			return NSDraggingInfo.DragOperationCopy;
 		}
+		if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
+			NSPasteboard pboard = NSPasteboard.pasteboardWithName("HostPBoard");
+			if(this.hostPboardChangeCount < pboard.changeCount()) {
+				if(pboard.availableTypeFromArray(new NSArray("HostPBoardType")) != null) {
+					tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
+					return NSDraggingInfo.DragOperationMove;
+				}
+			}
+		}
 		return NSDraggingInfo.DragOperationNone;
 	}
 
@@ -133,15 +157,14 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
 				NSArray filesList = (NSArray)info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
 				Queue q = new UploadQueue();
-				Host h = this.getItem(row);
+				Host h = (Host)this.get(row);
 				Session session = SessionFactory.createSession(h);
 				for(int i = 0; i < filesList.count(); i++) {
 					String filename = (String)filesList.objectAtIndex(i);
 					// Adding a previously exported bookmark file from the Finder
 					if(filename.indexOf(".duck") != -1) {
-						this.addItem(this.importBookmark(new java.io.File(filename)), row);
+						this.add(row, this.importBookmark(new java.io.File(filename)));
 						tableView.reloadData();
-						//tableView.selectRow(row, false);
 						return true;
 					}
 					// drop of a file from the finder > upload to the remote host this bookmark points to
@@ -157,10 +180,33 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 					return true;
 				}
 			}
+			if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
+				// we are only interested in our private pasteboard with a description of the host encoded in as a xml.
+				NSPasteboard pboard = NSPasteboard.pasteboardWithName("HostPBoard");
+				if(this.hostPboardChangeCount < pboard.changeCount()) {
+					log.debug("availableTypeFromArray:HostPBoardType: "+pboard.availableTypeFromArray(new NSArray("HostPBoardType")));
+					if(pboard.availableTypeFromArray(new NSArray("HostPBoardType")) != null) {
+						Object o = pboard.propertyListForType("HostPBoardType");// get the data from paste board
+						log.debug("tableViewAcceptDrop:"+o);
+						if(o != null) {
+							NSArray elements = (NSArray)o;
+							for(int i = 0; i < elements.count(); i++) {
+								NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
+								Host h = new Host(dict);
+								this.remove(this.indexOf(h));
+								this.add(row, h);
+								tableView.reloadData();
+							}
+							this.hostPboardChangeCount++;
+							return true;
+						}
+					}
+				}
+			}
 		}
 		return false;
 	}
-
+	
 	// ----------------------------------------------------------
 	// Drag methods
 	// ----------------------------------------------------------
@@ -187,7 +233,13 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			this.promisedDragBookmarks = new Host[rows.count()];
 			this.promisedDragBookmarksFiles = new java.io.File[rows.count()];
 			for(int i = 0; i < rows.count(); i++) {
-				promisedDragBookmarks[i] = (Host)this.getItem(((Integer)rows.objectAtIndex(i)).intValue());
+				promisedDragBookmarks[i] = (Host)this.get(((Integer)rows.objectAtIndex(i)).intValue());
+			}
+			// Writing data for private use for moving bookmarks.
+			NSPasteboard hostPboard = NSPasteboard.pasteboardWithName("HostPBoard");
+			hostPboard.declareTypes(new NSArray("HostPBoardType"), null);
+			if(hostPboard.setPropertyListForType(new NSArray(promisedDragBookmarks[0].getAsDictionary()), "HostPBoardType")) {
+				log.debug("HostPBoardType data sucessfully written to pasteboard");
 			}
 			if(pboard.setStringForType("duck", NSPasteboard.FilesPromisePboardType)) {
 				log.debug("FilesPromisePboardType data sucessfully written to pasteboard");
@@ -231,58 +283,21 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	//	Data Manipulation
 	// ----------------------------------------------------------
 
-	public void addItem(Host item) {
-		this.data.add(item);
+	public boolean add(Object host) {
+		super.add(host);
+		this.save();
+		return true;
+	}
+
+	public void add(int row, Object host) {
+		super.add(row, host);
 		this.save();
 	}
-
-	public void addItem(Host item, int row) {
-		this.data.add(row, item);
+	
+	public Object remove(int row) {
+		super.remove(row);
 		this.save();
-	}
-
-	public void removeItem(int index) {
-		if(index < this.size()) {
-			this.data.remove(index);
-		}
-		this.save();
-	}
-
-	public void removeItem(Host item) {
-		this.removeItem(this.data.lastIndexOf(item));
-	}
-
-	public Host getItem(int row) {
-		Host result = null;
-		if(row < this.size()) {
-			result = (Host)this.data.get(row);
-		}
-		return result;
-	}
-
-	public int indexOf(Object o) {
-		int index = 0;
-		for(Iterator i = this.data.iterator(); i.hasNext(); index++) {
-			if(i.next().equals(o))
-				return index;
-		}
-		return -1;
-	}
-
-	public Collection values() {
-		return data;
-	}
-
-	public int size() {
-		return this.data.size();
-	}
-
-	public void clear() {
-		this.data.clear();
-	}
-
-	public Iterator iterator() {
-		return data.iterator();
+		return null;
 	}
 
 	public void save() {
@@ -354,7 +369,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 				while(i.hasMoreElements()) {
 					element = i.nextElement();
 					if(element instanceof NSDictionary) {
-						this.data.add(new Host((NSDictionary)element));
+						this.add(new Host((NSDictionary)element));
 					}
 				}
 			}

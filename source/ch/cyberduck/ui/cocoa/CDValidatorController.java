@@ -172,7 +172,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 			c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
 			c.setIdentifier("FILENAME");
 			c.setMinWidth(100f);
-			c.setWidth(250f);
+			c.setWidth(220f);
 			c.setMaxWidth(500f);
 			c.setResizable(true);
 			c.setEditable(false);
@@ -185,8 +185,8 @@ public abstract class CDValidatorController extends AbstractValidator {
 			c.headerCell().setStringValue(NSBundle.localizedString("Server File", ""));
 			c.setIdentifier("REMOTE");
 			c.setMinWidth(100f);
-			c.setWidth(180f);
-			c.setMaxWidth(500f);
+			c.setWidth(200f);
+			c.setMaxWidth(600f);
 			c.setResizable(true);
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
@@ -197,8 +197,8 @@ public abstract class CDValidatorController extends AbstractValidator {
 			c.headerCell().setStringValue(NSBundle.localizedString("Local File", ""));
 			c.setIdentifier("LOCAL");
 			c.setMinWidth(100f);
-			c.setWidth(180f);
-			c.setMaxWidth(500f);
+			c.setWidth(200f);
+			c.setMaxWidth(600f);
 			c.setResizable(true);
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);

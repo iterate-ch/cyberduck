@@ -62,6 +62,10 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 		this.load();
 	}
 
+	public void sort(NSTableColumn tableColumn, final boolean ascending) {
+		//
+	}
+	
 	public int numberOfRowsInTableView(NSTableView tableView) {
 		return this.size();
 	}
@@ -70,13 +74,13 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 		if(row < numberOfRowsInTableView(tableView)) {
 			String identifier = (String)tableColumn.identifier();
 			if(identifier.equals("ICON")) {
-				return this.getItem(row);
+				return this.get(row);
 			}
 			if(identifier.equals("PROGRESS")) {
 				return this.getController(row).view();
 			}
 			if(identifier.equals("TYPEAHEAD")) {
-				return this.getItem(row).getName();
+				return ((Queue)this.get(row)).getName();
 			}
 			throw new IllegalArgumentException("Unknown identifier: "+identifier);
 		}
@@ -151,7 +155,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 						NSArray elements = (NSArray)o;
 						for(int i = 0; i < elements.count(); i++) {
 							NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-							this.addItem(Queue.createQueue(dict), row);
+							this.add(Queue.createQueue(dict), row);
 							tableView.reloadData();
 							tableView.selectRow(row, false);
 						}
@@ -178,7 +182,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 			try {
 				NSMutableArray list = new NSMutableArray();
 				for(int i = 0; i < this.size(); i++) {
-					list.addObject(this.getItem(i).getAsDictionary());
+					list.addObject(((Queue)this.get(i)).getAsDictionary());
 				}
 				NSMutableData collection = new NSMutableData();
 				String[] errorString = new String[]{null};
@@ -230,32 +234,25 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 				while(i.hasMoreElements()) {
 					element = i.nextElement();
 					if(element instanceof NSDictionary) {
-						this.addItem(Queue.createQueue((NSDictionary)element));
+						this.add(Queue.createQueue((NSDictionary)element));
 					}
 				}
 			}
 		}
 	}
 
-	public void addItem(Queue item) {
-		this.data.add(new CDProgressController(item));
+	public void add(Queue queue) {
+		super.add(new CDProgressController((Queue)queue));
 		this.save();
 	}
 
-	public void addItem(Queue item, int row) {
-		this.data.add(row, new CDProgressController(item));
+	public void add(Queue queue, int row) {
+		super.add(row, new CDProgressController((Queue)queue));
 		this.save();
 	}
 
-	public void removeItem(int index) {
-		if(index < this.size()) {
-			this.data.remove(index);
-		}
-		this.save();
-	}
-
-	public void removeItem(Queue item) {
-		for(Iterator i = data.iterator(); i.hasNext();) {
+	public void remove(Queue item) {
+		for(Iterator i = this.iterator(); i.hasNext();) {
 			CDProgressController c = (CDProgressController)i.next();
 			if(c.getQueue().equals(item)) {
 				i.remove();
@@ -263,21 +260,17 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 		}
 	}
 
-	public Queue getItem(int row) {
+	public Object get(int row) {
 		if(row < this.size()) {
-			return ((CDProgressController)this.data.get(row)).getQueue();
+			return ((CDProgressController)super.get(row)).getQueue();
 		}
 		return null;
 	}
 
 	public CDProgressController getController(int row) {
 		if(row < this.size()) {
-			return (CDProgressController)this.data.get(row);
+			return (CDProgressController)super.get(row);
 		}
 		return null;
-	}
-
-	public int size() {
-		return this.data.size();
 	}
 }

@@ -119,9 +119,9 @@ public class CDBrowserController extends CDController implements Observer {
 		this.window().setTitle("Cyberduck "+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		this.window().setInitialFirstResponder(quickConnectPopup);
 		// Drawer states
-		if(Preferences.instance().getBoolean("logDrawer.isOpen")) {
-			this.logDrawer.open();
-		}
+//		if(Preferences.instance().getBoolean("logDrawer.isOpen")) {
+//			this.logDrawer.open();
+//		}
 		if(Preferences.instance().getBoolean("bookmarkDrawer.isOpen")) {
 			this.bookmarkDrawer.open();
 		}
@@ -437,12 +437,19 @@ public class CDBrowserController extends CDController implements Observer {
 
 		// receive drag events from types
 		this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]
-		{NSPasteboard.FilenamesPboardType})); //accept bookmark files dragged from the Finder
+															   {
+																   NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
+																   NSPasteboard.FilesPromisePboardType,
+																   "HostPBoardType" //moving bookmarks
+															   }
+															   )
+												   );
 		this.bookmarkTable.setRowHeight(45f);
 
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("ICON");
+			c.headerCell().setStringValue("");
 			c.setMinWidth(32f);
 			c.setWidth(32f);
 			c.setMaxWidth(32f);
@@ -455,6 +462,7 @@ public class CDBrowserController extends CDController implements Observer {
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("BOOKMARK");
+			c.headerCell().setStringValue(NSBundle.localizedString("Bookmarks", "A column in the browser"));
 			c.setMinWidth(50f);
 			c.setWidth(200f);
 			c.setMaxWidth(500f);
@@ -501,7 +509,7 @@ public class CDBrowserController extends CDController implements Observer {
 	public void bookmarkTableRowDoubleClicked(Object sender) {
 		log.debug("bookmarkTableRowDoubleClicked");
 		if(this.bookmarkTable.selectedRow() != -1) {
-			this.mount((Host)bookmarkModel.getItem(bookmarkTable.selectedRow()));
+			this.mount((Host)bookmarkModel.get(bookmarkTable.selectedRow()));
 		}
 	}
 
@@ -519,7 +527,7 @@ public class CDBrowserController extends CDController implements Observer {
 			}
 
 			public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-				return CDBookmarkTableDataSource.instance().getItem(row).getHostname();
+				return ((Host)CDBookmarkTableDataSource.instance().get(row)).getHostname();
 			}
 		});
 	}
@@ -609,7 +617,7 @@ public class CDBrowserController extends CDController implements Observer {
 	public void editBookmarkButtonClicked(Object sender) {
 		this.bookmarkDrawer.open();
 		CDBookmarkController controller = new CDBookmarkController(bookmarkTable,
-		    bookmarkModel.getItem(bookmarkTable.selectedRow()));
+		    (Host)bookmarkModel.get(bookmarkTable.selectedRow()));
 		controller.window().makeKeyAndOrderFront(null);
 	}
 
@@ -635,10 +643,10 @@ public class CDBrowserController extends CDController implements Observer {
 			    "localhost",
 			    Preferences.instance().getInteger("connection.port.default"));
 		}
-		this.bookmarkModel.addItem(item);
+		this.bookmarkModel.add(item);
 		this.bookmarkTable.reloadData();
-		this.bookmarkTable.selectRow(bookmarkModel.indexOf(item), false);
-		this.bookmarkTable.scrollRowToVisible(bookmarkModel.indexOf(item));
+		this.bookmarkTable.selectRow(bookmarkModel.lastIndexOf(item), false);
+		this.bookmarkTable.scrollRowToVisible(bookmarkModel.lastIndexOf(item));
 		CDBookmarkController controller = new CDBookmarkController(bookmarkTable, item);
 	}
 
@@ -656,12 +664,12 @@ public class CDBrowserController extends CDController implements Observer {
 	public void deleteBookmarkButtonClicked(Object sender) {
 		this.bookmarkDrawer.open();
 		switch(NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", ""),
-		    NSBundle.localizedString("Do you want to delete the selected bookmark?", "")+" ["+bookmarkModel.getItem(bookmarkTable.selectedRow()).getNickname()+"]",
+		    NSBundle.localizedString("Do you want to delete the selected bookmark?", "")+" ["+((Host)bookmarkModel.get(bookmarkTable.selectedRow())).getNickname()+"]",
 		    NSBundle.localizedString("Delete", ""),
 		    NSBundle.localizedString("Cancel", ""),
 		    null)) {
 			case NSAlertPanel.DefaultReturn:
-				bookmarkModel.removeItem(bookmarkTable.selectedRow());
+				bookmarkModel.remove(bookmarkTable.selectedRow());
 				this.bookmarkTable.reloadData();
 				break;
 			case NSAlertPanel.AlternateReturn:
@@ -2036,17 +2044,6 @@ public class CDBrowserController extends CDController implements Observer {
 		// Delegate methods
 		// ----------------------------------------------------------
 
-		public boolean isSortedAscending() {
-			return this.sortAscending;
-		}
-
-		public NSTableColumn selectedColumn() {
-			return this.selectedColumn;
-		}
-
-		private boolean sortAscending = true;
-		private NSTableColumn selectedColumn = null;
-
 		public void sort(NSTableColumn tableColumn, final boolean ascending) {
 			final int higher = ascending ? 1 : -1;
 			final int lower = ascending ? -1 : 1;
@@ -2078,9 +2075,7 @@ public class CDBrowserController extends CDController implements Observer {
 						    if(ascending) {
 							    return p1.getName().compareToIgnoreCase(p2.getName());
 						    }
-						    else {
-							    return -p1.getName().compareToIgnoreCase(p2.getName());
-						    }
+							return -p1.getName().compareToIgnoreCase(p2.getName());
 					    }
 				    });
 			}
@@ -2096,9 +2091,7 @@ public class CDBrowserController extends CDController implements Observer {
 						    else if(p1 < p2) {
 							    return lower;
 						    }
-						    else {
-							    return 0;
-						    }
+							return 0;
 					    }
 				    });
 			}
@@ -2111,9 +2104,7 @@ public class CDBrowserController extends CDController implements Observer {
 						    if(ascending) {
 							    return p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
 						    }
-						    else {
-							    return -p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
-						    }
+							return -p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
 					    }
 				    });
 			}
@@ -2126,28 +2117,10 @@ public class CDBrowserController extends CDController implements Observer {
 						    if(ascending) {
 							    return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
 						    }
-						    else {
-							    return -p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
-						    }
+							return -p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
 					    }
 				    });
 			}
-		}
-
-		public void tableViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
-			log.debug("tableViewDidClickTableColumn");
-			if(this.selectedColumn == tableColumn) {
-				this.sortAscending = !this.sortAscending;
-			}
-			else {
-				if(selectedColumn != null) {
-					tableView.setIndicatorImage(null, selectedColumn);
-				}
-				this.selectedColumn = tableColumn;
-			}
-			tableView.setIndicatorImage(this.sortAscending ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), tableColumn);
-			this.sort(tableColumn, sortAscending);
-			tableView.reloadData();
 		}
 
 		// ----------------------------------------------------------
@@ -2169,17 +2142,6 @@ public class CDBrowserController extends CDController implements Observer {
 				return (Path)this.currentData.get(row);
 			}
 			return null;
-		}
-
-		public void removeEntry(Path o) {
-			int frow = fullData.indexOf(o);
-			if(frow < fullData.size()) {
-				fullData.remove(frow);
-			}
-			int crow = currentData.indexOf(o);
-			if(crow < currentData.size()) {
-				currentData.remove(crow);
-			}
 		}
 
 		public int indexOf(Path o) {

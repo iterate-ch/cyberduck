@@ -69,7 +69,7 @@ public class CDQueueController extends CDController {
 
 	public boolean hasRunningTransfers() {
 		for(int i = 0; i < this.queueModel.size(); i++) {
-			Queue q = this.queueModel.getItem(i);
+			Queue q = (Queue)this.queueModel.get(i);
 			if(q.isRunning()) {
 				return true;
 			}
@@ -201,7 +201,7 @@ public class CDQueueController extends CDController {
 		}
 		this.toolbar.validateVisibleItems();
 		if(this.queueTable.selectedRow() != -1) {
-			Queue q = this.queueModel.getItem(this.queueTable.selectedRow());
+			Queue q = (Queue)this.queueModel.get(this.queueTable.selectedRow());
 			if(q.numberOfRoots() == 1) {
 				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()+"/"+q.getRoot().getAbsolute(),
 				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
@@ -240,13 +240,13 @@ public class CDQueueController extends CDController {
 	}
 
 	public void removeItem(Queue queue) {
-		this.queueModel.removeItem(queue);
+		this.queueModel.remove(queue);
 		this.reloadQueueTable();
 	}
 
 	public void addItem(Queue queue) {
 		int row = this.queueModel.size();
-		this.queueModel.addItem(queue, row);
+		this.queueModel.add(queue, row);
 		this.queueModel.getController(row).init();
 		this.reloadQueueTable();
 		this.queueTable.selectRow(row, false);
@@ -378,7 +378,7 @@ public class CDQueueController extends CDController {
 
 	public void queueTableRowDoubleClicked(Object sender) {
 		if(this.queueTable.selectedRow() != -1) {
-			Queue item = this.queueModel.getItem(this.queueTable.selectedRow());
+			Queue item = (Queue)this.queueModel.get(this.queueTable.selectedRow());
 			if(item.isRunning()) {
 //				this.stopButtonClicked(sender);
 			}
@@ -397,7 +397,7 @@ public class CDQueueController extends CDController {
 				NSArray elements = (NSArray)o;
 				for(int i = 0; i < elements.count(); i++) {
 					NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-					this.queueModel.addItem(Queue.createQueue(dict));
+					this.queueModel.add(Queue.createQueue(dict));
 				}
 				pboard.setPropertyListForType(null, "QueuePBoardType");
 				this.reloadQueueTable();
@@ -408,7 +408,7 @@ public class CDQueueController extends CDController {
 	public void stopButtonClicked(Object sender) {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		while(enum.hasMoreElements()) {
-			Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
+			Queue queue = (Queue)this.queueModel.get(((Integer)enum.nextElement()).intValue());
 			if(queue.isRunning()) {
 				queue.cancel();
 			}
@@ -417,7 +417,7 @@ public class CDQueueController extends CDController {
 
 	public void stopAllButtonClicked(Object sender) {
 		for(int i = 0; i < this.queueModel.size(); i++) {
-			Queue queue = this.queueModel.getItem(i);
+			Queue queue = (Queue)this.queueModel.get(i);
 			if(queue.isRunning()) {
 				queue.cancel();
 			}
@@ -429,7 +429,7 @@ public class CDQueueController extends CDController {
 		while(enum.hasMoreElements()) {
 			int i = ((Integer)enum.nextElement()).intValue();
 			this.queueModel.getController(i).init();
-			Queue queue = this.queueModel.getItem(i);
+			Queue queue = (Queue)this.queueModel.get(i);
 			if(!queue.isRunning()) {
 				this.startItem(queue, true);
 			}
@@ -441,7 +441,7 @@ public class CDQueueController extends CDController {
 		while(enum.hasMoreElements()) {
 			int i = ((Integer)enum.nextElement()).intValue();
 			this.queueModel.getController(i).init();
-			Queue queue = this.queueModel.getItem(i);
+			Queue queue = (Queue)this.queueModel.get(i);
 			if(!queue.isRunning()) {
 				this.startItem(queue, false);
 			}
@@ -450,7 +450,7 @@ public class CDQueueController extends CDController {
 
 	public synchronized void openButtonClicked(Object sender) {
 		if(this.queueTable.selectedRow() != -1) {
-			Queue item = this.queueModel.getItem(this.queueTable.selectedRow());
+			Queue item = (Queue)this.queueModel.get(this.queueTable.selectedRow());
 			Path f = item.getRoot();
 			String file = item.getRoot().getLocal().toString();
 			if(!NSWorkspace.sharedWorkspace().openFile(file)) {
@@ -480,7 +480,7 @@ public class CDQueueController extends CDController {
 
 	public synchronized void revealButtonClicked(Object sender) {
 		if(this.queueTable.selectedRow() != -1) {
-			Queue item = this.queueModel.getItem(this.queueTable.selectedRow());
+			Queue item = (Queue)this.queueModel.get(this.queueTable.selectedRow());
 			Path f = item.getRoot();
 			String file = item.getRoot().getLocal().toString();
 			if(!NSWorkspace.sharedWorkspace().selectFile(file, "")) {
@@ -517,9 +517,9 @@ public class CDQueueController extends CDController {
 		int j = 0;
 		while(enum.hasMoreElements()) {
 			int i = ((Integer)enum.nextElement()).intValue();
-			Queue queue = this.queueModel.getItem(i-j);
+			Queue queue = (Queue)this.queueModel.get(i-j);
 			if(!queue.isRunning()) {
-				this.queueModel.removeItem(i-j);
+				this.queueModel.remove(i-j);
 				j++;
 			}
 		}
@@ -528,9 +528,9 @@ public class CDQueueController extends CDController {
 
 	public void clearButtonClicked(Object sender) {
 		for(int i = 0; i < this.queueModel.size(); i++) {
-			Queue q = this.queueModel.getItem(i);
+			Queue q = (Queue)this.queueModel.get(i);
 			if(q.getSize() == q.getCurrent() && q.getSize() > 0) {
-				this.queueModel.removeItem(i);
+				this.queueModel.remove(i);
 				i--;
 			}
 		}
@@ -586,7 +586,7 @@ public class CDQueueController extends CDController {
 			}
 			NSEnumerator enum = queueTable.selectedRowEnumerator();
 			while(enum.hasMoreElements()) {
-				Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
+				Queue queue = (Queue)this.queueModel.get(((Integer)enum.nextElement()).intValue());
 				if(!queue.isRunning()) {
 					return false;
 				}
@@ -595,14 +595,14 @@ public class CDQueueController extends CDController {
 		}
 		if(identifier.equals("Resume") || identifier.equals("resumeButtonClicked:")) {
 			if(this.queueTable.numberOfSelectedRows() > 0) {
-				Queue queue = this.queueModel.getItem(this.queueTable.selectedRow());
+				Queue queue = (Queue)this.queueModel.get(this.queueTable.selectedRow());
 				return !queue.isRunning() && !queue.isComplete();
 			}
 			return false;
 		}
 		if(identifier.equals("Reload") || identifier.equals("reloadButtonClicked:")) {
 			if(this.queueTable.numberOfSelectedRows() > 0) {
-				Queue queue = this.queueModel.getItem(this.queueTable.selectedRow());
+				Queue queue = (Queue)this.queueModel.get(this.queueTable.selectedRow());
 				return !queue.isRunning();
 			}
 			return false;
@@ -622,7 +622,7 @@ public class CDQueueController extends CDController {
 			}
 			NSEnumerator enum = queueTable.selectedRowEnumerator();
 			while(enum.hasMoreElements()) {
-				Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
+				Queue queue = (Queue)this.queueModel.get(((Integer)enum.nextElement()).intValue());
 				if(queue.isRunning()) {
 					return false;
 				}

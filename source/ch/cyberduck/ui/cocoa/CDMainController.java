@@ -193,7 +193,7 @@ public class CDMainController extends NSObject {
 				item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
 			}
 			if(index > 5) {
-				Host h = CDBookmarkTableDataSource.instance().getItem(index-6);
+				Host h = (Host)CDBookmarkTableDataSource.instance().get(index-6);
 				item.setTitle(h.getNickname());
 				item.setTarget(this);
 //				item.setImage(documentIcon);

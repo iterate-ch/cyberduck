@@ -105,29 +105,24 @@ public class Host {
 		return copy;
 	}
 
-	/**
-	 * For internal use only.
-	 *
-	 * @param url Must be in the format protocol://user@hostname:portnumber
-	 */
-	private Host(String url) throws java.net.MalformedURLException {
-		try {
-			this.protocol = url.substring(0, url.indexOf("://"));
-			this.hostname = url.substring(url.indexOf("@")+1, url.lastIndexOf(":"));
-			this.port = Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length()));
-			this.setCredentials(url.substring(url.indexOf("://")+3, url.lastIndexOf("@")), null);
-			this.nickname = this.getCredentials().getUsername()+"@"+this.getHostname();
-		}
-		catch(NumberFormatException e) {
-			log.error(e.getMessage());
-			throw new java.net.MalformedURLException("Not a valid URL: "+url);
-		}
-		catch(IndexOutOfBoundsException e) {
-			log.error(e.getMessage());
-			throw new java.net.MalformedURLException("Not a valid URL: "+url);
-		}
-		log.debug(this.toString());
-	}
+//	private Host(String url) throws java.net.MalformedURLException {
+//		try {
+//			this.protocol = url.substring(0, url.indexOf("://"));
+//			this.hostname = url.substring(url.indexOf("@")+1, url.lastIndexOf(":"));
+//			this.port = Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length()));
+//			this.setCredentials(url.substring(url.indexOf("://")+3, url.lastIndexOf("@")), null);
+//			this.nickname = this.getCredentials().getUsername()+"@"+this.getHostname();
+//		}
+//		catch(NumberFormatException e) {
+//			log.error(e.getMessage());
+//			throw new java.net.MalformedURLException("Not a valid URL: "+url);
+//		}
+//		catch(IndexOutOfBoundsException e) {
+//			log.error(e.getMessage());
+//			throw new java.net.MalformedURLException("Not a valid URL: "+url);
+//		}
+//		log.debug(this.toString());
+//	}
 
 	/**
 	 * New host with the default protocol for this port

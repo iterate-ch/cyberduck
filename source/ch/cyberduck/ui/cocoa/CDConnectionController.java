@@ -58,7 +58,7 @@ public class CDConnectionController extends CDController {
 
 	public void bookmarksSelectionChanged(Object sender) {
 		int index = CDBookmarkTableDataSource.instance().indexOf(bookmarksPopup.titleOfSelectedItem());
-		this.selectionChanged(CDBookmarkTableDataSource.instance().getItem(index));
+		this.selectionChanged((Host)CDBookmarkTableDataSource.instance().get(index));
 	}
 
 	private Rendezvous rendezvous;
@@ -135,7 +135,7 @@ public class CDConnectionController extends CDController {
 			}
 
 			public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-				return CDBookmarkTableDataSource.instance().getItem(row).getHostname();
+				return ((Host)CDBookmarkTableDataSource.instance().get(row)).getHostname();
 			}
 		});
 	}

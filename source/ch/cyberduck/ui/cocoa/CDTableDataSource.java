@@ -21,20 +21,59 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.NSDraggingInfo;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.application.NSImage;
+
+import java.util.ArrayList;
 
 /**
  * @version $Id$
  */
-public abstract class CDTableDataSource {//implements NSTableView.DataSource {
+public abstract class CDTableDataSource extends ArrayList {//implements NSTableView.DataSource {
 
 	public abstract int numberOfRowsInTableView(NSTableView tableView);
 
 	public abstract Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row);
 
+	public boolean selectionShouldChangeInTableView(NSTableView tableView) {
+		return true;
+	}
+		
+	// ----------------------------------------------------------
+	// Sorting
+	// ----------------------------------------------------------
+	
+	public boolean isSortedAscending() {
+		return this.sortAscending;
+	}
+	
+	public NSTableColumn selectedColumn() {
+		return this.selectedColumn;
+	}
+	
+	private NSTableColumn selectedColumn = null;
+	private boolean sortAscending = true;
+
+	public abstract void sort(NSTableColumn tableColumn, final boolean ascending);
+
 	// ----------------------------------------------------------
 	// TableView Delegate methods
 	// ----------------------------------------------------------
 
+	public void tableViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
+		if(this.selectedColumn == tableColumn) {
+			this.sortAscending = !this.sortAscending;
+		}
+		else {
+			if(selectedColumn != null) {
+				tableView.setIndicatorImage(null, selectedColumn);
+			}
+			this.selectedColumn = tableColumn;
+		}
+		tableView.setIndicatorImage(this.sortAscending ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), tableColumn);
+		this.sort(tableColumn, sortAscending);
+		tableView.reloadData();
+	}
+		
 	/**
 	 * Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
 	 * The delegate can implement this method to disallow selection of particular rows.
