@@ -95,7 +95,6 @@ public class SFTPSession extends Session {
 			public void onSocketTimeout(TransportProtocol transport) {
 				log.debug("onSocketTimeout");
 				SFTPSession.this.close();
-				return;
 			}
 
 			public void onDisconnect(TransportProtocol transport) {
@@ -139,9 +138,6 @@ public class SFTPSession extends Session {
 			this.log("Starting SFTP subsystem...", Message.PROGRESS);
 			this.SFTP = SSH.openSftpChannel(encoding);
 			this.log("SFTP subsystem ready", Message.PROGRESS);
-		}
-		else {
-			this.close();
 		}
 	}
 

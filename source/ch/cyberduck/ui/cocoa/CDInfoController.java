@@ -318,12 +318,16 @@ public class CDInfoController extends CDController {
 
 	public void filenameInputDidEndEditing(NSNotification sender) {
 		log.debug("textInputDidEndEditing");
-		Path file = (Path)this.files.get(0);
+		final Path file = (Path)this.files.get(0);
 		if(!filenameField.stringValue().equals(file.getName())) {
 			if(filenameField.stringValue().indexOf('/') == -1) {
-				file.rename(file.getParent().getAbsolute()+"/"+filenameField.stringValue());
-				// refresh the file listing so that the observers (if any) get notified of the change
-				file.getParent().list(true);
+				new Thread() {
+					public void run() {
+						file.rename(file.getParent().getAbsolute()+"/"+filenameField.stringValue());
+						// refresh the file listing so that the observers (if any) get notified of the change
+						file.getParent().list(true);
+					}
+				}.start();
 			}
 			else if(filenameField.stringValue().length() == 0) {
 				filenameField.setStringValue(file.getName());
@@ -350,28 +354,32 @@ public class CDInfoController extends CDController {
 		if(((NSButton)sender).state() == NSCell.MixedState) {
 			((NSButton)sender).setState(NSCell.OnState);
 		}
-
+		
 		p[Permission.OWNER][Permission.READ] = (ownerr.state() == NSCell.OnState);
 		p[Permission.OWNER][Permission.WRITE] = (ownerw.state() == NSCell.OnState);
 		p[Permission.OWNER][Permission.EXECUTE] = (ownerx.state() == NSCell.OnState);
-
+		
 		p[Permission.GROUP][Permission.READ] = (groupr.state() == NSCell.OnState);
 		p[Permission.GROUP][Permission.WRITE] = (groupw.state() == NSCell.OnState);
 		p[Permission.GROUP][Permission.EXECUTE] = (groupx.state() == NSCell.OnState);
-
+		
 		p[Permission.OTHER][Permission.READ] = (otherr.state() == NSCell.OnState);
 		p[Permission.OTHER][Permission.WRITE] = (otherw.state() == NSCell.OnState);
 		p[Permission.OTHER][Permission.EXECUTE] = (otherx.state() == NSCell.OnState);
-
-		Permission permission = new Permission(p);
+		
+		final Permission permission = new Permission(p);
 		permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+permission.toString());
-		// send the changes to the remote host
-		Path f = null;
-		for(Iterator i = files.iterator(); i.hasNext();) {
-			f = (Path)i.next();
-			f.changePermissions(permission, recursiveCheckbox.state() == NSCell.OnState);
-		}
-		// refresh the file listing so that the observers (if any) get notified of the change
-		f.getParent().list(true);
+		new Thread() {
+			public void run() {
+				// send the changes to the remote host
+				Path f = null;
+				for(Iterator i = files.iterator(); i.hasNext();) {
+					f = (Path)i.next();
+					f.changePermissions(permission, recursiveCheckbox.state() == NSCell.OnState);
+				}
+				// refresh the file listing so that the observers (if any) get notified of the change
+				f.getParent().list(true);
+			}
+		}.start();
 	}
 }

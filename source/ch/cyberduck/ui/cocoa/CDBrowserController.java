@@ -934,15 +934,19 @@ public class CDBrowserController extends CDController implements Observer {
 		sheet.orderOut(null);
 		switch(returnCode) {
 			case (NSAlertPanel.DefaultReturn):
-				Vector files = (Vector)contextInfo;
+				final Vector files = (Vector)contextInfo;
 				if(files.size() > 0) {
-					Iterator i = files.iterator();
-					Path p = null;
-					while(i.hasNext()) {
-						p = (Path)i.next();
-						p.delete();
-					}
-					p.getParent().list(true, this.showHiddenFiles);
+					new Thread() {
+						public void run() {
+							Iterator i = files.iterator();
+							Path p = null;
+							while(i.hasNext()) {
+								p = (Path)i.next();
+								p.delete();
+							}
+							p.getParent().list(true, showHiddenFiles);
+						}
+					}.start();
 				}
 				break;
 			case (NSAlertPanel.AlternateReturn):
