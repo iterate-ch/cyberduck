@@ -77,17 +77,21 @@ public class UploadQueue extends Queue {
 			this.callObservers(new Message(Message.QUEUE_STOP));
 		}
 	}
-
+	
 	protected List getChilds(List childs, Path p) {
-		childs.add(p);
-		if(p.attributes.isDirectory()) {
-			p.attributes.setSize(0);
-			File[] files = p.getLocal().listFiles();
-			for(int i = 0; i < files.length; i++) {
-				Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
-				// users complaining about .DS_Store files getting uploaded. It should be apple fixing their crappy file system, but whatever.
-				if(!child.getName().equals(".DS_Store")) {
-					this.getChilds(childs, child);
+		if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
+			childs.add(p);
+			if(p.attributes.isDirectory()) {
+				p.attributes.setSize(0);
+				File[] files = p.getLocal().listFiles();
+				for(int i = 0; i < files.length; i++) {
+					if(files[i].canRead()) {
+						Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
+						// users complaining about .DS_Store files getting uploaded. It should be apple fixing their crappy file system, but whatever.
+						if(!child.getName().equals(".DS_Store")) {
+							this.getChilds(childs, child);
+						}
+					}
 				}
 			}
 		}

@@ -2031,24 +2031,11 @@ public class CDBrowserController extends CDController implements Observer {
 			this.fullData = new ArrayList();
 			this.currentData = new ArrayList();
 		}
-
-//		public int outlineViewNumberOfChildrenOfItem(NSOutlineView outlineView, Object object);
 				
 		public int numberOfRowsInTableView(NSTableView tableView) {
 			return currentData.size();
 		}
 		
-//		public boolean outlineViewIsItemExpandable(NSOutlineView outlineView, Object item);		
-
-		/**
-		 * Invoked by outlineView, and returns the child item at the specified index. Children
-		 * of a given parent item are accessed sequentially. If item is null, this method should
-		 * return the appropriate child item of the root object
-		 */
-//		public Object outlineViewChildOfItem(NSOutlineView outlineView, int index, Object item);
-
-//		public Object outlineViewObjectValueForItem(NSOutlineView outlineView, NSTableColumn tableColumn, Object item);
-
 		public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 			if(row < this.numberOfRowsInTableView(tableView)) {
 				String identifier = (String)tableColumn.identifier();
@@ -2108,8 +2095,6 @@ public class CDBrowserController extends CDController implements Observer {
 		// Drop methods
 		// ----------------------------------------------------------
 
-//		public int outlineViewValidateDrop(NSOutlineView outlineView, NSDraggingInfo info, Object item, int row);
-
 		public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 			log.info("tableViewValidateDrop:row:"+row+",operation:"+operation);
 			if(isMounted()) {
@@ -2137,8 +2122,6 @@ public class CDBrowserController extends CDController implements Observer {
 			}
 			return NSDraggingInfo.DragOperationNone;
 		}
-
-//		public abstract boolean outlineViewAcceptDrop(NSOutlineView outlineView, NSDraggingInfo info, Object item, int index);
 		
 		public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 			log.debug("tableViewAcceptDrop:row:"+row+",operation:"+operation);
@@ -2195,8 +2178,6 @@ public class CDBrowserController extends CDController implements Observer {
 		// ----------------------------------------------------------
 		// Drag methods
 		// ----------------------------------------------------------
-
-//		public abstract boolean outlineViewWriteItemsToPasteboard(NSOutlineView outlineView, NSArray items, NSPasteboard pboard);
 
 		/**
 		 * Invoked by tableView after it has been determined that a drag should begin, but before the drag has been started.

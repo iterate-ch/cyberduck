@@ -80,7 +80,7 @@ public class SyncQueue extends Queue {
 	}
 
 	private void addLocalChilds(List childs, Path p) {
-		if(p.getLocal().exists()) {
+		if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
 			if(!childs.contains(p)) {
 				childs.add(p);
 			}
