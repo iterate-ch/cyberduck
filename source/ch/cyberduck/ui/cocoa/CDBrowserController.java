@@ -84,7 +84,7 @@ public class CDBrowserController extends NSObject implements Observer {
         // receive drag events from types
         this.browserTable.registerForDraggedTypes(new NSArray(new Object[]{
             NSPasteboard.FilenamesPboardType,
-            "BookmarkPboardType"}));
+            "QueuePboardType"}));
         this.browserTable.setRowHeight(17f);
 
         // setting appearance attributes
@@ -282,10 +282,6 @@ public class CDBrowserController extends NSObject implements Observer {
             Host host = (Host) CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow());
             this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
 			this.mount(host);
-//			Host host = (Host) CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow());
-//			CDBrowserController controller = new CDBrowserController();
-//			controller.window().makeKeyAndOrderFront(null);
-//          controller.mount(host);
         }
     }
 
@@ -1287,7 +1283,6 @@ public class CDBrowserController extends NSObject implements Observer {
 					}
 					else if (p.attributes.isFile()) {
 						icon = CDIconCache.instance().get(p.getExtension());
-//						icon = NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
 					}
 					else {
 						icon = notFoundIcon;
@@ -1326,18 +1321,29 @@ public class CDBrowserController extends NSObject implements Observer {
 
         public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
             log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
-            if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-                tableView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-                return NSTableView.DropAbove;
-            }
+			if(isMounted()) {
+				if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+					tableView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+					return NSDraggingInfo.DragOperationCopy;
+				}
+				NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+				if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+					if (row != -1 && row < tableView.numberOfRows()) {
+						Path selected = this.getEntry(row);
+						if(selected.isDirectory()) {
+							return NSDraggingInfo.DragOperationMove;
+						}
+					}
+				}
+			}
             return NSDraggingInfo.DragOperationNone;
         }
 
         public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
             log.debug("tableViewAcceptDrop:row:" + row + ",operation:" + operation);
-            NSPasteboard pboard = info.draggingPasteboard();
-            if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-                Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
+            NSPasteboard infoPboard = info.draggingPasteboard();
+            if (infoPboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+                Object o = infoPboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
                 log.debug("tableViewAcceptDrop:" + o);
                 if (o != null) {
                     if (o instanceof NSArray) {
@@ -1351,14 +1357,39 @@ public class CDBrowserController extends NSObject implements Observer {
                                     new Local((String) filesList.objectAtIndex(i)));
 							q.addRoot(p);
                         }
-							CDQueuesImpl.instance().addItem(q);
-							CDQueueController.instance().startItem(q, (Observer) CDBrowserController.this);
+						CDQueuesImpl.instance().addItem(q);
+						CDQueueController.instance().startItem(q, (Observer) CDBrowserController.this);
                         return true;
                     }
+					return false;
                 }
+				return false;
             }
-            return false;
-        }
+			if (row != -1 && row < tableView.numberOfRows()) {
+				NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+				log.debug("availableTypeFromArray:QueuePBoardType: " + pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
+				if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+					Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
+					log.debug("tableViewAcceptDrop:" + o);
+					if (o != null) {
+						NSArray elements = (NSArray) o;
+						for (int i = 0; i < elements.count(); i++) {
+							NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+							Path parent = this.getEntry(row);
+							if(parent.isDirectory()) {
+								Queue q = new Queue(dict);
+								List files = q.getRoots();
+								for(Iterator iter = files.iterator(); iter.hasNext(); ) {
+									Path p = (Path)iter.next();
+									p.rename(parent.getAbsolute(), p.getName());
+								}
+							}
+						}
+					}
+				}
+			}
+			return false;
+		}
 
 
         // ----------------------------------------------------------
@@ -1404,7 +1435,6 @@ public class CDBrowserController extends NSObject implements Observer {
                         fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
                     }
 					q.addRoot(promisedDragPaths[i]);
-//                    queueDictionaries.addObject(new Queue(promisedDragPaths[i], Queue.KIND_DOWNLOAD).getAsDictionary());
                 }
 				queueDictionaries.addObject(q.getAsDictionary());
                 // Writing data for private use when the item gets dragged to the transfer queue.
@@ -1446,7 +1476,6 @@ public class CDBrowserController extends NSObject implements Observer {
                     try {
                         this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
                                 this.promisedDragPaths[i].getName()));
-//                        Queue queue = new Queue(this.promisedDragPaths[i], Queue.KIND_DOWNLOAD);
 						q.addRoot(this.promisedDragPaths[i]);
                         promisedDragNames.addObject(this.promisedDragPaths[i].getName());
                     }

@@ -114,7 +114,7 @@ public class CDQueueCell extends CDTableCell {
 																	   boldFont),
 												new NSRect(cellPoint.x() + BORDER + SPACE,
 														   cellPoint.y() + SPACE,
-														   cellSize.width() - BORDER - SPACE,
+														   cellSize.width() - BORDER - SPACE - 40,
 														   cellSize.height()));
 			}
 			else {
@@ -139,7 +139,7 @@ public class CDQueueCell extends CDTableCell {
 //                    queue.getRoot().getHost().getHostname() +
 //                    queue.getRoot().getAbsolute(),
 			// hostname
-            NSGraphics.drawAttributedString(new NSAttributedString(queue.getRoot().getHost().getHostname(),
+            NSGraphics.drawAttributedString(new NSAttributedString(queue.getRoot().getHost().getHostname()+"/"+queue.getRoot().getAbsolute(),
 																   normalFont),
 											new NSRect(cellPoint.x() + BORDER + SPACE,
 													   cellPoint.y() + 20,

@@ -65,15 +65,12 @@ public class CDQueueTableDataSource extends CDTableDataSource {
         log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
         if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
             return NSDraggingInfo.DragOperationCopy;
-//			return NSDraggingInfo.DragOperationGeneric;
         }
         NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
         if (this.queuePboardChangeCount < pboard.changeCount()) {
             if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-                log.debug("tableViewValidateDrop:DragOperationGeneric");
                 // means the drag operation can be desided by the table view
                 // the tableview will draw rectangles or lines
-//				return NSDraggingInfo.DragOperationGeneric;
                 return NSDraggingInfo.DragOperationCopy;
             }
         }
@@ -121,12 +118,16 @@ public class CDQueueTableDataSource extends CDTableDataSource {
                             CDQueueController.instance().startItem(q);
                             return true;
                         }
+						return false;
                     }
+					return false;
                 }
                 catch (java.net.MalformedURLException e) {
                     log.error(e.getMessage());
+					return false;
                 }
             }
+			return false;
         }
         // we are only interested in our private pasteboard with a description of the queue
         // encoded in as a xml.

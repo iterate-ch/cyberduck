@@ -50,14 +50,27 @@ public class Host {
 	public static final String KEYFILE = "Private Key File";
 
 	public Host(NSDictionary dict) {
-		this((String) dict.objectForKey(Host.PROTOCOL),
-		    (String) dict.objectForKey(Host.HOSTNAME),
-		    Integer.parseInt((String) dict.objectForKey(Host.PORT)),
-		    new Login((String) dict.objectForKey(Host.HOSTNAME), (String) dict.objectForKey(Host.USERNAME), null),
-		    (String) dict.objectForKey(Host.PATH),
-		    (String) dict.objectForKey(Host.NICKNAME)
-		);
-		this.getLogin().setPrivateKeyFile((String) dict.objectForKey(Host.KEYFILE));
+		Object protocolObj = dict.objectForKey(Host.PROTOCOL);
+		if(protocolObj != null)
+			this.setProtocol((String) protocolObj);
+		Object hostnameObj = dict.objectForKey(Host.HOSTNAME);
+		if(hostnameObj != null) {
+			this.setHostname((String) hostnameObj);
+			Object usernameObj = dict.objectForKey(Host.USERNAME);
+			if(usernameObj != null)
+				this.setLogin(new Login((String) dict.objectForKey(Host.HOSTNAME), (String) usernameObj, null));
+			this.getLogin().setPrivateKeyFile((String) dict.objectForKey(Host.KEYFILE));
+		}
+		Object portObj = dict.objectForKey(Host.PORT);
+		if(portObj != null)
+			this.setPort(Integer.parseInt((String) portObj));
+		Object pathObj = dict.objectForKey(Host.PATH);
+		if(pathObj != null)
+			this.setDefaultPath((String) pathObj);
+		Object nicknameObj = dict.objectForKey(Host.NICKNAME);
+		if(nicknameObj != null)
+			this.setNickname((String) nicknameObj);
+		log.debug(this.toString());
 	}
 
 	public NSDictionary getAsDictionary() {
@@ -146,6 +159,8 @@ public class Host {
 
 	public void setDefaultPath(String defaultpath) {
 		this.defaultpath = defaultpath;
+		if(this.defaultpath == null || this.defaultpath.equals(""))
+			this.defaultpath = Path.HOME;
 	}
 
 	public String getDefaultPath() {

@@ -37,7 +37,6 @@ public abstract class Path {
 	private String path = null;
 	private Local local = null;
 	protected Path parent = null;
-//	private List cache = new ArrayList();
 	public Status status = new Status();
 	public Attributes attributes = new Attributes();
 
@@ -128,6 +127,7 @@ public abstract class Path {
 	 * @param name The relative filename
 	 */
 	public void setPath(String parent, String name) {
+		log.debug("setPath:"+parent+","+name);
 		if (parent.charAt(parent.length() - 1) == '/')
 			this.setPath(parent + name);
 		else
@@ -178,7 +178,6 @@ public abstract class Path {
 
 	protected void setCache(List files) {
 		this.getSession().cache().put(this.getAbsolute(), files);
-//		this.cache = files;
 	}
 
 	/**
@@ -202,9 +201,14 @@ public abstract class Path {
 	 */
 	public abstract Path mkdir(String folder);
 
-	//    public abstract int size();
-
-	public abstract void rename(String n);
+	public void rename(String parent, String filename) {
+		if (parent.charAt(parent.length() - 1) == '/')
+			this.rename(parent + filename);
+		else
+			this.rename(parent + "/" + filename);
+	}
+	
+	public abstract void rename(String absolute);
 
 	public abstract void changeOwner(String owner, boolean recursive);
 
@@ -216,7 +220,7 @@ public abstract class Path {
 	public abstract void changePermissions(Permission perm, boolean recursive);
 	
 	public boolean exists() {
-		return this.getParent().list(true, true).contains(this);
+		return this.getParent().list(false, true).contains(this);
 	}
 
 	public boolean isFile() {
@@ -256,14 +260,6 @@ public abstract class Path {
 			return "Folder";
 		return "Unknown";
 	}
-	
-//	public byte[] getIcon() {
-//		return this.icon;
-//	}
-//
-//	public void setIcon(byte[] icon) {
-//		this.icon = icon;
-//	}
 	
 	/**
 	 * @return true if this paths points to '/'
@@ -462,5 +458,9 @@ public abstract class Path {
 		if(other instanceof Path)
 			return this.getAbsolute().equals(((Path)other).getAbsolute());
 		return false;
+	}
+	
+	public String toString() {
+		return this.getAbsolute();
 	}
 }

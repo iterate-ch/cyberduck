@@ -165,6 +165,10 @@ public class Queue extends Observable implements Observer { //Thread {
 		this.roots.add(item);
 	}
 	
+	public List getRoots() {
+		return this.roots;
+	}
+	
 	/**
 		* @return Either <code>KIND_DOWNLOAD</code> or <code>KIND_UPLOAD</code>
 	 */

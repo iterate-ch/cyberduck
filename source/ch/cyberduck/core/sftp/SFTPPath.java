@@ -224,14 +224,13 @@ public class SFTPPath extends Path {
 		}
 	}
 
-	public void rename(String filename) {
-		log.debug("rename:" + filename);
+	public void rename(String absolute) {
+		log.debug("rename:" + absolute);
 		try {
 			session.check();
-			session.log("Renaming " + this.getName() + " to " + filename, Message.PROGRESS);
-			session.SFTP.renameFile(this.getAbsolute(), this.getParent().getAbsolute() + "/" + filename);
-			this.setPath(this.getParent().getAbsolute(), filename);
-			this.getParent().list(true);
+			session.log("Renaming " + this.getName() + " to " + absolute, Message.PROGRESS);
+			session.SFTP.renameFile(this.getAbsolute(), absolute);
+			this.setPath(absolute);
 		}
 		catch (SshException e) {
 			session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -249,7 +248,6 @@ public class SFTPPath extends Path {
 		try {
 			session.check();
 			session.log("Make directory " + name, Message.PROGRESS);
-//			if(session.SFTP.getAttributes(this.getAbsolute()))
 			session.SFTP.makeDirectory(this.getAbsolute() + "/" + name);
 			this.list(true);
 		}
@@ -367,7 +365,7 @@ public class SFTPPath extends Path {
 				throw new IOException("Unable to buffer data");
 			}
 			SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-//			this.status.setSize(p.getAttributes().getSize().intValue());
+			this.status.setSize(p.getAttributes().getSize().intValue());
 			SftpFileInputStream in = new SftpFileInputStream(p);
 			if (in == null) {
 				throw new IOException("Unable opening data stream");
@@ -394,8 +392,8 @@ public class SFTPPath extends Path {
 	
 	private List getUploadQueue(List queue) throws IOException {
 		if (this.getLocal().isDirectory()) {
-			this.session.check();
 			if(!this.exists()) {
+				this.session.check();
 				this.session.SFTP.makeDirectory(this.getAbsolute());
 			}
 			File[] files = this.getLocal().listFiles();

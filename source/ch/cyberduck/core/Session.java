@@ -37,8 +37,6 @@ public abstract class Session extends Observable {
 	public static final String HTTPS = "https";
 	public static final String FTP = "ftp";
 	public static final String SFTP = "sftp";
-
-//	protected ResourceBundle bundle = ResourceBundle.getBundle("core", Locale.getDefault());
 	
 	private Transcript transcript;
 	

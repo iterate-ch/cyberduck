@@ -148,6 +148,7 @@ public class FTPSession extends Session {
 
 	public synchronized Path workdir() {
 		try {
+			this.check();
 			return PathFactory.createPath(this, this.FTP.pwd());
 		}
 		catch (FTPException e) {

@@ -47,7 +47,7 @@ public class CDBookmarkCell extends CDTableCell {
                     new NSRect(cellPoint.x(), cellPoint.y() + 1, cellSize.width() - 5, cellSize.height()));
             NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getLogin().getUsername(), tinyFont),
                     new NSRect(cellPoint.x(), cellPoint.y() + 14, cellSize.width() - 5, cellSize.height()));
-            NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getHostname() + bookmark.getDefaultPath(), tinyFont),
+            NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getHostname()+"/"+bookmark.getDefaultPath(), tinyFont),
                     new NSRect(cellPoint.x(), cellPoint.y() + 27, cellSize.width() - 5, cellSize.height()));
         }
     }

@@ -198,15 +198,14 @@ public class FTPPath extends Path {
 		}
 	}
 
-	public void rename(String filename) {
-		log.debug("rename:" + filename);
+	public void rename(String absolute) {
+		log.debug("rename:" + absolute);
 		try {
 			session.check();
 			session.FTP.chdir(this.getParent().getAbsolute());
-			session.log("Renaming " + this.getName() + " to " + filename, Message.PROGRESS);
-			session.FTP.rename(this.getName(), filename);
-			this.setPath(this.getParent().getAbsolute(), filename);
-			this.getParent().list(true);
+			session.log("Renaming " + this.getName() + " to " + absolute, Message.PROGRESS);
+			session.FTP.rename(this.getName(), absolute);
+			this.setPath(absolute);
 		}
 		catch (FTPException e) {
 			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -330,7 +329,7 @@ public class FTPPath extends Path {
 		try {
 			log.debug("download:"+this.toString());
 			this.session.check();
-//			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
+			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
 			if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 				this.session.FTP.setTransferType(FTPTransferType.BINARY);
 				this.getLocal().getParentFile().mkdirs();
@@ -389,8 +388,8 @@ public class FTPPath extends Path {
 
 	private List getUploadQueue(List queue) throws IOException {
 		if (this.getLocal().isDirectory()) {
-			this.session.check();
 			if(!this.exists())
+				this.session.check();
 				session.FTP.mkdir(this.getAbsolute());
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
@@ -410,10 +409,10 @@ public class FTPPath extends Path {
 			log.debug("upload:"+this.toString());
 			this.session.check();
 			if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+				this.session.FTP.setTransferType(FTPTransferType.BINARY);
 				if(this.status.isResume()) {
 					this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
 				}
-				this.session.FTP.setTransferType(FTPTransferType.BINARY);
 				java.io.InputStream in = new FileInputStream(this.getLocal());
 				if (in == null) {
 					throw new IOException("Unable to buffer data");
