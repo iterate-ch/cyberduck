@@ -18,51 +18,65 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
-
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.Path;
-
-import java.util.List;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.NSSelector;
+
+import org.apache.log4j.Logger;
+
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SyncQueue;
+import ch.cyberduck.core.Validator;
+import ch.cyberduck.core.ValidatorFactory;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
-public class CDSyncValidatorController extends CDValidatorController {
+public class CDSyncQueueValidatorController extends CDValidatorController {
+	protected static Logger log = Logger.getLogger(CDSyncQueueValidatorController.class);
 
-    public CDSyncValidatorController() {
-        super(false);
-    }
-	
+	static {
+		ValidatorFactory.addFactory(SyncQueue.class, new Factory());
+	}
+
+	private static class Factory extends ValidatorFactory {
+		protected Validator create(boolean resumeRequested) {
+			return new CDSyncQueueValidatorController();
+		}
+	}
+
+	private CDSyncQueueValidatorController() {
+		super(false);
+	}
+
 	protected void load() {
-        if (false == NSApplication.loadNibNamed("Sync", this)) {
-            log.fatal("Couldn't load Sync.nib");
-        }
+		if(false == NSApplication.loadNibNamed("Sync", this)) {
+			log.fatal("Couldn't load Sync.nib");
+		}
 		this.setEnabled(false);
 	}
-	
+
 	public void awakeFromNib() {
 		super.awakeFromNib();
-        this.mirrorRadioCell.setTarget(this);
-        this.mirrorRadioCell.setAction(new NSSelector("mirrorCellClicked", new Class[]{Object.class}));
-        this.uploadRadioCell.setTarget(this);
-        this.uploadRadioCell.setAction(new NSSelector("uploadCellClicked", new Class[]{Object.class}));
-        this.downloadRadioCell.setTarget(this);
-        this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
+		this.mirrorRadioCell.setTarget(this);
+		this.mirrorRadioCell.setAction(new NSSelector("mirrorCellClicked", new Class[]{Object.class}));
+		this.uploadRadioCell.setTarget(this);
+		this.uploadRadioCell.setAction(new NSSelector("uploadCellClicked", new Class[]{Object.class}));
+		this.downloadRadioCell.setTarget(this);
+		this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
 	}
-	
+
 	protected void setEnabled(boolean enabled) {
 		this.syncButton.setEnabled(enabled);
-	}	
-	
+	}
+
 	public void mirrorCellClicked(Object sender) {
 		if(this.mirrorRadioCell.state() == NSCell.OnState) {
 			this.workset = new ArrayList();
-			for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
+			for(Iterator i = this.validated.iterator(); i.hasNext();) {
 				Path p = (Path)i.next();
 				this.workset.add(p);
 			}
@@ -73,9 +87,9 @@ public class CDSyncValidatorController extends CDValidatorController {
 	public void downloadCellClicked(Object sender) {
 		if(this.downloadRadioCell.state() == NSCell.OnState) {
 			this.workset = new ArrayList();
-			for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
+			for(Iterator i = this.validated.iterator(); i.hasNext();) {
 				Path p = (Path)i.next();
-				if(p.getRemote().exists()) {
+				if(p.getRemote().exists(false)) {
 					this.workset.add(p);
 				}
 			}
@@ -86,7 +100,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 	public void uploadCellClicked(Object sender) {
 		if(this.uploadRadioCell.state() == NSCell.OnState) {
 			this.workset = new ArrayList();
-			for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
+			for(Iterator i = this.validated.iterator(); i.hasNext();) {
 				Path p = (Path)i.next();
 				if(p.getLocal().exists()) {
 					this.workset.add(p);
@@ -95,101 +109,101 @@ public class CDSyncValidatorController extends CDValidatorController {
 			this.reloadTable();
 		}
 	}
-	
+
 	protected void fireDataChanged() {
 		this.mirrorCellClicked(null);
 		this.downloadCellClicked(null);
 		this.uploadCellClicked(null);
 	}
-	
+
 	public List getResult() {
-		log.debug("getResult:"+this.workset);
 		return this.workset;
 	}
 
 	// ----------------------------------------------------------
-    // Outlets
-    // ----------------------------------------------------------
+	// Outlets
+	// ----------------------------------------------------------
 	
 	private NSButtonCell mirrorRadioCell;
-	
+
 	public void setSyncRadioCell(NSButtonCell mirrorRadioCell) {
 		this.mirrorRadioCell = mirrorRadioCell;
 	}
 
 	private NSButtonCell downloadRadioCell;
-	
+
 	public void setDownloadRadioCell(NSButtonCell downloadRadioCell) {
 		this.downloadRadioCell = downloadRadioCell;
 	}
 
 	private NSButtonCell uploadRadioCell;
-	
+
 	public void setUploadRadioCell(NSButtonCell uploadRadioCell) {
 		this.uploadRadioCell = uploadRadioCell;
 	}
-	
+
 	private NSButton syncButton;
-	
+
 	public void setSyncButton(NSButton syncButton) {
 		this.syncButton = syncButton;
 		this.syncButton.setEnabled(false);
 	}
-	
+
 	public void syncActionFired(NSButton sender) {
-        NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
-    }
+		log.debug("syncActionFired");
+		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+	}
 
 	protected boolean validateFile(Path p) {
 		log.debug("validateFile:"+p);
-		if(p.getRemote().exists() && p.getLocal().exists()) {
+		if(p.getRemote().exists(false) && p.getLocal().exists()) {
 			return !(p.status.getSize() == p.getLocal().size()); //@todo size should be correct!?
 		}
 		return true; // Include if mirroring
 	}
-	
-	protected boolean validateDirectory(Path path) {
-		if(!path.getLocal().exists())
-			path.getLocal().mkdirs();
-		return false;
-	}
-	
+
 	protected boolean exists(Path p) {
-		return p.getRemote().exists() || p.getLocal().exists();
+		return p.getRemote().exists(false) || p.getLocal().exists();
 	}
 	
 	// ----------------------------------------------------------
-    // NSTableView.DataSource
-    // ----------------------------------------------------------
+	// NSTableView.DataSource
+	// ----------------------------------------------------------
 	
-	private static final NSImage arrowUpIcon = NSImage.imageNamed("arrowUp16.tiff");
-    private static final NSImage arrowDownIcon = NSImage.imageNamed("arrowDown16.tiff");
-	
-    public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-        if (row < numberOfRowsInTableView(tableView)) {
-            String identifier = (String)tableColumn.identifier();
+	private static final NSImage ARROW_UP_ICON = NSImage.imageNamed("arrowUpBlack16.tiff");
+	private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDownBlack16.tiff");
+	private static final NSImage PLUS_ICON = NSImage.imageNamed("plus.tiff");
+
+	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
+		if(row < numberOfRowsInTableView(tableView)) {
+			String identifier = (String)tableColumn.identifier();
 			Path p = (Path)this.workset.get(row);
 			if(p != null) {
-				if (identifier.equals("TYPE")) {
-					if(p.getRemote().exists() && p.getLocal().exists()) {
+				if(identifier.equals("TYPE")) {
+					if(p.getRemote().exists(false) && p.getLocal().exists()) {
 						if(p.getLocal().getTimestamp().before(p.getRemote().attributes.getTimestamp())) {
-							return arrowDownIcon;
+							return ARROW_DOWN_ICON;
 						}
 						if(p.getLocal().getTimestamp().after(p.getRemote().attributes.getTimestamp())) {
-							return arrowUpIcon;
+							return ARROW_UP_ICON;
 						}
 					}
-					if(p.getRemote().exists()) {
-						return arrowDownIcon;
+					if(p.getRemote().exists(false)) {
+						return ARROW_DOWN_ICON;
 					}
 					if(p.getLocal().exists()) {
-						return arrowUpIcon;
+						return ARROW_UP_ICON;
 					}
-					return NSImage.imageNamed("notfound.tiff"); // illegal argument
+					throw new IllegalArgumentException("The file must exist either locally or on the server");
+				}
+				if(identifier.equals("NEW")) {
+					if(!(p.getRemote().exists(false) && p.getLocal().exists())) {
+						return PLUS_ICON;
+					}
 				}
 				return super.tableViewObjectValueForLocation(tableView, tableColumn, row);
 			}
-        }
-        return null;
-    }
+		}
+		return null;
+	}
 }

@@ -27,73 +27,73 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class QueueList {
-    private static QueueList instance;
+	private static QueueList instance;
 
-    private List data = new ArrayList();
+	private List data = new ArrayList();
 
-    public QueueList() {
-        this.load();
-    }
+	public QueueList() {
+		this.load();
+	}
 
-    public static QueueList instance() {
-        if (null == instance) {
-            instance = new ch.cyberduck.ui.cocoa.CDQueueList();
-        }
-        return instance;
-    }
+	public static QueueList instance() {
+		if(null == instance) {
+			instance = new ch.cyberduck.ui.cocoa.CDQueueList();
+		}
+		return instance;
+	}
 
-    public abstract void save();
+	public abstract void save();
 
-    public abstract void load();
+	public abstract void load();
 
-    // ----------------------------------------------------------
-    //	Data Manipulation
-    // ----------------------------------------------------------
+	// ----------------------------------------------------------
+	//	Data Manipulation
+	// ----------------------------------------------------------
 
-    public void addItem(Queue item) {
-        this.data.add(item);
-    }
+	public void addItem(Queue item) {
+		this.data.add(item);
+	}
 
-    public void addItem(Queue item, int row) {
-        this.data.add(row, item);
-    }
+	public void addItem(Queue item, int row) {
+		this.data.add(row, item);
+	}
 
-    public void removeItem(int index) {
-        if (index < this.size()) {
-            this.data.remove(index);
-        }
-        this.save();
-    }
+	public void removeItem(int index) {
+		if(index < this.size()) {
+			this.data.remove(index);
+		}
+		this.save();
+	}
 
-    public void removeItem(Queue item) {
-        this.removeItem(this.data.lastIndexOf(item));
-    }
+	public void removeItem(Queue item) {
+		this.removeItem(this.data.lastIndexOf(item));
+	}
 
-    public Queue getItem(int row) {
-        Queue result = null;
-        if (row < this.size()) {
-            result = (Queue)this.data.get(row);
-        }
-        return result;
-    }
+	public Queue getItem(int row) {
+		Queue result = null;
+		if(row < this.size()) {
+			result = (Queue)this.data.get(row);
+		}
+		return result;
+	}
 
-    public int indexOf(Object o) {
-        return this.data.indexOf(o);
-    }
+	public int indexOf(Object o) {
+		return this.data.indexOf(o);
+	}
 
-    public Collection values() {
-        return data;
-    }
+	public Collection values() {
+		return data;
+	}
 
-    public int size() {
-        return this.data.size();
-    }
+	public int size() {
+		return this.data.size();
+	}
 
-    public void clear() {
-        this.data.clear();
-    }
+	public void clear() {
+		this.data.clear();
+	}
 
-    public Iterator iterator() {
-        return data.iterator();
-    }
+	public Iterator iterator() {
+		return data.iterator();
+	}
 }

@@ -18,11 +18,11 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSDictionary;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.apple.cocoa.foundation.NSDictionary;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
@@ -31,229 +31,222 @@ import org.apache.commons.net.io.FromNetASCIIOutputStream;
 import org.apache.commons.net.io.ToNetASCIIInputStream;
 import org.apache.commons.net.io.ToNetASCIIOutputStream;
 import org.apache.log4j.Logger;
-
-import ch.cyberduck.core.*;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
+
+import ch.cyberduck.core.*;
 
 /**
  * @version $Id$
  */
 public class FTPPath extends Path {
-    private static Logger log = Logger.getLogger(FTPPath.class);
+	private static Logger log = Logger.getLogger(FTPPath.class);
 
-    private static final String DOS_LINE_SEPARATOR = "\r\n";
-    private static final String MAC_LINE_SEPARATOR = "\r";
-    private static final String UNIX_LINE_SEPARATOR = "\n";
+	private static final String DOS_LINE_SEPARATOR = "\r\n";
+	private static final String MAC_LINE_SEPARATOR = "\r";
+	private static final String UNIX_LINE_SEPARATOR = "\n";
 
-    static {
-        PathFactory.addFactory(Session.FTP, new Factory());
-    }
+	static {
+		PathFactory.addFactory(Session.FTP, new Factory());
+	}
 
-    private static class Factory extends PathFactory {
-        protected Path create(Session session, String parent, String name) {
-            return new FTPPath((FTPSession)session, parent, name);
-        }
+	private static class Factory extends PathFactory {
+		protected Path create(Session session, String parent, String name) {
+			return new FTPPath((FTPSession)session, parent, name);
+		}
 
-        protected Path create(Session session) {
-            return new FTPPath((FTPSession)session);
-        }
+		protected Path create(Session session) {
+			return new FTPPath((FTPSession)session);
+		}
 
-        protected Path create(Session session, String path) {
-            return new FTPPath((FTPSession)session, path);
-        }
+		protected Path create(Session session, String path) {
+			return new FTPPath((FTPSession)session, path);
+		}
 
-        protected Path create(Session session, String path, Local file) {
-            return new FTPPath((FTPSession)session, path, file);
-        }
+		protected Path create(Session session, String path, Local file) {
+			return new FTPPath((FTPSession)session, path, file);
+		}
 
-        protected Path create(Session session, NSDictionary dict) {
-            return new FTPPath((FTPSession)session, dict);
-        }
-    }
+		protected Path create(Session session, NSDictionary dict) {
+			return new FTPPath((FTPSession)session, dict);
+		}
+	}
 
-    private FTPSession session;
+	private FTPSession session;
 
-    /**
-     * @param session The connection to work with for regular file operations
-     * @param parent  The parent directory relative to this file
-     * @param name    The filename of this path
-     */
-    private FTPPath(FTPSession s, String parent, String name) {
-        super(parent, name);
-        this.session = s;
-    }
+	/**
+	 * @param session The connection to work with for regular file operations
+	 * @param parent  The parent directory relative to this file
+	 * @param name    The filename of this path
+	 */
+	private FTPPath(FTPSession s, String parent, String name) {
+		super(parent, name);
+		this.session = s;
+	}
 
-    private FTPPath(FTPSession s, String path) {
-        super(path);
-        this.session = s;
-    }
+	private FTPPath(FTPSession s, String path) {
+		super(path);
+		this.session = s;
+	}
 
-    private FTPPath(FTPSession s) {
-        super();
-        this.session = s;
-    }
+	private FTPPath(FTPSession s) {
+		super();
+		this.session = s;
+	}
 
-    /**
-     * @param session The connection to work with for regular file operations
-     * @param parent  The parent directory relative to this file
-     * @param file    The corresponding local file to the remote path
-     */
-    private FTPPath(FTPSession s, String parent, Local file) {
-        super(parent, file);
-        this.session = s;
-    }
+	/**
+	 * @param session The connection to work with for regular file operations
+	 * @param parent  The parent directory relative to this file
+	 * @param file    The corresponding local file to the remote path
+	 */
+	private FTPPath(FTPSession s, String parent, Local file) {
+		super(parent, file);
+		this.session = s;
+	}
 
-    private FTPPath(FTPSession s, NSDictionary dict) {
-        super(dict);
-        this.session = s;
-    }
+	private FTPPath(FTPSession s, NSDictionary dict) {
+		super(dict);
+		this.session = s;
+	}
 
-    public Session getSession() {
-        return this.session;
-    }
+	public Session getSession() {
+		return this.session;
+	}
 
-    public synchronized List list() {
-        return this.list(false);
-    }
+	public synchronized List list(boolean refresh, boolean showHidden) {
+		List files = session.cache().get(this.getAbsolute());
+		session.addPathToHistory(this);
+		if(refresh || null == files) {
+			files = new ArrayList();
+			session.log("Listing "+this.getAbsolute(), Message.PROGRESS);
+			try {
+				session.check();
+				session.FTP.setTransferType(FTPTransferType.ASCII);
+				session.FTP.chdir(this.getAbsolute());
+				FTPFileEntryParser parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(session.host.getIdentification());
+				String[] lines = session.FTP.dir();
+				for(int i = 0; i < lines.length; i++) {
+					Path p = parser.parseFTPEntry(this, lines[i]);
+					if(p != null) {
+						String filename = p.getName();
+						if(!(filename.charAt(0) == '.') || showHidden) {
+							files.add(p);
+						}
+					}
+				}
+				session.cache().put(this.getAbsolute(), files);
+				session.log("Idle", Message.STOP);
+			}
+			catch(FTPException e) {
+				session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+				return files;
+			}
+			catch(IOException e) {
+				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				return files;
+			}
+		}
+		session.callObservers(this);
+		return files;
+	}
 
-    public synchronized List list(boolean refresh) {
-        return this.list(refresh, Preferences.instance().getProperty("browser.showHidden").equals("true"));
-    }
+	public synchronized void cwdir() throws IOException {
+		session.FTP.chdir(this.getAbsolute());
+	}
 
-    public synchronized List list(boolean refresh, boolean showHidden) {
-        List files = session.cache().get(this.getAbsolute());
-        session.addPathToHistory(this);
-        if (refresh || null == files) {
-            files = new ArrayList();
-            session.log("Listing " + this.getAbsolute(), Message.PROGRESS);
-            try {
-                session.check();
-                session.FTP.setTransferType(FTPTransferType.ASCII);
-                session.FTP.chdir(this.getAbsolute());
-                FTPFileEntryParser parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(session.host.getIdentification());
-                String[] lines = session.FTP.dir();
-                for (int i = 0; i < lines.length; i++) {
-                    Path p = parser.parseFTPEntry(this, lines[i]);
-                    if (p != null) {
-                        String filename = p.getName();
-                        if (!(filename.charAt(0) == '.') || showHidden) {
-                            files.add(p);
-                        }
-                    }
-                }
-                session.cache().put(this.getAbsolute(), files);
-                session.log("Idle", Message.STOP);
-            }
-            catch (FTPException e) {
-                session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-                return files;
-            }
-            catch (IOException e) {
-                session.log("IO Error: " + e.getMessage(), Message.ERROR);
-                return files;
-            }
-        }
-        session.callObservers(this);
-        return files;
-    }
-
-    public synchronized void cwdir() throws IOException {
-        session.FTP.chdir(this.getAbsolute());
-    }
-
-    public synchronized void mkdir(boolean recursive) {
-        log.debug("mkdir:" + this.getName());
-        try {
-            if (recursive) {
-                if (!this.getParent().exists()) {
-                    this.getParent().mkdir(recursive);
-                }
-            }
-            session.check();
-            session.log("Make directory " + this.getName(), Message.PROGRESS);
-            session.FTP.mkdir(this.getAbsolute());
-			this.getParent().invalidate();
-            session.log("Idle", Message.STOP);
-        }
-        catch (FTPException e) {
-            session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-    }
-
-    public synchronized void rename(String filename) {
-        log.debug("rename:" + filename);
-        try {
-            session.check();
-            session.log("Renaming " + this.getName() + " to " + filename, Message.PROGRESS);
-            session.FTP.rename(this.getAbsolute(), filename);
-            this.setPath(filename);
-            session.log("Idle", Message.STOP);
-        }
-        catch (FTPException e) {
-            session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-    }
-
-    public synchronized void delete() {
-        log.debug("delete:" + this.toString());
-        try {
+	public synchronized void mkdir(boolean recursive) {
+		log.debug("mkdir:"+this.getName());
+		try {
+			if(recursive) {
+				if(!this.getParent().exists()) {
+					this.getParent().mkdir(recursive);
+				}
+			}
 			session.check();
-            if (this.attributes.isFile()) {
+			session.log("Make directory "+this.getName(), Message.PROGRESS);
+			session.FTP.mkdir(this.getAbsolute());
+			this.getParent().invalidate();
+			session.log("Idle", Message.STOP);
+		}
+		catch(FTPException e) {
+			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+	}
+
+	public synchronized void rename(String filename) {
+		log.debug("rename:"+filename);
+		try {
+			session.check();
+			session.log("Renaming "+this.getName()+" to "+filename, Message.PROGRESS);
+			session.FTP.rename(this.getAbsolute(), filename);
+			this.setPath(filename);
+			session.log("Idle", Message.STOP);
+		}
+		catch(FTPException e) {
+			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+	}
+
+	public synchronized void delete() {
+		log.debug("delete:"+this.toString());
+		try {
+			session.check();
+			if(this.attributes.isFile()) {
 				session.FTP.chdir(this.getParent().getAbsolute());
-                session.log("Deleting " + this.getName(), Message.PROGRESS);
-                session.FTP.delete(this.getName());
-            }
-            else if (this.attributes.isDirectory()) {
-                List files = this.list(true, true);
-                java.util.Iterator iterator = files.iterator();
-                Path file = null;
-                while (iterator.hasNext()) {
-                    file = (Path)iterator.next();
-                    if (file.attributes.isFile()) {
-                        session.log("Deleting " + this.getName(), Message.PROGRESS);
-                        session.FTP.delete(file.getName());
-                    }
-                    if (file.attributes.isDirectory()) {
+				session.log("Deleting "+this.getName(), Message.PROGRESS);
+				session.FTP.delete(this.getName());
+			}
+			else if(this.attributes.isDirectory()) {
+				List files = this.list(true, true);
+				java.util.Iterator iterator = files.iterator();
+				Path file = null;
+				while(iterator.hasNext()) {
+					file = (Path)iterator.next();
+					if(file.attributes.isFile()) {
+						session.log("Deleting "+this.getName(), Message.PROGRESS);
+						session.FTP.delete(file.getName());
+					}
+					if(file.attributes.isDirectory()) {
 						file.delete();
-                    }
-                }
-                session.FTP.cdup();
-                session.log("Deleting " + this.getName(), Message.PROGRESS);
-                session.FTP.rmdir(this.getName());
-            }
-            this.getParent().invalidate();
-            session.log("Idle", Message.STOP);
-        }
-        catch (FTPException e) {
-            session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-    }
-	
+					}
+				}
+				session.FTP.cdup();
+				session.log("Deleting "+this.getName(), Message.PROGRESS);
+				session.FTP.rmdir(this.getName());
+			}
+			this.getParent().invalidate();
+			session.log("Idle", Message.STOP);
+		}
+		catch(FTPException e) {
+			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+	}
+
 	public synchronized java.util.Date modificationDate() {
-        try {
+		try {
 			this.attributes.setTimestamp(this.session.FTP.modtime(this.getAbsolute()));
 		}
-		catch (FTPException e) {
-			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
+		catch(FTPException e) {
+			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
 		}
-		catch (IOException e) {
-			session.log("IO Error: " + e.getMessage(), Message.ERROR);
+		catch(IOException e) {
+			session.log("IO Error: "+e.getMessage(), Message.ERROR);
 		}
 		finally {
 			return this.attributes.getTimestamp();
 		}
 	}
 	
+	/*
 	public synchronized long size() {
         try {
 			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
@@ -268,395 +261,392 @@ public class FTPPath extends Path {
 			return this.status.getSize();
 		}
 	}
+	 */
 	
 	public synchronized void changePermissions(Permission perm, boolean recursive) {
-		log.debug("changePermissions:" + perm);
+		log.debug("changePermissions:"+perm);
 		String command = "chmod";
-        try {
-            session.check();
-            if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-                session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
+		try {
+			session.check();
+			if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
+				session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
 				session.FTP.site(command+" "+perm.getOctalCode()+" "+this.getAbsolute());
-            }
-            else if (this.attributes.isDirectory()) {
-                session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
+			}
+			else if(this.attributes.isDirectory()) {
+				session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
 				session.FTP.site(command+" "+perm.getOctalCode()+" "+this.getAbsolute());
 				if(recursive) {
 					List files = this.list(false, false); //@todo also change on invisible files?
 					java.util.Iterator iterator = files.iterator();
 					Path file = null;
-					while (iterator.hasNext()) {
+					while(iterator.hasNext()) {
 						file = (Path)iterator.next();
 						file.changePermissions(perm, recursive);
 					}
 				}
-            }
-            this.getParent().invalidate();
-            session.log("Idle", Message.STOP);
-        }
-        catch (FTPException e) {
-            session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-    }
-	
-    public synchronized void download() {
-        try {
-            log.debug("download:" + this.toString());
-            if (this.attributes.isFile()) {
-                session.check();
-                if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-                    if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
-                        this.downloadASCII();
-                    }
-                    else {
-                        this.downloadBinary();
-                    }
-                }
-                else if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
-                    this.downloadBinary();
-                }
-                else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
-                    this.downloadASCII();
-                }
-                else {
-                    throw new FTPException("Transfer type not set");
-                }
-                if (this.status.isComplete()) {
-                    log.info("Updating permissions");
-                    if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
+			}
+			this.getParent().invalidate();
+			session.log("Idle", Message.STOP);
+		}
+		catch(FTPException e) {
+			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+	}
+
+	public synchronized void download() {
+		try {
+			log.debug("download:"+this.toString());
+			if(this.attributes.isFile()) {
+				session.check();
+				if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+					if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
+						this.downloadASCII();
+					}
+					else {
+						this.downloadBinary();
+					}
+				}
+				else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+					this.downloadBinary();
+				}
+				else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+					this.downloadASCII();
+				}
+				else {
+					throw new FTPException("Transfer type not set");
+				}
+				if(this.status.isComplete()) {
+					log.info("Updating permissions");
+					if(Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
 						Permission perm = null;
-						if (Preferences.instance().getProperty("queue.download.permissions.useDefault").equals("true")) {
+						if(Preferences.instance().getProperty("queue.download.permissions.useDefault").equals("true")) {
 							perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
 						}
 						else {
 							perm = this.attributes.getPermission();
 						}
-						if (!perm.isUndefined()) {
+						if(!perm.isUndefined()) {
 							this.getLocal().setPermission(perm);
 						}
-                    }
-                }
-                if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
-                    this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
-                }
-            }
-            session.log("Idle", Message.STOP);
-        }
-        catch (FTPException e) {
-            session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-    }
+					}
+				}
+				if(Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
+					this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+				}
+			}
+			session.log("Idle", Message.STOP);
+		}
+		catch(FTPException e) {
+			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+	}
 
-    private void downloadBinary() throws IOException {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            session.FTP.setTransferType(FTPTransferType.BINARY);
-			this.status.setSize(this.size()); //@todo obsolete
-            if (this.status.isResume()) {
-                this.status.setCurrent(this.getLocal().getTemp().length());
-            }
-            out = new FileOutputStream(this.getLocal().getTemp(), this.status.isResume());
-            if (out == null) {
-                throw new IOException("Unable to buffer data");
-            }
-            in = session.FTP.get(this.getAbsolute(), this.status.isResume() ? this.getLocal().getTemp().length() : 0);
-            if (in == null) {
-                throw new IOException("Unable opening data stream");
-            }
-            this.download(in, out);
-            if (this.status.isComplete()) {
-                if (in != null) {
-                    in.close();
-                    in = null;
-                }
-                if (out != null) {
-                    out.close();
-                    out = null;
-                }
-                session.FTP.validateTransfer();
-            }
-            if (this.status.isCanceled()) {
-                if (in != null) {
-                    in.close();
-                    in = null;
-                }
-                if (out != null) {
-                    out.close();
-                    out = null;
-                }
-                session.FTP.abor();
-            }
-            session.log("Idle", Message.STOP);
-        }
-        finally {
-            try {
-                if (in != null) {
-                    in.close();
-                    in = null;
-                }
-                if (out != null) {
-                    out.close();
-                    out = null;
-                }
-            }
-            catch (IOException e) {
-                log.error(e.getMessage());
-                e.printStackTrace();
-            }
-        }
-    }
+	private void downloadBinary() throws IOException {
+		InputStream in = null;
+		OutputStream out = null;
+		try {
+			session.FTP.setTransferType(FTPTransferType.BINARY);
+			if(this.status.isResume()) {
+				this.status.setCurrent(this.getLocal().getTemp().length());
+			}
+			out = new FileOutputStream(this.getLocal().getTemp(), this.status.isResume());
+			if(out == null) {
+				throw new IOException("Unable to buffer data");
+			}
+			in = session.FTP.get(this.getAbsolute(), this.status.isResume() ? this.getLocal().getTemp().length() : 0);
+			if(in == null) {
+				throw new IOException("Unable opening data stream");
+			}
+			this.download(in, out);
+			if(this.status.isComplete()) {
+				if(in != null) {
+					in.close();
+					in = null;
+				}
+				if(out != null) {
+					out.close();
+					out = null;
+				}
+				session.FTP.validateTransfer();
+			}
+			if(this.status.isCanceled()) {
+				if(in != null) {
+					in.close();
+					in = null;
+				}
+				if(out != null) {
+					out.close();
+					out = null;
+				}
+				session.FTP.abor();
+			}
+			session.log("Idle", Message.STOP);
+		}
+		finally {
+			try {
+				if(in != null) {
+					in.close();
+					in = null;
+				}
+				if(out != null) {
+					out.close();
+					out = null;
+				}
+			}
+			catch(IOException e) {
+				log.error(e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	}
 
-    private void downloadASCII() throws IOException {
-        InputStream in = null;
-        OutputStream out = null;
-        String lineSeparator = System.getProperty("line.separator"); //default value
-        if (Preferences.instance().getProperty("ftp.line.separator").equals("unix")) {
-            lineSeparator = UNIX_LINE_SEPARATOR;
-        }
-        else if (Preferences.instance().getProperty("ftp.line.separator").equals("mac")) {
-            lineSeparator = MAC_LINE_SEPARATOR;
-        }
-        else if (Preferences.instance().getProperty("ftp.line.separator").equals("win")) {
-            lineSeparator = DOS_LINE_SEPARATOR;
-        }
-        try {
-            session.FTP.setTransferType(FTPTransferType.ASCII);
-			this.status.setSize(this.size()); //@todo obsolete
-            if (this.status.isResume()) {
-                this.status.setCurrent(this.getLocal().getTemp().length());
-            }
-            out = new FromNetASCIIOutputStream(new FileOutputStream(this.getLocal().getTemp(),
-                    this.status.isResume()),
-                    lineSeparator);
-            if (out == null) {
-                throw new IOException("Unable to buffer data");
-            }
-            in = new FromNetASCIIInputStream(session.FTP.get(this.getAbsolute(),
-                    this.status.isResume() ? this.getLocal().getTemp().length() : 0),
-                    lineSeparator);
-            if (in == null) {
-                throw new IOException("Unable opening data stream");
-            }
-            this.download(in, out);
-            if (this.status.isComplete()) {
-                if (in != null) {
-                    in.close();
-                    in = null;
-                }
-                if (out != null) {
-                    out.close();
-                    out = null;
-                }
-                session.FTP.validateTransfer();
-            }
-            if (this.status.isCanceled()) {
-                if (in != null) {
-                    in.close();
-                    in = null;
-                }
-                if (out != null) {
-                    out.close();
-                    out = null;
-                }
-                session.FTP.abor();
-            }
-            session.log("Idle", Message.STOP);
-        }
-        finally {
-            try {
-                if (in != null) {
-                    in.close();
-                    in = null;
-                }
-                if (out != null) {
-                    out.close();
-                    out = null;
-                }
-            }
-            catch (IOException e) {
-                log.error(e.getMessage());
-                e.printStackTrace();
-            }
-        }
-    }
+	private void downloadASCII() throws IOException {
+		InputStream in = null;
+		OutputStream out = null;
+		String lineSeparator = System.getProperty("line.separator"); //default value
+		if(Preferences.instance().getProperty("ftp.line.separator").equals("unix")) {
+			lineSeparator = UNIX_LINE_SEPARATOR;
+		}
+		else if(Preferences.instance().getProperty("ftp.line.separator").equals("mac")) {
+			lineSeparator = MAC_LINE_SEPARATOR;
+		}
+		else if(Preferences.instance().getProperty("ftp.line.separator").equals("win")) {
+			lineSeparator = DOS_LINE_SEPARATOR;
+		}
+		try {
+			session.FTP.setTransferType(FTPTransferType.ASCII);
+			if(this.status.isResume()) {
+				this.status.setCurrent(this.getLocal().getTemp().length());
+			}
+			out = new FromNetASCIIOutputStream(new FileOutputStream(this.getLocal().getTemp(),
+			    this.status.isResume()),
+			    lineSeparator);
+			if(out == null) {
+				throw new IOException("Unable to buffer data");
+			}
+			in = new FromNetASCIIInputStream(session.FTP.get(this.getAbsolute(),
+			    this.status.isResume() ? this.getLocal().getTemp().length() : 0),
+			    lineSeparator);
+			if(in == null) {
+				throw new IOException("Unable opening data stream");
+			}
+			this.download(in, out);
+			if(this.status.isComplete()) {
+				if(in != null) {
+					in.close();
+					in = null;
+				}
+				if(out != null) {
+					out.close();
+					out = null;
+				}
+				session.FTP.validateTransfer();
+			}
+			if(this.status.isCanceled()) {
+				if(in != null) {
+					in.close();
+					in = null;
+				}
+				if(out != null) {
+					out.close();
+					out = null;
+				}
+				session.FTP.abor();
+			}
+			session.log("Idle", Message.STOP);
+		}
+		finally {
+			try {
+				if(in != null) {
+					in.close();
+					in = null;
+				}
+				if(out != null) {
+					out.close();
+					out = null;
+				}
+			}
+			catch(IOException e) {
+				log.error(e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	}
 
-    public synchronized void upload() {
-        log.debug("upload:" + this.toString());
-        try {
-            if (this.attributes.isFile()) { //@todo getLocal()?
-                session.check();
-                if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-                    if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
-                        this.uploadASCII();
-                    }
-                    else {
-                        this.uploadBinary();
-                    }
-                }
-                else if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
-                    this.uploadBinary();
-                }
-                else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
-                    this.uploadASCII();
-                }
-                else {
-                    throw new FTPException("Transfer mode not set");
-                }
-                if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
+	public synchronized void upload() {
+		log.debug("upload:"+this.toString());
+		try {
+			if(this.attributes.isFile()) { //@todo getLocal()?
+				session.check();
+				if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+					if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
+						this.uploadASCII();
+					}
+					else {
+						this.uploadBinary();
+					}
+				}
+				else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+					this.uploadBinary();
+				}
+				else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+					this.uploadASCII();
+				}
+				else {
+					throw new FTPException("Transfer mode not set");
+				}
+				if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
 					try {
-						if (Preferences.instance().getProperty("queue.upload.permissions.useDefault").equals("true")) {
+						if(Preferences.instance().getProperty("queue.upload.permissions.useDefault").equals("true")) {
 							Permission perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
 							session.FTP.site("CHMOD "+perm.getOctalCode()+" "+this.getAbsolute());
 						}
 						else {
 							Permission perm = this.getLocal().getPermission();
-							if (!perm.isUndefined()) {
+							if(!perm.isUndefined()) {
 								session.FTP.site("CHMOD "+perm.getOctalCode()+" "+this.getAbsolute());
 							}
 						}
 					}
-					catch (FTPException e) {
+					catch(FTPException e) {
 						// catch chmodding exceptions and change the preferences as the server doesn't seem to support CHMOD
 						Preferences.instance().setProperty("queue.upload.changePermissions", "false");
 					}
-                }
-            }
-            session.log("Idle", Message.STOP);
-        }
-        catch (FTPException e) {
-            session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-    }
+				}
+			}
+			session.log("Idle", Message.STOP);
+		}
+		catch(FTPException e) {
+			session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+			session.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+	}
 
-    private void uploadBinary() throws IOException {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            session.FTP.setTransferType(FTPTransferType.BINARY);
-            this.status.setSize(this.getLocal().length()); //@todo obsolete
-            if (this.status.isResume()) {
-                this.status.setCurrent(this.size());
-            }
-            in = new FileInputStream(this.getLocal());
-            if (in == null) {
-                throw new IOException("Unable to buffer data");
-            }
-            out = session.FTP.put(this.getAbsolute(), this.status.isResume());
-            if (out == null) {
-                throw new IOException("Unable opening data stream");
-            }
-            this.upload(out, in);
-            if (this.status.isComplete()) {
-                if (in != null) {
-                    in.close();
-                    in = null;
-                }
-                if (out != null) {
-                    out.close();
-                    out = null;
-                }
-                session.FTP.validateTransfer();
-            }
-            if (status.isCanceled()) {
-                if (in != null) {
-                    in.close();
-                    in = null;
-                }
-                if (out != null) {
-                    out.close();
-                    out = null;
-                }
-                session.FTP.abor();
-            }
-            session.log("Idle", Message.STOP);
-        }
-        finally {
-            try {
-                if (in != null) {
-                    in.close();
-                    in = null;
-                }
-                if (out != null) {
-                    out.close();
-                    out = null;
-                }
-            }
-            catch (IOException e) {
-                log.error(e.getMessage());
-                e.printStackTrace();
-            }
-        }
-    }
+	private void uploadBinary() throws IOException {
+		InputStream in = null;
+		OutputStream out = null;
+		try {
+			session.FTP.setTransferType(FTPTransferType.BINARY);
+			if(this.status.isResume()) {
+				this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
+			}
+			in = new FileInputStream(this.getLocal());
+			if(in == null) {
+				throw new IOException("Unable to buffer data");
+			}
+			out = session.FTP.put(this.getAbsolute(), this.status.isResume());
+			if(out == null) {
+				throw new IOException("Unable opening data stream");
+			}
+			this.upload(out, in);
+			if(this.status.isComplete()) {
+				if(in != null) {
+					in.close();
+					in = null;
+				}
+				if(out != null) {
+					out.close();
+					out = null;
+				}
+				session.FTP.validateTransfer();
+			}
+			if(status.isCanceled()) {
+				if(in != null) {
+					in.close();
+					in = null;
+				}
+				if(out != null) {
+					out.close();
+					out = null;
+				}
+				session.FTP.abor();
+			}
+			session.log("Idle", Message.STOP);
+		}
+		finally {
+			try {
+				if(in != null) {
+					in.close();
+					in = null;
+				}
+				if(out != null) {
+					out.close();
+					out = null;
+				}
+			}
+			catch(IOException e) {
+				log.error(e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	}
 
-    private void uploadASCII() throws IOException {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            session.FTP.setTransferType(FTPTransferType.ASCII);
-            this.status.setSize(this.getLocal().length()); //@todo obsolete
-            if (this.status.isResume()) {
-                this.status.setCurrent(this.size());
-            }
-            in = new ToNetASCIIInputStream(new FileInputStream(this.getLocal()));
-            if (in == null) {
-                throw new IOException("Unable to buffer data");
-            }
-            out = new ToNetASCIIOutputStream(session.FTP.put(this.getAbsolute(),
-                    this.status.isResume()));
-            if (out == null) {
-                throw new IOException("Unable opening data stream");
-            }
-            this.upload(out, in);
-            if (this.status.isComplete()) {
-                if (in != null) {
-                    in.close();
-                    in = null;
-                }
-                if (out != null) {
-                    out.close();
-                    out = null;
-                }
-                session.FTP.validateTransfer();
-            }
-            if (status.isCanceled()) {
-                if (in != null) {
-                    in.close();
-                    in = null;
-                }
-                if (out != null) {
-                    out.close();
-                    out = null;
-                }
-                session.FTP.abor();
-            }
-            session.log("Idle", Message.STOP);
-        }
-        finally {
-            try {
-                if (in != null) {
-                    in.close();
-                    in = null;
-                }
-                if (out != null) {
-                    out.close();
-                    out = null;
-                }
-            }
-            catch (IOException e) {
-                log.error(e.getMessage());
-                e.printStackTrace();
-            }
-        }
-    }
+	private void uploadASCII() throws IOException {
+		InputStream in = null;
+		OutputStream out = null;
+		try {
+			session.FTP.setTransferType(FTPTransferType.ASCII);
+			if(this.status.isResume()) {
+				this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
+			}
+			in = new ToNetASCIIInputStream(new FileInputStream(this.getLocal()));
+			if(in == null) {
+				throw new IOException("Unable to buffer data");
+			}
+			out = new ToNetASCIIOutputStream(session.FTP.put(this.getAbsolute(),
+			    this.status.isResume()));
+			if(out == null) {
+				throw new IOException("Unable opening data stream");
+			}
+			this.upload(out, in);
+			if(this.status.isComplete()) {
+				if(in != null) {
+					in.close();
+					in = null;
+				}
+				if(out != null) {
+					out.close();
+					out = null;
+				}
+				session.FTP.validateTransfer();
+			}
+			if(status.isCanceled()) {
+				if(in != null) {
+					in.close();
+					in = null;
+				}
+				if(out != null) {
+					out.close();
+					out = null;
+				}
+				session.FTP.abor();
+			}
+			session.log("Idle", Message.STOP);
+		}
+		finally {
+			try {
+				if(in != null) {
+					in.close();
+					in = null;
+				}
+				if(out != null) {
+					out.close();
+					out = null;
+				}
+			}
+			catch(IOException e) {
+				log.error(e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	}
 }
 	

@@ -21,8 +21,6 @@ package ch.cyberduck.core.sftp;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-
-import ch.cyberduck.core.*;
 import com.sshtools.j2ssh.SshClient;
 import com.sshtools.j2ssh.SshEventAdapter;
 import com.sshtools.j2ssh.SshException;
@@ -33,65 +31,67 @@ import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import com.sshtools.j2ssh.transport.TransportProtocol;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 
+import ch.cyberduck.core.*;
+
 /**
  * Opens a connection to the remote server via sftp protocol
  *
  * @version $Id$
  */
 public class SFTPSession extends Session {
-    private static Logger log = Logger.getLogger(Session.class);
+	private static Logger log = Logger.getLogger(Session.class);
 
-    static {
-        SessionFactory.addFactory(Session.SFTP, new Factory());
-    }
+	static {
+		SessionFactory.addFactory(Session.SFTP, new Factory());
+	}
 
-    private static class Factory extends SessionFactory {
-        protected Session create(Host h) {
-            return new SFTPSession(h);
-        }
-    }
+	private static class Factory extends SessionFactory {
+		protected Session create(Host h) {
+			return new SFTPSession(h);
+		}
+	}
 
-    protected SftpSubsystemClient SFTP;
-    private SshClient SSH;
+	protected SftpSubsystemClient SFTP;
+	private SshClient SSH;
 
-    private SFTPSession(Host h) {
-        super(h);
-    }
+	private SFTPSession(Host h) {
+		super(h);
+	}
 
-    public synchronized void close() {
-        try {
-            if (this.SFTP != null) {
-                this.log("Disconnecting...", Message.PROGRESS);
-                this.SFTP.close();
-                this.host.getLogin().setPassword(null);
-                this.SFTP = null;
-            }
-            if (this.SSH != null) {
-                this.log("Closing SSH Session Channel", Message.PROGRESS);
-                this.SSH.disconnect();
-                this.SSH = null;
-            }
-        }
-        catch (SshException e) {
-            log.error("SSH Error: " + e.getMessage());
+	public synchronized void close() {
+		try {
+			if(this.SFTP != null) {
+				this.log("Disconnecting...", Message.PROGRESS);
+				this.SFTP.close();
+				this.host.getLogin().setPassword(null);
+				this.SFTP = null;
+			}
+			if(this.SSH != null) {
+				this.log("Closing SSH Session Channel", Message.PROGRESS);
+				this.SSH.disconnect();
+				this.SSH = null;
+			}
+		}
+		catch(SshException e) {
+			log.error("SSH Error: "+e.getMessage());
 //            this.log("SSH Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            log.error("IO Error: " + e.getMessage());
+		}
+		catch(IOException e) {
+			log.error("IO Error: "+e.getMessage());
 //            this.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            this.log("Disconnected", Message.PROGRESS);
-            this.setClosed();
-        }
-    }
-	
-    public synchronized void connect() throws IOException {
-        this.log("Opening SSH connection to " + host.getIp() + "...", Message.PROGRESS);
+		}
+		finally {
+			this.log("Disconnected", Message.PROGRESS);
+			this.setClosed();
+		}
+	}
+
+	public synchronized void connect() throws IOException {
+		this.log("Opening SSH connection to "+host.getIp()+"...", Message.PROGRESS);
 		this.setConnected();
 		this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
-        this.log(host.getIp(), Message.TRANSCRIPT);
-        SSH = new SshClient();
+		this.log(host.getIp(), Message.TRANSCRIPT);
+		SSH = new SshClient();
 		//@todo
 		SSH.addEventHandler(new SshEventAdapter() {
 			public void onSocketTimeout(TransportProtocol transport) {
@@ -99,178 +99,179 @@ public class SFTPSession extends Session {
 				SFTPSession.this.log("Disconnected", Message.PROGRESS);
 				SFTPSession.this.setClosed();
 			}
-			
+
 			public void onDisconnect(TransportProtocol transport) {
 				log.debug("onDisconnect");
 				SFTPSession.this.log("Disconnected", Message.PROGRESS);
 				SFTPSession.this.setClosed();
 			}
-		}
-							);
-        SshConnectionProperties properties = new SshConnectionProperties();
-        properties.setHost(host.getHostname());
-        properties.setPort(host.getPort());
+		});
+		SshConnectionProperties properties = new SshConnectionProperties();
+		properties.setHost(host.getHostname());
+		properties.setPort(host.getPort());
 
-        // Sets the prefered client->server encryption cipher
-        properties.setPrefCSEncryption(Preferences.instance().getProperty("ssh.CSEncryption"));
-        // Sets the preffered server->client encryption cipher
-        properties.setPrefSCEncryption(Preferences.instance().getProperty("ssh.SCEncryption"));
-        // Sets the preffered client->server message authentication
-        properties.setPrefCSMac(Preferences.instance().getProperty("ssh.CSAuthentication"));
-        // Sets the preffered server->client message authentication
-        properties.setPrefSCMac(Preferences.instance().getProperty("ssh.SCAuthentication"));
-        // Sets the preferred server host key for server authentication
-        properties.setPrefPublicKey(Preferences.instance().getProperty("ssh.publickey"));
-        // Set the zlib compression
-        properties.setPrefSCComp(Preferences.instance().getProperty("ssh.compression"));
-        properties.setPrefCSComp(Preferences.instance().getProperty("ssh.compression"));
-        if (Preferences.instance().getProperty("connection.proxy.useProxy").equals("true")) {
-            properties.setTransportProvider(SshConnectionProperties.USE_SOCKS5_PROXY); //todo V4?
-            properties.setProxyHost(Preferences.instance().getProperty("connection.proxy.host"));
-            properties.setProxyPort(Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
+		// Sets the prefered client->server encryption cipher
+		properties.setPrefCSEncryption(Preferences.instance().getProperty("ssh.CSEncryption"));
+		// Sets the preffered server->client encryption cipher
+		properties.setPrefSCEncryption(Preferences.instance().getProperty("ssh.SCEncryption"));
+		// Sets the preffered client->server message authentication
+		properties.setPrefCSMac(Preferences.instance().getProperty("ssh.CSAuthentication"));
+		// Sets the preffered server->client message authentication
+		properties.setPrefSCMac(Preferences.instance().getProperty("ssh.SCAuthentication"));
+		// Sets the preferred server host key for server authentication
+		properties.setPrefPublicKey(Preferences.instance().getProperty("ssh.publickey"));
+		// Set the zlib compression
+		properties.setPrefSCComp(Preferences.instance().getProperty("ssh.compression"));
+		properties.setPrefCSComp(Preferences.instance().getProperty("ssh.compression"));
+		if(Preferences.instance().getProperty("connection.proxy.useProxy").equals("true")) {
+			properties.setTransportProvider(SshConnectionProperties.USE_SOCKS5_PROXY); //todo V4?
+			properties.setProxyHost(Preferences.instance().getProperty("connection.proxy.host"));
+			properties.setProxyPort(Integer.parseInt(Preferences.instance().getProperty("connection.proxy.port")));
 //			if(Preferences.instance().getProperty("connection.proxy.useAuthentication").equals("true")) {
 //				properties.setProxyUsername(Preferences.instance().getProperty("connection.proxy.username"));
 //				properties.setProxyPassword(Preferences.instance().getProperty("connection.proxy.password"));
 //			}
-        }
+		}
 
-        SSH.connect(properties, host.getHostKeyVerificationController());
-        this.log("SSH connection opened", Message.PROGRESS);
-        String id = SSH.getServerId();
-        this.host.setIdentification(id);
-        this.log(id, Message.TRANSCRIPT);
+		SSH.connect(properties, host.getHostKeyVerificationController());
+		this.log("SSH connection opened", Message.PROGRESS);
+		String id = SSH.getServerId();
+		this.host.setIdentification(id);
+		this.log(id, Message.TRANSCRIPT);
 
-        log.info(SSH.getAvailableAuthMethods(host.getLogin().getUsername()));
-        this.login();
-        this.log("Starting SFTP subsystem...", Message.PROGRESS);
-        this.SFTP = SSH.openSftpChannel();
-        this.log("SFTP subsystem ready", Message.PROGRESS);
-    }
+		log.info(SSH.getAvailableAuthMethods(host.getLogin().getUsername()));
+		this.login();
+		this.log("Starting SFTP subsystem...", Message.PROGRESS);
+		this.SFTP = SSH.openSftpChannel();
+		this.log("SFTP subsystem ready", Message.PROGRESS);
+	}
 
-    private int loginUsingAgentAuthentication(final Login credentials) throws IOException {
-        log.info("Trying ssh-agent authentication...");
-        AgentAuthenticationClient agent = new AgentAuthenticationClient();
-        agent.setUsername(credentials.getUsername());
+	private int loginUsingAgentAuthentication(final Login credentials) throws IOException {
+		log.info("Trying ssh-agent authentication...");
+		AgentAuthenticationClient agent = new AgentAuthenticationClient();
+		agent.setUsername(credentials.getUsername());
 //		agent.setAgent(new SshAgentClient(false, "sftp", SSH.));
 // Try the authentication
-        return SSH.authenticate(agent);
-    }
+		return SSH.authenticate(agent);
+	}
 
-    private int loginUsingKBIAuthentication(final Login credentials) throws IOException {
-        log.info("Trying Keyboard Interactive (PAM) authentication...");
-        KBIAuthenticationClient kbi = new KBIAuthenticationClient();
-        kbi.setUsername(credentials.getUsername());
-        kbi.setKBIRequestHandler(new KBIRequestHandler() {
-            public void showPrompts(String name,
-                                    String instructions,
-                                    KBIPrompt[] prompts) throws IOException {
-                log.info(name);
-                log.info(instructions);
-                if (prompts != null) {
-                    for (int i = 0; i < prompts.length; i++) {
-                        log.info(prompts[i].getPrompt());
-                        prompts[i].setResponse(credentials.getPassword());
-                    }
-                }
-            }
-        });
-        // Try the authentication
-        return SSH.authenticate(kbi);
-    }
+	private int loginUsingKBIAuthentication(final Login credentials) throws IOException {
+		log.info("Trying Keyboard Interactive (PAM) authentication...");
+		KBIAuthenticationClient kbi = new KBIAuthenticationClient();
+		kbi.setUsername(credentials.getUsername());
+		kbi.setKBIRequestHandler(new KBIRequestHandler() {
+			public void showPrompts(String name,
+			                        String instructions,
+			                        KBIPrompt[] prompts) throws IOException {
+				log.info(name);
+				log.info(instructions);
+				if(prompts != null) {
+					for(int i = 0; i < prompts.length; i++) {
+						log.info(prompts[i].getPrompt());
+						prompts[i].setResponse(credentials.getPassword());
+					}
+				}
+			}
+		});
+		// Try the authentication
+		return SSH.authenticate(kbi);
+	}
 
 
-    private int loginUsingPasswordAuthentication(final Login credentials) throws IOException {
-        log.info("Trying Password authentication...");
-        PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
-        auth.setUsername(credentials.getUsername());
-        auth.setPassword(credentials.getPassword());
-        // Try the authentication
-        return SSH.authenticate(auth);
-    }
+	private int loginUsingPasswordAuthentication(final Login credentials) throws IOException {
+		log.info("Trying Password authentication...");
+		PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
+		auth.setUsername(credentials.getUsername());
+		auth.setPassword(credentials.getPassword());
+		// Try the authentication
+		return SSH.authenticate(auth);
+	}
 
-    private int loginUsingPublicKeyAuthentication(final Login credentials) throws IOException {
-        log.info("Trying Public Key authentication...");
-        PublicKeyAuthenticationClient pk = new PublicKeyAuthenticationClient();
-        pk.setUsername(credentials.getUsername());
-        // Get the private key file
-        SshPrivateKeyFile keyFile = SshPrivateKeyFile.parse(new java.io.File(credentials.getPrivateKeyFile()));
-        // If the private key is passphrase protected then ask for the passphrase
-        String passphrase = null;
-        if (keyFile.isPassphraseProtected()) {
-            passphrase = credentials.getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
-            if (null == passphrase || passphrase.equals("")) {
-                if (host.getLogin().promptUser("The Private Key is password protected. Enter the passphrase for the key file '" + credentials.getPrivateKeyFile() + "'.")) {
-                    passphrase = credentials.getPassword();
-                    if (keyFile.isPassphraseProtected()) {
-                        if (credentials.usesKeychain()) {
-                            credentials.addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(), passphrase);
-                        }
-                    }
-                }
-                else {
-                    throw new SshException("Login as user " + credentials.getUsername() + " canceled.");
-                }
-            }
-        }
-        // Get the key
-        pk.setKey(keyFile.toPrivateKey(passphrase));
-        // Try the authentication
-        return SSH.authenticate(pk);
-    }
+	private int loginUsingPublicKeyAuthentication(final Login credentials) throws IOException {
+		log.info("Trying Public Key authentication...");
+		PublicKeyAuthenticationClient pk = new PublicKeyAuthenticationClient();
+		pk.setUsername(credentials.getUsername());
+		// Get the private key file
+		SshPrivateKeyFile keyFile = SshPrivateKeyFile.parse(new java.io.File(credentials.getPrivateKeyFile()));
+		// If the private key is passphrase protected then ask for the passphrase
+		String passphrase = null;
+		if(keyFile.isPassphraseProtected()) {
+			passphrase = credentials.getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
+			if(null == passphrase || passphrase.equals("")) {
+				if(host.getLogin().promptUser("The Private Key is password protected. Enter the passphrase for the key file '"+credentials.getPrivateKeyFile()+"'.")) {
+					passphrase = credentials.getPassword();
+					if(keyFile.isPassphraseProtected()) {
+						if(credentials.usesKeychain()) {
+							credentials.addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(), passphrase);
+						}
+					}
+				}
+				else {
+					throw new SshException("Login as user "+credentials.getUsername()+" canceled.");
+				}
+			}
+		}
+		// Get the key
+		pk.setKey(keyFile.toPrivateKey(passphrase));
+		// Try the authentication
+		return SSH.authenticate(pk);
+	}
 
-    private synchronized void login() throws IOException {
-        log.debug("login");
-        final Login credentials = host.getLogin();
-        if (credentials.check()) {
-            this.log("Authenticating as '" + credentials.getUsername() + "'", Message.PROGRESS);
-            if (credentials.usesPublicKeyAuthentication()) {
-                if (AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(credentials)) {
-                    this.log("Login successful", Message.PROGRESS);
-                    //credentials.addPasswordToKeychain();
-                    return;
-                }
-            }
-            else {
+	private synchronized void login() throws IOException {
+		log.debug("login");
+		final Login credentials = host.getLogin();
+		if(credentials.check()) {
+			this.log("Authenticating as '"+credentials.getUsername()+"'", Message.PROGRESS);
+			if(credentials.usesPublicKeyAuthentication()) {
+				if(AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(credentials)) {
+					this.log("Login successful", Message.PROGRESS);
+					//credentials.addPasswordToKeychain();
+					return;
+				}
+			}
+			else {
 //                if (AuthenticationProtocolState.COMPLETE == this.loginUsingAgentAuthentication(credentials) ||
-                if (
-                        AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
-                        AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
-                    this.log("Login successful", Message.PROGRESS);
-                    credentials.addPasswordToKeychain();
-                    return;
-                }
-            }
-            this.log("Login failed", Message.PROGRESS);
-            if (credentials.promptUser("Authentication as user " + credentials.getUsername() + " failed.")) {
-                this.login();
-            }
-            else {
-                throw new SshException("Login as user " + credentials.getUsername() + " canceled.");
-            }
-        }
-    }
+				if(
+				    AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
+				    AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
+					this.log("Login successful", Message.PROGRESS);
+					credentials.addPasswordToKeychain();
+					return;
+				}
+			}
+			this.log("Login failed", Message.PROGRESS);
+			if(credentials.promptUser("Authentication as user "+credentials.getUsername()+" failed.")) {
+				this.login();
+			}
+			else {
+				throw new SshException("Login as user "+credentials.getUsername()+" canceled.");
+			}
+		}
+	}
 
-    public synchronized Path workdir() {
-        try {
-            return PathFactory.createPath(this, SFTP.getDefaultDirectory());
-        }
-        catch (SshException e) {
-            this.log("SSH Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            this.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        return null;
-    }
+	public synchronized Path workdir() {
+		try {
+			return PathFactory.createPath(this, SFTP.getDefaultDirectory());
+		}
+		catch(SshException e) {
+			this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+		}
+		catch(IOException e) {
+			this.log("IO Error: "+e.getMessage(), Message.ERROR);
+		}
+		return null;
+	}
 
-    public synchronized void check() throws IOException {
-        this.log("Working", Message.START);
+	public synchronized void check() throws IOException {
+		this.log("Working", Message.START);
 		//		this.log("Checking connection...", Message.PROGRESS);
-        if (null == this.SSH) {
-			this.connect(); return;
+		if(null == this.SSH) {
+			this.connect();
+			return;
 		}
 		if(!this.SSH.isConnected()) {
-            this.close(); this.connect();
-        }
-    }
+			this.close();
+			this.connect();
+		}
+	}
 }

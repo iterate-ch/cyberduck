@@ -18,80 +18,82 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.Observable;
+import java.util.Observer;
+
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSObject;
+
+import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Queue;
 
-import java.util.Observer;
-import java.util.Observable;
-
-import org.apache.log4j.Logger;
-
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDProgressController extends NSObject implements Observer {
-    private static Logger log = Logger.getLogger(CDProgressController.class);
-		
+	private static Logger log = Logger.getLogger(CDProgressController.class);
+
 	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
 	private static NSMutableParagraphStyle lineBreakByTruncatingTailParagraph = new NSMutableParagraphStyle();
-	
-    static {
-        lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
-        lineBreakByTruncatingTailParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
-    }
-	
-    private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
-																							  new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-    private static final NSDictionary TRUNCATE_TAIL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingTailParagraph},
-																							  new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
-	
+	static {
+		lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
+		lineBreakByTruncatingTailParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
+	}
+
+	private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
+	    new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+	private static final NSDictionary TRUNCATE_TAIL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingTailParagraph},
+	    new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+
+
 	private Queue queue;
-	
+
 	public CDProgressController(Queue queue) {
 		this.queue = queue;
 		this.queue.addObserver(this);
 		//@todo this.queue.deleteObserver(this);
-        if (false == NSApplication.loadNibNamed("Progress", this)) {
-            log.fatal("Couldn't load Progress.nib");
-        }
-    }
-	
+		if(false == NSApplication.loadNibNamed("Progress", this)) {
+			log.fatal("Couldn't load Progress.nib");
+		}
+	}
+
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
 		this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
-																		   TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
+		    TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
 		this.updateProgressfield();
-		this.updateProgressbar();
 		this.updateAlertIcon();
 	}
-	
-    public void update(Observable o, Object arg) {
-		if (arg instanceof Message) {
+
+	public void update(Observable o, Object arg) {
+		if(arg instanceof Message) {
+			log.debug("update:"+arg);
 			Message msg = (Message)arg;
-			if (msg.getTitle().equals(Message.DATA)) {
+			if(msg.getTitle().equals(Message.DATA)) {
 				this.updateProgressbar();
 				this.updateProgressfield();
 			}
-			else if (msg.getTitle().equals(Message.PROGRESS)) {
+			else if(msg.getTitle().equals(Message.PROGRESS)) {
 				this.updateProgressfield();
 			}
-			else if (msg.getTitle().equals(Message.QUEUE_START)) {
+			else if(msg.getTitle().equals(Message.QUEUE_START)) {
 				this.progressBar.setIndeterminate(true);
 				this.progressBar.startAnimation(null);
 				this.updateAlertIcon();
 			}
-			else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+			else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
 				this.progressBar.setIndeterminate(false);
 				this.progressBar.stopAnimation(null);
 				this.updateAlertIcon();
 			}
 		}
 	}
-	
+
 	private void updateAlertIcon() {
 		if(this.queue.isRunning() || this.queue.isComplete()) {
 			alertIcon.setImage(null);
@@ -100,9 +102,9 @@ public class CDProgressController extends NSObject implements Observer {
 			alertIcon.setImage(NSImage.imageNamed("alert.tiff"));
 		}
 	}
-	
+
 	private void updateProgressbar() {
-		if (queue.isInitalized()) {
+		if(queue.isInitalized()) {
 			double progressValue = queue.getCurrent()/queue.getSize();
 			this.progressBar.setIndeterminate(false);
 			this.progressBar.setMinValue(0);
@@ -113,18 +115,18 @@ public class CDProgressController extends NSObject implements Observer {
 			this.progressBar.setIndeterminate(true);
 		}
 	}
-	
+
 	private void updateProgressfield() {
 		this.progressField.setAttributedStringValue(new NSAttributedString(queue.getStatusText(),
-																		   TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+		    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 	}
 
 	public Queue getQueue() {
 		return this.queue;
 	}
-	
+
 	private boolean highlighted;
-	
+
 	public void setHighlighted(boolean highlighted) {
 		this.highlighted = highlighted;
 		if(highlighted) {
@@ -136,17 +138,17 @@ public class CDProgressController extends NSObject implements Observer {
 			this.progressField.setTextColor(NSColor.darkGrayColor());
 		}
 	}
-	
+
 	public boolean isHighlighted() {
 		return this.highlighted;
 	}
 	
 	// ----------------------------------------------------------
-    // Outlets
-    // ----------------------------------------------------------
+	// Outlets
+	// ----------------------------------------------------------
 	
 	private NSTextField filenameField; // IBOutlet
-	
+
 	public void setFilenameField(NSTextField filenameField) {
 		this.filenameField = filenameField;
 		this.filenameField.setEditable(false);
@@ -155,16 +157,16 @@ public class CDProgressController extends NSObject implements Observer {
 	}
 
 	private NSTextField progressField; // IBOutlet
-	
+
 	public void setProgressField(NSTextField progressField) {
 		this.progressField = progressField;
 		this.progressField.setEditable(false);
 		this.progressField.setSelectable(false);
 		this.progressField.setTextColor(NSColor.darkGrayColor());
 	}
-		
+
 	private NSProgressIndicator progressBar; // IBOutlet
-	
+
 	public void setProgressBar(NSProgressIndicator progressBar) {
 		this.progressBar = progressBar;
 		this.progressBar.setIndeterminate(false);
@@ -175,19 +177,19 @@ public class CDProgressController extends NSObject implements Observer {
 		this.progressBar.setStyle(NSProgressIndicator.ProgressIndicatorBarStyle);
 		this.progressBar.setUsesThreadedAnimation(true);
 	}
-	
-    private NSImageView alertIcon; // IBOutlet
-	
-    public void setAlertIcon(NSImageView alertIcon) {
-        this.alertIcon = alertIcon;
-    }
-	
+
+	private NSImageView alertIcon; // IBOutlet
+
+	public void setAlertIcon(NSImageView alertIcon) {
+		this.alertIcon = alertIcon;
+	}
+
 	private NSView progressView; // IBOutlet
-	
+
 	public void setProgressSubview(NSView progressView) {
 		this.progressView = progressView;
 	}
-	
+
 	public NSView view() {
 		return this.progressView;
 	}

@@ -18,70 +18,74 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSGraphics;
 import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSMenu;
 import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSCoder;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSSize;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.DownloadQueue;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.SyncQueue;
+import ch.cyberduck.core.UploadQueue;
 
 /**
  * @version $Id$
  */
 public class CDIconCell extends CDTableCell {
 
-    private Queue queue;
+	private Queue queue;
 
-    public CDIconCell() {
-        super();
-    }
+	public CDIconCell() {
+		super();
+	}
 
-    protected CDIconCell(NSCoder decoder, long token) {
-        super(decoder, token);
-    }
+	protected CDIconCell(NSCoder decoder, long token) {
+		super(decoder, token);
+	}
 
-    protected void encodeWithCoder(NSCoder encoder) {
-        super.encodeWithCoder(encoder);
-    }
+	protected void encodeWithCoder(NSCoder encoder) {
+		super.encodeWithCoder(encoder);
+	}
 
-    public void setObjectValue(Object q) {
-        this.queue = (Queue)q;
-    }
+	public void setObjectValue(Object q) {
+		this.queue = (Queue)q;
+	}
 
-    private static final NSImage arrowUpIcon = NSImage.imageNamed("arrowUp.tiff");
-    private static final NSImage arrowDownIcon = NSImage.imageNamed("arrowDown.tiff");
-    private static final NSImage syncIcon = NSImage.imageNamed("sync32.tiff");
-    private static final NSImage multipleDocumentsIcon = NSImage.imageNamed("multipleDocuments32.tiff");
-    private static final NSImage folderIcon = NSImage.imageNamed("folder32.tiff");
-    private static final NSImage notFoundIcon = NSImage.imageNamed("notfound.tiff");
+	private static final NSImage arrowUpIcon = NSImage.imageNamed("arrowUp.tiff");
+	private static final NSImage arrowDownIcon = NSImage.imageNamed("arrowDown.tiff");
+	private static final NSImage syncIcon = NSImage.imageNamed("sync32.tiff");
+	private static final NSImage multipleDocumentsIcon = NSImage.imageNamed("multipleDocuments32.tiff");
+	private static final NSImage folderIcon = NSImage.imageNamed("folder32.tiff");
+	private static final NSImage notFoundIcon = NSImage.imageNamed("notfound.tiff");
 
 	private static final float SPACE = 4;
 
-    static {
-        arrowUpIcon.setSize(new NSSize(32f, 32f));
-        arrowDownIcon.setSize(new NSSize(32f, 32f));
-        syncIcon.setSize(new NSSize(32f, 32f));
-        notFoundIcon.setSize(new NSSize(32f, 32f));
-    }
+	static {
+		arrowUpIcon.setSize(new NSSize(32f, 32f));
+		arrowDownIcon.setSize(new NSSize(32f, 32f));
+		syncIcon.setSize(new NSSize(32f, 32f));
+		notFoundIcon.setSize(new NSSize(32f, 32f));
+	}
 
-    public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
-        super.drawInteriorWithFrameInView(cellFrame, controlView);
-        if (queue != null) {
-            NSPoint cellPoint = cellFrame.origin();
-            NSSize cellSize = cellFrame.size();
-			
-            // drawing file icon
+	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
+		super.drawInteriorWithFrameInView(cellFrame, controlView);
+		if(queue != null) {
+			NSPoint cellPoint = cellFrame.origin();
+			NSSize cellSize = cellFrame.size();
+
+			// drawing file icon
 			NSImage fileIcon = null;
-            NSImage arrowIcon = null;
-			
+			NSImage arrowIcon = null;
+
 			if(queue instanceof DownloadQueue) {
 				arrowIcon = arrowDownIcon;
-				if (queue.numberOfRoots() == 1) {
-					if (queue.getRoot().attributes.isFile()) {
+				if(queue.numberOfRoots() == 1) {
+					if(queue.getRoot().attributes.isFile()) {
 						fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
 					}
-					else if (queue.getRoot().attributes.isDirectory()) {
+					else if(queue.getRoot().attributes.isDirectory()) {
 						fileIcon = folderIcon;
 					}
 				}
@@ -91,16 +95,16 @@ public class CDIconCell extends CDTableCell {
 			}
 			else if(queue instanceof UploadQueue) {
 				arrowIcon = arrowUpIcon;
-				if (queue.numberOfRoots() == 1) {
-					if (queue.getRoot().getLocal().isFile()) {
-						if (queue.getRoot().getLocal().exists()) {
+				if(queue.numberOfRoots() == 1) {
+					if(queue.getRoot().getLocal().isFile()) {
+						if(queue.getRoot().getLocal().exists()) {
 							fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
 						}
 						else {
 							fileIcon = notFoundIcon;
 						}
 					}
-					else if (queue.getRoot().getLocal().isDirectory()) {
+					else if(queue.getRoot().getLocal().isDirectory()) {
 						fileIcon = folderIcon;
 					}
 					else {
@@ -117,14 +121,14 @@ public class CDIconCell extends CDTableCell {
 			}
 			fileIcon.setScalesWhenResized(true);
 			fileIcon.setSize(new NSSize(32f, 32f));
-			
-			fileIcon.compositeToPoint(new NSPoint(cellPoint.x()+SPACE, 
-												  cellPoint.y()+32+SPACE), 
-									  NSImage.CompositeSourceOver);
+
+			fileIcon.compositeToPoint(new NSPoint(cellPoint.x()+SPACE,
+			    cellPoint.y()+32+SPACE),
+			    NSImage.CompositeSourceOver);
 			if(arrowIcon != null) {
-				arrowIcon.compositeToPoint(new NSPoint(cellPoint.x()+SPACE*3, 
-													   cellPoint.y()+32+SPACE*3), 
-										   NSImage.CompositeSourceOver);
+				arrowIcon.compositeToPoint(new NSPoint(cellPoint.x()+SPACE*3,
+				    cellPoint.y()+32+SPACE*4),
+				    NSImage.CompositeSourceOver);
 			}
 		}
 	}

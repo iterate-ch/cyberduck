@@ -18,15 +18,81 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSSelector;
 
-interface CDController {
-    public void awakeFromNib();
+import org.apache.log4j.Logger;
 
-    public NSWindow window();
+/**
+ * @version $Id$
+ */
+public abstract class CDController {
+	protected static Logger log = Logger.getLogger(CDController.class);
 
-    public boolean windowShouldClose(NSWindow sender);
+	private NSWindow window; // IBOutlet
 
-    public void windowWillClose(NSNotification notification);
+	public void setWindow(NSWindow window) {
+		this.window = window;
+		this.window.setDelegate(this);
+	}
+
+	public NSWindow window() {
+		return this.window;
+	}
+
+	public abstract void awakeFromNib();
+
+	public boolean windowShouldClose(NSWindow sender) {
+		return true;
+	}	
+	
+	public abstract void windowWillClose(NSNotification notification);
+
+	public void endSheet() {
+		log.debug("endSheet");
+		if(this.hasSheet()) {
+			NSApplication.sharedApplication().endSheet(this.window().attachedSheet());
+		}
+	}
+
+	public void beginSheet(NSWindow sheet) {
+		this.beginSheet(sheet, false);
+	}
+
+	public void beginSheet(NSWindow sheet, boolean force) {
+		if(force) this.endSheet();
+		log.debug("beginSheet");
+		try {
+			this.window().makeKeyAndOrderFront(null);
+			synchronized(this) {
+				while(this.hasSheet()) {
+					log.debug("Sleeping...");
+					this.wait();
+				}
+				NSApplication.sharedApplication().beginSheet(sheet, //sheet
+				    this.window(),
+				    this, //modalDelegate
+				    new NSSelector("sheetDidEnd",
+				        new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
+				    null); //contextInfo
+			}
+			this.window().makeKeyAndOrderFront(null);
+		}
+		catch(InterruptedException e) {
+			log.error(e.getMessage());
+		}
+	}
+
+	public void sheetDidEnd(NSWindow window, int returncode, Object contextInfo) {
+		window.orderOut(null);
+		synchronized(this) {
+			this.notify();
+		}
+	}
+
+	public boolean hasSheet() {
+		return this.window().attachedSheet() != null;
+	}
 }

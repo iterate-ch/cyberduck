@@ -18,58 +18,52 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.io.File;
+import java.util.List;
+
+import com.apple.cocoa.foundation.NSMutableDictionary;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class UploadQueue extends Queue {
-	
+
 	public UploadQueue() {
 		super();
-    }
+	}
 
 	public UploadQueue(java.util.Observer callback) {
 		super(callback);
-    }
-	
+	}
+
 	public NSMutableDictionary getAsDictionary() {
-        NSMutableDictionary dict = super.getAsDictionary();
-        dict.setObjectForKey(Queue.KIND_UPLOAD+"", "Kind");
-        return dict;
-    }
-	
-	public List getChilds(Path p) {
-		return this.getChilds(new ArrayList(), p);
+		NSMutableDictionary dict = super.getAsDictionary();
+		dict.setObjectForKey(Queue.KIND_UPLOAD+"", "Kind");
+		return dict;
 	}
-	
-	private List getChilds(List list, Path p) {
-        list.add(p);
-        if (p.getLocal().isDirectory()) {
-            p.attributes.setType(Path.DIRECTORY_TYPE);
-            p.status.setSize(0); //@todo
-            File[] files = p.getLocal().listFiles();
-            for (int i = 0; i < files.length; i++) {
-                Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
-                // users complaining about .DS_Store files getting uploaded. It should be apple fixing their crappy file system, but whatever.
-                if (!child.getName().equals(".DS_Store")) {
-                    this.getChilds(list, child);
-                }
-            }
-        }
-        else if (p.getLocal().isFile()) {
-            p.attributes.setType(Path.FILE_TYPE);
-            p.status.setSize(p.getLocal().size()); //setting the file size to the known size of the local file
-			//@todo p.status.setTimestamp();
-        }
-		return list;
+
+	protected List getChilds(List childs, Path p) {
+		if(p.attributes.isDirectory()) {
+			childs.add(p);
+			File[] files = p.getLocal().listFiles();
+			for(int i = 0; i < files.length; i++) {
+				Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
+				// users complaining about .DS_Store files getting uploaded. It should be apple fixing their crappy file system, but whatever.
+				if(!child.getName().equals(".DS_Store")) {
+					this.getChilds(childs, child);
+				}
+			}
+		}
+		if(p.attributes.isFile()) {
+			if(p.exists()) {
+				List l = p.getParent().list(false, true);
+				childs.add(l.get(l.indexOf(this)));
+			}
+		}
+		return childs;
 	}
-	
+
 	protected void process(Path p) {
 		p.upload();
-	}	
+	}
 }

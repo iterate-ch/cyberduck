@@ -27,25 +27,25 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public abstract class TranscriptFactory {
-    private static Logger log = Logger.getLogger(TranscriptFactory.class);
+	private static Logger log = Logger.getLogger(TranscriptFactory.class);
 
-    private static Map transcripts = new HashMap();
+	private static Map transcripts = new HashMap();
 
-    public static void addImpl(String host, Transcript impl) {
-        transcripts.put(host, impl);
-    }
+	public static void addImpl(String host, Transcript impl) {
+		transcripts.put(host, impl);
+	}
 
-    public static Transcript getImpl(String host) {
-        Transcript impl = (Transcript)transcripts.get(host);
-        if (null == impl) {
-            return new DefaultTranscript();
-        }
-        return impl;
-    }
+	public static Transcript getImpl(String host) {
+		Transcript impl = (Transcript)transcripts.get(host);
+		if(null == impl) {
+			return new DefaultTranscript();
+		}
+		return impl;
+	}
 
-    private static class DefaultTranscript implements Transcript {
-        public void log(String message) {
-            log.info(message);
-        }
-    }
+	private static class DefaultTranscript implements Transcript {
+		public void log(String message) {
+			log.info(message);
+		}
+	}
 }

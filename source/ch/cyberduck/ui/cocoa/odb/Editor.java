@@ -18,94 +18,92 @@ package ch.cyberduck.ui.cocoa.odb;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSPathUtilities;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 public class Editor {
-    private static Logger log = Logger.getLogger(Editor.class);
+	private static Logger log = Logger.getLogger(Editor.class);
 
-    public static Map SUPPORTED_EDITORS = new HashMap();
+	public static Map SUPPORTED_EDITORS = new HashMap();
 
-    static {
-        SUPPORTED_EDITORS.put("SubEthaEdit", "de.codingmonkeys.SubEthaEdit");
-        SUPPORTED_EDITORS.put("BBEdit", "com.barebones.bbedit");
-        SUPPORTED_EDITORS.put("BBEdit Lite", "com.barebones.bbeditlite");
-        SUPPORTED_EDITORS.put("TextWrangler", "com.barebones.textwrangler");
+	static {
+		SUPPORTED_EDITORS.put("SubEthaEdit", "de.codingmonkeys.SubEthaEdit");
+		SUPPORTED_EDITORS.put("BBEdit", "com.barebones.bbedit");
+		SUPPORTED_EDITORS.put("BBEdit Lite", "com.barebones.bbeditlite");
+		SUPPORTED_EDITORS.put("TextWrangler", "com.barebones.textwrangler");
 //		SUPPORTED_EDITORS.put("PageSpinner", "com.optima.PageSpinner");
-        SUPPORTED_EDITORS.put("TextMate", "com.macromates.textmate");
-        SUPPORTED_EDITORS.put("Tex-Edit Plus", "com.transtex.texeditplus");
+		SUPPORTED_EDITORS.put("TextMate", "com.macromates.textmate");
+		SUPPORTED_EDITORS.put("Tex-Edit Plus", "com.transtex.texeditplus");
 //      SUPPORTED_EDITORS.put("Saskatoon", "sf.net.saskatoon");
-    }
+	}
 
-    static {
-        // Ensure native odb library is loaded
-        try {
-            NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath() + "/Java/" + "libODBEdit.jnilib";
-            log.debug("Locating libODBEdit.jnilib at '" + lib + "'");
-            System.load(lib);
-        }
-        catch (UnsatisfiedLinkError e) {
-            log.error("Could not load the ODBEdit library:" + e.getMessage());
-        }
-    }
+	static {
+		// Ensure native odb library is loaded
+		try {
+			NSBundle bundle = NSBundle.mainBundle();
+			String lib = bundle.resourcePath()+"/Java/"+"libODBEdit.jnilib";
+			log.debug("Locating libODBEdit.jnilib at '"+lib+"'");
+			System.load(lib);
+		}
+		catch(UnsatisfiedLinkError e) {
+			log.error("Could not load the ODBEdit library:"+e.getMessage());
+		}
+	}
 
-    private static NSMutableArray instances = new NSMutableArray();
+	private static NSMutableArray instances = new NSMutableArray();
 
-    public Editor() {
-        instances.addObject(this);
-    }
+	public Editor() {
+		instances.addObject(this);
+	}
 
-    private Path file;
+	private Path file;
 
-    public void open(Path f) {
-        this.file = f.copy(f.getSession());
-        String parent = NSPathUtilities.temporaryDirectory();
-        String filename = this.file.getName();
-        String proposal = filename;
-        int no = 0;
-        int index = filename.lastIndexOf(".");
-        do {
-            this.file.setLocal(new Local(parent, proposal));
-            no++;
-            if (index != -1) {
-                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
-            }
-            else {
-                proposal = filename + "-" + no;
-            }
-        }
-        while (this.file.getLocal().exists());
-        this.file.download();
-        if (this.file.status.isComplete()) {
-            this.edit(this.file.getLocal().getAbsolute());
-        }
-    }
+	public void open(Path f) {
+		this.file = f.copy(f.getSession());
+		String parent = NSPathUtilities.temporaryDirectory();
+		String filename = this.file.getName();
+		String proposal = filename;
+		int no = 0;
+		int index = filename.lastIndexOf(".");
+		do {
+			this.file.setLocal(new Local(parent, proposal));
+			no++;
+			if(index != -1) {
+				proposal = filename.substring(0, index)+"-"+no+filename.substring(index);
+			}
+			else {
+				proposal = filename+"-"+no;
+			}
+		} while(this.file.getLocal().exists());
+		this.file.download();
+		if(this.file.status.isComplete()) {
+			this.edit(this.file.getLocal().getAbsolute());
+		}
+	}
 
-    private native void edit(String path);
+	private native void edit(String path);
 
-    public void didCloseFile() {
-        log.debug("didCloseFile:"+this.file);
-        this.file.getLocal().delete();
-        instances.removeObject(this);
-    }
+	public void didCloseFile() {
+		log.debug("didCloseFile:"+this.file);
+		this.file.getLocal().delete();
+		instances.removeObject(this);
+	}
 
-    public void didModifyFile() {
-        log.debug("didModifyFile:"+this.file);
-        this.file.upload();
+	public void didModifyFile() {
+		log.debug("didModifyFile:"+this.file);
+		this.file.upload();
 		Growl.instance().notify(NSBundle.localizedString("Upload complete", "Growl Notification"),
-								file.getName());
-        this.file.getParent().list(true);
-    }
+		    file.getName());
+		this.file.getParent().list(true);
+	}
 }

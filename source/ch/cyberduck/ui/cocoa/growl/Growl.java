@@ -23,33 +23,33 @@ import com.apple.cocoa.foundation.NSBundle;
 import org.apache.log4j.Logger;
 
 public class Growl {
-    private static Logger log = Logger.getLogger(Growl.class);
-	
+	private static Logger log = Logger.getLogger(Growl.class);
+
 	static {
-        try {
-            NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath() + "/Java/" + "libGrowl.jnilib";
-            log.debug("Locating libGrowl.jnilib at '" + lib + "'");
-            System.load(lib);
-        }
-        catch (UnsatisfiedLinkError e) {
-            log.error("Could not load the Growl library:" + e.getMessage());
-        }
-    }
-	
+		try {
+			NSBundle bundle = NSBundle.mainBundle();
+			String lib = bundle.resourcePath()+"/Java/"+"libGrowl.jnilib";
+			log.debug("Locating libGrowl.jnilib at '"+lib+"'");
+			System.load(lib);
+		}
+		catch(UnsatisfiedLinkError e) {
+			log.error("Could not load the Growl library:"+e.getMessage());
+		}
+	}
+
 	private static Growl instance;
-		
+
 	private Growl() {
 		this.register();
 	}
-	
+
 	public static Growl instance() {
 		if(instance == null) {
 			instance = new Growl();
 		}
 		return instance;
 	}
-	
+
 	public native void launch();
 
 	public native void register();

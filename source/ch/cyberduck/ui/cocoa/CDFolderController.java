@@ -26,81 +26,77 @@ import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
 
 /**
  * @version $Id$
  */
-public class CDFolderController extends NSObject {
-    private static Logger log = Logger.getLogger(CDFolderController.class);
+public class CDFolderController extends CDController {
+	private static Logger log = Logger.getLogger(CDFolderController.class);
 
-    private static NSMutableArray instances = new NSMutableArray();
+	private static NSMutableArray instances = new NSMutableArray();
 
-    private NSWindow window;
+	private NSTextField folderField; //IBOutlet
 
-    public void setWindow(NSWindow window) {
-        this.window = window;
-        this.window.setDelegate(this);
-    }
+	public void setFolderField(NSTextField folderField) {
+		this.folderField = folderField;
+	}
 
-    private NSTextField folderField; //IBOutlet
+	public CDFolderController() {
+		instances.addObject(this);
+		if(false == NSApplication.loadNibNamed("Folder", this)) {
+			log.fatal("Couldn't load Folder.nib");
+		}
+	}
 
-    public void setFolderField(NSTextField folderField) {
-        this.folderField = folderField;
-    }
+	public void awakeFromNib() {
+		//
+	}
+		
+	public void windowWillClose(NSNotification notification) {
+		instances.removeObject(this);
+	}
 
-    public NSWindow window() {
-        return this.window;
-    }
-
-    public CDFolderController() {
-        instances.addObject(this);
-        if (false == NSApplication.loadNibNamed("Folder", this)) {
-            log.fatal("Couldn't load Folder.nib");
+	public void createButtonClicked(NSButton sender) {
+		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
+		if(folderField.stringValue().indexOf('/') != -1) {
+			NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+			    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+			    null, //alternative button
+			    null, //other button
+			    this.window(), //docWindow
+			    null, //modalDelegate
+			    null, //didEndSelector
+			    null, // dismiss selector
+			    null, // context
+			    NSBundle.localizedString("Invalid character in folder name.", "") // message
+			);
+		}
+		else if (folderField.stringValue().length() == 0) {
+			//
         }
-    }
-
-    public void windowWillClose(NSNotification notification) {
-        instances.removeObject(this);
-    }
-
-    public void createButtonClicked(Object sender) {
-        // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-        if (folderField.stringValue().indexOf('/') != -1) {
-            NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                    null, //alternative button
-                    null, //other button
-                    this.window(), //docWindow
-                    null, //modalDelegate
-                    null, //didEndSelector
-                    null, // dismiss selector
-                    null, // context
-                    NSBundle.localizedString("Invalid character in folder name.", "") // message
-            );
+        else {
+            NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
         }
-        else if (folderField.stringValue().length() == 0)
-			return;
-		NSApplication.sharedApplication().endSheet(this.window, ((NSButton)sender).tag());
-    }
+	}
 
-    public void cancelButtonClicked(Object sender) {
-        NSApplication.sharedApplication().endSheet(this.window, ((NSButton)sender).tag());
-    }
+	public void cancelButtonClicked(NSButton sender) {
+		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+	}
 
-    public void newFolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-        log.debug("newFolderSheetDidEnd");
-        sheet.orderOut(null);
-        switch (returncode) {
-            case (NSAlertPanel.DefaultReturn):
-                Path workdir = (Path)contextInfo;
+	public void newFolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
+		log.debug("newFolderSheetDidEnd");
+		sheet.orderOut(null);
+		switch(returncode) {
+			case (NSAlertPanel.DefaultReturn):
+				Path workdir = (Path)contextInfo;
 				Path child = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), folderField.stringValue());
-                child.mkdir(false);
-                workdir.list(true);
-                break;
-            case (NSAlertPanel.AlternateReturn):
-                break;
-        }
-    }
+				child.mkdir(false);
+				workdir.list(true);
+				break;
+			case (NSAlertPanel.AlternateReturn):
+				break;
+		}
+	}
 }

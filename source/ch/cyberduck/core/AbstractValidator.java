@@ -18,110 +18,107 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
-
-import java.util.List;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public abstract class AbstractValidator implements Validator {
-    private static Logger log = Logger.getLogger(Validator.class);
+	private static Logger log = Logger.getLogger(Validator.class);
+
+	/**
+	 * The user requested to resume this transfer
+	 */
+	private boolean resumeRequested = false;
 
 	public AbstractValidator(boolean resumeRequested) {
 		this.resumeRequested = resumeRequested;
 	}
-	
+
 	/**
-		* The user canceled this request, no further validation should be taken
-     */
-    private boolean canceled = false;
-	
+	 * The user canceled this request, no further validation should be taken
+	 */
+	private boolean canceled = false;
+
 	protected boolean isCanceled() {
 		return this.canceled;
 	}
-	
+
 	protected void setCanceled(boolean c) {
 		this.canceled = c;
 	}
-	
+
 	protected abstract boolean exists(Path p);
 
-	protected abstract void prompt();
-		
-	protected abstract void fireDataChanged();
-		
 	protected List validated = new ArrayList();
 	protected List workset = new ArrayList();
-	
+
 	public abstract List getResult();
-	
+
 	protected boolean validate(Path p) {
-        if (!this.isCanceled()) {
-			if (p.attributes.isFile()) {
+		if(!this.isCanceled()) {
+			if(p.attributes.isFile()) {
 				return this.validateFile(p);
 			}
-			if (p.attributes.isDirectory()) {
+			if(p.attributes.isDirectory()) {
 				return this.validateDirectory(p);
 			}
 		}
-		log.info("Canceled " + p.getName() + " - no further validation needed");
+		log.info("Canceled "+p.getName()+" - no further validation needed");
 		return false;
 	}
-		
+
 	protected boolean validateFile(Path path) {
-        if (this.isResumeRequested()) {
-            boolean fileExists = this.exists(path);
-            log.info("File " + path.getName() + " exists:" + fileExists);
-            path.status.setResume(fileExists);
-            return true;
-        }
-        // When overwriting file anyway we don't have to check if the file already exists
-        if (Preferences.instance().getProperty("queue.fileExists").equals("overwrite")) {
-            log.debug("Defaulting to overwrite on " + path.getName());
-            path.status.setResume(false);
-            return true;
-        }
+		if(this.resumeRequested) {
+			boolean fileExists = this.exists(path);
+			log.info("File "+path.getName()+" exists:"+fileExists);
+			path.status.setResume(fileExists);
+			return true;
+		}
+		// When overwriting file anyway we don't have to check if the file already exists
+		if(Preferences.instance().getProperty("queue.fileExists").equals("overwrite")) {
+			log.debug("Defaulting to overwrite on "+path.getName());
+			path.status.setResume(false);
+			return true;
+		}
 		boolean fileExists = this.exists(path);
-        log.info("File "+path.getName()+" exists:"+fileExists);
-        if (fileExists) {
-            if (Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
-                log.debug("Defaulting to resume on " + path.getName() + " succeeded:" + fileExists);
-                path.status.setResume(fileExists);
-                return true;
-            }
-            else if (Preferences.instance().getProperty("queue.fileExists").equals("similar")) {
-                log.debug("Defaulting to similar name on " + path.getName());
-                path.status.setResume(false);
-				this.proposeFilename(path);
-				log.debug("Changed name to " + path.getName());
+		log.info("File "+path.getName()+" exists:"+fileExists);
+		if(fileExists) {
+			if(Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
+				log.debug("Defaulting to resume on "+path.getName()+" succeeded:"+fileExists);
+				path.status.setResume(fileExists);
+				return true;
+			}
+			else if(Preferences.instance().getProperty("queue.fileExists").equals("similar")) {
+				log.debug("Defaulting to similar name on "+path.getName());
+				path.status.setResume(false);
+				this.adjustFilename(path);
+				log.debug("Changed name to "+path.getName());
 				return true;
 			}
 			else {//if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
-                log.debug("Prompting user on " + path.getName());
+				log.debug("Prompting user on "+path.getName());
 				return false;
-            }
+			}
 		}
-        else {//if (!fileExists) {
-            path.status.setResume(false);
-            return true;
-        }
+		else {//if (!fileExists) {
+			path.status.setResume(false);
+			return true;
+		}
 	}
-		
+
 	protected boolean validateDirectory(Path path) {
-		return true;
+		if(!path.exists())
+			path.getRemote().mkdir(false);
+		if(!path.getLocal().exists())
+			path.getLocal().mkdirs();
+//		if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true"))
+//			path.getLocal().setLastModified(path.attributes.getTimestamp().getTime());
+		return false;
 	}
-	
-	protected abstract void proposeFilename(Path path);
-	
-    /**
-     * The user requested to resume this transfer
-     */
-    private boolean resumeRequested = false;
-	
-	public boolean isResumeRequested() {
-		return this.resumeRequested;
-	}
+
+	protected abstract void adjustFilename(Path path);
 }

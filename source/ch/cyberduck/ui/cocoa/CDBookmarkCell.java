@@ -28,37 +28,37 @@ import ch.cyberduck.core.Host;
  * @version $Id$
  */
 public class CDBookmarkCell extends CDTableCell {
-    private Host bookmark;
+	private Host bookmark;
 
-    public CDBookmarkCell() {
-        super();
-    }
+	public CDBookmarkCell() {
+		super();
+	}
 
-    protected CDBookmarkCell(NSCoder decoder, long token) {
-        super(decoder, token);
-    }
+	protected CDBookmarkCell(NSCoder decoder, long token) {
+		super(decoder, token);
+	}
 
-    protected void encodeWithCoder(NSCoder encoder) {
-        super.encodeWithCoder(encoder);
-    }
+	protected void encodeWithCoder(NSCoder encoder) {
+		super.encodeWithCoder(encoder);
+	}
 
-    public void setObjectValue(Object bookmark) {
-        this.bookmark = (Host)bookmark;
-    }
+	public void setObjectValue(Object bookmark) {
+		this.bookmark = (Host)bookmark;
+	}
 
-    public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
-        super.drawInteriorWithFrameInView(cellFrame, controlView);
-        if (bookmark != null) {
+	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
+		super.drawInteriorWithFrameInView(cellFrame, controlView);
+		if(bookmark != null) {
 
-            NSPoint cellPoint = cellFrame.origin();
-            NSSize cellSize = cellFrame.size();
+			NSPoint cellPoint = cellFrame.origin();
+			NSSize cellSize = cellFrame.size();
 
-            NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(), boldFont),
-                    new NSRect(cellPoint.x(), cellPoint.y() + 1, cellSize.width() - 5, cellSize.height()));
-            NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getLogin().getUsername(), tinyFont),
-                    new NSRect(cellPoint.x(), cellPoint.y() + 14, cellSize.width() - 5, cellSize.height()));
-            NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getHostname() + "/" + bookmark.getDefaultPath(), tinyFont),
-                    new NSRect(cellPoint.x(), cellPoint.y() + 27, cellSize.width() - 5, cellSize.height()));
-        }
-    }
+			NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(), boldFont),
+			    new NSRect(cellPoint.x(), cellPoint.y()+1, cellSize.width()-5, cellSize.height()));
+			NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getLogin().getUsername(), tinyFont),
+			    new NSRect(cellPoint.x(), cellPoint.y()+14, cellSize.width()-5, cellSize.height()));
+			NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getHostname()+"/"+bookmark.getDefaultPath(), tinyFont),
+			    new NSRect(cellPoint.x(), cellPoint.y()+27, cellSize.width()-5, cellSize.height()));
+		}
+	}
 }

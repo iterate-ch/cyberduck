@@ -18,23 +18,21 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Path;
-
 import java.util.List;
+import java.util.Observer;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
-public interface Validator {
-	
+public interface Validator extends Observer {
+
 	/**
-	  * @return true if validatino was successfull, false if canceled by the user for whatever reason
-	  */
+	 * @return true if validatino was successfull, false if canceled by the user for whatever reason
+	 */
 	public boolean validate(Queue q);
-	
+
 	/**
-	  * @return The Path objects successfully validated
-	  */
+	 * @return The Path objects successfully validated
+	 */
 	public List getResult();
 }

@@ -18,17 +18,10 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSDate;
-import com.apple.cocoa.foundation.NSGregorianDate;
-import com.apple.cocoa.foundation.NSGregorianDateFormatter;
-import com.apple.cocoa.foundation.NSFormatter;
-import com.apple.cocoa.foundation.NSUserDefaults;
-
 import java.io.File;
-import java.text.DateFormat;
 import java.util.Date;
+
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -38,32 +31,32 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class Local extends File {
-    private static Logger log = Logger.getLogger(Local.class);
-	
-    public Local(File parent, String name) {
-        super(parent, name);
-    }
+	private static Logger log = Logger.getLogger(Local.class);
 
-    public Local(String parent, String name) {
-        super(parent, name);
-    }
+	public Local(File parent, String name) {
+		super(parent, name);
+	}
 
-    public Local(String path) {
-        super(path);
-    }
-	
+	public Local(String parent, String name) {
+		super(parent, name);
+	}
+
+	public Local(String path) {
+		super(path);
+	}
+
 	public long size() {
 		return this.length();
 	}
 
-    public File getTemp() {
-        return this;
+	public File getTemp() {
+		return this;
 //		return new File(super.getAbsolutePath()+".part");
-    }
+	}
 
-    public String getAbsolute() {
-        return super.getAbsolutePath();
-    }
+	public String getAbsolute() {
+		return super.getAbsolutePath();
+	}
 	
 //	public NSFileWrapper getWrapper() {
 	// @todo jnilib to access file wrapper
@@ -71,24 +64,24 @@ public class Local extends File {
 //		//this.getWrapper().setIcon(NSImage.imageNamed(img));
 //	}
 
-    public Permission getPermission() {
-        NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
-        return new Permission(((Integer)fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue());
-    }
+	public Permission getPermission() {
+		NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
+		return new Permission(((Integer)fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue());
+	}
 
-    public void setPermission(Permission p) {
-        boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(),
-                new NSDictionary(new Integer(p.getDecimalCode()),
-                        NSPathUtilities.FilePosixPermissions));
-        log.debug("Setting permissions on local file suceeded:" + success);
-    }
+	public void setPermission(Permission p) {
+		boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(),
+		    new NSDictionary(new Integer(p.getDecimalCode()),
+		        NSPathUtilities.FilePosixPermissions));
+		log.debug("Setting permissions on local file suceeded:"+success);
+	}
 
 	private static final NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
-	
-    /**
-		* @return the modification date of this file
-     */
-    public String getTimestampAsString() {
+
+	/**
+	 * @return the modification date of this file
+	 */
+	public String getTimestampAsString() {
 		try {
 			return formatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
 			//        return (DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT)).format(new Date(super.lastModified()));
@@ -98,15 +91,15 @@ public class Local extends File {
 		}
 		return null;
 	}
-	
-    public Date getTimestamp() {
-        return new Date(super.lastModified());
-    }
 
-    public boolean equals(Object other) {
-        if (other instanceof Local) {
-            return this.getAbsolutePath().equals(((Local)other).getAbsolutePath());// && this.attributes.getTimestamp().equals(((Local)other).attributes.getTimestamp());
-        }
-        return false;
-    }
+	public Date getTimestamp() {
+		return new Date(super.lastModified());
+	}
+
+	public boolean equals(Object other) {
+		if(other instanceof Local) {
+			return this.getAbsolutePath().equals(((Local)other).getAbsolutePath());// && this.attributes.getTimestamp().equals(((Local)other).attributes.getTimestamp());
+		}
+		return false;
+	}
 }

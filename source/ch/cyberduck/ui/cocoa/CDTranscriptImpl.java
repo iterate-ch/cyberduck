@@ -29,29 +29,29 @@ import ch.cyberduck.core.Transcript;
  */
 public class CDTranscriptImpl implements Transcript {
 
-    private NSTextView textView;
+	private NSTextView textView;
 
-    public CDTranscriptImpl(NSTextView textView) {
-        this.textView = textView;
-    }
+	public CDTranscriptImpl(NSTextView textView) {
+		this.textView = textView;
+	}
 
-    public void awakeFromNib() {
-        this.textView.setEditable(true);
-        this.textView.setSelectable(true);
-        this.textView.setUsesFontPanel(false);
-        this.textView.setRichText(false);
-    }
-	
+	public void awakeFromNib() {
+		this.textView.setEditable(true);
+		this.textView.setSelectable(true);
+		this.textView.setUsesFontPanel(false);
+		this.textView.setRichText(false);
+	}
+
 	private static final NSFont fixedWidthFont = NSFont.userFixedPitchFontOfSize(9.0f);
 
-    public void log(final String message) {
+	public void log(final String message) {
 // Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
 // formatting attributes of the first character of the text it replaces, or of the character immediately
 // before aRange if the range's length is 0. If the range's location is 0, the formatting
 // attributes of the first character in the receiver are used.
-        textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0),
-                message + "\n"); // @warning very bad performance
-        textView.setFont(fixedWidthFont);
-        //textView.scrollRangeToVisible(new NSRange(textView.textStorage().length()-1, 0));
-    }
+		textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0),
+		    message+"\n"); // @warning very bad performance
+		textView.setFont(fixedWidthFont);
+		//textView.scrollRangeToVisible(new NSRange(textView.textStorage().length()-1, 0));
+	}
 }

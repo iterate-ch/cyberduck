@@ -18,40 +18,35 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
+
+import com.apple.cocoa.foundation.NSMutableDictionary;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class DownloadQueue extends Queue {
-	
+
 	public NSMutableDictionary getAsDictionary() {
-        NSMutableDictionary dict = super.getAsDictionary();
-        dict.setObjectForKey(Queue.KIND_DOWNLOAD+"", "Kind");
-        return dict;
-    }
-	
-	public List getChilds(Path p) {
-		return this.getChilds(new ArrayList(), p);
+		NSMutableDictionary dict = super.getAsDictionary();
+		dict.setObjectForKey(Queue.KIND_DOWNLOAD+"", "Kind");
+		return dict;
 	}
-	
-	private List getChilds(List list, Path p) {
-        list.add(p);
-        if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
-            p.status.setSize(0); //@todo
-            for (Iterator i = p.list(false, true).iterator(); i.hasNext();) {
-                Path child = (Path)i.next();
-                child.setLocal(new Local(p.getLocal(), child.getName()));
+
+	protected List getChilds(List list, Path p) {
+		list.add(p);
+		if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
+			p.status.setSize(0);
+			for(Iterator i = p.list(false, true).iterator(); i.hasNext();) {
+				Path child = (Path)i.next();
+				child.setLocal(new Local(p.getLocal(), child.getName()));
 				this.getChilds(list, child);
-            }
-        }
+			}
+		}
 		return list;
 	}
-	
+
 	protected void process(Path p) {
 		p.download();
 	}

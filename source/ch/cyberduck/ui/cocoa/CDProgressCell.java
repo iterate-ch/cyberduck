@@ -18,42 +18,41 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSView;
+import com.apple.cocoa.foundation.NSCoder;
+import com.apple.cocoa.foundation.NSRect;
 
 import org.apache.log4j.Logger;
-
-import ch.cyberduck.core.Queue;
 
 /**
  * @version $Id$
  */
 public class CDProgressCell extends CDTableCell {
-    private static Logger log = Logger.getLogger(CDProgressCell.class);
+	private static Logger log = Logger.getLogger(CDProgressCell.class);
 
-    public CDProgressCell() {
-        super();
-    }
+	public CDProgressCell() {
+		super();
+	}
 
-    protected CDProgressCell(NSCoder decoder, long token) {
-        super(decoder, token);
-    }
+	protected CDProgressCell(NSCoder decoder, long token) {
+		super(decoder, token);
+	}
 
-    protected void encodeWithCoder(NSCoder encoder) {
-        super.encodeWithCoder(encoder);
-    }
+	protected void encodeWithCoder(NSCoder encoder) {
+		super.encodeWithCoder(encoder);
+	}
 
 	private NSView subview;
 
-    public void setObjectValue(Object subview) {
-        this.subview = (NSView)subview;
-    }
-	
-    public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
-        super.drawInteriorWithFrameInView(cellFrame, controlView);
+	public void setObjectValue(Object subview) {
+		this.subview = (NSView)subview;
+	}
+
+	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
+		super.drawInteriorWithFrameInView(cellFrame, controlView);
 		this.subview.setFrame(cellFrame);
-		if (this.subview.superview() != controlView) {
+		if(this.subview.superview() != controlView) {
 			controlView.addSubview(this.subview);
 		}
-    }
+	}
 }
