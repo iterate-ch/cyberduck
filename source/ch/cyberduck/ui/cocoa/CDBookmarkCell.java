@@ -32,7 +32,6 @@ public class CDBookmarkCell extends CDTableCell {
 	
 	public CDBookmarkCell() {
 		super();
-		//@todo set context menu
 	}
 
 	protected CDBookmarkCell(NSCoder decoder, long token) {

@@ -49,7 +49,7 @@ class SftpMessageStore extends SubsystemMessageStore {
      */
     public SftpMessageStore(String encoding) {
 		super(encoding);
-        this.transcript = TranscriptFactory.getImpl(this.toString()); //@todo get proper logger
+        this.transcript = TranscriptFactory.getImpl(this.toString()); //@nice get proper logger
     }
 
     /**

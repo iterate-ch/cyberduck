@@ -80,6 +80,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 				this.statusIndicator.stopAnimation(null);
 				this.setEnabled(true);
 				this.fileTableView.sizeToFit();
+				this.infoLabel.setStringValue(this.workList.size()+" "+NSBundle.localizedString("files", ""));
 				this.windowController.waitForSheet();
 			}
 			else {
@@ -319,7 +320,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 
 	protected void reloadTable() {
 		this.fileTableView.reloadData();
-		this.infoLabel.setStringValue(this.workList.size()+" "+NSBundle.localizedString("files", ""));
+//		this.infoLabel.setStringValue(this.workList.size()+" "+NSBundle.localizedString("files", ""));
 	}
 
 	public void windowWillClose(NSNotification notification) {

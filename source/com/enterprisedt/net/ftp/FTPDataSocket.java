@@ -38,11 +38,6 @@ import java.io.OutputStream;
 public interface FTPDataSocket {
 
     /**
-     *  Revision control id
-     */
-    public static String cvsId = "@(#)$Id$";
-
-    /**
      *   Set the TCP timeout on the underlying control socket.
      *
      *   If a timeout is set, then any operation which

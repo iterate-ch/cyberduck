@@ -59,7 +59,7 @@ public abstract class SubsystemChannel extends Channel {
         this.name = name;
         this.messageStore = messageStore;
 		this.encoding = encoding;
-        this.transcript = TranscriptFactory.getImpl(name); //@todo get proper logger
+        this.transcript = TranscriptFactory.getImpl(name); //@nice get proper logger
     }
 
     public String getChannelType() {

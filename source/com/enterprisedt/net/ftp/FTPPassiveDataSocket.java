@@ -36,11 +36,6 @@ import java.net.Socket;
 public class FTPPassiveDataSocket implements FTPDataSocket {
 
     /**
-     *  Revision control id
-     */
-    public static String cvsId = "@(#)$Id$";
-
-    /**
      *  The underlying socket 
      */
     protected Socket sock = null;

@@ -37,12 +37,6 @@ import java.io.IOException;
  public class FTPException extends IOException {
 
     /**
-     *  Revision control id
-     */
-    public static String cvsId = "@(#)$Id$";
-
-
-    /**
      *  Integer reply code
      */
     private int replyCode = -1;

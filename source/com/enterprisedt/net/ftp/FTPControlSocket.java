@@ -48,11 +48,6 @@ import java.util.Vector;
  public class FTPControlSocket {
 
      /**
-      *  Revision control id
-      */
-     public static String cvsId = "@(#)$Id$";
-
-     /**
       *   Standard FTP end of line sequence
       */
      static final String EOL = "\r\n";

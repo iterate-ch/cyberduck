@@ -34,11 +34,6 @@ package com.enterprisedt.net.ftp;
 public class FTPReply {
 
     /**
-     *  Revision control id
-     */
-    public static String cvsId = "@(#)$Id$";
-
-    /**
      *  Reply code
      */
     private String replyCode;

@@ -38,11 +38,6 @@ import java.net.Socket;
 public class FTPActiveDataSocket implements FTPDataSocket {
 
     /**
-     *  Revision control id
-     */
-    public static String cvsId = "@(#)$Id$";
-    
-    /**
      *  The underlying socket for Active connection.
      */
     protected ServerSocket sock = null;

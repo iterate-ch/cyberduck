@@ -38,8 +38,8 @@ public class Attributes extends Observable {
 	 */
 	private long size = -1;
 	private Date modified = null;
-	private String owner = "Unknown";
-	private String group = "Unknown";
+	private String owner = NSBundle.localizedString("Unknown", "");
+	private String group = NSBundle.localizedString("Unknown", "");
 	private int type = Path.FILE_TYPE;
 	protected Permission permission = new Permission();
 
@@ -85,13 +85,12 @@ public class Attributes extends Observable {
 		this.modified = d;
 	}
 
-	private static final NSGregorianDateFormatter longDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
-	
-	private static final NSGregorianDateFormatter shortDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), false);
-	
 	public Date getTimestamp() {
 		return this.modified;
 	}
+	
+	private static final NSGregorianDateFormatter longDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
+	private static final NSGregorianDateFormatter shortDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), false);
 	
 	/**
 		* @return the modification date of this file
@@ -105,7 +104,7 @@ public class Attributes extends Observable {
 				e.printStackTrace();
 			}
 		}
-		return "Unknown";
+		return NSBundle.localizedString("Unknown", "");
 	}
 	
 	public String getTimestampAsShortString() {
@@ -117,7 +116,7 @@ public class Attributes extends Observable {
 				e.printStackTrace();
 			}
 		}
-		return "Unknown";
+		return NSBundle.localizedString("Unknown", "");
 	}
 
 	public void setPermission(Permission p) {
