@@ -52,6 +52,9 @@ import org.apache.log4j.Logger;
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.28  2004/02/23 23:56:36  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.27  2004/02/21 21:39:30  dkocher
  *        *** empty log message ***
  *
@@ -752,6 +755,8 @@ public class FTPClient {
 		String reply = control.sendCommand("ABOR");
 		String[] validCodes = {"226", "426"};
 		lastValidReply = control.validateReply(reply, validCodes);
+		if(reply.substring(0, 3).equals("426"))
+			lastValidReply = control.validateReply(control.readReply(), "226");
 	}
 	
 	
@@ -759,7 +764,7 @@ public class FTPClient {
 		* This command shall cause a status response to be sent over
 	 * the control connection in the form of a reply.  The command
 	 * may be sent during a file transfer (along with the Telnet IP
-	* 									 and Synch signals--see the Section on FTP Commands) in which
+	* and Synch signals--see the Section on FTP Commands) in which
 	 * case the server will respond with the status of the
 	 * operation in progress, or it may be sent between file
 	 * transfers.  In the latter case, the command may have an
@@ -813,6 +818,3 @@ public class FTPClient {
 		}
 	}
 }
-
-
-
