@@ -273,7 +273,7 @@
 	If you don't enter a passphrase (just press the return key) then you will be allowed to log-in without having to enter a passphrase. This is less secure, but it can be really useful.\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f3 \cf0 		jungle:~/.ssh dkocher$ ssh-keygen -t dsa\
+\f3 \cf0 		jungle:~/.ssh dkocher$ ssh-keygen -t rsa\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0 \cf0 	2. Copy the public key to the remote host you wish to access and add it to the file authorized_keys in your ~/.ssh directory. (If that file does not exist then you should create it.) Anybody listed in the authorized_keys file (via their public key) is allowed to log-in, provided that they can prove that they possess the corresponding private key. Thus if you have the private key in your .ssh directory on your home machine you'll be allowed in.\

@@ -50,6 +50,7 @@ public class SyncQueue extends Queue {
 	
 	private List getChilds(List list, Path p) {
 		log.debug("getChilds:"+list+","+p);
+        list.add(p);
 		if(p.remote.exists()) {
 			if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
 				for (Iterator i = p.list(false, true).iterator(); i.hasNext();) {
@@ -59,7 +60,7 @@ public class SyncQueue extends Queue {
 				}
 			}
 			else if (p.attributes.isFile()) {
-				list.add(p);
+//				list.add(p);
 				return list;
 			}
 		}
@@ -80,7 +81,7 @@ public class SyncQueue extends Queue {
 			else if(p.local.isFile()) {
 				p.attributes.setType(Path.FILE_TYPE);
 				p.status.setSize(p.getLocal().length()); //setting the file size to the known size of the local file
-				list.add(p);
+//				list.add(p);
 				return list;
 			}
 		}
