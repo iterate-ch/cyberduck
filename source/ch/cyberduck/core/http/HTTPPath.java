@@ -29,8 +29,8 @@ import java.io.*;
 import java.net.URL;
 import java.net.MalformedURLException;
 import ch.cyberduck.core.Preferences;
-
 import java.util.List;
+import java.util.ArrayList;
 
 /**
 * @version $Id$
@@ -105,11 +105,31 @@ public class HTTPPath extends Path {
     public void changeGroup(String group) {
 	session.log("Invalid Operation", Message.ERROR);
     }
-    
-    public void fillDownloadQueue(Queue queue, Session session) {
+
+    public void fillQueue(Queue queue, Session session, int kind) {
+//	    Queue queue = new Queue(this, kind);
+//	List queue = new ArrayList();
+	try {
+	    this.session = (HTTPSession)session;
+//	    this.session = (HTTPSession)this.getSession().copy();
+	    this.session.check();
+	    switch(kind) {
+		case Queue.KIND_DOWNLOAD:
+		    this.fillDownloadQueue(queue);
+		    break;
+		default:
+		    throw new IllegalArgumentException("Upload not supported");
+	    }
+	}
+	catch(IOException e) {
+	    session.log(e.getMessage(), Message.ERROR);
+	}
+    }
+
+    private void fillDownloadQueue(Queue queue) {
 	queue.add(this);
     }
-    
+
     public void download() {
 	GetMethod GET = null;
 	try {
@@ -208,7 +228,7 @@ public class HTTPPath extends Path {
 	    if(out == null) {
 		throw new IOException("Unable to buffer data");
 	    }
-	    session.log("Opening data stream...", Message.PROGRESS);
+//	    session.log("Opening data stream...", Message.PROGRESS);
 	    InputStream in = session.HTTP.getInputStream(GET);
 	    if(in == null) {
 		throw new IOException("Unable opening data stream");
@@ -227,6 +247,7 @@ public class HTTPPath extends Path {
 	    session.log(e.getMessage(), Message.ERROR);
 	}
 	finally {
+	    session.log("Idle", Message.STOP);
             try {
 		session.HTTP.quit();
             }
@@ -236,12 +257,8 @@ public class HTTPPath extends Path {
 	}
     }
 
-    public void fillUploadQueue(Queue queue, Session session) {
-	session.log("Invalid Operation", Message.ERROR);
-    }
-    
     public void upload() {
-	session.log("Invalid Operation", Message.ERROR);
+	throw new IllegalArgumentException("Upload not supported");
     }
 
     public boolean isFile() {
