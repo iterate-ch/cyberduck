@@ -220,26 +220,6 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void rename(String absolute) {
-        log.debug("rename:" + absolute);
-        try {
-            session.check();
-            session.log("Renaming " + this.getName() + " to " + absolute, Message.PROGRESS);
-            session.SFTP.renameFile(this.getAbsolute(), absolute);
-            this.setPath(absolute);
-            this.getParent().list(true);
-        }
-        catch (SshException e) {
-            session.log("SSH Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            session.log("Idle", Message.STOP);
-        }
-    }
-
     public Path mkdir(String name) {
         log.debug("mkdir:" + name);
         try {

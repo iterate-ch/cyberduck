@@ -19,6 +19,11 @@
 
 #include <Keychain.h>
 
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
+{
+    return JNI_VERSION_1_4;
+}
+
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(JNIEnv *env, 
 																			   jobject this, 
 																			   jstring jService, 

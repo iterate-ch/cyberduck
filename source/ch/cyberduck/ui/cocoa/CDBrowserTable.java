@@ -49,9 +49,10 @@ public class CDBrowserTable extends CDTableView {
 		// receive drag events from types
         this.registerForDraggedTypes(new NSArray(new Object[]{
 			"QueuePboardType",
-            NSPasteboard.FilenamesPboardType})
-									 );
-
+			NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
+			NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as QueuePboardType
+												 ));
+		
 		// setting appearance attributes
         this.setRowHeight(17f);
         this.setAutoresizesAllColumnsToFit(true);

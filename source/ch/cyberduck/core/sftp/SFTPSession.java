@@ -215,6 +215,25 @@ public class SFTPSession extends Session {
         return null;
     }
 
+    public void rename(String oldFilename, String newFilename) {
+        log.debug("rename:" + newFilename);
+        try {
+            this.check();
+            this.log("Renaming " + oldFilename + " to " + newFilename, Message.PROGRESS);
+            this.SFTP.renameFile(oldFilename, newFilename);
+//            file.getParent().list(true);
+        }
+        catch (SshException e) {
+            this.log("SSH Error: " + e.getMessage(), Message.ERROR);
+        }
+        catch (IOException e) {
+            this.log("IO Error: " + e.getMessage(), Message.ERROR);
+        }
+        finally {
+            this.log("Idle", Message.STOP);
+        }
+    }
+	
     public synchronized void check() throws IOException {
         log.debug(this.toString() + ":check");
         this.log("Working", Message.START);

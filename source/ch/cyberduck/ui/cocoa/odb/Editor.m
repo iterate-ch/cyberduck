@@ -19,7 +19,6 @@
 #import "Editor.h"
 #import "ODBEditor.h"
 
-// Simple JNI_OnLoad api
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
 {
     return JNI_VERSION_1_4;
@@ -96,28 +95,24 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 {
 
 	jmethodID didModifyFileMethod = (*env)->GetMethodID(env, editorClass, "didModifyFile", "()V");
-//	jmethodID didModifyFileMethod = (*env)->GetMethodID(env, editorClass, "didModifyFile", "(Ljava/lang/String;)V");
 	if (didModifyFileMethod == 0) {
 		NSLog( @"Editor -> GetMethodID:didModifyFile failed");
 		return;
 	}
 	
 	(*env)->CallVoidMethod(env, editorObject, didModifyFileMethod);	
-//	(*env)->CallVoidMethod(env, editorObject, didModifyFileMethod, convertToJString(env, path));	
 }
 
 - (void)odbEditor:(ODBEditor *)editor didClosefile:(NSString *)path context:(NSDictionary *)context 
 {
 	
 	jmethodID didCloseFileMethod = (*env)->GetMethodID(env, editorClass, "didCloseFile", "()V");
-//	jmethodID didCloseFileMethod = (*env)->GetMethodID(env, editorClass, "didCloseFile", "(Ljava/lang/String;)V");
 	if (didCloseFileMethod == 0) {
 		NSLog( @"Editor -> GetMethodID:didCloseFile failed");
 		return;
 	}
 	
 	(*env)->CallVoidMethod(env, editorObject, didCloseFileMethod);	
-//	(*env)->CallVoidMethod(env, editorObject, didCloseFileMethod, convertToJString(env, path));	
 
 	[self release];
 }

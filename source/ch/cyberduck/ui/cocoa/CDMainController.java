@@ -70,19 +70,7 @@ public class CDMainController extends NSObject {
 	public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
         this.neverShowDonationCheckbox = neverShowDonationCheckbox;
         this.neverShowDonationCheckbox.setTarget(this);
-        this.neverShowDonationCheckbox.setAction(new NSSelector("neverShowDonationCheckboxClicked", new Class[]{NSButton.class}));
         this.neverShowDonationCheckbox.setState(Preferences.instance().getProperty("donate").equals("true") ? NSCell.OnState : NSCell.OffState);
-    }
-	
-	public void neverShowDonationCheckboxClicked(NSButton sender) {
-        switch (sender.state()) {
-            case NSCell.OnState:
-                Preferences.instance().setProperty("donate", "false");
-                break;
-            case NSCell.OffState:
-                Preferences.instance().setProperty("donate", "true");
-                break;
-        }
     }
 	
 	private NSButton autoUpdateCheckbox;
@@ -305,6 +293,14 @@ public class CDMainController extends NSObject {
             case NSAlertPanel.AlternateReturn:
                 break;
         }
+        switch (neverShowDonationCheckbox.state()) {
+            case NSCell.OnState:
+                Preferences.instance().setProperty("donate", "false");
+                break;
+            case NSCell.OffState:
+                Preferences.instance().setProperty("donate", "true");
+                break;
+        }
     }
 
     public void preferencesMenuClicked(Object sender) {
@@ -398,8 +394,8 @@ public class CDMainController extends NSObject {
         this.saveVersionInfo();
         //Writing usage info
         Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
-//		return this.checkForMountedBrowsers(app);
-        return true;
+		return this.checkForMountedBrowsers(app);
+//        return true;
     }
 
     private boolean checkForMountedBrowsers(NSApplication app) {

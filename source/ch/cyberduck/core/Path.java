@@ -194,6 +194,9 @@ public abstract class Path {
     }
 
     protected void setCache(List files) {
+//		Path parent = PathFactory.createPath(this.getSession(), this.getAbsolute(), "..");
+//		parent.attributes.setType(Path.DIRECTORY_TYPE);
+//		files.add(parent);
         this.getSession().cache().put(this.getAbsolute(), files);
     }
 
@@ -217,18 +220,18 @@ public abstract class Path {
      *
      * @param folder The relative name of the new folder
      */
-    public abstract Path mkdir(String folder);
+    public abstract Path mkdir(String folder); //@todo move to Session.java
 
-    public void rename(String parent, String filename) {
-        if (parent.charAt(parent.length() - 1) == '/') {
-            this.rename(parent + filename);
-        }
-        else {
-            this.rename(parent + "/" + filename);
-        }
-    }
+//    public void rename(String parent, String filename) {
+//        if (parent.charAt(parent.length() - 1) == '/') {
+//            this.rename(parent + filename);
+//        }
+//        else {
+//            this.rename(parent + "/" + filename);
+//        }
+//    }
 
-    public abstract void rename(String absolute);
+//    public abstract void rename(String filename);
 
     public abstract void changeOwner(String owner, boolean recursive);
 

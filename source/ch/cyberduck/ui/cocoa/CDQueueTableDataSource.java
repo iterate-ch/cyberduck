@@ -112,43 +112,42 @@ public class CDQueueTableDataSource extends CDTableDataSource {
                         CDQueueController.instance().startItem(q);
                         return true;
                     }
-                    return false;
                 }
                 catch (java.net.MalformedURLException e) {
                     log.error(e.getMessage());
-                    return false;
                 }
             }
-            return false;
         }
+		else {
         // we are only interested in our private pasteboard with a description of the queue
         // encoded in as a xml.
-        NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-        if (this.queuePboardChangeCount < pboard.changeCount()) {
-            log.debug("availableTypeFromArray:QueuePBoardType: " + pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
-            if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-                Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
-                log.debug("tableViewAcceptDrop:" + o);
-                if (o != null) {
-                    NSArray elements = (NSArray) o;
-                    for (int i = 0; i < elements.count(); i++) {
-                        NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                        if (row != -1) {
-                            QueueList.instance().addItem(new Queue(dict), row);
-                            tableView.reloadData();
-                            tableView.selectRow(row, false);
-                        }
-                        else {
-                            QueueList.instance().addItem(new Queue(dict));
-                            tableView.reloadData();
-                            tableView.selectRow(tableView.numberOfRows() - 1, false);
-                        }
-                    }
-                    this.queuePboardChangeCount++;
-                    return true;
-                }
-            }
-        }
+			NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+			if (this.queuePboardChangeCount < pboard.changeCount()) {
+				log.debug("availableTypeFromArray:QueuePBoardType: " + pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
+				if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+					Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
+					log.debug("tableViewAcceptDrop:" + o);
+					if (o != null) {
+						NSArray elements = (NSArray) o;
+						for (int i = 0; i < elements.count(); i++) {
+							NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+							if (row != -1) {
+								QueueList.instance().addItem(new Queue(dict), row);
+								tableView.reloadData();
+								tableView.selectRow(row, false);
+							}
+							else {
+								QueueList.instance().addItem(new Queue(dict));
+								tableView.reloadData();
+								tableView.selectRow(tableView.numberOfRows() - 1, false);
+							}
+						}
+						this.queuePboardChangeCount++;
+						return true;
+					}
+				}
+			}
+		}
         return false;
     }
 }

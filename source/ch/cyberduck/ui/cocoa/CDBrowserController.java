@@ -83,16 +83,16 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
         this.browserTable.setDoubleAction(new NSSelector("browserTableRowDoubleClicked", new Class[]{Object.class}));
         this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
         this.browserTable.setDelegate(this.browserModel);
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("browserTableRowEdited", new Class[]{NSNotification.class}),
-                NSText.TextDidEndEditingNotification,
-                this.browserTable);
+//        (NSNotificationCenter.defaultCenter()).addObserver(this,
+//                new NSSelector("browserTableRowEdited", new Class[]{NSNotification.class}),
+//                NSText.TextDidEndEditingNotification,
+//                this.browserTable);
     }
 
     public void browserTableRowDoubleClicked(Object sender) {
         log.debug("browserTableRowDoubleClicked");
         searchField.setStringValue("");
-        if (browserModel.size() > 0 && browserTable.numberOfSelectedRows() > 0) {
+        if (browserModel.numberOfRowsInTableView(browserTable) > 0 && browserTable.numberOfSelectedRows() > 0) {
             Path p = (Path) browserModel.getEntry(browserTable.selectedRow()); //last row selected
             if (p.isFile() || browserTable.numberOfSelectedRows() > 1) {
                 this.downloadButtonClicked(sender);
@@ -103,9 +103,9 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
         }
     }
 
-    public void browserTableRowEdited(Object sender) {
-        log.debug("browserTableRowEdited");
-    }
+//    public void browserTableRowEdited(Object sender) {
+//        log.debug("browserTableRowEdited");
+//    }
 
     private CDBookmarkTableDataSource bookmarkModel;
     private NSTableView bookmarkTable; // IBOutlet
@@ -375,6 +375,7 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
 
     public void setBookmarkDrawer(NSDrawer bookmarkDrawer) {
         this.bookmarkDrawer = bookmarkDrawer;
+        this.bookmarkDrawer.setDelegate(this);
     }
 
     public void toggleBookmarkDrawer(Object sender) {
@@ -621,7 +622,7 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
     }
 
     public void downloadAsButtonClicked(Object sender) {
-        if (browserModel.size() > 0 && browserTable.numberOfSelectedRows() > 0) {
+        if (browserModel.numberOfRowsInTableView(browserTable) > 0 && browserTable.numberOfSelectedRows() > 0) {
             if (this.isMounted()) {
                 NSEnumerator enum = browserTable.selectedRowEnumerator();
                 while (enum.hasMoreElements()) {
@@ -667,7 +668,7 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
     }
 
     public void downloadButtonClicked(Object sender) {
-        if (browserModel.size() > 0 && browserTable.numberOfSelectedRows() > 0) {
+        if (browserModel.numberOfRowsInTableView(browserTable) > 0 && browserTable.numberOfSelectedRows() > 0) {
             if (this.isMounted()) {
                 NSEnumerator enum = browserTable.selectedRowEnumerator();
                 Queue q = new Queue(Queue.KIND_DOWNLOAD);
@@ -886,7 +887,7 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
             return bookmarkTable.numberOfSelectedRows() == 1;
         }
         if (identifier.equals("Edit") || identifier.equals("editButtonClicked:")) {
-            if (this.isMounted() && browserModel.size() > 0 && browserTable.selectedRow() != -1) {
+            if (this.isMounted() && browserModel.numberOfRowsInTableView(browserTable) > 0 && browserTable.selectedRow() != -1) {
                 Path p = (Path) browserModel.getEntry(browserTable.selectedRow());
                 return p.attributes.isFile();
             }
@@ -1172,6 +1173,7 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
                     if (row != -1 && row < tableView.numberOfRows()) {
                         Path selected = this.getEntry(row);
                         if (selected.isDirectory()) {
+                            tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
                             return NSDraggingInfo.DragOperationMove;
                         }
                     }
@@ -1212,29 +1214,30 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
                         }
                         return true;
                     }
-                    return false;
                 }
-                return false;
             }
-            if (row != -1 && row < tableView.numberOfRows()) {
+            else if (row != -1 && row < tableView.numberOfRows()) {
                 NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
                 log.debug("availableTypeFromArray:QueuePBoardType: " + pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
                 if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-                    Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
+                    Object o = pboard.propertyListForType("QueuePBoardType");// get the data from pasteboard
                     log.debug("tableViewAcceptDrop:" + o);
                     if (o != null) {
                         NSArray elements = (NSArray) o;
                         for (int i = 0; i < elements.count(); i++) {
                             NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                            Path parent = this.getEntry(row);
-                            if (parent.isDirectory()) {
-                                Queue q = new Queue(dict);
-                                List files = q.getRoots();
-                                for (Iterator iter = files.iterator(); iter.hasNext();) {
-                                    Path p = (Path) iter.next();
-                                    p.rename(parent.getAbsolute(), p.getName());
-                                }
-                            }
+                            Path newParentFolder = this.getEntry(row);
+                            if (newParentFolder.isDirectory()) {
+								Queue q = new Queue(dict);
+								List files = q.getRoots();
+								for (Iterator iter = files.iterator(); iter.hasNext();) {
+									Path p = (Path) iter.next();
+									newParentFolder.getSession().rename(p.getAbsolute(), newParentFolder.getAbsolute()+"/"+p.getName());
+//									p.rename(newParentFolder.getAbsolute()+"/"+p.getName());
+								}
+								pathController.workdir().list(true);
+								return true;
+							}
                         }
                     }
                 }
@@ -1242,11 +1245,11 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
             return false;
         }
 
-
-// ----------------------------------------------------------
-// Drag methods
-// ----------------------------------------------------------
-
+		
+		// ----------------------------------------------------------
+		// Drag methods
+		// ----------------------------------------------------------
+		
         /**
          * Invoked by tableView after it has been determined that a drag should begin, but before the drag has been started.
          * The drag image and other drag-related information will be set up and provided by the table view once this call
@@ -1461,22 +1464,18 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
             this.sort(tableColumn, sortAscending);
             tableView.reloadData();
         }
-
+		
         public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-            log.debug("tableViewShouldEditLocation:" + row);
-            if (tableColumn.identifier().equals("FILENAME")) {
-                return true;
-            }
+			//          log.debug("tableViewShouldEditLocation:" + row);
+			//            if (tableColumn.identifier().equals("FILENAME")) {
+			//                return true;
+			//            }
             return false;
         }
-
-// ----------------------------------------------------------
-// Data access
-// ----------------------------------------------------------
-
-        public int size() {
-            return this.currentData.size();
-        }
+		
+		// ----------------------------------------------------------
+		// Data access
+		// ----------------------------------------------------------
 
         public void clear() {
             this.fullData.clear();
@@ -1489,12 +1488,21 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
         }
 
         public Path getEntry(int row) {
-            return (Path) this.currentData.get(row);
+			if(row < currentData.size()) {
+				return (Path) this.currentData.get(row);
+			}
+			return null;
         }
 
         public void removeEntry(Path o) {
-            fullData.remove(fullData.indexOf(o));
-            currentData.remove(currentData.indexOf(o));
+			int frow = fullData.indexOf(o);
+			if(frow < fullData.size()) {
+				fullData.remove(frow);
+			}
+			int crow = currentData.indexOf(o);
+			if(crow < currentData.size()) {
+				currentData.remove(crow);
+			}
         }
 
         public int indexOf(Path o) {

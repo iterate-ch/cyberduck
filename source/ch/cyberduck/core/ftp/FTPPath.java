@@ -195,27 +195,6 @@ public class FTPPath extends Path {
         }
     }
 
-    public void rename(String absolute) {
-        log.debug("rename:" + absolute);
-        try {
-            session.check();
-            session.FTP.chdir(this.getParent().getAbsolute());
-            session.log("Renaming " + this.getName() + " to " + absolute, Message.PROGRESS);
-            session.FTP.rename(this.getName(), absolute);
-            this.setPath(absolute);
-            this.getParent().list(true);
-        }
-        catch (FTPException e) {
-            session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            session.log("Idle", Message.STOP);
-        }
-    }
-
     public Path mkdir(String name) {
         log.debug("mkdir:" + name);
         try {
