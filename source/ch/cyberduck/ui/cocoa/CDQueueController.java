@@ -253,7 +253,6 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 	}
 	
 	private void reloadQueueTable() {
-        log.debug("reloadQueueTable");
 		this.queueTable.deselectAll(null);
 		while (this.queueTable.subviews().count() > 0) {
 			((NSView)this.queueTable.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();

@@ -1423,7 +1423,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             item.setLabel(NSBundle.localizedString("Synchronize", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Sync", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Synchronize local with remote files", "Toolbar item tooltip"));
-            item.setImage(NSImage.imageNamed("sync.tiff"));
+            item.setImage(NSImage.imageNamed("sync32.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("syncButtonClicked", new Class[]{Object.class}));
             return item;
