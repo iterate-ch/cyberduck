@@ -27,13 +27,19 @@ import ch.cyberduck.core.*;
 /**
 * @version $Id$
  */
-public class CDBrowserTable extends NSTableView {
+public class CDBrowserTable extends NSTableView implements Observer {
     private static Logger log = Logger.getLogger(CDBrowserTable.class);
     
     private static final NSColor TABLE_CELL_SHADED_COLOR = NSColor.colorWithCalibratedRGB(0.929f, 0.953f, 0.996f, 1.0f);
 
     private CDBrowserTableDataSource browserModel;
     private CDBrowserTableDelegate browserDelegate;
+
+    private Path workdir;
+
+    public Path workdir() {
+	return this.workdir;
+    }
 
     public CDBrowserTable() {
 	super();
@@ -64,16 +70,34 @@ public class CDBrowserTable extends NSTableView {
 	this.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
     }
 
+    public void update(Observable o, Object arg) {
+	log.debug("update:"+o+","+arg);
+	if(o instanceof Session) {
+	    if(arg instanceof Path) {
+		this.workdir = (Path)arg;
+		java.util.List cache = ((Path)arg).cache();
+		java.util.Iterator i = cache.iterator();
+//		log.debug("List size:"+cache.size());
+		browserModel.clear();
+		while(i.hasNext()) {
+		    browserModel.addEntry((Path)i.next());
+		}
+		this.reloadData();
+	    }
+	}
+    }
+
+	    
         // ----------------------------------------------------------
     // Drag methods
     // ----------------------------------------------------------
 
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
 	log.debug("finishedDraggingImage:"+operation);
-	if(promisedDragPath != null) {
-	    CDTransferController controller = new CDTransferController(promisedDragPath, Queue.KIND_DOWNLOAD);
+	if(promisedDragPaths != null) {
+	    CDTransferController controller = new CDTransferController(promisedDragPaths, Queue.KIND_DOWNLOAD);
 	    controller.transfer();
-	    promisedDragPath = null;
+	    promisedDragPaths = null;
 	}
     }
 
@@ -90,7 +114,7 @@ public class CDBrowserTable extends NSTableView {
 
     }
 
-    private Path promisedDragPath;
+    private Path[] promisedDragPaths;
 
     /**
 	@return the names (not full paths) of the files that the receiver promises to create at dropDestination.
@@ -101,11 +125,20 @@ public class CDBrowserTable extends NSTableView {
      */
     public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
 	log.debug("namesOfPromisedFilesDroppedAtDestination:"+dropDestination);
-		    //@todo multiple files
 
-	this.promisedDragPath = (Path)browserModel.getEntry(this.selectedRow());
-	promisedDragPath.setLocal(new java.io.File(dropDestination.getPath(), promisedDragPath.getName()));
-	return new NSArray(new String[]{promisedDragPath.getName()});
+	this.promisedDragPaths = new Path[this.numberOfSelectedRows()];
+	NSMutableArray promisedDragNames = new NSMutableArray();
+
+	NSEnumerator enum = this.selectedRowEnumerator();
+	int i = 0;
+	while(enum.hasMoreElements()) {
+	    promisedDragPaths[i] = (Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue());
+	    promisedDragPaths[i].setLocal(new java.io.File(dropDestination.getPath(), promisedDragPaths[i].getName()));
+	    promisedDragNames.addObject(promisedDragPaths[i].getName());
+	    i++;
+	}
+	return promisedDragNames;
+//	return new NSArray(new String[]{promisedDragPath.getName()});
     }
 
         
@@ -330,25 +363,19 @@ public class CDBrowserTable extends NSTableView {
 	// find the best match of the types we'll accept and what's actually on the pasteboard
 	// In the file format type that we're working with, get all data on the pasteboard
 	    NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
-	    int i = 0;
-	    for(; i < filesList.count(); i++) {
+	    Path[] roots = new Path[filesList.count()];
+	    for(int i = 0; i < filesList.count(); i++) {
 		log.debug(filesList.objectAtIndex(i));
-		String filename = (String)filesList.objectAtIndex(i);
-		
-		    //TODO TODO TODO TODO TODO
-//		    Path parent = (Path)pathController.getItem(0);
-//		    Path path = parent.copy();
-//		    path.setLocal(new java.io.File(filename));
-		    //TODO TODO TODO TODO TODO
-		
-		    //TODO TODO TODO TODO TODO
-		    //CDTransferController controller = new CDTransferController(path, Queue.KIND_UPLOAD);
-		    //controller.transfer(path.status.isResume());
-		    //TODO TODO TODO TODO TODO
+		roots[i] = ((CDBrowserTable)tableView).workdir().copy();
+		roots[i].setPath(roots[i].getAbsolute(), new java.io.File((String)filesList.objectAtIndex(i)));
 	    }
-	    tableView.reloadData();
-	    tableView.setNeedsDisplay(true);
-	    tableView.selectRow(row+i-1, false);
+
+	    CDTransferController controller = new CDTransferController(roots, Queue.KIND_UPLOAD);
+	    controller.transfer();
+	    
+//	    tableView.reloadData();
+//	    tableView.setNeedsDisplay(true);
+//	    tableView.selectRow(row+i-1, false);
 	    return true;
 	}
 

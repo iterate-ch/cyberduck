@@ -79,12 +79,6 @@ public class CDPathController implements Observer {
 	p.list();
     }
 
-//    public void selectionChanged(Object sender) {
-//	log.debug("selectionChanged");
-//	String input = ((NSControl)sender).stringValue();
-//	    p.list();
-//    }
-    
     public void addItem(Path p) {
 	this.items.add(p);
 	combo.addItem(p.getAbsolute());
@@ -92,7 +86,6 @@ public class CDPathController implements Observer {
 	    combo.itemAtIndex(combo.numberOfItems()-1).setImage(NSImage.imageNamed("disk.tiff"));
 	else
 	    combo.itemAtIndex(combo.numberOfItems()-1).setImage(NSImage.imageNamed("folder.tiff"));
-//	combo.sizeToFit();
     }
 
     public Path getItem(int row) {

@@ -147,7 +147,7 @@ public class CDTransferController implements Observer, Validator {
     }
 
     private void init() {
-	this.window().setTitle(root.getName());
+	this.window().setTitle(root.getName()+" ("+(queue.processedJobs()+1)+" of "+queue.numberOfJobs());
 	this.window().display();
 	this.urlField.setAttributedStringValue(new NSAttributedString(host.getURL()+root.getAbsolute()));
 	this.fileField.setAttributedStringValue(new NSAttributedString(root.getLocal().toString()));
@@ -187,22 +187,23 @@ public class CDTransferController implements Observer, Validator {
 		this.totalProgressBar.setMaxValue(queue.getSize());
 
 		this.fileDataField.setAttributedStringValue(new NSAttributedString(
-				  Status.parseDouble(status.getCurrent()/1024)+
-				  " of "+Status.parseDouble(status.getSize()/1024)+"kB ("+
-				  Status.parseDouble(queue.getCurrent()/1024)+" of "+Status.parseDouble(queue.getSize()/1024)+"kB Total), "+
-					      Status.parseDouble(queue.getSpeed()/1024) + "kB/s, "+queue.getTimeLeft()
+				Status.parseDouble(status.getCurrent()/1024)+
+				" of "+Status.parseDouble(status.getSize()/1024)+"kB ("+
+				Status.parseDouble(queue.getCurrent()/1024)+" of "+
+				Status.parseDouble(queue.getSize()/1024)+"kB Total), "+
+				Status.parseDouble(queue.getSpeed()/1024) + "kB/s, "+queue.getTimeLeft()
 		    ));
 		this.fileDataField.setNeedsDisplay(true);
 	    }
 	    // CLOCK
 	    else if(msg.getTitle().equals(Message.CLOCK)) {
 		this.clockField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
-		this.clockField.setNeedsDisplay(true);
+		this.clockField.display();
 	    }
 	    // PROGRESS
 	    else if(msg.getTitle().equals(Message.PROGRESS)) {
 		this.progressField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
-		this.progressField.setNeedsDisplay(true);
+		this.progressField.display();
 	    }
 	    // START
 	    else if(msg.getTitle().equals(Message.START)) {
@@ -276,7 +277,10 @@ public class CDTransferController implements Observer, Validator {
 	if(Queue.KIND_DOWNLOAD == kind) {
 	    log.debug("Validating download");
 	    if(resume) {
+		log.debug("resume:true");
 		if(path.status.isComplete()) {
+		    log.debug("complete:true");
+
 //		    NSAlertPanel.beginInformationalAlertSheet(
 //						"Error", //title
 //						"OK",// defaultbutton
@@ -293,16 +297,22 @@ public class CDTransferController implements Observer, Validator {
 //		    this.resumeButton.setEnabled(true);
 //		    this.reloadButton.setEnabled(true);
 //		    return false;
+		    log.debug("return:true");
 		    return true;
 		}
 		else if(! path.status.isComplete()) {
+		    log.debug("complete:false");
 		    path.status.setResume(path.getLocal().exists());
+		    log.debug("return:true");
 		    return true;
 		}
 	    }
 	    if(!resume) {
+		log.debug("resume:false");
 		if(path.getLocal().exists()) {
+		    log.debug("local path exists:true");
 		    if(Preferences.instance().getProperty("connection.download.duplicate.ask").equals("true")) {
+			log.debug("duplicate:ask:true");
 			NSAlertPanel.beginCriticalAlertSheet(
 					"File exists", //title
 					"Resume",// defaultbutton
@@ -335,21 +345,27 @@ public class CDTransferController implements Observer, Validator {
 		    }
 		    else if(Preferences.instance().getProperty("connection.download.duplicate.resume").equals("true")) {
 			path.status.setResume(true);
+			log.debug("return:true");
 			return true;
 		    }
 		    else if(Preferences.instance().getProperty("connection.download.duplicate.overwrite").equals("true")) {
 			path.status.setResume(false);
+			log.debug("return:true");
 			return true;
 		    }
 		}
+		log.debug("local path exists:false");
+		log.debug("return:true");
 		return true;
 	    }
 	}
 	else if(Queue.KIND_UPLOAD == kind) {
 	    log.debug("Validating upload");
+	    log.debug("return:true");
 	    return true;
 	}
-	throw new IllegalArgumentException("Argument must be either UPLOAD or DOWNLOAD");
+	log.error("Argument must be either UPLOAD or DOWNLOAD");
+	return false;
     }
 
     public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {

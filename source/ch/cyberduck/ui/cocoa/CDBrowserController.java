@@ -43,18 +43,11 @@ public class CDBrowserController implements Observer {
 	this.mainWindow = mainWindow;
     }
 
-    private NSTableView browserTable; // IBOutlet
-    public void setBrowserTable(NSTableView browserTable) {
+    private CDBrowserTable browserTable; // IBOutlet
+    public void setBrowserTable(CDBrowserTable browserTable) {
 	this.browserTable = browserTable;
 	this.browserTable.setTarget(this);
 	this.browserTable.setDoubleAction(new NSSelector("browserTableViewDidClickTableRow", new Class[] {Object.class}));
-/*	this.browserTable.setDataSource(browserModel = new CDBrowserTableDataSource());
-	this.browserTable.setDelegate(browserDelegate = new CDBrowserTableDelegate());
-	this.browserTable.setDrawsGrid(false);
-	this.browserTable.setAutoresizesAllColumnsToFit(true);
-	this.browserTable.setAutosaveTableColumns(true);
-	this.browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
-	this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));*/
     }
 
     private NSTableView favoritesTable; // IBOutlet
@@ -268,7 +261,6 @@ public class CDBrowserController implements Observer {
 		    progressIndicator.stopAnimation(this);
 		    statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
 		}
-		
 		// update status label
 		else if(msg.getTitle().equals(Message.PROGRESS)) {
 		    statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
@@ -277,7 +269,6 @@ public class CDBrowserController implements Observer {
 		else if(msg.getTitle().equals(Message.TRANSCRIPT)) {
 		    statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
 		}
-		
 		else if(msg.getTitle().equals(Message.OPEN)) {
 		    progressIndicator.startAnimation(this);
 		    CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
@@ -300,17 +291,6 @@ public class CDBrowserController implements Observer {
 		    statusLabel.setAttributedStringValue(new NSAttributedString((NSBundle.localizedString("Idle"))));
 		    //@todo enable toolbar
 		}
-	    }
-	    else if(arg instanceof Path) {
-		java.util.List cache = ((Path)arg).cache();
-		java.util.Iterator i = cache.iterator();
-//		log.debug("List size:"+cache.size());
-		CDBrowserTable.CDBrowserTableDataSource browserModel = (CDBrowserTable.CDBrowserTableDataSource)browserTable.dataSource();
-		browserModel.clear();
-		while(i.hasNext()) {
-		    browserModel.addEntry((Path)i.next());
-		}
-		browserTable.reloadData();
 	    }
 	    else
 		log.error("Unknown argument of type'"+arg.getClass()+"'");
@@ -349,8 +329,8 @@ public class CDBrowserController implements Observer {
 
     public void gotoButtonClicked(Object sender) {
         log.debug("folderButtonClicked");
-	Path current = (Path)pathController.getItem(0);
-	CDGotoController controller = new CDGotoController(current);
+//	Path current = (Path)pathController.getItem(0);
+	CDGotoController controller = new CDGotoController(browserTable.workdir());
 	NSApplication.sharedApplication().beginSheet(
 					      controller.window(),//sheet
 					      mainWindow, //docwindow
@@ -359,12 +339,12 @@ public class CDBrowserController implements Observer {
 			  "gotoSheetDidEnd",
 			  new Class[] { NSPanel.class, int.class, Object.class }
 			  ),// did end selector
-					      current); //contextInfo
+					      browserTable.workdir()); //contextInfo
     }
     
     public void folderButtonClicked(Object sender) {
         log.debug("folderButtonClicked");
-	Path parent = (Path)pathController.getItem(0);
+//	Path parent = (Path)pathController.getItem(0);
 	CDFolderController controller = new CDFolderController();
 	NSApplication.sharedApplication().beginSheet(
 					      controller.window(),//sheet
@@ -374,7 +354,7 @@ public class CDBrowserController implements Observer {
 			  "newfolderSheetDidEnd",
 			  new Class[] { NSPanel.class, int.class, Object.class }
 			  ),// did end selector
-					      parent); //contextInfo
+					      browserTable.workdir()); //contextInfo
     }
 
 
@@ -441,8 +421,9 @@ public class CDBrowserController implements Observer {
     public void refreshButtonClicked(Object sender) {
 	log.debug("refreshButtonClicked");
 //	Path p = host.getSession().workdir();
-	Path p = (Path)pathController.getItem(0);
-	p.list();
+//	Path p = (Path)pathController.getItem(0);
+//	p.list();
+	browserTable.workdir().list();
     }
 
     public void downloadButtonClicked(Object sender) {
@@ -470,7 +451,8 @@ public class CDBrowserController implements Observer {
 	sheet.orderOut(null);
 	switch(returnCode) {
 	    case(NSPanel.OKButton): {
-		Path parent = (Path)pathController.getItem(0);
+//		Path parent = (Path)pathController.getItem(0);
+		Path parent = browserTable.workdir();
 		// selected files on the local filesystem
 		NSArray selected = sheet.filenames();
 		java.util.Enumeration enumerator = selected.objectEnumerator();
@@ -497,8 +479,8 @@ public class CDBrowserController implements Observer {
 
      public void upButtonClicked(Object sender) {
 	 log.debug("upButtonClicked");
-	 Path p = (Path)pathController.getItem(0);
-	 p.getParent().list();
+//	 Path p = (Path)pathController.getItem(0);
+	 browserTable.workdir().getParent().list();
      }
     
     public void drawerButtonClicked(Object sender) {
@@ -573,6 +555,7 @@ public class CDBrowserController implements Observer {
 	
 	Session session = host.getSession();	
 	session.addObserver((Observer)this);
+	session.addObserver((Observer)browserTable);
 	session.addObserver((Observer)pathController);
 
 	session.mount();
