@@ -50,7 +50,6 @@
                 listCheckbox = NSButton; 
                 loginField = NSTextField; 
                 newBrowserCheckbox = NSButton; 
-                preserveModificationCheckbox = NSButton; 
                 processCheckbox = NSButton; 
                 protocolCombobox = NSPopUpButton; 
                 publickeyCombobox = NSPopUpButton; 
