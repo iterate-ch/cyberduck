@@ -387,11 +387,11 @@ public class CDBrowserController extends CDController implements Observer {
 			this.browserModel.sort(selectedColumn, this.browserModel.isSortedAscending());
 			this.browserTable.reloadData();
 			this.window().makeFirstResponder(this.browserTable);
-			ThreadUtilities.instance().invokeLater(new Runnable() {
-				public void run() {
-					CDBrowserController.this.toolbar.validateVisibleItems();
-				}
-			});
+//			ThreadUtilities.instance().invokeLater(new Runnable() {
+//				public void run() {
+//					CDBrowserController.this.toolbar.validateVisibleItems();
+//				}
+//			});
 			this.infoLabel.setStringValue(this.browserModel.numberOfRowsInTableView(this.browserTable)+" "+
 			    NSBundle.localizedString("files", ""));
 		}
@@ -1732,6 +1732,7 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 
 	private boolean validateItem(String identifier) {
+		log.debug("validateItem:"+identifier);
 		if(identifier.equals("copy:")) {
 			return this.isMounted() && browserTable.selectedRow() != -1;
 		}

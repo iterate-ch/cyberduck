@@ -511,7 +511,10 @@ public class CDMainController extends NSObject {
 
 	public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
 		log.debug("applicationShouldHandleReopen");
-		return CDMainController.newDocument() == null;
+		if(CDMainController.orderedBrowsers().count() == 0) {
+			return CDMainController.newDocument() == null;
+		}
+		return false;
 	}
 
 	public void applicationDidFinishLaunching(NSNotification notification) {
