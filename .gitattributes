@@ -346,6 +346,7 @@ img/folder32.tiff -text
 img/gear.tiff -text
 img/history.tiff -text
 img/info.tiff svneol=native#unset
+img/login.tiff -text
 img/multipleDocuments.tiff -text
 img/multipleDocuments32.tiff -text
 img/newfolder.tiff -text
