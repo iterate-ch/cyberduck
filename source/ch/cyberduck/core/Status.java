@@ -42,11 +42,11 @@ public class Status extends Observable implements Serializable {
 	/**
 	 * The file length
 	 */
-	private long size = -1;
+	private long size = 0;
 	/**
 	 * The number of transfered bytes. Must be less or equals size.
 	 */
-	private long current = -1;
+	private long current = 0;
 	/**
 	 * Indiciating wheter the transfer has been cancled by the user.
 	 */
@@ -94,7 +94,7 @@ public class Status extends Observable implements Serializable {
 	 * @return length the size of file in bytes.
 	 */
 	public long getSize() {
-		log.debug(this.toString()+">getSize:"+this.size);//@todo remove
+//		log.debug(this.toString()+">getSize:"+this.size);
 		return size;
 	}
 
@@ -139,7 +139,7 @@ public class Status extends Observable implements Serializable {
 	}
 
 	public long getCurrent() {
-		log.debug(this.toString()+">getCurrent:"+this.current);//@todo remove
+//		log.debug(this.toString()+">getCurrent:"+this.current);
 		return this.current;
 	}
 
@@ -164,5 +164,8 @@ public class Status extends Observable implements Serializable {
 	public void reset() {
 		this.complete = false;
 		this.canceled = false;
+		if(!this.isResume()) {
+			this.current = 0;
+		}
 	}
 }

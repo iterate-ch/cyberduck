@@ -108,8 +108,8 @@ public class Queue extends Observable implements Observer { //Thread {
 	private long speed;
 
 	private long timeLeft = -1;
-	private long current = -1;
-	private long size = -1;
+	private long current = 0;
+	private long size = 0;
 
 	private String status = "";
 	private String error = "";
@@ -232,11 +232,18 @@ public class Queue extends Observable implements Observer { //Thread {
 
 				for (Iterator iter = jobs.iterator() ; iter.hasNext() && !Queue.this.isCanceled(); ) {
 					Path item = (Path)iter.next();
-					if (validator.validate(item, Queue.this.kind)) {
-						Queue.this.run(item);
+					if (!validator.validate(item, Queue.this.kind)) {
+						iter.remove();
+					}
+					else {
+						item.status.reset();
 					}
 				}
-								
+
+				for (Iterator iter = jobs.iterator() ; iter.hasNext() && !Queue.this.isCanceled(); ) {
+					Queue.this.run((Path)iter.next());
+				}
+				
 				Queue.this.elapsedTimer.stop();
 				Queue.this.running = false;
 				Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
@@ -369,15 +376,12 @@ public class Queue extends Observable implements Observer { //Thread {
 		}
 		if (value > 0)
 			this.size = value;
-		log.debug("Total:"+size);
-		log.debug(this.toString()+">calculateTotalSize:"+this.size);//@todo remove
+//		log.debug(this.toString()+">calculateTotalSize:"+this.size);
 		return this.size;
 	}
 
 	public String getSizeAsString() {
-		if (this.getSize() != -1) //@todo performance
-			return Status.getSizeAsString(this.getSize());
-		return null;
+		return Status.getSizeAsString(this.getSize());
 	}
 
 	/**
@@ -394,14 +398,12 @@ public class Queue extends Observable implements Observer { //Thread {
 		}
 		if (value > 0)
 			this.current = value;
-		log.debug(this.toString()+">calculateCurrentSize:"+this.size);//@todo remove
+//		log.debug(this.toString()+">calculateCurrentSize:"+this.size);
 		return this.current;
 	}
 
 	public String getCurrentAsString() {
-		if (this.getCurrent() != -1)
-			return Status.getSizeAsString(this.getCurrent());
-		return null;
+		return Status.getSizeAsString(this.getCurrent());
 	}
 
 	/**
@@ -473,11 +475,6 @@ public class Queue extends Observable implements Observer { //Thread {
 	private void init() {
 		log.debug("init");
 		
-//		for (Iterator iter = jobs.iterator(); iter.hasNext(); ) {
-//			Path item = (Path)iter.next();
-//			item.status.reset();
-//		}
-
 		this.completedJobs = 0;
 		this.processedJobs = 0;
 		this.error = "";

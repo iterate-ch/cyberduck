@@ -410,6 +410,7 @@ public class SFTPPath extends Path {
 	
 	private Queue getUploadQueue(Queue queue) throws IOException {
 		if (this.getLocal().isDirectory()) {
+			this.session.check();
 			this.session.SFTP.makeDirectory(this.getAbsolute());
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
@@ -431,6 +432,7 @@ public class SFTPPath extends Path {
 		try {
 			log.debug("upload:" + this.toString());
 			this.session.check();
+			this.status.setSize(this.getLocal().length());
 			java.io.InputStream in = new FileInputStream(this.getLocal());
 			if (in == null) {
 				throw new IOException("Unable to buffer data");

@@ -401,6 +401,7 @@ public class FTPPath extends Path {
 	
 	private Queue getUploadQueue(Queue queue) throws IOException {
 		if (this.getLocal().isDirectory()) {
+			this.session.check();
 			session.FTP.mkdir(this.getAbsolute());
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
@@ -422,6 +423,7 @@ public class FTPPath extends Path {
 		try {
 			log.debug("upload:" + this.toString());
 			this.session.check();
+			this.status.setSize(this.getLocal().length());
 			if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 				this.session.FTP.setTransferType(FTPTransferType.BINARY);
 				java.io.InputStream in = new FileInputStream(this.getLocal());

@@ -378,8 +378,6 @@ public abstract class Path {
 		LineNumberReader in = new LineNumberReader(reader);
 		BufferedWriter out = new BufferedWriter(writer);
 
-		this.status.reset();
-		
 		long current = this.status.getCurrent();
 		boolean complete = false;
 		// read/write a line at a time
@@ -413,8 +411,6 @@ public abstract class Path {
 	private void transfer(java.io.InputStream i, java.io.OutputStream o) throws IOException {
 		BufferedInputStream in = new BufferedInputStream(i);
 		BufferedOutputStream out = new BufferedOutputStream(o);
-
-		this.status.reset();
 
 		// do the retrieving
 		int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
