@@ -178,6 +178,7 @@ public class CDBookmarkController {
 		else {
 			this.pkCheckbox.setState(NSCell.OffState);
 			this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
+			this.host.getLogin().setPrivateKeyFile(null);
 		}
 	}
 

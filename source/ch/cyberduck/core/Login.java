@@ -126,8 +126,8 @@ public class Login {
 		return this.user;
 	}
 
-	public void setUsername(String u) {
-		this.user = u;
+	public void setUsername(String user) {
+		this.user = user;
 	}
 	
 	public String getPassword() {

@@ -372,7 +372,7 @@ public class CDConnectionController implements Observer {
 						    Session.SFTP,
 						    hostPopup.stringValue(),
 						    Integer.parseInt(portField.stringValue()),
-						    new Login(usernameField.stringValue(), passField.stringValue()),
+						    new Login(hostPopup.stringValue(), usernameField.stringValue(), passField.stringValue()),
 						    pathField.stringValue()
 						);
 						break;
@@ -381,7 +381,7 @@ public class CDConnectionController implements Observer {
 						    Session.FTP,
 						    hostPopup.stringValue(),
 						    Integer.parseInt(portField.stringValue()),
-						    new Login(usernameField.stringValue(), passField.stringValue()),
+						    new Login(hostPopup.stringValue(), usernameField.stringValue(), passField.stringValue()),
 						    pathField.stringValue()
 						);
 						break;

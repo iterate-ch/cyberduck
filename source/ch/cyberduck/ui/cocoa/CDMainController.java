@@ -303,7 +303,7 @@ public class CDMainController {
 //		}
 		Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
 //		Preferences.instance().save();
-//		CDBookmarksImpl.instance().save();
+		CDBookmarksImpl.instance().save();
 //		CDHistoryImpl.instance().save();
 //		CDQueuesImpl.instance().save();
 
