@@ -80,11 +80,6 @@ public class CDProgressController extends NSObject implements Observer {
 		this.updateProgressfield();
 	}
 
-	public void update(NSTimer t) {
-		this.updateProgressbar();
-		this.updateProgressfield();
-	}
-
 	public void update(final Observable o, final Object arg) {
 		if(arg instanceof Message) {
 			Message msg = (Message)arg;
@@ -115,8 +110,9 @@ public class CDProgressController extends NSObject implements Observer {
 			}
 			else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
 				log.debug("------------- QUEUE_STOP");
-				this.updateProgressbar();
+				this.progressTimer.invalidate();
 				this.updateProgressfield();
+				this.progressBar.setIndeterminate(true);
 				this.progressBar.stopAnimation(null);
 				if(queue.isComplete() && !queue.isCanceled()) {
 					if(queue instanceof DownloadQueue) {
@@ -129,21 +125,25 @@ public class CDProgressController extends NSObject implements Observer {
 						CDQueueController.instance().removeItem(queue);
 					}
 				}
-				this.progressTimer.invalidate();
 				this.queue.deleteObserver(this);
 				this.queue.getSession().deleteObserver(this);
 			}
 		}
 	}
 
+	public void update(NSTimer t) {
+		this.updateProgressbar();
+		this.updateProgressfield();
+	}
+		
 	private void updateProgressbar() {
 		if(queue.isInitialized()) {
 			this.progressBar.setIndeterminate(false);
 			if(queue.getSize() != -1) {
 				double progressValue = queue.getCurrent()/queue.getSize();
 				this.progressBar.setMinValue(0);
-				this.progressBar.setMaxValue((double)queue.getSize());
-				this.progressBar.setDoubleValue((double)queue.getCurrent());
+				this.progressBar.setMaxValue(queue.getSize());
+				this.progressBar.setDoubleValue(queue.getCurrent());
 			}
 		}
 		else if(queue.isRunning()) {
