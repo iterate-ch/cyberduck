@@ -160,6 +160,12 @@ public class CDInfoController {//implements Observer {
     }
 
     public void windowWillClose(NSNotification notification) {
+	if(filenameField.stringValue() != file.getName()) {
+	    String newName = filenameField.stringValue();
+	    log.debug("Before renaming:"+file.toString());
+	    file.rename(newName);
+	    log.debug("After renaming:"+file.toString());
+	}
 	this.window().setDelegate(null);
 	NSNotificationCenter.defaultCenter().removeObserver(this);
 	allDocuments.removeObject(this);

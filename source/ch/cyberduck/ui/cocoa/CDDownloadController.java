@@ -81,11 +81,10 @@ public class CDDownloadController {
 		    this.window().orderOut(null);
 		    String protocol = url.getProtocol();
 		    String hostname = url.getHost();
-		    String file = url.getPath();
+		    String file = url.getQuery() == null ? url.getPath() : url.getPath() + "?" + url.getQuery();
 		    Path path = null;
 		    Host host = null;
 		    Session session = null;
-//		    CDTransferController controller = new CDTransferController(Queue.KIND_DOWNLOAD);
 		    if(protocol.equals(Session.FTP)) {
 			String userinfo = url.getUserInfo();
 			String user = Preferences.instance().getProperty("ftp.anonymous.name");
@@ -101,7 +100,6 @@ public class CDDownloadController {
 			path = new FTPPath((FTPSession)session, file);
 		    }
 		    else if (protocol.equals(Session.HTTP)) {
-//@todo			this.setServerPath(a.getPath() + "?" + a.getQuery());
 			session = new HTTPSession(host = new Host(Session.HTTP, hostname, url.getPort(), new Login()));
 			path = new HTTPPath((HTTPSession)session, file);
 		    }

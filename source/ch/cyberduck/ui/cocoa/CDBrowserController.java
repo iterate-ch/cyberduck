@@ -601,7 +601,7 @@ public class CDBrowserController implements Observer {
 	log.debug("refreshButtonClicked");
 //	Path p = host.getSession().workdir();
 	Path p = (Path)pathController.getItem(0);
-	p.list(true);
+	p.list();
     }
 
     public void downloadButtonClicked(Object sender) {

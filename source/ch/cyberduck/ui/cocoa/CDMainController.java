@@ -33,6 +33,8 @@ public class CDMainController {
 	org.apache.log4j.BasicConfigurator.configure();
 	Logger log = Logger.getRootLogger();
 	log.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
+	System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "info");
+	System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
 //	log.setLevel(Level.OFF);
 //	log.setLevel(Level.DEBUG);
 //	log.setLevel(Level.INFO);
@@ -82,8 +84,9 @@ public class CDMainController {
 	    else
 		log.info(entries.toString());
 
-	    String latestVersionNumber = (String)entries.objectForKey("Cyberduck");
+	    String latestVersionNumber = (String)entries.objectForKey("version");
 	    log.info("Latest version:"+latestVersionNumber);
+	    String filename = (String)entries.objectForKey("file");
 
 	    if(currentVersionNumber.equals(latestVersionNumber)) {
 		NSAlertPanel.runInformationalAlert(
@@ -103,7 +106,7 @@ public class CDMainController {
 						     null//other button
 						     );
 		if(NSAlertPanel.DefaultReturn == selection) {
-		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")+"Cyberduck-"+currentVersionNumber+".dmg"));
+		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")+filename));
 		}
 	    }
 	}

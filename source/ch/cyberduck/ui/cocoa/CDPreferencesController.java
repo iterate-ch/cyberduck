@@ -31,6 +31,13 @@ public class CDPreferencesController {
     private static Logger log = Logger.getLogger(CDPreferencesController.class);
 
     private static CDPreferencesController instance;
+
+    private static String CONNECTMODE_ACTIVE = "Active";
+    private static String CONNECTMODE_PASSIVE = "Passive";
+    private static String TRANSFERMODE_BINARY = "Binary";
+    private static String TRANSFERMODE_ASCII = "ASCII";
+    private static String PROTOCOL_FTP = "FTP";
+    private static String PROTOCOL_SFTP = "SFTP";
     
     // ----------------------------------------------------------
     // Outlets
@@ -53,7 +60,7 @@ public class CDPreferencesController {
 		break;
 	}
     }
-    
+
     private NSButtonCell duplicateOverwriteCheckbox;
     public void setDuplicateOverwriteCheckbox(NSButtonCell duplicateOverwriteCheckbox) {
 	this.duplicateOverwriteCheckbox = duplicateOverwriteCheckbox;
@@ -71,7 +78,7 @@ public class CDPreferencesController {
 		break;
 	}
     }
-    
+
     private NSButtonCell duplicateResumeCheckbox;
     public void setDuplicateResumeCheckbox(NSButtonCell duplicateResumeCheckbox) {
 	this.duplicateResumeCheckbox = duplicateResumeCheckbox;
@@ -93,160 +100,69 @@ public class CDPreferencesController {
     private NSButton downloadPathButton;
     public void setDownloadPathButton(NSButton downloadPathButton) {
 	this.downloadPathButton = downloadPathButton;
+	this.downloadPathButton.setTarget(this);
+	this.downloadPathButton.setAction(new NSSelector("downloadPathButtonClicked", new Class[] {NSButton.class}));
     }
-    
+
+    public void downloadPathButtonClicked(NSButton sender) {
+	NSOpenPanel panel = new NSOpenPanel();
+	panel.setCanChooseFiles(false);
+	panel.setCanChooseDirectories(true);
+	panel.setAllowsMultipleSelection(false);
+	panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window(), this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+    }
+
     private NSTextField anonymousField;
     public void setAnonymousField(NSTextField anonymousField) {
 	this.anonymousField = anonymousField;
-    }
-
-    private NSTextField downloadPathField;
-    public void setDownloadPathField(NSTextField downloadPathField) {
-	this.downloadPathField = downloadPathField;
-    }
-
-    private NSTextField loginField;
-    public void setLoginField(NSTextField loginField) {
-	this.loginField = loginField;
-    }
-    
-    private NSButton showHiddenCheckbox;
-    public void setShowHiddenCheckbox(NSButton showHiddenCheckbox) {
-	this.showHiddenCheckbox = showHiddenCheckbox;
-    }
-
-    private NSButton newBrowserCheckbox;
-    public void setNewBrowserCheckbox(NSButton newBrowserCheckbox) {
-	this.newBrowserCheckbox = newBrowserCheckbox;
-    }
-
-    private NSButton closeTransferCheckbox;
-    public void setCloseTransferCheckbox(NSButton closeTransferCheckbox) {
-	this.closeTransferCheckbox = closeTransferCheckbox;
-    }
-
-    private NSButton processCheckbox;
-    public void setProcessCheckbox(NSButton processCheckbox) {
-	this.processCheckbox = processCheckbox;
-    }
-    
-    private NSPopUpButton transfermodeCombo;
-    public void setTransfermodeCombo(NSPopUpButton transfermodeCombo) {
-	this.transfermodeCombo = transfermodeCombo;
-    }
-
-    private NSPopUpButton connectmodeCombo;
-    public void setConnectmodeCombo(NSPopUpButton connectmodeCombo) {
-	this.connectmodeCombo = connectmodeCombo;
-    }
-    
-    private NSPopUpButton protocolCombo;
-    public void setProtocolCombo(NSPopUpButton protocolCombo) {
-	this.protocolCombo = protocolCombo;
-    }
-
-    private NSWindow window;
-    public void setWindow(NSWindow window) {
-	this.window = window;
-    }
-
-    private static NSMutableArray allDocuments = new NSMutableArray();
-
-    public static CDPreferencesController instance() {
-	if(null == instance) {
-	    instance = new CDPreferencesController();
-	    allDocuments.addObject(instance);
-	}
-        if (false == NSApplication.loadNibNamed("Preferences", instance)) {
-            log.fatal("Couldn't load Preferences.nib");
-        }
-	instance.init();
-	return instance;
-    }
-    
-    private CDPreferencesController() {
-	allDocuments.addObject(this);
-    }
-
-    public NSWindow window() {
-	return this.window;
-    }
-
-    public void windowWillClose(NSNotification notification) {
-	this.window().setDelegate(null);
-	NSNotificationCenter.defaultCenter().removeObserver(this);
-	allDocuments.removeObject(this);
-    }
-    
-    private static String CONNECTMODE_ACTIVE = "Active";
-    private static String CONNECTMODE_PASSIVE = "Passive";
-    private static String TRANSFERMODE_BINARY = "Binary";
-    private static String TRANSFERMODE_ASCII = "ASCII";
-    private static String PROTOCOL_FTP = "FTP";
-    private static String PROTOCOL_SFTP = "SFTP";
-    
-    private void init() {
-	//setting values
-	loginField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
 	anonymousField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.pass"));
-	downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
-	showHiddenCheckbox.setState(Preferences.instance().getProperty("browser.showHidden").equals("true") ? NSCell.OnState : NSCell.OffState);
-	newBrowserCheckbox.setState(Preferences.instance().getProperty("browser.opendefault").equals("true") ? NSCell.OnState : NSCell.OffState);
-	closeTransferCheckbox.setState(Preferences.instance().getProperty("transfer.close").equals("true") ? NSCell.OnState : NSCell.OffState);
-
-	    
-	connectmodeCombo.removeAllItems();
-	connectmodeCombo.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
-	if(Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
-	    connectmodeCombo.setTitle(CONNECTMODE_PASSIVE);
-	else
-	    connectmodeCombo.setTitle(CONNECTMODE_ACTIVE);
-	
-	transfermodeCombo.removeAllItems();
-	transfermodeCombo.addItemsWithTitles(new NSArray(new String[]{TRANSFERMODE_BINARY, TRANSFERMODE_ASCII}));
-	if(Preferences.instance().getProperty("ftp.transfermode").equals("binary"))
-	    transfermodeCombo.setTitle(TRANSFERMODE_BINARY);
-	else
-	    transfermodeCombo.setTitle(TRANSFERMODE_ASCII);
-	
-	protocolCombo.removeAllItems();
-	protocolCombo.addItemsWithTitles(new NSArray(new String[]{PROTOCOL_FTP, PROTOCOL_SFTP}));
-	if(Preferences.instance().getProperty("connection.protocol.default").equals("ftp"))
-	    protocolCombo.setTitle(PROTOCOL_FTP);
-	else
-	    protocolCombo.setTitle(PROTOCOL_SFTP);
-		
 	NSNotificationCenter.defaultCenter().addObserver(
 						  this,
 						  new NSSelector("anonymousFieldDidChange", new Class[]{NSNotification.class}),
 						  NSControl.ControlTextDidChangeNotification,
 						  anonymousField);
-	NSNotificationCenter.defaultCenter().addObserver(
-						  this,
-						  new NSSelector("loginFieldDidChange", new Class[]{NSNotification.class}),
-						  NSControl.ControlTextDidChangeNotification,
-						  loginField);
-	NSNotificationCenter.defaultCenter().addObserver(
-						  this,
-						  new NSSelector("downloadPathFieldDidChange", new Class[]{NSNotification.class}),
-						  NSControl.ControlTextDidChangeNotification,
-						  downloadPathField);
-	
-    }
-
-    // ----------------------------------------------------------
-    // Notifications
-    // ----------------------------------------------------------
-    public void loginFieldDidChange(NSNotification sender) {
-	Preferences.instance().setProperty("connection.login.name", loginField.stringValue());
     }
 
     public void anonymousFieldDidChange(NSNotification sender) {
 	Preferences.instance().setProperty("ftp.anonymous.pass", anonymousField.stringValue());
     }
 
+    private NSTextField downloadPathField;
+    public void setDownloadPathField(NSTextField downloadPathField) {
+	this.downloadPathField = downloadPathField;
+	downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
+	NSNotificationCenter.defaultCenter().addObserver(
+						  this,
+						  new NSSelector("downloadPathFieldDidChange", new Class[]{NSNotification.class}),
+						  NSControl.ControlTextDidChangeNotification,
+						  downloadPathField);
+    }
+
     public void downloadPathFieldDidChange(NSNotification sender) {
 	Preferences.instance().setProperty("connection.download.folder", downloadPathField.stringValue());
+    }
+
+    private NSTextField loginField;
+    public void setLoginField(NSTextField loginField) {
+	this.loginField = loginField;
+	loginField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
+	NSNotificationCenter.defaultCenter().addObserver(
+						  this,
+						  new NSSelector("loginFieldDidChange", new Class[]{NSNotification.class}),
+						  NSControl.ControlTextDidChangeNotification,
+						  loginField);
+    }
+
+    public void loginFieldDidChange(NSNotification sender) {
+	Preferences.instance().setProperty("connection.login.name", loginField.stringValue());
+    }
+
+    private NSButton showHiddenCheckbox;
+    public void setShowHiddenCheckbox(NSButton showHiddenCheckbox) {
+	this.showHiddenCheckbox = showHiddenCheckbox;
+	this.showHiddenCheckbox.setTarget(this);
+	this.showHiddenCheckbox.setAction(new NSSelector("showHiddenCheckboxClicked", new Class[] {NSButton.class}));
+	showHiddenCheckbox.setState(Preferences.instance().getProperty("browser.showHidden").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
 
     public void showHiddenCheckboxClicked(NSButton sender) {
@@ -260,6 +176,13 @@ public class CDPreferencesController {
 	}
     }
 
+    private NSButton newBrowserCheckbox;
+    public void setNewBrowserCheckbox(NSButton newBrowserCheckbox) {
+	this.newBrowserCheckbox = newBrowserCheckbox;
+	this.newBrowserCheckbox.setTarget(this);
+	this.newBrowserCheckbox.setAction(new NSSelector("newBrowserCheckboxClicked", new Class[] {NSButton.class}));
+	newBrowserCheckbox.setState(Preferences.instance().getProperty("browser.opendefault").equals("true") ? NSCell.OnState : NSCell.OffState);
+    }
 
     public void newBrowserCheckboxClicked(NSButton sender) {
 	switch(sender.state()) {
@@ -270,6 +193,14 @@ public class CDPreferencesController {
 		Preferences.instance().setProperty("browser.opendefault", "false");
 		break;
 	}
+    }
+
+    private NSButton closeTransferCheckbox;
+    public void setCloseTransferCheckbox(NSButton closeTransferCheckbox) {
+	this.closeTransferCheckbox = closeTransferCheckbox;
+	this.closeTransferCheckbox.setTarget(this);
+	this.closeTransferCheckbox.setAction(new NSSelector("closeTransferCheckboxClicked", new Class[] {NSButton.class}));
+	closeTransferCheckbox.setState(Preferences.instance().getProperty("transfer.close").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
 
     public void closeTransferCheckboxClicked(NSButton sender) {
@@ -283,6 +214,13 @@ public class CDPreferencesController {
 	}
     }
 
+    private NSButton processCheckbox;
+    public void setProcessCheckbox(NSButton processCheckbox) {
+	this.processCheckbox = processCheckbox;
+	this.processCheckbox.setTarget(this);
+	this.processCheckbox.setAction(new NSSelector("processCheckboxClicked", new Class[] {NSButton.class}));
+    }
+
     public void processCheckboxClicked(NSButton sender) {
 	switch(sender.state()) {
 	    case NSCell.OnState:
@@ -293,31 +231,18 @@ public class CDPreferencesController {
 		break;
 	}
     }
-    
-    public void downloadPathButtonClicked(NSButton sender) {
-	NSOpenPanel panel = new NSOpenPanel();
-	panel.setCanChooseFiles(false);
-	panel.setCanChooseDirectories(true);
-	panel.setAllowsMultipleSelection(false);
-	panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window(), this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
-    }
 
-    
-    public void openPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
-	switch(returnCode) {
-	    case(NSPanel.OKButton): {
-		NSArray selected = sheet.filenames();
-		String filename;
-		if((filename = (String)selected.lastObject()) != null) {
-		    Preferences.instance().setProperty("connection.download.folder", filename);
-		    downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
-		}		
-		break;
-	    }
-	    case(NSPanel.CancelButton): {
-		break;
-	    }		
-	}
+    private NSPopUpButton transfermodeCombo;
+    public void setTransfermodeCombo(NSPopUpButton transfermodeCombo) {
+	this.transfermodeCombo = transfermodeCombo;
+	this.transfermodeCombo.setTarget(this);
+	this.transfermodeCombo.setAction(new NSSelector("transfermodeComboClicked", new Class[] {NSPopUpButton.class}));
+	transfermodeCombo.removeAllItems();
+	transfermodeCombo.addItemsWithTitles(new NSArray(new String[]{TRANSFERMODE_BINARY, TRANSFERMODE_ASCII}));
+	if(Preferences.instance().getProperty("ftp.transfermode").equals("binary"))
+	    transfermodeCombo.setTitle(TRANSFERMODE_BINARY);
+	else
+	    transfermodeCombo.setTitle(TRANSFERMODE_ASCII);
     }
 
     public void transfermodeComboClicked(NSPopUpButton sender) {
@@ -327,13 +252,39 @@ public class CDPreferencesController {
 	    Preferences.instance().setProperty("ftp.transfermode", "binary");
     }
 
+    private NSPopUpButton connectmodeCombo;
+    public void setConnectmodeCombo(NSPopUpButton connectmodeCombo) {
+	this.connectmodeCombo = connectmodeCombo;
+	this.connectmodeCombo.setTarget(this);
+	this.connectmodeCombo.setAction(new NSSelector("connectmodeComboClicked", new Class[] {NSPopUpButton.class}));
+	connectmodeCombo.removeAllItems();
+	connectmodeCombo.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
+	if(Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
+	    connectmodeCombo.setTitle(CONNECTMODE_PASSIVE);
+	else
+	    connectmodeCombo.setTitle(CONNECTMODE_ACTIVE);
+    }
+
     public void connectmodeComboClicked(NSPopUpButton sender) {
 	if(sender.selectedItem().title().equals(CONNECTMODE_ACTIVE))
 	    Preferences.instance().setProperty("ftp.connectmode", "active");
 	else
 	    Preferences.instance().setProperty("ftp.connectmode", "passive");
     }
-    
+
+    private NSPopUpButton protocolCombo;
+    public void setProtocolCombo(NSPopUpButton protocolCombo) {
+	this.protocolCombo = protocolCombo;
+	this.protocolCombo.setTarget(this);
+	this.protocolCombo.setAction(new NSSelector("protocolComboClicked", new Class[] {NSPopUpButton.class}));
+	protocolCombo.removeAllItems();
+	protocolCombo.addItemsWithTitles(new NSArray(new String[]{PROTOCOL_FTP, PROTOCOL_SFTP}));
+	if(Preferences.instance().getProperty("connection.protocol.default").equals("ftp"))
+	    protocolCombo.setTitle(PROTOCOL_FTP);
+	else
+	    protocolCombo.setTitle(PROTOCOL_SFTP);
+    }
+
     public void protocolComboClicked(NSPopUpButton sender) {
 	if(sender.selectedItem().title().equals(PROTOCOL_FTP)) {
 	    Preferences.instance().setProperty("connection.protocol.default", Session.FTP);
@@ -342,6 +293,57 @@ public class CDPreferencesController {
 	else {
 	    Preferences.instance().setProperty("connection.protocol.default", Session.SFTP);
 	    Preferences.instance().setProperty("connection.port.default", Session.SSH_PORT);
+	}
+    }
+
+
+    private NSWindow window;
+    public void setWindow(NSWindow window) {
+	this.window = window;
+    }
+
+
+    private static NSMutableArray allDocuments = new NSMutableArray();
+
+    public static CDPreferencesController instance() {
+	if(null == instance) {
+	    instance = new CDPreferencesController();
+	    allDocuments.addObject(instance);
+	}
+        if (false == NSApplication.loadNibNamed("Preferences", instance)) {
+            log.fatal("Couldn't load Preferences.nib");
+        }
+	return instance;
+    }
+
+    private CDPreferencesController() {
+	allDocuments.addObject(this);
+    }
+
+    public NSWindow window() {
+	return this.window;
+    }
+
+    public void windowWillClose(NSNotification notification) {
+	this.window().setDelegate(null);
+	NSNotificationCenter.defaultCenter().removeObserver(this);
+	allDocuments.removeObject(this);
+    }
+
+    public void openPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
+	switch(returnCode) {
+	    case(NSPanel.OKButton): {
+		NSArray selected = sheet.filenames();
+		String filename;
+		if((filename = (String)selected.lastObject()) != null) {
+		    Preferences.instance().setProperty("connection.download.folder", filename);
+		    downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
+		}
+		break;
+	    }
+	    case(NSPanel.CancelButton): {
+		break;
+	    }
 	}
     }
 }

@@ -72,15 +72,15 @@ public class CDTransferController implements Observer {
 	this.fileDataField = fileDataField;
     }
 
-    private NSTextField totalDataField;
-    public void setTotalDataField(NSTextField totalDataField) {
-	this.totalDataField = totalDataField;
-    }
+//    private NSTextField totalDataField;
+//    public void setTotalDataField(NSTextField totalDataField) {
+//	this.totalDataField = totalDataField;
+//    }
 
-    private NSTextField speedField;
-    public void setSpeedField(NSTextField speedField) {
-	this.speedField = speedField;
-    }
+//    private NSTextField speedField;
+//    public void setSpeedField(NSTextField speedField) {
+//	this.speedField = speedField;
+//    }
     
     private NSProgressIndicator totalProgressBar;
     public void setTotalProgressBar(NSProgressIndicator totalProgressBar) {
@@ -137,11 +137,11 @@ public class CDTransferController implements Observer {
 	this.host = host;
 	this.root = root;
 	this.kind = kind;
-	this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
         if (false == NSApplication.loadNibNamed("Transfer", this)) {
             log.fatal("Couldn't load Transfer.nib");
             return;
         }
+	this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
 	this.init();
     }
 
@@ -155,8 +155,8 @@ public class CDTransferController implements Observer {
 	this.fileField.setAttributedStringValue(new NSAttributedString(root.getLocal().toString()));
 	this.progressField.setAttributedStringValue(new NSAttributedString(""));
 	this.fileDataField.setAttributedStringValue(new NSAttributedString(""));
-	this.totalDataField.setAttributedStringValue(new NSAttributedString(""));
-	this.speedField.setAttributedStringValue(new NSAttributedString(""));
+//	this.totalDataField.setAttributedStringValue(new NSAttributedString(""));
+//	this.speedField.setAttributedStringValue(new NSAttributedString(""));
 	this.clockField.setAttributedStringValue(new NSAttributedString("00:00"));
 	switch(kind) {
 	    case Queue.KIND_DOWNLOAD:
@@ -184,20 +184,31 @@ public class CDTransferController implements Observer {
 	    Message msg = (Message)arg;
 	    // CURRENT
 	    if(msg.getTitle().equals(Message.DATA)) {
+		Status status = (Status)msg.getContent();
 		this.totalProgressBar.setIndeterminate(false);
 		this.totalProgressBar.setMinValue(0);
 		this.totalProgressBar.setDoubleValue((double)queue.getCurrent());
 		this.totalProgressBar.setMaxValue(queue.getSize());
-		
-		this.fileDataField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
+
+		this.fileDataField.setAttributedStringValue(new NSAttributedString(
+				  Status.parseDouble(status.getCurrent()/1024)+
+				  " of "+Status.parseDouble(status.getSize()/1024)+"kB ("+
+				  Status.parseDouble(queue.getCurrent()/1024)+" of "+Status.parseDouble(queue.getSize()/1024)+"kB Total), "+
+					      Status.parseDouble(queue.getSpeed()/1024) + "kB/s, "+queue.getTimeLeft()
+		    ));
 		this.fileDataField.display();
+//		this.fileDataField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
+//		this.fileDataField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
+//		this.fileDataField.display();
 //@todo percent		this.totalDataField.setAttributedStringValue(new NSAttributedString(queue.getCurrent()/queue.getSize()*100+"%"));
-		    this.totalDataField.setAttributedStringValue(new NSAttributedString(Status.parseDouble(queue.getCurrent()/1024)+" of "+Status.parseDouble(queue.getSize()/1024) + " kBytes."));
+//		    this.totalDataField.setAttributedStringValue(new NSAttributedString(Status.parseDouble(queue.getCurrent()/1024)+" of "+Status.parseDouble(queue.getSize()/1024) + " kBytes."));
+//		    this.totalDataField.display();
 	    }
-	    else if(msg.getTitle().equals(Message.SPEED)) {
-		this.speedField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
-		this.speedField.display();
-	    }
+//	    else if(msg.getTitle().equals(Message.SPEED)) {
+//		this.fileDataField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
+//		this.speedField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
+//		this.speedField.display();
+//	    }
 	    else if(msg.getTitle().equals(Message.CLOCK)) {
 		this.clockField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
 		this.clockField.display();
@@ -218,6 +229,8 @@ public class CDTransferController implements Observer {
 	    
 	    // STOP
 	    else if(msg.getTitle().equals(Message.STOP)) {
+		this.progressField.setAttributedStringValue(new NSAttributedString("Interrupted"));
+//		this.speedField.setAttributedStringValue(new NSAttributedString(""));
 		this.stopButton.setEnabled(false);
 		this.resumeButton.setEnabled(true);
 		this.reloadButton.setEnabled(true);
