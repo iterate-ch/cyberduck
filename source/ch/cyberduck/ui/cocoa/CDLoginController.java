@@ -46,18 +46,18 @@ public class CDLoginController extends LoginController {
     public void setUserField(NSTextField userField) {
         this.userField = userField;
         NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("userFieldDidChange", new Class[]{NSNotification.class}),
-														 NSControl.ControlTextDidChangeNotification,
-														 this.userField);
+                new NSSelector("userFieldDidChange", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.userField);
     }
 
-	public void userFieldDidChange(Object sender) {
-		log.debug("userFieldDidChange");
+    public void userFieldDidChange(Object sender) {
+        log.debug("userFieldDidChange");
         if (null == userField.objectValue() || userField.objectValue().equals("")) {
             log.warn("Value of username textfield is null");
         }
-	}
-	
+    }
+
     private NSTextField textField; // IBOutlet
 
     public void setTextField(NSTextField textField) {
@@ -69,17 +69,17 @@ public class CDLoginController extends LoginController {
     public void setPassField(NSSecureTextField passField) {
         this.passField = passField;
         NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("passFieldDidChange", new Class[]{NSNotification.class}),
-														 NSControl.ControlTextDidChangeNotification,
-														 this.passField);
+                new NSSelector("passFieldDidChange", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.passField);
     }
-	
-	public void passFieldDidChange(Object sender) {
-		log.debug("passFieldDidChange");
+
+    public void passFieldDidChange(Object sender) {
+        log.debug("passFieldDidChange");
         if (null == passField.objectValue() || passField.objectValue().equals("")) {
             log.warn("Value of password textfield is null");
         }
-	}
+    }
 
     private NSButton keychainCheckbox;
 
@@ -114,7 +114,7 @@ public class CDLoginController extends LoginController {
         instances.removeObject(this);
         NSNotificationCenter.defaultCenter().removeObserver(this);
     }
-	
+
     private boolean done = false;
     private boolean tryAgain = false;
 
@@ -122,27 +122,26 @@ public class CDLoginController extends LoginController {
         this.done = false;
         ThreadUtilities.instance().invokeLater(new Runnable() {
             public void run() {
-				textField.setStringValue(message);
-				userField.setStringValue(l.getUsername());
-				NSApplication.sharedApplication().beginSheet(window, //sheet
-															 parentWindow,
-															 CDLoginController.this, //modalDelegate
-															 new NSSelector("loginSheetDidEnd",
-																			new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
-															 l); //contextInfo
-				window().makeKeyAndOrderFront(null);
-			}
-		}
-											   );
-		while (!done) {
-			try {
-				log.debug("Sleeping...");
-				Thread.sleep(1000); //milliseconds
-			}
-			catch (InterruptedException e) {
-				log.error(e.getMessage());
-			}
-		}
+                textField.setStringValue(message);
+                userField.setStringValue(l.getUsername());
+                NSApplication.sharedApplication().beginSheet(window, //sheet
+                        parentWindow,
+                        CDLoginController.this, //modalDelegate
+                        new NSSelector("loginSheetDidEnd",
+                                new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
+                        l); //contextInfo
+                window().makeKeyAndOrderFront(null);
+            }
+        });
+        while (!done) {
+            try {
+                log.debug("Sleeping...");
+                Thread.sleep(1000); //milliseconds
+            }
+            catch (InterruptedException e) {
+                log.error(e.getMessage());
+            }
+        }
         return this.tryAgain;
     }
 
@@ -171,9 +170,9 @@ public class CDLoginController extends LoginController {
         switch (returncode) {
             case (NSAlertPanel.DefaultReturn):
                 this.tryAgain = true;
-				((Login) context).setUsername((String) userField.objectValue());
-				((Login) context).setPassword((String) passField.objectValue());
-                ((Login) context).setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
+                ((Login)context).setUsername((String)userField.objectValue());
+                ((Login)context).setPassword((String)passField.objectValue());
+                ((Login)context).setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
                 break;
             case (NSAlertPanel.AlternateReturn):
                 this.tryAgain = false;

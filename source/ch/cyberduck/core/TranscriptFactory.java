@@ -33,7 +33,7 @@ public abstract class TranscriptFactory {
     }
 
     public static Transcript getImpl(String host) {
-        Transcript impl = (Transcript) transcripts.get(host);
+        Transcript impl = (Transcript)transcripts.get(host);
         if (null == impl) {
             return new DefaultTranscript();
         }

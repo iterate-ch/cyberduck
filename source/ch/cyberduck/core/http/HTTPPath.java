@@ -47,23 +47,23 @@ public class HTTPPath extends Path {
 
     private static class Factory extends PathFactory {
         protected Path create(Session session, String parent, String name) {
-            return new HTTPPath((HTTPSession) session, parent, name);
+            return new HTTPPath((HTTPSession)session, parent, name);
         }
 
         protected Path create(Session session, String path) {
-            return new HTTPPath((HTTPSession) session, path);
+            return new HTTPPath((HTTPSession)session, path);
         }
 
         protected Path create(Session session) {
-            return new HTTPPath((HTTPSession) session);
+            return new HTTPPath((HTTPSession)session);
         }
 
         protected Path create(Session session, String path, Local file) {
-            return new HTTPPath((HTTPSession) session, path, file);
+            return new HTTPPath((HTTPSession)session, path, file);
         }
 
         protected Path create(Session session, NSDictionary dict) {
-            return new HTTPPath((HTTPSession) session, dict);
+            return new HTTPPath((HTTPSession)session, dict);
         }
     }
 
@@ -115,14 +115,14 @@ public class HTTPPath extends Path {
         session.log("Invalid Operation", Message.ERROR);
     }
 
-	public void cwdir() {
-		session.log("Invalid Operation", Message.ERROR);
-	}
+    public void cwdir() {
+        session.log("Invalid Operation", Message.ERROR);
+    }
 
-	public void mkdir(boolean recursive) {
-		session.log("Invalid Operation", Message.ERROR);
-	}
-	
+    public void mkdir(boolean recursive) {
+        session.log("Invalid Operation", Message.ERROR);
+    }
+
     public void rename(String filename) {
         session.log("Invalid Operation", Message.ERROR);
     }

@@ -40,7 +40,7 @@ public class CDBookmarkCell extends CDTableCell {
     }
 
     public void setObjectValue(Object bookmark) {
-        this.bookmark = (Host) bookmark;
+        this.bookmark = (Host)bookmark;
     }
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {

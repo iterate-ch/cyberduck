@@ -170,7 +170,7 @@ public class SshMsgDisconnect extends SshMessage {
             throws InvalidMessageException {
         try {
             // Save the values
-            reasonCode = (int) bar.readInt();
+            reasonCode = (int)bar.readInt();
             desc = bar.readString();
             langTag = bar.readString();
         }

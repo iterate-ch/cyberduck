@@ -289,49 +289,49 @@
     <first-group selected-file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Queue.java">
       <entry file="file://$PROJECT_DIR$/Changelog.txt" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="5" column="0" selection-start="213" selection-end="213" vertical-scroll-proportion="0.078125">
+          <state line="5" column="0" selection-start="213" selection-end="213" vertical-scroll-proportion="0.08203125">
             <folding />
           </state>
         </provider>
       </entry>
       <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Attributes.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="37" column="16" selection-start="1197" selection-end="1197" vertical-scroll-proportion="0.17838542">
+          <state line="37" column="16" selection-start="1197" selection-end="1197" vertical-scroll-proportion="0.19335938">
             <folding />
           </state>
         </provider>
       </entry>
       <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Codec.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="25" column="13" selection-start="841" selection-end="841" vertical-scroll-proportion="0.3684896">
+          <state line="25" column="13" selection-start="841" selection-end="841" vertical-scroll-proportion="0.38671875">
             <folding />
           </state>
         </provider>
       </entry>
       <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/DefaultFTPFileListParser.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="45" column="0" selection-start="1709" selection-end="1709" vertical-scroll-proportion="0.47509578">
+          <state line="45" column="0" selection-start="1736" selection-end="1736" vertical-scroll-proportion="0.7265625">
             <folding />
           </state>
         </provider>
       </entry>
       <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser/FTPFileEntryParserFactory.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="40" column="0" selection-start="1455" selection-end="1455" vertical-scroll-proportion="0.58237547">
+          <state line="40" column="0" selection-start="1455" selection-end="1455" vertical-scroll-proportion="0.890625">
             <folding />
           </state>
         </provider>
       </entry>
       <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser/NTFTPEntryParser.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="9" column="49" selection-start="389" selection-end="1110" vertical-scroll-proportion="0.140625">
+          <state line="9" column="49" selection-start="389" selection-end="762" vertical-scroll-proportion="0.1484375">
             <folding />
           </state>
         </provider>
       </entry>
       <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Queue.java" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="109" column="37" selection-start="3076" selection-end="3076" vertical-scroll-proportion="0.31770834">
+          <state line="107" column="5" selection-start="3036" selection-end="3036" vertical-scroll-proportion="0.28710938">
             <folding />
           </state>
         </provider>
@@ -366,18 +366,18 @@
     <expanded_node url="" module="Cyberduck" type="module" />
   </component>
   <component name="ProjectPane">
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/org" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/org/apache/commons" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/org/apache/commons/net" module="Cyberduck" type="directory" />
-    <expanded_node url="" module="Cyberduck" type="module" />
-    <expanded_node url="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/org/apache" module="Cyberduck" type="directory" />
-    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core" module="Cyberduck" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core" module="Cyberduck" type="directory" />
     <expanded_node url="file://$PROJECT_DIR$/source" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/org/apache/commons/net" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/org/apache/commons" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/org/apache" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/org" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch" module="Cyberduck" type="directory" />
+    <expanded_node url="" module="Cyberduck" type="module" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" splitterProportion="0.5">
@@ -505,17 +505,17 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1280" height="957" extended-state="6" />
-    <editor active="true" />
+    <frame x="0" y="22" width="1024" height="701" extended-state="6" />
+    <editor active="false" />
     <layout>
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="7" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.16883117" order="0" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.22028689" order="0" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.3298611" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="sliding" type="sliding" visible="false" weight="0.33" order="8" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.22889611" order="1" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.2182377" order="1" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
       <window_info id="CVS File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
@@ -612,49 +612,49 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Changelog.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="0" selection-start="213" selection-end="213" vertical-scroll-proportion="0.078125">
+        <state line="5" column="0" selection-start="213" selection-end="213" vertical-scroll-proportion="0.08203125">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Attributes.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="37" column="16" selection-start="1197" selection-end="1197" vertical-scroll-proportion="0.17838542">
+        <state line="37" column="16" selection-start="1197" selection-end="1197" vertical-scroll-proportion="0.19335938">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Codec.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="13" selection-start="841" selection-end="841" vertical-scroll-proportion="0.3684896">
+        <state line="25" column="13" selection-start="841" selection-end="841" vertical-scroll-proportion="0.38671875">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/DefaultFTPFileListParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="0" selection-start="1709" selection-end="1709" vertical-scroll-proportion="0.47509578">
+        <state line="45" column="0" selection-start="1736" selection-end="1736" vertical-scroll-proportion="0.7265625">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser/FTPFileEntryParserFactory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="0" selection-start="1455" selection-end="1455" vertical-scroll-proportion="0.58237547">
+        <state line="40" column="0" selection-start="1455" selection-end="1455" vertical-scroll-proportion="0.890625">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Queue.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="109" column="37" selection-start="3076" selection-end="3076" vertical-scroll-proportion="0.31770834">
+        <state line="107" column="5" selection-start="3036" selection-end="3036" vertical-scroll-proportion="0.28710938">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser/NTFTPEntryParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="49" selection-start="389" selection-end="1110" vertical-scroll-proportion="0.140625">
+        <state line="9" column="49" selection-start="389" selection-end="762" vertical-scroll-proportion="0.1484375">
           <folding />
         </state>
       </provider>

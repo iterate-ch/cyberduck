@@ -117,7 +117,7 @@ public class ConnectionProtocol extends AsyncService {
                 return new Long(nextChannelId++);
             }
             else {
-                return (Long) reusableChannels.iterator().next();
+                return (Long)reusableChannels.iterator().next();
             }
         }
     }
@@ -152,7 +152,7 @@ public class ConnectionProtocol extends AsyncService {
                 SshMessage result = messageStore.getMessage(messageIdFilter);
 
                 if (result.getMessageId() == SshMsgChannelOpenConfirmation.SSH_MSG_CHANNEL_OPEN_CONFIRMATION) {
-                    SshMsgChannelOpenConfirmation conf = (SshMsgChannelOpenConfirmation) result;
+                    SshMsgChannelOpenConfirmation conf = (SshMsgChannelOpenConfirmation)result;
                     activeChannels.put(channelId, channel);
                     log.debug("Initiating channel");
                     channel.init(this, channelId.longValue(),
@@ -191,7 +191,7 @@ public class ConnectionProtocol extends AsyncService {
             Channel channel;
 
             for (Iterator x = activeChannels.values().iterator(); x.hasNext();) {
-                channel = (Channel) x.next();
+                channel = (Channel)x.next();
 
                 if (channel != null) {
                     if (log.isDebugEnabled()) {
@@ -235,7 +235,7 @@ public class ConnectionProtocol extends AsyncService {
                 max = ((window.getWindowSpace() < channel.getRemotePacketSize()) &&
                         (window.getWindowSpace() > 0)) ? window.getWindowSpace()
                         : channel.getRemotePacketSize();
-                block = (max < remaining) ? (int) max : remaining;
+                block = (max < remaining) ? (int)max : remaining;
                 channel.remoteWindow.consumeWindowSpace(block);
                 buffer = new byte[block];
                 System.arraycopy(data, sent, buffer, 0, block);
@@ -296,7 +296,7 @@ public class ConnectionProtocol extends AsyncService {
             max = ((window.getWindowSpace() < channel.getRemotePacketSize()) &&
                     (window.getWindowSpace() > 0)) ? window.getWindowSpace()
                     : channel.getRemotePacketSize();
-            block = (max < remaining) ? (int) max : remaining;
+            block = (max < remaining) ? (int)max : remaining;
             channel.remoteWindow.consumeWindowSpace(block);
             buffer = new byte[block];
             System.arraycopy(data, sent, buffer, 0, block);
@@ -438,7 +438,7 @@ public class ConnectionProtocol extends AsyncService {
                         {
                             log.debug("Global request succeeded");
 
-                            return ((SshMsgRequestSuccess) reply).getRequestData();
+                            return ((SshMsgRequestSuccess)reply).getRequestData();
                         }
 
                     case SshMsgRequestFailure.SSH_MSG_REQUEST_FAILURE:
@@ -499,7 +499,7 @@ public class ConnectionProtocol extends AsyncService {
             sendGlobalRequestFailure();
         }
         else {
-            GlobalRequestHandler handler = (GlobalRequestHandler) globalRequests.get(requestName);
+            GlobalRequestHandler handler = (GlobalRequestHandler)globalRequests.get(requestName);
             GlobalRequestResponse response = handler.processGlobalRequest(requestName,
                     requestData);
 
@@ -523,56 +523,56 @@ public class ConnectionProtocol extends AsyncService {
         switch (msg.getMessageId()) {
             case SshMsgGlobalRequest.SSH_MSG_GLOBAL_REQUEST:
                 {
-                    onMsgGlobalRequest((SshMsgGlobalRequest) msg);
+                    onMsgGlobalRequest((SshMsgGlobalRequest)msg);
 
                     break;
                 }
 
             case SshMsgChannelOpen.SSH_MSG_CHANNEL_OPEN:
                 {
-                    onMsgChannelOpen((SshMsgChannelOpen) msg);
+                    onMsgChannelOpen((SshMsgChannelOpen)msg);
 
                     break;
                 }
 
             case SshMsgChannelClose.SSH_MSG_CHANNEL_CLOSE:
                 {
-                    onMsgChannelClose((SshMsgChannelClose) msg);
+                    onMsgChannelClose((SshMsgChannelClose)msg);
 
                     break;
                 }
 
             case SshMsgChannelEOF.SSH_MSG_CHANNEL_EOF:
                 {
-                    onMsgChannelEOF((SshMsgChannelEOF) msg);
+                    onMsgChannelEOF((SshMsgChannelEOF)msg);
 
                     break;
                 }
 
             case SshMsgChannelData.SSH_MSG_CHANNEL_DATA:
                 {
-                    onMsgChannelData((SshMsgChannelData) msg);
+                    onMsgChannelData((SshMsgChannelData)msg);
 
                     break;
                 }
 
             case SshMsgChannelExtendedData.SSH_MSG_CHANNEL_EXTENDED_DATA:
                 {
-                    onMsgChannelExtendedData((SshMsgChannelExtendedData) msg);
+                    onMsgChannelExtendedData((SshMsgChannelExtendedData)msg);
 
                     break;
                 }
 
             case SshMsgChannelRequest.SSH_MSG_CHANNEL_REQUEST:
                 {
-                    onMsgChannelRequest((SshMsgChannelRequest) msg);
+                    onMsgChannelRequest((SshMsgChannelRequest)msg);
 
                     break;
                 }
 
             case SshMsgChannelWindowAdjust.SSH_MSG_CHANNEL_WINDOW_ADJUST:
                 {
-                    onMsgChannelWindowAdjust((SshMsgChannelWindowAdjust) msg);
+                    onMsgChannelWindowAdjust((SshMsgChannelWindowAdjust)msg);
 
                     break;
                 }
@@ -700,7 +700,7 @@ public class ConnectionProtocol extends AsyncService {
                         " requested");
             }
 
-            return (Channel) activeChannels.get(l);
+            return (Channel)activeChannels.get(l);
         }
     }
 
@@ -773,7 +773,7 @@ public class ConnectionProtocol extends AsyncService {
                     " channel recieved");
 
             // Try to get the channel implementation from the allowed channels
-            ChannelFactory cf = (ChannelFactory) allowedChannels.get(msg.getChannelType());
+            ChannelFactory cf = (ChannelFactory)allowedChannels.get(msg.getChannelType());
 
             if (cf == null) {
                 sendChannelOpenFailure(msg.getSenderChannelId(),

@@ -62,26 +62,26 @@ public class Login {
     }
 
     public native void addPasswordToKeychain(String serviceName, String account, String password);
-		
+
     public void addPasswordToKeychain() {
         if (this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
-			this.addPasswordToKeychain(this.getServiceName(), this.getUsername(), this.getPassword());
+            this.addPasswordToKeychain(this.getServiceName(), this.getUsername(), this.getPassword());
         }
     }
-	
+
     /**
      * @param serviceName The service to use when looking up the password in the keychain
-     * @param user    Login with this username
-     * @param pass    Passphrase
+     * @param user        Login with this username
+     * @param pass        Passphrase
      */
     public Login(String serviceName, String user, String pass) {
         this(serviceName, user, pass, false);
     }
 
     /**
-     * @param serviceName       The serviceName to use when looking up the password in the keychain
-     * @param user          Login with this username
-     * @param pass          Passphrase
+     * @param serviceName             The serviceName to use when looking up the password in the keychain
+     * @param user                    Login with this username
+     * @param pass                    Passphrase
      * @param shouldBeAddedToKeychain if the credential should be added to the keychain uppon successful login
      */
     public Login(String serviceName, String user, String pass, boolean shouldBeAddedToKeychain) {
@@ -158,9 +158,9 @@ public class Login {
         return reasonable;
     }
 
-	/**
-		* @return 
-	 */
+    /**
+     * @return
+     */
     public boolean check() {
         if (!this.hasReasonableValues()) {
             if (Preferences.instance().getProperty("connection.login.useKeychain").equals("true")) {
@@ -182,8 +182,8 @@ public class Login {
     }
 
     /**
+     * @return
      * @pre controller != null
-	 * @return 
      */
     public boolean promptUser(String message) {
         return this.controller.promptUser(this, message);
@@ -204,10 +204,10 @@ public class Login {
     public void setPassword(String pass) {
         this.init(this.getUsername(), pass);
     }
-	
-	public String getServiceName() {
-		return this.serviceName;
-	}
+
+    public String getServiceName() {
+        return this.serviceName;
+    }
 
     public void setController(LoginController lc) {
         this.controller = lc;

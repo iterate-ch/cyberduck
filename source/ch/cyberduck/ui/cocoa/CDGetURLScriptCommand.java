@@ -37,7 +37,7 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
     }
 
     public Object performDefaultImplementation() {
-        String arg = (String) this.directParameter();
+        String arg = (String)this.directParameter();
         log.debug("Received URL from Apple Event: " + arg);
         try {
             URL url = new URL(arg);

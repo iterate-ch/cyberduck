@@ -61,7 +61,7 @@ public class KeyStore {
      * @return
      */
     public Map getPublicKeys() {
-        return (Map) publickeys.clone();
+        return (Map)publickeys.clone();
     }
 
     /**
@@ -77,7 +77,7 @@ public class KeyStore {
      * @return
      */
     public SshPublicKey elementAt(int i) {
-        return (SshPublicKey) index.elementAt(i);
+        return (SshPublicKey)index.elementAt(i);
     }
 
     /**
@@ -85,7 +85,7 @@ public class KeyStore {
      * @return
      */
     public String getDescription(SshPublicKey key) {
-        return (String) publickeys.get(key);
+        return (String)publickeys.get(key);
     }
 
     /**
@@ -93,7 +93,7 @@ public class KeyStore {
      * @return
      */
     public KeyConstraints getKeyConstraints(SshPublicKey key) {
-        return (KeyConstraints) constraints.get(key);
+        return (KeyConstraints)constraints.get(key);
     }
 
     /**
@@ -138,7 +138,7 @@ public class KeyStore {
                 KeyStoreListener listener;
 
                 while (it.hasNext()) {
-                    listener = (KeyStoreListener) it.next();
+                    listener = (KeyStoreListener)it.next();
                     listener.onAddKey(this);
                 }
 
@@ -164,7 +164,7 @@ public class KeyStore {
             KeyStoreListener listener;
 
             while (it.hasNext()) {
-                listener = (KeyStoreListener) it.next();
+                listener = (KeyStoreListener)it.next();
                 listener.onDeleteAllKeys(this);
             }
         }
@@ -186,8 +186,8 @@ public class KeyStore {
             InvalidSshKeySignatureException {
         synchronized (publickeys) {
             if (privatekeys.containsKey(pubkey)) {
-                SshPrivateKey key = (SshPrivateKey) privatekeys.get(pubkey);
-                KeyConstraints cs = (KeyConstraints) constraints.get(pubkey);
+                SshPrivateKey key = (SshPrivateKey)privatekeys.get(pubkey);
+                KeyConstraints cs = (KeyConstraints)constraints.get(pubkey);
 
                 if (cs.canUse()) {
                     if (!cs.hasTimedOut()) {
@@ -198,7 +198,7 @@ public class KeyStore {
                         KeyStoreListener listener;
 
                         while (it.hasNext()) {
-                            listener = (KeyStoreListener) it.next();
+                            listener = (KeyStoreListener)it.next();
                             listener.onKeyOperation(this, "hash-and-sign");
                         }
 
@@ -228,7 +228,7 @@ public class KeyStore {
             throws IOException {
         synchronized (publickeys) {
             if (publickeys.containsKey(pubkey)) {
-                String desc = (String) publickeys.get(pubkey);
+                String desc = (String)publickeys.get(pubkey);
 
                 if (description.equals(desc)) {
                     publickeys.remove(pubkey);
@@ -240,7 +240,7 @@ public class KeyStore {
                     KeyStoreListener listener;
 
                     while (it.hasNext()) {
-                        listener = (KeyStoreListener) it.next();
+                        listener = (KeyStoreListener)it.next();
                         listener.onDeleteKey(this);
                     }
 
@@ -266,7 +266,7 @@ public class KeyStore {
                 KeyStoreListener listener;
 
                 while (it.hasNext()) {
-                    listener = (KeyStoreListener) it.next();
+                    listener = (KeyStoreListener)it.next();
                     listener.onLock(this);
                 }
 
@@ -293,7 +293,7 @@ public class KeyStore {
                     KeyStoreListener listener;
 
                     while (it.hasNext()) {
-                        listener = (KeyStoreListener) it.next();
+                        listener = (KeyStoreListener)it.next();
                         listener.onUnlock(this);
                     }
 

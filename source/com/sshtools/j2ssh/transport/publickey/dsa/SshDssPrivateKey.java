@@ -85,7 +85,7 @@ class SshDssPrivateKey extends SshPrivateKey {
             dsaKey = new DSAPrivateKeySpec(x, p, q, g);
 
             KeyFactory kf = KeyFactory.getInstance("DSA");
-            prvkey = (DSAPrivateKey) kf.generatePrivate(dsaKey);
+            prvkey = (DSAPrivateKey)kf.generatePrivate(dsaKey);
         }
         catch (Exception e) {
             throw new InvalidSshKeyException();
@@ -98,7 +98,7 @@ class SshDssPrivateKey extends SshPrivateKey {
      */
     public boolean equals(Object obj) {
         if (obj instanceof SshDssPrivateKey) {
-            return prvkey.equals(((SshDssPrivateKey) obj).prvkey);
+            return prvkey.equals(((SshDssPrivateKey)obj).prvkey);
         }
 
         return false;
@@ -154,7 +154,7 @@ class SshDssPrivateKey extends SshPrivateKey {
                     prvkey.getParams().getG());
             KeyFactory kf = KeyFactory.getInstance("DSA");
 
-            return new SshDssPublicKey((DSAPublicKey) kf.generatePublic(spec));
+            return new SshDssPublicKey((DSAPublicKey)kf.generatePublic(spec));
         }
         catch (Exception e) {
             return null;

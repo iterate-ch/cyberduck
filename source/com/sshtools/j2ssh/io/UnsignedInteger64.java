@@ -96,7 +96,7 @@ public class UnsignedInteger64 extends Number implements Serializable,
      */
     public boolean equals(Object o) {
         try {
-            UnsignedInteger64 u = (UnsignedInteger64) o;
+            UnsignedInteger64 u = (UnsignedInteger64)o;
 
             return u.bigInt.equals(this.bigInt);
         }
@@ -146,7 +146,7 @@ public class UnsignedInteger64 extends Number implements Serializable,
      * @return
      */
     public int compareTo(Object val) {
-        return bigInt.compareTo(((UnsignedInteger64) val).bigInt);
+        return bigInt.compareTo(((UnsignedInteger64)val).bigInt);
     }
 
     /**

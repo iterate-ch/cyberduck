@@ -93,7 +93,7 @@ public class SshHmacFactory {
     public static SshHmac newInstance(String methodName)
             throws AlgorithmNotSupportedException {
         try {
-            return (SshHmac) ((Class) macs.get(methodName)).newInstance();
+            return (SshHmac)((Class)macs.get(methodName)).newInstance();
         }
         catch (Exception e) {
             throw new AlgorithmNotSupportedException(methodName +

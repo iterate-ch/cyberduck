@@ -52,7 +52,7 @@ public class FTPSession extends Session {
     }
 
     public synchronized void close() {
-		this.callObservers(new Message(Message.CLOSE, "Closing session."));
+        this.callObservers(new Message(Message.CLOSE, "Closing session."));
         try {
             if (this.FTP != null) {
                 this.log("Disconnecting...", Message.PROGRESS);
@@ -130,10 +130,11 @@ public class FTPSession extends Session {
         }
         return null;
     }
-	
+
     public synchronized void check() throws IOException {
-		if(log.isDebugEnabled())
-			log.debug(this.toString() + ":check");
+        if (log.isDebugEnabled()) {
+            log.debug(this.toString() + ":check");
+        }
         this.log("Working", Message.START);
 //		this.log("Checking connection...", Message.PROGRESS);
         if (null == this.FTP || !this.FTP.isAlive()) {

@@ -123,9 +123,9 @@ public class SshFxpInit extends SubsystemMessage {
                 Map.Entry entry;
 
                 while (it.hasNext()) {
-                    entry = (Map.Entry) it.next();
-                    baw.writeString((String) entry.getKey());
-                    baw.writeString((String) entry.getValue());
+                    entry = (Map.Entry)it.next();
+                    baw.writeString((String)entry.getKey());
+                    baw.writeString((String)entry.getValue());
                 }
             }
         }

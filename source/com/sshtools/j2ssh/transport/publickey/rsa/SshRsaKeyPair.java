@@ -85,8 +85,8 @@ public class SshRsaKeyPair extends SshKeyPair {
             KeyPair pair = keyGen.generateKeyPair();
 
             // Get the keys and set
-            setPrivateKey(new SshRsaPrivateKey((RSAPrivateKey) pair.getPrivate(),
-                    (RSAPublicKey) pair.getPublic()));
+            setPrivateKey(new SshRsaPrivateKey((RSAPrivateKey)pair.getPrivate(),
+                    (RSAPublicKey)pair.getPublic()));
         }
         catch (NoSuchAlgorithmException nsae) {
             prvKey = null;

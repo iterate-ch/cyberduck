@@ -191,7 +191,7 @@ public abstract class HttpMethodBase implements HttpMethod {
         // semantics of the message, by appending each subsequent field-value
         // to the first, each separated by a comma."
         //   - HTTP/1.0 (4.3)
-        Header header = (Header) (requestHeaders.get(headerName.toLowerCase()));
+        Header header = (Header)(requestHeaders.get(headerName.toLowerCase()));
         if (null == header) {
             header = new Header(headerName, headerValue);
         }
@@ -216,7 +216,7 @@ public abstract class HttpMethodBase implements HttpMethod {
         // semantics of the message, by appending each subsequent field-value
         // to the first, each separated by a comma."
         //   - HTTP/1.0 (4.3)
-        Header orig = (Header) (requestHeaders.get(header.getName().toLowerCase()));
+        Header orig = (Header)(requestHeaders.get(header.getName().toLowerCase()));
         if (null == orig) {
             orig = header;
         }
@@ -236,7 +236,7 @@ public abstract class HttpMethodBase implements HttpMethod {
      * @return the header
      */
     public Header getRequestHeader(String headerName) {
-        return (Header) (requestHeaders.get(headerName.toLowerCase()));
+        return (Header)(requestHeaders.get(headerName.toLowerCase()));
     }
 
     /**
@@ -315,7 +315,7 @@ public abstract class HttpMethodBase implements HttpMethod {
      * Return an array of my request headers.
      */
     public Header[] getRequestHeaders() {
-        return (Header[]) (requestHeaders.values().toArray(new Header[requestHeaders.size()]));
+        return (Header[])(requestHeaders.values().toArray(new Header[requestHeaders.size()]));
     }
 
     // ---------------------------------------------------------------- Queries
@@ -349,14 +349,14 @@ public abstract class HttpMethodBase implements HttpMethod {
      * Return an array my response headers.
      */
     public Header[] getResponseHeaders() {
-        return (Header[]) (responseHeaders.values().toArray(new Header[responseHeaders.size()]));
+        return (Header[])(responseHeaders.values().toArray(new Header[responseHeaders.size()]));
     }
 
     /**
      * Return the specified response headers.
      */
     public Header getResponseHeader(String headerName) {
-        return (Header) (responseHeaders.get(headerName.toLowerCase()));
+        return (Header)(responseHeaders.get(headerName.toLowerCase()));
     }
 
     /**
@@ -677,7 +677,7 @@ public abstract class HttpMethodBase implements HttpMethod {
         addRequestHeaders(state, conn);
         Iterator it = requestHeaders.values().iterator();
         while (it.hasNext()) {
-            conn.print(((Header) it.next()).toExternalForm());
+            conn.print(((Header)it.next()).toExternalForm());
         }
     }
 
@@ -753,7 +753,7 @@ public abstract class HttpMethodBase implements HttpMethod {
     protected void addAuthorizationRequestHeader(HttpState state, HttpConnection conn) throws IOException, HttpException {
         // add authorization header, if needed
         if (!requestHeaders.containsKey("authorization")) {
-            Header wwwAuthenticateHeader = (Header) (responseHeaders.get("www-authenticate"));
+            Header wwwAuthenticateHeader = (Header)(responseHeaders.get("www-authenticate"));
             if (null != wwwAuthenticateHeader) {
                 try {
                     Authenticator.authenticate(this, state);
@@ -984,7 +984,7 @@ public abstract class HttpMethodBase implements HttpMethod {
             String name = line.substring(0, colon).trim();
             String match = name.toLowerCase();
             String value = line.substring(colon + 1).trim();
-            Header header = (Header) (responseHeaders.get(match));
+            Header header = (Header)(responseHeaders.get(match));
             if (null == header) {
                 header = new Header(name, value);
             }

@@ -115,7 +115,7 @@ public class ForwardingClient implements ChannelFactory {
         Iterator it = localForwardings.values().iterator();
 
         while (it.hasNext()) {
-            if (((ForwardingConfiguration) it.next()).getState().getValue() == StartStopState.STARTED) {
+            if (((ForwardingConfiguration)it.next()).getState().getValue() == StartStopState.STARTED) {
                 return true;
             }
         }
@@ -123,7 +123,7 @@ public class ForwardingClient implements ChannelFactory {
         it = remoteForwardings.values().iterator();
 
         while (it.hasNext()) {
-            if (((ForwardingConfiguration) it.next()).getState().getValue() == StartStopState.STARTED) {
+            if (((ForwardingConfiguration)it.next()).getState().getValue() == StartStopState.STARTED) {
                 return true;
             }
         }
@@ -138,7 +138,7 @@ public class ForwardingClient implements ChannelFactory {
             for (Iterator it = properties.getLocalForwardings().values()
                     .iterator(); it.hasNext();) {
                 try {
-                    fwd = (ForwardingConfiguration) it.next();
+                    fwd = (ForwardingConfiguration)it.next();
                     fwd = addLocalForwarding(fwd);
 
                     if (properties.getForwardingAutoStartMode()) {
@@ -156,7 +156,7 @@ public class ForwardingClient implements ChannelFactory {
             for (Iterator it = properties.getRemoteForwardings().values()
                     .iterator(); it.hasNext();) {
                 try {
-                    fwd = (ForwardingConfiguration) it.next();
+                    fwd = (ForwardingConfiguration)it.next();
                     addRemoteForwarding(fwd);
 
                     if (properties.getForwardingAutoStartMode()) {
@@ -183,7 +183,7 @@ public class ForwardingClient implements ChannelFactory {
         Iterator it = localForwardings.values().iterator();
 
         while (it.hasNext()) {
-            if (((ForwardingConfiguration) it.next()).getActiveForwardingSocketChannels()
+            if (((ForwardingConfiguration)it.next()).getActiveForwardingSocketChannels()
                     .size() > 0) {
                 return true;
             }
@@ -192,7 +192,7 @@ public class ForwardingClient implements ChannelFactory {
         it = remoteForwardings.values().iterator();
 
         while (it.hasNext()) {
-            if (((ForwardingConfiguration) it.next()).getActiveForwardingSocketChannels()
+            if (((ForwardingConfiguration)it.next()).getActiveForwardingSocketChannels()
                     .size() > 0) {
                 return true;
             }
@@ -214,7 +214,7 @@ public class ForwardingClient implements ChannelFactory {
         ForwardingConfiguration config;
 
         while (it.hasNext()) {
-            config = (ForwardingConfiguration) it.next();
+            config = (ForwardingConfiguration)it.next();
 
             if (config.getAddressToBind().equals(addressToBind) &&
                     (config.getPortToBind() == portToBind)) {
@@ -237,7 +237,7 @@ public class ForwardingClient implements ChannelFactory {
             throw new ForwardingConfigurationException("The configuraiton does not exist!");
         }
 
-        return (ForwardingConfiguration) localForwardings.get(name);
+        return (ForwardingConfiguration)localForwardings.get(name);
     }
 
     /**
@@ -252,7 +252,7 @@ public class ForwardingClient implements ChannelFactory {
             throw new ForwardingConfigurationException("The configuraiton does not exist!");
         }
 
-        return (ForwardingConfiguration) remoteForwardings.get(name);
+        return (ForwardingConfiguration)remoteForwardings.get(name);
     }
 
     /**
@@ -282,7 +282,7 @@ public class ForwardingClient implements ChannelFactory {
         ForwardingConfiguration config;
 
         while (it.hasNext()) {
-            config = (ForwardingConfiguration) it.next();
+            config = (ForwardingConfiguration)it.next();
 
             if (config.getAddressToBind().equals(addressToBind) &&
                     (config.getPortToBind() == portToBind)) {
@@ -304,7 +304,7 @@ public class ForwardingClient implements ChannelFactory {
             throw new ForwardingConfigurationException("The name is not a valid forwarding configuration");
         }
 
-        ForwardingListener listener = (ForwardingListener) localForwardings.get(name);
+        ForwardingListener listener = (ForwardingListener)localForwardings.get(name);
 
         if (listener.isRunning()) {
             stopLocalForwarding(name);
@@ -325,7 +325,7 @@ public class ForwardingClient implements ChannelFactory {
             throw new ForwardingConfigurationException("The name is not a valid forwarding configuration");
         }
 
-        ForwardingListener listener = (ForwardingListener) remoteForwardings.get(name);
+        ForwardingListener listener = (ForwardingListener)remoteForwardings.get(name);
 
         if (listener.isRunning()) {
             stopRemoteForwarding(name);
@@ -357,7 +357,7 @@ public class ForwardingClient implements ChannelFactory {
         ForwardingConfiguration config;
 
         while (it.hasNext()) {
-            config = (ForwardingConfiguration) it.next();
+            config = (ForwardingConfiguration)it.next();
 
             if (config.getAddressToBind().equals(addressToBind) &&
                     (config.getPortToBind() == portToBind)) {
@@ -457,7 +457,7 @@ public class ForwardingClient implements ChannelFactory {
         ForwardingConfiguration config;
 
         while (it.hasNext()) {
-            config = (ForwardingConfiguration) it.next();
+            config = (ForwardingConfiguration)it.next();
 
             if (config.getAddressToBind().equals(addressToBind) &&
                     (config.getPortToBind() == portToBind)) {
@@ -502,7 +502,7 @@ public class ForwardingClient implements ChannelFactory {
         ForwardingConfiguration config;
 
         while (it.hasNext()) {
-            config = (ForwardingConfiguration) it.next();
+            config = (ForwardingConfiguration)it.next();
 
             if (config.getAddressToBind().equals(fwd.getAddressToBind()) &&
                     (config.getPortToBind() == fwd.getPortToBind())) {
@@ -545,7 +545,7 @@ public class ForwardingClient implements ChannelFactory {
             try {
                 ByteArrayReader bar = new ByteArrayReader(requestData);
                 String originatingHost = bar.readString();
-                int originatingPort = (int) bar.readInt();
+                int originatingPort = (int)bar.readInt();
                 log.debug("Creating socket to " +
                         x11ForwardingConfiguration.getHostToConnect() + "/" +
                         x11ForwardingConfiguration.getPortToConnect());
@@ -572,9 +572,9 @@ public class ForwardingClient implements ChannelFactory {
             try {
                 ByteArrayReader bar = new ByteArrayReader(requestData);
                 String addressBound = bar.readString();
-                int portBound = (int) bar.readInt();
+                int portBound = (int)bar.readInt();
                 String originatingHost = bar.readString();
-                int originatingPort = (int) bar.readInt();
+                int originatingPort = (int)bar.readInt();
                 ForwardingConfiguration config = getRemoteForwardingByAddress(addressBound,
                         portBound);
                 Socket socket = new Socket(config.getHostToConnect(),
@@ -617,7 +617,7 @@ public class ForwardingClient implements ChannelFactory {
         }
 
         try {
-            ForwardingListener listener = (ForwardingListener) localForwardings.get(uniqueName);
+            ForwardingListener listener = (ForwardingListener)localForwardings.get(uniqueName);
             listener.start();
         }
         catch (IOException ex) {
@@ -669,7 +669,7 @@ public class ForwardingClient implements ChannelFactory {
             throw new ForwardingConfigurationException("The name is not a valid forwarding configuration");
         }
 
-        ForwardingConfiguration config = (ForwardingConfiguration) remoteForwardings.get(name);
+        ForwardingConfiguration config = (ForwardingConfiguration)remoteForwardings.get(name);
         ByteArrayWriter baw = new ByteArrayWriter();
         baw.writeString(config.getAddressToBind());
         baw.writeInt(config.getPortToBind());
@@ -699,7 +699,7 @@ public class ForwardingClient implements ChannelFactory {
             throw new ForwardingConfigurationException("The name is not a valid forwarding configuration");
         }
 
-        ForwardingListener listener = (ForwardingListener) localForwardings.get(uniqueName);
+        ForwardingListener listener = (ForwardingListener)localForwardings.get(uniqueName);
         listener.stop();
         log.info("Local forwarding configuration " + uniqueName + "' stopped");
     }
@@ -716,7 +716,7 @@ public class ForwardingClient implements ChannelFactory {
             throw new ForwardingConfigurationException("The remote forwarding configuration does not exist");
         }
 
-        ForwardingConfiguration config = (ForwardingConfiguration) remoteForwardings.get(name);
+        ForwardingConfiguration config = (ForwardingConfiguration)remoteForwardings.get(name);
         ByteArrayWriter baw = new ByteArrayWriter();
         baw.writeString(config.getAddressToBind());
         baw.writeInt(config.getPortToBind());

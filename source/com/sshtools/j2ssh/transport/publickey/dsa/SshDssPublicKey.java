@@ -86,7 +86,7 @@ public class SshDssPublicKey extends SshPublicKey {
             dsaKey = new DSAPublicKeySpec(y, p, q, g);
 
             KeyFactory kf = KeyFactory.getInstance("DSA");
-            pubkey = (DSAPublicKey) kf.generatePublic(dsaKey);
+            pubkey = (DSAPublicKey)kf.generatePublic(dsaKey);
         }
         catch (Exception e) {
             throw new InvalidSshKeyException();

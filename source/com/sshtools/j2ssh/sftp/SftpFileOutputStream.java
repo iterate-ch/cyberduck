@@ -69,11 +69,11 @@ public class SftpFileOutputStream extends OutputStream {
         int pos = 0;
         int count;
         int available;
-        int max = (int) file.getSFTPSubsystem().maximumPacketSize();
+        int max = (int)file.getSFTPSubsystem().maximumPacketSize();
 
         while (pos < len) {
-            available = ((int) file.getSFTPSubsystem().availableWindowSpace() < max)
-                    ? (int) file.getSFTPSubsystem().availableWindowSpace() : max;
+            available = ((int)file.getSFTPSubsystem().availableWindowSpace() < max)
+                    ? (int)file.getSFTPSubsystem().availableWindowSpace() : max;
             count = (available < (len - pos)) ? available : (len - pos);
             file.getSFTPSubsystem().writeFile(file.getHandle(), position,
                     buffer, offset + pos, count);
@@ -88,14 +88,14 @@ public class SftpFileOutputStream extends OutputStream {
      */
     public void write(int b) throws IOException {
         byte[] buffer = new byte[1];
-        buffer[0] = (byte) b;
+        buffer[0] = (byte)b;
         file.getSFTPSubsystem().writeFile(file.getHandle(), position, buffer,
                 0, 1);
         position = UnsignedInteger64.add(position, 1);
     }
 
     public long skip(long n) {
-        position = position.add(position, (int) n);
+        position = position.add(position, (int)n);
         return n;
     }
 

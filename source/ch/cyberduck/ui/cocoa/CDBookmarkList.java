@@ -37,10 +37,10 @@ public class CDBookmarkList extends BookmarkList { //implements NSTableView.Data
 
     private static final File BOOKMARKS_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Favorites.plist"));
 
-	public CDBookmarkList() {
-		super();
-	}
-	
+    public CDBookmarkList() {
+        super();
+    }
+
     static {
         BOOKMARKS_FILE.getParentFile().mkdir();
     }
@@ -60,7 +60,7 @@ public class CDBookmarkList extends BookmarkList { //implements NSTableView.Data
                 NSMutableArray list = new NSMutableArray();
                 java.util.Iterator i = this.iterator();
                 while (i.hasNext()) {
-                    Host bookmark = (Host) i.next();
+                    Host bookmark = (Host)i.next();
                     list.addObject(bookmark.getAsDictionary());
                 }
                 NSMutableData collection = new NSMutableData();
@@ -110,17 +110,17 @@ public class CDBookmarkList extends BookmarkList { //implements NSTableView.Data
                 log.debug("Successfully read BookmarkList: " + propertyListFromXMLData);
             }
             if (propertyListFromXMLData instanceof NSArray) {
-                NSArray entries = (NSArray) propertyListFromXMLData;
+                NSArray entries = (NSArray)propertyListFromXMLData;
                 java.util.Enumeration i = entries.objectEnumerator();
                 Object element;
                 while (i.hasMoreElements()) {
                     element = i.nextElement();
                     if (element instanceof NSDictionary) { //new since 2.1
-                        this.addItem(new Host((NSDictionary) element));
+                        this.addItem(new Host((NSDictionary)element));
                     }
                     if (element instanceof String) { //backward compatibilty <= 2.1beta5 (deprecated)
                         try {
-                            this.addItem(new Host((String) element));
+                            this.addItem(new Host((String)element));
                         }
                         catch (java.net.MalformedURLException e) {
                             log.error("Bookmark has invalid URL: " + e.getMessage());
@@ -147,7 +147,7 @@ public class CDBookmarkList extends BookmarkList { //implements NSTableView.Data
             log.debug("Successfully read bookmark file: " + propertyListFromXMLData);
         }
         if (propertyListFromXMLData instanceof NSDictionary) {
-            return new Host((NSDictionary) propertyListFromXMLData);
+            return new Host((NSDictionary)propertyListFromXMLData);
         }
         log.error("Invalid file format:" + file);
         return null;

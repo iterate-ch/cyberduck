@@ -83,7 +83,7 @@ public class SimpleLog implements Log {
         // add all system props that start with "httpclient."
         Enumeration enum = System.getProperties().propertyNames();
         while (enum.hasMoreElements()) {
-            String name = (String) (enum.nextElement());
+            String name = (String)(enum.nextElement());
             if (null != name && name.startsWith("httpclient.")) {
                 _simplelogProps.setProperty(name, System.getProperty(name));
             }

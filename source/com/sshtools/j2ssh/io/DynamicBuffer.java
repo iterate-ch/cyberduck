@@ -175,7 +175,7 @@ public class DynamicBuffer {
         }
 
         verifyBufferSize(1);
-        buf[writepos] = (byte) b;
+        buf[writepos] = (byte)b;
         writepos++;
         notifyAll();
     }
@@ -221,7 +221,7 @@ public class DynamicBuffer {
             return -1;
         }
 
-        return (int) buf[readpos++];
+        return (int)buf[readpos++];
     }
 
     /**

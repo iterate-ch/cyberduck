@@ -37,26 +37,26 @@ public class CDMainController extends NSObject {
 
     private static final File VERSION_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Version.plist"));
 
-	public void awakeFromNib() {
-		//@todo performance tests
-		this.threadWorkerTimer = new NSTimer(0.2, this, new NSSelector("handleThreadWorkerTimerEvent", new Class[] {NSTimer.class}), null, true);
-		NSRunLoop.currentRunLoop().addTimerForMode(this.threadWorkerTimer, NSRunLoop.DefaultRunLoopMode);
-	}
+    public void awakeFromNib() {
+        //@todo performance tests
+        this.threadWorkerTimer = new NSTimer(0.2, this, new NSSelector("handleThreadWorkerTimerEvent", new Class[]{NSTimer.class}), null, true);
+        NSRunLoop.currentRunLoop().addTimerForMode(this.threadWorkerTimer, NSRunLoop.DefaultRunLoopMode);
+    }
 
-	// If we want the equivalent to SwingUtilities.invokeLater() for Cocoa, we have to fend for ourselves, it seems.
-	private NSTimer threadWorkerTimer;
-	
-	/**
-		* Called very frequently, every 0.1 seconds
-	 */
-	private void handleThreadWorkerTimerEvent(NSTimer t) {
-		//log.debug("handleThreadWorkerTimerEvent");
-		Runnable item;
-		while((item = ThreadUtilities.instance().next()) != null) {
-			item.run();
-		}
-	}
-		
+    // If we want the equivalent to SwingUtilities.invokeLater() for Cocoa, we have to fend for ourselves, it seems.
+    private NSTimer threadWorkerTimer;
+
+    /**
+     * Called very frequently, every 0.1 seconds
+     */
+    private void handleThreadWorkerTimerEvent(NSTimer t) {
+        //log.debug("handleThreadWorkerTimerEvent");
+        Runnable item;
+        while ((item = ThreadUtilities.instance().next()) != null) {
+            item.run();
+        }
+    }
+
     static {
         org.apache.log4j.BasicConfigurator.configure();
         Logger log = Logger.getRootLogger();
@@ -73,35 +73,35 @@ public class CDMainController extends NSObject {
     // Outlets
     // ----------------------------------------------------------
 
-	private NSMenu dockMenu; // IBOutlet
-	
-	public void setDockMenu(NSMenu dockMenu) {
-		this.dockMenu = dockMenu;
-	}
-	
+    private NSMenu dockMenu; // IBOutlet
+
+    public void setDockMenu(NSMenu dockMenu) {
+        this.dockMenu = dockMenu;
+    }
+
     private NSWindow donationSheet; // IBOutlet
 
     public void setDonationSheet(NSWindow donationSheet) {
         this.donationSheet = donationSheet;
     }
-	
-	private NSButton neverShowDonationCheckbox; 
 
-	public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
+    private NSButton neverShowDonationCheckbox;
+
+    public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
         this.neverShowDonationCheckbox = neverShowDonationCheckbox;
         this.neverShowDonationCheckbox.setTarget(this);
         this.neverShowDonationCheckbox.setState(Preferences.instance().getProperty("donate").equals("false") ? NSCell.OnState : NSCell.OffState);
     }
-	
-	private NSButton autoUpdateCheckbox;
-	
+
+    private NSButton autoUpdateCheckbox;
+
     public void setAutoUpdateCheckbox(NSButton autoUpdateCheckbox) {
         this.autoUpdateCheckbox = autoUpdateCheckbox;
         this.autoUpdateCheckbox.setTarget(this);
         this.autoUpdateCheckbox.setAction(new NSSelector("autoUpdateCheckboxClicked", new Class[]{NSButton.class}));
         this.autoUpdateCheckbox.setState(Preferences.instance().getProperty("update.check").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
-	
+
     public void autoUpdateCheckboxClicked(NSButton sender) {
         switch (sender.state()) {
             case NSCell.OnState:
@@ -112,7 +112,7 @@ public class CDMainController extends NSObject {
                 break;
         }
     }
-	
+
     public NSWindow updateSheet; // IBOutlet
 
     public void setUpdateSheet(NSWindow updateSheet) {
@@ -137,10 +137,10 @@ public class CDMainController extends NSObject {
     public void setBookmarkMenu(NSMenu bookmarkMenu) {
         this.bookmarkMenu = bookmarkMenu;
         NSSelector setDelegateSelector =
-			new NSSelector("setDelegate", new Class[]{Object.class});
+                new NSSelector("setDelegate", new Class[]{Object.class});
         if (setDelegateSelector.implementedByClass(NSMenu.class)) {
-			this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
-		}
+            this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
+        }
     }
 
     private class BookmarkMenuDelegate extends NSObject {
@@ -174,7 +174,7 @@ public class CDMainController extends NSObject {
             log.debug("bookmarkMenuClicked:" + sender);
             CDBrowserController controller = new CDBrowserController();
             controller.window().makeKeyAndOrderFront(null);
-            controller.mount((Host) items.get(sender));
+            controller.mount((Host)items.get(sender));
         }
     }
 
@@ -191,72 +191,72 @@ public class CDMainController extends NSObject {
     }
 
     public void updateMenuClicked(Object sender) {
-		this.checkForUpdate(true);
-	}
-	
-	public void checkForUpdate(final boolean verbose) {
+        this.checkForUpdate(true);
+    }
+
+    public void checkForUpdate(final boolean verbose) {
         ThreadUtilities.instance().invokeLater(new Runnable() {
             public void run() {
-				// An autorelease pool is used to manage Foundation’s autorelease mechanism for 
-				// Objective-C objects. NSAutoreleasePool provides Java applications access to 
-				// autorelease pools. Typically it is not necessary for Java applications to 
-				// use NSAutoreleasePools since Java manages garbage collection. However, some 
-				// situations require an autorelease pool; for instance, if you start off a thread 
-				// that calls Cocoa, there won’t be a top-level pool.
-				int mypool = NSAutoreleasePool.push();
+                // An autorelease pool is used to manage Foundation’s autorelease mechanism for
+                // Objective-C objects. NSAutoreleasePool provides Java applications access to
+                // autorelease pools. Typically it is not necessary for Java applications to
+                // use NSAutoreleasePools since Java manages garbage collection. However, some
+                // situations require an autorelease pool; for instance, if you start off a thread
+                // that calls Cocoa, there won’t be a top-level pool.
+                int mypool = NSAutoreleasePool.push();
                 try {
-                    String currentVersionNumber = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
+                    String currentVersionNumber = (String)NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
                     log.info("Current version:" + currentVersionNumber);
-					
+
                     NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.update.xml")));
                     if (null == data) {
-						if(verbose) {
-							NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Error", "Alert sheet title"), //title
-														  NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text"),
-														  NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
-														  null, //alternative button
-														  null//other button
-														  );
-						}
+                        if (verbose) {
+                            NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                                    NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text"),
+                                    NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
+                                    null, //alternative button
+                                    null//other button
+                            );
+                        }
                         return;
                     }
                     String[] errorString = new String[]{null};
                     Object propertyListFromXMLData =
-						NSPropertyListSerialization.propertyListFromData(data,
-																		 NSPropertyListSerialization.PropertyListImmutable,
-																		 new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-																		 errorString);
+                            NSPropertyListSerialization.propertyListFromData(data,
+                                    NSPropertyListSerialization.PropertyListImmutable,
+                                    new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+                                    errorString);
                     if (errorString[0] != null || null == propertyListFromXMLData) {
                         log.error("Version info could not be retrieved: " + errorString[0]);
-						if(verbose) {
-							NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Error", "Alert sheet title"), //title
-														  NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text")+" ("+errorString[0]+")",
-														  NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
-														  null, //alternative button
-														  null//other button
-														  );
-						}
+                        if (verbose) {
+                            NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                                    NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text") + " (" + errorString[0] + ")",
+                                    NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
+                                    null, //alternative button
+                                    null//other button
+                            );
+                        }
                     }
                     else {
                         log.info(propertyListFromXMLData.toString());
-                        NSDictionary entries = (NSDictionary) propertyListFromXMLData;
-                        String latestVersionNumber = (String) entries.objectForKey("version");
+                        NSDictionary entries = (NSDictionary)propertyListFromXMLData;
+                        String latestVersionNumber = (String)entries.objectForKey("version");
                         log.info("Latest version:" + latestVersionNumber);
-                        String filename = (String) entries.objectForKey("file");
-                        String comment = (String) entries.objectForKey("comment");
-						
+                        String filename = (String)entries.objectForKey("file");
+                        String comment = (String)entries.objectForKey("comment");
+
                         if (currentVersionNumber.equals(latestVersionNumber)) {
-							if(verbose) {
-								NSAlertPanel.runInformationalAlert(NSBundle.localizedString("No update", "Alert sheet title"), //title
-																   NSBundle.localizedString("No newer version available.", "Alert sheet text") + " Cyberduck " + currentVersionNumber + " " + NSBundle.localizedString("is up to date.", "Alert sheet text"),
-																   "OK", // defaultbutton
-																   null, //alternative button
-																   null//other button
-																   );
-							}
+                            if (verbose) {
+                                NSAlertPanel.runInformationalAlert(NSBundle.localizedString("No update", "Alert sheet title"), //title
+                                        NSBundle.localizedString("No newer version available.", "Alert sheet text") + " Cyberduck " + currentVersionNumber + " " + NSBundle.localizedString("is up to date.", "Alert sheet text"),
+                                        "OK", // defaultbutton
+                                        null, //alternative button
+                                        null//other button
+                                );
+                            }
                         }
                         else {
-							// Update available, show update dialog
+                            // Update available, show update dialog
                             if (false == NSApplication.loadNibNamed("Update", CDMainController.this)) {
                                 log.fatal("Couldn't load Update.nib");
                                 return;
@@ -271,14 +271,13 @@ public class CDMainController extends NSObject {
                 catch (Exception e) {
                     log.error(e.getMessage());
                 }
-				finally {
-					NSAutoreleasePool.pop(mypool);
-				}
+                finally {
+                    NSAutoreleasePool.pop(mypool);
+                }
             }
-        }
-									);
+        });
     }
-	
+
     public void websiteMenuClicked(Object sender) {
         try {
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.home")));
@@ -299,7 +298,7 @@ public class CDMainController extends NSObject {
 
     public void feedbackMenuClicked(Object sender) {
         try {
-            String currentVersionNumber = (String) NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion");
+            String currentVersionNumber = (String)NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion");
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail") + "?subject=Cyberduck-" + currentVersionNumber));
         }
         catch (java.net.MalformedURLException e) {
@@ -389,21 +388,21 @@ public class CDMainController extends NSObject {
         return false;
     }
 
-	public boolean applicationOpenTempFile(NSApplication app, String filename) {
+    public boolean applicationOpenTempFile(NSApplication app, String filename) {
         log.debug("applicationOpenTempFile:" + filename);
         return this.applicationOpenFile(app, filename);
     }
-	
+
     public boolean applicationOpenUntitledFile(NSApplication app) {
         log.debug("applicationOpenUntitledFile");
-		if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
-			CDBrowserController controller = new CDBrowserController();
-			controller.window().makeKeyAndOrderFront(null);
-			return controller != null;
-		}
-		return false;
+        if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
+            CDBrowserController controller = new CDBrowserController();
+            controller.window().makeKeyAndOrderFront(null);
+            return controller != null;
+        }
+        return false;
     }
-	
+
     public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
         log.info("applicationShouldHandleReopen:" + visibleWindowsFound);
         NSArray windows = NSApplication.sharedApplication().windows();
@@ -445,8 +444,8 @@ public class CDMainController extends NSObject {
             }
         }
         if (Preferences.instance().getProperty("update.check").equals("true")) {
-			this.checkForUpdate(false);
-		}
+            this.checkForUpdate(false);
+        }
     }
 
     public boolean applicationShouldTerminate(NSApplication app) {
@@ -455,7 +454,7 @@ public class CDMainController extends NSObject {
         this.saveVersionInfo();
         //Writing usage info
         Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
-		return this.checkForMountedBrowsers(app);
+        return this.checkForMountedBrowsers(app);
 //        return true;
     }
 	
@@ -463,16 +462,17 @@ public class CDMainController extends NSObject {
     // AppleScript support (NOT TESTED - FOR FURTURE USE)
     // ----------------------------------------------------------
 
-	public boolean applicationDelegateHandlesKey(NSApplication application, String key) {
-        log.debug("applicationDelegateHandlesKey:"+key);
+    public boolean applicationDelegateHandlesKey(NSApplication application, String key) {
+        log.debug("applicationDelegateHandlesKey:" + key);
         if (key.equals("orderedDocuments")) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
-	
-	public NSArray orderedDocuments() {
+
+    public NSArray orderedDocuments() {
         log.debug("orderedDocuments");
         NSApplication app = NSApplication.sharedApplication();
         NSArray orderedWindows = (NSArray)NSKeyValue.valueForKey(app, "orderedWindows");
@@ -487,28 +487,28 @@ public class CDMainController extends NSObject {
         }
         return orderedDocs;
     }
-	
-	public void insertInOrderedDocumentsAtIndex(CDBrowserController doc, int index) {
-        log.debug("insertInOrderedDocumentsAtIndex"+doc);
+
+    public void insertInOrderedDocumentsAtIndex(CDBrowserController doc, int index) {
+        log.debug("insertInOrderedDocumentsAtIndex" + doc);
         doc.window().makeKeyAndOrderFront(null);
     }
-	
+
     private boolean checkForMountedBrowsers(NSApplication app) {
         NSArray windows = app.windows();
         int count = windows.count();
         boolean needsConfirm = false;
 
-		// Determine if there are any open connections
+        // Determine if there are any open connections
         while (!needsConfirm && (0 != count--)) {
-            NSWindow window = (NSWindow) windows.objectAtIndex(count);
-			if(window.isVisible()) { //@workaround
-				CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-				if (null != controller) {
-					if (controller.isConnected()) {
-						needsConfirm = true;
-					}
-				}
-			}
+            NSWindow window = (NSWindow)windows.objectAtIndex(count);
+            if (window.isVisible()) { //@workaround
+                CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+                if (null != controller) {
+                    if (controller.isConnected()) {
+                        needsConfirm = true;
+                    }
+                }
+            }
         }
 
         if (needsConfirm) {
@@ -526,7 +526,7 @@ public class CDMainController extends NSObject {
 // Review unsaved; Quit Anyway falls through
                 count = windows.count();
                 while (0 != count--) {
-                    NSWindow window = (NSWindow) windows.objectAtIndex(count);
+                    NSWindow window = (NSWindow)windows.objectAtIndex(count);
                     CDBrowserController controller = CDBrowserController.controllerForWindow(window);
                     if (null != controller) {
                         window.makeKeyAndOrderFront(null);
@@ -556,8 +556,8 @@ public class CDMainController extends NSObject {
                 log.debug("Successfully read version info: " + propertyListFromXMLData);
             }
             if (propertyListFromXMLData instanceof NSDictionary) {
-                NSDictionary dict = (NSDictionary) propertyListFromXMLData;
-                return (String) dict.objectForKey("Version");
+                NSDictionary dict = (NSDictionary)propertyListFromXMLData;
+                return (String)dict.objectForKey("Version");
             }
         }
         return null;
@@ -566,7 +566,7 @@ public class CDMainController extends NSObject {
     private void saveVersionInfo() {
         try {
             NSMutableDictionary dict = new NSMutableDictionary();
-            dict.setObjectForKey((String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion"), "Version");
+            dict.setObjectForKey((String)NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion"), "Version");
             NSMutableData collection = new NSMutableData();
             String[] errorString = new String[]{null};
             collection.appendData(NSPropertyListSerialization.dataFromPropertyList(dict,
@@ -592,6 +592,6 @@ public class CDMainController extends NSObject {
     }
 
     public NSMenu applicationDockMenu(NSApplication sender) {
-		return this.dockMenu;
-	}
+        return this.dockMenu;
+    }
 }

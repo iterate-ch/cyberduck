@@ -287,6 +287,6 @@ public class SftpFile implements Comparable {
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     public int compareTo(Object o) {
-        return getFilename().compareTo(((SftpFile) o).getFilename());
+        return getFilename().compareTo(((SftpFile)o).getFilename());
     }
 }

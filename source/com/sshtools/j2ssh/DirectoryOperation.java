@@ -134,14 +134,14 @@ public class DirectoryOperation {
             obj = i.next();
 
             if (obj instanceof File) {
-                file = (File) obj;
+                file = (File)obj;
 
                 if (file.isFile()) {
                     size += file.length();
                 }
             }
             else if (obj instanceof SftpFile) {
-                sftpfile = (SftpFile) obj;
+                sftpfile = (SftpFile)obj;
 
                 if (sftpfile.isFile()) {
                     size += sftpfile.getAttributes().getSize().longValue();
@@ -153,14 +153,14 @@ public class DirectoryOperation {
             obj = i.next();
 
             if (obj instanceof File) {
-                file = (File) obj;
+                file = (File)obj;
 
                 if (file.isFile()) {
                     size += file.length();
                 }
             }
             else if (obj instanceof SftpFile) {
-                sftpfile = (SftpFile) obj;
+                sftpfile = (SftpFile)obj;
 
                 if (sftpfile.isFile()) {
                     size += sftpfile.getAttributes().getSize().longValue();

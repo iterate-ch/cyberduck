@@ -112,7 +112,7 @@ public class SshPrivateKeyFile {
             String ft;
 
             while (it.hasNext() && !valid) {
-                ft = (String) it.next();
+                ft = (String)it.next();
                 log.debug("Attempting " + ft);
                 format = SshPrivateKeyFormatFactory.newInstance(ft);
                 valid = format.isFormatted(formattedKey);

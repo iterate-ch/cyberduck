@@ -169,7 +169,7 @@ public class PEMReader extends PEM {
      */
     public byte[] decryptPayload(String passphrase)
             throws GeneralSecurityException {
-        String dekInfo = (String) header.get("DEK-Info");
+        String dekInfo = (String)header.get("DEK-Info");
 
         if (dekInfo != null) {
             int comma = dekInfo.indexOf(',');
@@ -183,7 +183,7 @@ public class PEMReader extends PEM {
             byte[] iv = new byte[ivString.length() / 2];
 
             for (int i = 0; i < ivString.length(); i += 2) {
-                iv[i / 2] = (byte) Integer.parseInt(ivString.substring(i, i +
+                iv[i / 2] = (byte)Integer.parseInt(ivString.substring(i, i +
                         2), 16);
             }
 

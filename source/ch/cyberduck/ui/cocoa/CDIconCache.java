@@ -38,7 +38,7 @@ public class CDIconCache extends HashMap {
     }
 
     public NSImage get(String key) {
-        NSImage img = (NSImage) super.get(key);
+        NSImage img = (NSImage)super.get(key);
         if (null == img) {
             this.put(key, img = NSWorkspace.sharedWorkspace().iconForFileType(key));
         }

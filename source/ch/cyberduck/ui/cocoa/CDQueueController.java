@@ -34,7 +34,7 @@ public class CDQueueController extends NSObject implements Observer {
 
     private static CDQueueController instance;
 
-	private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
     /**
      * The observer to notify when an upload is complete
@@ -47,9 +47,9 @@ public class CDQueueController extends NSObject implements Observer {
         log.debug("instance");
         if (null == instance) {
             instance = new CDQueueController();
-			if (false == NSApplication.loadNibNamed("Queue", instance)) {
-				log.fatal("Couldn't load Queue.nib");
-			}
+            if (false == NSApplication.loadNibNamed("Queue", instance)) {
+                log.fatal("Couldn't load Queue.nib");
+            }
         }
         return instance;
     }
@@ -58,13 +58,13 @@ public class CDQueueController extends NSObject implements Observer {
         instances.addObject(this);
     }
 
-	public boolean windowShouldClose(NSWindow sender) {
-		log.debug("windowShouldClose"+sender);
-		return true;
-	}
+    public boolean windowShouldClose(NSWindow sender) {
+        log.debug("windowShouldClose" + sender);
+        return true;
+    }
 
     public void windowWillClose(NSNotification notification) {
-		log.debug("windowWillClose:"+notification);
+        log.debug("windowWillClose:" + notification);
         QueueList.instance().save();
         instances.removeObject(this);
         instance = null;
@@ -95,11 +95,11 @@ public class CDQueueController extends NSObject implements Observer {
         // a drag with tableView.dragPromisedFilesOfTypes(), we listens for those events
         // and then use the private pasteboard instead.
         this.queueTable.registerForDraggedTypes(new NSArray(new Object[]{"QueuePBoardType",
-			NSPasteboard.StringPboardType,
-			NSPasteboard.FilesPromisePboardType}));
-		
+                                                                         NSPasteboard.StringPboardType,
+                                                                         NSPasteboard.FilesPromisePboardType}));
+
         this.queueTable.setRowHeight(50f);
-		
+
         NSTableColumn dataColumn = new NSTableColumn();
         dataColumn.setIdentifier("DATA");
         dataColumn.setMinWidth(200f);
@@ -109,7 +109,7 @@ public class CDQueueController extends NSObject implements Observer {
         dataColumn.setResizable(true);
         dataColumn.setDataCell(new CDQueueCell());
         this.queueTable.addTableColumn(dataColumn);
-		
+
         NSTableColumn progressColumn = new NSTableColumn();
         progressColumn.setIdentifier("PROGRESS");
         progressColumn.setMinWidth(80f);
@@ -119,14 +119,14 @@ public class CDQueueController extends NSObject implements Observer {
         progressColumn.setResizable(true);
         progressColumn.setDataCell(new CDProgressCell());
         this.queueTable.addTableColumn(progressColumn);
-		
+
         NSSelector setUsesAlternatingRowBackgroundColorsSelector =
-			new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
+                new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
         if (setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
             this.queueTable.setUsesAlternatingRowBackgroundColors(true);
         }
         NSSelector setGridStyleMaskSelector =
-			new NSSelector("setGridStyleMask", new Class[]{int.class});
+                new NSSelector("setGridStyleMask", new Class[]{int.class});
         if (setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
             this.queueTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
         }
@@ -135,8 +135,8 @@ public class CDQueueController extends NSObject implements Observer {
         this.queueTable.setAllowsMultipleSelection(true);
         this.queueTable.setAllowsEmptySelection(true);
         this.queueTable.setAllowsColumnReordering(false);
-		
-		this.queueTable.sizeToFit();
+
+        this.queueTable.sizeToFit();
     }
 
     public void startItem(Queue queue) {
@@ -148,103 +148,92 @@ public class CDQueueController extends NSObject implements Observer {
         this.startItem(queue, false);
     }
 
-	public void startItem(Queue queue, Observer callback, boolean resumeRequested) {
-        this.callback = callback;
-        this.startItem(queue, resumeRequested);
-    }
-	
-    public void startItem(final Queue queue, final boolean resumeRequested) {
+    public void startItem(Queue queue, boolean resumeRequested) {
         log.info("Starting item:" + queue);
-		QueueList.instance().save();
-		CDQueueController.this.queueTable.reloadData();
-		CDQueueController.this.queueTable.selectRow(QueueList.instance().indexOf(queue), false);
-		CDQueueController.this.queueTable.scrollRowToVisible(QueueList.instance().indexOf(queue));
-		
-		if (Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
-			CDQueueController.this.window().makeKeyAndOrderFront(null);
-		}
-		
-		queue.getRoot().getHost().getLogin().setController(new CDLoginController(CDQueueController.this.window()));
-		if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
-			try {
-				queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(CDQueueController.this.window()));
-			}
-			catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
-				CDQueueController.this.window().makeKeyAndOrderFront(null);
-				//This exception is thrown whenever an exception occurs open or reading from the host file.
-				NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", ""), //title
-													 NSBundle.localizedString("OK", ""), // defaultbutton
-													 null, //alternative button
-													 null, //other button
-													 CDQueueController.this.window(), //docWindow
-													 null, //modalDelegate
-													 null, //didEndSelector
-													 null, // dismiss selector
-													 null, // context
-													 NSBundle.localizedString("Could not open or read the host file", "") + ": " + e.getMessage() // message
-													 );
-				return;
-			}
-		}
-		queue.start(new CDValidatorController(queue.kind(), resumeRequested), CDQueueController.this);
+        QueueList.instance().save();
+        this.queueTable.reloadData();
+        this.queueTable.selectRow(QueueList.instance().indexOf(queue), false);
+        this.queueTable.scrollRowToVisible(QueueList.instance().indexOf(queue));
+
+        if (Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
+            this.window().makeKeyAndOrderFront(null);
+        }
+
+        queue.getRoot().getHost().getLogin().setController(new CDLoginController(this.window()));
+        if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
+            try {
+                queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(this.window()));
+            }
+            catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
+                this.window().makeKeyAndOrderFront(null);
+                //This exception is thrown whenever an exception occurs open or reading from the host file.
+                NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", ""), //title
+                        NSBundle.localizedString("OK", ""), // defaultbutton
+                        null, //alternative button
+                        null, //other button
+                        this.window(), //docWindow
+                        null, //modalDelegate
+                        null, //didEndSelector
+                        null, // dismiss selector
+                        null, // context
+                        NSBundle.localizedString("Could not open or read the host file", "") + ": " + e.getMessage() // message
+                );
+            }
+        }
+        queue.start(new CDValidatorController(queue.kind(), resumeRequested), this);
     }
-	
-    public void update(final Observable observable, final Object arg) {
+
+    public void update(Observable observable, Object arg) {
 //		log.debug("update:"+observable+","+arg);
-        ThreadUtilities.instance().invokeLater(new Runnable() {
-            public void run() {
-				if (arg instanceof Message) {
-					Message msg = (Message) arg;
-					if (msg.getTitle().equals(Message.PROGRESS) || msg.getTitle().equals(Message.ERROR)) {
-						if (window().isVisible()) {
-							if (queueTable.visibleRect() != NSRect.ZeroRect) {
-								int row = QueueList.instance().indexOf((Queue) observable);
-								NSRect queueRect = queueTable.frameOfCellAtLocation(0, row);
-								queueTable.setNeedsDisplay(queueRect);
-							}
-						}
-					}
-					else if (msg.getTitle().equals(Message.DATA)) {
-						if (window().isVisible()) {
-							if (queueTable.visibleRect() != NSRect.ZeroRect) {
-								int row = QueueList.instance().indexOf((Queue) observable);
-								NSRect progressRect = queueTable.frameOfCellAtLocation(1, row);
-								queueTable.setNeedsDisplay(progressRect);
-							}
-						}
-					}
-					else if (msg.getTitle().equals(Message.QUEUE_START)) {
-						toolbar.validateVisibleItems();
-						QueueList.instance().save();
-					}
-					else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
-						toolbar.validateVisibleItems();
-						Queue queue = (Queue) observable;
-						if (queue.isComplete()) {
-							if (Queue.KIND_DOWNLOAD == queue.kind()) {
-								if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
-									boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
-									log.debug("Success opening file:" + success);
-								}
-							}
-							if (Queue.KIND_UPLOAD == queue.kind()) {
-								if (callback != null) {
-									log.debug("Telling observable to refresh directory listing");
-									callback.update(observable, new Message(Message.REFRESH));
-								}
-							}
-							if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
-								queueTable.deselectAll(null);
-								QueueList.instance().removeItem(queue);
-								queueTable.reloadData();
-							}
-						}
-						QueueList.instance().save();
-					}
-				}
-			}
-		}
-											   );
+        if (arg instanceof Message) {
+            Message msg = (Message)arg;
+            if (msg.getTitle().equals(Message.PROGRESS) || msg.getTitle().equals(Message.ERROR)) {
+                if (this.window().isVisible()) {
+                    if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
+                        int row = QueueList.instance().indexOf((Queue)observable);
+                        NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
+                        this.queueTable.setNeedsDisplay(queueRect);
+                    }
+                }
+            }
+            else if (msg.getTitle().equals(Message.DATA)) {
+                if (this.window().isVisible()) {
+                    if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
+                        int row = QueueList.instance().indexOf((Queue)observable);
+                        NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
+                        this.queueTable.setNeedsDisplay(progressRect);
+                    }
+                }
+            }
+            else if (msg.getTitle().equals(Message.QUEUE_START)) {
+                this.toolbar.validateVisibleItems();
+                QueueList.instance().save();
+            }
+            else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+                this.toolbar.validateVisibleItems();
+                Queue queue = (Queue)observable;
+                if (queue.isComplete()) {
+                    if (Queue.KIND_DOWNLOAD == queue.kind()) {
+                        if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
+                            boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+                            log.debug("Success opening file:" + success);
+                        }
+                    }
+                    if (Queue.KIND_UPLOAD == queue.kind()) {
+                        if (callback != null) {
+                            log.debug("Telling observable to refresh directory listing");
+                            callback.update(observable, new Message(Message.REFRESH));
+                        }
+                    }
+                    if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
+                        this.queueTable.deselectAll(null);
+                        QueueList.instance().removeItem(queue);
+                        this.queueTable.reloadData();
+                    }
+                }
+                QueueList.instance().save();
+            }
+        }
     }
 
     public void awakeFromNib() {
@@ -268,7 +257,7 @@ public class CDQueueController extends NSObject implements Observer {
             item.setImage(NSImage.imageNamed("stop.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("stopButtonClicked", new Class[]{Object.class}));
-			return item;
+            return item;
         }
         if (itemIdentifier.equals("Resume")) {
             item.setLabel(NSBundle.localizedString("Resume", ""));
@@ -276,7 +265,7 @@ public class CDQueueController extends NSObject implements Observer {
             item.setImage(NSImage.imageNamed("resume.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("resumeButtonClicked", new Class[]{Object.class}));
-			return item;
+            return item;
         }
         if (itemIdentifier.equals("Reload")) {
             item.setLabel(NSBundle.localizedString("Reload", ""));
@@ -284,7 +273,7 @@ public class CDQueueController extends NSObject implements Observer {
             item.setImage(NSImage.imageNamed("reload.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("reloadButtonClicked", new Class[]{Object.class}));
-			return item;
+            return item;
         }
         if (itemIdentifier.equals("Show")) {
             item.setLabel(NSBundle.localizedString("Show", ""));
@@ -292,7 +281,7 @@ public class CDQueueController extends NSObject implements Observer {
             item.setImage(NSImage.imageNamed("reveal.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("revealButtonClicked", new Class[]{Object.class}));
-			return item;
+            return item;
         }
         if (itemIdentifier.equals("Remove")) {
             item.setLabel(NSBundle.localizedString("Remove", ""));
@@ -300,7 +289,7 @@ public class CDQueueController extends NSObject implements Observer {
             item.setImage(NSImage.imageNamed("clean.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("removeButtonClicked", new Class[]{Object.class}));
-			return item;
+            return item;
         }
         if (itemIdentifier.equals("Clear")) {
             item.setLabel(NSBundle.localizedString("Clear", ""));
@@ -308,10 +297,10 @@ public class CDQueueController extends NSObject implements Observer {
             item.setImage(NSImage.imageNamed("cleanAll.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("clearButtonClicked", new Class[]{Object.class}));
-			return item;
+            return item;
         }
-		// itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
-		// Returning null will inform the toolbar this kind of item is not supported.
+        // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
+        // Returning null will inform the toolbar this kind of item is not supported.
         return null;
     }
 
@@ -330,7 +319,7 @@ public class CDQueueController extends NSObject implements Observer {
     public void stopButtonClicked(Object sender) {
         NSEnumerator enum = queueTable.selectedRowEnumerator();
         while (enum.hasMoreElements()) {
-            Queue queue = QueueList.instance().getItem(((Integer) enum.nextElement()).intValue());
+            Queue queue = QueueList.instance().getItem(((Integer)enum.nextElement()).intValue());
             if (queue.isRunning()) {
                 queue.cancel();
             }
@@ -340,7 +329,7 @@ public class CDQueueController extends NSObject implements Observer {
     public void resumeButtonClicked(Object sender) {
         NSEnumerator enum = queueTable.selectedRowEnumerator();
         while (enum.hasMoreElements()) {
-            Queue queue = QueueList.instance().getItem(((Integer) enum.nextElement()).intValue());
+            Queue queue = QueueList.instance().getItem(((Integer)enum.nextElement()).intValue());
             if (!queue.isRunning()) {
                 this.startItem(queue, true);
             }
@@ -350,7 +339,7 @@ public class CDQueueController extends NSObject implements Observer {
     public void reloadButtonClicked(Object sender) {
         NSEnumerator enum = queueTable.selectedRowEnumerator();
         while (enum.hasMoreElements()) {
-            Queue queue = QueueList.instance().getItem(((Integer) enum.nextElement()).intValue());
+            Queue queue = QueueList.instance().getItem(((Integer)enum.nextElement()).intValue());
             if (!queue.isRunning()) {
                 this.startItem(queue, false);
             }
@@ -402,7 +391,7 @@ public class CDQueueController extends NSObject implements Observer {
         NSEnumerator enum = queueTable.selectedRowEnumerator();
         int i = 0;
         while (enum.hasMoreElements()) {
-            QueueList.instance().removeItem(((Integer) enum.nextElement()).intValue() - i);
+            QueueList.instance().removeItem(((Integer)enum.nextElement()).intValue() - i);
             i++;
         }
         this.queueTable.reloadData();
@@ -410,7 +399,7 @@ public class CDQueueController extends NSObject implements Observer {
 
     public void clearButtonClicked(Object sender) {
         for (Iterator iter = QueueList.instance().iterator(); iter.hasNext();) {
-            Queue q = (Queue) iter.next();
+            Queue q = (Queue)iter.next();
             if (q.getSize() == q.getCurrent() && q.getSize() > 0) {
                 iter.remove();
             }
@@ -463,7 +452,7 @@ public class CDQueueController extends NSObject implements Observer {
             }
             NSEnumerator enum = queueTable.selectedRowEnumerator();
             while (enum.hasMoreElements()) {
-                Queue queue = QueueList.instance().getItem(((Integer) enum.nextElement()).intValue());
+                Queue queue = QueueList.instance().getItem(((Integer)enum.nextElement()).intValue());
                 if (!queue.isRunning()) {
                     return false;
                 }
@@ -523,7 +512,7 @@ return true;
             }
             NSEnumerator enum = queueTable.selectedRowEnumerator();
             while (enum.hasMoreElements()) {
-                Queue queue = QueueList.instance().getItem(((Integer) enum.nextElement()).intValue());
+                Queue queue = QueueList.instance().getItem(((Integer)enum.nextElement()).intValue());
                 if (queue.isRunning()) {
                     return false;
                 }

@@ -96,9 +96,9 @@ class SshAgentKeyList extends SubsystemMessage {
             String description;
 
             while (it.hasNext()) {
-                entry = (Map.Entry) it.next();
-                key = (SshPublicKey) entry.getKey();
-                description = (String) entry.getValue();
+                entry = (Map.Entry)it.next();
+                key = (SshPublicKey)entry.getKey();
+                description = (String)entry.getValue();
                 baw.writeBinaryString(key.getEncoded());
                 baw.writeString(description);
             }
@@ -120,7 +120,7 @@ class SshAgentKeyList extends SubsystemMessage {
             throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
-            int num = (int) bar.readInt();
+            int num = (int)bar.readInt();
             SshPublicKey key;
             String description;
             byte[] buf;

@@ -71,7 +71,7 @@ public class Queue extends Observable implements Observer { //Thread {
     private List roots = new ArrayList();
 
     public Path getRoot() {
-        return (Path) roots.get(0);
+        return (Path)roots.get(0);
     }
 
     /**
@@ -110,25 +110,25 @@ public class Queue extends Observable implements Observer { //Thread {
     public Queue(NSDictionary dict) {
         Object kindObj = dict.objectForKey("Kind");
         if (kindObj != null) {
-            this.kind = Integer.parseInt((String) kindObj);
+            this.kind = Integer.parseInt((String)kindObj);
         }
         Object hostObj = dict.objectForKey("Host");
         if (hostObj != null) {
-            Host host = new Host((NSDictionary) hostObj);
+            Host host = new Host((NSDictionary)hostObj);
             Session s = SessionFactory.createSession(host);
             Object rootsObj = dict.objectForKey("Roots");
             if (rootsObj != null) {
-                NSArray r = (NSArray) rootsObj;
+                NSArray r = (NSArray)rootsObj;
                 for (int i = 0; i < r.count(); i++) {
-                    this.addRoot(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
+                    this.addRoot(PathFactory.createPath(s, (NSDictionary)r.objectAtIndex(i)));
                 }
             }
             Object itemsObj = dict.objectForKey("Items");
             if (itemsObj != null) {
-                NSArray items = (NSArray) itemsObj;
+                NSArray items = (NSArray)itemsObj;
                 if (null != items) {
                     for (int i = 0; i < items.count(); i++) {
-                        this.jobs.add(PathFactory.createPath(s, (NSDictionary) items.objectAtIndex(i)));
+                        this.jobs.add(PathFactory.createPath(s, (NSDictionary)items.objectAtIndex(i)));
                     }
                 }
             }
@@ -142,12 +142,12 @@ public class Queue extends Observable implements Observer { //Thread {
         dict.setObjectForKey(this.getRoot().getHost().getAsDictionary(), "Host");
         NSMutableArray r = new NSMutableArray();
         for (Iterator iter = this.roots.iterator(); iter.hasNext();) {
-            r.addObject(((Path) iter.next()).getAsDictionary());
+            r.addObject(((Path)iter.next()).getAsDictionary());
         }
         dict.setObjectForKey(r, "Roots");
         NSMutableArray items = new NSMutableArray();
         for (Iterator iter = jobs.iterator(); iter.hasNext();) {
-            items.addObject(((Path) iter.next()).getAsDictionary());
+            items.addObject(((Path)iter.next()).getAsDictionary());
         }
         dict.setObjectForKey(items, "Items");
         return dict;
@@ -182,16 +182,16 @@ public class Queue extends Observable implements Observer { //Thread {
 
     public void update(Observable o, Object arg) {
         if (arg instanceof Message) {
-            Message msg = (Message) arg;
+            Message msg = (Message)arg;
             if (msg.getTitle().equals(Message.DATA)) {
                 this.callObservers(arg);
             }
             else if (msg.getTitle().equals(Message.PROGRESS)) {
-                this.status = (String) msg.getContent();
+                this.status = (String)msg.getContent();
                 this.callObservers(arg);
             }
             else if (msg.getTitle().equals(Message.ERROR)) {
-                this.error = " : " + (String) msg.getContent();
+                this.error = " : " + (String)msg.getContent();
                 this.callObservers(arg);
             }
         }
@@ -204,45 +204,47 @@ public class Queue extends Observable implements Observer { //Thread {
      *                  the file already exists at the download location
      */
     public synchronized void start(final Validator validator, final Observer observer) {
-		new Thread() {
-			public void run() {
-				log.debug("start");
-				Queue.this.error = "";
-				Queue.this.jobs.clear();
-				Queue.this.addObserver(observer);
-				
-				Queue.this.elapsedTimer.start();
-				Queue.this.running = true;
-				Queue.this.canceled = false;
-				Queue.this.callObservers(new Message(Message.QUEUE_START, Queue.this));
-				
-				Queue.this.getRoot().getSession().addObserver(Queue.this);
-				Queue.this.getRoot().getSession().cache().clear();
-				for (Iterator i = roots.iterator(); i.hasNext() && !Queue.this.isCanceled();) {
-					Path r = (Path) i.next();
-					log.debug("Iterating over childs of " + r);
-					Iterator childs = r.getChilds(Queue.this.kind).iterator();
-					while (childs.hasNext() && !Queue.this.isCanceled()) {
-						log.debug("Adding child to queue...");
-						Queue.this.jobs.add((Path) childs.next());
-					}
-				}
-				
-				for (Iterator iter = jobs.iterator(); iter.hasNext() && !Queue.this.isCanceled();) {
-					Path item = (Path) iter.next();
-					if(log.isDebugEnabled())
-						log.debug("Validating " + item.toString());
-					if (!validator.validate(item)) {
-						iter.remove();
-					}
-					item.status.reset();
-				}
-				
+        log.debug("start");
+        this.error = "";
+        this.jobs.clear();
+        new Thread() {
+            public void run() {
+                int mypool = NSAutoreleasePool.push();
+
+                Queue.this.addObserver(observer);
+
+                Queue.this.elapsedTimer.start();
+                Queue.this.running = true;
+                Queue.this.canceled = false;
+                Queue.this.callObservers(new Message(Message.QUEUE_START, Queue.this));
+
+                Queue.this.getRoot().getSession().addObserver(Queue.this);
+                Queue.this.getRoot().getSession().cache().clear();
+                for (Iterator i = roots.iterator(); i.hasNext() && !Queue.this.isCanceled();) {
+                    Path r = (Path)i.next();
+                    log.debug("Iterating over childs of " + r);
+                    Iterator childs = r.getChilds(Queue.this.kind).iterator();
+                    while (childs.hasNext() && !Queue.this.isCanceled()) {
+                        log.debug("Adding child to queue...");
+                        Queue.this.jobs.add((Path)childs.next());
+                    }
+                }
+
+                for (Iterator iter = jobs.iterator(); iter.hasNext() && !Queue.this.isCanceled();) {
+                    Path item = (Path)iter.next();
+                    log.debug("Validating " + item.toString());
+                    if (!validator.validate(item)) {
+                        iter.remove();
+                    }
+                    item.status.reset();
+                }
+
 				Queue.this.progressTimer.start();
 				Queue.this.leftTimer.start();
-				for (Iterator iter = jobs.iterator(); iter.hasNext() && !Queue.this.isCanceled();) {
-					Queue.this.currentJob = (Path) iter.next();
-					Queue.this.currentJob.status.addObserver(Queue.this);
+                for (Iterator iter = jobs.iterator(); iter.hasNext() && !Queue.this.isCanceled();) {
+					Queue.this.currentJob = (Path)iter.next();
+					Queue.this.currentJob.status.addObserver(this);
+					
 					switch (kind) {
 						case KIND_DOWNLOAD:
 							Queue.this.currentJob.download();
@@ -251,21 +253,24 @@ public class Queue extends Observable implements Observer { //Thread {
 							Queue.this.currentJob.upload();
 							break;
 					}
-					Queue.this.currentJob.status.deleteObserver(Queue.this);
-				}
+					
+					Queue.this.currentJob.status.deleteObserver(this);
+                }
 				Queue.this.progressTimer.stop();
 				Queue.this.leftTimer.stop();
-				
-				Queue.this.getRoot().getSession().close();
-				Queue.this.getRoot().getSession().deleteObserver(Queue.this);
-				
-				Queue.this.running = false;
-				Queue.this.elapsedTimer.stop();
-				Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
-				
-				Queue.this.deleteObserver(observer);
-			}
-		}.start();
+
+                Queue.this.getRoot().getSession().close();
+                Queue.this.getRoot().getSession().deleteObserver(Queue.this);
+
+                Queue.this.running = false;
+                Queue.this.elapsedTimer.stop();
+                Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
+
+                Queue.this.deleteObserver(observer);
+
+                NSAutoreleasePool.pop(mypool);
+            }
+        }.start();
     }
 
     /**
@@ -274,12 +279,12 @@ public class Queue extends Observable implements Observer { //Thread {
      * @pre The thread must be running
      */
     public void cancel() {
-		//this.currentJob.status.setCanceled(true);
-		for (Iterator iter = jobs.iterator(); iter.hasNext();) {
-			((Path) iter.next()).status.setCanceled(true);
-		}
-		this.canceled = true;
-		//            this.running = false;
+        //this.currentJob.status.setCanceled(true);
+        for (Iterator iter = jobs.iterator(); iter.hasNext();) {
+            ((Path)iter.next()).status.setCanceled(true);
+        }
+        this.canceled = true;
+        //            this.running = false;
     }
 
     /**
@@ -295,7 +300,7 @@ public class Queue extends Observable implements Observer { //Thread {
      *         been cancled by the user.
      */
     private boolean isCanceled() {
-		return this.canceled;
+        return this.canceled;
 //        return !this.isRunning();
     }
 
@@ -336,7 +341,7 @@ public class Queue extends Observable implements Observer { //Thread {
     private long calculateTotalSize() {
         long value = 0;
         for (Iterator iter = jobs.iterator(); iter.hasNext();) {
-            value += ((Path) iter.next()).status.getSize();
+            value += ((Path)iter.next()).status.getSize();
         }
         return value;
     }
@@ -355,7 +360,7 @@ public class Queue extends Observable implements Observer { //Thread {
     private long calculateCurrentSize() {
         long value = 0;
         for (Iterator iter = jobs.iterator(); iter.hasNext();) {
-            value += ((Path) iter.next()).status.getCurrent();
+            value += ((Path)iter.next()).status.getCurrent();
         }
         return value;
     }
@@ -396,7 +401,7 @@ public class Queue extends Observable implements Observer { //Thread {
             //@todo: implementation of better 'time left' management.
             if (this.timeLeft != -1) {
                 if (this.timeLeft >= 60) {
-                    return (int) this.timeLeft / 60 + " minutes remaining.";
+                    return (int)this.timeLeft / 60 + " minutes remaining.";
                 }
                 else {
                     return this.timeLeft + " seconds remaining.";
@@ -450,14 +455,14 @@ public class Queue extends Observable implements Observer { //Thread {
                         // calendar.set(year, mont, date, hour, minute, second)
                         // >= one hour
                         if (seconds >= 3600) {
-                            hours = (int) (seconds / 60 / 60);
-                            minutes = (int) ((seconds - hours * 60 * 60) / 60);
+                            hours = (int)(seconds / 60 / 60);
+                            minutes = (int)((seconds - hours * 60 * 60) / 60);
                             calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), hours, minutes, seconds - minutes * 60);
                         }
                         else {
                             // >= one minute
                             if (seconds >= 60) {
-                                minutes = (int) (seconds / 60);
+                                minutes = (int)(seconds / 60);
                                 calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), minutes, seconds - minutes * 60);
                             }
                             // only seconds
@@ -502,7 +507,7 @@ public class Queue extends Observable implements Observer { //Thread {
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         if (getSpeed() > 0) {
-                            Queue.this.setTimeLeft((int) ((Queue.this.getSize() - currentJob.status.getCurrent()) / getSpeed()));
+                            Queue.this.setTimeLeft((int)((Queue.this.getSize() - currentJob.status.getCurrent()) / getSpeed()));
                         }
                         else {
                             Queue.this.setTimeLeft(-1);

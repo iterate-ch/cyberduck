@@ -153,7 +153,7 @@ class Authenticator {
         log.debug("Authenticator.basic(String,HttpState)");
         UsernamePasswordCredentials cred = null;
         try {
-            cred = (UsernamePasswordCredentials) (state.getCredentials(realm));
+            cred = (UsernamePasswordCredentials)(state.getCredentials(realm));
         }
         catch (ClassCastException e) {
             throw new HttpException("UsernamePasswordCredentials required for Basic authentication.");
@@ -163,7 +163,7 @@ class Authenticator {
                 log.info("No credentials found for realm \"" + realm + "\", attempting to use default credentials.");
             }
             try {
-                cred = (UsernamePasswordCredentials) (state.getCredentials(null));
+                cred = (UsernamePasswordCredentials)(state.getCredentials(null));
             }
             catch (ClassCastException e) {
                 throw new HttpException("UsernamePasswordCredentials required for Basic authentication.");

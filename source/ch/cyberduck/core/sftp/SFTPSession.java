@@ -59,7 +59,7 @@ public class SFTPSession extends Session {
     }
 
     public synchronized void close() {
-		this.callObservers(new Message(Message.CLOSE, "Closing session."));
+        this.callObservers(new Message(Message.CLOSE, "Closing session."));
         try {
             if (this.SFTP != null) {
                 this.log("Disconnecting...", Message.PROGRESS);
@@ -189,9 +189,9 @@ public class SFTPSession extends Session {
             if (AuthenticationProtocolState.COMPLETE == result) {
                 this.log("Login sucessfull", Message.PROGRESS);
                 if (keyFile.isPassphraseProtected()) {
-					if(credentials.usesKeychain()) {
-						credentials.addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(), passphrase);
-					}
+                    if (credentials.usesKeychain()) {
+                        credentials.addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(), passphrase);
+                    }
                 }
             }
             else {
@@ -216,7 +216,7 @@ public class SFTPSession extends Session {
         }
         return null;
     }
-	
+
     public synchronized void check() throws IOException {
         log.debug(this.toString() + ":check");
         this.log("Working", Message.START);

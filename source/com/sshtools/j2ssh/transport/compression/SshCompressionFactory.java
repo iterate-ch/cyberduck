@@ -66,7 +66,7 @@ public class SshCompressionFactory {
             InputStream in;
 
             while ((enum != null) && enum.hasMoreElements()) {
-                url = (URL) enum.nextElement();
+                url = (URL)enum.nextElement();
                 in = url.openStream();
                 properties.load(in);
                 IOUtil.closeStream(in);
@@ -137,7 +137,7 @@ public class SshCompressionFactory {
                 return null;
             }
             else {
-                return (SshCompression) ((Class) comps.get(algorithmName)).newInstance();
+                return (SshCompression)((Class)comps.get(algorithmName)).newInstance();
             }
         }
         catch (Exception e) {

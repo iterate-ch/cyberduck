@@ -90,7 +90,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
     public SftpSubsystemClient() {
         // We will use our own message store implementation
         super("sftp", new SftpMessageStore());
-        messageStore = (SftpMessageStore) super.messageStore;
+        messageStore = (SftpMessageStore)super.messageStore;
         registerMessages();
     }
 
@@ -180,7 +180,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
             SubsystemMessage reply = messageStore.getMessage(requestId);
 
             if (reply instanceof SshFxpName) {
-                SshFxpName names = (SshFxpName) reply;
+                SshFxpName names = (SshFxpName)reply;
                 SftpFile[] files = names.getFiles();
                 SftpFile f;
 
@@ -193,7 +193,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
                 return files.length;
             }
             else if (reply instanceof SshFxpStatus) {
-                SshFxpStatus status = (SshFxpStatus) reply;
+                SshFxpStatus status = (SshFxpStatus)reply;
 
                 if (status.getErrorCode().intValue() == SshFxpStatus.STATUS_FX_EOF) {
                     return -1;
@@ -287,14 +287,14 @@ public class SftpSubsystemClient extends SubsystemChannel {
             SubsystemMessage reply = messageStore.getMessage(requestId);
             if (reply instanceof SshFxpAttrs) {
                 SftpFile file = new SftpFile(absolutePath,
-                        ((SshFxpAttrs) reply).getAttributes());
+                        ((SshFxpAttrs)reply).getAttributes());
                 file.setHandle(handle);
                 file.setSFTPSubsystem(this);
 
                 return file;
             }
             else if (reply instanceof SshFxpStatus) {
-                throw new IOException(((SshFxpStatus) reply).getErrorMessage());
+                throw new IOException(((SshFxpStatus)reply).getErrorMessage());
             }
             else {
                 throw new IOException("Unexpected server response " +
@@ -329,7 +329,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
             SubsystemMessage reply = messageStore.getMessage(requestId);
 
             if (reply instanceof SshFxpName) {
-                SftpFile[] files = ((SshFxpName) reply).getFiles();
+                SftpFile[] files = ((SshFxpName)reply).getFiles();
 
                 if (files.length != 1) {
                     throw new IOException("Server responded to SSH_FXP_REALPATH with too many files!");
@@ -338,7 +338,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
                 return files[0].getAbsolutePath();
             }
             else if (reply instanceof SshFxpStatus) {
-                throw new IOException(((SshFxpStatus) reply).getErrorMessage());
+                throw new IOException(((SshFxpStatus)reply).getErrorMessage());
             }
             else {
                 throw new IOException("Unexpected server response " +
@@ -412,10 +412,10 @@ public class SftpSubsystemClient extends SubsystemChannel {
             SubsystemMessage reply = messageStore.getMessage(requestId);
 
             if (reply instanceof SshFxpAttrs) {
-                return ((SshFxpAttrs) reply).getAttributes();
+                return ((SshFxpAttrs)reply).getAttributes();
             }
             else if (reply instanceof SshFxpStatus) {
-                throw new IOException(((SshFxpStatus) reply).getErrorMessage());
+                throw new IOException(((SshFxpStatus)reply).getErrorMessage());
             }
             else {
                 throw new IOException("Unexpected server response " +
@@ -450,10 +450,10 @@ public class SftpSubsystemClient extends SubsystemChannel {
             SubsystemMessage reply = messageStore.getMessage(requestId);
 
             if (reply instanceof SshFxpAttrs) {
-                return ((SshFxpAttrs) reply).getAttributes();
+                return ((SshFxpAttrs)reply).getAttributes();
             }
             else if (reply instanceof SshFxpStatus) {
-                throw new IOException(((SshFxpStatus) reply).getErrorMessage());
+                throw new IOException(((SshFxpStatus)reply).getErrorMessage());
             }
             else {
                 throw new IOException("Unexpected server response " +
@@ -494,19 +494,19 @@ public class SftpSubsystemClient extends SubsystemChannel {
             SubsystemMessage reply = messageStore.getMessage(requestId);
 
             if (reply instanceof SshFxpData) {
-                byte[] msgdata = ((SshFxpData) reply).getData();
+                byte[] msgdata = ((SshFxpData)reply).getData();
                 System.arraycopy(msgdata, 0, output, off, msgdata.length);
 
                 return msgdata.length;
             }
             else if (reply instanceof SshFxpStatus) {
-                SshFxpStatus status = (SshFxpStatus) reply;
+                SshFxpStatus status = (SshFxpStatus)reply;
 
                 if (status.getErrorCode().intValue() == SshFxpStatus.STATUS_FX_EOF) {
                     return -1;
                 }
                 else {
-                    throw new IOException(((SshFxpStatus) reply).getErrorMessage());
+                    throw new IOException(((SshFxpStatus)reply).getErrorMessage());
                 }
             }
             else {
@@ -610,7 +610,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
             SubsystemMessage reply = messageStore.getMessage(requestId);
 
             if (reply instanceof SshFxpName) {
-                SftpFile[] files = ((SshFxpName) reply).getFiles();
+                SftpFile[] files = ((SshFxpName)reply).getFiles();
 
                 if (files.length != 1) {
                     throw new IOException("Server responded to SSH_FXP_REALLINK with too many files!");
@@ -619,7 +619,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
                 return files[0].getAbsolutePath();
             }
             else if (reply instanceof SshFxpStatus) {
-                throw new IOException(((SshFxpStatus) reply).getErrorMessage());
+                throw new IOException(((SshFxpStatus)reply).getErrorMessage());
             }
             else {
                 throw new IOException("Unexpected server response " +
@@ -751,7 +751,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 
         if (reply instanceof SshFxpVersion) {
             result = true;
-            version = ((SshFxpVersion) reply).getVersion().intValue();
+            version = ((SshFxpVersion)reply).getVersion().intValue();
             log.info("Server responded with version " +
                     String.valueOf(version));
         }
@@ -765,7 +765,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
             SubsystemMessage reply = messageStore.getMessage(requestId);
 
             if (reply instanceof SshFxpHandle) {
-                byte[] handle = ((SshFxpHandle) reply).getHandle();
+                byte[] handle = ((SshFxpHandle)reply).getHandle();
 
                 // Add the handle to our managed list
                 handles.add(handle);
@@ -773,7 +773,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
                 return handle;
             }
             else if (reply instanceof SshFxpStatus) {
-                throw new IOException(((SshFxpStatus) reply).getErrorMessage());
+                throw new IOException(((SshFxpStatus)reply).getErrorMessage());
             }
             else {
                 throw new IOException("Unexpected server response " +
@@ -796,10 +796,10 @@ public class SftpSubsystemClient extends SubsystemChannel {
             log.info("Received response");
 
             if (reply instanceof SshFxpStatus) {
-                SshFxpStatus status = (SshFxpStatus) reply;
+                SshFxpStatus status = (SshFxpStatus)reply;
 
                 if (status.getErrorCode().intValue() != SshFxpStatus.STATUS_FX_OK) {
-                    throw new IOException(((SshFxpStatus) reply).getErrorMessage());
+                    throw new IOException(((SshFxpStatus)reply).getErrorMessage());
                 }
             }
             else {

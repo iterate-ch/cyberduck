@@ -18,41 +18,41 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import java.lang.Runnable;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 public class ThreadUtilities {
     private static Logger log = Logger.getLogger(ThreadUtilities.class);
-	
-	private static ThreadUtilities instance;
-	
-	private List queue;
-	
-	private ThreadUtilities() {
-		this.queue = new ArrayList();
-	}
-	
-	public static ThreadUtilities instance() {
+
+    private static ThreadUtilities instance;
+
+    private List queue;
+
+    private ThreadUtilities() {
+        this.queue = new ArrayList();
+    }
+
+    public static ThreadUtilities instance() {
         if (null == instance) {
             instance = new ThreadUtilities();
         }
         return instance;
     }
-	
-	public synchronized void invokeLater(Runnable thread) {
-		//log.debug("invokeLater:"+thread);
-		this.queue.add(thread);
-	}
-	
-	public synchronized Runnable next() {
-		//log.debug("next");
+
+    public synchronized void invokeLater(Runnable thread) {
+        //log.debug("invokeLater:"+thread);
+        this.queue.add(thread);
+    }
+
+    public synchronized Runnable next() {
+        //log.debug("next");
 //		if(log.isDebugEnabled())
 //			log.debug("Size of thread queue:"+queue.size()+" objects waiting for removal");
-        if (this.queue.isEmpty())
+        if (this.queue.isEmpty()) {
             return null;
+        }
         return (Runnable)this.queue.remove(0);
-    }	
+    }
 }

@@ -177,7 +177,7 @@ public abstract class SubsystemClient implements Runnable {
                 read = in.read(buffer);
 
                 if (read > 0) {
-                    len = (int) ByteArrayReader.readInt(buffer, 0);
+                    len = (int)ByteArrayReader.readInt(buffer, 0);
                     msg = new byte[len];
                     pos = 0;
 

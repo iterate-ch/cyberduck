@@ -322,10 +322,10 @@ public class URIUtil {
         while (ix < end) {
             byte b = bytes[ix++];     // Get byte to test
             if (plusIsSpace && b == '+') {
-                b = (byte) ' ';
+                b = (byte)' ';
             }
             else if (b == '%') {
-                b = (byte) ((convertHexDigit(bytes[ix++]) << 4)
+                b = (byte)((convertHexDigit(bytes[ix++]) << 4)
                         + convertHexDigit(bytes[ix++]));
             }
             bytes[ox++] = b;
@@ -489,7 +489,7 @@ public class URIUtil {
         }
         StringBuffer rewrittenStr = new StringBuffer(len);
         for (int i = off; i < len; i++) {
-            char c = (char) bytes[i];
+            char c = (char)bytes[i];
             if (safe.get(c)) {
                 rewrittenStr.append(c);
             }
@@ -500,8 +500,8 @@ public class URIUtil {
                 else {
                     byte toEscape = bytes[i];
                     rewrittenStr.append('%');
-                    int low = (int) (toEscape & 0x0f);
-                    int high = (int) ((toEscape & 0xf0) >> 4);
+                    int low = (int)(toEscape & 0x0f);
+                    int high = (int)((toEscape & 0xf0) >> 4);
                     rewrittenStr.append(hexadecimal[high]);
                     rewrittenStr.append(hexadecimal[low]);
                 }
@@ -728,21 +728,21 @@ public class URIUtil {
             case '7':
             case '8':
             case '9':
-                return (byte) (b - '0');
+                return (byte)(b - '0');
             case 'a':
             case 'b':
             case 'c':
             case 'd':
             case 'e':
             case 'f':
-                return (byte) (b - 'a' + 10);
+                return (byte)(b - 'a' + 10);
             case 'A':
             case 'B':
             case 'C':
             case 'D':
             case 'E':
             case 'F':
-                return (byte) (b - 'A' + 10);
+                return (byte)(b - 'A' + 10);
             default:
                 throw new IllegalArgumentException(b + " is not a hex value");
         }

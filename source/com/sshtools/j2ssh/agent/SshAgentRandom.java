@@ -101,7 +101,7 @@ class SshAgentRandom extends SubsystemMessage {
             throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
-            length = (int) bar.readInt();
+            length = (int)bar.readInt();
         }
         catch (IOException ioe) {
             throw new InvalidMessageException(ioe.getMessage());

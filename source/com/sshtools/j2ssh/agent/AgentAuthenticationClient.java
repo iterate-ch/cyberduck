@@ -149,9 +149,9 @@ public class AgentAuthenticationClient extends SshAuthenticationClient {
         Map.Entry entry;
 
         while (it.hasNext() && !acceptable) {
-            entry = (Map.Entry) it.next();
-            key = (SshPublicKey) entry.getKey();
-            description = (String) entry.getValue();
+            entry = (Map.Entry)it.next();
+            key = (SshPublicKey)entry.getKey();
+            description = (String)entry.getValue();
             acceptable = acceptsKey(authentication, getUsername(),
                     serviceToStart, key);
             log.info("Agent authentication with key " + key.getFingerprint() +
@@ -240,7 +240,7 @@ public class AgentAuthenticationClient extends SshAuthenticationClient {
             SshPublicKey key;
 
             for (Iterator x = keys.keySet().iterator(); x.hasNext();) {
-                key = (SshPublicKey) x.next();
+                key = (SshPublicKey)x.next();
 
                 if (ssh.acceptsKey(getUsername(), key)) {
                     return true;

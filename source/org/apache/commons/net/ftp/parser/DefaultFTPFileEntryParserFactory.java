@@ -68,39 +68,39 @@ public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFacto
                 return createNTFTPEntryParser();
             }
             else if (ukey.indexOf("OS/2") >= 0) {
-				// @todo NOT TESTED
+                // @todo NOT TESTED
                 return createOS2FTPEntryParser();
             }
             else if (ukey.indexOf("OS/400") >= 0) {
-				// @todo NOT TESTED
+                // @todo NOT TESTED
                 return createOS400FTPEntryParser();
             }
         }
         return new UnixFTPEntryParser();
     }
-	
-	public FTPFileEntryParser createUnixFTPEntryParser() {
+
+    public FTPFileEntryParser createUnixFTPEntryParser() {
         return new UnixFTPEntryParser();
-	}
-	
-	public FTPFileEntryParser createVMSVersioningFTPEntryParser() {
-		return new VMSVersioningFTPEntryParser();
-	}
-	
-	public FTPFileEntryParser createNTFTPEntryParser() {
-		return new CompositeFileEntryParser(new FTPFileEntryParser[]
-											{
-												new NTFTPEntryParser(),
-												new UnixFTPEntryParser()
-											});
-	}
-	
-	public FTPFileEntryParser createOS2FTPEntryParser() {
-		return new OS2FTPEntryParser();
-	}
-	
-	public FTPFileEntryParser createOS400FTPEntryParser() {
-		return new OS400FTPEntryParser();
-	}
+    }
+
+    public FTPFileEntryParser createVMSVersioningFTPEntryParser() {
+        return new VMSVersioningFTPEntryParser();
+    }
+
+    public FTPFileEntryParser createNTFTPEntryParser() {
+        return new CompositeFileEntryParser(new FTPFileEntryParser[]
+        {
+            new NTFTPEntryParser(),
+            new UnixFTPEntryParser()
+        });
+    }
+
+    public FTPFileEntryParser createOS2FTPEntryParser() {
+        return new OS2FTPEntryParser();
+    }
+
+    public FTPFileEntryParser createOS400FTPEntryParser() {
+        return new OS400FTPEntryParser();
+    }
 }
 

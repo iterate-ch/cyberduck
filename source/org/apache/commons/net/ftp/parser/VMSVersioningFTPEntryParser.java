@@ -93,14 +93,14 @@ public class VMSVersioningFTPEntryParser extends VMSFTPEntryParser {
         HashMap existingEntries = new HashMap();
         ListIterator iter = original.listIterator();
         while (iter.hasNext()) {
-            String entry = ((String) iter.next()).trim();
+            String entry = ((String)iter.next()).trim();
             MatchResult result = null;
             if (_preparse_matcher_.matches(entry, _preparse_pattern_)) {
                 result = _preparse_matcher_.getMatch();
                 String name = result.group(1);
                 String version = result.group(2);
                 NameVersion nv = new NameVersion(name, version);
-                NameVersion existing = (NameVersion) existingEntries.get(name);
+                NameVersion existing = (NameVersion)existingEntries.get(name);
                 if (null != existing) {
                     if (nv.versionNumber < existing.versionNumber) {
                         iter.remove();  // removal removes from original list.
@@ -116,14 +116,14 @@ public class VMSVersioningFTPEntryParser extends VMSFTPEntryParser {
         // we now must remove those with smaller than the largest version number
         // for each name that were found before the largest
         while (iter.hasPrevious()) {
-            String entry = ((String) iter.previous()).trim();
+            String entry = ((String)iter.previous()).trim();
             MatchResult result = null;
             if (_preparse_matcher_.matches(entry, _preparse_pattern_)) {
                 result = _preparse_matcher_.getMatch();
                 String name = result.group(1);
                 String version = result.group(2);
                 NameVersion nv = new NameVersion(name, version);
-                NameVersion existing = (NameVersion) existingEntries.get(name);
+                NameVersion existing = (NameVersion)existingEntries.get(name);
                 if (null != existing) {
                     if (nv.versionNumber < existing.versionNumber) {
                         iter.remove(); // removal removes from original list.

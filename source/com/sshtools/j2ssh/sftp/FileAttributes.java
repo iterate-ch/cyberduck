@@ -201,7 +201,7 @@ public class FileAttributes {
            }
               }*/
         if (isFlagSet(SSH_FILEXFER_ATTR_EXTENDED)) {
-            int count = (int) bar.readInt();
+            int count = (int)bar.readInt();
             String type;
             String data;
 
@@ -574,9 +574,9 @@ public class FileAttributes {
             Set set;
 
             while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
-                baw.writeString((String) entry.getKey());
-                baw.writeString((String) entry.getValue());
+                Map.Entry entry = (Map.Entry)it.next();
+                baw.writeString((String)entry.getKey());
+                baw.writeString((String)entry.getValue());
             }
         }
 

@@ -52,7 +52,7 @@ public class HTTPSession extends Session {
     }
 
     public synchronized void close() {
-		this.callObservers(new Message(Message.CLOSE, "Closing session."));
+        this.callObservers(new Message(Message.CLOSE, "Closing session."));
         try {
             if (this.HTTP != null) {
                 this.log("Disconnecting...", Message.PROGRESS);

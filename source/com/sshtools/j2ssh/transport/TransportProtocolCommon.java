@@ -289,7 +289,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
      * @return
      */
     public byte[] getSessionIdentifier() {
-        return (byte[]) sessionIdentifier.clone();
+        return (byte[])sessionIdentifier.clone();
     }
 
     /**
@@ -327,7 +327,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
             Iterator it = list.iterator();
 
             while (it.hasNext()) {
-                String keyExchange = (String) it.next();
+                String keyExchange = (String)it.next();
                 SshKeyExchange kex = SshKeyExchangeFactory.newInstance(keyExchange);
                 kex.init(this);
                 kexs.put(keyExchange, kex);
@@ -342,7 +342,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
         }
         catch (Throwable e) {
             if (e instanceof IOException) {
-                state.setLastError((IOException) e);
+                state.setLastError((IOException)e);
             }
 
             if (state.getValue() != TransportProtocolState.DISCONNECTED) {
@@ -458,7 +458,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
             throw new MessageNotRegisteredException(messageId);
         }
 
-        SshMessageStore actual = (SshMessageStore) messageNotifications.get(messageId);
+        SshMessageStore actual = (SshMessageStore)messageNotifications.get(messageId);
 
         if (!store.equals(actual)) {
             throw new MessageNotRegisteredException(messageId, store);
@@ -592,7 +592,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
             }
 
             // Get an instance of the key exchange algortihm
-            SshKeyExchange kex = (SshKeyExchange) kexs.get(kexAlgorithm);
+            SshKeyExchange kex = (SshKeyExchange)kexs.get(kexAlgorithm);
 
             // Do the key exchange
             performKeyExchange(kex);
@@ -698,7 +698,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 
         int[] filter = new int[1];
         filter[0] = SshMsgNewKeys.SSH_MSG_NEWKEYS;
-        msg = (SshMsgNewKeys) readMessage(filter);
+        msg = (SshMsgNewKeys)readMessage(filter);
 
         if (log.isDebugEnabled()) {
             log.debug("Received " + msg.getMessageName());
@@ -768,7 +768,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
                 log.debug("Sending queued messages");
 
                 while (it.hasNext()) {
-                    SshMessage msg = (SshMessage) it.next();
+                    SshMessage msg = (SshMessage)it.next();
                     sendMessage(msg, this);
                 }
 
@@ -825,12 +825,12 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
         Iterator itClient = clientAlgorithms.iterator();
 
         while (itClient.hasNext()) {
-            algorithmClient = (String) itClient.next();
+            algorithmClient = (String)itClient.next();
 
             Iterator itServer = serverAlgorithms.iterator();
 
             while (itServer.hasNext()) {
-                algorithmServer = (String) itServer.next();
+                algorithmServer = (String)itServer.next();
 
                 if (algorithmClient.equals(algorithmServer)) {
                     log.debug("Returning " + algorithmClient);
@@ -865,35 +865,35 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
             switch (msg.getMessageId()) {
                 case SshMsgKexInit.SSH_MSG_KEX_INIT:
                     {
-                        onMsgKexInit((SshMsgKexInit) msg);
+                        onMsgKexInit((SshMsgKexInit)msg);
 
                         break;
                     }
 
                 case SshMsgDisconnect.SSH_MSG_DISCONNECT:
                     {
-                        onMsgDisconnect((SshMsgDisconnect) msg);
+                        onMsgDisconnect((SshMsgDisconnect)msg);
 
                         break;
                     }
 
                 case SshMsgIgnore.SSH_MSG_IGNORE:
                     {
-                        onMsgIgnore((SshMsgIgnore) msg);
+                        onMsgIgnore((SshMsgIgnore)msg);
 
                         break;
                     }
 
                 case SshMsgUnimplemented.SSH_MSG_UNIMPLEMENTED:
                     {
-                        onMsgUnimplemented((SshMsgUnimplemented) msg);
+                        onMsgUnimplemented((SshMsgUnimplemented)msg);
 
                         break;
                     }
 
                 case SshMsgDebug.SSH_MSG_DEBUG:
                     {
-                        onMsgDebug((SshMsgDebug) msg);
+                        onMsgDebug((SshMsgDebug)msg);
 
                         break;
                     }
@@ -914,7 +914,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
         TransportProtocolEventHandler eventHandler;
 
         while (it.hasNext()) {
-            eventHandler = (TransportProtocolEventHandler) it.next();
+            eventHandler = (TransportProtocolEventHandler)it.next();
             eventHandler.onDisconnect(this);
         }
 
@@ -929,7 +929,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
         SshMessageStore ms;
 
         for (it = messageStores.iterator(); (it != null) && it.hasNext();) {
-            ms = (SshMessageStore) it.next();
+            ms = (SshMessageStore)it.next();
 
             try {
                 ms.close();
@@ -964,7 +964,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
             hash.putBytes(exchangeHash);
 
             // Put in the character
-            hash.putByte((byte) chr);
+            hash.putByte((byte)chr);
 
             // Put the exchange hash in again
             hash.putBytes(sessionIdentifier);
@@ -1029,7 +1029,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
         while (!remoteVer.startsWith("SSH-") &&
                 (buffer.length() < MAX_BUFFER_LENGTH)) {
             // Get the next string
-            while (((ch = (char) provider.getInputStream().read()) != '\n') &&
+            while (((ch = (char)provider.getInputStream().read()) != '\n') &&
                     (buffer.length() < MAX_BUFFER_LENGTH)) {
                 buffer.append(ch);
             }
@@ -1180,28 +1180,28 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
                 switch (messageId.intValue()) {
                     case SshMsgDisconnect.SSH_MSG_DISCONNECT:
                         {
-                            onMsgDisconnect((SshMsgDisconnect) msg);
+                            onMsgDisconnect((SshMsgDisconnect)msg);
 
                             break;
                         }
 
                     case SshMsgIgnore.SSH_MSG_IGNORE:
                         {
-                            onMsgIgnore((SshMsgIgnore) msg);
+                            onMsgIgnore((SshMsgIgnore)msg);
 
                             break;
                         }
 
                     case SshMsgUnimplemented.SSH_MSG_UNIMPLEMENTED:
                         {
-                            onMsgUnimplemented((SshMsgUnimplemented) msg);
+                            onMsgUnimplemented((SshMsgUnimplemented)msg);
 
                             break;
                         }
 
                     case SshMsgDebug.SSH_MSG_DEBUG:
                         {
-                            onMsgDebug((SshMsgDebug) msg);
+                            onMsgDebug((SshMsgDebug)msg);
 
                             break;
                         }
@@ -1251,7 +1251,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
                     TransportProtocolEventHandler eventHandler;
 
                     while (it.hasNext()) {
-                        eventHandler = (TransportProtocolEventHandler) it.next();
+                        eventHandler = (TransportProtocolEventHandler)it.next();
                         eventHandler.onSocketTimeout(this /*,
                         provider.isConnected()*/);
                     }
@@ -1302,7 +1302,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 
         for (Iterator it = messageStores.iterator();
              (it != null) && it.hasNext();) {
-            ms = (SshMessageStore) it.next();
+            ms = (SshMessageStore)it.next();
 
             if (ms.isRegisteredMessage(messageId)) {
                 return ms;

@@ -62,7 +62,7 @@ public class Local extends File {
 
     public Permission getPermission() {
         NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
-        return new Permission(((Integer) fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue());
+        return new Permission(((Integer)fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue());
     }
 
     public void setPermission(Permission p) {
@@ -82,7 +82,7 @@ public class Local extends File {
 
     public boolean equals(Object other) {
         if (other instanceof Local) {
-            return this.getAbsolutePath().equals(((Local) other).getAbsolutePath());// && this.attributes.getTimestamp().equals(((Local)other).attributes.getTimestamp());
+            return this.getAbsolutePath().equals(((Local)other).getAbsolutePath());// && this.attributes.getTimestamp().equals(((Local)other).attributes.getTimestamp());
         }
         return false;
     }

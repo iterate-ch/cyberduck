@@ -125,7 +125,7 @@ class SshAgentFailure extends SubsystemMessage {
             throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
-            errorcode = (int) bar.readInt();
+            errorcode = (int)bar.readInt();
         }
         catch (IOException ioe) {
             throw new InvalidMessageException(ioe.getMessage());

@@ -104,11 +104,11 @@ public abstract class BindingChannel extends Channel {
                 Object obj = it.next();
 
                 if (obj instanceof SshMsgChannelData) {
-                    boundChannel.sendChannelData(((SshMsgChannelData) obj).getChannelData());
+                    boundChannel.sendChannelData(((SshMsgChannelData)obj).getChannelData());
                 }
                 else if (obj instanceof SshMsgChannelExtendedData) {
-                    boundChannel.sendChannelExtData(((SshMsgChannelExtendedData) obj).getDataTypeCode(),
-                            ((SshMsgChannelExtendedData) obj).getChannelData());
+                    boundChannel.sendChannelExtData(((SshMsgChannelExtendedData)obj).getDataTypeCode(),
+                            ((SshMsgChannelExtendedData)obj).getChannelData());
                 }
                 else {
                     throw new IOException("[" + getName() +

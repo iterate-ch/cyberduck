@@ -81,7 +81,7 @@ public class SshRsaPublicKey extends SshPublicKey {
 
             try {
                 KeyFactory kf = KeyFactory.getInstance("RSA");
-                pubKey = (RSAPublicKey) kf.generatePublic(rsaKey);
+                pubKey = (RSAPublicKey)kf.generatePublic(rsaKey);
             }
             catch (NoSuchAlgorithmException nsae) {
                 throw new InvalidSshKeyException();

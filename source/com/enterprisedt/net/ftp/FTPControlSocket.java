@@ -209,7 +209,7 @@ public class FTPControlSocket {
         InetAddress localhost = controlSock.getLocalAddress();
 
         // send the PORT command to the server
-        setDataPort(localhost, (short) socket.getLocalPort());
+        setDataPort(localhost, (short)socket.getLocalPort());
 
         return socket;
     }
@@ -223,8 +223,8 @@ public class FTPControlSocket {
      */
     private short toUnsignedShort(byte value) {
         return (value < 0)
-                ? (short) (value + 256)
-                : (short) value;
+                ? (short)(value + 256)
+                : (short)value;
     }
 
     /**
@@ -235,8 +235,8 @@ public class FTPControlSocket {
      */
     protected byte[] toByteArray(short value) {
         byte[] bytes = new byte[2];
-        bytes[0] = (byte) (value >> 8);     // bits 1- 8
-        bytes[1] = (byte) (value & 0x00FF); // bits 9-16
+        bytes[0] = (byte)(value >> 8);     // bits 1- 8
+        bytes[1] = (byte)(value & 0x00FF); // bits 9-16
         return bytes;
     }
 

@@ -92,7 +92,7 @@ public class LogSource {
     }
 
     static public Log getInstance(String name) {
-        Log log = (Log) (_logs.get(name));
+        Log log = (Log)(_logs.get(name));
         if (null == log) {
             log = makeNewLogInstance(name);
             _logs.put(name, log);
@@ -137,7 +137,7 @@ public class LogSource {
             Constructor ctor = logclass.getConstructor(argtypes);
             Object[] args = new Object[1];
             args[0] = name;
-            log = (Log) (ctor.newInstance(args));
+            log = (Log)(ctor.newInstance(args));
         }
         catch (Exception e) {
             log = null;
@@ -160,7 +160,7 @@ public class LogSource {
     static public void setLevel(int level) {
         Iterator it = _logs.entrySet().iterator();
         while (it.hasNext()) {
-            Log log = (Log) (it.next());
+            Log log = (Log)(it.next());
             log.setLevel(level);
         }
     }

@@ -167,7 +167,7 @@ public class NameValuePair implements Serializable {
             return true;
         }
         else if (this.getClass().equals(object.getClass())) {
-            NameValuePair pair = (NameValuePair) object;
+            NameValuePair pair = (NameValuePair)object;
             return ((null == name ? null == pair.name : name.equals(pair.name))
                     && (null == value ? null == pair.value : value.equals(pair.value)));
         }

@@ -87,14 +87,14 @@ public class SubsystemMessageStore {
     public synchronized void addMessage(byte[] msgdata)
             throws InvalidMessageException {
         try {
-            Class impl = (Class) registeredMessages.get(new Integer(msgdata[0]));
+            Class impl = (Class)registeredMessages.get(new Integer(msgdata[0]));
 
             if (impl == null) {
                 throw new InvalidMessageException("The message with id " +
                         String.valueOf(msgdata[0]) + " is not implemented");
             }
 
-            SubsystemMessage msg = (SubsystemMessage) impl.newInstance();
+            SubsystemMessage msg = (SubsystemMessage)impl.newInstance();
             msg.fromByteArray(msgdata);
             addMessage(msg);
 
@@ -150,7 +150,7 @@ public class SubsystemMessageStore {
         }
 
         if (messages.size() > 0) {
-            return (SubsystemMessage) messages.remove(0);
+            return (SubsystemMessage)messages.remove(0);
         }
         else {
             throw new MessageNotAvailableException();

@@ -84,8 +84,8 @@ public abstract class Preferences {
         defaults.put("website.update.xml", "http://update.cyberduck.ch/versionlist.xml");
         defaults.put("website.update", "http://cyberduck.ch/");
         defaults.put("website.home", "http://cyberduck.ch/");
-		
-		defaults.put("update.check", "true");
+
+        defaults.put("update.check", "true");
 
         defaults.put("bookmarkDrawer.isOpen", "false");
         defaults.put("logDrawer.isOpen", "false");
@@ -120,7 +120,7 @@ public abstract class Preferences {
         defaults.put("queue.fileExists", "ask");
         defaults.put("queue.upload.changePermissions", "true");
         defaults.put("queue.download.changePermissions", "true");
-		defaults.put("queue.download.preserveDate", "true");
+        defaults.put("queue.download.preserveDate", "true");
 
         defaults.put("connection.login.name", System.getProperty("user.name"));
         defaults.put("connection.login.useKeychain", "true");
@@ -146,17 +146,17 @@ public abstract class Preferences {
         defaults.put("ssh.knownhosts", System.getProperty("user.home") + "/.ssh/known_hosts");
 
 //        defaults.put("ssh.CSEncryption", NSBundle.localizedString("Default", "")); //client -> server encryption cipher
-		defaults.put("ssh.CSEncryption", "aes128-cbc"); //client -> server encryption cipher
+        defaults.put("ssh.CSEncryption", "aes128-cbc"); //client -> server encryption cipher
 //        defaults.put("ssh.SCEncryption", NSBundle.localizedString("Default", "")); //server -> client encryption cipher
-		defaults.put("ssh.SCEncryption", "aes128-cbc"); //server -> client encryption cipher
+        defaults.put("ssh.SCEncryption", "aes128-cbc"); //server -> client encryption cipher
 
 //        defaults.put("ssh.CSAuthentication", NSBundle.localizedString("Default", "")); //client -> server message authentication
-		defaults.put("ssh.CSAuthentication", "hmac_md5"); //client -> server message authentication
+        defaults.put("ssh.CSAuthentication", "hmac_md5"); //client -> server message authentication
 //        defaults.put("ssh.SCAuthentication", NSBundle.localizedString("Default", "")); //server -> client message authentication
-		defaults.put("ssh.SCAuthentication", "hmac_md5"); //server -> client message authentication
+        defaults.put("ssh.SCAuthentication", "hmac_md5"); //server -> client message authentication
 
 //        defaults.put("ssh.publickey", NSBundle.localizedString("Default", ""));
-		defaults.put("ssh.publickey", "ssh-rsa");
+        defaults.put("ssh.publickey", "ssh-rsa");
         defaults.put("ssh.compression", "zlib");
     }
 
@@ -169,7 +169,7 @@ public abstract class Preferences {
      * @return The value of the property
      */
     public String getProperty(String property) {
-        String value = (String) defaults.get(property);
+        String value = (String)defaults.get(property);
         if (value == null) {
             throw new IllegalArgumentException("No property with key '" + property.toString() + "'");
         }

@@ -48,28 +48,28 @@ public class Host {
     public Host(NSDictionary dict) {
         Object protocolObj = dict.objectForKey(Host.PROTOCOL);
         if (protocolObj != null) {
-            this.setProtocol((String) protocolObj);
+            this.setProtocol((String)protocolObj);
         }
         Object hostnameObj = dict.objectForKey(Host.HOSTNAME);
         if (hostnameObj != null) {
-            this.setHostname((String) hostnameObj);
+            this.setHostname((String)hostnameObj);
             Object usernameObj = dict.objectForKey(Host.USERNAME);
             if (usernameObj != null) {
-                this.setLogin(new Login((String) dict.objectForKey(Host.HOSTNAME), (String) usernameObj, null));
+                this.setLogin(new Login((String)dict.objectForKey(Host.HOSTNAME), (String)usernameObj, null));
             }
-            this.getLogin().setPrivateKeyFile((String) dict.objectForKey(Host.KEYFILE));
+            this.getLogin().setPrivateKeyFile((String)dict.objectForKey(Host.KEYFILE));
         }
         Object portObj = dict.objectForKey(Host.PORT);
         if (portObj != null) {
-            this.setPort(Integer.parseInt((String) portObj));
+            this.setPort(Integer.parseInt((String)portObj));
         }
         Object pathObj = dict.objectForKey(Host.PATH);
         if (pathObj != null) {
-            this.setDefaultPath((String) pathObj);
+            this.setDefaultPath((String)pathObj);
         }
         Object nicknameObj = dict.objectForKey(Host.NICKNAME);
         if (nicknameObj != null) {
-            this.setNickname((String) nicknameObj);
+            this.setNickname((String)nicknameObj);
         }
         log.debug(this.toString());
     }

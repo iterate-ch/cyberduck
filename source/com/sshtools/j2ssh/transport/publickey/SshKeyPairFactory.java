@@ -60,7 +60,7 @@ public class SshKeyPairFactory {
         try {
             // Load external pks from configuration file
             if (ConfigurationLoader.isConfigurationAvailable(SshAPIConfiguration.class)) {
-                SshAPIConfiguration config = (SshAPIConfiguration) ConfigurationLoader.getConfiguration(SshAPIConfiguration.class);
+                SshAPIConfiguration config = (SshAPIConfiguration)ConfigurationLoader.getConfiguration(SshAPIConfiguration.class);
 
                 if (config != null) {
                     List list = config.getPublicKeyExtensions();
@@ -69,7 +69,7 @@ public class SshKeyPairFactory {
                         Iterator it = list.iterator();
 
                         while (it.hasNext()) {
-                            ExtensionAlgorithm algorithm = (ExtensionAlgorithm) it.next();
+                            ExtensionAlgorithm algorithm = (ExtensionAlgorithm)it.next();
                             String name = algorithm.getAlgorithmName();
 
                             if (pks.containsKey(name)) {
@@ -105,7 +105,7 @@ public class SshKeyPairFactory {
             log.debug("The default public key is not set! using first in list");
 
             Iterator it = pks.keySet().iterator();
-            defaultAlgorithm = (String) it.next();
+            defaultAlgorithm = (String)it.next();
         }
     }
 
@@ -144,7 +144,7 @@ public class SshKeyPairFactory {
     public static SshKeyPair newInstance(String methodName)
             throws AlgorithmNotSupportedException {
         try {
-            return (SshKeyPair) ((Class) pks.get(methodName)).newInstance();
+            return (SshKeyPair)((Class)pks.get(methodName)).newInstance();
         }
         catch (Exception e) {
             throw new AlgorithmNotSupportedException(methodName +

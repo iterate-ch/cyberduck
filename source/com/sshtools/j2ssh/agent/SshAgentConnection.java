@@ -375,7 +375,7 @@ public class SshAgentConnection implements Runnable {
                 }
 
                 if (alive) {
-                    len = (int) ByteArrayReader.readInt(lendata, 0);
+                    len = (int)ByteArrayReader.readInt(lendata, 0);
                     msgdata = new byte[len];
                     len = 0;
 
@@ -413,7 +413,7 @@ public class SshAgentConnection implements Runnable {
      * @throws IOException if an IO error occurs
      */
     protected void onMessageReceived(byte[] msgdata) throws IOException {
-        switch ((int) (msgdata[0] & 0xFF)) {
+        switch ((int)(msgdata[0] & 0xFF)) {
             case SshAgentForwardingNotice.SSH_AGENT_FORWARDING_NOTICE:
                 {
                     log.info("Agent forwarding notice received");

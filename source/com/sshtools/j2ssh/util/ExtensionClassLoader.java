@@ -135,7 +135,7 @@ public class ExtensionClassLoader extends ClassLoader {
 
         while (it.hasNext()) {
             byte[] classData;
-            File file = (File) it.next();
+            File file = (File)it.next();
 
             if (file.isDirectory()) {
                 url = findResourceInDirectory(file, name);
@@ -169,7 +169,7 @@ public class ExtensionClassLoader extends ClassLoader {
 
         while (it.hasNext()) {
             byte[] classData;
-            File file = (File) it.next();
+            File file = (File)it.next();
 
             if (file.isDirectory()) {
                 url = findResourceInDirectory(file, name);
@@ -199,7 +199,7 @@ public class ExtensionClassLoader extends ClassLoader {
 
         while (it.hasNext()) {
             byte[] classData;
-            File file = (File) it.next();
+            File file = (File)it.next();
 
             try {
                 if (file.isDirectory()) {
@@ -229,7 +229,7 @@ public class ExtensionClassLoader extends ClassLoader {
 
         // Use the cached value, if this class is already loaded into
         // this classloader.
-        ClassCacheEntry entry = (ClassCacheEntry) cache.get(name);
+        ClassCacheEntry entry = (ClassCacheEntry)cache.get(name);
 
         if (entry != null) {
             if (log.isDebugEnabled()) {
@@ -251,7 +251,7 @@ public class ExtensionClassLoader extends ClassLoader {
 
         while (it.hasNext()) {
             byte[] classData;
-            File file = (File) it.next();
+            File file = (File)it.next();
 
             try {
                 if (file.isDirectory()) {
@@ -348,7 +348,7 @@ public class ExtensionClassLoader extends ClassLoader {
             InputStream in = new FileInputStream(classFile);
 
             try {
-                return loadBytesFromStream(in, (int) classFile.length());
+                return loadBytesFromStream(in, (int)classFile.length());
             }
             finally {
                 in.close();
@@ -375,7 +375,7 @@ public class ExtensionClassLoader extends ClassLoader {
                 }
 
                 return loadBytesFromStream(zipfile.getInputStream(entry),
-                        (int) entry.getSize());
+                        (int)entry.getSize());
             }
             else {
                 // Not found

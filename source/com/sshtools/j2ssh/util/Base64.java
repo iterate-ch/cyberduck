@@ -38,20 +38,20 @@ public class Base64 {
     /**  */
     public final static boolean DECODE = false;
     private final static int MAX_LINE_LENGTH = 76;
-    private final static byte EQUALS_SIGN = (byte) '=';
-    private final static byte NEW_LINE = (byte) '\n';
+    private final static byte EQUALS_SIGN = (byte)'=';
+    private final static byte NEW_LINE = (byte)'\n';
     private final static byte[] ALPHABET = {
-        (byte) 'A', (byte) 'B', (byte) 'C', (byte) 'D', (byte) 'E', (byte) 'F',
-        (byte) 'G', (byte) 'H', (byte) 'I', (byte) 'J', (byte) 'K', (byte) 'L',
-        (byte) 'M', (byte) 'N', (byte) 'O', (byte) 'P', (byte) 'Q', (byte) 'R',
-        (byte) 'S', (byte) 'T', (byte) 'U', (byte) 'V', (byte) 'W', (byte) 'X',
-        (byte) 'Y', (byte) 'Z', (byte) 'a', (byte) 'b', (byte) 'c', (byte) 'd',
-        (byte) 'e', (byte) 'f', (byte) 'g', (byte) 'h', (byte) 'i', (byte) 'j',
-        (byte) 'k', (byte) 'l', (byte) 'm', (byte) 'n', (byte) 'o', (byte) 'p',
-        (byte) 'q', (byte) 'r', (byte) 's', (byte) 't', (byte) 'u', (byte) 'v',
-        (byte) 'w', (byte) 'x', (byte) 'y', (byte) 'z', (byte) '0', (byte) '1',
-        (byte) '2', (byte) '3', (byte) '4', (byte) '5', (byte) '6', (byte) '7',
-        (byte) '8', (byte) '9', (byte) '+', (byte) '/'
+        (byte)'A', (byte)'B', (byte)'C', (byte)'D', (byte)'E', (byte)'F',
+        (byte)'G', (byte)'H', (byte)'I', (byte)'J', (byte)'K', (byte)'L',
+        (byte)'M', (byte)'N', (byte)'O', (byte)'P', (byte)'Q', (byte)'R',
+        (byte)'S', (byte)'T', (byte)'U', (byte)'V', (byte)'W', (byte)'X',
+        (byte)'Y', (byte)'Z', (byte)'a', (byte)'b', (byte)'c', (byte)'d',
+        (byte)'e', (byte)'f', (byte)'g', (byte)'h', (byte)'i', (byte)'j',
+        (byte)'k', (byte)'l', (byte)'m', (byte)'n', (byte)'o', (byte)'p',
+        (byte)'q', (byte)'r', (byte)'s', (byte)'t', (byte)'u', (byte)'v',
+        (byte)'w', (byte)'x', (byte)'y', (byte)'z', (byte)'0', (byte)'1',
+        (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7',
+        (byte)'8', (byte)'9', (byte)'+', (byte)'/'
     };
     private final static byte[] DECODABET = {
         -9, -9, -9, -9, -9, -9, -9, -9, -9, -5, -5, -9, -9, -5, -9, -9, -9, -9,
@@ -109,7 +109,7 @@ public class Base64 {
         byte sbiDecode = 0;
 
         for (i = 0; i < len; i++) {
-            sbiCrop = (byte) (source[i] & 0x7f);
+            sbiCrop = (byte)(source[i] & 0x7f);
 
             // Only the low seven bits
             sbiDecode = DECODABET[sbiCrop];
@@ -343,7 +343,7 @@ public class Base64 {
         if (source[srcOffset + 2] == EQUALS_SIGN) {
             int outBuff = ((DECODABET[source[srcOffset]] << 24) >>> 6) |
                     ((DECODABET[source[srcOffset + 1]] << 24) >>> 12);
-            destination[destOffset] = (byte) (outBuff >>> 16);
+            destination[destOffset] = (byte)(outBuff >>> 16);
 
             return 1;
         }
@@ -352,8 +352,8 @@ public class Base64 {
             int outBuff = ((DECODABET[source[srcOffset]] << 24) >>> 6) |
                     ((DECODABET[source[srcOffset + 1]] << 24) >>> 12) |
                     ((DECODABET[source[srcOffset + 2]] << 24) >>> 18);
-            destination[destOffset] = (byte) (outBuff >>> 16);
-            destination[destOffset + 1] = (byte) (outBuff >>> 8);
+            destination[destOffset] = (byte)(outBuff >>> 16);
+            destination[destOffset + 1] = (byte)(outBuff >>> 8);
 
             return 2;
         }
@@ -363,9 +363,9 @@ public class Base64 {
                     ((DECODABET[source[srcOffset + 1]] << 24) >>> 12) |
                     ((DECODABET[source[srcOffset + 2]] << 24) >>> 18) |
                     ((DECODABET[source[srcOffset + 3]] << 24) >>> 24);
-            destination[destOffset] = (byte) (outBuff >> 16);
-            destination[destOffset + 1] = (byte) (outBuff >> 8);
-            destination[destOffset + 2] = (byte) (outBuff);
+            destination[destOffset] = (byte)(outBuff >> 16);
+            destination[destOffset + 1] = (byte)(outBuff >> 8);
+            destination[destOffset + 2] = (byte)(outBuff);
 
             return 3;
         }
@@ -484,7 +484,7 @@ public class Base64 {
 
                             // If end of stream, b is -1.
                             if (b >= 0) {
-                                b3[i] = (byte) b;
+                                b3[i] = (byte)b;
                                 numSigBytes++;
                             }
 
@@ -530,7 +530,7 @@ public class Base64 {
                             // Reads a -1 if end of stream
                         }
 
-                        b4[i] = (byte) b;
+                        b4[i] = (byte)b;
                     }
 
                     // end for: each needed input byte
@@ -581,7 +581,7 @@ public class Base64 {
                     return -1;
                 }
 
-                dest[off + i] = (byte) b;
+                dest[off + i] = (byte)b;
             }
 
             // end for: each byte read
@@ -647,7 +647,7 @@ public class Base64 {
 
         // end flush
         public void write(int theByte) throws java.io.IOException {
-            buffer[position++] = (byte) theByte;
+            buffer[position++] = (byte)theByte;
 
             if (position >= bufferLength) {
                 if (encode) {

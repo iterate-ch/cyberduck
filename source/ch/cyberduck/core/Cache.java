@@ -26,9 +26,9 @@ import java.util.List;
  * @version $Id$
  */
 public class Cache extends HashMap {
-	
+
     public List get(String path) {
-        List childs = (List) super.get(path);
+        List childs = (List)super.get(path);
         if (null == childs) {
             childs = new ArrayList();
         }

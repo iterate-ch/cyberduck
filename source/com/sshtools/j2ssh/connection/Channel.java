@@ -150,7 +150,7 @@ public abstract class Channel {
                 ChannelEventListener eventListener;
 
                 while (it.hasNext()) {
-                    eventListener = (ChannelEventListener) it.next();
+                    eventListener = (ChannelEventListener)it.next();
 
                     if (eventListener != null) {
                         eventListener.onDataReceived(this, msg.getChannelData());
@@ -200,7 +200,7 @@ public abstract class Channel {
             ChannelEventListener eventListener;
 
             while (it.hasNext()) {
-                eventListener = (ChannelEventListener) it.next();
+                eventListener = (ChannelEventListener)it.next();
 
                 if (eventListener != null) {
                     eventListener.onDataSent(this, data);
@@ -231,7 +231,7 @@ public abstract class Channel {
             ChannelEventListener eventListener;
 
             while (it.hasNext()) {
-                eventListener = (ChannelEventListener) it.next();
+                eventListener = (ChannelEventListener)it.next();
 
                 if (eventListener != null) {
                     eventListener.onDataSent(this, data);
@@ -281,7 +281,7 @@ public abstract class Channel {
             ChannelEventListener eventListener;
 
             while (it.hasNext()) {
-                eventListener = (ChannelEventListener) it.next();
+                eventListener = (ChannelEventListener)it.next();
 
                 if (eventListener != null) {
                     eventListener.onDataReceived(this, msg.getChannelData());
@@ -392,7 +392,7 @@ public abstract class Channel {
             ChannelEventListener eventListener;
 
             while (it.hasNext()) {
-                eventListener = (ChannelEventListener) it.next();
+                eventListener = (ChannelEventListener)it.next();
 
                 if (eventListener != null) {
                     eventListener.onChannelClose(this);
@@ -441,7 +441,7 @@ public abstract class Channel {
             ChannelEventListener eventListener;
 
             while (it.hasNext()) {
-                eventListener = (ChannelEventListener) it.next();
+                eventListener = (ChannelEventListener)it.next();
 
                 if (eventListener != null) {
                     eventListener.onChannelEOF(this);
@@ -491,7 +491,7 @@ public abstract class Channel {
             ChannelEventListener eventListener;
 
             while (it.hasNext()) {
-                eventListener = (ChannelEventListener) it.next();
+                eventListener = (ChannelEventListener)it.next();
 
                 if (eventListener != null) {
                     eventListener.onChannelOpen(this);

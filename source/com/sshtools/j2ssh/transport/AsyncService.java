@@ -73,7 +73,7 @@ public abstract class AsyncService extends Service implements Runnable {
      */
     protected void onStart() throws IOException {
         if (Thread.currentThread() instanceof SshThread) {
-            thread = ((SshThread) Thread.currentThread()).cloneThread(this,
+            thread = ((SshThread)Thread.currentThread()).cloneThread(this,
                     getServiceName());
         }
         else {

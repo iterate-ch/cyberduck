@@ -56,7 +56,7 @@ public class CDBookmarkController extends NSObject {
     }
 
     public void windowWillClose(NSNotification notification) {
-        OFFSET =- 16;
+        OFFSET = -16;
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
         BookmarkList.instance().save();
@@ -134,7 +134,7 @@ public class CDBookmarkController extends NSObject {
         this.callback = callback;
         this.host = host;
         instances.addObject(this);
-        OFFSET =+ 16;
+        OFFSET = +16;
         if (false == NSApplication.loadNibNamed("Bookmark", this)) {
             log.fatal("Couldn't load Bookmark.nib");
         }
@@ -145,7 +145,7 @@ public class CDBookmarkController extends NSObject {
         NSPoint origin = this.window.frame().origin();
         this.window.setFrameOrigin(new NSPoint(origin.x() + OFFSET, origin.y() - OFFSET));
         this.window.setTitle(this.host.getNickname());
-		// Live editing of values
+        // Live editing of values
         (NSNotificationCenter.defaultCenter()).addObserver(this,
                 new NSSelector("hostInputDidEndEditing", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
@@ -209,7 +209,7 @@ public class CDBookmarkController extends NSObject {
                     NSArray selected = sheet.filenames();
                     java.util.Enumeration enumerator = selected.objectEnumerator();
                     while (enumerator.hasMoreElements()) {
-                        String pk = (String) enumerator.nextElement();
+                        String pk = (String)enumerator.nextElement();
                         this.host.getLogin().setPrivateKeyFile(pk);
                         this.pkLabel.setStringValue(pk);
                     }
@@ -273,7 +273,7 @@ public class CDBookmarkController extends NSObject {
             this.pkCheckbox.setState(NSCell.OffState);
             this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
-		// Notify the observer he should reload the data to show the changes
+        // Notify the observer he should reload the data to show the changes
         this.callback.reloadData();
     }
 }

@@ -128,7 +128,7 @@ public class SshMsgChannelExtendedData extends SshMessage {
             throws InvalidMessageException {
         try {
             recipientChannel = bar.readInt();
-            dataTypeCode = (int) bar.readInt();
+            dataTypeCode = (int)bar.readInt();
 
             if (bar.available() > 0) {
                 channelData = bar.readBinaryString();

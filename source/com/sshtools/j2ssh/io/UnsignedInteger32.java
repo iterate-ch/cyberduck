@@ -139,7 +139,7 @@ public class UnsignedInteger32 extends Number implements Serializable {
             return false;
         }
 
-        return (((UnsignedInteger32) o).value.equals(this.value));
+        return (((UnsignedInteger32)o).value.equals(this.value));
     }
 
     /**

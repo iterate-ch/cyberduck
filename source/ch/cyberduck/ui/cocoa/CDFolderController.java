@@ -63,44 +63,44 @@ public class CDFolderController extends NSObject {
     public void windowWillClose(NSNotification notification) {
         instances.removeObject(this);
     }
-	
+
     public void createButtonClicked(Object sender) {
         // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-		if(folderField.stringValue().indexOf('/') != -1) {
-			NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-													  NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-													  null, //alternative button
-													  null, //other button
-													  this.window(), //docWindow
-													  null, //modalDelegate
-													  null, //didEndSelector
-													  null, // dismiss selector
-													  null, // context
-													  NSBundle.localizedString("Invalid character in folder name.", "") // message
-													  );
-		}
-		else if(folderField.stringValue().length() == 0) {
+        if (folderField.stringValue().indexOf('/') != -1) {
+            NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+                    null, //alternative button
+                    null, //other button
+                    this.window(), //docWindow
+                    null, //modalDelegate
+                    null, //didEndSelector
+                    null, // dismiss selector
+                    null, // context
+                    NSBundle.localizedString("Invalid character in folder name.", "") // message
+            );
+        }
+        else if (folderField.stringValue().length() == 0) {
 //			folderField.setStringValue(this.file.getName());
-		}
-		else {
-			NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
-		}
-	}
-	
-	public void cancelButtonClicked(Object sender) {
-		NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
-	}
+        }
+        else {
+            NSApplication.sharedApplication().endSheet(this.window, ((NSButton)sender).tag());
+        }
+    }
+
+    public void cancelButtonClicked(Object sender) {
+        NSApplication.sharedApplication().endSheet(this.window, ((NSButton)sender).tag());
+    }
 
     public void newfolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
         log.debug("newfolderSheetDidEnd");
-		sheet.orderOut(null);
+        sheet.orderOut(null);
         switch (returncode) {
             case (NSAlertPanel.DefaultReturn):
-				Path p = (Path)contextInfo;
-				p.setPath(p.getAbsolute(), folderField.stringValue());
-				p.mkdir(false);
-				p.getParent().list(true);
-				break;
+                Path p = (Path)contextInfo;
+                p.setPath(p.getAbsolute(), folderField.stringValue());
+                p.mkdir(false);
+                p.getParent().list(true);
+                break;
             case (NSAlertPanel.AlternateReturn):
                 break;
         }

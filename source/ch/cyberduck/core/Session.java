@@ -54,7 +54,7 @@ public abstract class Session extends Observable {
      */
     public static final int FTP_PORT = 21;
     /**
-		* Default port for ftp-ssl
+     * Default port for ftp-ssl
      */
     public static final int FTPS_PORT = 990;
     /**
@@ -83,10 +83,10 @@ public abstract class Session extends Observable {
     }
 
     public void callObservers(Object arg) {
-		if(log.isDebugEnabled()) {
-			log.debug("callObservers:" + arg);
-			log.debug(this.countObservers() + " observer(s) known.");
-		}
+        if (log.isDebugEnabled()) {
+            log.debug("callObservers:" + arg);
+            log.debug(this.countObservers() + " observer(s) known.");
+        }
         this.setChanged();
         this.notifyObservers(arg);
     }
@@ -104,31 +104,31 @@ public abstract class Session extends Observable {
      */
     public synchronized void mount() {
         this.log("Mounting " + host.getHostname() + "...", Message.PROGRESS);
-		new Thread() {
-			public void run() {
-				try {
-					Session.this.check();
-					Path home;
-					if (host.hasReasonableDefaultPath()) {
-						if (host.getDefaultPath().charAt(0) != '/') {
-							home = PathFactory.createPath(Session.this, Session.this.workdir().getAbsolute(), host.getDefaultPath());
-						}
-						else {
-							home = PathFactory.createPath(Session.this, host.getDefaultPath());
-						}
-					}
-					else {
-						home = Session.this.workdir();
-					}
-					home.list(true);
-				}
-				catch (IOException e) {
-					Session.this.log("IO Error: " + e.getMessage(), Message.ERROR);
-				}
-			}
-		}.start();
-	}
-	
+        new Thread() {
+            public void run() {
+                try {
+                    Session.this.check();
+                    Path home;
+                    if (host.hasReasonableDefaultPath()) {
+                        if (host.getDefaultPath().charAt(0) != '/') {
+                            home = PathFactory.createPath(Session.this, Session.this.workdir().getAbsolute(), host.getDefaultPath());
+                        }
+                        else {
+                            home = PathFactory.createPath(Session.this, host.getDefaultPath());
+                        }
+                    }
+                    else {
+                        home = Session.this.workdir();
+                    }
+                    home.list(true);
+                }
+                catch (IOException e) {
+                    Session.this.log("IO Error: " + e.getMessage(), Message.ERROR);
+                }
+            }
+        }.start();
+    }
+
     /**
      * Close the connecion to the remote host.
      * The protocol specific implementation has to  be coded in the subclasses.
@@ -180,14 +180,14 @@ public abstract class Session extends Observable {
         log.info("Content of path history:" + history.toString());
         int size = history.size();
         if ((size != -1) && (size > 1)) {
-            Path p = (Path) history.get(size - 2);
+            Path p = (Path)history.get(size - 2);
             //delete the fetched path - otherwise we produce a loop
             history.remove(size - 1);
             history.remove(size - 2);
             return p;
         }
         else if (1 == size) {
-            return (Path) history.get(size - 1);
+            return (Path)history.get(size - 1);
         }
         return workdir();
     }

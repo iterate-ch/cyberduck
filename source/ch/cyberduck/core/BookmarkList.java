@@ -30,7 +30,7 @@ import java.util.List;
  * @see ch.cyberduck.core.Host
  */
 public abstract class BookmarkList {
-	private static BookmarkList instance;
+    private static BookmarkList instance;
 
     protected List data = new ArrayList();
 
@@ -38,13 +38,13 @@ public abstract class BookmarkList {
         this.load();
     }
 
-	public static BookmarkList instance() {
+    public static BookmarkList instance() {
         if (null == instance) {
             instance = new ch.cyberduck.ui.cocoa.CDBookmarkList();
         }
         return instance;
     }
-	
+
     public abstract void save();
 
     public abstract void load();
@@ -62,24 +62,24 @@ public abstract class BookmarkList {
     }
 
     public void addItem(Host item, int row) {
-		this.data.add(row, item);
+        this.data.add(row, item);
     }
 
     public void removeItem(int index) {
         if (index < this.size()) {
-			this.data.remove(index);
-		}
+            this.data.remove(index);
+        }
     }
 
     public void removeItem(Host item) {
-		this.removeItem(this.data.lastIndexOf(item));
+        this.removeItem(this.data.lastIndexOf(item));
     }
 
     public Host getItem(int row) {
-		Host result = null;
+        Host result = null;
         if (row < this.size()) {
-			result = (Host) this.data.get(row);
-		}
+            result = (Host)this.data.get(row);
+        }
         return result;
     }
 

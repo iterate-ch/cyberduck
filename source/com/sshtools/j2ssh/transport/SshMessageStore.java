@@ -274,10 +274,10 @@ public final class SshMessageStore {
             throw new MessageNotRegisteredException(messageId);
         }
 
-        Class cls = (Class) register.get(SshMessage.getMessageId(msgdata));
+        Class cls = (Class)register.get(SshMessage.getMessageId(msgdata));
 
         try {
-            SshMessage msg = (SshMessage) cls.newInstance();
+            SshMessage msg = (SshMessage)cls.newInstance();
             msg.fromByteArray(new ByteArrayReader(msgdata));
             addMessage(msg);
         }
@@ -308,7 +308,7 @@ public final class SshMessageStore {
         synchronized (listeners) {
             if (listeners.size() > 0) {
                 for (Iterator it = listeners.iterator(); it.hasNext();) {
-                    ((SshMessageListener) it.next()).messageReceived(msg);
+                    ((SshMessageListener)it.next()).messageReceived(msg);
                 }
             }
         }
@@ -360,7 +360,7 @@ public final class SshMessageStore {
         }
 
         if (messages.size() > 0) {
-            return (SshMessage) messages.remove(0);
+            return (SshMessage)messages.remove(0);
         }
         else {
             throw new MessageStoreEOFException();
@@ -449,7 +449,7 @@ public final class SshMessageStore {
         SshMessage msg;
 
         for (int x = 0; x < messages.size(); x++) {
-            msg = (SshMessage) messages.get(x);
+            msg = (SshMessage)messages.get(x);
 
             // Determine whether its one of the filtered messages
             for (int i = 0; i < messageIdFilter.length; i++) {
@@ -564,10 +564,10 @@ public final class SshMessageStore {
             throw new MessageNotRegisteredException(messageId);
         }
 
-        Class cls = (Class) register.get(SshMessage.getMessageId(msgdata));
+        Class cls = (Class)register.get(SshMessage.getMessageId(msgdata));
 
         try {
-            SshMessage msg = (SshMessage) cls.newInstance();
+            SshMessage msg = (SshMessage)cls.newInstance();
             msg.fromByteArray(new ByteArrayReader(msgdata));
 
             return msg;

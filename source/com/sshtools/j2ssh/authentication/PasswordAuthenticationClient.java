@@ -120,7 +120,7 @@ public class PasswordAuthenticationClient extends SshAuthenticationClient {
                 serviceToStart, "password", baw.toByteArray());
         authentication.sendMessage(msg);
 
-        SshMsgUserAuthPwdChangeReq pwd = (SshMsgUserAuthPwdChangeReq) authentication.readMessage(SshMsgUserAuthPwdChangeReq.SSH_MSG_USERAUTH_PWD_CHANGEREQ);
+        SshMsgUserAuthPwdChangeReq pwd = (SshMsgUserAuthPwdChangeReq)authentication.readMessage(SshMsgUserAuthPwdChangeReq.SSH_MSG_USERAUTH_PWD_CHANGEREQ);
 
         if (changePrompt != null) {
             String newpassword = changePrompt.changePassword(pwd.getPrompt());

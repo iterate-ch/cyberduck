@@ -165,7 +165,7 @@ class TransportProtocolInputStream {
                     TransportProtocolEventHandler eventHandler;
 
                     while (it.hasNext()) {
-                        eventHandler = (TransportProtocolEventHandler) it.next();
+                        eventHandler = (TransportProtocolEventHandler)it.next();
 
                         eventHandler.onSocketTimeout(transport);
                     }
@@ -269,7 +269,7 @@ class TransportProtocolInputStream {
         message.write(initial);
 
         // Preview the message length
-        msglen = (int) ByteArrayReader.readInt(initial, 0);
+        msglen = (int)ByteArrayReader.readInt(initial, 0);
 
         padlen = initial[4];
 

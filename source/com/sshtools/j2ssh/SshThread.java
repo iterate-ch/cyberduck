@@ -87,7 +87,7 @@ public class SshThread extends Thread {
         Integer i;
 
         if (names.containsKey(name)) {
-            i = new Integer(((Integer) names.get(name)).intValue() + 1);
+            i = new Integer(((Integer)names.get(name)).intValue() + 1);
         }
         else {
             i = new Integer(1);
@@ -233,7 +233,7 @@ public class SshThread extends Thread {
         String username;
 
         if (Thread.currentThread() instanceof SshThread) {
-            return ((SshThread) Thread.currentThread()).getUsername();
+            return ((SshThread)Thread.currentThread()).getUsername();
         }
         else {
             throw new SshRuntimeException("The current thread is not running within an SshThread context");
@@ -242,7 +242,7 @@ public class SshThread extends Thread {
 
     public static boolean hasUserContext() {
         if (Thread.currentThread() instanceof SshThread) {
-            return ((SshThread) Thread.currentThread()).getUsername() != null;
+            return ((SshThread)Thread.currentThread()).getUsername() != null;
         }
         else {
             throw new SshRuntimeException("The current thread is not running within an SshThread context");
@@ -269,7 +269,7 @@ public class SshThread extends Thread {
         String username;
 
         if (Thread.currentThread() instanceof SshThread) {
-            return ((SshThread) Thread.currentThread()).getSessionIdString();
+            return ((SshThread)Thread.currentThread()).getSessionIdString();
         }
         else {
             throw new SshRuntimeException("The current thread is not running within an SshThread context");
@@ -294,7 +294,7 @@ public class SshThread extends Thread {
      */
     public static SshThread getCurrentThread() throws SshRuntimeException {
         if (Thread.currentThread() instanceof SshThread) {
-            return (SshThread) Thread.currentThread();
+            return (SshThread)Thread.currentThread();
         }
         else {
             throw new SshRuntimeException("The current thread is not an SshThread");

@@ -65,7 +65,7 @@ public class SshCipherFactory {
             InputStream in;
 
             while ((enum != null) && enum.hasMoreElements()) {
-                url = (URL) enum.nextElement();
+                url = (URL)enum.nextElement();
                 in = url.openStream();
                 properties.load(in);
                 IOUtil.closeStream(in);
@@ -138,7 +138,7 @@ public class SshCipherFactory {
         log.info("Creating new " + algorithmName + " cipher instance");
 
         try {
-            return (SshCipher) ((Class) ciphers.get(algorithmName)).newInstance();
+            return (SshCipher)((Class)ciphers.get(algorithmName)).newInstance();
         }
         catch (Throwable t) {
             throw new AlgorithmNotSupportedException(algorithmName +

@@ -55,20 +55,20 @@ public abstract class Validator {
             return false;
         }
         if (resumeRequested) {
-			boolean fileExists = Queue.KIND_DOWNLOAD == kind ? path.getLocal().getTemp().exists() : path.exists();
-			log.info("File " + path.getName() + " exists:" + fileExists);
+            boolean fileExists = Queue.KIND_DOWNLOAD == kind ? path.getLocal().getTemp().exists() : path.exists();
+            log.info("File " + path.getName() + " exists:" + fileExists);
             path.status.setResume(fileExists);
             return true;
         }
         else {//if (!resumeRequested) {
-			// When overwriting file anyway we don't have to check if the file already exists
-			if (Preferences.instance().getProperty("queue.fileExists").equals("overwrite")) {
-				log.debug("Defaulting to overwrite on " + path.getName());
-				path.status.setResume(false);
-				return true;
-			}
-			boolean fileExists = Queue.KIND_DOWNLOAD == kind ? path.getLocal().getTemp().exists() : path.exists();
-			log.info("File " + path.getName() + " exists:" + fileExists);
+            // When overwriting file anyway we don't have to check if the file already exists
+            if (Preferences.instance().getProperty("queue.fileExists").equals("overwrite")) {
+                log.debug("Defaulting to overwrite on " + path.getName());
+                path.status.setResume(false);
+                return true;
+            }
+            boolean fileExists = Queue.KIND_DOWNLOAD == kind ? path.getLocal().getTemp().exists() : path.exists();
+            log.info("File " + path.getName() + " exists:" + fileExists);
             if (fileExists) {
                 if (Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
                     log.debug("Defaulting to resume on " + path.getName() + " succeeded:" + fileExists);

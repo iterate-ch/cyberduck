@@ -55,7 +55,7 @@ public class SshKeyExchangeFactory {
         try {
             // Load external compression from configuration file
             if (ConfigurationLoader.isConfigurationAvailable(SshAPIConfiguration.class)) {
-                SshAPIConfiguration config = (SshAPIConfiguration) ConfigurationLoader.getConfiguration(SshAPIConfiguration.class);
+                SshAPIConfiguration config = (SshAPIConfiguration)ConfigurationLoader.getConfiguration(SshAPIConfiguration.class);
 
                 if (config != null) {
                     List list = config.getKeyExchangeExtensions();
@@ -64,7 +64,7 @@ public class SshKeyExchangeFactory {
                         Iterator it = list.iterator();
 
                         while (it.hasNext()) {
-                            ExtensionAlgorithm algorithm = (ExtensionAlgorithm) it.next();
+                            ExtensionAlgorithm algorithm = (ExtensionAlgorithm)it.next();
                             String name = algorithm.getAlgorithmName();
 
                             if (kexs.containsKey(name)) {
@@ -100,7 +100,7 @@ public class SshKeyExchangeFactory {
             log.debug("The default key exchange is not set! using first in list");
 
             Iterator it = kexs.keySet().iterator();
-            defaultAlgorithm = (String) it.next();
+            defaultAlgorithm = (String)it.next();
         }
     }
 
@@ -138,7 +138,7 @@ public class SshKeyExchangeFactory {
     public static SshKeyExchange newInstance(String methodName)
             throws AlgorithmNotSupportedException {
         try {
-            return (SshKeyExchange) ((Class) kexs.get(methodName)).newInstance();
+            return (SshKeyExchange)((Class)kexs.get(methodName)).newInstance();
         }
         catch (Exception e) {
             throw new AlgorithmNotSupportedException(methodName +

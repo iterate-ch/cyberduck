@@ -443,7 +443,7 @@ public class GetMethod extends HttpMethodBase {
         }
 
         if (!useDisk) {
-            memoryData = ((ByteArrayOutputStream) out).toByteArray();
+            memoryData = ((ByteArrayOutputStream)out).toByteArray();
         }
 
         out.close();

@@ -70,10 +70,10 @@ public class DynamicClassLoader extends ClassLoader {
             File f = null;
 
             if (obj instanceof String) {
-                f = new File((String) obj);
+                f = new File((String)obj);
             }
             else if (obj instanceof File) {
-                f = (File) obj;
+                f = (File)obj;
             }
             else {
                 throw new IllegalArgumentException("Entries in classpath must be either a String or File object");
@@ -117,7 +117,7 @@ public class DynamicClassLoader extends ClassLoader {
         Iterator it = classpath.iterator();
 
         while (it.hasNext()) {
-            File file = (File) it.next();
+            File file = (File)it.next();
 
             if (file.isDirectory()) {
                 String fileName = name.replace('/', File.separatorChar);
@@ -154,7 +154,7 @@ public class DynamicClassLoader extends ClassLoader {
             Iterator it = classpath.iterator();
 
             while (it.hasNext()) {
-                File file = (File) it.next();
+                File file = (File)it.next();
 
                 if (file.isDirectory()) {
                     s = loadResourceFromDirectory(file, name);
@@ -184,7 +184,7 @@ public class DynamicClassLoader extends ClassLoader {
      * @return
      */
     public synchronized boolean shouldReload(String classname) {
-        ClassCacheEntry entry = (ClassCacheEntry) cache.get(classname);
+        ClassCacheEntry entry = (ClassCacheEntry)cache.get(classname);
 
         if (entry == null) {
             // class wasn't even loaded
@@ -209,7 +209,7 @@ public class DynamicClassLoader extends ClassLoader {
         Enumeration e = cache.elements();
 
         while (e.hasMoreElements()) {
-            ClassCacheEntry entry = (ClassCacheEntry) e.nextElement();
+            ClassCacheEntry entry = (ClassCacheEntry)e.nextElement();
 
             if (entry.isSystemClass()) {
                 continue;
@@ -245,7 +245,7 @@ public class DynamicClassLoader extends ClassLoader {
 
         // Use the cached value, if this class is already loaded into
         // this classloader.
-        ClassCacheEntry entry = (ClassCacheEntry) cache.get(name);
+        ClassCacheEntry entry = (ClassCacheEntry)cache.get(name);
 
         if (entry != null) {
             // Class found in our cache
@@ -286,7 +286,7 @@ public class DynamicClassLoader extends ClassLoader {
 
         while (it.hasNext()) {
             byte[] classData;
-            File file = (File) it.next();
+            File file = (File)it.next();
 
             try {
                 if (file.isDirectory()) {
@@ -392,7 +392,7 @@ public class DynamicClassLoader extends ClassLoader {
             InputStream in = new FileInputStream(classFile);
 
             try {
-                return loadBytesFromStream(in, (int) classFile.length());
+                return loadBytesFromStream(in, (int)classFile.length());
             }
             finally {
                 in.close();
@@ -417,7 +417,7 @@ public class DynamicClassLoader extends ClassLoader {
                 cache.origin = file;
 
                 return loadBytesFromStream(zipfile.getInputStream(entry),
-                        (int) entry.getSize());
+                        (int)entry.getSize());
             }
             else {
                 // Not found

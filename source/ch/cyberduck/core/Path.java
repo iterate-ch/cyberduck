@@ -67,19 +67,19 @@ public abstract class Path {
         log.debug("Path");
         Object pathObj = dict.objectForKey("Remote");
         if (pathObj != null) {
-            this.setPath((String) pathObj);
+            this.setPath((String)pathObj);
         }
         Object localObj = dict.objectForKey("Local");
         if (localObj != null) {
-            this.setLocal(new Local((String) localObj));
+            this.setLocal(new Local((String)localObj));
         }
         Object attributesObj = dict.objectForKey("Attributes");
         if (attributesObj != null) {
-            this.attributes = new Attributes((NSDictionary) attributesObj);
+            this.attributes = new Attributes((NSDictionary)attributesObj);
         }
         Object statusObj = dict.objectForKey("Status");
         if (statusObj != null) {
-            this.status = new Status((NSDictionary) statusObj);
+            this.status = new Status((NSDictionary)statusObj);
         }
     }
 
@@ -148,25 +148,25 @@ public abstract class Path {
 
     public void setPath(String p) {
         log.debug("setPath:" + p);
-		this.path = p;
-		//this.parent = null;
+        this.path = p;
+        //this.parent = null;
     }
 
     /**
      * @return My parent directory
      */
     public Path getParent() {
-		int index = this.getAbsolute().lastIndexOf('/');
-		String parent = null;
-		if (index > 0) {
-			parent = this.getAbsolute().substring(0, index);
-		}
-		else {//if (index == 0) //parent is root
-			parent = "/";
-		}
-		return PathFactory.createPath(this.getSession(), parent);
+        int index = this.getAbsolute().lastIndexOf('/');
+        String parent = null;
+        if (index > 0) {
+            parent = this.getAbsolute().substring(0, index);
+        }
+        else {//if (index == 0) //parent is root
+            parent = "/";
+        }
+        return PathFactory.createPath(this.getSession(), parent);
     }
-	
+
     /**
      * @throws NullPointerException if session is not initialized
      */
@@ -182,9 +182,9 @@ public abstract class Path {
         return this.getSession().cache().get(this.getAbsolute());
     }
 
-	public void invalidate() {
+    public void invalidate() {
         this.getSession().cache().remove(this.getAbsolute());
-	}
+    }
 
     protected void setCache(List files) {
 //		Path parent = this.getParent();
@@ -193,7 +193,7 @@ public abstract class Path {
 //		files.add(parent);
         this.getSession().cache().put(this.getAbsolute(), files);
     }
-	
+
     /**
      * Request a file listing from the server. Has to be a directory
      */
@@ -209,23 +209,23 @@ public abstract class Path {
      */
     public abstract void delete();
 
-	/**
-		* Changes the session's working directory to this path
-	 */
-	public abstract void cwdir();
+    /**
+     * Changes the session's working directory to this path
+     */
+    public abstract void cwdir();
 
-	/**
-		* @param recursive Create intermediate directories as required.  If this option is
-	 * not specified, the full path prefix of each operand must already
-	 * exist
-	 */
-	public abstract void mkdir(boolean recursive);
-	
-	/**
-		* @param newFilename Should be an absolute path
-	 */
+    /**
+     * @param recursive Create intermediate directories as required.  If this option is
+     *                  not specified, the full path prefix of each operand must already
+     *                  exist
+     */
+    public abstract void mkdir(boolean recursive);
+
+    /**
+     * @param newFilename Should be an absolute path
+     */
     public abstract void rename(String newFilename);
-	
+
     /**
      * @param recursive Include subdirectories and files
      */
@@ -257,12 +257,12 @@ public abstract class Path {
         return this.attributes.isDirectory();
     }
 
-	// hack
+    // hack
     private boolean linksToFile() {
         return this.attributes.isSymbolicLink() && this.getName().indexOf(".") != -1;
     }
 
-	// hack
+    // hack
     private boolean linksToDirectory() {
         return !this.linksToFile() && this.attributes.permission.getOwnerPermissions()[Permission.EXECUTE];
     }
@@ -294,14 +294,14 @@ public abstract class Path {
      * @return the path relative to its parent directory
      */
     public String getName() {
-		String abs = this.getAbsolute();
-		int index = abs.lastIndexOf('/');
-		return (index > 0) ? abs.substring(index + 1) : abs.substring(1);
-	}
-	
-	/**
-		* Manually set the name viewable by the end user; thereby obfuscating the real pathname
-	 */
+        String abs = this.getAbsolute();
+        int index = abs.lastIndexOf('/');
+        return (index > 0) ? abs.substring(index + 1) : abs.substring(1);
+    }
+
+    /**
+     * Manually set the name viewable by the end user; thereby obfuscating the real pathname
+     */
 //	public void setName(String name) {
 //		this.name = name;
 //	}
@@ -364,14 +364,14 @@ public abstract class Path {
         return childs;
     }
 
-	/**
-		* @return All childs of the local file representation and the file itself. Does not return any directory
-	 names, but only plain files.
-	 */
+    /**
+     * @return All childs of the local file representation and the file itself. Does not return any directory
+     *         names, but only plain files.
+     */
     private List getDownloadQueue(List queue) {
         if (this.isDirectory()) {
             for (Iterator i = this.list(false, true).iterator(); i.hasNext();) {
-                Path p = (Path) i.next();
+                Path p = (Path)i.next();
                 p.setLocal(new Local(this.getLocal(), p.getName()));
                 p.getDownloadQueue(queue);
             }
@@ -382,20 +382,20 @@ public abstract class Path {
         return queue;
     }
 
-	/**
-		* @return The path itself and all files included if this path denotes a directory (recursive for all
-																						   subsequent directories)
-	 Does not return any directory names, but only plain files.
-	 */
+    /**
+     * @return The path itself and all files included if this path denotes a directory (recursive for all
+     *         subsequent directories)
+     *         Does not return any directory names, but only plain files.
+     */
     private List getUploadQueue(List queue) {
         if (this.getLocal().isDirectory()) {
             File[] files = this.getLocal().listFiles();
             for (int i = 0; i < files.length; i++) {
                 Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), new Local(files[i].getAbsolutePath()));
-				// users complaining about .DS_Store files getting uploaded. It should be apple fixing their crappy file system, but whatever.
-				if(!p.getName().equals(".DS_Store")) {
-					p.getUploadQueue(queue);
-				}
+                // users complaining about .DS_Store files getting uploaded. It should be apple fixing their crappy file system, but whatever.
+                if (!p.getName().equals(".DS_Store")) {
+                    p.getUploadQueue(queue);
+                }
             }
         }
         else if (this.getLocal().isFile()) {
@@ -416,8 +416,9 @@ public abstract class Path {
      * @param writer The stream to write to
      */
     public void upload(java.io.Writer writer, java.io.Reader reader) throws IOException {
-		if(log.isDebugEnabled())
-			log.debug("upload(" + writer.toString() + ", " + reader.toString());
+        if (log.isDebugEnabled()) {
+            log.debug("upload(" + writer.toString() + ", " + reader.toString());
+        }
         this.getSession().log("Uploading " + this.getName() + " (ASCII)", Message.PROGRESS);
         if (this.status.isResume()) {
             long skipped = reader.skip(this.status.getCurrent());
@@ -436,8 +437,9 @@ public abstract class Path {
      * @param o The stream to write to
      */
     public void upload(java.io.OutputStream o, java.io.InputStream i) throws IOException {
-		if(log.isDebugEnabled())
-			log.debug("upload(" + o.toString() + ", " + i.toString());
+        if (log.isDebugEnabled()) {
+            log.debug("upload(" + o.toString() + ", " + i.toString());
+        }
         this.getSession().log("Uploading " + this.getName(), Message.PROGRESS);
         if (this.status.isResume()) {
             long skipped = i.skip(this.status.getCurrent());
@@ -448,16 +450,17 @@ public abstract class Path {
         }
         this.transfer(i, o);
     }
-	
+
     /**
-		* ascii download
+     * ascii download
      *
      * @param reader The stream to read from
      * @param writer The stream to write to
      */
     public void download(java.io.Reader reader, java.io.Writer writer) throws IOException {
-		if(log.isDebugEnabled())
-			log.debug("transfer(" + reader.toString() + ", " + writer.toString());
+        if (log.isDebugEnabled()) {
+            log.debug("transfer(" + reader.toString() + ", " + writer.toString());
+        }
         this.getSession().log("Downloading " + this.getName() + " (ASCII)", Message.PROGRESS);
         this.transfer(reader, writer);
         //this.getLocal().getTemp().renameTo(this.getLocal());
@@ -470,8 +473,9 @@ public abstract class Path {
      * @param o The stream to write to
      */
     public void download(java.io.InputStream i, java.io.OutputStream o) throws IOException {
-		if(log.isDebugEnabled())
-			log.debug("transfer(" + i.toString() + ", " + o.toString());
+        if (log.isDebugEnabled()) {
+            log.debug("transfer(" + i.toString() + ", " + o.toString());
+        }
         this.getSession().log("Downloading " + this.getName(), Message.PROGRESS);
         this.transfer(i, o);
         //this.getLocal().getTemp().renameTo(this.getLocal());
@@ -482,9 +486,10 @@ public abstract class Path {
      * @param writer The stream to write to
      */
     private void transfer(java.io.Reader reader, java.io.Writer writer) throws IOException {
-		if(log.isDebugEnabled())
-			log.debug("transfer(" + reader.toString() + ", " + writer.toString());
-		LineNumberReader in = new LineNumberReader(reader);
+        if (log.isDebugEnabled()) {
+            log.debug("transfer(" + reader.toString() + ", " + writer.toString());
+        }
+        LineNumberReader in = new LineNumberReader(reader);
         BufferedWriter out = new BufferedWriter(writer);
 
         long current = this.status.getCurrent();
@@ -511,8 +516,9 @@ public abstract class Path {
      * @param o The stream to write to
      */
     private void transfer(java.io.InputStream i, java.io.OutputStream o) throws IOException {
-		if(log.isDebugEnabled())
-			log.debug("transfer(" + i.toString() + ", " + o.toString());
+        if (log.isDebugEnabled()) {
+            log.debug("transfer(" + i.toString() + ", " + o.toString());
+        }
         BufferedInputStream in = new BufferedInputStream(i);
         BufferedOutputStream out = new BufferedOutputStream(o);
         int chunksize = Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
@@ -537,7 +543,7 @@ public abstract class Path {
 
     public boolean equals(Object other) {
         if (other instanceof Path) {
-            return this.getAbsolute().equals(((Path) other).getAbsolute());
+            return this.getAbsolute().equals(((Path)other).getAbsolute());
         }
         return false;
     }

@@ -67,7 +67,7 @@ public class SshPrivateKeyFormatFactory {
             InputStream in;
 
             while ((enum != null) && enum.hasMoreElements()) {
-                url = (URL) enum.nextElement();
+                url = (URL)enum.nextElement();
                 in = url.openStream();
                 properties.load(in);
                 IOUtil.closeStream(in);
@@ -96,11 +96,11 @@ public class SshPrivateKeyFormatFactory {
         String classname;
 
         while (it.hasNext()) {
-            classname = (String) it.next();
+            classname = (String)it.next();
 
             try {
                 Class cls = ConfigurationLoader.getExtensionClass(classname);
-                f = (SshPrivateKeyFormat) cls.newInstance();
+                f = (SshPrivateKeyFormat)cls.newInstance();
                 log.debug("Installing " + f.getFormatType() +
                         " private key format");
                 formatTypes.put(f.getFormatType(), cls);
@@ -132,7 +132,7 @@ public class SshPrivateKeyFormatFactory {
             throws InvalidSshKeyException {
         try {
             if (formatTypes.containsKey(type)) {
-                return (SshPrivateKeyFormat) ((Class) formatTypes.get(type)).newInstance();
+                return (SshPrivateKeyFormat)((Class)formatTypes.get(type)).newInstance();
             }
             else {
                 throw new InvalidSshKeyException("The format type " + type +

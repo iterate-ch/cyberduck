@@ -83,7 +83,7 @@ public abstract class SshPublicKey {
      */
     public boolean equals(Object obj) {
         if (obj instanceof SshPublicKey) {
-            return (getFingerprint().compareTo(((SshPublicKey) obj).getFingerprint()) == 0);
+            return (getFingerprint().compareTo(((SshPublicKey)obj).getFingerprint()) == 0);
         }
 
         return false;

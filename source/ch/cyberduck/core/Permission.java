@@ -39,7 +39,7 @@ public class Permission {
     public Permission(NSDictionary dict) {
         Object maskObj = dict.objectForKey("Mask");
         if (maskObj != null) {
-            this.mask = (String) maskObj;
+            this.mask = (String)maskObj;
         }
     }
 

@@ -35,7 +35,7 @@ public class CDPreferencesController extends NSObject {
 
     private static CDPreferencesController instance;
 
-	private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
     private NSWindow window; //IBOutlet
 
@@ -48,9 +48,9 @@ public class CDPreferencesController extends NSObject {
         log.debug("instance");
         if (null == instance) {
             instance = new CDPreferencesController();
-			if (false == NSApplication.loadNibNamed("Preferences", instance)) {
-				log.fatal("Couldn't load Preferences.nib");
-			}
+            if (false == NSApplication.loadNibNamed("Preferences", instance)) {
+                log.fatal("Couldn't load Preferences.nib");
+            }
         }
         return instance;
     }
@@ -69,10 +69,10 @@ public class CDPreferencesController extends NSObject {
         return this.window;
     }
 
-	public boolean windowShouldClose(NSWindow sender) {
-		return true;
-	}
-	
+    public boolean windowShouldClose(NSWindow sender) {
+        return true;
+    }
+
     public void windowWillClose(NSNotification notification) {
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
@@ -165,7 +165,7 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
         java.util.Iterator iterator = editors.keySet().iterator();
         int i = 0;
         while (iterator.hasNext()) {
-            items[i] = (String) iterator.next();
+            items[i] = (String)iterator.next();
             i++;
         }
         this.editorCombobox.addItemsWithTitles(new NSArray(items));
@@ -174,7 +174,7 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
 
     public void editorComboboxClicked(NSPopUpButton sender) {
         Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
-        Preferences.instance().setProperty("editor.bundleIdentifier", (String) Editor.SUPPORTED_EDITORS.get(sender.titleOfSelectedItem()));
+        Preferences.instance().setProperty("editor.bundleIdentifier", (String)Editor.SUPPORTED_EDITORS.get(sender.titleOfSelectedItem()));
     }
 
     private NSPopUpButton encodingCombobox;
@@ -189,7 +189,7 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
         java.util.Iterator iterator = charsets.values().iterator();
         int i = 0;
         while (iterator.hasNext()) {
-            items[i] = ((java.nio.charset.Charset) iterator.next()).name();
+            items[i] = ((java.nio.charset.Charset)iterator.next()).name();
             i++;
         }
         this.encodingCombobox.addItemsWithTitles(new NSArray(items));
@@ -583,7 +583,7 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
                 {
                     NSArray selected = sheet.filenames();
                     String filename;
-                    if ((filename = (String) selected.lastObject()) != null) {
+                    if ((filename = (String)selected.lastObject()) != null) {
                         Preferences.instance().setProperty("queue.download.folder", filename);
                         this.downloadPathField.setStringValue(Preferences.instance().getProperty("queue.download.folder"));
                     }
@@ -637,7 +637,7 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
     public void bufferFieldDidChange(NSNotification sender) {
         try {
             int kbit = Integer.parseInt(this.bufferField.stringValue());
-            Preferences.instance().setProperty("connection.buffer", (int) kbit / 8 * 1024); //Bytes
+            Preferences.instance().setProperty("connection.buffer", (int)kbit / 8 * 1024); //Bytes
         }
         catch (NumberFormatException e) {
             log.error(e.getMessage());

@@ -27,21 +27,21 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class QueueList {
-	private static QueueList instance;
-	
+    private static QueueList instance;
+
     private List data = new ArrayList();
 
     public QueueList() {
         this.load();
     }
 
-	public static QueueList instance() {
+    public static QueueList instance() {
         if (null == instance) {
             instance = new ch.cyberduck.ui.cocoa.CDQueueList();
         }
         return instance;
     }
-	
+
     public abstract void save();
 
     public abstract void load();
@@ -60,8 +60,8 @@ public abstract class QueueList {
 
     public void removeItem(int index) {
         if (index < this.size()) {
-			this.data.remove(index);
-		}
+            this.data.remove(index);
+        }
     }
 
     public void removeItem(Queue item) {
@@ -71,7 +71,7 @@ public abstract class QueueList {
     public Queue getItem(int row) {
         Queue result = null;
         if (row < this.size()) {
-            result = (Queue) this.data.get(row);
+            result = (Queue)this.data.get(row);
         }
         return result;
     }

@@ -64,10 +64,10 @@ public class HmacMd5 implements SshHmac {
     public byte[] generate(long sequenceNo, byte[] data, int offset, int len) {
         // Write the sequence no
         byte[] sequenceBytes = new byte[4];
-        sequenceBytes[0] = (byte) (sequenceNo >> 24);
-        sequenceBytes[1] = (byte) (sequenceNo >> 16);
-        sequenceBytes[2] = (byte) (sequenceNo >> 8);
-        sequenceBytes[3] = (byte) (sequenceNo >> 0);
+        sequenceBytes[0] = (byte)(sequenceNo >> 24);
+        sequenceBytes[1] = (byte)(sequenceNo >> 16);
+        sequenceBytes[2] = (byte)(sequenceNo >> 8);
+        sequenceBytes[3] = (byte)(sequenceNo >> 0);
         mac.update(sequenceBytes);
         mac.update(data, offset, len);
 

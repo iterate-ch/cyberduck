@@ -476,7 +476,7 @@ public class HttpConnection {
 //                log.debug("HttpConnection.readLine() found \\n, breaking");
                 break;
             }
-            buf.append((char) ch);
+            buf.append((char)ch);
         }
         if (wireLog.isInfoEnabled() && buf.length() > 0) {
             wireLog.info("<< \"" + buf.toString() + "\" [\\r\\n]");

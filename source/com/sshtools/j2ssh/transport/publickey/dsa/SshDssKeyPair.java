@@ -76,8 +76,8 @@ public class SshDssKeyPair extends SshKeyPair {
             KeyPair pair = keyGen.generateKeyPair();
 
             // Get the keys
-            DSAPrivateKey prvKey = (DSAPrivateKey) pair.getPrivate();
-            DSAPublicKey pubKey = (DSAPublicKey) pair.getPublic();
+            DSAPrivateKey prvKey = (DSAPrivateKey)pair.getPrivate();
+            DSAPublicKey pubKey = (DSAPublicKey)pair.getPublic();
 
             // Set the private key (the public is automatically generated)
             setPrivateKey(new SshDssPrivateKey(prvKey));

@@ -40,7 +40,7 @@ public class CDProgressCell extends CDTableCell {
     }
 
     public void setObjectValue(Object queue) {
-        this.queue = (Queue) queue;
+        this.queue = (Queue)queue;
     }
 
     private static final NSImage stripeGrayIcon = NSImage.imageNamed("stripeGray.tiff");
@@ -57,7 +57,7 @@ public class CDProgressCell extends CDTableCell {
             final float PROGRESS_HEIGHT = 10;
             float progress;
             if (queue.getSize() > 0) {
-                progress = (float) ((float) queue.getCurrent() / (float) queue.getSize());
+                progress = (float)((float)queue.getCurrent() / (float)queue.getSize());
             }
             else {
                 progress = 0;
@@ -77,7 +77,7 @@ public class CDProgressCell extends CDTableCell {
                     PROGRESS_HEIGHT);
 
             // drawing current of size string
-            NSGraphics.drawAttributedString(new NSAttributedString((int) (progress * 100) + "%"
+            NSGraphics.drawAttributedString(new NSAttributedString((int)(progress * 100) + "%"
                     + " - " +
                     queue.getProgress(),
                     normalFont),

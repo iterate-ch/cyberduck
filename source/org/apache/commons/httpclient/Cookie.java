@@ -322,7 +322,7 @@ public class Cookie extends NameValuePair implements Serializable {
      */
     public boolean equals(Object obj) {
         if ((obj != null) && (obj instanceof Cookie)) {
-            Cookie that = (Cookie) obj;
+            Cookie that = (Cookie)obj;
             return (null == this.getName() ? null == that.getName() : this.getName().equals(that.getName())) &&
                     (null == this.getPath() ? null == that.getPath() : this.getPath().equals(that.getPath())) &&
                     (null == this.getDomain() ? null == that.getDomain() : this.getDomain().equals(that.getDomain()));

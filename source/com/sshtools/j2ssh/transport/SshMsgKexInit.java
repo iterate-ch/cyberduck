@@ -200,7 +200,7 @@ public class SshMsgKexInit extends SshMessage {
 
         while (it.hasNext()) {
             // Add the seperator and then the item
-            ret += (sep + (String) it.next());
+            ret += (sep + (String)it.next());
             sep = ",";
         }
 

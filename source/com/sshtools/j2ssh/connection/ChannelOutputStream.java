@@ -117,7 +117,7 @@ public class ChannelOutputStream extends OutputStream {
         }
 
         byte[] data = new byte[1];
-        data[0] = (byte) b;
+        data[0] = (byte)b;
         sendChannelData(data);
     }
 

@@ -36,47 +36,45 @@ public abstract class FTPFileEntryParserImpl implements FTPFileEntryParser {
      */
     public FTPFileEntryParserImpl() {
     }
-    
+
     /**
      * Reads the next entry using the supplied BufferedReader object up to
      * whatever delemits one entry from the next.  This default implementation
      * simply calls BufferedReader.readLine().
      *
-     * @param reader The BufferedReader object from which entries are to be 
-     * read.
-     *
+     * @param reader The BufferedReader object from which entries are to be
+     *               read.
      * @return A string representing the next ftp entry or null if none found.
-     * @exception java.io.IOException thrown on any IO Error reading from the reader.
+     * @throws java.io.IOException thrown on any IO Error reading from the reader.
      */
-    public String readNextEntry(BufferedReader reader) throws IOException 
-    {
+    public String readNextEntry(BufferedReader reader) throws IOException {
         return reader.readLine();
     }
-	
+
     /**
      * This method is a hook for those implementors (such as
      * VMSVersioningFTPEntryParser, and possibly others) which need to
      * perform some action upon the FTPFileList after it has been created
      * from the server stream, but before any clients see the list.
-     *
+     * <p/>
      * This default implementation is a no-op.
      *
      * @param original Original list after it has been created from the server stream
-     *
      * @return <code>original</code> unmodified.
      */
     public List preParse(Path parent, List original) {
-     	 Iterator it = original.iterator();
-     	 while (it.hasNext()){
-     	 	String entry = (String) it.next();
-     	 	if (null == parseFTPEntry(parent, entry)) {
-     	 		it.remove();
-     	 	} else {
-     	 		break;
-     	 	}
-     	 }
-         return original;                                
-     } 
+        Iterator it = original.iterator();
+        while (it.hasNext()) {
+            String entry = (String)it.next();
+            if (null == parseFTPEntry(parent, entry)) {
+                it.remove();
+            }
+            else {
+                break;
+            }
+        }
+        return original;
+    }
 }
 
 /* Emacs configuration

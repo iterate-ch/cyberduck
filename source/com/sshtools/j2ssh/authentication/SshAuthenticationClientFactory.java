@@ -84,13 +84,13 @@ public class SshAuthenticationClientFactory {
         try {
             // Load external methods from configuration file
             if (ConfigurationLoader.isConfigurationAvailable(SshAPIConfiguration.class)) {
-                SshAPIConfiguration config = (SshAPIConfiguration) ConfigurationLoader.getConfiguration(SshAPIConfiguration.class);
+                SshAPIConfiguration config = (SshAPIConfiguration)ConfigurationLoader.getConfiguration(SshAPIConfiguration.class);
                 List addons = config.getAuthenticationExtensions();
                 Iterator it = addons.iterator();
 
                 // Add the methods to our supported list
                 while (it.hasNext()) {
-                    ExtensionAlgorithm method = (ExtensionAlgorithm) it.next();
+                    ExtensionAlgorithm method = (ExtensionAlgorithm)it.next();
                     String name = method.getAlgorithmName();
 
                     if (auths.containsKey(name)) {
@@ -153,7 +153,7 @@ public class SshAuthenticationClientFactory {
     public static SshAuthenticationClient newInstance(String methodName)
             throws AlgorithmNotSupportedException {
         try {
-            return (SshAuthenticationClient) ((Class) auths.get(methodName)).newInstance();
+            return (SshAuthenticationClient)((Class)auths.get(methodName)).newInstance();
         }
         catch (Exception e) {
             throw new AlgorithmNotSupportedException(methodName +

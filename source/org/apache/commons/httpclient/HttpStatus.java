@@ -104,7 +104,7 @@ public class HttpStatus {
 
         }
         else {
-            return (String) mapStatusCodes.get(intKey);
+            return (String)mapStatusCodes.get(intKey);
         }
     }
 

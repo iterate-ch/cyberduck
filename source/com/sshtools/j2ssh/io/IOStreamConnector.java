@@ -185,7 +185,7 @@ public class IOStreamConnector {
                         out.flush();
 
                         // Inform all of the listeners
-                        IOStreamConnectorListener[] l = (IOStreamConnectorListener[]) listenerList.getListeners(IOStreamConnectorListener.class);
+                        IOStreamConnectorListener[] l = (IOStreamConnectorListener[])listenerList.getListeners(IOStreamConnectorListener.class);
 
                         for (int i = (l.length - 1); i >= 0; i--) {
                             l[i].data(buffer, count);

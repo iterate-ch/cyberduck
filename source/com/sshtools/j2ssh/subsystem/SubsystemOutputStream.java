@@ -77,7 +77,7 @@ public class SubsystemOutputStream extends OutputStream {
     private void processMessage() throws IOException {
         // Now try to process a message
         if (buffer.size() > (messageStart + 4)) {
-            int messageLength = (int) ByteArrayReader.readInt(buffer.toByteArray(),
+            int messageLength = (int)ByteArrayReader.readInt(buffer.toByteArray(),
                     messageStart);
 
             if (messageLength <= (buffer.size() - 4)) {

@@ -169,7 +169,7 @@ public class SocksProxySocket extends Socket implements TransportProvider {
             InputStream proxyIn = proxySocket.getInputStream();
             OutputStream proxyOut = proxySocket.getOutputStream();
             byte[] request = {
-                (byte) SOCKS5, (byte) 0x02, (byte) 0x00, (byte) 0x02
+                (byte)SOCKS5, (byte)0x02, (byte)0x00, (byte)0x02
             };
             byte[] reply = new byte[2];
             proxyOut.write(request);
@@ -215,14 +215,14 @@ public class SocksProxySocket extends Socket implements TransportProvider {
                 }
 
                 request = new byte[]{
-                    (byte) SOCKS5, (byte) 0x01, (byte) 0x00, (byte) 0x01
+                    (byte)SOCKS5, (byte)0x01, (byte)0x00, (byte)0x01
                 };
                 proxyOut.write(request);
                 proxyOut.write(hostAddr.getAddress());
             }
             else {
                 request = new byte[]{
-                    (byte) SOCKS5, (byte) 0x01, (byte) 0x00, (byte) 0x03
+                    (byte)SOCKS5, (byte)0x01, (byte)0x00, (byte)0x03
                 };
                 proxyOut.write(request);
                 proxyOut.write(remoteHost.length());

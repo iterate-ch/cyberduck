@@ -213,7 +213,7 @@ public class SshAgentClient {
         msg = readMessage();
 
         if (msg instanceof SshAgentVersionResponse) {
-            SshAgentVersionResponse reply = (SshAgentVersionResponse) msg;
+            SshAgentVersionResponse reply = (SshAgentVersionResponse)msg;
 
             if (reply.getVersion() != 2) {
                 throw new IOException("The agent verison is not compatible with verison 2");
@@ -261,7 +261,7 @@ public class SshAgentClient {
         msg = readMessage();
 
         if (msg instanceof SshAgentOperationComplete) {
-            return ((SshAgentOperationComplete) msg).getData();
+            return ((SshAgentOperationComplete)msg).getData();
         }
         else {
             throw new IOException("The operation failed");
@@ -280,7 +280,7 @@ public class SshAgentClient {
         msg = readMessage();
 
         if (msg instanceof SshAgentKeyList) {
-            return ((SshAgentKeyList) msg).getKeys();
+            return ((SshAgentKeyList)msg).getKeys();
         }
         else {
             throw new IOException("The agent responsed with an invalid message");
@@ -330,7 +330,7 @@ public class SshAgentClient {
         msg = readMessage();
 
         if (msg instanceof SshAgentRandomData) {
-            return ((SshAgentRandomData) msg).getRandomData();
+            return ((SshAgentRandomData)msg).getRandomData();
         }
         else {
             throw new IOException("Agent failed to provide the request random data");
@@ -349,7 +349,7 @@ public class SshAgentClient {
         msg = readMessage();
 
         if (msg instanceof SshAgentAlive) {
-            if (!Arrays.equals(padding, ((SshAgentAlive) msg).getPadding())) {
+            if (!Arrays.equals(padding, ((SshAgentAlive)msg).getPadding())) {
                 throw new IOException("Agent failed to reply with expected data");
             }
         }
@@ -438,7 +438,7 @@ public class SshAgentClient {
                 len += in.read(lendata, len, lendata.length - len);
             }
 
-            len = (int) ByteArrayReader.readInt(lendata, 0);
+            len = (int)ByteArrayReader.readInt(lendata, 0);
             msgdata = new byte[len];
             len = 0;
 
@@ -446,11 +446,11 @@ public class SshAgentClient {
                 len += in.read(msgdata, len, msgdata.length - len);
             }
 
-            Integer id = new Integer((int) msgdata[0] & 0xFF);
+            Integer id = new Integer((int)msgdata[0] & 0xFF);
 
             if (messages.containsKey(id)) {
-                Class cls = (Class) messages.get(id);
-                SubsystemMessage msg = (SubsystemMessage) cls.newInstance();
+                Class cls = (Class)messages.get(id);
+                SubsystemMessage msg = (SubsystemMessage)cls.newInstance();
                 msg.fromByteArray(msgdata);
                 log.info("Received message " + msg.getMessageName());
 

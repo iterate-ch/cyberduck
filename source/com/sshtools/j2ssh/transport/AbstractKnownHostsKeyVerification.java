@@ -99,9 +99,9 @@ public abstract class AbstractKnownHostsKeyVerification
 
                     while ((line = reader.readLine()) != null) {
                         StringTokenizer tokens = new StringTokenizer(line, " ");
-                        String host = (String) tokens.nextElement();
-                        String algorithm = (String) tokens.nextElement();
-                        String key = (String) tokens.nextElement();
+                        String host = (String)tokens.nextElement();
+                        String algorithm = (String)tokens.nextElement();
+                        String key = (String)tokens.nextElement();
                         SshPublicKey pk = SshKeyPairFactory.decodePublicKey(Base64.decode(key));
 
                         /*if (host.indexOf(",") > -1) {
@@ -262,10 +262,10 @@ public abstract class AbstractKnownHostsKeyVerification
         Iterator it = allowedHosts.keySet().iterator();
 
         while (it.hasNext()) {
-            StringTokenizer tokens = new StringTokenizer((String) it.next(), ",");
+            StringTokenizer tokens = new StringTokenizer((String)it.next(), ",");
 
             while (tokens.hasMoreElements()) {
-                String name = (String) tokens.nextElement();
+                String name = (String)tokens.nextElement();
 
                 if (name.equals(host)) {
                     allowedHosts.remove(name);
@@ -305,7 +305,7 @@ public abstract class AbstractKnownHostsKeyVerification
 
         while (it.hasNext()) {
             // Could be a comma delimited string of names/ip addresses
-            String names = (String) it.next();
+            String names = (String)it.next();
 
             if (names.equals(host)) {
                 return validateHost(names, pk);
@@ -315,7 +315,7 @@ public abstract class AbstractKnownHostsKeyVerification
 
             while (tokens.hasMoreElements()) {
                 // Try the allowed hosts by looking at the allowed hosts map
-                String name = (String) tokens.nextElement();
+                String name = (String)tokens.nextElement();
 
                 if (name.equalsIgnoreCase(host)) {
                     return validateHost(names, pk);
@@ -367,9 +367,9 @@ public abstract class AbstractKnownHostsKeyVerification
 
     private SshPublicKey getAllowedKey(String names, String algorithm) {
         if (allowedHosts.containsKey(names)) {
-            Map map = (Map) allowedHosts.get(names);
+            Map map = (Map)allowedHosts.get(names);
 
-            return (SshPublicKey) map.get(algorithm);
+            return (SshPublicKey)map.get(algorithm);
         }
 
         return null;
@@ -380,7 +380,7 @@ public abstract class AbstractKnownHostsKeyVerification
             allowedHosts.put(host, new HashMap());
         }
 
-        Map map = (Map) allowedHosts.get(host);
+        Map map = (Map)allowedHosts.get(host);
         map.put(key.getAlgorithmName(), key);
     }
 
@@ -434,14 +434,14 @@ public abstract class AbstractKnownHostsKeyVerification
         Iterator it = allowedHosts.entrySet().iterator();
 
         while (it.hasNext()) {
-            entry = (Map.Entry) it.next();
+            entry = (Map.Entry)it.next();
 
-            Iterator it2 = ((Map) entry.getValue()).entrySet().iterator();
+            Iterator it2 = ((Map)entry.getValue()).entrySet().iterator();
 
             while (it2.hasNext()) {
-                entry2 = (Map.Entry) it2.next();
+                entry2 = (Map.Entry)it2.next();
 
-                SshPublicKey pk = (SshPublicKey) entry2.getValue();
+                SshPublicKey pk = (SshPublicKey)entry2.getValue();
                 knownhosts += (entry.getKey().toString() + " " +
                         pk.getAlgorithmName() + " " +
                         Base64.encodeBytes(pk.getEncoded(), true) + "\n");

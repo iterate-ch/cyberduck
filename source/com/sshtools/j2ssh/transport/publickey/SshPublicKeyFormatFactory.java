@@ -54,7 +54,7 @@ public class SshPublicKeyFormatFactory {
 
         try {
             if (ConfigurationLoader.isConfigurationAvailable(SshAPIConfiguration.class)) {
-                SshAPIConfiguration config = (SshAPIConfiguration) ConfigurationLoader.getConfiguration(SshAPIConfiguration.class);
+                SshAPIConfiguration config = (SshAPIConfiguration)ConfigurationLoader.getConfiguration(SshAPIConfiguration.class);
                 defaultFormat = config.getDefaultPublicKeyFormat();
                 formats.addAll(config.getPublicKeyFormats());
             }
@@ -69,11 +69,11 @@ public class SshPublicKeyFormatFactory {
         String classname;
 
         while (it.hasNext()) {
-            classname = (String) it.next();
+            classname = (String)it.next();
 
             try {
                 Class cls = ConfigurationLoader.getExtensionClass(classname);
-                f = (SshPublicKeyFormat) cls.newInstance();
+                f = (SshPublicKeyFormat)cls.newInstance();
                 log.debug("Installing " + f.getFormatType() +
                         " public key format");
                 formatTypes.put(f.getFormatType(), cls);
@@ -102,7 +102,7 @@ public class SshPublicKeyFormatFactory {
             throws InvalidSshKeyException {
         try {
             if (formatTypes.containsKey(type)) {
-                return (SshPublicKeyFormat) ((Class) formatTypes.get(type)).newInstance();
+                return (SshPublicKeyFormat)((Class)formatTypes.get(type)).newInstance();
             }
             else {
                 throw new InvalidSshKeyException("The format type " + type +

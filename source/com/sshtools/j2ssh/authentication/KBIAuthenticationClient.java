@@ -93,7 +93,7 @@ public class KBIAuthenticationClient extends SshAuthenticationClient {
             msg = authentication.readMessage(SshMsgUserAuthInfoRequest.SSH_MSG_USERAUTH_INFO_REQUEST);
 
             if (msg instanceof SshMsgUserAuthInfoRequest) {
-                SshMsgUserAuthInfoRequest request = (SshMsgUserAuthInfoRequest) msg;
+                SshMsgUserAuthInfoRequest request = (SshMsgUserAuthInfoRequest)msg;
                 KBIPrompt[] prompts = request.getPrompts();
                 handler.showPrompts(request.getName(),
                         request.getInstruction(), prompts);

@@ -62,28 +62,28 @@ public class CDPathController extends NSObject implements Observer {
 
     public void update(final Observable o, final Object arg) {
         log.debug("update:" + o + "," + arg);
-		if (o instanceof Session) {
-			if (arg instanceof Path) {
-				workdir = (Path) arg;
-				removeAllItems();
-				// current path has index 0
-				addItem(workdir);
-				// root path has index numberOfItems()-1
-				Path p = workdir;
-				while (!p.isRoot()) {
-					p = p.getParent();
-					addItem(p);
-				}
-			}
-		}
-	}
-			
+        if (o instanceof Session) {
+            if (arg instanceof Path) {
+                workdir = (Path)arg;
+                removeAllItems();
+                // current path has index 0
+                addItem(workdir);
+                // root path has index numberOfItems()-1
+                Path p = workdir;
+                while (!p.isRoot()) {
+                    p = p.getParent();
+                    addItem(p);
+                }
+            }
+        }
+    }
+
     public int numberOfItems() {
         return items.size();
     }
 
     public void selectionChanged(Object sender) {
-        Path p = (Path) items.get(combo.indexOfSelectedItem());
+        Path p = (Path)items.get(combo.indexOfSelectedItem());
         p.list();
     }
 
@@ -99,7 +99,7 @@ public class CDPathController extends NSObject implements Observer {
     }
 
     public Path getItem(int row) {
-        return (Path) items.get(row);
+        return (Path)items.get(row);
     }
 
     public void removeAllItems() {

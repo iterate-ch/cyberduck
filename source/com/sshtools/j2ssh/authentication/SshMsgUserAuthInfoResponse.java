@@ -118,7 +118,7 @@ public class SshMsgUserAuthInfoResponse extends SshMessage {
     protected void constructMessage(ByteArrayReader bar)
             throws com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
-            int num = (int) bar.readInt();
+            int num = (int)bar.readInt();
 
             if (num > 0) {
                 responses = new String[num];

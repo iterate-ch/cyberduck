@@ -105,7 +105,7 @@ public class HttpState {
         if (cookie != null) {
             // first remove any old cookie that is equivalent
             for (Iterator it = cookies.iterator(); it.hasNext();) {
-                Cookie tmp = (Cookie) it.next();
+                Cookie tmp = (Cookie)it.next();
                 if (cookie.equals(tmp)) {
                     it.remove();
                     break;
@@ -138,7 +138,7 @@ public class HttpState {
      * @return an array of my {@link Cookie}s.
      */
     public Cookie[] getCookies() {
-        return (Cookie[]) (cookies.toArray(new Cookie[cookies.size()]));
+        return (Cookie[])(cookies.toArray(new Cookie[cookies.size()]));
     }
 
     /**
@@ -156,12 +156,12 @@ public class HttpState {
     public Cookie[] getCookies(String domain, int port, String path, boolean secure, Date now) {
         ArrayList list = new ArrayList(cookies.size());
         for (int i = 0, m = cookies.size(); i < m; i++) {
-            Cookie c = (Cookie) (cookies.get(i));
+            Cookie c = (Cookie)(cookies.get(i));
             if (c.matches(domain, port, path, secure, now)) {
                 list.add(c);
             }
         }
-        return (Cookie[]) (list.toArray(new Cookie[list.size()]));
+        return (Cookie[])(list.toArray(new Cookie[list.size()]));
     }
 
 
@@ -186,7 +186,7 @@ public class HttpState {
         boolean removed = false;
         Iterator it = cookies.iterator();
         while (it.hasNext()) {
-            if (((Cookie) (it.next())).isExpired(date)) {
+            if (((Cookie)(it.next())).isExpired(date)) {
                 it.remove();
                 removed = true;
             }
@@ -227,7 +227,7 @@ public class HttpState {
      * @param realm the authentication realm
      */
     public Credentials getCredentials(String realm) {
-        return (Credentials) (credMap.get(realm));
+        return (Credentials)(credMap.get(realm));
     }
 
 }

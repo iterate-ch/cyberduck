@@ -174,7 +174,7 @@ public class ConfigurationLoader {
                     // depending upon how you want to initialize your JCE provider
                     Class cls;
                     cls = Class.forName("org.bouncycastle.jce.provider.BouncyCastleProvider");
-                    java.security.Security.addProvider((java.security.Provider) cls.newInstance());
+                    java.security.Security.addProvider((java.security.Provider)cls.newInstance());
                 }
             }
         }
@@ -252,7 +252,7 @@ public class ConfigurationLoader {
             Iterator it = contexts.iterator();
 
             while (it.hasNext()) {
-                ConfigurationContext context = (ConfigurationContext) it.next();
+                ConfigurationContext context = (ConfigurationContext)it.next();
 
                 if (context.isConfigurationAvailable(cls)) {
                     return true;
@@ -277,7 +277,7 @@ public class ConfigurationLoader {
             Iterator it = contexts.iterator();
 
             while (it.hasNext()) {
-                ConfigurationContext context = (ConfigurationContext) it.next();
+                ConfigurationContext context = (ConfigurationContext)it.next();
 
                 if (context.isConfigurationAvailable(cls)) {
                     return context.getConfiguration(cls);

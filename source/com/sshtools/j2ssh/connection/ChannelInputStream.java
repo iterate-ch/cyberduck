@@ -122,11 +122,11 @@ public class ChannelInputStream extends InputStream {
         if (available == 0) {
             try {
                 if (type != null) {
-                    SshMsgChannelExtendedData msg = (SshMsgChannelExtendedData) messageStore.peekMessage(filter);
+                    SshMsgChannelExtendedData msg = (SshMsgChannelExtendedData)messageStore.peekMessage(filter);
                     available = msg.getChannelData().length;
                 }
                 else {
-                    SshMsgChannelData msg = (SshMsgChannelData) messageStore.peekMessage(filter);
+                    SshMsgChannelData msg = (SshMsgChannelData)messageStore.peekMessage(filter);
                     available = msg.getChannelData().length;
                 }
 
@@ -278,7 +278,7 @@ public class ChannelInputStream extends InputStream {
                 while ((msg == null) && !isClosed()) {
                     try {
                         log.debug("Waiting for extended channel data");
-                        msg = (SshMsgChannelExtendedData) messageStore.getMessage(filter,
+                        msg = (SshMsgChannelExtendedData)messageStore.getMessage(filter,
                                 interrupt);
                     }
                     catch (MessageNotAvailableException ex) {
@@ -301,7 +301,7 @@ public class ChannelInputStream extends InputStream {
                 while ((msg == null) && !isClosed()) {
                     try {
                         log.debug("Waiting for channel data");
-                        msg = (SshMsgChannelData) messageStore.getMessage(filter,
+                        msg = (SshMsgChannelData)messageStore.getMessage(filter,
                                 interrupt);
                     }
                     catch (MessageNotAvailableException ex1) {

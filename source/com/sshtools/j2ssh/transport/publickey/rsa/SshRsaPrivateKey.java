@@ -87,8 +87,8 @@ public class SshRsaPrivateKey extends SshPrivateKey {
             RSAPrivateKeySpec prvSpec = new RSAPrivateKeySpec(n, p);
             RSAPublicKeySpec pubSpec = new RSAPublicKeySpec(n, e);
             KeyFactory kf = KeyFactory.getInstance("RSA");
-            prvKey = (RSAPrivateKey) kf.generatePrivate(prvSpec);
-            pubKey = (RSAPublicKey) kf.generatePublic(pubSpec);
+            prvKey = (RSAPrivateKey)kf.generatePrivate(prvSpec);
+            pubKey = (RSAPublicKey)kf.generatePublic(pubSpec);
         }
         catch (Exception e) {
             throw new InvalidSshKeyException();
@@ -101,7 +101,7 @@ public class SshRsaPrivateKey extends SshPrivateKey {
      */
     public boolean equals(Object obj) {
         if (obj instanceof SshRsaPrivateKey) {
-            return prvKey.equals(((SshRsaPrivateKey) obj).prvKey);
+            return prvKey.equals(((SshRsaPrivateKey)obj).prvKey);
         }
 
         return false;

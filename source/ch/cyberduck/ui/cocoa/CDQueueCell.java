@@ -43,7 +43,7 @@ public class CDQueueCell extends CDTableCell {
     }
 
     public void setObjectValue(Object q) {
-        this.queue = (Queue) q;
+        this.queue = (Queue)q;
     }
 
     public static NSMenu defaultMenu() {

@@ -908,7 +908,7 @@ public class SshClient {
      */
     public List getActiveChannels() {
         synchronized (activeChannels) {
-            return (List) activeChannels.clone();
+            return (List)activeChannels.clone();
         }
     }
 
@@ -948,7 +948,7 @@ public class SshClient {
             obj = it.next();
 
             if (obj instanceof SessionChannelClient) {
-                if (((SessionChannelClient) obj).getSessionType().equals(type)) {
+                if (((SessionChannelClient)obj).getSessionType().equals(type)) {
                     return true;
                 }
             }
@@ -976,8 +976,8 @@ public class SshClient {
             obj = it.next();
 
             if (obj instanceof SessionChannelClient) {
-                if (((SessionChannelClient) obj).getSessionType().equals(type)) {
-                    return (SessionChannelClient) obj;
+                if (((SessionChannelClient)obj).getSessionType().equals(type)) {
+                    return (SessionChannelClient)obj;
                 }
             }
         }

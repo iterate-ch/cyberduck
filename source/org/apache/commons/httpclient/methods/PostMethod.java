@@ -177,7 +177,7 @@ public class PostMethod extends GetMethod {
                 v.add(old);
             }
             else if (old instanceof List) {
-                v = (List) old;
+                v = (List)old;
             }
             else {
                 throw new ClassCastException("Didn't expect to find " +
@@ -221,7 +221,7 @@ public class PostMethod extends GetMethod {
                 parameters.remove(paramName);
             }
             else if (old instanceof List) {
-                List list = (List) old;
+                List list = (List)old;
                 if (list.remove(paramValue)) {
                     if (list.isEmpty()) {
                         parameters.remove(paramName);
@@ -283,10 +283,10 @@ public class PostMethod extends GetMethod {
             StringBuffer sb = new StringBuffer();
             Iterator it = parameters.keySet().iterator();
             while (it.hasNext()) {
-                String name = (String) (it.next());
+                String name = (String)(it.next());
                 Object value = parameters.get(name);
                 if (value instanceof List) {
-                    List list = (List) value;
+                    List list = (List)value;
                     Iterator valit = list.iterator();
                     while (valit.hasNext()) {
                         if (sb.length() > 0) {

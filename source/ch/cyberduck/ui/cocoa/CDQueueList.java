@@ -96,13 +96,13 @@ public class CDQueueList extends QueueList { //implements NSTableView.DataSource
                 log.debug("Successfully read Queue: " + propertyListFromXMLData);
             }
             if (propertyListFromXMLData instanceof NSArray) {
-                NSArray entries = (NSArray) propertyListFromXMLData;
+                NSArray entries = (NSArray)propertyListFromXMLData;
                 java.util.Enumeration i = entries.objectEnumerator();
                 Object element;
                 while (i.hasMoreElements()) {
                     element = i.nextElement();
                     if (element instanceof NSDictionary) {
-                        this.addItem(new Queue((NSDictionary) element));
+                        this.addItem(new Queue((NSDictionary)element));
                     }
                 }
             }

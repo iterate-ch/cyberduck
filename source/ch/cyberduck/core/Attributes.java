@@ -49,7 +49,7 @@ public class Attributes extends Observable {
         log.debug("Attributes");
         Object typeObj = dict.objectForKey("Type");
         if (typeObj != null) {
-            this.type = Integer.parseInt((String) typeObj);
+            this.type = Integer.parseInt((String)typeObj);
         }
     }
 

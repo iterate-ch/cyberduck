@@ -45,23 +45,23 @@ public class SFTPPath extends Path {
 
     private static class Factory extends PathFactory {
         protected Path create(Session session, String parent, String name) {
-            return new SFTPPath((SFTPSession) session, parent, name);
+            return new SFTPPath((SFTPSession)session, parent, name);
         }
 
         protected Path create(Session session, String path) {
-            return new SFTPPath((SFTPSession) session, path);
+            return new SFTPPath((SFTPSession)session, path);
         }
 
         protected Path create(Session session) {
-            return new SFTPPath((SFTPSession) session);
+            return new SFTPPath((SFTPSession)session);
         }
 
         protected Path create(Session session, String path, Local file) {
-            return new SFTPPath((SFTPSession) session, path, file);
+            return new SFTPPath((SFTPSession)session, path, file);
         }
 
         protected Path create(Session session, NSDictionary dict) {
-            return new SFTPPath((SFTPSession) session, dict);
+            return new SFTPPath((SFTPSession)session, dict);
         }
     }
 
@@ -109,7 +109,7 @@ public class SFTPPath extends Path {
         session.addPathToHistory(this);
         if (refresh || files.size() == 0) {
             files.clear();
-            session.log("Listing "+this.getName(), Message.PROGRESS);
+            session.log("Listing " + this.getName(), Message.PROGRESS);
             SftpFile workingDirectory = null;
             try {
                 session.check();
@@ -121,7 +121,7 @@ public class SFTPPath extends Path {
                 }
                 java.util.Iterator i = children.iterator();
                 while (i.hasNext()) {
-                    SftpFile x = (SftpFile) i.next();
+                    SftpFile x = (SftpFile)i.next();
                     if (!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
                         if (!(x.getFilename().charAt(0) == '.') || showHidden) {
                             Path p = PathFactory.createPath(session, this.getAbsolute(), x.getFilename());
@@ -183,35 +183,11 @@ public class SFTPPath extends Path {
         session.callObservers(this);
         return files;
     }
-	
-	public void cwdir() {
-        try {
-            session.check();
-			session.SFTP.openDirectory(this.getParent().getAbsolute());
-        }
-        catch (SshException e) {
-            session.log("SSH Error: " + e.getMessage(), Message.ERROR);
-        }
-        catch (IOException e) {
-            session.log("IO Error: " + e.getMessage(), Message.ERROR);
-        }
-        finally {
-            session.log("Idle", Message.STOP);
-        }
-	}
 
-	public void mkdir(boolean recursive) {
-        log.debug("mkdir:"+this.getName());
+    public void cwdir() {
         try {
-			if(recursive) {
-				if(!this.getParent().exists()) {
-					this.getParent().mkdir(recursive);
-				}
-			}
             session.check();
-            session.log("Make directory " + this.getName(), Message.PROGRESS);
-            session.SFTP.makeDirectory(this.getAbsolute());
-			this.getParent().invalidate();
+            session.SFTP.openDirectory(this.getParent().getAbsolute());
         }
         catch (SshException e) {
             session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -223,16 +199,40 @@ public class SFTPPath extends Path {
             session.log("Idle", Message.STOP);
         }
     }
-	
+
+    public void mkdir(boolean recursive) {
+        log.debug("mkdir:" + this.getName());
+        try {
+            if (recursive) {
+                if (!this.getParent().exists()) {
+                    this.getParent().mkdir(recursive);
+                }
+            }
+            session.check();
+            session.log("Make directory " + this.getName(), Message.PROGRESS);
+            session.SFTP.makeDirectory(this.getAbsolute());
+            this.getParent().invalidate();
+        }
+        catch (SshException e) {
+            session.log("SSH Error: " + e.getMessage(), Message.ERROR);
+        }
+        catch (IOException e) {
+            session.log("IO Error: " + e.getMessage(), Message.ERROR);
+        }
+        finally {
+            session.log("Idle", Message.STOP);
+        }
+    }
+
     public void rename(String filename) {
-        log.debug("rename:"+filename);
+        log.debug("rename:" + filename);
         try {
             session.check();
             session.log("Renaming " + this.getName() + " to " + filename, Message.PROGRESS);
             session.SFTP.renameFile(this.getAbsolute(), filename);
-			this.setPath(filename);
+            this.setPath(filename);
 //			this.setPath(this.getParent().getAbsolute(), filename);
-			this.getParent().invalidate();
+            this.getParent().invalidate();
         }
         catch (SshException e) {
             session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -244,7 +244,7 @@ public class SFTPPath extends Path {
             session.log("Idle", Message.STOP);
         }
     }
-	
+
     public void delete() {
         log.debug("delete:" + this.toString());
         try {
@@ -258,7 +258,7 @@ public class SFTPPath extends Path {
                 java.util.Iterator iterator = files.iterator();
                 Path file = null;
                 while (iterator.hasNext()) {
-                    file = (Path) iterator.next();
+                    file = (Path)iterator.next();
                     if (file.isDirectory()) {
                         file.delete();
                     }
@@ -271,7 +271,7 @@ public class SFTPPath extends Path {
                 session.log("Deleting " + this.getName(), Message.PROGRESS);
                 session.SFTP.removeDirectory(this.getAbsolute());
             }
-			this.getParent().invalidate();
+            this.getParent().invalidate();
         }
         catch (SshException e) {
             session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -288,7 +288,7 @@ public class SFTPPath extends Path {
         log.debug("changePermissions");
         try {
             session.check();
-			//@todo support recursion
+            //@todo support recursion
             session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
         }
         catch (SshException e) {
@@ -335,8 +335,8 @@ public class SFTPPath extends Path {
                 }
             }
             if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
-				this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
-			}
+                this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+            }
         }
         catch (SshException e) {
             session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -347,11 +347,17 @@ public class SFTPPath extends Path {
         finally {
             session.log("Idle", Message.STOP);
             try {
-                if (in != null) { in.close(); in = null; }
-                if (out != null) { out.close(); out = null; }
+                if (in != null) {
+                    in.close();
+                    in = null;
+                }
+                if (out != null) {
+                    out.close();
+                    out = null;
+                }
             }
             catch (IOException e) {
-				e.printStackTrace();
+                e.printStackTrace();
                 log.error(e.getMessage());
             }
         }
@@ -413,12 +419,18 @@ public class SFTPPath extends Path {
         finally {
             session.log("Idle", Message.STOP);
             try {
-                if (in != null) { in.close(); in = null; }
-                if (out != null) { out.close(); out = null; }
+                if (in != null) {
+                    in.close();
+                    in = null;
+                }
+                if (out != null) {
+                    out.close();
+                    out = null;
+                }
             }
             catch (IOException e) {
                 log.error(e.getMessage());
-				e.printStackTrace();
+                e.printStackTrace();
             }
         }
     }

@@ -439,7 +439,7 @@ public class SessionChannelClient extends IOChannel {
         log.debug("Channel Request received: " + requestType);
 
         if (requestType.equals("exit-status")) {
-            exitCode = new Integer((int) ByteArrayReader.readInt(requestData, 0));
+            exitCode = new Integer((int)ByteArrayReader.readInt(requestData, 0));
             log.debug("Exit code of " + exitCode.toString() + " received");
         }
         else if (requestType.equals("exit-signal")) {

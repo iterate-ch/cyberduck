@@ -38,9 +38,9 @@ public class CDValidatorController extends Validator {
     public CDValidatorController(int kind, boolean resume) {
         super(kind, resume);
         instances.addObject(this);
-		if (false == NSApplication.loadNibNamed("Validator", this)) {
-			log.fatal("Couldn't load Validator.nib");
-		}
+        if (false == NSApplication.loadNibNamed("Validator", this)) {
+            log.fatal("Couldn't load Validator.nib");
+        }
     }
 
     private NSImageView iconView; // IBOutlet
@@ -98,47 +98,46 @@ public class CDValidatorController extends Validator {
     private boolean sheetClosedAndSelectionMade = true;
 
     public boolean prompt(final Path path) {
-		if (!applySettingsToAll) {
-			sheetClosedAndSelectionMade = false;
-			ThreadUtilities.instance().invokeLater(new Runnable() {
-				public void run() {
-					resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
-					String alertText =
-						NSBundle.localizedString("Local", "") + ":\n"
-						+ "\t" + NSBundle.localizedString("Filename", "") + ": " + path.getLocal().getAbsolute() + "\n"
-						+ "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(path.getLocal().length()) + "\n"
-						+ "\t" + NSBundle.localizedString("Modified", "") + ": " + path.getLocal().getTimestampAsString() + "\n"
-						+ NSBundle.localizedString("Remote", "") + ":\n"
-						+ "\t" + NSBundle.localizedString("Filename", "") + ": " + path.getAbsolute() + "\n"
-						+ "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(path.status.getSize()) + "\n"
-						+ "\t" + NSBundle.localizedString("Modified", "") + " " + path.attributes.getTimestampAsString() + "\n"
-						;
-					alertTextField.setStringValue(alertText); // message
-					NSImage img = NSWorkspace.sharedWorkspace().iconForFileType(path.getExtension());
-					img.setScalesWhenResized(true);
-					img.setSize(new NSSize(64f, 64f));
-					iconView.setImage(img);
-					CDQueueController.instance().window().makeKeyAndOrderFront(null);
-					NSApplication.sharedApplication().beginSheet(window(), //sheet
-																 CDQueueController.instance().window(),
-																 CDValidatorController.this, //modalDelegate
-																 new NSSelector("validateSheetDidEnd",
-																				new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
-																 path); //contextInfo
-					window().makeKeyAndOrderFront(null);
-				}
-			}
-												   );
-		}
+        if (!applySettingsToAll) {
+            sheetClosedAndSelectionMade = false;
+            ThreadUtilities.instance().invokeLater(new Runnable() {
+                public void run() {
+                    resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
+                    String alertText =
+                            NSBundle.localizedString("Local", "") + ":\n"
+                            + "\t" + NSBundle.localizedString("Filename", "") + ": " + path.getLocal().getAbsolute() + "\n"
+                            + "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(path.getLocal().length()) + "\n"
+                            + "\t" + NSBundle.localizedString("Modified", "") + ": " + path.getLocal().getTimestampAsString() + "\n"
+                            + NSBundle.localizedString("Remote", "") + ":\n"
+                            + "\t" + NSBundle.localizedString("Filename", "") + ": " + path.getAbsolute() + "\n"
+                            + "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(path.status.getSize()) + "\n"
+                            + "\t" + NSBundle.localizedString("Modified", "") + " " + path.attributes.getTimestampAsString() + "\n"
+                            ;
+                    alertTextField.setStringValue(alertText); // message
+                    NSImage img = NSWorkspace.sharedWorkspace().iconForFileType(path.getExtension());
+                    img.setScalesWhenResized(true);
+                    img.setSize(new NSSize(64f, 64f));
+                    iconView.setImage(img);
+                    CDQueueController.instance().window().makeKeyAndOrderFront(null);
+                    NSApplication.sharedApplication().beginSheet(window(), //sheet
+                            CDQueueController.instance().window(),
+                            CDValidatorController.this, //modalDelegate
+                            new NSSelector("validateSheetDidEnd",
+                                    new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
+                            path); //contextInfo
+                    window().makeKeyAndOrderFront(null);
+                }
+            });
+        }
         // Waiting for user to make choice
         while (!sheetClosedAndSelectionMade) {
-			try {
-				log.debug("Sleeping...");
-				Thread.sleep(1000); //milliseconds
-			}
-			catch (InterruptedException e) {
-				log.error(e.getMessage());
-			}
+            try {
+                log.debug("Sleeping...");
+                Thread.sleep(1000); //milliseconds
+            }
+            catch (InterruptedException e) {
+                log.error(e.getMessage());
+            }
         }
         path.status.setResume(resumeChoosen);
         log.info("File " + path.getName() + " will be included:" + include);

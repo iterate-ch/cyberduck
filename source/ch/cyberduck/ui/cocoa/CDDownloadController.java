@@ -81,7 +81,7 @@ public class CDDownloadController extends NSObject {
 
     public void closeSheet(Object sender) {
         // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-        NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
+        NSApplication.sharedApplication().endSheet(this.window, ((NSButton)sender).tag());
     }
 
     public void downloadSheetDidEnd(NSWindow sheet, int returncode, Object context) {

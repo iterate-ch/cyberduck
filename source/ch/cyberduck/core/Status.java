@@ -64,11 +64,11 @@ public class Status extends Observable implements Serializable {
     public Status(NSDictionary dict) {
         Object sizeObj = dict.objectForKey("Size");
         if (sizeObj != null) {
-            this.size = Integer.parseInt((String) sizeObj);
+            this.size = Integer.parseInt((String)sizeObj);
         }
         Object currentObj = dict.objectForKey("Current");
         if (currentObj != null) {
-            this.current = Integer.parseInt((String) currentObj);
+            this.current = Integer.parseInt((String)currentObj);
         }
     }
 
@@ -116,15 +116,15 @@ public class Status extends Observable implements Serializable {
             return size + "B";
         }
         if (size < MEGA) {
-            String v = String.valueOf((double) size / KILO);
+            String v = String.valueOf((double)size / KILO);
             return v.substring(0, v.indexOf('.') + 2) + "kB";
         }
         if (size < GIGA) {
-            String v = String.valueOf((double) size / MEGA);
+            String v = String.valueOf((double)size / MEGA);
             return v.substring(0, v.indexOf('.') + 2) + "MB";
         }
         else {
-            String v = String.valueOf((double) size / GIGA);
+            String v = String.valueOf((double)size / GIGA);
             return v.substring(0, v.indexOf('.') + 2) + "GB";
         }
     }
@@ -173,8 +173,9 @@ public class Status extends Observable implements Serializable {
     }
 
     public void reset() {
-		if(log.isDebugEnabled())
-			log.debug("reset (resume=" + resume + ")");
+        if (log.isDebugEnabled()) {
+            log.debug("reset (resume=" + resume + ")");
+        }
         this.complete = false;
         this.canceled = false;
         if (!this.isResume()) {

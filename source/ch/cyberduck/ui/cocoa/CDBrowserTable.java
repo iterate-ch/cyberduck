@@ -46,14 +46,14 @@ public class CDBrowserTable extends NSTableView {
 
     public void awakeFromNib() {
         log.debug("awakeFromNib");
-		// receive drag events from types
+        // receive drag events from types
         this.registerForDraggedTypes(new NSArray(new Object[]{
-			"QueuePboardType",
-			NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
-			NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as QueuePboardType
-												 ));
-		
-		// setting appearance attributes
+            "QueuePboardType",
+            NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
+            NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as QueuePboardType
+        ));
+
+        // setting appearance attributes
         this.setRowHeight(17f);
         this.setAutoresizesAllColumnsToFit(true);
         NSSelector setUsesAlternatingRowBackgroundColorsSelector =
@@ -78,7 +78,7 @@ public class CDBrowserTable extends NSTableView {
             }
         }
 
-		// ading table columns
+        // ading table columns
         if (Preferences.instance().getProperty("browser.columnIcon").equals("true")) {
             NSTableColumn c = new NSTableColumn();
             c.setIdentifier("TYPE");
@@ -155,30 +155,30 @@ public class CDBrowserTable extends NSTableView {
         }
 
         this.sizeToFit();
-		// selection properties
+        // selection properties
         this.setAllowsMultipleSelection(true);
         this.setAllowsEmptySelection(true);
         this.setAllowsColumnReordering(true);
     }
-	
+
     public void keyDown(NSEvent event) {
-		if(!event.isARepeat()) {
-			String chars = event.characters();
-			//double timestamp = event.timestamp();
-			Object ds = this.dataSource();
-			if(ds instanceof CDTableDataSource) {
-				CDTableDataSource model = (CDTableDataSource)ds;
-				for (int i = 0; i < model.numberOfRowsInTableView(this); i++) {
-					NSAttributedString s = (NSAttributedString) model.tableViewObjectValueForLocation(this, this.tableColumnWithIdentifier("FILENAME"), i);
-					String filename = s.stringReference().string();
-					if (filename.toLowerCase().startsWith(chars)) {
-						this.selectRow(i, false);
-						this.scrollRowToVisible(i);
-						return;
-					}
-				}
-			}
-		}
-		super.keyDown(event);
+        if (!event.isARepeat()) {
+            String chars = event.characters();
+            //double timestamp = event.timestamp();
+            Object ds = this.dataSource();
+            if (ds instanceof CDTableDataSource) {
+                CDTableDataSource model = (CDTableDataSource)ds;
+                for (int i = 0; i < model.numberOfRowsInTableView(this); i++) {
+                    NSAttributedString s = (NSAttributedString)model.tableViewObjectValueForLocation(this, this.tableColumnWithIdentifier("FILENAME"), i);
+                    String filename = s.stringReference().string();
+                    if (filename.toLowerCase().startsWith(chars)) {
+                        this.selectRow(i, false);
+                        this.scrollRowToVisible(i);
+                        return;
+                    }
+                }
+            }
+        }
+        super.keyDown(event);
     }
 }

@@ -34,6 +34,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Preferences;
+
 //import ch.cyberduck.core.Transcript;
 //import ch.cyberduck.core.TranscriptFactory;
 
@@ -46,7 +47,7 @@ import ch.cyberduck.core.Preferences;
  */
 public class FTPClient {
     private static Logger log = Logger.getLogger(FTPClient.class);
-	
+
     /**
      * Socket responsible for controlling
      * the connection
@@ -461,7 +462,7 @@ public class FTPClient {
             }
             catch (IOException ignore) {
                 log.error(ignore.getMessage());
-				ignore.printStackTrace();
+                ignore.printStackTrace();
             }
 
             // check the control response
@@ -471,7 +472,7 @@ public class FTPClient {
 
             // empty array is default
             if (!entries.isEmpty()) {
-                result = (String[]) entries.toArray(result);
+                result = (String[])entries.toArray(result);
             }
         }
         return result;

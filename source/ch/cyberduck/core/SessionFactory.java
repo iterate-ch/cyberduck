@@ -46,6 +46,6 @@ public abstract class SessionFactory {
                 throw new RuntimeException("No class for type: " + id);
             }
         }
-        return ((SessionFactory) factories.get(id)).create(h);
+        return ((SessionFactory)factories.get(id)).create(h);
     }
 }

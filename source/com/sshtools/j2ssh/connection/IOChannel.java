@@ -272,7 +272,7 @@ public abstract class IOChannel extends Channel {
             while (true) {
                 try {
                     // Peek into the message store and look for the next message
-                    SshMsgChannelData msg = (SshMsgChannelData) incoming.peekMessage(SshMsgChannelData.SSH_MSG_CHANNEL_DATA);
+                    SshMsgChannelData msg = (SshMsgChannelData)incoming.peekMessage(SshMsgChannelData.SSH_MSG_CHANNEL_DATA);
 
                     // Remove the message so we dont process again
                     incoming.removeMessage(msg);

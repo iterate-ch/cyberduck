@@ -43,27 +43,27 @@ public abstract class PathFactory {
 
     public static final Path createPath(Session session) {
         loadClass(session.getHost().getProtocol());
-        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session);
+        return ((PathFactory)factories.get(session.getHost().getProtocol())).create(session);
     }
 
     public static final Path createPath(Session session, String parent, String name) {
         loadClass(session.getHost().getProtocol());
-        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, parent, name);
+        return ((PathFactory)factories.get(session.getHost().getProtocol())).create(session, parent, name);
     }
 
     public static final Path createPath(Session session, String path) {
         loadClass(session.getHost().getProtocol());
-        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, path);
+        return ((PathFactory)factories.get(session.getHost().getProtocol())).create(session, path);
     }
 
     public static final Path createPath(Session session, String path, Local file) {
         loadClass(session.getHost().getProtocol());
-        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, path, file);
+        return ((PathFactory)factories.get(session.getHost().getProtocol())).create(session, path, file);
     }
 
     public static final Path createPath(Session session, NSDictionary dict) {
         loadClass(session.getHost().getProtocol());
-        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, dict);
+        return ((PathFactory)factories.get(session.getHost().getProtocol())).create(session, dict);
     }
 
     private static void loadClass(String id) {

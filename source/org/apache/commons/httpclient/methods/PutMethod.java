@@ -249,7 +249,7 @@ public class PutMethod
             return data.length;
         }
         else if (null != file) {
-            return (int) (file.length());
+            return (int)(file.length());
         }
         else if (url != null) {
             return -1;

@@ -95,7 +95,7 @@ public abstract class Base64EncodedFileFormat implements SshKeyFormatConversion 
      * @return
      */
     public String getHeaderValue(String headerTag) {
-        return (String) headers.get(headerTag);
+        return (String)headers.get(headerTag);
     }
 
     /**
@@ -200,8 +200,8 @@ public abstract class Base64EncodedFileFormat implements SshKeyFormatConversion 
             Iterator it = tags.iterator();
 
             while (it.hasNext()) {
-                headerTag = (String) it.next();
-                headerValue = (String) headers.get(headerTag);
+                headerTag = (String)it.next();
+                headerValue = (String)headers.get(headerTag);
 
                 String header = headerTag + ": " + headerValue;
                 pos = 0;

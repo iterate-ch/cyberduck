@@ -135,7 +135,7 @@ public class AuthenticationProtocolClient extends Service {
         }
 
         if (msg instanceof SshMsgUserAuthFailure) {
-            return ((SshMsgUserAuthFailure) msg).getAvailableAuthentications();
+            return ((SshMsgUserAuthFailure)msg).getAvailableAuthentications();
         }
         else {
             throw new IOException("None request returned success! Insecure feature not supported");
@@ -173,7 +173,7 @@ public class AuthenticationProtocolClient extends Service {
                 serviceToStart.start();
 
                 for (Iterator it = listeners.iterator(); it.hasNext();) {
-                    AuthenticationProtocolListener listener = (AuthenticationProtocolListener) it.next();
+                    AuthenticationProtocolListener listener = (AuthenticationProtocolListener)it.next();
 
                     if (listener != null) {
                         listener.onAuthenticationComplete();
@@ -268,7 +268,7 @@ public class AuthenticationProtocolClient extends Service {
     private SshMessage parseMessage(SshMessage msg)
             throws TerminatedStateException {
         if (msg instanceof SshMsgUserAuthFailure) {
-            if (((SshMsgUserAuthFailure) msg).getPartialSuccess()) {
+            if (((SshMsgUserAuthFailure)msg).getPartialSuccess()) {
                 throw new TerminatedStateException(AuthenticationProtocolState.PARTIAL);
             }
             else {
@@ -296,7 +296,7 @@ public class AuthenticationProtocolClient extends Service {
             SshMessage msg = messageStore.peekMessage(SshMsgUserAuthBanner.SSH_MSG_USERAUTH_BANNER,
                     timeout);
 
-            return ((SshMsgUserAuthBanner) msg).getBanner();
+            return ((SshMsgUserAuthBanner)msg).getBanner();
         }
         catch (MessageNotAvailableException e) {
             return "";

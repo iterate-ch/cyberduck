@@ -51,7 +51,7 @@ public class ByteArrayReader extends ByteArrayInputStream {
      * @return
      */
     public static long readInt(byte[] data, int start) {
-        long ret = (((long) (data[start] & 0xFF) << 24) & 0xFFFFFFFF) |
+        long ret = (((long)(data[start] & 0xFF) << 24) & 0xFFFFFFFF) |
                 ((data[start + 1] & 0xFF) << 16) | ((data[start + 2] & 0xFF) << 8) |
                 ((data[start + 3] & 0xFF) << 0);
 
@@ -66,7 +66,7 @@ public class ByteArrayReader extends ByteArrayInputStream {
         byte[] raw = new byte[4];
         read(raw);
 
-        long ret = (((long) (raw[0] & 0xFF) << 24) & 0xFFFFFFFF) |
+        long ret = (((long)(raw[0] & 0xFF) << 24) & 0xFFFFFFFF) |
                 ((raw[1] & 0xFF) << 16) | ((raw[2] & 0xFF) << 8) | (raw[3] & 0xFF);
 
         return ret;
@@ -96,7 +96,7 @@ public class ByteArrayReader extends ByteArrayInputStream {
      * @throws IOException
      */
     public BigInteger readBigInteger() throws IOException {
-        int len = (int) readInt();
+        int len = (int)readInt();
         byte[] raw = new byte[len];
         read(raw);
 
@@ -109,7 +109,7 @@ public class ByteArrayReader extends ByteArrayInputStream {
      */
     public byte[] readBinaryString() throws IOException {
         long len = readInt();
-        byte[] raw = new byte[(int) len];
+        byte[] raw = new byte[(int)len];
         read(raw);
 
         return raw;
@@ -121,8 +121,8 @@ public class ByteArrayReader extends ByteArrayInputStream {
      * @return
      */
     public static String readString(byte[] data, int start) {
-        int len = (int) readInt(data, start);
-        byte[] chars = new byte[(int) len];
+        int len = (int)readInt(data, start);
+        byte[] chars = new byte[(int)len];
         System.arraycopy(data, start + 4, chars, 0, len);
 
         return new String(chars);
@@ -134,7 +134,7 @@ public class ByteArrayReader extends ByteArrayInputStream {
      */
     public String readString() throws IOException {
         long len = readInt();
-        byte[] raw = new byte[(int) len];
+        byte[] raw = new byte[(int)len];
         read(raw);
 
         return new String(raw);

@@ -75,10 +75,10 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
      */
     public void writeInt(long i) throws IOException {
         byte[] raw = new byte[4];
-        raw[0] = (byte) (i >> 24);
-        raw[1] = (byte) (i >> 16);
-        raw[2] = (byte) (i >> 8);
-        raw[3] = (byte) (i);
+        raw[0] = (byte)(i >> 24);
+        raw[1] = (byte)(i >> 16);
+        raw[2] = (byte)(i >> 8);
+        raw[3] = (byte)(i);
         write(raw);
     }
 
@@ -88,10 +88,10 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
      */
     public void writeInt(int i) throws IOException {
         byte[] raw = new byte[4];
-        raw[0] = (byte) (i >> 24);
-        raw[1] = (byte) (i >> 16);
-        raw[2] = (byte) (i >> 8);
-        raw[3] = (byte) (i);
+        raw[0] = (byte)(i >> 24);
+        raw[1] = (byte)(i >> 16);
+        raw[2] = (byte)(i >> 8);
+        raw[3] = (byte)(i);
         write(raw);
     }
 
@@ -101,10 +101,10 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
      */
     public static byte[] encodeInt(int i) {
         byte[] raw = new byte[4];
-        raw[0] = (byte) (i >> 24);
-        raw[1] = (byte) (i >> 16);
-        raw[2] = (byte) (i >> 8);
-        raw[3] = (byte) (i);
+        raw[0] = (byte)(i >> 24);
+        raw[1] = (byte)(i >> 16);
+        raw[2] = (byte)(i >> 8);
+        raw[3] = (byte)(i);
 
         return raw;
     }
@@ -143,10 +143,10 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
                     String.valueOf(pos));
         }
 
-        array[pos] = (byte) (value >> 24);
-        array[pos + 1] = (byte) (value >> 16);
-        array[pos + 2] = (byte) (value >> 8);
-        array[pos + 3] = (byte) (value);
+        array[pos] = (byte)(value >> 24);
+        array[pos + 1] = (byte)(value >> 16);
+        array[pos + 2] = (byte)(value >> 8);
+        array[pos + 3] = (byte)(value);
     }
 
     /**

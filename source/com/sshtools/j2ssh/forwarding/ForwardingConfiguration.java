@@ -310,7 +310,7 @@ public class ForwardingConfiguration {
     public class ForwardingConfigurationMonitor implements ChannelEventListener {
         public void onChannelOpen(Channel channel) {
             if (log.isDebugEnabled()) {
-                ForwardingChannel fch = (ForwardingChannel) channel;
+                ForwardingChannel fch = (ForwardingChannel)channel;
                 log.debug("Opening forwarding channel from " +
                         fch.getOriginatingHost() + ":" +
                         String.valueOf(fch.getOriginatingPort()));
@@ -319,11 +319,11 @@ public class ForwardingConfiguration {
             // Add channel to the active forwardings
             activeForwardings.add(channel);
 
-            ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[]) listenerList.getListeners(ForwardingConfigurationListener.class);
+            ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[])listenerList.getListeners(ForwardingConfigurationListener.class);
 
             for (int i = (l.length - 1); i >= 0; i--) {
                 l[i].opened(ForwardingConfiguration.this,
-                        (ForwardingSocketChannel) channel);
+                        (ForwardingSocketChannel)channel);
             }
         }
 
@@ -341,7 +341,7 @@ public class ForwardingConfiguration {
 
         public void onChannelClose(Channel channel) {
             if (log.isDebugEnabled()) {
-                ForwardingChannel fch = (ForwardingChannel) channel;
+                ForwardingChannel fch = (ForwardingChannel)channel;
                 log.debug("Closing forwarding channel from " +
                         fch.getOriginatingHost() + ":" +
                         String.valueOf(fch.getOriginatingPort()));
@@ -350,29 +350,29 @@ public class ForwardingConfiguration {
             // Remove channel from the active forwardings
             activeForwardings.remove(channel);
 
-            ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[]) listenerList.getListeners(ForwardingConfigurationListener.class);
+            ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[])listenerList.getListeners(ForwardingConfigurationListener.class);
 
             for (int i = (l.length - 1); i >= 0; i--) {
                 l[i].closed(ForwardingConfiguration.this,
-                        (ForwardingSocketChannel) channel);
+                        (ForwardingSocketChannel)channel);
             }
         }
 
         public void onDataReceived(Channel channel, byte[] data) {
-            ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[]) listenerList.getListeners(ForwardingConfigurationListener.class);
+            ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[])listenerList.getListeners(ForwardingConfigurationListener.class);
 
             for (int i = (l.length - 1); i >= 0; i--) {
                 l[i].dataReceived(ForwardingConfiguration.this,
-                        (ForwardingSocketChannel) channel, data.length);
+                        (ForwardingSocketChannel)channel, data.length);
             }
         }
 
         public void onDataSent(Channel channel, byte[] data) {
-            ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[]) listenerList.getListeners(ForwardingConfigurationListener.class);
+            ForwardingConfigurationListener[] l = (ForwardingConfigurationListener[])listenerList.getListeners(ForwardingConfigurationListener.class);
 
             for (int i = (l.length - 1); i >= 0; i--) {
                 l[i].dataSent(ForwardingConfiguration.this,
-                        (ForwardingSocketChannel) channel, data.length);
+                        (ForwardingSocketChannel)channel, data.length);
             }
         }
     }

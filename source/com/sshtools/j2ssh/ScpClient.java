@@ -510,18 +510,18 @@ public final class ScpClient {
         private String readString() throws IOException {
             int ch;
             int i = 0;
-            while (((ch = in.read()) != ((int) '\n')) && (ch >= 0)) {
-                buffer[i++] = (byte) ch;
+            while (((ch = in.read()) != ((int)'\n')) && (ch >= 0)) {
+                buffer[i++] = (byte)ch;
             }
             if (ch == -1) {
                 throw new EOFException("SCP returned unexpected EOF");
             }
-            if (buffer[0] == (byte) '\n') {
+            if (buffer[0] == (byte)'\n') {
                 throw new IOException("Unexpected <NL>");
             }
-            if ((buffer[0] == (byte) '\02') || (buffer[0] == (byte) '\01')) {
+            if ((buffer[0] == (byte)'\02') || (buffer[0] == (byte)'\01')) {
                 String msg = new String(buffer, 1, i - 1);
-                if (buffer[0] == (byte) '\02') {
+                if (buffer[0] == (byte)'\02') {
                     throw new IOException(msg);
                 }
                 throw new IOException("SCP returned an unexpected error: "
@@ -540,7 +540,7 @@ public final class ScpClient {
                 throw new EOFException("SCP returned unexpected EOF");
             }
             String msg = readString();
-            if (r == (byte) '\02') {
+            if (r == (byte)'\02') {
                 throw new IOException(msg);
             }
             throw new IOException("SCP returned an unexpected error: " + msg);
@@ -562,7 +562,7 @@ public final class ScpClient {
             try {
                 while (count < size) {
                     read = file.read(buffer, 0,
-                            (int) (((size - count) < buffer.length)
+                            (int)(((size - count) < buffer.length)
                             ? (size - count) : buffer.length));
                     if (read == -1) {
                         throw new EOFException("SCP received an unexpected EOF");
@@ -583,7 +583,7 @@ public final class ScpClient {
             try {
                 while (count < size) {
                     read = in.read(buffer, 0,
-                            (int) (((size - count) < buffer.length)
+                            (int)(((size - count) < buffer.length)
                             ? (size - count) : buffer.length));
                     if (read == -1) {
                         throw new EOFException("SCP received an unexpected EOF");

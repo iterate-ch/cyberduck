@@ -138,7 +138,7 @@ public class SshPublicKeyFile {
             String ft;
 
             while (it.hasNext() && !valid) {
-                ft = (String) it.next();
+                ft = (String)it.next();
                 log.debug("Attempting " + ft);
                 format = SshPublicKeyFormatFactory.newInstance(ft);
                 valid = format.isFormatted(formattedKey);

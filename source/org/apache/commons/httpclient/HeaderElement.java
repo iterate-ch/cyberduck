@@ -347,7 +347,7 @@ public class HeaderElement extends NameValuePair {
             // now let's add all the parameters into the header element
             if (paramlist.size() > 0) {
                 NameValuePair[] tmp2 = new NameValuePair[paramlist.size()];
-                paramlist.copyInto((NameValuePair[]) tmp2);
+                paramlist.copyInto((NameValuePair[])tmp2);
                 element.parameters = tmp2;
                 paramlist.removeAllElements();
             }
@@ -357,7 +357,7 @@ public class HeaderElement extends NameValuePair {
         }
 
         HeaderElement[] headerElements = new HeaderElement[elements.size()];
-        elements.copyInto((HeaderElement[]) headerElements);
+        elements.copyInto((HeaderElement[])headerElements);
         return headerElements;
     }
 

@@ -41,14 +41,14 @@ import com.sshtools.j2ssh.util.OpenClosedState;
 class SftpMessageStore extends SubsystemMessageStore {
     /**  */
     public static Log log = LogFactory.getLog(SftpMessageStore.class);
-	
-	private Transcript transcript;
+
+    private Transcript transcript;
 
     /**
      * Creates a new SftpMessageStore object.
      */
     public SftpMessageStore() {
-		this.transcript = TranscriptFactory.getImpl(this.toString()); //@todo get proper log
+        this.transcript = TranscriptFactory.getImpl(this.toString()); //@todo get proper log
     }
 
     /**
@@ -67,12 +67,12 @@ class SftpMessageStore extends SubsystemMessageStore {
                 it = messages.iterator();
 
                 while (it.hasNext()) {
-                    msg = (SubsystemMessage) it.next();
+                    msg = (SubsystemMessage)it.next();
 
                     if (msg instanceof MessageRequestId) {
-                        if (((MessageRequestId) msg).getId().equals(requestId)) {
+                        if (((MessageRequestId)msg).getId().equals(requestId)) {
                             messages.remove(msg);
-							this.transcript.log("< "+msg.getMessageName());
+                            this.transcript.log("< " + msg.getMessageName());
                             return msg;
                         }
                     }

@@ -67,8 +67,8 @@ public class PEMWriter extends PEM {
 
         if (!header.isEmpty()) {
             for (Iterator i = header.keySet().iterator(); i.hasNext();) {
-                String key = (String) i.next();
-                String value = (String) header.get(key);
+                String key = (String)i.next();
+                String value = (String)header.get(key);
                 writer.print(key + ": ");
 
                 if ((key.length() + value.length() + 2) > MAX_LINE_LENGTH) {

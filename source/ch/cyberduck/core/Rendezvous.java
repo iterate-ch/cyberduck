@@ -58,7 +58,7 @@ public class Rendezvous extends Observable implements ServiceListener {
         }
         catch (IOException e) {
             log.error(e.getMessage());
-			e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -70,10 +70,10 @@ public class Rendezvous extends Observable implements ServiceListener {
     }
 
     public void callObservers(Message arg) {
-		if(log.isDebugEnabled()) {
-			log.debug("callObservers:" + arg);
-			log.debug(this.countObservers() + " observer(s) known.");
-		}
+        if (log.isDebugEnabled()) {
+            log.debug("callObservers:" + arg);
+            log.debug(this.countObservers() + " observer(s) known.");
+        }
         this.setChanged();
         this.notifyObservers(arg);
     }

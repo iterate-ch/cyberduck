@@ -74,7 +74,7 @@ public abstract class HttpHeader {
             }
 
             if (c != '\r') {
-                lineBuf.append((char) c);
+                lineBuf.append((char)c);
             }
             else {
                 break;
@@ -110,7 +110,7 @@ public abstract class HttpHeader {
      * @return
      */
     public String getHeaderField(String headerName) {
-        return (String) fields.get(headerName.toLowerCase());
+        return (String)fields.get(headerName.toLowerCase());
     }
 
     /**
@@ -129,7 +129,7 @@ public abstract class HttpHeader {
         Iterator it = getHeaderFieldNames().iterator();
 
         while (it.hasNext()) {
-            String fieldName = (String) it.next();
+            String fieldName = (String)it.next();
             str += (fieldName + ": " + getHeaderField(fieldName) + "\r\n");
         }
 
@@ -162,7 +162,7 @@ public abstract class HttpHeader {
             }
 
             if (c != '\r') {
-                lineBuf.append((char) c);
+                lineBuf.append((char)c);
             }
             else {
                 if (lineBuf.length() != 0) {

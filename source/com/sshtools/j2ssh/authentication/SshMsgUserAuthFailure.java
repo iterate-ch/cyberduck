@@ -102,7 +102,7 @@ public class SshMsgUserAuthFailure extends SshMessage {
 
             while (it.hasNext()) {
                 authMethods = ((authMethods == null) ? "" : (authMethods + ",")) +
-                        (String) it.next();
+                        (String)it.next();
             }
 
             baw.writeString(authMethods);

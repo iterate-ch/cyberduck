@@ -165,7 +165,7 @@ public class SshAgentSocketListener {
      * @return the random port for this agent.
      */
     public static int configureNewLocation() {
-        return 49152 + (int) Math.round(((float) 16383 * Math.random()));
+        return 49152 + (int)Math.round(((float)16383 * Math.random()));
     }
 
     /**

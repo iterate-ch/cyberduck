@@ -407,7 +407,7 @@ public class ResponseInputStream extends InputStream {
             else if (ch == '\n') {
                 break;
             }
-            sb.append((char) ch);
+            sb.append((char)ch);
         }
         return (sb.toString());
 

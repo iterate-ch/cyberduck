@@ -140,8 +140,8 @@ public class TransportProtocolClient extends TransportProtocolCommon {
         Map.Entry entry;
 
         while (it.hasNext()) {
-            entry = (Map.Entry) it.next();
-            ((Service) entry.getValue()).stop();
+            entry = (Map.Entry)it.next();
+            ((Service)entry.getValue()).stop();
         }
 
         services.clear();

@@ -48,7 +48,7 @@ public abstract class SubsystemChannel extends Channel {
     protected SubsystemMessageStore messageStore;
     DynamicBuffer buffer = new DynamicBuffer();
     int nextMessageLength = -1;
-	private Transcript transcript;
+    private Transcript transcript;
 
     public SubsystemChannel(String name) {
         this.name = name;
@@ -58,7 +58,7 @@ public abstract class SubsystemChannel extends Channel {
     public SubsystemChannel(String name, SubsystemMessageStore messageStore) {
         this.name = name;
         this.messageStore = messageStore;
-		this.transcript = TranscriptFactory.getImpl(name); //@todo get proper logger
+        this.transcript = TranscriptFactory.getImpl(name); //@todo get proper logger
     }
 
     public String getChannelType() {
@@ -66,7 +66,7 @@ public abstract class SubsystemChannel extends Channel {
     }
 
     protected void sendMessage(SubsystemMessage msg) throws InvalidMessageException, IOException {
-		transcript.log("> "+msg.getMessageName());
+        transcript.log("> " + msg.getMessageName());
         if (log.isDebugEnabled()) {
             log.debug("Sending " + msg.getMessageName() + " subsystem message");
         }
@@ -85,7 +85,7 @@ public abstract class SubsystemChannel extends Channel {
         log.debug("Channel Request received: " + requestType);
 
         if (requestType.equals("exit-status")) {
-            exitCode = new Integer((int) ByteArrayReader.readInt(requestData, 0));
+            exitCode = new Integer((int)ByteArrayReader.readInt(requestData, 0));
             log.debug("Exit code of " + exitCode.toString() + " received");
         }
         else if (requestType.equals("exit-signal")) {
@@ -145,7 +145,7 @@ public abstract class SubsystemChannel extends Channel {
                     ;
                 }
 
-                nextMessageLength = (int) ByteArrayReader.readInt(tmp, 0);
+                nextMessageLength = (int)ByteArrayReader.readInt(tmp, 0);
             }
 
             if (buffer.getInputStream().available() >= nextMessageLength) {
