@@ -5,6 +5,8 @@
 /cyberduck-application.psd -text
 /cyberduck-application.tiff -text
 /cyberduck-document.icns svneol=native#unset
+en.lproj/InfoPlist.strings -text
+en.lproj/Localizable.strings -text svneol=unset#application/octet-stream
 img/add.tiff svneol=native#unset
 img/addPressed.tiff svneol=native#unset
 img/arrow.tiff svneol=native#unset
