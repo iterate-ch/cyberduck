@@ -235,7 +235,7 @@ public class CDConnectionController implements Observer {
 	
 	public void keychainCheckboxSelectionChanged(Object sender) {
 		log.debug("keychainCheckboxSelectionChanged");
-		//todo Implement Keychain Access
+		//@todo Implement Keychain Access
 	}
 	
     private NSTextField urlLabel;

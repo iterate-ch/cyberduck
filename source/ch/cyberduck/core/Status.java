@@ -24,6 +24,8 @@ import org.apache.log4j.Logger;
 
 /**
 * The Status class is the model of a download's status.
+ * The wrapper for any status informations of a transfer as the size and transferred
+  * bytes.
  * @version $Id$
  */
 public class Status extends Observable implements Serializable {
@@ -53,14 +55,6 @@ public class Status extends Observable implements Serializable {
 		* The last action has been stopped, but must not be completed.
      */
     
-    /**
-		* The wrapper for any status informations of a transfer like it's length and transferred
-     * bytes.
-     */
-    public Status () {
-		super();
-    }
-	
     /**
         * Notify all observers
      * @param arg The message to send to the observers

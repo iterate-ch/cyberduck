@@ -28,48 +28,46 @@ import java.net.URL;
 import org.apache.log4j.Logger;
 
 /**
- * @author Stuart A. Malone
+* @author Stuart A. Malone
  */
 public class CDGetURLScriptCommand extends NSScriptCommand {
     private static Logger log = Logger.getLogger(CDGetURLScriptCommand.class);
-
+	
     public CDGetURLScriptCommand(NSScriptCommandDescription commandDescription) {
-	super(commandDescription);
+		super(commandDescription);
     }
-
+	
     // @todo support other protocols than ftp
     public Object performDefaultImplementation() {
-	String arg = (String)this.directParameter();
-	log.debug("Received URL from Apple Event: "+arg);
-	try {
-	    URL url = new URL(arg);
-	    if(url.getProtocol().equals(Session.FTP)) {
-		String file = url.getFile();
-		log.debug("File:"+file);
-		Host h = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()));
-		if(file.length() > 1) {
-		    Path p = new FTPPath((FTPSession)h.createSession(), file);
-		    // we assume a file has an extension
-		    if(null != p.getExtension()) {
-			log.debug("Opening transfer window");
-				CDQueueController.instance().addItemAndStart(new Queue(p, 
-																   Queue.KIND_DOWNLOAD));
-//			CDTransferController controller = new CDTransferController(p, Queue.KIND_DOWNLOAD);
-//			controller.transfer();
-			return null;
-		    }
+		String arg = (String)this.directParameter();
+		log.debug("Received URL from Apple Event: "+arg);
+		try {
+			URL url = new URL(arg);
+			if(url.getProtocol().equals(Session.FTP)) {
+				String file = url.getFile();
+				log.debug("File:"+file);
+				Host h = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()), url.getPath());
+				if(file.length() > 1) {
+					Path p = new FTPPath((FTPSession)h.createSession(), file);
+					// we assume a file has an extension
+					if(null != p.getExtension()) {
+						log.debug("Assuming download");
+						CDQueueController.instance().addItemAndStart(new Queue(p, 
+																			   Queue.KIND_DOWNLOAD));
+						return null;
+					}
+				}
+				log.debug("Assuming file listing");
+				CDBrowserController controller = new CDBrowserController();
+				controller.mount(h);
+			}
+			else {
+				log.error("Can only receiver FTP URL events for now.");
+			}
 		}
-		log.debug("Opening browser window");
-		CDBrowserController controller = new CDBrowserController();
-		controller.mount(h);
-	    }
-	    else {
-		log.error("Can only receiver FTP URL events for now.");
-	    }
-	}
-	catch(java.net.MalformedURLException e) {
-	    log.error(e.getMessage());
-	}
-	return null;
+		catch(java.net.MalformedURLException e) {
+			log.error(e.getMessage());
+		}
+		return null;
     }
 }

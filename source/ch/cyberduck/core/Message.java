@@ -41,7 +41,7 @@ public class Message {//{implements java.io.Serializable {
     // connection state of file
     public static final String START = "START";
     public static final String STOP = "STOP";
-//    public static final String COMPLETE = "COMPLETE";
+//	public static final String COMPLETE = "COMPLETE";
 //    public static final String INCOMPLETE = "INCOMPLETE";
 	
     public static final String RENDEZVOUS_ADD = "RENDEZVOUS_ADD";

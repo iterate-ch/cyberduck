@@ -94,8 +94,6 @@ public class CDDownloadController {
 						this.window().orderOut(null);
 						CDQueueController.instance().addItemAndStart(new Queue(path, 
 																		   Queue.KIND_DOWNLOAD));
-//						CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
-//						controller.transfer();
 					}
 					else
 						throw new MalformedURLException("URL must contain reference to a file");

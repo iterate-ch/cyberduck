@@ -367,7 +367,7 @@ public class SFTPPath extends Path {
 	
     public void fillUploadQueue(List queue) throws IOException {
 		if(this.getLocal().isDirectory()) {
-			this.session.SFTP.makeDirectory(this.getAbsolute());//@todo do it here rather than in upload() ?
+			this.session.SFTP.makeDirectory(this.getAbsolute());
 			File[] files = this.getLocal().listFiles();
 			for(int i = 0; i < files.length; i++) {
 				SFTPPath p = new SFTPPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));

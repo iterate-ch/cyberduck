@@ -64,6 +64,7 @@ public class CDQueueController implements Observer, Validator {
     public void setQueueTable(NSTableView queueTable) {
 		this.queueTable = queueTable;
 		this.queueTable.setTarget(this);
+		this.queueTable.setDoubleAction(new NSSelector("resumeButtonClicked", new Class[] {Object.class}));
 		this.queueTable.setDataSource(this.queueModel = new CDQueueTableDataSource());
 		this.queueTable.setDelegate(this.queueModel);
 		this.queueTable.setRowHeight(50f);
@@ -99,7 +100,6 @@ public class CDQueueController implements Observer, Validator {
 			this.queueTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
 		}
 
-		this.queueTable.setDoubleAction(new NSSelector("revealButtonClicked", new Class[] {Object.class}));
 		this.queueTable.sizeToFit();
     }
 		
@@ -148,16 +148,17 @@ public class CDQueueController implements Observer, Validator {
 //			if(msg.getTitle().equals(Message.CLOCK)
 //			   || msg.getTitle().equals(Message.DATA)
 //			   || msg.getTitle().equals(Message.PROGRESS)) {
-			this.queueTable.reloadData();
-//			}
+			this.queueTable.reloadData(); //@todo only let the table redraw the cells affected.
 			if(msg.getTitle().equals(Message.START)) {
+				log.debug("************START***********");
 				this.toolbar.validateVisibleItems();
 			}
 			else if(msg.getTitle().equals(Message.STOP)) {
+				log.debug("************STOP***********");
 				this.toolbar.validateVisibleItems();
 				if(observable instanceof Queue) {
 					Queue queue = (Queue)observable;
-					if(queue.isEmpty()) {
+					if(queue.numberOfJobs() == queue.processedJobs()) {
 						if(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
 							this.queueTable.deselectAll(null);
 							CDQueuesImpl.instance().removeItem(queue);
@@ -173,6 +174,7 @@ public class CDQueueController implements Observer, Validator {
 				}
 			}
 			else if(msg.getTitle().equals(Message.ERROR)) {
+				this.toolbar.validateVisibleItems();
 				NSAlertPanel.beginCriticalAlertSheet(
 										 NSBundle.localizedString("Error"), //title
 										 NSBundle.localizedString("OK"),// defaultbutton
@@ -249,7 +251,8 @@ public class CDQueueController implements Observer, Validator {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		while(enum.hasMoreElements()) {
 			Queue item = CDQueuesImpl.instance().getItem(((Integer)enum.nextElement()).intValue());
-			item.cancel();
+			if(item.isRunning())
+				item.cancel();
 		}
 	}
 	
@@ -475,7 +478,6 @@ public class CDQueueController implements Observer, Validator {
 				proceed = true;
 				break;
 			case NSAlertPanel.AlternateReturn : //Cancel
-//				item.cancel();
 				proceed = false;
 				break;
 			case NSAlertPanel.OtherReturn : //Overwrite

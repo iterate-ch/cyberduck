@@ -140,7 +140,6 @@ public class HTTPPath extends Path {
     }
 	
     private void fillDownloadQueue(List queue) {
-		//	this.status.setSize(this.session.HTTP.size(this.getAbsolute()));
 		queue.add(this);
     }
 	

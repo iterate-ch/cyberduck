@@ -33,22 +33,20 @@ import org.apache.log4j.Logger;
 public class CDQueueTableDataSource extends CDTableDataSource {
     private static Logger log = Logger.getLogger(CDQueueTableDataSource.class);
 	
-	private Queues data = CDQueuesImpl.instance();
-	
 	public int numberOfRowsInTableView(NSTableView tableView) {
-		return data.size();
+		return CDQueuesImpl.instance().size();
 	}
 	
 	//getValue()
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 //		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 		String identifier = (String)tableColumn.identifier();
-		Queue item = this.data.getItem(row);
+		Queue item = CDQueuesImpl.instance().getItem(row);
 		if(identifier.equals("DATA")) {
-			return data.getItem(row);
+			return CDQueuesImpl.instance().getItem(row);
 		}
 		if(identifier.equals("PROGRESS")) {
-			return data.getItem(row);
+			return CDQueuesImpl.instance().getItem(row);
 		}
 		throw new IllegalArgumentException("Unknown identifier: "+identifier);
 	}

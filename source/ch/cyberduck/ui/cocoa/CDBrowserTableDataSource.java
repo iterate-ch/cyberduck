@@ -230,7 +230,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		NSMutableArray promisedDragNames = new NSMutableArray();
 		for(int i = 0; i < promisedDragPaths.length; i++) {
 			try {
-				//todo check if url decoding still needed
+				//@todo check if url decoding still needed
 				promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), Codec.encode(promisedDragPaths[i].getName())));
 				promisedDragNames.addObject(Codec.encode(promisedDragPaths[i].getName()));
 			}

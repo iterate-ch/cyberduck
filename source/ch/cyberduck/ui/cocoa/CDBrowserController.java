@@ -473,7 +473,7 @@ public class CDBrowserController implements Observer {
     private NSTextField statusLabel; // IBOutlet
     public void setStatusLabel(NSTextField statusLabel) {
 		this.statusLabel = statusLabel;
-		statusLabel.setObjectValue(NSBundle.localizedString("Idle"));
+		this.statusLabel.setObjectValue(NSBundle.localizedString("Idle"));
     }
 	
     /**
@@ -663,7 +663,7 @@ public class CDBrowserController implements Observer {
 				browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
 				browserModel.sort(selectedColumn, browserModel.isSortedAscending());
 				browserTable.reloadData();
-				//this.toolbar.validateVisibleItems();//todo
+				this.toolbar.validateVisibleItems();
 			}
 			if(arg instanceof Message) {
 				Message msg = (Message)arg;
@@ -680,17 +680,17 @@ public class CDBrowserController implements Observer {
 										  null, // context
 										  (String)msg.getContent() // message
 										  );
-					progressIndicator.stopAnimation(this);
+					this.progressIndicator.stopAnimation(this);
 					this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
-					statusLabel.setObjectValue(msg.getContent());
+					this.statusLabel.setObjectValue(msg.getContent());
 				}
 				// update status label
 				else if(msg.getTitle().equals(Message.PROGRESS)) {
-					statusLabel.setObjectValue(msg.getContent());
-					statusLabel.display();
+					this.statusLabel.setObjectValue(msg.getContent());
+					this.statusLabel.display();
 				}
 				else if(msg.getTitle().equals(Message.TRANSCRIPT)) {
-					statusLabel.setObjectValue(msg.getContent());
+					this.statusLabel.setObjectValue(msg.getContent());
 				}
 				else if(msg.getTitle().equals(Message.OPEN)) {
 					this.statusIcon.setImage(null);
@@ -700,20 +700,19 @@ public class CDBrowserController implements Observer {
 				}
 				else if(msg.getTitle().equals(Message.CLOSE)) {
 //					this.statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
-					progressIndicator.stopAnimation(this);
-					//this.toolbar.validateVisibleItems();//todo
+					this.progressIndicator.stopAnimation(this);
 					this.toolbar.validateVisibleItems();
 				}
 				else if(msg.getTitle().equals(Message.START)) {
-					progressIndicator.startAnimation(this);
+					//this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
+					this.progressIndicator.startAnimation(this);
 					this.statusIcon.setImage(null);
 					this.statusIcon.setNeedsDisplay(true);
-//					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
 					this.toolbar.validateVisibleItems();
 				}
 				else if(msg.getTitle().equals(Message.STOP)) {
-					progressIndicator.stopAnimation(this);
-					statusLabel.setObjectValue(NSBundle.localizedString("Idle"));
+					this.progressIndicator.stopAnimation(this);
+					this.statusLabel.setObjectValue(NSBundle.localizedString("Idle"));
 					this.toolbar.validateVisibleItems();
 				}
 			}
