@@ -55,6 +55,7 @@ public class CDBookmarkController {
 	public void windowWillClose(NSNotification notification) {
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 		instances.removeObject(this);
+		CDBookmarksImpl.instance().save();
 	}
 	
 	private NSPopUpButton protocolPopup; // IBOutlet

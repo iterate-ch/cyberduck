@@ -43,6 +43,8 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>ftp</string>
+				<string>http</string>
+				<string>sftp</string>
 			</array>
 		</dict>
 	</array>

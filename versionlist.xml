@@ -3,11 +3,18 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.2b4</string>
+	<string>2.2b5</string>
 	<key>file</key>
-	<string>Cyberduck-2.2beta4.dmg</string>
+	<string>Cyberduck-2.2beta5.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.2b5
+- Korean Localization
+- Passphrases for private key files (SSH) are stored in the Keychain
+- Bookmark editor allows to specify the port number
+- When a bookmark is edited, the properties are updated in the bookmark drawer instantly
+- A confirmation dialog is displayed before deleting a bookmark
+
 2.2b4
 - Fixed a bug that with some FTP servers the permissions could not be modified
 - When addding a transfer to the queue it is highlighted
