@@ -35,8 +35,6 @@ import org.apache.log4j.Logger;
 public class Editor extends NSObject {
 	private static Logger log = Logger.getLogger(Editor.class);
 		
-	private static Editor instance;
-
 	public static Map SUPPORTED_EDITORS = new HashMap();
 	
 	static {
@@ -60,38 +58,47 @@ public class Editor extends NSObject {
 		}
 	}
 	
-	private Map filesBeingEdited;
+//	private Map filesBeingEdited;
 
-	public static Editor instance() {
-		if(null == instance) {
-			instance = new Editor();
-		}
-		return instance;
+	private static NSMutableArray instances = new NSMutableArray();
+
+//	public static Editor instance() {
+//		if(null == instance) {
+//			instance = new Editor();
+//		}
+//		return instance;
+//	}
+	
+	public Editor() {
+//		this.filesBeingEdited = new HashMap();
+        instances.addObject(this);
 	}
 	
-	private Editor() {
-		this.filesBeingEdited = new HashMap();
-	}
+	private Path file;
 		
-	public void open(Path file) {
-		file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), file.getName()));
-		this.filesBeingEdited.put(file.getLocal().getAbsolutePath(), file);
-		file.download();
+	public void open(Path f) {
+		this.file = f;
+		this.file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), file.getName()));
+//		this.filesBeingEdited.put(file.getLocal().getAbsolutePath(), file);
+		this.file.download();
 		this.edit(file.getLocal().getAbsolutePath());
 	}
 	
 	private native void edit(String path);
 	
-	public void didCloseFile(String file) {
+	public void didCloseFile() {
 		log.debug("didCloseFile");
-		Path p = (Path)this.filesBeingEdited.get(file);
-		p.getLocal().delete();
-		this.filesBeingEdited.remove(file);
+//		Path p = (Path)this.filesBeingEdited.get(file);
+//		p.getLocal().delete();
+		this.file.getLocal().delete();
+        instances.removeObject(this);
+//		this.filesBeingEdited.remove(file);
 	}
 	
-	public void didModifyFile(String file) {
+	public void didModifyFile() {
 		log.debug("didModifyFile:");
-		Path p = (Path)this.filesBeingEdited.get(file);
-		p.upload();
+//		Path p = (Path)this.filesBeingEdited.get(file);
+		this.file.upload();
+//		p.upload();
 	}
 }

@@ -644,9 +644,8 @@ public class CDBrowserController extends NSObject implements Observer {
 			int selected = ((Integer) enum.nextElement()).intValue();
 			Path path = browserModel.getEntry(selected);
 			if(path.attributes.isFile()) {
-//				Editor editor = new Editor(path);
-//				editor.open();
-				Editor.instance().open(path);
+				Editor editor = new Editor();
+				editor.open(path);
 			}
 		}
 	}

@@ -53,25 +53,15 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 	return (*env)->NewStringUTF(env, unichars);
 }
 
-//jclass editorClass = 0;
-//jobject editorObject = 0;
-//JNIEnv* globalenv = 0;
-
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 										JNIEnv *env, 
 										jobject this, 
 										jstring path) 
 {
 	
-	// save jni environment for access in other methods
-//	globalenv = env;
-//	editorObject = (*env)->NewGlobalRef(env, this);
-//	editorClass = (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, this));
-	
 	Editor *editor = [[Editor alloc] init: env
 						  withEditorClass: (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, this)) 
 						 withEditorObject: (*env)->NewGlobalRef(env, this)];
-//	Editor *editor = [[Editor alloc] init];
 	[editor odbEdit:nil path:convertToNSString(env, path)];
 }
 
@@ -105,25 +95,29 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 - (void)odbEditor:(ODBEditor *)editor didModifyFile:(NSString *)path newFileLocation:(NSString *)newPath  context:(NSDictionary *)context
 {
 
-	jmethodID didModifyFileMethod = (*env)->GetMethodID(env, editorClass, "didModifyFile", "(Ljava/lang/String;)V");
+	jmethodID didModifyFileMethod = (*env)->GetMethodID(env, editorClass, "didModifyFile", "()V");
+//	jmethodID didModifyFileMethod = (*env)->GetMethodID(env, editorClass, "didModifyFile", "(Ljava/lang/String;)V");
 	if (didModifyFileMethod == 0) {
 		NSLog( @"Editor -> GetMethodID:didModifyFile failed");
 		return;
 	}
 	
-	(*env)->CallVoidMethod(env, editorObject, didModifyFileMethod, convertToJString(env, path));	
+	(*env)->CallVoidMethod(env, editorObject, didModifyFileMethod);	
+//	(*env)->CallVoidMethod(env, editorObject, didModifyFileMethod, convertToJString(env, path));	
 }
 
 - (void)odbEditor:(ODBEditor *)editor didClosefile:(NSString *)path context:(NSDictionary *)context 
 {
 	
-	jmethodID didCloseFileMethod = (*env)->GetMethodID(env, editorClass, "didCloseFile", "(Ljava/lang/String;)V");
+	jmethodID didCloseFileMethod = (*env)->GetMethodID(env, editorClass, "didCloseFile", "()V");
+//	jmethodID didCloseFileMethod = (*env)->GetMethodID(env, editorClass, "didCloseFile", "(Ljava/lang/String;)V");
 	if (didCloseFileMethod == 0) {
 		NSLog( @"Editor -> GetMethodID:didCloseFile failed");
 		return;
 	}
 	
-	(*env)->CallVoidMethod(env, editorObject, didCloseFileMethod, convertToJString(env, path));	
+	(*env)->CallVoidMethod(env, editorObject, didCloseFileMethod);	
+//	(*env)->CallVoidMethod(env, editorObject, didCloseFileMethod, convertToJString(env, path));	
 
 	[self release];
 }
