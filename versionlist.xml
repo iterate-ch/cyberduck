@@ -15,6 +15,7 @@ change<?xml version="1.0" encoding="UTF-8"?>
 - [Bugfix] Folder to synchronize not selectable in some cases
 - [Bugfix] Fallback to default directory when specified directory doesn't exist
 - [Bugfix] Resolved incompatibility with SSH-1 keys in ~/.ssh/known_hosts (SFTP)
+- [Bugfix] Resolved crash in info window when group was unknown
 
 2.4b4
 - [Bugfix] Dragging files to the Finder
