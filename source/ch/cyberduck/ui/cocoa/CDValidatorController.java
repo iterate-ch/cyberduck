@@ -90,8 +90,6 @@ public abstract class CDValidatorController extends AbstractValidator implements
 	}
 
 	protected boolean validateFile(Path path, boolean resumeRequested) {
-		path.reset();
-		
 		if(resumeRequested) { // resume existing files independant of settings in preferences
 			path.status.setResume(this.isExisting(path));
 			return true;
@@ -103,6 +101,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 			return true;
 		}
 		if(this.isExisting(path)) {
+			path.reset();
 			if(Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
 				log.debug("Apply validation rule to resume:"+path.getName());
 				path.status.setResume(true);

@@ -25,7 +25,6 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] The proxy icon in the window title bar can then be dragged to the bookmark drawer or the Finder.
 - [Feature] Updated toolbar icons
 - [Feature] Display the number of files in the browser 
-- [Feature] Added BBedit Lite to the list of supported editors
 - [Feature] Added TextMate to the list of supported editors
 - [Feature] Tooltip in browser shows absolute path
 - [Feature] Tooltip in queue shows detailed info
