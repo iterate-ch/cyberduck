@@ -89,7 +89,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
     public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int index, int operation) {
         log.debug("tableViewAcceptDrop:row:" + index + ",operation:" + operation);
 		int row = index;
-		if (row < 0); row = 0;
+		if (row < 0) { row = 0; }
 		if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
             String droppedText = info.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
             if (droppedText != null) {

@@ -103,7 +103,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
     public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int index, int operation) {
         log.debug("tableViewAcceptDrop:row:" + index + ",operation:" + operation);
 		int row = index;
-		if (row < 0); row = 0;
+		if (row < 0) { row = 0; }
         if (row < tableView.numberOfRows()) {
             if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
                 Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
