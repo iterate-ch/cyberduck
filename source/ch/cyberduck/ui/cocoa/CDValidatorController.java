@@ -32,7 +32,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public abstract class CDValidatorController extends CDController implements Validator {
+public abstract class CDValidatorController extends CDWindowController implements Validator {
 	private static Logger log = Logger.getLogger(CDValidatorController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -44,7 +44,7 @@ public abstract class CDValidatorController extends CDController implements Vali
 	}
 	
 	protected static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
-																								new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+			new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 	
 	protected CDWindowController windowController;
 
@@ -53,6 +53,8 @@ public abstract class CDValidatorController extends CDController implements Vali
 		this.load();
 		instances.addObject(this);
 	}
+
+    protected abstract void load();
 
 	public void awakeFromNib() {
         super.awakeFromNib();
@@ -95,20 +97,20 @@ public abstract class CDValidatorController extends CDController implements Vali
 		if(this.hasPrompt() && !this.isCanceled()) {
 			this.statusIndicator.stopAnimation(null);
 			this.setEnabled(true);
-			this.fileTableView.sizeToFit();
+            this.fireDataChanged();
 			this.infoLabel.setStringValue(this.workList.size()+" "+NSBundle.localizedString("files", ""));
 			this.windowController.waitForSheetEnd();
 		}
 		return !this.isCanceled();
 	}
 
-    protected boolean validate(Path p, boolean resume) {
+    protected boolean validate(Path p, boolean resumeRequested) {
         if(p.attributes.isFile()) {
             p.reset();
             if(Preferences.instance().getBoolean("queue.transformer.useTransformer")) {
                 p.setPath(p.getParent().getAbsolute(), NameTransformer.instance().transform(p.getName()));
             }
-            return this.validateFile(p, resume);
+            return this.validateFile(p, resumeRequested);
         }
         if(p.attributes.isDirectory()) {
             return this.validateDirectory(p);
@@ -163,8 +165,6 @@ public abstract class CDValidatorController extends CDController implements Vali
     protected void adjustFilename(Path path) {
         //        
     }
-
-	protected abstract void load();
 
 	protected boolean hasPrompt = false;
 
@@ -335,17 +335,6 @@ public abstract class CDValidatorController extends CDController implements Vali
 		this.cancelButton.setAction(new NSSelector("cancelActionFired", new Class[]{Object.class}));
 	}
 
-	private NSPanel window; // IBOutlet
-
-	public void setWindow(NSPanel window) {
-		this.window = window;
-		this.window.setDelegate(this);
-	}
-
-	public NSPanel window() {
-		return this.window;
-	}
-
 	protected void setEnabled(boolean enabled) {
 		this.overwriteButton.setEnabled(enabled);
 		this.resumeButton.setEnabled(enabled);
@@ -393,46 +382,14 @@ public abstract class CDValidatorController extends CDController implements Vali
 	
 	protected void fireDataChanged() {
 		if(this.hasPrompt()) {
-			this.invoke(new Runnable() {
-				public void run() {
-					CDValidatorController.this.fileTableView.reloadData();
-				}
-			});
+            fileTableView.reloadData();
+//			this.invoke(new Runnable() {
+//				public void run() {
+//					fileTableView.reloadData();
+//				}
+//			});
 		}
 	}
-	
-/*
-	private static final NSColor LIGHT_GREEN_COLOR = NSColor.colorWithCalibratedRGB(0.0f, 1.0f, 0.0f, 0.5f);
-	private static final NSColor LIGHT_RED_COLOR = NSColor.colorWithCalibratedRGB(1.0f, 0.0f, 0.0f, 0.5f);
-	
-	public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn tableColumn, int row) {
-		String identifier = (String)tableColumn.identifier();
-		if(identifier.equals("REMOTE")) {
-			Path p = (Path)this.workList.get(row);
-			if(p.getRemote().exists() && p.getLocal().exists()) {
-				((NSTextFieldCell)cell).setDrawsBackground(true);
-				if(p.getLocal().getTimestampAsCalendar().before(p.getRemote().attributes.getTimestampAsCalendar())) {
-					((NSTextFieldCell)cell).setBackgroundColor(LIGHT_GREEN_COLOR);
-				}
-				else {
-					((NSTextFieldCell)cell).setBackgroundColor(LIGHT_RED_COLOR);
-				}
-			}
-		}
-		if(identifier.equals("LOCAL")) {
-			Path p = (Path)this.workList.get(row);
-			if(p.getRemote().exists() && p.getLocal().exists()) {
-				((NSTextFieldCell)cell).setDrawsBackground(true);
-				if(p.getLocal().getTimestampAsCalendar().after(p.getRemote().attributes.getTimestampAsCalendar())) {
-					((NSTextFieldCell)cell).setBackgroundColor(LIGHT_GREEN_COLOR);
-				}
-				else {
-					((NSTextFieldCell)cell).setBackgroundColor(LIGHT_RED_COLOR);
-				}
-			}
-		}
-	}
-*/
 	
 	public void tableViewSelectionDidChange(NSNotification notification) {
 		if(this.fileTableView.selectedRow() != -1) {
@@ -513,7 +470,6 @@ public abstract class CDValidatorController extends CDController implements Vali
 				}
 			}
 		}
-		log.warn("tableViewObjectValueForLocation:return null");
 		return null;
 	}
 

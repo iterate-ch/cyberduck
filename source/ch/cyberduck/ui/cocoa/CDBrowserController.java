@@ -1991,23 +1991,21 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		return null;
 	}
 
-
-	public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-		return new NSArray(new Object[]{
-			"New Connection",
-			NSToolbarItem.SeparatorItemIdentifier,
-			"Bookmarks",
-			"Quick Connect",
-			"Refresh",
-			"Get Info",
-			"Edit",
-			"Download",
-			"Upload",
-			NSToolbarItem.FlexibleSpaceItemIdentifier,
-			"Disconnect"
-		});
-	}
-
+    public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
+        return new NSArray(new Object[]{
+            "New Connection",
+            NSToolbarItem.SeparatorItemIdentifier,
+            "Bookmarks",
+            "Quick Connect",
+            "Action",
+            NSToolbarItem.SeparatorItemIdentifier,
+            "Refresh",
+            "Edit",
+            NSToolbarItem.FlexibleSpaceItemIdentifier,
+            "Disconnect"
+        });
+    }
+    
 	public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
 		return new NSArray(new Object[]{
 			"New Connection",
