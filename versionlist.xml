@@ -8,6 +8,12 @@
 	<string>Cyberduck-2.2beta1.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.2b2
+- Updated Japanese Localization
+- Updated french Localization
+- Updated portuguese Localization
+- Fixed-width font in transcript
+
 2.2b1
 - Keychain integration
 - New file transfer manager

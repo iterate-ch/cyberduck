@@ -64,7 +64,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 //		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 		String identifier = (String) tableColumn.identifier();
 		Path p = (Path) this.currentData.get(row);
-		if (identifier.equals("ICON")) {
+		if (identifier.equals("TYPE")) {
 			NSImage icon;
 			if (p.isDirectory())
 				icon = NSImage.imageNamed("folder16.tiff");

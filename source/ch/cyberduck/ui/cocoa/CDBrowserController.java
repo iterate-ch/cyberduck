@@ -86,7 +86,7 @@ public class CDBrowserController implements Observer {
 		// ading table columns
 		if (Preferences.instance().getProperty("browser.columnIcon").equals("true")) {
 			NSTableColumn c = new NSTableColumn();
-			c.setIdentifier("ICON");
+			c.setIdentifier("TYPE");
 			c.headerCell().setStringValue("");
 			c.setMinWidth(20f);
 			c.setWidth(20f);

@@ -96,7 +96,6 @@ public class CDLoginController extends LoginController {
 	private boolean tryAgain = false;
 	
 	public boolean promptUser(Login l, String message) {
-		log.debug("promptUser:" + l.toString());//todo remove
 		this.done = false;
 		this.textField.setStringValue(message);
 		this.userField.setStringValue(l.getUsername());

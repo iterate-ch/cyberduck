@@ -23,6 +23,7 @@ import ch.cyberduck.core.Transcripter;
 
 import com.apple.cocoa.application.NSClipView;
 import com.apple.cocoa.application.NSTextView;
+import com.apple.cocoa.application.NSFont;
 import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRange;
 
@@ -38,6 +39,7 @@ public class CDTranscriptImpl implements Transcripter {
 
 	public void setTextView(NSTextView textView) {
 		this.textView = textView;
+		this.textView.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
 	}
 
 	public CDTranscriptImpl() {

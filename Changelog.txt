@@ -2,13 +2,12 @@ FTP and SFTP Browser for Mac OS X
 http://cyberduck.ch/
 
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
-Cyberduck features the same intuitive interface for both FTP and SFTP browsing. 
-You can open connections to multiple servers with its document based interface. A bookmark manager 
-allows you to store frequently-used servers. Bookmarks can be exported as a regular file by dragging them to the Finder.
-Drag and drop is supported for both downloading and uploading files. Just drag the file(s) or folder from the Finder 
-to the browser window or vice versa to start the transfer. 
-File deletion and renaming, checking and changing of permissions is possible with a Finder-like info panel. 
-Rendezvous is supported. Keychain integration.
+
+2.2b2
+- Updated Japanese Localization
+- Updated french Localization
+- Updated portuguese Localization
+- Fixed-width font in transcript
 
 2.2b1
 - Keychain integration
