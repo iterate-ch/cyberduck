@@ -32,7 +32,7 @@ import ch.cyberduck.ui.LoginController;
 /**
  * @version $Id$
  */
-public class CDLoginController extends LoginController {
+public class CDLoginController implements LoginController {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
     private static NSMutableArray instances = new NSMutableArray();
@@ -96,9 +96,9 @@ public class CDLoginController extends LoginController {
         this.window.setDelegate(this);
     }
 
-    private Controller windowController;
+    private CDController windowController;
 
-    public CDLoginController(Controller windowController) {
+    public CDLoginController(CDController windowController) {
         instances.addObject(this);
         this.windowController = windowController;
         if (false == NSApplication.loadNibNamed("Login", this)) {

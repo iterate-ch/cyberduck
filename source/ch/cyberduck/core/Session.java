@@ -18,12 +18,16 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
 import org.apache.log4j.Logger;
+
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 /**
  * @version $Id$
@@ -121,9 +125,13 @@ public abstract class Session extends Observable {
                         home = Session.this.workdir();
                     }
                     home.list(true);
+					Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl Notification"),
+											Session.this.host.getHostname());
                 }
                 catch (IOException e) {
                     Session.this.log("IO Error: " + e.getMessage(), Message.ERROR);
+					Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl Notification"),
+											Session.this.host.getHostname());
                 }
             }
         }.start();

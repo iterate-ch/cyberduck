@@ -23,7 +23,6 @@ import ch.cyberduck.core.PathFactory;
 /**
  * @version $Id$
  */
-
 public class OS400FTPEntryParser extends RegexFTPFileEntryParserImpl {
     private static final String REGEX =
             "(\\S+)\\s+"				// user

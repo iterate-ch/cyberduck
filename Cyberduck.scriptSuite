@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 	<dict>
+		<key>Name</key>
+		<string>Cyberduck</string>
 		<key>AppleEventCode</key>
 		<string>CYCK</string>
 		<key>Classes</key>
@@ -12,10 +14,178 @@
 				<string>capp</string>
 				<key>Superclass</key>
 				<string>NSCoreSuite.NSApplication</string>
+				<key>ToManyRelationships</key>
+				<dict>
+					<key>orderedDocuments</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>docu</string>
+						<key>Type</key>
+						<string>Browser</string>
+						<key>ReadOnly</key>
+						<string>NO</string>
+					</dict>
+				</dict>
+				<key>SupportedCommands</key>
+				<dict>
+					<key>NSCoreSuite.Create</key>
+					<string>newDocument:</string>
+				</dict>
+			</dict>
+			<key>Browser</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>docu</string>
+				<key>Superclass</key>
+				<string>NSCoreSuite.NSDocument</string>
+				<key>Attributes</key>
+				<dict>
+					<key>workdir</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>WoRy</string>
+						<key>ReadOnly</key>
+						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+				</dict>
+				<key>SupportedCommands</key>
+				<dict>
+					<key>Connect</key>
+					<string>mount:</string>
+					<key>Disconnect</key>
+					<string>disconnectButtonClicked:</string>
+					<key>CreateFolder</key>
+					<string>folderButtonClicked:</string>
+					<key>DeleteFile</key>
+					<string>deleteButtonClicked:</string>
+					<key>Download</key>
+					<string>downloadButtonClicked:</string>
+					<key>Upload</key>
+					<string>uploadButtonClicked:</string>
+					<key>Refresh</key>
+					<string>refreshButtonClicked:</string>
+					<key>Goto</key>
+					<string>gotoButtonClicked:</string>
+				</dict>
 			</dict>
 		</dict>
 		<key>Commands</key>
 		<dict>
+			<key>Connect</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>CoCt</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Protocol</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PrCl</string>
+						<key>Optional</key>
+						<string>Yes</string>
+						<key>Type</key>
+						<string>NSString&lt;Protocols&gt;</string>
+					</dict>
+					<key>Host</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>HoSt</string>
+						<key>Optional</key>
+						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+					<key>Port</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PoRt</string>
+						<key>Optional</key>
+						<string>Yes</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+					<key>InitialPath</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PaTh</string>
+						<key>Optional</key>
+						<string>Yes</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+					<key>Username</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>UsMe</string>
+						<key>Optional</key>
+						<string>Yes</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+					<key>Password</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PaRd</string>
+						<key>Optional</key>
+						<string>Yes</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>Disconnect</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>DiCt</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+			</dict>
+			<key>CreateFolder</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>CrEr</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+			</dict>
+			<key>DeleteFile</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>DeLe</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+			</dict>
+			<key>Download</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>DoAd</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+			</dict>
+			<key>Upload</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>UpAd</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+			</dict>
+			<key>Refresh</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>ReSh</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+			</dict>
+			<key>Goto</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>GoTo</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+			</dict>
 			<key>GetURL</key>
 			<dict>
 				<key>AppleEventClassCode</key>
@@ -23,7 +193,7 @@
 				<key>AppleEventCode</key>
 				<string>GURL</string>
 				<key>CommandClass</key>
-				<string>ch.cyberduck.ui.cocoa.CDGetURLScriptCommand</string>
+				<string>ch.cyberduck.ui.cocoa.CDApplescriptabilityController</string>
 			</dict>
 			<key>OpenURL</key>
 			<dict>
@@ -32,10 +202,23 @@
 				<key>AppleEventCode</key>
 				<string>OURL</string>
 				<key>CommandClass</key>
-				<string>ch.cyberduck.ui.cocoa.CDGetURLScriptCommand</string>
+				<string>ch.cyberduck.ui.cocoa.CDApplescriptabilityController</string>
 			</dict>
 		</dict>
-		<key>Name</key>
-		<string>Cyberduck</string>
+		<key>Enumerations</key>
+		<dict>
+			<key>Protocols</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>PrCl</string>
+				<key>Enumerators</key>
+				<dict>
+					<key>ftp </key>
+					<string>ftp </string>
+					<key>sftp</key>
+					<string>sftp</string>
+				</dict>
+			</dict>
+		</dict>
 	</dict>
 </plist>

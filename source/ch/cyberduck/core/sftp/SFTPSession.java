@@ -24,11 +24,13 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
 import com.sshtools.j2ssh.SshClient;
+import com.sshtools.j2ssh.SshEventAdapter;
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.agent.AgentAuthenticationClient;
 import com.sshtools.j2ssh.authentication.*;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
+import com.sshtools.j2ssh.transport.TransportProtocol;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 
 /**
@@ -91,6 +93,20 @@ public class SFTPSession extends Session {
         this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
         this.log(host.getIp(), Message.TRANSCRIPT);
         SSH = new SshClient();
+		SSH.addEventHandler(new SshEventAdapter() {
+			public void onSocketTimeout(TransportProtocol transport) {
+				log.debug("onSocketTimeout");
+				SFTPSession.this.log("Disconnected", Message.PROGRESS);
+				SFTPSession.this.setConnected(false);
+			}
+			
+			public void onDisconnect(TransportProtocol transport) {
+				log.debug("onDisconnect");
+				SFTPSession.this.log("Disconnected", Message.PROGRESS);
+				SFTPSession.this.setConnected(false);
+			}
+		}
+							);
         SshConnectionProperties properties = new SshConnectionProperties();
         properties.setHost(host.getHostname());
         properties.setPort(host.getPort());

@@ -32,23 +32,8 @@ import ch.cyberduck.ui.cocoa.CDQueueController;
 /**
  * @version $Id$
  */
-public class Queue implements Observer { //Thread {
+public class Queue extends Observable implements Observer {
     private static Logger log = Logger.getLogger(Queue.class);
-
-    /**
-     * Estimation time till end of processing
-     */
-    private Timer leftTimer;
-    /**
-     * File transfer pogress
-     */
-    private Timer progressTimer;
-    /**
-     * Time left since start of processing
-     */
-    private Timer elapsedTimer;
-
-    private Calendar calendar = Calendar.getInstance();
 
     public static final int KIND_DOWNLOAD = 0;
     public static final int KIND_UPLOAD = 1;
@@ -57,41 +42,11 @@ public class Queue implements Observer { //Thread {
      */
     private int kind;
 
-    /**
-     * The file currently beeing processed in the queue
-     */
-    private Path currentJob;
-
-    /**
-     * The root of the queue; either the file itself or the parent directory of all files
-     */
     private List roots = new ArrayList();
 
-    public Path getRoot() {
-        return (Path)roots.get(0);
-    }
-
-    /**
-     * This has the same size as the roots and contains the root
-     * path itself and all subelements (in case of a directory)
-     */
-    private List jobs = new ArrayList();
-
-    /**
-     * The this has been canceled from processing for any reason
-     */
-    private boolean running;
-    private boolean canceled;
-
-    /*
-     * 	current speed (bytes/second)
-     */
-    private long speed;
-
-    private long timeLeft = -1;
-
     private String status = "";
-//    private String error = "";
+	
+	private Worker worker;
 
     /**
      * Creating an empty queue containing no items. Items have to be added later
@@ -101,7 +56,7 @@ public class Queue implements Observer { //Thread {
      */
     public Queue(int kind) {
         this.kind = kind;
-        this.init();
+		this.worker = new Worker(this, null);
     }
 
     public Queue(NSDictionary dict) {
@@ -120,6 +75,7 @@ public class Queue implements Observer { //Thread {
                     this.addRoot(PathFactory.createPath(s, (NSDictionary)r.objectAtIndex(i)));
                 }
             }
+			/*
             Object itemsObj = dict.objectForKey("Items");
             if (itemsObj != null) {
                 NSArray items = (NSArray)itemsObj;
@@ -129,8 +85,9 @@ public class Queue implements Observer { //Thread {
                     }
                 }
             }
+			 */
+			this.worker = new Worker(this, null);
         }
-        this.init();
     }
 
     public NSDictionary getAsDictionary() {
@@ -142,11 +99,13 @@ public class Queue implements Observer { //Thread {
             r.addObject(((Path)iter.next()).getAsDictionary());
         }
         dict.setObjectForKey(r, "Roots");
+		/*
         NSMutableArray items = new NSMutableArray();
         for (Iterator iter = jobs.iterator(); iter.hasNext();) {
             items.addObject(((Path)iter.next()).getAsDictionary());
         }
         dict.setObjectForKey(items, "Items");
+		 */
         return dict;
     }
 
@@ -162,6 +121,10 @@ public class Queue implements Observer { //Thread {
         this.roots.add(item);
     }
 
+	public Path getRoot() {
+        return (Path)roots.get(0);
+    }
+		
     public List getRoots() {
         return this.roots;
     }
@@ -173,124 +136,195 @@ public class Queue implements Observer { //Thread {
         return this.kind;
     }
 
+	/**
+	 * Notify all observers
+     *
+     * @param arg The message to send to the observers
+     * @see ch.cyberduck.core.Message
+     */
+    public void callObservers(Object arg) {
+        this.setChanged();
+        this.notifyObservers(arg);
+    }
+		
     public void update(Observable o, Object arg) {
         if (arg instanceof Message) {
             Message msg = (Message)arg;
-            if (msg.getTitle().equals(Message.DATA)) {
-                CDQueueController.instance().update(this, arg);
-            }
-            else if (msg.getTitle().equals(Message.PROGRESS)) {
+            if (msg.getTitle().equals(Message.PROGRESS)) {
                 this.status = (String)msg.getContent();
-                CDQueueController.instance().update(this, arg);
-            }
-            else if (msg.getTitle().equals(Message.ERROR)) {
-                // this.error = " : "+(String)msg.getContent();
-                CDQueueController.instance().update(this, arg);
-            }
-        }
+			}
+		}
+		this.callObservers(arg);
     }
-
+	
     /**
      * Process the queue. All files will be downloaded or uploaded rerspectively.
      *
      * @param validator A callback class where the user can decide what to do if
      *                  the file already exists at the download or upload location respectively
      */
-    public synchronized void start(final Validator validator) {
+    public synchronized void start(Validator validator) {
         log.debug("start");
-//        this.error = "";
-        this.jobs.clear();
-        new Thread() {
-            public void run() {
-                int mypool = NSAutoreleasePool.push();
-
-                Queue.this.elapsedTimer.start();
-                Queue.this.running = true;
-                Queue.this.canceled = false;
-                CDQueueController.instance().update(Queue.this, new Message(Message.QUEUE_START));
-
-                Queue.this.getRoot().getSession().addObserver(Queue.this);
-                Queue.this.getRoot().getSession().cache().clear();
-                for (Iterator i = roots.iterator(); i.hasNext() && !Queue.this.isCanceled();) {
-                    Path r = (Path)i.next();
-                    log.debug("Iterating over childs of " + r);
-                    Iterator childs = r.getChilds(Queue.this.kind).iterator();
-                    while (childs.hasNext() && !Queue.this.isCanceled()) {
-                        Path child = (Path)childs.next();
-                        log.debug("Adding " + child.getName() + " as child to queue.");
-                        Queue.this.jobs.add(child);
-                    }
-                }
-
-                for (Iterator iter = jobs.iterator(); iter.hasNext() && !Queue.this.isCanceled();) {
-                    Path item = (Path)iter.next();
-                    log.debug("Validating " + item.toString());
-                    if (!validator.validate(item)) {
-                        iter.remove();
-                    }
-                    item.status.reset();
-                }
-
-                Queue.this.progressTimer.start();
-                Queue.this.leftTimer.start();
-                for (Iterator iter = jobs.iterator(); iter.hasNext() && !Queue.this.isCanceled();) {
-                    Queue.this.currentJob = (Path)iter.next();
-                    Queue.this.currentJob.status.addObserver(Queue.this);
-
-                    switch (kind) {
-                        case KIND_DOWNLOAD:
-                            Queue.this.currentJob.download();
-                            break;
-                        case KIND_UPLOAD:
-                            Queue.this.currentJob.upload();
-                            break;
-                    }
-
-                    Queue.this.currentJob.status.deleteObserver(Queue.this);
-                }
-                Queue.this.progressTimer.stop();
-                Queue.this.leftTimer.stop();
-
-                Queue.this.getRoot().getSession().close();
-                Queue.this.getRoot().getSession().deleteObserver(Queue.this);
-
-                Queue.this.running = false;
-                Queue.this.elapsedTimer.stop();
-                CDQueueController.instance().update(Queue.this, new Message(Message.QUEUE_STOP));
-
-                NSAutoreleasePool.pop(mypool);
-            }
-        }.start();
-    }
-
-    /**
+		this.worker = new Worker(this, validator);
+		this.worker.start();
+	}
+	
+	private class Worker extends Thread {		
+		Queue queue;
+		private Validator validator;
+		List jobs;
+		boolean running;
+		boolean canceled;
+        long size;
+		private Timer progress;
+		
+		public Worker(Queue queue, Validator validator) {
+			this.queue = queue;
+			this.validator = validator;
+			this.init();
+		}
+				
+		public long size() {
+			return this.size;
+		}
+		
+		public long current() {
+			long value = 0;
+			for (Iterator iter = jobs.iterator(); iter.hasNext();) {
+				value += ((Path)iter.next()).status.getCurrent();
+			}
+			return value;
+		}
+		
+		public int numberOfEntries() {
+			return this.jobs.size();
+		}
+		
+		public void cancel() {
+			for (Iterator iter = jobs.iterator(); iter.hasNext();) {
+				((Path)iter.next()).status.setCanceled(true);
+			}
+			this.canceled = true;
+		}
+		
+		public boolean isStopped() {
+			return !this.running;
+		}
+		
+		private void init() {
+			this.jobs = new ArrayList();
+			this.progress = new Timer(500,
+										   new ActionListener() {
+											   int i = 0;
+											   long current;
+											   long last;
+											   long[] speeds = new long[8];
+											   
+											   public void actionPerformed(ActionEvent e) {
+												   long diff = 0;
+												   current = current(); // Bytes
+												   if (current <= 0) {
+													   setSpeed(0);
+												   }
+												   else {
+													   speeds[i] = (current - last) * 2; // Bytes per second
+													   i++;
+													   last = current;
+													   if (i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
+														   i = 0;
+													   }
+													   for (int k = 0; k < speeds.length; k++) {
+														   diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
+													   }
+													   setSpeed((diff / speeds.length)); //Bytes per second
+												   }
+												   
+											   }
+										   }
+										   );
+		}
+		
+		public void run() {
+//@todo			int mypool = NSAutoreleasePool.push();
+			this.running = true;
+			this.queue.callObservers(new Message(Message.QUEUE_START));
+			
+			this.queue.getRoot().getSession().addObserver(this.queue);
+			this.queue.getRoot().getSession().cache().clear();
+			for (Iterator i = roots.iterator(); i.hasNext() && !canceled; ) {
+				Path r = (Path)i.next();
+				log.debug("Iterating over childs of " + r);
+				Iterator childs = r.getChilds(this.queue.kind()).iterator();
+				while (childs.hasNext() && !canceled) {
+					if(canceled) break;
+					Path child = (Path)childs.next();
+					log.debug("Adding " + child.getName() + " as child to queue.");
+					this.jobs.add(child);
+				}
+			}
+			
+			for (Iterator iter = jobs.iterator(); iter.hasNext() && !canceled; ) {
+				Path item = (Path)iter.next();
+				log.debug("Validating " + item.toString());
+				if (!this.validator.validate(item)) {
+					iter.remove();
+				}
+				item.status.reset();
+				this.size += item.status.getSize();
+			}
+			
+			this.progress.start();
+			for (Iterator iter = jobs.iterator(); iter.hasNext() && !canceled; ) {
+				Path job = (Path)iter.next();
+				job.status.addObserver(queue);				
+				switch (kind) {
+					case KIND_DOWNLOAD:
+						job.download();
+						break;
+					case KIND_UPLOAD:
+						job.upload();
+						break;
+				}
+				job.status.deleteObserver(queue);
+			}
+			this.progress.stop();
+			
+			this.queue.getRoot().getSession().close();
+			this.queue.getRoot().getSession().deleteObserver(this.queue);
+			
+			this.running = false;
+			this.queue.callObservers(new Message(Message.QUEUE_STOP));
+			
+//			NSAutoreleasePool.pop(mypool);
+		}
+	}
+		
+		/**
      * Stops the currently running thread processing the queue.
      *
      * @pre The thread must be running
      */
     public void cancel() {
-        //this.currentJob.status.setCanceled(true);
-        for (Iterator iter = jobs.iterator(); iter.hasNext();) {
-            ((Path)iter.next()).status.setCanceled(true);
-        }
-        this.canceled = true;
+		this.worker.cancel();
     }
 
     /**
      * @return True if this queue's thread is running
      */
     public boolean isRunning() {
-        return this.running;
+        return !this.worker.isStopped();
     }
 
     /**
      * @return True if the processing of the queue has been stopped,
-     *         either becasuse the transfers have all been completed or
-     *         been cancled by the user.
+     * either becasuse the transfers have all been completed or
+     * been cancled by the user.
      */
+	/*
     private boolean isCanceled() {
         return this.canceled;
     }
+	 */
 
     public int numberOfRoots() {
         return this.roots.size();
@@ -300,39 +334,41 @@ public class Queue implements Observer { //Thread {
      * @return Number of jobs in the this.
      */
     public int numberOfJobs() {
-        return this.jobs.size();
+		return this.worker.numberOfEntries();
+		// return this.this.jobs.size();
     }
 
     /**
      * @return rue if all items in the this queue have been processed sucessfully.
      */
     public boolean isComplete() {
-        return this.getSize() == this.getCurrent();
+        return this.isInitalized() && (this.getSize() == this.getCurrent());
     }
-
-    public String getStatus() {
-        return this.getElapsedTime() + " " + this.status;
-//        return this.getElapsedTime() + " " + this.status + " " + error;
+	
+	public boolean isInitalized() {
+		return !(this.getSize() == 0 && this.getCurrent() == 0);
+	}
+	
+    public String getStatusText() {
+		if(this.isInitalized()) {
+			if(this.isRunning()) {
+				return this.getCurrentAsString()
+				+" of "+this.getSizeAsString()
+				+" at "+this.getSpeedAsString()+"  "
+				+this.status;
+			}
+			return this.getCurrentAsString()
+			+" of "+this.getSizeAsString()+"  "
+			+this.status;
+		}
+		return "(Unknown size)  "+this.status;
     }
-
-    public String getProgress() {
-        return this.getCurrentAsString() + " of " + this.getSizeAsString();
-    }
-
+	
     /**
      * @return The cummulative file size of all files remaining in the this
      */
     public long getSize() {
-        return this.calculateTotalSize();
-    }
-
-
-    private long calculateTotalSize() {
-        long value = 0;
-        for (Iterator iter = jobs.iterator(); iter.hasNext();) {
-            value += ((Path)iter.next()).status.getSize();
-        }
-        return value;
+		return this.worker.size();
     }
 
     public String getSizeAsString() {
@@ -343,15 +379,7 @@ public class Queue implements Observer { //Thread {
      * @return The number of bytes already processed of all elements in the whole this.
      */
     public long getCurrent() {
-        return this.calculateCurrentSize();
-    }
-
-    private long calculateCurrentSize() {
-        long value = 0;
-        for (Iterator iter = jobs.iterator(); iter.hasNext();) {
-            value += ((Path)iter.next()).status.getCurrent();
-        }
-        return value;
+		return this.worker.current();
     }
 
     public String getCurrentAsString() {
@@ -370,6 +398,8 @@ public class Queue implements Observer { //Thread {
         return "";
     }
 
+	private long speed;
+	
     /**
      * @return The bytes being processed per second
      */
@@ -379,130 +409,5 @@ public class Queue implements Observer { //Thread {
 
     private void setSpeed(long s) {
         this.speed = s;
-    }
-
-    private void setTimeLeft(int seconds) {
-        this.timeLeft = seconds;
-    }
-
-    public String getTimeLeft() {
-        if (this.isRunning()) {
-            //@todo: implementation of better 'time left' management.
-            if (this.timeLeft != -1) {
-                if (this.timeLeft >= 60) {
-                    return (int)this.timeLeft / 60 + " minutes remaining.";
-                }
-                else {
-                    return this.timeLeft + " seconds remaining.";
-                }
-            }
-        }
-        return "";
-    }
-
-    public String getElapsedTime() {
-        if (calendar.get(Calendar.HOUR) > 0) {
-            return this.parseTime(calendar.get(Calendar.HOUR))
-                    + ":"
-                    + parseTime(calendar.get(Calendar.MINUTE))
-                    + ":"
-                    + parseTime(calendar.get(Calendar.SECOND));
-        }
-        else {
-            return this.parseTime(calendar.get(Calendar.MINUTE))
-                    + ":"
-                    + parseTime(calendar.get(Calendar.SECOND));
-        }
-    }
-
-    private String parseTime(int t) {
-        if (t > 9) {
-            return String.valueOf(t);
-        }
-        else {
-            return "0" + t;
-        }
-    }
-
-    private void init() {
-        log.debug("init");
-
-        this.calendar.set(Calendar.HOUR, 0);
-        this.calendar.set(Calendar.MINUTE, 0);
-        this.calendar.set(Calendar.SECOND, 0);
-        this.calendar.set(Calendar.HOUR, 0);
-        this.calendar.set(Calendar.MINUTE, 0);
-        this.calendar.set(Calendar.SECOND, 0);
-        this.elapsedTimer = new Timer(1000,
-                new ActionListener() {
-                    int seconds = 0;
-                    int minutes = 0;
-                    int hours = 0;
-
-                    public void actionPerformed(ActionEvent event) {
-                        seconds++;
-                        // calendar.set(year, mont, date, hour, minute, second)
-                        // >= one hour
-                        if (seconds >= 3600) {
-                            hours = (int)(seconds / 60 / 60);
-                            minutes = (int)((seconds - hours * 60 * 60) / 60);
-                            calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), hours, minutes, seconds - minutes * 60);
-                        }
-                        else {
-                            // >= one minute
-                            if (seconds >= 60) {
-                                minutes = (int)(seconds / 60);
-                                calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), minutes, seconds - minutes * 60);
-                            }
-                            // only seconds
-                            else {
-                                calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), seconds);
-                            }
-                        }
-                        CDQueueController.instance().update(Queue.this, new Message(Message.PROGRESS));
-//                        Queue.this.callObservers(new Message(Message.PROGRESS));
-                    }
-                });
-
-        this.progressTimer = new Timer(500,
-                new ActionListener() {
-                    int i = 0;
-                    long current;
-                    long last;
-                    long[] speeds = new long[8];
-
-                    public void actionPerformed(ActionEvent e) {
-                        long diff = 0;
-                        current = currentJob.status.getCurrent(); // Bytes
-                        if (current <= 0) {
-                            setSpeed(0);
-                        }
-                        else {
-                            speeds[i] = (current - last) * 2; // Bytes per second
-                            i++;
-                            last = current;
-                            if (i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
-                                i = 0;
-                            }
-                            for (int k = 0; k < speeds.length; k++) {
-                                diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
-                            }
-                            Queue.this.setSpeed((diff / speeds.length)); //Bytes per second
-                        }
-
-                    }
-                });
-
-        this.leftTimer = new Timer(1000,
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        if (getSpeed() > 0) {
-                            Queue.this.setTimeLeft((int)((Queue.this.getSize() - currentJob.status.getCurrent()) / getSpeed()));
-                        }
-                        else {
-                            Queue.this.setTimeLeft(-1);
-                        }
-                    }
-                });
     }
 }

@@ -83,7 +83,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 - (IBAction) odbEdit:(id) sender path:(NSString *)path
 {
     
-    [[ODBEditor sharedODBEditor] editFile:path options: nil forClient:self context: NULL];
+    [[ODBEditor sharedODBEditor] editFile:path options:nil forClient:self context:nil];
 }
 
 - (void)odbEditor:(ODBEditor *)editor didModifyFile:(NSString *)path newFileLocation:(NSString *)newPath  context:(NSDictionary *)context

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>Name</key>
+		<string>Cyberduck Suite</string>
+		<key>Description</key>
+		<string>AppleScript commands and classes specific to Cyberduck</string>
+		<key>Classes</key>
+		<dict>
+			<key>Cyberduck</key>
+			<dict>
+				<key>Description</key>
+				<string>Cyberduck's top level scripting object.</string>
+				<key>Name</key>
+				<string>application</string>
+				<key>PluralName</key>
+				<string>applications</string>
+			</dict>
+			<key>Browser</key>
+			<dict>
+				<key>Attributes</key>
+				<dict>
+					<key>workdir</key>
+					<dict>
+						<key>Description</key>
+						<string>The current working directory.</string>
+						<key>Name</key>
+						<string>working directory</string>
+					</dict>
+				</dict>
+				<key>Description</key>
+				<string>A Browser</string>
+				<key>Name</key>
+				<string>browser</string>
+				<key>PluralName</key>
+				<string>browsers</string>
+			</dict>
+		</dict>
+		<key>Commands</key>
+		<dict>
+			<key>Connect</key>
+			<dict>
+				<key>Description</key>
+				<string>Connect to a specified server.</string>
+				<key>Name</key>
+				<string>connect</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Protocol</key>
+					<dict>
+						<key>Description</key>
+						<string>The protocol to use (FTP or SFTP).</string>
+						<key>Name</key>
+						<string>with protocol</string>
+					</dict>
+					<key>Host</key>
+					<dict>
+						<key>Description</key>
+						<string>The host to connect to.</string>
+						<key>Name</key>
+						<string>to</string>
+					</dict>
+					<key>Port</key>
+					<dict>
+						<key>Description</key>
+						<string>The port to use when connecting.</string>
+						<key>Name</key>
+						<string>with port</string>
+					</dict>
+					<key>InitialPath</key>
+					<dict>
+						<key>Description</key>
+						<string>The initial path to change to after connection is made.</string>
+						<key>Name</key>
+						<string>with initial path</string>
+					</dict>
+					<key>Password</key>
+					<dict>
+						<key>Description</key>
+						<string>The password to use when connecting.</string>
+						<key>Name</key>
+						<string>with password</string>
+					</dict>
+					<key>Username</key>
+					<dict>
+						<key>Description</key>
+						<string>The username to use when connecting.</string>
+						<key>Name</key>
+						<string>as user</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>Disconnect</key>
+			<dict>
+				<key>Description</key>
+				<string>No description</string>
+				<key>Name</key>
+				<string>disconnect</string>
+			</dict>
+			<key>CreateFolder</key>
+			<dict>
+				<key>Description</key>
+				<string>No description</string>
+				<key>Name</key>
+				<string>create folder</string>
+			</dict>
+			<key>DeleteFile</key>
+			<dict>
+				<key>Description</key>
+				<string>No description</string>
+				<key>Name</key>
+				<string>delete file</string>
+			</dict>
+			<key>Refresh</key>
+			<dict>
+				<key>Description</key>
+				<string>No description</string>
+				<key>Name</key>
+				<string>refresh</string>
+			</dict>
+			<key>Download</key>
+			<dict>
+				<key>Description</key>
+				<string>No description</string>
+				<key>Name</key>
+				<string>download</string>
+			</dict>
+			<key>Upload</key>
+			<dict>
+				<key>Description</key>
+				<string>No description</string>
+				<key>Name</key>
+				<string>upload</string>
+			</dict>
+			<key>Goto</key>
+			<dict>
+				<key>Description</key>
+				<string>No description</string>
+				<key>Name</key>
+				<string>go to</string>
+			</dict>
+			<key>GetURL</key>
+			<dict>
+				<key>Description</key>
+				<string>Open a URL</string>
+				<key>Name</key>
+				<string>open URL</string>
+			</dict>
+			<key>OpenURL</key>
+			<dict>
+				<key>Description</key>
+				<string>Open a URL</string>
+				<key>Name</key>
+				<string>open URL</string>
+			</dict>
+		</dict>
+		<key>Enumerations</key>
+		<dict>
+			<key>Protocols</key>
+			<dict>
+				<key>ftp </key>
+				<dict>
+					<key>Description</key>
+					<string>Connect to server using FTP File Transfer</string>
+					<key>Name</key>
+					<string>FTP</string>
+				</dict>
+				<key>sftp</key>
+				<dict>
+					<key>Description</key>
+					<string>Connect to server using SSH Secure File Transfer</string>
+					<key>Name</key>
+					<string>SFTP</string>
+				</dict>
+			</dict>
+		</dict>
+	</dict>
+</plist>

@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa.odb;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSObject;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
 import java.util.HashMap;
@@ -31,7 +30,9 @@ import org.apache.log4j.Logger;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 
-public class Editor extends NSObject {
+import ch.cyberduck.ui.cocoa.growl.Growl;
+
+public class Editor {
     private static Logger log = Logger.getLogger(Editor.class);
 
     public static Map SUPPORTED_EDITORS = new HashMap();
@@ -39,6 +40,7 @@ public class Editor extends NSObject {
     static {
         SUPPORTED_EDITORS.put("SubEthaEdit", "de.codingmonkeys.SubEthaEdit");
         SUPPORTED_EDITORS.put("BBEdit", "com.barebones.bbedit");
+        SUPPORTED_EDITORS.put("BBEdit Lite", "com.barebones.bbeditlite");
         SUPPORTED_EDITORS.put("TextWrangler", "com.barebones.textwrangler");
 //		SUPPORTED_EDITORS.put("PageSpinner", "com.optima.PageSpinner");
         SUPPORTED_EDITORS.put("Tex-Edit Plus", "com.transtex.texeditplus");
@@ -92,14 +94,16 @@ public class Editor extends NSObject {
     private native void edit(String path);
 
     public void didCloseFile() {
-        log.debug("didCloseFile");
+        log.debug("didCloseFile:"+this.file);
         this.file.getLocal().delete();
         instances.removeObject(this);
     }
 
     public void didModifyFile() {
-        log.debug("didModifyFile:");
+        log.debug("didModifyFile:"+this.file);
         this.file.upload();
+		Growl.instance().notify(NSBundle.localizedString("Upload complete", "Growl Notification"),
+								file.getName());
         this.file.getParent().list(true);
     }
 }

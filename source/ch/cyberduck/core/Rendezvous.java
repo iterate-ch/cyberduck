@@ -47,7 +47,7 @@ public class Rendezvous extends Observable implements ServiceListener {
         log.debug("Rendezvous");
         this.services = new HashMap();
     }
-
+	
     public void init() {
         log.debug("init");
         new Thread() {
@@ -120,7 +120,6 @@ public class Rendezvous extends Observable implements ServiceListener {
             }
 
             String identifier = info.getServer() + " (" + Host.getDefaultProtocol(info.getPort()).toUpperCase() + ")";
-            //@todo dont't rely on standard port numbers
 			
             this.services.put(identifier, h);
             this.callObservers(new Message(Message.RENDEZVOUS_ADD, identifier));

@@ -44,13 +44,13 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
     private String host;
     private SshPublicKey publicKey;
 
-    private Controller windowController;
+    private CDController windowController;
 
     public void windowWillClose(NSNotification notification) {
         instances.removeObject(this);
     }
 
-    public CDHostKeyController(Controller windowController) throws InvalidHostFileException {
+    public CDHostKeyController(CDController windowController) throws InvalidHostFileException {
         super(Preferences.instance().getProperty("ssh.knownhosts"));
         this.windowController = windowController;
         instances.addObject(this);

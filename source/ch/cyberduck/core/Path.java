@@ -349,7 +349,6 @@ public abstract class Path {
         }
         else if (this.getLocal().isFile()) {
             this.attributes.setType(Path.FILE_TYPE);
-            //this.attributes.setTimestamp(this.getLocal().lastModified());
             this.status.setSize(this.getLocal().length()); //setting the file size to the known size of the local file
         }
         return queue;

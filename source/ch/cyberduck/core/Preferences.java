@@ -127,6 +127,7 @@ public abstract class Preferences {
         defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
         defaults.put("ftp.connectmode", "passive");
         defaults.put("ftp.transfermode", "binary");
+		defaults.put("ftp.timeout", "60000");
         defaults.put("ftp.transfermode.ascii.extensions", "txt cgi htm html shtml xml xsl php php3 js css asp java c cp cpp m h pl py rb sh");
         defaults.put("ftp.line.separator", "unix");
         defaults.put("ftp.sendSystemCommand", "true");

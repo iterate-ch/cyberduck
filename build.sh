@@ -16,4 +16,4 @@
 
 #!/bin/sh
         
-xcodebuild -target all -buildstyle Deployment
+xcodebuild -target $1 -buildstyle Deployment

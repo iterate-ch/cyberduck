@@ -26,6 +26,7 @@ import com.apple.cocoa.foundation.NSSelector;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 
 import org.apache.log4j.Logger;
 
@@ -34,7 +35,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public class CDDownloadController extends NSObject implements Controller {
+public class CDDownloadController extends NSObject implements CDController {
     private static Logger log = Logger.getLogger(CDDownloadController.class);
 
     private static NSMutableArray instances = new NSMutableArray();
@@ -94,7 +95,7 @@ public class CDDownloadController extends NSObject implements Controller {
     public void downloadButtonClicked(Object sender) {
         log.debug("downloadButtonClicked");
         try {
-            URL url = new URL(urlField.stringValue());
+            URL url = new URL(URLDecoder.decode(urlField.stringValue(), "UTF-8"));
             Host host = new Host(url.getProtocol(),
                     url.getHost(),
                     url.getPort(),
@@ -105,7 +106,8 @@ public class CDDownloadController extends NSObject implements Controller {
                 Path path = PathFactory.createPath(SessionFactory.createSession(host), file);
                 Queue queue = new Queue(Queue.KIND_DOWNLOAD);
                 queue.addRoot(path);
-                QueueList.instance().addItem(queue);
+				CDQueueController.instance().addItem(queue);
+//                QueueList.instance().addItem(queue);
                 CDQueueController.instance().startItem(queue);
             }
             else {
@@ -113,6 +115,9 @@ public class CDDownloadController extends NSObject implements Controller {
             }
             NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
         }
+		catch (java.io.UnsupportedEncodingException e) {
+            log.error(e.getMessage());
+		}
         catch (MalformedURLException e) {
             NSAlertPanel.beginCriticalAlertSheet("Error", //title
                     "OK", // defaultbutton

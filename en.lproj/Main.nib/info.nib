@@ -9,7 +9,7 @@
 		<key>103</key>
 		<string>44 590 445 44 0 0 1024 746 </string>
 		<key>250</key>
-		<string>380 543 162 49 0 0 1280 1002 </string>
+		<string>293 397 162 49 0 0 1024 746 </string>
 	</dict>
 	<key>IBFramework Version</key>
 	<string>364.0</string>
@@ -20,6 +20,6 @@
 		<integer>103</integer>
 	</array>
 	<key>IBSystem Version</key>
-	<string>7H63</string>
+	<string>7M34</string>
 </dict>
 </plist>
