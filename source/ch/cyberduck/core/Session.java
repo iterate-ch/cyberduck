@@ -203,7 +203,6 @@ public abstract class Session extends Observable {
 //		this.host.setLoginController(null);
 //		this.host.setHostKeyVerificationController(null);
 		SessionPool.instance().release(this);
-		System.gc(); //@todo
 	}
 
 	private class KeepAliveTask extends TimerTask {

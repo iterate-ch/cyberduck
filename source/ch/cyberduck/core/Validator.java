@@ -25,7 +25,7 @@ import java.util.List;
  */
 public interface Validator {
 
-	public void validate(Queue q);
+	public boolean validate(List files, boolean resumeRequested);
 
 	public List getValidated();
 

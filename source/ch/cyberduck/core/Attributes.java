@@ -49,7 +49,10 @@ public class Attributes extends Observable {
 	}
 
 	public boolean isUndefined() {
-		return this.modified == null || this.size == -1;
+		boolean defined = this.modified == null || this.size == -1;
+		if(!defined)
+			log.warn("Undefined file attributes");
+		return defined;
 	}
 
 	public Attributes(NSDictionary dict) {

@@ -184,12 +184,6 @@ public abstract class Queue extends Observable {
 	
 	protected abstract void process(Path p);
 	
-	private boolean resumeRequested;
-	
-	public boolean isResumeRequested() {
-		return this.resumeRequested;
-	}
-	
 	public List getJobs() {
 		return this.jobs;
 	}	
@@ -197,29 +191,21 @@ public abstract class Queue extends Observable {
 	/**
 		* Process the queue. All files will be downloaded/uploaded/synced rerspectively.
 	 */
-	public void start(boolean resumeRequested) {
-		this.resumeRequested = resumeRequested;
-		this.init();
-		this.validator.validate(this);
-		if(!this.validator.isCanceled()) {
-			if(this.validator.getValidated().size() > 0) {
-				this.jobs = this.validator.getValidated();
-				this.reset();
-				for(Iterator iter = this.getJobs().iterator(); iter.hasNext() && !this.isCanceled();) {
-					((Path)iter.next()).status.reset();
-				}
-				for(Iterator iter = this.getJobs().iterator(); iter.hasNext() && !this.isCanceled();) {
-					this.process((Path)iter.next());
-				}
+	public void start(boolean resumeRequested, boolean shouldValidate) {
+		if(this.init(resumeRequested, shouldValidate)) {
+			this.reset();
+			for(Iterator iter = this.getJobs().iterator(); iter.hasNext() && !this.isCanceled();) {
+				((Path)iter.next()).status.reset();
 			}
-		}
-		else {
-			this.cancel();
+			for(Iterator iter = this.getJobs().iterator(); iter.hasNext() && !this.isCanceled();) {
+				this.process((Path)iter.next());
+			}
 		}
 		this.finish();
 	}
 	
-	private void init() {
+	private boolean init(boolean resumeRequested, boolean shouldValidate) {
+        this.canceled = false;
 		this.running = true;
 		this.validator = ValidatorFactory.createValidator(this.getClass());
 		this.progress = new Timer(500,
@@ -252,6 +238,17 @@ public abstract class Queue extends Observable {
 								  });
 		this.progress.start();
 		this.callObservers(new Message(Message.QUEUE_START));
+		if(shouldValidate) {
+			if(this.validator.validate(this.getChilds(), resumeRequested)) {
+				if(this.validator.getValidated().size() > 0) {
+					this.jobs = this.validator.getValidated();
+					return true;
+				}
+			}
+			return false;
+		}
+		this.jobs = this.getChilds();
+		return true;
 	}
 	
 	private void finish() {

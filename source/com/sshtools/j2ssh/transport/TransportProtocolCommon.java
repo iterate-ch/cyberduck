@@ -1221,7 +1221,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 					msgdata = sshIn.readMessage();
 					hasmsg = true;
 				}
-				catch(InterruptedIOException ex /*SocketTimeoutException ex*/) { //@todo
+				catch(InterruptedIOException ex /*SocketTimeoutException ex*/) {
 					log.info("Possible timeout on transport inputstream");
 					Iterator it = eventHandlers.iterator();
 					while(it.hasNext()) {

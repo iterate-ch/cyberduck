@@ -210,7 +210,7 @@ public class CDBrowserController extends CDController implements Observer {
 				path.setLocal(new Local(path.getLocal().getParent(), (String)nameObj));
 			}
 			Queue queue = new DownloadQueue(path);
-			queue.start(false);
+			queue.start(false, false);
 		}
 		return null;
 	}
@@ -231,7 +231,7 @@ public class CDBrowserController extends CDController implements Observer {
 				path.setPath(this.workdir().getAbsolute(), (String)nameObj);
 			}
 			Queue queue = new UploadQueue(path);
-			queue.start(false);
+			queue.start(false, false);
 		}
 		return null;
 	}
@@ -1476,7 +1476,7 @@ public class CDBrowserController extends CDController implements Observer {
 		}
 	}
 
-	private void unmount() {
+	public void unmount() {
 		if(this.isMounted()) {
 			this.workdir().getSession().close();
 			TranscriptFactory.removeImpl(this.workdir().getSession().getHost().getHostname());
@@ -1606,7 +1606,6 @@ public class CDBrowserController extends CDController implements Observer {
 			this.workdir().getSession().deleteObserver((Observer)this);
 		}
 		instances.removeObject(this);
-		System.gc(); //@todo
 	}
 
 	public boolean validateMenuItem(NSMenuItem item) {

@@ -358,7 +358,9 @@ public class SFTPPath extends Path {
 						}
 					}
 					if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
-						this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+						if(!this.attributes.isUndefined()) {
+							this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+						}
 					}
 				}
 				if(this.attributes.isDirectory()) {

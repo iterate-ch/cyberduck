@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.List;
 import java.util.Iterator;
 
 import com.apple.cocoa.application.*;
@@ -51,25 +52,23 @@ public abstract class CDValidatorController extends AbstractValidator {
 		    this.fileTableView);
 	}
 
-	public void validate(Queue q) {
-		for(Iterator iter = q.getChilds().iterator(); iter.hasNext() && !this.isCanceled();) {
+	public boolean validate(List files, boolean resumeRequested) {
+		for(Iterator iter = files.iterator(); iter.hasNext() && !this.isCanceled();) {
 			Path child = (Path)iter.next();
 			log.debug("Validating:"+child);
-			if(this.validate(child, q.isResumeRequested())) {
+			if(this.validate(child, resumeRequested)) {
 				log.info("Adding "+child+" to final set.");
 				this.validatedList.add(child);
 			}
 		}
-		if(this.isCanceled()) {
-			return;
-		}
-		if(this.hasPrompt()) {
+		if(this.hasPrompt() && !this.isCanceled()) {
 			this.statusIndicator.stopAnimation(null);
 			this.setEnabled(true);
 			this.fileTableView.sizeToFit();
 			this.infoLabel.setStringValue(this.workList.size()+" "+NSBundle.localizedString("files", ""));
 			this.windowController.waitForSheetEnd();
 		}
+		return !this.isCanceled();
 	}
 
 	protected abstract void load();

@@ -288,7 +288,7 @@ public class CDQueueController extends CDController {
 		queue.getHost().setLoginController(new CDLoginController(this));
 		new Thread() {
 			public void run() {
-				queue.start(resumeRequested);
+				queue.start(resumeRequested, true);
 			}
 		}.start();
 	}

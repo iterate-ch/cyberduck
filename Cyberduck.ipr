@@ -199,7 +199,7 @@
       <module fileurl="file://$PROJECT_DIR$/Cyberduck.iml" filepath="$PROJECT_DIR$/Cyberduck.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" assert-keyword="false" jdk-15="false" project-jdk-name="java version &quot;1.4.2_03&quot;" />
+  <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="false" project-jdk-name="java version &quot;1.4.2_05&quot;" />
   <component name="RmicSettings">
     <option name="IS_EANABLED" value="false" />
     <option name="DEBUGGING_INFO" value="true" />
