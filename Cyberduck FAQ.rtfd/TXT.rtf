@@ -2,7 +2,7 @@
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fswiss\fcharset77 Helvetica-Oblique;
 \f3\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;}
-\vieww12040\viewh13640\viewkind0
+\vieww12040\viewh13600\viewkind0
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\fs24 \cf0      {{\NeXTGraphic cyberduck-application.icns \width2560 \height2560
@@ -41,7 +41,7 @@
 \f1\b Why isn't there a <insert your preferred language here> localization?
 \f0\b0 \
 	Because nobody has written one yet. Why not doing it yourself? It's easy and you don't need any programming skills. Contact me and I'll send you the relevant files. Current available localizations are 
-\f2\i English, Dutch, German, French, Italian, Japanese, Korean, Chinese (Traditional and Simplified), Portuguese, Spanish, Finnish, Slovak and Czech
+\f2\i English, Dutch, German, French, Italian, Japanese, Korean, Chinese (Traditional and Simplified), Portuguese, Spanish, Finnish, Slovak, Czech and Norwegian
 \f0\i0 .\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
@@ -51,22 +51,61 @@
 
 \f0\b0 \cf0 	Write an email to 
 \f2\i <mailto:bugs@cyberduck.ch>
-\f0\i0  with a description what you have a done and what went wrong. It would help if you can include the crash report and also all the files with the pattern ~/Library/Logs/JavaNativeCrash_pid(****).log\
+\f0\i0  with a description what you have a done and what went wrong. It would help if you can include the crash report and also all the \cf0 files\cf0  with the pattern ~/Library/Logs/JavaNativeCrash_pid(****).log\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 \
 \'a5	Where does Cyberduck store its preferences?\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 	~/Library/Application Support/Cyberduck\
+\f0\b0 \cf0 	~/Library/Application Support/Cyberduck/\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 	
 \f0\b0 ~/Library/Preferences/ch.sudo.cyberduck.plist\
 \
+
+\f1\b \'a5	What version of OS X does Cyberduck expect?\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	Cyberduck has never been tested on any OS X version prior to 10.3. Your mileage may vary. If Cyberduck crashes when launching, try installing the latest Java Update from http://www.apple.com/support/downloads/javaupdate142.html\
+\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \'a5	I don't want Cyberduck to ask me to review open connections upon quit!\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	Open a Terminal.app window and type:\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f3 \cf0 		defaults write ch.sudo.cyberduck browser.confirmQuit false\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0 \cf0 \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \'a5	The 'Info' panel should be like an inspector always showing the details of the file(s) currently selected!\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	Open a Terminal.app window and type:\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f3 \cf0 		defaults write ch.sudo.cyberduck browser.info.isInspector true\
+\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\li1440\fi-1440\ql\qnatural
+
+\f0 \cf0 \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 	The server does only allow one single connection; I can't transfer any files!\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	Limit the maximum number of simultaneous to a server in the 'Advanced' tab in the Preferences.\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \
 \
 
-\f1\b\fs48 	Cyberduck How-to\
+\fs48 	Cyberduck How-to\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0\fs24 \cf0 \
@@ -199,25 +238,7 @@
 	{{\NeXTGraphic Pasted Graphic 7.png \width4360 \height1760
 }¬}
 \f0\fs24 \
-\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 	How can I configure Cyberduck to apply specific default permissions to files uploaded? (By default, Cyberduck applies the permissions the file has on the local system)\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	Open a Terminal window (Applications/Utilities/Terminal.app and type:\
-		defaults write ch.sudo.cyberduck queue.permissions.useDefault true\
-		defaults write ch.sudo.cyberduck queue.permissions.default rwx------\
-	If you no longer want to use these settings, type\
-		defaults write ch.sudo.cyberduck queue.permissions.useDefault false\
 	\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 	How do I download file with HTTP (from a web server)?\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	Select 'New Download (\'f0-D)' from the 'File' Menu. Enter an URL (or drag it e.g. from a web browser) pointing to a file. You can also drag an URL directly to the Transfer Queue to initiate the transfer (e.g. from Safari).\
-\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 	Can I move files on a remote host?\
@@ -234,9 +255,9 @@
 \f1\b \cf0 \'a5	EDITING FILES\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 	You can edit a file just as a local file by clicking the 'Edit' toolbar button or by choosing 'Open in Editor (\'f0-J)' in the 'File' Menu. The file will be downloaded to the user's temporary directory and opened with the preferred editor. (Supported editors include SubEthaEdit, BBEdit, TextWrangler and Text-Edit Plus). Set your preferred editor in the Preferences. The file will be uploaded to the server everytime you choose 'Save' in the Editor application. The file is not changed on the server if you just close the document without saving.\
+\f0\b0 \cf0 	You can edit a file just as a local file by clicking the 'Edit' toolbar button or by choosing 'Open in Editor (\'f0-J)' in the 'File' Menu. The file will be downloaded to the user's temporary directory and opened with the preferred editor. (Supported editors include SubEthaEdit, BBEdit, TextWrangler, TextMate and Text-Edit Plus). Set your preferred editor in the Preferences. The file will be uploaded to the server everytime you choose 'Save' in the Editor application. The file is not changed on the server if you just close the document without saving.\
 \
-	{{\NeXTGraphic Pasted Graphic 6.tiff \width3960 \height2040
+	{{\NeXTGraphic Pasted Graphic 6.tiff \width5560 \height2220
 }¬}
 \f0\fs24 \
 \
@@ -253,9 +274,19 @@
 \
 
 \f1\b \'a5	SYNCHRONIZATION\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	Files can be synchronized by selecting the directory to synchronize in the browser and select 'Synchronize (\'f0-S)' from the 'File' menu or the toolbar button in the browser.\
 \
+	{{\NeXTGraphic Pasted Graphic 11.tiff \width3780 \height2020
+}¬}
+\f0\fs24 \
 \
-\'a5	PROXY SERVERS\
+	You will be prompted to select the directory on your computer to to synchronize the files with. Cyberduck will only attempt to synchronize files that are of different size. Based on the modification date the file will be downloaded or uploaded from/to the server. You will be prompted to confirm the actions and if missing files should only be download, uploaded or mirrored.\
+\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \'a5	PROXY SERVERS\
 	What proxy servers does Cyberduck support?
 \f0\b0 \
 	In theory SOCKS 4/5. This feature has not been tested. You can adjust the proxy settings in the System Preferences.\
@@ -293,31 +324,17 @@
 \f0\b0\fs24 \cf0 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b \cf0 	The server does only allow one single connection; I can't download any files\
+\f1\b \cf0 	I try to open a new SSH connection but I just get the spinning progress bar. In the Console.app I can read 'java.lang.NegativeArraySizeException at com.sshtools.j2ssh.io.ByteArrayReader.readString(ByteArrayReader.java:164)'\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 	Close the connection in the browser first using the 'Disconnect' toolbar item. Then double click the file to download.\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 \
-	I try to open a new SSH connection but I just get the spinning progress bar. In the Console.app I can read 'java.lang.NegativeArraySizeException at com.sshtools.j2ssh.io.ByteArrayReader.readString(ByteArrayReader.java:164)'\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	Delete all SSH1 keys in ~/.ssh/known_hosts\
+\f0\b0 \cf0 	Delete all SSH1 keys in ~/.ssh/known_hosts.\
 	\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 	When I upload a file I get the error 'SITE chmod 664: command not understood' or 'Permission denied'\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	Uncheck the option 'Queue > Adjust file permissions on upload' in the Preferences\
-\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 	When listing a directory on a FTP server I get the error message in response to the  'LIST -a' command: 550 Directory not found.\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 	Uncheck the option 'FTP > Send LIST -a command' in the Preferences\
+\f0\b0 \cf0 	Uncheck the option 'FTP > Send LIST -a command' in the Preferences.\
 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 

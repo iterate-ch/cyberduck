@@ -1468,7 +1468,7 @@ public class CDBrowserController extends CDController implements Observer {
 		if(itemIdentifier.equals("New Connection")) {
 			item.setLabel(NSBundle.localizedString("New Connection", "Toolbar item"));
 			item.setPaletteLabel(NSBundle.localizedString("New Connection", "Toolbar item"));
-			item.setToolTip(NSBundle.localizedString("Connect to remote host", "Toolbar item tooltip"));
+			item.setToolTip(NSBundle.localizedString("Connect to server", "Toolbar item tooltip"));
 			item.setImage(NSImage.imageNamed("connect.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("connectButtonClicked", new Class[]{Object.class}));
