@@ -382,7 +382,7 @@ public class CDQueueController extends CDController {
 	public void queueTableRowDoubleClicked(Object sender) {
 		if(this.queueTable.selectedRow() != -1) {
 			Queue item = this.queueModel.getItem(this.queueTable.selectedRow());
-			this.resumeButtonClicked(sender);
+			this.reloadButtonClicked(sender);
 		}
 	}
 

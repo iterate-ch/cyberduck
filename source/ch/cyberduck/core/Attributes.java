@@ -33,6 +33,10 @@ import com.apple.cocoa.foundation.*;
 public class Attributes extends Observable {
 	private static Logger log = Logger.getLogger(Attributes.class);
 
+	/**
+	* The file length
+	 */
+	private long size = -1;
 	private Date modified = null;
 	private String owner = "Unknown";
 	private String group = "Unknown";
@@ -57,6 +61,20 @@ public class Attributes extends Observable {
 	}
 
 	/**
+		* @param size the size of file in bytes.
+	 */
+	public void setSize(long size) {
+		this.size = size;
+	}
+	
+	/**
+		* @return length the size of file in bytes.
+	 */
+	public long getSize() {
+		return this.size;
+	}
+		
+	/**
 	 * Set the modfication returned by ftp directory listings
 	 */
 	public void setTimestamp(long m) {
@@ -71,31 +89,35 @@ public class Attributes extends Observable {
 	
 	private static final NSGregorianDateFormatter shortDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), false);
 	
+	public Date getTimestamp() {
+		return this.modified;
+	}
+	
 	/**
 		* @return the modification date of this file
 	 */
 	public String getTimestampAsString() {
-		try {
-			return longDateFormatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
+		if(this.getTimestamp() != null) {
+			try {
+				return longDateFormatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
+			}
+			catch(NSFormatter.FormattingException e) {
+				e.printStackTrace();
+			}
 		}
-		catch(NSFormatter.FormattingException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return "Unknown";
 	}
 	
 	public String getTimestampAsShortString() {
-		try {
-			return shortDateFormatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
+		if(this.getTimestamp() != null) {
+			try {
+				return shortDateFormatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
+			}
+			catch(NSFormatter.FormattingException e) {
+				e.printStackTrace();
+			}
 		}
-		catch(NSFormatter.FormattingException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public Date getTimestamp() {
-		return this.modified;
+		return "Unknown";
 	}
 
 	public void setPermission(Permission p) {

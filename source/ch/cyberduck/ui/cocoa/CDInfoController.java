@@ -213,7 +213,7 @@ public class CDInfoController extends CDController {
 										   file.attributes.getOwner());
 			int size = 0;
 			for(Iterator i = files.iterator(); i.hasNext();) {
-				size += ((Path)i.next()).getSize();
+				size += ((Path)i.next()).attributes.getSize();
 			}
 			this.sizeField.setStringValue(Status.getSizeAsString(size)+" ("+size+" bytes)");
 			

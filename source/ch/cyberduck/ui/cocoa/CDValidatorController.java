@@ -84,6 +84,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 	}
 
 	protected boolean validateFile(Path path, boolean resumeRequested) {
+		path.reset(); //@todo
 		if(resumeRequested) { // resume existing files independant of settings in preferences
 			path.status.setResume(this.isExisting(path));
 			return true;
@@ -109,10 +110,12 @@ public abstract class CDValidatorController extends AbstractValidator implements
 			}
 			if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
 				log.debug("Apply validation rule to ask:"+path.getName());
-				List parentListing = path.getParent().list(false, true);
-				Path current = (Path)parentListing.get(parentListing.indexOf(path));
-				current.setLocal(path.getLocal());
-				this.prompt(current);
+				//@todo
+//				List parentListing = path.getParent().list(false, true);
+//				Path current = (Path)parentListing.get(parentListing.indexOf(path));
+//				current.setLocal(path.getLocal());
+//				this.prompt(current);
+				this.prompt(path);
 				return false;
 			}
 			throw new IllegalArgumentException("No rules set to validate transfers");
@@ -421,7 +424,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 				if(identifier.equals("REMOTE")) {
 					if(p.getRemote().exists()) {
 						if(p.attributes.isFile()) {
-							return new NSAttributedString(Status.getSizeAsString(p.getSize())+", "+p.attributes.getTimestampAsShortString(), 
+							return new NSAttributedString(Status.getSizeAsString(p.attributes.getSize())+", "+p.attributes.getTimestampAsShortString(), 
 														  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 						}
 						if(p.attributes.isDirectory()) {
@@ -448,7 +451,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 					StringBuffer tooltip = new StringBuffer();
 					if(p.getRemote().exists()) {
 						tooltip.append(NSBundle.localizedString("Remote", "")+":\n"
-						    +"  "+Status.getSizeAsString(p.getSize())+"\n"
+						    +"  "+Status.getSizeAsString(p.attributes.getSize())+"\n"
 						    +"  "+p.attributes.getTimestampAsString());
 					}
 					if(p.getRemote().exists() && p.getLocal().exists())

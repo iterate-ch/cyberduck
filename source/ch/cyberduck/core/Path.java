@@ -36,10 +36,6 @@ public abstract class Path {
 
 	private String path = null;
 	private Local local = null;
-	/**
-		* The file length
-	 */
-	protected long size = -1;
 	
 	public Status status = new Status();
 	public Attributes attributes = new Attributes();
@@ -61,7 +57,6 @@ public abstract class Path {
 		copy.local = this.local;
 		copy.attributes = this.attributes;
 		copy.status = this.status;
-		copy.size = this.size;
 		return copy;
 	}
 
@@ -148,25 +143,7 @@ public abstract class Path {
 		this.path = p;
 	}
 
-	/**
-		* @param size the size of file in bytes.
-	 */
-	public void setSize(long size) {
-//		log.debug("setSize:"+size);
-		this.size = size;
-	}
-	
-	/**
-		* @return length the size of file in bytes.
-	 */
-	public long getSize() {
-		return this.getSize(false);
-	}
-
-	/**
-		* @param force Force to ask the server for the file size nevertheless of any cached values
-	 */
-	public abstract long getSize(boolean force);
+	public abstract void reset();
 	
 	private Path parent;
 	

@@ -102,15 +102,15 @@ public class SFTPPath extends Path {
 		if(refresh || null == files) {
 			files = new ArrayList();
 			session.log("Listing "+this.getAbsolute(), Message.PROGRESS);
-			SftpFile workingDirectory = null;
 			try {
 				session.check();
-				workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
+				SftpFile workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
 				List children = new ArrayList();
 				int read = 1;
 				while(read > 0) {
 					read = session.SFTP.listChildren(workingDirectory, children);
 				}
+				workingDirectory.close();
 				java.util.Iterator i = children.iterator();
 				while(i.hasNext()) {
 					SftpFile x = (SftpFile)i.next();
@@ -119,7 +119,7 @@ public class SFTPPath extends Path {
 							Path p = PathFactory.createPath(session, this.getAbsolute(), x.getFilename());
 							p.attributes.setOwner(x.getAttributes().getUID().toString());
 							p.attributes.setGroup(x.getAttributes().getGID().toString());
-							p.setSize(x.getAttributes().getSize().longValue());
+							p.attributes.setSize(x.getAttributes().getSize().longValue());
 							p.attributes.setTimestamp(Long.parseLong(x.getAttributes().getModifiedTime().toString())*1000L);
 							String permStr = x.getAttributes().getPermissionsString();
 							if(permStr.charAt(0) == 'd') {
@@ -151,19 +151,6 @@ public class SFTPPath extends Path {
 			catch(IOException e) {
 				session.log("IO Error: "+e.getMessage(), Message.ERROR);
 				session.close();
-			}
-			finally {
-				if(workingDirectory != null) {
-					try {
-						workingDirectory.close();
-					}
-					catch(SshException e) {
-						session.log("SSH Error: "+e.getMessage(), Message.ERROR);
-					}
-					catch(IOException e) {
-						session.log("IO Error: "+e.getMessage(), Message.ERROR);
-					}
-				}
 			}
 		}
 		session.callObservers(this);
@@ -217,21 +204,23 @@ public class SFTPPath extends Path {
 		}
 	}
 	
-	public synchronized long getSize(boolean force) {
-		if(force) {
-//			try {
-//				SftpFile f = session.SFTP.openDirectory(this.getAbsolute());
-//				this.size = f.getAttributes().getSize().longValue();
-//			}
-//			catch(SshException e) {
+	public void reset() {
+		if(this.exists()) {
+			try {
+				session.check();
+				SftpFile f = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
+				this.attributes.setSize(f.getAttributes().getSize().longValue());
+				this.attributes.setTimestamp(Long.parseLong(f.getAttributes().getModifiedTime().toString())*1000L);
+				f.close();
+			}
+			catch(SshException e) {
 //				session.log("SSH Error: "+e.getMessage(), Message.ERROR);
-//			}
-//			catch(IOException e) {
-//				session.log("IO Error: "+e.getMessage(), Message.ERROR);
-//				session.close();
-//			}
+			}
+			catch(IOException e) {
+				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.close();
+			}
 		}
-		return this.size;
 	}
 	
 	public synchronized void delete() {
@@ -315,8 +304,8 @@ public class SFTPPath extends Path {
 				if(out == null) {
 					throw new IOException("Unable to buffer data");
 				}
-				SftpFile p = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-				in = new SftpFileInputStream(p);
+				SftpFile f = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
+				in = new SftpFileInputStream(f);
 				if(in == null) {
 					throw new IOException("Unable opening data stream");
 				}
@@ -389,22 +378,22 @@ public class SFTPPath extends Path {
 				if(in == null) {
 					throw new IOException("Unable to buffer data");
 				}
-				SftpFile p = null;
+				SftpFile f = null;
 				if(this.status.isResume()) {
-					p = session.SFTP.openFile(this.getAbsolute(),
+					f = session.SFTP.openFile(this.getAbsolute(),
 											  SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
 											  SftpSubsystemClient.OPEN_APPEND); //File open flag, forces all writes to append data at the end of the file.
 				}
 				else {
-					p = session.SFTP.openFile(this.getAbsolute(),
+					f = session.SFTP.openFile(this.getAbsolute(),
 											  SftpSubsystemClient.OPEN_CREATE | //File open flag, if specified a new file will be created if one does not already exist.
 											  SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
 											  SftpSubsystemClient.OPEN_TRUNCATE); //File open flag, forces an existing file with the same name to be truncated to zero length when creating a file by specifying OPEN_CREATE.
 				}
 				if(this.status.isResume()) {
-					this.status.setCurrent(p.getAttributes().getSize().intValue());
+					this.status.setCurrent(f.getAttributes().getSize().intValue());
 				}
-				out = new SftpFileOutputStream(p);
+				out = new SftpFileOutputStream(f);
 				if(out == null) {
 					throw new IOException("Unable opening data stream");
 				}

@@ -166,7 +166,6 @@ public class NameTransformer {
 		else {
 			log.debug("NameTransformer replace string not contained in: "+transformName);
 		}
-//		return index;
 		return transformName;
 	}		
 	

@@ -1747,7 +1747,7 @@ public class CDBrowserController extends CDController implements Observer {
 					return new NSAttributedString(p.getName(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 				}
 				if(identifier.equals("SIZE")) {
-					return new NSAttributedString(Status.getSizeAsString(p.getSize()), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+					return new NSAttributedString(Status.getSizeAsString(p.attributes.getSize()), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 				}
 				if(identifier.equals("MODIFIED")) {
 					return new NSGregorianDate((double)p.attributes.getTimestamp().getTime()/1000,
@@ -1761,7 +1761,7 @@ public class CDBrowserController extends CDController implements Observer {
 				}
 				if(identifier.equals("TOOLTIP")) {
 					return p.getAbsolute()+"\n"
-					    +Status.getSizeAsString(p.getSize())+"\n"
+					    +Status.getSizeAsString(p.attributes.getSize())+"\n"
 					    +p.attributes.getTimestampAsString();
 				}
 				throw new IllegalArgumentException("Unknown identifier: "+identifier);
@@ -2013,8 +2013,8 @@ public class CDBrowserController extends CDController implements Observer {
 				Collections.sort(this.values(),
 				    new Comparator() {
 					    public int compare(Object o1, Object o2) {
-						    long p1 = ((Path)o1).getSize();
-						    long p2 = ((Path)o2).getSize();
+						    long p1 = ((Path)o1).attributes.getSize();
+						    long p2 = ((Path)o2).attributes.getSize();
 						    if(p1 > p2) {
 							    return higher;
 						    }

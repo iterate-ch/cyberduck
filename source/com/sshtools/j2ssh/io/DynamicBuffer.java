@@ -34,6 +34,7 @@ import java.io.OutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import ch.cyberduck.core.Preferences;
 
 /**
  * <p/>
@@ -55,7 +56,9 @@ public class DynamicBuffer {
     /**
      * Buffer size when the dynamic buffer is opened
      */
-    protected static final int DEFAULT_BUFFER_SIZE = 32768;
+//    protected static final int DEFAULT_BUFFER_SIZE = 32768;
+    protected static final int DEFAULT_BUFFER_SIZE 
+		= Integer.parseInt(Preferences.instance().getProperty("connection.buffer"));
 
     /**
      * The buffer

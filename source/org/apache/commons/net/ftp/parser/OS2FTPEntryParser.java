@@ -125,7 +125,7 @@ public class OS2FTPEntryParser extends RegexFTPFileEntryParserImpl {
 			try {
 				Long theSize = new Long(size.trim());
 				theSize = new Long(String.valueOf(theSize.intValue()));
-				f.setSize(theSize.longValue());
+				f.attributes.setSize(theSize.longValue());
 			}
             catch (NumberFormatException e) {
                 // intentionally do nothing

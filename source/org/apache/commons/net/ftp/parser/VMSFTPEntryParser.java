@@ -142,7 +142,7 @@ public class VMSFTPEntryParser extends RegexFTPFileEntryParserImpl {
 			try {
 				Long theSize = new Long(size);
 				long sizeInBytes = theSize.longValue() * longBlock;
-				f.setSize(sizeInBytes);
+				f.attributes.setSize(sizeInBytes);
 			}
 			catch (NumberFormatException e) {
 				// intentionally do nothing

@@ -68,7 +68,7 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
 	protected boolean validateDirectory(Path path) {
 		if(!path.getLocal().exists()) {
 			//Include the directory as it has to be created before we can download any childs
-			path.setSize(0);
+			path.attributes.setSize(0);
 			return true;
 		}
 		return false;

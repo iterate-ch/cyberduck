@@ -193,21 +193,22 @@ public class FTPPath extends Path {
 		}
 	}
 	
-	public synchronized long getSize(boolean force) {
-		if(force) {
+	public void reset() {
+		if(this.exists()) {
 			try {
-				this.size = this.session.FTP.size(this.getAbsolute());
+				session.check();
+				//@todo session.FTP.setTransferType(FTPTransferType.BINARY);
+				this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()));
+				this.attributes.setSize(session.FTP.size(this.getAbsolute()));
 			}
 			catch(FTPException e) {
-				log.error(e.getMessage());
-				//ignore; SIZE command not recognized
+//				session.log("FTP Error: "+e.getMessage(), Message.ERROR);
 			}
 			catch(IOException e) {
 				session.log("IO Error: "+e.getMessage(), Message.ERROR);
 				session.close();
 			}
 		}
-		return this.size;
 	}
 	
 	public synchronized void delete() {
@@ -475,7 +476,7 @@ public class FTPPath extends Path {
 		try {
 			session.check();
 			if(this.attributes.isFile()) {
-				this.setSize(this.getLocal().getSize());
+				this.attributes.setSize(this.getLocal().getSize());
 				if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
 					if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
 						this.uploadASCII();

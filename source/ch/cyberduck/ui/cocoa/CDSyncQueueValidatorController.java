@@ -97,9 +97,8 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	}
 
 	protected boolean validateFile(Path p, boolean resume) {
-		log.debug("validateFile:"+p);
 		if(p.getRemote().exists() && p.getLocal().exists()) {
-			if (!(p.getRemote().getSize() == p.getLocal().getSize())) {
+			if (!(p.getRemote().attributes.getSize() == p.getLocal().getSize())) {
 				this.prompt(p);
 			}
 		}
@@ -116,7 +115,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		}
 		else {
 			//List the directory in the validation window that the user sees it will get created
-			p.setSize(0);
+			p.attributes.setSize(0);
 			if(!p.getRemote().exists()) {
 				p.getSession().cache().put(p.getAbsolute(), new ArrayList());
 			}
