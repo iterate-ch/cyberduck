@@ -16,7 +16,6 @@
 - [Feature] Czech Localization
 - [Feature] Support for EPFL file listings to support servers running "publicfile" (FTP)
 - [Bugfix] Improved PASV response parsing (FTP)
-- [Bugfix] Better parsing symbolic links
 - [Feature] Supporting SOCKS proxies (not tested)
 - [Feature] Change file permissions on multiple files
 - [Feature] Copy the URL of a remote site
