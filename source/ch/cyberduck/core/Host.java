@@ -153,7 +153,7 @@ public class Host {
 			throw new MalformedURLException("No hostname given");
 		int begin = 0;
 		int cut = 0;
-		if(input.indexOf("://", begin) == -1 || input.indexOf('@', begin) == -1) {
+		if(input.indexOf("://", begin) == -1 && input.indexOf('@', begin) == -1) {
 			throw new MalformedURLException("No protocol or user delimiter");
 		}
 		String protocol = Preferences.instance().getProperty("connection.protocol.default");

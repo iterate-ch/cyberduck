@@ -2105,7 +2105,6 @@ public class CDBrowserController extends CDController implements Observer {
 				}
 				throw new IllegalArgumentException("Unknown identifier: "+identifier);
 			}
-			log.warn("tableViewObjectValueForLocation:return null");
 			return null;
 		}
 
