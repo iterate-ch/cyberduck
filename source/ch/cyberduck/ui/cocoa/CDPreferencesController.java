@@ -28,6 +28,10 @@ import org.apache.log4j.Logger;
 public class CDPreferencesController {
     private static Logger log = Logger.getLogger(CDPreferencesController.class);
 
+    // ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
+
     private NSTextField downloadPathField;
     public void setDownloadPathField(NSTextField downloadPathField) {
 	this.downloadPathField = downloadPathField;
@@ -57,8 +61,15 @@ public class CDPreferencesController {
     public void setWindow(NSWindow window) {
 	this.window = window;
     }
-    
-    public void window() {
 
+    public CDPreferencesController() {
+        if (false == NSApplication.loadNibNamed("Preferences", this)) {
+            log.error("Couldn't load Preferences.nib");
+            return;
+        }
+    }
+
+    public NSWindow window() {
+	return this.window;
     }
 }

@@ -21,12 +21,15 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
+import java.util.Observer;
+import java.util.Observable;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Favorites;
 
 /**
 * @version $Id$
  */
-public class CDFavoritesView extends NSTableView {
+public class CDFavoritesView extends NSTableView implements Observer {
     private static Logger log = Logger.getLogger(CDFavoritesView.class);
 
     private CDFavoritesTableDataSource model = new CDFavoritesTableDataSource();
@@ -58,8 +61,21 @@ public class CDFavoritesView extends NSTableView {
 	this.setDataSource(model);
 	this.setDelegate(this);
 	this.setAutoresizesAllColumnsToFit(true);
+
+	Favorites.instance().addObserver(this);
     }
 
+
+    public void update(Observable o, Object arg) {
+	if(o instanceof Favorites) {
+	    if(arg instanceof Host) {
+		Host h = (Host)arg;
+		model.addEntry(h);
+		this.reloadData();
+	    }
+	}
+    }
+    
     public void reloadData() {
 	super.reloadData();
 	this.setNeedsDisplay(true);

@@ -21,13 +21,16 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
+import ch.cyberduck.core.Path;
 
 /**
 * @version $Id$
  */
 public class CDFolderSheet {
-    private static Logger log = Logger.getLogger(CDLoginSheet.class);
+    private static Logger log = Logger.getLogger(CDFolderSheet.class);
 
+    private Path parent;
+    
     private NSWindow sheet;
     public void setSheet(NSWindow sheet) {
 	this.sheet = sheet;
@@ -38,16 +41,34 @@ public class CDFolderSheet {
 	this.folderField = folderField;
     }
 
-    public void window() {
+    public NSWindow window() {
 	return this.sheet;
+    }
+
+    public CDFolderSheet(Path parent) {
+	this.parent = parent;
+	this.init();
+    }
+
+    private void init() {
+	NSApplication.loadNibNamed("Folder", this);
     }
     
     public void closeSheet(NSObject sender) {
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-	NSApplication.sharedApplication().endSheet(this, ((NSButton)sender).tag());
+	NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
     }
 
-    public String getValue() {
-	return folderField.stringValue();
+    public void newfolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
+        log.debug("newfolderSheetDidEnd");
+	sheet.orderOut(this);
+	switch(returncode) {
+	    case(NSAlertPanel.DefaultReturn):
+//		Path parent = (Path)pathComboBox.getItem(pathComboBox.numberOfItems()-1);
+		parent.mkdir(folderField.stringValue());
+	    case(NSAlertPanel.AlternateReturn):
+		//
+	}
     }
+    
 }

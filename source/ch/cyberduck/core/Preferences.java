@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class Preferences {//extends Properties {
     private static Logger log = Logger.getLogger(Preferences.class);
-    private static java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+//    private static java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 
     private static Preferences current = null;
     private Hashtable defaults;
@@ -45,6 +45,7 @@ public abstract class Preferences {//extends Properties {
      * @return The singleton instance of me.
      */
     public static Preferences instance() {
+	log.debug("instance");
         if(null == current) {
             String strVendor = System.getProperty("java.vendor");
             if(strVendor.indexOf("Apple") != -1)
@@ -179,8 +180,8 @@ public abstract class Preferences {//extends Properties {
         //frame sizes
         defaults.put("frame.width", "560");
         defaults.put("frame.height", "480");
-        defaults.put("frame.x", getXLocation(560));
-        defaults.put("frame.y", getYLocation(480));
+//     @todo   defaults.put("frame.x", getXLocation(560));
+//@todo        defaults.put("frame.y", getYLocation(480));
         defaults.put("transcriptdialog.width", "520");
         defaults.put("transcriptdialog.height", "550");
 //        defaults.put("transcriptdialog.x", getXLocation(520));
@@ -230,11 +231,13 @@ public abstract class Preferences {//extends Properties {
     public abstract void load();
 
     private String getXLocation(int componentWidth) {
-        return new Integer((screenSize.width/2) - (componentWidth/2)).toString();
+	return null;
+//        return new Integer((screenSize.width/2) - (componentWidth/2)).toString();
     }
 
     private String getYLocation(int componentHeight) {
-        return new Integer((screenSize.height/2) - (componentHeight/2)).toString();
+	return null;
+  //@todo      return new Integer((screenSize.height/2) - (componentHeight/2)).toString();
     }
     
 }

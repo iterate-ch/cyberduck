@@ -102,7 +102,7 @@ public class Status extends Observable implements Serializable {
 //        calendar.set(Calendar.MINUTE, 0);
 //      calendar.set(Calendar.SECOND, 0);
 
-	ObserverList.instance().registerObservable(this);
+//	ObserverList.instance().registerObservable(this);
 
         /*
 	 timeLeftTimer = new Timer(1000,
@@ -485,42 +485,4 @@ public class Status extends Observable implements Serializable {
         return message;
     }
      */
-
-
-    /*
-    public String getPanelProperty() {
-        if(this.panelProperty == null)
-            this.panelProperty = this.getDefaultPanelProperty();
-        return this.panelProperty;
-    }
-
-    public String getLastPanelProperty() {
-        if(this.lastPanelProperty == null || this.panelProperty.equals(this.lastPanelProperty))
-            return this.getDefaultPanelProperty();
-        return lastPanelProperty;
-    }
-
-    public String getDefaultPanelProperty() {
-        return PROGRESSPANEL;
-    }
-*/
-
-    // initial panel property
-    /*
-    private String panelProperty;
-    private String lastPanelProperty;
-    
-    public void setPanelProperty(String newPanelProperty) {
-        log.debug("setPanelProperty("+newPanelProperty+")");
-        if(lastPanelProperty != newPanelProperty) {
-            this.lastPanelProperty = this.panelProperty;
-        }
-        if(panelProperty != newPanelProperty) {
-            this.panelProperty = newPanelProperty;
-            this.callObservers(newPanelProperty);
-        }
-    }
-     */
-
-
 }

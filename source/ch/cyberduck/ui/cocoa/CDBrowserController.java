@@ -51,6 +51,7 @@ public class CDBrowserController implements Observer {
     private CDMainWindow mainWindow; // IBOutlet
     public void setMainWindow(CDMainWindow mainWindow) {
 	this.mainWindow = mainWindow;
+	this.mainWindow.setDelegate(this);
     }
 
     private CDBrowserView browserTable; // IBOutlet
@@ -76,7 +77,6 @@ public class CDBrowserController implements Observer {
     private NSProgressIndicator progressIndicator; // IBOutlet
     public void setProgressIndicator(NSProgressIndicator progressIndicator) {
 	this.progressIndicator = progressIndicator;
-//	this.progressIndicator.setIndeterminate(true);
     }
 
     private NSTextField statusLabel; // IBOutlet
@@ -92,7 +92,11 @@ public class CDBrowserController implements Observer {
     
     public CDBrowserController() {
 	super();
-	log.debug("CDMainController");
+	log.debug("CDBrowserController");
+        if (false == NSApplication.loadNibNamed("Browser", this)) {
+            log.error("Couldn't load Browser.nib");
+            return;
+        }
     }
 
     public NSWindow window() {
@@ -142,6 +146,10 @@ public class CDBrowserController implements Observer {
     // Selector methods for the toolbar items
     // ----------------------------------------------------------
 
+    public void toggleDrawer(NSObject sender) {
+	drawer.toggle(this);
+    }
+    
     public void folderButtonPressed(NSObject sender) {
         log.debug("folderButtonPressed");
 	CDFolderSheet sheet = new CDFolderSheet((Path)pathComboBox.getItem(pathComboBox.numberOfItems()-1));
@@ -154,12 +162,6 @@ public class CDBrowserController implements Observer {
 			  new Class[] { NSPanel.class, int.class, Object.class }
 			  ),// did end selector
 					      null); //contextInfo
-    }
-
-    public void newBrowserMenuPressed(NSObject sender) {
-	CDMainController controller = new CDMainController();
-	NSApplication.loadNibNamed("Main", controller);
-	controller.window().makeKeyAndOrderFront(this);
     }
 
 
@@ -254,11 +256,6 @@ public class CDBrowserController implements Observer {
 	controller.connect();
     }
 
-    public void connectMenuPressed(NSObject sender) {
-	log.debug("connectMenuPressed");
-	this.connectButtonPressed(sender);
-    }
-
     public void connectButtonPressed(NSObject sender) {
 	log.debug("connectButtonPressed");
 	CDConnectionSheet sheet = new CDConnectionSheet();
@@ -271,11 +268,6 @@ public class CDBrowserController implements Observer {
 		      new Class[] { NSWindow.class, int.class, NSWindow.class }
 		      ),// did end selector
 					      null); //contextInfo
-    }
-    
-    public void preferencesMenuPressed(NSObject sender) {
-	CDPreferencesController controller = new CDPreferencesController();
-	controller.window().makeKeyAndOrderFront(mainWindow);
     }
     
     public void awakeFromNib() {
@@ -383,37 +375,6 @@ public class CDBrowserController implements Observer {
     }
 
 
-    public void donationSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	log.debug("donationSheetDidEnd");
-	sheet.orderOut(this);
-	switch(returncode) {
-	    case(NSAlertPanel.DefaultReturn):
-		try {
-		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("donate.url")));
-		}
-		catch(java.net.MalformedURLException e) {
-		    e.printStackTrace();
-		}
-	    case(NSAlertPanel.AlternateReturn):
-		//
-	}
-        NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
-    }
-
-    public void closeDonationSheet(NSObject sender) {
-	log.debug("closeDonationSheet");
-	NSApplication.sharedApplication().endSheet(donationSheet, NSAlertPanel.AlternateReturn);
-    }
-
-    public void donateMenuPressed(NSObject sender) {
-	try {
-	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("donate.url")));
-	}
-	catch(java.net.MalformedURLException e) {
-	    e.printStackTrace();
-	}
-    }
-
 
     // ----------------------------------------------------------
     // Window delegate methods
@@ -439,6 +400,7 @@ public class CDBrowserController implements Observer {
 			      sender, // context
 			      "All connections to remote servers will be closed." // message
 			      );
+	//@todo return the actual selection
 	return false;
     }
     

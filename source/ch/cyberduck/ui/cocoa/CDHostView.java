@@ -25,10 +25,12 @@ import java.util.Observer;
 import java.util.Observable;
 import ch.cyberduck.ui.ObserverList;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Favorites;
 import ch.cyberduck.core.Message;
 
 /**
 * @version $Id$
+ * @obsolete
  */
 public class CDHostView extends NSTableView implements Observer {
     private static Logger log = Logger.getLogger(CDHostView.class);
@@ -67,7 +69,7 @@ public class CDHostView extends NSTableView implements Observer {
 	this.setDelegate(this);
 	this.setAutoresizesAllColumnsToFit(true);
 	
-	ObserverList.instance().registerObserver((Observer)this);
+//	ObserverList.instance().registerObserver((Observer)this);
 
 
 //	if(this.tableColumnWithIdentifier("STATUS") != null)
@@ -204,7 +206,7 @@ public class CDHostView extends NSTableView implements Observer {
 
 	    public void cellClicked(NSObject sender) {
 		log.debug("cellClicked");
-//		Favorites.instance().add(model.getEntry(selectedRow());
+		Favorites.instance().add((Host)model.getEntry(selectedRow()));
 	    }
 	}	
     }

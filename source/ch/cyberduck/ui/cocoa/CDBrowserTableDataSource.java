@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDBrowserTableDataSource extends NSObject {
+public class CDBrowserTableDataSource {
     private static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 
     private List data;
@@ -45,7 +45,7 @@ public class CDBrowserTableDataSource extends NSObject {
 
     //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-//	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
+	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
         String identifier = (String)tableColumn.identifier();
         Path p = (Path)data.get(row);
 	if(identifier.equals("TYPE")) {
@@ -155,10 +155,12 @@ public class CDBrowserTableDataSource extends NSObject {
     }
 
     public void addEntry(Object entry, int row) {
+	log.debug("addEntry:"+entry);
 	this.data.add(row, entry);
     }
 
     public void addEntry(Object entry) {
+	log.debug("addEntry:"+entry);
 	this.data.add(entry);
     }
     

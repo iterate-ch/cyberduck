@@ -41,13 +41,15 @@ import org.apache.log4j.Logger;
  * A path is a remote directory or file.
  * @version $Id$
  */
-public abstract class Path extends Observable {
+public abstract class Path {// extends Observable {
     private static Logger log = Logger.getLogger(Path.class);
 
     protected String name = null;
     protected String path = null;
     protected Path parent = null;
+
     private List cache = null;
+    
     public Status status = new Status();
     public Attributes attributes = new Attributes();
 
@@ -65,7 +67,6 @@ public abstract class Path extends Observable {
             this.setPath(path + name);
         else
             this.setPath(path + "/" + name);
-	ObserverList.instance().registerObservable(this);//@todo only register if download
     }
 
     /**
@@ -73,7 +74,6 @@ public abstract class Path extends Observable {
      */
     public Path(String path) {
         this.setPath(path);
-	ObserverList.instance().registerObservable(this);//@todo only register if download
     }
 
     /**
@@ -81,9 +81,12 @@ public abstract class Path extends Observable {
      */
     public void setPath(String pathname) {
 	log.debug("setPath:"+pathname);
+//	if(pathname.charAt(pathname.length()-1) == '/')
+//	    pathname = pathname.substring(0, pathname.length()-2);
         this.path = pathname.trim();
     }
- 
+
+    /*
     public void callObservers(Message arg) {
         log.debug("callObservers:"+arg.toString());
 	log.debug(this.countObservers()+" observers known.");
@@ -93,6 +96,7 @@ public abstract class Path extends Observable {
         long end = System.currentTimeMillis();
 	log.debug((end - start) + " ms");
     }
+     */
 
     /**
 	* @return my parent directory
@@ -222,7 +226,7 @@ public abstract class Path extends Observable {
      */
     public String getName() {
 	if(name == null) {
-	    String abs = getAbsolute();
+	    String abs = this.getAbsolute();
 	    int index = abs.lastIndexOf("/");
 	    name = (index > 0) ? abs.substring(index + 1) : abs;
 	}

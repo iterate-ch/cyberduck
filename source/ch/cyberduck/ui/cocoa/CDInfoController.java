@@ -24,15 +24,17 @@ import org.apache.log4j.Logger;
 import java.util.Observer;
 import java.util.Observable;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Message;
+//import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.ui.ObserverList;
+//import ch.cyberduck.ui.ObserverList;
 
 /**
 * @version $Id$
  */
-public class CDInfoController implements Observer {
+public class CDInfoController {//implements Observer {
     private static Logger log = Logger.getLogger(CDInfoController.class);
+
+    private Path file;
 
     // ----------------------------------------------------------
     // Outlets
@@ -81,23 +83,62 @@ public class CDInfoController implements Observer {
     public void setIconImageView(NSImageView iconImageView) {
 	this.iconImageView = iconImageView;
     }
-    
-    private Path selectedPath;
 
+    private NSWindow window;
+    public void setWindow(NSWindow window) {
+	this.window = window;
+    }
+    
+    
     // ----------------------------------------------------------
     // Constructors
     // ----------------------------------------------------------
     
-    public CDInfoWindow() {
+    public CDInfoController(Path file) {
 	super();
-	log.debug("CDInfoWindow");
+	log.debug("CDInfoController");
+	this.file = file;
+        if (false == NSApplication.loadNibNamed("Info", this)) {
+            log.error("Couldn't load Info.nib");
+            return;
+        }
+	this.init();
     }
 
-    public void awakeFromNib() {
-	log.debug("awakeFromNib");
+    private void init() {
+	this.filenameField.setStringValue(file.getName());
+	this.groupField.setStringValue(file.attributes.getGroup());
+	this.kindField.setStringValue(file.getKind());
+	this.modifiedField.setStringValue(file.attributes.getModified());
+	this.ownerField.setStringValue(file.attributes.getOwner());
+	this.sizeField.setStringValue(file.status.getSizeAsString());
 
-	ObserverList.instance().registerObserver(this);
+	Permission permission = file.attributes.getPermission();
+	boolean[] ownerPerm = permission.getOwnerPermissions();
+	boolean[] groupPerm = permission.getGroupPermissions();
+	boolean[] otherPerm = permission.getOtherPermissions();
+		    //Sets the cell's state to value, which can be NSCell.OnState, NSCell.OffState, or NSCell.MixedState. If necessary, this method also redraws the receiver.
+	ownerr.setState(ownerPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+	ownerw.setState(ownerPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+	ownerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+	groupr.setState(groupPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+	groupw.setState(groupPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+	groupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+	otherr.setState(otherPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+	otherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+	otherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+
+	permissionsBox.setTitle("Permissions | "+permission.getString()+" ("+permission.getCode()+")");
+
+	if(file.isFile()) {
+	    this.iconImageView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
+	}
+	if(file.isDirectory())
+	    this.iconImageView.setImage(NSImage.imageNamed("folder.tiff"));
+
 	
+//	ObserverList.instance().registerObserver(this);
+
 	(NSNotificationCenter.defaultCenter()).addObserver(
 						    this,
 						    new NSSelector("textInputDidEndEditing", new Class[]{NSNotification.class}),
@@ -105,21 +146,22 @@ public class CDInfoController implements Observer {
 						    filenameField);
     }
 
-    public void update(Observable o, Object arg) {
+
+/*    public void update(Observable o, Object arg) {
 	log.debug("update:"+o+","+arg);
 	if(o instanceof Path) {
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.SELECTION)) {
-		    this.selectedPath = (Path)o;
-		    this.filenameField.setStringValue(selectedPath.getName());
-		    this.groupField.setStringValue(selectedPath.attributes.getGroup());
-		    this.kindField.setStringValue(selectedPath.getKind());
-		    this.modifiedField.setStringValue(selectedPath.attributes.getModified());
-		    this.ownerField.setStringValue(selectedPath.attributes.getOwner());
-		    this.sizeField.setStringValue(selectedPath.status.getSizeAsString());
+		    this.file = (Path)o;
+		    this.filenameField.setStringValue(file.getName());
+		    this.groupField.setStringValue(file.attributes.getGroup());
+		    this.kindField.setStringValue(file.getKind());
+		    this.modifiedField.setStringValue(file.attributes.getModified());
+		    this.ownerField.setStringValue(file.attributes.getOwner());
+		    this.sizeField.setStringValue(file.status.getSizeAsString());
 
-		    Permission permission = selectedPath.attributes.getPermission();
+		    Permission permission = file.attributes.getPermission();
 		    boolean[] ownerPerm = permission.getOwnerPermissions();
 		    boolean[] groupPerm = permission.getGroupPermissions();
 		    boolean[] otherPerm = permission.getOtherPermissions();
@@ -136,20 +178,22 @@ public class CDInfoController implements Observer {
 
 		    permissionsBox.setTitle("Permissions | "+permission.getString()+" ("+permission.getCode()+")");
 
-		    if(selectedPath.isFile()) {
-			this.iconImageView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(selectedPath.getExtension()));
+		    if(file.isFile()) {
+			this.iconImageView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
 		    }
-		    if(selectedPath.isDirectory())
+		    if(file.isDirectory())
 			this.iconImageView.setImage(NSImage.imageNamed("folder.tiff"));
 		}
 	    }
 	}
     }
+*/
+
 
     public void textInputDidEndEditing(NSNotification sender) {
 	log.debug("textInputDidEndEditing");
-	if(selectedPath != null)
-	    selectedPath.rename(filenameField.stringValue());
+	if(file != null)
+	    file.rename(filenameField.stringValue());
     }
 
     public void permissionsSelectionChanged(NSObject sender) {
@@ -168,13 +212,13 @@ public class CDInfoController implements Observer {
 	p[Permission.OTHER][Permission.EXECUTE] = otherx.state() == NSCell.OnState;
 
 	Permission permission = new Permission(p);
-	selectedPath.attributes.setPermission(permission);
+	file.attributes.setPermission(permission);
 	
-	selectedPath.changePermissions(permission.getCode());
+	file.changePermissions(permission.getCode());
 	permissionsBox.setTitle("Permissions | "+permission.getString()+" ("+permission.getCode()+")");
     }
 
-    public void showWindow() {
-
+    public NSWindow window() {
+	return this.window;
     }
 }

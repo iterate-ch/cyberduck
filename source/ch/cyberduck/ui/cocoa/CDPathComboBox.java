@@ -69,7 +69,7 @@ public class CDPathComboBox extends NSPopUpButton implements Observer {
 
     public void awakeFromNib() {
     
-    	ObserverList.instance().registerObserver((Observer)this);
+//    	ObserverList.instance().registerObserver((Observer)this);
 
 	this.setTarget(this);
 	this.setAction(new NSSelector("selectionChanged", new Class[]{null}));

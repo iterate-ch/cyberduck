@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 
 /**
 * @version $Id$
+ * @obsolete
  */
 public class CDSplitView extends NSSplitView {
     private static Logger log = Logger.getLogger(CDSplitView.class);

@@ -21,11 +21,12 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
+import ch.cyberduck.core.Login;
 
 /**
 * @version $Id$
  */
-public class CDLoginController {
+public class CDLoginController extends Login {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
     // ----------------------------------------------------------
@@ -51,26 +52,71 @@ public class CDLoginController {
     public void setSheet(NSWindow sheet) {
 	this.sheet = sheet;
     }
+
+
+    public CDLoginController(String user, String pass) {
+	super(user, pass);
+    }
+
+    public CDLoginController() {
+	super();
+    }
     
     public void closeSheet(NSObject sender) {
 	log.debug("closeSheet");
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-	NSApplication.sharedApplication().endSheet(this, ((NSButton)sender).tag());
+	NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
     }
     
-    public void setExplanation(String text) {
-	this.textField.setStringValue(text);
-    }
-
-    public String user() {
-	return userField.stringValue();
-    }
-
-    public String pass() {
-	return passField.stringValue();
-    }
-
     public NSWindow window() {
-	return this.sheet();
+	return this.sheet;
+    }
+
+    
+
+    private boolean done;
+    private boolean tryAgain;
+    public boolean loginFailure(String message) {
+	log.info("Authentication failed");
+	NSApplication.loadNibNamed("Login", this);
+	this.textField.setStringValue(message);
+	NSApplication.sharedApplication().beginSheet(
+					      this.window(), //sheet
+					      null, //docWindow //@todo attach to mainwindow
+					      this, //modalDelegate
+					      new NSSelector(
+			  "loginSheetDidEnd",
+			  new Class[] { NSWindow.class, int.class, NSWindow.class }
+			  ),// did end selector
+					      null); //contextInfo
+	while(!done) {
+	    try {
+		Thread.sleep(500); //milliseconds
+	    }
+	    catch(InterruptedException e) {
+		e.printStackTrace();
+	    }
+	}
+	return tryAgain;
+    }
+
+    /**
+	* Selector method from
+     * @see loginFailure
+     */
+    public void loginSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+	log.info("loginSheetDidEnd");
+	switch(returncode) {
+	    case(NSAlertPanel.DefaultReturn):
+		tryAgain = true;
+		this.setUsername(userField.stringValue());
+		this.setPassword(passField.stringValue());
+		break;
+	    case(NSAlertPanel.AlternateReturn):
+		tryAgain = false;
+		break;
+	}
+	done = true;
+	this.window().close();
     }
 }

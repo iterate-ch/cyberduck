@@ -20,9 +20,19 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.History;
+import ch.cyberduck.core.Favorites;
+import org.apache.log4j.Logger;
 
 public class CDMainController {
+    private static Logger log = Logger.getLogger(CDMainController.class);
 
+
+    public void awakeFromNib() {
+
+    }
+    
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
@@ -32,26 +42,86 @@ public class CDMainController {
 	this.donationSheet = donationSheet;
     }
 
+
+    public void donateMenuPressed(NSObject sender) {
+	try {
+	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("donate.url")));
+	}
+	catch(java.net.MalformedURLException e) {
+	    e.printStackTrace();
+	}
+    }
+
+
+    public void donationSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+	log.debug("donationSheetDidEnd");
+	sheet.orderOut(this);
+	switch(returncode) {
+	    case(NSAlertPanel.DefaultReturn):
+		try {
+		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("donate.url")));
+		}
+		catch(java.net.MalformedURLException e) {
+		    e.printStackTrace();
+		}
+	    case(NSAlertPanel.AlternateReturn):
+		//
+	}
+        NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
+    }
+
+    public void closeDonationSheet(NSObject sender) {
+	log.debug("closeDonationSheet");
+	NSApplication.sharedApplication().endSheet(donationSheet, NSAlertPanel.AlternateReturn);
+    }
+
+
+    public void preferencesMenuPressed(NSObject sender) {
+	CDPreferencesController controller = new CDPreferencesController();
+	controller.window().makeKeyAndOrderFront(null);
+    }
+
+    public void newBrowserMenuPressed(NSObject sender) {
+	CDBrowserController controller = new CDBrowserController();
+	controller.window().makeKeyAndOrderFront(null);
+    }
+
     
-        // ----------------------------------------------------------
+// ----------------------------------------------------------
     // Application delegate methods
     // ----------------------------------------------------------
 
-    public int applicationShouldTerminate(NSObject sender) {
-	log.debug("applicationShouldTerminate");
-	//@todo             NSArray windows = NSApplication.sharedApplication().windows();
 
+    public void applicationDidFinishLaunching (NSNotification notification) {
+        // To get service requests to go to the controller...
+//        NSApplication.sharedApplication().setServicesProvider(this);
+    }
+
+
+//    public boolean applicationOpenFile (NSApplication app, String filename) {
+	//
+  //  }
+
+
+    public int applicationShouldTerminate (NSApplication app) {
+	log.debug("applicationShouldTerminate");
+	NSArray windows = app.windows();
+	java.util.Enumeration i = windows.objectEnumerator();
+	while(i.hasMoreElements()) {
+	    ((NSWindow)i.nextElement()).performClose(this);
+	}
 	Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses"))+1);
         Preferences.instance().save();
 	History.instance().save();
 	Favorites.instance().save();
+	
         NSApplication.loadNibNamed("Donate", this);
         if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 &&
 	   Preferences.instance().getProperty("donate").equals("true")) {
 	    if(Preferences.instance().getProperty("donate").equals("true")) {
 		NSApplication.sharedApplication().beginSheet(
 					       donationSheet,//sheet
-					       mainWindow, //docwindow
+					       null, //docwindow
 					       this, //delegate
 					       new NSSelector(
 			   "donationSheetDidEnd",
@@ -65,9 +135,6 @@ public class CDMainController {
     }
 
     public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
-	log.debug("applicationShouldTerminateAfterLastWindowClosed");
-	return true;
+	return false;
     }
-
-    
 }

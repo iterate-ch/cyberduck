@@ -22,6 +22,10 @@ import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 import org.apache.log4j.Logger;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.Message;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
 * @version $Id$
@@ -29,8 +33,19 @@ import ch.cyberduck.core.Path;
 public class CDTransferController implements Observer {
     private static Logger log = Logger.getLogger(CDTransferController.class);
 
-    private Path transfer;
+    private Path file;
+//@todo open new session for transfer
+    //private Session session;
 
+    // ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
+
+    private NSWindow window;
+    public void setWindow(NSWindow window) {
+	this.window = window;
+    }
+    
     private NSTextField urlField;
     public void setUrlField(NSTextField urlField) {
 	this.urlField = urlField;
@@ -65,33 +80,87 @@ public class CDTransferController implements Observer {
     public void setIconView(NSImageView iconView) {
 	this.iconView = iconView;
     }
+
+    public NSImageView fileIconView;
+    public void setFileIconView(NSImageView fileIconView) {
+	this.fileIconView = fileIconView;
+    }
     
-    public CDTransferController(Path transfer) {
+    public CDTransferController(Path file) {
 	super();
-	this.transfer = transfer;
-	transfer.addObserver(this);
+	this.file = file;
+	//register for events
+	file.status.addObserver(this);
+        if (false == NSApplication.loadNibNamed("Transfer", this)) {
+            log.error("Couldn't load Transfer.nib");
+            return;
+        }
 	this.init();
     }
 
     private void init() {
-	NSApplication.loadNibNamed("Transfer", this);
-
+	this.fileIconView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
+	this.urlField.setStringValue(file.getAbsolute());
+	this.progressBar.setMinValue(0);
+	this.progressBar.setMaxValue(file.status.getSize());
+	
+	//@todo
     }
 
     public void update(Observable o, Object arg) {
-	if(o instanceof Path) {
-	    
+	if(o instanceof Status) {
+	    if(arg instanceof Message) {
+		Message msg = (Message)arg;
+		if(msg.getTitle().equals(Message.DATA)) {
+		    this.progressField.setStringValue(msg.getDescription());
+		    return;
+		}
+		if(msg.getTitle().equals(Message.PROGRESS)) {
+		    //@todo
+		    return;
+		}
+		if(msg.getTitle().equals(Message.ERROR)) {
+
+		    return;
+		}
+		if(msg.getTitle().equals(Message.START)) {
+
+		    return;
+		}
+		if(msg.getTitle().equals(Message.STOP)) {
+
+		    return;
+		}
+		if(msg.getTitle().equals(Message.COMPLETE)) {
+
+		    return;
+		}
+	    }
 	}
     }
 
     public void download() {
-	iconView.setImage(NSImage.imageNamed("download.tiff");
-	this.transfer.download();
+	iconView.setImage(NSImage.imageNamed("download.tiff"));
+	this.file.download();
     }
 
     public void upload() {
-	iconView.setImage(NSImage.imageNamed("upload.tiff");
-	this.transfer.upload();
+	iconView.setImage(NSImage.imageNamed("upload.tiff"));
+//@todo	this.file.upload();
+    }
+
+    public NSWindow window() {
+	return this.window;
+    }
+
+    public void resumeButtonClicked(NSObject sender) {
+	this.stopButton.setEnabled(true);
+	this.resumeButton.setEnabled(false);
+    }
+
+    public void stopButtonClicked(NSObject sender) {
+	this.stopButton.setEnabled(false);
+	this.resumeButton.setEnabled(true);
     }
 }
 

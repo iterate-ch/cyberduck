@@ -34,8 +34,8 @@ public class Host extends Observable {
     private static Logger log = Logger.getLogger(Host.class);
 
     public Login login;
-    private String protocol = Preferences.instance().getProperty("connection.protocol.default");
-    private int port = Integer.parseInt(Preferences.instance().getProperty("connection.port.default"));
+    private String protocol;//@todo = Preferences.instance().getProperty("connection.protocol.default");
+    private int port;// = Integer.parseInt(Preferences.instance().getProperty("connection.port.default"));
     private String name;
     private String workdir;
     private HostKeyVerification hostKeyVerification;
@@ -48,7 +48,7 @@ public class Host extends Observable {
         this.name = name;
 	this.workdir = workdir != null ? workdir : this.workdir;
         this.login = login != null ? login : this.login;
-	ObserverList.instance().registerObservable(this);
+//	ObserverList.instance().registerObservable(this);
 	log.debug(this.toString());
     }
 

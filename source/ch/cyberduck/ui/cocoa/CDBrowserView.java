@@ -40,17 +40,17 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
     private static final float STRIPE_RED = (float)(237.0/255.0);
     private static final float STRIPE_GREEN = (float)(243.0/255.0);
     private static final float STRIPE_BLUE = (float)(254.0/255.0);
-    
+
     private NSColor sStripeColor = null;
 
-    private CDBrowserTableDataSource model = new CDBrowserTableDataSource();
-    
-    public CDBrowserView() {
+    private CDBrowserTableDataSource model;//= new CDBrowserTableDataSource();
+
+	protected CDBrowserView() {
 	super();
 	log.debug("CDBrowserView");
     }
 
-    public CDBrowserView(NSRect frame) {
+    protected CDBrowserView(NSRect frame) {
 	super(frame);
 	log.debug("CDBrowserView");
     }
@@ -65,11 +65,10 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	log.debug("encodeWithCoder");
     }
 
-
-    public Object dataSource() {
-	log.debug("dataSource");
-	return this.model;
-    }
+//    public Object dataSource() {
+//	log.debug("dataSource");
+//	return this.model;
+//    }
     
     /**
 	* Gets called multiple times if this class is references from multiple nib files
@@ -77,15 +76,12 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
 
-	this.setDataSource(model);
+	this.setDataSource(model = new CDBrowserTableDataSource());
 	
-	ObserverList.instance().registerObserver(this);
+//	ObserverList.instance().registerObserver(this);
 	// Registering for File Drops
 	this.registerForDraggedTypes(new NSArray(new Object[] {NSPasteboard.FileContentsPboardType}));
 
-//	if(null == this.model) 
-//	    this.model = (CDBrowserTableDataSource)this.dataSource();
-//	log.debug("CDBrowserTableDataSource:"+model);
 	this.setDelegate(this);
 	this.setTarget(this);
 	this.setDrawsGrid(false);
@@ -112,10 +108,10 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
     
     public void tableViewSelectionDidChange(NSNotification notification) {
 	log.debug("tableViewSelectionDidChange");
-	int row = this.selectedRow();
-	if(row != -1) {
-	    ((Path)model.getEntry(row)).callObservers(new Message(Message.SELECTION));
-	}
+//	int row = this.selectedRow();
+//	if(row != -1) {
+//	    ((Path)model.getEntry(row)).callObservers(new Message(Message.SELECTION));
+//	}
     }
 
     public void update(Observable o, Object arg) {
@@ -141,6 +137,7 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	    if(arg instanceof Path) {
 		List cache = ((Path)arg).cache();
 		java.util.Iterator i = cache.iterator();
+		log.debug("List size:"+cache.size());
 		model.clear();
 		while(i.hasNext()) {
 		    model.addEntry(i.next());
@@ -151,9 +148,10 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
     }
 
     public void reloadData() {
+	log.debug("reloadData");
 	super.reloadData();
-//	this.setNeedsDisplay(true);
-	this.display();
+	this.setNeedsDisplay(true);
+//	this.display();
     }
     
     // ----------------------------------------------------------
@@ -274,90 +272,4 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
     }
  */
 
-
-    // ----------------------------------------------------------
-    // NSDraggingDestination interface methods -OBSOLETE already implemented in superclass
-    // ----------------------------------------------------------
-
-    /**
-	* Invoked when a dragged image enters the destination. Specifically, this method is invoked when the mouse
-     * pointer enters the destination's bounds rectangle (if it is a view object) or its frame
-     * rectangle (if it is a window object).
-     */
-    /*
-    public int draggingEntered(NSDraggingInfo sender) {
-	log.debug("draggingEntered");
-	return NSDraggingInfo.DragOperationCopy;
-    }
-
-    public int draggingUpdated(NSDraggingInfo sender) {
-	log.debug("draggingUpdated");
-	return NSDraggingInfo.DragOperationCopy;
-    }
-
-    public void draggingEnded(NSDraggingInfo sender) {
-	log.debug("draggingEnded");
-	//
-    }
-
-    public void draggingExited(NSDraggingInfo sender) {
-	log.debug("draggingExited");
-	//
-    }
-     */
-
-    /**
-	* Invoked when the image is released, if the most recent draggingEntered or draggingUpdated message
-     * returned an acceptable drag-operation value. Returns true if the receiver agrees to perform the drag operation
-     * and false if not. Use sender to obtain details about the dragging operation.
-     */
-    /*
-    public boolean prepareForDragOperation(NSDraggingInfo sender)  {
-	log.debug("prepareForDragOperation");
-	NSPasteboard pasteboard = sender.draggingPasteboard();
-	if(NSPasteboard.FileContentsPboardType.equals(pasteboard.availableTypeFromArray(new NSArray(NSPasteboard.FileContentsPboardType))))
-	    return true;
-	return false;
-    }
-     */
-
-    /**
-	* Invoked after the released image has been removed from the screen and the previous prepareForDragOperation message
-     * has returned true. The destination should implement this method to do the real work of importing the pasteboard data
-     * represented by the image. If the destination accepts the data, it returns true; otherwise it returns false. The default is
-     * to return false. Use sender to obtain details about the dragging operation.
-     */
-    /*
-    public boolean performDragOperation(NSDraggingInfo sender) {
-	log.debug("performDragOperation");
-	NSPasteboard pasteboard = sender.draggingPasteboard();
-//	NSData data = pasteboard.dataForType(NSPasteboard.FileContentsPboardType);
-//	if(data == null) {
-//	    // error sheet
-//	}
-	NSFileWrapper wrapper = pasteboard.readFileWrapper();
-	String file = wrapper.filename();
-	log.debug("performDragOperation:"+file);
-//	transferController.upload(file);
-
-	
-//	if(wrapper.isRegularFile())
-//	if(wrapper.isDirectory())
-	
-	return true;
-    }
-     */
-
-    /**
-	* Invoked when the dragging operation is complete and the previous performDragOperation returned true. The destination
-     * implements this method to perform any tidying up that it needs to do, such as updating its visual representation
-     * now that it has incorporated the dragged data. This message is the last message sent from sender to the destination
-     * during a dragging session.
-     */
-    /*
-    public void concludeDragOperaton(NSDraggingInfo sender) {
-	log.debug("concludeDragOperaton");
-	//
-    }
-     */
 }
