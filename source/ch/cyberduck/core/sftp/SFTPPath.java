@@ -260,7 +260,7 @@ public class SFTPPath extends Path {
 
 	public synchronized java.util.Date modificationDate() {
         try {
-            session.check();
+            session.check(); //@todo remove
 			//@todo
 			session.log("Idle", Message.STOP);
         }
@@ -272,6 +272,23 @@ public class SFTPPath extends Path {
 		}
 		finally {
 			return this.attributes.getTimestamp();
+		}
+	}
+	
+	public synchronized long size() {
+        try {
+            session.check(); //@todo remove
+			//@todo
+			session.log("Idle", Message.STOP);
+        }
+        catch (SshException e) {
+            session.log("SSH Error: " + e.getMessage(), Message.ERROR);
+        }
+		catch (IOException e) {
+			session.log("IO Error: " + e.getMessage(), Message.ERROR);
+		}
+		finally {
+			return this.status.getSize();
 		}
 	}
 	

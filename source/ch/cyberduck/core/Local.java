@@ -46,6 +46,10 @@ public class Local extends File {
     public Local(String path) {
         super(path);
     }
+	
+	public long size() {
+		return this.length();
+	}
 
     public File getTemp() {
         return this;

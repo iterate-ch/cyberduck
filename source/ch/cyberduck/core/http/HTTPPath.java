@@ -136,6 +136,11 @@ public class HTTPPath extends Path {
 		return null;
 	}
 	
+	public synchronized long size() {
+        session.log("Invalid Operation", Message.ERROR);
+		return -1;
+	}
+	
     public synchronized void download() {
         InputStream in = null;
         OutputStream out = null;

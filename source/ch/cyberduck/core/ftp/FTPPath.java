@@ -254,6 +254,21 @@ public class FTPPath extends Path {
 		}
 	}
 	
+	public synchronized long size() {
+        try {
+			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
+		}
+		catch (FTPException e) {
+			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
+		}
+		catch (IOException e) {
+			session.log("IO Error: " + e.getMessage(), Message.ERROR);
+		}
+		finally {
+			return this.status.getSize();
+		}
+	}
+	
 	public synchronized void changePermissions(Permission perm, boolean recursive) {
 		log.debug("changePermissions:" + perm);
 		String command = "chmod";
@@ -337,7 +352,7 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
-            long size = session.FTP.size(this.getAbsolute());
+            long size = this.size();
             if (size != -1) {
                 this.status.setSize(size);
             }
@@ -410,7 +425,7 @@ public class FTPPath extends Path {
         }
         try {
             session.FTP.setTransferType(FTPTransferType.ASCII);
-            long size = session.FTP.size(this.getAbsolute());
+            long size = this.size();
             if (size != -1) {
                 this.status.setSize(size);
             }
@@ -530,7 +545,7 @@ public class FTPPath extends Path {
             session.FTP.setTransferType(FTPTransferType.BINARY);
             this.status.setSize(this.getLocal().length());
             if (this.status.isResume()) {
-                this.status.setCurrent(session.FTP.size(this.getAbsolute()));
+                this.status.setCurrent(this.size());
             }
             in = new FileInputStream(this.getLocal());
             if (in == null) {
@@ -590,7 +605,7 @@ public class FTPPath extends Path {
             session.FTP.setTransferType(FTPTransferType.ASCII);
             this.status.setSize(this.getLocal().length());
             if (this.status.isResume()) {
-                this.status.setCurrent(session.FTP.size(this.getAbsolute()));
+                this.status.setCurrent(this.size());
             }
             in = new ToNetASCIIInputStream(new FileInputStream(this.getLocal()));
             if (in == null) {

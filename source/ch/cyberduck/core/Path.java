@@ -219,6 +219,8 @@ public abstract class Path {
 
 	public abstract java.util.Date modificationDate();
 
+	public abstract long size();
+
     /**
      * @param recursive Include subdirectories and files
      */

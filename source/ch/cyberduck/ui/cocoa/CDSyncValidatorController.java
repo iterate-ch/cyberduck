@@ -201,9 +201,13 @@ public class CDSyncValidatorController extends CDValidatorController {
 		log.debug("validateFile:"+p);
 		this.reloadData();
 		if(p.remote.exists() && p.local.exists()) {
+			//@todo should we even bother about modification dates at this stage?
+			//@todo modficiation date only relevant if download/upload
 			boolean equal = p.remote.modificationDate().equals(p.local.getTimestamp());
 			log.info(p.getName()+" : Same modification date:"+equal);
-			return !equal;
+			boolean size = (p.remote.size() == p.local.size());
+			log.info(p.getName()+" : Same size:"+size);
+			return !equal && !size;
 		}
 		return true; // Include if mirroring
 	}
@@ -318,10 +322,18 @@ public class CDSyncValidatorController extends CDValidatorController {
 			Path p = (Path)this.workset.get(row);
 			if(p != null) {
 				if (identifier.equals("TYPE")) {
-					if(p.local.getTimestamp().before(p.attributes.getTimestamp())) {
+					if(p.remote.exists() && p.local.exists()) {
+						if(p.local.getTimestamp().before(p.attributes.getTimestamp())) {
+							return arrowDownIcon;
+						}
+						if(p.local.getTimestamp().after(p.attributes.getTimestamp())) {
+							return arrowUpIcon;
+						}
+					}
+					if(p.remote.exists()) {
 						return arrowDownIcon;
 					}
-					if(p.local.getTimestamp().after(p.attributes.getTimestamp())) {
+					if(p.local.exists()) {
 						return arrowUpIcon;
 					}
 					return NSImage.imageNamed("notfound.tiff"); // illegal argument
