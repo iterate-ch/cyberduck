@@ -21,6 +21,8 @@
 - [Feature] Apply permissions recursively
 - [Feature] Option to apply default permissions to transferred files in Preferences
 - [Feature] Option to preserve modification date on download in Preferences
+- [Feature] Switch encoding per browser with menu or toolbar item
+- [Feature] Switch 'Show hidden files' per browser with menu or toolbar item
 - [Feature] Transfer Queue with "Aqua" progress indicator
 - [Feature] Bookmarks of recently connected hosts are saved in ~/Library/Application Support/Cyberduck/History 
 - [Feature] Provide a proxy icon for the connection in the window title bar

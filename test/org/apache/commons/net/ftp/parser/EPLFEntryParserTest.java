@@ -24,8 +24,8 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
 
     public void setUp() {
 		this.parser = new UnixFTPEntryParser();
-		Login login = new Login("localhost", "anonymous", "anonymous@example.net", false);
-		Host host = new Host("localhost", login);
+		Host host = new Host("localhost");
+		host.setCredentials("anonymous", "anonymous@example.net");
 		Session session = SessionFactory.createSession(host);
 		this.parentPath = PathFactory.createPath(session, "/");
     }

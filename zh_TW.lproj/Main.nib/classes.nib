@@ -16,8 +16,9 @@
                 gotoButtonClicked = id; 
                 infoButtonClicked = id; 
                 insideButtonClicked = id; 
-                refreshButtonClicked = id; 
+                reloadButtonClicked = id; 
                 removeBookmarkButtonClicked = id; 
+                showHiddenFilesClicked = id; 
                 showTransferQueueClicked = id; 
                 syncButtonClicked = id; 
                 toggleBookmarkDrawer = id; 
@@ -43,7 +44,7 @@
             }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDMainController"; 
             LANGUAGE = Java; 
-            OUTLETS = {bookmarkMenu = NSMenu; }; 
+            OUTLETS = {bookmarkMenu = NSMenu; encodingMenu = id; }; 
             SUPERCLASS = NSObject; 
         }
     ); 
