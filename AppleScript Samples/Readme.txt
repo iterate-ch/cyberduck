@@ -13,14 +13,17 @@ Installation
 ------------
 
 You can copy the sample scripts to ~/Library/Scripts/. Please keep in mind that you have to modify the scripts to make them usable for you.
+IMPORTANT: It seems that if the script is a folder action script you have to copy the file to ~/Library/Scripts/Folder Action Scripts/ to make it work.  
 
 Samples
 -------
 
 - Upload Sample.scpt
 
+Note: For further information about folder action scripts, see [http://www.apple.com/applescript/folderactions/].
+
 You have to modify this script with the correct connection settings. See the line where the connection is made: [connect to "hostname" with protocol "ftp" as user "username" with initial folder "directory"].
-You must attach this script to a folder in the 'Finder' (called 'Folder Action'). Right-click on a directory in the Finder, e.g. 'Upload' on the Desktop, and choose 'Attach Folder Action...'. Select the 'Upload Sample.scpt' script in ~/Library/Scripts/. 
+You must attach this script to a folder in the 'Finder' (called 'Folder Action'). Right-click on a directory in the Finder, e.g. 'Upload' on the Desktop, and choose 'Attach Folder Action...'. Select the 'Upload Sample.scpt' script in ~/Library/Scripts/Folder Action Scripts/. 
 Every file dropped onto this folder will then be uploaded to the server specified above.
 
 - Edit Sample.scpt
