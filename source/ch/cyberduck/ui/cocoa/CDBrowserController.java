@@ -2255,10 +2255,11 @@ public class CDBrowserController extends CDController implements Observer {
 				tableView.dragPromisedFilesOfTypes(fileTypes, imageRect, this, true, event);
 			}
 			// we return false because we don't want the table to draw the drag image
-			return false;
+			return true;
 		}
 
 		public int draggingSourceOperationMaskForLocal(boolean local) {
+			log.debug("draggingSourceOperationMaskForLocal:"+local);
 			if(local)
 				return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
 			return NSDraggingInfo.DragOperationCopy;
@@ -2266,10 +2267,10 @@ public class CDBrowserController extends CDController implements Observer {
 
 		/**
 		 * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-		 *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-		 *         Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
-		 *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
-		 *         blocking the destination application.
+		 * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+		 * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
+		 * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
+		 * blocking the destination application.
 		 */
 		public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
 			log.debug("namesOfPromisedFilesDroppedAtDestination:"+dropDestination);
@@ -2280,17 +2281,16 @@ public class CDBrowserController extends CDController implements Observer {
 					try {
 						this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
 						    this.promisedDragPaths[i].getName()));
-//						if(this.promisedDragPaths[i].getLocal().getParent().equals(System.getProperty("user.home")+"/.Trash")) {
-//							deleteFileButtonClicked(this.promisedDragPaths[i].copy(workdir().getSession()));
-//						}
-//						else {
+//						this.promisedDragPaths[i].getLocal().createNewFile();
 						q.addRoot(this.promisedDragPaths[i]);
 						promisedDragNames.addObject(this.promisedDragPaths[i].getName());
-//						}
 					}
 					catch(java.io.UnsupportedEncodingException e) {
 						log.error(e.getMessage());
 					}
+//					catch(java.io.IOException e) {
+//						log.error(e.getMessage());
+//					}
 				}
 				if(q.numberOfRoots() > 0) {
 					CDQueueController.instance().startItem(q);
