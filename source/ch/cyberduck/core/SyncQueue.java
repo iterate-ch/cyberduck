@@ -29,14 +29,6 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
  */
 public class SyncQueue extends Queue {
 
-	public SyncQueue() {
-		super();
-	}
-
-	public SyncQueue(java.util.Observer callback) {
-		super(callback);
-	}
-
 	public NSMutableDictionary getAsDictionary() {
 		NSMutableDictionary dict = super.getAsDictionary();
 		dict.setObjectForKey(Queue.KIND_SYNC+"", "Kind");

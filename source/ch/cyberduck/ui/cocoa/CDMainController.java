@@ -601,6 +601,7 @@ public class CDMainController extends NSObject {
 
 	public static CDBrowserController newDocument() {
 		CDBrowserController controller = new CDBrowserController();
+		controller.window().makeKeyAndOrderFront(null);
 		NSPoint origin = controller.window().frame().origin();
 		if(null == cascadedWindowPoint) {
 			cascadedWindowPoint = new NSPoint(origin.x(), origin.y());
@@ -608,7 +609,6 @@ public class CDMainController extends NSObject {
 		controller.window().setFrameTopLeftPoint(cascadedWindowPoint);
 		// move point for next window
 		cascadedWindowPoint = controller.window().cascadeTopLeftFromPoint(cascadedWindowPoint);
-		controller.window().makeKeyAndOrderFront(null);
 		return controller;
 	}
 
