@@ -71,8 +71,9 @@ public class Login {
 	private String service;
 	private String user;
 	private transient String pass;
-	private LoginController controller;
 	private String privateKeyFile;
+	
+	private LoginController controller;
 
 	/**
 	 * New instance with default values. Anonymous login.

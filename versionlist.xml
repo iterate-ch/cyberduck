@@ -14,6 +14,7 @@
 - Bookmark editor allows to specify the port number
 - When a bookmark is edited, the properties are updated in the bookmark drawer instantly
 - A confirmation dialog is displayed before deleting a bookmark
+- A confirmation dialog is displayed when connecting to a new site in a browser still connected to another host
 
 2.2b4
 - Fixed a bug that with some FTP servers the permissions could not be modified

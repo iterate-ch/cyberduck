@@ -369,8 +369,6 @@ public class CDBrowserController implements Observer {
 		this.bookmarkDrawer.open();
 		CDBookmarkController controller = new CDBookmarkController(bookmarkTable, 
 																   CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow()));
-//		controller.window().makeKeyAndOrderFront(null);
-//		this.bookmarkTable.reloadData();
 	}
 
 	private NSButton addBookmarkButton; // IBOutlet
@@ -395,8 +393,6 @@ public class CDBrowserController implements Observer {
 		}
 		CDBookmarksImpl.instance().addItem(item);
 		CDBookmarkController controller = new CDBookmarkController(bookmarkTable, item);
-//		this.window().makeKeyAndOrderFront(null);
-//		this.bookmarkTable.reloadData();
 	}
 
 	private NSButton removeBookmarkButton; // IBOutlet
@@ -412,10 +408,10 @@ public class CDBrowserController implements Observer {
 
 	public void removeBookmarkButtonClicked(Object sender) {
 		this.bookmarkDrawer.open();
-		switch(NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark"), 
-											 NSBundle.localizedString("Do you want to delete the selected bookmark?"), 
-											 NSBundle.localizedString("Delete"), 
-											 NSBundle.localizedString("Cancel"),
+		switch(NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", null), 
+											 NSBundle.localizedString("Do you want to delete the selected bookmark?", null), 
+											 NSBundle.localizedString("Delete", null), 
+											 NSBundle.localizedString("Cancel", null),
 											 null)) {
 			case NSAlertPanel.DefaultReturn :
 				CDBookmarksImpl.instance().removeItem(bookmarkTable.selectedRow());
@@ -794,45 +790,11 @@ public class CDBrowserController implements Observer {
 	}
 
 	public void disconnectButtonClicked(Object sender) {
-		this.unmount();
-	}
-
-	public void mount(Host host) {
-		log.debug("mount:" + host);
-		this.unmount();
-
-		Session session = SessionFactory.createSession(host);
-		session.addObserver((Observer) this);
-		session.addObserver((Observer) pathController);
-
-		progressIndicator.startAnimation(this);
-		pathController.removeAllItems();
-		browserModel.clear();
-		browserTable.reloadData();
-		this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
-
-		if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
-			try {
-				host.setHostKeyVerificationController(new CDHostKeyController(this.window));
-			}
-			catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
-				//This exception is thrown whenever an exception occurs open or reading from the host file.
-				NSAlertPanel.beginCriticalAlertSheet(
-				    NSBundle.localizedString("Error", "Alert sheet title"), //title
-				    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-				    null, //alternative button
-				    null, //other button
-				    this.window, //docWindow
-				    null, //modalDelegate
-				    null, //didEndSelector
-				    null, // dismiss selector
-				    null, // context
-				    NSBundle.localizedString("Could not open or read the host file", "Alert sheet text") + ": " + e.getMessage() // message
-				);
-			}
-		}
-		host.getLogin().setController(new CDLoginController(this.window));
-		session.mount();
+		this.unmount(new NSSelector(
+									"closeSheetDidEnd",
+									new Class[] { NSWindow.class, int.class, Object.class }
+									), null // end selector
+					 );
 	}
 
 	public boolean isMounted() {
@@ -845,42 +807,110 @@ public class CDBrowserController implements Observer {
 		return false;
 	}
 
-	public void unmount() {
-		log.debug("unmount");
-		if (this.isConnected()) {
-			pathController.workdir().getSession().close();
+	public void mount(Host host) {
+		log.debug("mount:"+host);
+		if(this.unmount(new NSSelector(
+									"mountSheetDidEnd",
+									new Class[] { NSWindow.class, int.class, Object.class }
+									), host// end selector
+						)) {
+			Session session = SessionFactory.createSession(host);
+			session.addObserver((Observer) this);
+			session.addObserver((Observer) pathController);
+			
+			progressIndicator.startAnimation(this);
+			pathController.removeAllItems();
+			browserModel.clear();
+			browserTable.reloadData();
+			this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
+			
+			if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
+				try {
+					host.setHostKeyVerificationController(new CDHostKeyController(this.window));
+				}
+				catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
+					//This exception is thrown whenever an exception occurs open or reading from the host file.
+					NSAlertPanel.beginCriticalAlertSheet(
+														 NSBundle.localizedString("Error", "Alert sheet title"), //title
+														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+														 null, //alternative button
+														 null, //other button
+														 this.window, //docWindow
+														 null, //modalDelegate
+														 null, //didEndSelector
+														 null, // dismiss selector
+														 null, // context
+														 NSBundle.localizedString("Could not open or read the host file", "Alert sheet text") + ": " + e.getMessage() // message
+														 );
+				}
+			}
+			host.getLogin().setController(new CDLoginController(this.window));
+			session.mount();
 		}
 	}
 
+	public void mountSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+		this.unmountSheetDidEnd(sheet, returncode, contextInfo);
+		if (returncode == NSAlertPanel.DefaultReturn) {
+			this.mount((Host)contextInfo);
+		}
+	}
+
+	/**
+	* @return True if the unmount process has finished, false if the user has to agree first
+	 */
+	public boolean unmount(NSSelector selector, Host context) {
+		log.debug("unmount");
+		if (this.isConnected()) {
+			NSAlertPanel.beginCriticalAlertSheet(
+												 NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + pathController.workdir().getSession().getHost().getHostname(), //title
+												 NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
+												 NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+												 null, //other button
+												 this.window(), //window
+												 this, //delegate
+												 selector,
+												 null, // dismiss selector
+												 context, // context
+												 NSBundle.localizedString("The connection will be closed.", "Alert sheet text") // message
+												 );
+			return false;
+//			pathController.workdir().getSession().close();
+		}
+		return true;
+	}
+
+	public void unmountSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+		sheet.orderOut(null);
+		if (returncode == NSAlertPanel.DefaultReturn) {
+			pathController.workdir().getSession().close();
+			pathController.workdir().getSession().deleteObserver((Observer) this);
+			pathController.workdir().getSession().deleteObserver((Observer) pathController);
+		}
+	}
 
 	// ----------------------------------------------------------
 	// Window delegate methods
 	// ----------------------------------------------------------
 
 	public boolean windowShouldClose(NSWindow sender) {
-		if (this.isConnected()) {
-			NSAlertPanel.beginCriticalAlertSheet(
-			    NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + pathController.workdir().getSession().getHost().getHostname(), //title
-			    NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
-			    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
-			    null, //other button
-			    sender, //window
-			    this, //delegate
-			    new NSSelector
-			        (
-			            "closeSheetDidEnd",
-			            new Class[]
-			            {
-				            NSWindow.class, int.class, Object.class
-			            }
-			        ), // end selector
-			    null, // dismiss selector
-			    null, // context
-			    NSBundle.localizedString("The connection will be closed.", "Alert sheet text") // message
-			);
-			return false;
+//		if (this.isConnected()) {
+		return this.unmount(new NSSelector(
+										"closeSheetDidEnd",
+										new Class[] { NSWindow.class, int.class, Object.class }
+										), null // end selector
+						 );
+//			return false;
+//		}
+//		return true;
+	}
+
+	public void closeSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+		this.unmountSheetDidEnd(sheet, returncode, contextInfo);
+		if (returncode == NSAlertPanel.DefaultReturn) {
+//			this.unmount();
+			this.window.close();
 		}
-		return true;
 	}
 
 	public void windowWillClose(NSNotification notification) {
@@ -892,19 +922,6 @@ public class CDBrowserController implements Observer {
 		instances.removeObject(this);
 	}
 
-
-	// ----------------------------------------------------------
-	// IB action methods
-	// ----------------------------------------------------------
-
-	public void closeSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-		// if multi window app only close the one window with main.close()
-		sheet.orderOut(null);
-		if (returncode == NSAlertPanel.DefaultReturn) {
-			this.unmount();
-			this.window.close();
-		}
-	}
 
 	public boolean validateMenuItem(_NSObsoleteMenuItemProtocol cell) {
 		//	log.debug("validateMenuItem:"+aCell);
