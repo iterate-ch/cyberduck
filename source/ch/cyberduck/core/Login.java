@@ -69,10 +69,10 @@ public class Login {
 	/**
 		* @see #getInternetPasswordFromKeychain
 	 */
-	public native String getInternetPasswordFromKeychain(String protocol, String serviceName, String user);
+	public native String getInternetPasswordFromKeychain(String protocol, String serviceName, int port, String user);
 
 	public String getInternetPasswordFromKeychain() {
-		return this.getInternetPasswordFromKeychain(this.protocol, this.serviceName, this.getUsername());
+		return this.getInternetPasswordFromKeychain(this.protocol, this.serviceName, this.port, this.getUsername());
 	}
 	
 	/**
