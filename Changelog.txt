@@ -51,7 +51,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] Change file permissions on multiple files
 - [Feature] Copy the URL of a remote site
 - [Bugfix] Use date formatting rules set in the System Preferences
-- [Featuer] Preference item to set the action when double-clicking files (Download or edit)
+- [Feature] Preference item to set the action when double-clicking files (Download or edit)
 - [Bugfix] Remembering the position of the browser window
 - [Bugfix] Compatibility with servers not supporting the SIZE command (FTP)
 

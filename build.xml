@@ -203,13 +203,6 @@
 				<include name="org/apache/commons/net/**/*.class"/>
 			</fileset>
 		</jar>
-		<jar jarfile="${build}/http.jar"
-			update="yes"
-			manifest="${build}/MANIFEST.MF">
-			<fileset dir="${build.classes}">
-				<include name="org/apache/commons/httpclient/**/*.class"/>
-			</fileset>
-		</jar>
 	</target>
   
 
