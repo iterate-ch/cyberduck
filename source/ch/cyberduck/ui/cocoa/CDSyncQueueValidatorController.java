@@ -46,7 +46,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		}
 	}
 
-	private CDSyncQueueValidatorController(CDController windowController) {
+	private CDSyncQueueValidatorController(CDWindowController windowController) {
 		super(windowController);
 	}
 

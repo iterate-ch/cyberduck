@@ -33,7 +33,7 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 /**
  * @version $Id$
  */
-public class CDBrowserController extends CDController implements Observer {
+public class CDBrowserController extends CDWindowController implements Observer {
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
     private static final File HISTORY_FOLDER = new File(
@@ -338,7 +338,8 @@ public class CDBrowserController extends CDController implements Observer {
     }
 
     public void awakeFromNib() {
-        log.debug("awakeFromNib");
+        super.awakeFromNib();
+
         this._updateBrowserTableColumns();
 
         // Configure window
@@ -431,7 +432,7 @@ public class CDBrowserController extends CDController implements Observer {
 				break;
 			}
 			case COLUMN_VIEW: {
-				ThreadUtilities.instance().invokeLater(new Runnable() {
+				this.invoke(new Runnable() {
 					public void run() {
 						if(isMounted()) {
 							browserColumnView.setPath(workdir().getAbsolute());
@@ -651,7 +652,7 @@ public class CDBrowserController extends CDController implements Observer {
                 this.progressIndicator.startAnimation(this);
                 this.statusIcon.setImage(null);
                 this.statusIcon.setNeedsDisplay(true);
-                ThreadUtilities.instance().invokeLater(new Runnable() {
+                this.invoke(new Runnable() {
                     public void run() {
                         CDBrowserController.this.toolbar.validateVisibleItems();
                     }
@@ -661,7 +662,7 @@ public class CDBrowserController extends CDController implements Observer {
                 this.progressIndicator.stopAnimation(this);
                 this.statusIcon.setImage(null);
                 this.statusIcon.setNeedsDisplay(true);
-                ThreadUtilities.instance().invokeLater(new Runnable() {
+                this.invoke(new Runnable() {
                     public void run() {
                         CDBrowserController.this.toolbar.validateVisibleItems();
                     }
@@ -671,7 +672,7 @@ public class CDBrowserController extends CDController implements Observer {
                 this.statusIcon.setImage(null);
                 this.statusIcon.display();
                 this.progressIndicator.startAnimation(this);
-                ThreadUtilities.instance().invokeLater(new Runnable() {
+                this.invoke(new Runnable() {
                     public void run() {
                         CDBrowserController.this.toolbar.validateVisibleItems();
                     }
@@ -682,7 +683,7 @@ public class CDBrowserController extends CDController implements Observer {
                 this.statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                 this.statusLabel.display();
-                ThreadUtilities.instance().invokeLater(new Runnable() {
+                this.invoke(new Runnable() {
                     public void run() {
                         CDBrowserController.this.toolbar.validateVisibleItems();
                     }

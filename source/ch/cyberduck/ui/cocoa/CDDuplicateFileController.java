@@ -48,6 +48,8 @@ public class CDDuplicateFileController extends CDFileController {
 	}
 	
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		NSImage icon = CDIconCache.instance().get(this.file.getExtension());
 		icon.setSize(new NSSize(64f, 64f));
 		this.iconView.setImage(icon);

@@ -29,7 +29,7 @@ import ch.cyberduck.core.Session;
 /**
  * @version $Id$
  */
-public class CDBookmarkController extends CDController {
+public class CDBookmarkController extends CDWindowController {
 	private static Logger log = Logger.getLogger(CDBookmarkController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -191,7 +191,8 @@ public class CDBookmarkController extends CDController {
 	}
 
 	public void awakeFromNib() {
-		log.debug("awakeFromNib");
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(true);
 		this.cascade();
 		this.window().setTitle(this.host.getNickname());

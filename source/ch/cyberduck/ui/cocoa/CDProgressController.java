@@ -34,7 +34,7 @@ import ch.cyberduck.core.Queue;
 /**
  * @version $Id$
  */
-public class CDProgressController extends NSObject implements Observer {
+public class CDProgressController extends CDController implements Observer {
 	private static Logger log = Logger.getLogger(CDProgressController.class);
 
 	private String statusText = "";
@@ -75,6 +75,8 @@ public class CDProgressController extends NSObject implements Observer {
 	}
 
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
 		    TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
 		this.updateProgressfield();
@@ -103,7 +105,7 @@ public class CDProgressController extends NSObject implements Observer {
 				    new NSSelector("update", new Class[]{NSTimer.class}),
 				    getQueue(), //userInfo
 				    true); //repeating
-				ThreadUtilities.instance().invokeLater(new Runnable() {
+				this.invoke(new Runnable() {
 					public void run() {
 						NSRunLoop.currentRunLoop().addTimerForMode(progressTimer,
 						    NSRunLoop.DefaultRunLoopMode);

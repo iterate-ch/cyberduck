@@ -31,7 +31,7 @@ import ch.cyberduck.core.Queue;
 /**
  * @version $Id$
  */
-public class CDQueueController extends CDController {
+public class CDQueueController extends CDWindowController {
 	private static Logger log = Logger.getLogger(CDQueueController.class);
 
 	private static CDQueueController instance;
@@ -256,14 +256,14 @@ public class CDQueueController extends CDController {
 			public void update(final java.util.Observable o, final Object arg) {
 				Message msg = (Message)arg;
 				if(msg.getTitle().equals(Message.QUEUE_START)) {
-					ThreadUtilities.instance().invokeLater(new Runnable() {
+					CDQueueController.this.invoke(new Runnable() {
 						public void run() {
 							toolbar.validateVisibleItems();
 						}
 					});
 				}
 				if(msg.getTitle().equals(Message.QUEUE_STOP)) {
-					ThreadUtilities.instance().invokeLater(new Runnable() {
+					CDQueueController.this.invoke(new Runnable() {
 						public void run() {
 							toolbar.validateVisibleItems();
 							int row = queueTable.selectedRow();
@@ -300,6 +300,8 @@ public class CDQueueController extends CDController {
 	}
 
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		this.toolbar = new NSToolbar("Queue Toolbar");
 		this.toolbar.setDelegate(this);
 		this.toolbar.setAllowsUserCustomization(true);

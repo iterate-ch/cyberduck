@@ -34,12 +34,14 @@ import ch.cyberduck.core.Path;
 /**
  * @version $Id$
  */
-public class CDGotoController extends CDController {
+public class CDGotoController extends CDWindowController {
 	private static Logger log = Logger.getLogger(CDGotoController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
 
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(true);
 		this.folderCombobox.setStringValue(workdir.getAbsolute());
 	}

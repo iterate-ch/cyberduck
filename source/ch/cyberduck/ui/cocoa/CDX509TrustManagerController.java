@@ -73,14 +73,14 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 		return this.sheet;
 	}
 
-    private CDController windowController;
+    private CDWindowController windowController;
 
     private boolean allowServerCertificate = false;
     private boolean allowClientCertificate = false;
 
     private KeyStore keystore = null;
 
-    public CDX509TrustManagerController(CDController windowController) {
+    public CDX509TrustManagerController(CDWindowController windowController) {
         this.windowController = windowController;
         instances.addObject(this);
         if(false == NSApplication.loadNibNamed("Certificate", this)) {

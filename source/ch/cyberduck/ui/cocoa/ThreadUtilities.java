@@ -41,16 +41,16 @@ public class ThreadUtilities {
 		return instance;
 	}
 	
-	public synchronized void invokeLater(Runnable thread) {
-		//log.debug("invokeLater:"+thread);
-		this.queue.add(thread);
-	}
-
-	public synchronized Runnable next() {
-		//log.debug("Size of thread queue:"+queue.size()+" objects waiting for removal");
-		if(this.queue.isEmpty()) {
-			return null;
-		}
-		return (Runnable)this.queue.remove(0);
-	}
+//	public synchronized void invokeLater(Runnable thread) {
+//		//log.debug("invokeLater:"+thread);
+//		this.queue.add(thread);
+//	}
+//
+//	public synchronized Runnable next() {
+//		//log.debug("Size of thread queue:"+queue.size()+" objects waiting for removal");
+//		if(this.queue.isEmpty()) {
+//			return null;
+//		}
+//		return (Runnable)this.queue.remove(0);
+//	}
 }

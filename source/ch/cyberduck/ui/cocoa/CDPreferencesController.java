@@ -32,7 +32,7 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 /**
  * @version $Id$
  */
-public class CDPreferencesController extends CDController {
+public class CDPreferencesController extends CDWindowController {
 	private static Logger log = Logger.getLogger(CDPreferencesController.class);
 
 	private static CDPreferencesController instance;
@@ -55,7 +55,8 @@ public class CDPreferencesController extends CDController {
 	}
 
 	public void awakeFromNib() {
-		log.debug("awakeFromNib");
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(true);
 		this.window().center();
 		this.transfermodeComboboxClicked(this.transfermodeCombobox);

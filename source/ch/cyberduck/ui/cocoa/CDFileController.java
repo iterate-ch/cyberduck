@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public abstract class CDFileController extends CDController {
+public abstract class CDFileController extends CDWindowController {
 	protected static Logger log = Logger.getLogger(CDFileController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -42,6 +42,8 @@ public abstract class CDFileController extends CDController {
 	}
 
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(true);
 	}
 
