@@ -3,9 +3,9 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.1beta2</string>
+	<string>2.1beta4</string>
 	<key>file</key>
-	<string>Cyberduck-2.1beta2.dmg.gz</string>
+	<string>Cyberduck-2.1beta4.dmg</string>
 	<key>comment</key>
         <string>Changelog:
 2.1beta4

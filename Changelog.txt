@@ -10,7 +10,7 @@ File deletion and renaming, checking and changing of permissions is possible wit
 - Cyberduck now has the official creator code 'CYCK' and can handle URL events from other applications. See "http://www.monkeyfood.com/software/moreInternet/" to configure Cyberduck as the default FTP helper application.
 - Smaller bug fixes.
 
-http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1beta4.dmg.gz
+http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1beta4.dmg
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta4.tar.gz
 
 2.1beta3
