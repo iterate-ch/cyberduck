@@ -112,7 +112,7 @@ public class CDInfoController {//implements Observer {
 	this.kindField.setStringValue(file.getKind());
 	this.modifiedField.setStringValue(file.attributes.getModified());
 	this.ownerField.setStringValue(file.attributes.getOwner());
-	this.sizeField.setStringValue(file.status.getSizeAsString());
+	this.sizeField.setStringValue(file.getSizeAsString());
 
 	Permission permission = file.attributes.getPermission();
 	boolean[] ownerPerm = permission.getOwnerPermissions();

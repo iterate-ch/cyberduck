@@ -44,15 +44,6 @@ public abstract class Path {// extends Observable {
     public static String FOLDER = "FOLDER";
     public static String LINK = "LINK";
 
-    /**
-	* Download is resumable
-     */
-    private transient boolean resume = false;
-
-    /**
-     * The file length
-     */
-    private int size = -1;
     
     /**
 	* A remote path where nothing is known about a local equivalent.
@@ -246,44 +237,6 @@ public abstract class Path {// extends Observable {
 	return this.local;
     }
 
-
-    /**
-	* @ param size the size of file in bytes.
-     */
-    public void setSize(int size) {
-	//	log.debug("setSize:"+size);
-	this.size = size;
-    }
-
-    /**
-	* @ return length the size of file in bytes.
-     */
-    public int getSize() {
-//	log.debug("getSize:"+size);
-	return size;
-    }
-
-    private static final int KILO = 1024; //2^10
-    private static final int MEGA = 1048576; // 2^20
-    private static final int GIGA = 1073741824; // 2^30
-
-    /**
-	* @return The size of the file
-     */
-    public String getSizeAsString() {
-	if(size < KILO) {
-	    return size + " B";
-	}
-	else if(size < MEGA) {
-	    return new Double(size/KILO).intValue() + " KB";
-	}
-	else if(size < GIGA) {
-	    return new Double(size/MEGA).intValue() + " MB";
-	}
-	else {
-	    return new Double(size/GIGA).intValue() + " GB";
-	}
-    }
     
 //    public BoundedRangeModel getProgressModel() {
 //	DefaultBoundedRangeModel m = null;

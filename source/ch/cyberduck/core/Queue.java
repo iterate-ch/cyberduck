@@ -42,14 +42,27 @@ public class Queue extends Observable implements Observer { //Thread {
     public static final int KIND_DOWNLOAD = 0;
     public static final int KIND_UPLOAD = 1;
 
+    /**
+	* The elements (jobs to process) of the queue
+     */
     private Vector files = new java.util.Vector();
-//    private Observer observer;
+    /**
+	* What kind of queue, either upload or download
+     */
     private int kind;
-    //number of completed transfers
-//    private int numberOfCompletedJobs = 0;
+    /**
+	* Number of completed jobs in the queue
+     */
+    private int completedJobs = 0;
+    /**
+	* The file currently beeing processed in the queue
+     */
     private Path candidate;
 
-    private boolean canceled;
+    /**
+	* The queue has been stopped from processing for any reason
+     */
+    private boolean stopped;
     /*
      * 	c speed (bytes/second)
      */
@@ -58,7 +71,6 @@ public class Queue extends Observable implements Observer { //Thread {
      * overall speed (bytes/second)
      */
     private transient double overall = 0;
-
     /**
 	* The size of all files accumulated
      */
@@ -94,23 +106,6 @@ public class Queue extends Observable implements Observer { //Thread {
     }
 
     
-    public static double parseDouble(double d) {
-        //log.debug("parseDouble(" + d + ")");
-        String s = Double.toString(d);
-        if(s.indexOf(".") != -1) {
-            int l = s.substring(s.indexOf(".")).length();
-            if(l > 3) {
-                return Double.parseDouble(s.substring(0, s.indexOf('.') + 3));
-            }
-            else {
-                return Double.parseDouble(s.substring(0, s.indexOf('.') + l));
-            }
-        }
-        else {
-            return d;
-        }
-    }
-    
     private String parseTime(int t) {
 	if(t > 9) {
 	    return String.valueOf(t);
@@ -127,7 +122,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	this.callObservers(new Message(Message.START));
 	this.speed = 0;
 	this.overall = 0;
-	this.canceled = false;
+	this.stopped = false;
 //	this.current = this.isResume() ? current : 0;
 	new Thread() {
 	    public void run() {
@@ -233,9 +228,10 @@ public class Queue extends Observable implements Observer { //Thread {
 		//Iterating over all the files in the queue
 		Iterator i = files.iterator();
 		candidate = null;
-		while(i.hasNext() && !isCanceled()) {
+		while(i.hasNext() && !isStopped()) {
 		    candidate = (Path)i.next();
-//		    candidate.status.addObserver(this);
+		    callObservers(new Message(Message.PROGRESS, "Downloading "+this.getName()+" ("+remainingJobs()+1+" of "+numberOfJobs()+")"));
+		    candidate.status.addObserver(Queue.this);
 		    candidate.getSession().addObserver(Queue.this);
 		    switch(kind) {
 			case KIND_DOWNLOAD:
@@ -245,13 +241,12 @@ public class Queue extends Observable implements Observer { //Thread {
 			    candidate.upload();
 			    break;
 		    }
-		    if(candidate.status.isComplete()) {
-			
+		    if(candidate.status.isComplete()) {			
 			callObservers(new Message(Message.COMPLETE));
 		    }
-//		    candidate.status.deleteObserver(this);
+		    candidate.status.deleteObserver(Queue.this);
 		    candidate.getSession().deleteObserver(Queue.this);
-//		    numberOfCompletedJobs++;
+		    completedJobs++;
 		}
 
 		clockTimer.stop();
@@ -260,17 +255,17 @@ public class Queue extends Observable implements Observer { //Thread {
 
 		candidate.getSession().close();
 		callObservers(new Message(Message.STOP));
+		stopped = true;
 	    }
 	}.start();
     }
     
     public void cancel() {
 	candidate.status.setCanceled(true);
-	this.canceled = true;
     }
 
-    public boolean isCanceled() {
-	return canceled;
+    public boolean isStopped() {
+	return stopped;
     }
 
 //    public boolean done() {
@@ -280,17 +275,17 @@ public class Queue extends Observable implements Observer { //Thread {
     /**
 	*@ return The number of elements in the queue
      */
-    public int numberOfElements() {
-//	log.debug("numberOfElements:"+files.size());
+    public int numberOfJobs() {
+//	log.debug("numberOfJobs:"+files.size());
 	return files.size();
     }
 
     /**
 	* The number of remaining items to be processed in the queue.
      */
-//    public int reamining() {
-//	return this.numberOfElements() - numberOfCompletedJobs;
-  //  }
+    public int remainingJobs() {
+	return this.numberOfJobs() - completedJobs;
+    }
 
     /**
 	* @return The cummulative file sizes
@@ -302,8 +297,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	    Path file = null;
 	    while(i.hasNext()) {
 		file = (Path)i.next();
-		this.size = this.size + file.getSize();
-//		this.size = this.size + file.status.getSize();
+		this.size = this.size + file.status.getSize();
 	    }
 	}
 //	log.debug("getSize:"+size);
@@ -336,23 +330,26 @@ public class Queue extends Observable implements Observer { //Thread {
     private void setSpeed(double s) {
 	this.speed = s;
 
+	this.callObservers(new Message(Message.SPEED, "Current: "
+				+ Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
+				+ Status.parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
 	//@todo duplicated code
-	if(this.getSpeed() <= 0 && this.getOverall() <= 0) {
-	    this.callObservers(new Message(Message.DATA, parseDouble(this.getCurrent()/1024) + " of " + parseDouble(this.getSize()/1024) + " kBytes."));
-	}
-	else {
-	    if(this.getOverall() <= 0) {
-		this.callObservers(new Message(Message.DATA, parseDouble(this.getCurrent()/1024) + " of "
-				 + parseDouble(this.getSize()/1024) + " kBytes. Current: " +
-				 + parseDouble(this.getSpeed()/1024) + "kB/s.")); //\n" + this.getTimeLeftMessage());
-	    }
-	    else {
-		this.callObservers(new Message(Message.DATA, parseDouble(this.getCurrent()/1024) + " of "
-				 + parseDouble(this.getSize()/1024) + " kBytes. Current: "
-				 + parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
-				 + parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
-	    }
-	}
+//	if(this.getSpeed() <= 0 && this.getOverall() <= 0) {
+//	    this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of " + Status.parseDouble(this.getSize()/1024) + " kBytes."));
+//	}
+//	else {
+//	    if(this.getOverall() <= 0) {
+//		this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of "
+//				 + Status.parseDouble(this.getSize()/1024) + " kBytes. Current: " +
+//				 + Status.parseDouble(this.getSpeed()/1024) + "kB/s.")); //\n" + this.getTimeLeftMessage());
+//	    }
+//	    else {
+//	this.callObservers(new Message(Message.SPEED, Status.parseDouble(this.getCurrent()/1024) + " of "
+//				+ Status.parseDouble(this.getSize()/1024) + " kBytes. Current: "
+//				+ Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
+//				+ Status.parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
+//	    }
+//	}
     }
 
     /**
@@ -365,23 +362,25 @@ public class Queue extends Observable implements Observer { //Thread {
     private void setOverall(double s) {
 	this.overall = s;
 
-	//@todo duplicated code
-	if(this.getSpeed() <= 0 && this.getOverall() <= 0) {
-	    this.callObservers(new Message(Message.DATA, parseDouble(this.getCurrent()/1024) + " of " + parseDouble(this.getSize()/1024) + " kBytes."));
-	}
-	else {
-	    if(this.getOverall() <= 0) {
-		this.callObservers(new Message(Message.DATA, parseDouble(this.getCurrent()/1024) + " of "
-				 + parseDouble(this.getSize()/1024) + " kBytes. Current: " +
-				 + parseDouble(this.getSpeed()/1024) + "kB/s.")); //\n" + this.getTimeLeftMessage());
-	    }
-	    else {
-		this.callObservers(new Message(Message.DATA, parseDouble(this.getCurrent()/1024) + " of "
-				 + parseDouble(this.getSize()/1024) + " kBytes. Current: "
-				 + parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
-				 + parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
-	    }
-	}
-    }
-    
+	this.callObservers(new Message(Message.SPEED, "Current: "
+				+ Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
+				+ Status.parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
+	    
+//	if(this.getSpeed() <= 0 && this.getOverall() <= 0) {
+//	    this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of " + Status.parseDouble(this.getSize()/1024) + " kBytes."));
+//	}
+//	else {
+//	    if(this.getOverall() <= 0) {
+//		this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of "
+//				 + Status.parseDouble(this.getSize()/1024) + " kBytes. Current: " +
+//				 + Status.parseDouble(this.getSpeed()/1024) + "kB/s.")); //\n" + this.getTimeLeftMessage());
+//	    }
+//	    else {
+//		this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of "
+//				 + Status.parseDouble(this.getSize()/1024) + " kBytes. Current: "
+//				 + Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
+//				 + Status.parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
+//	    }
+//	}
+}
 }

@@ -101,27 +101,26 @@ public class SFTPPath extends Path {
 	try {
 	    session.check();
 	    session.log("Listing "+this.getName(), Message.PROGRESS);
-	    SftpFile workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
 	    List children = new ArrayList();
 	    int read = 1;
 	    while(read > 0) {
-		read = session.SFTP.listChildren(workingDirectory, children);
+		read = session.SFTP.listChildren(session.SFTP.openDirectory(this.getAbsolute()), children);
 	    }
 	    java.util.Iterator i = children.iterator();
 	    List files = new java.util.ArrayList();
 	    while(i.hasNext()) {
 		SftpFile x = (SftpFile)i.next();
+//		log.debug(x.getAbsolutePath());
+
 		if(!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
 		    SFTPPath p = new SFTPPath(session, SFTPPath.this.getAbsolute(), x.getFilename());
-				    //log.debug(p.getName());
 		    if(p.getName().charAt(0) == '.' && !showHidden) {
-					//p.attributes.setVisible(false);
-			    //@todo show . files if desired
+			p.attributes.setVisible(false);
 		    }
 		    else {
 			p.attributes.setOwner(x.getAttributes().getUID().toString());
 			p.attributes.setGroup(x.getAttributes().getGID().toString());
-			p.setSize(x.getAttributes().getSize().intValue());
+			p.status.setSize(x.getAttributes().getSize().intValue());
 			p.attributes.setModified(x.getAttributes().getModifiedTime().longValue());
 			p.attributes.setMode(x.getAttributes().getPermissionsString());
 			p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
@@ -289,7 +288,7 @@ public class SFTPPath extends Path {
 	    }
 	    else if(isFile()) {
 		SftpFile p = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-		this.setSize(p.getAttributes().getSize().intValue());
+		this.status.setSize(p.getAttributes().getSize().intValue());
 		queue.add(this);
 	    }
 	    else
@@ -323,7 +322,7 @@ public class SFTPPath extends Path {
 	    if(in == null) {
 		throw new IOException("Unable opening data stream");
 	    }
-	    session.log("Downloading "+this.getName(), Message.PROGRESS);
+	    //session.log("Downloading "+this.getName(), Message.PROGRESS);
 	    this.download(in, out);
 	}
 	catch(SshException e) {
@@ -350,7 +349,7 @@ public class SFTPPath extends Path {
 		}
 	    }
 	    else if(this.getLocal().isFile()) {
-		this.setSize((int)this.getLocal().length());
+		this.status.setSize((int)this.getLocal().length());
 		queue.add(this);
 	    }
 	    else

@@ -271,7 +271,7 @@ public class FTPPath extends Path {
 		}
 	    }
 	    else if(isFile()) {
-		this.setSize((int)session.FTP.size(this.getAbsolute()));
+		this.status.setSize((int)session.FTP.size(this.getAbsolute()));
 		queue.add(this);
 	    }
 	    else
@@ -306,14 +306,14 @@ public class FTPPath extends Path {
 		if(in == null) {
 		    throw new IOException("Unable opening data stream");
 		}
-		session.log("Downloading "+this.getName(), Message.PROGRESS);
+		//session.log("Downloading "+this.getName(), Message.PROGRESS);
 		this.download(in, out);
 		session.FTP.validateTransfer();
 	    }
 	    else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 		session.log("Setting transfer type to ASCII", Message.PROGRESS);
 		session.FTP.setType(FTPTransferType.ASCII);
-		this.setSize((int)(session.FTP.size(this.getAbsolute())));
+		this.status.setSize((int)(session.FTP.size(this.getAbsolute())));
 		this.getLocal().getParentFile().mkdir();
 		java.io.Writer out = new FileWriter(this.getLocal(), this.status.isResume());
 		if(out == null) {
@@ -324,7 +324,7 @@ public class FTPPath extends Path {
 		if(in == null) {
 		    throw new IOException("Unable opening data stream");
 		}
-		session.log("Downloading "+this.getName(), Message.PROGRESS);
+		//session.log("Downloading "+this.getName(), Message.PROGRESS);
 		this.download(in, out);
 		session.FTP.validateTransfer();
 	    }
@@ -356,7 +356,7 @@ public class FTPPath extends Path {
 		}
 	    }
 	    else if(this.getLocal().isFile()) {
-		this.setSize((int)this.getLocal().length());
+		this.status.setSize((int)this.getLocal().length());
 		queue.add(this);
 	    }
 	    else
@@ -398,7 +398,7 @@ public class FTPPath extends Path {
 	    else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 		session.log("Setting transfer type to ASCII.", Message.PROGRESS);
 		session.FTP.setType(FTPTransferType.ASCII);
-		this.setSize((int)this.getLocal().length());
+		this.status.setSize((int)this.getLocal().length());
 
 		java.io.Reader in = new FileReader(this.getLocal());
 		if(in == null) {
@@ -453,10 +453,8 @@ public class FTPPath extends Path {
 		    Path p = parseListLine(parent, line);
 		    String filename = p.getName();
 		    if(!(filename.equals(".") || filename.equals(".."))) {
-			if(!showHidden) {
-			    if(filename.charAt(0) == '.') {
-				p.attributes.setVisible(false);
-			    }
+			if(!showHidden && filename.charAt(0) == '.') {
+			    p.attributes.setVisible(false);
 			}
 			parsedList.add(p);
 		    }
@@ -532,7 +530,7 @@ public class FTPPath extends Path {
 		    p.attributes.setModified(date);
 		    p.attributes.setMode(access);
 		    p.attributes.setPermission(new Permission(access));
-		    p.setSize(size);
+		    p.status.setSize(size);
 		    return p;
 	    }
 	    catch(NumberFormatException e) {
@@ -610,7 +608,7 @@ public class FTPPath extends Path {
 		p.attributes.setModified(date);
 		p.attributes.setMode(access);
 		p.attributes.setPermission(new Permission(access));
-		p.setSize(Integer.parseInt(size));
+		p.status.setSize(Integer.parseInt(size));
 
 //		 if(isLink(line)) {
 //		    // the following lines are the most ugly. I just don't know how I can be sure

@@ -79,6 +79,11 @@ public class CDTransferController implements Observer {
     public void setTotalDataField(NSTextField totalDataField) {
 	this.totalDataField = totalDataField;
     }
+
+    private NSTextField speedField;
+    public void setSpeedField(NSTextField speedField) {
+	this.speedField = speedField;
+    }
     
     private NSProgressIndicator totalProgressBar;
     public void setTotalProgressBar(NSProgressIndicator totalProgressBar) {
@@ -214,8 +219,8 @@ public class CDTransferController implements Observer {
 			    fileIconView.setImage(NSImage.imageNamed("folder.tiff"));
 			break;
 		}
-		if(queue.numberOfElements() > 1)
-		    window().setTitle(file.getName()+" - "+queue.numberOfElements()+" files");
+		if(queue.numberOfJobs() > 1)
+		    window().setTitle(file.getName()+" - "+queue.numberOfJobs()+" files");
 		queue.start();
 		session.deleteObserver(CDTransferController.this);
 	    }
@@ -226,10 +231,9 @@ public class CDTransferController implements Observer {
 	if(arg instanceof Message) {
 	    Message msg = (Message)arg;
 	    if(msg.getTitle().equals(Message.DATA)) {
-		int currentQueue = queue.getCurrent();
 
 //		    this.fileProgressBar.setDoubleValue((double)status.getCurrent());
-		this.totalProgressBar.setDoubleValue((double)currentQueue);
+		this.totalProgressBar.setDoubleValue((double)queue.getCurrent());
 //		    log.debug("File progress:"+status.getCurrent());
 //		    log.debug("Total progress:"+queue.getCurrent());
 		
@@ -238,12 +242,15 @@ public class CDTransferController implements Observer {
 
 		this.fileDataField.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
 //		    this.fileDataField.sizeToFit();
-		this.totalDataField.setAttributedStringValue(new NSAttributedString(currentQueue/queue.getSize()*100+"%"));
-//		    this.totalDataField.setAttributedStringValue(new NSAttributedString(Queue.parseDouble(currentQueue/1024)+" of "+Queue.parseDouble(queue.getSize()/1024) + " kBytes."));
+//@todo percent		this.totalDataField.setAttributedStringValue(new NSAttributedString(queue.getCurrent()/queue.getSize()*100+"%"));
+		    this.totalDataField.setAttributedStringValue(new NSAttributedString(Status.parseDouble(queue.getCurrent()/1024)+" of "+Status.parseDouble(queue.getSize()/1024) + " kBytes."));
 		    //this.totalDataField.sizeToFit();
 	    }
+	    else if(msg.getTitle().equals(Message.SPEED)) {
+		this.speedField.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
+	    }
 	    else if(msg.getTitle().equals(Message.CLOCK)) {
-		clockField.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
+		this.clockField.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
 	    }
 	    else if(msg.getTitle().equals(Message.START)) {
 		this.totalProgressBar.setIndeterminate(false);
@@ -260,6 +267,8 @@ public class CDTransferController implements Observer {
 		this.stopButton.setEnabled(false);
 		this.resumeButton.setEnabled(true);
 		this.reloadButton.setEnabled(true);
+		this.totalProgressBar.stopAnimation(null);
+//		this.fileProgressBar.stopAnimation(null);
 	    }
 	    else if(msg.getTitle().equals(Message.COMPLETE)) {
 //@todo		    if(queue.done()) {
@@ -271,8 +280,8 @@ public class CDTransferController implements Observer {
 		if(Queue.KIND_DOWNLOAD == kind) {
 			//@todo temp path name
 			//path.getLocalTemp().renameTo(path.getLocal());
-		    if(queue.numberOfElements() == 1) {
-			if(Preferences.instance().getProperty("connection.download.postprocess").equals("true") && queue.numberOfElements() == 1) {
+		    if(queue.numberOfJobs() == 1) {
+			if(Preferences.instance().getProperty("connection.download.postprocess").equals("true") && queue.numberOfJobs() == 1) {
 			    NSWorkspace.sharedWorkspace().openFile(file.getLocal().toString());
 			}
 		    }
@@ -327,7 +336,7 @@ public class CDTransferController implements Observer {
     }
 
     public boolean windowShouldClose(Object sender) {
-	if(!queue.isCanceled()) {
+	if(!queue.isStopped()) {
 	    NSAlertPanel.beginCriticalAlertSheet(
 					       "Cancel transfer?", //title
 					       "Stop",// defaultbutton

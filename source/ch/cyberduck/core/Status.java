@@ -20,46 +20,33 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Vector;
 
 /**
-  * The Status class is the model of a download's status. The view of this is represented by
-  * the <code>StatusPanel</code> notified by the methods available from the <code>Observable</code> class.
-  * To get notifed of my status register via <code>registerObserver()</code> of <code>BookmarkPanel</code>.
-  * @version $Id$
+  * The Status class is the model of a download's status.
+ * @version $Id$
   */
-public class Status implements Serializable {
-
+public class Status extends Observable implements Serializable {
     private static Logger log = Logger.getLogger(Status.class);
 
     /**
     * Download is resumable
      */
     private transient boolean resume = false;
-
+    /**
+	* The file length
+     */
+    private int size = -1;
+    /**
+	* The number of transfered bytes. Must be less or equals size.
+     */
     private int current = 0;
-    /*
-     * current speed (bytes/second)
+    /**
+	* Indiciating wheter the transfer has been cancled by the user.
      */
-//    private transient double speed = 0;
-    /*
-     * overall speed (bytes/second)
-     */
-  //  private transient double overall = 0;
-    /*
-     * the size of the file
-     */
- //   private int size = -1;
-
-//    private transient Timer currentSpeedTimer, overallSpeedTimer, chronoTimer;//timeLeftTimer;
-
     private boolean canceled;
     /**
 	* Indicates that the last action has been completed.
@@ -68,14 +55,6 @@ public class Status implements Serializable {
     /**
 	* The last action has been stopped, but must not be completed.
      */
-  //  private transient boolean stopped = true;
-
-//    private Calendar calendar = Calendar.getInstance();
-    
- //   private int seconds = 0;
-  //  private int minutes = 0;
-  //  private int hours = 0;
-  //  private int left;
     
     /**
 	* The wrapper for any status informations of a transfer like it's length and transferred
@@ -92,23 +71,51 @@ public class Status implements Serializable {
      * @param arg The message to send to the observers
      * @see ch.cyberduck.core.Message
      */
-//    public void callObservers(Message arg) {
+    public void callObservers(Message arg) {
 //	log.debug("callObserver:"+arg);
 //	log.debug(this.countObservers()+" observers known.");
-  //      this.setChanged();
-//	this.notifyObservers(arg);
-  //  }
+	this.setChanged();
+	this.notifyObservers(arg);
+    }
 
+    /**
+	* @ param size the size of file in bytes.
+     */
+    public void setSize(int size) {
+	//	log.debug("setSize:"+size);
+	this.size = size;
+    }
 
-//    public String parseTime(int t) {
-//	if(t > 9) {
-//	    return String.valueOf(t);
-  //      }
-    //    else {
- //           return "0" + t;
-//	}
-  //  }
+    /**
+	* @ return length the size of file in bytes.
+     */
+    public int getSize() {
+//	log.debug("getSize:"+size);
+	return size;
+    }
 
+    private static final int KILO = 1024; //2^10
+    private static final int MEGA = 1048576; // 2^20
+    private static final int GIGA = 1073741824; // 2^30
+
+    /**
+	* @return The size of the file
+     */
+    public String getSizeAsString() {
+	if(size < KILO) {
+	    return size + " B";
+	}
+	else if(size < MEGA) {
+	    return new Double(size/KILO).intValue() + " KB";
+	}
+	else if(size < GIGA) {
+	    return new Double(size/MEGA).intValue() + " MB";
+	}
+	else {
+	    return new Double(size/GIGA).intValue() + " GB";
+	}
+    }
+    
 
     // ZUSTAENDE
     public void setComplete(boolean b) {
@@ -214,84 +221,45 @@ public class Status implements Serializable {
     public void setCurrent(int c) {
 	//        log.debug("setCurrent(" + c + ")");
 	this.current = c;
-
-	/*
+	this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of " + Status.parseDouble(this.getSize()/1024) + " kBytes."));
+/*
 	if(this.getSpeed() <= 0 && this.getOverall() <= 0) {
-	    this.callObservers(new Message(Message.DATA, parseDouble(this.getCurrent()/1024) + " of " + parseDouble(this.getSize()/1024) + " kBytes."));
+	    this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of " + Status.parseDouble(this.getSize()/1024) + " kBytes."));
 	}
 	else {
 	    if(this.getOverall() <= 0) {
-		this.callObservers(new Message(Message.DATA, parseDouble(this.getCurrent()/1024) + " of "
-		    + parseDouble(this.getSize()/1024) + " kBytes. Current: " +
-		    + parseDouble(this.getSpeed()/1024) + "kB/s.")); //\n" + this.getTimeLeftMessage());
+		this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of "
+		    + Status.parseDouble(this.getSize()/1024) + " kBytes. Current: " +
+		    + Status.parseDouble(this.getSpeed()/1024) + "kB/s.")); //\n" + this.getTimeLeftMessage());
 	    }
 	    else {
-		this.callObservers(new Message(Message.DATA, parseDouble(this.getCurrent()/1024) + " of "
-		    + parseDouble(this.getSize()/1024) + " kBytes. Current: "
-		    + parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
-		    + parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
+		this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of "
+		    + Status.parseDouble(this.getSize()/1024) + " kBytes. Current: "
+		    + Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
+		    + Status.parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
 	    }
 	}
-	 */
+ */
     }
 
-    /**
-	* @ param size the size of file in bytes.
-     */
-//    public void setSize(int size) {
-	//	log.debug("setSize:"+size);
-//	this.size = size;
-  //  }
 
-    /**
-	* @ return length the size of file in bytes.
-     */
- //   public int getSize() {
-//	log.debug("getSize:"+size);
-//	return size;
-  //  }
-
-//    private static final int KILO = 1024; //2^10
-//    private static final int MEGA = 1048576; // 2^20
-//    private static final int GIGA = 1073741824; // 2^30
-
-    /**
-	* @return The size of the file
-     */
-//    public String getSizeAsString() {
-//	if(size < KILO) {
-//	    return size + " B";
-//	}
-//	else if(size < MEGA) {
-//	    return new Double(size/KILO).intValue() + " KB";
-//	}
-//	else if(size < GIGA) {
-//	    return new Double(size/MEGA).intValue() + " MB";
-//	}
-//	else {
-//	    return new Double(size/GIGA).intValue() + " GB";
-//	}
-//  }    
-
-    /**
-	* @return double current bytes/second
-     */
-//    private double getSpeed() {
-//	return this.speed;
-//    }
-//    private void setSpeed(double s) {
-//	this.speed = s;
-  //  }
-
-    /**
-	* @return double bytes per seconds transfered since the connection has been opened
-     */
-//    private double getOverall() {
-//	return this.overall;
-  //  }
- //   private void setOverall(double s) {
-//	this.overall = s;
-  //  }
+    public static double parseDouble(double d) {
+        //log.debug("Status.parseDouble(" + d + ")");
+        String s = Double.toString(d);
+        if(s.indexOf(".") != -1) {
+            int l = s.substring(s.indexOf(".")).length();
+            if(l > 3) {
+                return Double.parseDouble(s.substring(0, s.indexOf('.') + 3));
+            }
+            else {
+                return Double.parseDouble(s.substring(0, s.indexOf('.') + l));
+            }
+        }
+        else {
+            return d;
+        }
+    }
+    
 
     public void setResume(boolean resume) {
 	this.resume = resume;

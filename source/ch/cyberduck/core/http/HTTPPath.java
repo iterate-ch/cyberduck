@@ -182,25 +182,25 @@ public class HTTPPath extends Path {
 	    Header transferEncodingHeader = GET.getResponseHeader("Bookmark-Encoding");
 	    if(lengthHeader != null) {
 		try {
-		    this.setSize(Integer.parseInt(lengthHeader.getValue()));
+		    this.status.setSize(Integer.parseInt(lengthHeader.getValue()));
 		}
 		catch(NumberFormatException e) {
-		    this.setSize(-1);
+		    this.status.setSize(-1);
 		}
 	    }
 	    if(rangeHeader != null) {
 		try {
 		    String r = rangeHeader.getValue();
 		    int l = Integer.parseInt(r.substring(v.indexOf('/') + 1));
-		    this.setSize(l);
+		    this.status.setSize(l);
 		}
 		catch(NumberFormatException e) {
-		    this.setSize(-1);
+		    this.status.setSize(-1);
 		}
 	    }
 	    else if(null != transferEncodingHeader) {
 		if("chunked".equalsIgnoreCase(transferEncodingHeader.getValue())) {
-		    this.setSize(-1);
+		    this.status.setSize(-1);
 		}
 	    }
 
@@ -213,7 +213,7 @@ public class HTTPPath extends Path {
 	    if(in == null) {
 		throw new IOException("Unable opening data stream");
 	    }
-	    session.log("Downloading "+this.getName(), Message.PROGRESS);
+	    //session.log("Downloading "+this.getName(), Message.PROGRESS);
 	    this.download(in, out);
 	}
 	catch(HttpException e) {
