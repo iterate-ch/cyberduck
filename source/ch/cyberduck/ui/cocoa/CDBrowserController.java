@@ -172,16 +172,16 @@ public class CDBrowserController extends CDController implements Observer {
 		return null;
 	}
 	
-	public boolean handleExistsScriptCommand(NSScriptCommand command) {
+	public Object handleExistsScriptCommand(NSScriptCommand command) {
 		log.debug("handleExistsScriptCommand:"+command);
 		if(this.isMounted()) {
 			NSDictionary args = command.evaluatedArguments();
 			Path path = PathFactory.createPath(this.workdir().getSession(), 
 											   this.workdir().getAbsolute(), 
 											   (String)args.objectForKey("Path"));
-			return path.exists();
+			return new Integer(path.exists() ? 1 : 0);
 		}
-		return false;
+		return new Integer(0);
 	}
 	
 

@@ -28,6 +28,8 @@
 						<string>ch.cyberduck.ui.cocoa.CDBrowserController</string>
 					</dict>
 				</dict>
+				<key>ToOneRelationships</key>
+				<dict/>
 			</dict>
 			<key>ch.cyberduck.ui.cocoa.CDBrowserController</key>
 			<dict>
@@ -129,7 +131,7 @@
 						<key>Optional</key>
 						<string>Yes</string>
 						<key>Type</key>
-						<string>NSString&lt;Protocols&gt;</string>
+						<string>Protocols</string>
 					</dict>
 					<key>Port</key>
 					<dict>
