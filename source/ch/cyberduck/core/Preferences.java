@@ -137,6 +137,7 @@ public abstract class Preferences {
 		defaults.put("ftp.connectmode", "passive");
 		defaults.put("ftp.transfermode", "binary");
 		defaults.put("ftp.sendSystemCommand", "true");
+		defaults.put("ftp.sendExtendedListCommand", "false");
 
 		defaults.put("http.agent", "Cyberduck/2.1");
 		defaults.put("http.acceptheader", "*/*");

@@ -423,7 +423,19 @@ public class FTPClient {
 		data.setTimeout(timeout);
 
 		// send the retrieve command
-		String command = full ? "LIST " : "NLST ";
+//		String command = full ? "LIST " : "NLST ";
+		String command;
+		if(full) {
+			if(Preferences.instance().getProperty("ftp.sendExtendedListCommand").equals("true")) {
+				command = "LIST -a ";
+			}
+			else {
+				command = "LIST ";
+			}
+		}
+		else {
+			command = "NLST ";
+		}
 		if (dirname != null)
 			command += dirname;
 

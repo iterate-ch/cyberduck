@@ -3,16 +3,18 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.2b1</string>
+	<string>2.2b2</string>
 	<key>file</key>
-	<string>Cyberduck-2.2beta1.dmg</string>
+	<string>Cyberduck-2.2beta2.dmg</string>
 	<key>comment</key>
         <string>Changelog:
 2.2b2
-- Updated Japanese Localization
-- Updated French Localization
-- Updated Portuguese Localization
-- Fixed-width font in transcript
+- Updated Japanese localization
+- Updated French localization
+- Updated Portuguese localization
+- Updated Italian localization
+- The log is now written with a fixed-width font
+- Various minor improvements
 
 2.2b1
 - Keychain integration
