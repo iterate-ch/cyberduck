@@ -390,6 +390,7 @@ import com.sshtools.j2ssh.configuration.SshConnectionProperties
  properties.setPrefSCMac("hmac-md5");
  */
 		SSH.connect(host.getName(), host.getHostKeyVerification());
+		HTTPSession.this.log("SSH connection opened", Message.PROGRESS);
 		SFTPSession.this.log(SSH.getServerId(), Message.TRANSCRIPT);
 		SFTPSession.this.login();
 		String path = host.getWorkdir().equals(Preferences.instance().getProperty("connection.path.default")) ? SFTP.getDefaultDirectory() : host.getWorkdir();

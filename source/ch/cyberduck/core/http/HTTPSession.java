@@ -72,10 +72,14 @@ public class HTTPSession extends Session {
             return parent;
         }
 
-        public void list() {
+        public void list(boolean refresh) {
             HTTPSession.this.log("Invalid Operation", Message.ERROR);
         }
 
+        public void list() {
+            HTTPSession.this.log("Invalid Operation", Message.ERROR);
+        }
+	
         public void delete() {
             HTTPSession.this.log("Invalid Operation", Message.ERROR);
         }
