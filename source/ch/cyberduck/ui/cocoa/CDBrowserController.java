@@ -357,6 +357,7 @@ public class CDBrowserController implements Observer {
 		// update status label
 		else if(msg.getTitle().equals(Message.PROGRESS)) {
 		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getDescription()));
+		    statusLabel.display();
 		}
 		else if(msg.getTitle().equals(Message.TRANSCRIPT)) {
 		    statusLabel.setAttributedStringValue(new NSAttributedString(msg.getDescription()));

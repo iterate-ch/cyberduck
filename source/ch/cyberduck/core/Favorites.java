@@ -20,11 +20,11 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Observable;
-import java.net.URL;
+import java.util.Map;
+import java.util.HashMap;
+
+import ch.cyberduck.core.Host;
 
 /**
 * Keeps track of recently connected hosts
@@ -33,7 +33,7 @@ import java.net.URL;
 public abstract class Favorites {
     private static Logger log = Logger.getLogger(Favorites.class);
     
-    private List data = new ArrayList();
+    private Map data = new HashMap();
 
     /**
 	* Ensure persistency.
@@ -45,23 +45,37 @@ public abstract class Favorites {
      */
     public abstract void load();
 
-    public void add(Object h) {
-	this.data.add(h);
-	this.save();
+    public void addItem(String url) {
+	log.debug("addItem:"+url);
+	Host h = new Host(url.substring(0, url.indexOf("://")),
+		   url.substring(url.indexOf("@")+1, url.lastIndexOf(":")),
+		   Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length())),
+		   new Login(url.substring(url.indexOf("://")+3, url.lastIndexOf("@"))));
+	this.data.put(h.toString(), h);
     }
 
-    public Object get(String name) {
-	Iterator i = data.iterator();
-	Object h;
-	while(i.hasNext()) {
-	    h = i.next();
-	    if(h.toString().equals(name.toString()))
-		return h;
-	}
-	throw new IllegalArgumentException("Host "+name+" not found in Favorites.");
+    /**
+	* @param name the Key the host is stored with (ususally host.toString())
+     */
+    public Object getItem(String name) {
+	Object result =  this.data.get(name);
+	if(null == result)
+	    throw new IllegalArgumentException("Host "+name+" not found in Favorites.");
+	return result;
     }
+
+//    public Object get(String name) {
+//	Iterator i = data.iterator();
+//	Object h;
+//	while(i.hasNext()) {
+//	    h = i.next();
+//	    if(h.toString().equals(name.toString()))
+//		return h;
+//	}
+//	throw new IllegalArgumentException("Host "+name+" not found in Favorites.");
+//    }
 
     public Iterator getIterator() {
-	return data.iterator();
+	return data.values().iterator();
     }
 }

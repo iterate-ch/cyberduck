@@ -46,6 +46,11 @@ public class CDPreferencesController {
 	this.downloadPathField = downloadPathField;
     }
 
+    private NSTextField loginField;
+    public void setLoginField(NSTextField loginField) {
+	this.loginField = loginField;
+    }
+    
     private NSButton downloadPathButton;
     public void setDownloadPathButton(NSButton downloadPathButton) {
 	this.downloadPathButton = downloadPathButton;
@@ -128,6 +133,7 @@ public class CDPreferencesController {
     
     private void init() {
 	//setting values
+	loginField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
 	anonymousField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.pass"));
 	downloadPathField.setStringValue(Preferences.instance().getProperty("connection.download.folder"));
 	showHiddenCheckbox.setState(Preferences.instance().getProperty("browser.showHidden").equals("true") ? NSCell.OnState : NSCell.OffState);
@@ -163,6 +169,11 @@ public class CDPreferencesController {
 						  anonymousField);
 	NSNotificationCenter.defaultCenter().addObserver(
 						  this,
+						  new NSSelector("loginFieldDidChange", new Class[]{NSNotification.class}),
+						  NSControl.ControlTextDidChangeNotification,
+						  loginField);
+	NSNotificationCenter.defaultCenter().addObserver(
+						  this,
 						  new NSSelector("downloadPathFieldDidChange", new Class[]{NSNotification.class}),
 						  NSControl.ControlTextDidChangeNotification,
 						  downloadPathField);
@@ -172,7 +183,9 @@ public class CDPreferencesController {
     // ----------------------------------------------------------
     // Notifications
     // ----------------------------------------------------------
-    
+    public void loginFieldDidChange(NSNotification sender) {
+	Preferences.instance().setProperty("connection.login.name", anonymousField.stringValue());
+    }
 
     public void anonymousFieldDidChange(NSNotification sender) {
 	Preferences.instance().setProperty("ftp.anonymous.pass", anonymousField.stringValue());

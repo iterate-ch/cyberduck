@@ -33,10 +33,23 @@ import java.util.Iterator;
 public class CDFavoritesImpl extends Favorites {
     private static Logger log = Logger.getLogger(CDFavoritesImpl.class);
 
+    private static Favorites instance;
+
     private static final File FAVORTIES_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Favorites.plist"));
 
     static {
 	FAVORTIES_FILE.getParentFile().mkdir();
+    }
+
+    private CDFavoritesImpl() {
+	super();
+    }
+
+    public static Favorites instance() {
+	if(null == instance) {
+	    instance = new CDFavoritesImpl();
+	}
+	return instance;
     }
 
     public void save() {
@@ -72,7 +85,7 @@ public class CDFavoritesImpl extends Favorites {
 	    log.info("Successfully read Favorites: "+entries);
 	    java.util.Enumeration i = entries.objectEnumerator();
 	    while(i.hasMoreElements()) {
-		this.add(i.nextElement());
+		this.addItem((String)i.nextElement());
 	    }
 	}
     }

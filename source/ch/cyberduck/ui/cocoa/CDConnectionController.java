@@ -56,48 +56,54 @@ public class CDConnectionController {
 	this.sheet = sheet;
     }
 
-    private Favorites favorites;
-    private FavoritesDataSource favoritesDataSource;
+//    private FavoritesDataSource favoritesDataSource;
     private NSPopUpButton favoritesPopup;
     public void setFavoritesPopup(NSPopUpButton favoritesPopup) {
 	this.favoritesPopup = favoritesPopup;
 	this.favoritesPopup.setImage(NSImage.imageNamed("favorites.tiff"));
+
+	CDFavoritesImpl.instance().load();
+	Iterator i = CDFavoritesImpl.instance().getIterator();
+	while(i.hasNext())
+	    favoritesPopup.addItem(i.next().toString());
+	
 	this.favoritesPopup.setTarget(this);
 	this.favoritesPopup.setAction(new NSSelector("favoritesSelectionChanged", new Class[] {Object.class}));
-	this.favoritesDataSource = new FavoritesDataSource();
+//	this.favoritesDataSource = new FavoritesDataSource();
     }
 
-    private class FavoritesDataSource {
-
-	private Map data = new HashMap();
-
-	public FavoritesDataSource() {
-	    favorites = new CDFavoritesImpl();
-	    favorites.load();
-	    Iterator i = favorites.getIterator();
-	    while(i.hasNext())
-		this.addItem(i.next());
-	}
+//    private class FavoritesDataSource {
+//
+//	private Favorites favorites;
+//	private Map data = new HashMap();
+//
+//	public FavoritesDataSource() {
+//	    this.favorites = CDFavoritesImpl.instance();
+//	    this.favorites.load();
+//	    Iterator i = this.favorites.getIterator();
+//	    while(i.hasNext())
+//		this.addItem(i.next());
+//	}
 	
-	public void addItem(Object o) {
-	    log.debug("addItem:"+o);
-	    String url = o.toString();
-	    Host h = new Host(url.substring(0, url.indexOf("://")),
-	  url.substring(url.indexOf("@")+1, url.lastIndexOf(":")),
-	  Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length())),
-		       new Login(url.substring(url.indexOf("://")+3, url.lastIndexOf("@"))));
-	    this.data.put(h.toString(), h);
-	    favoritesPopup.addItem(h.toString());
-	}
-
-	public Object getItem(String name) {
-	    return this.data.get(name);
-	}
-
-	public void clear(NSPopUpButton aComboBox) {
-	    favoritesPopup.removeAllItems();
-	}
-    }
+//	public void addItem(Object o) {
+//	    log.debug("addItem:"+o);
+//	    String url = o.toString();
+//	    Host h = new Host(url.substring(0, url.indexOf("://")),
+//	  url.substring(url.indexOf("@")+1, url.lastIndexOf(":")),
+//	  Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length())),
+//		       new Login(url.substring(url.indexOf("://")+3, url.lastIndexOf("@"))));
+//	    this.data.put(h.toString(), h);
+//	    favoritesPopup.addItem(h.toString());
+//	}
+//
+//	public Object getItem(String name) {
+//	    return this.data.get(name);
+//	}
+//
+//	public void clear(NSPopUpButton aComboBox) {
+//	    favoritesPopup.removeAllItems();
+//	}
+//  }
     
     private NSPopUpButton rendezvousPopup;
     private RendezvousDataSource rendezvousDataSource;
@@ -320,7 +326,7 @@ public class CDConnectionController {
 
     public void favoritesSelectionChanged(Object sender) {
 	log.debug("favoritesSelectionChanged:"+sender);
-	Object selectedItem = favoritesDataSource.getItem(favoritesPopup.titleOfSelectedItem());
+	Object selectedItem = CDFavoritesImpl.instance().getItem(favoritesPopup.titleOfSelectedItem());
 	this.updateFields((Host)selectedItem);
 	this.updateLabel(sender);
     }
@@ -406,7 +412,6 @@ public class CDConnectionController {
 		    default:
 			throw new IllegalArgumentException("No protocol selected.");
 		}
-		    this.favorites.add(host.toString());
 		browser.mount(host);
 		    
 	case(NSAlertPanel.AlternateReturn):
