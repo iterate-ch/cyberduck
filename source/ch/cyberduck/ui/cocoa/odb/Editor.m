@@ -52,23 +52,26 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 										jobject this, 
 										jstring path) 
 {
-	
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	Editor *editor = [[Editor alloc] init: env
 						  withEditorClass: (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, this)) 
 						 withEditorObject: (*env)->NewGlobalRef(env, this)];
 	[editor odbEdit:nil path:convertToNSString(env, path)];
+	[pool release];
 }
 
 @implementation Editor
 
 - (id)init:(JNIEnv*)jniEnv withEditorClass:(jclass)class withEditorObject:(jobject)obj
 {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     self = [super init];
 	if (self != nil) {
 		env = jniEnv;
 		editorClass = class;
 		editorObject = obj;
 	}
+	[pool release];
     return self;
 }
 

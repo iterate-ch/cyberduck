@@ -25,8 +25,6 @@ import org.apache.log4j.Logger;
 public class Growl {
     private static Logger log = Logger.getLogger(Growl.class);
 	
-	//@todo			int mypool = NSAutoreleasePool.push();
-
 	static {
         try {
             NSBundle bundle = NSBundle.mainBundle();

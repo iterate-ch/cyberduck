@@ -17,6 +17,7 @@
 - [Feature] Move remote files with copy & paste
 - [Feature] Put remote files into the transfer queue with copy & paste
 - [Feature] Provide a proxy-icon for the connection in the title bar. The icon can then be dragged to the Bookmark drawer or to the Finder as a .duck file.
+- [Feature] Support for Novell Netware file listings (FTP)
 - [Bugfix] Bookmark drawer icon has no text-only equivalent
 - [Bugfix] Tabbing between browser and filter box
 - [Bugfix] Quick Connect Field has initial focus

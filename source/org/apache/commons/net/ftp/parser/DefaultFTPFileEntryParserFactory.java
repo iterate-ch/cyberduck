@@ -61,8 +61,7 @@ public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFacto
                 //return createVMSFTPEntryParser();
             }
             else if (ukey.indexOf("NETWARE") >= 0) {
-                throw new FTPException("\"" + key + "\" is not currently a supported system. Think about a good motivation for the author of this sofware to write an appropriate parser. See Help > Send Feedback menu.");
-                //return createNetwareFTPEntryParser();
+                return createNetwareFTPEntryParser();
             }
             else if (ukey.indexOf("WINDOWS") >= 0) {
                 return createNTFTPEntryParser();
@@ -82,7 +81,11 @@ public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFacto
     public FTPFileEntryParser createUnixFTPEntryParser() {
         return new UnixFTPEntryParser();
     }
-
+	
+    public FTPFileEntryParser createNetwareFTPEntryParser() {
+        return new NetwareFTPEntryParser();
+    }
+	
     public FTPFileEntryParser createVMSVersioningFTPEntryParser() {
         return new VMSVersioningFTPEntryParser();
     }

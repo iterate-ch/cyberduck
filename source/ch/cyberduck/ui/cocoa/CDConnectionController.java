@@ -59,7 +59,7 @@ public class CDConnectionController extends NSObject implements Observer {
 	 
 	 public void setHistoryPopup(NSPopUpButton historyPopup) {
 		 this.historyPopup = historyPopup;
-		 this.historyPopup.setImage(NSImage.imageNamed("history.tiff"));
+		 this.historyPopup.setImage(NSImage.imageNamed("history"));
 		 Iterator i = CDHistoryImpl.instance().iterator();
 		 while (i.hasNext()) {
 			 historyPopup.addItem(i.next().toString());
@@ -83,7 +83,7 @@ public class CDConnectionController extends NSObject implements Observer {
 
     public void setBookmarksPopup(NSPopUpButton bookmarksPopup) {
         this.bookmarksPopup = bookmarksPopup;
-        this.bookmarksPopup.setImage(NSImage.imageNamed("bookmarks.tiff"));
+        this.bookmarksPopup.setImage(NSImage.imageNamed("bookmarks"));
         Iterator i = CDBookmarkTableDataSource.instance().iterator();
         while (i.hasNext()) {
             bookmarksPopup.addItem(i.next().toString());
@@ -102,7 +102,7 @@ public class CDConnectionController extends NSObject implements Observer {
 
     public void setRendezvousPopup(NSPopUpButton rendezvousPopup) {
         this.rendezvousPopup = rendezvousPopup;
-        this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous16.tiff"));
+        this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous16"));
         this.rendezvousPopup.setTarget(this);
         this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionChanged", new Class[]{Object.class}));
         this.rendezvous = new Rendezvous();

@@ -42,8 +42,9 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_launch(
 																  JNIEnv *env, 
 																  jobject this)
 {
-	
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	[[Growl defaultInstance] launchGrowl];
+	[pool release];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notify(
@@ -52,8 +53,10 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notify(
 																	 jstring title,
 																	 jstring description)
 {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	[[Growl defaultInstance] notifyGrowl:convertToNSString(env, title) 
 						 withDescription:convertToNSString(env, description)];
+	[pool release];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
@@ -63,9 +66,11 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 																			  jstring description,
 																			  jstring image)
 {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	[[Growl defaultInstance] notifyGrowl:convertToNSString(env, title) 
 						 withDescription:convertToNSString(env, description)
 						   withImageName:convertToNSString(env, image)];
+	[pool release];
 }
 
 #define	GROWL_DOWNLOAD_COMPLETE				NSLocalizedString(@"Download complete", @"Growl Notification")
@@ -98,7 +103,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 																		   selector:@selector(registerGrowl:) 
 																			context:nil];
 	}
-//	[self registerGrowl:nil];
 }
 
 - (void)registerGrowl:(void*)context

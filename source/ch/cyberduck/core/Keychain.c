@@ -108,7 +108,6 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(J
 										);
 			pass[passLength] = '\0';
 			return (*env)->NewStringUTF(env, pass);
-			break;
 		case errSecItemNotFound:
 			syslog(LOG_INFO, "Keychain item not found");
 			return(NULL);
