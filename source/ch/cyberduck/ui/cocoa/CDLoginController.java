@@ -24,6 +24,7 @@ import ch.cyberduck.ui.LoginController;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSNotificationCenter;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSSelector;
 
@@ -34,25 +35,22 @@ import org.apache.log4j.Logger;
  */
 public class CDLoginController extends LoginController {
 	private static Logger log = Logger.getLogger(CDLoginController.class);
-
+	
 	// ----------------------------------------------------------
 	// Outlets
 	// ----------------------------------------------------------
 
 	private NSTextField userField; // IBOutlet
-
 	public void setUserField(NSTextField userField) {
 		this.userField = userField;
 	}
 
 	private NSTextField textField; // IBOutlet
-
 	public void setTextField(NSTextField textField) {
 		this.textField = textField;
 	}
 
 	private NSSecureTextField passField; // IBOutlet
-
 	public void setPassField(NSSecureTextField passField) {
 		this.passField = passField;
 	}
@@ -70,6 +68,8 @@ public class CDLoginController extends LoginController {
 	public void setWindow(NSWindow window) {
 		this.window = window;
 		this.window.setDelegate(this);
+//		this.window.makeFirstResponder(loginButton);
+//		this.window.setDefaultButtonCell(loginButton.cell());
 	}
 
 	private NSWindow parentWindow;
@@ -90,6 +90,7 @@ public class CDLoginController extends LoginController {
 
 	public void windowWillClose(NSNotification notification) {
 		instances.removeObject(this);
+		NSNotificationCenter.defaultCenter().removeObserver(this);
 	}
 
 	private boolean done = false;
@@ -123,15 +124,21 @@ public class CDLoginController extends LoginController {
 
 	public void closeSheet(NSButton sender) {
 		log.debug("closeSheet");
-		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-		this.userField.abortEditing();
-		this.passField.abortEditing();
+		//		this.userField.validateEditing();
+		//		this.passField.validateEditing();
+		if(null == userField.objectValue() || userField.objectValue().equals(""))
+			log.warn("Value of username field is null");
+		if(null == passField.objectValue() || passField.objectValue().equals(""))
+			log.warn("Value of password field is null");
+		// Ends a document modal session by specifying the sheet window, sheet. 
+		// Also passes along a returnCode to the delegate.
 		NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
-
+	
 	/**
-	 * Selector method from
-	 * @see #loginFailure
+		* Selector method from
+	 * @see #promptUser
+	 * @see #closeSheet
 	 */
 	public void loginSheetDidEnd(NSWindow sheet, int returncode, Object context) {
 		log.debug("loginSheetDidEnd");
@@ -139,8 +146,8 @@ public class CDLoginController extends LoginController {
 		switch (returncode) {
 			case (NSAlertPanel.DefaultReturn):
 				this.tryAgain = true;
-				((Login)context).setUsername(userField.stringValue());
-				((Login)context).setPassword(passField.stringValue());
+				((Login)context).setUsername((String)userField.objectValue());
+				((Login)context).setPassword((String)passField.objectValue());
 				((Login)context).setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
 				break;
 			case (NSAlertPanel.AlternateReturn):

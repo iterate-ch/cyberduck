@@ -92,7 +92,10 @@ public class CDDownloadController {
 			case (NSAlertPanel.DefaultReturn):
 				try {
 					URL url = new URL(urlField.stringValue());
-					Host host = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getHost(), url.getUserInfo()));
+					Host host = new Host(url.getProtocol(), 
+										 url.getHost(), 
+										 url.getPort(), 
+										 new Login(url.getHost(), url.getUserInfo(), null));
 					Session session = SessionFactory.createSession(host);
 					String file = url.getFile();
 					if (file.length() > 1) {

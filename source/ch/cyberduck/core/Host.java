@@ -52,7 +52,7 @@ public class Host {
 		this((String) dict.objectForKey(Host.PROTOCOL),
 		    (String) dict.objectForKey(Host.HOSTNAME),
 		    Integer.parseInt((String) dict.objectForKey(Host.PORT)),
-		    new Login((String) dict.objectForKey(Host.HOSTNAME), (String) dict.objectForKey(Host.USERNAME)),
+		    new Login((String) dict.objectForKey(Host.HOSTNAME), (String) dict.objectForKey(Host.USERNAME), null),
 		    (String) dict.objectForKey(Host.PATH),
 		    (String) dict.objectForKey(Host.NICKNAME)
 		);
@@ -81,7 +81,7 @@ public class Host {
 			this.protocol = url.substring(0, url.indexOf("://"));
 			this.hostname = url.substring(url.indexOf("@") + 1, url.lastIndexOf(":"));
 			this.port = Integer.parseInt(url.substring(url.lastIndexOf(":") + 1, url.length()));
-			this.login = new Login(hostname, url.substring(url.indexOf("://") + 3, url.lastIndexOf("@")));
+			this.login = new Login(hostname, url.substring(url.indexOf("://") + 3, url.lastIndexOf("@")), null);
 			this.nickname = this.getLogin().getUsername() + "@" + this.getHostname();
 		}
 		catch (NumberFormatException e) {

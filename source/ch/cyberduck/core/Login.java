@@ -54,7 +54,7 @@ public class Login {
 	native String getPasswordFromKeychain(String service, String account);
 
 	public String getPasswordFromKeychain() {
-		log.debug("getPasswordFromKeychain:" + this.toString());
+//		log.debug("getPasswordFromKeychain:" + this.toString());
 		return this.getPasswordFromKeychain(this.service, this.user);
 	}
 
@@ -62,7 +62,7 @@ public class Login {
 	native void addPasswordToKeychain(String service, String account, String password);
 
 	public void addPasswordToKeychain() {
-		log.debug("addPasswordToKeychain:" + this.toString());
+//		log.debug("addPasswordToKeychain:" + this.toString());
 		if(this.addToKeychain) {
 			this.addPasswordToKeychain(this.service, this.user, this.pass);
 		}
@@ -78,13 +78,12 @@ public class Login {
 	 * New instance with default values. Anonymous login.
 	 * @param service The service to use when looking up the password in the keychain
 	 */
-	public Login(String service) {
-		this(service,
-		    Preferences.instance().getProperty("connection.login.name"),
-			 null,
-//		    Preferences.instance().getProperty("ftp.anonymous.pass"),
-		    false);
-	}
+//	public Login(String service) {
+//		this(service,
+//		    Preferences.instance().getProperty("connection.login.name"),
+//			 null,
+//		    false);
+//	}
 
 	/**
 	 * @param service The service to use when looking up the password in the keychain
@@ -98,39 +97,62 @@ public class Login {
 	public Login(String service, String user, String pass, boolean addToKeychain) {
 		this.service = service;
 		this.addToKeychain = addToKeychain;
-		if (null == user || user.equals(""))
-			this.user = Preferences.instance().getProperty("connection.login.name");
-		else
-			this.user = user;
-		if (null == pass || pass.equals(""))
-			this.pass = null;
-		//				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
-		else
-			this.pass = pass;
+		this.init(user, pass);
 	}
 
 	/**
 	 * @param service The service to use when looking up the password in the keychain
 	 * @param l the login credentials
 	 */
+	/*
 	public Login(String service, String l) {
 		this.service = service;
 		if (l != null) {
 			if (l.indexOf(':') != -1) {
-				this.user = l.substring(0, l.indexOf(':'));
-				this.pass = l.substring(l.indexOf(':') + 1, l.length());
+				this.init(l.substring(0, l.indexOf(':')), l.substring(l.indexOf(':') + 1, l.length()));
+//				this.user = l.substring(0, l.indexOf(':'));
+//				this.pass = l.substring(l.indexOf(':') + 1, l.length());
 			}
 			else {
-				this.user = l;
-				this.pass = null;
+				this.init(user, null);
+//				this.user = l;
+//				this.pass = null;
 //				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 			}
 		}
 		else {
-			this.user = Preferences.instance().getProperty("connection.login.name");
-			this.pass = null;
+			this.init(user, null);
+//			this.user = Preferences.instance().getProperty("connection.login.name");
+//			this.pass = null;
 //			this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 		}
+	}
+	 */
+	
+	private void init(String user, String pass) {
+		if (null == user || user.equals("")) {
+			this.user = Preferences.instance().getProperty("connection.login.name");
+			if(this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"))) {
+				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+			}
+		}
+		else {
+			if(user.indexOf(':') != -1) { //catch username/pass from java.net.URL.getUserInfo()
+				this.user = user.substring(0, user.indexOf(':'));
+				this.pass = user.substring(user.indexOf(':')+1, user.length());
+			}
+			else
+				this.user = user;
+		}
+		if (null == pass || pass.equals("")) {
+			if(this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"))) {
+				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+			}
+			else
+				this.pass = null;
+		}
+		else 
+			this.pass = pass;
 	}
 
 	public boolean usesPublicKeyAuthentication() {
@@ -198,7 +220,8 @@ public class Login {
 	}
 
 	public void setUsername(String user) {
-		this.user = user;
+		this.init(user, this.getPassword());
+//		this.user = user;
 	}
 
 	public String getPassword() {
@@ -206,14 +229,15 @@ public class Login {
 	}
 
 	public void setPassword(String pass) {
-		this.pass = pass;
+		this.init(this.getUsername(), pass);
+//		this.pass = pass;
 	}
 
 	public void setController(LoginController lc) {
 		this.controller = lc;
 	}
 	
-	public String toString() {
-		return this.user+":"+this.pass;
-	}
+//	public String toString() {
+//		return this.user+":"+this.pass;
+//	}
 }
