@@ -137,8 +137,8 @@ public abstract class Preferences {
 		defaults.put("queue.sync.ignore.minute", "false");
 		defaults.put("queue.sync.ignore.second", "true");
 		defaults.put("queue.sync.ignore.millisecond", "true");
-		defaults.put("queue.sync.remote.timezone", java.util.TimeZone.getDefault().getID());
-		
+		defaults.put("queue.sync.timezone", java.util.TimeZone.getDefault().getID());
+
 		defaults.put("queue.transformer.useTransformer", "false");
 		defaults.put("queue.transformer.maxLength", "-1");
 		defaults.put("queue.transformer.keepsFilenameExtensions", "true");

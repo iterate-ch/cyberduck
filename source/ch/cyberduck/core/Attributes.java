@@ -99,7 +99,7 @@ public class Attributes extends Observable {
 	}
 
 	public Calendar getTimestampAsCalendar() {
-		Calendar c = Calendar.getInstance(TimeZone.getTimeZone(Preferences.instance().getProperty("queue.sync.remote.timezone")));
+		Calendar c = Calendar.getInstance(TimeZone.getTimeZone(Preferences.instance().getProperty("queue.sync.timezone")));
 		if(this.getTimestamp() != null) {
 			c.setTime(this.getTimestamp());
 		}
