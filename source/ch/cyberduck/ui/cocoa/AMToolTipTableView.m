@@ -24,7 +24,6 @@
 - (NSString *)_amKeyForColumn:(int)columnIndex row:(int)rowIndex;
 @end
 
-
 @implementation AMToolTipTableView
 
 - (id)init

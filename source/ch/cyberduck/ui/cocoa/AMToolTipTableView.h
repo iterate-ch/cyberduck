@@ -35,10 +35,3 @@
 - (void)awakeFromNib;
 
 @end
-
-
-@protocol AMToolTipDelegate
-
-- (NSString *)tableView:(NSTableView *)aTableView toolTipForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex;
-
-@end

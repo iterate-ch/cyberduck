@@ -305,9 +305,9 @@ public abstract class CDValidatorController extends AbstractValidator {
 					if(p.exists())
 						tooltip.append(NSBundle.localizedString("Remote", "")+":\n"
 									   +"  "+Status.getSizeAsString(p.status.getSize())+"\n"
-									   +"  "+p.attributes.getTimestampAsString()+"\n");
+									   +"  "+p.attributes.getTimestampAsString());
 					if(p.getLocal().exists())
-						tooltip.append(NSBundle.localizedString("Local", "")+":\n"
+						tooltip.append("\n"+NSBundle.localizedString("Local", "")+":\n"
 									   +"  "+Status.getSizeAsString(p.getLocal().length())+"\n"
 									   +"  "+p.getLocal().getTimestampAsString()+"\n");
 					return tooltip.toString();

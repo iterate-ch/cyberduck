@@ -64,6 +64,7 @@ public class UploadQueue extends Queue {
         else if (p.getLocal().isFile()) {
             p.attributes.setType(Path.FILE_TYPE);
             p.status.setSize(p.getLocal().size()); //setting the file size to the known size of the local file
+			//@todo p.status.setTimestamp();
         }
 		return list;
 	}

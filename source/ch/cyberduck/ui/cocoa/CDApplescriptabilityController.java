@@ -39,7 +39,7 @@ public class CDApplescriptabilityController extends NSScriptCommand {
 
     public Object performDefaultImplementation() {
         String arg = (String)this.directParameter();
-        log.debug("Received URL from Apple Event: "+arg);
+        log.debug("Received URL from Apple Event:"+arg);
 		try {
 			URL url = new URL(URLDecoder.decode(arg, "UTF-8"));
 			String file = url.getFile();
@@ -53,9 +53,7 @@ public class CDApplescriptabilityController extends NSScriptCommand {
 				Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
 				// we assume a file has an extension
 				if (null != p.getExtension()) {
-					log.debug("Assume downloading");
-					Queue q = new DownloadQueue();
-					q.addRoot(p);
+					Queue q = new DownloadQueue(); q.addRoot(p);
 					CDQueueController.instance().startItem(q);
 				}
 			}

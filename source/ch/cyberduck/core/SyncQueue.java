@@ -63,7 +63,7 @@ public class SyncQueue extends Queue {
 				return list;
 			}
 		}
-		if(p.getLocal().exists()) {
+		else if(p.getLocal().exists()) {
 			if(p.getLocal().isDirectory()) {
 				p.attributes.setType(Path.DIRECTORY_TYPE);
 				p.status.setSize(0); //@todo
@@ -79,7 +79,8 @@ public class SyncQueue extends Queue {
 			}
 			else if(p.getLocal().isFile()) {
 				p.attributes.setType(Path.FILE_TYPE);
-				p.status.setSize(p.getLocal().length()); //setting the file size to the known size of the local file
+				//@todo p.status.setSize(); > p.status.setSize(this.getLocal().length());
+				//@todo p.attributes.setTimestamp();
 				return list;
 			}
 		}

@@ -358,7 +358,7 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
-			this.status.setSize(this.size());
+			this.status.setSize(this.size()); //@todo obsolete
             if (this.status.isResume()) {
                 this.status.setCurrent(this.getLocal().getTemp().length());
             }
@@ -428,7 +428,7 @@ public class FTPPath extends Path {
         }
         try {
             session.FTP.setTransferType(FTPTransferType.ASCII);
-			this.status.setSize(this.size());
+			this.status.setSize(this.size()); //@todo obsolete
             if (this.status.isResume()) {
                 this.status.setCurrent(this.getLocal().getTemp().length());
             }
@@ -543,7 +543,7 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
-            this.status.setSize(this.getLocal().length());
+            this.status.setSize(this.getLocal().length()); //@todo obsolete
             if (this.status.isResume()) {
                 this.status.setCurrent(this.size());
             }
@@ -603,7 +603,7 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             session.FTP.setTransferType(FTPTransferType.ASCII);
-            this.status.setSize(this.getLocal().length());
+            this.status.setSize(this.getLocal().length()); //@todo obsolete
             if (this.status.isResume()) {
                 this.status.setCurrent(this.size());
             }

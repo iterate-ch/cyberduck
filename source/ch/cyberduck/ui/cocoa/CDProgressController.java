@@ -186,7 +186,6 @@ public class CDProgressController extends NSObject implements Observer {
 	
 	public void setProgressSubview(NSView progressView) {
 		this.progressView = progressView;
-//		this.progressView.setToolTip(this.queue.getRoot().getHost().getURL());
 	}
 	
 	public NSView view() {

@@ -336,7 +336,7 @@ public class SFTPPath extends Path {
                     throw new IOException("Unable to buffer data");
                 }
                 SftpFile p = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-                this.status.setSize(p.getAttributes().getSize().intValue());
+                this.status.setSize(p.getAttributes().getSize().intValue()); //@todo obsolete
                 in = new SftpFileInputStream(p);
                 if (in == null) {
                     throw new IOException("Unable opening data stream");
@@ -435,8 +435,8 @@ public class SFTPPath extends Path {
                 this.upload(out, in);
                 if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
 					Permission perm = null;
-                    if (Preferences.instance().getProperty("queue.permissions.useDefault").equals("true")) {
-                        perm = new Permission(Preferences.instance().getProperty("queue.permissions.default"));
+                    if (Preferences.instance().getProperty("queue.upload.permissions.useDefault").equals("true")) {
+                        perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
                     }
                     else {
                         perm = this.getLocal().getPermission();

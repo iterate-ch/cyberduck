@@ -1358,9 +1358,12 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 	
     public boolean validateToolbarItem(NSToolbarItem item) {
         //	log.debug("validateToolbarItem:"+item.label());
-        this.backButton.setEnabled(pathController.numberOfItems() > 0);
-        this.upButton.setEnabled(pathController.numberOfItems() > 0);
-        this.pathPopup.setEnabled(pathController.numberOfItems() > 0);
+		boolean enabled = pathController.numberOfItems() > 0;
+        this.backButton.setEnabled(enabled);
+        this.upButton.setEnabled(enabled);
+        this.pathPopup.setEnabled(enabled);
+        this.pathPopup.setEnabled(enabled);
+		this.searchField.setEnabled(enabled);
         return this.validateItem(item.itemIdentifier());
     }
 
