@@ -26,6 +26,8 @@
 
 	<property file="build.properties"/>
 
+	<property name="debug" value="on" />
+
 	<!-- set global properties for this build -->
 	<property name="home" value="." />
 	<property name="build" value="${home}/build" />
@@ -36,7 +38,7 @@
 	<property name="classes" value="${build}/classes" />
 	<property name="resources" value="${home}/resources" />
 	<property name="doc" value="${home}/doc" />
-	<property name="classpath" value="/System/Library/Java/:${lib}/log4j.jar:${lib}/xerces.jar:${lib}/xml.jar:${lib}/ant.jar:${lib}/junit.jar" />
+	<property name="classpath" value="/System/Library/Java/:${lib}/log4j.jar" /><!--:${lib}/xerces.jar:${lib}/xml.jar:${lib}/ant.jar:${lib}/junit.jar" />-->
 
 	<!-- mac os x properties used by target 'app'-->
 	<property name="app.name" value="Cyberduck" />
@@ -77,40 +79,141 @@
 		<mkdir dir="${dist}" />
 		<mkdir dir="${doc}" />
 	</target>
-	<!--
-	<target name="compile" depends="init">
-		<javac 
-		    debug="on"
-		    deprecation="on"
-		    classpath="${classpath}" 
-		    srcdir="${source}" 
-		    destdir="${classes}"
-		</javac>
-	</target>
-	-->
+
+	<target name="all-modules" depends="core,ftp,ssh,http,cocoa"></target>
 	
 	<target name="core">
-		<javac 
-		    debug="on"
-		    deprecation="on"
-		    classpath="${classpath}" 
-		    srcdir="${source}" 
-		    destdir="${classes}/core"
-		    includes="ch/cyberduck/core/**"
-		/>
+	    <mkdir dir="${classes}/core" />
+	    <javac 
+		debug="${debug}"
+		deprecation="on"
+		classpath="${classpath}" 
+		srcdir="${source}" 
+		destdir="${classes}/core"
+		includes="ch/cyberduck/core/**">
+	    </javac>
+	    
+	    <jar jarfile="${build}/core.jar"
+		update="yes">
+		<fileset dir="${classes}/core">
+		    <include name="ch/cyberduck/core/**/*.class"/>
+		</fileset>
+	    </jar>
+
+	    <copy todir="${app.jar}">
+		<fileset dir="${build}">
+		    <include name="core.jar" />
+		</fileset>
+	    </copy>
 	</target>
 	
+	<target name="cocoa">
+	    <mkdir dir="${classes}/cocoa" />
+	    <javac 
+		debug="${debug}"
+		deprecation="on"
+		classpath="${classpath}:${build}/core.jar" 
+		srcdir="${source}" 
+		destdir="${classes}/cocoa"
+		includes="ch/cyberduck/ui/cocoa/**">
+	    </javac>
+	    
+	    <jar jarfile="${build}/cocoa.jar"
+		update="yes">
+		<fileset dir="${classes}/cocoa/">
+		    <include name="ch/cyberduck/ui/cocoa/**/*.class"/>
+		</fileset>
+	    </jar>
+	    
+	    <copy todir="${app.jar}">
+		<fileset dir="${build}">
+		    <include name="cocoa.jar" />
+		</fileset>
+	    </copy>
+	</target>
+
+
+	<target name="ssh">
+	    <mkdir dir="${classes}/ssh" />
+	    <javac 
+		debug="${debug}"
+		deprecation="on"
+		classpath="${classpath}" 
+		srcdir="${source}" 
+		destdir="${classes}/ssh"
+		includes="com/sshtools/j2ssh/**">
+	    </javac>
+	    
+	    <jar jarfile="${build}/ssh.jar"
+		update="yes">
+		<fileset dir="${classes}/ssh">
+		    <include name="com/sshtools/j2ssh/**/*.class"/>
+		</fileset>
+	    </jar>
+
+	    <copy todir="${app.jar}">
+		<fileset dir="${build}">
+		    <include name="ssh.jar" />
+		</fileset>
+	    </copy>
+	</target>
+
+
+	<target name="ftp">
+	    <mkdir dir="${classes}/ftp" />
+	    <javac 
+		debug="${debug}"
+		deprecation="on"
+		classpath="${classpath}" 
+		srcdir="${source}" 
+		destdir="${classes}/ftp"
+		includes="com/enterprisedt/**">
+	    </javac>
+	    
+	    <jar jarfile="${build}/ftp.jar"
+		update="yes">
+		<fileset dir="${classes}/ftp">
+		    <include name="com/enterprisedt/**/*.class"/>
+		</fileset>
+	    </jar>
+
+	    <copy todir="${app.jar}">
+		<fileset dir="${build}">
+		    <include name="ftp.jar" />
+		</fileset>
+	    </copy>
+	</target>
 	
-	
+	<target name="http">
+	    <mkdir dir="${classes}/http" />
+	    <javac 
+		debug="${debug}"
+		deprecation="on"
+		classpath="${classpath}" 
+		srcdir="${source}" 
+		destdir="${classes}/http"
+		includes="org/apache/commons/httpclient/**">
+	    </javac>
+	    
+	    <jar jarfile="${build}/http.jar"
+		update="yes">
+		<fileset dir="${classes}/http">
+		    <include name="org/apache/commons/httpclient/**/*.class"/>
+		</fileset>
+	    </jar>
+
+	    <copy todir="${app.jar}">
+		<fileset dir="${build}">
+		    <include name="http.jar" />
+		</fileset>
+	    </copy>
+	</target>
+
+<!--
 	<target name="jar" depends="compile" description="build executable jar file">
 		<jar	jarfile="${dist}/${app.name}.jar"
 				update="yes"
 				manifest="${resources}/${app.name}.MF">
-    			<!--<fileset dir="${lib}">
-				 	<include name="javax/**"/>
-				 	<include name="com/**"/>
-				 	<include name="org/**"/>
-				</fileset>-->
     			<fileset dir="${classes}">
 				 	<include name="**/*.class"/>
 				</fileset>
@@ -121,7 +224,7 @@
 				</fileset>
 		</jar>
 	</target>
-	
+-->	
 	<target name="doc" depends="init">
 		<javadoc packagenames="ch.cyberduck.*"
 		           sourcepath="${source}"
@@ -141,8 +244,9 @@
 		<delete file="${dist}/${app.name}.jar" />
 		<delete file="${app.jar}/${app.name}.jar" />
 	</target>
-
+<!--
 	<target name="all" depends="clean, dist, doc"/>
+-->
 
 <!--	<target name="dist" depends="app, zip, tar"/>-->
 
@@ -169,6 +273,7 @@
 	</target>
 -->
 
+<!--
 	<target name="app" depends="jar" description="build mac os x bundle">
 
 		<mkdir dir="${app.bundle}" />
@@ -215,5 +320,6 @@
 		</copy>
 		<chmod perm="ugo+rx" file="${app.contents}/MacOS/${app.name}" />
 	</target>
+	-->
 </project>
 
