@@ -18,11 +18,6 @@
             SUPERCLASS = NSObject; 
         }, 
         {
-            CLASS = "ch.cyberduck.ui.cocoa.CDBookmarkTable"; 
-            LANGUAGE = Java; 
-            SUPERCLASS = NSTableView; 
-        }, 
-        {
             CLASS = "ch.cyberduck.ui.cocoa.CDBrowserController"; 
             LANGUAGE = Java; 
             OUTLETS = {

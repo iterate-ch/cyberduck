@@ -17,11 +17,6 @@
             LANGUAGE = Java; 
             OUTLETS = {queueTable = NSTableView; window = NSWindow; }; 
             SUPERCLASS = NSObject; 
-        }, 
-        {
-            CLASS = "ch.cyberduck.ui.cocoa.CDQueueTable"; 
-            LANGUAGE = Java; 
-            SUPERCLASS = NSTableView; 
         }
     ); 
     IBVersion = 1; 

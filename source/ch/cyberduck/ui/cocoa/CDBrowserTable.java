@@ -78,7 +78,7 @@ public class CDBrowserTable extends NSTableView {
             }
         }
 
-// ading table columns
+		// ading table columns
         if (Preferences.instance().getProperty("browser.columnIcon").equals("true")) {
             NSTableColumn c = new NSTableColumn();
             c.setIdentifier("TYPE");
@@ -164,7 +164,6 @@ public class CDBrowserTable extends NSTableView {
     public void keyDown(NSEvent event) {
         String chars = event.characters();
         double timestamp = event.timestamp();
-		//        CDTableDataSource model = ((CDTableDataSource) this.dataSource());
 		Object ds = this.dataSource();
 		if(ds instanceof CDTableDataSource) {
 			CDTableDataSource model = (CDTableDataSource)ds;
@@ -177,7 +176,6 @@ public class CDBrowserTable extends NSTableView {
 				}
 			}
 		}
-//        this.interpretKeyEvents(new NSArray(event));
 		super.keyDown(event);
     }
 }

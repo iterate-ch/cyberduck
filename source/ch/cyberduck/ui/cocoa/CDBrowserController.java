@@ -117,6 +117,55 @@ public class CDBrowserController extends NSObject implements Observer { //@todo
         this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableRowDoubleClicked", new Class[]{Object.class}));
         this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
         this.bookmarkTable.setDelegate(this.bookmarkModel);
+		
+		// receive drag events from types
+        this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]{"BookmarkPboardType",
+			NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
+			NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as BookmarkPboardType
+												 ));
+        this.bookmarkTable.setRowHeight(45f);
+		
+        NSTableColumn iconColumn = new NSTableColumn();
+        iconColumn.setIdentifier("ICON");
+        iconColumn.setMinWidth(32f);
+        iconColumn.setWidth(32f);
+        iconColumn.setMaxWidth(32f);
+        iconColumn.setEditable(false);
+        iconColumn.setResizable(true);
+        iconColumn.setDataCell(new NSImageCell());
+        this.bookmarkTable.addTableColumn(iconColumn);
+		
+        NSTableColumn bookmarkColumn = new NSTableColumn();
+        bookmarkColumn.setIdentifier("BOOKMARK");
+        bookmarkColumn.setMinWidth(50f);
+        bookmarkColumn.setWidth(200f);
+        bookmarkColumn.setMaxWidth(500f);
+        bookmarkColumn.setEditable(false);
+        bookmarkColumn.setResizable(true);
+        bookmarkColumn.setDataCell(new CDBookmarkCell());
+        this.bookmarkTable.addTableColumn(bookmarkColumn);
+		
+		// setting appearance attributes
+        this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
+        NSSelector setUsesAlternatingRowBackgroundColorsSelector =
+			new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
+        if (setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
+            this.bookmarkTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getProperty("browser.alternatingRows").equals("true"));
+        }
+        NSSelector setGridStyleMaskSelector =
+			new NSSelector("setGridStyleMask", new Class[]{int.class});
+        if (setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
+            this.bookmarkTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
+        }
+        this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
+		
+		// selection properties
+        this.bookmarkTable.setAllowsMultipleSelection(false);
+        this.bookmarkTable.setAllowsEmptySelection(true);
+        this.bookmarkTable.setAllowsColumnReordering(false);
+		
+        this.bookmarkTable.sizeToFit();
+		
         (NSNotificationCenter.defaultCenter()).addObserver(this,
                 new NSSelector("bookmarkSelectionDidChange", new Class[]{NSNotification.class}),
                 NSTableView.TableViewSelectionDidChangeNotification,

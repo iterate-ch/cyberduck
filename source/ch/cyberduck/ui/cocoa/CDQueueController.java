@@ -81,6 +81,53 @@ public class CDQueueController extends NSObject implements Observer {
         this.queueTable.setDoubleAction(new NSSelector("queueTableRowDoubleClicked", new Class[]{Object.class}));
         this.queueTable.setDataSource(this.queueModel = new CDQueueTableDataSource());
         this.queueTable.setDelegate(this.queueModel);
+        // receive drag events from types
+        // in fact we are not interested in file promises, but because the browser model can only initiate
+        // a drag with tableView.dragPromisedFilesOfTypes(), we listens for those events
+        // and then use the private pasteboard instead.
+        this.queueTable.registerForDraggedTypes(new NSArray(new Object[]{"QueuePBoardType",
+			NSPasteboard.StringPboardType,
+			NSPasteboard.FilesPromisePboardType}));
+		
+        this.queueTable.setRowHeight(50f);
+		
+        NSTableColumn dataColumn = new NSTableColumn();
+        dataColumn.setIdentifier("DATA");
+        dataColumn.setMinWidth(200f);
+        dataColumn.setWidth(350f);
+        dataColumn.setMaxWidth(1000f);
+        dataColumn.setEditable(false);
+        dataColumn.setResizable(true);
+        dataColumn.setDataCell(new CDQueueCell());
+        this.queueTable.addTableColumn(dataColumn);
+		
+        NSTableColumn progressColumn = new NSTableColumn();
+        progressColumn.setIdentifier("PROGRESS");
+        progressColumn.setMinWidth(80f);
+        progressColumn.setWidth(300f);
+        progressColumn.setMaxWidth(1000f);
+        progressColumn.setEditable(false);
+        progressColumn.setResizable(true);
+        progressColumn.setDataCell(new CDProgressCell());
+        this.queueTable.addTableColumn(progressColumn);
+		
+        NSSelector setUsesAlternatingRowBackgroundColorsSelector =
+			new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
+        if (setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
+            this.queueTable.setUsesAlternatingRowBackgroundColors(true);
+        }
+        NSSelector setGridStyleMaskSelector =
+			new NSSelector("setGridStyleMask", new Class[]{int.class});
+        if (setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
+            this.queueTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
+        }
+		
+        //selection properties
+        this.queueTable.setAllowsMultipleSelection(true);
+        this.queueTable.setAllowsEmptySelection(true);
+        this.queueTable.setAllowsColumnReordering(false);
+		
+		this.queueTable.sizeToFit();
     }
 
     public void startItem(Queue queue) {
