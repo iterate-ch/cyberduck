@@ -103,7 +103,7 @@ public class Queue extends Observable implements Observer { //Thread {
     /**
 		* The size of all files accumulated
      */
-    private long size;
+//    private long size;
 //    private long current;
     private int timeLeft;
     
@@ -298,10 +298,10 @@ public class Queue extends Observable implements Observer { //Thread {
 		* @return The cummulative file size of all files remaining in the queue
      */
     public long getSize() {
-		if(this.size <= 0)
-			this.size = this.calculateTotalSize();
-		return this.size;
-		//	return this.calculateTotalSize();
+//		if(this.size <= 0)
+//			this.size = this.calculateTotalSize();
+//		return this.size;
+		return this.calculateTotalSize();
     }
 	
     public long calculateTotalSize() {
@@ -357,12 +357,12 @@ public class Queue extends Observable implements Observer { //Thread {
     
     private void setSpeed(long s) {
 		this.speed = s;
-		this.callObservers(new Message(Message.DATA, currentJob.status));
+		this.callObservers(new Message(Message.DATA));
     }
 	
     private void setTimeLeft(int seconds) {
         this.timeLeft = seconds;
-		this.callObservers(new Message(Message.DATA, currentJob.status));
+		this.callObservers(new Message(Message.DATA));
     }
 	
     public String getTimeLeft() {
@@ -378,6 +378,21 @@ public class Queue extends Observable implements Observer { //Thread {
         }
         return message;
     }
+	
+	public String getElapsedTime() {
+		if(calendar.get(Calendar.HOUR) > 0) {
+			return this.parseTime(calendar.get(Calendar.HOUR)) 
+			+":"
+			+ parseTime(calendar.get(Calendar.MINUTE)) 
+			+":"
+			+ parseTime(calendar.get(Calendar.SECOND));
+		}
+		else {
+			return this.parseTime(calendar.get(Calendar.MINUTE)) 
+			+":"
+			+ parseTime(calendar.get(Calendar.SECOND));
+		}
+	}
 	
     private String parseTime(int t) {
 		if(t > 9) {
@@ -405,7 +420,7 @@ public class Queue extends Observable implements Observer { //Thread {
  //}
 	
 private void reset() {
-    this.size = -1;
+//    this.size = -1;
 //    this.current = 0;
     this.speed = -1;
 	//    this.overall = 0;
@@ -414,7 +429,7 @@ private void reset() {
     this.calendar.set(Calendar.HOUR, 0);
     this.calendar.set(Calendar.MINUTE, 0);
     this.calendar.set(Calendar.SECOND, 0);
-//	this.callObservers(new Message(Message.DATA, currentJob.status));
+//	this.callObservers(new Message(Message.DATA));
 }
 
 private void init() {
@@ -443,13 +458,7 @@ private void init() {
 												  calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), seconds);
 											  }
 										  }
-										  
-										  if(calendar.get(Calendar.HOUR) > 0) {
-											  callObservers(new Message(Message.CLOCK, parseTime(calendar.get(Calendar.HOUR)) + ":" + parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND))));
-										  }
-										  else {
-											  Queue.this.callObservers(new Message(Message.CLOCK, parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND))));
-										  }
+										  Queue.this.callObservers(new Message(Message.CLOCK));
 									  }
 								  }
 								  );
@@ -504,7 +513,6 @@ private void init() {
 												   diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
 											   }
 											   Queue.this.setSpeed((diff/speeds.length)); //Bytes per second
-														 //Queue.this.setSpeed((diff/speeds.length/1024)) //kBytes per second
 										   }
 										   
 									   }

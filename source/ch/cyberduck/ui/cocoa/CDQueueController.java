@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Validator;
 
@@ -58,8 +59,10 @@ public class CDQueueController implements Observer, Validator {
 		this.queueTable.setTarget(this);
 		this.queueTable.setDataSource(this.queueModel = new CDQueueTableDataSource());
 		this.queueTable.setDelegate(this.queueModel);
-//		this.queueTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
+		this.queueTable.tableColumnWithIdentifier("REMOVE").setDataCell(new NSActionCell());
+//		this.queueTable.tableColumnWithIdentifier("ICON").setDataCell(new CDImageCell());
 		this.queueTable.tableColumnWithIdentifier("DATA").setDataCell(new CDQueueCell());
+		this.queueTable.tableColumnWithIdentifier("PROGRESS").setDataCell(new CDProgressCell());
 		this.queueTable.setDoubleAction(new NSSelector("revealButtonClicked", new Class[] {Object.class}));
     }
 	
@@ -79,11 +82,28 @@ public class CDQueueController implements Observer, Validator {
 		this.queueTable.reloadData();
 		queue.addObserver(this);
 		queue.start();
-//todo		this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
+		//todo		this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
     }
-
+	
 	public void update(Observable o, Object arg) {
 		this.queueTable.reloadData();
+		if(arg instanceof Message) {
+			Message msg = (Message)arg;
+			if(msg.getTitle().equals(Message.ERROR)) {
+				NSAlertPanel.beginCriticalAlertSheet(
+										 NSBundle.localizedString("Error"), //title
+										 NSBundle.localizedString("OK"),// defaultbutton
+										 null,//alternative button
+										 null,//other button
+										 this.window(), //docWindow
+										 null, //modalDelegate
+										 null, //didEndSelector
+										 null, // dismiss selector
+										 null, // context
+										 (String)msg.getContent() // message
+										 );
+			}
+		}
 	}
 	
 	public static CDQueueController instance() {
