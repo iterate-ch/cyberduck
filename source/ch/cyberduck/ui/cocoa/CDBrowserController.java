@@ -455,7 +455,7 @@ public class CDBrowserController extends CDController implements Observer {
 			}
 			else if(msg.getTitle().equals(Message.START)) {
 				this.statusIcon.setImage(null);
-				this.statusIcon.setNeedsDisplay(true);
+				this.statusIcon.display();
 				this.progressIndicator.startAnimation(this);
 				ThreadUtilities.instance().invokeLater(new Runnable() {
 					public void run() {
