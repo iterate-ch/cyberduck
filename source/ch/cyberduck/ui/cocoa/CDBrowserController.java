@@ -692,7 +692,7 @@ public class CDBrowserController extends CDController implements Observer {
 	public void setEncodingPopup(NSPopUpButton encodingPopup) {
 		this.encodingPopup = encodingPopup;
 		this.encodingPopup.setTarget(this);
-		this.encodingPopup.setAction(new NSSelector("encodingButtonClicked", new Class[]{NSPopUpButton.class}));
+		this.encodingPopup.setAction(new NSSelector("encodingButtonClicked", new Class[]{Object.class}));
 		this.encodingPopup.removeAllItems();
 		java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
 		String[] items = new String[charsets.size()];
@@ -1434,9 +1434,6 @@ public class CDBrowserController extends CDController implements Observer {
 		if(identifier.equals("showHiddenFilesClicked:")) {
 			return this.isMounted();
 		}
-		if(identifier.equals("Encoding") || identifier.equals("encodingButtonClicked:")) {
-			return this.isMounted();
-		}
 		if(identifier.equals("addBookmarkButtonClicked:")) {
 			return true;
 		}
@@ -1517,7 +1514,6 @@ public class CDBrowserController extends CDController implements Observer {
 		this.upButton.setEnabled(enabled);
 		this.pathPopupButton.setEnabled(enabled);
 		this.searchField.setEnabled(enabled);
-		this.encodingPopup.setEnabled(enabled);
 		return this.validateItem(item.itemIdentifier());
 	}
 
@@ -1555,9 +1551,18 @@ public class CDBrowserController extends CDController implements Observer {
 			item.setPaletteLabel(NSBundle.localizedString("Encoding", "Toolbar item"));
 			item.setToolTip(NSBundle.localizedString("Character Encoding", "Toolbar item tooltip"));
 			item.setView(encodingPopup);
-			NSMenuItem encodingMenu = new NSMenuItem();
-			encodingMenu.setTitle(NSBundle.localizedString("Encoding", "Toolbar item"));
-			encodingMenu.setSubmenu(encodingPopup.menu());
+			NSMenuItem encodingMenu = new NSMenuItem(NSBundle.localizedString("Encoding", "Toolbar item"),
+													 new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
+													 "");
+			java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
+			java.util.Iterator iter = charsets.values().iterator();
+			NSMenu charsetMenu = new NSMenu();
+			while(iter.hasNext()) {
+				charsetMenu.addItem(new NSMenuItem(((java.nio.charset.Charset)iter.next()).name(),
+													new NSSelector("encodingButtonClicked", new Class[]{Object.class}), 
+													""));
+			}
+			encodingMenu.setSubmenu(charsetMenu);
 			item.setMenuFormRepresentation(encodingMenu);
 			item.setMinSize(encodingPopup.frame().size());
 			item.setMaxSize(encodingPopup.frame().size());
