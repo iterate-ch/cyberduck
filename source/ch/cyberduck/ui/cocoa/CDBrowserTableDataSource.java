@@ -116,7 +116,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
      * "retarget" a drop if desired by calling setDropRowAndDropOperation and returning something other than
      * NSDraggingInfo.
      * DragOperationNone. One may choose to retarget for various reasons (e.g. for better visual
-																		  * feedback when inserting into a sorted position).
+	* feedback when inserting into a sorted position).
      */
     public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 		log.debug("tableViewValidateDrop:row:"+row+",operation:"+operation);
@@ -177,12 +177,11 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		*/
     public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
 		log.debug("tableViewWriteRowsToPasteboard:"+rows);
-//		Session session = this.workdir().getSession().copy();
 		if(rows.count() > 0) {
 			this.promisedDragPaths = new Path[rows.count()];
-			// The types argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
-			NSMutableArray types = new NSMutableArray();
-			NSMutableArray queues = new NSMutableArray();
+			// The fileTypes argument is the list of fileTypes being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
+			NSMutableArray fileTypes = new NSMutableArray();
+			NSMutableArray queueDictionaries = new NSMutableArray();
 			// declare our dragged type in the paste board
 //			pboard.declareTypes(new NSArray(new Object[]{"QueuePBoardType", 
 //												NSPasteboard.FilesPromisePboardType}), null);
@@ -190,31 +189,30 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			for(int i = 0; i < rows.count(); i++) {
 				Session session = this.workdir().getSession().copy();
 				promisedDragPaths[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue()).copy(session);
-
-				queues.addObject(new Queue(promisedDragPaths[i], Queue.KIND_DOWNLOAD).getAsDictionary());
-								 
 				if(promisedDragPaths[i].isFile()) {
-//					types.addObject(NSPathUtilities.FileTypeRegular);
+//					fileTypes.addObject(NSPathUtilities.FileTypeRegular);
 					if(promisedDragPaths[i].getExtension() != null)
-						types.addObject(promisedDragPaths[i].getExtension());
+						fileTypes.addObject(promisedDragPaths[i].getExtension());
 					else
-						types.addObject(NSPathUtilities.FileTypeUnknown);
+						fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
 				}
 				else if(promisedDragPaths[i].isDirectory()) {
-//					types.addObject(NSPathUtilities.FileTypeDirectory);
-					types.addObject("'fldr'");
+//					fileTypes.addObject(NSPathUtilities.FileTypeDirectory);
+					fileTypes.addObject("'fldr'");
 				}
 				else
-					types.addObject(NSPathUtilities.FileTypeUnknown);
+					fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
+				queueDictionaries.addObject(new Queue(promisedDragPaths[i], Queue.KIND_DOWNLOAD).getAsDictionary());
 			}
-			if(pboard.setPropertyListForType(types, NSPasteboard.FilesPromisePboardType))
-				log.debug("FilesPromisePboardType data sucessfully written to pasteboard");
-			else
-				log.error("Could not write FilenamesPboardType data to pasteboard");
+//			if(pboard.setPropertyListForType(fileTypes, NSPasteboard.FilesPromisePboardType))
+//				log.debug("FilesPromisePboardType data sucessfully written to pasteboard");
+//			else
+//				log.error("Could not write FilenamesPboardType data to pasteboard");
 
+			// Writing data for private use when the item gets dragged to the transfer queue.
 			NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
 			queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
-			if(queuePboard.setPropertyListForType(queues, "QueuePBoardType"))
+			if(queuePboard.setPropertyListForType(queueDictionaries, "QueuePBoardType"))
 				log.debug("QueuePBoardType data sucessfully written to pasteboard");
 			else
 				log.error("Could not write QueuePBoardType data to pasteboard");
@@ -223,7 +221,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
 			NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
 			
-			tableView.dragPromisedFilesOfTypes(types, imageRect, this, true, event);
+			tableView.dragPromisedFilesOfTypes(fileTypes, imageRect, this, true, event);
 		}
 		// we return false because we don't want the table to draw the drag image
 		return false;

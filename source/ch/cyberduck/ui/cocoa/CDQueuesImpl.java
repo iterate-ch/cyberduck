@@ -41,11 +41,6 @@ public class CDQueuesImpl extends Queues { //implements NSTableView.DataSource {
 		QUEUE_FILE.getParentFile().mkdir();
     }
 	
-    private CDQueuesImpl() {
-		super();
-		this.load();
-    }
-	
     public static CDQueuesImpl instance() {
 		if(null == instance) {
 			instance = new CDQueuesImpl();

@@ -32,6 +32,10 @@ public abstract class Queues {
 	
     private List data = new ArrayList();
 		
+	public Queues() {
+		this.load();
+    }
+	
     public abstract void save();
 	
     public abstract void load();
@@ -43,16 +47,19 @@ public abstract class Queues {
     public void addItem(Queue item) {
 		log.debug("addItem:"+item);
 		this.data.add(item);
+		this.save();
     }
 
 	public void addItem(Queue item, int row) {
 		log.debug("addItem:"+item);
 		this.data.add(row, item);
+		this.save();
     }
 	
 	public void removeItem(int index) {
 		log.debug("removeItem:"+index);
 		this.data.remove(index);
+		this.save();
 	}
 	
     public void removeItem(Queue item) {

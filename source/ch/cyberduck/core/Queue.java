@@ -107,7 +107,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	private long current = -1;
 	private long size = -1;
 	
-	private String status = "Idle";
+	private String status = " ";
 	
 	public Queue(Path root, int kind) {
 		log.debug("Queue");

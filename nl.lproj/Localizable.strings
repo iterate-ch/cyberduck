@@ -16,19 +16,6 @@
 "SFTP (SSH Secure File Transfer)" = "SFTP (SSH Secure File Transfer)";
 "Quick Connect" = "Snelverbinding";
 
-/* CDTransferController - Transfer.nib */
-"of" = "van";
-"Total" = "Totaal";
-"Complete" = "Compleet";
-"Stop" = "Stop";
-"File exists" = "Bestand bestaat";
-"Resume" = "Herneem";
-"Overwrite" = "Overschrijven";
-"Cancel transfer?" = "Annuleer gegevensoverdracht?";
-"The file" = "Het bestand";
-"alredy exists in" = "bestaat al in";
-"Closing this window will stop the file transfer" = "Als u dit venster sluit stopt de gegevensoverdracht";
-
 /* CDInfoController - Info.nib */
 "Permissions" = "Bevoegdheden";
 
@@ -68,3 +55,22 @@
 "Disconnect from" = "Verbreek verbinding met";
 "Close" = "Sluit";
 "The connection will be closed." = "De verbinding wordt afgesloten.";
+
+/* CDQueueController - Queue.nib */
+"Resume" = "Herneem";
+"Reload" = "Opnieuw laden";
+"Stop" = "Stop";
+"Show in Finder" = "Toon in Finder";
+
+"of" = "van";
+"Total" = "Totaal";
+"Complete" = "Compleet";
+"Stop" = "Stop";
+"File exists" = "Bestand bestaat";
+"Resume" = "Herneem";
+"Overwrite" = "Overschrijven";
+"Cancel transfer?" = "Annuleer gegevensoverdracht?";
+"The file" = "Het bestand";
+"alredy exists in" = "bestaat al in";
+"Closing this window will stop the file transfer" = "Als u dit venster sluit stopt de gegevensoverdracht";
+

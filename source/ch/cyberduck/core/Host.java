@@ -42,7 +42,7 @@ public class Host {
     /**
 		* For internal use only.
 	 * @deprecated
-	 * @arg url Must be in the format protocol://user@hostname:portnumber
+	 * @param url Must be in the format protocol://user@hostname:portnumber
      */
     public Host(String url) throws java.net.MalformedURLException {
 		try {

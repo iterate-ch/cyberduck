@@ -32,6 +32,10 @@ public abstract class History {
 
 	private Map data = new HashMap();
 
+	public History() {
+		this.load();
+    }
+
 	public abstract void save();
 	
     public abstract void load();
@@ -42,16 +46,19 @@ public abstract class History {
 				this.removeItem(0);
 		}
 		this.data.put(h.getHostname(), h);
+		this.save();
     }
 	
 	public void removeItem(int index) {
 		log.debug("removeItem:"+index);
 		this.data.remove(this.getItem(index).getHostname());
+		this.save();
 	}
 	
     public void removeItem(Host item) {
 		log.debug("removeItem:"+item);
 		this.data.remove(item.getHostname());
+		this.save();
     }
 	
     public Host getItem(int index) {

@@ -198,7 +198,8 @@ public class CDBrowserController implements Observer {
 		// receive drag events from types
 		this.bookmarkTable.registerForDraggedTypes(new NSArray(
 															   new Object[]{"BookmarkPboardType", 
-																   NSPasteboard.FilenamesPboardType}
+																   NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
+																   NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as BookmarkPboardType
 															   )
 												   );
 		this.bookmarkTable.setRowHeight(45f);

@@ -35,14 +35,18 @@ public abstract class Bookmarks {
     	
     protected List data = new ArrayList();
 		
-	public abstract void save();
-	
-    public abstract void load();
+	public Bookmarks() {
+		this.load();
+    }
 	
 	protected void finalize() throws Throwable {
 		super.finalize();
 		this.save();
 	}
+	
+	public abstract void save();
+	
+    public abstract void load();
 	
 	public abstract Host importBookmark(java.io.File file);
 	
@@ -55,16 +59,19 @@ public abstract class Bookmarks {
     public void addItem(Host item) {
 		log.debug("addItem:"+item);
 		this.data.add(item);
+		this.save();
     }
 	
 	public void addItem(Host item, int row) {
 		log.debug("addItem:"+item);
 		this.data.add(row, item);
+		this.save();
     }
 	
 	public void removeItem(int index) {
 		log.debug("removeItem:"+index);
 		this.data.remove(index);
+		this.save();
 	}
 	
     public void removeItem(Host item) {

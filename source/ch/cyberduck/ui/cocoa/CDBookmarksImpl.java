@@ -42,11 +42,6 @@ public class CDBookmarksImpl extends Bookmarks { //implements NSTableView.DataSo
 		BOOKMARKS_FILE.getParentFile().mkdir();
     }
 	
-    private CDBookmarksImpl() {
-		super();
-		this.load();
-    }
-	
     public static CDBookmarksImpl instance() {
 		if(null == instance) {
 			instance = new CDBookmarksImpl();

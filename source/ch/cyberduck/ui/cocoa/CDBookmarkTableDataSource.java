@@ -31,13 +31,11 @@ import org.apache.log4j.Logger;
  */
 public class CDBookmarkTableDataSource extends CDTableDataSource {
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
-	
-	private Bookmarks bookmarks = CDBookmarksImpl.instance();
-	
+		
 	private NSArray draggedRows;	// keep track of which row got dragged
 
 	public int numberOfRowsInTableView(NSTableView tableView) {
-		return bookmarks.size();
+		return CDBookmarksImpl.instance().size();
 	}
 	
 	//getValue()
@@ -48,15 +46,12 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			return NSImage.imageNamed("cyberduck-document.icns");
 		}
 		if(identifier.equals("BOOKMARK")) {
-			return (Host)bookmarks.values().toArray()[row];
+			return (Host)CDBookmarksImpl.instance().values().toArray()[row];
 		}
 		throw new IllegalArgumentException("Unknown identifier: "+identifier);
 	}
 	
-//	public Host getEntry(int row) {
-//		return (Host)bookmarks.values().toArray()[row];
-//    }
-	
+
 	// ----------------------------------------------------------
  // Drop methods
  // ----------------------------------------------------------
@@ -82,7 +77,12 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 					}
 				}
 			}
+			return NSDraggingInfo.DragOperationNone;
 		}
+		NSPasteboard bookmarkPboard = NSPasteboard.pasteboardWithName("BookmarkPBoard");
+		log.debug("availableTypeFromArray:BookmarkPBoardType: "+bookmarkPboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")));
+		if(bookmarkPboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")) != null)
+			return NSDraggingInfo.DragOperationGeneric;
 		return NSDraggingInfo.DragOperationNone;
 	}
 	
@@ -121,10 +121,10 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 				}
 			}
 		}
-		else if(pboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")) != null) {
-			// test to see if the string for the type we defined in the paste board.
-			// if doesn't, do nothing.
-			Object o = pboard.propertyListForType("BookmarkPBoardType");// get the data from paste board
+		NSPasteboard bookmarkPboard = NSPasteboard.pasteboardWithName("BookmarkPBoard");
+		log.debug("availableTypeFromArray:BookmarkPBoardType: "+bookmarkPboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")));
+		if(bookmarkPboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")) != null) {
+			Object o = bookmarkPboard.propertyListForType("BookmarkPBoardType");// get the data from paste board
 			log.debug("tableViewAcceptDrop:"+o);
 			if(o != null) {
 				if(o instanceof NSArray) {
@@ -172,33 +172,47 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			this.promisedDragBookmarks = new Host[rows.count()];
 			this.promisedDragBookmarksFiles = new java.io.File[rows.count()];
 			// The types argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
-			NSMutableArray types = new NSMutableArray();
+			NSMutableArray fileTypes = new NSMutableArray();
+			NSMutableArray bookmarkDictionaries = new NSMutableArray();
 			for(int i = 0; i < rows.count(); i++) {
-				promisedDragBookmarks[i] = (Host)bookmarks.getItem(((Integer)rows.objectAtIndex(i)).intValue());
-				types.addObject("duck");
+				promisedDragBookmarks[i] = (Host)CDBookmarksImpl.instance().getItem(((Integer)rows.objectAtIndex(i)).intValue());
+				fileTypes.addObject("duck");
+				bookmarkDictionaries.addObject(promisedDragBookmarks[i].getAsDictionary());
 			}
+//			if(pboard.setPropertyListForType(fileTypes, NSPasteboard.FilesPromisePboardType))
+//				log.debug("FilesPromisePboardType data sucessfully written to pasteboard");
+//			else
+//				log.error("Could not write FilenamesPboardType data to pasteboard");
+			
+			NSPasteboard bookmarkPboard = NSPasteboard.pasteboardWithName("BookmarkPBoard");
+			bookmarkPboard.declareTypes(new NSArray("BookmarkPBoardType"), null);
+			if(bookmarkPboard.setPropertyListForType(bookmarkDictionaries, "BookmarkPBoardType"))
+				log.debug("BookmarkPBoardType data sucessfully written to pasteboard");
+			else
+				log.error("Could not write BookmarkPBoardType data to pasteboard");			
+			
 			NSEvent event = NSApplication.sharedApplication().currentEvent();
 			NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
 			NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
-			tableView.dragPromisedFilesOfTypes(types, imageRect, this, true, event);
+			tableView.dragPromisedFilesOfTypes(fileTypes, imageRect, this, true, event);
 		}
 		// we return false because we don't want the table to draw the drag image
 		return false;
     }
 	
-    public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
-		log.debug("finishedDraggingImage:operation:"+operation);
-		if(! (NSDraggingInfo.DragOperationNone == operation)) {
-			if(promisedDragBookmarks != null) {
-				for(int i = 0; i < promisedDragBookmarks.length; i++) {
-					CDBookmarksImpl.instance().exportBookmark(promisedDragBookmarks[i], promisedDragBookmarksFiles[i]);
-				}
-				promisedDragBookmarks = null;
-				promisedDragBookmarksFiles = null;
-				draggedRows = null;
-			}
-		}
-	}
+//    public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
+//		log.debug("finishedDraggingImage:operation:"+operation);
+//		if(! (NSDraggingInfo.DragOperationNone == operation)) {
+//			if(promisedDragBookmarks != null) {
+//				for(int i = 0; i < promisedDragBookmarks.length; i++) {
+//					CDBookmarksImpl.instance().exportBookmark(promisedDragBookmarks[i], promisedDragBookmarksFiles[i]);
+//				}
+//				promisedDragBookmarks = null;
+//				promisedDragBookmarksFiles = null;
+//				draggedRows = null;
+//			}
+//		}
+//	}
 	
     /**
 		@return the names (not full paths) of the files that the receiver promises to create at dropDestination.
@@ -216,12 +230,16 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 													 java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), 
 													 promisedDragBookmarks[i].getNickname()+".duck"
 													 );
+				CDBookmarksImpl.instance().exportBookmark(promisedDragBookmarks[i], promisedDragBookmarksFiles[i]);
 				promisedDragNames.addObject(promisedDragBookmarks[i].getNickname());
 			}
 			catch(java.io.UnsupportedEncodingException e) {
 				log.error(e.getMessage());	
 			}
 		}
+		promisedDragBookmarks = null;
+		promisedDragBookmarksFiles = null;
+		draggedRows = null;
 		return promisedDragNames;
     }
 }	

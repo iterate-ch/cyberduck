@@ -41,11 +41,6 @@ public class CDHistoryImpl extends History {
 		HISTORY_FILE.getParentFile().mkdir();
     }
 	
-	private CDHistoryImpl() {
-		super();
-		this.load();
-    }
-	
     public static CDHistoryImpl instance() {
 		if(null == instance) {
 			instance = new CDHistoryImpl();
