@@ -124,8 +124,8 @@ public class CDQueueController extends NSObject implements Observer, CDControlle
 		}
 	}
 	
-	public void alertSheetDidClose(Object sender) {
-//		instance.notifyAll();
+	public synchronized void alertSheetDidClose(Object sender) {
+		this.notify();
 	}
 	
 	public void windowDidBecomeKey(NSNotification notification) {
@@ -333,15 +333,13 @@ public class CDQueueController extends NSObject implements Observer, CDControlle
         return this.window() != null && this.window().isVisible();
     }
 
-    public void update(Observable observable, Object arg) {
+    public synchronized void update(Observable observable, Object arg) {
 		if (arg instanceof Message) {
 			Message msg = (Message)arg;
 			if (msg.getTitle().equals(Message.ERROR)) {
 				while (this.window().attachedSheet() != null) {
 					try {
-						log.debug("Sleeping...");
-//						instance.wait();
-						Thread.sleep(1000); //milliseconds
+						log.debug("Sleeping..."); this.wait();
 					}
 					catch (InterruptedException e) {
 						log.error(e.getMessage());
@@ -540,12 +538,11 @@ public class CDQueueController extends NSObject implements Observer, CDControlle
         }
     }
 
-    public void openButtonClicked(Object sender) {
+    public synchronized void openButtonClicked(Object sender) {
         if (this.queueTable.selectedRow() != -1) {
             while (this.window().attachedSheet() != null) {
                 try {
-                    log.debug("Sleeping...");
-                    Thread.sleep(1000); //milliseconds
+                    log.debug("Sleeping..."); this.wait();
                 }
                 catch (InterruptedException e) {
                     log.error(e.getMessage());
@@ -561,8 +558,8 @@ public class CDQueueController extends NSObject implements Observer, CDControlle
                             null, //alternative button
                             null, //other button
                             this.window(), //docWindow
-                            null, //modalDelegate
-                            null, //didEndSelector
+                            this, //modalDelegate
+							new NSSelector("alertSheetDidClose", new Class[]{Object.class}), //didEndSelector
                             null, // dismiss selector
                             null, // context
                             NSBundle.localizedString("Could not open the file", "") + " \""
@@ -589,12 +586,11 @@ public class CDQueueController extends NSObject implements Observer, CDControlle
         }
     }
 
-    public void revealButtonClicked(Object sender) {
+    public synchronized void revealButtonClicked(Object sender) {
         if (this.queueTable.selectedRow() != -1) {
             while (this.window().attachedSheet() != null) {
                 try {
-                    log.debug("Sleeping...");
-                    Thread.sleep(1000); //milliseconds
+                    log.debug("Sleeping..."); this.wait();
                 }
                 catch (InterruptedException e) {
                     log.error(e.getMessage());
@@ -606,18 +602,18 @@ public class CDQueueController extends NSObject implements Observer, CDControlle
             if (!NSWorkspace.sharedWorkspace().selectFile(file, "")) {
                 if (item.isComplete()) {
                     NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Could not show the file in the Finder", ""), //title
-                            NSBundle.localizedString("OK", ""), // defaultbutton
-                            null, //alternative button
-                            null, //other button
-                            this.window(), //docWindow
-                            null, //modalDelegate
-                            null, //didEndSelector
-                            null, // dismiss selector
-                            null, // context
-                            NSBundle.localizedString("Could not show the file", "") + " \""
-                            + file
-                            + "\". " + NSBundle.localizedString("It moved since you downloaded it.", "") // message
-                    );
+														 NSBundle.localizedString("OK", ""), // defaultbutton
+														 null, //alternative button
+														 null, //other button
+														 this.window(), //docWindow
+														 this, //modalDelegate
+														 new NSSelector("alertSheetDidClose", new Class[]{Object.class}), //didEndSelector
+														 null, // dismiss selector
+														 null, // context
+														 NSBundle.localizedString("Could not show the file", "") + " \""
+														 + file
+														 + "\". " + NSBundle.localizedString("It moved since you downloaded it.", "") // message
+														 );
                 }
                 else {
                     NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Could not show the file in the Finder", ""), //title

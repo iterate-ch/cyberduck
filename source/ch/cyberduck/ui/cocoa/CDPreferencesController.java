@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
@@ -209,6 +210,26 @@ public class CDPreferencesController extends NSObject {
         }
     }
 
+	private NSButton chmodUploadDefaultCheckbox; //IBOutlet
+	
+    public void setChmodUploadDefaultCheckbox(NSButton chmodUploadDefaultCheckbox) {
+        this.chmodUploadDefaultCheckbox = chmodUploadDefaultCheckbox;
+        this.chmodUploadDefaultCheckbox.setTarget(this);
+        this.chmodUploadDefaultCheckbox.setAction(new NSSelector("chmodUploadDefaultCheckboxClicked", new Class[]{NSButton.class}));
+        this.chmodUploadDefaultCheckbox.setState(Preferences.instance().getProperty("queue.upload.permissions.useDefault").equals("true") ? NSCell.OnState : NSCell.OffState);
+    }
+	
+    public void chmodUploadDefaultCheckboxClicked(NSButton sender) {
+        switch (sender.state()) {
+            case NSCell.OnState:
+                Preferences.instance().setProperty("queue.upload.permissions.useDefault", true);
+                break;
+            case NSCell.OffState:
+                Preferences.instance().setProperty("queue.upload.permissions.useDefault", false);
+                break;
+        }
+    }
+	
     private NSButton chmodDownloadCheckbox; //IBOutlet
 
     public void setChmodDownloadCheckbox(NSButton chmodDownloadCheckbox) {
@@ -229,6 +250,84 @@ public class CDPreferencesController extends NSObject {
         }
     }
 
+	private NSButton chmodDownloadDefaultCheckbox; //IBOutlet
+	
+    public void setChmodDownloadDefaultCheckbox(NSButton chmodDownloadDefaultCheckbox) {
+        this.chmodDownloadDefaultCheckbox = chmodDownloadDefaultCheckbox;
+        this.chmodDownloadDefaultCheckbox.setTarget(this);
+        this.chmodDownloadDefaultCheckbox.setAction(new NSSelector("chmodDownloadDefaultCheckboxClicked", new Class[]{NSButton.class}));
+        this.chmodDownloadDefaultCheckbox.setState(Preferences.instance().getProperty("queue.download.permissions.useDefault").equals("true") ? NSCell.OnState : NSCell.OffState);
+    }
+	
+    public void chmodDownloadDefaultCheckboxClicked(NSButton sender) {
+        switch (sender.state()) {
+            case NSCell.OnState:
+                Preferences.instance().setProperty("queue.download.permissions.useDefault", true);
+                break;
+            case NSCell.OffState:
+                Preferences.instance().setProperty("queue.download.permissions.useDefault", false);
+                break;
+        }
+    }
+	
+	public NSButton downerr; //IBOutlet
+    public NSButton downerw; //IBOutlet
+    public NSButton downerx; //IBOutlet
+    public NSButton dgroupr; //IBOutlet
+    public NSButton dgroupw; //IBOutlet
+    public NSButton dgroupx; //IBOutlet
+    public NSButton dotherr; //IBOutlet
+    public NSButton dotherw; //IBOutlet
+    public NSButton dotherx; //IBOutlet
+	
+	public void defaultPermissionsDownloadChanged(Object sender) {
+        boolean[][] p = new boolean[3][3];
+
+        p[Permission.OWNER][Permission.READ] = (downerr.state() == NSCell.OnState);
+        p[Permission.OWNER][Permission.WRITE] = (downerw.state() == NSCell.OnState);
+        p[Permission.OWNER][Permission.EXECUTE] = (downerx.state() == NSCell.OnState);
+		
+        p[Permission.GROUP][Permission.READ] = (dgroupr.state() == NSCell.OnState);
+        p[Permission.GROUP][Permission.WRITE] = (dgroupw.state() == NSCell.OnState);
+        p[Permission.GROUP][Permission.EXECUTE] = (dgroupx.state() == NSCell.OnState);
+		
+        p[Permission.OTHER][Permission.READ] = (dotherr.state() == NSCell.OnState);
+        p[Permission.OTHER][Permission.WRITE] = (dotherw.state() == NSCell.OnState);
+        p[Permission.OTHER][Permission.EXECUTE] = (dotherx.state() == NSCell.OnState);
+		
+        Permission permission = new Permission(p);
+		Preferences.instance().setProperty("queue.download.permissions.default", permission.toString());
+	}
+
+	public NSButton uownerr; //IBOutlet
+    public NSButton uownerw; //IBOutlet
+    public NSButton uownerx; //IBOutlet
+    public NSButton ugroupr; //IBOutlet
+    public NSButton ugroupw; //IBOutlet
+    public NSButton ugroupx; //IBOutlet
+    public NSButton uotherr; //IBOutlet
+    public NSButton uotherw; //IBOutlet
+    public NSButton uotherx; //IBOutlet
+	
+	public void defaultPermissionsUploadChanged(Object sender) {
+        boolean[][] p = new boolean[3][3];
+		
+        p[Permission.OWNER][Permission.READ] = (uownerr.state() == NSCell.OnState);
+        p[Permission.OWNER][Permission.WRITE] = (uownerw.state() == NSCell.OnState);
+        p[Permission.OWNER][Permission.EXECUTE] = (uownerx.state() == NSCell.OnState);
+		
+        p[Permission.GROUP][Permission.READ] = (ugroupr.state() == NSCell.OnState);
+        p[Permission.GROUP][Permission.WRITE] = (ugroupw.state() == NSCell.OnState);
+        p[Permission.GROUP][Permission.EXECUTE] = (ugroupx.state() == NSCell.OnState);
+		
+        p[Permission.OTHER][Permission.READ] = (uotherr.state() == NSCell.OnState);
+        p[Permission.OTHER][Permission.WRITE] = (uotherw.state() == NSCell.OnState);
+        p[Permission.OTHER][Permission.EXECUTE] = (uotherx.state() == NSCell.OnState);
+		
+        Permission permission = new Permission(p);
+		Preferences.instance().setProperty("queue.upload.permissions.default", permission.toString());
+	}
+	
     private NSButton horizontalLinesCheckbox; //IBOutlet
 
     public void setHorizontalLinesCheckbox(NSButton horizontalLinesCheckbox) {
@@ -565,6 +664,36 @@ public class CDPreferencesController extends NSObject {
         }
     }
 
+	private NSTextField concurrentConnectionsField; //IBOutlet
+	
+	public void setConcurrentConnectionsField(NSTextField concurrentConnectionsField) {
+        this.concurrentConnectionsField = concurrentConnectionsField;
+		this.concurrentConnectionsField.setStringValue(Preferences.instance().getProperty("connection.pool.max"));
+        NSNotificationCenter.defaultCenter().addObserver(this,
+														 new NSSelector("concurrentConnectionsFieldDidChange", new Class[]{NSNotification.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 this.concurrentConnectionsField);
+    }
+	
+	public void concurrentConnectionsFieldDidChange(NSNotification sender) {
+        Preferences.instance().setProperty("connection.pool.max", this.concurrentConnectionsField.stringValue());
+    }	
+
+	private NSTextField concurrentConnectionsTimeoutField; //IBOutlet
+	
+	public void setConcurrentConnectionsTimeoutField(NSTextField concurrentConnectionsTimeoutField) {
+        this.concurrentConnectionsTimeoutField = concurrentConnectionsTimeoutField;
+		this.concurrentConnectionsTimeoutField.setStringValue(Preferences.instance().getProperty("connection.pool.timeout"));
+        NSNotificationCenter.defaultCenter().addObserver(this,
+														 new NSSelector("concurrentConnectionsTimeoutFieldDidChange", new Class[]{NSNotification.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 this.concurrentConnectionsTimeoutField);
+    }
+	
+	public void concurrentConnectionsTimeoutFieldDidChange(NSNotification sender) {
+        Preferences.instance().setProperty("connection.pool.timeout", this.concurrentConnectionsTimeoutField.stringValue());
+    }	
+	
     private NSTextField bufferField; //IBOutlet
 
     public void setBufferField(NSTextField bufferField) {

@@ -353,11 +353,17 @@ public class SFTPPath extends Path {
                 if (this.status.isComplete()) {
                     log.info("Updating permissions");
                     if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-                        Permission perm = this.attributes.getPermission();
-                        if (!perm.isUndefined()) {
-                            this.getLocal().setPermission(perm);
-                        }
-                    }
+						Permission perm = null;
+						if (Preferences.instance().getProperty("queue.download.permissions.useDefault").equals("true")) {
+							perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
+						}
+						else {
+							perm = this.attributes.getPermission();
+						}
+						if (!perm.isUndefined()) {
+							this.getLocal().setPermission(perm);
+						}
+					}
                 }
                 if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
                     this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
@@ -428,16 +434,16 @@ public class SFTPPath extends Path {
                 }
                 this.upload(out, in);
                 if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
+					Permission perm = null;
                     if (Preferences.instance().getProperty("queue.permissions.useDefault").equals("true")) {
-                        Permission perm = new Permission(Preferences.instance().getProperty("queue.permissions.default"));
-                        this.changePermissions(perm, false);
+                        perm = new Permission(Preferences.instance().getProperty("queue.permissions.default"));
                     }
                     else {
-                        Permission perm = this.getLocal().getPermission();
-                        if (!perm.isUndefined()) {
-                            this.changePermissions(perm, false);
-                        }
+                        perm = this.getLocal().getPermission();
                     }
+					if (!perm.isUndefined()) {
+						this.changePermissions(perm, false);
+					}
                 }
             }
             session.log("Idle", Message.STOP);

@@ -158,6 +158,10 @@ public abstract class Queue extends Observable implements Observer {
     public List getRoots() {
         return this.roots;
     }
+	
+	public List getJobs() {
+		return this.jobs;
+	}
 
 	/**
 	 * Notify all observers

@@ -39,7 +39,6 @@ public class CDInfoController extends NSObject {
 
     private static NSMutableArray instances = new NSMutableArray();
 
-//    private Path file;
     private List files;
 	
     // ----------------------------------------------------------
@@ -234,7 +233,7 @@ public class CDInfoController extends NSObject {
         }
 
         Permission permission = null;
-        for (Iterator i = files.iterator(); i.hasNext();) {
+        for (Iterator i = files.iterator(); i.hasNext(); ) {
             permission = ((Path)i.next()).attributes.getPermission();
             log.debug("Permission:" + permission);
             boolean[] ownerPerm = permission.getOwnerPermissions();
@@ -265,7 +264,6 @@ public class CDInfoController extends NSObject {
         NSImage fileIcon = null;
         if (this.numberOfFiles() > 1) {
             fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
-            fileIcon.setSize(new NSSize(32f, 32f));
         }
         else {
             if (file.attributes.isFile()) {

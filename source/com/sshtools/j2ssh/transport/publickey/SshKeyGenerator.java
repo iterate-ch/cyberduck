@@ -99,7 +99,6 @@ public class SshKeyGenerator {
 
         while (thread.isAlive()) {
             System.out.print(".");
-
             try {
                 Thread.sleep(100);
             }

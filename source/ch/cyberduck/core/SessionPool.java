@@ -18,8 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import com.apple.cocoa.foundation.NSBundle;
 
+import org.apache.log4j.Logger;
 import java.io.IOException;
 
 import java.util.*;
@@ -34,10 +35,8 @@ public class SessionPool extends Hashtable {
 
 	private static SessionPool instance;
 
-	private final int MAX_CONNECTIONS = Integer.parseInt(Preferences.instance().getProperty("connection.pool.max"));
-	
 	private SessionPool() {
-		super();
+		//
 	}
 	
 	public static SessionPool instance() {
@@ -53,8 +52,8 @@ public class SessionPool extends Hashtable {
 	public int getSize(Host h) {
 		String key = h.getURL();
 		if(this.containsKey(key)) 
-			return MAX_CONNECTIONS-((List)this.get(key)).size();
-		return MAX_CONNECTIONS;
+			return Integer.parseInt(Preferences.instance().getProperty("connection.pool.max"))-((List)this.get(key)).size();
+		return Integer.parseInt(Preferences.instance().getProperty("connection.pool.max"));
 	}
 	
 	/**
@@ -68,13 +67,18 @@ public class SessionPool extends Hashtable {
 		List connections = null;
 		if(this.containsKey(key)) {
 		   connections = (List)this.get(key);
-		   while(connections.size() >= MAX_CONNECTIONS) {
+		   while(connections.size() >= Integer.parseInt(Preferences.instance().getProperty("connection.pool.max"))) {
 			   try {
 				   session.log("Allowed connections exceeded. Waiting...", Message.PROGRESS);
-				   this.wait(Integer.parseInt(Preferences.instance().getProperty("connection.pool.timeout")));
+				   this.wait(Integer.parseInt(Preferences.instance().getProperty("connection.pool.timeout"))*1000);
 			   }
 			   catch (InterruptedException ignored) {
-				   throw new IOException("Timeout to wait for a connection from the pool. You may want to adjust the number of allowed concurrent connections in the Preferences."); //@todo localize, better text
+				   //
+			   }
+			   if(connections.size() >= Integer.parseInt(Preferences.instance().getProperty("connection.pool.max"))) {
+				   // not awakened by another session but because of the timeout
+				   //I gave up after waiting for "+Preferences.instance().getProperty("connection.pool.timeout")+" seconds
+				   throw new IOException(NSBundle.localizedString("Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences.", ""));
 			   }
 		   }
 		}

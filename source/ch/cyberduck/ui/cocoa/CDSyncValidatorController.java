@@ -50,9 +50,9 @@ public class CDSyncValidatorController extends CDValidatorController {
         this.mirrorRadioCell.setTarget(this);
         this.mirrorRadioCell.setAction(new NSSelector("mirrorCellClicked", new Class[]{Object.class}));
         this.uploadRadioCell.setTarget(this);
-        this.uploadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
+        this.uploadRadioCell.setAction(new NSSelector("uploadCellClicked", new Class[]{Object.class}));
         this.downloadRadioCell.setTarget(this);
-        this.downloadRadioCell.setAction(new NSSelector("uploadCellClicked", new Class[]{Object.class}));
+        this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
 	}
 	
 	protected void setEnabled(boolean enabled) {
@@ -143,15 +143,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 	protected boolean validateFile(Path p) {
 		log.debug("validateFile:"+p);
 		if(p.getRemote().exists() && p.getLocal().exists()) {
-			//@todo should we even bother about modification dates at this stage?
-			//@todo modficiation date only relevant if download/upload
-//			boolean equalTimestamp = p.modificationDate().equals(p.getLocal().getTimestamp());
-//			log.info(p.getRemote().getName()+" : Same modification date:"+equalTimestamp);
-//			boolean equalSize = (p.size() == p.getLocal().size()); //@todo size should be correct!?
-			boolean equalSize = (p.status.getSize() == p.getLocal().size()); //@todo size should be correct!?
-			log.info(p.getRemote().getName()+" : Same size:"+equalSize);
-//			return !equalTimestamp && !equalSize;
-			return !equalSize;
+			return !(p.status.getSize() == p.getLocal().size()); //@todo size should be correct!?
 		}
 		return true; // Include if mirroring
 	}
@@ -195,37 +187,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 					}
 					return NSImage.imageNamed("notfound.tiff"); // illegal argument
 				}
-				if (identifier.equals("ICON")) {
-					NSImage icon = CDIconCache.instance().get(p.getExtension());
-					icon.setSize(new NSSize(16f, 16f));
-					return icon;
-				}
-				if (identifier.equals("NAME")) {
-					return p.getRemote().getName();
-				}
-				if (identifier.equals("TOOLTIP")) {
-					try {
-						String localTimestamp = formatter.stringForObjectValue(new NSGregorianDate((double)p.getLocal().getTimestamp().getTime()/1000, 
-																								   NSDate.DateFor1970)
-																			   );
-						String remoteTimestamp = formatter.stringForObjectValue(new NSGregorianDate((double)p.getRemote().attributes.getTimestamp().getTime()/1000, 
-																									NSDate.DateFor1970)
-																				);
-						return
-							NSBundle.localizedString("Local", "")+":\n"
-							+"\t"+p.getLocal().getAbsolute()+"\n"
-							+"\t"+Status.getSizeAsString(p.getLocal().length())+"\n"
-							+"\t"+localTimestamp+"\n"
-							+ NSBundle.localizedString("Remote", "")+":\n"
-							+"\t"+p.getAbsolute()+"\n"
-							+"\t"+Status.getSizeAsString(p.status.getSize())+"\n"
-							+"\t"+remoteTimestamp+"\n";
-					}
-					catch(NSFormatter.FormattingException e) {
-						log.error(e.toString());
-					}
-				}
-				throw new IllegalArgumentException("Unknown identifier: " + identifier);
+				return super.tableViewObjectValueForLocation(tableView, tableColumn, row);
 			}
         }
         return null;

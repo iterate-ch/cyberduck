@@ -145,13 +145,12 @@ public abstract class CDValidatorController extends AbstractValidator {
 	
 	protected abstract void load();
 
-	protected void prompt() {
+	protected synchronized void prompt() {
 		this.load();
         while (this.windowController.window().attachedSheet() != null) {
             try {
                 log.debug("Sleeping...");
-				this.windowController.wait();
-				//                Thread.sleep(1000); //milliseconds
+				this.wait();
             }
             catch (InterruptedException e) {
                 log.error(e.getMessage());
@@ -209,7 +208,7 @@ public abstract class CDValidatorController extends AbstractValidator {
         NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 
-	public boolean validate(Queue q) {
+	public synchronized boolean validate(Queue q) {
 		boolean loaded = false;
 		// for every root get its childs
 		for (Iterator rootIter = q.getRoots().iterator(); rootIter.hasNext(); ) {
@@ -237,9 +236,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 			while (this.windowController.window().attachedSheet() != null) {
 				try {
 					log.debug("Sleeping...");
-					//block the caller thread
-					//				this.windowController.wait();
-					Thread.sleep(1000); //milliseconds
+					this.wait();
 				}
 				catch (InterruptedException e) {
 					log.error(e.getMessage());
@@ -249,9 +246,9 @@ public abstract class CDValidatorController extends AbstractValidator {
 		return !this.isCanceled();
 	}
 	
-	public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+	public synchronized void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.close();
-//		this.windowController.notifyAll();
+		this.notify();
 	}
 	
 	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
@@ -293,7 +290,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 	
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier());
         if (row < numberOfRowsInTableView(tableView)) {
             String identifier = (String)tableColumn.identifier();
 			Path p = (Path)this.workset.get(row);
@@ -307,20 +303,16 @@ public abstract class CDValidatorController extends AbstractValidator {
 					return icon;
 				}
 				if (identifier.equals("TOOLTIP")) {
-					try {
-						return
-							NSBundle.localizedString("Local", "")+":\n"
-							+"\t"+p.getLocal().getAbsolute()+"\n"
-							+"\t"+Status.getSizeAsString(p.getLocal().length())+"\n"
-							+"\t"+p.getLocal().getTimestampAsString()+"\n"
-							+ NSBundle.localizedString("Remote", "")+":\n"
-							+"\t"+p.getAbsolute()+"\n"
-							+"\t"+Status.getSizeAsString(p.status.getSize())+"\n"
-							+"\t"+p.attributes.getTimestampAsString()+"\n";
-					}
-					catch(NSFormatter.FormattingException e) {
-						log.error(e.toString());
-					}
+					StringBuffer tooltip = new StringBuffer();
+					if(p.exists())
+						tooltip.append(NSBundle.localizedString("Remote", "")+":\n"
+									   +"  "+Status.getSizeAsString(p.status.getSize())+"\n"
+									   +"  "+p.attributes.getTimestampAsString()+"\n");
+					if(p.getLocal().exists())
+						tooltip.append(NSBundle.localizedString("Local", "")+":\n"
+									   +"  "+Status.getSizeAsString(p.getLocal().length())+"\n"
+									   +"  "+p.getLocal().getTimestampAsString()+"\n");
+					return tooltip.toString();
 				}
 			}
 		}

@@ -259,10 +259,10 @@ public class FTPPath extends Path {
 			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
 		}
 		catch (FTPException e) {
-			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
+//			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
 		}
 		catch (IOException e) {
-			session.log("IO Error: " + e.getMessage(), Message.ERROR);
+//			session.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
 		finally {
 			return this.status.getSize();
@@ -327,10 +327,16 @@ public class FTPPath extends Path {
                 if (this.status.isComplete()) {
                     log.info("Updating permissions");
                     if (Preferences.instance().getProperty("queue.download.changePermissions").equals("true")) {
-                        Permission perm = this.attributes.getPermission();
-                        if (!perm.isUndefined()) {
-                            this.getLocal().setPermission(perm);
-                        }
+						Permission perm = null;
+						if (Preferences.instance().getProperty("queue.download.permissions.useDefault").equals("true")) {
+							perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
+						}
+						else {
+							perm = this.attributes.getPermission();
+						}
+						if (!perm.isUndefined()) {
+							this.getLocal().setPermission(perm);
+						}
                     }
                 }
                 if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
@@ -352,10 +358,7 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
-            long size = this.size();
-            if (size != -1) {
-                this.status.setSize(size);
-            }
+			this.status.setSize(this.size());
             if (this.status.isResume()) {
                 this.status.setCurrent(this.getLocal().getTemp().length());
             }
@@ -425,10 +428,7 @@ public class FTPPath extends Path {
         }
         try {
             session.FTP.setTransferType(FTPTransferType.ASCII);
-            long size = this.size();
-            if (size != -1) {
-                this.status.setSize(size);
-            }
+			this.status.setSize(this.size());
             if (this.status.isResume()) {
                 this.status.setCurrent(this.getLocal().getTemp().length());
             }
@@ -511,8 +511,8 @@ public class FTPPath extends Path {
                 }
                 if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
 					try {
-						if (Preferences.instance().getProperty("queue.permissions.useDefault").equals("true")) {
-							Permission perm = new Permission(Preferences.instance().getProperty("queue.permissions.default"));
+						if (Preferences.instance().getProperty("queue.upload.permissions.useDefault").equals("true")) {
+							Permission perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
 							session.FTP.site("CHMOD "+perm.getOctalCode()+" "+this.getAbsolute());
 						}
 						else {

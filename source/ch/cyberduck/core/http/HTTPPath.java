@@ -229,7 +229,7 @@ public class HTTPPath extends Path {
                 log.info("Processing redirect");
                 try {
                     URL redirect = new URL(GET.getResponseHeader("Location").getValue());
-                    session = new HTTPSession(new Host(redirect.getProtocol(), redirect.getHost(),
+                    session = (HTTPSession)SessionFactory.createSession(new Host(redirect.getProtocol(), redirect.getHost(),
                             redirect.getPort(),
                             new Login(redirect.getHost(), redirect.getUserInfo(), null)));
                     this.setPath(redirect.getFile());

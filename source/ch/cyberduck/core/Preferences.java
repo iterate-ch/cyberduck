@@ -116,10 +116,13 @@ public abstract class Preferences {
         defaults.put("queue.orderFrontOnTransfer", "true");
         defaults.put("queue.download.folder", System.getProperty("user.home") + "/Desktop");
         defaults.put("queue.fileExists", "ask");
-        defaults.put("queue.permissions.useDefault", "false");
-        defaults.put("queue.permissions.default", "rw-r--r--");
         defaults.put("queue.upload.changePermissions", "true");
+        defaults.put("queue.upload.permissions.useDefault", "false");
+        defaults.put("queue.upload.permissions.default", "rw-r--r--");
         defaults.put("queue.download.changePermissions", "false");
+		defaults.put("queue.download.permissions.useDefault", "false");
+        defaults.put("queue.download.permissions.default", "rw-r--r--");
+
         defaults.put("queue.download.preserveDate", "true");
 
         //ftp properties
@@ -133,7 +136,7 @@ public abstract class Preferences {
         defaults.put("ftp.sendSystemCommand", "true");
         defaults.put("ftp.sendExtendedListCommand", "false");
 
-		defaults.put("connection.pool.timeout", "120"); // in seconds
+		defaults.put("connection.pool.timeout", "180"); // in seconds
 		defaults.put("connection.pool.max", "3"); // maximumum concurrent connections to the same host
         defaults.put("connection.login.name", System.getProperty("user.name"));
         defaults.put("connection.login.useKeychain", "true");

@@ -117,11 +117,10 @@ public class CDLoginController implements LoginController {
 
     private boolean tryAgain = false;
 
-    public boolean promptUser(final Login l, final String message) {
+    public synchronized boolean promptUser(final Login l, final String message) {
         while (windowController.window().attachedSheet() != null) {
             try {
-                log.debug("Sleeping...");
-                Thread.sleep(1000); //milliseconds
+                log.debug("Sleeping..."); this.wait();
             }
             catch (InterruptedException e) {
                 log.error(e.getMessage());
@@ -139,8 +138,7 @@ public class CDLoginController implements LoginController {
             window().makeKeyAndOrderFront(null);
             while (windowController.window().attachedSheet() != null) {
                 try {
-                    log.debug("Sleeping...");
-                    Thread.sleep(1000); //milliseconds
+                    log.debug("Sleeping..."); this.wait();
                 }
                 catch (InterruptedException e) {
                     log.error(e.getMessage());
@@ -169,7 +167,7 @@ public class CDLoginController implements LoginController {
      * @see #promptUser
      * @see #closeSheet
      */
-    public void loginSheetDidEnd(NSWindow sheet, int returncode, Object context) {
+    public synchronized void loginSheetDidEnd(NSWindow sheet, int returncode, Object context) {
         log.debug("loginSheetDidEnd");
         this.window.orderOut(null);
         switch (returncode) {
@@ -183,5 +181,6 @@ public class CDLoginController implements LoginController {
                 this.tryAgain = false;
                 break;
         }
+		this.notify();
     }
 }
