@@ -203,11 +203,11 @@ public class CDPreferencesController extends NSObject {
         switch (sender.state()) {
             case NSCell.OnState:
                 Preferences.instance().setProperty("queue.upload.changePermissions", true);
-				this.chmodUploadDefaultCheckbox.setEnabled(false);
+				this.chmodUploadDefaultCheckbox.setEnabled(true);
                 break;
             case NSCell.OffState:
                 Preferences.instance().setProperty("queue.upload.changePermissions", false);
-				this.chmodUploadDefaultCheckbox.setEnabled(true);
+				this.chmodUploadDefaultCheckbox.setEnabled(false);
                 break;
         }
     }
