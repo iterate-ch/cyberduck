@@ -39,7 +39,7 @@ public abstract class Path {
 //	private String name = null;
     private String path = null;
     private Local local = null;
-    protected Path parent = null;
+//    protected Path parent = null;
     public Status status = new Status();
     public Attributes attributes = new Attributes();
 
@@ -148,39 +148,30 @@ public abstract class Path {
 
     public void setPath(String p) {
         log.debug("setPath:" + p);
-        if (p.length() > 1 && p.charAt(p.length() - 1) == '/') {
-            this.path = p.substring(0, p.length() - 1);
-        }
-        else {
-            this.path = p;
-        }
-		this.parent = null;
+		//        if (p.length() > 1 && p.charAt(p.length() - 1) == '/') {
+		//            this.path = p.substring(0, p.length() - 1);
+		//      }
+		//        else {
+		this.path = p;
+		//        }
+		//this.parent = null;
     }
 
     /**
      * @return My parent directory
      */
     public Path getParent() {
-        if ((null == parent)) {
-			String abs = this.getAbsolute();
-            int index = abs.lastIndexOf('/');
-            String dirname = abs;
-            if (index > 0) {
-                dirname = abs.substring(0, index);
-            }
-            else if (index == 0) //parent is root
-            {
-                dirname = "/";
-            }
-            else if (index < 0) {
-                dirname = "/";
-            }
-            this.parent = PathFactory.createPath(this.getSession(), dirname);
-        }
-        log.debug("getParent:" + parent);
-        return this.parent;
+		int index = this.getAbsolute().lastIndexOf('/');
+		String parent = null;
+		if (index > 0) {
+			parent = abs.substring(0, index);
+		}
+		else {//if (index == 0) //parent is root
+			parent = "/";
+		}
+		return PathFactory.createPath(this.getSession(), parent);
     }
-
+	
     /**
      * @throws NullPointerException if session is not initialized
      */
