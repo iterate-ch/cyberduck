@@ -1212,6 +1212,7 @@ public class CDBrowserController extends CDController implements Observer {
 			TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(logView));
 
 			Session session = SessionFactory.createSession(host);
+			this.workdir = PathFactory.createPath(session, host.getDefaultPath());
 			session.addObserver((Observer)this);
 
 			if(session instanceof ch.cyberduck.core.sftp.SFTPSession) {
