@@ -201,6 +201,9 @@ public abstract class Queue extends Observable {
 				this.process((Path)iter.next());
 			}
 		}
+		else {
+			this.cancel();
+		}
 		this.finish();
 	}
 	
