@@ -66,6 +66,7 @@ public class CDProgressController extends NSObject implements Observer {
 																		   TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
 		this.updateProgressfield();
 		this.updateProgressbar();
+		this.updateAlertIcon();
 	}
 	
     public void update(Observable o, Object arg) {
@@ -81,11 +82,22 @@ public class CDProgressController extends NSObject implements Observer {
 			else if (msg.getTitle().equals(Message.QUEUE_START)) {
 				this.progressBar.setIndeterminate(true);
 				this.progressBar.startAnimation(null);
+				this.updateAlertIcon();
 			}
 			else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
 				this.progressBar.setIndeterminate(false);
 				this.progressBar.stopAnimation(null);
+				this.updateAlertIcon();
 			}
+		}
+	}
+	
+	private void updateAlertIcon() {
+		if(this.queue.isRunning() || this.queue.isComplete()) {
+			alertIcon.setImage(null);
+		}
+		else {
+			alertIcon.setImage(NSImage.imageNamed("alert.tiff"));
 		}
 	}
 	
@@ -128,7 +140,6 @@ public class CDProgressController extends NSObject implements Observer {
 	public boolean isHighlighted() {
 		return this.highlighted;
 	}
-		
 	
 	// ----------------------------------------------------------
     // Outlets
@@ -157,13 +168,19 @@ public class CDProgressController extends NSObject implements Observer {
 	public void setProgressBar(NSProgressIndicator progressBar) {
 		this.progressBar = progressBar;
 		this.progressBar.setIndeterminate(false);
-		this.progressBar.setDisplayedWhenStopped(true);
+		this.progressBar.setDisplayedWhenStopped(false);
 		this.progressBar.setControlTint(NSProgressIndicator.GraphiteControlTint);
 		this.progressBar.setControlTint(NSProgressIndicator.BlueControlTint);
 		this.progressBar.setControlSize(NSProgressIndicator.SmallControlSize);
 		this.progressBar.setStyle(NSProgressIndicator.ProgressIndicatorBarStyle);
 		this.progressBar.setUsesThreadedAnimation(true);
 	}
+	
+    private NSImageView alertIcon; // IBOutlet
+	
+    public void setAlertIcon(NSImageView alertIcon) {
+        this.alertIcon = alertIcon;
+    }
 	
 	private NSView progressView; // IBOutlet
 	

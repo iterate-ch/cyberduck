@@ -254,7 +254,13 @@ public class CDConnectionController extends NSObject implements Observer {
             panel.setCanChooseDirectories(false);
             panel.setCanChooseFiles(true);
             panel.setAllowsMultipleSelection(false);
-            panel.beginSheetForDirectory(System.getProperty("user.home") + "/.ssh", null, null, this.window, this, new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+            panel.beginSheetForDirectory(System.getProperty("user.home") + "/.ssh", 
+										 null, 
+										 null, 
+										 this.window, 
+										 this, 
+										 new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), 
+										 null);
         }
         else {
             this.passField.setEnabled(true);

@@ -39,32 +39,24 @@ public abstract class AbstractValidator implements Validator {
      */
     private boolean canceled = false;
 	
-	public boolean isCanceled() {
+	protected boolean isCanceled() {
 		return this.canceled;
 	}
 	
-	public void setCanceled(boolean c) {
+	protected void setCanceled(boolean c) {
 		this.canceled = c;
 	}
-		
-	protected abstract boolean prompt(Path p);
 	
 	protected abstract boolean exists(Path p);
+
+	protected abstract void prompt();
 		
-	public List validate(Queue q) {
-		List validated = new ArrayList();
-		// for every root get its branches
-		for (Iterator rootIter = q.getRoots().iterator(); rootIter.hasNext(); ) {
-			for(Iterator iter = q.getChilds((Path)rootIter.next()).iterator(); iter.hasNext(); ) {
-				Path child = (Path)iter.next();
-				if (this.validate(child)) {
-					log.info(child.getName()+" validated.");
-					validated.add(child);
-				}
-			}
-		}
-		return validated;
-	}
+	protected abstract void fireDataChanged();
+		
+	protected List validated = new ArrayList();
+	protected List workset = new ArrayList();
+	
+	public abstract List getResult();
 	
 	protected boolean validate(Path p) {
         if (!this.isCanceled()) {
@@ -93,7 +85,7 @@ public abstract class AbstractValidator implements Validator {
             return true;
         }
 		boolean fileExists = this.exists(path);
-        log.info("File " + path.getName() + " exists:" + fileExists);
+        log.info("File "+path.getName()+" exists:"+fileExists);
         if (fileExists) {
             if (Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
                 log.debug("Defaulting to resume on " + path.getName() + " succeeded:" + fileExists);
@@ -109,7 +101,7 @@ public abstract class AbstractValidator implements Validator {
 			}
 			else {//if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
                 log.debug("Prompting user on " + path.getName());
-				return this.prompt(path);
+				return false;
             }
 		}
         else {//if (!fileExists) {

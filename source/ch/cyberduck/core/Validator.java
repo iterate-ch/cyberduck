@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Path;
 
 import java.util.List;
 
@@ -27,8 +28,13 @@ import java.util.List;
  */
 public interface Validator {
 	
-	public List validate(Queue q);
+	/**
+	  * @return true if validatino was successfull, false if canceled by the user for whatever reason
+	  */
+	public boolean validate(Queue q);
 	
-	public boolean isCanceled();
-
+	/**
+	  * @return The Path objects successfully validated
+	  */
+	public List getResult();
 }

@@ -109,7 +109,7 @@ public class SFTPPath extends Path {
         session.addPathToHistory(this);
         if (refresh || null == files) {
             files = new ArrayList();
-            session.log("Listing " + this.getName(), Message.PROGRESS);
+            session.log("Listing " + this.getAbsolute(), Message.PROGRESS);
             SftpFile workingDirectory = null;
             try {
                 session.check();
@@ -150,7 +150,7 @@ public class SFTPPath extends Path {
                         }
                     }
                 }
-                this.setCache(files);
+                this.getSession().cache().put(this.getAbsolute(), files);
                 session.log("Idle", Message.STOP);
             }
             catch (SshException e) {

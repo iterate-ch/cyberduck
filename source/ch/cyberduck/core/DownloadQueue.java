@@ -35,15 +35,14 @@ public class DownloadQueue extends Queue {
         return dict;
     }
 	
-	protected List getChilds(Path p) {
+	public List getChilds(Path p) {
 		return this.getChilds(new ArrayList(), p);
 	}
 	
 	private List getChilds(List list, Path p) {
-		log.debug("getChilds:"+p);
         list.add(p);
         if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
-            p.status.setSize(0);
+            p.status.setSize(0); //@todo
             for (Iterator i = p.list(false, true).iterator(); i.hasNext();) {
                 Path child = (Path)i.next();
                 child.setLocal(new Local(p.getLocal(), child.getName()));

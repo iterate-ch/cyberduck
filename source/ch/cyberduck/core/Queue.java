@@ -168,6 +168,16 @@ public abstract class Queue extends Observable implements Observer {
     public void callObservers(Object arg) {
         this.setChanged();
         this.notifyObservers(arg);
+        if (arg instanceof Message) {
+            Message msg = (Message)arg;
+			if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+				if (this.isComplete()) {
+					if (callback != null) {
+						callback.update(null, new Message(Message.REFRESH));
+					}
+				}
+			}
+		}
     }
 		
     public void update(Observable o, Object arg) {
@@ -176,21 +186,11 @@ public abstract class Queue extends Observable implements Observer {
             if (msg.getTitle().equals(Message.PROGRESS)) {
                 this.status = (String)msg.getContent();
 			}
-			else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
-				if (this.isComplete()) {
-					if (callback != null) {
-						//@todo testing
-						log.debug("Telling observable to refresh directory listing");
-						callback.update(null, new Message(Message.REFRESH));
-					}
-				}
-			}
 		}
 		this.callObservers(arg);
     }
 	
 	private void reset() {
-//		this.jobs = new ArrayList();
 		this.size = 0;
 		for (Iterator iter = jobs.iterator(); iter.hasNext();) {
 			Path p = (Path)iter.next();
@@ -199,7 +199,7 @@ public abstract class Queue extends Observable implements Observer {
 		}
 	}
 	
-	protected abstract List getChilds(Path p);
+	public abstract List getChilds(Path p);
 	
 	private Timer progress;
 
@@ -236,12 +236,16 @@ public abstract class Queue extends Observable implements Observer {
 									  }
 								  }
 								  );
-		List validated = this.validator.validate(this);
-		if(!this.validator.isCanceled()) {
-			this.jobs = validated;
-			this.reset();
+		boolean validated = this.validator.validate(this);
+		if(validated) {
+			List result = this.validator.getResult();
+			if(result.size() > 0) {
+				this.jobs = result;
+				this.reset();
+				return true;
+			}
 		}
-		return !this.validator.isCanceled();
+		return false;
 	}
 	
 	protected abstract void process(Path p);

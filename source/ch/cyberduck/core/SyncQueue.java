@@ -44,14 +44,14 @@ public class SyncQueue extends Queue {
         return dict;
     }
 		
-	protected List getChilds(Path p) {
+	public List getChilds(Path p) {
 		return this.getChilds(new ArrayList(), p);
 	}
 	
 	private List getChilds(List list, Path p) {
-		log.debug("getChilds:"+list+","+p);
         list.add(p);
-		if(p.remote.exists()) {
+		if(p.exists()) {
+//@todo			p.refresh();
 			if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
 				for (Iterator i = p.list(false, true).iterator(); i.hasNext();) {
 					Path child = (Path)i.next();
@@ -60,15 +60,13 @@ public class SyncQueue extends Queue {
 				}
 			}
 			else if (p.attributes.isFile()) {
-//				list.add(p);
 				return list;
 			}
 		}
-		if(p.local.exists()) {
-			if(p.local.isDirectory()) {
-				log.debug(">>>> Directory:"+p);
+		if(p.getLocal().exists()) {
+			if(p.getLocal().isDirectory()) {
 				p.attributes.setType(Path.DIRECTORY_TYPE);
-				p.status.setSize(0);
+				p.status.setSize(0); //@todo
 				File[] files = p.getLocal().listFiles();
 				for (int i = 0; i < files.length; i++) {
 					Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
@@ -79,11 +77,9 @@ public class SyncQueue extends Queue {
 					}
 				}
 			}
-			else if(p.local.isFile()) {
-				log.debug(">>>> File:"+p);
+			else if(p.getLocal().isFile()) {
 				p.attributes.setType(Path.FILE_TYPE);
 				p.status.setSize(p.getLocal().length()); //setting the file size to the known size of the local file
-//				list.add(p);
 				return list;
 			}
 		}

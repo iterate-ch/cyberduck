@@ -43,16 +43,15 @@ public class UploadQueue extends Queue {
         return dict;
     }
 	
-	protected List getChilds(Path p) {
+	public List getChilds(Path p) {
 		return this.getChilds(new ArrayList(), p);
 	}
 	
 	private List getChilds(List list, Path p) {
-		log.debug("getChilds:"+p);
         list.add(p);
         if (p.getLocal().isDirectory()) {
             p.attributes.setType(Path.DIRECTORY_TYPE);
-            p.status.setSize(0);
+            p.status.setSize(0); //@todo
             File[] files = p.getLocal().listFiles();
             for (int i = 0; i < files.length; i++) {
                 Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
@@ -64,7 +63,7 @@ public class UploadQueue extends Queue {
         }
         else if (p.getLocal().isFile()) {
             p.attributes.setType(Path.FILE_TYPE);
-            p.status.setSize(p.local.size()); //setting the file size to the known size of the local file
+            p.status.setSize(p.getLocal().size()); //setting the file size to the known size of the local file
         }
 		return list;
 	}

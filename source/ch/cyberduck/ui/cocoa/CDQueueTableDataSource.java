@@ -129,7 +129,6 @@ public class CDQueueTableDataSource extends CDTableDataSource {
                         Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
                         Queue q = new DownloadQueue();
                         q.addRoot(p);
-                        this.addItem(q, row);
                         CDQueueController.instance().startItem(q);
                         return true;
                     }

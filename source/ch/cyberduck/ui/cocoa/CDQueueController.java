@@ -76,45 +76,56 @@ public class CDQueueController extends NSObject implements Observer, CDControlle
         }
         return instance;
     }
-
-    /*
-     public int checkForRunningTransfers() {
-        Iterator iter = this.queueModel.iterator();
-        while(iter.hasNext()) {
-            ch.cyberduck.core.Queue q = (ch.cyberduck.core.Queue)iter.next();
-            if(q.isRunning()) {
-                NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Transfers in progress", ""), //title
-                                                     NSBundle.localizedString("Cancel", ""), // defaultbutton
-                                                     NSBundle.localizedString("Quit", ""), //alternative button
-                                                     null, //other button
-                                                     this.window(), //window
-                                                     this, //delegate
-                                                     new NSSelector("checkForRunningTransfersSheetDidEnd",
-                                                                    new Class[]{NSWindow.class, int.class, Object.class}),
-                                                     null, // dismiss selector
-                                                     null, // context
-                                                     NSBundle.localizedString("There are items in the queue currently being transferred. Quit anyway?", "") // message
-                                                     );
-                return NSApplication.TerminateLater; //break
-            }
-        }
-        return NSApplication.TerminateNow;
-    }
-
-    public void checkForRunningTransfersSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-sheet.orderOut(null);
-if (returncode == NSAlertPanel.AlternateReturn) {
-            this.stopAllButtonClicked(null);
-            NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
-        }
-if (returncode == NSAlertPanel.DefaultReturn) {
-            NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
-        }
-    }
-     */
+	
+	public boolean hasRunningTransfers() {
+		for(int i = 0; i < this.queueModel.size(); i++) {
+			Queue q = this.queueModel.getItem(i);
+			if(q.isRunning()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/*
+	 * @return NSApplication.TerminateLater or NSApplication.TerminateNow depending if there are
+	 * running transfers to be checked first
+	 */
+	public static int applicationShouldTerminate(NSApplication app) {
+		if(null != instance) {
+			if(instance.hasRunningTransfers()) {
+				NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Transfer in progress", ""), //title
+													 NSBundle.localizedString("Quit", ""), // defaultbutton
+													 NSBundle.localizedString("Cancel", ""), //alternative button
+													 null, //other button
+													 instance.window(), //window
+													 instance, //delegate
+													 new NSSelector("checkForRunningTransfersSheetDidEnd",
+																	new Class[]{NSWindow.class, int.class, Object.class}),
+													 null, // dismiss selector
+													 null, // context
+													 NSBundle.localizedString("There are items in the queue currently being transferred. Quit anyway?", "") // message
+													 );
+				return NSApplication.TerminateLater; //break
+			}
+		}
+		NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
+		return NSApplication.TerminateNow;
+	}
+	
+	public void checkForRunningTransfersSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+		sheet.orderOut(null);
+		if (returncode == NSAlertPanel.DefaultReturn) { //Quit
+			this.stopAllButtonClicked(null);
+			NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
+		}
+		if (returncode == NSAlertPanel.AlternateReturn) { //Cancel
+			NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
+		}
+	}
 	
 	public void alertSheetDidClose(Object sender) {
-		this.notifyAll();
+		instance.notifyAll();
 	}
 	
 	public void windowDidBecomeKey(NSNotification notification) {
@@ -235,7 +246,6 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     }
 	
 	private void tableViewSelectionChange() {
-		log.debug("tableViewSelectionChange");
 		boolean key = this.window().isKeyWindow();
 		for(int i = 0; i < this.queueModel.size(); i++) {
 			this.queueModel.getController(i).setHighlighted(this.queueTable.isRowSelected(i) && key);
@@ -278,7 +288,6 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     }
 
     private void startItem(Queue queue, boolean resumeRequested) {
-        log.info("Starting item:" + queue);
 		queue.addObserver(this); //@todo delete observer
         if (Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
             this.window().makeKeyAndOrderFront(null);
@@ -306,15 +315,15 @@ if (returncode == NSAlertPanel.DefaultReturn) {
             }
         }
 		if(queue instanceof DownloadQueue) {
-			queue.start(new CDDownloadValidatorController(this, resumeRequested));
+			queue.start(new CDDownloadValidatorController(resumeRequested));
 			return;
 		}
 		if(queue instanceof UploadQueue) {
-			queue.start(new CDUploadValidatorController(this, resumeRequested));
+			queue.start(new CDUploadValidatorController(resumeRequested));
 			return;
 		}
 		if(queue instanceof SyncQueue) {
-			queue.start(new CDSyncValidatorController(this));
+			queue.start(new CDSyncValidatorController());
 			return;
 		}
 		throw new IllegalArgumentException("Unknown queuing action");
@@ -331,22 +340,25 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 				while (this.window().attachedSheet() != null) {
 					try {
 						log.debug("Sleeping...");
-						this.wait();
+						instance.wait();
+//						Thread.sleep(1000); //milliseconds
 					}
 					catch (InterruptedException e) {
 						log.error(e.getMessage());
+						return;
 					}
 				}
 				synchronized (this) {
+					this.window().makeKeyAndOrderFront(null);
 					NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
 														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
 														 null, //alternative button
 														 null, //other button
 														 this.window(), //docWindow
-														 null, //modalDelegate
+														 this, //modalDelegate
 														 new NSSelector("alertSheetDidClose", new Class[]{Object.class}), //didEndSelector
 														 null, // dismiss selector
-														 null, // context
+														 observable, // context
 														 (String)msg.getContent() // message
 														 );
 				}
@@ -499,6 +511,15 @@ if (returncode == NSAlertPanel.DefaultReturn) {
         }
     }
 
+	public void stopAllButtonClicked(Object sender) {
+        for(int i = 0; i < this.queueModel.size(); i++) {
+            Queue queue = this.queueModel.getItem(i);
+            if (queue.isRunning()) {
+                queue.cancel();
+            }
+        }
+    }
+	
     public void resumeButtonClicked(Object sender) {
         NSEnumerator enum = queueTable.selectedRowEnumerator();
         while (enum.hasMoreElements()) {

@@ -91,7 +91,8 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 	public void update(final Observable o, final Object arg) {
         log.debug("update:" + o + "," + arg);
         if (arg instanceof Path) {
-            this.browserModel.setData(((Path)arg).cache());
+			Path p = (Path)arg;
+            this.browserModel.setData(p.getSession().cache().get(p.getAbsolute()));
             NSTableColumn selectedColumn = this.browserModel.selectedColumn() != null ? this.browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
             this.browserTable.setIndicatorImage(this.browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
             this.browserModel.sort(selectedColumn, this.browserModel.isSortedAscending());
@@ -122,7 +123,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 														 null, //alternative button
 														 null, //other button
 														 window(), //docWindow
-														 null, //modalDelegate
+														 this, //modalDelegate
 														 null, //didEndSelector new NSSelector("alertSheetDidClose", new Class[]{Object.class})
 														 null, // dismissSelector
 														 null, // context
@@ -603,7 +604,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 
     public void setUpButton(NSButton upButton) {
         this.upButton = upButton;
-        this.upButton.setImage(NSImage.imageNamed("up.tiff"));
+        this.upButton.setImage(NSImage.imageNamed("arrowUp16.tiff"));
         this.upButton.setTarget(this);
         this.upButton.setAction(new NSSelector("upButtonClicked", new Class[]{Object.class}));
     }
@@ -612,7 +613,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 
     public void setBackButton(NSButton backButton) {
         this.backButton = backButton;
-        this.backButton.setImage(NSImage.imageNamed("back.tiff"));
+        this.backButton.setImage(NSImage.imageNamed("arrowLeft16.tiff"));
         this.backButton.setTarget(this);
         this.backButton.setAction(new NSSelector("backButtonClicked", new Class[]{Object.class}));
     }
@@ -807,7 +808,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 			panel.setTitle(NSBundle.localizedString("Download", ""));
 			panel.setCanCreateDirectories(true);
 			panel.beginSheetForDirectory(null,
-										 path.local.getName(),
+										 path.getLocal().getName(),
 										 this.window(),
 										 this,
 										 new NSSelector("saveAsPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
@@ -1119,38 +1120,6 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         }
         return true;
     }
-
-    public static void reviewMountedBrowsers(boolean proceed) {
-        // Determine if there are any open connections
-        if (proceed) {
-            NSArray windows = NSApplication.sharedApplication().windows();
-            int count = windows.count();
-            log.debug("Number of open windows:" + count);
-            int terminateReturnValue = NSApplication.TerminateNow;
-            while (0 != count--) {
-                NSWindow window = (NSWindow)windows.objectAtIndex(count);
-                CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-                if (null != controller) {
-                    log.debug("Window with index number " + count + " has a controller attached");
-                    if (!controller.unmount(new NSSelector("terminateReviewSheetDidEnd",
-                            new Class[]{NSWindow.class, int.class, Object.class}),
-                            null)) {
-                        return;
-                    }
-                }
-            }
-        }
-        // also check if the transfer queue has items running
-        /*
-        if(CDQueueController.instance().checkForRunningTransfers() == NSApplication.TerminateLater) {
-            // the transfer queue must be cancled first and wil then send the application terminate answer event itself
-            NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
-            return;
-        }
-         */
-        // no running transfer, we quit if the user didn't choose to !procceed
-        NSApplication.sharedApplication().replyToApplicationShouldTerminate(proceed);
-    }
 	
 	public boolean loadDataRepresentation(NSData data, String type) {
 		if(type.equals("Cyberduck Bookmark")) {
@@ -1196,12 +1165,31 @@ public class CDBrowserController extends NSObject implements CDController, Obser
     // Window delegate methods
     // ----------------------------------------------------------
 
-    public boolean windowShouldClose(NSWindow sender) {
-        return this.unmount(new NSSelector("closeSheetDidEnd",
-                new Class[]{NSWindow.class, int.class, Object.class}), null // end selector
-        );
-    }
-
+	public static int applicationShouldTerminate(NSApplication app) {
+        // Determine if there are any open connections
+        NSArray windows = NSApplication.sharedApplication().windows();
+        int count = windows.count();
+        // Determine if there are any open connections
+        while (0 != count--) {
+            NSWindow window = (NSWindow)windows.objectAtIndex(count);
+            CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+			if (null != controller) {
+				if (!controller.unmount(new NSSelector("terminateReviewSheetDidEnd",
+													   new Class[]{NSWindow.class, int.class, Object.class}),
+										null)) {
+					return NSApplication.TerminateLater;
+				}
+			}
+		}
+		return CDQueueController.applicationShouldTerminate(app);
+	}
+	
+	public boolean windowShouldClose(NSWindow sender) {
+		return this.unmount(new NSSelector("closeSheetDidEnd",
+										   new Class[]{NSWindow.class, int.class, Object.class}), null // end selector
+							);
+	}
+	
     public void unmountSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
         if (returncode == NSAlertPanel.DefaultReturn) {
@@ -1224,11 +1212,11 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 
     public void terminateReviewSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         this.closeSheetDidEnd(sheet, returncode, contextInfo);
-        if (returncode == NSAlertPanel.DefaultReturn) {
-            CDBrowserController.reviewMountedBrowsers(true);
+        if (returncode == NSAlertPanel.DefaultReturn) { //Disconnect
+            CDBrowserController.applicationShouldTerminate(null);
         }
-        if (returncode == NSAlertPanel.AlternateReturn) {
-            CDBrowserController.reviewMountedBrowsers(false);
+        if (returncode == NSAlertPanel.AlternateReturn) { //Cancel
+			NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
         }
     }
 
@@ -1407,7 +1395,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             item.setLabel(NSBundle.localizedString("Refresh", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Refresh", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Refresh directory listing", "Toolbar item tooltip"));
-            item.setImage(NSImage.imageNamed("refresh.tiff"));
+            item.setImage(NSImage.imageNamed("reload.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("refreshButtonClicked", new Class[]{Object.class}));
             return item;
@@ -1507,9 +1495,9 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             "Refresh",
             "Get Info",
             "Edit",
-			"Synchronize",
             "Download",
             "Upload",
+			"Synchronize",
             NSToolbarItem.FlexibleSpaceItemIdentifier,
             "Disconnect"
         });

@@ -1,5 +1,6 @@
 {
     IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {
                 cancelActionFired = id; 
@@ -7,18 +8,25 @@
                 resumeActionFired = id; 
                 skipActionFired = id; 
             }; 
-            CLASS = CDValidatorController; 
+            CLASS = "ch.sudo.cyberduck.ui.cocoa.CDValidatorController"; 
             LANGUAGE = Java; 
             OUTLETS = {
-                alertTextField = NSTextField; 
-                applyCheckbox = NSButton; 
-                iconView = NSImageView; 
+                fileTableView = NSTableView; 
+                infoLabel = NSTextField; 
+                localField = NSTextField; 
+                localSizeField = NSTextField; 
+                localTimestampField = NSTextField; 
+                overwriteButton = NSButton; 
+                remoteSizeField = NSTextField; 
+                remoteTimestampField = NSTextField; 
                 resumeButton = NSButton; 
+                skipButton = NSButton; 
+                statusIndicator = NSProgressIndicator; 
+                urlField = NSTextField; 
                 window = NSWindow; 
             }; 
             SUPERCLASS = NSObject; 
-        }, 
-        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
+        }
     ); 
     IBVersion = 1; 
 }

@@ -37,9 +37,7 @@ public abstract class Path {
     private static Logger log = Logger.getLogger(Path.class);
 
     private String path = null;
-	
-    public Local local = null;
-	public Path remote = this;
+    private Local local = null;
 	
     public Status status = new Status();
     public Attributes attributes = new Attributes();
@@ -57,9 +55,11 @@ public abstract class Path {
      * @return A copy of me with a new session
      */
     public Path copy(Session s) {
-        Path copy = PathFactory.createPath(s, this.getAbsolute()); //@todo session.copy()
+        Path copy = PathFactory.createPath(s, this.getAbsolute());
+		copy.local = this.local;
         copy.attributes = this.attributes;
-        copy.status.setSize(this.status.getSize());
+		copy.status = this.status;
+//        copy.status.setSize(this.status.getSize());
         return copy;
     }
 
@@ -146,7 +146,9 @@ public abstract class Path {
 
     public void setPath(String p) {
         this.path = p;
-    }
+//		this.local = new Local(Preferences.instance().getProperty("queue.download.folder"), 
+//							   this.getName());
+	}
 
     /**
      * @return My parent directory
@@ -170,20 +172,20 @@ public abstract class Path {
         return this.getSession().getHost();
     }
 
-    /**
-     * @return My directory listing
+	/**
+	 * @return My directory listing
      * @throws NullPointerException if session is not initialized
      */
-    public List cache() {
-        return this.getSession().cache().get(this.remote.getAbsolute());
+    private List childs() {
+        List childs = this.getSession().cache().get(this.getAbsolute());
+		if(null == childs) {
+			childs = this.list(false, true);
+		}
+		return childs;
     }
-
-    protected void setCache(List files) {
-        this.getSession().cache().put(this.remote.getAbsolute(), files);
-    }
-
+	
     public void invalidate() {
-        this.getSession().cache().remove(this.remote.getAbsolute());
+        this.getSession().cache().remove(this.getAbsolute());
     }
 
     /**
@@ -228,24 +230,24 @@ public abstract class Path {
 
     public boolean exists() {
         boolean exists;
-        if (this.remote.isRoot()) {
+        if (this.isRoot()) {
             return true;
         }
-        return this.getParent().list(false, true).contains(this);
+        return this.getParent().childs().contains(this);
     }
 		
     /**
      * @return true if this paths points to '/'
      */
     public boolean isRoot() {
-        return this.remote.getAbsolute().equals("/") || this.remote.getAbsolute().indexOf('/') == -1;
+        return this.getAbsolute().equals("/") || this.getAbsolute().indexOf('/') == -1;
     }
 
     /**
      * @return the path relative to its parent directory
      */
     public String getName() {
-        String abs = this.remote.getAbsolute();
+        String abs = this.getAbsolute();
         int index = abs.lastIndexOf('/');
         return (index > 0) ? abs.substring(index + 1) : abs.substring(1);
     }
@@ -267,10 +269,14 @@ public abstract class Path {
     public Local getLocal() {
         //default value if not set explicitly, i.e. with drag and drop
         if (null == this.local) {
-            return new Local(Preferences.instance().getProperty("queue.download.folder"), this.remote.getName());
+            return new Local(Preferences.instance().getProperty("queue.download.folder"), this.getName());
         }
         return this.local;
     }
+	
+	public Path getRemote() {
+		return this;
+	}
 
     /**
      * @return the extension if any
@@ -429,7 +435,7 @@ public abstract class Path {
 	public void sync() {
         try {
 			this.getSession().check();
-			if(this.remote.exists() && this.local.exists()) {
+			if(this.exists() && this.local.exists()) {
 				if(this.local.getTimestamp().before(this.attributes.getTimestamp())) {
 					this.download();
 				}
@@ -437,7 +443,7 @@ public abstract class Path {
 					this.upload();
 				}
 			}
-			else if(this.remote.exists()) {
+			else if(this.exists()) {
 				this.download();
 			}
 			else if(this.local.exists()) {

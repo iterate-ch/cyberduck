@@ -126,7 +126,7 @@ public class FTPPath extends Path {
         session.addPathToHistory(this);
         if (refresh || null == files) {
             files = new ArrayList();
-            session.log("Listing " + this.getName(), Message.PROGRESS);
+            session.log("Listing " + this.getAbsolute(), Message.PROGRESS);
             try {
                 session.check();
                 session.FTP.setTransferType(FTPTransferType.ASCII);
@@ -142,7 +142,7 @@ public class FTPPath extends Path {
                         }
                     }
                 }
-                this.setCache(files);
+                this.getSession().cache().put(this.getAbsolute(), files);
                 session.log("Idle", Message.STOP);
             }
             catch (FTPException e) {

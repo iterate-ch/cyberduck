@@ -8,9 +8,12 @@
             OUTLETS = {
                 downloadRadioCell = NSButtonCell; 
                 fileTableView = NSTableView; 
+                infoLabel = NSTextField; 
                 localField = NSTextField; 
+                localSizeField = NSTextField; 
                 localTimestampField = NSTextField; 
                 mirrorRadioCell = NSButtonCell; 
+                remoteSizeField = NSTextField; 
                 remoteTimestampField = NSTextField; 
                 statusIndicator = NSProgressIndicator; 
                 syncButton = NSButton; 

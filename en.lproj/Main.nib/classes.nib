@@ -15,7 +15,6 @@
                 gotoButtonClicked = id; 
                 infoButtonClicked = id; 
                 insideButtonClicked = id; 
-                myAction = id; 
                 refreshButtonClicked = id; 
                 removeBookmarkButtonClicked = id; 
                 showTransferQueueClicked = id; 

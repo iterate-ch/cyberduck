@@ -101,7 +101,8 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 
 - (id)init
 {
-	if (self = [super init]) {
+	self = [super init];
+	if (self) {
 		[[NSDistributedNotificationCenter defaultCenter] addObserver:self 
 															selector:@selector(registerGrowlWithContext:) 
 																name:GROWL_IS_READY 

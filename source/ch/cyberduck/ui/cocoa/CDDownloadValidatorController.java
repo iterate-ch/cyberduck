@@ -20,6 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSApplication;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import ch.cyberduck.core.Validator;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Local;
@@ -30,24 +33,35 @@ import ch.cyberduck.core.Path;
  */
 public class CDDownloadValidatorController extends CDValidatorController {
 
-    public CDDownloadValidatorController(CDController windowController, boolean resumeRequested) {
-        super(windowController, resumeRequested);
-        if (false == NSApplication.loadNibNamed("Validator", this)) {
-            log.fatal("Couldn't load Validator.nib");
-        }
+    public CDDownloadValidatorController(boolean resumeRequested) {
+        super(resumeRequested);
     }
+	
+	protected void load() {
+		if (false == NSApplication.loadNibNamed("Validator", this)) {
+			log.fatal("Couldn't load Validator.nib");
+		}
+		this.setEnabled(false);
+	}
+	
+	public List getResult() {
+		List result = new ArrayList();
+		result.addAll(this.validated);
+		result.addAll(this.workset);
+		return result;
+	}
 	
 	protected boolean validateDirectory(Path path) {
         // directory won't need validation, will get created if missing otherwise ignored
-		if(!path.local.exists())
-			path.local.mkdirs();
+		if(!path.getLocal().exists())
+			path.getLocal().mkdirs();
 		if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true"))
 			path.getLocal().setLastModified(path.attributes.getTimestamp().getTime());
-        return false;
+        return true; //@todo
     }
 		
 	protected boolean exists(Path p) {
-		return p.remote.exists();
+		return p.getLocal().exists();
 	}
 	
 	protected void proposeFilename(Path path) {
@@ -66,6 +80,6 @@ public class CDDownloadValidatorController extends CDValidatorController {
                 proposal = filename + "-" + no;
             }
         }
-        while (path.local.exists());
+        while (path.getLocal().exists());
     }	
 }

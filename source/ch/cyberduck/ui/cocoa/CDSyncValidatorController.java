@@ -33,59 +33,78 @@ import java.util.ArrayList;
  */
 public class CDSyncValidatorController extends CDValidatorController {
 
-    public CDSyncValidatorController(CDController windowController) {
-        super(windowController, false);
+    public CDSyncValidatorController() {
+        super(false);
+    }
+	
+	protected void load() {
         if (false == NSApplication.loadNibNamed("Sync", this)) {
             log.fatal("Couldn't load Sync.nib");
         }
-    }
+		this.setEnabled(false);
+	}
 	
-	protected List validated = new ArrayList();
-	protected List workset = new ArrayList();
-
 	public void awakeFromNib() {
-		this.fileTableView.setDelegate(this);
-		this.fileTableView.setDataSource(this);
-		this.fileTableView.sizeToFit();
+		super.awakeFromNib();
         this.mirrorRadioCell.setTarget(this);
         this.mirrorRadioCell.setAction(new NSSelector("mirrorCellClicked", new Class[]{Object.class}));
         this.uploadRadioCell.setTarget(this);
-        this.uploadRadioCell.setAction(new NSSelector("uploadCellClicked", new Class[]{Object.class}));
+        this.uploadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
         this.downloadRadioCell.setTarget(this);
-        this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
+        this.downloadRadioCell.setAction(new NSSelector("uploadCellClicked", new Class[]{Object.class}));
 	}
 	
+	protected void setEnabled(boolean enabled) {
+		this.syncButton.setEnabled(enabled);
+	}	
+	
 	public void mirrorCellClicked(Object sender) {
-		this.workset = new ArrayList();
-		for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
-			Path p = (Path)i.next();
-			this.workset.add(p);
+		if(this.mirrorRadioCell.state() == NSCell.OnState) {
+			this.workset = new ArrayList();
+			for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
+				Path p = (Path)i.next();
+				this.workset.add(p);
+			}
+			this.reloadTable();
 		}
-		this.reloadData();
 	}
 
 	public void downloadCellClicked(Object sender) {
-		this.workset = new ArrayList();
-		for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
-			Path p = (Path)i.next();
-			if(p.remote.exists()) {
-				this.workset.add(p);
+		if(this.downloadRadioCell.state() == NSCell.OnState) {
+			this.workset = new ArrayList();
+			for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
+				Path p = (Path)i.next();
+				if(p.getRemote().exists()) {
+					this.workset.add(p);
+				}
 			}
+			this.reloadTable();
 		}
-		this.reloadData();
 	}
 
 	public void uploadCellClicked(Object sender) {
-		this.workset = new ArrayList(); //@todo clear
-		for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
-			Path p = (Path)i.next();
-			if(p.local.exists()) {
-				this.workset.add(p);
+		if(this.uploadRadioCell.state() == NSCell.OnState) {
+			this.workset = new ArrayList();
+			for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
+				Path p = (Path)i.next();
+				if(p.getLocal().exists()) {
+					this.workset.add(p);
+				}
 			}
+			this.reloadTable();
 		}
-		this.reloadData();
 	}
 	
+	protected void fireDataChanged() {
+		this.mirrorCellClicked(null);
+		this.downloadCellClicked(null);
+		this.uploadCellClicked(null);
+	}
+	
+	public List getResult() {
+		return this.workset;
+	}
+
 	// ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
@@ -107,42 +126,6 @@ public class CDSyncValidatorController extends CDValidatorController {
 	public void setUploadRadioCell(NSButtonCell uploadRadioCell) {
 		this.uploadRadioCell = uploadRadioCell;
 	}
-
-	private NSTextField localTimestampField;
-	
-	public void setLocalTimestampField(NSTextField localTimestampField) {
-		this.localTimestampField = localTimestampField;
-	}
-
-	private NSTextField remoteTimestampField;
-	
-	public void setRemoteTimestampField(NSTextField remoteTimestampField) {
-		this.remoteTimestampField = remoteTimestampField;
-	}
-	
-	private NSTextField urlField;
-	
-	public void setUrlField(NSTextField urlField) {
-		this.urlField = urlField;
-	}
-	
-	private NSTextField localField;
-	
-	public void setLocalField(NSTextField localField) {
-		this.localField = localField;
-	}
-	
-	private NSProgressIndicator statusIndicator;
-	
-	public void setStatusIndicator(NSProgressIndicator statusIndicator) {
-		this.statusIndicator = statusIndicator;
-	}
-	
-	private NSTableView fileTableView;
-	
-	public void setFileTableView(NSTableView fileTableView) {
-		this.fileTableView = fileTableView;
-	}
 	
 	private NSButton syncButton;
 	
@@ -155,166 +138,45 @@ public class CDSyncValidatorController extends CDValidatorController {
         NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 
-	public void cancelActionFired(NSButton sender) {
-        this.setCanceled(true);
-		this.workset.clear();
-        NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
-    }
-	
-	public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-        sheet.close();
-	}
-	
-	public void reloadData() {
-		log.debug("reloadData");
-		this.fileTableView.deselectAll(null);
-		log.debug("Working set: "+this.workset);
-		this.fileTableView.reloadData();
-	}
-	
-	public List validate(Queue q) {
-		this.statusIndicator.startAnimation(null);
-		this.prompt(null);
-		this.validated = super.validate(q);
-		if(this.mirrorRadioCell.state() == NSCell.OnState)
-			this.mirrorCellClicked(null);
-		if(this.downloadRadioCell.state() == NSCell.OnState)
-			this.downloadCellClicked(null);
-		if(this.uploadRadioCell.state() == NSCell.OnState)
-			this.uploadCellClicked(null);
-		this.statusIndicator.stopAnimation(null);
-		this.syncButton.setEnabled(true);
-		while (windowController.window().attachedSheet() != null) {
-			try {
-				log.debug("Sleeping...");
-				//block the caller thread
-				Thread.sleep(1000); //milliseconds
-			}
-			catch (InterruptedException e) {
-				log.error(e.getMessage());
-			}
-		}
-		return workset;
-	}
-	
 	protected boolean validateFile(Path p) {
 		log.debug("validateFile:"+p);
-		this.reloadData();
-		if(p.remote.exists() && p.local.exists()) {
+		if(p.getRemote().exists() && p.getLocal().exists()) {
 			//@todo should we even bother about modification dates at this stage?
 			//@todo modficiation date only relevant if download/upload
-			boolean equal = p.remote.modificationDate().equals(p.local.getTimestamp());
-			log.info(p.getName()+" : Same modification date:"+equal);
-			boolean size = (p.remote.size() == p.local.size());
-			log.info(p.getName()+" : Same size:"+size);
-			return !equal && !size;
+//			boolean equalTimestamp = p.modificationDate().equals(p.getLocal().getTimestamp());
+//			log.info(p.getRemote().getName()+" : Same modification date:"+equalTimestamp);
+//			boolean equalSize = (p.size() == p.getLocal().size()); //@todo size should be correct!?
+			boolean equalSize = (p.status.getSize() == p.getLocal().size()); //@todo size should be correct!?
+			log.info(p.getRemote().getName()+" : Same size:"+equalSize);
+//			return !equalTimestamp && !equalSize;
+			return !equalSize;
 		}
 		return true; // Include if mirroring
 	}
 	
 	protected boolean validateDirectory(Path path) {
-		if(!path.local.exists())
-			path.local.mkdirs();
+		if(!path.getLocal().exists())
+			path.getLocal().mkdirs();
 		return false;
 	}
 	
-	protected boolean prompt(Path ignored) {
-        while (windowController.window().attachedSheet() != null) {
-            try {
-                log.debug("Sleeping...");
-                Thread.sleep(1000); //milliseconds
-            }
-            catch (InterruptedException e) {
-                log.error(e.getMessage());
-            }
-        }
-		windowController.window().makeKeyAndOrderFront(null);
-		NSApplication.sharedApplication().beginSheet(this.window(), //sheet
-													 windowController.window(),
-													 this, //modalDelegate
-													 new NSSelector("validateSheetDidEnd",
-																	new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
-													 null); //contextInfo
-		windowController.window().makeKeyAndOrderFront(null);
-		return true;
-	}
-	
 	protected boolean exists(Path p) {
-		return p.remote.exists() || p.local.exists();
+		return p.getRemote().exists() || p.getLocal().exists();
 	}
 	
-	
-    private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
-	
-    static {
-        lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
-    }
-	
-    private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
-																							  new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-
 	// ----------------------------------------------------------
     // NSTableView.DataSource
     // ----------------------------------------------------------
-
-	private final NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
 	
-	public void tableViewSelectionDidChange(NSNotification notification) {
-		if(this.fileTableView.selectedRow() != -1) {
-			Path p = (Path)this.workset.get(this.fileTableView.selectedRow());
-			if(p != null) {
-				try {
-					if(p.local.exists()) {
-						this.localField.setAttributedStringValue(new NSAttributedString(p.local.getAbsolute(),
-																						TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
-																 );
-						String localeTS = formatter.stringForObjectValue(new NSGregorianDate((double)p.local.getTimestamp().getTime()/1000, 
-																							 NSDate.DateFor1970)
-																		 );
-						this.localTimestampField.setAttributedStringValue(new NSAttributedString(localeTS, TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-					}
-					else {
-						this.localField.setStringValue("-");
-						this.localTimestampField.setStringValue("-");
-					}
-					if(p.remote.exists()) {
-						this.urlField.setAttributedStringValue(new NSAttributedString(p.getHost().getURL()+p.getAbsolute(), 
-																					  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
-															   );
-						String remoteTS = formatter.stringForObjectValue(new NSGregorianDate((double)p.remote.attributes.getTimestamp().getTime()/1000, 
-																							 NSDate.DateFor1970)
-																		 );
-						this.remoteTimestampField.setAttributedStringValue(new NSAttributedString(remoteTS, TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-					}
-					else {
-						this.urlField.setStringValue("-");
-						this.remoteTimestampField.setStringValue("-");
-					}
-				}
-				catch(NSFormatter.FormattingException e) {
-					log.error(e.toString());
-				}
-			}
-		}
-		else {
-			this.urlField.setStringValue("");
-			this.remoteTimestampField.setStringValue("");
-			this.localField.setStringValue("");
-			this.localTimestampField.setStringValue("");
-		}
+	public void tableViewWillDisplayCell(NSTableView tableView, 
+												  Object c, 
+												  NSTableColumn tableColumn, 
+												  int rowIndex) {
+		// NSCell cell = (NSCell)c;
 	}
 	
-	public int numberOfRowsInTableView(NSTableView tableView) {
-		return workset.size();
-    }
-	
-	private static final NSImage arrowUpIcon = NSImage.imageNamed("up.tiff");
-    private static final NSImage arrowDownIcon = NSImage.imageNamed("down.tiff");
-	
-	static {
-		arrowUpIcon.setSize(new NSSize(16f, 16f));	
-		arrowDownIcon.setSize(new NSSize(16f, 16f));	
-	}
+	private static final NSImage arrowUpIcon = NSImage.imageNamed("arrowUp16.tiff");
+    private static final NSImage arrowDownIcon = NSImage.imageNamed("arrowDown16.tiff");
 	
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
         if (row < numberOfRowsInTableView(tableView)) {
@@ -322,18 +184,18 @@ public class CDSyncValidatorController extends CDValidatorController {
 			Path p = (Path)this.workset.get(row);
 			if(p != null) {
 				if (identifier.equals("TYPE")) {
-					if(p.remote.exists() && p.local.exists()) {
-						if(p.local.getTimestamp().before(p.attributes.getTimestamp())) {
+					if(p.getRemote().exists() && p.getLocal().exists()) {
+						if(p.getLocal().getTimestamp().before(p.getRemote().attributes.getTimestamp())) {
 							return arrowDownIcon;
 						}
-						if(p.local.getTimestamp().after(p.attributes.getTimestamp())) {
+						if(p.getLocal().getTimestamp().after(p.getRemote().attributes.getTimestamp())) {
 							return arrowUpIcon;
 						}
 					}
-					if(p.remote.exists()) {
+					if(p.getRemote().exists()) {
 						return arrowDownIcon;
 					}
-					if(p.local.exists()) {
+					if(p.getLocal().exists()) {
 						return arrowUpIcon;
 					}
 					return NSImage.imageNamed("notfound.tiff"); // illegal argument
@@ -344,7 +206,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 					return icon;
 				}
 				if (identifier.equals("NAME")) {
-					return p.getName();
+					return p.getRemote().getName();
 				}
 				throw new IllegalArgumentException("Unknown identifier: " + identifier);
 			}

@@ -21,10 +21,12 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Status;
 import ch.cyberduck.core.AbstractValidator;
@@ -37,42 +39,100 @@ public abstract class CDValidatorController extends AbstractValidator {
 
     private static NSMutableArray instances = new NSMutableArray();
 
-    protected CDController windowController;
+    protected CDController windowController = CDQueueController.instance();
 
-    public CDValidatorController(CDController windowController, boolean resumeRequested) {
+    public CDValidatorController(boolean resumeRequested) {
 		super(resumeRequested);
-        this.windowController = windowController;
+//        this.windowController = windowController; //@todo CDQueueController.instance()
         instances.addObject(this);
     }
 
+	public void awakeFromNib() {
+		this.fileTableView.setDelegate(this);
+		this.fileTableView.setDataSource(this);
+		this.fileTableView.sizeToFit();
+	}
+	
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
 
-    private NSImageView iconView; // IBOutlet
+	private NSTextField localTimestampField;
+	
+	public void setLocalTimestampField(NSTextField localTimestampField) {
+		this.localTimestampField = localTimestampField;
+	}
+	
+	private NSTextField remoteTimestampField;
+	
+	public void setRemoteTimestampField(NSTextField remoteTimestampField) {
+		this.remoteTimestampField = remoteTimestampField;
+	}
+	
+	private NSTextField infoLabel; // IBOutlet
+	
+	public void setInfoLabel(NSTextField infoLabel) {
+		this.infoLabel = infoLabel;
+	}
+	
+	private NSTextField urlField; // IBOutlet
+	
+	public void setUrlField(NSTextField urlField) {
+		this.urlField = urlField;
+	}
+	
+	private NSTextField localField; // IBOutlet
+	
+	public void setLocalField(NSTextField localField) {
+		this.localField = localField;
+	}
 
-    public void setIconView(NSImageView iconView) {
-        this.iconView = iconView;
+	private NSTextField localSizeField; // IBOutlet
+	
+	public void setLocalSizeField(NSTextField localSizeField) {
+		this.localSizeField = localSizeField;
+	}
+
+	private NSTextField remoteSizeField; // IBOutlet
+	
+	public void setRemoteSizeField(NSTextField remoteSizeField) {
+		this.remoteSizeField = remoteSizeField;
+	}
+	
+	private NSProgressIndicator statusIndicator; // IBOutlet
+	
+	public void setStatusIndicator(NSProgressIndicator statusIndicator) {
+		this.statusIndicator = statusIndicator;
+	}
+	
+	private NSTableView fileTableView; // IBOutlet
+	
+	public void setFileTableView(NSTableView fileTableView) {
+		this.fileTableView = fileTableView;
+	}
+
+    private NSButton skipButton; // IBOutlet
+	
+    public void setSkipButton(NSButton skipButton) {
+        this.skipButton = skipButton;
+		this.skipButton.setEnabled(false);
     }
-
-    private NSTextField alertTextField; // IBOutlet
-
-    public void setAlertTextField(NSTextField alertTextField) {
-        this.alertTextField = alertTextField;
-    }
-
-    private NSButton applyCheckbox; // IBOutlet
-
-    public void setApplyCheckbox(NSButton applyCheckbox) {
-        this.applyCheckbox = applyCheckbox;
-    }
-
+	
     private NSButton resumeButton; // IBOutlet
 
     public void setResumeButton(NSButton resumeButton) {
         this.resumeButton = resumeButton;
+		this.resumeButton.setEnabled(false);
+		//@todo resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
     }
 
+	private NSButton overwriteButton; // IBOutlet
+	
+    public void setOverwriteButton(NSButton overwriteButton) {
+        this.overwriteButton = overwriteButton;
+		this.overwriteButton.setEnabled(false);
+    }
+	
     private NSPanel window; // IBOutlet
 
     public void setWindow(NSPanel window) {
@@ -84,80 +144,59 @@ public abstract class CDValidatorController extends AbstractValidator {
         return this.window;
     }
 
+	protected void setEnabled(boolean enabled) {
+		this.overwriteButton.setEnabled(enabled);
+		this.resumeButton.setEnabled(enabled); //@todo
+		this.skipButton.setEnabled(enabled);
+	}
+	
+	protected void reloadTable() {
+		this.fileTableView.deselectAll(null);
+		this.fileTableView.reloadData();
+		this.infoLabel.setStringValue(this.workset.size()+" "+NSBundle.localizedString("files", ""));
+	}
+		
     public void windowWillClose(NSNotification notification) {
         instances.removeObject(this);
     }
 
-    /*
-     * Use the same settings for all succeeding items to check
-     */
-    private boolean applySettingsToAll = false;
-    /**
-     * Include this file in the transfer queue
-     */
-    private boolean include = false;
-    /**
-     * The resume button has been selected
-     */
-    private boolean resumeChoosen = false;
-		
-    protected boolean prompt(final Path path) {
-        while (windowController.window().attachedSheet() != null) {
+	protected void fireDataChanged() {
+		this.reloadTable();
+	}
+	
+	protected abstract void load();
+
+	protected void prompt() {
+		this.load();
+        while (this.windowController.window().attachedSheet() != null) {
             try {
                 log.debug("Sleeping...");
-                Thread.sleep(1000); //milliseconds
+				this.windowController.wait();
+				//                Thread.sleep(1000); //milliseconds
             }
             catch (InterruptedException e) {
                 log.error(e.getMessage());
+				return;
             }
         }
-        if (!applySettingsToAll) {
-            synchronized (this) {
-                resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
-                Path remote = path;
-                List list = path.getParent().list(); //List cache = path.getParent().cache();
-                if (list.indexOf(path) != -1) {
-                    remote = (Path)list.get(list.indexOf(path));
-                }
-                String alertText =
-                        NSBundle.localizedString("Local", "") + ":\n"
-                        + "\t" + path.getLocal().getAbsolute() + "\n"
-                        + "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(path.getLocal().length()) + "\n"
-                        + "\t" + NSBundle.localizedString("Modified", "") + ": " + path.getLocal().getTimestampAsString() + "\n"
-                        + NSBundle.localizedString("Remote", "") + ":\n"
-                        + "\t" + remote.getAbsolute() + "\n"
-                        + "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(remote.status.getSize()) + "\n"
-                        + "\t" + NSBundle.localizedString("Modified", "") + ": " + remote.attributes.getTimestampAsString() + "\n"
-                        ;
-                alertTextField.setStringValue(alertText); // message
-                NSImage img = NSWorkspace.sharedWorkspace().iconForFileType(path.getExtension());
-                img.setScalesWhenResized(true);
-                img.setSize(new NSSize(64f, 64f));
-                iconView.setImage(img);
-				windowController.window().makeKeyAndOrderFront(null);
-                NSApplication.sharedApplication().beginSheet(this.window(), //sheet
-                        windowController.window(),
-                        CDValidatorController.this, //modalDelegate
-                        new NSSelector("validateSheetDidEnd",
-                                new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
-                        path); //contextInfo
-				windowController.window().makeKeyAndOrderFront(null);
-                // Waiting for user to make choice
-                while (windowController.window().attachedSheet() != null) {
-                    try {
-                        log.debug("Sleeping...");
-                        Thread.sleep(1000); //milliseconds
-                    }
-                    catch (InterruptedException e) {
-                        log.error(e.getMessage());
-                    }
-                }
-            }
-        }
-        path.status.setResume(resumeChoosen);
-        log.info("File " + path.getName() + " will be included:" + include);
-        return include;
-    }
+		this.windowController.window().makeKeyAndOrderFront(null);
+		NSApplication.sharedApplication().beginSheet(this.window(), //sheet
+													 this.windowController.window(),
+													 this, //modalDelegate
+													 new NSSelector("validateSheetDidEnd",
+																	new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
+													 null); //contextInfo
+		this.windowController.window().makeKeyAndOrderFront(null);
+		this.statusIndicator.startAnimation(null);
+	}
+	
+	/* 
+		@todo !!!
+	 List list = path.getParent().childs();
+	 if (list.indexOf(path) != -1) {
+		 remote = (Path)list.get(list.indexOf(path));
+	 }
+	 */
 	
 	protected void proposeFilename(Path path) {
 //		return path.local.getName();
@@ -165,36 +204,170 @@ public abstract class CDValidatorController extends AbstractValidator {
 
     public void resumeActionFired(NSButton sender) {
         log.debug("resumeActionFired");
-        this.resumeChoosen = true;
-        this.include = true;
+		for(Iterator i = this.workset.iterator(); i.hasNext(); ) {
+			((Path)i.next()).status.setResume(true);
+		}
         NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 
     public void overwriteActionFired(NSButton sender) {
         log.debug("overwriteActionFired");
-        this.resumeChoosen = false;
-        this.include = true;
+		for(Iterator i = this.workset.iterator(); i.hasNext(); ) {
+			((Path)i.next()).status.setResume(false);
+		}
         NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 
     public void skipActionFired(NSButton sender) {
         log.debug("skipActionFired");
-        this.resumeChoosen = true;
-        this.include = false;
+		this.workset.clear();
         NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 
-    public void cancelActionFired(NSButton sender) {
-        log.debug("cancelActionFired");
+	public void cancelActionFired(NSButton sender) {
         this.setCanceled(true);
-        this.include = false;
-        this.resumeChoosen = true;
+		this.workset.clear();
         NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 
-    public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+	public boolean validate(Queue q) {
+		boolean loaded = false;
+		// for every root get its childs
+		for (Iterator rootIter = q.getRoots().iterator(); rootIter.hasNext(); ) {
+			for(Iterator iter = q.getChilds((Path)rootIter.next()).iterator(); iter.hasNext(); ) {
+				Path child = (Path)iter.next();
+				if (this.validate(child)) {
+					log.info(child.getName()+" validated.");
+					this.validated.add(child);
+				}
+				else {
+					log.info(child.getName()+" in workset.");
+					if(!loaded) {
+						this.prompt(); 
+						loaded = true;
+					}
+					this.workset.add(child);
+					this.fireDataChanged();
+				}
+			}
+		}
+		if(loaded) {
+			this.statusIndicator.stopAnimation(null);
+			this.setEnabled(true);
+			
+			while (this.windowController.window().attachedSheet() != null) {
+				try {
+					log.debug("Sleeping...");
+					//block the caller thread
+					//				this.windowController.wait();
+					Thread.sleep(1000); //milliseconds
+				}
+				catch (InterruptedException e) {
+					log.error(e.getMessage());
+				}
+			}
+		}
+		return !this.isCanceled();
+	}
+	
+	public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.close();
-        this.applySettingsToAll = (applyCheckbox.state() == NSCell.OnState);
-        log.info("Action will applied to all subsequent validated items");
+//		this.windowController.notifyAll();
+	}
+	
+	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
+	
+    static {
+        lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
+    }
+	
+    private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
+																							  new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+	
+	// ----------------------------------------------------------
+    // NSTableView.DataSource
+    // ----------------------------------------------------------
+	
+	private final NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
+	
+	public boolean tableViewShouldSelectRow(NSTableView aTableView, int rowIndex) {
+		return true;
+	}
+	
+	public void tableViewSelectionDidChange(NSNotification notification) {
+		if(this.fileTableView.selectedRow() != -1) {
+			Path p = (Path)this.workset.get(this.fileTableView.selectedRow());
+			if(p != null) {
+				try {
+					if(p.getLocal().exists()) {
+						this.localField.setAttributedStringValue(new NSAttributedString(p.getLocal().getAbsolute(),
+																						TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
+																 );
+						String localeTS = formatter.stringForObjectValue(new NSGregorianDate((double)p.getLocal().getTimestamp().getTime()/1000, 
+																							 NSDate.DateFor1970)
+																		 );
+						this.localTimestampField.setAttributedStringValue(new NSAttributedString(localeTS, 
+																								 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
+																		  );
+						this.localSizeField.setStringValue(Status.getSizeAsString(p.getLocal().length()));
+					}
+					else {
+						this.localField.setStringValue("-");
+						this.localTimestampField.setStringValue("-");
+						this.localSizeField.setStringValue("-");
+					}
+					if(p.getRemote().exists()) {
+						this.urlField.setAttributedStringValue(new NSAttributedString(p.getRemote().getHost().getURL()+p.getRemote().getAbsolute(), 
+																					  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
+															   );
+						String remoteTS = formatter.stringForObjectValue(new NSGregorianDate((double)p.getRemote().attributes.getTimestamp().getTime()/1000, 
+																							 NSDate.DateFor1970)
+																		 );
+						this.remoteTimestampField.setAttributedStringValue(new NSAttributedString(remoteTS, 
+																								  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
+																		   );
+						this.remoteSizeField.setStringValue(Status.getSizeAsString(p.status.getSize()));
+					}
+				}
+				catch(NSFormatter.FormattingException e) {
+					log.error(e.toString());
+				}
+			}
+		}
+		else {
+			this.urlField.setStringValue("-");
+			this.remoteTimestampField.setStringValue("-");
+			this.remoteSizeField.setStringValue("-");
+
+			this.localField.setStringValue("-");
+			this.localTimestampField.setStringValue("-");
+			this.localSizeField.setStringValue("-");
+		}
+	}
+	
+	public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn column, int row) {
+//		tableView.setToolTip(null);
+	}
+	
+	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
+        if (row < numberOfRowsInTableView(tableView)) {
+            String identifier = (String)tableColumn.identifier();
+			Path p = (Path)this.workset.get(row);
+			if(p != null) {
+				if (identifier.equals("NAME")) {
+					return p.getRemote().getName();
+				}
+				if (identifier.equals("ICON")) {
+					NSImage icon = CDIconCache.instance().get(p.getExtension());
+					icon.setSize(new NSSize(16f, 16f));
+					return icon;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public int numberOfRowsInTableView(NSTableView tableView) {
+		return workset.size();
     }
 }

@@ -15,11 +15,7 @@
 	<string>364.0</string>
 	<key>IBOldestOS</key>
 	<integer>2</integer>
-	<key>IBOpenObjects</key>
-	<array>
-		<integer>103</integer>
-	</array>
 	<key>IBSystem Version</key>
-	<string>7M34</string>
+	<string>7R28</string>
 </dict>
 </plist>
