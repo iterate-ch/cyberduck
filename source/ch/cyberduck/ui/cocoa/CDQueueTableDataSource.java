@@ -33,13 +33,8 @@ import org.apache.log4j.Logger;
 public class CDQueueTableDataSource extends CDTableDataSource {
     private static Logger log = Logger.getLogger(CDQueueTableDataSource.class);
 	
-//	private List data; //Queue elements
 	private Queues data = CDQueuesImpl.instance();
 	
-//	public CDQueueTableDataSource() {
-//		this.data = new ArrayList();
-//	}
-		
 	public int numberOfRowsInTableView(NSTableView tableView) {
 		return data.size();
 	}
@@ -48,44 +43,13 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 //		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 		String identifier = (String)tableColumn.identifier();
-		Queue item = this.getEntry(row);
-		if(identifier.equals("ICON")) {
-			return data.getItem(row);
-		}
+		Queue item = this.data.getItem(row);
 		if(identifier.equals("DATA")) {
 			return data.getItem(row);
 		}
 		if(identifier.equals("PROGRESS")) {
 			return data.getItem(row);
 		}
-		if(identifier.equals("REMOVE")) {
-			return NSImage.imageNamed("cancel.tiff");
-		}
 		throw new IllegalArgumentException("Unknown identifier: "+identifier);
 	}
-	
-	//setValue()
-	public void tableViewSetObjectValueForLocation(NSTableView tableView, Object object, NSTableColumn tableColumn, int row) {
-		String identifier = (String)tableColumn.identifier();
-		if(identifier.equals("REMOVE")) {
-			data.removeItem(row);
-			tableView.reloadData();
-		}
-	}
-	
-	public void addEntry(Queue element) {
-		this.data.addItem(element);
-	}
-	
-	public void removeEntry(int row) {
-		this.data.removeItem(row);
-	}
-	
-	public void removeEntry(Queue o) {
-		this.data.removeItem(this.data.indexOf(o));
-	}
-	
-	public Queue getEntry(int row) {
-		return (Queue)data.getItem(row);
-    }
 }	

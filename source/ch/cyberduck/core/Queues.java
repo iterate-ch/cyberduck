@@ -50,7 +50,7 @@ public abstract class Queues {
 		this.data.remove(index);
 	}
 	
-    public void removeItem(Host item) {
+    public void removeItem(Queue item) {
 		log.debug("removeItem:"+item);
 		this.removeItem(this.data.lastIndexOf(item));
     }

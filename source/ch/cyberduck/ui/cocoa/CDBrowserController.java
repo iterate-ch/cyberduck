@@ -203,6 +203,7 @@ public class CDBrowserController implements Observer {
 		iconColumn.setMinWidth(32f);
 		iconColumn.setWidth(32f);
 		iconColumn.setMaxWidth(32f);
+		iconColumn.setEditable(false);
 		iconColumn.setResizable(true);
 		iconColumn.setDataCell(new NSImageCell());
 		this.bookmarkTable.addTableColumn(iconColumn);
@@ -212,6 +213,7 @@ public class CDBrowserController implements Observer {
 		bookmarkColumn.setMinWidth(50f);
 		bookmarkColumn.setWidth(200f);
 		bookmarkColumn.setMaxWidth(500f);
+		bookmarkColumn.setEditable(false);
 		bookmarkColumn.setResizable(true);
 		bookmarkColumn.setDataCell(new CDBookmarkCell());
 		this.bookmarkTable.addTableColumn(bookmarkColumn);

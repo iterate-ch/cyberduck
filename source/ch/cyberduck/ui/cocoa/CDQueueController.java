@@ -73,15 +73,17 @@ public class CDQueueController implements Observer, Validator {
 		dataColumn.setMinWidth(200f);
 		dataColumn.setWidth(350f);
 		dataColumn.setMaxWidth(1000f);
+		dataColumn.setEditable(false);
 		dataColumn.setResizable(true);
 		dataColumn.setDataCell(new CDQueueCell());
 		this.queueTable.addTableColumn(dataColumn);
 
 		NSTableColumn progressColumn = new NSTableColumn();
-		progressColumn.setIdentifier("DATA");
+		progressColumn.setIdentifier("PROGRESS");
 		progressColumn.setMinWidth(50f);
-		progressColumn.setWidth(250f);
+		progressColumn.setWidth(300f);
 		progressColumn.setMaxWidth(1000f);
+		progressColumn.setEditable(false);
 		progressColumn.setResizable(true);
 		progressColumn.setDataCell(new CDProgressCell());
 		this.queueTable.addTableColumn(progressColumn);
@@ -100,32 +102,10 @@ public class CDQueueController implements Observer, Validator {
 		this.queueTable.setDoubleAction(new NSSelector("revealButtonClicked", new Class[] {Object.class}));
 		this.queueTable.sizeToFit();
     }
-	
-//	public void addTransfer(Path root, int kind) {
-//		List l = new ArrayList(); 
-//		l.add(root);
-//		this.addTransfer(l, kind);
-//	}
-
-	/**
-		* @param kind Tag specifiying if it is a download or upload.
-     */
-//	public void addTransfer(List roots, int kind) {
-//		this.window().makeKeyAndOrderFront(null);
-//		Queue queue = new Queue(roots, kind, this);
-////		CDQueueElementController elementController = new CDQueueElementController(queue);
-////		this.queueModel.addEntry(elementController);
-////		queue.addObserver(elementController);
-//		this.queueModel.addEntry(queue);
-//		this.queueTable.reloadData();
-//		queue.addObserver(this);
-//		queue.start(this);
-//		//		this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
-//    }
-	
+		
 	public void addItem(Queue queue) {
 		this.window().makeKeyAndOrderFront(null);
-		this.queueModel.addEntry(queue);
+		CDQueuesImpl.instance().addItem(queue);
 		this.queueTable.reloadData();
 		this.queueTable.selectRow(this.queueTable.numberOfRows(), false);
 	}
@@ -180,7 +160,7 @@ public class CDQueueController implements Observer, Validator {
 					if(queue.isEmpty()) {
 						if(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
 							this.queueTable.deselectAll(null);
-							this.queueModel.removeEntry(queue);
+							CDQueuesImpl.instance().removeItem(queue);
 							this.queueTable.reloadData();
 						}
 						if(Queue.KIND_DOWNLOAD == queue.kind()) {
@@ -268,25 +248,25 @@ public class CDQueueController implements Observer, Validator {
 	public void stopButtonClicked(Object sender) {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		while(enum.hasMoreElements()) {
-			Queue item = (Queue)this.queueModel.getEntry(((Integer)enum.nextElement()).intValue());
+			Queue item = CDQueuesImpl.instance().getItem(((Integer)enum.nextElement()).intValue());
 			item.cancel();
 		}
 	}
 	
 	public void resumeButtonClicked(Object sender) {
-		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+		Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
 		item.getRoot().status.setResume(true);
 		this.startItem(item);
 	}
 	
 	public void reloadButtonClicked(Object sender) {
-		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+		Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
 		item.getRoot().status.setResume(false);
 		this.startItem(item);
 	}
 
 	public void revealButtonClicked(Object sender) {
-		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+		Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
 		if(!NSWorkspace.sharedWorkspace().selectFile(item.getRoot().getLocal().toString(), "")) {
 			NSAlertPanel.beginCriticalAlertSheet(
 												 NSBundle.localizedString("Could not show the file in the Finder"), //title
@@ -307,7 +287,7 @@ public class CDQueueController implements Observer, Validator {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		int i = 0;
 		while(enum.hasMoreElements()) {
-			this.queueModel.removeEntry(((Integer)enum.nextElement()).intValue()-i);
+			CDQueuesImpl.instance().removeItem(((Integer)enum.nextElement()).intValue()-i);
 			i++;
 		}
 		this.queueTable.reloadData();
@@ -343,21 +323,21 @@ public class CDQueueController implements Observer, Validator {
 		String label = item.label();
 		if(label.equals(NSBundle.localizedString("Stop"))) {
 			if(this.queueTable.numberOfSelectedRows() == 1) {
-				Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+				Queue queue = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
 				return queue.isRunning();
 			}
 			return false;
 		}
 		if(label.equals(NSBundle.localizedString("Resume"))) {
 			if(this.queueTable.numberOfSelectedRows() == 1) {
-				Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+				Queue queue = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
 				return queue.isCanceled() && !(queue.remainingJobs() == 0);
 			}
 			return false;
 		}
 		if(label.equals(NSBundle.localizedString("Reload"))) {
 			if(this.queueTable.numberOfSelectedRows() == 1) {
-				Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+				Queue queue = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
 				return !queue.isRunning();
 			}
 			return false;
@@ -367,7 +347,7 @@ public class CDQueueController implements Observer, Validator {
 		}
 		if(label.equals(NSBundle.localizedString("Remove"))) {
 			if(this.queueTable.selectedRow() != -1) {
-				Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+				Queue queue = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
 				return queue.isCanceled();
 			}
 			return false;

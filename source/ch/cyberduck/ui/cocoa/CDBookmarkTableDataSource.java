@@ -42,9 +42,6 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 //		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 		String identifier = (String)tableColumn.identifier();
-		if(identifier.equals("STATUS")) {
-			return NSImage.imageNamed("cyberduck-document.icns");
-		}
 		if(identifier.equals("ICON")) {
 			return NSImage.imageNamed("cyberduck-document.icns");
 		}

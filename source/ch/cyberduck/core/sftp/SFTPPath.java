@@ -375,7 +375,7 @@ public class SFTPPath extends Path {
 			}
 		}
 		else if(this.getLocal().isFile()) {
-			this.status.setSize((int)this.getLocal().length());
+			this.status.setSize(this.getLocal().length());
 			queue.add(this);
 		}
 		else
