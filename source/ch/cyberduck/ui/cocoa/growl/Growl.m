@@ -116,7 +116,13 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 
 - (void)registerGrowl
 {
-	[self registerGrowlWithContext: nil];
+	if(NSClassFromString(@"GrowlAppBridge") != nil) 
+	{ 
+		if([NSClassFromString(@"GrowlAppBridge") isGrowlRunning]) 
+		{
+			[self registerGrowlWithContext: nil];
+		}
+	}
 }
 
 - (void)registerGrowlWithContext:(void*)context
