@@ -18,9 +18,27 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
-public interface Transcripter {
-	public void transcript(String text);
+import junit.framework.TestCase;
+
+public class QueueTest extends TestCase {
+	
+	static {
+		org.apache.log4j.BasicConfigurator.configure();
+	}
+	
+	public QueueTest(String name) {
+		super(name);
+	}
+	
+	public void testKindFile() {
+		
+	}
+	
+	public void testKindFolder() {
+		
+	}
+	
+	public void testQueueEmpty() {
+
+	}
 }
