@@ -48,8 +48,8 @@ public class Preferences extends Properties {
 
     private static Logger log = Logger.getLogger(Preferences.class);
 
-    private static File PREFS_DIRECTORY = new File(System.getProperty("user.home"), ".cyberduck");
-    private static final String PREFERENCES_FILE = "cyberduck.preferences";
+    public static File PREFS_DIRECTORY = new File(System.getProperty("user.home"), ".cyberduck");
+    public static final String PREFERENCES_FILE = "cyberduck.preferences";
 //    private static File PREFS_DIRECTORY = null;
 //    private static final String PREFERENCES_FILE = null;
     private static Preferences current = null;
@@ -148,7 +148,9 @@ public class Preferences extends Properties {
         log.debug("setDefaults()");
 
 	//	System.out.println("Working directory:"+System.getProperty("user.dir"));
-	
+	this.setProperty("cyberduck.version", "2.1");
+	this.setProperty("cyberduck.donate", "true");
+        
 	System.setProperty("sshtools.home", System.getProperty("user.dir"));
 	System.setProperty("sshtools.config", System.getProperty("user.dir"));
 

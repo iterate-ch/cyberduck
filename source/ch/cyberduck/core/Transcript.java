@@ -27,7 +27,7 @@ package ch.cyberduck.core;
 
 import javax.swing.JTextArea;
 
-import ch.cyberduck.ui.common.GUIFactory;
+//import ch.cyberduck.ui.common.GUIFactory;
 
 /**
  * Singleton text area to append logging messages.
@@ -46,7 +46,7 @@ public class Transcript extends JTextArea {
      private Transcript() {
          super();
          this.setEditable(true);
-         this.setFont(GUIFactory.FONT_MONOSPACED_SMALL);
+//         this.setFont(GUIFactory.FONT_MONOSPACED_SMALL);
      }
 
      public void transcript(String text) {

@@ -65,6 +65,7 @@ public class CDPathPopUpButton extends NSPopUpButton implements Observer {
 
     public CDPathPopUpButton( NSRect rect, boolean flag) {
 	super(rect, flag);
+	log.debug("CDPathPopUpButton");
     }	
 
     public CDPathPopUpButton(NSCoder decoder, long token) {

@@ -30,8 +30,8 @@ import java.util.*;
 
 import com.enterprisedt.net.ftp.*;
 
-import ch.cyberduck.Cyberduck;
-import ch.cyberduck.core.Preferences;import ch.cyberduck.core.*;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.*;
 
 import org.apache.log4j.Logger;
 

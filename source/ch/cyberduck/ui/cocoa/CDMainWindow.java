@@ -110,6 +110,7 @@ public class CDMainWindow extends NSWindow {//implements Observer {
 
     public void quitSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
 	// if multi window app only close the one window with main.close()
+        sheet.close();
 	if(returncode == NSAlertPanel.DefaultReturn)
 	    NSApplication.sharedApplication().terminate(this);
     }

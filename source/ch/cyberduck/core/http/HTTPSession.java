@@ -32,7 +32,6 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import ch.cyberduck.Cyberduck;
 import ch.cyberduck.core.Preferences;import ch.cyberduck.core.*;
 
 import org.apache.log4j.Logger;
@@ -113,7 +112,7 @@ public class HTTPSession extends Session {
                 }
                 GET.addRequestHeader("Accept", "*/*");
 
-		GET.addRequestHeader("User-Agent", "Cyberduck/" + Cyberduck.getVersion());
+		GET.addRequestHeader("User-Agent", "Cyberduck/" + Preferences.instance().getProperty("cyberduck.version"));
                 if(host.status.isResume()) {
                     GET.addRequestHeader("Range", "bytes=" + host.status.getCurrent() + "-");
                 }

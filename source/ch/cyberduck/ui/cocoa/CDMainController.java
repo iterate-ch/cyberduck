@@ -114,7 +114,7 @@ public class CDMainController extends NSObject {
     
     public void preferencesButtonPressed(NSObject sender) {
         NSApplication.loadNibNamed("Preferences", this);
-        preferencesWindow.orderFront(this);
+        preferencesWindow.makeKeyAndOrderFront(this);
     }
 
     public void connectionSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {

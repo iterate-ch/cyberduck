@@ -38,10 +38,12 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Vector;
+import java.net.URL;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.Cyberduck;
 import ch.cyberduck.core.Preferences;
 /**
   * The Status class is the model of a download's status. The view of this is represented by
@@ -52,6 +54,34 @@ import ch.cyberduck.core.Preferences;
 public class Status extends Observable implements Serializable {
 
     private static Logger log = Logger.getLogger(Status.class);
+
+/*
+    public static final Icon GREEN_ICON = Status.getIcon(Status.getResource("blipGreen.gif"));
+    public static final Icon BLUE_ICON = Status.getIcon(Status.getResource("blipBlue.gif"));
+    public static final Icon RED_ICON = Status.getIcon(Status.getResource("blipRed.gif"));
+    public static final Icon GRAY_ICON = Status.getIcon(Status.getResource("blipGray.gif"));
+
+
+    public static URL getResource(String name) {
+        URL url= Status.class.getResource(name);
+        if (url == null) {
+            log.warn("Failed to load resource '" + name + "'.");
+        }
+        return url;
+    }
+    
+    public static Icon getIcon(URL url) {
+        Icon image = null;
+        try {
+            image = new ImageIcon(url);
+        }
+        catch(Exception e) {
+            log.warn("Failed to load image.");
+        }
+        return image;
+    }
+    */
+
 
     /**
       * Progress trackers.
@@ -291,18 +321,20 @@ public class Status extends Observable implements Serializable {
         }
     }
 
+/*
     public javax.swing.Icon getIcon() {
         if(this.isComplete()) {
-            return ch.cyberduck.ui.common.GUIFactory.GREEN_ICON;
+            return GREEN_ICON;
         }
         if(!this.isStopped()) {
-            return ch.cyberduck.ui.common.GUIFactory.BLUE_ICON;
+            return BLUE_ICON;
         }
         if(this.getLength() > this.getCurrent()) {
-            return ch.cyberduck.ui.common.GUIFactory.RED_ICON;
+            return RED_ICON;
         }
-        return ch.cyberduck.ui.common.GUIFactory.GRAY_ICON;
+        return GRAY_ICON;
     }
+    */
 
     // ZUSTAENDE
     private void setComplete(boolean b) {

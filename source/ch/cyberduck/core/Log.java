@@ -27,7 +27,6 @@ package ch.cyberduck.core;
 
 import java.io.*;
 
-import ch.cyberduck.Cyberduck;
 import ch.cyberduck.core.Preferences;
 import org.apache.log4j.Logger;
 
@@ -49,7 +48,7 @@ public class Log {
     
     public void append(String text) {
 //        log.debug("[Log] append(" + text + ")");
-        buffer.append(text + Cyberduck.SEPARATOR);
+        buffer.append(text + System.getProperty("line.separator"));
     }
     
     public void save() {
@@ -57,7 +56,7 @@ public class Log {
         FileWriter fw = null;
         BufferedWriter bw = null;
         try {
-            File prefFile = new File(Cyberduck.PREFS_DIRECTORY, Preferences.instance().getProperty("connection.log.file"));
+            File prefFile = new File(Preferences.PREFS_DIRECTORY, Preferences.instance().getProperty("connection.log.file"));
             bw = new BufferedWriter(fw = new FileWriter(prefFile.toString(), true));
             String logtext = buffer.toString();
             if (logtext != null) {
@@ -91,7 +90,7 @@ public class Log {
     public static String open() {
         log.debug("[Log] open()");
 	StringBuffer logtext = new StringBuffer();
-	File path = new File(Cyberduck.PREFS_DIRECTORY, Preferences.instance().getProperty("connection.log.file"));
+	File path = new File(Preferences.PREFS_DIRECTORY, Preferences.instance().getProperty("connection.log.file"));
 	if(path.exists()) {
             try {
                 FileReader fr = new FileReader(path);
@@ -103,7 +102,7 @@ public class Log {
                         eof = true;
                     }
                     else {
-                        logtext.append(line + Cyberduck.SEPARATOR);
+                        logtext.append(line + System.getProperty("line.separator"));
                     }
                 }
             }
@@ -117,7 +116,7 @@ public class Log {
     public static void delete() {
         log.debug("[Log] delete()");
         try {
-	    File path = new File(Cyberduck.PREFS_DIRECTORY, Preferences.instance().getProperty("connection.log.file"));
+	    File path = new File(Preferences.PREFS_DIRECTORY, Preferences.instance().getProperty("connection.log.file"));
 	    if (path.exists())
 		path.delete();
         }

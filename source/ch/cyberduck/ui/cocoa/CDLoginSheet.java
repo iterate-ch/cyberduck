@@ -40,7 +40,6 @@ public class CDLoginSheet extends NSWindow {
 	    NSApplication.sharedApplication().endSheet(this, NSAlertPanel.AlternateReturn);
     }
 
-
     public String getUser() {
 	log.debug("getUser");
 	return userField.stringValue();

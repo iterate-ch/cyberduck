@@ -13,6 +13,8 @@ public class CDTransferController extends NSObject {
 
     private static Logger log = Logger.getLogger(CDTransferController.class);
 
+    public NSTableView transferTable;
+
     public CDTransferController() {
 	super();
 	log.debug("CDDownloadController");
@@ -23,11 +25,11 @@ public class CDTransferController extends NSObject {
     }    
 
     public void download() {
-	log.debug("CDDownloadController:download");
+	log.debug("download");
     }
 
     public void upload() {
-	log.debug("CDDownloadController:upload");
+	log.debug("upload");
 
     }
 }

@@ -85,6 +85,7 @@ public class CDConnectionSheet extends NSWindow {
     }
 
     public void closeSheet(NSObject sender) {
+	log.debug("closeSheet");
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 	NSApplication.sharedApplication().endSheet(this, NSAlertPanel.AlternateReturn);
     }

@@ -64,7 +64,7 @@ public class CDConnectionController extends NSObject implements Observer {
     public NSTextField hostField; /* IBOutlet */
     public NSTextField usernameField; /* IBOutlet */
     public NSSecureTextField passwordField; /* IBOutlet */
-    public NSView logView; /* IBOutlet */
+    public NSTextView logView; /* IBOutlet */
     public NSProgressIndicator progressIndicator; /* IBOutlet */
     
     public NSTableView browserTable;  /* IBOutlet */
