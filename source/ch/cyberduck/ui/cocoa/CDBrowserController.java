@@ -729,7 +729,7 @@ public class CDBrowserController extends CDController implements Observer {
 		this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
 
 		// selection properties
-		this.bookmarkTable.setAllowsMultipleSelection(false);
+		this.bookmarkTable.setAllowsMultipleSelection(true);
 		this.bookmarkTable.setAllowsEmptySelection(true);
 		this.bookmarkTable.setAllowsColumnResizing(false);
 		this.bookmarkTable.setAllowsColumnSelection(false);

@@ -130,8 +130,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 			NSPasteboard pboard = NSPasteboard.pasteboardWithName("HostPBoard");
 			if(this.hostPboardChangeCount < pboard.changeCount()) {
 				if(pboard.availableTypeFromArray(new NSArray("HostPBoardType")) != null) {
-					tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
-					//tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
+					tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
 					return NSDraggingInfo.DragOperationMove;
 				}
 			}
@@ -166,7 +165,6 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 						this.add(row, this.importBookmark(new java.io.File(filename)));
 						tableView.reloadData();
 						tableView.selectRow(row, false);
-						return true;
 					}
 					else {
 						// Drop of a file from the finder > upload to the remote host this bookmark points to
@@ -180,8 +178,8 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 				// if anything has been added to the queue then process the queue
 				if(q.numberOfRoots() > 0) {
 					CDQueueController.instance().startItem(q);
-					return true;
 				}
+				return true;
 			}
 			if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
 				// we are only interested in our private pasteboard with a description of the host encoded in as a xml.
