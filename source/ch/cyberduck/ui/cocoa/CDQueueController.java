@@ -147,12 +147,6 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 	
     private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
 																						 new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-	
-	public void tableViewSelectionDidChange(NSNotification notification) {
-		this.toolbar.validateVisibleItems();
-		this.updateLabels();
-	}
-	
 	private void updateLabels() {
 		if(this.queueTable.selectedRow() != -1) {
 			Queue q = this.queueModel.getItem(this.queueTable.selectedRow());
@@ -186,7 +180,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
                                                                          NSPasteboard.StringPboardType,
                                                                          NSPasteboard.FilesPromisePboardType}));
 
-        this.queueTable.setRowHeight(50f);//@todo
+        this.queueTable.setRowHeight(50f);
 
         NSTableColumn iconColumn = new NSTableColumn();
         iconColumn.setIdentifier("ICON");
@@ -227,6 +221,28 @@ if (returncode == NSAlertPanel.DefaultReturn) {
         this.queueTable.sizeToFit();
     }
 	
+	//@todo call this when window opens
+	private void tableViewSelectionChange() {
+		for(int i = 0; i < this.queueModel.size(); i++) {
+			this.queueModel.getController(i).setSelected(false);
+		}
+        NSEnumerator enum = this.queueTable.selectedRowEnumerator();
+        while (enum.hasMoreElements()) {
+			int selectedRow = ((Integer)enum.nextElement()).intValue();
+			this.queueModel.getController(selectedRow).setSelected(true);
+		}
+		this.toolbar.validateVisibleItems();
+		this.updateLabels();
+	}
+	
+	public void tableViewSelectionIsChanging(NSNotification notification) {
+		this.tableViewSelectionChange();
+	}
+	
+	public void tableViewSelectionDidChange(NSNotification notification) {
+		this.tableViewSelectionChange();
+	}
+		
 	private void reloadQueueTable() {
         log.debug("reloadQueueTable");
 		while (this.queueTable.subviews().count() > 0) {
@@ -247,8 +263,8 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     public void startItem(Queue queue, boolean resumeRequested) {
         log.info("Starting item:" + queue);
 		queue.addObserver(this);
-//@todo        this.queueTable.selectRow(this.queueModel.indexOf(queue), false);
-       //@todo this.queueTable.scrollRowToVisible(this.queueModel.indexOf(queue));
+//@todo	this.queueTable.selectRow(this.queueModel.indexOf(queue), false);
+//@todo this.queueTable.scrollRowToVisible(this.queueModel.indexOf(queue));
 
         if (Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
             this.window().makeKeyAndOrderFront(null);
@@ -330,8 +346,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 						}
 					}
 					if (Queue.KIND_UPLOAD == queue.kind()) {
-						Growl.instance().notify(NSBundle.localizedString("Upload complete", "Growl Notification"),
-												queue.getRoot().getName());
+						Growl.instance().notify(NSBundle.localizedString("Upload complete", "Growl Notification"), queue.getRoot().getName());
 						//@todo                            if (callback != null) {
 						//                                log.debug("Telling observable to refresh directory listing");
 						//                                callback.update(null, new Message(Message.REFRESH));
@@ -426,12 +441,10 @@ if (returncode == NSAlertPanel.DefaultReturn) {
     public void queueTableRowDoubleClicked(Object sender) {
         if (this.queueTable.selectedRow() != -1) {
             Queue item = this.queueModel.getItem(this.queueTable.selectedRow());
-            if (item.isComplete()) {
+            if (item.isComplete())
                 this.revealButtonClicked(sender);
-            }
-            else {
+            else
                 this.resumeButtonClicked(sender);
-            }
         }
     }
 
@@ -447,7 +460,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 					this.queueModel.addItem(new Queue(dict));
 				}
 				pboard.setPropertyListForType(null, "QueuePBoardType");
-				this.queueTable.reloadData();
+				this.reloadQueueTable();
 			}
 		}
 	}

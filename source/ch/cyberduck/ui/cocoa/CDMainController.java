@@ -50,7 +50,6 @@ public class CDMainController extends NSObject {
                 NSWorkspace.WorkspaceDidWakeNotification,
                 null);
 		
-        //@todo performance tests
         this.threadWorkerTimer = new NSTimer(0.2, this, new NSSelector("handleThreadWorkerTimerEvent", new Class[]{NSTimer.class}), null, true);
         NSRunLoop.currentRunLoop().addTimerForMode(this.threadWorkerTimer, NSRunLoop.DefaultRunLoopMode);
     }
@@ -78,13 +77,6 @@ public class CDMainController extends NSObject {
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
-
-    private NSMenu dockMenu; // IBOutlet
-
-    public void setDockMenu(NSMenu dockMenu) {
-		log.debug("setDockMenu");
-        this.dockMenu = dockMenu;
-    }
 
     private NSWindow donationSheet; // IBOutlet
 
@@ -184,7 +176,6 @@ public class CDMainController extends NSObject {
             if (index == 4) {
                 item.setEnabled(true);
                 item.setImage(NSImage.imageNamed("rendezvous"));
-//				item.setSubmenu(rendezvousMenu);
             }
             if (index > 5) {
                 Host h = CDBookmarkTableDataSource.instance().getItem(index - 6);
@@ -199,8 +190,7 @@ public class CDMainController extends NSObject {
 
         public void bookmarkMenuClicked(Object sender) {
             log.debug("bookmarkMenuClicked:" + sender);
-            CDBrowserController controller = new CDBrowserController();
-            controller.window().makeKeyAndOrderFront(null);
+            CDBrowserController controller = CDMainController.this.newDocument();
             controller.mount((Host)items.get(sender));
         }
     }
@@ -270,8 +260,7 @@ public class CDMainController extends NSObject {
 
         public void rendezvousMenuClicked(NSMenuItem sender) {
 			//log.debug("rendezvousMenuClicked:" + sender);
-            CDBrowserController controller = new CDBrowserController();
-            controller.window().makeKeyAndOrderFront(null);
+            CDBrowserController controller = CDMainController.this.newDocument();
             controller.mount((Host)items.get(sender.title()));
         }
     }
@@ -457,10 +446,7 @@ public class CDMainController extends NSObject {
     }
 
 	public void newBrowserMenuClicked(Object sender) {
-        CDBrowserController controller = new CDBrowserController();
-        controller.window().makeKeyAndOrderFront(null);
-        NSPoint origin = controller.window().frame().origin();
-        controller.window().setFrameOrigin(controller.window().cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y())));
+        this.newDocument();
     }
 	
     public void showTransferQueueClicked(Object sender) {
@@ -479,9 +465,7 @@ public class CDMainController extends NSObject {
             log.info("Found file: " + f.toString());
             Host host = CDBookmarkTableDataSource.instance().importBookmark(f);
             if (host != null) {
-                CDBrowserController controller = new CDBrowserController();
-                controller.window().makeKeyAndOrderFront(null);
-                controller.mount(host);
+                this.newDocument().mount(host);
                 return true;
             }
         }
@@ -493,41 +477,25 @@ public class CDMainController extends NSObject {
         return this.applicationOpenFile(app, filename);
     }
 
+	/**
+		* @return true if the file was successfully opened, false otherwise.
+	 */
     public boolean applicationOpenUntitledFile(NSApplication app) {
         log.debug("applicationOpenUntitledFile");
-        if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
-            CDBrowserController controller = new CDBrowserController();
-            controller.window().makeKeyAndOrderFront(null);
-            return controller != null;
-        }
-        return false;
+		return this.newDocument() != null;
     }
 
-    public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
-        log.info("applicationShouldHandleReopen:" + visibleWindowsFound);
-        if (visibleWindowsFound) {
-            return false;
-        }
-		/*
-        if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
-            CDBrowserController controller = new CDBrowserController();
-            controller.window().makeKeyAndOrderFront(null);
-            return false;
-        }
-		 */
+	public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
+        log.info("applicationShouldHandleReopen");
 		return true;
     }
-
+	
     public void applicationDidFinishLaunching(NSNotification notification) {
         log.info("Available localizations:" + NSBundle.mainBundle().localizations());
         if (Preferences.instance().getProperty("queue.openByDefault").equals("true")) {
             this.showTransferQueueClicked(null);
         }
         int uses = Integer.parseInt(Preferences.instance().getProperty("uses"));
-//        String v = this.readVersionInfo();
-//        if (null == v || !v.equals(NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion"))) {
-//            Preferences.instance().setProperty("donate", "true");
-//        }
         if (Preferences.instance().getProperty("donate").equals("true")) {
             if (false == NSApplication.loadNibNamed("Donate", this)) {
                 log.fatal("Couldn't load Donate.nib");
@@ -565,32 +533,42 @@ public class CDMainController extends NSObject {
         NSNotificationCenter.defaultCenter().removeObserver(this);
         //Terminating rendezvous discovery
         this.rendezvous.quit();
-//Writing version info
+		//Writing version info
         this.saveVersionInfo();
-//Writing usage info
+		//Writing usage info
         Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
         Preferences.instance().save();
-//@todo check        CDBookmarkTableDataSource.instance().save();
-//        QueueList.instance().save();
     }
 
     // ----------------------------------------------------------
     // Applescriptability
     // ----------------------------------------------------------
-
-    public boolean applicationDelegateHandlesKey(NSApplication application, String key) {
-        log.debug("applicationDelegateHandlesKey:"+key);
-        if (key.equals("browserController"))
+	
+	public boolean applicationDelegateHandlesKey(NSApplication application, String key) {
+		log.debug("applicationDelegateHandlesKey:"+key);
+		if (key.equals("orderedDocuments"))
 			return true;
 		return false;
-    }
-
-	public CDBrowserController browserController() {
-		return new CDBrowserController();
 	}
 	
-	/*
-    public NSArray orderedDocuments() {
+	private static NSPoint cascadedWindowPoint;
+	
+	public CDBrowserController newDocument() {
+        CDBrowserController controller = new CDBrowserController();
+		NSPoint origin = controller.window().frame().origin();
+		if(null == cascadedWindowPoint) {
+			cascadedWindowPoint = new NSPoint(origin.x(), origin.y());
+		}
+		controller.window().setFrameTopLeftPoint(cascadedWindowPoint);
+//			controller.window().setFrameOrigin(cascadedWindowPoint);
+		// move point for next window
+		cascadedWindowPoint = controller.window().cascadeTopLeftFromPoint(cascadedWindowPoint);
+		//cascadedWindowPoint = controller.window().cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y()));
+        controller.window().makeKeyAndOrderFront(null);
+		return controller;
+	}
+	
+	public NSArray orderedDocuments() {
         log.debug("orderedDocuments");
         NSApplication app = NSApplication.sharedApplication();
         NSArray orderedWindows = (NSArray)NSKeyValue.valueForKey(app, "orderedWindows");
@@ -605,12 +583,13 @@ public class CDMainController extends NSObject {
         }
         return orderedDocs;
     }
-
+	
     public void insertInOrderedDocumentsAtIndex(CDBrowserController doc, int index) {
         log.debug("insertInOrderedDocumentsAtIndex" + doc);
         doc.window().makeKeyAndOrderFront(null);
     }
-	 */
+	
+    // ----------------------------------------------------------
 
     private int checkForMountedBrowsers(NSApplication app) {
         NSArray windows = app.windows();
@@ -696,9 +675,5 @@ public class CDMainController extends NSObject {
 
     public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
         return false;
-    }
-
-    public NSMenu applicationDockMenu(NSApplication sender) {
-        return this.dockMenu;
     }
 }

@@ -11,28 +11,33 @@
 			<key>Cyberduck</key>
 			<dict>
 				<key>AppleEventCode</key>
-				<string>Capp</string>
+				<string>capp</string>
 				<key>Superclass</key>
 				<string>NSCoreSuite.NSApplication</string>
 				<key>ToManyRelationships</key>
 				<dict>
-					<key>browserController</key>
+					<key>orderedDocuments</key>
 					<dict>
 						<key>AppleEventCode</key>
-						<string>DoNt</string>
-						<key>ReadOnly</key>
-						<string>YES</string>
+						<string>docu</string>
 						<key>Type</key>
-						<string>Cyberduck.Browser</string>
+						<string>Browser</string>
+						<key>ReadOnly</key>
+						<string>NO</string>
 					</dict>
+				</dict>
+				<key>SupportedCommands</key>
+				<dict>
+					<key>NSCoreSuite.Create</key>
+					<string>newDocument:</string>
 				</dict>
 			</dict>
 			<key>Browser</key>
 			<dict>
 				<key>AppleEventCode</key>
-				<string>DoNt</string>
+				<string>docu</string>
 				<key>Superclass</key>
-				<string>NSCoreSuite.AbstractObject</string>
+				<string>NSCoreSuite.NSDocument</string>
 				<key>Attributes</key>
 				<dict>
 					<key>workdir</key>
@@ -49,6 +54,20 @@
 				<dict>
 					<key>Connect</key>
 					<string>mount:</string>
+					<key>Disconnect</key>
+					<string>disconnectButtonClicked:</string>
+					<key>CreateFolder</key>
+					<string>folderButtonClicked:</string>
+					<key>DeleteFile</key>
+					<string>deleteButtonClicked:</string>
+					<key>Download</key>
+					<string>downloadButtonClicked:</string>
+					<key>Upload</key>
+					<string>uploadButtonClicked:</string>
+					<key>Refresh</key>
+					<string>refreshButtonClicked:</string>
+					<key>Goto</key>
+					<string>gotoButtonClicked:</string>
 				</dict>
 			</dict>
 		</dict>
@@ -117,6 +136,55 @@
 						<string>NSString</string>
 					</dict>
 				</dict>
+			</dict>
+			<key>Disconnect</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>DiCt</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+			</dict>
+			<key>CreateFolder</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>CrEr</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+			</dict>
+			<key>DeleteFile</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>DeLe</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+			</dict>
+			<key>Download</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>DoAd</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+			</dict>
+			<key>Upload</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>UpAd</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+			</dict>
+			<key>Refresh</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>ReSh</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+			</dict>
+			<key>Goto</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>GoTo</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
 			</dict>
 			<key>GetURL</key>
 			<dict>

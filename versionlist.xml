@@ -16,7 +16,7 @@
 - [Feature] Added BBedit Lite to the list of supported editors
 - [Feature] Move remote files with copy & paste
 - [Feature] Put remote files into the transfer queue with copy & paste
-- [Bugfix] Preserve modification dates of downloaded folders
+- [Feature] Provide a proxy-icon for the connection in the title bar. The icon can then be dragged to the Bookmark drawer or to the Finder as a .duck file.
 - [Bugfix] Bookmark drawer icon has no text-only equivalent
 
 2.3.3

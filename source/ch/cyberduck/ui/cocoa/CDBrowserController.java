@@ -22,6 +22,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import java.util.*;
+import java.io.File;
 
 import org.apache.log4j.Logger;
 
@@ -34,6 +35,12 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 public class CDBrowserController extends NSObject implements CDController, Observer {
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
+	private static final File HISTORY_FOLDER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
+
+	static {
+        HISTORY_FOLDER.mkdirs();
+    }
+	
     /**
      * Keep references of controller objects because otherweise they get garbage collected
      * if not referenced here.
@@ -613,7 +620,8 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 
     public void awakeFromNib() {
         log.debug("awakeFromNib");
-        this.window.setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
+		this.window().setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
+		this.window().makeFirstResponder(quickConnectPopup);
         this.pathController = new CDPathController(pathPopup);
         // Drawer states
         if (Preferences.instance().getProperty("logDrawer.isOpen").equals("true")) {
@@ -627,8 +635,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         this.toolbar.setDelegate(this);
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
-        this.window.setToolbar(toolbar);
-        this.window.makeFirstResponder(quickConnectPopup);
+        this.window().setToolbar(toolbar);
     }
 
 
@@ -641,7 +648,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
             browserModel.sort(selectedColumn, browserModel.isSortedAscending());
             browserTable.reloadData();
             toolbar.validateVisibleItems();
-            window.makeFirstResponder(browserTable);
+//@todo            window.makeFirstResponder(browserTable);
         }
         else if (arg instanceof Message) {
             Message msg = (Message)arg;
@@ -664,7 +671,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                 statusIcon.setNeedsDisplay(true);
                 statusLabel.setObjectValue(msg.getContent());
                 statusLabel.display();
-                window().setDocumentEdited(false);
+//@todo                window().setDocumentEdited(false);
             }
             else if (msg.getTitle().equals(Message.REFRESH)) {
                 refreshButtonClicked(null);
@@ -675,10 +682,13 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                 statusLabel.display();
             }
             else if (msg.getTitle().equals(Message.OPEN)) {
+                progressIndicator.startAnimation(this);
                 statusIcon.setImage(null);
                 statusIcon.setNeedsDisplay(true);
+				this.browserModel.clear();
+				this.browserTable.reloadData();
                 toolbar.validateVisibleItems();
-                window().setDocumentEdited(true);
+//@todo                window().setDocumentEdited(true);
             }
             else if (msg.getTitle().equals(Message.CLOSE)) {
 				//@todo
@@ -686,7 +696,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                 statusIcon.setImage(null);
                 statusIcon.setNeedsDisplay(true);
                 toolbar.validateVisibleItems();
-                window().setDocumentEdited(false);
+//@todo                window().setDocumentEdited(false);
             }
             else if (msg.getTitle().equals(Message.START)) {
                 statusIcon.setImage(null);
@@ -895,7 +905,7 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                     item.setPath(workdir.getAbsolute(), new Local((String)enumerator.nextElement()));
                     q.addRoot(item);
                 }
-                    CDQueueController.instance().addItem(q);
+				CDQueueController.instance().addItem(q);
                 CDQueueController.instance().startItem(q);
 //@todo                CDQueueController.instance().startItem(q, (Observer)this);
                 break;
@@ -953,8 +963,12 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 	public void mount(NSScriptCommand command) {
         log.debug("mount:"+command);
 		NSDictionary args = command.evaluatedArguments();
-		String hostname = (String)args.objectForKey("Host");
-		//@todo
+		Host host = new Host(Session.FTP,//@todo
+						(String)args.objectForKey("Host"),
+						Integer.parseInt((String)args.objectForKey("Port")),
+						new Login((String)args.objectForKey("Host"), (String)args.objectForKey("Username"), (String)args.objectForKey("Password"), false),
+						(String)args.objectForKey("Path"));
+		this.mount(host);
 	}
 		
     public void mount(final Host host) {
@@ -962,18 +976,18 @@ public class CDBrowserController extends NSObject implements CDController, Obser
         if (this.unmount(new NSSelector("mountSheetDidEnd",
                 new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
         )) {
-            this.window().setTitle(host.getProtocol() + ":" + host.getHostname());
-            pathController.removeAllItems();
-            browserModel.clear();
-            browserTable.reloadData();
-
+			{
+				this.window().setTitle(host.getProtocol() + ":" + host.getHostname());
+				File bookmark = new File(HISTORY_FOLDER+"/"+host.getHostname()+".duck");
+				CDBookmarkTableDataSource.instance().exportBookmark(host, bookmark);
+				this.window().setRepresentedFilename(bookmark.getAbsolutePath());
+			}
+			
             TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(logView));
 
             Session session = SessionFactory.createSession(host);
             session.addObserver((Observer)this);
             session.addObserver((Observer)pathController);
-
-            progressIndicator.startAnimation(this);
 
             if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
                 try {
@@ -1723,8 +1737,8 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 		// ----------------------------------------------------------
 
 		//@todo
-		public void typeAheadString(String inString) {
-			/*
+		/*
+		public void scrollTo(String inString) {
 			// This general sample looks for a highlighted column, presuming that is that column we are sorted by, and uses that as the lookup key.
 			NSTableColumn *col = [tableView highlightedTableColumn];
 			if (nil != col) {
@@ -1744,8 +1758,8 @@ public class CDBrowserController extends NSObject implements CDController, Obser
 				[tableView selectRow:i byExtendingSelection:NO];
 				[tableView scrollRowToVisible:i];
 			}
-			 */
 		}
+		 */
 		
         public boolean isSortedAscending() {
             return this.sortAscending;

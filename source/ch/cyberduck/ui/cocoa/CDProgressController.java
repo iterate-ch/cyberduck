@@ -35,6 +35,8 @@ import org.apache.log4j.Logger;
 public class CDProgressController extends NSObject implements Observer {
     private static Logger log = Logger.getLogger(CDProgressController.class);
 	
+	//@todo contex menu
+	
 	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
 	
     static {
@@ -43,12 +45,12 @@ public class CDProgressController extends NSObject implements Observer {
 	
     private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
 																							  new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-	
 	private Queue queue;
 	
 	public CDProgressController(Queue queue) {
 		this.queue = queue;
 		this.queue.addObserver(this);
+		//@todo this.queue.deleteObserver(this);
         if (false == NSApplication.loadNibNamed("Progress", this)) {
             log.fatal("Couldn't load Progress.nib");
         }
@@ -82,9 +84,8 @@ public class CDProgressController extends NSObject implements Observer {
 	}
 	
 	private void updateProgressbar() {
-		double progressValue = 0;
 		if (queue.getSize() > 0) {
-			progressValue = queue.getCurrent()/queue.getSize();
+			double progressValue = queue.getCurrent()/queue.getSize();
 			this.progressBar.setIndeterminate(false);
 			this.progressBar.setMinValue(0);
 			this.progressBar.setMaxValue((double)queue.getSize());
@@ -96,7 +97,6 @@ public class CDProgressController extends NSObject implements Observer {
 	}
 	
 	private void updateProgressfield() {
-		//@todo change color when highlighted
 		this.filenameField.setAttributedStringValue(new NSAttributedString(queue.getRoot().getName(),
 																		   TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 		this.progressField.setAttributedStringValue(new NSAttributedString(queue.getStatusText(),
@@ -107,16 +107,39 @@ public class CDProgressController extends NSObject implements Observer {
 		return this.queue;
 	}
 	
+	private boolean selected;
+	
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+		if(selected) {
+			this.filenameField.setTextColor(NSColor.whiteColor());
+			this.progressField.setTextColor(NSColor.whiteColor());
+		}
+		else {
+			this.filenameField.setTextColor(NSColor.blackColor());
+			this.progressField.setTextColor(NSColor.darkGrayColor());
+		}
+	}
+	
+	public boolean isSelected() {
+		return this.selected;
+	}
+		
 	private NSTextField filenameField; // IBOutlet
 	
 	public void setFilenameField(NSTextField filenameField) {
 		this.filenameField = filenameField;
+		this.filenameField.setEditable(false);
+		this.filenameField.setSelectable(false);
+		this.filenameField.setTextColor(NSColor.blackColor());
 	}
 
 	private NSTextField progressField; // IBOutlet
 	
 	public void setProgressField(NSTextField progressField) {
 		this.progressField = progressField;
+		this.progressField.setEditable(false);
+		this.progressField.setSelectable(false);
 		this.progressField.setTextColor(NSColor.darkGrayColor());
 	}
 		
@@ -137,6 +160,7 @@ public class CDProgressController extends NSObject implements Observer {
 	
 	public void setProgressSubview(NSView progressView) {
 		this.progressView = progressView;
+		this.progressView.setToolTip(this.queue.getRoot().getAbsolute());
 	}
 	
 	public NSView view() {

@@ -41,6 +41,10 @@
 		<dict>
 			<key>Connect</key>
 			<dict>
+				<key>Description</key>
+				<string>Connect to a specified server.</string>
+				<key>Name</key>
+				<string>connect</string>
 				<key>Arguments</key>
 				<dict>
 					<key>Protocol</key>
@@ -86,24 +90,69 @@
 						<string>as user</string>
 					</dict>
 				</dict>
+			</dict>
+			<key>Disconnect</key>
+			<dict>
 				<key>Description</key>
-				<string>Connect to a specified server.</string>
+				<string>No description</string>
 				<key>Name</key>
-				<string>connect</string>
+				<string>disconnect</string>
+			</dict>
+			<key>CreateFolder</key>
+			<dict>
+				<key>Description</key>
+				<string>No description</string>
+				<key>Name</key>
+				<string>create folder</string>
+			</dict>
+			<key>DeleteFile</key>
+			<dict>
+				<key>Description</key>
+				<string>No description</string>
+				<key>Name</key>
+				<string>delete file</string>
+			</dict>
+			<key>Refresh</key>
+			<dict>
+				<key>Description</key>
+				<string>No description</string>
+				<key>Name</key>
+				<string>refresh</string>
+			</dict>
+			<key>Download</key>
+			<dict>
+				<key>Description</key>
+				<string>No description</string>
+				<key>Name</key>
+				<string>download</string>
+			</dict>
+			<key>Upload</key>
+			<dict>
+				<key>Description</key>
+				<string>No description</string>
+				<key>Name</key>
+				<string>upload</string>
+			</dict>
+			<key>Goto</key>
+			<dict>
+				<key>Description</key>
+				<string>No description</string>
+				<key>Name</key>
+				<string>go to</string>
 			</dict>
 			<key>GetURL</key>
 			<dict>
 				<key>Description</key>
 				<string>Open a URL</string>
 				<key>Name</key>
-				<string>getURL</string>
+				<string>open URL</string>
 			</dict>
 			<key>OpenURL</key>
 			<dict>
 				<key>Description</key>
 				<string>Open a URL</string>
 				<key>Name</key>
-				<string>openURL</string>
+				<string>open URL</string>
 			</dict>
 		</dict>
 		<key>Enumerations</key>

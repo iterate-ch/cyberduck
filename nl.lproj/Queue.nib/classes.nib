@@ -15,7 +15,12 @@
         {
             CLASS = "ch.cyberduck.core.CDQueueController"; 
             LANGUAGE = Java; 
-            OUTLETS = {queueTable = NSTableView; window = NSWindow; }; 
+            OUTLETS = {
+                localField = NSTextField; 
+                queueTable = NSTableView; 
+                urlField = NSTextField; 
+                window = NSWindow; 
+            }; 
             SUPERCLASS = NSObject; 
         }
     ); 

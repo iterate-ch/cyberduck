@@ -82,8 +82,6 @@ public class FTPClient {
      */
     private FTPReply lastValidReply;
 
-//    private Transcript transcript;
-
     public FTPClient() {
         super();
     }
@@ -97,7 +95,6 @@ public class FTPClient {
      */
     public void connect(String remoteHost, int controlPort) throws IOException, FTPException {
         control = new FTPControlSocket(remoteHost, controlPort);
-//        transcript = TranscriptFactory.getImpl(remoteHost);
     }
 
     /**

@@ -16,7 +16,7 @@
 			<key>CFBundleTypeName</key>
 			<string>Cyberduck Bookmark</string>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<string>None</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>

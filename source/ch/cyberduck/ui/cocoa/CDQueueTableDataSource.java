@@ -72,7 +72,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
                 return this.getItem(row);
             }
             if (identifier.equals("PROGRESS")) {
-				return ((CDProgressController)this.data.get(row)).view();
+				return this.getController(row).view();
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
@@ -261,7 +261,6 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 			if(c.getQueue().equals(item))
 				i.remove();
 		}
-			//this.removeItem(this.data.lastIndexOf(item));
     }
 	
     public Queue getItem(int row) {

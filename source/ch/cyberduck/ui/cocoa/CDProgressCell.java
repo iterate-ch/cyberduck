@@ -31,8 +31,6 @@ import ch.cyberduck.core.Queue;
 public class CDProgressCell extends CDTableCell {
     private static Logger log = Logger.getLogger(CDProgressCell.class);
 
-    private Queue queue;
-
     public CDProgressCell() {
         super();
     }
@@ -50,7 +48,7 @@ public class CDProgressCell extends CDTableCell {
     public void setObjectValue(Object subview) {
         this.subview = (NSView)subview;
     }
-
+	
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         super.drawInteriorWithFrameInView(cellFrame, controlView);
 		this.subview.setFrame(cellFrame);
