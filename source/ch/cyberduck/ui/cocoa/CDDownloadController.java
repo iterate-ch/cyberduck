@@ -26,6 +26,7 @@ import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 
 import java.net.MalformedURLException;
+import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
@@ -76,9 +77,16 @@ public class CDDownloadController extends CDController {
 			String file = host.getDefaultPath();
 			if(file.length() > 1) {
 				Path path = PathFactory.createPath(SessionFactory.createSession(host), file);
-				Queue queue = new DownloadQueue();
-				queue.addRoot(path);
-				CDQueueController.instance().startItem(queue);
+				try {
+					path.cwdir();
+					CDBrowserController controller = new CDBrowserController();
+					controller.mount(host);
+				}
+				catch(IOException e) {
+					Queue queue = new DownloadQueue();
+					queue.addRoot(path);
+					CDQueueController.instance().startItem(queue);
+				}
 			}
 			else {
 				throw new MalformedURLException("URL must contain reference to a file");

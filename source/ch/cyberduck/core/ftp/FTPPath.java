@@ -154,6 +154,7 @@ public class FTPPath extends Path {
 
 	public void cwdir() throws IOException {
 		synchronized(session) {
+			session.check();
 			session.FTP.chdir(this.getAbsolute());
 		}
 	}

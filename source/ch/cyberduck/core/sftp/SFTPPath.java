@@ -167,6 +167,7 @@ public class SFTPPath extends Path {
 
 	public void cwdir() throws IOException {
 		synchronized(session) {
+			session.check();
 			session.SFTP.openDirectory(this.getAbsolute());
 		}
 	}
