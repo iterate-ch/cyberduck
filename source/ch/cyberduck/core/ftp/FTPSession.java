@@ -59,7 +59,7 @@ public class FTPSession extends Session {
 		// System.getProperties().put("proxyHost", Preferences.instance().getProperty("connection.proxy.host"));
 		// System.getProperties().put("proxyPort", Preferences.instance().getProperty("connection.proxy.port"));
 	}
-
+	
 	public synchronized void close() {
 		this.callObservers(new Message(Message.CLOSE, "Closing session."));
 		try {
@@ -85,8 +85,8 @@ public class FTPSession extends Session {
 	public synchronized void connect() throws IOException {
 		this.callObservers(new Message(Message.OPEN, "Opening session."));
 		this.log("Opening FTP connection to " + host.getIp() + "...", Message.PROGRESS);
-		this.log("-------" + new java.util.Date().toString(), Message.TRANSCRIPT);
-		this.log("-------" + host.getIp(), Message.TRANSCRIPT);
+		this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
+		this.log(host.getIp(), Message.TRANSCRIPT);
 		this.FTP = new FTPClient();
 		if (Preferences.instance().getProperty("ftp.connectmode").equals("active")) {
 			this.FTP.setConnectMode(FTPConnectMode.ACTIVE);
@@ -154,7 +154,7 @@ public class FTPSession extends Session {
 		}
 	}
 
-	public Path workdir() {
+	public synchronized Path workdir() {
 		try {
 			return PathFactory.createPath(this, this.FTP.pwd());
 		}
@@ -168,7 +168,7 @@ public class FTPSession extends Session {
 	}
 
 
-	public void check() throws IOException {
+	public synchronized void check() throws IOException {
 		log.debug(this.toString() + ":check");
 		this.log("Working", Message.START);
 		if (null == this.FTP || !this.FTP.isAlive()) {

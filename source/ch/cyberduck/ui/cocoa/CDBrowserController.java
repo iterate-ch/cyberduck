@@ -834,7 +834,6 @@ public class CDBrowserController implements Observer {
 			TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(logView));
 
 			Session session = SessionFactory.createSession(host);
-			
 			session.addObserver((Observer) this);
 			session.addObserver((Observer) pathController);
 			
@@ -895,7 +894,6 @@ public class CDBrowserController implements Observer {
 												 NSBundle.localizedString("The connection will be closed.", "Alert sheet text") // message
 												 );
 			return false;
-//			pathController.workdir().getSession().close();
 		}
 		return true;
 	}
@@ -904,8 +902,6 @@ public class CDBrowserController implements Observer {
 		sheet.orderOut(null);
 		if (returncode == NSAlertPanel.DefaultReturn) {
 			pathController.workdir().getSession().close();
-			pathController.workdir().getSession().deleteObserver((Observer) this);
-			pathController.workdir().getSession().deleteObserver((Observer) pathController);
 		}
 	}
 
@@ -935,6 +931,8 @@ public class CDBrowserController implements Observer {
 		}
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 		instances.removeObject(this);
+		this.bookmarkDrawer.close();
+		this.logDrawer.close();
 	}
 
 

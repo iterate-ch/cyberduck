@@ -172,11 +172,8 @@ public class CDInfoController {
 			this.iconImageView.setImage(fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
 		}
 		if(file.isDirectory()) {
-			this.iconImageView.setImage(fileIcon = NSImage.imageNamed("folder.tiff"));
+			this.iconImageView.setImage(fileIcon = NSImage.imageNamed("folder32.tiff"));
 		}
-//		if(file.isLink()) {
-//			NSImage symlinkIcon = NSImage.imageNamed("symlink.tiff")
-//		}
 
 		(NSNotificationCenter.defaultCenter()).addObserver(
 		    this,

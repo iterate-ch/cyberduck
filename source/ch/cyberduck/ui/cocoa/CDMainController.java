@@ -268,6 +268,11 @@ public class CDMainController {
 	}
 
 	public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
+		log.info("applicationShouldHandleReopen:"+visibleWindowsFound);
+		NSArray windows = NSApplication.sharedApplication().windows();
+		if(windows.count() > 0) {
+			log.debug("Open windows:"+windows);
+		}
 		if (visibleWindowsFound)
 			return true;
 		if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {

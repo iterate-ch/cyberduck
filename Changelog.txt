@@ -6,6 +6,9 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 2.2b6
 - Properly deleting symbolic links
 - Displaying link icons in browser
+- Downloading files from FTP servers not supporting the SIZE command
+- Fixed a bug where overwritten files with SFTP got corrupted
+- Better performance when transferring files
 - Bug fixes
 
 2.2b5

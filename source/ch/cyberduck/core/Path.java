@@ -202,22 +202,34 @@ public abstract class Path {
 	 * @param recursive Include subdirectories and files
 	 */
 	public abstract void changePermissions(Permission perm, boolean recursive);
-
+	
 	public boolean isFile() {
+		if (this.isLink())
+			return this.linksToFile();
 		return this.attributes.permission.getMask().charAt(0) == '-';
 	}
+	
+//	public abstract void sync(Local local, boolean recursive, boolean commit, int kind);
 
 	/**
 	 * @return true if is directory or a symbolic link that everyone can execute
 	 */
 	public boolean isDirectory() {
 		if (this.isLink())
-			return this.attributes.permission.getOtherPermissions()[Permission.EXECUTE];
+			return this.linksToDirectory();
 		return this.attributes.permission.getMask().charAt(0) == 'd';
 	}
 
 	public boolean isLink() {
 		return this.attributes.permission.getMask().charAt(0) == 'l';
+	}
+	
+	private boolean linksToFile() {
+		return this.isLink() && this.getName().indexOf(".") != -1;
+	}
+	
+	private boolean linksToDirectory() {
+		return !this.linksToFile() && this.attributes.permission.getOwnerPermissions()[Permission.EXECUTE];
 	}
 
 	/**
@@ -394,8 +406,6 @@ public abstract class Path {
 	private void transfer(java.io.InputStream i, java.io.OutputStream o) throws IOException {
 		BufferedInputStream in = new BufferedInputStream(i);
 		BufferedOutputStream out = new BufferedOutputStream(o);
-//		BufferedInputStream in = new BufferedInputStream(new DataInputStream(i));
-//		BufferedOutputStream out = new BufferedOutputStream(new DataOutputStream(o));
 
 		this.status.reset();
 

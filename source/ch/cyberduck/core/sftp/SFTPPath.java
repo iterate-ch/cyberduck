@@ -90,15 +90,15 @@ public class SFTPPath extends Path {
 		return this.session;
 	}
 
-	public List list() {
+	public synchronized List list() {
 		return this.list(false);
 	}
 	
-	public List list(boolean refresh) {
+	public synchronized List list(boolean refresh) {
 		return this.list(refresh, Preferences.instance().getProperty("browser.showHidden").equals("true"));
 	}
 	
-	public List list(boolean refresh, boolean showHidden) {
+	public synchronized List list(boolean refresh, boolean showHidden) {
 		List files = this.cache();
 		session.addPathToHistory(this);
 		if(refresh || files.size() == 0) {
@@ -218,6 +218,7 @@ public class SFTPPath extends Path {
 		try {
 			session.check();
 			session.log("Make directory " + name, Message.PROGRESS);
+//			if(session.SFTP.getAttributes(this.getAbsolute()))
 			session.SFTP.makeDirectory(this.getAbsolute() + "/" + name);
 			this.list(true);
 		}
@@ -320,6 +321,7 @@ public class SFTPPath extends Path {
 				while (i.hasNext()) {
 					SFTPPath p = (SFTPPath) i.next();
 					p.setLocal(new Local(this.getLocal(), p.getName()));
+					p.status.setResume(this.status.isResume());
 					p.fillDownloadQueue(queue);
 				}
 			}
@@ -357,6 +359,7 @@ public class SFTPPath extends Path {
 				throw new IOException("Unable opening data stream");
 			}
 			this.download(in, out);
+			//p.close();
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -375,6 +378,7 @@ public class SFTPPath extends Path {
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
 				Path p = PathFactory.createPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
+				p.status.setResume(this.status.isResume());
 				((SFTPPath)p).fillUploadQueue(queue);
 			}
 		}
@@ -394,13 +398,17 @@ public class SFTPPath extends Path {
 			if (in == null) {
 				throw new IOException("Unable to buffer data");
 			}
-			SftpFile remoteFile = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_CREATE | SftpSubsystemClient.OPEN_WRITE);
+			SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), 
+													SftpSubsystemClient.OPEN_CREATE | 
+													SftpSubsystemClient.OPEN_WRITE |
+													SftpSubsystemClient.OPEN_TRUNCATE);
 			this.changePermissions(this.getLocal().getPermission(), false);
-			SftpFileOutputStream out = new SftpFileOutputStream(remoteFile);
+			SftpFileOutputStream out = new SftpFileOutputStream(p);
 			if (out == null) {
 				throw new IOException("Unable opening data stream");
 			}
 			this.upload(out, in);
+			//p.close();
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);

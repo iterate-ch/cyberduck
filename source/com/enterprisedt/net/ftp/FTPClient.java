@@ -701,10 +701,66 @@ public class FTPClient {
 		String reply = control.sendCommand("NOOP");
 		control.validateReply(reply, "200");
 	}
+	
+	/**
+		* This command tells the server to abort the previous FTP
+	 * service command and any associated transfer of data.  The
+	 * abort command may require "special action", as discussed in
+	 * the Section on FTP Commands, to force recognition by the
+	 * server.  No action is to be taken if the previous command
+	 * has been completed (including data transfer).  The control
+	 * connection is not to be closed by the server, but the data
+	 * connection must be closed.
+	 * 
+	 * There are two cases for the server upon receipt of this
+	 * command: (1) the FTP service command was already completed,
+	 * or (2) the FTP service command is still in progress.
+	 * 
+	 * In the first case, the server closes the data connection
+	 * (if it is open) and responds with a 226 reply, indicating
+	 * that the abort command was successfully processed.
+	 * 
+	 * In the second case, the server aborts the FTP service in
+	 * progress and closes the data connection, returning a 426
+	 * reply to indicate that the service request terminated
+	 * abnormally.  The server then sends a 226 reply,
+	 * indicating that the abort command was successfully
+	 * processed.
+		*/
+	public void abor() throws IOException, FTPException {
+		String reply = control.sendCommand("ABOR");
+		String[] validCodes = {"226", "426"};
+		lastValidReply = control.validateReply(reply, validCodes);
+	}
+	
+	
+	/**
+		* This command shall cause a status response to be sent over
+	 * the control connection in the form of a reply.  The command
+	 * may be sent during a file transfer (along with the Telnet IP
+	* 									 and Synch signals--see the Section on FTP Commands) in which
+	 * case the server will respond with the status of the
+	 * operation in progress, or it may be sent between file
+	 * transfers.  In the latter case, the command may have an
+	 * argument field.  If the argument is a pathname, the command
+	 * is analogous to the "list" command except that data shall be
+	 * transferred over the control connection.  If a partial
+	 * pathname is given, the server may respond with a list of
+	 * file names or attributes associated with that specification.
+	 * If no argument is given, the server should return general
+	 * status information about the server FTP process.  This
+	 * should include current values of all transfer parameters and
+	 * the status of connections.
+	 */
+	public String stat(String remoteFile) throws IOException, FTPException {
+		String reply = control.sendCommand("STAT " + remoteFile);
+		String[] validCodes = {"211", "212", "213"}; //450 File not available
+		lastValidReply = control.validateReply(reply, validCodes);
+		return lastValidReply.getReplyText();
+	}
 
 	/**
 	 *  Quit the FTP session
-	 *
 	 */
 	public void quit() throws IOException, FTPException {
 		if (this.isAlive()) {

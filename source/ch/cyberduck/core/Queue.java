@@ -169,7 +169,6 @@ public class Queue extends Observable implements Observer { //Thread {
 				this.leftTimer.start();
 
 				this.currentJob = (Path) elements.next();
-				this.currentJob.status.setResume(root.status.isResume());
 				this.currentJob.status.addObserver(this);
 
 				this.processedJobs++;
@@ -190,9 +189,6 @@ public class Queue extends Observable implements Observer { //Thread {
 				this.progressTimer.stop();
 				this.leftTimer.stop();
 			}
-//			if (this.isEmpty()) {
-//				root.getSession().close();
-//			}
 		}
 	}
 
@@ -220,6 +216,7 @@ public class Queue extends Observable implements Observer { //Thread {
 				if (validator.validate(root, kind)) {
 					log.debug("Filling this of root element " + root);
 					root.fillQueue(jobs, kind);
+					calculateTotalSize();
 					process();
 				}
 				
@@ -317,7 +314,8 @@ public class Queue extends Observable implements Observer { //Thread {
 	 * @return The cummulative file size of all files remaining in the this
 	 */
 	public long getSize() {
-		return this.calculateTotalSize();
+		return this.size;
+//		return this.calculateTotalSize();
 	}
 
 	private long calculateTotalSize() {
@@ -328,6 +326,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		}
 		if (value > 0)
 			this.size = value;
+		log.debug("Total:"+size);
 		return this.size;
 	}
 
@@ -352,6 +351,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		}
 		if (value > 0)
 			this.current = value;
+		log.debug("Current:"+current);
 		return this.current;
 	}
 
@@ -508,6 +508,6 @@ public class Queue extends Observable implements Observer { //Thread {
 		);
 
 		this.jobs.add(this.root);
-		this.setChanged();
+//		this.setChanged();
 	}
 }

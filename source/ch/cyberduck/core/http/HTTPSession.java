@@ -68,8 +68,8 @@ public class HTTPSession extends Session {
 	public synchronized void connect() throws IOException {
 		this.callObservers(new Message(Message.OPEN, "Opening session."));
 		this.log("Opening HTTP connection to " + host.getIp() + "...", Message.PROGRESS);
-		this.log("-------" + new java.util.Date().toString(), Message.TRANSCRIPT);
-		this.log("-------" + host.getIp(), Message.TRANSCRIPT);
+		this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
+		this.log(host.getIp(), Message.TRANSCRIPT);
 		this.HTTP = new HttpClient();
 		this.HTTP.connect(host.getHostname(), host.getPort(), false);
 		this.setConnected(true);

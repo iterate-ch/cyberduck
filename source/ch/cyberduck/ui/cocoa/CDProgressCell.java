@@ -44,7 +44,6 @@ public class CDProgressCell extends CDTableCell {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
 		if(queue != null) {
 			
-			//		log.debug("Redrawing progress cell...");
 			NSPoint cellPoint = cellFrame.origin();
 			NSSize cellSize = cellFrame.size();
 			

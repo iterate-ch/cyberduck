@@ -94,15 +94,15 @@ public class FTPPath extends Path {
 		return this.session;
 	}
 	
-	public List list() {
+	public synchronized List list() {
 		return this.list(false);
 	}
 	
-	public List list(boolean refresh) {
+	public synchronized List list(boolean refresh) {
 		return this.list(refresh, Preferences.instance().getProperty("browser.showHidden").equals("true"));
 	}
 	
-	public List list(boolean refresh, boolean showHidden) {
+	public synchronized List list(boolean refresh, boolean showHidden) {
 		List files = this.cache();
 		session.addPathToHistory(this);
 		if(refresh || files.size() == 0) {
@@ -288,11 +288,17 @@ public class FTPPath extends Path {
 			while (i.hasNext()) {
 				FTPPath p = (FTPPath) i.next();
 				p.setLocal(new Local(this.getLocal(), p.getName()));
+				p.status.setResume(this.status.isResume());
 				p.fillDownloadQueue(queue);
 			}
 		}
 		else if (this.isFile()) {
-			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
+			try {
+				this.status.setSize(this.session.FTP.size(this.getAbsolute()));
+			}
+			catch(FTPException e) {
+				log.error(e.getMessage());
+			}
 			queue.add(this);
 		}
 		else
@@ -319,6 +325,9 @@ public class FTPPath extends Path {
 				this.download(in, out);
 				if (this.status.isComplete())
 					this.session.FTP.validateTransfer();
+				if(status.isCanceled()) {
+					this.session.FTP.abor();
+				}
 			}
 			else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
 				this.session.FTP.setTransferType(FTPTransferType.ASCII);
@@ -334,6 +343,9 @@ public class FTPPath extends Path {
 				this.download(in, out);
 				if (this.status.isComplete())
 					this.session.FTP.validateTransfer();
+				if(status.isCanceled()) {
+					this.session.FTP.abor();
+				}
 			}
 			else {
 				throw new FTPException("Transfer type not set");
@@ -356,6 +368,7 @@ public class FTPPath extends Path {
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
 				Path p = PathFactory.createPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
+				p.status.setResume(this.status.isResume());
 				((FTPPath)p).fillUploadQueue(queue);
 			}
 		}
@@ -382,7 +395,11 @@ public class FTPPath extends Path {
 					throw new IOException("Unable opening data stream");
 				}
 				this.upload(out, in);
-				this.session.FTP.validateTransfer();
+				if (this.status.isComplete())
+					this.session.FTP.validateTransfer();
+				if(status.isCanceled()) {
+					this.session.FTP.abor();
+				}				
 				if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
 					this.changePermissions(this.getLocal().getPermission(), false);
 				}
@@ -398,7 +415,11 @@ public class FTPPath extends Path {
 					throw new IOException("Unable opening data stream");
 				}
 				this.upload(out, in);
-				this.session.FTP.validateTransfer();
+				if (this.status.isComplete())
+					this.session.FTP.validateTransfer();
+				if(status.isCanceled()) {
+					this.session.FTP.abor();
+				}				
 				if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
 					this.changePermissions(this.getLocal().getPermission(), false);
 				}

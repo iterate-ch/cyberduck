@@ -144,6 +144,7 @@ public class CDQueueController implements Observer, Validator {
 	}
 
 	public void startItem(Queue queue) {
+		log.info("Starting item:"+queue);
 		this.queueTable.reloadData();
 		this.queueTable.selectRow(CDQueuesImpl.instance().indexOf(queue), false);
 		this.queueTable.scrollRowToVisible(CDQueuesImpl.instance().indexOf(queue));
@@ -157,6 +158,7 @@ public class CDQueueController implements Observer, Validator {
 				queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(this.window));
 			}
 			catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
+				this.window().makeKeyAndOrderFront(null);
 				//This exception is thrown whenever an exception occurs open or reading from the host file.
 				NSAlertPanel.beginCriticalAlertSheet(
 				    NSBundle.localizedString("Error", ""), //title
@@ -307,32 +309,34 @@ public class CDQueueController implements Observer, Validator {
 	public void stopButtonClicked(Object sender) {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		while (enum.hasMoreElements()) {
-			Queue item = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
-			if (item.isRunning())
-				item.cancel();
+			Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
+			if (queue.isRunning())
+				queue.cancel();
 		}
 	}
 
 	public void resumeButtonClicked(Object sender) {
-		if (this.queueTable.selectedRow() != -1) {
-			Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-			if (!item.isRunning()) {
-				item.getRoot().status.setResume(true);
-				this.startItem(item, null);
+		NSEnumerator enum = queueTable.selectedRowEnumerator();
+		while (enum.hasMoreElements()) {
+			Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
+			if (!queue.isRunning()) {
+				queue.getRoot().status.setResume(true);
+				this.startItem(queue, null);
 			}
 		}
 	}
 
 	public void reloadButtonClicked(Object sender) {
-		if (this.queueTable.selectedRow() != -1) {
-			Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-			if (!item.isRunning()) {
-				item.getRoot().status.setResume(false);
-				this.startItem(item, null);
+		NSEnumerator enum = queueTable.selectedRowEnumerator();
+		while (enum.hasMoreElements()) {
+			Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
+			if (!queue.isRunning()) {
+				queue.getRoot().status.setResume(false);
+				this.startItem(queue, null);
 			}
 		}
 	}
-
+	
 	public void revealButtonClicked(Object sender) {
 		if (this.queueTable.selectedRow() != -1) {
 			Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
@@ -411,35 +415,51 @@ public class CDQueueController implements Observer, Validator {
 	public boolean validateToolbarItem(NSToolbarItem item) {
 		String identifier = item.itemIdentifier();
 		if (identifier.equals("Stop")) {
-			if (this.queueTable.numberOfSelectedRows() == 1) {
-				Queue queue = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-				return queue.isRunning();
+			if(this.queueTable.numberOfSelectedRows() < 1)
+				return false;
+			NSEnumerator enum = queueTable.selectedRowEnumerator();
+			while (enum.hasMoreElements()) {
+				Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
+				if(!queue.isRunning())
+					return false;
 			}
-			return false;
+			return true;
 		}
 		if (identifier.equals("Resume")) {
-			if (this.queueTable.numberOfSelectedRows() == 1) {
-				Queue queue = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-				return queue.isCanceled() && !(queue.remainingJobs() == 0) && (queue.getRoot() instanceof FTPPath);
+			if(this.queueTable.numberOfSelectedRows() < 1)
+				return false;
+			NSEnumerator enum = queueTable.selectedRowEnumerator();
+			while (enum.hasMoreElements()) {
+				Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
+				if(!( queue.isCanceled() && !(queue.remainingJobs() == 0) && (queue.getRoot() instanceof FTPPath)))
+					return false;
 			}
-			return false;
+			return true;
 		}
 		if (identifier.equals("Reload")) {
-			if (this.queueTable.numberOfSelectedRows() == 1) {
-				Queue queue = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-				return !queue.isRunning();
+			if(this.queueTable.numberOfSelectedRows() < 1)
+				return false;
+			NSEnumerator enum = queueTable.selectedRowEnumerator();
+			while (enum.hasMoreElements()) {
+				Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
+				if(queue.isRunning())
+					return false;
 			}
-			return false;
+			return true;
 		}
 		if (identifier.equals("Show")) {
 			return this.queueTable.numberOfSelectedRows() == 1;
 		}
 		if (identifier.equals("Remove")) {
-			if (this.queueTable.selectedRow() != -1) {
-				Queue queue = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-				return queue.isCanceled();
+			if(this.queueTable.numberOfSelectedRows() < 1)
+				return false;
+			NSEnumerator enum = queueTable.selectedRowEnumerator();
+			while (enum.hasMoreElements()) {
+				Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
+				if(!queue.isCanceled())
+					return false;
 			}
-			return false;
+			return true;
 		}
 		return true;
 	}
@@ -487,21 +507,22 @@ public class CDQueueController implements Observer, Validator {
 							}
 						}
 						this.done = false;
+						this.window().makeKeyAndOrderFront(null);
 						NSAlertPanel.beginCriticalAlertSheet(
-						    NSBundle.localizedString("File exists", ""), //title
-						    NSBundle.localizedString("Overwrite", ""), // defaultbutton
-						    NSBundle.localizedString("Cancel", ""), //alternative button
+															 NSBundle.localizedString("File exists", ""), //title
+															 NSBundle.localizedString("Overwrite", ""), // defaultbutton
+															 NSBundle.localizedString("Cancel", ""), //alternative button
 															 path.status.isComplete() ? null : NSBundle.localizedString("Resume", ""), //other button
-						    this.window,
-						    this, //delegate
-						    new NSSelector
-						        (
-								 "validateSheetDidEnd",
-								 new Class[]
-								 {
-									 NSWindow.class, int.class, Object.class
-								 }
-								 ), // end selector
+															 this.window,
+															 this, //delegate
+															 new NSSelector
+															 (
+															  "validateSheetDidEnd",
+															  new Class[]
+															  {
+																  NSWindow.class, int.class, Object.class
+															  }
+															  ), // end selector
 															 null, // dismiss selector
 															 path, // context
 															 NSBundle.localizedString("The file", "") + " '" + path.getName() + "' " + NSBundle.localizedString("alredy exists in", "") + " " + path.getLocal().getParent() // message
@@ -570,15 +591,15 @@ public class CDQueueController implements Observer, Validator {
 		sheet.close();
 		Path item = (Path) contextInfo;
 		switch (returncode) {
-			case NSAlertPanel.DefaultReturn: //Resume
-				item.status.setResume(true);
+			case NSAlertPanel.DefaultReturn: //Overwrite
+				item.status.setResume(false);
 				proceed = true;
 				break;
 			case NSAlertPanel.AlternateReturn: //Cancel
 				proceed = false;
 				break;
-			case NSAlertPanel.OtherReturn: //Overwrite
-				item.status.setResume(false);
+			case NSAlertPanel.OtherReturn: //Resume
+				item.status.setResume(true);
 				proceed = true;
 				break;
 		}
