@@ -133,7 +133,6 @@ public abstract class Preferences {
 		defaults.put("ftp.sendSystemCommand", "true");
 		defaults.put("ftp.sendExtendedListCommand", "true");
 
-		defaults.put("http.agent", "Cyberduck/2.2");
 		defaults.put("http.agent", "Cyberduck/" + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		defaults.put("http.acceptheader", "*/*");
 
