@@ -243,7 +243,7 @@ public class Queue extends Observable implements Observer { //Thread {
 				Queue.this.leftTimer.start();
                 for (Iterator iter = jobs.iterator(); iter.hasNext() && !Queue.this.isCanceled();) {
 					Queue.this.currentJob = (Path)iter.next();
-					Queue.this.currentJob.status.addObserver(this);
+					Queue.this.currentJob.status.addObserver(Queue.this);
 					
 					switch (kind) {
 						case KIND_DOWNLOAD:
@@ -254,7 +254,7 @@ public class Queue extends Observable implements Observer { //Thread {
 							break;
 					}
 					
-					Queue.this.currentJob.status.deleteObserver(this);
+					Queue.this.currentJob.status.deleteObserver(Queue.this);
                 }
 				Queue.this.progressTimer.stop();
 				Queue.this.leftTimer.stop();

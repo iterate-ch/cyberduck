@@ -75,11 +75,6 @@ public abstract class Validator {
                     path.status.setResume(fileExists);
                     return true;
                 }
-//                else if (Preferences.instance().getProperty("queue.fileExists").equals("overwrite")) {
-//                    log.debug("Defaulting to overwrite on " + path.getName());
-//                    path.status.setResume(false);
-//                    return true;
-//                }
                 else if (Preferences.instance().getProperty("queue.fileExists").equals("similar")) {
                     log.debug("Defaulting to similar name on " + path.getName());
                     path.status.setResume(false);

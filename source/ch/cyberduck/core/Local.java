@@ -73,7 +73,7 @@ public class Local extends File {
     }
 
     public String getTimestampAsString() {
-        return (DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)).format(new Date(super.lastModified()));
+        return (DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT)).format(new Date(super.lastModified()));
     }
 
     public Date getTimestamp() {

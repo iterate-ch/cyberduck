@@ -105,13 +105,13 @@ public class CDValidatorController extends Validator {
                     resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
                     String alertText =
                             NSBundle.localizedString("Local", "") + ":\n"
-                            + "\t" + NSBundle.localizedString("Filename", "") + ": " + path.getLocal().getAbsolute() + "\n"
-                            + "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(path.getLocal().length()) + "\n"
-                            + "\t" + NSBundle.localizedString("Modified", "") + ": " + path.getLocal().getTimestampAsString() + "\n"
+                            + "\t" /*+ NSBundle.localizedString("Filename", "") + ": "*/ + path.getLocal().getAbsolute() + "\n"
+                            //+ "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(path.getLocal().length()) + "\n"
+                            //+ "\t" + NSBundle.localizedString("Modified", "") + ": " + path.getLocal().getTimestampAsString() + "\n"
                             + NSBundle.localizedString("Remote", "") + ":\n"
-                            + "\t" + NSBundle.localizedString("Filename", "") + ": " + path.getAbsolute() + "\n"
-                            + "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(path.status.getSize()) + "\n"
-                            + "\t" + NSBundle.localizedString("Modified", "") + " " + path.attributes.getTimestampAsString() + "\n"
+                            + "\t" /*+ NSBundle.localizedString("Filename", "") + ": "*/ + path.getAbsolute() + "\n"
+                            //+ "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(path.status.getSize()) + "\n"
+                            //+ "\t" + NSBundle.localizedString("Modified", "") + " " + path.attributes.getTimestampAsString() + "\n"
                             ;
                     alertTextField.setStringValue(alertText); // message
                     NSImage img = NSWorkspace.sharedWorkspace().iconForFileType(path.getExtension());
