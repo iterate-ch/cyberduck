@@ -75,77 +75,77 @@ public class CDMainController {
 	NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().resourcePath(), "License.rtf").toString());
     }
 
-    public void updateMenuClicked(Object sender) {
-	try {
-	    NSBundle bundle = NSBundle.bundleForClass(this.getClass());
-	    String currentVersionNumber = (String)bundle.objectForInfoDictionaryKey("CFBundleVersion");
-	    log.debug("current version:"+currentVersionNumber);
-
-	    org.apache.commons.httpclient.HttpClient http = new org.apache.commons.httpclient.HttpClient();
-	    http.connect("www.cyberduck.ch", 80, false);
-	    org.apache.commons.httpclient.methods.GetMethod GET = new org.apache.commons.httpclient.methods.GetMethod("versionlist.xml");
-	    GET.addRequestHeader("Accept", GET.getAcceptHeader());
-	    GET.addRequestHeader("User-Agent", "Cyberduck/" + Preferences.instance().getProperty("version")+"-Check for Update");
-	    int response = http.executeMethod(GET);
-	    java.io.InputStream in = null;
-	    if(!org.apache.commons.httpclient.HttpStatus.isSuccessfulResponse(response)) {
-		in = http.getInputStream(GET);
-		java.io.OutputStream out = new java.io.FileOutputStream(new java.io.File(NSBundle.mainBundle().resourcePath(), "version.plist"));
-		boolean complete = false;
-		int amount = 0;
-		byte[] chunk = new byte[4096];
-		while (!complete) {
-		    amount = in.read(chunk, 0, 4096);
-		    if(amount == -1) {
-			complete = true;
-		    }
-		    else {
-			out.write(chunk, 0, amount);
-		    }
-		}
-		if(in != null) {
-		    in.close();
-		}
-		if(out != null) {
-		    out.flush();
-		    out.close();
-		}
-		NSData xmlData = new NSData(new java.io.File(NSBundle.mainBundle().resourcePath(), "version.plist"));	    
+//    public void updateMenuClicked(Object sender) {
+//	try {
+//	    NSBundle bundle = NSBundle.bundleForClass(this.getClass());
+//	    String currentVersionNumber = (String)bundle.objectForInfoDictionaryKey("CFBundleVersion");
+//	    log.debug("current version:"+currentVersionNumber);
+//
+//	    org.apache.commons.httpclient.HttpClient http = new org.apache.commons.httpclient.HttpClient();
+//	    http.connect("www.cyberduck.ch", 80, false);
+//	    org.apache.commons.httpclient.methods.GetMethod GET = new org.apache.commons.httpclient.methods.GetMethod("versionlist.xml");
+//	    GET.addRequestHeader("Accept", GET.getAcceptHeader());
+//	    GET.addRequestHeader("User-Agent", "Cyberduck/" + Preferences.instance().getProperty("version")+"-Check for Update");
+//	    int response = http.executeMethod(GET);
+//	    java.io.InputStream in = null;
+//	    if(!org.apache.commons.httpclient.HttpStatus.isSuccessfulResponse(response)) {
+//		in = http.getInputStream(GET);
+//		java.io.OutputStream out = new java.io.FileOutputStream(new java.io.File(NSBundle.mainBundle().resourcePath(), "version.plist"));
+//		boolean complete = false;
+//		int amount = 0;
+//		byte[] chunk = new byte[4096];
+//		while (!complete) {
+//		    amount = in.read(chunk, 0, 4096);
+//		    if(amount == -1) {
+//			complete = true;
+//		    }
+//		    else {
+//			out.write(chunk, 0, amount);
+//		    }
+//		}
+//		if(in != null) {
+//		    in.close();
+//		}
+//		if(out != null) {
+//		    out.flush();
+//		    out.close();
+//		}
+//		NSData xmlData = new NSData(new java.io.File(NSBundle.mainBundle().resourcePath(), "version.plist"));	    
 //	NSData xmlData = new NSData(new java.net.URL(Preferences.instance().getProperty("website.xml")));
-		NSDictionary pList = (NSDictionary)NSPropertyListSerialization.propertyListFromXMLData(xmlData);
-		String latestVersionNumber = (String)pList.objectForKey("Cyberduck");
-
-		if(currentVersionNumber.equals(latestVersionNumber)) {
-		    NSAlertPanel.runInformationalAlert(
-					 "No update", //title
-					 "No newer version available. Cyberduck "+currentVersionNumber+" is up to date.",
-					 "OK",// defaultbutton
-					 null,//alternative button
-					 null//other button
-					 );
-		}
-		else {
-		    int selection = NSAlertPanel.runInformationalAlert(
-							 "New version", //title
-							 "Cyberduck "+currentVersionNumber+" is out of date. The current version is Cyberduck "+currentVersionNumber,
-							 "Download",// defaultbutton
-							 "Later",//alternative button
-							 null//other button
-							 );
-		    if(NSAlertPanel.DefaultReturn == selection) {
-			NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")));
-		    }
-		}
-	    }
-	    else {
-		//blabla -failed
-	    }
-	}
-	catch(Exception e) {
-	    e.printStackTrace();
-	    log.error(e.getMessage());
-	}
-    }
+//		NSDictionary pList = (NSDictionary)NSPropertyListSerialization.propertyListFromXMLData(xmlData);
+//		String latestVersionNumber = (String)pList.objectForKey("Cyberduck");
+//
+//		if(currentVersionNumber.equals(latestVersionNumber)) {
+//		    NSAlertPanel.runInformationalAlert(
+//					 "No update", //title
+//					 "No newer version available. Cyberduck "+currentVersionNumber+" is up to date.",
+//					 "OK",// defaultbutton
+//					 null,//alternative button
+//					 null//other button
+//					 );
+//		}
+//		else {
+//		    int selection = NSAlertPanel.runInformationalAlert(
+//							 "New version", //title
+//							 "Cyberduck "+currentVersionNumber+" is out of date. The current version is Cyberduck "+currentVersionNumber,
+//							 "Download",// defaultbutton
+//							 "Later",//alternative button
+//							 null//other button
+//							 );
+//		    if(NSAlertPanel.DefaultReturn == selection) {
+//			NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")));
+//		    }
+//		}
+//	    }
+//	    else {
+//		//blabla -failed
+//	    }
+//	}
+//	catch(Exception e) {
+//	    e.printStackTrace();
+//	    log.error(e.getMessage());
+//	}
+//  }
     
     public void websiteMenuClicked(Object sender) {
 	try {
@@ -296,4 +296,14 @@ public class CDMainController {
     public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
 	return false;
     }
+
+
+    public boolean validateMenuItem(_NSObsoleteMenuItemProtocol aCell) {
+        String sel = aCell.action().name();
+
+        if (sel.equals("infoButtonClicked:")) {
+	    log.debug("validating info menu item");
+        }
+        return true;
+    }    
 }

@@ -17,15 +17,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.io.IOException;
-import ch.cyberduck.core.http.HTTPSession;
-import ch.cyberduck.core.sftp.SFTPSession;
+import org.apache.log4j.Logger;
+
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.http.HTTPSession;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.sftp.SFTPSession;
+
 import com.sshtools.j2ssh.transport.HostKeyVerification;
-import java.util.List;
-import org.apache.log4j.Logger;
 
 public class Host {
     private static Logger log = Logger.getLogger(Host.class);
