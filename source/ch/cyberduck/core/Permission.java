@@ -113,12 +113,8 @@ public class Permission {
         this.other[WRITE] = p[OTHER][WRITE];
         this.other[EXECUTE] = p[OTHER][EXECUTE];
 //		log.debug("Permission:"+this.toString());
-        this.mask = "-" + getString();
+        this.mask = this.getString();
     }
-
-//	public Permission(int octal) {
-//		
-//	}
 
     public Permission(int decimal) {
 //		log.debug("Permission(decimal):"+decimal);
@@ -205,7 +201,7 @@ public class Permission {
                 this.other = new boolean[]{true, true, true};
                 break;
         }
-        this.mask = "-" + getString();
+        this.mask = this.getString();
 //		log.debug("Permission:"+this.toString());
     }
 
@@ -214,14 +210,14 @@ public class Permission {
     }
 
     /**
-     * @param access unix access permitions, i.e. -rwxrwxrwx
+     * @param access unix access permitions, i.e. rwxr-xr-x
      */
     public void setMask(String mask) {
         this.mask = mask;
     }
 
     /**
-     * @return The unix access permissions including the the first bit
+     * @return The unix access permissions
      */
     public String getMask() {
         return this.mask;

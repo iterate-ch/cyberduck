@@ -340,7 +340,7 @@ public class CDPreferencesController extends NSObject {
         p[Permission.OTHER][Permission.EXECUTE] = (dotherx.state() == NSCell.OnState);
 		
         Permission permission = new Permission(p);
-		Preferences.instance().setProperty("queue.download.permissions.default", permission.toString());
+		Preferences.instance().setProperty("queue.download.permissions.default", permission.getMask());
 	}
 
 	public NSButton uownerr; //IBOutlet
@@ -369,7 +369,7 @@ public class CDPreferencesController extends NSObject {
         p[Permission.OTHER][Permission.EXECUTE] = (uotherx.state() == NSCell.OnState);
 		
         Permission permission = new Permission(p);
-		Preferences.instance().setProperty("queue.upload.permissions.default", permission.toString());
+		Preferences.instance().setProperty("queue.upload.permissions.default", permission.getMask());
 	}
 	
     private NSButton horizontalLinesCheckbox; //IBOutlet
