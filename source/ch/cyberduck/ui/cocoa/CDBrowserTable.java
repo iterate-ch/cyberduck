@@ -452,30 +452,33 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	    */
 	public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
 	    log.debug("tableViewWriteRowsToPasteboard:"+rows);
-	    Path[] roots = new Path[rows.count()];
-	    NSMutableArray types = new NSMutableArray();
-	    for(int i = 0; i < rows.count(); i++) {
-		roots[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue());
-		if(roots[i].isFile()) {
-		    if(roots[i].getExtension() != null)
-			types.addObject(roots[i].getExtension());
+	    if(rows.count() > 0) {
+		Path[] roots = new Path[rows.count()];
+		NSMutableArray types = new NSMutableArray();
+		for(int i = 0; i < rows.count(); i++) {
+		    roots[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue());
+		    if(roots[i].isFile()) {
+			if(roots[i].getExtension() != null)
+			    types.addObject(roots[i].getExtension());
+			else
+			    types.addObject(NSPathUtilities.FileTypeUnknown);
+		    }
+		    else if(roots[i].isDirectory()) {
+			types.addObject("'fldr'");
+		    }
 		    else
 			types.addObject(NSPathUtilities.FileTypeUnknown);
 		}
-		else if(roots[i].isDirectory()) {
-		    types.addObject("'fldr'");
-		}
-		else
-		    types.addObject(NSPathUtilities.FileTypeUnknown);
-	    }
 
-	    NSEvent event = NSApplication.sharedApplication().currentEvent();
-	    NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
-	    NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
 
-	    CDBrowserTable.this.dragPromisedFilesOfTypes(types, imageRect, CDBrowserTable.this, true, event);
+		NSEvent event = NSApplication.sharedApplication().currentEvent();
+		NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
+		NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
 
+		CDBrowserTable.this.dragPromisedFilesOfTypes(types, imageRect, CDBrowserTable.this, true, event);
+		
 	    // The types argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
+	    }
 	    return false;
 	}
 

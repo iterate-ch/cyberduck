@@ -84,7 +84,7 @@ public class SFTPSession extends Session {
 	this.callObservers(new Message(Message.OPEN, "Opening session."));
 	this.log("Opening SSH connection to " + host.getIp()+"...", Message.PROGRESS);
 	SshConnectionProperties properties = new SshConnectionProperties();
-	properties.setHost(host.getName());
+	properties.setHost(host.getHostname());
 	properties.setPort(host.getPort());
 	
 		    // Sets the prefered client->server encryption cipher

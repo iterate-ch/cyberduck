@@ -88,7 +88,7 @@ public class FTPSession extends Session {
 //		    if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
 //			FTP.initSOCKSAuthentication(Preferences.instance().getProperty("connection.proxy.username"), Preferences.instance().getProperty("connection.proxy.password"));
 //		    }
-	FTP.connect(host.getName(), host.getPort());
+	FTP.connect(host.getHostname(), host.getPort());
 	this.log("FTP connection opened", Message.PROGRESS);
 	this.login();
 	FTP.system();

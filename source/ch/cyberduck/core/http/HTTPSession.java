@@ -42,7 +42,7 @@ public class HTTPSession extends Session {
 
     public HTTPSession(Host h) {
         super(h);
-        this.HTTP = new HttpConnection(h.getName(), h.getPort());
+        this.HTTP = new HttpConnection(h.getHostname(), h.getPort());
 //        this.HTTP = new HttpClient();
 //	this.connectionManager = new SimpleHttpConnectionManager();
 //	this.hostConfiguration = new HostConfiguration();

@@ -78,31 +78,33 @@ public class CDDownloadController {
 		try {
 		    url = new URL(urlField.stringValue());
 		    this.window().orderOut(null);
-		    String protocol = url.getProtocol();
-		    String hostname = url.getHost();
-		    String file = url.getQuery() == null ? url.getPath() : url.getPath() + "?" + url.getQuery();
+//		    String protocol = url.getProtocol();
+//		    String hostname = url.getHost();
 		    Path path = null;
-		    Host host = null;
-		    Session session = null;
-		    if(protocol.equals(Session.FTP)) {
-			String userinfo = url.getUserInfo();
-			String user = Preferences.instance().getProperty("ftp.anonymous.name");
-			String pass = Preferences.instance().getProperty("ftp.anonymous.pass");
-			if(userinfo != null) {
-			    int i = userinfo.indexOf(':');
-			    if(i != -1) {
-				user = userinfo.substring(0, i);
-				pass = userinfo.substring(i + 1);
-			    }
-			}
-			session = new FTPSession(host = new Host(Session.FTP, hostname, url.getPort(), new Login(user, pass)));
+		    String file = url.getQuery() == null ? url.getPath() : url.getFile();
+		    Host host = new Host(urlField.stringValue());
+		    Session session = host.getSession();
+		    if(host.getProtocol().equals(Session.FTP)) {
+//			String userinfo = url.getUserInfo();
+//			String user = Preferences.instance().getProperty("ftp.anonymous.name");
+//			String pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+//			if(userinfo != null) {
+//			    int i = userinfo.indexOf(':');
+//			    if(i != -1) {
+//				user = userinfo.substring(0, i);
+//				pass = userinfo.substring(i + 1);
+//			    }
+//			}
+//			session = new FTPSession(host = new Host(Session.FTP, hostname, url.getPort(), new Login(user, pass)));
+//			session = new FTPSession(host);
 			path = new FTPPath((FTPSession)session, file);
 		    }
-		    else if (protocol.equals(Session.HTTP)) {
-			session = new HTTPSession(host = new Host(Session.HTTP, hostname, url.getPort(), new Login()));
+		    else if(host.getProtocol().equals(Session.HTTP)) {
+//			session = new HTTPSession(host);
+//			session = new HTTPSession(host = new Host(Session.HTTP, hostname, url.getPort(), new Login()));
 			path = new HTTPPath((HTTPSession)session, file);
 		    }
-		    CDTransferController controller = new CDTransferController(session.copy(), path, Queue.KIND_DOWNLOAD);
+		    CDTransferController controller = new CDTransferController(session, path, Queue.KIND_DOWNLOAD);
 		    controller.transfer();
 		}
 		catch(MalformedURLException e) {

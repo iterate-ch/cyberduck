@@ -127,12 +127,11 @@ public class CDTransferController implements Observer, Validator {
 	this.queue.addObserver(this);
 	this.root = roots[0];
 	this.host = root.getHost();
-	this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
-
         if (false == NSApplication.loadNibNamed("Transfer", this)) {
             log.fatal("Couldn't load Transfer.nib");
             return;
         }
+	this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
     }	
     
     /**
@@ -263,6 +262,10 @@ public class CDTransferController implements Observer, Validator {
 				       (String)msg.getContent() // message
 				       );
 		this.queue.cancel();
+		this.totalProgressBar.stopAnimation(null);
+		this.stopButton.setEnabled(false);
+		this.resumeButton.setEnabled(true);
+		this.reloadButton.setEnabled(true);
 		this.progressField.setAttributedStringValue(new NSAttributedString((String)msg.getContent()));
 		this.progressField.setNeedsDisplay(true);
 	    }
@@ -286,7 +289,6 @@ public class CDTransferController implements Observer, Validator {
 		log.debug("resume:true");
 		if(path.status.isComplete()) {
 		    log.debug("complete:true");
-
 //		    NSAlertPanel.beginInformationalAlertSheet(
 //						"Error", //title
 //						"OK",// defaultbutton

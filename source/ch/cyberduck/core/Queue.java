@@ -152,7 +152,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		this.candidate = (Path)elements.next();
 		this.candidate.status.addObserver(this);
 
-		this.callObservers(new Message(Message.PROGRESS, KIND_DOWNLOAD == kind ? "Downloading "+candidate.getName()+" ("+(this.processedJobs()+1)+" of "+(this.numberOfJobs())+")" : "Uploading "+candidate.getName()+" ("+(this.processedJobs())+" of "+(this.numberOfJobs())+")"));
+		this.callObservers(new Message(Message.PROGRESS, KIND_DOWNLOAD == kind ? "Downloading "+candidate.getName()+" ("+(this.processedJobs()+1)+" of "+(this.numberOfJobs())+")" : "Uploading "+candidate.getName()+" ("+(this.processedJobs()+1)+" of "+(this.numberOfJobs())+")"));
 		
 //		if(this.validator.validate(candidate, kind)) {
 		log.debug("Validation sucessfull");
@@ -198,6 +198,13 @@ public class Queue extends Observable implements Observer { //Thread {
 	}.start();
     }
 
+//    public void stop() {
+//
+//    }
+
+//    public void resume() {
+//
+//    }
 
     public void cancel() {
 	this.stopped = true;

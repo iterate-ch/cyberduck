@@ -33,12 +33,18 @@ public class Login {
     }
 
     public Login(String l) {
-	if(l.indexOf(':') != -1) {
-	    this.user = l.substring(0, l.indexOf(':')-1);
-	    this.pass = l.substring(l.indexOf(':'), l.length()-1);
+	if(l != null) {
+	    if(l.indexOf(':') != -1) {
+		this.user = l.substring(0, l.indexOf(':'));
+		this.pass = l.substring(l.indexOf(':')+1, l.length());
+	    }
+	    else {
+		this.user = l;
+		this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+	    }
 	}
 	else {
-	    this.user = l;
+	    this.user = Preferences.instance().getProperty("ftp.anonymous.name");
 	    this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 	}
     }

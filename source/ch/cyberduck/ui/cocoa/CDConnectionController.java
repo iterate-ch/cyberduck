@@ -220,7 +220,7 @@ public class CDConnectionController {
     public void updateFields(Host selectedItem) {
 	log.debug("updateFields:"+selectedItem);
 	this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals("ftp") ? FTP_STRING : SFTP_STRING);
-	this.hostPopup.setStringValue(selectedItem.getName());
+	this.hostPopup.setStringValue(selectedItem.getHostname());
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
 	this.usernameField.setStringValue(selectedItem.getLogin().getUsername());
     }

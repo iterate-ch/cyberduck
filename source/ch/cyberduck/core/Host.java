@@ -20,6 +20,10 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.ftp.FTPPath;
+import ch.cyberduck.core.http.HTTPPath;
+import ch.cyberduck.core.sftp.SFTPPath;
+
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 import org.apache.log4j.Logger;
 
@@ -28,33 +32,64 @@ public class Host {
 
     private String protocol;
     private int port;
-    private String name;
+    private String hostname;
+    private Path path;
     private transient HostKeyVerification hostKeyVerification;
     private transient Session session;
     private transient Login login;
 
-    public Host(String url) {
-	this.setURL(url);
+//    public Host(String url) throws java.net.MalformedURLException {
+//	try {
+//	    this.protocol = this.parseProtocol(url);
+//	    this.port = this.parsePortnumber(url);
+//	    this.hostname = this.parseHostname(url);
+//	    this.login = this.parseUser(url);
+//	}
+//	catch(IndexOutOfBoundsException e) {
+//	    throw new java.net.MalformedURLException(e.getMessage());
+//	}
+//	catch(NumberFormatException e) {
+//	    throw new java.net.MalformedURLException(e.getMessage());
+//	}
+//	log.debug(this.toString());
+//    }
+
+    /**
+	* For internal use only.
+	* @ precondition URL must be in the format protocol://user@hostname:portnumber
+     */
+    public Host(String url) throws java.net.MalformedURLException {
+	try {
+	    this.protocol = url.substring(0, url.indexOf("://"));
+	    this.hostname = url.substring(url.indexOf("@")+1, url.lastIndexOf(":"));
+	    this.port = Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length()));
+	    this.login = new Login(url.substring(url.indexOf("://")+3, url.lastIndexOf("@")));
+	}
+	catch(NumberFormatException e) {
+	    log.error(e.getMessage());
+	    throw new java.net.MalformedURLException("Not a valid URL"+url);
+	}
+	catch(IndexOutOfBoundsException e) {
+	    log.error(e.getMessage());
+	    throw new java.net.MalformedURLException("Not a valid URL"+url);
+	}
+    }
+
+    public Host(String hostname, int port, Login login) {
+	this(getDefaultProtocol(port), hostname, port, login);
     }
     
-    public Host(String name, int port, Login login) {
-        this.protocol = this.getDefaultProtocol(port);
-        this.port = port != -1 ? port : this.getDefaultPort(protocol);
-        this.name = name;
-        this.login = login;
-	log.debug(this.toString());
-    }
-    
-    public Host(String protocol, String name, int port, Login login) {
+    public Host(String protocol, String hostname, int port, Login login) {
         this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
         this.port = port != -1 ? port : this.getDefaultPort(protocol);
-        this.name = name;
+        this.hostname = hostname;
         this.login = login;
 	log.debug(this.toString());
     }
 
-    public Host(String name, Login login) {
-	this(Preferences.instance().getProperty("connection.protocol.default"), name, Integer.parseInt(Preferences.instance().getProperty("connection.port.default")), login);
+    public Host(String hostname, Login login) {
+	this(Preferences.instance().getProperty("connection.protocol.default"), hostname, Integer.parseInt(Preferences.instance().getProperty("connection.port.default")), login);
+	log.debug(this.toString());
     }
 
     public Session getSession() {
@@ -79,27 +114,9 @@ public class Host {
 	return this.session;
     }
 
-    /**
-	* @param url Must be in the format protocol://username@hostname:portnumber
-     */
-    public void setURL(String url) {
-	try {
-	    this.protocol = url.substring(0, url.indexOf("://"));
-	    this.name = url.substring(url.indexOf("@")+1, url.lastIndexOf(":"));
-	    this.port = Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length()));
-	    this.login = new Login(url.substring(url.indexOf("://")+3, url.lastIndexOf("@")));
-	}
-	catch(NumberFormatException e) {
-	    log.error(e.getMessage());
-	}
-	catch(IndexOutOfBoundsException e) {
-	    log.error(e.getMessage());
-	}
+    public Path getPath() {
+	return this.path;
     }
-    
-//    public boolean hasValidSession() {
-//	return session != null && session.isConnected();//@todo use check() without reconnecting 
-//    }
     
     public void closeSession() {
         log.debug("closeSession");
@@ -109,7 +126,7 @@ public class Host {
 	}
     }
 
-    private String getDefaultProtocol(int port) {
+    private static String getDefaultProtocol(int port) {
 	switch(port) {
 	    case Session.HTTP_PORT:
 		return Session.HTTP;
@@ -123,7 +140,7 @@ public class Host {
 	
     }
     
-    private int getDefaultPort(String protocol) {
+    private static int getDefaultPort(String protocol) {
 	if(protocol.equals(Session.FTP))
 	    return Session.FTP_PORT;
 	else if(protocol.equals(Session.SFTP))
@@ -145,13 +162,13 @@ public class Host {
 	return this.protocol;
     }
 
-    public String getName() {
-	return this.name;
+    public String getHostname() {
+	return this.hostname;
     }
 
-    private void setName(String name) {
-	log.debug("setName"+name);
-	this.name = name;
+    private void setHostname(String hostname) {
+	log.debug("setHostname"+hostname);
+	this.hostname = hostname;
     }
 
     public int getPort() {
@@ -172,10 +189,10 @@ public class Host {
      */
     public String getIp() {
         //if we call getByName(null) InetAddress would return localhost
-        if(this.name == null)
+        if(this.hostname == null)
             return "Unknown host";
         try {
-            return java.net.InetAddress.getByName(name).toString();
+            return java.net.InetAddress.getByName(hostname).toString();
         }
         catch(java.net.UnknownHostException e) {
             return "Unknown host";
@@ -189,9 +206,79 @@ public class Host {
 
     /**
 	* protocol://user@host:port
-	@return The URL of the remote host including user login name and port
+	@return The URL of the remote host including user login hostname and port
      */
     public String getURL() {
-	return this.getProtocol()+"://"+this.getLogin().getUsername()+"@"+this.getName()+":"+this.getPort();
+	return this.getProtocol()+"://"+this.getLogin().getUsername()+"@"+this.getHostname()+":"+this.getPort();
     }
+
+    /*
+    public Path parsePath(String url) {
+	log.debug("parsePath");
+	int beginIndex = url.indexOf(url.indexOf("://")+3, '/');
+	int endIndex = url.length();
+	String file = url.substring(beginIndex, endIndex);
+	Path path = null;
+	if(file.length() > 1) {
+	    String protocol = this.parseProtocol(url);
+	    if(this.getProtocol().equalsIgnoreCase(Session.FTP)) {
+		return new FTPPath((FTPSession)this.getSession(), file);
+	    }
+	    else if(this.getProtocol().equalsIgnoreCase(Session.SFTP)) {
+		return new SFTPPath((SFTPSession)this.getSession(), file);
+	    }
+	    else if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
+		return new HTTPPath((HTTPSession)this.getSession(), file);
+	    }
+	}
+	return path;
+    }
+     */
+
+    /*
+    private Login parseUser(String url) {
+	log.debug("parseUser");
+	if(url.indexOf('@') != -1) {
+	    int beginIndex = url.indexOf("://")+3;
+	    int endIndex = url.indexOf('@');
+	    return new Login(url.substring(beginIndex, endIndex));
+	}
+	else
+	    return new Login();
+    }
+
+    private String parseHostname(String url) {
+	log.debug("parseHostname");
+	int beginIndex = -1;
+	if(url.indexOf('@') != -1)
+	    beginIndex = url.indexOf("@")+1;
+	else
+	    beginIndex = url.indexOf("://")+3;
+	int endIndex = -1;
+	if(url.indexOf(':', url.indexOf("://")+3) != -1)
+	    endIndex = url.indexOf(':', url.indexOf("://")+3) ;
+	else if(url.indexOf('/', beginIndex) != -1)
+	    endIndex = url.indexOf('/', beginIndex);
+	else
+	    endIndex = url.length();
+	return url.substring(beginIndex, endIndex);
+//	this.hostname = url.substring(url.indexOf("@")+1, url.lastIndexOf(':'));
+    }
+
+    private String parseProtocol(String url) {
+	log.debug("parseProtocol");
+	int endIndex =  url.indexOf("://");
+	return url.substring(0, url.indexOf("://"));
+    }
+
+    private int parsePortnumber(String url) {
+	log.debug("parsePortnumber");
+	int beginIndex = url.indexOf(url.indexOf("://")+3, ':');
+	if(beginIndex != -1) {
+	    int endIndex = url.indexOf('/', beginIndex+1);
+	    return Integer.parseInt(url.substring(beginIndex+1, endIndex));
+	}
+	return this.getDefaultPort(this.parseProtocol(url));
+    }
+    */
 }

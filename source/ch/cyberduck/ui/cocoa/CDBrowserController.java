@@ -260,7 +260,7 @@ public class CDBrowserController implements Observer {
 		    browserModel.clear();
 		    browserTable.reloadData();
 
-		    mainWindow.setTitle(host.getProtocol()+":"+host.getName());
+		    mainWindow.setTitle(host.getProtocol()+":"+host.getHostname());
 		}
 		else if(msg.getTitle().equals(Message.CLOSE)) {
 		    progressIndicator.stopAnimation(this);
@@ -507,6 +507,7 @@ public class CDBrowserController implements Observer {
     public void mount(Host host) {
 	log.debug("mount:"+host);
 	this.isMounting = true;
+	this.window().makeKeyAndOrderFront(null);
 	this.unmount();
 	this.host = host;
 
@@ -691,7 +692,7 @@ public class CDBrowserController implements Observer {
 	if(host != null) {
 	    if(host.getSession().isConnected()) {
 		NSAlertPanel.beginCriticalAlertSheet(
-			       NSBundle.localizedString("Disconnect from"+" "+host.getName()), //title
+			       NSBundle.localizedString("Disconnect from"+" "+host.getHostname()), //title
 			       NSBundle.localizedString("Disconnect"),// defaultbutton
 			       NSBundle.localizedString("Cancel"),//alternative button
 			       null,//other button

@@ -271,21 +271,21 @@ public class FTPPath extends Path {
     }
 
     private void fillDownloadQueue(List queue)  throws IOException {
-	    if(this.isDirectory()) {
-		List files = this.list(false, true);
-		java.util.Iterator i = files.iterator();
-		while(i.hasNext()) {
-		    FTPPath p = (FTPPath)i.next();
-		    p.setLocal(new File(this.getLocal(), p.getName()));
-		    p.fillDownloadQueue(queue);
-		}
+	if(this.isDirectory()) {
+	    List files = this.list(false, true);
+	    java.util.Iterator i = files.iterator();
+	    while(i.hasNext()) {
+		FTPPath p = (FTPPath)i.next();
+		p.setLocal(new File(this.getLocal(), p.getName()));
+		p.fillDownloadQueue(queue);
 	    }
-	    else if(this.isFile()) {
-		this.status.setSize((int)this.session.FTP.size(this.getAbsolute()));
-		queue.add(this);
-	    }
-	    else
-		throw new IOException("Cannot determine file type");
+	}
+	else if(this.isFile()) {
+	    this.status.setSize((int)this.session.FTP.size(this.getAbsolute()));
+	    queue.add(this);
+	}
+	else
+	    throw new IOException("Cannot determine file type");
     }
 
     public void download() {

@@ -88,7 +88,12 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
 	    log.info("Successfully read Favorites: "+entries);
 	    java.util.Enumeration i = entries.objectEnumerator();
 	    while(i.hasMoreElements()) {
-		this.addItem(new Host((String)i.nextElement()));
+		try {
+		    this.addItem(new Host((String)i.nextElement()));
+		}
+		catch(java.net.MalformedURLException e) {
+		    log.error(e.getMessage());
+		}
 	    }
 	}
     }
@@ -113,9 +118,9 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
     }
     
     //setValue()
-    public void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row) {
-	log.debug("tableViewSetObjectValueForLocation:"+row);
-	Host h = (Host)this.values().toArray()[row];
-	h.setURL((String)value);
-    }
+//    public void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row) {
+//	log.debug("tableViewSetObjectValueForLocation:"+row);
+//	Host h = (Host)this.values().toArray()[row];
+//	h.setURL((String)value);
+//    }
 }

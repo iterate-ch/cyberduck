@@ -52,7 +52,7 @@ public abstract class History {
 
     public void addItem(Host h) {
 	log.debug("addItem:"+h);
-	this.data.put(h.getName(), h);
+	this.data.put(h.getHostname(), h);
     }
 
     public void removeItem(String url) {

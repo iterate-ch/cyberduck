@@ -91,7 +91,12 @@ public class CDHistoryImpl extends History { //implements NSComboBox.DataSource 
 	    log.info("Successfully read History: "+entries);
 	    java.util.Enumeration i = entries.objectEnumerator();
 	    while(i.hasMoreElements()) {
-		this.addItem(new Host((String)i.nextElement()));
+		try {
+		    this.addItem(new Host((String)i.nextElement()));
+		}
+		catch(java.net.MalformedURLException e) {
+		    log.error(e.getMessage());
+		}
 	    }
 	}
     }
@@ -110,7 +115,7 @@ public class CDHistoryImpl extends History { //implements NSComboBox.DataSource 
 
     public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
 	Host h = (Host)this.values().toArray()[row];
-	return h.getName();
+	return h.getHostname();
     }
     
     // ----------------------------------------------------------
@@ -127,7 +132,7 @@ public class CDHistoryImpl extends History { //implements NSComboBox.DataSource 
 	String identifier = (String)tableColumn.identifier();
 	if(identifier.equals("URL")) {
 	    Host h = (Host)this.values().toArray()[row];
-	    return h.getName();
+	    return h.getHostname();
 	}
 	throw new IllegalArgumentException("Unknown identifier: "+identifier);
     }
