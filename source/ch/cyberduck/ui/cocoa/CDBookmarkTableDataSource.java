@@ -105,12 +105,12 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 						if (row != -1) {
 							CDBookmarksImpl.instance().addItem(h, row);
 							tableView.reloadData();
-							tableView.selectRow(row, false);
+//							tableView.selectRow(row, false);
 						}
 						else {
 							CDBookmarksImpl.instance().addItem(h);
 							tableView.reloadData();
-							tableView.selectRow(tableView.numberOfRows() - 1, false);
+//							tableView.selectRow(tableView.numberOfRows() - 1, false);
 						}
 					}
 					return true;
@@ -127,7 +127,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 					if (o instanceof NSArray) {
 						for (int i = 0; i < draggedRows.count(); i++) {
 							CDBookmarksImpl.instance().removeItem(((Integer) draggedRows.objectAtIndex(i)).intValue());
-							tableView.reloadData();
+//							tableView.reloadData();
 						}
 						NSArray elements = (NSArray) o;
 						for (int i = 0; i < elements.count(); i++) {
@@ -135,12 +135,12 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 							if (row != -1 && row < CDBookmarksImpl.instance().size() - 1) {
 								CDBookmarksImpl.instance().addItem(new Host(dict), row);
 								tableView.reloadData();
-								tableView.selectRow(row, false);
+//								tableView.selectRow(row, false);
 							}
 							else {
 								CDBookmarksImpl.instance().addItem(new Host(dict));
 								tableView.reloadData();
-								tableView.selectRow(tableView.numberOfRows() - 1, false);
+//								tableView.selectRow(tableView.numberOfRows() - 1, false);
 							}
 						}
 						draggedRows = null;

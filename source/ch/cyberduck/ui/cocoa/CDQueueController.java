@@ -209,29 +209,30 @@ public class CDQueueController implements Observer, Validator {
 					}
 				}
 			}
-//			else if (msg.getTitle().equals(Message.START)) {
-//				log.debug("************START***********");
-//				this.toolbar.validateVisibleItems();
-//			}
-//			else if (msg.getTitle().equals(Message.STOP)) {
-//				log.debug("************STOP***********");
-//				this.toolbar.validateVisibleItems();
-//			}
-			else if (msg.getTitle().equals(Message.ERROR)) {
-//				this.toolbar.validateVisibleItems();
-				NSAlertPanel.beginCriticalAlertSheet(
-				    NSBundle.localizedString("Error", ""), //title
-				    NSBundle.localizedString("OK", ""), // defaultbutton
-				    null, //alternative button
-				    null, //other button
-				    this.window, //docWindow
-				    null, //modalDelegate
-				    null, //didEndSelector
-				    null, // dismiss selector
-				    null, // context
-				    (String) msg.getContent() // message
-				);
+			else if (msg.getTitle().equals(Message.START)) {
+				log.debug("************START***********");
+				this.toolbar.validateVisibleItems();
 			}
+			else if (msg.getTitle().equals(Message.STOP)) {
+				log.debug("************STOP***********");
+				this.toolbar.validateVisibleItems();
+			}
+			else if (msg.getTitle().equals(Message.ERROR)) {
+				this.toolbar.validateVisibleItems();
+			}
+//				NSAlertPanel.beginCriticalAlertSheet(
+//				    NSBundle.localizedString("Error", ""), //title
+//				    NSBundle.localizedString("OK", ""), // defaultbutton
+//				    null, //alternative button
+//				    null, //other button
+//				    this.window, //docWindow
+//				    null, //modalDelegate
+//				    null, //didEndSelector
+//				    null, // dismiss selector
+//				    null, // context
+//				    (String) msg.getContent() // message
+//				);
+//			}
 		}
 	}
 
@@ -440,14 +441,13 @@ public class CDQueueController implements Observer, Validator {
 	}
 
 	private boolean proceed;
-	private boolean done;
+	private boolean done = true;
 
 	/**
 	 * @return true if validation suceeded, false if !proceed
 	 */
 	public boolean validate(Path path, int kind) {
 		boolean resume = path.status.isResume();
-		this.done = false;
 		this.proceed = false;
 		log.debug("validate:" + path + "," + resume);
 		if (Queue.KIND_DOWNLOAD == kind) {
@@ -472,11 +472,22 @@ public class CDQueueController implements Observer, Validator {
 					log.debug("local path exists:true");
 					if (Preferences.instance().getProperty("queue.download.duplicate").equals("ask")) {
 						log.debug("queue.download.duplicate:ask");
+						// Waiting for other alert sheets open to be closed first
+						while (!done) {
+							try {
+								log.debug("Sleeping...");
+								Thread.sleep(1000); //milliseconds
+							}
+							catch (InterruptedException e) {
+								log.error(e.getMessage());
+							}
+						}
+						this.done = false;
 						NSAlertPanel.beginCriticalAlertSheet(
 						    NSBundle.localizedString("File exists", ""), //title
-						    NSBundle.localizedString("Resume", ""), // defaultbutton
+						    NSBundle.localizedString("Overwrite", ""), // defaultbutton
 						    NSBundle.localizedString("Cancel", ""), //alternative button
-						    NSBundle.localizedString("Overwrite", ""), //other button
+															 path.status.isComplete() ? null : NSBundle.localizedString("Resume", ""), //other button
 						    this.window,
 						    this, //delegate
 						    new NSSelector
@@ -491,6 +502,7 @@ public class CDQueueController implements Observer, Validator {
 															 path, // context
 															 NSBundle.localizedString("The file", "") + " " + path.getName() + " " + NSBundle.localizedString("alredy exists in", "") + " " + path.getLocal().getParent() // message
 															 );
+						// Waiting for user to make choice
 						while (!done) {
 							try {
 								log.debug("Sleeping...");
@@ -568,17 +580,4 @@ public class CDQueueController implements Observer, Validator {
 		}
 		this.done = true;
 	}
-
-//	public void closeSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-//		log.debug("closeSheetDidEnd");
-//		sheet.orderOut(null);
-//		switch (returncode) {
-//			case NSAlertPanel.DefaultReturn:
-//				this.stopButtonClicked(null);
-//				this.window.close();
-//				break;
-//			case NSAlertPanel.AlternateReturn:
-//				break;
-//		}
-//	}
 }

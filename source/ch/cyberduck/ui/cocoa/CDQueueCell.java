@@ -61,26 +61,28 @@ public class CDQueueCell extends CDTableCell {
 					arrowIcon = NSImage.imageNamed("arrowDown.tiff");
 					if (queue.getRoot().isFile())
 						fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
-					else
+					else if (queue.getRoot().isDirectory())
 						fileIcon = NSImage.imageNamed("folder.icns");
 					break;
 				case Queue.KIND_UPLOAD:
 					arrowIcon = NSImage.imageNamed("arrowUp.tiff");
 					if (queue.getRoot().getLocal().isFile())
 						fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
-					else
+					else if (queue.getRoot().getLocal().isDirectory())
 						fileIcon = NSImage.imageNamed("folder.icns");
 					break;
 			}
 			
-			fileIcon.setSize(new NSSize(32f, 32f));
-			arrowIcon.setSize(new NSSize(32f, 32f));
-			
 			final float BORDER = 40;
 			final float SPACE = 5;
 			
-			fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE, cellPoint.y() + 32 + SPACE), NSImage.CompositeSourceOver);
-			arrowIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE * 2, cellPoint.y() + 32 + SPACE * 2), NSImage.CompositeSourceOver);
+			if(fileIcon != null) {
+				fileIcon.setSize(new NSSize(32f, 32f));
+				arrowIcon.setSize(new NSSize(32f, 32f));
+				
+				fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE, cellPoint.y() + 32 + SPACE), NSImage.CompositeSourceOver);
+				arrowIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE * 2, cellPoint.y() + 32 + SPACE * 2), NSImage.CompositeSourceOver);
+			}
 			
 			// drawing path properties
 			// local file

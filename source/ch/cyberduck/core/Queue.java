@@ -100,7 +100,8 @@ public class Queue extends Observable implements Observer { //Thread {
 	private long current = -1;
 	private long size = -1;
 
-	private String status = " ";
+	private String status = "";
+	private String error = "";
 
 	public Queue(Path root, int kind) {
 		log.debug("Queue");
@@ -127,7 +128,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	public NSDictionary getAsDictionary() {
 		NSMutableDictionary dict = new NSMutableDictionary();
 		dict.setObjectForKey(this.status, "Status");
-		dict.setObjectForKey(this.kind() + "", "Kind");
+		dict.setObjectForKey(this.kind + "", "Kind");
 		dict.setObjectForKey(this.getSize() + "", "Size");
 		dict.setObjectForKey(this.getCurrent() + "", "Current");
 		dict.setObjectForKey(this.root.getHost().getAsDictionary(), "Host");
@@ -151,8 +152,10 @@ public class Queue extends Observable implements Observer { //Thread {
 		//Forwarding all messages from the current file's status to my observers
 		if (arg instanceof Message) {
 			Message msg = (Message) arg;
-			if (msg.getTitle().equals(Message.PROGRESS) || msg.getTitle().equals(Message.ERROR))
+			if (msg.getTitle().equals(Message.PROGRESS))
 				this.status = (String) msg.getContent();
+			if (msg.getTitle().equals(Message.ERROR))
+				this.error = " : "+(String) msg.getContent();
 		}
 		this.callObservers(arg);
 	}
@@ -202,6 +205,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		log.debug("start");
 		this.completedJobs = 0;
 		this.processedJobs = 0;
+		this.error = "";
 		new Thread() {
 			public void run() {
 				Queue.this.addObserver(observer);
@@ -289,11 +293,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	}
 
 	public String getStatus() {
-		return this.getElapsedTime()
-//		+" ("+this.processedJobs()
-//		+" of "+this.numberOfJobs()
-//		+") "+this.status;
-		    + " " + this.status;
+		return this.getElapsedTime()+" "+this.status+" "+error;
 	}
 
 	public String getProgress() {
