@@ -43,9 +43,9 @@ public abstract class Queue extends Observable {
 	private List roots = new ArrayList();
 	private List jobs;
 	
-	protected long size = -1;
-	private long current = 0;
-	private long speed;
+	protected double size = -1;
+	private double current = 0;
+	private double speed;
 	
 	private Validator validator;
 	
@@ -103,11 +103,11 @@ public abstract class Queue extends Observable {
 		}
 		Object sizeObj = dict.objectForKey("Size");
 		if(sizeObj != null) {
-			q.size = Long.parseLong((String)sizeObj);
+			q.size = Double.parseDouble((String)sizeObj);
 		}
 		Object currentObj = dict.objectForKey("Current");
 		if(currentObj != null) {
-			q.current = Long.parseLong((String)currentObj);
+			q.current = Double.parseDouble((String)currentObj);
 		}
 		return q;
 	}
@@ -208,12 +208,12 @@ public abstract class Queue extends Observable {
 		this.progress = new Timer(500,
 								  new java.awt.event.ActionListener() {
 									  int i = 0;
-									  long current;
-									  long last;
-									  long[] speeds = new long[8];
+									  double current;
+									  double last;
+									  double[] speeds = new double[8];
 									  
 									  public void actionPerformed(java.awt.event.ActionEvent e) {
-										  long diff = 0;
+										  double diff = 0;
 										  current = getCurrent(); // Bytes
 										  if(current <= 0) {
 											  setSpeed(0);
@@ -274,7 +274,7 @@ public abstract class Queue extends Observable {
 	protected abstract void reset();
 	
 	public boolean isInitialized() {
-		return this.getJobs() != null;// && this.getSize() != 0;
+		return this.getJobs() != null;
 	}
 	
 	public int numberOfRoots() {
@@ -285,7 +285,7 @@ public abstract class Queue extends Observable {
 		return this.getSize() == this.getCurrent();
 	}
 	
-	public long getSize() {
+	public double getSize() {
 		return this.size; //cached value
 	}
 	
@@ -293,9 +293,9 @@ public abstract class Queue extends Observable {
 		return Status.getSizeAsString(this.getSize());
 	}
 	
-	public long getCurrent() {
+	public double getCurrent() {
 		if(this.isInitialized()) {
-			long size = 0;
+			double size = 0;
 			for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
 				size += ((Path)iter.next()).status.getCurrent();
 			}
@@ -323,11 +323,11 @@ public abstract class Queue extends Observable {
 	/**
 		* @return The bytes being processed per second
 	 */
-	public long getSpeed() {
+	public double getSpeed() {
 		return this.speed;
 	}
 	
-	private void setSpeed(long s) {
+	private void setSpeed(double s) {
 		this.speed = s;
 	}
 }
