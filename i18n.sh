@@ -95,7 +95,10 @@ nib() {
 }
 
 updateNibFromStrings() {
-    rm -rf $language/$nibfile.bak
+    if [ `test -f $language/$nibfile.bak` ]; then {
+    	rm -rf $language/$nibfile.bak 
+    }
+    fi;
     mv $language/$nibfile $language/$nibfile.bak
 
     if($force == true); then
@@ -119,7 +122,10 @@ updateNibFromStrings() {
 udpateStringsFromNib() {
     echo "*** Updating $nib.strings in $language..."
         
-    rm $language/$nib.strings.bak
+    if [ `test -f $language/$nib.strings.bak` ]; then {
+    	rm $language/$nib.strings.bak 
+    }
+    fi;
     mv $language/$nib.strings $language/$nib.strings.bak
     nibtool --previous English.lproj/$nibfile \
             --incremental $language/$nibfile \

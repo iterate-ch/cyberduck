@@ -97,6 +97,12 @@
 		<exec executable="./buildDMG.pl" spawn="false">
 		    <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor} -buildDir ${build} -compressionLevel 9 -volSize 15 ${build}/${app.name}.app ${app.name}\ FAQ.rtfd ${app.name}\ Website.webloc Donate.webloc English.lproj/License.txt Credits.html  AppleScript\ Samples"/>
 		</exec>
+		<exec executable="gpg" spawn="false">
+			<arg line="-a -o ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.sig --detach-sig ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"/>
+		</exec>
+		<exec executable="md5sum" spawn="false">
+			<arg line="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg > ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5"/>
+		</exec>
 	</target>
 
 	<target name="scp">
