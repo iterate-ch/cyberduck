@@ -55,6 +55,7 @@ public class FTPParser {
 			String line = list[i].trim();
 			if(isValidLine(line)) {
 				Path p = parseListLine(parent, line);
+//				Path p = parseListLine(parent, new String(line.getBytes("ISO-8859-1"), "UTF-8").toString());
 				String filename = p.getName();
 				if(!(filename.equals(".") || filename.equals(".."))) {
 					if(!showHidden && filename.charAt(0) == '.') {

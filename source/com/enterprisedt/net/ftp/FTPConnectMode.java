@@ -36,11 +36,6 @@ package com.enterprisedt.net.ftp;
  public class FTPConnectMode {
 
      /**
-      *  Revision control id
-      */
-     private static String cvsId = "@(#)$Id$";
-
-     /**
       *   Represents active connect mode
       */
      public static FTPConnectMode ACTIVE = new FTPConnectMode();

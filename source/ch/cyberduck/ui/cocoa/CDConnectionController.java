@@ -68,7 +68,6 @@ public class CDConnectionController implements Observer {
 	
 	private Rendezvous rendezvous;
     private NSPopUpButton rendezvousPopup;
-//    private RendezvousDataSource rendezvousDataSource;
     public void setRendezvousPopup(NSPopUpButton rendezvousPopup) {
 		this.rendezvousPopup = rendezvousPopup;
 		this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous.tiff"));
@@ -147,6 +146,69 @@ public class CDConnectionController implements Observer {
 		this.passField = passField;
     }
 	
+	private NSTextField pkLabel;
+    public void setPkLabel(NSTextField pkLabel) {
+		this.pkLabel = pkLabel;
+		this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected"));
+    }
+	
+	private NSButton pkCheckbox;
+	public void setPkCheckbox(NSButton pkCheckbox) {
+		this.pkCheckbox = pkCheckbox;
+		this.pkCheckbox.setTarget(this);
+		this.pkCheckbox.setAction(new NSSelector("pkCheckboxSelectionChanged", new Class[] {Object.class}));
+	}
+	
+	public void pkCheckboxSelectionChanged(Object sender) {
+		log.debug("pkCheckboxSelectionChanged");
+		if(this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected"))) {
+			NSOpenPanel panel = new NSOpenPanel();
+			panel.setCanChooseDirectories(false);
+			panel.setCanChooseFiles(true);
+			panel.setAllowsMultipleSelection(false);
+			panel.beginSheetForDirectory(System.getProperty("user.home")+"/.ssh", null, null, this.window(), this, new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+		}
+		else {
+			this.passField.setEnabled(true);
+			this.pkCheckbox.setState(NSCell.OffState);
+			this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected"));
+		}
+	}
+	
+    public void pkSelectionPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
+		sheet.orderOut(null);
+		switch(returnCode) {
+			case(NSPanel.OKButton): {
+				NSArray selected = sheet.filenames();
+				java.util.Enumeration enumerator = selected.objectEnumerator();
+				while (enumerator.hasMoreElements()) {
+					this.pkLabel.setStringValue((String)enumerator.nextElement());
+				}
+				this.passField.setEnabled(false);
+				break;
+			}
+			case(NSPanel.CancelButton): {
+				this.passField.setEnabled(true);
+				this.pkCheckbox.setState(NSCell.OffState);
+				this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected"));
+				break;
+			}
+		}
+    }
+	
+	private NSButton keychainCheckbox;
+	public void setKeychainCheckbox(NSButton keychainCheckbox) {
+		this.keychainCheckbox = keychainCheckbox;
+		this.keychainCheckbox.setTarget(this);
+		this.keychainCheckbox.setEnabled(false);
+		this.keychainCheckbox.setAction(new NSSelector("keychainCheckboxSelectionChanged", new Class[] {Object.class}));
+	}
+	
+	public void keychainCheckboxSelectionChanged(Object sender) {
+		log.debug("keychainCheckboxSelectionChanged");
+		//todo
+	}
+	
     private NSTextField urlLabel;
     public void setUrlLabel(NSTextField urlLabel) {
 		this.urlLabel = urlLabel;
@@ -204,7 +266,7 @@ public class CDConnectionController implements Observer {
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
 		this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals("ftp") ? FTP_STRING : SFTP_STRING);
 		this.portField.setIntValue(protocolPopup.selectedItem().tag());
-		//	this.pathField.setStringValue("~");
+		this.pkCheckbox.setEnabled(Preferences.instance().getProperty("connection.protocol.default").equals("sftp"));
     }
 	
     public void updateFields(Host selectedItem) {
@@ -214,6 +276,7 @@ public class CDConnectionController implements Observer {
 		this.pathField.setStringValue(selectedItem.getDefaultPath());
 		this.portField.setIntValue(protocolPopup.selectedItem().tag());
 		this.usernameField.setStringValue(selectedItem.getLogin().getUsername());
+		this.pkCheckbox.setEnabled(selectedItem.getProtocol().equals(Session.SFTP));
     }
 	
     public void updateLabel(Object sender) {
@@ -224,13 +287,14 @@ public class CDConnectionController implements Observer {
 		else if(selectedItem.tag() == Session.FTP_PORT)
 			protocol = Session.FTP+"://";
 		urlLabel.setStringValue(protocol+usernameField.stringValue()+"@"+hostPopup.stringValue()+":"+portField.stringValue()+"/"+pathField.stringValue());
+		this.pkCheckbox.setEnabled(selectedItem.tag() == Session.SSH_PORT);
     }
 	
     public void closeSheet(NSButton sender) {
 		log.debug("closeSheet");
         NSNotificationCenter.defaultCenter().removeObserver(this);	
-		rendezvous.deleteObserver(this);
-		rendezvous.quit();
+		this.rendezvous.deleteObserver(this);
+		this.rendezvous.quit();
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
@@ -238,6 +302,8 @@ public class CDConnectionController implements Observer {
     public void connectionSheetDidEnd(NSWindow sheet, int returncode, Object context) {
 		log.debug("connectionSheetDidEnd");
 		sheet.orderOut(null);
+		this.rendezvous.deleteObserver(this);
+		this.rendezvous.quit();
 		switch(returncode) {
 			case(NSAlertPanel.DefaultReturn):
 				int tag = protocolPopup.selectedItem().tag();
@@ -264,6 +330,9 @@ public class CDConnectionController implements Observer {
 					default:
 						throw new IllegalArgumentException("No protocol selected.");
 				}
+					if(pkCheckbox.state() == NSCell.OnState) {
+						host.getLogin().setPrivateKeyFile(pkLabel.stringValue());
+					}
 					browser.mount(host);
 				break;
 			case(NSAlertPanel.AlternateReturn):

@@ -40,12 +40,15 @@ import org.apache.log4j.Logger;
 public class CDBrowserTableDataSource extends CDTableDataSource {
     private static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 	
-	private List data;
+	private List fullData;
+	private List currentData;
+
     private Path workdir;
     
     public CDBrowserTableDataSource() {
 		super();
-		this.data = new ArrayList();
+		this.fullData = new ArrayList();
+		this.currentData = new ArrayList();
     }
     
     public void setWorkdir(Path workdir) {
@@ -57,14 +60,14 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
     }
     
     public int numberOfRowsInTableView(NSTableView tableView) {
-		return data.size();
+		return currentData.size();
     }
         
     //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 		//	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 		String identifier = (String)tableColumn.identifier();
-		Path p = (Path)this.data.get(row);
+		Path p = (Path)this.currentData.get(row);
 		if(identifier.equals("TYPE")) {
 			if(p.isDirectory())
 				return NSImage.imageNamed("folder.icns");
@@ -72,9 +75,11 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		}
 		if(identifier.equals("FILENAME")) {
 //			try {
-//			log.debug("***as is: "+p.getName());
-//				log.debug("***rawdata>unicode: "+new String(p.getName().getBytes("RAWDATA"), "UTF-8").toString());
-//				return new String(p.getName().getBytes("UTF-8"), "UTF-8").toString();
+//				log.debug("***as is: "+p.getName());
+//				log.debug("***iso>utf: "+new String(p.getName().getBytes("ISO-8859-1"), "UTF-8").toString());
+//				log.debug("***latin1>utf: "+new String(p.getName().getBytes("ISO-Latin-1"), "UTF-8").toString());
+//				log.debug("***rawcurrentData>unicode: "+new String(p.getName().getBytes("RAWDATA"), "UTF-8").toString());
+//				return new String(p.getName().getBytes("ISO-8859-1"), "UTF-8").toString();
 //			}
 //			catch(java.io.UnsupportedEncodingException e) {
 //				log.error(e.getMessage());	
@@ -95,7 +100,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
     //setValue()
 //    public void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row) {
 //		log.debug("tableViewSetObjectValueForLocation:"+row);
-//		Path p = (Path)data.get(row);
+//		Path p = (Path)currentData.get(row);
 //		p.rename((String)value);
 //    }
     
@@ -113,8 +118,8 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
      * operation. The proposed
      * location is row is and action is operation. Based on the mouse position, the table view
      * will suggest a proposed drop location.
-     * This method must return a value that indicates which dragging operation the data source will
-     * perform. The data source may
+     * This method must return a value that indicates which dragging operation the currentData source will
+     * perform. The currentData source may
      * "retarget" a drop if desired by calling setDropRowAndDropOperation and returning something other than
      * NSDraggingInfo.
      * DragOperationNone. One may choose to retarget for various reasons (e.g. for better visual
@@ -130,7 +135,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		* Invoked by tableView when the mouse button is released over a table view that previously decided to allow a drop.
      * @param info contains details on this dragging operation.
      * @param row The proposed location is row and action is operation.
-     * The data source should
+     * The currentData source should
      * incorporate the data from the dragging pasteboard at this time.
      */
     public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
@@ -349,31 +354,38 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
  // ----------------------------------------------------------
 	
 	public void clear() {
-		this.data.clear();
+		this.fullData.clear();
+		this.currentData.clear();
 	}
 	
 	public void addEntry(Path entry) {
 		if(entry.attributes.isVisible())
-			this.data.add(entry);
+			this.fullData.add(entry);
+		this.currentData = fullData;
 	}
 	
 	public Path getEntry(int row) {
-		return (Path)this.data.get(row);
+		return (Path)this.currentData.get(row);
 	}
 	
 	public void removeEntry(Path o) {
-		data.remove(data.indexOf(o));
+		fullData.remove(fullData.indexOf(o));
+		currentData.remove(currentData.indexOf(o));
 	}
 	
-	public void removeEntry(int row) {
-		data.remove(row);
-	}
+//	public void removeEntry(int row) {
+//		fullData.remove(row);
+//	}
 	
 	public int indexOf(Path o) {
-		return data.indexOf(o);
+		return currentData.indexOf(o);
+	}
+	
+	public void setActiveSet(List currentData) {
+		this.currentData = currentData;
 	}
 	
 	public List values() {
-		return this.data;
+		return this.fullData;
 	}
 }    

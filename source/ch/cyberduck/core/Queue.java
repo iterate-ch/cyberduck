@@ -47,6 +47,9 @@ public class Queue extends Observable implements Observer { //Thread {
      */
     private Timer elapsedTimer;
 	
+	/**
+		* The validator checks if the file already exists and propeses a solution to the user
+	 */
     private Validator validator;
 	
     Calendar calendar = Calendar.getInstance();
@@ -54,7 +57,7 @@ public class Queue extends Observable implements Observer { //Thread {
     public static final int KIND_DOWNLOAD = 0;
     public static final int KIND_UPLOAD = 1;
     /**
-		* What kind of queue, either upload or download
+		* What kind of queue, either KIND_DOWNLOAD or KIND_UPLOAD
      */
     private int kind;
     /**
@@ -67,9 +70,13 @@ public class Queue extends Observable implements Observer { //Thread {
     private Path candidate;
 	
     /**
-		* This is a list of root path, meaning a directory or file selected to upload.
+		* This is a list of root path, meaning a directory or file selected to transfer.
      */
-    private Path[] roots;
+    private List roots; //Path
+	
+	public List getRoots() {
+		return this.roots;
+	}
 	
     /**
 		* This has the same size as the roots and contains the root
@@ -96,13 +103,13 @@ public class Queue extends Observable implements Observer { //Thread {
     private long current;
     private int timeLeft;
     
-    public Queue(Path[] roots, int kind, Validator validator) {
-		log.debug("New queue with "+roots.length+" root elements");
+    public Queue(List roots, int kind, Validator validator) {
+		log.debug("New queue with "+roots.size()+" root elements");
 		this.roots = roots;
-		this.jobs = new ArrayList[roots.length];
 		this.kind = kind;
 		this.validator = validator;
-		this.init();
+		this.candidate = (Path)roots.get(0);
+		this.jobs = new ArrayList[roots.size()];
     }
     
     /**
@@ -110,9 +117,9 @@ public class Queue extends Observable implements Observer { //Thread {
      * the queue will consist of only this.
      * @param  kind Specifiying a download or upload.
      */
-    public Queue(Path root, int kind, Validator validator) {
-		this(new Path[]{root}, kind, validator);
-    }
+//    public Queue(Path root, int kind, Validator validator) {
+//		this(new Path[]{root}, kind, validator);
+//    }
 	
     public int kind() {
 		return this.kind;
@@ -126,72 +133,85 @@ public class Queue extends Observable implements Observer { //Thread {
 	
     public void update(Observable o, Object arg) {
 		//Forwarding all messages from the current file's status to my observers
-		this.callObservers((Message)arg);
+		this.callObservers(arg);
     }
 	
     private void process() {
 		log.debug("process");
-		
-		for(int i = 0; i < roots.length; i ++) {
-			jobs[i] = new ArrayList();
-			if(this.validator.validate(roots[i], kind)) {
-				log.debug("Filling queue of root element "+roots[i]);
-				roots[i].getSession().addObserver(this);
-				roots[i].fillQueue(jobs[i], kind);
-				roots[i].getSession().deleteObserver(this);
-			}
-		}
-		for(int i = 0; i < roots.length; i ++) {
+
+		int i = 0;
+		Iterator rootIterator = roots.iterator();
+		while(rootIterator.hasNext()) {
 			//Iterating over all the files in the queue
-			if(!this.isStopped()) {
-				this.callObservers(roots[i]);
-				roots[i].getSession().addObserver(this);
-				
-				Iterator elements = jobs[i].iterator();
-				while(elements.hasNext() && !isStopped()) {
-					this.progressTimer.start();
-					this.leftTimer.start();
-					
-					this.candidate = (Path)elements.next();
-					this.candidate.status.setResume(roots[i].status.isResume());
-					
-					this.candidate.status.addObserver(this);
-					
-					this.processedJobs++;
-					
-					this.callObservers(new Message(Message.PROGRESS, KIND_DOWNLOAD == kind ? "Downloading "+candidate.getName()+" ("+(this.processedJobs())+" of "+(this.numberOfJobs())+")" : "Uploading "+candidate.getName()+" ("+(this.processedJobs())+" of "+(this.numberOfJobs())+")"));
-					
-					switch(kind) {
-						case KIND_DOWNLOAD:
-							candidate.download();
-							break;
-						case KIND_UPLOAD:
-							candidate.upload();
-							break;
-					}
-					if(candidate.status.isComplete()) {
-						current += candidate.status.getCurrent();
-					}
-					this.candidate.status.deleteObserver(this);
-					
-					this.progressTimer.stop();
-					this.leftTimer.stop();
-				}
+			if(this.isStopped()) {
+				break;
 			}
-			roots[i].getSession().deleteObserver(this);
-			if(this.isEmpty())
-				roots[i].getSession().close();
+			Path root = (Path)rootIterator.next();
+			this.callObservers(root);
+			root.getSession().addObserver(this);
 			
+			Iterator elements = jobs[i].iterator();
+			while(elements.hasNext() && !isStopped()) {
+				this.progressTimer.start();
+				this.leftTimer.start();
+				
+				this.candidate = (Path)elements.next();
+				this.candidate.status.setResume(root.status.isResume());
+				
+				this.candidate.status.addObserver(this);
+				
+				this.processedJobs++;
+				
+				//				this.callObservers(new Message(Message.PROGRESS, 
+	//								   KIND_DOWNLOAD == kind ? 
+ //								   "Downloading "+candidate.getName()+" ("+(this.processedJobs())+" of "+(this.numberOfJobs())+")" : 
+ //								   "Uploading "+candidate.getName()+" ("+(this.processedJobs())+" of "+(this.numberOfJobs())+")"));
+				
+				switch(kind) {
+					case KIND_DOWNLOAD:
+						candidate.download();
+						break;
+					case KIND_UPLOAD:
+						candidate.upload();
+						break;
+				}
+				if(candidate.status.isComplete()) {
+					current += candidate.status.getCurrent();
+				}
+				this.candidate.status.deleteObserver(this);
+				
+				this.progressTimer.stop();
+				this.leftTimer.stop();
+			}
+			root.getSession().deleteObserver(this);
+			if(this.isEmpty()) {
+				root.getSession().close();
+			}
+			i++;
 		}
-    }
+	}
 	
-    /**
+	/**
 		* Process the queue. All files will be downloaded or uploaded rerspectively.
-     * @param resume If false finish all non finished items in the queue. If true refill the queue with all the childs from the parent Path and restart
-     */
-    public void start() {
+	 * @param resume If false finish all non finished items in the queue. If true refill the queue with all the childs from the parent Path and restart
+	 */
+	public void start() {
 		log.debug("start");
 		this.reset();
+		this.init();
+		int i = 0;
+		Iterator rootIterator = roots.iterator();
+		while(rootIterator.hasNext()) {
+			jobs[i] = new ArrayList();
+			Path root = (Path)rootIterator.next();
+			if(this.validator.validate(root, kind)) {
+				log.debug("Filling queue of root element "+root);
+				root.getSession().addObserver(this);
+				root.fillQueue(jobs[i], kind);
+				root.getSession().deleteObserver(this);
+			}
+			i++;
+		}
 		new Thread() {
 			public void run() {
 				stopped = false;
@@ -220,6 +240,10 @@ public class Queue extends Observable implements Observer { //Thread {
     public boolean isStopped() {
 		return stopped;
     }
+	
+	public Path getCurrentJob() {
+		return this.candidate;
+	}
 	
     /**
 		* @return Number of remaining items to be processed in the queue.
@@ -260,7 +284,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		* @return The cummulative file size of all files remaining in the queue
      */
     public long getSize() {
-		if(this.size < 0)
+		if(this.size <= 0)
 			this.size = this.calculateTotalSize();
 		return this.size;
 		//	return this.calculateTotalSize();
@@ -269,9 +293,11 @@ public class Queue extends Observable implements Observer { //Thread {
     public long calculateTotalSize() {
 		long value = 0;
 		for(int i = 0; i < jobs.length; i ++) {
-			Iterator elements = jobs[i].iterator();
-			while(elements.hasNext()) {
-				value += ((Path)elements.next()).status.getSize();
+			if(null != jobs[i]) {
+				Iterator elements = jobs[i].iterator();
+				while(elements.hasNext()) {
+					value += ((Path)elements.next()).status.getSize();
+				}
 			}
 		}
 		log.debug("calculateTotalSize:"+value);
@@ -281,9 +307,11 @@ public class Queue extends Observable implements Observer { //Thread {
     private int calculateCurrentSize() {
 		int value = 0;
 		for(int i = 0; i < jobs.length; i ++) {
-			Iterator elements = jobs[i].iterator();
-			while(elements.hasNext()) {
-				value += ((Path)elements.next()).status.getCurrent();
+			if(null != jobs[i]) {
+				Iterator elements = jobs[i].iterator();
+				while(elements.hasNext()) {
+					value += ((Path)elements.next()).status.getCurrent();
+				}
 			}
 		}
 		log.debug("calculateCurrentSize:"+value);
@@ -313,6 +341,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	
     private void setTimeLeft(int seconds) {
         this.timeLeft = seconds;
+		this.callObservers(new Message(Message.DATA, candidate.status));
     }
 	
     public String getTimeLeft() {
@@ -364,6 +393,7 @@ private void reset() {
     this.calendar.set(Calendar.HOUR, 0);
     this.calendar.set(Calendar.MINUTE, 0);
     this.calendar.set(Calendar.SECOND, 0);
+//	this.callObservers(new Message(Message.DATA, candidate.status));
 }
 
 private void init() {

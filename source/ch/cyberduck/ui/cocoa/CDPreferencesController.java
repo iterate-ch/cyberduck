@@ -41,7 +41,7 @@ public class CDPreferencesController {
     private static final String PROTOCOL_FTP = "FTP";
     private static final String PROTOCOL_SFTP = "SFTP";
 	
-	//    private static final String ASK_ME_WHAT_TO_DO = NSBundle.localizedString("Ask me what to do");
+	private static final String ASK_ME_WHAT_TO_DO = NSBundle.localizedString("Ask me what to do");
     private static final String OVERWRITE_EXISTING_FILE = NSBundle.localizedString("Overwrite existing file");
     private static final String TRY_TO_RESUME_TRANSFER = NSBundle.localizedString("Try to resume transfer");
     private static final String USE_A_SIMILAR_NAME = NSBundle.localizedString("Use similar name");
@@ -62,6 +62,7 @@ public class CDPreferencesController {
 		this.publickeyCombo.removeAllItems();
 		this.publickeyCombo.addItemsWithTitles(
 										 new NSArray(new String[]{
+											 "Default",
 											 SSH_DSS,
 											 SSH_RSA
 										 }));
@@ -400,7 +401,7 @@ public class CDPreferencesController {
 		this.duplicateCombo.setTarget(this);
 		this.duplicateCombo.setAction(new NSSelector("duplicateComboClicked", new Class[] {NSPopUpButton.class}));
 		this.duplicateCombo.removeAllItems();	
-		this.duplicateCombo.addItemsWithTitles(new NSArray(new String[]{OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
+		this.duplicateCombo.addItemsWithTitles(new NSArray(new String[]{ASK_ME_WHAT_TO_DO, OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
 		//	if(Preferences.instance().getProperty("download.duplicate").equals("ask"))
   //	    this.duplicateCombo.setTitle(ASK_ME_WHAT_TO_DO);
 		if(Preferences.instance().getProperty("download.duplicate").equals("overwrite"))

@@ -46,7 +46,6 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 		if(identifier.equals("FAVORITE")) {
 			Host h = (Host)bookmarks.values().toArray()[row];
 			return h;
-//			return h.getNickname();
 		}
 		throw new IllegalArgumentException("Unknown identifier: "+identifier);
 	}

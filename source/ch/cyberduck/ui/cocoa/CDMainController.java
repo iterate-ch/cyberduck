@@ -234,30 +234,19 @@ public class CDMainController {
 		File f = new File(filename);
 		if(f.exists()) {
 			log.info("Found file: "+f.toString());
-			NSData plistData = new NSData(f);
-			Object propertyListFromXMLData = NSPropertyListSerialization.propertyListFromXMLData(plistData);
-			log.info("Successfully read file: "+propertyListFromXMLData);
-			if(propertyListFromXMLData instanceof NSDictionary) {
-				NSDictionary a = (NSDictionary)propertyListFromXMLData;
-				   Host host = new Host(
-				(String)a.objectForKey(Bookmarks.PROTOCOL), 
-				(String)a.objectForKey(Bookmarks.NICKNAME),
-				(String)a.objectForKey(Bookmarks.HOSTNAME), 
-				Integer.parseInt((String)a.objectForKey(Bookmarks.PORT)),
-				new Login((String)a.objectForKey(Bookmarks.USERNAME)),
-				(String)a.objectForKey(Bookmarks.PATH)
-						 );
-				   CDBrowserController controller = newBrowserMenuClicked(null);
-				   controller.mount(host);
+			Host host = CDBookmarksImpl.instance().importBookmark(f);
+			if( host!= null) {
+				CDBrowserController controller = newBrowserMenuClicked(null);
+				controller.mount(host);
+				return true;
 			}
-			return true;
 		}
 		return false;
 	}
-
-    public void applicationDidFinishLaunching (NSNotification notification) {
-        // To get service requests to go to the controller...
-		//        NSApplication.sharedApplication().setServicesProvider(this);
+	
+	public void applicationDidFinishLaunching (NSNotification notification) {
+		// To get service requests to go to the controller...
+  //        NSApplication.sharedApplication().setServicesProvider(this);
 		log.info("Available localizations:"+NSBundle.mainBundle().localizations());
 		if(Preferences.instance().getProperty("browser.opendefault").equals("true")) {
 			this.newBrowserMenuClicked(null);

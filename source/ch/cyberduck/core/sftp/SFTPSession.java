@@ -23,7 +23,10 @@ import com.sshtools.j2ssh.SshClient;
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
 import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
+import com.sshtools.j2ssh.authentication.PublicKeyAuthenticationClient;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
+import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
+import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import java.io.IOException;
 import org.apache.log4j.Logger;
@@ -55,7 +58,7 @@ public class SFTPSession extends Session {
 		try {
 			if(this.SFTP != null) {
 				this.log("Disconnecting...", Message.PROGRESS);
-				this.SFTP.stop();
+				this.SFTP.close();
 				this.SFTP = null;
 			}
 			if(this.SSH != null) {
@@ -139,45 +142,66 @@ public class SFTPSession extends Session {
     
     private synchronized void login() throws IOException {
 		log.debug("login");
-		// password authentication
 		this.log("Authenticating as '"+host.getLogin().getUsername()+"'", Message.PROGRESS);
-		PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
-		auth.setUsername(host.getLogin().getUsername());
-		auth.setPassword(host.getLogin().getPassword());
 		
-		// Try the authentication
-		int result = SSH.authenticate(auth);
-		//	this.log(SSH.getAuthenticationBanner(100), Message.TRANSCRIPT);
-  // Evaluate the result
-		if (AuthenticationProtocolState.COMPLETE == result) {
-			this.log("Login sucessfull", Message.PROGRESS);
-		}
-		else {
-			this.log("Login failed", Message.PROGRESS);
-			String explanation = null;
-			if(AuthenticationProtocolState.PARTIAL == result)
-				explanation = "Authentication as user "+host.getLogin().getUsername()+" succeeded but another authentication method is required.";
-			else //(AuthenticationProtocolState.FAILED == result)
-				explanation = "Authentication as user "+host.getLogin().getUsername()+" failed.";
-			if(host.getLogin().getController().loginFailure(explanation))
-				this.login();
+		if(host.getLogin().usesPasswordAuthentication()) {// password authentication
+			PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
+			auth.setUsername(host.getLogin().getUsername());
+			auth.setPassword(host.getLogin().getPassword());
+			
+			// Try the authentication
+			int result = SSH.authenticate(auth);
+			//	this.log(SSH.getAuthenticationBanner(100), Message.TRANSCRIPT);
+   // Evaluate the result
+			if (AuthenticationProtocolState.COMPLETE == result) {
+				this.log("Login sucessfull", Message.PROGRESS);
+			}
 			else {
+				this.log("Login failed", Message.PROGRESS);
+				String explanation = null;
+				if(AuthenticationProtocolState.PARTIAL == result)
+					explanation = "Authentication as user "+host.getLogin().getUsername()+" succeeded but another authentication method is required.";
+				else //(AuthenticationProtocolState.FAILED == result)
+					explanation = "Authentication as user "+host.getLogin().getUsername()+" failed.";
+				if(host.getLogin().getController().loginFailure(explanation))
+					this.login();
+				else {
+					throw new SshException("Login as user "+host.getLogin().getUsername()+" failed.");
+				}
+			}
+		}
+		else if(host.getLogin().usesPublicKeyAuthentication()) {//public key authentication
+			PublicKeyAuthenticationClient pk = new PublicKeyAuthenticationClient();
+			pk.setUsername(host.getLogin().getUsername());
+			// Get the private key file
+			SshPrivateKeyFile keyFile = SshPrivateKeyFile.parse(new java.io.File(host.getLogin().getPrivateKeyFile()));
+			// If the private key is passphrase protected then ask for the passphrase
+			String passphrase = null;
+			if (keyFile.isPassphraseProtected()) {
+				if(host.getLogin().getController().loginFailure("The Private Key is password protected. Enter the passphrase for the key file '"+host.getLogin().getPrivateKeyFile()+"'.")) {
+					passphrase = host.getLogin().getPassword();
+				}
+				else {
+					throw new SshException("Login as user "+host.getLogin().getUsername()+" failed.");
+				}
+			}
+			// Get the key
+			SshPrivateKey key = keyFile.toPrivateKey(passphrase);
+			pk.setKey(key);
+			// Try the authentication
+			int result = SSH.authenticate(pk);
+			// Evaluate the result
+			if (AuthenticationProtocolState.COMPLETE == result) {
+				this.log("Login sucessfull", Message.PROGRESS);
+			}
+			else {
+				this.log("Login failed", Message.PROGRESS);
 				throw new SshException("Login as user "+host.getLogin().getUsername()+" failed.");
 			}
 		}
-		
-		/*
-		 //public key authentication
-		 PublicKeyAuthenticationClient auth = new PublicKeyAuthenticationClient();
-		 auth.setUsername(host.getLogin().getUsername());
-		 // Open up the private key file
-		 SshPrivateKeyFile file = SshPrivateKeyFile.parse(new File(System.getProperty("user.home"), ".ssh/privateKey"));
-		 // Get the key
-		 SshPrivateKey key = file.toPrivateKey(host.getLogin().getPassword());
-		 // Set the key and authenticate
-		 auth.setKey(key);
-		 int result = session.authenticate(auth);
-		 */	
+		else {
+			this.log("No authentication method specified", Message.ERROR);
+		}
     }
 	
     public Path workdir() {

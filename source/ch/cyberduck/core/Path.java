@@ -97,11 +97,25 @@ public abstract class Path {
     /**
 		* @param pathname The absolute path of the file
      */
-    public void setPath(String name) {
-        if(name.length() > 1 && name.charAt(name.length()-1) == '/')
-			this.path = name.substring(0, name.length()-1);
-		else
-			this.path = name;
+    public void setPath(String p) {
+		log.debug("setPath:"+p);
+//		try {
+//			log.debug("***utf>latin1: "+new String(p.getBytes("UTF-8"), "ISO-8859-1").toString());
+//			String name = new String(p.getBytes("UTF-8"), "ISO-8859-1").toString();
+		com.apple.cocoa.foundation.NSData theData = new com.apple.cocoa.foundation.NSData(p.getBytes());
+		com.apple.cocoa.foundation.NSStringReference theString = new com.apple.cocoa.foundation.NSStringReference(theData, com.apple.cocoa.foundation.NSStringReference.ISOLatin1StringEncoding);
+		
+		String name = theString.string();
+		log.debug("setPath:(latin1)"+name);
+		
+		if(name.length() > 1 && name.charAt(name.length()-1) == '/')
+				this.path = name.substring(0, name.length()-1);
+			else
+				this.path = name;
+//		}
+//		catch(java.io.UnsupportedEncodingException e) {
+//			log.error(e.getMessage());	
+//		}
     }
 	
     /**

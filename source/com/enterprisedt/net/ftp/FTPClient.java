@@ -33,6 +33,7 @@ import java.io.OutputStreamWriter;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -45,11 +46,6 @@ import java.util.Vector;
  *
  */
 public class FTPClient {
-    
-    /**
-    *  Revision control id
-	 */
-    private static String cvsId = "@(#)$Id$";
     
     /**
     *  Format to interpret MTDM timestamp
@@ -91,9 +87,9 @@ public class FTPClient {
 	 */
     private FTPReply lastValidReply;
     
-    
     public FTPClient() {
 		super();
+        tsFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
     
     /**
@@ -105,6 +101,7 @@ public class FTPClient {
 	 */
     public void connect(String remoteHost, int controlPort) throws IOException, FTPException {
         control = new FTPControlSocket(remoteHost, controlPort);
+//		this.setTimeout(5000);
     }
     
     /**
@@ -228,18 +225,27 @@ public class FTPClient {
     
     /**
 		*  Issue arbitrary ftp commands to the FTP server.
-	 *
-	 *  @param command     ftp command to be sent to server
-	 *  @param validCodes  valid return codes for this command
-	 */
-    public void quote(String command, String[] validCodes) throws IOException, FTPException {
-		
-        String reply = control.sendCommand(command);
-		
-        // allow for no validation to be supplied
-        if (validCodes != null && validCodes.length > 0)
-            lastValidReply = control.validateReply(reply, validCodes);
-    }
+		*
+		*  @param command     ftp command to be sent to server
+		*  @param validCodes  valid return codes for this command
+		* 
+		*  @return  the text returned by the FTP server
+		*/
+    public String quote(String command, String[] validCodes)
+        throws IOException, FTPException {
+			
+			String reply = control.sendCommand(command);
+			
+			// allow for no validation to be supplied
+			if (validCodes != null && validCodes.length > 0) {
+				lastValidReply = control.validateReply(reply, validCodes);
+				return lastValidReply.getReplyText();
+			}
+			else {
+				throw new FTPException("Valid reply code must be supplied");
+			}            
+		}
+	
     
     
     /**
@@ -512,15 +518,18 @@ public class FTPClient {
 		* Wrapper for the command <code>size [fileName]</code>.  If the file does
 	 * not exist, we return -1;
 	 */
-    public long size(String fileName) throws IOException, FTPException {
-		String reply = control.sendCommand("SIZE " + fileName);
-        //control.validateReply(reply, "213");
-        try {
-            return Long.parseLong(reply.substring(4));
-        }
-        catch (Exception e) {
-            return -1L;
-        }
+    public long size(String remoteFile) throws IOException, FTPException {
+		String reply = control.sendCommand("SIZE " + remoteFile);
+		lastValidReply = control.validateReply(reply, "213");
+		
+		// parse the reply string .
+		String replyText = lastValidReply.getReplyText();
+		try {
+			return Long.parseLong(replyText);
+		}
+		catch (NumberFormatException ex) {
+			throw new FTPException("Failed to parse reply: " + replyText);
+		}
     }
     
     /**
@@ -590,13 +599,16 @@ public class FTPClient {
 	 *               change to
 	 */
     public void chdir(String dir) throws IOException, FTPException {
-		
         String reply = control.sendCommand("CWD " + dir);
         lastValidReply = control.validateReply(reply, "250");
     }
     
+	
+    /**
+		*  Change the remote working directory to
+	 *  the enclosing folder
+	 */
     public void cdup() 	throws IOException, FTPException {
-		
 		String reply = control.sendCommand("CDUP");
 		lastValidReply = control.validateReply(reply, "250");
     }

@@ -57,7 +57,8 @@ public class CDBrowserController implements Observer {
 		
 	public void browserTableViewDidClickTableRow(Object sender) {
 		log.debug("browserTableViewDidClickTableRow");
-		if(browserTable.numberOfSelectedRows() > 0) {
+		searchField.setStringValue("");
+			if(browserTable.numberOfSelectedRows() > 0) {
 			Path p = (Path)browserModel.getEntry(browserTable.selectedRow()); //last row selected 
 			if(p.isFile() || browserTable.numberOfSelectedRows() > 1) {
 				NSEnumerator enum = browserTable.selectedRowEnumerator();
@@ -67,8 +68,12 @@ public class CDBrowserController implements Observer {
 					while(enum.hasMoreElements()) {
 						items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
 					}
-					CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
-					controller.transfer();
+					CDQueueController controller = CDQueueController.instance();
+					controller.addTransfer(items, Queue.KIND_DOWNLOAD);
+//					controller.addTransfer((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
+					controller.window().makeKeyAndOrderFront(null);
+//					CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
+//					controller.transfer();
 				}
 			}
 			if(p.isDirectory())
@@ -132,6 +137,47 @@ public class CDBrowserController implements Observer {
 		this.mount(host);
     }
 	
+	private NSTextField searchField; // IBOutlet
+	public void setSearchField(NSTextField searchField) {
+		this.searchField = searchField;
+		NSNotificationCenter.defaultCenter().addObserver(
+												   this,
+												   new NSSelector("searchFieldTextDidChange", new Class[]{Object.class}),
+												   NSControl.ControlTextDidChangeNotification,
+												   searchField);
+	}
+	
+	public void searchFieldTextDidChange(NSNotification aNotification) {
+//		log.debug("searchFieldTextDidChange:"+aNotification);
+		String searchString = null;
+		NSDictionary userInfo = aNotification.userInfo();
+		if(null != userInfo) {
+			Object o = userInfo.allValues().lastObject();
+			if(null != o) {
+				searchString = ((NSText)o).string();
+				log.debug("searchFieldTextDidChange:"+searchString);
+				Iterator i = browserModel.values().iterator();
+				if(null == searchString  || searchString.length() == 0) {
+					this.browserModel.setActiveSet(this.browserModel.values());
+					this.browserTable.reloadData();
+				}
+				else {
+					List subset = new ArrayList();
+					Path next;
+					while (i.hasNext()) {
+						next = (Path)i.next();
+						if(next.getName().indexOf(searchString) != -1) {
+//						if(next.getName().startsWith(searchString)) {
+							subset.add(next);
+						}
+					}
+					this.browserModel.setActiveSet(subset);
+					this.browserTable.reloadData();
+				}
+			}
+		}
+	}
+	
 	// ----------------------------------------------------------
 	// Manage Bookmarks
 	// ----------------------------------------------------------
@@ -156,8 +202,10 @@ public class CDBrowserController implements Observer {
     }
 	
 	public void editBookmarkButtonClicked(Object sender) {
+		this.bookmarkDrawer.open();
 		CDBookmarkController controller = new CDBookmarkController(CDBookmarksImpl.instance().getItem(bookmarkTable.selectedRow()));
 		controller.window().makeKeyAndOrderFront(null);
+		this.bookmarkTable.reloadData();
     }
 	
     private NSButton addBookmarkButton; // IBOutlet
@@ -170,17 +218,19 @@ public class CDBrowserController implements Observer {
     }
 	
 	public void addBookmarkButtonClicked(Object sender) {
+		this.bookmarkDrawer.open();
 		Host item;
 		if(this.isMounted()) {
-			item = browserModel.workdir().getSession().getHost();
+			Host h = browserModel.workdir().getSession().getHost();
+			item = new Host(h.getProtocol(), h.getHostname(), h.getPort(), h.getLogin(), h.getDefaultPath());
 		}
 		else {
 			item = new Host("", new Login());
 		}
 		CDBookmarksImpl.instance().addItem(item);
-		this.bookmarkTable.reloadData();
 		CDBookmarkController controller = new CDBookmarkController(item);
 		controller.window().makeKeyAndOrderFront(null);
+		this.bookmarkTable.reloadData();
     }
 	
     private NSButton removeBookmarkButton; // IBOutlet
@@ -194,9 +244,14 @@ public class CDBrowserController implements Observer {
     }
     			
     public void removeBookmarkButtonClicked(Object sender) {
+		this.bookmarkDrawer.open();
 		CDBookmarksImpl.instance().removeItem(bookmarkTable.selectedRow());
 		this.bookmarkTable.reloadData();
     }
+	
+	public void showTransferQueueClicked(Object sender) {
+		CDQueueController.instance().window().makeKeyAndOrderFront(null);
+	}
 
 	// ----------------------------------------------------------
 	// Browser navigation
@@ -496,10 +551,10 @@ public class CDBrowserController implements Observer {
 //					this.statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
 					progressIndicator.stopAnimation(this);
 				}
-				
 				else if(msg.getTitle().equals(Message.START)) {
 					progressIndicator.startAnimation(this);
 					this.statusIcon.setImage(null);
+					this.statusIcon.setNeedsDisplay(true);
 //					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
 				}
 				else if(msg.getTitle().equals(Message.STOP)) {
@@ -860,6 +915,15 @@ public class CDBrowserController implements Observer {
         if (sel.equals("upButtonClicked:")) {
 			return this.isMounted();
         }
+		if (sel.equals("addBookmarkButtonClicked:")) {
+			return true;
+        }
+		if (sel.equals("removeBookmarkButtonClicked:")) {
+			return bookmarkTable.numberOfSelectedRows() == 1;
+		}
+		if (sel.equals("editBookmarkButtonClicked:")) {
+			return bookmarkTable.numberOfSelectedRows() == 1;
+		}
         if (sel.equals("backButtonClicked:")) {
 			return this.isMounted();
         }

@@ -32,7 +32,6 @@ public class Host {
     private String nickname;
     private String defaultpath = Path.HOME;
     private transient HostKeyVerification hostKeyVerification;
-//    private transient Session session;
     private transient Login login;
 	
     /**
@@ -66,16 +65,20 @@ public class Host {
     public Host(String hostname, int port, Login login) {
 		this(getDefaultProtocol(port), hostname, port, login);
     }
-    
+	
     public Host(String protocol, String hostname, int port, Login login) {
-		this(protocol, null, hostname, port, login, "");
+		this(protocol, hostname, port, login, "", null);
     }
 
 	public Host(String protocol, String hostname, int port, Login login, String defaultpath) {
-		this(protocol, null, hostname, port, login, defaultpath);
+		this(protocol, hostname, port, login, defaultpath, null);
 	}
-
-    public Host(String protocol, String nickname, String hostname, int port, Login login, String defaultpath) {
+	
+	public Host(String hostname, int port, Login login, String nickname) {
+		this(getDefaultProtocol(port), hostname, port, login, "", nickname);
+    }
+	
+    public Host(String protocol, String hostname, int port, Login login, String defaultpath, String nickname) {
 		this.setProtocol(protocol);
 		this.setPort(port);
         this.setHostname(hostname);
@@ -216,7 +219,7 @@ public class Host {
     public HostKeyVerification getHostKeyVerificationController() {
 		return this.hostKeyVerification;
     }
-	
+		
     /**
 		* @return The IP address of the remote host if available
      */

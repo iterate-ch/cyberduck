@@ -37,11 +37,6 @@ package com.enterprisedt.net.ftp;
  public class FTPTransferType {
 
      /**
-      *  Revision control id
-      */
-     private static String cvsId = "@(#)$Id$";
-
-     /**
       *   Represents ASCII transfer type
       */
      public static FTPTransferType ASCII = new FTPTransferType();

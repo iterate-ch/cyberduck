@@ -21,6 +21,28 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Bug fixes, suggestions and comments should be sent to bruce@enterprisedt.com
+ *
+ *  Change Log:
+ *
+ *        $Log$
+ *        Revision 1.4  2003/12/15 23:14:04  dkocher
+ *        *** empty log message ***
+ *
+ *        Revision 1.4  2003/11/02 21:50:14  bruceb
+ *        changed FTPDataSocket to an interface
+ *
+ *        Revision 1.3  2003/05/31 14:53:44  bruceb
+ *        1.2.2 changes
+ *
+ *        Revision 1.2  2002/11/19 22:01:25  bruceb
+ *        changes for 1.2
+ *
+ *        Revision 1.1  2001/10/09 20:53:46  bruceb
+ *        Active mode changes
+ *
+ *        Revision 1.1  2001/10/05 14:42:03  bruceb
+ *        moved from old project
+ *
  */
 
 package com.enterprisedt.net.ftp;
@@ -28,50 +50,14 @@ package com.enterprisedt.net.ftp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-
 
 /**
- *  Supports client-side FTP DataSocket in Passive and Active Mode.
- *  Wrapper for Socket and ServerSocket. Methods are package access
- *  only - not for public use.
+ *  Interface for data socket classes, whether active or passive
  *
- *  @author      Vladyslav Skarzhevsky
+ *  @author      Bruce Blackshaw
  *  @version     $Revision$
  */
-
-public class FTPDataSocket {
-
-    /**
-     *  Revision control id
-     */
-    private static String cvsId = "@(#)$Id$";
-
-    /**
-     *  The underlying socket for Active connection.
-     */
-    private ServerSocket activeSocket = null;
-
-    /**
-     *  The underlying socket for PASV connection or Socket accepted from server.
-     */
-    private Socket passiveSocket = null;
-
-    /**
-     *  Create socket wrapper for Active connection.
-     */
-    FTPDataSocket(ServerSocket s) {
-         activeSocket = s;
-    }
-
-    /**
-     *  Create socket wrapper for PASV connection.
-     */
-    FTPDataSocket(Socket s) {
-         passiveSocket = s;
-    }
-
+public interface FTPDataSocket {
 
     /**
      *   Set the TCP timeout on the underlying control socket.
@@ -82,63 +68,24 @@ public class FTPDataSocket {
      *
      *   @param millis The length of the timeout, in milliseconds
      */
-    void setTimeout(int millis)
-        throws IOException {
-
-        if (passiveSocket != null)
-            passiveSocket.setSoTimeout(millis);
-        else if (activeSocket != null)
-            activeSocket.setSoTimeout(millis);
-    }
-
+    void setTimeout(int millis) throws IOException;
 
     /**
-     *  If active mode, accepts the FTP server's connection - in PASV,
-     *  we are already connected. Then gets the output stream of
-     *  the connection
+     *  Get the appropriate output stream for writing to
      *
      *  @return  output stream for underlying socket.
      */
-    OutputStream getOutputStream() throws IOException {
-
-        if (passiveSocket != null) {
-            return passiveSocket.getOutputStream();
-        }
-        else {
-            // accept socket from server, in Active mode
-            passiveSocket = activeSocket.accept();
-            // get and return its OutputStream
-            return passiveSocket.getOutputStream ();
-        }
-    }
+    OutputStream getOutputStream() throws IOException;
 
     /**
-     *  If active mode, accepts the FTP server's connection - in PASV,
-     *  we are already connected. Then gets the input stream of
-     *  the connection
+     *  Get the appropriate input stream for reading from
      *
      *  @return  input stream for underlying socket.
      */
-    InputStream getInputStream() throws IOException {
-
-        if (passiveSocket != null) {
-            return passiveSocket.getInputStream();
-        } else {
-            // accept socket from server, in Active mode
-            passiveSocket = activeSocket.accept();
-            // get and return it's InputStream
-            return passiveSocket.getInputStream ();
-        }
-    }
+    InputStream getInputStream() throws IOException;
 
      /**
-      *  Closes underlying sockets.
+      *  Closes underlying socket(s)
       */
-    void close() throws IOException {
-
-        if (passiveSocket != null)
-            passiveSocket.close();
-        if (activeSocket != null)
-            activeSocket.close();
-    }
+    void close() throws IOException;
 }

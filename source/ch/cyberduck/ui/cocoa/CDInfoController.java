@@ -142,9 +142,6 @@ public class CDInfoController {
 		if(file.isDirectory())
 			this.iconImageView.setImage(NSImage.imageNamed("folder.icns"));
 		
-		
-		//	ObserverList.instance().registerObserver(this);
-		
 		(NSNotificationCenter.defaultCenter()).addObserver(
 													 this,
 													 new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),

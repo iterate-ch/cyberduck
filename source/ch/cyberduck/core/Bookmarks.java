@@ -34,25 +34,27 @@ import org.apache.log4j.Logger;
 public abstract class Bookmarks {
     private static Logger log = Logger.getLogger(Bookmarks.class);
     
-	public static final String HOSTNAME = "Hostname";
-    public static final String NICKNAME = "Nickname";
-    public static final String PORT = "Port";
-    public static final String PROTOCOL = "Protocol";
-    public static final String USERNAME = "Username";
-    public static final String PATH = "Path";
+	private static final String HOSTNAME = "Hostname";
+    private static final String NICKNAME = "Nickname";
+    private static final String PORT = "Port";
+    private static final String PROTOCOL = "Protocol";
+    private static final String USERNAME = "Username";
+    private static final String PATH = "Path";
+    private static final String KEYFILE = "Private Key File";	
 	
     protected List data = new ArrayList();
-//    protected Map data = new HashMap();
 	
 	private Host getFromDictionary(NSDictionary dict) {
-		return new Host(
+		Host h = new Host(
 				  (String)dict.objectForKey(Bookmarks.PROTOCOL), 
-				  (String)dict.objectForKey(Bookmarks.NICKNAME),
 				  (String)dict.objectForKey(Bookmarks.HOSTNAME), 
 				  Integer.parseInt((String)dict.objectForKey(Bookmarks.PORT)),
 				  new Login((String)dict.objectForKey(Bookmarks.USERNAME)),
-				  (String)dict.objectForKey(Bookmarks.PATH)
+				  (String)dict.objectForKey(Bookmarks.PATH),
+				  (String)dict.objectForKey(Bookmarks.NICKNAME)
 				  );
+		h.getLogin().setPrivateKeyFile((String)dict.objectForKey(Bookmarks.KEYFILE));
+		return h;
 	}
 	
 	private NSDictionary getAsDictionary(Host bookmark) {
@@ -63,6 +65,8 @@ public abstract class Bookmarks {
 		dict.setObjectForKey(bookmark.getProtocol(), Bookmarks.PROTOCOL);
 		dict.setObjectForKey(bookmark.getLogin().getUsername(), Bookmarks.USERNAME);
 		dict.setObjectForKey(bookmark.getDefaultPath(), Bookmarks.PATH);
+		if(bookmark.getLogin().getPrivateKeyFile() != null)
+			dict.setObjectForKey(bookmark.getLogin().getPrivateKeyFile(), Bookmarks.KEYFILE);
 		return dict;
 	}
 	
@@ -160,7 +164,6 @@ public abstract class Bookmarks {
     public void addItem(Host item) {
 		log.debug("addItem:"+item);
 		this.data.add(item);
-//		this.data.put(item.getURL(), item);
     }
 	
 	public void removeItem(int index) {
@@ -170,7 +173,6 @@ public abstract class Bookmarks {
     public void removeItem(Host item) {
 		log.debug("removeItem:"+item);
 		this.removeItem(this.data.lastIndexOf(item));
-//		this.data.remove(key);
     }
 	
     /**

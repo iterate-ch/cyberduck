@@ -21,6 +21,17 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Bug fixes, suggestions and comments should be sent to bruce@enterprisedt.com
+ *
+ *  Change Log:
+ *
+ *        $Log$
+ *        Revision 1.3  2003/12/15 23:14:04  dkocher
+ *        *** empty log message ***
+ *
+ *        Revision 1.1  2002/11/19 22:01:25  bruceb
+ *        changes for 1.2
+ *
+ *
  */
 
 package com.enterprisedt.net.ftp;
@@ -32,11 +43,6 @@ package com.enterprisedt.net.ftp;
  *  @version     $Revision$
  */
 public class FTPReply {
-
-    /**
-     *  Revision control id
-     */
-    private static String cvsId = "@(#)$Id$";
 
     /**
      *  Reply code

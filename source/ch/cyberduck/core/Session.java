@@ -122,8 +122,8 @@ public abstract class Session extends Observable {
 		* @return boolean True if the session has not yet been closed. 
      */
     public boolean isConnected() {
-		log.debug(this.toString());
-		log.debug("isConnected:"+connected);
+//		log.debug(this.toString());
+//		log.debug("isConnected:"+connected);
 		return this.connected;
     }
 	

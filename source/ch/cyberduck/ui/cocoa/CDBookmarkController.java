@@ -50,22 +50,43 @@ public class CDBookmarkController {
 		this.protocolPopup.setTarget(this);
 		this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[] {Object.class}));
     }
+
+	public void protocolSelectionChanged(Object sender) {
+		log.debug("protocolSelectionChanged:"+sender);
+		int tag = protocolPopup.selectedItem().tag();
+		switch(tag) {
+			case(Session.SSH_PORT):
+				this.host.setProtocol(Session.SFTP);
+				this.host.setPort(Session.SSH_PORT);
+				break;
+			case(Session.FTP_PORT):
+				this.host.setProtocol(Session.FTP);
+				this.host.setPort(Session.FTP_PORT);
+				break;
+		}
+		this.updateFields();
+    }
+    	
     private NSTextField nicknameField; // IBOutlet
     public void setNicknameField(NSTextField nicknameField) {
 		this.nicknameField = nicknameField;
     }
+	
     private NSTextField hostField; // IBOutlet
     public void setHostField(NSTextField hostField) {
 		this.hostField = hostField;
     }
+	
     private NSTextField pathField; // IBOutlet
     public void setPathField(NSTextField pathField) {
 		this.pathField = pathField;
     }
+	
     private NSTextField urlField; // IBOutlet
     public void setUrlField(NSTextField urlField) {
 		this.urlField = urlField;
     }
+	
     private NSTextField usernameField; // IBOutlet
     public void setUsernameField(NSTextField usernameField) {
 		this.usernameField = usernameField;
@@ -121,22 +142,57 @@ public class CDBookmarkController {
 		allDocuments.removeObject(this);
     }
     
-    public void protocolSelectionChanged(Object sender) {
-		log.debug("protocolSelectionChanged:"+sender);
-		int tag = protocolPopup.selectedItem().tag();
-		switch(tag) {
-			case(Session.SSH_PORT):
-				this.host.setProtocol(Session.SFTP);
-				this.host.setPort(Session.SSH_PORT);
-				break;
-			case(Session.FTP_PORT):
-				this.host.setProtocol(Session.FTP);
-				this.host.setPort(Session.FTP_PORT);
-				break;
-		}
-		this.updateFields();
+	private NSTextField pkLabel;
+    public void setPkLabel(NSTextField pkLabel) {
+		this.pkLabel = pkLabel;
+		this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected"));
     }
-    
+	
+	private NSButton pkCheckbox;
+	public void setPkCheckbox(NSButton pkCheckbox) {
+		this.pkCheckbox = pkCheckbox;
+		this.pkCheckbox.setTarget(this);
+		this.pkCheckbox.setAction(new NSSelector("pkCheckboxSelectionChanged", new Class[] {Object.class}));
+	}
+	
+	public void pkCheckboxSelectionChanged(Object sender) {
+		log.debug("pkCheckboxSelectionChanged");
+		if(this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected"))) {
+			NSOpenPanel panel = new NSOpenPanel();
+			panel.setCanChooseDirectories(false);
+			panel.setCanChooseFiles(true);
+			panel.setAllowsMultipleSelection(false);
+			panel.beginSheetForDirectory(System.getProperty("user.home")+"/.ssh", null, null, this.window(), this, new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+		}
+		else {
+			this.pkCheckbox.setState(NSCell.OffState);
+			this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected"));
+		}
+	}
+	
+    public void pkSelectionPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
+		log.debug("pkSelectionPanelDidEnd");
+		sheet.orderOut(null);
+		switch(returnCode) {
+			case(NSPanel.OKButton): {
+				NSArray selected = sheet.filenames();
+				java.util.Enumeration enumerator = selected.objectEnumerator();
+				while (enumerator.hasMoreElements()) {
+					String pk = (String)enumerator.nextElement();
+					this.host.getLogin().setPrivateKeyFile(pk);
+					this.pkLabel.setStringValue(pk);
+				}
+				break;
+			}
+			case(NSPanel.CancelButton): {
+				this.host.getLogin().setPrivateKeyFile(null);
+				this.pkCheckbox.setState(NSCell.OffState);
+				this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected"));
+				break;
+			}
+		}
+    }
+	
     public void hostInputDidEndEditing(NSNotification sender) {
 		log.debug("hostInputDidEndEditing");
 		this.host.setHostname(hostField.stringValue());
@@ -169,6 +225,15 @@ public class CDBookmarkController {
 		this.pathField.setStringValue(this.host.getDefaultPath());
 		this.usernameField.setStringValue(this.host.getLogin().getUsername());
 		this.protocolPopup.selectItemWithTitle(this.host.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
+		this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Session.SFTP));
+		if(this.host.getLogin().usesPublicKeyAuthentication()) {
+			this.pkCheckbox.setState(NSCell.OnState);
+			this.pkLabel.setStringValue(this.host.getLogin().getPrivateKeyFile());
+		}
+		else {
+			this.pkCheckbox.setState(NSCell.OffState);
+			this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected"));
+		}
     }
     
     public NSWindow window() {

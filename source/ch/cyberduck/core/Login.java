@@ -19,10 +19,13 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.LoginController;
 
+import java.io.File;
+
 public class Login {
     private String user;
     private transient String pass;
     private LoginController controller;
+	private String privateKeyFile;
     
     /**
 		* New instance with default values. Anonymous login.
@@ -32,22 +35,42 @@ public class Login {
 		this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
     }
 	
+//	public Login(String user, File privateKeyFile) {
+//		this.user = user;
+//		this.privateKeyFile = privateKeyFile;
+//	}
+	
     /**
 		* New instance with default values. Anonymous login.
      * @param controller The controller to handle failed logins attempts
      */
-    public Login(LoginController controller) {
-		this();
-		this.controller = controller;
-    }
+    //public Login(LoginController controller) {
+	//	this();
+	//	this.controller = controller;
+    //}
 	
     /**
 		* @param l the login credentials
      * @param controller The controller to handle failed logins attempts
      */
-    public Login(String l, LoginController controller) {
-		this(l);
-		this.controller = controller;
+//    public Login(String l, LoginController controller) {
+//		this(l);
+//		this.controller = controller;
+//    }
+	
+	/**
+		* @param user Login with this username
+     * @param pass Passphrase
+     */
+    public Login(String user, String pass) {
+		if(null == user || user.equals(""))
+			this.user = Preferences.instance().getProperty("ftp.anonymous.name");
+		else
+			this.user = user;
+		if(null == pass || pass.equals(""))
+			this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+		else
+			this.pass = pass;
     }
 	
     /**
@@ -70,6 +93,22 @@ public class Login {
 		}
     }
 	
+	public boolean usesPublicKeyAuthentication() {
+		return this.privateKeyFile != null;
+	}
+	
+	public boolean usesPasswordAuthentication() {
+		return !this.usesPublicKeyAuthentication();
+	}
+	
+	public void setPrivateKeyFile(String file) {
+		this.privateKeyFile = file;
+	}
+	
+	public String getPrivateKeyFile() {
+		return this.privateKeyFile;
+	}
+	
     public boolean hasReasonableValues() {
 		if(this.user != null && this.pass != null) {
 			// anonymous login is ok
@@ -82,24 +121,7 @@ public class Login {
 		// all other cases we don't like
 		return false;
     }
-	
-    /**
-		* @param user Login with this username
-     * @param pass Passphrase
-     */
-    public Login(String user, String pass) {
-		if(null == user || user.equals(""))
-			this.user = Preferences.instance().getProperty("ftp.anonymous.name");
-		else
-			this.user = user;
-		if(null == pass || pass.equals(""))
-			this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
-		else
-			this.pass = pass;
-    }
-	
-	//    public abstract boolean loginFailure(String explanation);
-	
+		
     public String getUsername() {
 		return this.user;
     }

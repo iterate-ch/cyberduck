@@ -18,21 +18,24 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.Queue;
+
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+
 import org.apache.log4j.Logger;
 
-public class CDBookmarkCell extends NSCell {
-	private static Logger log = Logger.getLogger(CDBookmarkCell.class);
+public class CDQueueCell extends NSCell {
+	private static Logger log = Logger.getLogger(CDQueueCell.class);
 
-	private Host bookmark;
-	private	NSImage image = NSImage.imageNamed("cyberduck-document.icns");
+	private Queue queue;
 	
-	public void setObjectValue(Object bookmark) {
-//		log.debug("setObjectValue:"+bookmark);
-		if(bookmark instanceof Host)
-	        this.bookmark = (Host)bookmark;
+	public void setObjectValue(Object queue) {
+//		log.debug("setObjectValue:"+transfer);
+		if(queue instanceof Queue)
+	        this.queue = (Queue)queue;
     }
     
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
@@ -98,21 +101,60 @@ public class CDBookmarkCell extends NSCell {
   //invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.
 		controlView.lockFocus();
 		
-		
 		NSPoint cellPoint = cellFrame.origin();
 		NSSize cellSize = cellFrame.size();	
-				
+		
+		// drawing file icon
+		NSImage fileIcon = null;
+		switch(queue.kind()) {
+			case Queue.KIND_DOWNLOAD:
+				if(queue.getCurrentJob().isFile())
+					fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getCurrentJob().getExtension());
+				else
+					fileIcon = NSImage.imageNamed("folder.icns");
+				break;
+			case Queue.KIND_UPLOAD:
+				if(queue.getCurrentJob().getLocal().isFile())
+					fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getCurrentJob().getExtension());
+				else
+					fileIcon = NSImage.imageNamed("folder.icns");
+				break;
+		}
+		
+		fileIcon.setSize(new NSSize(16f, 16f));
+		fileIcon.compositeToPoint(new NSPoint(cellPoint.x(), cellPoint.y()+16+1), NSImage.CompositeSourceOver);
+		
+		// drawing path properties
+		// local file
 		NSGraphics.drawAttributedString(
-								  new NSAttributedString(bookmark.getNickname(), boldFont), 
-								  new NSRect(cellPoint.x(), cellPoint.y()+1, cellSize.width()-5, cellSize.height())
+								  new NSAttributedString(queue.getCurrentJob().getName(), boldFont), 
+								  new NSRect(cellPoint.x()+20, cellPoint.y()+1, cellSize.width()-5, cellSize.height())
 								  );
+		// remote url
 		NSGraphics.drawAttributedString(
-								  new NSAttributedString(bookmark.getLogin().getUsername(), tinyFont),
-								  new NSRect(cellPoint.x(), cellPoint.y()+14, cellSize.width()-5, cellSize.height())
+								  new NSAttributedString(queue.getCurrentJob().getHost().getURL()+queue.getCurrentJob().getAbsolute(), tinyFont),
+								  new NSRect(cellPoint.x()+20, cellPoint.y()+20, cellSize.width()-5, cellSize.height())
 								  );
+		// drawing status
 		NSGraphics.drawAttributedString(
-								  new NSAttributedString(bookmark.getDefaultPath(), tinyFont),
-								  new NSRect(cellPoint.x(), cellPoint.y()+27, cellSize.width()-5, cellSize.height())
+								  new NSAttributedString(
+								 (queue.getCurrentJob().status.getCurrent()/1024)+
+								  " "+NSBundle.localizedString("of")+
+								  " "+(queue.getCurrentJob().status.getSize()/1024)+"kB ("+
+								  (queue.getCurrent()/1024)+" of "+
+								  (queue.getSize()/1024)+"kB "+NSBundle.localizedString("Total")+"), "+
+								  Status.parseLong(queue.getSpeed()/1024) + "kB/s, "+queue.getTimeLeft(),
+								  tinyFont),
+								  new NSRect(cellPoint.x()+20, cellPoint.y()+33, cellSize.width()-5, cellSize.height())
+								  );
+		
+		NSGraphics.drawAttributedString(
+								  new NSAttributedString(
+								 Queue.KIND_DOWNLOAD == queue.kind() ? 
+								 "Downloading "+queue.getCurrentJob().getName()+" ("+(queue.processedJobs())+" of "+(queue.numberOfJobs())+")" : 
+								 "Uploading "+queue.getCurrentJob().getName()+" ("+(queue.processedJobs())+" of "+(queue.numberOfJobs())+")", 
+								 tinyFont),
+								  new NSRect(cellPoint.x()+20, cellPoint.y()+46, cellSize.width()-5, cellSize.height())
 								  );
 		controlView.unlockFocus();
 	}	

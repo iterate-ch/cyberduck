@@ -27,14 +27,14 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class Rendezvous extends Observable implements com.strangeberry.rendezvous.ServiceListener {
+public class Rendezvous extends Observable implements javax.jmdns.ServiceListener {
     private static Logger log = Logger.getLogger(Rendezvous.class);
 	
 //    private static Rendezvous instance;
-    private static final String[] serviceTypes = new String[]{"_ftp._tcp.local.", "_ssh._tcp.local."};
+    private static final String[] serviceTypes = new String[]{"_sftp._tcp.local.", "_ftp._tcp.local.", "_ssh._tcp.local."};
 	
     private Map services;
-	private com.strangeberry.rendezvous.Rendezvous rendezvous;
+	private javax.jmdns.JmDNS jmDNS;
 	
     public Rendezvous() {
 		log.debug("Rendezvous");
@@ -44,9 +44,9 @@ public class Rendezvous extends Observable implements com.strangeberry.rendezvou
     public void init() {
 		try {
 			for(int i = 0; i < serviceTypes.length; i++) {
-				this.rendezvous = new com.strangeberry.rendezvous.Rendezvous();
+				this.jmDNS = new javax.jmdns.JmDNS();
 				log.info("Adding Rendezvous service listener for "+serviceTypes[i]);
-				this.rendezvous.addServiceListener(serviceTypes[i], this);
+				this.jmDNS.addServiceListener(serviceTypes[i], this);
 			}
 		}
 		catch(IOException e) {
@@ -56,7 +56,7 @@ public class Rendezvous extends Observable implements com.strangeberry.rendezvou
 	
 	public void quit() {
 		log.info("Removing Rendezvous service listener");
-		this.rendezvous.removeServiceListener(this);
+		this.jmDNS.removeServiceListener(this);
 	}
 	
 //    public static Rendezvous instance() {
@@ -79,14 +79,14 @@ public class Rendezvous extends Observable implements com.strangeberry.rendezvou
 	}
 	
     /**
-		* This method is called when rendezvous discovers a service
+		* This method is called when jmDNS discovers a service
      * for the first time. Only its name and type are known. We can
      * now request the service information.
      * @param type something like _ftp._tcp.local.
      */
-    public void addService(com.strangeberry.rendezvous.Rendezvous rendezvous, String type, String name) {
+    public void addService(javax.jmdns.JmDNS jmDNS, String type, String name) {
 		log.debug("addService:"+name+","+type);
-		this.rendezvous.requestServiceInfo(type, name);
+		this.jmDNS.requestServiceInfo(type, name);
     }
 	
     /**
@@ -94,13 +94,12 @@ public class Rendezvous extends Observable implements com.strangeberry.rendezvou
      * The ServiceInfo.getURL() constructs an http url given the addres,
      * port, and path properties found in the ServiceInfo record.
      */
-    public void resolveService(com.strangeberry.rendezvous.Rendezvous rendezvous, String type, String name, com.strangeberry.rendezvous.ServiceInfo info) {
+    public void resolveService(javax.jmdns.JmDNS jmDNS, String type, String name, javax.jmdns.ServiceInfo info) {
 		if (info != null) {
 			log.debug("resolveService:"+name+","+type+","+info);
-			Host h = new Host(info.getName()+".local.", info.getPort(), new Login(Preferences.instance().getProperty("connection.login.name"))); //todo fix .local.
+			Host h = new Host(info.getName(), info.getServer(), info.getPort(), new Login(Preferences.instance().getProperty("connection.login.name"))); //todo fix .local.
 			this.services.put(h.getURL(), h);
 			log.debug(info.toString());
-			//	    log.debug(rendezvous.getInterface());
 			this.callObservers(new Message(Message.RENDEZVOUS, h));
 		}
 		else {
@@ -111,7 +110,7 @@ public class Rendezvous extends Observable implements com.strangeberry.rendezvou
     /**
 		* This method is called when a service is no longer available.
      */
-    public void removeService(com.strangeberry.rendezvous.Rendezvous rendezvous, String type, String name) {
+    public void removeService(javax.jmdns.JmDNS jmDNS, String type, String name) {
 		log.debug("removeService:"+name);
 		this.services.remove(name+".local.");
 		//	this.callObservers(new Message(Message.RENDEZVOUS, this.services.get(name+".local.")));
