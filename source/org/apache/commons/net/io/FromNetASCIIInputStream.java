@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 
-import ch.cyberduck.core.Preferences;
-
 /**
  * This class wraps an input stream, replacing all occurrences
  * of &lt;CR&gt;&lt;LF&gt; (carriage return followed by a linefeed),

@@ -28,8 +28,8 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.BookmarkList;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Preferences;
 
 public class CDMainController extends NSObject {

@@ -23,8 +23,8 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.BookmarkList;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 
 /**

@@ -18,7 +18,6 @@ package org.apache.commons.net.ftp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 

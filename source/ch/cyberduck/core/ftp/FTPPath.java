@@ -25,7 +25,10 @@ import java.util.List;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
-import org.apache.commons.net.io.*;
+import org.apache.commons.net.io.FromNetASCIIInputStream;
+import org.apache.commons.net.io.FromNetASCIIOutputStream;
+import org.apache.commons.net.io.ToNetASCIIInputStream;
+import org.apache.commons.net.io.ToNetASCIIOutputStream;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;

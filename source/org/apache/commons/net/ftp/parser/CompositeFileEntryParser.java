@@ -15,10 +15,10 @@
  */
 package org.apache.commons.net.ftp.parser;
 
-import ch.cyberduck.core.Path;
-
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
+
+import ch.cyberduck.core.Path;
 
 /**
  * This implementation allows to pack some FileEntryParsers together

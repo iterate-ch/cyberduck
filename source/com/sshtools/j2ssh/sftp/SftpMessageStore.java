@@ -31,13 +31,12 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import ch.cyberduck.core.Transcript;
+import ch.cyberduck.core.TranscriptFactory;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.subsystem.SubsystemMessageStore;
 import com.sshtools.j2ssh.util.OpenClosedState;
-
-import ch.cyberduck.core.TranscriptFactory;
-import ch.cyberduck.core.Transcript;
 
 class SftpMessageStore extends SubsystemMessageStore {
     /**  */

@@ -18,8 +18,6 @@ package org.apache.commons.net.ftp.parser;
 
 import java.util.Calendar;
 
-import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
-
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;

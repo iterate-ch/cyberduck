@@ -28,8 +28,10 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
 import com.sshtools.j2ssh.SshException;
-import com.sshtools.j2ssh.io.UnsignedInteger32;
-import com.sshtools.j2ssh.sftp.*;
+import com.sshtools.j2ssh.sftp.SftpFile;
+import com.sshtools.j2ssh.sftp.SftpFileInputStream;
+import com.sshtools.j2ssh.sftp.SftpFileOutputStream;
+import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 
 /**
  * @version $Id$

@@ -31,6 +31,8 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import ch.cyberduck.core.Transcript;
+import ch.cyberduck.core.TranscriptFactory;
 import com.sshtools.j2ssh.connection.Channel;
 import com.sshtools.j2ssh.connection.SshMsgChannelData;
 import com.sshtools.j2ssh.connection.SshMsgChannelExtendedData;
@@ -38,9 +40,6 @@ import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.DynamicBuffer;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
-
-import ch.cyberduck.core.TranscriptFactory;
-import ch.cyberduck.core.Transcript;
 
 public abstract class SubsystemChannel extends Channel {
     private static Log log = LogFactory.getLog(SubsystemChannel.class);

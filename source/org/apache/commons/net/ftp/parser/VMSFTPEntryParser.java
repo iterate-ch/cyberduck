@@ -20,7 +20,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Calendar;
 
-import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Path;

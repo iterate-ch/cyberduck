@@ -18,11 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSAutoreleasePool;
+import com.apple.cocoa.foundation.*;
 
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
