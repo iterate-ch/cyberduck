@@ -66,11 +66,11 @@ public class CDMainController {
     }
     
     public void helpMenuClicked(Object sender) {
-	NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().resourcePath(), "Help.rtfd").toString());
+	NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().pathForResource("Help", "rtfd")).toString());
     }
 
     public void licenseMenuClicked(Object sender) {
-	NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().resourcePath(), "License.txt").toString());
+	NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().pathForResource("License", "txt")).toString());
     }
 
     public void updateMenuClicked(Object sender) {
@@ -237,6 +237,7 @@ public class CDMainController {
     public void applicationDidFinishLaunching (NSNotification notification) {
         // To get service requests to go to the controller...
 //        NSApplication.sharedApplication().setServicesProvider(this);
+	log.info("Available localizations:"+NSBundle.mainBundle().localizations());
 	if(Preferences.instance().getProperty("browser.opendefault").equals("true")) {
 	    this.newBrowserMenuClicked(null);
 	}

@@ -366,21 +366,41 @@ public class CDBrowserTable extends NSTableView {
 	    */
 	public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
 	    log.debug("tableViewWriteRowsToPasteboard:"+rows);
-	    Path p = (Path)this.getEntry(((Integer)rows.objectAtIndex(rows.count()-1)).intValue());
+	    Path[] roots = new Path[rows.count()];
+	    NSMutableArray types = new NSMutableArray();
+	    for(int i = 0; i < rows.count(); i++) {
+		roots[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue());
+		if(roots[i].isFile()) {
+		    if(roots[i].getExtension() != null)
+			types.addObject(roots[i].getExtension());
+		    else
+			types.addObject(NSPathUtilities.FileTypeUnknown);
+		}
+		else if(roots[i].isDirectory()) {
+//		    types.addObject(NSPathUtilities.FileTypeDirectory);
+		    types.addObject("'fldr'");
+		}
+		else
+		    types.addObject(NSPathUtilities.FileTypeUnknown);
+	    }
 
 	    //@todo multiple files
 	    NSEvent event = NSApplication.sharedApplication().currentEvent();
 	    NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
 	    NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
 
+	    CDBrowserTable.this.dragPromisedFilesOfTypes(types, imageRect, CDBrowserTable.this, true, event);
+
 	    //• 	The typeArray argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
-	    NSArray type;
-	    if(p.isFile()) {
-		CDBrowserTable.this.dragPromisedFilesOfTypes(new NSArray(p.getExtension()), imageRect, CDBrowserTable.this, false, NSApplication.sharedApplication().currentEvent());
-		return false;
-	    }
-	    if(p.isDirectory())
-		CDBrowserTable.this.dragPromisedFilesOfTypes(new NSArray("'fldr'"), imageRect, CDBrowserTable.this, false, NSApplication.sharedApplication().currentEvent());
+//	    NSArray type;
+//	    if(p.isFile()) {
+//		CDBrowserTable.this.dragPromisedFilesOfTypes(new NSArray(p.getExtension()), imageRect, CDBrowserTable.this, false, NSApplication.sharedApplication().currentEvent());
+//		return false;
+//	    }
+//	    if(p.isDirectory())
+//		CDBrowserTable.this.dragPromisedFilesOfTypes(new NSArray("'fldr'"), imageRect, CDBrowserTable.this, false, NSApplication.sharedApplication().currentEvent());
+//	    return false;
+
 	    return false;
 	}
 
