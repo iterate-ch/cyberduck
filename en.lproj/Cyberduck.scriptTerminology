@@ -293,7 +293,7 @@
 						<key>Description</key>
 						<string>The local folder.</string>
 						<key>Name</key>
-						<string>with</string>
+						<string>with local folder</string>
 					</dict>
 				</dict>
 			</dict>

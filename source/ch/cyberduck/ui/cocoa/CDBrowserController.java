@@ -243,6 +243,7 @@ public class CDBrowserController extends CDController implements Observer {
 			Path path = PathFactory.createPath(this.workdir().getSession(), 
 											   (String)args.objectForKey("Path"));
 			path.setLocal(new Local((String)args.objectForKey("Local")));
+			path.attributes.setType(Path.DIRECTORY_TYPE);
 			Queue queue = new SyncQueue(path);
 			queue.process(false, false);
 		}
@@ -256,6 +257,7 @@ public class CDBrowserController extends CDController implements Observer {
 			Path path = PathFactory.createPath(this.workdir().getSession(), 
 											   this.workdir().getAbsolute(), 
 											   (String)args.objectForKey("Path"));
+			//@todo path.attributes.setType()
 			Object localObj = args.objectForKey("Local");
 			if(localObj != null) {
 				path.setLocal(new Local((String)localObj, path.getName()));

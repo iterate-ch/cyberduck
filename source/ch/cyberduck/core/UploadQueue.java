@@ -74,6 +74,7 @@ public class UploadQueue extends Queue {
 	protected List getChilds(List childs, Path p) {
 		childs.add(p);
 		if(p.attributes.isDirectory()) {
+			p.attributes.setSize(0);
 			File[] files = p.getLocal().listFiles();
 			for(int i = 0; i < files.length; i++) {
 				Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));

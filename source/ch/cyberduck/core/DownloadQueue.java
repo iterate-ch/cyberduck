@@ -45,6 +45,7 @@ public class DownloadQueue extends Queue {
 	protected List getChilds(List childs, Path p) {
 		childs.add(p);
 		if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
+			p.attributes.setSize(0);
 			for(Iterator i = p.list(false, true).iterator(); i.hasNext();) {
 				Path child = (Path)i.next();
 				child.setLocal(new Local(p.getLocal(), child.getName()));

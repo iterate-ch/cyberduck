@@ -72,15 +72,15 @@ public class SyncQueue extends Queue {
 		}
 	}
 
-	private void addLocalChilds(List childs, Path root) {
-		if(root.getLocal().exists()) {
-			if(!childs.contains(root)) {
-				childs.add(root);
+	private void addLocalChilds(List childs, Path p) {
+		if(p.getLocal().exists()) {
+			if(!childs.contains(p)) {
+				childs.add(p);
 			}
-			if(root.attributes.isDirectory()) {
-				File[] files = root.getLocal().listFiles();
+			if(p.attributes.isDirectory()) {
+				File[] files = p.getLocal().listFiles();
 				for(int i = 0; i < files.length; i++) {
-					Path child = PathFactory.createPath(root.getSession(), root.getAbsolute(), new Local(files[i].getAbsolutePath()));
+					Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
 					if(!child.getName().equals(".DS_Store")) {
 						this.addLocalChilds(childs, child);
 					}
@@ -89,15 +89,16 @@ public class SyncQueue extends Queue {
 		}
 	}
 
-	private void addRemoteChilds(List childs, Path root) {
-		if(root.getRemote().exists()) {
-			if(!childs.contains(root)) {
-				childs.add(root);
+	private void addRemoteChilds(List childs, Path p) {
+		if(p.getRemote().exists()) {
+			if(!childs.contains(p)) {
+				childs.add(p);
 			}
-			if(root.attributes.isDirectory() && !root.attributes.isSymbolicLink()) {
-				for(Iterator i = root.list(false, true).iterator(); i.hasNext();) {
+			if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
+				p.attributes.setSize(0);
+				for(Iterator i = p.list(false, true).iterator(); i.hasNext();) {
 					Path child = (Path)i.next();
-					child.setLocal(new Local(root.getLocal(), child.getName()));
+					child.setLocal(new Local(p.getLocal(), child.getName()));
 					this.addRemoteChilds(childs, child);
 				}
 			}

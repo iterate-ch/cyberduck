@@ -368,7 +368,7 @@ public class FTPPath extends Path {
 					}
 				}
 				if(this.attributes.isDirectory()) {
-					this.getLocal().mkdir();
+					this.getLocal().mkdirs();
 				}
 				session.log("Idle", Message.STOP);
 			}

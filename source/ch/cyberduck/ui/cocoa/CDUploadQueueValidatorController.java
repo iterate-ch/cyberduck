@@ -61,7 +61,6 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 	}
 
 	protected boolean validateDirectory(Path p) {
-		p.attributes.setSize(0);
 		if(!p.getRemote().exists()) {
 			//Directory does not exist yet; include so it will be created on the server
 			p.getSession().cache().put(p.getAbsolute(), new ArrayList());

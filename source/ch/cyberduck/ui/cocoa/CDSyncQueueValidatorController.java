@@ -109,7 +109,6 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	}
 
 	protected boolean validateDirectory(Path p) {
-		p.attributes.setSize(0);
 		if(p.getRemote().exists() && p.getLocal().exists()) {
 			//Do not include as it exists both locally and on the server
 			return false;

@@ -332,8 +332,6 @@
 					<dict>
 						<key>AppleEventCode</key>
 						<string>PaTh</string>
-						<key>Optional</key>
-						<string>No</string>
 						<key>Type</key>
 						<string>NSString</string>
 					</dict>
@@ -341,8 +339,6 @@
 					<dict>
 						<key>AppleEventCode</key>
 						<string>LoAl</string>
-						<key>Optional</key>
-						<string>No</string>
 						<key>Type</key>
 						<string>NSString</string>
 					</dict>
