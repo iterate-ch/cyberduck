@@ -323,6 +323,9 @@ public class FTPPath extends Path {
                     this.getLocal().setPermission(perm);
                 }
             }
+            if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
+				this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+			}
         }
         catch (FTPException e) {
             session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -354,25 +357,21 @@ public class FTPPath extends Path {
             }
             this.download(in, out);
             if (this.status.isComplete()) {
-                in.close(); in = null;
-                out.close(); out = null;
+                if (in != null) { in.close(); in = null; }
+                if (out != null) { out.close(); out = null; }
                 session.FTP.validateTransfer();
             }
             if (status.isCanceled()) {
-                in.close(); in = null;
-                out.close(); out = null;
+                if (in != null) { in.close(); in = null; }
+                if (out != null) { out.close(); out = null; }
                 session.FTP.abor();
             }
         }
         finally {
             session.log("Idle", Message.STOP);
             try {
-                if (in != null) {
-                    in.close();
-                }
-                if (out != null) {
-                    out.close();
-                }
+                if (in != null) { in.close(); in = null; }
+                if (out != null) { out.close(); out = null; }
             }
             catch (IOException e) {
                 log.error(e.getMessage());
@@ -416,25 +415,21 @@ public class FTPPath extends Path {
             }
             this.download(in, out);
             if (this.status.isComplete()) {
-                in.close(); in = null;
-                out.close(); out = null;
+                if (in != null) { in.close(); in = null; }
+                if (out != null) { out.close(); out = null; }
                 session.FTP.validateTransfer();
             }
             if (status.isCanceled()) {
-                in.close(); in = null;
-                out.close(); out = null;
+                if (in != null) { in.close(); in = null; }
+                if (out != null) { out.close(); out = null; }
                 session.FTP.abor();
             }
         }
         finally {
             session.log("Idle", Message.STOP);
             try {
-                if (in != null) {
-                    in.close();
-                }
-                if (out != null) {
-                    out.close();
-                }
+                if (in != null) { in.close(); in = null; }
+                if (out != null) { out.close(); out = null; }
             }
             catch (IOException e) {
                 log.error(e.getMessage());
@@ -504,25 +499,21 @@ public class FTPPath extends Path {
             }
             this.upload(out, in);
             if (this.status.isComplete()) {
-                in.close(); in = null;
-                out.close(); out = null;
+                if (in != null) { in.close(); in = null; }
+                if (out != null) { out.close(); out = null; }
                 session.FTP.validateTransfer();
             }
             if (status.isCanceled()) {
-                in.close(); in = null;
-                out.close(); out = null;
+                if (in != null) { in.close(); in = null; }
+                if (out != null) { out.close(); out = null; }
                 session.FTP.abor();
             }
         }
         finally {
             session.log("Idle", Message.STOP);
             try {
-                if (in != null) {
-                    in.close();
-                }
-                if (out != null) {
-                    out.close();
-                }
+                if (in != null) { in.close(); in = null; }
+                if (out != null) { out.close(); out = null; }
             }
             catch (IOException e) {
                 log.error(e.getMessage());
@@ -553,25 +544,21 @@ public class FTPPath extends Path {
             }
             this.upload(out, in);
             if (this.status.isComplete()) {
-                in.close(); in = null;
-                out.close(); out = null;
+                if (in != null) { in.close(); in = null; }
+                if (out != null) { out.close(); out = null; }
                 session.FTP.validateTransfer();
             }
             if (status.isCanceled()) {
-                in.close(); in = null;
-                out.close(); out = null;
+                if (in != null) { in.close(); in = null; }
+                if (out != null) { out.close(); out = null; }
                 session.FTP.abor();
             }
         }
         finally {
             session.log("Idle", Message.STOP);
             try {
-                if (in != null) {
-                    in.close();
-                }
-                if (out != null) {
-                    out.close();
-                }
+                if (in != null) { in.close(); in = null; }
+                if (out != null) { out.close(); out = null; }
             }
             catch (IOException e) {
                 log.error(e.getMessage());

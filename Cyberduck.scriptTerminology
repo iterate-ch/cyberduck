@@ -13,15 +13,6 @@
 				<key>PluralName</key>
 				<string>applications</string>
 			</dict>
-			<key>Browser</key>
-			<dict>
-				<key>Description</key>
-				<string>A SFTP/FTP Browser.</string>
-				<key>Name</key>
-				<string>browser</string>
-				<key>PluralName</key>
-				<string>browsers</string>
-			</dict>
 		</dict>
 		<key>Commands</key>
 		<dict>

@@ -34,8 +34,8 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Transcript;
-import ch.cyberduck.core.TranscriptFactory;
+//import ch.cyberduck.core.Transcript;
+//import ch.cyberduck.core.TranscriptFactory;
 
 /**
  * Supports client-side FTP. Most common
@@ -81,7 +81,7 @@ public class FTPClient {
      */
     private FTPReply lastValidReply;
 
-    private Transcript transcript;
+//    private Transcript transcript;
 
     public FTPClient() {
         super();
@@ -96,7 +96,7 @@ public class FTPClient {
      */
     public void connect(String remoteHost, int controlPort) throws IOException, FTPException {
         control = new FTPControlSocket(remoteHost, controlPort);
-        transcript = TranscriptFactory.getImpl(remoteHost);
+//        transcript = TranscriptFactory.getImpl(remoteHost);
     }
 
     /**
@@ -412,7 +412,6 @@ public class FTPClient {
         data.setTimeout(timeout);
 
         // send the retrieve command
-//		String command = full ? "LIST " : "NLST ";
         String command;
         if (full) {
             if (Preferences.instance().getProperty("ftp.sendExtendedListCommand").equals("true")) {
@@ -454,7 +453,7 @@ public class FTPClient {
             String line = null;
             while ((line = in.readLine()) != null) {
                 entries.add(line);
-                transcript.log(line);
+                //@todo transcript.log(line); //very bad performance
             }
             try {
                 in.close();

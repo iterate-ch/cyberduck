@@ -96,13 +96,15 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
      * Invoked by tableView when the mouse button is released over a table view that previously decided to allow a drop.
      *
      * @param info contains details on this dragging operation.
-     * @param row  The proposed location is row and action is operation.
+     * @param index  The proposed location is row and action is operation.
      *             The data source should
      *             incorporate the data from the dragging pasteboard at this time.
      */
-    public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-        log.debug("tableViewAcceptDrop:row:" + row + ",operation:" + operation);
-        if (row != -1 && row < tableView.numberOfRows()) {
+    public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int index, int operation) {
+        log.debug("tableViewAcceptDrop:row:" + index + ",operation:" + operation);
+		int row = index;
+		if (row < 0); row = 0;
+        if (row < tableView.numberOfRows()) {
             if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
                 Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
                 log.debug("tableViewAcceptDrop:" + o);

@@ -161,8 +161,8 @@ public abstract class Path {
      * @return My parent directory
      */
     public Path getParent() {
-        String abs = this.getAbsolute();
         if ((null == parent)) {
+			String abs = this.getAbsolute();
             int index = abs.lastIndexOf('/');
             String dirname = abs;
             if (index > 0) {

@@ -432,7 +432,7 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
         this.publickeyCombobox.setAction(new NSSelector("publickeyComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.publickeyCombobox.removeAllItems();
         this.publickeyCombobox.addItemsWithTitles(new NSArray(new String[]{
-            NSBundle.localizedString("Default", ""),
+            //NSBundle.localizedString("Default", ""),
             SSH_DSS,
             SSH_RSA
         }));
@@ -463,7 +463,7 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
         this.csEncryptionCombobox.setAction(new NSSelector("csEncryptionComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.csEncryptionCombobox.removeAllItems();
         this.csEncryptionCombobox.addItemsWithTitles(new NSArray(new String[]{
-            NSBundle.localizedString("Default", ""),
+            //NSBundle.localizedString("Default", ""),
             des_cbc,
             blowfish_cbc,
             twofish256_cbc,
@@ -490,7 +490,7 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
         this.scEncryptionCombobox.setAction(new NSSelector("scEncryptionComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.scEncryptionCombobox.removeAllItems();
         this.scEncryptionCombobox.addItemsWithTitles(new NSArray(new String[]{
-            NSBundle.localizedString("Default", ""),
+            //NSBundle.localizedString("Default", ""),
             des_cbc,
             blowfish_cbc,
             twofish256_cbc,
@@ -524,7 +524,7 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
         this.scAuthenticationCombobox.setAction(new NSSelector("scAuthenticationComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.scAuthenticationCombobox.removeAllItems();
         this.scAuthenticationCombobox.addItemsWithTitles(new NSArray(new String[]{
-            NSBundle.localizedString("Default", ""),
+            //NSBundle.localizedString("Default", ""),
             hmac_sha1,
             hmac_sha1_96,
             hmac_md5,
@@ -547,7 +547,7 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
         this.csAuthenticationCombobox.setAction(new NSSelector("csAuthenticationComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.csAuthenticationCombobox.removeAllItems();
         this.csAuthenticationCombobox.addItemsWithTitles(new NSArray(new String[]{
-            NSBundle.localizedString("Default", ""),
+            //NSBundle.localizedString("Default", ""),
             hmac_sha1,
             hmac_sha1_96,
             hmac_md5,

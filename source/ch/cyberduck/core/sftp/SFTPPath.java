@@ -354,6 +354,9 @@ public class SFTPPath extends Path {
                     this.getLocal().setPermission(perm);
                 }
             }
+            if (Preferences.instance().getProperty("queue.download.preserveDate").equals("true")) {
+				this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+			}
         }
         catch (SshException e) {
             session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -364,12 +367,8 @@ public class SFTPPath extends Path {
         finally {
             session.log("Idle", Message.STOP);
             try {
-                if (in != null) {
-                    in.close();
-                }
-                if (out != null) {
-                    out.close();
-                }
+                if (in != null) { in.close(); in = null; }
+                if (out != null) { out.close(); out = null; }
             }
             catch (IOException e) {
 				e.printStackTrace();
@@ -434,12 +433,8 @@ public class SFTPPath extends Path {
         finally {
             session.log("Idle", Message.STOP);
             try {
-                if (in != null) {
-                    in.close();
-                }
-                if (out != null) {
-                    out.close();
-                }
+                if (in != null) { in.close(); in = null; }
+                if (out != null) { out.close(); out = null; }
             }
             catch (IOException e) {
                 log.error(e.getMessage());

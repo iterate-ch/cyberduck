@@ -82,13 +82,15 @@ public class CDQueueTableDataSource extends CDTableDataSource {
      * Invoked by tableView when the mouse button is released over a table view that previously decided to allow a drop.
      *
      * @param info contains details on this dragging operation.
-     * @param row  The proposed location is row and action is operation.
+     * @param index  The proposed location is row and action is operation.
      *             The data source should
      *             incorporate the data from the dragging pasteboard at this time.
      */
-    public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-        log.debug("tableViewAcceptDrop:row:" + row + ",operation:" + operation);
-        if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
+    public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int index, int operation) {
+        log.debug("tableViewAcceptDrop:row:" + index + ",operation:" + operation);
+		int row = index;
+		if (row < 0); row = 0;
+		if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
             String droppedText = info.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
             if (droppedText != null) {
                 log.info("NSPasteboard.StringPboardType:" + droppedText);
@@ -103,12 +105,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
                         Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
                         Queue q = new Queue(Queue.KIND_DOWNLOAD);
                         q.addRoot(p);
-                        if (row != -1) {
-                            QueueList.instance().addItem(q, row);
-                        }
-                        else {
-                            QueueList.instance().addItem(q);
-                        }
+						QueueList.instance().addItem(q, row);
                         CDQueueController.instance().startItem(q);
                         return true;
                     }
@@ -131,16 +128,9 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 						NSArray elements = (NSArray) o;
 						for (int i = 0; i < elements.count(); i++) {
 							NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-							if (row != -1) {
-								QueueList.instance().addItem(new Queue(dict), row);
-								tableView.reloadData();
-								tableView.selectRow(row, false);
-							}
-							else {
-								QueueList.instance().addItem(new Queue(dict));
-								tableView.reloadData();
-								tableView.selectRow(tableView.numberOfRows() - 1, false);
-							}
+							QueueList.instance().addItem(new Queue(dict), row);
+							tableView.reloadData();
+							tableView.selectRow(row, false);
 						}
 						this.queuePboardChangeCount++;
 						return true;

@@ -74,7 +74,7 @@ public class Attributes extends Observable {
      * @return the modification date of this file
      */
     public String getTimestampAsString() {
-        return (DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)).format(this.modified);
+        return (DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT)).format(this.modified);
     }
 
     public Date getTimestamp() {

@@ -13,13 +13,6 @@
 				<key>Superclass</key>
 				<string>NSCoreSuite.NSApplication</string>
 			</dict>
-			<key>Browser</key>
-			<dict>
-				<key>AppleEventCode</key>
-				<string>docu</string>
-				<key>Superclass</key>
-				<string>NSCoreSuite.NSDocument</string>
-			</dict>
 		</dict>
 		<key>Commands</key>
 		<dict>

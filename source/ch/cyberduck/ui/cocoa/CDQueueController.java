@@ -180,7 +180,7 @@ public class CDQueueController extends NSObject implements Observer {
                 );
             }
         }
-        queue.start(new CDValidatorController(queue.kind(), resumeRequested, this.window()), this);
+        queue.start(new CDValidatorController(queue.kind(), resumeRequested), this);
     }
 
     public void update(Observable observable, Object arg) {

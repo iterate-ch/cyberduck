@@ -70,7 +70,7 @@ public class CDMainController extends NSObject {
 	public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
         this.neverShowDonationCheckbox = neverShowDonationCheckbox;
         this.neverShowDonationCheckbox.setTarget(this);
-        this.neverShowDonationCheckbox.setState(Preferences.instance().getProperty("donate").equals("true") ? NSCell.OnState : NSCell.OffState);
+        this.neverShowDonationCheckbox.setState(Preferences.instance().getProperty("donate").equals("false") ? NSCell.OnState : NSCell.OffState);
     }
 	
 	private NSButton autoUpdateCheckbox;
@@ -473,15 +473,17 @@ public class CDMainController extends NSObject {
         int count = windows.count();
         boolean needsConfirm = false;
 
-// Determine if there are any open connections
+		// Determine if there are any open connections
         while (!needsConfirm && (0 != count--)) {
             NSWindow window = (NSWindow) windows.objectAtIndex(count);
-            CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-            if (null != controller) {
-                if (controller.isConnected()) {
-                    needsConfirm = true;
-                }
-            }
+			if(window.isVisible()) { //@workaround
+				CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+				if (null != controller) {
+					if (controller.isConnected()) {
+						needsConfirm = true;
+					}
+				}
+			}
         }
 
         if (needsConfirm) {

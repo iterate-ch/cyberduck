@@ -19,7 +19,6 @@ package org.apache.commons.net.ftp.parser;
 import java.util.Calendar;
 
 import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
-import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
@@ -38,8 +37,6 @@ import ch.cyberduck.core.Permission;
  * @see org.apache.commons.net.ftp.FTPFileEntryParser FTPFileEntryParser (for usage instructions)
  */
 public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
-
-    private static Logger log = Logger.getLogger(UnixFTPEntryParser.class);
 
     /**
      * months abbreviations looked for by this parser.  Also used
