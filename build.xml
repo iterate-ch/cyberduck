@@ -81,8 +81,6 @@
 		<echo message="   project source:	${source}"/>
 		<echo message="   ---------------------------------------------------------------"/>
 		<echo message=""/>
-		<echo message="IMPORTANT NOTE: YOU HAVE TO RUN THE BUILD TASK 'app' IN XCODE FIRST!"/>
-		<echo message=""/>
 		<echo message="Building ${app.name}..."/>
 		<mkdir dir="${build}"/>
 		<mkdir dir="${build.classes}"/>
