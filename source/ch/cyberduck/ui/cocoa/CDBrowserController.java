@@ -119,8 +119,6 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 	
 	public void update(final Observable o, final Object arg) {
-		//			ThreadUtilities.instance().invokeLater(new Runnable() {
-		//				public void run() {
 		if(arg instanceof Path) {
 			this.workdir = (Path)arg;
 			this.pathPopupItems.clear();
@@ -142,23 +140,31 @@ public class CDBrowserController extends CDController implements Observer {
 			this.window().makeFirstResponder(this.browserTable);
 			this.infoLabel.setStringValue(this.browserModel.numberOfRowsInTableView(this.browserTable)+" "+
 										  NSBundle.localizedString("files", ""));
-			this.toolbar.validateVisibleItems();
+			ThreadUtilities.instance().invokeLater(new Runnable() {
+				public void run() {
+					CDBrowserController.this.toolbar.validateVisibleItems();
+				}
+			});
 		}
 		else if(arg instanceof Message) {
-			Message msg = (Message)arg;
+			final Message msg = (Message)arg;
 			if(msg.getTitle().equals(Message.ERROR)) {
 				this.progressIndicator.stopAnimation(this);
 				this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
 				this.statusIcon.setNeedsDisplay(true);
 				this.statusLabel.setObjectValue(msg.getContent());
 				this.statusLabel.display();
-				this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
-																(String)msg.getContent(), // message
-																NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-																null, //alternative button
-																null //other button
-																)
-								);
+				ThreadUtilities.instance().invokeLater(new Runnable() {
+					public void run() {
+						CDBrowserController.this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
+																		(String)msg.getContent(), // message
+																		NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+																		null, //alternative button
+																		null //other button
+																		)
+										);
+					}
+				});
 				//this.window().setDocumentEdited(false);
 			}
 			else if(msg.getTitle().equals(Message.PROGRESS)) {
@@ -176,31 +182,45 @@ public class CDBrowserController extends CDController implements Observer {
 				this.browserTable.reloadData();
 				this.pathPopupItems.clear();
 				this.pathPopupButton.removeAllItems();
-				this.toolbar.validateVisibleItems();
+				ThreadUtilities.instance().invokeLater(new Runnable() {
+					public void run() {
+						CDBrowserController.this.toolbar.validateVisibleItems();
+					}
+				});
 				//this.window().setDocumentEdited(true);
 			}
 			else if(msg.getTitle().equals(Message.CLOSE)) {
 				this.progressIndicator.stopAnimation(this);
 				this.statusIcon.setImage(null);
 				this.statusIcon.setNeedsDisplay(true);
-				this.toolbar.validateVisibleItems();
+				ThreadUtilities.instance().invokeLater(new Runnable() {
+					public void run() {
+						CDBrowserController.this.toolbar.validateVisibleItems();
+					}
+				});
 				//this.window().setDocumentEdited(false);
 			}
 			else if(msg.getTitle().equals(Message.START)) {
 				this.statusIcon.setImage(null);
 				this.statusIcon.setNeedsDisplay(true);
 				this.progressIndicator.startAnimation(this);
-				this.toolbar.validateVisibleItems();
+				ThreadUtilities.instance().invokeLater(new Runnable() {
+					public void run() {
+						CDBrowserController.this.toolbar.validateVisibleItems();
+					}
+				});
 			}
 			else if(msg.getTitle().equals(Message.STOP)) {
 				this.progressIndicator.stopAnimation(this);
 				this.statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
 				this.statusLabel.display();
-				this.toolbar.validateVisibleItems();
+				ThreadUtilities.instance().invokeLater(new Runnable() {
+					public void run() {
+						CDBrowserController.this.toolbar.validateVisibleItems();
+					}
+				});
 			}
 		}
-		//				}
-		//			});
 	}
 	
 	// ----------------------------------------------------------
@@ -1211,7 +1231,7 @@ public class CDBrowserController extends CDController implements Observer {
 				this.window().setRepresentedFilename(bookmark.getAbsolutePath());
 			}
 
-			TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(logView));
+			//TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(logView));
 
 			Session session = SessionFactory.createSession(host);
 			//this.workdir = PathFactory.createPath(session, host.getDefaultPath());

@@ -58,13 +58,10 @@ public abstract class CDController {
 		if(count != 0) {
 			while(0 != count--) {
 				NSWindow window = (NSWindow)windows.objectAtIndex(count);
-				//				CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-				//				if(null != controller) {
 				NSPoint origin = window.frame().origin();
 				origin = new NSPoint(origin.x(), origin.y()+window.frame().size().height());
 				this.window().setFrameTopLeftPoint(this.window().cascadeTopLeftFromPoint(origin));
 				break;
-				//				}
 			}
 		}
 	}
@@ -76,11 +73,26 @@ public abstract class CDController {
 		}
 	}
 	
-	public void waitForSheet() {
+	public void waitForSheetEnd() {
+		log.debug("waitForSheetEnd");
 		synchronized(this) {
-			while(this.window().attachedSheet() != null) {
+			while(this.hasSheet()) {
 				try {
-					log.debug("Sleeping..."); this.wait(); log.debug("Awakened");
+					log.debug("Sleeping:waitForSheetEnd..."); this.wait(); log.debug("Awakened:waitForSheetEnd");
+				}
+				catch(InterruptedException e) {
+					log.error(e.getMessage());
+				}
+			}
+		}
+	}
+	
+	public void waitForSheetDisplay(NSWindow sheet) {
+		log.debug("waitForSheetDisplay:"+sheet);
+		synchronized(this) {
+			while(this.window().attachedSheet() != sheet) {
+				try {
+					log.debug("Sleeping:waitForSheetDisplay..."); this.wait(); log.debug("Awakened:waitForSheetDisplay");
 				}
 				catch(InterruptedException e) {
 					log.error(e.getMessage());
@@ -104,9 +116,9 @@ public abstract class CDController {
 	}
 
 	public void beginSheet(NSWindow sheet, Object delegate, NSSelector endSelector, Object contextInfo) {
+		log.debug("beginSheet:"+sheet);
 		synchronized(this) {
-			log.debug("beginSheet");
-			this.waitForSheet();
+			this.waitForSheetEnd();
 			this.window().makeKeyAndOrderFront(null);
 			NSApplication.sharedApplication().beginSheet(sheet, //sheet
 														 this.window(),
@@ -114,12 +126,13 @@ public abstract class CDController {
 														 endSelector, // did end selector
 														 contextInfo); //contextInfo
 			this.window().makeKeyAndOrderFront(null);
+			this.notifyAll();
 		}
 	}
 
-	public void sheetDidEnd(NSWindow window, int returncode, Object contextInfo) {
-		log.debug("sheetDidEnd:"+window);
-		window.orderOut(null);
+	public void sheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+		log.debug("sheetDidEnd:"+sheet);
+		sheet.orderOut(null);
 		synchronized(this) {
 			this.notifyAll();
 		}

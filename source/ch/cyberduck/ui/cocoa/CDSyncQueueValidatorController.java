@@ -139,8 +139,8 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 				Path p = (Path)i.next();
 				this.workList.add(p);
 			}
-			this.reloadTable();
 		}
+		super.fireDataChanged();
 	}
 
 	public void downloadCellClicked(Object sender) {
@@ -152,8 +152,8 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 					this.workList.add(p);
 				}
 			}
-			this.reloadTable();
 		}
+		super.fireDataChanged();
 	}
 
 	public void uploadCellClicked(Object sender) {
@@ -165,8 +165,8 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 					this.workList.add(p);
 				}
 			}
-			this.reloadTable();
 		}
+		super.fireDataChanged();
 	}
 
 	// ----------------------------------------------------------
@@ -211,9 +211,11 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	// ----------------------------------------------------------
 	
 	protected void fireDataChanged() {
-		this.mirrorCellClicked(null);
-		this.downloadCellClicked(null);
-		this.uploadCellClicked(null);
+		if(this.hasPrompt()) {
+			this.mirrorCellClicked(null);
+			this.downloadCellClicked(null);
+			this.uploadCellClicked(null);
+		}
 	}
 		
 	private static final NSImage ARROW_UP_ICON = NSImage.imageNamed("arrowUp16.tiff");

@@ -60,15 +60,16 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		log.debug("onHostKeyMismatch");
 		this.host = host;
 		this.publicKey = actualHostKey;
-		this.windowController.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Host key mismatch:", "")+" "+host, //title
-																		 NSBundle.localizedString("The host key supplied is", "")+": "
-																		 +actualHostKey.getFingerprint()+
-																		 "\n"+NSBundle.localizedString("The current allowed key for this host is", "")+" : "
-																		 +allowedHostKey.getFingerprint()+"\n"+NSBundle.localizedString("Do you want to allow the host access?", ""),
-																		 NSBundle.localizedString("Allow", ""), // defaultbutton
-																		 NSBundle.localizedString("Deny", ""), //alternative button
-																		 isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
-																		 ),
+		NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Host key mismatch:", "")+" "+host, //title
+														 NSBundle.localizedString("The host key supplied is", "")+": "
+														 +actualHostKey.getFingerprint()+
+														 "\n"+NSBundle.localizedString("The current allowed key for this host is", "")+" : "
+														 +allowedHostKey.getFingerprint()+"\n"+NSBundle.localizedString("Do you want to allow the host access?", ""),
+														 NSBundle.localizedString("Allow", ""), // defaultbutton
+														 NSBundle.localizedString("Deny", ""), //alternative button
+														 isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
+														 );
+		this.windowController.beginSheet(sheet,
 										 this, //delegate
 										 new NSSelector
 										 ("keyMismatchSheetDidClose",
@@ -77,7 +78,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 											  NSWindow.class, int.class, Object.class
 										  }), // end selector
 										 null);
-		this.windowController.waitForSheet();
+		this.windowController.waitForSheetEnd();
 	}
 	
 	public void keyMismatchSheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {
@@ -114,12 +115,13 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 		log.debug("onUnknownHost");
 		this.host = host;
 		this.publicKey = publicKey;
-		this.windowController.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Unknown host key for", "")+" "+host, //title
-																		 NSBundle.localizedString("The host is currently unknown to the system. The host key fingerprint is", "")+": "+publicKey.getFingerprint()+".",
-																		 NSBundle.localizedString("Allow", ""), // defaultbutton
-																		 NSBundle.localizedString("Deny", ""), //alternative button
-																		 isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
-																		 ),
+		NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Unknown host key for", "")+" "+host, //title
+														 NSBundle.localizedString("The host is currently unknown to the system. The host key fingerprint is", "")+": "+publicKey.getFingerprint()+".",
+														 NSBundle.localizedString("Allow", ""), // defaultbutton
+														 NSBundle.localizedString("Deny", ""), //alternative button
+														 isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
+														 );
+		this.windowController.beginSheet(sheet,
 										 this, //delegate
 										 new NSSelector
 										 ("unknownHostSheetDidClose",
@@ -128,7 +130,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 											  NSWindow.class, int.class, Object.class
 										  }), // end selector
 										 null);
-		this.windowController.waitForSheet();
+		this.windowController.waitForSheetEnd();
 	}
 	
 	public void unknownHostSheetDidClose(NSWindow sheet, int returncode, Object contextInfo) {

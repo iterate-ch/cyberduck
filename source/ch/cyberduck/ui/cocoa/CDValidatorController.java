@@ -42,6 +42,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 
 	public CDValidatorController(CDController windowController) {
 		this.windowController = windowController;
+		this.load();
 		instances.addObject(this);
 	}
 
@@ -60,19 +61,21 @@ public abstract class CDValidatorController extends AbstractValidator {
 				log.info("Adding "+child+" to final set.");				
 				this.validatedList.add(child);
 			}
-			if(this.hasPrompt()) {
-				this.fireDataChanged();
-			}
+			this.fireDataChanged();
 		}
 		if(this.isCanceled()) {
 			return;
 		}
 		if(this.hasPrompt()) {
-			this.statusIndicator.stopAnimation(null);
-			this.setEnabled(true);
-			this.fileTableView.sizeToFit();
-			this.infoLabel.setStringValue(this.workList.size()+" "+NSBundle.localizedString("files", ""));
-			this.windowController.waitForSheet();
+			ThreadUtilities.instance().invokeLater(new Runnable() {
+				public void run() {
+					CDValidatorController.this.statusIndicator.stopAnimation(null);
+					CDValidatorController.this.setEnabled(true);
+					CDValidatorController.this.fileTableView.sizeToFit();
+					CDValidatorController.this.infoLabel.setStringValue(CDValidatorController.this.workList.size()+" "+NSBundle.localizedString("files", ""));
+				}
+			});
+			this.windowController.waitForSheetEnd();
 		}
 	}
 	
@@ -86,9 +89,14 @@ public abstract class CDValidatorController extends AbstractValidator {
 	
 	protected void prompt(Path p) {
 		if(!this.hasPrompt()) {
-			this.load();
-			this.windowController.beginSheet(this.window());
-			this.statusIndicator.startAnimation(null);
+			//			this.windowController.waitForSheetEnd();
+			//			ThreadUtilities.instance().invokeLater(new Runnable() {
+			//				public void run() {
+			CDValidatorController.this.windowController.beginSheet(CDValidatorController.this.window());
+			CDValidatorController.this.statusIndicator.startAnimation(null);
+			//				}
+			//			});
+			this.windowController.waitForSheetDisplay(this.window());
 			this.hasPrompt = true;
 		}
 		this.promptList.add(p);
@@ -268,11 +276,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.skipButton.setEnabled(enabled);
 	}
 
-	protected void reloadTable() {
-		this.fileTableView.reloadData();
-//		this.infoLabel.setStringValue(this.workList.size()+" "+NSBundle.localizedString("files", ""));
-	}
-
 	public void windowWillClose(NSNotification notification) {
 		instances.removeObject(this);
 	}
@@ -322,7 +325,9 @@ public abstract class CDValidatorController extends AbstractValidator {
 	// ----------------------------------------------------------
 	
 	protected void fireDataChanged() {
-		this.reloadTable();
+		if(this.hasPrompt()) {
+			this.fileTableView.reloadData();
+		}
 	}
 	
 /*

@@ -109,12 +109,20 @@ public class CDLoginController extends CDController implements LoginController {
 
 	private Login login;
 	
-	public Login promptUser(Login login, final String message) {
+	public Login promptUser(final Login login, final String message) {
 		this.login = login;
-		this.textField.setStringValue(message);
-		this.userField.setStringValue(login.getUsername());
-		this.windowController.beginSheet(this.window());
-		this.windowController.waitForSheet();
+		synchronized(this.windowController) {
+//			this.windowController.waitForSheetEnd();
+//			ThreadUtilities.instance().invokeLater(new Runnable() {
+//				public void run() {
+			CDLoginController.this.textField.setStringValue(message);
+			CDLoginController.this.userField.setStringValue(login.getUsername());
+			CDLoginController.this.windowController.beginSheet(CDLoginController.this.window());
+			//				}
+			//			});
+			this.windowController.waitForSheetDisplay(this.window());
+			this.windowController.waitForSheetEnd();
+		}
 		return this.login;
 	}
 

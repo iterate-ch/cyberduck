@@ -60,8 +60,6 @@ public class CDProgressController extends NSObject implements Observer {
 		this.queue = queue;
 		this.queue.addObserver(this);
 		this.queue.getRoot().getSession().addObserver(this);
-		//@todo this.queue.deleteObserver(this);
-		//@todo this.queue.getRoot().getSession().deleteObserver(this);
 		if(false == NSApplication.loadNibNamed("Progress", this)) {
 			log.fatal("Couldn't load Progress.nib");
 		}
