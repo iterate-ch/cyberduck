@@ -91,9 +91,12 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	//this.setDropRowAndDropOperation(-1, NSTableView.DropOn);
 	if(this.tableColumnWithIdentifier("TYPE") != null)
 	    this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
-	//this.setIndicatorImage(NSImage.imageNamed("indicator.tiff"), this.tableColumnWithIdentifier("FILENAME"))
-    }
+	//this.setIndicatorImage(NSImage.imageNamed("indicator.tiff"), this.tableColumnWithIdentifier("FILENAME"));
+//	this.setIndicatorImage(this._defaultTableHeaderSortImage(), this.tableColumnWithIdentifier("FILENAME"));
+	
+	//    [myTableView setIndicatorImage: [NSTableView _defaultTableHeaderSortImage] inTableColumn: [myTableView tableColumnWithIdentifier: @"cellNumber"]];
 
+    }
 
     public void doubleClickAction(NSObject sender) {
 	log.debug("doubleClickAction");
@@ -104,18 +107,16 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 	    p.list();
     }
     
-    
     public void tableViewSelectionDidChange(NSNotification notification) {
 	log.debug("tableViewSelectionDidChange");
 	int row = this.selectedRow();
 	if(row != -1) {
-//	    ((Path)model.getEntry(row)).callObservers(Message.SELECTION);
+	    ((Path)model.getEntry(row)).callObservers(new Message(Message.SELECTION));
 	}
     }
 
-    
     public void update(Observable o, Object arg) {
-	log.debug("update");
+	log.debug("update:"+o+","+arg);
 	if(o instanceof Host) {
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;
@@ -123,11 +124,13 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 		if(msg.getTitle().equals(Message.OPEN)) {
 		    model.clear();
 		    this.reloadData();
+		    this.setNeedsDisplay(true);
 		}
 		// The host's session has been closed.
 		if(msg.getTitle().equals(Message.CLOSE)) {
 		    model.clear();
 		    this.reloadData();
+		    this.setNeedsDisplay(true);
 		}
 	    }
 	    if(arg instanceof Path) {
@@ -138,15 +141,16 @@ public class CDBrowserView extends NSTableView implements Observer {//, NSDraggi
 		    model.addEntry(i.next());
 		}
 		this.reloadData();
+		this.setNeedsDisplay(true);
 	    }
 	}
     }
 
 
-    public void reloadData() {
-	super.reloadData();
-	this.setNeedsDisplay(true);
-    }    
+  //  public void reloadData() {
+//	super.reloadData();
+//	this.setNeedsDisplay(true);
+   // }    
 
     // ----------------------------------------------------------
     // Drawing methods

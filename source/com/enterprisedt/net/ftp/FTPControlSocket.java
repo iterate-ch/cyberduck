@@ -25,6 +25,9 @@
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.5  2003/04/16 17:24:34  dkocher
+ *        No log message.
+ *
  *        Revision 1.4  2003/04/01 22:06:58  dkocher
  *        *** empty log message ***
  *
@@ -59,12 +62,11 @@ import java.io.OutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.net.InetAddress;
-
 import org.apache.log4j.Logger;
+import ch.cyberduck.core.Transcript;
 
 /**
  *  Supports client-side FTP operations
@@ -448,7 +450,7 @@ import org.apache.log4j.Logger;
       *  @return  reply to the supplied command
       */
      String sendCommand(String command) throws IOException {
-	 log.debug("sendCommand("+command+")");
+	 Transcript.instance().transcript(command);
          //if (debugResponses)
              //log.println("---> " + command);
 
@@ -523,6 +525,7 @@ import org.apache.log4j.Logger;
       */
      FTPReply validateReply(String reply, String expectedReplyCode) throws IOException, FTPException {
 	 log.debug("validateReply:"+reply);
+	 Transcript.instance().transcript(reply);
          // all reply codes are 3 chars long
          String replyCode = reply.substring(0, 3);
          String replyText = reply.substring(4);
@@ -548,6 +551,8 @@ import org.apache.log4j.Logger;
       */
      FTPReply validateReply(String reply, String[] expectedReplyCodes) throws IOException, FTPException {
 	 log.debug("validateReply");
+	 Transcript.instance().transcript(reply);
+	 
          // all reply codes are 3 chars long
          String replyCode = reply.substring(0, 3);
          String replyText = reply.substring(4);

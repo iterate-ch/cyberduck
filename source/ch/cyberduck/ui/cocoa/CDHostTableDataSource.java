@@ -49,7 +49,7 @@ public class CDHostTableDataSource extends NSObject {
     }
 
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-	log.debug("tableViewObjectValueForLocation");
+	//	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 	Host h = (Host)data.get(row);
 	String identifier = (String)tableColumn.identifier();
 	if(identifier.equals("STATUS")) {

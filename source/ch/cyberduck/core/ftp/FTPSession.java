@@ -408,6 +408,7 @@ public class FTPSession extends Session {
 		    FTP.connect(host.getName(), host.getPort());
 		    FTPSession.this.log("FTP connection opened", Message.PROGRESS);
 		    FTPSession.this.login();
+		    FTPSession.this.setConnected(true);
 		    FTP.system();
 		    String path = host.getWorkdir().equals(Preferences.instance().getProperty("connection.path.default")) ? FTP.pwd() : host.getWorkdir();
 		    FTPFile home = new FTPFile(path);
@@ -448,13 +449,17 @@ public class FTPSession extends Session {
     public void check() throws IOException {
 	log.debug("check");
 	if(!FTP.isAlive()) {
-	    host.recycle();
+	  //  host.recycle();
+	    this.setConnected(false);
 	    this.connect();
-	    //while(!FTP.isAlive())
-		//
+	}
+	while(true) {
+	    if(this.isConnected())
+		return;
+	    this.log("Waiting for connection...", Message.PROGRESS);
+	    Thread.yield();
 	}
     }
-
     
     class FTPParser {
 	private final String months[] = {

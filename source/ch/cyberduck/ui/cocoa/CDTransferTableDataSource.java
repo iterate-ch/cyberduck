@@ -45,18 +45,19 @@ public class CDTransferTableDataSource extends NSObject {//implements NSTableVie
 
     //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-	log.debug("tableViewObjectValueForLocation:"+row);
+//	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
         String identifier = (String)tableColumn.identifier();
         Path p = (Path)data.get(row);
 	if(identifier.equals("TYPE")) {
-	    //@todo
+	    //@todo if(p.isDownload())
 	    return NSImage.imageNamed("download.tiff");
-	    //if p.isUpload() return NSImage.imageNamed("upload.tiff");
+	    //if(p.isUpload()) return NSImage.imageNamed("upload.tiff");
 	}
 	if(identifier.equals("FILENAME"))
 	    return p.getName();
 	if(identifier.equals("PROGRESS"))
-	    return p.status.getCurrent()+"";
+	    return null;
+//	    return p.status.getCurrent()+"";
 //	    return new NSProgressIndicator();
 	if(identifier.equals("BUTTON")) {
 	    return NSImage.imageNamed("stop.tiff");

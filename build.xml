@@ -76,10 +76,9 @@
 		<echo message="Building ${app.name}..."/>
 		<mkdir dir="${classes}" />
 		<mkdir dir="${build}" />
-		<mkdir dir="${doc}" />
 	</target>
 
-	<target name="all-modules" depends="core,ftp,ssh,http,cocoa"></target>
+	<target name="all-modules" depends="core,ftp,ssh,http,cocoa,swing"></target>
 	
 	<target name="libraries">
 	    <copy todir="${app.jar}">
@@ -128,6 +127,7 @@
 	    <jar jarfile="${build}/cocoa.jar"
 		update="yes">
 		<fileset dir="${classes}/cocoa/">
+		    <include name="ch/cyberduck/ui/*.class"/>
 		    <include name="ch/cyberduck/ui/cocoa/**/*.class"/>
 		</fileset>
 	    </jar>
@@ -153,6 +153,7 @@
 	    <jar jarfile="${build}/swing.jar"
 		update="yes">
 		<fileset dir="${classes}/swing/">
+		    <include name="ch/cyberduck/ui/*.class"/>
 		    <include name="ch/cyberduck/ui/swing/**/*.class"/>
 		</fileset>
 	    </jar>
@@ -258,16 +259,17 @@
 	</target>
 -->	
 	<target name="doc" depends="init">
+		<mkdir dir="${doc}" />
 		<javadoc packagenames="ch.cyberduck.*"
 		           sourcepath="${source}"
+			   classpath="${classpath}"
 		           destdir="${doc}"
 		           author="true"
 		           version="true"
 		           use="true"
 		           windowtitle="${app.name} API"
 		           doctitle="${app.name}"
-		           private="true"
-		           bottom="Copyright (c) 2001 David Kocher. Enjoy ${app.name}!">
+		           bottom="Copyright (c) 2003 David Kocher. Enjoy ${app.name}!">
 		  </javadoc>
 	</target>
 	
@@ -304,54 +306,5 @@
                 <delete file="${dist}/${app.name}.tar"/>
 	</target>
 -->
-
-<!--
-	<target name="app" depends="jar" description="build mac os x bundle">
-
-		<mkdir dir="${app.bundle}" />
-		<mkdir dir="${app.resources}" />
-		<mkdir dir="${app.contents}" />
-		<mkdir dir="${app.contents}/MacOS" />
-		<mkdir dir="${app.jar}" />
-
-		<echo message="put stuff into Contents"/>
-		<copy todir="${app.contents}">
-			<fileset dir="${resources}">
-				<include name="Info.plist" />
-				<include name="PkgInfo" />
-			</fileset>
-		</copy>
-		<replace dir="${app.contents}" includes="**/*.plist">
-			<replacefilter token="*cyberduck.version.major*" value="${cyberduck.version.major}"/>
-			<replacefilter token="*cyberduck.version.minor*" value="${cyberduck.version.minor}"/>
-		</replace>
-
-		<echo message="put icns and stuff into ${app.resources}"/>
-		<copy todir="${app.resources}">
-			<fileset dir="${resources}">
-				<include name="*.icns" />
-			</fileset>
-		</copy>
-
-		<echo message="put jars into ${app.jar}"/>
-		<copy todir="${app.jar}">
-			<fileset dir="${dist}">
-				<include name="${app.name}.jar" />
-			</fileset>
-			<fileset dir="${lib}">
-				<include name="log4j.jar" />
-				<include name="jaxb.jar" />
-			</fileset>
-		</copy>
-
-		<echo message="put app stub in ${app.contents}/MacOS and make executable"/>
-		<copy todir="${app.contents}/MacOS">
-			<fileset dir="${resources}">
-				<include name="${app.name}" />
-			</fileset>
-		</copy>
-		<chmod perm="ugo+rx" file="${app.contents}/MacOS/${app.name}" />
-	</target>
-	-->
 </project>
 

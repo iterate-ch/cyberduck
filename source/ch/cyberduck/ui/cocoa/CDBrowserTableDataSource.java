@@ -49,7 +49,7 @@ public class CDBrowserTableDataSource extends NSObject {
 
     //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-//	log.debug("tableViewObjectValueForLocation");
+//	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
         String identifier = (String)tableColumn.identifier();
         Path p = (Path)data.get(row);
 	if(identifier.equals("TYPE")) {
@@ -76,13 +76,14 @@ public class CDBrowserTableDataSource extends NSObject {
 
     //setValue()
     public void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row) {
+	log.debug("tableViewSetObjectValueForLocation:"+row);
         Path p = (Path)data.get(row);
 	p.rename((String)value);
     }
 
 
     // ----------------------------------------------------------
-    // Drop methods
+    // Drag&Drop methods
     // ----------------------------------------------------------
     
     /**
@@ -101,8 +102,10 @@ public class CDBrowserTableDataSource extends NSObject {
     }
 
     /**
-	* Invoked by tableView when the mouse button is released over a table view that previously decided to allow a drop. info
-     * contains details on this dragging operation. The proposed location is row and action is operation. The data source should
+	* Invoked by tableView when the mouse button is released over a table view that previously decided to allow a drop.
+     * @param info contains details on this dragging operation.
+     * @param row The proposed location is row and action is operation.
+     * The data source should
      * incorporate the data from the dragging pasteboard at this time.
      */
     public boolean tableViewAcceptDrop( NSTableView tableView, NSDraggingInfo info, int row, int operation) {
@@ -123,10 +126,24 @@ public class CDBrowserTableDataSource extends NSObject {
 	    //data.addEntry(fileseList.objectAtIndex(i), row+i);
 	}
 	tableView.reloadData();
+	tableView.setNeedsDisplay(true);
 	// Select the last song.
 	tableView.selectRow(row+i-1, false);
 	return true;
     }
+
+    /**    Invoked by tableView after it has been determined that a drag should begin, but before the drag has been started.
+	* The drag image and other drag-related information will be set up and provided by the table view once this call
+	* returns with true.
+	* @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard
+	* (data, owner, and so on).
+	*@param rows is the list of row numbers that will be participating in the drag.
+	*/
+    public  boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
+	return true;
+    }
+
+	
 
     // ----------------------------------------------------------
     // Data access

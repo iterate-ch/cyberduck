@@ -144,7 +144,7 @@ public class CDMainController extends NSObject {
 	if(infoWindow == null)
 	    NSApplication.loadNibNamed("Info", this);
 	Path path = (Path)((CDBrowserTableDataSource)browserTable.dataSource()).getEntry(browserTable.selectedRow());
-//@todo	((CDInfoWindow)infoWindow).update(path, new Message(Message.SELECTION));
+//	infoWindow.update(path, new Message(Message.SELECTION));
 	infoWindow.orderFront(this);
     }
 

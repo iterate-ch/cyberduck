@@ -25,6 +25,9 @@
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.4  2003/04/16 17:24:34  dkocher
+ *        No log message.
+ *
  *        Revision 1.3  2003/04/01 22:06:58  dkocher
  *        *** empty log message ***
  *
@@ -174,7 +177,15 @@ public class FTPClient {
 	* @return true if the control socket isn't null
      */
     public boolean isAlive() {
-        return control!=null;
+	if(null == control)
+	    return false;
+	try {
+	    this.noop();
+	    return true;
+	}
+	catch(IOException e) {
+	    return false;
+	}
     }
     
     /**

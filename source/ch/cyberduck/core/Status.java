@@ -33,6 +33,7 @@ import java.util.Observable;
 import java.util.Vector;
 import java.net.URL;
 import org.apache.log4j.Logger;
+import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.ObserverList;
 
@@ -118,7 +119,7 @@ public class Status extends Observable implements Serializable {
      * @param arg The message to send to the observers
      * @see ch.cyberduck.core.Message
      */
-    public void callObservers(Object arg) {
+    public void callObservers(Message arg) {
         log.debug("callObservers:"+arg.toString());
 	log.debug(this.countObservers()+" known.");
  //        long start = System.currentTimeMillis();

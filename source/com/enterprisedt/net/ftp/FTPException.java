@@ -25,6 +25,9 @@
  *  Change Log:
  *
  *    $Log$
+ *    Revision 1.3  2003/04/16 17:24:34  dkocher
+ *    No log message.
+ *
  *    Revision 1.2  2003/03/21 14:14:43  dkocher
  *    No log message.
  *
@@ -52,9 +55,9 @@ package com.enterprisedt.net.ftp;
  *
  */
 
-import ch.cyberduck.core.SessionException;
+import java.io.IOException;
 
- public class FTPException extends SessionException {
+ public class FTPException extends IOException {
 
     /**
      *  Revision control id

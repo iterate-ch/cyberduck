@@ -66,12 +66,12 @@ public class CDTransferView extends NSTableView implements Observer {
 	this.setTarget(this);
         this.setDoubleAction(new NSSelector("doubleClickAction", new Class[] {null}));
 	this.setAutoresizesAllColumnsToFit(true);
-//	if(this.tableColumnWithIdentifier("PROGRESS") != null)
-//	    this.tableColumnWithIdentifier("PROGRESS").setDataCell(new CDProgressCell());
+	if(this.tableColumnWithIdentifier("PROGRESS") != null)
+	    this.tableColumnWithIdentifier("PROGRESS").setDataCell(new CDProgressCell());
 	if(this.tableColumnWithIdentifier("TYPE") != null)
 	    this.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
 	if(this.tableColumnWithIdentifier("BUTTON") != null)
-	    this.tableColumnWithIdentifier("BUTTON").setDataCell(new NSImageCell());	
+	    this.tableColumnWithIdentifier("BUTTON").setDataCell(new CDButtonCell());	
     }
 
     public void doubleClickAction(NSObject sender) {
@@ -92,10 +92,10 @@ public class CDTransferView extends NSTableView implements Observer {
 	}
     }
 
-    public void reloadData() {
-	super.reloadData();
-	this.setNeedsDisplay(true);
-    }
+//    public void reloadData() {
+//	super.reloadData();
+//	this.setNeedsDisplay(true);
+  //  }
 
     public void update(Observable o, Object arg) {
 	log.debug("update:"+o+","+arg);
@@ -107,6 +107,7 @@ public class CDTransferView extends NSTableView implements Observer {
 		if(msg.getTitle().equals(Message.DATA))
 		    //  return new JProgressBar(bookmark.status.getProgressModel());
 		    this.reloadData(); //@todo inefficient?
+		this.setNeedsDisplay(true);
 	    }
 	}
 	if(o instanceof Path) {
@@ -115,11 +116,13 @@ public class CDTransferView extends NSTableView implements Observer {
 		if(msg.getTitle().equals(Message.START)) {
 		    model.addEntry(o);
 		    this.reloadData();
+		    this.setNeedsDisplay(true);
 		}
 		if(msg.getTitle().equals(Message.STOP)) {
 		    if(Preferences.instance().getProperty("files.removeCompleted").equals("true")) {
 			model.removeEntry(o);
 			this.reloadData();
+			this.setNeedsDisplay(true);
 		    }
 		}
 	    }
@@ -150,26 +153,48 @@ public class CDTransferView extends NSTableView implements Observer {
 	log.debug("tableViewSelectionDidChange");
 	//
     }
-/*
+
+    class CDButtonCell extends NSButtonCell {
+	public CDButtonCell() {
+	    super(NSImage.imageNamed("stop.tiff"));
+	    this.setTarget(this);
+	    this.setAction(new NSSelector("selectionChanged", new Class[]{null}));
+//	    this.setDrawsBackground(false);
+	    log.debug("CDButtonCell");
+	}
+
+	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
+	    super.drawInteriorWithFrameInView(cellFrame, controlView);
+	    log.debug("drawInteriorWithFrameInView");
+	}
+
+	public void selectionChanged(NSObject sender) {
+	    log.debug("selectionChanged");
+//	    if(e.type() == NSEvent.LeftMouseDown) {
+//		log.debug("NSEvent.LeftMouseDown");
+//	    }
+	}
+    }
+
     class CDProgressCell extends NSCell {
 	NSProgressIndicator progressBar;
 
 	public CDProgressCell() {
 	    super();
+	    log.debug("CDProgressCell");
 	}
 
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 	    log.debug("drawInteriorWithFrameInView");
-	    if (null == progressBar) {
+//	    if (null == progressBar) {
 		progressBar = new NSProgressIndicator(cellFrame);
 		progressBar.setIndeterminate(true);
 		progressBar.setControlSize(NSProgressIndicator.SmallControlSize);
-		progressBar.setDoubleValue(0.0);
-		controlView.addSubview(progressBar);
-	    }
+//		progressBar.setDoubleValue(0.0);
+//	    }
 	    progressBar.setFrame(cellFrame);
 	    progressBar.displayRect(cellFrame);
+//	    controlView.addSubview(progressBar);
 	}
     }
-    */
 }

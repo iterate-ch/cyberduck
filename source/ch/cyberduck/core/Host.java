@@ -64,10 +64,13 @@ public class Host extends Observable {
 
     public void callObservers(Object arg) {
         log.debug("callObservers:"+arg.toString());
+        long start = System.currentTimeMillis();
 	this.setChanged();
 //	if(arg instanceof Path)
 	    //@todothis.workdir = (Path)arg;
 	this.notifyObservers(arg);
+        long end = System.currentTimeMillis();
+	log.debug((end - start) + " ms");
     }
     
     public void deleteObserver(Observer o) {
@@ -88,7 +91,7 @@ public class Host extends Observable {
 	    if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
 		this.session = new HTTPSession(this);
 	    }
-	    //        if(this.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
+	    //  @todo      if(this.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
      //            return new HTTPSession(this);
      //        }
 	    if(this.getProtocol().equalsIgnoreCase(Session.FTP)) {
@@ -115,6 +118,10 @@ public class Host extends Observable {
 	this.closeSession();
 	this.openSession();
     }
+    
+//    public boolean isConnected() {
+//	return this.getSession().isConnected();
+  //  }    
 
     public Login getLogin() {
 	return this.login;
@@ -132,6 +139,7 @@ public class Host extends Observable {
 	return this.port;
     }
 
+//@todo SSHHost, FTPHost, HTTPHost, etc
     //ssh specific
     public void setHostKeyVerification(HostKeyVerification h) {
 	this.hostKeyVerification = h;

@@ -65,7 +65,7 @@ public class CDHostView extends NSTableView implements Observer {
 	if(this.tableColumnWithIdentifier("STATUS") != null)
 	    this.tableColumnWithIdentifier("STATUS").setDataCell(new NSImageCell());;
 	if(this.tableColumnWithIdentifier("BUTTON") != null)
-	    this.tableColumnWithIdentifier("BUTTON").setDataCell(new NSImageCell());;
+	    this.tableColumnWithIdentifier("BUTTON").setDataCell(new CDButtonCell());;
 //	this.tableColumnWithIdentifier("HOST").setDataCell(new CDHostCell());;
     }
 
@@ -116,28 +116,52 @@ public class CDHostView extends NSTableView implements Observer {
     }
     */
 
-    public void reloadData() {
-	super.reloadData();
-	this.setNeedsDisplay(true);
-    }    
+//    public void reloadData() {
+//	super.reloadData();
+//	this.setNeedsDisplay(true);
+//    }    
     
     // ----------------------------------------------------------
     // Observer interface
     // ----------------------------------------------------------
 
     public void update(Observable o, Object arg) {
+	log.debug("update:"+o+","+arg);
 	if(o instanceof Host) {
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.OPEN)) {
 		    model.addEntry(o);
 		    this.reloadData();
+		    this.setNeedsDisplay(true);
 		}
 		if(msg.getTitle().equals(Message.CLOSE)) {
 		    model.removeEntry(o);
 		    this.reloadData();
+		    this.setNeedsDisplay(true);
 		}
 	    }
+	}
+    }
+
+    class CDButtonCell extends NSButtonCell {
+	public CDButtonCell() {
+	    super(NSImage.imageNamed("stop.tiff"));//@todo image dependant on state
+	    this.setTarget(this);
+	    this.setAction(new NSSelector("selectionChanged", new Class[]{null}));
+	    //	    this.setDrawsBackground(false);
+	    log.debug("CDButtonCell");
+	}
+
+	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
+	    super.drawInteriorWithFrameInView(cellFrame, controlView);
+	}
+
+	public void selectionChanged(NSObject sender) {
+	    log.debug("selectionChanged");
+	    //	    if(e.type() == NSEvent.LeftMouseDown) {
+     //		log.debug("NSEvent.LeftMouseDown");
+     //	    }
 	}
     }
     

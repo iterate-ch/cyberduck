@@ -447,7 +447,7 @@ public class SFTPSession extends Session {
     public void check() throws IOException {
 	log.debug("check");
 	if(!SSH.isConnected()) {
-	    host.recycle();
+	   // host.recycle();
 	    this.connect();
 	}
     }

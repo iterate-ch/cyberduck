@@ -56,6 +56,8 @@ public abstract class Session {//extends Thread {
      */
     public Host host;
 
+    private boolean connected;
+
     public Session(Host h) {//, TransferAction action) {//, boolean secure) {
 	log.debug("Session("+h+")");
 	this.host = h;
@@ -85,6 +87,16 @@ public abstract class Session {//extends Thread {
      */
     public abstract void check() throws IOException;
 
+    /**
+     * @return boolean True if the session has not yet been closed. 
+     */
+    public boolean isConnected() {
+	return this.connected;
+    }
+
+    public void setConnected(boolean connected) {
+	this.connected = connected;
+    }
     
     public void log(String message, String title) {
 //        log.debug("[Session] log("+message+","+type+")");

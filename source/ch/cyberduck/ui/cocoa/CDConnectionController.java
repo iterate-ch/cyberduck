@@ -68,6 +68,7 @@ public class CDConnectionController extends NSObject implements Observer {
     private NSProgressIndicator progressIndicator; // IBOutlet
     public void setLoginSheet(NSProgressIndicator progressIndicator) {
 	this.progressIndicator = progressIndicator;
+	this.progressIndicator.setIndeterminate(true);
     }
 
     private NSTextField statusLabel; // IBOutlet

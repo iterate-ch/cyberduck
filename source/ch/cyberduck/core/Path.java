@@ -32,6 +32,7 @@ import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
 import java.util.Observable;
 import java.util.Observer;
+import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.ObserverList;
 import org.apache.log4j.Logger;
@@ -92,7 +93,7 @@ public abstract class Path extends Observable {//implements Serializable {//, Tr
     }
 */
  
-    public void callObservers(Object arg) {
+    public void callObservers(Message arg) {
 	log.debug("callObservers:"+arg.toString());
 	this.setChanged();
 	this.notifyObservers(arg);
