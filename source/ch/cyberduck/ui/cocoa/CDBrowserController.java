@@ -514,10 +514,13 @@ public class CDBrowserController implements Observer {
 	this.window().makeKeyAndOrderFront(null);
 	this.unmount();
 	this.host = host;
-
-	if(host.getProtocol().equals(Session.SFTP)) {
+	this.host.getSession().addObserver((Observer)this);
+	this.host.getSession().addObserver((Observer)browserTable);
+	this.host.getSession().addObserver((Observer)pathController);
+	
+	if(this.host.getProtocol().equals(Session.SFTP)) {
 	    try {
-		host.setHostKeyVerificationController(new CDHostKeyController(this.window()));
+		this.host.setHostKeyVerificationController(new CDHostKeyController(this.window()));
 	    }
 	    catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
 		//This exception is thrown whenever an exception occurs open or reading from the host file.
@@ -536,16 +539,10 @@ public class CDBrowserController implements Observer {
 	    }
 	}
 	
-	CDHistoryImpl.instance().addItem(host);
-	//oops- ugly
 	this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
-	
-	Session session = host.getSession();	
-	session.addObserver((Observer)this);
-	session.addObserver((Observer)browserTable);
-	session.addObserver((Observer)pathController);
-
-	session.mount();
+    
+	this.host.getSession().mount();
+	CDHistoryImpl.instance().addItem(host);
 	this.isMounting = false;
 	this.mounted = true;
     }
@@ -556,14 +553,10 @@ public class CDBrowserController implements Observer {
 
     public void unmount() {
 	log.debug("unmount");
-	if(this.isMounted()) {
-	//this.mounted = false;
-//	if(this.host != null) {
-//	    if(host.getSession() != null) {
-//		host.getSession().deleteObserver((Observer)this);
-//		host.getSession().deleteObserver((Observer)browserTable);
-//		host.getSession().deleteObserver((Observer)pathController);
-//	    }
+	if(host != null) {
+	    this.host.getSession().deleteObserver((Observer)this);
+	    this.host.getSession().deleteObserver((Observer)browserTable);
+	    this.host.getSession().deleteObserver((Observer)pathController);
 	    this.host.closeSession();
 	}
     }
