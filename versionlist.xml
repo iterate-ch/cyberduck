@@ -8,6 +8,11 @@
 	<string>Cyberduck-2.2beta2.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.2b3
+- Caching folder listings
+- Auto-refresh the folder listing after uploading a file
+- Sending 'LIST -a' to list directories with FTP
+
 2.2b2
 - Updated Japanese localization
 - Updated French localization

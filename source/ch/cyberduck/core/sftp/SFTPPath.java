@@ -129,9 +129,6 @@ public class SFTPPath extends Path {
 					}
 				}
 				this.setCache(files);
-				//			if (notifyobservers) {
-				//session.callObservers(this);
-				//			}
 			}
 			catch (SshException e) {
 				session.log("SSH Error: " + e.getMessage(), Message.ERROR);

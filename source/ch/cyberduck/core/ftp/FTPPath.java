@@ -113,10 +113,6 @@ public class FTPPath extends Path {
 				session.FTP.setTransferType(FTPTransferType.ASCII);
 				session.FTP.chdir(this.getAbsolute());
 				this.setCache(files = FTPParser.instance().parseList(this, session.FTP.dir(), showHidden));
-//				this.setCache(FTPParser.instance().parseList(this, session.FTP.dir(), showHidden));
-				//			if (notifyobservers) {
-//				session.callObservers(this);
-				//			}
 			}
 			catch (FTPException e) {
 				session.log("FTP Error: " + e.getMessage(), Message.ERROR);
@@ -130,7 +126,6 @@ public class FTPPath extends Path {
 		}
 		session.callObservers(this);
 		return files;
-		//		return this.cache();
 	}
 	
 	public void delete() {
@@ -139,7 +134,7 @@ public class FTPPath extends Path {
 			session.check();
 			if (this.isDirectory()) {
 				session.FTP.chdir(this.getAbsolute());
-				List files = this.list(false, true);
+				List files = this.list(true, true);
 				java.util.Iterator iterator = files.iterator();
 				Path file = null;
 				while (iterator.hasNext()) {

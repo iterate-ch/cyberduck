@@ -49,7 +49,7 @@ public class CDTranscriptImpl implements Transcripter {
 
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
-		textView.setEditable(false);
+		textView.setEditable(true);
 		textView.setSelectable(true);
 		Transcript.instance().addListener(this);
 	}

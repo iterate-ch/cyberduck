@@ -404,7 +404,6 @@ public class CDQueueController implements Observer, Validator {
 	}
 
 	public boolean validateToolbarItem(NSToolbarItem item) {
-//		log.debug("validateToolbarItem:"+item.label());
 		String identifier = item.itemIdentifier();
 		if (identifier.equals("Stop")) {
 			if (this.queueTable.numberOfSelectedRows() == 1) {
@@ -500,7 +499,7 @@ public class CDQueueController implements Observer, Validator {
 								 ), // end selector
 															 null, // dismiss selector
 															 path, // context
-															 NSBundle.localizedString("The file", "") + " " + path.getName() + " " + NSBundle.localizedString("alredy exists in", "") + " " + path.getLocal().getParent() // message
+															 NSBundle.localizedString("The file", "") + " '" + path.getName() + "' " + NSBundle.localizedString("alredy exists in", "") + " " + path.getLocal().getParent() // message
 															 );
 						// Waiting for user to make choice
 						while (!done) {
