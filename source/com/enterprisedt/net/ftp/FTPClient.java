@@ -49,11 +49,6 @@ import ch.cyberduck.core.Preferences;
 public class FTPClient {
 	
     /**
-	*  Revision control id
-	*/
-    public static String cvsId = "@(#)$Id$";
-    
-    /**
 		* SOCKS port property name
 		*/
     final private static String SOCKS_PORT = "socksProxyPort";
@@ -751,19 +746,20 @@ public class FTPClient {
     public void setTransferType(FTPTransferType type)
         throws IOException, FTPException {
 			
-			checkConnection(true);
-			
-			// determine the character to send
-			String typeStr = FTPTransferType.ASCII_CHAR;
-			if (type.equals(FTPTransferType.BINARY))
-				typeStr = FTPTransferType.BINARY_CHAR;
-			
-			// send the command
-			FTPReply reply = control.sendCommand("TYPE " + typeStr);
-			lastValidReply = control.validateReply(reply, "200");
-			
+			if(!type.equals(this.transferType)) {
+				checkConnection(true);
+				
+				// determine the character to send
+				String typeStr = FTPTransferType.ASCII_CHAR;
+				if (type.equals(FTPTransferType.BINARY))
+					typeStr = FTPTransferType.BINARY_CHAR;
+				
+				// send the command
+				FTPReply reply = control.sendCommand("TYPE " + typeStr);
+				lastValidReply = control.validateReply(reply, "200");
+			}
 			// record the type
-			transferType = type;
+			this.transferType = type;
 		}
 	
 	
