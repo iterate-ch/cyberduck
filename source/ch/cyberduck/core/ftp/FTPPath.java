@@ -58,6 +58,10 @@ public class FTPPath extends Path {
 	super(parent, file);
 	this.session = session;
     }
+
+    public Path copy() {
+	return new FTPPath(this.session, this.getAbsolute());
+    }
     
     public Path getParent() {
 	String abs = this.getAbsolute();
@@ -134,7 +138,7 @@ public class FTPPath extends Path {
 		session.log("Deleting "+this.getName(), Message.PROGRESS);
 		session.FTP.delete(this.getName());
 	    }
-	    this.getParent().list();
+// performance bottleneck when used recursivy this.getParent().list();
 	}
 	catch(FTPException e) {
 	    session.log("FTP Error: "+e.getMessage(), Message.ERROR);

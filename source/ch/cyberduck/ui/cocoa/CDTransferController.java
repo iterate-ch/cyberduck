@@ -126,24 +126,26 @@ public class CDTransferController implements Observer {
     /**
 	* @param kind Tag specifiying if it is a download or upload.
      */
-    public CDTransferController(Host host, Path root, int kind) {
+    public CDTransferController(Path root, int kind) {
 	allDocuments.addObject(this);
-	this.host = host;
 	this.root = root;
+	this.host = root.getHost();
 	this.kind = kind;
         if (false == NSApplication.loadNibNamed("Transfer", this)) {
             log.fatal("Couldn't load Transfer.nib");
             return;
         }
 	this.host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
-	this.init();
+//	this.init();
     }
 
     /**
 	* Init the gui components according to the model
      */
-    private void init() {
-	log.debug("init");
+    public void awakeFromNib() {
+	log.debug("awakeFromNib");
+	NSPoint origin = this.window().frame().origin();
+	this.window().setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 	this.window().setTitle(root.getName());
 	this.urlField.setAttributedStringValue(new NSAttributedString(host.getURL()+root.getAbsolute()));
 	this.fileField.setAttributedStringValue(new NSAttributedString(root.getLocal().toString()));
@@ -234,14 +236,17 @@ public class CDTransferController implements Observer {
 	    else if(msg.getTitle().equals(Message.COMPLETE)) {
 		this.progressField.setAttributedStringValue(new NSAttributedString("Complete"));
 		this.progressField.display();
-		if(Queue.KIND_DOWNLOAD == kind) {
-		    if(1 == queue.numberOfJobs()) {
+		if(1 == queue.numberOfJobs()) {
+		    if(Preferences.instance().getProperty("transfer.close").equals("true")) {
+			this.window.close();
+		    }
+		    if(Queue.KIND_DOWNLOAD == kind) {
 			if(Preferences.instance().getProperty("connection.download.postprocess").equals("true")) {
 			    NSWorkspace.sharedWorkspace().openFile(root.getLocal().toString());
 			}
-			if(Preferences.instance().getProperty("transfer.close").equals("true")) {
-			    this.window.close();
-			}
+		    }
+		    if(Queue.KIND_UPLOAD == kind) {
+			//todo refresh listing
 		    }
 		}
 	    }

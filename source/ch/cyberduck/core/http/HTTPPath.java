@@ -51,6 +51,10 @@ public class HTTPPath extends Path {
 	this.session = session;
     }
 
+    public Path copy() {
+	return new HTTPPath(this.session, this.getAbsolute());
+    }
+    
     public Path getParent() {
 	String abs = this.getAbsolute();
 	if((null == parent)) {

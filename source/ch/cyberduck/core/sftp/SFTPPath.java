@@ -58,6 +58,10 @@ public class SFTPPath extends Path {
 	this.session = session;
     }
 
+    public Path copy() {
+	return new SFTPPath(this.session, this.getAbsolute());
+    }
+    
     public Path getParent() {
 	String abs = this.getAbsolute();
 	if((null == parent)) {
@@ -105,7 +109,7 @@ public class SFTPPath extends Path {
 			p.attributes.setOwner(x.getAttributes().getUID().toString());
 			p.attributes.setGroup(x.getAttributes().getGID().toString());
 			p.status.setSize(x.getAttributes().getSize().intValue());
-			p.attributes.setModified(x.getAttributes().getModifiedTime().longValue());
+			p.attributes.setModified(Long.parseLong(x.getAttributes().getModifiedTime().toString())*1000L);
 			p.attributes.setMode(x.getAttributes().getPermissionsString());
 			p.attributes.setPermission(new Permission(x.getAttributes().getPermissionsString()));
 			files.add(p);
@@ -166,7 +170,7 @@ public class SFTPPath extends Path {
 		session.log("Deleting "+this.getName(), Message.PROGRESS);
 		session.SFTP.removeFile(this.getAbsolute());
 	    }
-	    this.getParent().list();
+//	    this.getParent().list();
 	}
 	catch(SshException e) {
 	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);

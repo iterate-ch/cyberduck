@@ -93,13 +93,21 @@ public abstract class Path {// extends Observable {
 //	log.debug("setPath:"+pathname);
 //	if(pathname.charAt(pathname.length()-1) == '/')
 //	    pathname = pathname.substring(0, pathname.length()-2);
-        this.path = pathname.trim();
+//        this.path = pathname.trim();
+        this.path = pathname;
     }
 
     /**
 	* @return My parent directory
      */
     public abstract Path getParent();
+
+    /**
+	* @throws NullPointerException if session is not initialized
+     */
+    public Host getHost() {
+	return this.getSession().getHost();
+    }
 
     /**
 	* @return My directory listing
@@ -430,6 +438,8 @@ public abstract class Path {// extends Observable {
   //          this.status.fireStopEvent();
     //    }
     //}
+
+    public abstract Path copy();
     
     public String toString() {
 	return this.getAbsolute();

@@ -56,11 +56,16 @@ public class CDTranscriptImpl implements Transcripter {
 	 * attributes of the first character in the receiver are used.
 	 */
 	int l = textView.string().length();
-	textView.replaceCharactersInRange(new NSRange(l, 0), message+"\n");
-	textView.scrollRangeToVisible(new NSRange(l, message.length()));
+	this.textView.replaceCharactersInRange(new NSRange(l, 0), message+"\n");
+	this.textView.scrollRangeToVisible(new NSRange(l, message.length()));
 
     }
 
+    public void clearLogButtonClicked(Object sender) {
+//	this.textView.selectAll();
+//	this.textView.delete();
+    }
+    
     public Object getView() {
 	return textView;
     }

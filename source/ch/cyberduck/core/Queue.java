@@ -38,6 +38,10 @@ public class Queue extends Observable implements Observer { //Thread {
     public static final int KIND_DOWNLOAD = 0;
     public static final int KIND_UPLOAD = 1;
 
+    private Timer timeLeftTimer;
+    private Timer currentSpeedTimer;
+    private Timer clockTimer;
+
     /**
 	* The elements (jobs to process) of the queue
      */
@@ -90,15 +94,12 @@ public class Queue extends Observable implements Observer { //Thread {
      * the queue will consist of only this.
      * @param  kind Specifiying a download or upload.
      */
-//    public Queue(Path parent, int kind) {
-//	this(parent, kind);
-//  }
-
     public Queue(Path root, int kind) {
 //	this.roots = new ArrayList();
 //	this.roots.add(root);
 	this.root = root;
 	this.kind = kind;
+	this.init();
     }
 
     public int kind() {
@@ -142,114 +143,8 @@ public class Queue extends Observable implements Observer { //Thread {
 	this.reset();
 	new Thread() {
 	    public void run() {
-		
-		Timer clockTimer = new Timer(1000,
-			       new ActionListener() {
-				   int seconds = 0;
-				   int minutes = 0;
-				   int hours = 0;
-				   public void actionPerformed(ActionEvent event) {
-				       seconds++;
-				      // calendar.set(year, mont, date, hour, minute, second)
-				// >= one hour
-				       if(seconds >= 3600) {
-					   hours = (int)(seconds/60/60);
-					   minutes = (int)((seconds - hours*60*60)/60);
-					   calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), hours, minutes, seconds - minutes*60);
-				       }
-				       else {
-					  // >= one minute
-					   if(seconds >= 60) {
-					       minutes = (int)(seconds/60);
-					       calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), minutes, seconds - minutes*60);
-					   }
-					  // only seconds
-					   else {
-					       calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), seconds);
-					   }
-				       }
-
-				       if(calendar.get(Calendar.HOUR) > 0) {
-					   callObservers(new Message(Message.CLOCK, parseTime(calendar.get(Calendar.HOUR)) + ":" + parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND))));
-				       }
-				       else {
-					   Queue.this.callObservers(new Message(Message.CLOCK, parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND))));
-				       }
-				   }
-			       }
-			       );
 		clockTimer.start();
 
-		/*
-		Timer overallSpeedTimer = new Timer(4000,
-				      new ActionListener() {
-					  Vector overall = new Vector();
-					  double current;
-					  double last;
-					  public void actionPerformed(ActionEvent e) {
-					      current = candidate.status.getCurrent();
-					      if(current <= 0) {
-						  setOverall(0);
-					      }
-					      else {
-						  overall.add(new Double((current - last)/4)); // bytes transferred for the last 4 seconds
-						  Iterator iterator = overall.iterator();
-						  double sum = 0;
-						  while(iterator.hasNext()) {
-						      Double s = (Double)iterator.next();
-						      sum = sum + s.doubleValue();
-						  }
-						  setOverall((sum/overall.size()));
-						  last = current;
-					       //                        log.debug("overallSpeed " + sum/overall.size()/1024 + " KBytes/sec");
-					      }
-					  }
-				      }
-				      );
-		 */
-
-		Timer currentSpeedTimer = new Timer(500,
-				      new ActionListener() {
-					  int i = 0;
-					  int current;
-					  int last;
-					  int[] speeds = new int[8];
-					  public void actionPerformed(ActionEvent e) {
-					      int diff = 0;
-					      current = candidate.status.getCurrent();
-					      if(current <= 0) {
-						  setSpeed(0);
-					      }
-					      else {
-						  speeds[i] = (current - last)*(2); i++; last = current;
-						  if(i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
-						      i = 0;
-						  }
-
-						  for (int k = 0; k < speeds.length; k++) {
-						      diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
-						  }
-						  
-					       //                        log.debug("currentSpeed " + diff/speeds.length/1024 + " KBytes/sec");
-						  Queue.this.setSpeed((diff/speeds.length));
-					      }
-
-					  }
-				      }
-				      );
-
-		Timer timeLeftTimer = new Timer(1000,
-				  new ActionListener() {
-				      public void actionPerformed(ActionEvent e) {
-					  if(getSpeed() > 0)
-					      Queue.this.setTimeLeft((int)((candidate.status.getSize() - candidate.status.getCurrent())/getSpeed()));
-					  else
-					      Queue.this.setTimeLeft(-1);
-				      }
-				  }
-				  );
-
-		// --------------------------------------------------------------
 		Session session = root.getSession().copy();
 		session.addObserver(Queue.this);
 		
@@ -263,9 +158,7 @@ public class Queue extends Observable implements Observer { //Thread {
 		while(k.hasNext()) {
 		    size += ((Path)k.next()).status.getSize();
 		}
-		
-		// --------------------------------------------------------------
-		
+				
 		//Iterating over all the files in the queue
 		Iterator i = jobs.iterator();
 		while(i.hasNext() && !isStopped()) {
@@ -463,9 +356,116 @@ private void reset() {
     this.stopped = false;
     this.timeLeft = -1;
     this.completedJobs = 0;
-    calendar.set(Calendar.HOUR, 0);
-    calendar.set(Calendar.MINUTE, 0);
-    calendar.set(Calendar.SECOND, 0);
+    this.calendar.set(Calendar.HOUR, 0);
+    this.calendar.set(Calendar.MINUTE, 0);
+    this.calendar.set(Calendar.SECOND, 0);
+}
+
+private void init() {
+    this.clockTimer = new Timer(1000,
+				 new ActionListener() {
+				     int seconds = 0;
+				     int minutes = 0;
+				     int hours = 0;
+				     public void actionPerformed(ActionEvent event) {
+					 seconds++;
+				      // calendar.set(year, mont, date, hour, minute, second)
+				// >= one hour
+					 if(seconds >= 3600) {
+					     hours = (int)(seconds/60/60);
+					     minutes = (int)((seconds - hours*60*60)/60);
+					     calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), hours, minutes, seconds - minutes*60);
+					 }
+					 else {
+					  // >= one minute
+					     if(seconds >= 60) {
+						 minutes = (int)(seconds/60);
+						 calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), minutes, seconds - minutes*60);
+					     }
+					  // only seconds
+					     else {
+						 calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), seconds);
+					     }
+					 }
+
+					 if(calendar.get(Calendar.HOUR) > 0) {
+					     callObservers(new Message(Message.CLOCK, parseTime(calendar.get(Calendar.HOUR)) + ":" + parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND))));
+					 }
+					 else {
+					     Queue.this.callObservers(new Message(Message.CLOCK, parseTime(calendar.get(Calendar.MINUTE)) + ":" + parseTime(calendar.get(Calendar.SECOND))));
+					 }
+				     }
+				 }
+				 );
+
+    /*
+     Timer overallSpeedTimer = new Timer(4000,
+					 new ActionListener() {
+					     Vector overall = new Vector();
+					     double current;
+					     double last;
+					     public void actionPerformed(ActionEvent e) {
+						 current = candidate.status.getCurrent();
+						 if(current <= 0) {
+						     setOverall(0);
+						 }
+						 else {
+						     overall.add(new Double((current - last)/4)); // bytes transferred for the last 4 seconds
+						     Iterator iterator = overall.iterator();
+						     double sum = 0;
+						     while(iterator.hasNext()) {
+							 Double s = (Double)iterator.next();
+							 sum = sum + s.doubleValue();
+						     }
+						     setOverall((sum/overall.size()));
+						     last = current;
+					       //                        log.debug("overallSpeed " + sum/overall.size()/1024 + " KBytes/sec");
+						 }
+					     }
+					 }
+					 );
+     */
+
+    this.currentSpeedTimer = new Timer(500,
+					new ActionListener() {
+					    int i = 0;
+					    int current;
+					    int last;
+					    int[] speeds = new int[8];
+					    public void actionPerformed(ActionEvent e) {
+						int diff = 0;
+						current = candidate.status.getCurrent();
+						if(current <= 0) {
+						    setSpeed(0);
+						}
+						else {
+						    speeds[i] = (current - last)*(2); i++; last = current;
+						    if(i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
+							i = 0;
+						    }
+
+						    for (int k = 0; k < speeds.length; k++) {
+							diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
+						    }
+						    
+					       //                        log.debug("currentSpeed " + diff/speeds.length/1024 + " KBytes/sec");
+						    Queue.this.setSpeed((diff/speeds.length));
+						}
+
+					    }
+					}
+					);
+
+    this.timeLeftTimer = new Timer(1000,
+				    new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+					    if(getSpeed() > 0)
+						Queue.this.setTimeLeft((int)((candidate.status.getSize() - candidate.status.getCurrent())/getSpeed()));
+					    else
+						Queue.this.setTimeLeft(-1);
+					}
+				    }
+				    );    
     
 }
 

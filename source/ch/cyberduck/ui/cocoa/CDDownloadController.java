@@ -54,15 +54,14 @@ public class CDDownloadController {
             log.fatal("Couldn't load Download.nib");
             return;
         }
-	this.init();
     }
 
     public NSWindow window() {
 	return this.sheet;
     }
 
-    private void init() {
-	//
+    public void awakeFromNib() {
+	log.debug("awakeFromNib");
     }
 
     public void windowWillClose(NSNotification notification) {
@@ -102,7 +101,7 @@ public class CDDownloadController {
 			path = new HTTPPath((HTTPSession)session, file);
 		    }
 //		    controller.setPath(path);
-		    CDTransferController controller = new CDTransferController(host, path, Queue.KIND_DOWNLOAD);
+		    CDTransferController controller = new CDTransferController(path, Queue.KIND_DOWNLOAD);
 		    controller.transfer(path.status.isResume());
 		}
 		catch(MalformedURLException e) {

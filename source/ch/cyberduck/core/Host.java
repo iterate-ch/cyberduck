@@ -58,7 +58,7 @@ public class Host {
     }
 
     public Session getSession() {
-        log.debug("getSession");
+//        log.debug("getSession");
 	if(null == this.session) {
 	    if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
 		this.session = new HTTPSession(this);

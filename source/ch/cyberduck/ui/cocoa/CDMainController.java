@@ -135,7 +135,9 @@ public class CDMainController {
 
     public void feedbackMenuClicked(Object sender) {
 	try {
-	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail")+"?subject=Cyberduck"));
+	    NSBundle bundle = NSBundle.bundleForClass(this.getClass());
+	    String currentVersionNumber = (String)bundle.objectForInfoDictionaryKey("CFBundleVersion");
+	    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail")+"?subject=Cyberduck-"+currentVersionNumber));
 	}
 	catch(java.net.MalformedURLException e) {
 	    log.error(e.getMessage());
@@ -164,8 +166,9 @@ public class CDMainController {
 		catch(java.net.MalformedURLException e) {
 		    log.error(e.getMessage());
 		}
+		break;
 	    case NSAlertPanel.AlternateReturn :
-		//
+		break;
 	}
         NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
     }
@@ -241,4 +244,6 @@ public class CDMainController {
     public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
 	return false;
     }
+
+//    public abstract NSMenu applicationDockMenu(NSApplication sender)
 }

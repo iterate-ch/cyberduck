@@ -105,11 +105,6 @@ public class CDConnectionController {
 	this.hostPopup.setDataSource(CDHistoryImpl.instance());
     }
 
-//    private NSTextField hostField;
-  //  public void setHostField(NSTextField hostField) {
-//	this.hostField = hostField;
-  //  }
-    
 //    private NSTextField pathField;
 //    public void setPathField(NSTextField pathField) {
 //	this.pathField = pathField;
@@ -155,7 +150,7 @@ public class CDConnectionController {
             log.fatal("Couldn't load Connection.nib");
             return;
         }
-	this.init();
+//	this.init();
     }
 
     public void windowWillClose(NSNotification notification) {
@@ -165,8 +160,8 @@ public class CDConnectionController {
     }
     
             
-    private void init() {
-	log.debug("init");
+    private void awakeFromNib() {
+	log.debug("awakeFromNib");
 	// Notify the updateLabel() method if the user types.
 	NSNotificationCenter.defaultCenter().addObserver(
 						  this,
@@ -189,18 +184,7 @@ public class CDConnectionController {
 						    NSControl.ControlTextDidChangeNotification,
 						    usernameField);
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
-
-	//initalizaing protcol popup
-//	this.protocolPopup.removeAllItems();
-//	this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{FTP_STRING, SFTP_STRING}));
-//	this.protocolPopup.itemWithTitle(FTP_STRING).setTag(Session.FTP_PORT);
-//	this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalent("F");
-//	this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-//	this.protocolPopup.itemWithTitle(SFTP_STRING).setTag(Session.SSH_PORT);
-//	this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalent("S");
-//	this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
 	this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals("ftp") ? FTP_STRING : SFTP_STRING);
-	
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
 //	this.pathField.setStringValue("~");
     }
@@ -210,8 +194,8 @@ public class CDConnectionController {
 	int index = hostPopup.indexOfSelectedItem();
 	if(index != -1) {
 	    this.updateFields(((CDHistoryImpl)CDHistoryImpl.instance()).getItemAtIndex(index));
-	    this.updateLabel(sender);
 	}
+	this.updateLabel(sender);
     }
 
     public void favoritesSelectionChanged(Object sender) {
@@ -230,11 +214,6 @@ public class CDConnectionController {
     public void protocolSelectionChanged(Object sender) {
 	log.debug("protocolSelectionChanged:"+sender);
 	this.portField.setIntValue(protocolPopup.selectedItem().tag());
-//	NSMenuItem selectedItem = protocolPopup.selectedItem();
-//	if(selectedItem.tag() == Session.SSH_PORT)
-//	    portField.setIntValue(Session.SSH_PORT);
-//	if(selectedItem.tag() == Session.FTP_PORT)
-//	    portField.setIntValue(Session.FTP_PORT);
 	this.updateLabel(sender);
     }
 
@@ -280,10 +259,10 @@ public class CDConnectionController {
 		    default:
 			throw new IllegalArgumentException("No protocol selected.");
 		}
-		    browser.mount(host);
-
+		browser.mount(host);
+		break;
 	    case(NSAlertPanel.AlternateReturn):
-		//
+		break;
 	}
     }
 }

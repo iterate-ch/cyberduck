@@ -75,6 +75,12 @@ public class CDPathController implements Observer {
 	p.list();
     }
 
+//    public void selectionChanged(Object sender) {
+//	log.debug("selectionChanged");
+//	String input = ((NSControl)sender).stringValue();
+//	    p.list();
+//    }
+    
     public void addItem(Path p) {
 	this.items.add(p);
 	combo.addItem(p.getAbsolute());

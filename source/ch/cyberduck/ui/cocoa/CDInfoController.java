@@ -104,10 +104,14 @@ public class CDInfoController {//implements Observer {
             log.fatal("Couldn't load Info.nib");
             return;
         }
-	this.init();
+//	this.init();
     }
 
-    private void init() {
+    public void awakeFromNib() {
+	log.debug("awakeFromNib");
+	NSPoint origin = this.window().frame().origin();
+	this.window().setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
+
 	this.filenameField.setStringValue(file.getName());
 	this.pathField.setStringValue(file.getParent().getAbsolute());
 	this.groupField.setStringValue(file.attributes.getGroup());
@@ -160,11 +164,9 @@ public class CDInfoController {//implements Observer {
     }
 
     public void windowWillClose(NSNotification notification) {
-	if(filenameField.stringValue() != file.getName()) {
+	if(!filenameField.stringValue().equals(file.getName())) {
 	    String newName = filenameField.stringValue();
-	    log.debug("Before renaming:"+file.toString());
 	    file.rename(newName);
-	    log.debug("After renaming:"+file.toString());
 	}
 	this.window().setDelegate(null);
 	NSNotificationCenter.defaultCenter().removeObserver(this);
@@ -174,12 +176,9 @@ public class CDInfoController {//implements Observer {
 
     public void filenameInputDidEndEditing(NSNotification sender) {
 	log.debug("textInputDidEndEditing");
-	
-	if(filenameField.stringValue() != file.getName()) {
+	if(!filenameField.stringValue().equals(file.getName())) {
 	    String newName = filenameField.stringValue();
-	    log.debug("Before renaming:"+file.toString());
 	    file.rename(newName);
-	    log.debug("After renaming:"+file.toString());
 	}
     }
     

@@ -101,6 +101,10 @@ public abstract class Session extends Observable {
 	 this.close();
 	 this.connect();
    }
+
+     public Host getHost() {
+	 return this.host;
+     }
     
     /**
 	* @return The current working directory (pwd)
@@ -119,7 +123,7 @@ public abstract class Session extends Observable {
      * @return boolean True if the session has not yet been closed. 
      */
     public boolean isConnected() {
-	log.info("Connected:"+connected);
+//	log.info("Connected:"+connected);
 	return this.connected;
     }
 

@@ -26,10 +26,8 @@ import org.apache.log4j.Logger;
 /**
 * @version $Id$
  */
-public class CDFolderController {
-    private static Logger log = Logger.getLogger(CDFolderController.class);
-
-//    private Path parent;
+public class CDGotoController {
+    private static Logger log = Logger.getLogger(CDGotoController.class);
     
     private NSWindow sheet;
     public void setSheet(NSWindow sheet) {
@@ -39,45 +37,49 @@ public class CDFolderController {
     private NSTextField folderField; /* IBOutlet */
     public void setFolderField(NSTextField folderField) {
 	this.folderField = folderField;
+	this.folderField.setStringValue(current.getAbsolute());
     }
 
     public NSWindow window() {
 	return this.sheet;
     }
 
+    private Path current;
+
     private static NSMutableArray allDocuments = new NSMutableArray();
 
-    public CDFolderController() {
-//    public CDFolderController(Path parent) {
-//	this.parent = parent;
+    public CDGotoController(Path current) {
+	this.current = current;
 	allDocuments.addObject(this);
-        if (false == NSApplication.loadNibNamed("Folder", this)) {
-            log.fatal("Couldn't load Folder.nib");
+        if (false == NSApplication.loadNibNamed("Goto", this)) {
+            log.fatal("Couldn't load Goto.nib");
             return;
         }
     }
 
     public void windowWillClose(NSNotification notification) {
 	this.window().setDelegate(null);
-//	NSNotificationCenter.defaultCenter().removeObserver(this);
 	allDocuments.removeObject(this);
     }
-    
+
     public void closeSheet(Object sender) {
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 	NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
     }
 
-    public void newfolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-        log.debug("newfolderSheetDidEnd");
+    public void gotoSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
+	log.debug("gotoSheetDidEnd");
 	sheet.orderOut(null);
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
-		((Path)contextInfo).mkdir(folderField.stringValue());
+		Path current = (Path)contextInfo;
+		Path go = current.copy();
+		go.setPath(this.folderField.stringValue());
+		go.list();
 		break;
 	    case(NSAlertPanel.AlternateReturn):
 		break;
 	}
     }
-    
+
 }

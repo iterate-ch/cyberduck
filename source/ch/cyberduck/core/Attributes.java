@@ -31,7 +31,8 @@ import java.util.Observable;
 public class Attributes extends Observable {
     private static Logger log = Logger.getLogger(Path.class);
 
-    private long modified;
+    private Date modified;
+//    private long modified;
 
     private String owner;
     private String group;
@@ -56,15 +57,20 @@ public class Attributes extends Observable {
 	* Set the modfication returned by ftp directory listings
      */
     public void setModified(long m) {
-	this.modified = m;
+	this.modified = new Date(m);
     }
 
     /**
 	* @return the modification date of this file
      */
     public String getModified() {
-	return (DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)).format(new Date(this.modified));
+	return (DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)).format(this.modified);
+//	return (DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)).format(new Date(this.modified));
     }
+
+     public Date getModifiedDate() {
+	 return this.modified;
+     }
 
     /**
 	* @param access unix access permitions, i.e. -rwxrwxrwx
