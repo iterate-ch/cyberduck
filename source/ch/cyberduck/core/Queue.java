@@ -34,11 +34,12 @@ import org.apache.log4j.Logger;
 public abstract class Queue extends Observable {
 	protected static Logger log = Logger.getLogger(Queue.class);
 
-	protected Worker worker;
-	protected long size;
-	protected long current;
+	private Worker worker;
 	private List roots;
 
+	protected long size;
+	protected long current;
+	
 	/**
 	 * Creating an empty queue containing no items. Items have to be added later
 	 * using the <code>addRoot</code> method.
@@ -228,7 +229,7 @@ public abstract class Queue extends Observable {
 										  }
 									  });
 			this.progress.start();
-			//@todo this.queue.getRoot().getSession().cache().clear();
+			// this.queue.getRoot().getSession().cache().clear();
 			this.queue.callObservers(new Message(Message.QUEUE_START));
 		}
 		

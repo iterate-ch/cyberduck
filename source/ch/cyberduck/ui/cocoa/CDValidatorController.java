@@ -56,7 +56,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 		if(arg instanceof Message) {
 			Message msg = (Message)arg;
 			if(msg.getTitle().equals(Message.ERROR)) {
-				this.setCanceled(true);
+				this.setCanceled(true); //@todo
 			}
 		}
 	}
@@ -76,7 +76,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 		}
 		q.getRoot().getSession().deleteObserver(this);
 		if(this.visible) {
-			if(!this.isCanceled()) {
+			if(!this.isCanceled()) { //@todo
 				this.statusIndicator.stopAnimation(null);
 				this.setEnabled(true);
 				this.fileTableView.sizeToFit();
@@ -274,7 +274,7 @@ public abstract class CDValidatorController extends AbstractValidator implements
 	}
 
 	protected void setEnabled(boolean enabled) {
-		this.cancelButton.setEnabled(enabled);
+		this.cancelButton.setEnabled(enabled); //@todo
 		this.overwriteButton.setEnabled(enabled);
 		this.resumeButton.setEnabled(enabled);
 		this.skipButton.setEnabled(enabled);

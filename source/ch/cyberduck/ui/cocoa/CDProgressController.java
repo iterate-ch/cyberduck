@@ -37,7 +37,6 @@ public class CDProgressController extends NSObject implements Observer {
 
 	private String statusText = "";
 	private StringBuffer errorText;
-//	private StringBuffer tooltip;
 
 	private NSTimer progressTimer;
 	
@@ -69,7 +68,6 @@ public class CDProgressController extends NSObject implements Observer {
 	}
 	
 	public void awakeFromNib() {
-		log.debug("awakeFromNib");
 		this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
 																		   TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
 		this.updateProgressfield();
@@ -87,29 +85,34 @@ public class CDProgressController extends NSObject implements Observer {
 					Message msg = (Message)arg;
 					if(msg.getTitle().equals(Message.PROGRESS)) {
 						statusText = (String)msg.getContent();
-						updateProgressfield();
+						this.updateProgressfield();
 					}
 					else if(msg.getTitle().equals(Message.ERROR)) {
-						errorText.append("\n"+(String)msg.getContent());
-						alertIcon.setHidden(false);
+						this.errorText.append("\n"+(String)msg.getContent());
+						this.alertIcon.setHidden(false);
 					}
 					else if(msg.getTitle().equals(Message.QUEUE_START)) {
-						progressBar.setIndeterminate(true);
-						progressBar.startAnimation(null);
-						errorText = new StringBuffer();
-						alertIcon.setHidden(true);
-						progressTimer = new NSTimer(0.5, //seconds
+						this.progressBar.setIndeterminate(true);
+						this.progressBar.startAnimation(null);
+						this.errorText = new StringBuffer();
+						this.alertIcon.setHidden(true);
+						this.progressTimer = new NSTimer(0.5, //seconds
 													CDProgressController.this, //target
 													new NSSelector("update", new Class[]{NSTimer.class}),
 													getQueue(), //userInfo
 													true); //repeating
-						NSRunLoop.currentRunLoop().addTimerForMode(progressTimer, NSRunLoop.DefaultRunLoopMode);
+						ThreadUtilities.instance().invokeLater(new Runnable() {
+							public void run() {
+								NSRunLoop.currentRunLoop().addTimerForMode(this.progressTimer, 
+																		   NSRunLoop.DefaultRunLoopMode);
+							}
+						});
 					}
 					else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
-						updateProgressbar();
-						updateProgressfield();
-						progressBar.stopAnimation(null);
-						progressBar.setIndeterminate(false);
+						this.updateProgressbar();
+						this.updateProgressfield();
+						this.progressBar.stopAnimation(null);
+						this.progressBar.setIndeterminate(false);
 						if(queue.isComplete() && !queue.isCanceled()) {
 							if(queue instanceof DownloadQueue) {
 								Growl.instance().notify(NSBundle.localizedString("Download complete",
@@ -134,7 +137,7 @@ public class CDProgressController extends NSObject implements Observer {
 								CDQueueController.instance().removeItem(queue);
 							}
 						}
-						progressTimer.invalidate();
+						this.progressTimer.invalidate();
 					}
 //				}
 //			});
