@@ -47,11 +47,12 @@ public class Login {
         }
     }
 
-	/**
-		* Use this to define if passwords should be added to the keychain
-	 * @param shouldBeAddedToKeychain If true, the password of the login is added to the keychain uppon 
-	 * successfull login
-	 */
+    /**
+     * Use this to define if passwords should be added to the keychain
+     *
+     * @param shouldBeAddedToKeychain If true, the password of the login is added to the keychain uppon
+     *                                successfull login
+     */
     public void setUseKeychain(boolean shouldBeAddedToKeychain) {
         this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
     }
@@ -60,18 +61,18 @@ public class Login {
         return this.shouldBeAddedToKeychain;
     }
 
-	/**
-		* @see #getPasswordFromKeychain
-	 */
+    /**
+     * @see #getPasswordFromKeychain
+     */
     public native String getPasswordFromKeychain(String serviceName, String account);
 
     public String getPasswordFromKeychain() {
         return this.getPasswordFromKeychain(this.getServiceName(), this.getUsername());
     }
 
-	/**
-		* @see #addPasswordToKeychain
-	 */
+    /**
+     * @see #addPasswordToKeychain
+     */
     public native void addPasswordToKeychain(String serviceName, String account, String password);
 
     public void addPasswordToKeychain() {
@@ -132,12 +133,13 @@ public class Login {
         return this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"));
     }
 
-	/**
-		* SSH specific
-	 * @return true if public key authentication should be used. This is the case, if a 
-	 * private key file has been specified
-	 * @see #setPrivateKeyFile
-	 */
+    /**
+     * SSH specific
+     *
+     * @return true if public key authentication should be used. This is the case, if a
+     *         private key file has been specified
+     * @see #setPrivateKeyFile
+     */
     public boolean usesPublicKeyAuthentication() {
         return this.privateKeyFile != null;
     }
@@ -150,21 +152,21 @@ public class Login {
         return this.privateKeyFile;
     }
 
-	/**
-		* Checks if both username and password qualify for a possible reasonable login attempt
-	 */
+    /**
+     * Checks if both username and password qualify for a possible reasonable login attempt
+     */
     public boolean hasReasonableValues() {
         boolean reasonable = false;
         if (this.usesPublicKeyAuthentication()) {
             reasonable = true;
         }
         if (this.user != null && this.pass != null) {
-            // anonymous login is ok
+// anonymous login is ok
             if (this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name")) &&
                     this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass"))) {
                 reasonable = true;
             }
-            // if both name and pass are custom it is ok
+// if both name and pass are custom it is ok
             if (!(this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"))) &&
                     !(this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass")))) {
                 reasonable = true;
@@ -175,9 +177,9 @@ public class Login {
     }
 
     /**
-     * @return true if reasonable values have been found localy or 
-	 * in the keychain or the user was prompted to
-	 * for the credentials and new values got entered.
+     * @return true if reasonable values have been found localy or
+     *         in the keychain or the user was prompted to
+     *         for the credentials and new values got entered.
      */
     public boolean check() {
         if (!this.hasReasonableValues()) {
@@ -200,8 +202,8 @@ public class Login {
     }
 
     /**
-     * @return true if the user hasn't canceled the login process. If false is returned, 
-	 * no more attempts should be made and the connection closed.
+     * @return true if the user hasn't canceled the login process. If false is returned,
+     *         no more attempts should be made and the connection closed.
      * @pre controller != null
      */
     public boolean promptUser(String message) {

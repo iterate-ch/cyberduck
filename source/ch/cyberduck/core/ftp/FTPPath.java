@@ -136,9 +136,9 @@ public class FTPPath extends Path {
                     Path p = parser.parseFTPEntry(this, lines[i]);
                     if (p != null) {
                         String filename = p.getName();
-						if (!(filename.charAt(0) == '.') || showHidden) {
-							files.add(p);
-						}
+                        if (!(filename.charAt(0) == '.') || showHidden) {
+                            files.add(p);
+                        }
                     }
                 }
 
@@ -157,7 +157,7 @@ public class FTPPath extends Path {
         session.callObservers(this);
         return files;
     }
-	
+
     public synchronized void cwdir() {
         try {
             session.check();

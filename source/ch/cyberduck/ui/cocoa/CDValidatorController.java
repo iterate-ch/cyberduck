@@ -24,7 +24,6 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Validator;
 
 /**

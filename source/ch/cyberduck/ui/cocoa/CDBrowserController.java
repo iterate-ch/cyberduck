@@ -93,18 +93,18 @@ public class CDBrowserController extends NSObject implements Observer {
             "QueuePboardType",
             NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
             NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as QueuePboardType
-												 ));
+        ));
 		
         // setting appearance attributes
         this.browserTable.setRowHeight(17f);
         this.browserTable.setAutoresizesAllColumnsToFit(true);
         NSSelector setUsesAlternatingRowBackgroundColorsSelector =
-			new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
+                new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
         if (setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
             this.browserTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getProperty("browser.alternatingRows").equals("true"));
         }
         NSSelector setGridStyleMaskSelector =
-			new NSSelector("setGridStyleMask", new Class[]{int.class});
+                new NSSelector("setGridStyleMask", new Class[]{int.class});
         if (setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
             if (Preferences.instance().getProperty("browser.horizontalLines").equals("true") && Preferences.instance().getProperty("browser.verticalLines").equals("true")) {
                 this.browserTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
@@ -195,13 +195,13 @@ public class CDBrowserController extends NSObject implements Observer {
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             this.browserTable.addTableColumn(c);
         }
-		
+
         this.browserTable.sizeToFit();
         // selection properties
         this.browserTable.setAllowsMultipleSelection(true);
         this.browserTable.setAllowsEmptySelection(true);
-        this.browserTable.setAllowsColumnReordering(true);    
-	}
+        this.browserTable.setAllowsColumnReordering(true);
+    }
 
     public void browserTableRowDoubleClicked(Object sender) {
         log.debug("browserTableRowDoubleClicked");

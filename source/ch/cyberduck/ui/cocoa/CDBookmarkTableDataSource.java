@@ -144,7 +144,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                     }
                 }
             }
-			//Moving items
+            //Moving items
             if (draggedRows != null) {
                 NSPasteboard bookmarkPboard = NSPasteboard.pasteboardWithName("BookmarkPBoard");
                 log.debug("availableTypeFromArray:BookmarkPBoardType: " + bookmarkPboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")));

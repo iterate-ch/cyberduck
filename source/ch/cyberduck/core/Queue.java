@@ -159,8 +159,9 @@ public class Queue extends Observable implements Observer { //Thread {
      * @param item The path to be added in the queue
      */
     public void addRoot(Path item) {
-		if(log.isDebugEnabled())
-			log.debug("add:" + item);
+        if (log.isDebugEnabled()) {
+            log.debug("add:" + item);
+        }
         this.roots.add(item);
     }
 
@@ -239,25 +240,25 @@ public class Queue extends Observable implements Observer { //Thread {
                     item.status.reset();
                 }
 
-				Queue.this.progressTimer.start();
-				Queue.this.leftTimer.start();
+                Queue.this.progressTimer.start();
+                Queue.this.leftTimer.start();
                 for (Iterator iter = jobs.iterator(); iter.hasNext() && !Queue.this.isCanceled();) {
-					Queue.this.currentJob = (Path)iter.next();
-					Queue.this.currentJob.status.addObserver(Queue.this);
-					
-					switch (kind) {
-						case KIND_DOWNLOAD:
-							Queue.this.currentJob.download();
-							break;
-						case KIND_UPLOAD:
-							Queue.this.currentJob.upload();
-							break;
-					}
-					
-					Queue.this.currentJob.status.deleteObserver(Queue.this);
+                    Queue.this.currentJob = (Path)iter.next();
+                    Queue.this.currentJob.status.addObserver(Queue.this);
+
+                    switch (kind) {
+                        case KIND_DOWNLOAD:
+                            Queue.this.currentJob.download();
+                            break;
+                        case KIND_UPLOAD:
+                            Queue.this.currentJob.upload();
+                            break;
+                    }
+
+                    Queue.this.currentJob.status.deleteObserver(Queue.this);
                 }
-				Queue.this.progressTimer.stop();
-				Queue.this.leftTimer.stop();
+                Queue.this.progressTimer.stop();
+                Queue.this.leftTimer.stop();
 
                 Queue.this.getRoot().getSession().close();
                 Queue.this.getRoot().getSession().deleteObserver(Queue.this);

@@ -106,13 +106,13 @@ public class NTFTPEntryParser extends RegexFTPFileEntryParserImpl {
             cal.set(Calendar.DATE, day);
             cal.set(Calendar.MONTH, month);
             int ap = Calendar.AM;
-            if ("P".equals(ampm))
-            {
+            if ("P".equals(ampm)) {
                 ap = Calendar.PM;
                 if (hour != 12) {
                     hour += 12;
                 }
-            } else if (hour == 12) {
+            }
+            else if (hour == 12) {
                 hour = 0;
             }
 

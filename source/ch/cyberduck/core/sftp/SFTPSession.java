@@ -28,7 +28,6 @@ import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.authentication.*;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
-import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 
 /**
@@ -121,98 +120,98 @@ public class SFTPSession extends Session {
         this.log("SFTP subsystem ready", Message.PROGRESS);
         this.setConnected(true);
     }
-	
-	
-	private int loginUsingKBIAuthentication(final Login credentials) throws IOException {
-		log.info("Trying Keyboard Interactive (PAM) authentication...");
-		KBIAuthenticationClient kbi = new KBIAuthenticationClient();
-		kbi.setUsername(credentials.getUsername());
-		kbi.setKBIRequestHandler(new KBIRequestHandler() {
-			public void showPrompts(String name, 
-									String instructions,
-									KBIPrompt[] prompts) throws IOException {
-										log.info(name);
-										log.info(instructions);
-										if (prompts != null) {
-											for (int i = 0; i < prompts.length; i++) {
-												log.info(prompts[i].getPrompt());
-												prompts[i].setResponse(credentials.getPassword());
-											}
-										}
-									}
-		});
-		// Try the authentication
-		return SSH.authenticate(kbi);
-	}
-	
-	
-	private int loginUsingPasswordAuthentication(final Login credentials) throws IOException {
-		log.info("Trying Password authentication...");
-		PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
-		auth.setUsername(credentials.getUsername());
-		auth.setPassword(credentials.getPassword());
-		// Try the authentication
-		return SSH.authenticate(auth);
-	}
-	
-	private int loginUsingPublicKeyAuthentication(final Login credentials) throws IOException {
-		log.info("Trying Public Key authentication...");
-		PublicKeyAuthenticationClient pk = new PublicKeyAuthenticationClient();
-		pk.setUsername(credentials.getUsername());
-		// Get the private key file
-		SshPrivateKeyFile keyFile = SshPrivateKeyFile.parse(new java.io.File(credentials.getPrivateKeyFile()));
-		// If the private key is passphrase protected then ask for the passphrase
-		String passphrase = null;
-		if (keyFile.isPassphraseProtected()) {
-			passphrase = credentials.getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
-			if (null == passphrase || passphrase.equals("")) {
-				if (host.getLogin().promptUser("The Private Key is password protected. Enter the passphrase for the key file '" + credentials.getPrivateKeyFile() + "'.")) {
-					passphrase = credentials.getPassword();
-					if (keyFile.isPassphraseProtected()) {
-						if (credentials.usesKeychain()) {
-							credentials.addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(), passphrase);
-						}
-					}
-				}
-				else {
-					throw new SshException("Login as user " + credentials.getUsername() + " canceled.");
-				}
-			}
-		}
-		// Get the key
-		pk.setKey(keyFile.toPrivateKey(passphrase));
-		// Try the authentication
-		return SSH.authenticate(pk);
-	}
-	
+
+
+    private int loginUsingKBIAuthentication(final Login credentials) throws IOException {
+        log.info("Trying Keyboard Interactive (PAM) authentication...");
+        KBIAuthenticationClient kbi = new KBIAuthenticationClient();
+        kbi.setUsername(credentials.getUsername());
+        kbi.setKBIRequestHandler(new KBIRequestHandler() {
+            public void showPrompts(String name,
+                                    String instructions,
+                                    KBIPrompt[] prompts) throws IOException {
+                log.info(name);
+                log.info(instructions);
+                if (prompts != null) {
+                    for (int i = 0; i < prompts.length; i++) {
+                        log.info(prompts[i].getPrompt());
+                        prompts[i].setResponse(credentials.getPassword());
+                    }
+                }
+            }
+        });
+        // Try the authentication
+        return SSH.authenticate(kbi);
+    }
+
+
+    private int loginUsingPasswordAuthentication(final Login credentials) throws IOException {
+        log.info("Trying Password authentication...");
+        PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
+        auth.setUsername(credentials.getUsername());
+        auth.setPassword(credentials.getPassword());
+        // Try the authentication
+        return SSH.authenticate(auth);
+    }
+
+    private int loginUsingPublicKeyAuthentication(final Login credentials) throws IOException {
+        log.info("Trying Public Key authentication...");
+        PublicKeyAuthenticationClient pk = new PublicKeyAuthenticationClient();
+        pk.setUsername(credentials.getUsername());
+        // Get the private key file
+        SshPrivateKeyFile keyFile = SshPrivateKeyFile.parse(new java.io.File(credentials.getPrivateKeyFile()));
+        // If the private key is passphrase protected then ask for the passphrase
+        String passphrase = null;
+        if (keyFile.isPassphraseProtected()) {
+            passphrase = credentials.getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
+            if (null == passphrase || passphrase.equals("")) {
+                if (host.getLogin().promptUser("The Private Key is password protected. Enter the passphrase for the key file '" + credentials.getPrivateKeyFile() + "'.")) {
+                    passphrase = credentials.getPassword();
+                    if (keyFile.isPassphraseProtected()) {
+                        if (credentials.usesKeychain()) {
+                            credentials.addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(), passphrase);
+                        }
+                    }
+                }
+                else {
+                    throw new SshException("Login as user " + credentials.getUsername() + " canceled.");
+                }
+            }
+        }
+        // Get the key
+        pk.setKey(keyFile.toPrivateKey(passphrase));
+        // Try the authentication
+        return SSH.authenticate(pk);
+    }
+
     private synchronized void login() throws IOException {
         log.debug("login");
         final Login credentials = host.getLogin();
-		if(credentials.check()) {
-			this.log("Authenticating as '" + credentials.getUsername() + "'", Message.PROGRESS);
-			if (credentials.usesPublicKeyAuthentication()) {
-				if (AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(credentials)) {
-					this.log("Login successful", Message.PROGRESS);
-					//credentials.addPasswordToKeychain();
-					return;
-				}
-			}
-			else {
-				if (AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
-					AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
-					this.log("Login successful", Message.PROGRESS);
-					credentials.addPasswordToKeychain();
-					return;
-				}
-			}
-			this.log("Login failed", Message.PROGRESS);
-			if (credentials.promptUser("Authentication as user " + credentials.getUsername() + " failed.")) {
-				this.login();
-			}
-			else {
-				throw new SshException("Login as user " + credentials.getUsername() + " canceled.");
-			}
-		}
+        if (credentials.check()) {
+            this.log("Authenticating as '" + credentials.getUsername() + "'", Message.PROGRESS);
+            if (credentials.usesPublicKeyAuthentication()) {
+                if (AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(credentials)) {
+                    this.log("Login successful", Message.PROGRESS);
+                    //credentials.addPasswordToKeychain();
+                    return;
+                }
+            }
+            else {
+                if (AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
+                        AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
+                    this.log("Login successful", Message.PROGRESS);
+                    credentials.addPasswordToKeychain();
+                    return;
+                }
+            }
+            this.log("Login failed", Message.PROGRESS);
+            if (credentials.promptUser("Authentication as user " + credentials.getUsername() + " failed.")) {
+                this.login();
+            }
+            else {
+                throw new SshException("Login as user " + credentials.getUsername() + " canceled.");
+            }
+        }
     }
 
     public synchronized Path workdir() {

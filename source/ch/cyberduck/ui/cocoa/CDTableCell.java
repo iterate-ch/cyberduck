@@ -27,7 +27,7 @@ import com.apple.cocoa.foundation.NSRect;
 public class CDTableCell extends NSCell {
 
     protected boolean highlighted;
-	
+
     protected NSDictionary boldFont;
     protected NSDictionary normalFont;
     protected NSDictionary tinyFont;
@@ -60,7 +60,7 @@ public class CDTableCell extends NSCell {
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT.setAlignment(NSText.RightTextAlignment);
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
     }
-	
+
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         this.highlighted = this.isHighlighted() && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(NSColor.secondarySelectedControlColor());
 
