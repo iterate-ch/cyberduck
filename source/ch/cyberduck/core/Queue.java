@@ -229,7 +229,7 @@ public abstract class Queue extends Observable {
 										  }
 									  });
 			this.progress.start();
-			//@todo this.queue.getRoot().getSession().cache().clear();
+			this.queue.getRoot().getSession().cache().clear();
 			this.queue.callObservers(new Message(Message.QUEUE_START));
 		}
 		

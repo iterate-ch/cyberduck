@@ -134,7 +134,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.fileTableView.setDelegate(this);
 		this.fileTableView.sizeToFit();
 		this.fileTableView.setRowHeight(17f);
-//		this.fileTableView.setAutoresizesAllColumnsToFit(true);
+		this.fileTableView.setAutoresizesAllColumnsToFit(true);
 		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
 		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
 		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {

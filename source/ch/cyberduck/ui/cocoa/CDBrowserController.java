@@ -1206,7 +1206,7 @@ public class CDBrowserController extends CDController implements Observer {
 		Host h = this.workdir().getSession().getHost();
 		NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
 		pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
-		if(!pboard.setStringForType(h.getURL()+h.getDefaultPath(), NSPasteboard.StringPboardType)) {
+		if(!pboard.setStringForType(h.getURL()+this.workdir().getAbsolute(), NSPasteboard.StringPboardType)) {
 			log.error("Error writing URL to NSPasteboard.StringPboardType.");
 		}
 	}
