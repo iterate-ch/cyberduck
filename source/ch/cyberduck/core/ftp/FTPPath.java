@@ -241,9 +241,7 @@ public class FTPPath extends Path {
 	
 	public synchronized java.util.Date modificationDate() {
         try {
-            session.check();
 			this.attributes.setTimestamp(this.session.FTP.modtime(this.getAbsolute()));
-			session.log("Idle", Message.STOP);
 		}
 		catch (FTPException e) {
 			session.log("FTP Error: " + e.getMessage(), Message.ERROR);

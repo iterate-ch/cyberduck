@@ -59,14 +59,13 @@ public class CDSyncValidatorController extends CDValidatorController {
 		this.workset = new ArrayList();
 		for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
 			Path p = (Path)i.next();
-			log.debug("> add");
 			this.workset.add(p);
 		}
 		this.reloadData();
 	}
 
 	public void downloadCellClicked(Object sender) {
-		this.workset.clear();
+		this.workset = new ArrayList();
 		for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
 			Path p = (Path)i.next();
 			if(p.remote.exists()) {
@@ -77,7 +76,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 	}
 
 	public void uploadCellClicked(Object sender) {
-		this.workset.clear();
+		this.workset = new ArrayList(); //@todo clear
 		for(Iterator i = this.validated.iterator(); i.hasNext(); ) {
 			Path p = (Path)i.next();
 			if(p.local.exists()) {
@@ -183,7 +182,6 @@ public class CDSyncValidatorController extends CDValidatorController {
 			this.downloadCellClicked(null);
 		if(this.uploadRadioCell.state() == NSCell.OnState)
 			this.uploadCellClicked(null);
-		this.reloadData();
 		this.statusIndicator.stopAnimation(null);
 		this.syncButton.setEnabled(true);
 		while (windowController.window().attachedSheet() != null) {
@@ -200,9 +198,12 @@ public class CDSyncValidatorController extends CDValidatorController {
 	}
 	
 	protected boolean validateFile(Path p) {
-		this.reloadData(); //@todo should be after return statement
+		log.debug("validateFile:"+p);
+		this.reloadData();
 		if(p.remote.exists() && p.local.exists()) {
-			return !p.modificationDate().equals(p.getLocal().getTimestamp());
+			boolean equal = p.remote.modificationDate().equals(p.local.getTimestamp());
+			log.info(p.getName()+" : Same modification date:"+equal);
+			return !equal;
 		}
 		return true; // Include if mirroring
 	}
@@ -260,7 +261,7 @@ public class CDSyncValidatorController extends CDValidatorController {
 			if(p != null) {
 				try {
 					if(p.local.exists()) {
-						this.localField.setAttributedStringValue(new NSAttributedString(p.getLocal().getAbsolute(),
+						this.localField.setAttributedStringValue(new NSAttributedString(p.local.getAbsolute(),
 																						TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY)
 																 );
 						String localeTS = formatter.stringForObjectValue(new NSGregorianDate((double)p.local.getTimestamp().getTime()/1000, 
@@ -317,10 +318,10 @@ public class CDSyncValidatorController extends CDValidatorController {
 			Path p = (Path)this.workset.get(row);
 			if(p != null) {
 				if (identifier.equals("TYPE")) {
-					if(p.getLocal().getTimestamp().before(p.attributes.getTimestamp())) {
+					if(p.local.getTimestamp().before(p.attributes.getTimestamp())) {
 						return arrowDownIcon;
 					}
-					if(p.getLocal().getTimestamp().after(p.attributes.getTimestamp())) {
+					if(p.local.getTimestamp().after(p.attributes.getTimestamp())) {
 						return arrowUpIcon;
 					}
 					return NSImage.imageNamed("notfound.tiff"); // illegal argument

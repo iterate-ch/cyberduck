@@ -37,14 +37,14 @@ public abstract class AbstractValidator implements Validator {
 	/**
 		* The user canceled this request, no further validation should be taken
      */
-    private boolean isCanceled = false;
+    private boolean canceled = false;
 	
 	public boolean isCanceled() {
-		return this.isCanceled;
+		return this.canceled;
 	}
 	
 	public void setCanceled(boolean c) {
-		this.isCanceled = c;
+		this.canceled = c;
 	}
 		
 	protected abstract boolean prompt(Path p);
@@ -53,14 +53,12 @@ public abstract class AbstractValidator implements Validator {
 		
 	public List validate(Queue q) {
 		List validated = new ArrayList();
-		List roots = q.getRoots();
 		// for every root get its branches
-		for (Iterator rootIter = roots.iterator(); rootIter.hasNext(); ) {
-			Path root = (Path)rootIter.next();
-			List tree = q.getChilds(root);
-			for(Iterator iter = tree.iterator(); iter.hasNext(); ) {
+		for (Iterator rootIter = q.getRoots().iterator(); rootIter.hasNext(); ) {
+			for(Iterator iter = q.getChilds((Path)rootIter.next()).iterator(); iter.hasNext(); ) {
 				Path child = (Path)iter.next();
 				if (this.validate(child)) {
+					log.info(child.getName()+" validated.");
 					validated.add(child);
 				}
 			}
@@ -69,13 +67,12 @@ public abstract class AbstractValidator implements Validator {
 	}
 	
 	protected boolean validate(Path p) {
-		log.debug("Validating "+p.toString());
-        if (!this.isCanceled) {
-			if (p.attributes.isDirectory()) {
-				return this.validateDirectory(p);
-			}
+        if (!this.isCanceled()) {
 			if (p.attributes.isFile()) {
 				return this.validateFile(p);
+			}
+			if (p.attributes.isDirectory()) {
+				return this.validateDirectory(p);
 			}
 		}
 		log.info("Canceled " + p.getName() + " - no further validation needed");
