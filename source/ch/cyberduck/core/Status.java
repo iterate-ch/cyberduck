@@ -66,15 +66,15 @@ public class Status /*extends Observable*/ {
 			return size+"B";
 		}
 		if(size < MEGA) {
-			String v = String.valueOf((double)size/KILO);
+			String v = String.valueOf((long)(size/KILO));
 			return v.substring(0, v.indexOf('.')+2)+"kB";
 		}
 		if(size < GIGA) {
-			String v = String.valueOf((double)size/MEGA);
+			String v = String.valueOf((long)(size/MEGA));
 			return v.substring(0, v.indexOf('.')+2)+"MB";
 		}
 		else {
-			String v = String.valueOf((double)size/GIGA);
+			String v = String.valueOf((long)(size/GIGA));
 			return v.substring(0, v.indexOf('.')+2)+"GB";
 		}
 	}
