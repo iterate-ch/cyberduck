@@ -117,7 +117,13 @@ public class CDHistoryImpl extends History {
 				    NSPropertyListSerialization.PropertyListXMLFormat,
 				    errorString)
 				);
-				//				collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(list));
+				//				NSMutableDictionary versionInfo = new NSMutableDictionary();
+				//				versionInfo.setObjectForKey(NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"), "Version");
+				//				collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
+				//																					   versionInfo,
+				//																					   NSPropertyListSerialization.PropertyListXMLFormat,
+				//																					   errorString)
+				//									  );
 				if (errorString[0] != null)
 					log.error("Problem writing bookmark file: " + errorString[0]);
 

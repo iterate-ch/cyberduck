@@ -56,6 +56,14 @@ public class CDLoginController implements LoginController {
 		this.passField = passField;
 	}
 
+	private NSButton keychainCheckbox;
+	
+	public void setKeychainCheckbox(NSButton keychainCheckbox) {
+		this.keychainCheckbox = keychainCheckbox;
+		this.keychainCheckbox.setState(NSCell.OffState);
+		//		this.keychainCheckbox.setState(Preferences.instance().getProperty("connection.login.useKeychain").equals("true") ? NSCell.OnState : NSCell.OffState);
+	}
+	
 	private NSWindow sheet; // IBOutlet
 
 	public void setSheet(NSWindow sheet) {
@@ -66,10 +74,10 @@ public class CDLoginController implements LoginController {
 
 	private static NSMutableArray allDocuments = new NSMutableArray();
 
-	private Login login;
+//	private Login login;
 
-	public CDLoginController(NSWindow parentWindow, Login login) {
-		this.login = login;
+	public CDLoginController(NSWindow parentWindow) {
+//		login = login;
 		this.parentWindow = parentWindow;
 		allDocuments.addObject(this);
 		if (false == NSApplication.loadNibNamed("Login", this)) {
@@ -98,7 +106,7 @@ public class CDLoginController implements LoginController {
 	/**
 	 * @return True if the user has choosen to try again with new credentials
 	 */
-	public boolean loginFailure(String message) {
+	public boolean loginFailure(Login login, String message) {
 		log.info("Authentication failed");
 		this.done = false;
 		this.textField.setStringValue(message);
@@ -111,7 +119,7 @@ public class CDLoginController implements LoginController {
 		        "loginSheetDidEnd",
 		        new Class[]{NSWindow.class, int.class, Object.class}
 		    ), // did end selector
-		    null); //contextInfo
+		    login); //contextInfo
 		this.window().makeKeyAndOrderFront(null);
 		while (!done) {
 			try {
@@ -124,19 +132,23 @@ public class CDLoginController implements LoginController {
 		}
 		return tryAgain;
 	}
-
+	
 	/**
-	 * Selector method from
+		* Selector method from
 	 * @see #loginFailure
 	 */
-	public void loginSheetDidEnd(NSWindow sheet, int returncode, Object main) {
+	public void loginSheetDidEnd(NSWindow sheet, int returncode, Object context) {
 		log.debug("loginSheetDidEnd");
 		this.window().orderOut(null);
+		Login login = (Login)context;
 		switch (returncode) {
 			case (NSAlertPanel.DefaultReturn):
-				this.tryAgain = true;
-				this.login.setUsername(userField.stringValue());
-				this.login.setPassword(passField.stringValue());
+				login.setUsername(userField.stringValue());
+				login.setPassword(passField.stringValue());
+				if(keychainCheckbox.state() == NSCell.OnState) {
+					login.addPasswordToKeychain();
+				}
+					this.tryAgain = true;
 				break;
 			case (NSAlertPanel.AlternateReturn):
 				this.tryAgain = false;

@@ -44,15 +44,14 @@ public class CDQueueCell extends CDTableCell {
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
 		
-		log.debug("Redrawing queue cell...");
+//		log.debug("Redrawing queue cell...");
 		NSPoint cellPoint = cellFrame.origin();
 		NSSize cellSize = cellFrame.size();
-		log.debug("cellPoint:"+cellPoint.x()+","+cellPoint.y());
 		
 		//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and
 		//coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
 		//invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.
-		controlView.lockFocus();
+//		controlView.lockFocus();
 		
 		// drawing file icon
 		NSImage fileIcon = null;
@@ -110,6 +109,6 @@ public class CDQueueCell extends CDTableCell {
 												   cellSize.width() - BORDER - SPACE,
 												   cellSize.height())
 										);
-		controlView.unlockFocus();
+//		controlView.unlockFocus();
 	}
 }

@@ -18,6 +18,8 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Login;
+
 public interface LoginController {
 
 	/**
@@ -26,6 +28,6 @@ public interface LoginController {
 	 * @return true If we whould try again with new login
 	 * @param explanation Any additional information why the login failed.
 	 */
-	public boolean loginFailure(String explanation);
+	public boolean loginFailure(Login login, String explanation);
 
 }

@@ -195,15 +195,10 @@ public class CDConnectionController implements Observer {
 	
 	public void setKeychainCheckbox(NSButton keychainCheckbox) {
 		this.keychainCheckbox = keychainCheckbox;
-		this.keychainCheckbox.setTarget(this);
-		this.keychainCheckbox.setAction(new NSSelector("keychainCheckboxSelectionChanged", new Class[]{Object.class}));
+		this.keychainCheckbox.setState(NSCell.OffState);
+//		this.keychainCheckbox.setState(Preferences.instance().getProperty("connection.login.useKeychain").equals("true") ? NSCell.OnState : NSCell.OffState);
 	}
-
-	public void keychainCheckboxSelectionChanged(Object sender) {
-		log.debug("keychainCheckboxSelectionChanged");
 		
-	}
-	
 	private NSButton pkCheckbox;
 
 	public void setPkCheckbox(NSButton pkCheckbox) {
@@ -251,15 +246,6 @@ public class CDConnectionController implements Observer {
 		}
 	}
 
-//	private NSButton keychainCheckbox;
-//
-//	public void setKeychainCheckbox(NSButton keychainCheckbox) {
-//		this.keychainCheckbox = keychainCheckbox;
-//		this.keychainCheckbox.setEnabled(false);
-//		this.keychainCheckbox.setTarget(this);
-//		this.keychainCheckbox.setAction(new NSSelector("keychainCheckboxSelectionChanged", new Class[]{Object.class}));
-//	}
-
 	private NSTextField urlLabel;
 
 	public void setUrlLabel(NSTextField urlLabel) {
@@ -295,30 +281,61 @@ public class CDConnectionController implements Observer {
 	private void awakeFromNib() {
 		log.debug("awakeFromNib");
 		// Notify the updateURLLabel() method if the user types.
+		//ControlTextDidChangeNotification
 		NSNotificationCenter.defaultCenter().addObserver(
-		    this,
-		    new NSSelector("updateURLLabel", new Class[]{Object.class}),
-		    NSControl.ControlTextDidChangeNotification,
-		    hostPopup);
+														 this,
+														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 hostPopup);
 		NSNotificationCenter.defaultCenter().addObserver(
-		    this,
-		    new NSSelector("updateURLLabel", new Class[]{Object.class}),
-		    NSControl.ControlTextDidChangeNotification,
-		    pathField);
+														 this,
+														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 pathField);
 		NSNotificationCenter.defaultCenter().addObserver(
-		    this,
-		    new NSSelector("updateURLLabel", new Class[]{Object.class}),
-		    NSControl.ControlTextDidChangeNotification,
-		    portField);
+														 this,
+														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 portField);
 		NSNotificationCenter.defaultCenter().addObserver(
-		    this,
-		    new NSSelector("updateURLLabel", new Class[]{Object.class}),
-		    NSControl.ControlTextDidChangeNotification,
-		    usernameField);
+														 this,
+														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
+														 NSControl.ControlTextDidChangeNotification,
+														 usernameField);
+		//NSControlTextDidEndEditingNotification
+		NSNotificationCenter.defaultCenter().addObserver(
+														 this,
+														 new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
+														 NSControl.ControlTextDidEndEditingNotification,
+														 hostPopup);
+		NSNotificationCenter.defaultCenter().addObserver(
+														 this,
+														 new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
+														 NSControl.ControlTextDidEndEditingNotification,
+														 usernameField);
+		
 		this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
 		this.protocolPopup.setTitle(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.portField.setIntValue(protocolPopup.selectedItem().tag());
 		this.pkCheckbox.setEnabled(Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP));
+	}
+	
+	public void getPasswordFromKeychain(Object sender) {
+		if(hostPopup.stringValue() != null && 
+		   hostPopup.stringValue() != "" && 
+		   usernameField.stringValue() != null && 
+		   usernameField.stringValue() != "") {
+			Login l = new Login(hostPopup.stringValue(), usernameField.stringValue());
+			String passFromKeychain = l.getPasswordFromKeychain();
+			if(passFromKeychain != null) {
+				log.info("Password for "+usernameField.stringValue()+" found in Keychain");
+				this.passField.setStringValue(passFromKeychain);
+			}
+			else {
+//				this.passField.setStringValue("");
+				log.info("Password for "+usernameField.stringValue()+" NOT found in Keychain");
+			}
+		}
 	}
 
 	private void selectionChanged(Host selectedItem) {
@@ -372,7 +389,7 @@ public class CDConnectionController implements Observer {
 						    Session.SFTP,
 						    hostPopup.stringValue(),
 						    Integer.parseInt(portField.stringValue()),
-						    new Login(hostPopup.stringValue(), usernameField.stringValue(), passField.stringValue()),
+						    new Login(hostPopup.stringValue(), usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState),
 						    pathField.stringValue()
 						);
 						break;
@@ -381,7 +398,7 @@ public class CDConnectionController implements Observer {
 						    Session.FTP,
 						    hostPopup.stringValue(),
 						    Integer.parseInt(portField.stringValue()),
-						    new Login(hostPopup.stringValue(), usernameField.stringValue(), passField.stringValue()),
+						    new Login(hostPopup.stringValue(), usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState),
 						    pathField.stringValue()
 						);
 						break;

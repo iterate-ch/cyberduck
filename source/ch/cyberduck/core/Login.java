@@ -33,8 +33,16 @@ public class Login {
 	//char *getpwdfromkeychain( const char *service, const char *account, OSStatus *error );
     native String getPasswordFromKeychain(String service, String account);
 	
+	public String getPasswordFromKeychain() {
+		return this.getPasswordFromKeychain(this.service, this.user);
+	}
+	
 	//void addpwdtokeychain( const char *service, const char *account, const char *password );
 	native void addPasswordToKeychain(String service, String account, String password);
+	
+	public void addPasswordToKeychain() {
+		this.addPasswordToKeychain(this.service, this.user, this.pass);
+	}
 	
 	private String service;
 	private String user;
@@ -58,6 +66,10 @@ public class Login {
 	 * @param pass Passphrase
 	 */
 	public Login(String service, String user, String pass) {
+		this(service, user, pass, false);
+	}
+
+	public Login(String service, String user, String pass, boolean addToKeychain) {
 		this.service = service;
 		if (null == user || user.equals(""))
 			this.user = Preferences.instance().getProperty("ftp.anonymous.name");
@@ -67,6 +79,8 @@ public class Login {
 			this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 		else
 			this.pass = pass;
+		if(addToKeychain)
+			this.addPasswordToKeychain();
 	}
 
 	/**
@@ -121,6 +135,10 @@ public class Login {
 		// all other cases we don't like
 		return false;
 	}
+	
+	public boolean promptUser(String message) {
+		return controller.loginFailure(this, message);
+	}
 
 	public String getUsername() {
 		return this.user;
@@ -134,29 +152,21 @@ public class Login {
 		if(!this.hasReasonableValues()) {
 			if(Preferences.instance().getProperty("connection.login.useKeychain").equals("true")) {
 				log.info("Searching keychain for password...");
-				this.pass = this.getPasswordFromKeychain(this.service, this.getUsername());
+				this.pass = this.getPasswordFromKeychain();
 				if(null == this.pass) {
-					//				if(this.controller != null)
-					//					this.controller.loginFailure("The username or password is not reasonable.");
-					//				else
-					// still no reasonable values, what a pitty
-					this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
+					this.promptUser("The username or password is not reasonable.");
 				}
 			}
 		}
 		return this.pass;
 	}
 	
-	public void setPassword(String p) {
-		this.pass = p;
+	public void setPassword(String pass) {
+		this.pass = pass;
 	}
 
-	public void setController(LoginController c) {
-		this.controller = c;
-	}
-
-	public LoginController getController() {
-		return this.controller;
+	public void setController(LoginController lc) {
+		this.controller = lc;
 	}
 
 	public String toString() {

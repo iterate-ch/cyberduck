@@ -132,8 +132,8 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 							p = new FTPPath((FTPSession) session, this.workdir().getAbsolute(), new Local((String) filesList.objectAtIndex(i)));
 						if (this.workdir() instanceof SFTPPath)
 							p = new SFTPPath((SFTPSession) session, this.workdir().getAbsolute(), new Local((String) filesList.objectAtIndex(i)));
-						CDQueueController.instance().addItemAndStart(new Queue(p,
-						    Queue.KIND_UPLOAD));
+						CDQueueController.instance().addItem(new Queue(p,
+						    Queue.KIND_UPLOAD), true);
 					}
 					return true;
 				}
@@ -238,8 +238,8 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 				try {
 					//@todo url decoding still needed?
 					this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), Codec.encode(this.promisedDragPaths[i].getName())));
-					CDQueueController.instance().addItemAndStart(new Queue(this.promisedDragPaths[i],
-					    Queue.KIND_DOWNLOAD));
+					CDQueueController.instance().addItem(new Queue(this.promisedDragPaths[i],
+					    Queue.KIND_DOWNLOAD), true);
 					promisedDragNames.addObject(Codec.encode(this.promisedDragPaths[i].getName()));
 				}
 				catch (java.io.UnsupportedEncodingException e) {

@@ -94,8 +94,8 @@ public class CDDownloadController {
 							path = new HTTPPath((HTTPSession) session, file);
 						}
 						this.window().orderOut(null);
-						CDQueueController.instance().addItemAndStart(new Queue(path,
-						    Queue.KIND_DOWNLOAD));
+						CDQueueController.instance().addItem(new Queue(path,
+						    Queue.KIND_DOWNLOAD), true);
 					}
 					else
 						throw new MalformedURLException("URL must contain reference to a file");

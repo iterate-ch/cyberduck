@@ -67,7 +67,13 @@ public class CDQueuesImpl extends Queues { //implements NSTableView.DataSource {
 				    NSPropertyListSerialization.PropertyListXMLFormat,
 				    errorString)
 				);
-				//				collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(list));
+				//				NSMutableDictionary versionInfo = new NSMutableDictionary();
+				//				versionInfo.setObjectForKey(NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"), "Version");
+				//				collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
+				//																					   versionInfo,
+				//																					   NSPropertyListSerialization.PropertyListXMLFormat,
+				//																					   errorString)
+				//									  );
 				if (errorString[0] != null)
 					log.error("Problem writing queue file: " + errorString[0]);
 

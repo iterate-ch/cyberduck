@@ -121,21 +121,23 @@ public class CDQueueController implements Observer, Validator {
 		this.queueTable.setAllowsColumnReordering(false);
 	}
 
-	public void addItem(Queue queue) {
+/*@todo	public void addItem(Queue queue, boolean start, Observer callback) {
+		this.addItem(queue, start);
+		this.callback = callback;
+	}
+*/
+	public void addItem(Queue queue, boolean start) {
 		this.window().makeKeyAndOrderFront(null);
 		CDQueuesImpl.instance().addItem(queue);
 		this.queueTable.reloadData();
 		this.queueTable.selectRow(this.queueTable.numberOfRows() - 1, false);
+		if(start)
+			this.startItem(queue);
 	}
-
-	public void addItemAndStart(Queue queue) {
-		this.addItem(queue);
-		this.startItem(queue);
-	}
-
+	
 	public void startItem(Queue queue) {
 		queue.addObserver(this);
-		queue.getRoot().getHost().getLogin().setController(new CDLoginController(this.window(), queue.getRoot().getHost().getLogin()));
+		queue.getRoot().getHost().getLogin().setController(new CDLoginController(this.window()));
 		if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
 			try {
 				queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(this.window()));
@@ -163,22 +165,30 @@ public class CDQueueController implements Observer, Validator {
 //		log.debug("update:"+observable+","+arg);
 		if (arg instanceof Message) {
 			Message msg = (Message) arg;
-
-//			this.queueTable.reloadData(); //@todo only let the table redraw the cells affected.
-
-			//public NSRect frameOfCellAtLocation(int columnIndex, int rowIndex)
-			NSRect rect0 = this.queueTable.frameOfCellAtLocation(0, CDQueuesImpl.instance().indexOf((Queue)observable));
-//			this.queueTable.drawWithFrameInView(rect0, this.queueTable);
-			NSCell queueCell = this.queueTable.tableColumnWithIdentifier("DATA").dataCell();
-			queueCell.drawWithFrameInView(rect0, this.queueTable);
-
-			NSRect rect1 = this.queueTable.frameOfCellAtLocation(1, CDQueuesImpl.instance().indexOf((Queue)observable));
-//			this.queueTable.drawWithFrameInView(rect1, this.queueTable);
-			NSCell progressCell = this.queueTable.tableColumnWithIdentifier("PROGRESS").dataCell();
-			progressCell.drawWithFrameInView(rect1, this.queueTable);
-
+			
+			if(this.window().isVisible()) {
+				if(this.queueTable.visibleRect() != NSRect.ZeroRect) {
+//					log.debug("Queue table visible, redrawing cells");
+					NSCell queueCell = this.queueTable.tableColumnWithIdentifier("DATA").dataCell();
+					queueCell.drawWithFrameInView(this.queueTable.frameOfCellAtLocation(0, CDQueuesImpl.instance().indexOf((Queue)observable)), 
+												  this.queueTable);
+					
+					NSCell progressCell = this.queueTable.tableColumnWithIdentifier("PROGRESS").dataCell();
+					progressCell.drawWithFrameInView(this.queueTable.frameOfCellAtLocation(1, CDQueuesImpl.instance().indexOf((Queue)observable)), 
+													 this.queueTable);
+					
+					this.queueTable.setNeedsDisplay(true);
+				}
+			}
+			
 			if (msg.getTitle().equals(Message.QUEUE_START) || msg.getTitle().equals(Message.QUEUE_STOP)) {
 				this.toolbar.validateVisibleItems();
+				Queue queue = (Queue)observable;
+				if (Queue.KIND_UPLOAD == queue.kind()) {
+/*@todo				if(callback != null) {
+					callback.update(observable, queue.getRoot()); 
+					*/
+				}
 			}
 			else if (msg.getTitle().equals(Message.START)) {
 				log.debug("************START***********");
@@ -188,7 +198,7 @@ public class CDQueueController implements Observer, Validator {
 				log.debug("************STOP***********");
 				this.toolbar.validateVisibleItems();
 				if (observable instanceof Queue) {
-					Queue queue = (Queue) observable;
+					Queue queue = (Queue)observable;
 					if (queue.numberOfJobs() == queue.processedJobs()) {
 						if (Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
 							this.queueTable.deselectAll(null);

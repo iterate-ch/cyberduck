@@ -256,7 +256,7 @@ public class Host {
 		this((String) dict.objectForKey(Host.PROTOCOL),
 		    (String) dict.objectForKey(Host.HOSTNAME),
 		    Integer.parseInt((String) dict.objectForKey(Host.PORT)),
-		    new Login((String) dict.objectForKey(Host.USERNAME)),
+		    new Login((String) dict.objectForKey(Host.HOSTNAME), (String) dict.objectForKey(Host.USERNAME)),
 		    (String) dict.objectForKey(Host.PATH),
 		    (String) dict.objectForKey(Host.NICKNAME)
 		);

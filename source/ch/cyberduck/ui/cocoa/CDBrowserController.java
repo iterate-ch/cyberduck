@@ -174,9 +174,9 @@ public class CDBrowserController implements Observer {
 				if (this.isMounted()) {
 					while (enum.hasMoreElements()) {
 						Session session = browserModel.workdir().getSession().copy();
-						CDQueueController.instance().addItemAndStart(new Queue(
+						CDQueueController.instance().addItem(new Queue(
 						    ((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session),
-						    Queue.KIND_DOWNLOAD));
+						    Queue.KIND_DOWNLOAD), true);
 					}
 				}
 			}
@@ -539,7 +539,7 @@ public class CDBrowserController implements Observer {
 
 	public void update(Observable o, Object arg) {
 		log.debug("update:" + o + "," + arg);
-		if (o instanceof Session) {
+//		if (o instanceof Session) {
 			if (arg instanceof Path) {
 				browserModel.setWorkdir((Path) arg);
 				java.util.List cache = ((Path) arg).cache();
@@ -606,7 +606,7 @@ public class CDBrowserController implements Observer {
 					this.toolbar.validateVisibleItems();
 				}
 			}
-		}
+//		}
 	}
 
 	// ----------------------------------------------------------
@@ -712,8 +712,8 @@ public class CDBrowserController implements Observer {
 		NSEnumerator enum = browserTable.selectedRowEnumerator();
 		while (enum.hasMoreElements()) {
 			Session session = browserModel.workdir().getSession().copy();
-			CDQueueController.instance().addItemAndStart(new Queue(((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session),
-			    Queue.KIND_DOWNLOAD));
+			CDQueueController.instance().addItem(new Queue(((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session),
+			    Queue.KIND_DOWNLOAD), true);
 		}
 	}
 
@@ -735,17 +735,13 @@ public class CDBrowserController implements Observer {
 					// selected files on the local filesystem
 					NSArray selected = sheet.filenames();
 					java.util.Enumeration enumerator = selected.objectEnumerator();
-//				List items = new ArrayList();
-//				Session session = parent.getSession().copy();
 					while (enumerator.hasMoreElements()) {
 						Session session = parent.getSession().copy();
 						Path item = parent.copy(session);
 						item.setPath(parent.getAbsolute(), new Local((String) enumerator.nextElement()));
-						//					items.add(item);
-						CDQueueController.instance().addItemAndStart(new Queue(item,
-						    Queue.KIND_UPLOAD));
+						CDQueueController.instance().addItem(new Queue(item,
+						    Queue.KIND_UPLOAD), true);
 					}
-					//				CDQueueController.instance().addTransfer(items, Queue.KIND_UPLOAD);
 					break;
 				}
 			case (NSPanel.CancelButton):
@@ -822,7 +818,7 @@ public class CDBrowserController implements Observer {
 				);
 			}
 		}
-		host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
+		host.getLogin().setController(new CDLoginController(this.window()));
 		session.mount();
 		CDHistoryImpl.instance().addItem(host);
 	}

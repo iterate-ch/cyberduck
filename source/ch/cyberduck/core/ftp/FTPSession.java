@@ -55,6 +55,7 @@ public class FTPSession extends Session {
 			if (this.FTP != null) {
 				this.log("Disconnecting...", Message.PROGRESS);
 				this.FTP.quit();
+				this.getHost().getLogin().setPassword(null);
 				this.FTP = null;
 			}
 			this.log("Disconnected", Message.PROGRESS);
@@ -122,9 +123,6 @@ public class FTPSession extends Session {
 
 	private synchronized void login() throws IOException {
 		log.debug("login");
-//@todo if (!host.getLogin().hasReasonableValues()) {
-//			host.getLogin().getController().loginFailure("The username or password is not reasonable.");
-//		}
 		try {
 			this.log("Authenticating as " + host.getLogin().getUsername() + "...", Message.PROGRESS);
 			this.FTP.login(host.getLogin().getUsername(), host.getLogin().getPassword());
@@ -132,7 +130,7 @@ public class FTPSession extends Session {
 		}
 		catch (FTPException e) {
 			this.log("Login failed", Message.PROGRESS);
-			if (host.getLogin().getController().loginFailure("Authentication for user " + host.getLogin().getUsername() + " failed. The server response is: " + e.getMessage())) {
+			if (host.getLogin().promptUser("Authentication for user " + host.getLogin().getUsername() + " failed. The server response is: " + e.getMessage())) {
 				// let's try again with the new values
 				this.login();
 			}

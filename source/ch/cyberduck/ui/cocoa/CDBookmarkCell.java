@@ -41,8 +41,7 @@ public class CDBookmarkCell extends CDTableCell {
 		//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and
 		//coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
 		//invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.
-		controlView.lockFocus();
-
+//		controlView.lockFocus();
 
 		NSPoint cellPoint = cellFrame.origin();
 		NSSize cellSize = cellFrame.size();
@@ -59,6 +58,6 @@ public class CDBookmarkCell extends CDTableCell {
 		    new NSAttributedString(bookmark.getDefaultPath(), tinyFont),
 		    new NSRect(cellPoint.x(), cellPoint.y() + 27, cellSize.width() - 5, cellSize.height())
 		);
-		controlView.unlockFocus();
+//		controlView.unlockFocus();
 	}
 }

@@ -61,6 +61,7 @@ public class SFTPSession extends Session {
 			if (this.SFTP != null) {
 				this.log("Disconnecting...", Message.PROGRESS);
 				this.SFTP.close();
+				this.getHost().getLogin().setPassword(null);
 				this.SFTP = null;
 			}
 			if (this.SSH != null) {
@@ -144,9 +145,6 @@ public class SFTPSession extends Session {
 
 	private synchronized void login() throws IOException {
 		log.debug("login");
-//@todo		if (!host.getLogin().hasReasonableValues()) {
-//			host.getLogin().getController().loginFailure("The username or password is not reasonable.");
-//		}
 		this.log("Authenticating as '" + host.getLogin().getUsername() + "'", Message.PROGRESS);
 		if (host.getLogin().usesPasswordAuthentication()) {// password authentication
 			PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
@@ -156,7 +154,6 @@ public class SFTPSession extends Session {
 			// Try the authentication
 			int result = SSH.authenticate(auth);
 			//	this.log(SSH.getAuthenticationBanner(100), Message.TRANSCRIPT);
-// Evaluate the result
 			if (AuthenticationProtocolState.COMPLETE == result) {
 				this.log("Login successfull", Message.PROGRESS);
 			}
@@ -167,7 +164,7 @@ public class SFTPSession extends Session {
 					explanation = "Authentication as user " + host.getLogin().getUsername() + " succeeded but another authentication method is required.";
 				else //(AuthenticationProtocolState.FAILED == result)
 					explanation = "Authentication as user " + host.getLogin().getUsername() + " failed.";
-				if (host.getLogin().getController().loginFailure(explanation))
+				if (host.getLogin().promptUser(explanation))
 					this.login();
 				else {
 					throw new SshException("Login as user " + host.getLogin().getUsername() + " failed.");
@@ -182,7 +179,7 @@ public class SFTPSession extends Session {
 			// If the private key is passphrase protected then ask for the passphrase
 			String passphrase = null;
 			if (keyFile.isPassphraseProtected()) {
-				if (host.getLogin().getController().loginFailure("The Private Key is password protected. Enter the passphrase for the key file '" + host.getLogin().getPrivateKeyFile() + "'.")) {
+				if (host.getLogin().promptUser("The Private Key is password protected. Enter the passphrase for the key file '" + host.getLogin().getPrivateKeyFile() + "'.")) {
 					passphrase = host.getLogin().getPassword();
 				}
 				else {

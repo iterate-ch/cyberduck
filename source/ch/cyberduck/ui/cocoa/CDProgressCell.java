@@ -40,10 +40,9 @@ public class CDProgressCell extends CDTableCell {
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
 		
-		log.debug("Redrawing progress cell...");
+//		log.debug("Redrawing progress cell...");
 		NSPoint cellPoint = cellFrame.origin();
 		NSSize cellSize = cellFrame.size();
-		log.debug("cellPoint:"+cellPoint.x()+","+cellPoint.y());
 
 		final float SPACE = 5;
 		final float PROGRESS_HEIGHT = 10;
@@ -69,7 +68,7 @@ public class CDProgressCell extends CDTableCell {
 		//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and
 		//coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
 		//invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.
-		controlView.lockFocus();
+//		controlView.lockFocus();
 		
 		// drawing current of size string
 		NSGraphics.drawAttributedString(
@@ -113,6 +112,6 @@ public class CDProgressCell extends CDTableCell {
 		NSColor.colorWithPatternImage(NSImage.imageNamed("stripe.tiff")).set();
 		NSBezierPath.fillRect(barRectFilled);
 		
-		controlView.unlockFocus();
+//		controlView.unlockFocus();
 	}
 }

@@ -507,6 +507,26 @@ public class CDPreferencesController {
 		Preferences.instance().setProperty("connection.login.name", this.loginField.stringValue());
 	}
 
+	private NSButton keychainCheckbox; //IBOutlet
+	
+	public void setKeychainCheckbox(NSButton keychainCheckbox) {
+		this.keychainCheckbox = keychainCheckbox;
+		this.keychainCheckbox.setTarget(this);
+		this.keychainCheckbox.setAction(new NSSelector("keychainCheckboxClicked", new Class[]{NSButton.class}));
+		this.keychainCheckbox.setState(Preferences.instance().getProperty("connection.login.useKeychain").equals("true") ? NSCell.OnState : NSCell.OffState);
+	}
+	
+	public void keychainCheckboxClicked(NSButton sender) {
+		switch (sender.state()) {
+			case NSCell.OnState:
+				Preferences.instance().setProperty("connection.login.useKeychain", true);
+				break;
+			case NSCell.OffState:
+				Preferences.instance().setProperty("connection.login.useKeychain", false);
+				break;
+		}
+	}
+	
 	private NSButton showHiddenCheckbox; //IBOutlet
 
 	public void setShowHiddenCheckbox(NSButton showHiddenCheckbox) {
