@@ -26,8 +26,18 @@
 	cocoaforge.com\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 	Discuss anything reletead to Cyberduck at http://cyberduck.ch/forum/\
+\f0\b0 \cf0 	Discuss anything reletead to Cyberduck at 
+\f2\i http://cyberduck.ch/forum/
+\f0\i0 \
 \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 	[1]	FAQ\
+	[2]	Howto\
+	[3]	Known problems\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 \
 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
@@ -40,13 +50,13 @@
 \f1\b \cf0 \'a5	Is Cyberduck free?\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 	Cyberduck is free software. Free software is a matter of the users' freedom to run, copy, distribute, study, change and improve the software. If you find this program useful, please consider making a donation. A donation would not only demonstrate your appreciation of this software, but also help to advance development in the future.\
+\f0\b0 \cf0 	Cyberduck is free software. Free software is a matter of the users' freedom to run, copy, distribute, study, change and improve the software. If you find this program useful, please consider making a donation. A donation would not only demonstrate your appreciation of this software, but also help to advance development in the future. It will help to make Cyberduck even better!\
 \
 \'a5	
 \f1\b Why isn't there a <insert your preferred language here> localization?
 \f0\b0 \
 	Because nobody has written one yet. Why not doing it yourself? It's easy and you don't need any programming skills. Contact me and I'll send you the relevant files. Current available localizations are 
-\f2\i English, Dutch, German, French, Italian, Japanese, Korean, Chinese (Traditional and Simplified), Portuguese, Spanish, Finnish, Slovak, Czech and Norwegian
+\f2\i English, Dutch, German, French, Italian, Japanese, Korean, Chinese (Traditional and Simplified), Portuguese, Spanish, Finnish, Slovak, Czech, Norwegian and Swedish
 \f0\i0 .\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
@@ -72,88 +82,11 @@
 \'a5	Where does Cyberduck store its preferences?\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f0\b0 \cf0 	~/Library/Application Support/Cyberduck/\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 	
-\f0\b0 ~/Library/Preferences/ch.sudo.cyberduck.plist\
-\
-
-\f1\b \'a5	I don't want Cyberduck to ask me to review open connections upon quit!\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	Open a Terminal.app window and type:\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f3 \cf0 		defaults write ch.sudo.cyberduck browser.confirmDisconnect false\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0 \cf0 \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 \'a5	The 'Info' panel should be like an inspector always showing the details of the file(s) currently selected!\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	Open a Terminal.app window and type:\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f3 \cf0 		defaults write ch.sudo.cyberduck browser.info.isInspector true\
-\pard\tx480\tx960\tx1440\tx1920\tx2400\tx2880\tx3360\tx3840\tx4320\tx4800\tx5280\tx5760\tx6240\tx6720\tx7200\tx7680\tx8160\tx8640\tx9120\tx9600\tx10080\tx10560\tx11040\tx11520\tx12000\tx12480\tx12960\tx13440\tx13920\tx14400\tx14880\tx15360\tx15840\tx16320\tx16800\tx17280\tx17760\tx18240\tx18720\tx19200\tx19680\tx20160\tx20640\tx21120\tx21600\tx22080\tx22560\tx23040\tx23520\tx24000\tx24480\tx24960\tx25440\tx25920\tx26400\tx26880\tx27360\tx27840\tx28320\tx28800\tx29280\tx29760\tx30240\tx30720\tx31200\tx31680\tx32160\tx32640\tx33120\tx33600\tx34080\tx34560\tx35040\tx35520\tx36000\tx36480\tx36960\tx37440\tx37920\tx38400\tx38880\tx39360\tx39840\tx40320\tx40800\tx41280\tx41760\tx42240\tx42720\tx43200\tx43680\tx44160\tx44640\tx45120\tx45600\tx46080\tx46560\tx47040\tx47520\tx48000\li1440\fi-1440\ql\qnatural
-
-\f0 \cf0 \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 \'a5	The server does only allow one single connection; I can't transfer any files!\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	Limit the maximum number of simultaneous to a server to one in the 'Advanced' tab in the Preferences.
-\f3 \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 \
-\'a5	The connection to the server frequently times out; I want it to stay it alive if at all possible!\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0\b0 \cf0 	You can force Cyberduck to send a no operation command at a given time interval. Open a Terminal.app window and type: \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f3 \cf0 		defaults write ch.sudo.cyberduck connection.keepalive true\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 	
-\f0\b0 The default time interval a is set to 30 seconds. To adjust it (in milliseconds), type: \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f3 \cf0 		defaults write ch.sudo.cyberduck connection.keepalive.interval 30000\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 \
-\'a5	I cannot sync files because the modifcation date differs; the server lives in a different time zone!\
-	
-\f0\b0 Currently you have to set the time zone of the server manually using the following command:
-\f3 	defaults write ch.sudo.cyberduck queue.sync.timezone <timezone>\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0 \cf0 	You can get a list of valid <timezone> values at 
-\f2\i http://cvs.cyberduck.ch/*checkout*/cyberduck-cocoa/TIMEZONES?rev=HEAD&content-type=text/plain
+\f0\b0 \cf0 	
+\f2\i ~/Library/Application Support/Cyberduck/
+\f0\i0  and 
+\f2\i ~/Library/Preferences/ch.sudo.cyberduck.plist
 \f0\i0 \
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f1\b \cf0 \
-\'a5	I don't want to synchronize files if only e.g. the minutes differ in the timestamp!\
-	
-\f0\b0 You can configure Cberduck to ignore certain values when comparing the modification date of files. Open a Terminal.app and type:\
-		
-\f3 defaults write ch.sudo.cyberduck queue.sync.ignore.second true\
-\pard\tx700\tx1180\li700\fi-700\ql\qnatural
-
-\f0 \cf0 		
-\f3 defaults write ch.sudo.cyberduck queue.sync.ignore.minute true\
-
-\f0 		
-\f3 defaults write ch.sudo.cyberduck queue.sync.ignore.hour false\
-
-\f0 	By default, milliseconds and seconds are ignored.\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f1\b \cf0 \
@@ -180,7 +113,7 @@
 \f1\b b)
 \f0\b0  Type in the name of the server directly in to the 'Quick Connect' field in the toolbar. The text field will autocomplete from bookmarked hosts. You can enter a string in the format <user>@<host>, i.e. user@example.net, or a fully qualified URL such as ftp://mirror.switch.ch/mirror/.\
 	\
-	{{\NeXTGraphic Pasted Graphic 1.tiff \width6520 \height1760
+	{{\NeXTGraphic Pasted Graphic.tiff \width6560 \height1740
 }¬}
 \f0\fs24 \
 \
@@ -196,21 +129,31 @@
 \f1\b d)
 \f0\b0  Use the bookmark menu. Select a bookmark from the 'Bookmark' menu.\
 \
+	{{\NeXTGraphic Pasted Graphic 1.tiff \width5420 \height980
+}¬}\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\fs24 \cf0 \
 	
 \f1\b e)
 \f0\b0  Double click a Cyberduck bookmark file in the Finder.\
 \
+	{{\NeXTGraphic Pasted Graphic 15.tiff \width2000 \height1620
+}¬}\
+
+\f0\fs24 \
 	
 \f1\b f)
 \f0\b0  Double click a Internet Location File in the Finder (requires RCDefaultApp from http://www.rubicode.com/Software/RCDefaultApp/)\
 \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b 	Does Cyberduck support Rendezvous/Zeroconf?
+\f1\b \cf0 	Does Cyberduck support Rendezvous/Zeroconf?
 \f0\b0 \
 	In the 'New Connection' Dialog look at the Rendezvous icon in the top left corner. You will get a list with FTP/SFTP servers supporting Rendezvous on your local network.\
 	You can also see available Rendezvous services in the 'Bookmark' menu.\
 \
-	{{\NeXTGraphic Pasted Graphic.tiff \width4680 \height1040
+	{{\NeXTGraphic Pasted Graphic 16.tiff \width4680 \height1040
 }¬}
 \f0\fs24 \
 \
@@ -387,20 +330,74 @@
 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b\fs48 \cf0 	Known Problems\
+\f1\b\fs48 \cf0 	[3] Known Problems\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0\fs24 \cf0 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b \cf0 	When listing a directory on a FTP server I get the error message in response to the  'LIST -a' command: 550 Directory not found.\
+\f1\b \cf0 \'a5	When listing a directory on a FTP server I get the error message in response to the  'LIST -a' command: 550 Directory not found.\
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
 \f0\b0 \cf0 	Uncheck the option 'FTP > Send LIST -a command' in the Preferences.\
 \
 \pard\tx700\tx1180\li700\fi-700\ql\qnatural
 
-\f1\b \cf0 	If you know of any other problems, please report them to mailto:feedback@cyberduck.ch
+\f1\b \cf0 \'a5	The server does only allow one single connection; I can't transfer any files!\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	Limit the maximum number of simultaneous to a server to one in the 'Advanced' tab in the Preferences.
+\f3 \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \
+\'a5	The connection to the server frequently times out; I want it to stay it alive if at all possible!\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0\b0 \cf0 	You can force Cyberduck to send a no operation command at a given time interval. Open a Terminal.app window and type: \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f3 \cf0 		defaults write ch.sudo.cyberduck connection.keepalive true\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 	
+\f0\b0 The default time interval a is set to 30 seconds. To adjust it (in milliseconds), type: \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f3 \cf0 		defaults write ch.sudo.cyberduck connection.keepalive.interval 30000\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \
+\'a5	I cannot sync files because the modifcation date differs; the server lives in a different time zone!\
+	
+\f0\b0 Currently you have to set the time zone of the server manually using the following command:
+\f3 	defaults write ch.sudo.cyberduck queue.sync.timezone <timezone>\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0 \cf0 	You can get a list of valid <timezone> values at 
+\f2\i http://cvs.cyberduck.ch/*checkout*/cyberduck-cocoa/TIMEZONES?rev=HEAD&content-type=text/plain
+\f0\i0 \
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \
+\'a5	I don't want to synchronize files if only e.g. the minutes differ in the timestamp!\
+	
+\f0\b0 You can configure Cberduck to ignore certain values when comparing the modification date of files. Open a Terminal.app and type:\
+		
+\f3 defaults write ch.sudo.cyberduck queue.sync.ignore.second true\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f0 \cf0 		
+\f3 defaults write ch.sudo.cyberduck queue.sync.ignore.minute true\
+
+\f0 		
+\f3 defaults write ch.sudo.cyberduck queue.sync.ignore.hour false\
+
+\f0 	By default, milliseconds and seconds are ignored.\
+\
+\pard\tx700\tx1180\li700\fi-700\ql\qnatural
+
+\f1\b \cf0 \'a5	If you know of any other problems, please report them to mailto:feedback@cyberduck.ch
 \f0\b0 \
 	Thanks.\
 }
