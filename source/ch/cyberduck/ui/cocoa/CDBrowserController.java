@@ -339,6 +339,13 @@ public class CDBrowserController extends NSObject implements Observer {
                     Path next;
                     while (i.hasNext()) {
                         next = (Path) i.next();
+						/*
+						 Perl5Matcher matcher_ = new Perl5Matcher();
+						 Pattern pattern = new Perl5Compiler().compile(searchString);
+						 if (matcher.matches(next.getName().toLowerCase(), this.pattern))
+							subset.add(next);
+						}
+						 */
                         if(next.getName().toLowerCase().startsWith(searchString.toLowerCase())) {
                             subset.add(next);
                         }
