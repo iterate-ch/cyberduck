@@ -41,7 +41,7 @@ en.lproj/Folder.strings svneol=native#unset
 en.lproj/Goto.strings svneol=native#unset
 en.lproj/Info.strings svneol=native#unset
 en.lproj/InfoPlist.strings -text
-en.lproj/Localizable.strings -text
+en.lproj/Localizable.strings -text svneol=unset#application/octet-stream
 en.lproj/Login.strings svneol=native#unset
 en.lproj/Main.strings svneol=native#unset
 en.lproj/Preferences.strings svneol=native#unset
