@@ -264,9 +264,9 @@ public class FTPControlSocket {
 	    throws IOException, FTPException {
 
 		// use any available port
-		FTPDataSocket socket = newActiveDataSocket(0);
+		FTPDataSocket socket = new FTPActiveDataSocket(new ServerSocket(0));
 
-		// get the local address to which the control socket is bound.
+			// get the local address to which the control socket is bound.
 		InetAddress localhost = controlSock.getLocalAddress();
 
 		// send the PORT command to the server
@@ -403,7 +403,7 @@ public class FTPControlSocket {
 		int port = (parts[4]<<8)+parts[5];
 
 		// create the socket
-		return newPassiveDataSocket(ipAddress, port);
+		return new FTPPassiveDataSocket(new Socket(ipAddress, port));
 	}
 
 	/*
@@ -435,37 +435,6 @@ public class FTPControlSocket {
 		return parts;
 	}
 	 */
-
-	/**
-	 * Constructs a new <code>FTPDataSocket</code> object (client mode) and connect
-	 * to the given remote host and port number.
-	 *
-	 * @param remoteHost Remote host to connect to.
-	 * @param port       Remote port to connect to.
-	 * @return A new <code>FTPDataSocket</code> object (client mode) which is
-	 *         connected to the given server.
-	 * @throws IOException Thrown if no TCP/IP connection could be made.
-	 */
-	protected FTPDataSocket newPassiveDataSocket(String remoteHost, int port)
-	    throws IOException {
-
-		return new FTPPassiveDataSocket(new Socket(remoteHost, port));
-	}
-
-	/**
-	 * Constructs a new <code>FTPDataSocket</code> object (server mode) which will
-	 * listen on the given port number.
-	 *
-	 * @param port Remote port to listen on.
-	 * @return A new <code>FTPDataSocket</code> object (server mode) which is
-	 *         configured to listen on the given port.
-	 * @throws IOException Thrown if an error occurred when creating the socket.
-	 */
-	protected FTPDataSocket newActiveDataSocket(int port)
-	    throws IOException {
-
-		return new FTPActiveDataSocket(new ServerSocket(port));
-	}
 
 	/**
 	 * Send a command to the FTP server and

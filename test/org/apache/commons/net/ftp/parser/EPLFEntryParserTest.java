@@ -40,7 +40,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         this.assertEquals("pub", parsed.getName());
         this.assertEquals("/pub", parsed.getAbsolute());
 
-        this.assertEquals(1024, parsed.getSize());
+        this.assertEquals(1024, parsed.attributes.getSize());
 
         this.assertNotNull("timestamp", parsed.attributes.getTimestamp());
         this.assertEquals(Path.DIRECTORY_TYPE, parsed.attributes.getType());
@@ -70,7 +70,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         this.assertFalse("is dir", parsed.attributes.isDirectory());
         this.assertFalse("is root", parsed.isRoot());
         
-        this.assertEquals("size", 280, parsed.getSize());
+        this.assertEquals("size", 280, parsed.attributes.getSize());
         
         long millis = 825718503;
         millis = millis * 1000;
@@ -93,7 +93,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         this.assertTrue("is dir", parsed.attributes.isDirectory());
         this.assertFalse("is root", parsed.isRoot());
         
-        this.assertEquals("size", -1, parsed.getSize());
+        this.assertEquals("size", -1, parsed.attributes.getSize());
         
         long millis = 825718503;
         millis = millis * 1000;
@@ -146,21 +146,21 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         parsed = parser.parseFTPEntry(parentPath, "+,m825718503,r,s280,\tdjb.html\r\n");
         this.assertEquals("name", "djb.html", parsed.getName());
         this.assertFalse("is dir", parsed.attributes.isDirectory());
-        this.assertEquals("size", 280, parsed.getSize());        
+        this.assertEquals("size", 280, parsed.attributes.getSize());        
         this.assertEquals("timestamp", new Date(millis), parsed.attributes.getTimestamp());        
         this.assertEquals("permissions", "r--r--r-- (444)", parsed.attributes.getPermission().toString());
         
         parsed = parser.parseFTPEntry(parentPath, "+m825718503,,r,s280,\tdjb.html\r\n");
         this.assertEquals("X name", "djb.html", parsed.getName());
         this.assertFalse("X is dir", parsed.attributes.isDirectory());
-        this.assertEquals("X size", 280, parsed.getSize());        
+        this.assertEquals("X size", 280, parsed.attributes.getSize());        
         this.assertEquals("X timestamp", new Date(millis), parsed.attributes.getTimestamp());        
         this.assertEquals("X permissions", "r--r--r-- (444)", parsed.attributes.getPermission().toString());
         
         parsed = parser.parseFTPEntry(parentPath, "+m825718503,r,s280,,\tdjb.html\r\n");
         this.assertEquals("XX name", "djb.html", parsed.getName());
         this.assertFalse("XX is dir", parsed.attributes.isDirectory());
-        this.assertEquals("XX size", 280, parsed.getSize());        
+        this.assertEquals("XX size", 280, parsed.attributes.getSize());        
         this.assertEquals("XX timestamp", new Date(millis), parsed.attributes.getTimestamp());        
         this.assertEquals("XX permissions", "r--r--r-- (444)", parsed.attributes.getPermission().toString());
     }

@@ -94,6 +94,12 @@ public class CDBrowserController extends CDController implements Observer {
 	
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
+		// Configure table views
+		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
+		this.browserTable.setDelegate(this.browserModel);
+		this.bookmarkTable.setDataSource(this.bookmarkModel = CDBookmarkTableDataSource.instance());
+		this.bookmarkTable.setDelegate(this.bookmarkModel);
+		// Configure window
 		this.cascade();
 		this.window().setTitle("Cyberduck "+NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
 		this.window().setInitialFirstResponder(quickConnectPopup);
@@ -104,7 +110,7 @@ public class CDBrowserController extends CDController implements Observer {
 		if(Preferences.instance().getProperty("bookmarkDrawer.isOpen").equals("true")) {
 			this.bookmarkDrawer.open();
 		}
-		// Toolbar
+		// Configure Toolbar
 		this.toolbar = new NSToolbar("Cyberduck Toolbar");
 		this.toolbar.setDelegate(this);
 		this.toolbar.setAllowsUserCustomization(true);
@@ -210,8 +216,6 @@ public class CDBrowserController extends CDController implements Observer {
 		this.browserTable = browserTable;
 		this.browserTable.setTarget(this);
 		this.browserTable.setDoubleAction(new NSSelector("browserTableRowDoubleClicked", new Class[]{Object.class}));
-		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
-		this.browserTable.setDelegate(this.browserModel);
 		// receive drag events from types
 		this.browserTable.registerForDraggedTypes(new NSArray(new Object[]{
 			"QueuePboardType",
@@ -387,10 +391,8 @@ public class CDBrowserController extends CDController implements Observer {
 
 	public void setBookmarkTable(NSTableView bookmarkTable) {
 		this.bookmarkTable = bookmarkTable;
-		this.bookmarkTable.setDelegate(this);
 		this.bookmarkTable.setTarget(this);
 		this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableRowDoubleClicked", new Class[]{Object.class}));
-		this.bookmarkTable.setDataSource(this.bookmarkModel = CDBookmarkTableDataSource.instance());
 
 		// receive drag events from types
 		this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]
