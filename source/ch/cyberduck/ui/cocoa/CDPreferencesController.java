@@ -937,13 +937,6 @@ public class CDPreferencesController extends CDController {
 		}
 	}
 
-	private NSTextField userAgentField; //IBOutlet
-
-	public void setUserAgentField(NSTextField userAgentField) {
-		this.userAgentField = userAgentField;
-		this.userAgentField.setStringValue(Preferences.instance().getProperty("http.agent"));
-	}
-
 	private NSTextField anonymousField; //IBOutlet
 
 	public void setAnonymousField(NSTextField anonymousField) {

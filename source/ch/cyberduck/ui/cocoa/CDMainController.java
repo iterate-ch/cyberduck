@@ -227,7 +227,9 @@ public class CDMainController extends NSObject {
 							Message msg = (Message)arg;
 							Host host = rendezvous.getService((String)msg.getContent());
 							if(msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
-								Growl.instance().notifyWithImage("Rendezvous", (String)msg.getContent(), "rendezvous");
+								Growl.instance().notifyWithImage("Rendezvous", 
+																 (String)msg.getContent(), 
+																 "rendezvous.icns");
 								items.put((String)msg.getContent(),
 								    host);
 							}
@@ -524,6 +526,7 @@ public class CDMainController extends NSObject {
 	}
 
 	public void applicationDidFinishLaunching(NSNotification notification) {
+		Growl.instance().register();
 		log.info("Available localizations:"+NSBundle.mainBundle().localizations());
 		if(Preferences.instance().getBoolean("queue.openByDefault")) {
 			this.showTransferQueueClicked(null);

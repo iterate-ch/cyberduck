@@ -40,7 +40,7 @@ public class Growl {
 	private static Growl instance;
 
 	private Growl() {
-		this.register();
+		//
 	}
 
 	public static Growl instance() {
