@@ -7,7 +7,7 @@ Kopírování a distribuce doslovných kopií tohoto licenčního dokumentu
 jsou dovoleny komukoliv, jeho změny jsou však zakázány.
 
 
-Preambule
+		Preambule
 
 Softwarové licence jsou většinou navrženy tak, že vám odebírají právo
 volného sdílení a úprav programů. Smyslem Obecné veřejné licence GNU je
@@ -241,7 +241,7 @@ výjimky ze zde uvedených ustanovení. Naše rozhodnutí bude vedeno dvěma
 cíli: zachováním volné povahy všech odvozenin našeho volného softwaru a
 podporou sdílení a opětovného využití softwaru obecně.
 
-ZÁRUKA SE NEPOSKYTUJE
+		ZÁRUKA SE NEPOSKYTUJE
 
 11. VZHLEDEM K BEZPLATNÉMU POSKYTNUTÍ LICENCE K PROGRAMU SE NA PROGRAM
 NEVZTAHUJE ŽÁDNÁ ZÁRUKA, A TO V MÍŘE POVOLENÉ PLATNÝM ZÁKONEM. POKUD
@@ -264,7 +264,7 @@ VÁM NEBO TŘETÍM STRANÁM, NEBO SELHÁNÍ FUNKCE PROGRAMU V SOUČINNOSTI S
 JINÝMI PROGRAMY), A TO I V PŘÍPADĚ, ŽE TAKOVÝ DRŽITEL AUTORSKÝCH PRÁV
 NEBO JINÁ STRANA BYLI UPOZORNĚNI NA MOŽNOST TAKOVÝCH ŠKOD.
 
-KONEC USTANOVENÍ A PODMÍNEK
+		KONEC USTANOVENÍ A PODMÍNEK
 
 
 Tento text je neoficiálním překladem Obecné veřejné licence GNU (GNU
