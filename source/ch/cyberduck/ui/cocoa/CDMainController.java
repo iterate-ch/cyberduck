@@ -116,8 +116,8 @@ public class CDMainController {
 		    log.fatal("Couldn't load Update.nib");
 		    return;
 		}
-		this.updateLabel.setStringValue("Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is out of date. The current version is")+" "+latestVersionNumber);
-		this.updateText.insertText(comment);
+		this.updateLabel.setStringValue("Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is out of date. The current version is")+" "+latestVersionNumber+".");
+		this.updateText.replaceCharactersInRange(new NSRange(updateText.textStorage().length(), 0), comment);
 		this.updateSheet.setTitle(filename);
 		this.updateSheet.makeKeyAndOrderFront(null);
 

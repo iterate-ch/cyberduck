@@ -61,7 +61,7 @@ public class Queue extends Observable implements Observer { //Thread {
     /**
 	* Number of completed jobs in the queue
      */
-    private int completedJobs;
+    private int processedJobs;
     /**
 	* The file currently beeing processed in the queue
      */
@@ -147,23 +147,24 @@ public class Queue extends Observable implements Observer { //Thread {
 	}
 	
 	for(int i = 0; i < roots.length; i ++) {
-		//Iterating over all the files in the queue
+	    //Iterating over all the files in the queue
 	    this.callObservers(roots[i]);
 	    Iterator elements = jobs[i].iterator();
 	    while(elements.hasNext() && !isStopped()) {
 		this.progressTimer.start();
 		this.leftTimer.start();
 
+		this.processedJobs++;
+
 		this.candidate = (Path)elements.next();
 		this.candidate.status.addObserver(this);
 
 		String content = null;
-		if(KIND_DOWNLOAD == kind)
-		    content = "Downloading "+candidate.getName()+" ("+(this.completedJobs()+1)+" of "+(this.numberOfJobs())+")";
-		else
-		    content = "Uploading "+candidate.getName()+" ("+(this.completedJobs()+1)+" of "+(this.numberOfJobs())+")";
-		this.callObservers(new Message(Message.PROGRESS, content));
-//		this.callObservers(new Message(Message.PROGRESS, KIND_DOWNLOAD == kind ? "Downloading " : "Uploading "+candidate.getName()+" ("+(this.completedJobs()+1)+" of "+this.numberOfJobs())+")");
+//		if(KIND_DOWNLOAD == kind)
+//		    content = "Downloading "+candidate.getName()+" ("+(this.processedJobs()+1)+" of "+(this.numberOfJobs())+")";
+//		else
+//		    content = "Uploading "+candidate.getName()+" ("+(this.processedJobs()+1)+" of "+(this.numberOfJobs())+")";
+		this.callObservers(new Message(Message.PROGRESS, KIND_DOWNLOAD == kind ? "Downloading "+candidate.getName()+" ("+(this.processedJobs()+1)+" of "+(this.numberOfJobs())+")" : "Uploading "+candidate.getName()+" ("+(this.processedJobs()+1)+" of "+(this.numberOfJobs())+")"));
 
 		if(this.validator.validate(candidate, kind)) {
 		    log.debug("Validation sucessfull");
@@ -177,7 +178,6 @@ public class Queue extends Observable implements Observer { //Thread {
 		    }
 		    if(candidate.status.isComplete()) {
 			current += candidate.status.getCurrent();
-			completedJobs++;
 		    }
 		}
 		this.candidate.status.deleteObserver(this);
@@ -187,7 +187,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	    }
 	}
 
-	if(this.numberOfJobs() == this.completedJobs())
+	if(this.numberOfJobs() == this.processedJobs())
 	    session.close(); //todo session might be null
 	session.deleteObserver(Queue.this);
     }
@@ -225,14 +225,14 @@ public class Queue extends Observable implements Observer { //Thread {
 	* @return Number of remaining items to be processed in the queue.
      */
     public int remainingJobs() {
-	return this.numberOfJobs() - this.completedJobs();
+	return this.numberOfJobs() - this.processedJobs();
     }
 
     /**
 	* @return Number of completed (totally transferred) items in the queue.
      */
-    public int completedJobs() {
-	return this.completedJobs;
+    public int processedJobs() {
+	return this.processedJobs;
     }
 
     /**
@@ -286,22 +286,6 @@ public class Queue extends Observable implements Observer { //Thread {
      */
     public int getCurrent() {
 	return this.current + candidate.status.getCurrent();
-//	int currentBytes = 0;
-//	Iterator i = jobs.iterator();
-//	while(i.hasNext()) {
-//	    currentBytes += ((Path)i.next()).status.getCurrent();
-//	}
-//	return currentBytes;
-	
-//	return candidate.status.getCurrent();
-//	int current = 0;
-//	Iterator i = files.iterator();
-//	Path file = null;
-//	while(i.hasNext()) {
-//	    file = (Path)i.next();
-//	    current = current + file.status.getCurrent();
-//	}
-//	return current;
     }
 
     /**
@@ -314,13 +298,6 @@ public class Queue extends Observable implements Observer { //Thread {
     private void setSpeed(double s) {
 	this.speed = s;
 	this.callObservers(new Message(Message.DATA, candidate.status));
-//	this.callObservers(new Message(Message.SPEED, 
-//				Status.parseDouble(this.getSpeed()/1024) + "kB/s, about "
-//				+this.getTimeLeft()+" remaining."));
-	
-//	this.callObservers(new Message(Message.SPEED, "Current: "
-//				+ Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
-//				+ Status.parseDouble(this.getOverall()/1024) + " kB/s. "+this.getTimeLeft()));
     }
 
     private void setTimeLeft(int seconds) {
@@ -362,7 +339,7 @@ private void reset() {
     this.speed = -1;
     this.overall = -1;
     this.timeLeft = -1;
-    this.completedJobs = 0;
+    this.processedJobs = 0;
     this.calendar.set(Calendar.HOUR, 0);
     this.calendar.set(Calendar.MINUTE, 0);
     this.calendar.set(Calendar.SECOND, 0);
