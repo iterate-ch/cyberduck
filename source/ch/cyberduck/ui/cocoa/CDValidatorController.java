@@ -267,8 +267,6 @@ public abstract class CDValidatorController extends AbstractValidator {
     // NSTableView.DataSource
     // ----------------------------------------------------------
 	
-	protected final NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
-	
 	public void tableViewSelectionDidChange(NSNotification notification) {
 		if(this.fileTableView.selectedRow() != -1) {
 			Path p = (Path)this.workset.get(this.fileTableView.selectedRow());
@@ -310,21 +308,15 @@ public abstract class CDValidatorController extends AbstractValidator {
 				}
 				if (identifier.equals("TOOLTIP")) {
 					try {
-						String localTimestamp = formatter.stringForObjectValue(new NSGregorianDate((double)p.getLocal().getTimestamp().getTime()/1000, 
-																								   NSDate.DateFor1970)
-																			   );
-						String remoteTimestamp = formatter.stringForObjectValue(new NSGregorianDate((double)p.getRemote().attributes.getTimestamp().getTime()/1000, 
-																									NSDate.DateFor1970)
-																				);
 						return
 							NSBundle.localizedString("Local", "")+":\n"
 							+"\t"+p.getLocal().getAbsolute()+"\n"
 							+"\t"+Status.getSizeAsString(p.getLocal().length())+"\n"
-							+"\t"+localTimestamp+"\n"
+							+"\t"+p.getLocal().getTimestampAsString()+"\n"
 							+ NSBundle.localizedString("Remote", "")+":\n"
 							+"\t"+p.getAbsolute()+"\n"
 							+"\t"+Status.getSizeAsString(p.status.getSize())+"\n"
-							+"\t"+remoteTimestamp+"\n";
+							+"\t"+p.attributes.getTimestampAsString()+"\n";
 					}
 					catch(NSFormatter.FormattingException e) {
 						log.error(e.toString());

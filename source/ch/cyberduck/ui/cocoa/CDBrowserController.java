@@ -1594,7 +1594,9 @@ public class CDBrowserController extends NSObject implements CDController, Obser
                     return new NSAttributedString(p.attributes.getPermission().toString(), TABLE_CELL_PARAGRAPH_DICTIONARY);
                 }
 				if (identifier.equals("TOOLTIP")) {
-					return p.getAbsolute();
+					return p.getAbsolute()+"\n"
+					+Status.getSizeAsString(p.status.getSize())+"\n"
+					+p.attributes.getTimestampAsString();
 				}
                 throw new IllegalArgumentException("Unknown identifier: " + identifier);
             }

@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
+import com.apple.cocoa.foundation.NSGregorianDateFormatter;
+import com.apple.cocoa.foundation.NSUserDefaults;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -70,11 +72,14 @@ public class Attributes extends Observable {
         this.modified = d;
     }
 
+	private static final NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
+	
     /**
      * @return the modification date of this file
      */
     public String getTimestampAsString() {
-        return (DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT)).format(this.modified);
+		return formatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
+//        return (DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT)).format(this.modified);
     }
 
     public Date getTimestamp() {
