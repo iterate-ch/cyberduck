@@ -116,11 +116,4 @@ public class CDFavoritesImpl extends Favorites { //implements NSTableView.DataSo
 	}
 	throw new IllegalArgumentException("Unknown identifier: "+identifier);
     }
-    
-    //setValue()
-//    public void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row) {
-//	log.debug("tableViewSetObjectValueForLocation:"+row);
-//	Host h = (Host)this.values().toArray()[row];
-//	h.setURL((String)value);
-//    }
 }

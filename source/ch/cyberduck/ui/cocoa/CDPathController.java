@@ -66,10 +66,6 @@ public class CDPathController implements Observer {
 	}
     }
 
-//    public void clear() {
-//	this.items.clear();
-//    }
-
     public int numberOfItems() {
 	return items.size();
     }

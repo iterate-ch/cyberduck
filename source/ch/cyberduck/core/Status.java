@@ -142,7 +142,6 @@ public class Status extends Observable implements Serializable {
     public void setCurrent(long current) {
 	this.current = current;
 	this.callObservers(new Message(Message.DATA, this));
-//	this.callObservers(new Message(Message.DATA, Status.parseDouble(this.getCurrent()/1024) + " of " + Status.parseDouble(this.getSize()/1024) + " kBytes."));
     }
 
     public static long parseLong(long d) {

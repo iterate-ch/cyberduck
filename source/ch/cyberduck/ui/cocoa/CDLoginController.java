@@ -69,12 +69,6 @@ public class CDLoginController implements LoginController {
         }
     }
 
-//    public CDLoginController(NSWindow parentWindow) {
-//	super();
-//	allDocuments.addObject(this);
-//	this.parentWindow = parentWindow;
-//  }
-
     public void closeSheet(NSButton sender) {
 	log.debug("closeSheet");
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
@@ -85,10 +79,10 @@ public class CDLoginController implements LoginController {
 	return this.sheet;
     }
 
-//    public void windowWillClose(NSNotification notification) {
+    public void windowWillClose(NSNotification notification) {
 //	this.window().setDelegate(null);
-//	allDocuments.removeObject(this);
-//    }
+	allDocuments.removeObject(this);
+    }
 
     private boolean done;
     private boolean tryAgain;
@@ -110,7 +104,6 @@ public class CDLoginController implements LoginController {
 			  new Class[] { NSWindow.class, int.class, Object.class }
 			  ),// did end selector
 					      null); //contextInfo
-//	log.debug("Ordering front sheet window");
 	this.window().makeKeyAndOrderFront(null);
 	while(!done) {
 	    try {

@@ -309,7 +309,6 @@ public class CDBrowserController implements Observer {
 
     public void gotoButtonClicked(Object sender) {
         log.debug("folderButtonClicked");
-//	Path current = (Path)pathController.getItem(0);
 	CDGotoController controller = new CDGotoController(browserTable.workdir());
 	NSApplication.sharedApplication().beginSheet(
 					      controller.window(),//sheet
@@ -324,7 +323,6 @@ public class CDBrowserController implements Observer {
     
     public void folderButtonClicked(Object sender) {
         log.debug("folderButtonClicked");
-//	Path parent = (Path)pathController.getItem(0);
 	CDFolderController controller = new CDFolderController();
 	NSApplication.sharedApplication().beginSheet(
 					      controller.window(),//sheet
@@ -416,7 +414,6 @@ public class CDBrowserController implements Observer {
 	    items.add(browserModel.getEntry(((Integer)enum.nextElement()).intValue()).copy(session));
 	}
 	CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
-//	CDTransferController controller = new CDTransferController(browserTable.workdir().getSession().copy(), (Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
 	controller.transfer();
     }
     
@@ -446,7 +443,6 @@ public class CDBrowserController implements Observer {
 		    items.add(item);
 		}
 		CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_UPLOAD);
-//		CDTransferController controller = new CDTransferController(parent.getSession().copy(), (Path[])items.toArray(new Path[]{}), Queue.KIND_UPLOAD);
 		controller.transfer();
 		break;
 	    }
@@ -463,7 +459,6 @@ public class CDBrowserController implements Observer {
 
      public void upButtonClicked(Object sender) {
 	 log.debug("upButtonClicked");
-//	 Path p = (Path)pathController.getItem(0);
 	 browserTable.workdir().getParent().list();
      }
     
@@ -592,14 +587,6 @@ public class CDBrowserController implements Observer {
 	    item.setTarget(this);
 	    item.setAction(new NSSelector("connectButtonClicked", new Class[] {Object.class}));
 	}
-//	else if (itemIdentifier.equals("Path")) {
-//	    item.setLabel("Path");
-//	    item.setPaletteLabel("Path");
-//	    item.setToolTip("Change working directory");
-//	    item.setView(pathBox);
-//	    item.setMinSize(pathBox.frame().size());
-//	    item.setMaxSize(pathBox.frame().size());
-//	}
 	else if (itemIdentifier.equals(NSBundle.localizedString("Quick Connect"))) {
 	    item.setLabel(NSBundle.localizedString("Quick Connect"));
 	    item.setPaletteLabel(NSBundle.localizedString("Quick Connect"));
@@ -715,7 +702,6 @@ public class CDBrowserController implements Observer {
 
     public void windowWillClose(NSNotification notification) {
 	this.window().setDelegate(null);
-//	NSNotificationCenter.defaultCenter().removeObserver(this);
 	allDocuments.removeObject(this);
     }
 

@@ -230,21 +230,6 @@ public class SFTPPath extends Path {
 	return new SFTPPath(session, this.getAbsolute(), name);
     }
 
-//    public int size() {
-//	try {
-//	    session.check();
-//	    SftpFile p = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-//	    return p.getAttributes().getSize().intValue();
-//	}
-//	catch(SshException e) {
-//	    session.log("SSH Error: "+e.getMessage(), Message.ERROR);
-//	}
-//	catch(IOException e) {
-//	    session.log("IO Error: "+e.getMessage(), Message.ERROR);
-//	}
-//	return -1;
-//  }
-
     public void changePermissions(int permissions) {
 	log.debug("changePermissions");
 	try {
@@ -283,7 +268,6 @@ public class SFTPPath extends Path {
 	}
     }
     
-
     private void fillDownloadQueue(List queue) {
 	try {
 	    this.session.check();
@@ -317,7 +301,6 @@ public class SFTPPath extends Path {
 	    log.debug("download:"+this.toString());
 	    if(!this.isFile())
 		throw new IOException("Download must be a file.");
-//	    status.fireActiveEvent();
 	    this.session.check();
 	    this.getLocal().getParentFile().mkdirs();
 	    OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
@@ -366,7 +349,6 @@ public class SFTPPath extends Path {
     public void upload() {
 	try {
 	    log.debug("upload:"+this.toString());
-//	    status.fireActiveEvent();
 	    this.session.check();
 	    java.io.InputStream in = new FileInputStream(this.getLocal());
 	    if(in == null) {

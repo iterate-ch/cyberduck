@@ -140,7 +140,6 @@ public class CDBrowserTable extends NSTableView implements Observer {
 		    items.add(browserModel.getEntry(((Integer)enum.nextElement()).intValue()).copy(session));
 		}
 		CDTransferController controller = new CDTransferController((Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
-//		CDTransferController controller = new CDTransferController(this.workdir.getSession().copy(), (Path[])items.toArray(new Path[]{}), Queue.KIND_DOWNLOAD);
 		controller.transfer();
 	    }
 	    if(p.isDirectory())
@@ -385,17 +384,9 @@ public class CDBrowserTable extends NSTableView implements Observer {
 		    roots[i] = new FTPPath((FTPSession)session, workdir.getAbsolute(), new java.io.File((String)filesList.objectAtIndex(i)));
 		if(workdir instanceof SFTPPath)
 		    roots[i] = new SFTPPath((SFTPSession)session, workdir.getAbsolute(), new java.io.File((String)filesList.objectAtIndex(i)));
-//		roots[i] = ((CDBrowserTable)tableView).workdir.copy();
-//		roots[i].setPath(roots[i].getAbsolute(), new java.io.File((String)filesList.objectAtIndex(i)));
 	    }
 	    CDTransferController controller = new CDTransferController(roots, Queue.KIND_UPLOAD);
-
-//	    CDTransferController controller = new CDTransferController(workdir().getSession().copy(), roots, Queue.KIND_UPLOAD);
 	    controller.transfer();
-	    
-//	    tableView.reloadData();
-//	    tableView.setNeedsDisplay(true);
-//	    tableView.selectRow(row+i-1, false);
 	    return true;
 	}
 
@@ -450,20 +441,10 @@ public class CDBrowserTable extends NSTableView implements Observer {
 
 
 	public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
-	    log.debug("DragOperationCopy:"+NSDraggingInfo.DragOperationCopy);
-	    log.debug("DragOperationLink:"+NSDraggingInfo.DragOperationLink);
-	    log.debug("DragOperationGeneric:"+NSDraggingInfo.DragOperationGeneric);
-	    log.debug("DragOperationPrivate:"+NSDraggingInfo.DragOperationPrivate);
-	    log.debug("DragOperationMove:"+NSDraggingInfo.DragOperationMove);
-	    log.debug("DragOperationDelete:"+NSDraggingInfo.DragOperationDelete);
-	    log.debug("DragOperationEvery:"+NSDraggingInfo.DragOperationEvery);
-	    log.debug("DragOperationAll:"+NSDraggingInfo.DragOperationAll);
-	    log.debug("DragOperationNone:"+NSDraggingInfo.DragOperationNone);
 	    log.debug("finishedDraggingImage:"+operation);
 	    if(! (NSDraggingInfo.DragOperationNone == operation)) {
 		if(promisedDragPaths != null) {
 		    CDTransferController controller = new CDTransferController(promisedDragPaths, Queue.KIND_DOWNLOAD);
-//	    CDTransferController controller = new CDTransferController(this.workdir.getSession().copy(), promisedDragPaths, Queue.KIND_DOWNLOAD);
 		    controller.transfer();
 		    promisedDragPaths = null;
 		}
@@ -479,8 +460,7 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	    if(local)
 		return NSDraggingInfo.DragOperationNone;
 	    else
-		return NSDraggingInfo.DragOperationCopy;
-//		return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
+		return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
 	}
 
 	/**
@@ -492,23 +472,11 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	 */
 	public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
 	    log.debug("namesOfPromisedFilesDroppedAtDestination:"+dropDestination);
-	    
-//	this.promisedDragPaths = new Path[this.numberOfSelectedRows()];
 	    NSMutableArray promisedDragNames = new NSMutableArray();
 	    for(int i = 0; i < promisedDragPaths.length; i++) {
 		promisedDragPaths[i].setLocal(new java.io.File(dropDestination.getPath(), promisedDragPaths[i].getName()));
 		promisedDragNames.addObject(promisedDragPaths[i].getName());
 	    }
-	    
-//	NSEnumerator enum = this.selectedRowEnumerator();
-//	int i = 0;
-//	Session session = workdir.getSession().copy();
-//	while(enum.hasMoreElements()) {
-//	    promisedDragPaths[i] = browserModel.getEntry(((Integer)enum.nextElement()).intValue()).copy(session);
-//	    promisedDragPaths[i].setLocal(new java.io.File(dropDestination.getPath(), promisedDragPaths[i].getName()));
-//	    promisedDragNames.addObject(promisedDragPaths[i].getName());
-//	    i++;
-//	}
 	    return promisedDragNames;
 	}
 
@@ -524,12 +492,10 @@ public class CDBrowserTable extends NSTableView implements Observer {
 	}
 
 	public void addEntry(Path entry, int row) {
-//	log.debug("addEntry:"+entry);
 	    this.data.add(row, entry);
 	}
 
 	public void addEntry(Path entry) {
-//	log.debug("addEntry:"+entry);
 	    if(entry.attributes.isVisible())
 		this.data.add(entry);
 	}

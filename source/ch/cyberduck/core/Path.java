@@ -33,16 +33,13 @@ public abstract class Path {
     private String path = null;
     private java.io.File local = null;
     protected Path parent = null;
-
     private List cache = null;
-
     public Status status = new Status();
     public Attributes attributes = new Attributes();
 
     public static String FILE = "FILE";
     public static String FOLDER = "FOLDER";
     public static String LINK = "LINK";
-
     
     /**
 	* A remote path where nothing is known about a local equivalent.
@@ -244,59 +241,6 @@ public abstract class Path {
 	return null;
     }
 
-    /**
-	* @return the number of '/' characters in a path
-     */
-//     public int getPathDepth() {
-//	 int depth = 0;
-//	 int length = 0;
-//        while((length = this.toString().indexOf('/', length + 1)) != -1) {
-//            depth++;
-//        }
-//        return depth;
-//    }
-    
-    /*
-    * @return a path relative the parameter
-    * @param relative 
-    */
-//    public Path getRelativePath(Path relative) {
-//    	int index = this.getAbsolute().indexOf(relative.getAbsolute());
-//    	if(index == -1) {
-//    		throw new IllegalArgumentException("The argument must be part of this path");
-//    	}
-//    	else {
-//    		return new Path(this.getAbsolute().substring(index + relative.getAbsolute().length()));
-//    	}
-//    }
-
-
-    /**
-     * @param depth the '/'
-     * @return a new Path cut to the length of parameter <code>depth</code>
-     */
-//    public Path getPathFragment(int depth) throws IllegalArgumentException {
-//        log.debug("[Path] getPathFragment(" + depth + ")");
-//        if(depth > this.getPathDepth())
-//            throw new IllegalArgumentException("Path is not that long: " + depth + " > " + this.getPathDepth());
-//        if(depth > 0) {
-//            int length = 1; //@modification
-//            for (int n = 0; n < depth; n++) {
-//                if((length = this.toString().indexOf('/', length + 1)) < 0) {
-//                    break;
-//                }
-//            }
-//            if(length > 0)
-//                return new Path(this.toString().substring(0, length + 1));
-//            else {
-//                return new Path(this.toString());
-//            }
-//        }
-//        else {
-//            return new Path("/");
-//        }
-//    }
-
     public abstract Session getSession();
 
     public abstract void download();
@@ -304,8 +248,6 @@ public abstract class Path {
     public abstract void upload();
 
     public abstract void fillQueue(List queue, int kind);
-//    public abstract void fillQueue(List queue, Session session, int kind);
-
 
     // ----------------------------------------------------------
     // Transfer methods

@@ -116,13 +116,6 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 	}
     }
 
-
-//    public void deniedHostSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-//	log.debug("deniedHostSheetDidEnd");
-//	sheet.orderOut(null);
-//	done = true;
-//  }
-
     public void keyMismatchSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
 	log.debug("keyMismatchSheetDidEnd");
 	sheet.orderOut(null);

@@ -128,7 +128,6 @@ public class CDHistoryImpl extends History { //implements NSComboBox.DataSource 
     
     //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-//	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
 	String identifier = (String)tableColumn.identifier();
 	if(identifier.equals("URL")) {
 	    Host h = (Host)this.values().toArray()[row];

@@ -140,7 +140,6 @@ public class HTTPPath extends Path {
 	GetMethod GET = null;
 	try {
 	    log.debug("download:"+this.toString());
-//	    this.status.fireActiveEvent();
 	    session.check();
 	    GET = new GetMethod(this.getAbsolute()); //@todo encode url
 //	    GET.setUseDisk(false);

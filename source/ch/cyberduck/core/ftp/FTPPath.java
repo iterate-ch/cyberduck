@@ -287,7 +287,6 @@ public class FTPPath extends Path {
 	    log.debug("download:"+this.toString());
 	    if(!this.isFile())
 		throw new IOException("Download must be a file.");
-//	    status.fireActiveEvent();
 	    this.session.check();
 	    if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 //		this.session.log("Setting transfer mode to BINARY", Message.PROGRESS);
@@ -362,7 +361,6 @@ public class FTPPath extends Path {
     public void upload() {
 	try {
 	    log.debug("upload:"+this.toString());
-//	    status.fireActiveEvent();
 	    this.session.check();
 	    if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 //		this.session.log("Setting transfer mode to BINARY.", Message.PROGRESS);

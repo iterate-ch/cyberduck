@@ -158,7 +158,9 @@ public class Queue extends Observable implements Observer { //Thread {
 
 		    this.candidate.status.addObserver(this);
 
-		    this.callObservers(new Message(Message.PROGRESS, KIND_DOWNLOAD == kind ? "Downloading "+candidate.getName()+" ("+(this.processedJobs()+1)+" of "+(this.numberOfJobs())+")" : "Uploading "+candidate.getName()+" ("+(this.processedJobs()+1)+" of "+(this.numberOfJobs())+")"));
+		    this.processedJobs++;
+
+		    this.callObservers(new Message(Message.PROGRESS, KIND_DOWNLOAD == kind ? "Downloading "+candidate.getName()+" ("+(this.processedJobs())+" of "+(this.numberOfJobs())+")" : "Uploading "+candidate.getName()+" ("+(this.processedJobs())+" of "+(this.numberOfJobs())+")"));
 
 		    switch(kind) {
 			case KIND_DOWNLOAD:
@@ -169,7 +171,6 @@ public class Queue extends Observable implements Observer { //Thread {
 			    break;
 		    }
 		    if(candidate.status.isComplete()) {
-			this.processedJobs++;
 			current += candidate.status.getCurrent();
 		    }
 		    this.candidate.status.deleteObserver(this);
@@ -223,6 +224,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	* @return Number of remaining items to be processed in the queue.
      */
     public int remainingJobs() {
+	log.debug("remainingJobs:");
 	return this.numberOfJobs() - this.processedJobs();
     }
 
@@ -230,6 +232,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	* @return Number of completed (totally transferred) items in the queue.
      */
     public int processedJobs() {
+	log.debug("processedJobs:"+processedJobs);
 	return this.processedJobs;
     }
 
@@ -241,6 +244,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	for(int i = 0; i < roots.length; i ++) {
 	    no += this.jobs[i].size();
 	}
+	log.debug("numberOfJobs:"+no);
 	return no;
     }
 
@@ -255,15 +259,7 @@ public class Queue extends Observable implements Observer { //Thread {
 	* @return The cummulative file size of all files remaining in the queue
      */
     public long getSize() {
-//	log.debug("getSize:"+this.size);
-//	if(-1 == this.size)
-//	    this.calculateSize();
-//	return this.size;
-	return this.calculateTotalSize();
-    }
-
-    private int calculateTotalSize() {
-	int value = 0;
+	long value = 0;
 	for(int i = 0; i < jobs.length; i ++) {
 	    Iterator elements = jobs[i].iterator();
 	    while(elements.hasNext()) {

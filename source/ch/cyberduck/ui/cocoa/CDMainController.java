@@ -124,18 +124,6 @@ public class CDMainController {
 		this.updateText.replaceCharactersInRange(new NSRange(updateText.textStorage().length(), 0), comment);
 		this.updateSheet.setTitle(filename);
 		this.updateSheet.makeKeyAndOrderFront(null);
-
-//		
-//		int selection = NSAlertPanel.runInformationalAlert(
-//						     NSBundle.localizedString("New version"), //title
-//						     "Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is out of date. The current version is")+" "+latestVersionNumber,
-//						     NSBundle.localizedString("Download"),// defaultbutton
-//						     NSBundle.localizedString("Later"),//alternative button
-//						     null//other button
-//						     );
-//		if(NSAlertPanel.DefaultReturn == selection) {
-//		    NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")+filename));
-//		}
 	    }
 	}
 	catch(Exception e) {
