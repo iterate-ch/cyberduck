@@ -1,4 +1,4 @@
-verFTP and SFTP Browser for Mac OS X
+FTP and SFTP Browser for Mac OS X
 http://cyberduck.ch/
 
 Last modified: $Date$
