@@ -35,8 +35,8 @@ import com.apple.cocoa.application.*;
 /**
 * @version $Id$
  */
-public class CDPathPopUpButton extends NSPopUpButton implements Observer {
-    private static Logger log = Logger.getLogger(CDPathPopUpButton.class);
+public class CDPathComboBox extends NSPopUpButton implements Observer {
+    private static Logger log = Logger.getLogger(CDPathComboBox.class);
 
     private List items = new ArrayList();
     
@@ -77,24 +77,28 @@ public class CDPathPopUpButton extends NSPopUpButton implements Observer {
 	super.addItem(p.getAbsolute());
     }
 
-    public CDPathPopUpButton() {
+    public Path getItem(int row) {
+	return (Path)items.get(row);
+    }
+
+    public CDPathComboBox() {
 	super();
-	log.debug("CDPathPopUpButton");
+	log.debug("CDPathComboBox");
     }
 
-    public CDPathPopUpButton(NSRect rect) {
+    public CDPathComboBox(NSRect rect) {
 	super(rect);
-	log.debug("CDPathPopUpButton");
+	log.debug("CDPathComboBox");
     }
 
-    public CDPathPopUpButton( NSRect rect, boolean flag) {
+    public CDPathComboBox( NSRect rect, boolean flag) {
 	super(rect, flag);
-	log.debug("CDPathPopUpButton");
+	log.debug("CDPathComboBox");
     }	
 
-    public CDPathPopUpButton(NSCoder decoder, long token) {
+    public CDPathComboBox(NSCoder decoder, long token) {
 	super(decoder, token);
-	log.debug("CDPathPopUpButton:decoder");
+	log.debug("CDPathComboBox:decoder");
     }
 
     public void encodeWithCoder(NSCoder encoder) {
