@@ -39,6 +39,10 @@ import ch.cyberduck.core.*;
 public class CDProgressController extends NSObject implements Observer {
 	private static Logger log = Logger.getLogger(CDProgressController.class);
 
+	private String statusText = "";
+	private StringBuffer errorText;
+//	private StringBuffer tooltip;
+
 	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
 	private static NSMutableParagraphStyle lineBreakByTruncatingTailParagraph = new NSMutableParagraphStyle();
 
@@ -58,6 +62,7 @@ public class CDProgressController extends NSObject implements Observer {
 	public CDProgressController(Queue queue) {
 		this.queue = queue;
 		this.queue.addObserver(this);
+		this.queue.getRoot().getSession().addObserver(this);
 		//@todo this.queue.deleteObserver(this);
 		if(false == NSApplication.loadNibNamed("Progress", this)) {
 			log.fatal("Couldn't load Progress.nib");
@@ -73,27 +78,29 @@ public class CDProgressController extends NSObject implements Observer {
 
 	public void update(Observable o, Object arg) {
 		if(arg instanceof Message) {
-			log.debug("update:"+arg);
 			Message msg = (Message)arg;
 			if(msg.getTitle().equals(Message.DATA)) {
 				this.updateProgressbar();
 				this.updateProgressfield();
 			}
 			else if(msg.getTitle().equals(Message.PROGRESS)) {
+				this.statusText = (String)msg.getContent();
 				this.updateProgressfield();
 			}
 			else if(msg.getTitle().equals(Message.ERROR)) {
+				this.errorText.append("\n"+(String)msg.getContent());
 				this.alertIcon.setHidden(false);
 			}
 			else if(msg.getTitle().equals(Message.QUEUE_START)) {
 				this.progressBar.setIndeterminate(true);
 				this.progressBar.startAnimation(null);
+				this.errorText = new StringBuffer();
 				this.alertIcon.setHidden(true);
 			}
 			else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
 				this.progressBar.setIndeterminate(false);
 				this.progressBar.stopAnimation(null);
-				if(this.queue.isComplete()) {
+				if(this.queue.isComplete() && !this.queue.isCanceled()) {
 					if(this.queue instanceof DownloadQueue) {
 						Growl.instance().notify(NSBundle.localizedString("Download complete",
 																		 "Growl Notification"),
@@ -122,7 +129,7 @@ public class CDProgressController extends NSObject implements Observer {
 	}
 
 	private void updateProgressbar() {
-		if(queue.isInitalized()) {
+		if(queue.isInitialized()) {
 			double progressValue = queue.getCurrent()/queue.getSize();
 			this.progressBar.setIndeterminate(false);
 			this.progressBar.setMinValue(0);
@@ -135,17 +142,34 @@ public class CDProgressController extends NSObject implements Observer {
 	}
 
 	private void updateProgressfield() {
-		this.progressField.setAttributedStringValue(new NSAttributedString(queue.getStatusText(),
+		this.progressField.setAttributedStringValue(new NSAttributedString(this.getProgressText(),
 		    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 	}
-
+	
+	private String getProgressText() {
+		if(this.queue.isInitialized()) {
+			if(this.queue.isRunning()) {
+				return this.queue.getCurrentAsString()
+				+" of "+this.queue.getSizeAsString()
+				+" at "+this.queue.getSpeedAsString()+"  "+this.statusText;
+			}
+			return this.queue.getCurrentAsString()
+			+" of "+this.queue.getSizeAsString()+"  "+this.statusText;
+		}
+		return "(Unknown size)  "+this.statusText;
+	}	
+	
+	private String getErrorText() {
+		return this.errorText.toString();
+	}
+	
 	public Queue getQueue() {
 		return this.queue;
 	}
 
 	public void alertButtonClicked(NSButton sender) {
 		CDQueueController.instance().beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"),
-																				this.queue.getErrorText(), // message
+																				this.getErrorText(), // message
 																				NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
 																				null, //alternative button
 																				null //other button

@@ -73,14 +73,26 @@ public class Attributes extends Observable {
 		this.modified = d;
 	}
 
-	private static final NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
-
+	private static final NSGregorianDateFormatter longDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
+	
+	private static final NSGregorianDateFormatter shortDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), false);
+	
 	/**
-	 * @return the modification date of this file
+		* @return the modification date of this file
 	 */
 	public String getTimestampAsString() {
 		try {
-			return formatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
+			return longDateFormatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
+		}
+		catch(NSFormatter.FormattingException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String getTimestampAsShortString() {
+		try {
+			return shortDateFormatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
 		}
 		catch(NSFormatter.FormattingException e) {
 			e.printStackTrace();

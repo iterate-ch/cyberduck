@@ -31,20 +31,13 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public abstract class Queue extends Observable implements Observer {
+public abstract class Queue extends Observable {
 	protected static Logger log = Logger.getLogger(Queue.class);
 
 	private Worker worker;
-
-	private long size = -1;
-	
-	private List roots = new ArrayList();
-	private List jobs = new ArrayList();
-
-	private String status = "";
-	private StringBuffer error;
-	private StringBuffer tooltip;
-	
+	protected long size;
+	protected long current;
+	private List roots;
 
 	/**
 	 * The observer to notify when an upload is complete
@@ -57,6 +50,7 @@ public abstract class Queue extends Observable implements Observer {
 	 */
 	public Queue() {
 		this.worker = new Worker(this, ValidatorFactory.createValidator(this.getClass()));
+		this.roots = new ArrayList();
 	}
 
 	public Queue(Observer callback) {
@@ -107,17 +101,14 @@ public abstract class Queue extends Observable implements Observer {
 					q.addRoot(PathFactory.createPath(s, (NSDictionary)r.objectAtIndex(i)));
 				}
 			}
-			Object itemsObj = dict.objectForKey("Items");
-			if(itemsObj != null) {
-				NSArray items = (NSArray)itemsObj;
-				if(null != items) {
-					List jobs = new ArrayList();
-					for(int i = 0; i < items.count(); i++) {
-						jobs.add(PathFactory.createPath(s, (NSDictionary)items.objectAtIndex(i)));
-					}
-					q.setJobs(jobs);
-				}
-			}
+		}
+		Object sizeObj = dict.objectForKey("Size");
+		if(sizeObj != null) {
+			q.size = Long.parseLong((String)sizeObj);
+		}
+		Object currentObj = dict.objectForKey("Current");
+		if(currentObj != null) {
+			q.current = Long.parseLong((String)currentObj);
 		}
 		return q;
 	}
@@ -130,11 +121,8 @@ public abstract class Queue extends Observable implements Observer {
 			r.addObject(((Path)iter.next()).getAsDictionary());
 		}
 		dict.setObjectForKey(r, "Roots");
-		NSMutableArray items = new NSMutableArray();
-		for(Iterator iter = jobs.iterator(); iter.hasNext();) {
-			items.addObject(((Path)iter.next()).getAsDictionary());
-		}
-		dict.setObjectForKey(items, "Items");
+		dict.setObjectForKey(""+this.getSize(), "Size");
+		dict.setObjectForKey(""+this.getCurrent(), "Current");
 		return dict;
 	}
 
@@ -145,25 +133,6 @@ public abstract class Queue extends Observable implements Observer {
 	 */
 	public void addRoot(Path item) {
 		this.roots.add(item);
-	}
-
-	protected void setJobs(List jobs) {
-		this.jobs = jobs;
-		{
-			this.tooltip = new StringBuffer();
-			int i = 0;
-			Iterator iter = this.jobs.iterator();
-			while(i < 10 && iter.hasNext()) {
-				this.tooltip.append(iter.next().toString());
-				if(iter.hasNext()) {
-					this.tooltip.append("\n");
-				}
-				i++;
-			}
-			if(iter.hasNext()) {
-				this.tooltip.append("...");
-			}
-		}
 	}
 	
 	public Path getRoot() {
@@ -180,10 +149,6 @@ public abstract class Queue extends Observable implements Observer {
 
 	public List getRoots() {
 		return this.roots;
-	}
-
-	public List getJobs() {
-		return this.jobs;
 	}
 
 	/**
@@ -207,23 +172,8 @@ public abstract class Queue extends Observable implements Observer {
 		}
 	}
 	
-	public void update(Observable o, Object arg) {
-		if(arg instanceof Message) {
-			Message msg = (Message)arg;
-			if(msg.getTitle().equals(Message.PROGRESS)) {
-				this.status = (String)msg.getContent();
-			}
-			if(msg.getTitle().equals(Message.ERROR)) {
-				this.error.append("\n"+(String)msg.getContent());
-			}
-		}
-		this.callObservers(arg);
-	}
-
-	public void reset() {
+	private void reset(List jobs) {
 		this.size = 0;
-		this.status = "";
-		this.error = new StringBuffer();
 		for(Iterator iter = jobs.iterator(); iter.hasNext();) {
 			Path p = (Path)iter.next();
 			p.status.reset();
@@ -260,28 +210,39 @@ public abstract class Queue extends Observable implements Observer {
 
 	private class Worker extends Thread {
 		private Queue queue;
+		private List jobs;
 		private Validator validator;
 		private Timer progress;
 		private boolean running;
 		private boolean canceled;
 
-		public Worker(Queue queue, Validator validator) {
+		protected Worker(Queue queue, Validator validator) {
 			this.queue = queue;
 			this.validator = validator;
+		}
+		
+		public List getJobs() {
+			return this.jobs;
 		}
 				
 		public void run() {
 			this.init();
-			List jobs = this.validator.validate(queue);
-			if(jobs.size() > 0) {
-				this.queue.setJobs(jobs);
-				this.queue.reset();
+			this.jobs = this.validator.validate(queue);
+			if(!this.validator.isCanceled()) {
+				this.queue.reset(this.jobs);
 				for(Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
-					Path job = (Path)iter.next();
-					job.status.addObserver(queue);
+					final Path job = (Path)iter.next();
+					job.status.addObserver(new Observer() {
+						public void update(Observable o, Object arg) {
+							Queue.this.callObservers(arg);
+						}
+					}
+										   );
 					this.queue.process(job);
-					job.status.deleteObserver(queue);
 				}
+			}
+			else {
+				this.cancel();
 			}
 			this.finish();
 		}
@@ -317,7 +278,12 @@ public abstract class Queue extends Observable implements Observer {
 										  }
 									  });
 			this.progress.start();
-			this.queue.getRoot().getSession().addObserver(this.queue);
+//			this.queue.getRoot().getSession().addObserver(new Observer() {
+//				public void update(Observable o, Object arg) {
+//					Queue.this.callObservers(arg);
+//				}
+//			}
+//														  );
 			//@todo this.queue.getRoot().getSession().cache().clear();
 			this.queue.callObservers(new Message(Message.QUEUE_START));
 		}
@@ -325,24 +291,28 @@ public abstract class Queue extends Observable implements Observer {
 		private void finish() {
 			this.running = false;
 			this.progress.stop();
+//			this.queue.getRoot().getSession().deleteObserver(this.queue);
 			this.queue.getRoot().getSession().close();
-			this.queue.getRoot().getSession().deleteObserver(this.queue);
 			this.queue.callObservers(new Message(Message.QUEUE_STOP));
 		}
 		
-		public void cancel() {
+		protected void cancel() {
 			for(Iterator iter = jobs.iterator(); iter.hasNext();) {
 				((Path)iter.next()).status.setCanceled(true);
 			}
 			this.canceled = true;
 		}
 
-		public boolean isCanceled() {
+		protected boolean isCanceled() {
 			return this.canceled;
 		}
 
-		public boolean isRunning() {
+		protected boolean isRunning() {
 			return this.running;
+		}
+		
+		protected boolean isInitialized() {
+			return this.getJobs() != null;
 		}
 	}
 
@@ -358,7 +328,11 @@ public abstract class Queue extends Observable implements Observer {
 	public boolean isCanceled() {
 		return this.worker.isCanceled();
 	}
-
+	
+	public boolean isInitialized() {
+		return this.worker.isInitialized();
+	}
+	
 	/**
 	 * @return True if this queue's thread is running
 	 */
@@ -370,55 +344,11 @@ public abstract class Queue extends Observable implements Observer {
 		return this.roots.size();
 	}
 
-	/**
-	 * @return Number of jobs in the this.
-	 */
-	public int numberOfJobs() {
-		return this.jobs.size();
-	}
-
-	/**
-	 * @return rue if all items in the this queue have been processed sucessfully.
-	 */
 	public boolean isComplete() {
-		return this.isInitalized() && (this.getSize() == this.getCurrent());
-	}
-
-	public boolean isInitalized() {
-		return !(this.getSize() == 0 && this.getCurrent() == 0);
-	}
-	
-	public String getTooltip() {
-		return tooltip.toString();
-	}
-	
-	public String getErrorText() {
-		return this.error.toString();
-	}
-
-	public String getStatusText() {
-		if(this.isInitalized()) {
-			if(this.isRunning()) {
-				return this.getCurrentAsString()
-				    +" of "+this.getSizeAsString()
-				    +" at "+this.getSpeedAsString()+"  "
-				    +this.status;
-			}
-			return this.getCurrentAsString()
-			    +" of "+this.getSizeAsString()+"  "
-			    +this.status;
-		}
-		return "(Unknown size)  "+this.status;
+		return !(this.getSize() == 0 && this.getCurrent() == 0) && (this.getSize() == this.getCurrent());
 	}
 
 	public long getSize() {
-		if(-1 == this.size) { // not yet initialized; get cached size of jobs
-			long value = 0;
-			for(Iterator iter = jobs.iterator(); iter.hasNext();) {
-				value += ((Path)iter.next()).status.getSize();
-			}
-			return value;
-		}
 		return this.size;
 	}
 
@@ -426,15 +356,15 @@ public abstract class Queue extends Observable implements Observer {
 		return Status.getSizeAsString(this.getSize());
 	}
 
-	/**
-	 * @return The number of bytes already processed of all elements in the whole this.
-	 */
 	public long getCurrent() {
-		long value = 0;
-		for(Iterator iter = jobs.iterator(); iter.hasNext();) {
-			value += ((Path)iter.next()).status.getCurrent();
+		if(this.worker.isRunning() && this.worker.isInitialized()) {
+			long size = 0;
+			for(Iterator iter = this.worker.getJobs().iterator(); iter.hasNext();) {
+				size += ((Path)iter.next()).status.getCurrent();
+			}
+			this.current = size;
 		}
-		return value;
+		return this.current; //cached value
 	}
 
 	public String getCurrentAsString() {

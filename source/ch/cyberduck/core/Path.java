@@ -227,7 +227,6 @@ public abstract class Path {
 			return true;
 		}
 		this.exists = this.getParent().list(false, true).contains(this);
-		log.debug(this.toString()+":\n++++++++++++++ exists:"+this.exists);
 		return this.exists;
 	}
 

@@ -156,8 +156,8 @@ public class CDQueueController extends CDController {
 			else {
 				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL(),
 				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-				this.localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiples files", "")
-				    +" ("+q.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
+				this.localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiples files", ""),
+//				    +" ("+q.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
 				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 			}
 		}
@@ -423,7 +423,7 @@ public class CDQueueController extends CDController {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		while(enum.hasMoreElements()) {
 			Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
-			queue.reset();
+//			queue.reset();
 			if(!queue.isRunning()) {
 				this.startItem(queue, true);
 			}
@@ -434,7 +434,7 @@ public class CDQueueController extends CDController {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		while(enum.hasMoreElements()) {
 			Queue queue = this.queueModel.getItem(((Integer)enum.nextElement()).intValue());
-			queue.reset();
+//			queue.reset();
 			if(!queue.isRunning()) {
 				this.startItem(queue, false);
 			}

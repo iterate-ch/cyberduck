@@ -29,9 +29,10 @@ import ch.cyberduck.core.Host;
  */
 public class CDBookmarkCell extends CDTableCell {
 	private Host bookmark;
-
+	
 	public CDBookmarkCell() {
 		super();
+		//@todo set context menu
 	}
 
 	protected CDBookmarkCell(NSCoder decoder, long token) {

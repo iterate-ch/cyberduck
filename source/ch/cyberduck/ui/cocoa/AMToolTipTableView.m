@@ -77,6 +77,7 @@
 	[super keyDown:theEvent];
 }
 
+/*
 - (NSRect)frameOfCellAtColumn:(int)columnIndex row:(int)rowIndex
 {
 	// this cell is apparently displayed, so we need to add a region for it
@@ -94,6 +95,7 @@
 	[regionList setObject:[NSNumber numberWithInt:[self addToolTipRect:result owner:self userData:cellKey]] forKey:cellKey];
 	return [super frameOfCellAtColumn:columnIndex row:rowIndex];
 }
+*/
 
 - (NSString *)_amKeyForColumn:(int)columnIndex row:(int)rowIndex
 {

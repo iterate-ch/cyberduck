@@ -34,7 +34,7 @@ public abstract class AbstractValidator implements Validator {
 	 */
 	private boolean canceled = false;
 
-	protected boolean isCanceled() {
+	public boolean isCanceled() {
 		return this.canceled;
 	}
 

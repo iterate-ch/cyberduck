@@ -96,7 +96,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 	protected boolean visible = false;
 	
 	protected void prompt(Path p) {
-		log.debug("prompt:"+p);
 		if(!this.visible) {
 			this.load();
 			CDQueueController.instance().beginSheet(this.window());
@@ -193,12 +192,35 @@ public abstract class CDValidatorController extends AbstractValidator {
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.fileTableView.addTableColumn(c);
 		}
+		{
+			NSTableColumn c = new NSTableColumn();
+			c.headerCell().setStringValue(NSBundle.localizedString("Local File", ""));
+			c.setIdentifier("LOCAL");
+			c.setMinWidth(100f);
+			c.setWidth(180f);
+			c.setMaxWidth(500f);
+			c.setResizable(true);
+			c.setDataCell(new NSTextFieldCell());
+			c.dataCell().setAlignment(NSText.LeftTextAlignment);
+			this.fileTableView.addTableColumn(c);
+		}
+		{
+			NSTableColumn c = new NSTableColumn();
+			c.headerCell().setStringValue(NSBundle.localizedString("Server File", ""));
+			c.setIdentifier("REMOTE");
+			c.setMinWidth(100f);
+			c.setWidth(180f);
+			c.setMaxWidth(500f);
+			c.setResizable(true);
+			c.setDataCell(new NSTextFieldCell());
+			c.dataCell().setAlignment(NSText.LeftTextAlignment);
+			this.fileTableView.addTableColumn(c);
+		}
 		
 		// selection properties
 		this.fileTableView.setAllowsMultipleSelection(true);
 		this.fileTableView.setAllowsEmptySelection(true);
 		this.fileTableView.setAllowsColumnReordering(true);
-		
 		this.fileTableView.sizeToFit();
 	}
 
@@ -342,7 +364,8 @@ public abstract class CDValidatorController extends AbstractValidator {
 			Path p = (Path)this.workset.get(row);
 			if(p != null) {
 				if(identifier.equals("FILENAME")) {
-					return new NSAttributedString(p.getRemote().getName());
+					return new NSAttributedString(p.getRemote().getName(),
+												  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 				}
 				if(identifier.equals("ICON")) {
 					if(p.attributes.isDirectory()) {
@@ -354,6 +377,12 @@ public abstract class CDValidatorController extends AbstractValidator {
 						return icon;
 					}
 					return NSImage.imageNamed("notfound.tiff");
+				}
+				if(identifier.equals("REMOTE")) {
+					return new NSAttributedString(Status.getSizeAsString(p.status.getSize())+", "+p.attributes.getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+				}
+				if(identifier.equals("LOCAL")) {
+					return new NSAttributedString(Status.getSizeAsString(p.getLocal().getSize())+", "+p.getLocal().getTimestampAsShortString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 				}
 				if(identifier.equals("TOOLTIP")) {
 					StringBuffer tooltip = new StringBuffer();

@@ -20,8 +20,11 @@ package ch.cyberduck.core;
 
 import java.io.File;
 import java.util.Date;
+import java.io.IOException;
 
 import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSFileWrapper;
 
 import org.apache.log4j.Logger;
 
@@ -33,35 +36,90 @@ import org.apache.log4j.Logger;
 public class Local extends File {
 	private static Logger log = Logger.getLogger(Local.class);
 
+//	private NSFileWrapper wrapper;
+	
+//	static {
+//		try {
+//			NSBundle bundle = NSBundle.mainBundle();
+//			String lib = bundle.resourcePath()+"/Java/"+"libLocal.jnilib";
+//			log.debug("Locating libLocal.jnilib at '"+lib+"'");
+//			System.load(lib);
+//		}
+//		catch(UnsatisfiedLinkError e) {
+//			log.error("Could not load the alias resolving library:"+e.getMessage());
+//		}
+//	}
+	
 	public Local(File parent, String name) {
 		super(parent, name);
+//		this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
 
 	public Local(String parent, String name) {
 		super(parent, name);
+//		this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
 
 	public Local(String path) {
 		super(path);
+//		this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
 
 	public long size() {
 		return this.length();
 	}
 
-	public File getTemp() {
-		return this;
-//		return new File(super.getAbsolutePath()+".part");
-	}
-
 	public String getAbsolute() {
 		return super.getAbsolutePath();
 	}
 	
-//	public NSFileWrapper getWrapper() {
-	// @todo jnilib to access file wrapper
-//		return new NSFileWrapper(this.getTemp().getAbsolutePath(), false);
-//		//this.getWrapper().setIcon(NSImage.imageNamed(img));
+//	public File getAbsoluteFile() {
+//		return new Local(super.getAbsoluteFile().getAbsolutePath());
+//	}
+	
+//	public File getCanonicalFile() throws IOException {
+//		return new Local(super.getCanonicalFile().getAbsolutePath());
+//	}
+	
+//	public File getParentFile() {
+//		return new Local(super.getParentFile().getAbsolutePath());
+//	}
+	
+//	public boolean isFile() {
+//		if(this.isAlias()) {
+//			return this.resolveAlias().isFile();
+//		}
+//		return super.isFile();
+//	}
+	
+//	public boolean isDirectory() {
+//		if(this.isAlias()) {
+//			return this.resolveAlias().isDirectory();
+//		}
+//		return super.isDirectory();
+//	}
+	
+//	public boolean isAlias() {
+//		return this.isAlias(this.getAbsolute());
+//	}
+
+//	public Local resolveAlias() {
+//		return new Local(this.resolveAlias(this.getAbsolute()));
+//	}
+	
+	/**
+	 * @return true if the provided path is an alias.
+     */
+//	private native boolean isAlias(String path);
+	
+    /**
+	 * Resolves an alias path.
+     * @return the same path if the provided path is not an alias.
+     */
+//	private native String resolveAlias(String aliasPath);
+	
+//	public void setProgress(float progress) {
+//		this.wrapper.setIcon(NSImage.imageNamed("download0.icns"));
 //	}
 
 	public Permission getPermission() {
@@ -76,15 +134,26 @@ public class Local extends File {
 		log.debug("Setting permissions on local file suceeded:"+success);
 	}
 
-	private static final NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
+	private static final NSGregorianDateFormatter longDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
+
+	private static final NSGregorianDateFormatter shortDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), false);
 
 	/**
 	 * @return the modification date of this file
 	 */
 	public String getTimestampAsString() {
 		try {
-			return formatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
-			//        return (DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT)).format(new Date(super.lastModified()));
+			return longDateFormatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
+		}
+		catch(NSFormatter.FormattingException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String getTimestampAsShortString() {
+		try {
+			return shortDateFormatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
 		}
 		catch(NSFormatter.FormattingException e) {
 			e.printStackTrace();
@@ -96,6 +165,10 @@ public class Local extends File {
 		return new Date(super.lastModified());
 	}
 
+	public long getSize() {
+		return super.length();
+	}
+	
 	public boolean equals(Object other) {
 		if(other instanceof Local) {
 			return this.getAbsolutePath().equals(((Local)other).getAbsolutePath());// && this.attributes.getTimestamp().equals(((Local)other).attributes.getTimestamp());

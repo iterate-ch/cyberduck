@@ -352,13 +352,13 @@ public class FTPPath extends Path {
 		try {
 			session.FTP.setTransferType(FTPTransferType.BINARY);
 			if(this.status.isResume()) {
-				this.status.setCurrent(this.getLocal().getTemp().length());
+				this.status.setCurrent(this.getLocal().getSize());
 			}
-			out = new FileOutputStream(this.getLocal().getTemp(), this.status.isResume());
+			out = new FileOutputStream(this.getLocal(), this.status.isResume());
 			if(out == null) {
 				throw new IOException("Unable to buffer data");
 			}
-			in = session.FTP.get(this.getAbsolute(), this.status.isResume() ? this.getLocal().getTemp().length() : 0);
+			in = session.FTP.get(this.getAbsolute(), this.status.isResume() ? this.getLocal().getSize() : 0);
 			if(in == null) {
 				throw new IOException("Unable opening data stream");
 			}
@@ -421,16 +421,16 @@ public class FTPPath extends Path {
 		try {
 			session.FTP.setTransferType(FTPTransferType.ASCII);
 			if(this.status.isResume()) {
-				this.status.setCurrent(this.getLocal().getTemp().length());
+				this.status.setCurrent(this.getLocal().getSize());
 			}
-			out = new FromNetASCIIOutputStream(new FileOutputStream(this.getLocal().getTemp(),
+			out = new FromNetASCIIOutputStream(new FileOutputStream(this.getLocal(),
 			    this.status.isResume()),
 			    lineSeparator);
 			if(out == null) {
 				throw new IOException("Unable to buffer data");
 			}
 			in = new FromNetASCIIInputStream(session.FTP.get(this.getAbsolute(),
-			    this.status.isResume() ? this.getLocal().getTemp().length() : 0),
+			    this.status.isResume() ? this.getLocal().getSize() : 0),
 			    lineSeparator);
 			if(in == null) {
 				throw new IOException("Unable opening data stream");

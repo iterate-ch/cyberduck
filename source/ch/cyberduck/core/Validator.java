@@ -30,4 +30,6 @@ public interface Validator extends Observer {
 	 * @return true if validatino was successfull, false if canceled by the user for whatever reason
 	 */
 	public List validate(Queue q);
+	
+	public boolean isCanceled();
 }

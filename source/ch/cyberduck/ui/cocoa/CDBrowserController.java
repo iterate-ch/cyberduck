@@ -67,6 +67,30 @@ public class CDBrowserController extends CDController implements Observer {
 		}
 		return null;
 	}
+	
+	public static void updateBrowserTableAttributes() {
+		NSArray windows = NSApplication.sharedApplication().windows();
+		int count = windows.count();
+		while(0 != count--) {
+			NSWindow window = (NSWindow)windows.objectAtIndex(count);
+			CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+			if(null != controller) {
+				controller._updateBrowserTableAttributes();
+			}
+		}
+	}
+	
+	public static void updateBrowserTableColumns() {
+		NSArray windows = NSApplication.sharedApplication().windows();
+		int count = windows.count();
+		while(0 != count--) {
+			NSWindow window = (NSWindow)windows.objectAtIndex(count);
+			CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+			if(null != controller) {
+				controller._updateBrowserTableColumns();
+			}
+		}
+	}
 
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
@@ -202,8 +226,17 @@ public class CDBrowserController extends CDController implements Observer {
 		// setting appearance attributes
 		this.browserTable.setRowHeight(17f);
 		this.browserTable.setAutoresizesAllColumnsToFit(true);
+		this._updateBrowserTableAttributes();
+		// selection properties
+		this.browserTable.setAllowsMultipleSelection(true);
+		this.browserTable.setAllowsEmptySelection(true);
+		this.browserTable.setAllowsColumnReordering(true);
+		this._updateBrowserTableColumns();
+	}
+	
+	protected void _updateBrowserTableAttributes() {
 		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
-		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
+		new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
 		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
 			this.browserTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getProperty("browser.alternatingRows").equals("true"));
 		}
@@ -222,6 +255,13 @@ public class CDBrowserController extends CDController implements Observer {
 			else {
 				this.browserTable.setGridStyleMask(NSTableView.GridNone);
 			}
+		}
+	}
+	
+	protected void _updateBrowserTableColumns() {
+		java.util.Enumeration enum = this.browserTable.tableColumns().objectEnumerator();
+		while (enum.hasMoreElements()) {
+			this.browserTable.removeTableColumn((NSTableColumn)enum.nextElement()); 
 		}
 		// ading table columns
 		if(Preferences.instance().getProperty("browser.columnIcon").equals("true")) {
@@ -300,13 +340,8 @@ public class CDBrowserController extends CDController implements Observer {
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.browserTable.addTableColumn(c);
 		}
-
 		this.browserTable.sizeToFit();
-
-		// selection properties
-		this.browserTable.setAllowsMultipleSelection(true);
-		this.browserTable.setAllowsEmptySelection(true);
-		this.browserTable.setAllowsColumnReordering(true);
+			this.browserTable.reloadData();
 	}
 
 	public void browserTableRowDoubleClicked(Object sender) {
@@ -748,11 +783,16 @@ public class CDBrowserController extends CDController implements Observer {
 		NSEnumerator enum = browserTable.selectedRowEnumerator();
 		Vector files = new Vector();
 		StringBuffer alertText = new StringBuffer(NSBundle.localizedString("Really delete the following files? This cannot be undone.", "Confirm deleting files."));
-		while(enum.hasMoreElements()) {
+		int i = 0;
+		while(i < 10 && enum.hasMoreElements()) {
 			int selected = ((Integer)enum.nextElement()).intValue();
 			Path p = (Path)browserModel.getEntry(selected);
 			files.add(p);
 			alertText.append("\n- "+p.getName());
+			i++;
+		}
+		if(enum.hasMoreElements()) {
+			alertText.append("\n- (...)");
 		}
 		NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Delete", "Alert sheet title"), //title
 		    NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
@@ -926,13 +966,13 @@ public class CDBrowserController extends CDController implements Observer {
 				Path workdir = this.workdir();
 				// selected files on the local filesystem
 				NSArray selected = sheet.filenames();
-				java.util.Enumeration enumerator = selected.objectEnumerator();
+				java.util.Enumeration enum = selected.objectEnumerator();
 				Queue q = new UploadQueue((Observer)this);
 				Session session = workdir.getSession().copy();
-				while(enumerator.hasMoreElements()) {
+				while(enum.hasMoreElements()) {
 					q.addRoot(PathFactory.createPath(session,
 					    workdir.getAbsolute(),
-					    new Local((String)enumerator.nextElement())));
+					    new Local((String)enum.nextElement())));
 				}
 				CDQueueController.instance().startItem(q);
 				break;
@@ -1548,15 +1588,6 @@ public class CDBrowserController extends CDController implements Observer {
 	private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
 	private static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
-	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
-
-	static {
-		lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
-	}
-
-	private static final NSDictionary TABLE_CELL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
-	    new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-
 	private class CDBrowserTableDataSource extends CDTableDataSource {
 		private List fullData;
 		private List currentData;
@@ -1592,20 +1623,20 @@ public class CDBrowserController extends CDController implements Observer {
 					return icon;
 				}
 				if(identifier.equals("FILENAME")) {
-					return new NSAttributedString(p.getName(), TABLE_CELL_PARAGRAPH_DICTIONARY);
+					return new NSAttributedString(p.getName(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 				}
 				if(identifier.equals("SIZE")) {
-					return new NSAttributedString(Status.getSizeAsString(p.status.getSize()), TABLE_CELL_PARAGRAPH_DICTIONARY);
+					return new NSAttributedString(Status.getSizeAsString(p.status.getSize()), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 				}
 				if(identifier.equals("MODIFIED")) {
 					return new NSGregorianDate((double)p.attributes.getTimestamp().getTime()/1000,
 					    NSDate.DateFor1970);
 				}
 				if(identifier.equals("OWNER")) {
-					return new NSAttributedString(p.attributes.getOwner(), TABLE_CELL_PARAGRAPH_DICTIONARY);
+					return new NSAttributedString(p.attributes.getOwner(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 				}
 				if(identifier.equals("PERMISSIONS")) {
-					return new NSAttributedString(p.attributes.getPermission().toString(), TABLE_CELL_PARAGRAPH_DICTIONARY);
+					return new NSAttributedString(p.attributes.getPermission().toString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 				}
 				if(identifier.equals("TOOLTIP")) {
 					return p.getAbsolute()+"\n"

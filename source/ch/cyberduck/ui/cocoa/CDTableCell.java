@@ -38,6 +38,15 @@ public class CDTableCell extends NSCell {
 	private static NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT;
 	private static NSMutableParagraphStyle PARAGRAPH_STYLE_RIGHT_ALIGNMENT;
 
+	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
+	
+	static {
+		lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
+	}
+		
+	public static final NSDictionary TABLE_CELL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
+																						 new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+
 	public CDTableCell() {
 		super();
 	}

@@ -176,7 +176,6 @@ public class CDMainController extends NSObject {
 		 * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
 		 */
 		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-//			log.debug("menuUpdateItemAtIndex"+index);
 			if(index == 4) {
 				item.setEnabled(true);
 				item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
@@ -194,7 +193,7 @@ public class CDMainController extends NSObject {
 
 		public void bookmarkMenuClicked(Object sender) {
 			log.debug("bookmarkMenuClicked:"+sender);
-			CDBrowserController controller = CDMainController.this.newDocument();
+			CDBrowserController controller = CDMainController.newDocument();
 			controller.mount((Host)items.get(sender));
 		}
 	}
@@ -264,7 +263,7 @@ public class CDMainController extends NSObject {
 
 		public void rendezvousMenuClicked(NSMenuItem sender) {
 			//log.debug("rendezvousMenuClicked:" + sender);
-			CDBrowserController controller = CDMainController.this.newDocument();
+			CDBrowserController controller = CDMainController.newDocument();
 			controller.mount((Host)items.get(sender.title()));
 		}
 	}
@@ -450,7 +449,7 @@ public class CDMainController extends NSObject {
 	}
 
 	public void newBrowserMenuClicked(Object sender) {
-		this.newDocument();
+		CDMainController.newDocument();
 	}
 
 	public void showTransferQueueClicked(Object sender) {
@@ -469,7 +468,7 @@ public class CDMainController extends NSObject {
 			log.info("Found file: "+f.toString());
 			Host host = CDBookmarkTableDataSource.instance().importBookmark(f);
 			if(host != null) {
-				this.newDocument().mount(host);
+				CDMainController.newDocument().mount(host);
 				return true;
 			}
 		}
@@ -487,7 +486,7 @@ public class CDMainController extends NSObject {
 	public boolean applicationOpenUntitledFile(NSApplication app) {
 		log.debug("applicationOpenUntitledFile");
 		if(Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
-			return this.newDocument() != null;
+			return CDMainController.newDocument() != null;
 		}
 		return false;
 	}
@@ -600,17 +599,15 @@ public class CDMainController extends NSObject {
 
 	private static NSPoint cascadedWindowPoint;
 
-	public CDBrowserController newDocument() {
+	public static CDBrowserController newDocument() {
 		CDBrowserController controller = new CDBrowserController();
 		NSPoint origin = controller.window().frame().origin();
 		if(null == cascadedWindowPoint) {
 			cascadedWindowPoint = new NSPoint(origin.x(), origin.y());
 		}
 		controller.window().setFrameTopLeftPoint(cascadedWindowPoint);
-//			controller.window().setFrameOrigin(cascadedWindowPoint);
 		// move point for next window
 		cascadedWindowPoint = controller.window().cascadeTopLeftFromPoint(cascadedWindowPoint);
-		//cascadedWindowPoint = controller.window().cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y()));
 		controller.window().makeKeyAndOrderFront(null);
 		return controller;
 	}

@@ -29,7 +29,7 @@ import ch.cyberduck.core.Session;
 /**
  * @version $Id$
  */
-public class CDBookmarkController extends NSObject {
+public class CDBookmarkController extends CDController {
 	private static Logger log = Logger.getLogger(CDBookmarkController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -42,17 +42,6 @@ public class CDBookmarkController extends NSObject {
 	// ----------------------------------------------------------
 	// Outlets
 	// ----------------------------------------------------------
-
-	private NSWindow window; // IBOutlet
-
-	public void setWindow(NSWindow window) {
-		this.window = window;
-		this.window.setDelegate(this);
-	}
-
-	public NSWindow window() {
-		return this.window;
-	}
 
 	public void windowWillClose(NSNotification notification) {
 		NSNotificationCenter.defaultCenter().removeObserver(this);
@@ -137,9 +126,9 @@ public class CDBookmarkController extends NSObject {
 
 	public void awakeFromNib() {
 		log.debug("awakeFromNib");
-		NSPoint origin = this.window.frame().origin();
-		this.window.setFrameOrigin(this.window.cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y())));
-		this.window.setTitle(this.host.getNickname());
+		NSPoint origin = this.window().frame().origin();
+		this.window().setFrameOrigin(this.window().cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y())));
+		this.window().setTitle(this.host.getNickname());
 		// Live editing of values
 		(NSNotificationCenter.defaultCenter()).addObserver(this,
 		    new NSSelector("hostInputDidEndEditing", new Class[]{NSNotification.class}),
@@ -186,7 +175,7 @@ public class CDBookmarkController extends NSObject {
 			panel.setCanChooseDirectories(false);
 			panel.setCanChooseFiles(true);
 			panel.setAllowsMultipleSelection(false);
-			panel.beginSheetForDirectory(System.getProperty("user.home")+"/.ssh", null, null, this.window, this, new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+			panel.beginSheetForDirectory(System.getProperty("user.home")+"/.ssh", null, null, this.window(), this, new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
 		}
 		else {
 			this.pkCheckbox.setState(NSCell.OffState);
@@ -251,7 +240,7 @@ public class CDBookmarkController extends NSObject {
 	}
 
 	private void updateFields() {
-		this.window.setTitle(this.host.getNickname());
+		this.window().setTitle(this.host.getNickname());
 		this.urlField.setStringValue(this.host.getURL()+host.getDefaultPath());
 		this.hostField.setStringValue(this.host.getHostname());
 		this.portField.setStringValue(""+this.host.getPort());

@@ -410,6 +410,7 @@ public class CDPreferencesController extends NSObject {
 				Preferences.instance().setProperty("browser.horizontalLines", false);
 				break;
 		}
+		CDBrowserController.updateBrowserTableAttributes();
 	}
 
 	private NSButton verticalLinesCheckbox; //IBOutlet
@@ -430,6 +431,7 @@ public class CDPreferencesController extends NSObject {
 				Preferences.instance().setProperty("browser.verticalLines", false);
 				break;
 		}
+		CDBrowserController.updateBrowserTableAttributes();
 	}
 
 	private NSButton alternatingRowBackgroundCheckbox; //IBOutlet
@@ -450,6 +452,7 @@ public class CDPreferencesController extends NSObject {
 				Preferences.instance().setProperty("browser.alternatingRows", false);
 				break;
 		}
+		CDBrowserController.updateBrowserTableAttributes();
 	}
 
 	private NSButton columnModificationCheckbox; //IBOutlet
@@ -470,6 +473,7 @@ public class CDPreferencesController extends NSObject {
 				Preferences.instance().setProperty("browser.columnModification", false);
 				break;
 		}
+		CDBrowserController.updateBrowserTableColumns();
 	}
 
 	private NSButton columnOwnerCheckbox; //IBOutlet
@@ -490,6 +494,7 @@ public class CDPreferencesController extends NSObject {
 				Preferences.instance().setProperty("browser.columnOwner", false);
 				break;
 		}
+		CDBrowserController.updateBrowserTableColumns();
 	}
 
 	private NSButton columnPermissionsCheckbox; //IBOutlet
@@ -510,6 +515,7 @@ public class CDPreferencesController extends NSObject {
 				Preferences.instance().setProperty("browser.columnPermissions", false);
 				break;
 		}
+		CDBrowserController.updateBrowserTableColumns();
 	}
 
 	private NSButton columnSizeCheckbox; //IBOutlet
@@ -530,6 +536,7 @@ public class CDPreferencesController extends NSObject {
 				Preferences.instance().setProperty("browser.columnSize", false);
 				break;
 		}
+		CDBrowserController.updateBrowserTableColumns();
 	}
 
 	// public-key algorithms
@@ -551,7 +558,7 @@ public class CDPreferencesController extends NSObject {
 
 		publickeyCombobox.setTitle(Preferences.instance().getProperty("ssh.publickey"));
 	}
-
+	
 	public void publickeyComboboxClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("ssh.publickey", sender.titleOfSelectedItem());
 	}
