@@ -18,14 +18,11 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.io.*;
-import java.util.List;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
-//import com.apple.cocoa.foundation.NSData;
-//import com.apple.cocoa.foundation.NSStringReference;
-
+import java.io.*;
+import java.util.List;
 import org.apache.log4j.Logger;
 
 /**

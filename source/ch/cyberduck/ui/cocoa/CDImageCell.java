@@ -20,8 +20,12 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Queue;
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSView;
+import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSSize;
 
 import org.apache.log4j.Logger;
 

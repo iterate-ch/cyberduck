@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSPathUtilities;
+
 import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
@@ -32,21 +33,16 @@ import org.apache.log4j.Logger;
 public class Local extends File {
     private static Logger log = Logger.getLogger(Local.class);
 	
-//	public Attributes attributes;
-	
 	public Local(File parent, String name) {
 		super(parent, name);
-//		this.init();
 	}
 
 	public Local(String parent, String name) {
 		super(parent, name);
-//		this.init();
 	}
 	
 	public Local(String path) {
 		super(path);
-//		this.init();
 	}
 	
     public Permission getPermission() {

@@ -27,14 +27,14 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public abstract class History extends Bookmarks {
+public abstract class History {
 	private static Logger log = Logger.getLogger(History.class);
 
 	private Map data = new HashMap();
 
-	public History() {
-		super();
-	}
+	public abstract void save();
+	
+    public abstract void load();
 	
 	public void addItem(Host h) {
 		this.data.put(h.getHostname(), h);
@@ -67,6 +67,10 @@ public abstract class History extends Bookmarks {
 		this.data.clear();
 	}
 
+	public int size() {
+		return this.data.size();
+	}
+	
 	public Collection values() {
 		return data.values();
     }

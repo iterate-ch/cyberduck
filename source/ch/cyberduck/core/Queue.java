@@ -19,21 +19,21 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.ftp.FTPPath;
-import ch.cyberduck.core.sftp.SFTPPath;
-import ch.cyberduck.core.http.HTTPPath;
-
 import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.http.HTTPPath;
 import ch.cyberduck.core.http.HTTPSession;
+import ch.cyberduck.core.sftp.SFTPPath;
 import ch.cyberduck.core.sftp.SFTPSession;
+
+import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSMutableArray;
 import org.apache.log4j.Logger;
 
 /**
@@ -59,7 +59,7 @@ public class Queue extends Observable implements Observer { //Thread {
      */
     private Timer elapsedTimer;
 	
-    Calendar calendar = Calendar.getInstance();
+    private Calendar calendar = Calendar.getInstance();
 	
     public static final int KIND_DOWNLOAD = 0;
     public static final int KIND_UPLOAD = 1;
@@ -119,49 +119,31 @@ public class Queue extends Observable implements Observer { //Thread {
 	public Queue(Path root, int kind) {
 		this.root = root;
 		this.kind = kind;
-//		List roots = new ArrayList(); 
-//		roots.add(root);
-//		this.init(roots, kind);
 		this.init();
 	}
 	
-//    public Queue(List roots, int kind) {
-//		log.debug("New this with "+roots.size()+" root elements");
-//		this.init(roots, kind);
-//	}
-	
-//	private void init(List roots, int kind) {
-//		this.roots = roots;
-//		this.kind = kind;
-//		this.validator = validator;
-//		this.currentJob = (Path)roots.get(0);
-//    }
-	
 	public Queue(NSDictionary dict) {
-		this.kind = ((Integer)dict.objectForKey("Kind")).intValue();
 		Host host = new Host((NSDictionary)dict.objectForKey("Host"));
 		NSArray elements = (NSArray)dict.objectForKey("Roots");
 		for(int i = 0; i < elements.count(); i++) {
 			//todo Path Factory Pattern
 			if(host.getProtocol().equalsIgnoreCase(Session.HTTP)) {
 				this.root = new HTTPPath((HTTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
-//				this.addRoot(new HTTPPath((HTTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i)));
 			}
 			//  if(host.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
-			//            return new HTTPSession(this);
+			//			this.root = new HTTPSPath((HTTPSSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
 			//        }
 			else if(host.getProtocol().equalsIgnoreCase(Session.FTP)) {
 				this.root = new FTPPath((FTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
-//				this.addRoot(new FTPPath((FTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i)));
 			}
 			else if(host.getProtocol().equalsIgnoreCase(Session.SFTP)) {
 				this.root = new SFTPPath((SFTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i));
-//				this.addRoot(new SFTPPath((SFTPSession)host.createSession(), (NSDictionary)elements.objectAtIndex(i)));
 			}
 			else {
 				log.error("Unknown protocol");
 			}
 		}
+		this.kind = ((Integer)dict.objectForKey("Kind")).intValue();
 		this.status = (String)dict.objectForKey("Status");
 		this.size = ((Long)dict.objectForKey("Size")).longValue();
 		this.current = ((Long)dict.objectForKey("Current")).longValue();
@@ -241,7 +223,6 @@ public class Queue extends Observable implements Observer { //Thread {
 				}
 				if(currentJob.status.isComplete()) {
 					this.completedJobs++;
-					//					this.current += currentJob.status.getCurrent();
 				}
 				this.currentJob.status.deleteObserver(this);
 				
@@ -348,41 +329,16 @@ public class Queue extends Observable implements Observer { //Thread {
 	
 	public String getStatus() {
 		return this.status;
-		/*
-		if(this.isRunning()) {
-			if(Queue.KIND_DOWNLOAD == this.kind())
-				return this.getElapsedTime()+" "+"Downloading "+this.getRoot().getDecodedName()+" ("+(this.completedJobs())+" of "+(this.numberOfJobs())+")";
-			return this.getElapsedTime()+" "+"Uploading "+this.getRoot().getDecodedName()+" ("+(this.completedJobs())+" of "+(this.numberOfJobs())+")";
-		}
-		if(this.isEmpty()) {
-			return this.getElapsedTime()+" "+
-			"Complete ("+(this.completedJobs())+
-			" of "+
-			(this.numberOfJobs())+
-			")";
-		}
-		return this.getElapsedTime()+" "+
-		"Incomplete ("+(this.completedJobs())+
-		" of "+
-		(this.numberOfJobs())+
-		")";
-		 */
 	}
 	
 	public String getSizeAsString() {
 		return Status.getSizeAsString(this.getSize());
-//		if(null == size)
-//			return "";
-//		return size;
     }
 	
     /**
 		* @return The cummulative file size of all files remaining in the this
      */
     public long getSize() {
-//		if(this.size <= 0)
-//			this.size = this.calculateTotalSize();
-//		return this.size;
 		return this.calculateTotalSize();
     }
 	
@@ -452,10 +408,6 @@ public class Queue extends Observable implements Observer { //Thread {
 		if(this.isRunning())
 			return Status.getSizeAsString(this.getSpeed())+"/sec";
 		return "";
-//		String speed = Status.getSizeAsString(this.getSpeed());
-//		if(null == speed)
-//			return "";
-//		return speed+"/sec";
     }
 	
 	public long getSpeed() {
@@ -474,17 +426,15 @@ public class Queue extends Observable implements Observer { //Thread {
 	
     public String getTimeLeft() {
 		if(this.isRunning()) {
-//        String message = "";
-        //@todo: implementation of better 'time left' management.
-//        if(this.timeLeft != -1) {
-            if(this.timeLeft >= 60) {
-                return (int)this.timeLeft/60 + " minutes remaining.";
-            }
-            else {
-                return this.timeLeft + " seconds remaining.";
-            }
-//        }
-//        return message;
+			//@todo: implementation of better 'time left' management.
+			if(this.timeLeft != -1) {
+				if(this.timeLeft >= 60) {
+					return (int)this.timeLeft/60 + " minutes remaining.";
+				}
+				else {
+					return this.timeLeft + " seconds remaining.";
+				}
+			}
 		}
 		return "";
     }
@@ -528,19 +478,6 @@ public class Queue extends Observable implements Observer { //Thread {
  //				   + Status.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
  //				   + Status.parseDouble(this.getOverall()/1024) + " kB/s. "+this.getTimeLeft()));
  //}
-
-	/*
-private void reset() {
-    this.speed = -1;
-	//    this.overall = 0;
-    this.timeLeft = -1;
-    this.completedJobs = 0;
-    this.calendar.set(Calendar.HOUR, 0);
-    this.calendar.set(Calendar.MINUTE, 0);
-    this.calendar.set(Calendar.SECOND, 0);
-//	this.callObservers(new Message(Message.DATA));
-}
-*/
 
 private void startTimers() {
     this.calendar.set(Calendar.HOUR, 0);
@@ -635,10 +572,10 @@ private void startTimers() {
     this.leftTimer = new Timer(1000,
 							   new ActionListener() {
 								   public void actionPerformed(ActionEvent e) {
-//									   if(getSpeed() > 0)
-									   Queue.this.setTimeLeft((int)((Queue.this.getSize() - currentJob.status.getCurrent())/getSpeed()));
-//									   else
-//										   Queue.this.setTimeLeft(-1);
+									   if(getSpeed() > 0)
+										   Queue.this.setTimeLeft((int)((Queue.this.getSize() - currentJob.status.getCurrent())/getSpeed()));
+									   else
+										   Queue.this.setTimeLeft(-1);
 								   }
 							   }
 							   );

@@ -18,25 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Codec;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Validator;
+import ch.cyberduck.core.*;
 
-import java.util.Observer;
-import java.util.Observable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.io.File;
-
-import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSEnumerator;
+import com.apple.cocoa.foundation.NSSelector;
 
+import java.util.Observable;
+import java.util.Observer;
 import org.apache.log4j.Logger;
 
 public class CDQueueController implements Observer, Validator {
@@ -46,6 +37,19 @@ public class CDQueueController implements Observer, Validator {
 
 	private NSToolbar toolbar;
 
+	public static CDQueueController instance() {
+		if(null == instance) {
+			instance = new CDQueueController();
+		}
+		return instance;
+    }
+	
+	public CDQueueController() {
+        if (false == NSApplication.loadNibNamed("Queue", this)) {
+            log.fatal("Couldn't load Queue.nib");
+        }
+	}
+	
     private NSWindow window; // IBOutlet
     public void setWindow(NSWindow window) {
 		this.window = window;
@@ -82,8 +86,17 @@ public class CDQueueController implements Observer, Validator {
 		progressColumn.setDataCell(new CDProgressCell());
 		this.queueTable.addTableColumn(progressColumn);
 		
-//		this.queueTable.tableColumnWithIdentifier("DATA").setDataCell(new CDQueueCell());
-//		this.queueTable.tableColumnWithIdentifier("PROGRESS").setDataCell(new CDProgressCell());
+		NSSelector setUsesAlternatingRowBackgroundColorsSelector = 
+			new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[] {boolean.class});
+		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
+			this.queueTable.setUsesAlternatingRowBackgroundColors(true);
+		}
+		NSSelector setGridStyleMaskSelector = 
+			new NSSelector("setGridStyleMask", new Class[] {int.class});
+		if(setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
+			this.queueTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
+		}
+
 		this.queueTable.setDoubleAction(new NSSelector("revealButtonClicked", new Class[] {Object.class}));
 		this.queueTable.sizeToFit();
     }
@@ -114,6 +127,7 @@ public class CDQueueController implements Observer, Validator {
 		this.window().makeKeyAndOrderFront(null);
 		this.queueModel.addEntry(queue);
 		this.queueTable.reloadData();
+		this.queueTable.selectRow(this.queueTable.numberOfRows(), false);
 	}
 	
 	public void addItemAndStart(Queue queue) {
@@ -148,6 +162,7 @@ public class CDQueueController implements Observer, Validator {
 	}
 	
 	public void update(Observable observable, Object arg) {
+//		log.debug("update:"+observable+","+arg);
 		if(arg instanceof Message) {
 			Message msg = (Message)arg;
 //			if(msg.getTitle().equals(Message.CLOCK)
@@ -164,12 +179,14 @@ public class CDQueueController implements Observer, Validator {
 					Queue queue = (Queue)observable;
 					if(queue.isEmpty()) {
 						if(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
+							this.queueTable.deselectAll(null);
 							this.queueModel.removeEntry(queue);
 							this.queueTable.reloadData();
 						}
 						if(Queue.KIND_DOWNLOAD == queue.kind()) {
-							if(Preferences.instance().getProperty("connection.download.postprocess").equals("true")) {
-								NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+							if(Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
+								boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+								log.debug("Success opening file:"+success);
 							}
 						}
 					}
@@ -191,20 +208,7 @@ public class CDQueueController implements Observer, Validator {
 			}
 		}
 	}
-	
-	public static CDQueueController instance() {
-		if(null == instance) {
-			instance = new CDQueueController();
-		}
-		return instance;
-    }
-	
-	private CDQueueController() {
-        if (false == NSApplication.loadNibNamed("Queue", this)) {
-            log.fatal("Couldn't load Queue.nib");
-        }
-	}
-	
+		
 	public void awakeFromNib() {
 		this.window().setTitle("Transfer Queue");
 		this.toolbar = new NSToolbar("Queue Toolbar");
@@ -212,79 +216,11 @@ public class CDQueueController implements Observer, Validator {
 		this.toolbar.setAllowsUserCustomization(true);
 		this.toolbar.setAutosavesConfiguration(true);
 		this.window().setToolbar(toolbar);
-		this.load(QUEUE_FILE);
+//		this.load(QUEUE_FILE);
 	}		
 	
-	private static final File QUEUE_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Queue.plist"));
+//	private static final File QUEUE_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Queue.plist"));
 
-    private void load(java.io.File f) {
-		log.debug("load");
-		if(f.exists()) {
-			log.info("Found Queue file: "+f.toString());			
-			NSData plistData = new NSData(f);
-			String[] errorString = new String[]{null};
-			Object propertyListFromXMLData = 
-				NSPropertyListSerialization.propertyListFromData(plistData, 
-																 NSPropertyListSerialization.PropertyListImmutable,
-																 new int[]{NSPropertyListSerialization.PropertyListXMLFormat}, 
-																 errorString);
-			if(errorString[0]!=null)
-				log.error("Problem reading queue file: "+errorString[0]);
-			else
-				log.info("Successfully read Queue: "+propertyListFromXMLData);
-			if(propertyListFromXMLData instanceof NSArray) {
-				NSArray entries = (NSArray)propertyListFromXMLData;
-				java.util.Enumeration i = entries.objectEnumerator();
-				Object element;
-				while(i.hasMoreElements()) {
-					element = i.nextElement();
-					if(element instanceof NSDictionary) {
-						this.addItem(new Queue((NSDictionary)element));
-					}
-				}
-			}
-		}
-    }
-	
-	protected void finalize() throws Throwable {
-		super.finalize();
-		this.save(QUEUE_FILE);
-	}
-	
-	public void save() {
-		this.save(QUEUE_FILE);
-	}
-	
-	private void save(java.io.File f) {
-		log.debug("save");
-		if(Preferences.instance().getProperty("queue.save").equals("true")) {
-			try {
-				NSMutableArray list = new NSMutableArray();
-				for(int i = 0; i < queueModel.numberOfRowsInTableView(this.queueTable); i++) {
-					list.addObject(queueModel.getEntry(i).getAsDictionary());
-				}
-				NSMutableData collection = new NSMutableData();
-				String[] errorString = new String[]{null};
-				collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
-																					   list,
-																					   NSPropertyListSerialization.PropertyListXMLFormat, 
-																					   errorString)
-									  );
-				//				collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(list));
-				if(errorString[0]!=null)
-					log.error("Problem writing queue file: "+errorString[0]);
-				
-				if(collection.writeToURL(f.toURL(), true))
-					log.info("Queue sucessfully saved to :"+f.toString());
-				else
-					log.error("Error saving Queue to :"+f.toString());
-			}
-			catch(java.net.MalformedURLException e) {
-				log.error(e.getMessage());
-			}
-		}
-    }
-	
 	// ----------------------------------------------------------
  	// Toolbar Delegate
  	// ----------------------------------------------------------
@@ -338,63 +274,39 @@ public class CDQueueController implements Observer, Validator {
 	}
 	
 	public void resumeButtonClicked(Object sender) {
-		//		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
-		NSEnumerator enum = queueTable.selectedRowEnumerator();
-		while(enum.hasMoreElements()) {
-			Queue item = (Queue)this.queueModel.getEntry(((Integer)enum.nextElement()).intValue());
-//			Iterator i = item.getRoots().iterator();
-//			while(i.hasNext()) {
-//				Path p = (Path)i.next();
-//				p.status.setResume(true);
-//			}
-			item.getRoot().status.setResume(true);
-			this.startItem(item);
-		}
+		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+		item.getRoot().status.setResume(true);
+		this.startItem(item);
 	}
 	
 	public void reloadButtonClicked(Object sender) {
-		//		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
-		NSEnumerator enum = queueTable.selectedRowEnumerator();
-		while(enum.hasMoreElements()) {
-			Queue item = (Queue)this.queueModel.getEntry(((Integer)enum.nextElement()).intValue());
-//			Iterator i = item.getRoots().iterator();
-//			while(i.hasNext()) {
-//				Path p = (Path)i.next();
-//				p.status.setResume(false);
-//			}
-			item.getRoot().status.setResume(false);
-			this.startItem(item);
-		}
+		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+		item.getRoot().status.setResume(false);
+		this.startItem(item);
 	}
 
 	public void revealButtonClicked(Object sender) {
-		//		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
-		NSEnumerator enum = queueTable.selectedRowEnumerator();
-		while(enum.hasMoreElements()) {
-			Queue item = (Queue)this.queueModel.getEntry(((Integer)enum.nextElement()).intValue());
-			if(!NSWorkspace.sharedWorkspace().selectFile(item.getRoot().getLocal().toString(), "")) {
-				NSAlertPanel.beginCriticalAlertSheet(
-													 NSBundle.localizedString("Could not show the file in the Finder"), //title
-													 NSBundle.localizedString("OK"),// defaultbutton
-													 null,//alternative button
-													 null,//other button
-													 this.window(), //docWindow
-													 null, //modalDelegate
-													 null, //didEndSelector
-													 null, // dismiss selector
-													 null, // context
-													 "Could not show the file \""+item.getRoot().getLocal().toString()+"\" in the Finder because it moved since you downloaded it." // message
-													 );
-			}
+		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
+		if(!NSWorkspace.sharedWorkspace().selectFile(item.getRoot().getLocal().toString(), "")) {
+			NSAlertPanel.beginCriticalAlertSheet(
+												 NSBundle.localizedString("Could not show the file in the Finder"), //title
+												 NSBundle.localizedString("OK"),// defaultbutton
+												 null,//alternative button
+												 null,//other button
+												 this.window(), //docWindow
+												 null, //modalDelegate
+												 null, //didEndSelector
+												 null, // dismiss selector
+												 null, // context
+												 "Could not show the file \""+item.getRoot().getLocal().toString()+"\" in the Finder because it moved since you downloaded it." // message
+												 );
 		}
     }	
 
 	public void removeButtonClicked(Object sender) {
-//		Queue item = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		int i = 0;
 		while(enum.hasMoreElements()) {
-//			Queue item = (Queue)this.queueModel.getEntry(((Integer)enum.nextElement()).intValue());
 			this.queueModel.removeEntry(((Integer)enum.nextElement()).intValue()-i);
 			i++;
 		}
@@ -404,7 +316,7 @@ public class CDQueueController implements Observer, Validator {
 	public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
 		return new NSArray(new Object[] {
 			"Resume",
-			NSBundle.localizedString("Reload"),
+			"Reload",
 			"Stop",
 			"Remove",
 			NSToolbarItem.FlexibleSpaceItemIdentifier,
@@ -430,21 +342,21 @@ public class CDQueueController implements Observer, Validator {
 //		log.debug("validateToolbarItem:"+item.label());
 		String label = item.label();
 		if(label.equals(NSBundle.localizedString("Stop"))) {
-			if(this.queueTable.selectedRow() != -1) {
+			if(this.queueTable.numberOfSelectedRows() == 1) {
 				Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
 				return queue.isRunning();
 			}
 			return false;
 		}
 		if(label.equals(NSBundle.localizedString("Resume"))) {
-			if(this.queueTable.selectedRow() != -1) {
+			if(this.queueTable.numberOfSelectedRows() == 1) {
 				Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
 				return queue.isCanceled() && !(queue.remainingJobs() == 0);
 			}
 			return false;
 		}
 		if(label.equals(NSBundle.localizedString("Reload"))) {
-			if(this.queueTable.selectedRow() != -1) {
+			if(this.queueTable.numberOfSelectedRows() == 1) {
 				Queue queue = (Queue)this.queueModel.getEntry(this.queueTable.selectedRow());
 				return !queue.isRunning();
 			}

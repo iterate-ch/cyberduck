@@ -19,8 +19,10 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+
 import java.util.*;
 import org.apache.log4j.Logger;
 
@@ -47,18 +49,31 @@ public class CDBrowserController implements Observer {
     private NSTableView browserTable; // IBOutlet
     public void setBrowserTable(NSTableView browserTable) {
 		this.browserTable = browserTable;
+		this.browserTable.setTarget(this);
+		this.browserTable.setDoubleAction(new NSSelector("browserTableRowDoubleClicked", new Class[] {Object.class}));
+		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
+		this.browserTable.setDelegate(this.browserModel);
+		this.browserTable.setRowHeight(17f);
 		
 		// setting appearance attributes
 		this.browserTable.setAutoresizesAllColumnsToFit(true);
-		this.browserTable.setUsesAlternatingRowBackgroundColors(CDPreferencesImpl.instance().getProperty("browser.alternatingRows").equals("true"));
-		if(Preferences.instance().getProperty("browser.horizontalLines").equals("true") && CDPreferencesImpl.instance().getProperty("browser.verticalLines").equals("true"))
-			this.browserTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
-		else if(Preferences.instance().getProperty("browser.verticalLines").equals("true"))
-			this.browserTable.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
-		else if(Preferences.instance().getProperty("browser.horizontalLines").equals("true"))
-			this.browserTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
-		else
-			this.browserTable.setGridStyleMask(NSTableView.GridNone);
+		NSSelector setUsesAlternatingRowBackgroundColorsSelector = 
+			new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[] {boolean.class});
+		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
+			this.browserTable.setUsesAlternatingRowBackgroundColors(CDPreferencesImpl.instance().getProperty("browser.alternatingRows").equals("true"));
+		}
+		NSSelector setGridStyleMaskSelector = 
+			new NSSelector("setGridStyleMask", new Class[] {int.class});
+		if(setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
+			if(Preferences.instance().getProperty("browser.horizontalLines").equals("true") && CDPreferencesImpl.instance().getProperty("browser.verticalLines").equals("true"))
+				this.browserTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
+			else if(Preferences.instance().getProperty("browser.verticalLines").equals("true"))
+				this.browserTable.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
+			else if(Preferences.instance().getProperty("browser.horizontalLines").equals("true"))
+				this.browserTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
+			else
+				this.browserTable.setGridStyleMask(NSTableView.GridNone);
+		}
 		
 		// ading table columns
 		if(Preferences.instance().getProperty("browser.columnIcon").equals("true")) {
@@ -137,12 +152,6 @@ public class CDBrowserController implements Observer {
 		}
 		
 		this.browserTable.sizeToFit();
-
-		this.browserTable.setTarget(this);
-		// double click action
-		this.browserTable.setDoubleAction(new NSSelector("browserTableRowDoubleClicked", new Class[] {Object.class}));
-		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
-		this.browserTable.setDelegate(this.browserModel);
 		
 		// selection properties
 		this.browserTable.setAllowsMultipleSelection(true);
@@ -184,10 +193,41 @@ public class CDBrowserController implements Observer {
     public void setBookmarkTable(NSTableView bookmarkTable) {
 		this.bookmarkTable = bookmarkTable;
 		this.bookmarkTable.setTarget(this);
+		this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableRowDoubleClicked", new Class[] {Object.class}));
 		this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
 		this.bookmarkTable.setDelegate(this.bookmarkModel);
+		this.bookmarkTable.setRowHeight(45f);
+	
+		NSTableColumn iconColumn = new NSTableColumn();
+		iconColumn.setIdentifier("ICON");
+		iconColumn.setMinWidth(32f);
+		iconColumn.setWidth(32f);
+		iconColumn.setMaxWidth(32f);
+		iconColumn.setResizable(true);
+		iconColumn.setDataCell(new NSImageCell());
+		this.bookmarkTable.addTableColumn(iconColumn);
 
+		NSTableColumn bookmarkColumn = new NSTableColumn();
+		bookmarkColumn.setIdentifier("BOOKMARK");
+		bookmarkColumn.setMinWidth(50f);
+		bookmarkColumn.setWidth(200f);
+		bookmarkColumn.setMaxWidth(500f);
+		bookmarkColumn.setResizable(true);
+		bookmarkColumn.setDataCell(new CDBookmarkCell());
+		this.bookmarkTable.addTableColumn(bookmarkColumn);
+		
 		// setting appearance attributes
+		this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
+		NSSelector setUsesAlternatingRowBackgroundColorsSelector = 
+			new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[] {boolean.class});
+		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
+			this.bookmarkTable.setUsesAlternatingRowBackgroundColors(true);
+		}
+		NSSelector setGridStyleMaskSelector = 
+			new NSSelector("setGridStyleMask", new Class[] {int.class});
+		if(setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
+				this.bookmarkTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
+		}
 		this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
 
 		// selection properties
@@ -198,9 +238,6 @@ public class CDBrowserController implements Observer {
 		// receive drag events from types
 		this.bookmarkTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
 		
-		this.bookmarkTable.tableColumnWithIdentifier("ICON").setDataCell(new NSImageCell());
-		this.bookmarkTable.tableColumnWithIdentifier("BOOKMARK").setDataCell(new CDBookmarkCell());
-		this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableRowDoubleClicked", new Class[] {Object.class}));
 		(NSNotificationCenter.defaultCenter()).addObserver(
 													 this,
 													 new NSSelector("bookmarkSelectionDidChange", new Class[]{NSNotification.class}),

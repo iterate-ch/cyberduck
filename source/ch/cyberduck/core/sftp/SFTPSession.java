@@ -19,15 +19,17 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.*;
+
 import com.sshtools.j2ssh.SshClient;
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
 import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
 import com.sshtools.j2ssh.authentication.PublicKeyAuthenticationClient;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
+import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
-import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
+
 import java.io.IOException;
 import org.apache.log4j.Logger;
 

@@ -19,11 +19,14 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.*;
+
+import com.apple.cocoa.foundation.NSDictionary;
+
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
+
 import java.io.*;
 import java.util.List;
-import com.apple.cocoa.foundation.NSDictionary;
 import org.apache.log4j.Logger;
 
 /**

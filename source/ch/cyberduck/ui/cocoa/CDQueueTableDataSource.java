@@ -19,12 +19,11 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Queues;
 
-import java.util.List;
-import java.util.ArrayList;
-
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSTableView;
 
 import org.apache.log4j.Logger;
 
@@ -34,11 +33,12 @@ import org.apache.log4j.Logger;
 public class CDQueueTableDataSource extends CDTableDataSource {
     private static Logger log = Logger.getLogger(CDQueueTableDataSource.class);
 	
-	private List data; //Queue elements
+//	private List data; //Queue elements
+	private Queues data = CDQueuesImpl.instance();
 	
-	public CDQueueTableDataSource() {
-		this.data = new ArrayList();
-	}
+//	public CDQueueTableDataSource() {
+//		this.data = new ArrayList();
+//	}
 		
 	public int numberOfRowsInTableView(NSTableView tableView) {
 		return data.size();
@@ -50,13 +50,13 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 		String identifier = (String)tableColumn.identifier();
 		Queue item = this.getEntry(row);
 		if(identifier.equals("ICON")) {
-			return this.getEntry(row);
+			return data.getItem(row);
 		}
 		if(identifier.equals("DATA")) {
-			return this.getEntry(row);
+			return data.getItem(row);
 		}
 		if(identifier.equals("PROGRESS")) {
-			return this.getEntry(row);
+			return data.getItem(row);
 		}
 		if(identifier.equals("REMOVE")) {
 			return NSImage.imageNamed("cancel.tiff");
@@ -68,24 +68,24 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 	public void tableViewSetObjectValueForLocation(NSTableView tableView, Object object, NSTableColumn tableColumn, int row) {
 		String identifier = (String)tableColumn.identifier();
 		if(identifier.equals("REMOVE")) {
-			this.removeEntry(row);
+			data.removeItem(row);
 			tableView.reloadData();
 		}
 	}
 	
 	public void addEntry(Queue element) {
-		this.data.add(element);
+		this.data.addItem(element);
 	}
 	
 	public void removeEntry(int row) {
-		this.data.remove(row);
+		this.data.removeItem(row);
 	}
 	
 	public void removeEntry(Queue o) {
-		this.data.remove(this.data.indexOf(o));
+		this.data.removeItem(this.data.indexOf(o));
 	}
 	
 	public Queue getEntry(int row) {
-		return (Queue)data.get(row);
+		return (Queue)data.getItem(row);
     }
 }	

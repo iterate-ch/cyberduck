@@ -18,8 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Bookmarks;
 import ch.cyberduck.core.Host;
+
 import com.apple.cocoa.application.NSComboBox;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
@@ -29,14 +29,14 @@ import com.apple.cocoa.application.NSTableView;
  */
 public class CDQuickConnectDataSource { //implements NSComboBox.DataSource {
 	
-	private Bookmarks history = CDHistoryImpl.instance();
+	private CDHistoryImpl history = CDHistoryImpl.instance();
 	
     // ----------------------------------------------------------
     // NSComboBox.DataSource
     // ----------------------------------------------------------
 	
     public int numberOfItemsInComboBox(NSComboBox combo) {
-		return history.values().size();
+		return history.size();
     }
 	
     public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {

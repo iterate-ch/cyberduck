@@ -26,6 +26,7 @@
 package com.enterprisedt.net.ftp;
 
 import ch.cyberduck.core.Transcript;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
@@ -33,8 +34,8 @@ import java.io.OutputStreamWriter;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.Properties;
+import java.util.TimeZone;
 import java.util.Vector;
 
 /**

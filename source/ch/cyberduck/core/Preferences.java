@@ -116,13 +116,13 @@ public abstract class Preferences {
 	defaults.put("queue.openByDefault", "false");
 	defaults.put("queue.save", "true");
 	defaults.put("queue.removeItemWhenComplete", "false");
+	defaults.put("queue.postProcessItemWhenComplete", "false");
 
 	defaults.put("connection.login.name", System.getProperty("user.name"));
 	defaults.put("connection.download.folder", System.getProperty("user.home"));
 	defaults.put("download.duplicate", "ask");
 	
 	//defaults.put("files.encode", "true");
-	defaults.put("connection.download.postprocess", "false");
 	//Connection
 	//	private int BLOCKSIZE = 65535;
 	

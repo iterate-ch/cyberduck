@@ -18,13 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Codec;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Queue;
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSGraphics;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSView;
+import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSSize;
 
 public class CDQueueCell extends CDTableCell {
 	private Queue queue;
@@ -76,7 +79,8 @@ public class CDQueueCell extends CDTableCell {
 		// drawing path properties
 		// local file
 		NSGraphics.drawAttributedString(
-										new NSAttributedString(Codec.encode(queue.getRoot().getName()), boldFont), 
+										new NSAttributedString(queue.getRoot().getName(), boldFont), 
+//										new NSAttributedString(Codec.encode(queue.getRoot().getName()), boldFont), 
 										new NSRect(cellPoint.x()+BORDER+SPACE, 
 												   cellPoint.y()+SPACE,
 												   cellSize.width()-BORDER-SPACE, 

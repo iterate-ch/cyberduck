@@ -20,10 +20,12 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Codec;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Status;
+
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+
 import org.apache.log4j.Logger;
 
 /**

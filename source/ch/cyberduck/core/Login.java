@@ -19,8 +19,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.LoginController;
 
-import java.io.File;
-
 public class Login {
     private String user;
     private transient String pass;

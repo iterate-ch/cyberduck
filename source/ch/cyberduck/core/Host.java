@@ -20,9 +20,12 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.sftp.SFTPSession;
-import com.sshtools.j2ssh.transport.HostKeyVerification;
+
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
+
+import com.sshtools.j2ssh.transport.HostKeyVerification;
+
 import org.apache.log4j.Logger;
 
 public class Host {
@@ -189,8 +192,7 @@ public class Host {
     
     public void setNickname(String nickname) {
 //		log.debug("setNickname:"+nickname);
-        this.nickname = nickname != null ? nickname : this.getHostname();
-//        this.nickname = nickname != null ? nickname : this.getLogin().getUsername()+"@"+this.getHostname();
+        this.nickname = nickname != null ? nickname : this.getHostname()+" ("+this.getProtocol.toUppercase()+")";
     }
 	
     public String getHostname() {

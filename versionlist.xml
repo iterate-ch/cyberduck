@@ -8,6 +8,11 @@
 	<string>Cyberduck-2.1.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.2
+- Support for public key authentication (SSH)
+- Live filtering directory listings
+- New transfer/queue manager
+
 2.1
 - Bookmarks can now be edited.
 - Bookmarks can now be saved as a regular file (Drag the bookmarks to the Finder).

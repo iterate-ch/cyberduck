@@ -18,12 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Bookmarks;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Login;
 import ch.cyberduck.core.Preferences;
+
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+
 import java.io.File;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -262,7 +262,17 @@ public class CDMainController {
 		return false;
 	}
 	
-	public void applicationDidFinishLaunching (NSNotification notification) {
+	public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
+		if(visibleWindowsFound)
+			return true;
+		if(Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
+			this.newBrowserMenuClicked(null);
+			return false;
+		}
+		return true;
+	}
+
+	public void applicationDidFinishLaunching(NSNotification notification) {
 		// To get service requests to go to the controller...
   //        NSApplication.sharedApplication().setServicesProvider(this);
 		log.info("Available localizations:"+NSBundle.mainBundle().localizations());
@@ -272,10 +282,9 @@ public class CDMainController {
 		if(Preferences.instance().getProperty("queue.openByDefault").equals("true")) {
 			this.showTransferQueueClicked(null);
 		}
-//todo load queue		CDQueueController.instance();
     }
 	
-    public int applicationShouldTerminate (NSApplication app) {
+    public int applicationShouldTerminate(NSApplication app) {
 		log.debug("applicationShouldTerminate");
 //		NSArray windows = NSApplication.sharedApplication().windows();
 //		if(windows.count() > 0) {
@@ -290,9 +299,9 @@ public class CDMainController {
 //		}
 		Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses"))+1);
         Preferences.instance().save();
-		((CDBookmarksImpl)CDBookmarksImpl.instance()).save();
-		((CDHistoryImpl)CDHistoryImpl.instance()).save();
-		CDQueueController.instance().save();//todo replace with CDQueue
+		CDBookmarksImpl.instance().save();
+		CDHistoryImpl.instance().save();
+		CDQueuesImpl.instance().save();
 		
 		if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
 			if (false == NSApplication.loadNibNamed("Donate", this)) {

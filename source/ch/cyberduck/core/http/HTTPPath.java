@@ -19,6 +19,9 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.*;
+
+import com.apple.cocoa.foundation.NSDictionary;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +32,6 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
-import com.apple.cocoa.foundation.NSDictionary;
 import org.apache.log4j.Logger;
 
 /**

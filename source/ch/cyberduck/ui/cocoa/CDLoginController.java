@@ -20,10 +20,12 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Login;
 import ch.cyberduck.ui.LoginController;
+
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSSelector;
+
 import org.apache.log4j.Logger;
 
 /**

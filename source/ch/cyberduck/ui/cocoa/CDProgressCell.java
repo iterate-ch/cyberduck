@@ -21,7 +21,10 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Queue;
 
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSSize;
 
 public class CDProgressCell extends CDTableCell {
 	private Queue queue;
@@ -44,7 +47,9 @@ public class CDProgressCell extends CDTableCell {
 		else
 			progress = 0;
 //		log.debug("progress:"+progress);
-		final float PROGRESS_WIDTH = progress*(cellSize.width()-SPACE*2);
+		float PROGRESS_WIDTH = progress*(cellSize.width()-SPACE*2);
+		if(PROGRESS_WIDTH < 0)
+			PROGRESS_WIDTH = 0;
 
 		NSRect barRect = new NSRect(cellPoint.x()+SPACE, 
 									cellPoint.y()+cellSize.height()/2-PROGRESS_HEIGHT/2, 

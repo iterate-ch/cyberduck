@@ -20,8 +20,10 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Bookmarks;
 import ch.cyberduck.core.Host;
+
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -33,7 +35,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	private Bookmarks bookmarks = CDBookmarksImpl.instance();
 	
 	public int numberOfRowsInTableView(NSTableView tableView) {
-		return bookmarks.values().size();
+		return bookmarks.size();
 	}
 	
 	//getValue()

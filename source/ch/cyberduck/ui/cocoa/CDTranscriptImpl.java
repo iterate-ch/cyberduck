@@ -20,8 +20,10 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Transcript;
 import ch.cyberduck.core.Transcripter;
+
 import com.apple.cocoa.application.NSTextView;
 import com.apple.cocoa.foundation.NSRange;
+
 import org.apache.log4j.Logger;
 
 /**

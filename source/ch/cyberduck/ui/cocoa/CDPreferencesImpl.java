@@ -19,8 +19,10 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
+
 import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSUserDefaults;
+
 import java.io.File;
 import org.apache.log4j.Logger;
 

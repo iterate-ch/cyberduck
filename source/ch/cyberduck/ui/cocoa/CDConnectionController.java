@@ -19,8 +19,10 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;

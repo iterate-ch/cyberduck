@@ -23,10 +23,12 @@ import ch.cyberduck.core.ftp.FTPPath;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.http.HTTPPath;
 import ch.cyberduck.core.http.HTTPSession;
+
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSPoint;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.apache.log4j.Logger;

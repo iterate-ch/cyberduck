@@ -541,16 +541,16 @@ public class CDPreferencesController {
 		this.processCheckbox = processCheckbox;
 		this.processCheckbox.setTarget(this);
 		this.processCheckbox.setAction(new NSSelector("processCheckboxClicked", new Class[] {NSButton.class}));
-		this.processCheckbox.setState(Preferences.instance().getProperty("connection.download.postprocess").equals("true") ? NSCell.OnState : NSCell.OffState);
+		this.processCheckbox.setState(Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
 	
     public void processCheckboxClicked(NSButton sender) {
 		switch(sender.state()) {
 			case NSCell.OnState:
-				Preferences.instance().setProperty("connection.download.postprocess", true);
+				Preferences.instance().setProperty("queue.postProcessItemWhenComplete", true);
 				break;
 			case NSCell.OffState:
-				Preferences.instance().setProperty("connection.download.postprocess", false);
+				Preferences.instance().setProperty("queue.postProcessItemWhenComplete", false);
 				break;
 		}
     }

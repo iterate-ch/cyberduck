@@ -19,9 +19,11 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.*;
+
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPException;
+
 import java.io.IOException;
 import org.apache.log4j.Logger;
 

@@ -19,8 +19,14 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Host;
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+
+import com.apple.cocoa.application.NSGraphics;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSView;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSSize;
 
 public class CDBookmarkCell extends CDTableCell {
 	private Host bookmark;

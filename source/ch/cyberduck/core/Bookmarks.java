@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
-import com.apple.cocoa.application.NSWorkspace;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -36,129 +34,20 @@ public abstract class Bookmarks {
     private static Logger log = Logger.getLogger(Bookmarks.class);
     	
     protected List data = new ArrayList();
+		
+	public abstract void save();
 	
-	public Host importBookmark(java.io.File file) {
-		log.info("Importing bookmark from "+file);
-		NSData plistData = new NSData(file);
-		String[] errorString = new String[]{null};
-		Object propertyListFromXMLData = 
-			NSPropertyListSerialization.propertyListFromData(plistData, 
-															 NSPropertyListSerialization.PropertyListImmutable,
-															 new int[]{NSPropertyListSerialization.PropertyListXMLFormat}, 
-															 errorString);
-		if(errorString[0]!=null)
-			log.error("Problem reading bookmark file: "+errorString[0]);
-		else
-			log.info("Successfully read bookmark file: "+propertyListFromXMLData);
-		if(propertyListFromXMLData instanceof NSDictionary) {
-			return new Host((NSDictionary)propertyListFromXMLData);
-		}
-		log.error("Invalid file format:"+file);
-		return null;
-	}		
+    public abstract void load();
 	
-	public void exportBookmark(Host bookmark, java.io.File file) {
-		try {
-			log.info("Exporting bookmark "+bookmark+" to "+file);
-			NSMutableData collection = new NSMutableData();
-//			public static NSData dataFromPropertyList(Object plist, int format, String[] errorString)
-			String[] errorString = new String[]{null};
-			collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
-												 bookmark.getAsDictionary(),
-												 NSPropertyListSerialization.PropertyListXMLFormat, 
-																				   errorString)
-					  );
-			if(errorString[0]!=null)
-				log.error("Problem writing bookmark file: "+errorString[0]);
-				//collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(bookmark.getAsDictionary()));
-			if(collection.writeToURL(file.toURL(), true)) {
-				log.info("Bookmarks sucessfully saved in :"+file.toString());
-				NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolutePath());
-			}
-			else
-				log.error("Error saving Bookmarks in :"+file.toString());
-		}
-		catch(java.net.MalformedURLException e) {
-			log.error(e.getMessage());
-		}
+	protected void finalize() throws Throwable {
+		super.finalize();
+		this.save();
 	}
 	
-	/**
-		* Saves this collection of bookmarks in to a file to the users's application support directory
-	 * in a plist xml format
-	 */
-    public void save(java.io.File f) {
-		log.debug("save");
-		if(Preferences.instance().getProperty("favorites.save").equals("true")) {
-			try {
-				NSMutableArray list = new NSMutableArray();
-				Iterator i = this.iterator();
-				while(i.hasNext()) {
-					Host bookmark = (Host)i.next();
-					list.addObject(bookmark.getAsDictionary());
-				}
-				NSMutableData collection = new NSMutableData();
-				String[] errorString = new String[]{null};
-				collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
-																					   list,
-																					   NSPropertyListSerialization.PropertyListXMLFormat, 
-																					   errorString)
-									  );
-				//				collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(list));
-				if(errorString[0]!=null)
-					log.error("Problem writing bookmark file: "+errorString[0]);
-				
-				if(collection.writeToURL(f.toURL(), true))
-					log.info("Bookmarks sucessfully saved to :"+f.toString());
-				else
-					log.error("Error saving Bookmarks to :"+f.toString());
-			}
-			catch(java.net.MalformedURLException e) {
-				log.error(e.getMessage());
-			}
-		}
-    }
+	public abstract Host importBookmark(java.io.File file);
 	
-	/**
-		* Deserialize all the bookmarks saved previously in the users's application support directory
-	 */
-    public void load(java.io.File f) {
-		log.debug("load");
-		if(f.exists()) {
-			log.info("Found Bookmarks file: "+f.toString());			
-			NSData plistData = new NSData(f);
-			String[] errorString = new String[]{null};
-			Object propertyListFromXMLData = 
-				NSPropertyListSerialization.propertyListFromData(plistData, 
-																 NSPropertyListSerialization.PropertyListImmutable,
-																 new int[]{NSPropertyListSerialization.PropertyListXMLFormat}, 
-																 errorString);
-			if(errorString[0]!=null)
-				log.error("Problem reading bookmark file: "+errorString[0]);
-			else
-				log.info("Successfully read Bookmarks: "+propertyListFromXMLData);
-			if(propertyListFromXMLData instanceof NSArray) {
-				NSArray entries = (NSArray)propertyListFromXMLData;
-				java.util.Enumeration i = entries.objectEnumerator();
-				Object element;
-				while(i.hasMoreElements()) {
-					element = i.nextElement();
-					if(element instanceof NSDictionary) { //new since 2.1
-						this.addItem(new Host((NSDictionary)element));
-					}
-					if(element instanceof String) { //backward compatibilty <= 2.1beta5 (deprecated)
-						try {
-							this.addItem(new Host((String)element));
-						}
-						catch(java.net.MalformedURLException e) {
-							log.error("Bookmark has invalid URL: "+e.getMessage());
-						}
-					}
-				}
-			}
-		}
-    }
-	
+	public abstract void exportBookmark(Host bookmark, java.io.File file);
+		
 	// ----------------------------------------------------------
 	//	Data Manipulation
 	// ----------------------------------------------------------
@@ -185,10 +74,18 @@ public abstract class Bookmarks {
 			throw new IllegalArgumentException("No host with index "+index+" in Bookmarks.");
 		return result;
     }
-	
+
+	public int indexOf(Object o) {
+		return this.data.indexOf(o);
+	}
+		
     public Collection values() {
 		return data;
     }
+	
+	public int size() {
+		return this.data.size();
+	}
 	
 	public void clear() {
 		this.data.clear();

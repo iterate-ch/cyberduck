@@ -18,15 +18,14 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
+import javax.jmdns.ServiceListener;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import org.apache.log4j.Logger;
-
-import javax.jmdns.ServiceListener;
-import javax.jmdns.ServiceInfo;
-import javax.jmdns.JmDNS;
 
 /**
 * @version $Id$
