@@ -154,6 +154,7 @@ public abstract class Path {
         else {
             this.path = p;
         }
+		this.parent = null;
     }
 
     /**
@@ -174,10 +175,10 @@ public abstract class Path {
             else if (index < 0) {
                 dirname = "/";
             }
-            parent = PathFactory.createPath(this.getSession(), dirname);
+            this.parent = PathFactory.createPath(this.getSession(), dirname);
         }
         log.debug("getParent:" + parent);
-        return parent;
+        return this.parent;
     }
 
     /**

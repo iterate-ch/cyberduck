@@ -92,7 +92,7 @@ public class CDFolderController extends NSObject {
 				Path p = (Path)contextInfo;
 				p.setPath(p.getAbsolute(), folderField.stringValue());
 				p.mkdir(false);
-				p.list(true);
+				p.getParent().list(true);
 				break;
             case (NSAlertPanel.AlternateReturn):
                 break;
