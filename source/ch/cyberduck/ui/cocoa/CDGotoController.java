@@ -27,66 +27,68 @@ import com.apple.cocoa.foundation.NSNotification;
 import org.apache.log4j.Logger;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDGotoController {
-    private static Logger log = Logger.getLogger(CDGotoController.class);
-    
-    private NSWindow sheet; // IBOutlet
-    public void setSheet(NSWindow sheet) {
+	private static Logger log = Logger.getLogger(CDGotoController.class);
+
+	private NSWindow sheet; // IBOutlet
+
+	public void setSheet(NSWindow sheet) {
 		this.sheet = sheet;
-    }
-	
-    private NSTextField folderField; // IBOutlet
-    public void setFolderField(NSTextField folderField) {
+	}
+
+	private NSTextField folderField; // IBOutlet
+
+	public void setFolderField(NSTextField folderField) {
 		this.folderField = folderField;
 		this.folderField.setStringValue(current.getAbsolute());
-    }
-	
-    public NSWindow window() {
+	}
+
+	public NSWindow window() {
 		return this.sheet;
-    }
-	
-    private Path current;
-	
-    private static NSMutableArray allDocuments = new NSMutableArray();
-	
-    public CDGotoController(Path current) {
+	}
+
+	private Path current;
+
+	private static NSMutableArray allDocuments = new NSMutableArray();
+
+	public CDGotoController(Path current) {
 		this.current = current;
 		allDocuments.addObject(this);
-        if (false == NSApplication.loadNibNamed("Goto", this)) {
-            log.fatal("Couldn't load Goto.nib");
-            return;
-        }
-    }
-	
-    public void windowWillClose(NSNotification notification) {
+		if (false == NSApplication.loadNibNamed("Goto", this)) {
+			log.fatal("Couldn't load Goto.nib");
+			return;
+		}
+	}
+
+	public void windowWillClose(NSNotification notification) {
 		this.window().setDelegate(null);
 		allDocuments.removeObject(this);
-    }
-	
-    public void closeSheet(Object sender) {
+	}
+
+	public void closeSheet(Object sender) {
 		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-		NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
-    }
-	
-    public void gotoSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
+		NSApplication.sharedApplication().endSheet(this.window(), ((NSButton) sender).tag());
+	}
+
+	public void gotoSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
 		log.debug("gotoSheetDidEnd");
 		sheet.orderOut(null);
-		switch(returncode) {
-			case(NSAlertPanel.DefaultReturn):
-				Path current = (Path)contextInfo;
+		switch (returncode) {
+			case (NSAlertPanel.DefaultReturn):
+				Path current = (Path) contextInfo;
 				Path go = current.copy(current.getSession());
 				String name = this.folderField.stringValue();
-				if(name.charAt(0) != '/')
+				if (name.charAt(0) != '/')
 					go.setPath(current.getAbsolute(), name);
 				else
 					go.setPath(name);
 				go.list();
 				break;
-			case(NSAlertPanel.AlternateReturn):
+			case (NSAlertPanel.AlternateReturn):
 				break;
 		}
-    }
-	
+	}
+
 }

@@ -31,78 +31,78 @@ import com.apple.cocoa.foundation.NSSize;
 
 public class CDQueueCell extends CDTableCell {
 	private Queue queue;
-	
+
 	public void setObjectValue(Object queue) {
-		this.queue = (Queue)queue;
-    }
-    	
+		this.queue = (Queue) queue;
+	}
+
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
-		
+
 		NSPoint cellPoint = cellFrame.origin();
-		NSSize cellSize = cellFrame.size();	
-		
-		//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and 
+		NSSize cellSize = cellFrame.size();
+
+		//Locks the focus on the receiver, so subsequent commands take effect in the receiver’s window and
 		//coordinate system. If you don’t use a display... method to draw an NSView, you must invoke lockFocus before
 		//invoking methods that send commands to the window server, and must balance it with an unlockFocus message when finished.
 		controlView.lockFocus();
-		
+
 		// drawing file icon
 		NSImage fileIcon = null;
 		NSImage arrowIcon = null;
-		switch(queue.kind()) {
+		switch (queue.kind()) {
 			case Queue.KIND_DOWNLOAD:
 				arrowIcon = NSImage.imageNamed("arrowDown.tiff");
-				if(queue.getRoot().isFile())
+				if (queue.getRoot().isFile())
 					fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
 				else
 					fileIcon = NSImage.imageNamed("folder.icns");
 				break;
 			case Queue.KIND_UPLOAD:
 				arrowIcon = NSImage.imageNamed("arrowUp.tiff");
-				if(queue.getRoot().getLocal().isFile())
+				if (queue.getRoot().getLocal().isFile())
 					fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
 				else
 					fileIcon = NSImage.imageNamed("folder.icns");
 				break;
 		}
-		
+
 		fileIcon.setSize(new NSSize(32f, 32f));
 		arrowIcon.setSize(new NSSize(32f, 32f));
-		
+
 		final float BORDER = 40;
 		final float SPACE = 5;
-		
-		fileIcon.compositeToPoint(new NSPoint(cellPoint.x()+SPACE, cellPoint.y()+32+SPACE), NSImage.CompositeSourceOver);
-		arrowIcon.compositeToPoint(new NSPoint(cellPoint.x()+SPACE*2, cellPoint.y()+32+SPACE*2), NSImage.CompositeSourceOver);
-		
+
+		fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE, cellPoint.y() + 32 + SPACE), NSImage.CompositeSourceOver);
+		arrowIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE * 2, cellPoint.y() + 32 + SPACE * 2), NSImage.CompositeSourceOver);
+
 		// drawing path properties
 		// local file
 		NSGraphics.drawAttributedString(
-										new NSAttributedString(queue.getRoot().getName(), boldFont), 
-//										new NSAttributedString(Codec.encode(queue.getRoot().getName()), boldFont), 
-										new NSRect(cellPoint.x()+BORDER+SPACE, 
-												   cellPoint.y()+SPACE,
-												   cellSize.width()-BORDER-SPACE, 
-												   cellSize.height())
-										);
+		    new NSAttributedString(queue.getRoot().getName(), boldFont),
+//										new NSAttributedString(Codec.encode(queue.getRoot().getName()), boldFont),
+		    new NSRect(cellPoint.x() + BORDER + SPACE,
+		        cellPoint.y() + SPACE,
+		        cellSize.width() - BORDER - SPACE,
+		        cellSize.height())
+		);
 		// remote url
 		NSGraphics.drawAttributedString(
-										new NSAttributedString(queue.getRoot().getHost().getURL()+queue.getRoot().getAbsolute(), tinyFont),
-										new NSRect(cellPoint.x()+BORDER+SPACE, 
-												   cellPoint.y()+20, 
-												   cellSize.width()-BORDER-SPACE, 
-												   cellSize.height())
-										);
+		    new NSAttributedString(queue.getRoot().getHost().getURL() + queue.getRoot().getAbsolute(), tinyFont),
+		    new NSRect(cellPoint.x() + BORDER + SPACE,
+		        cellPoint.y() + 20,
+		        cellSize.width() - BORDER - SPACE,
+		        cellSize.height())
+		);
 		NSGraphics.drawAttributedString(
-										new NSAttributedString(
-															   queue.getStatus(),
-															   tinyFont),
-										new NSRect(cellPoint.x()+BORDER+SPACE, 
-												   cellPoint.y()+33, 
-												   cellSize.width()-BORDER-SPACE, 
-												   cellSize.height())
-										);
+		    new NSAttributedString(
+		        queue.getStatus(),
+		        tinyFont),
+		    new NSRect(cellPoint.x() + BORDER + SPACE,
+		        cellPoint.y() + 33,
+		        cellSize.width() - BORDER - SPACE,
+		        cellSize.height())
+		);
 		controlView.unlockFocus();
-	}	
+	}
 }

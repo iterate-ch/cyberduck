@@ -29,115 +29,119 @@ import com.apple.cocoa.foundation.NSSelector;
 import org.apache.log4j.Logger;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDLoginController implements LoginController {
-    private static Logger log = Logger.getLogger(CDLoginController.class);
-	
-    // ----------------------------------------------------------
-    // Outlets
-    // ----------------------------------------------------------
-    
-    private NSTextField userField; // IBOutlet
-    public void setUserField(NSTextField userField) {
+	private static Logger log = Logger.getLogger(CDLoginController.class);
+
+	// ----------------------------------------------------------
+	// Outlets
+	// ----------------------------------------------------------
+
+	private NSTextField userField; // IBOutlet
+
+	public void setUserField(NSTextField userField) {
 		this.userField = userField;
-    }
-	
-    private NSTextField textField; // IBOutlet
-    public void setTextField(NSTextField textField) {
+	}
+
+	private NSTextField textField; // IBOutlet
+
+	public void setTextField(NSTextField textField) {
 		this.textField = textField;
-    }
-    
-    private NSSecureTextField passField; // IBOutlet
-    public void setPassField(NSSecureTextField passField) {
+	}
+
+	private NSSecureTextField passField; // IBOutlet
+
+	public void setPassField(NSSecureTextField passField) {
 		this.passField = passField;
-    }
-	
-    private NSWindow sheet; // IBOutlet
-    public void setSheet(NSWindow sheet) {
+	}
+
+	private NSWindow sheet; // IBOutlet
+
+	public void setSheet(NSWindow sheet) {
 		this.sheet = sheet;
-    }
-	
-    private NSWindow parentWindow;
-	
-    private static NSMutableArray allDocuments = new NSMutableArray();
-	
-    private Login login;
-    
-    public CDLoginController(NSWindow parentWindow, Login login) {
+	}
+
+	private NSWindow parentWindow;
+
+	private static NSMutableArray allDocuments = new NSMutableArray();
+
+	private Login login;
+
+	public CDLoginController(NSWindow parentWindow, Login login) {
 		this.login = login;
 		this.parentWindow = parentWindow;
 		allDocuments.addObject(this);
-        if (false == NSApplication.loadNibNamed("Login", this)) {
-            log.fatal("Couldn't load Login.nib");
-        }
-    }
-	
-    public void closeSheet(NSButton sender) {
+		if (false == NSApplication.loadNibNamed("Login", this)) {
+			log.fatal("Couldn't load Login.nib");
+		}
+	}
+
+	public void closeSheet(NSButton sender) {
 		log.debug("closeSheet");
 		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
-    }
-    
-    public NSWindow window() {
+	}
+
+	public NSWindow window() {
 		return this.sheet;
-    }
-	
-    public void windowWillClose(NSNotification notification) {
+	}
+
+	public void windowWillClose(NSNotification notification) {
 		this.window().setDelegate(null);
 		allDocuments.removeObject(this);
-    }
-	
-    private boolean done;
-    private boolean tryAgain;
-	
-    /**
-		* @return True if the user has choosen to try again with new credentials
-     */
-    public boolean loginFailure(String message) {
+	}
+
+	private boolean done;
+	private boolean tryAgain;
+
+	/**
+	 * @return True if the user has choosen to try again with new credentials
+	 */
+	public boolean loginFailure(String message) {
 		log.info("Authentication failed");
 		this.done = false;
 		this.textField.setStringValue(message);
 		this.userField.setStringValue(login.getUsername());
 		NSApplication.sharedApplication().beginSheet(
-											   this.window(), //sheet
-											   parentWindow,
-											   this, //modalDelegate
-											   new NSSelector(
-							 "loginSheetDidEnd",
-							 new Class[] { NSWindow.class, int.class, Object.class }
-							 ),// did end selector
-											   null); //contextInfo
+		    this.window(), //sheet
+		    parentWindow,
+		    this, //modalDelegate
+		    new NSSelector(
+		        "loginSheetDidEnd",
+		        new Class[]{NSWindow.class, int.class, Object.class}
+		    ), // did end selector
+		    null); //contextInfo
 		this.window().makeKeyAndOrderFront(null);
-		while(!done) {
+		while (!done) {
 			try {
 				log.debug("Sleeping...");
 				Thread.sleep(1000); //milliseconds
 			}
-			catch(InterruptedException e) {
+			catch (InterruptedException e) {
 				log.error(e.getMessage());
 			}
 		}
 		return tryAgain;
-    }
-	
-    /**
-		* Selector method from
-     * @see #loginFailure
-     */
-    public void loginSheetDidEnd(NSWindow sheet, int returncode, Object main) {
+	}
+
+	/**
+	 * Selector method from
+	 * @see #loginFailure
+	 */
+	public void loginSheetDidEnd(NSWindow sheet, int returncode, Object main) {
 		log.debug("loginSheetDidEnd");
 		this.window().orderOut(null);
-		switch(returncode) {
-			case(NSAlertPanel.DefaultReturn):
+		switch (returncode) {
+			case (NSAlertPanel.DefaultReturn):
 				this.tryAgain = true;
 				this.login.setUsername(userField.stringValue());
 				this.login.setPassword(passField.stringValue());
 				break;
-			case(NSAlertPanel.AlternateReturn):
+			case (NSAlertPanel.AlternateReturn):
 				this.tryAgain = false;
 				break;
 		}
 		this.done = true;
-    }
+	}
 }

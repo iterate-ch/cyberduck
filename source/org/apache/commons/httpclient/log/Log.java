@@ -68,33 +68,46 @@ package org.apache.commons.httpclient.log;
  * @version $Id$
  */
 public interface Log {
-    public void debug(Object message);
-    public void debug(Object message, Throwable t);
-    public void info(Object message);
-    public void info(Object message, Throwable t);
-    public void warn(Object message);
-    public void warn(Object message, Throwable t);
-    public void error(Object message);
-    public void error(Object message, Throwable t);
-    public void fatal(Object message);
-    public void fatal(Object message, Throwable t);
-    public boolean isDebugEnabled();
-    public boolean isInfoEnabled();
-    public void setLevel(int level);
-    public int getLevel();
+	public void debug(Object message);
 
-    /** All logging level. */
-    public static final int ALL  = Integer.MIN_VALUE;
-    /** "Debug" level logging. */
-    public static final int DEBUG  = 10000;
-    /** "Info" level logging. */
-    public static final int INFO   = 20000;
-    /** "Warn" level logging. */
-    public static final int WARN   = 30000;
-    /** "Error" level logging. */
-    public static final int ERROR  = 40000;
-    /** "Fatal" level logging. */
-    public static final int FATAL  = 50000;
-    /** No logging level. */
-    public static final int OFF  = Integer.MAX_VALUE;
+	public void debug(Object message, Throwable t);
+
+	public void info(Object message);
+
+	public void info(Object message, Throwable t);
+
+	public void warn(Object message);
+
+	public void warn(Object message, Throwable t);
+
+	public void error(Object message);
+
+	public void error(Object message, Throwable t);
+
+	public void fatal(Object message);
+
+	public void fatal(Object message, Throwable t);
+
+	public boolean isDebugEnabled();
+
+	public boolean isInfoEnabled();
+
+	public void setLevel(int level);
+
+	public int getLevel();
+
+	/** All logging level. */
+	public static final int ALL = Integer.MIN_VALUE;
+	/** "Debug" level logging. */
+	public static final int DEBUG = 10000;
+	/** "Info" level logging. */
+	public static final int INFO = 20000;
+	/** "Warn" level logging. */
+	public static final int WARN = 30000;
+	/** "Error" level logging. */
+	public static final int ERROR = 40000;
+	/** "Fatal" level logging. */
+	public static final int FATAL = 50000;
+	/** No logging level. */
+	public static final int OFF = Integer.MAX_VALUE;
 }

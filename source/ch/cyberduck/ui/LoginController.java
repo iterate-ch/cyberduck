@@ -20,12 +20,12 @@ package ch.cyberduck.ui;
 
 public interface LoginController {
 
-    /**
-    * Call this to allow the user to reenter the new login credentials.
-     * A concrete sublcass could eg. display a panel.
-     * @return true If we whould try again with new login
-     * @param explanation Any additional information why the login failed.
-     */
-    public boolean loginFailure(String explanation);
+	/**
+	 * Call this to allow the user to reenter the new login credentials.
+	 * A concrete sublcass could eg. display a panel.
+	 * @return true If we whould try again with new login
+	 * @param explanation Any additional information why the login failed.
+	 */
+	public boolean loginFailure(String explanation);
 
 }

@@ -28,32 +28,32 @@ import java.net.URL;
 import org.apache.log4j.Logger;
 
 /**
-* @author Stuart A. Malone
+ * @author Stuart A. Malone
  */
 public class CDGetURLScriptCommand extends NSScriptCommand {
-    private static Logger log = Logger.getLogger(CDGetURLScriptCommand.class);
-	
-    public CDGetURLScriptCommand(NSScriptCommandDescription commandDescription) {
+	private static Logger log = Logger.getLogger(CDGetURLScriptCommand.class);
+
+	public CDGetURLScriptCommand(NSScriptCommandDescription commandDescription) {
 		super(commandDescription);
-    }
-	
-    // @todo support other protocols than ftp
-    public Object performDefaultImplementation() {
-		String arg = (String)this.directParameter();
-		log.debug("Received URL from Apple Event: "+arg);
+	}
+
+	// @todo support other protocols than ftp
+	public Object performDefaultImplementation() {
+		String arg = (String) this.directParameter();
+		log.debug("Received URL from Apple Event: " + arg);
 		try {
 			URL url = new URL(arg);
-			if(url.getProtocol().equals(Session.FTP)) {
+			if (url.getProtocol().equals(Session.FTP)) {
 				String file = url.getFile();
-				log.debug("File:"+file);
+				log.debug("File:" + file);
 				Host h = new Host(url.getProtocol(), url.getHost(), url.getPort(), new Login(url.getUserInfo()), url.getPath());
-				if(file.length() > 1) {
-					Path p = new FTPPath((FTPSession)h.createSession(), file);
+				if (file.length() > 1) {
+					Path p = new FTPPath((FTPSession) h.createSession(), file);
 					// we assume a file has an extension
-					if(null != p.getExtension()) {
+					if (null != p.getExtension()) {
 						log.debug("Assuming download");
-						CDQueueController.instance().addItemAndStart(new Queue(p, 
-																			   Queue.KIND_DOWNLOAD));
+						CDQueueController.instance().addItemAndStart(new Queue(p,
+						    Queue.KIND_DOWNLOAD));
 						return null;
 					}
 				}
@@ -65,9 +65,9 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
 				log.error("Can only receiver FTP URL events for now.");
 			}
 		}
-		catch(java.net.MalformedURLException e) {
+		catch (java.net.MalformedURLException e) {
 			log.error(e.getMessage());
 		}
 		return null;
-    }
+	}
 }

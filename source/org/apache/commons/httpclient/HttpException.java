@@ -73,22 +73,22 @@ import java.io.IOException;
  */
 public class HttpException extends IOException {
 
-    private int code = -1;
+	private int code = -1;
 
-    public HttpException() {
-        super();
-    }
+	public HttpException() {
+		super();
+	}
 
-    public HttpException(String message) {
-        super(message);
-    }
+	public HttpException(String message) {
+		super(message);
+	}
 
-    public HttpException(String message, int code) {
-        super(message);
-	this.code = code;
-    }
+	public HttpException(String message, int code) {
+		super(message);
+		this.code = code;
+	}
 
-    public int getReplyCode() {
-	return this.code;
-    }
+	public int getReplyCode() {
+		return this.code;
+	}
 }

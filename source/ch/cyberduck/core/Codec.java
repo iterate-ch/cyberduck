@@ -21,31 +21,32 @@ package ch.cyberduck.core;
 import org.apache.log4j.Logger;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class Codec {
-    private static Logger log = Logger.getLogger(Path.class);
+	private static Logger log = Logger.getLogger(Path.class);
 
-	private Codec() {}
-	
+	private Codec() {
+	}
+
 	public static String encode(String text) {
 		return Codec.encode(text, Preferences.instance().getProperty("browser.encoding"));
 	}
-	
+
 	public static String encode(String text, String encoding) {
 		String encoded = text;
 		try {
 //			log.info("Assuminging remote encoding:"+encoding);
 			encoded = new String(text.getBytes(), encoding).toString();
 		}
-		catch(java.io.UnsupportedEncodingException e) {
-			log.error(e.getMessage());	
+		catch (java.io.UnsupportedEncodingException e) {
+			log.error(e.getMessage());
 		}
 		finally {
 			return encoded;
 		}
 	}
-	
+
 	public static String decode(String text) {
 		return text;
 	}

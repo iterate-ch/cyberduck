@@ -25,6 +25,9 @@
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.4  2003/12/28 00:42:51  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.3  2003/12/15 23:14:04  dkocher
  *        *** empty log message ***
  *
@@ -44,45 +47,45 @@ package com.enterprisedt.net.ftp;
  */
 public class FTPReply {
 
-    /**
-     *  Reply code
-     */
-    private String replyCode;
+	/**
+	 *  Reply code
+	 */
+	private String replyCode;
 
-    /**
-     *  Reply text
-     */
-    private String replyText;
+	/**
+	 *  Reply text
+	 */
+	private String replyText;
 
 
-    /**
-     *  Constructor. Only to be constructed
-     *  by this package, hence package access
-     *
-     *  @param  replyCode  the server's reply code
-     *  @param  replyText  the server's reply text
-     */
-    FTPReply(String replyCode, String replyText) {
-        this.replyCode = replyCode;
-        this.replyText = replyText;
-    }
+	/**
+	 *  Constructor. Only to be constructed
+	 *  by this package, hence package access
+	 *
+	 *  @param  replyCode  the server's reply code
+	 *  @param  replyText  the server's reply text
+	 */
+	FTPReply(String replyCode, String replyText) {
+		this.replyCode = replyCode;
+		this.replyText = replyText;
+	}
 
-    /**
-     *  Getter for reply code
-     *
-     *  @return server's reply code
-     */
-    public String getReplyCode() {
-        return replyCode;
-    }
+	/**
+	 *  Getter for reply code
+	 *
+	 *  @return server's reply code
+	 */
+	public String getReplyCode() {
+		return replyCode;
+	}
 
-    /**
-     *  Getter for reply text
-     * 
-     *  @return server's reply text
-     */
-    public String getReplyText() {
-        return replyText;
-    }
+	/**
+	 *  Getter for reply text
+	 *
+	 *  @return server's reply text
+	 */
+	public String getReplyText() {
+		return replyText;
+	}
 
 }

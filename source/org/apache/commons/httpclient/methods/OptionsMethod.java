@@ -80,85 +80,85 @@ public class OptionsMethod
     extends HttpMethodBase {
 
 
-    // -------------------------------------------------------------- Constants
+	// -------------------------------------------------------------- Constants
 
 
-    // ----------------------------------------------------------- Constructors
+	// ----------------------------------------------------------- Constructors
 
 
-    /**
-     * Method constructor.
-     */
-    public OptionsMethod() {
-    }
+	/**
+	 * Method constructor.
+	 */
+	public OptionsMethod() {
+	}
 
 
-    /**
-     * Method constructor.
-     */
-    public OptionsMethod(String path) {
-        super(path);
-    }
+	/**
+	 * Method constructor.
+	 */
+	public OptionsMethod(String path) {
+		super(path);
+	}
 
 
-    // ----------------------------------------------------- Instance Variables
+	// ----------------------------------------------------- Instance Variables
 
 
-    /**
-     * Methods allowed.
-     */
-    private Vector methodsAllowed = new Vector();
+	/**
+	 * Methods allowed.
+	 */
+	private Vector methodsAllowed = new Vector();
 
 
-    // --------------------------------------------------------- Public Methods
+	// --------------------------------------------------------- Public Methods
 
-    public String getName() {
-        return "OPTIONS";
-    }
-
-
-    /**
-     * Is the specified method allowed ?
-     */
-    public boolean isAllowed(String method) {
-        checkUsed();
-        return methodsAllowed.contains(method);
-    }
+	public String getName() {
+		return "OPTIONS";
+	}
 
 
-    /**
-     * Get a list of allowed methods.
-     */
-    public Enumeration getAllowedMethods() {
-        checkUsed();
-        return methodsAllowed.elements();
-    }
+	/**
+	 * Is the specified method allowed ?
+	 */
+	public boolean isAllowed(String method) {
+		checkUsed();
+		return methodsAllowed.contains(method);
+	}
 
 
-    // ----------------------------------------------------- HttpMethod Methods
+	/**
+	 * Get a list of allowed methods.
+	 */
+	public Enumeration getAllowedMethods() {
+		checkUsed();
+		return methodsAllowed.elements();
+	}
 
-    protected void processResponseHeaders(HttpState state, HttpConnection conn) {
-        Header allowHeader = getResponseHeader("allow");
-        if (allowHeader != null) {
-            String allowHeaderValue = allowHeader.getValue();
-            StringTokenizer tokenizer =
-                new StringTokenizer(allowHeaderValue, ",");
-            while (tokenizer.hasMoreElements()) {
-                String methodAllowed =
-                    tokenizer.nextToken().trim().toUpperCase();
-                methodsAllowed.addElement(methodAllowed);
-            }
-        }
-    }
 
-    /**
-     * Return true if the method needs a content-length header in the request.
-     *
-     * @return true if a content-length header will be expected by the server
-     */
-    public boolean needContentLength() {
-        return false;
-    }
+	// ----------------------------------------------------- HttpMethod Methods
+
+	protected void processResponseHeaders(HttpState state, HttpConnection conn) {
+		Header allowHeader = getResponseHeader("allow");
+		if (allowHeader != null) {
+			String allowHeaderValue = allowHeader.getValue();
+			StringTokenizer tokenizer =
+			    new StringTokenizer(allowHeaderValue, ",");
+			while (tokenizer.hasMoreElements()) {
+				String methodAllowed =
+				    tokenizer.nextToken().trim().toUpperCase();
+				methodsAllowed.addElement(methodAllowed);
+			}
+		}
+	}
+
+	/**
+	 * Return true if the method needs a content-length header in the request.
+	 *
+	 * @return true if a content-length header will be expected by the server
+	 */
+	public boolean needContentLength() {
+		return false;
+	}
 
 
 }

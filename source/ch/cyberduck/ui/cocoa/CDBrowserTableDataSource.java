@@ -34,127 +34,108 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDBrowserTableDataSource extends CDTableDataSource {
-    private static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
-	
+	private static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
+
 	private List fullData;
 	private List currentData;
 
-    private Path workdir;
-    
-    public CDBrowserTableDataSource() {
+	private Path workdir;
+
+	public CDBrowserTableDataSource() {
 		super();
 		this.fullData = new ArrayList();
 		this.currentData = new ArrayList();
-    }
-    
-    public void setWorkdir(Path workdir) {
+	}
+
+	public void setWorkdir(Path workdir) {
 		this.workdir = workdir;
-    }
-	
-    public Path workdir() {
+	}
+
+	public Path workdir() {
 		return this.workdir;
-    }
-    
-    public int numberOfRowsInTableView(NSTableView tableView) {
+	}
+
+	public int numberOfRowsInTableView(NSTableView tableView) {
 		return currentData.size();
-    }
-        
-    //getValue()
-    public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
+	}
+
+	//getValue()
+	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
 //		log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
-		String identifier = (String)tableColumn.identifier();
-		Path p = (Path)this.currentData.get(row);
-		if(identifier.equals("ICON")) {
+		String identifier = (String) tableColumn.identifier();
+		Path p = (Path) this.currentData.get(row);
+		if (identifier.equals("ICON")) {
 			NSImage icon;
-			if(p.isDirectory())
+			if (p.isDirectory())
 				icon = NSImage.imageNamed("folder16.tiff");
 			else
 				icon = NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
 			icon.setSize(new NSSize(16f, 16f));
 			return icon;
 		}
-		if(identifier.equals("FILENAME")) {
+		if (identifier.equals("FILENAME")) {
 			return Codec.encode(p.getName());
 		}
-		else if(identifier.equals("SIZE"))
+		else if (identifier.equals("SIZE"))
 			return Status.getSizeAsString(p.status.getSize());
-		else if(identifier.equals("MODIFIED"))
+		else if (identifier.equals("MODIFIED"))
 			return p.attributes.getModified();
-		else if(identifier.equals("OWNER"))
+		else if (identifier.equals("OWNER"))
 			return p.attributes.getOwner();
-		else if(identifier.equals("PERMISSIONS"))
+		else if (identifier.equals("PERMISSIONS"))
 			return p.attributes.getPermission().toString();
-		throw new IllegalArgumentException("Unknown identifier: "+identifier);
-    }
-    
-    //setValue()
+		throw new IllegalArgumentException("Unknown identifier: " + identifier);
+	}
+
+	//setValue()
 //    public void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row) {
 //		log.debug("tableViewSetObjectValueForLocation:"+row);
 //		Path p = (Path)currentData.get(row);
 //		p.rename((String)value);
 //    }
-    
-    /**
-		* The files dragged from the browser to the Finder
-     */
-    private Path[] promisedDragPaths;
-    
-    // ----------------------------------------------------------
-    // Drop methods
-    // ----------------------------------------------------------
-    
-    /**
-		* Used by tableView to determine a valid drop target. info contains details on this dragging
-     * operation. The proposed
-     * location is row is and action is operation. Based on the mouse position, the table view
-     * will suggest a proposed drop location.
-     * This method must return a value that indicates which dragging operation the currentData source will
-     * perform. The currentData source may
-     * "retarget" a drop if desired by calling setDropRowAndDropOperation and returning something other than
-     * NSDraggingInfo.
-     * DragOperationNone. One may choose to retarget for various reasons (e.g. for better visual
-	* feedback when inserting into a sorted position).
-     */
-    public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-		log.debug("tableViewValidateDrop:row:"+row+",operation:"+operation);
-		if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+
+	/**
+	 * The files dragged from the browser to the Finder
+	 */
+	private Path[] promisedDragPaths;
+
+	// ----------------------------------------------------------
+	// Drop methods
+	// ----------------------------------------------------------
+
+	public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+		log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
+		if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
 			tableView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
 			return NSTableView.DropAbove;
 		}
 		return NSDraggingInfo.DragOperationNone;
-    }
-    
-    /**
-		* Invoked by tableView when the mouse button is released over a table view that previously decided to allow a drop.
-     * @param info contains details on this dragging operation.
-     * @param row The proposed location is row and action is operation.
-     * The currentData source should
-     * incorporate the data from the dragging pasteboard at this time.
-     */
-    public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-		log.debug("tableViewAcceptDrop:row:"+row+",operation:"+operation);
+	}
+
+	public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+		log.debug("tableViewAcceptDrop:row:" + row + ",operation:" + operation);
 		NSPasteboard pboard = info.draggingPasteboard();
 		// What type of data are we going to allow to be dragged?  The pasteboard might contain different formats
-		if(pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+		if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
 			Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
-			log.debug("tableViewAcceptDrop:"+o);
-			if(o != null) {
-				if(o instanceof NSArray) {
-					NSArray filesList = (NSArray)o;
+			log.debug("tableViewAcceptDrop:" + o);
+			if (o != null) {
+				if (o instanceof NSArray) {
+					NSArray filesList = (NSArray) o;
 					//					NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
-					for(int i = 0; i < filesList.count(); i++) {
+					for (int i = 0; i < filesList.count(); i++) {
 						Session session = this.workdir().getSession().copy();
 						log.debug(filesList.objectAtIndex(i));
 						Path p = null;
-						if(this.workdir() instanceof FTPPath)
-							p = new FTPPath((FTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i)));
-						if(this.workdir() instanceof SFTPPath)
-							p = new SFTPPath((SFTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i)));
-						CDQueueController.instance().addItemAndStart(new Queue(p, 
-																			   Queue.KIND_UPLOAD));
+						if (this.workdir() instanceof FTPPath)
+							p = new FTPPath((FTPSession) session, this.workdir().getAbsolute(), new Local((String) filesList.objectAtIndex(i)));
+						if (this.workdir() instanceof SFTPPath)
+							p = new SFTPPath((SFTPSession) session, this.workdir().getAbsolute(), new Local((String) filesList.objectAtIndex(i)));
+						CDQueueController.instance().addItemAndStart(new Queue(p,
+						    Queue.KIND_UPLOAD));
 					}
 					return true;
 				}
@@ -162,41 +143,41 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		}
 		return false;
 	}
-    
-	
+
+
 	// ----------------------------------------------------------
- // Drag methods
- // ----------------------------------------------------------
-    
-    /**    Invoked by tableView after it has been determined that a drag should begin, but before the drag has been started.
-		* The drag image and other drag-related information will be set up and provided by the table view once this call
-		* returns with true.
-		* @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard
-		* (data, owner, and so on).
-		*@param rows is the list of row numbers that will be participating in the drag.
-		*/
-    public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
-		log.debug("tableViewWriteRowsToPasteboard:"+rows);
-		if(rows.count() > 0) {
+	// Drag methods
+	// ----------------------------------------------------------
+
+	/**    Invoked by tableView after it has been determined that a drag should begin, but before the drag has been started.
+	 * The drag image and other drag-related information will be set up and provided by the table view once this call
+	 * returns with true.
+	 * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard
+	 * (data, owner, and so on).
+	 *@param rows is the list of row numbers that will be participating in the drag.
+	 */
+	public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
+		log.debug("tableViewWriteRowsToPasteboard:" + rows);
+		if (rows.count() > 0) {
 			this.promisedDragPaths = new Path[rows.count()];
 			// The fileTypes argument is the list of fileTypes being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
 			NSMutableArray fileTypes = new NSMutableArray();
 			NSMutableArray queueDictionaries = new NSMutableArray();
 			// declare our dragged type in the paste board
-//			pboard.declareTypes(new NSArray(new Object[]{"QueuePBoardType", 
+//			pboard.declareTypes(new NSArray(new Object[]{"QueuePBoardType",
 //												NSPasteboard.FilesPromisePboardType}), null);
 			pboard.declareTypes(new NSArray(NSPasteboard.FilesPromisePboardType), null);
-			for(int i = 0; i < rows.count(); i++) {
+			for (int i = 0; i < rows.count(); i++) {
 				Session session = this.workdir().getSession().copy();
-				promisedDragPaths[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue()).copy(session);
-				if(promisedDragPaths[i].isFile()) {
+				promisedDragPaths[i] = (Path) this.getEntry(((Integer) rows.objectAtIndex(i)).intValue()).copy(session);
+				if (promisedDragPaths[i].isFile()) {
 //					fileTypes.addObject(NSPathUtilities.FileTypeRegular);
-					if(promisedDragPaths[i].getExtension() != null)
+					if (promisedDragPaths[i].getExtension() != null)
 						fileTypes.addObject(promisedDragPaths[i].getExtension());
 					else
 						fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
 				}
-				else if(promisedDragPaths[i].isDirectory()) {
+				else if (promisedDragPaths[i].isDirectory()) {
 //					fileTypes.addObject(NSPathUtilities.FileTypeDirectory);
 					fileTypes.addObject("'fldr'");
 				}
@@ -212,168 +193,168 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			// Writing data for private use when the item gets dragged to the transfer queue.
 			NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
 			queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
-			if(queuePboard.setPropertyListForType(queueDictionaries, "QueuePBoardType"))
+			if (queuePboard.setPropertyListForType(queueDictionaries, "QueuePBoardType"))
 				log.debug("QueuePBoardType data sucessfully written to pasteboard");
 			else
 				log.error("Could not write QueuePBoardType data to pasteboard");
-			
+
 			NSEvent event = NSApplication.sharedApplication().currentEvent();
 			NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
-			NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
-			
+			NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
+
 			tableView.dragPromisedFilesOfTypes(fileTypes, imageRect, this, true, event);
 		}
 		// we return false because we don't want the table to draw the drag image
 		return false;
-    }
+	}
 
-	
+
 //    public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
 //		log.debug("finishedDraggingImage:operation"+operation);
 //		if(! (NSDraggingInfo.DragOperationNone == operation)) {
 //			if(promisedDragPaths != null) {
 //				for(int i = 0; i < promisedDragPaths.length; i++) {
-//					CDQueueController.instance().addItemAndStart(new Queue(promisedDragPaths[i], 
+//					CDQueueController.instance().addItemAndStart(new Queue(promisedDragPaths[i],
 //																	   Queue.KIND_DOWNLOAD));
 //				}
 //				promisedDragPaths = null;
 //			}
 //		}
 //    }
-    
-    /**
-		@return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-     * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-     * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
-     * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
-     * blocking the destination application.
-     */
-    public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
-		log.debug("namesOfPromisedFilesDroppedAtDestination:"+dropDestination);
-		if(null == dropDestination) {
+
+	/**
+	 @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
+	 * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+	 * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
+	 * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
+	 * blocking the destination application.
+	 */
+	public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
+		log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
+		if (null == dropDestination) {
 			return null; //return paths for interapplication communication
 		}
 		else {
 			NSMutableArray promisedDragNames = new NSMutableArray();
-			for(int i = 0; i < promisedDragPaths.length; i++) {
+			for (int i = 0; i < promisedDragPaths.length; i++) {
 				try {
 					//@todo url decoding still needed?
 					this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), Codec.encode(this.promisedDragPaths[i].getName())));
-					CDQueueController.instance().addItemAndStart(new Queue(this.promisedDragPaths[i], 
-																		   Queue.KIND_DOWNLOAD));
+					CDQueueController.instance().addItemAndStart(new Queue(this.promisedDragPaths[i],
+					    Queue.KIND_DOWNLOAD));
 					promisedDragNames.addObject(Codec.encode(this.promisedDragPaths[i].getName()));
 				}
-				catch(java.io.UnsupportedEncodingException e) {
-					log.error(e.getMessage());	
+				catch (java.io.UnsupportedEncodingException e) {
+					log.error(e.getMessage());
 				}
 			}
 			this.promisedDragPaths = null;
 			return promisedDragNames;
 		}
-    }
-	
+	}
+
 	// ----------------------------------------------------------
- // Delegate methods
- // ----------------------------------------------------------
-	
+	// Delegate methods
+	// ----------------------------------------------------------
+
 	public boolean isSortedAscending() {
 		return this.sortAscending;
 	}
-	
+
 	public NSTableColumn selectedColumn() {
 		return this.selectedColumn;
 	}
-	
+
 	private boolean sortAscending = true;
 	private NSTableColumn selectedColumn = null;
-	
+
 	public void sort(NSTableColumn tableColumn, final boolean ascending) {
-		final int higher = ascending ? 1 : -1 ;
+		final int higher = ascending ? 1 : -1;
 		final int lower = ascending ? -1 : 1;
-		if(tableColumn.identifier().equals("TYPE")) {
+		if (tableColumn.identifier().equals("TYPE")) {
 			Collections.sort(this.values(),
-					new Comparator() {
-						public int compare(Object o1, Object o2) {
-							Path p1 = (Path) o1;
-							Path p2 = (Path) o2;
-							if(p1.isDirectory() && p2.isDirectory())
-								return 0;
-							if(p1.isFile() && p2.isFile())
-								return 0;
-							if(p1.isFile())
-								return higher;
-							return lower;
-						}
-					}
-					);
+			    new Comparator() {
+				    public int compare(Object o1, Object o2) {
+					    Path p1 = (Path) o1;
+					    Path p2 = (Path) o2;
+					    if (p1.isDirectory() && p2.isDirectory())
+						    return 0;
+					    if (p1.isFile() && p2.isFile())
+						    return 0;
+					    if (p1.isFile())
+						    return higher;
+					    return lower;
+				    }
+			    }
+			);
 		}
-		else if(tableColumn.identifier().equals("FILENAME")) {
+		else if (tableColumn.identifier().equals("FILENAME")) {
 			Collections.sort(this.values(),
-					new Comparator() {
-						public int compare(Object o1, Object o2) {
-							Path p1 = (Path)o1;
-							Path p2 = (Path)o2;
-							if(ascending)
-								return p1.getName().compareToIgnoreCase(p2.getName());
-							else
-								return -p1.getName().compareToIgnoreCase(p2.getName());
-						}
-					}
-					);
+			    new Comparator() {
+				    public int compare(Object o1, Object o2) {
+					    Path p1 = (Path) o1;
+					    Path p2 = (Path) o2;
+					    if (ascending)
+						    return p1.getName().compareToIgnoreCase(p2.getName());
+					    else
+						    return -p1.getName().compareToIgnoreCase(p2.getName());
+				    }
+			    }
+			);
 		}
-		else if(tableColumn.identifier().equals("SIZE")) {
+		else if (tableColumn.identifier().equals("SIZE")) {
 			Collections.sort(this.values(),
-					new Comparator() {
-						public int compare(Object o1, Object o2) {
-							long p1 = ((Path)o1).status.getSize();
-							long p2 = ((Path)o2).status.getSize();
-							if (p1 > p2)
-								return higher;
-							else if (p1 < p2)
-								return lower;
-							else
-								return 0;
-						}
-					}
-					);
+			    new Comparator() {
+				    public int compare(Object o1, Object o2) {
+					    long p1 = ((Path) o1).status.getSize();
+					    long p2 = ((Path) o2).status.getSize();
+					    if (p1 > p2)
+						    return higher;
+					    else if (p1 < p2)
+						    return lower;
+					    else
+						    return 0;
+				    }
+			    }
+			);
 		}
-		else if(tableColumn.identifier().equals("MODIFIED")) {
+		else if (tableColumn.identifier().equals("MODIFIED")) {
 			Collections.sort(this.values(),
-					new Comparator() {
-						public int compare(Object o1, Object o2) {
-							Path p1 = (Path) o1;
-							Path p2 = (Path) o2;
-							if(ascending)
-								return p1.attributes.getModifiedDate().compareTo(p2.attributes.getModifiedDate());
-							else
-								return -p1.attributes.getModifiedDate().compareTo(p2.attributes.getModifiedDate());
-						}
-					}
-					);
+			    new Comparator() {
+				    public int compare(Object o1, Object o2) {
+					    Path p1 = (Path) o1;
+					    Path p2 = (Path) o2;
+					    if (ascending)
+						    return p1.attributes.getModifiedDate().compareTo(p2.attributes.getModifiedDate());
+					    else
+						    return -p1.attributes.getModifiedDate().compareTo(p2.attributes.getModifiedDate());
+				    }
+			    }
+			);
 		}
-		else if(tableColumn.identifier().equals("OWNER")) {
+		else if (tableColumn.identifier().equals("OWNER")) {
 			Collections.sort(this.values(),
-					new Comparator() {
-						public int compare(Object o1, Object o2) {
-							Path p1 = (Path) o1;
-							Path p2 = (Path) o2;
-							if(ascending)
-								return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
-							else
-								return -p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
-						}
-					}
-					);
+			    new Comparator() {
+				    public int compare(Object o1, Object o2) {
+					    Path p1 = (Path) o1;
+					    Path p2 = (Path) o2;
+					    if (ascending)
+						    return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
+					    else
+						    return -p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
+				    }
+			    }
+			);
 		}
 	}
-	
+
 	public void tableViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
 		log.debug("tableViewDidClickTableColumn");
-		if(this.selectedColumn == tableColumn) {
+		if (this.selectedColumn == tableColumn) {
 			this.sortAscending = !this.sortAscending;
 		}
 		else {
-			if(selectedColumn != null)
+			if (selectedColumn != null)
 				tableView.setIndicatorImage(null, selectedColumn);
 			this.selectedColumn = tableColumn;
 		}
@@ -381,44 +362,40 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 		this.sort(tableColumn, sortAscending);
 		tableView.reloadData();
 	}
-	
+
 	// ----------------------------------------------------------
- // Data access
- // ----------------------------------------------------------
-	
+	// Data access
+	// ----------------------------------------------------------
+
 	public void clear() {
 		this.fullData.clear();
 		this.currentData.clear();
 	}
-	
+
 	public void addEntry(Path entry) {
-		if(entry.attributes.isVisible())
+		if (entry.attributes.isVisible())
 			this.fullData.add(entry);
 		this.currentData = fullData;
 	}
-	
+
 	public Path getEntry(int row) {
-		return (Path)this.currentData.get(row);
+		return (Path) this.currentData.get(row);
 	}
-	
+
 	public void removeEntry(Path o) {
 		fullData.remove(fullData.indexOf(o));
 		currentData.remove(currentData.indexOf(o));
 	}
-	
-//	public void removeEntry(int row) {
-//		fullData.remove(row);
-//	}
-	
+
 	public int indexOf(Path o) {
 		return currentData.indexOf(o);
 	}
-	
+
 	public void setActiveSet(List currentData) {
 		this.currentData = currentData;
 	}
-	
+
 	public List values() {
 		return this.fullData;
 	}
-}    
+}

@@ -1,4 +1,5 @@
 package ch.cyberduck.core;
+
 /*
  *  Copyright (c) 2003 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -29,108 +30,108 @@ import com.sshtools.j2ssh.transport.HostKeyVerification;
 import org.apache.log4j.Logger;
 
 public class Host {
-    private static Logger log = Logger.getLogger(Host.class);
-	
-    private String protocol;
-    private int port;
-    private String hostname;
-    private String nickname;
-    private String defaultpath = Path.HOME;
-    private transient HostKeyVerification hostKeyVerification;
-    private transient Login login;
-	
-    /**
-		* For internal use only.
+	private static Logger log = Logger.getLogger(Host.class);
+
+	private String protocol;
+	private int port;
+	private String hostname;
+	private String nickname;
+	private String defaultpath = Path.HOME;
+	private transient HostKeyVerification hostKeyVerification;
+	private transient Login login;
+
+	/**
+	 * For internal use only.
 	 * @deprecated
 	 * @param url Must be in the format protocol://user@hostname:portnumber
-     */
-    public Host(String url) throws java.net.MalformedURLException {
+	 */
+	public Host(String url) throws java.net.MalformedURLException {
 		try {
 			this.protocol = url.substring(0, url.indexOf("://"));
-			this.hostname = url.substring(url.indexOf("@")+1, url.lastIndexOf(":"));
-			this.port = Integer.parseInt(url.substring(url.lastIndexOf(":")+1, url.length()));
-			this.login = new Login(url.substring(url.indexOf("://")+3, url.lastIndexOf("@")));
-			this.nickname = this.getLogin().getUsername()+"@"+this.getHostname();
+			this.hostname = url.substring(url.indexOf("@") + 1, url.lastIndexOf(":"));
+			this.port = Integer.parseInt(url.substring(url.lastIndexOf(":") + 1, url.length()));
+			this.login = new Login(url.substring(url.indexOf("://") + 3, url.lastIndexOf("@")));
+			this.nickname = this.getLogin().getUsername() + "@" + this.getHostname();
 		}
-		catch(NumberFormatException e) {
+		catch (NumberFormatException e) {
 			log.error(e.getMessage());
-			throw new java.net.MalformedURLException("Not a valid URL: "+url);
+			throw new java.net.MalformedURLException("Not a valid URL: " + url);
 		}
-		catch(IndexOutOfBoundsException e) {
+		catch (IndexOutOfBoundsException e) {
 			log.error(e.getMessage());
-			throw new java.net.MalformedURLException("Not a valid URL: "+url);
+			throw new java.net.MalformedURLException("Not a valid URL: " + url);
 		}
 		log.debug(this.toString());
-    }
-	
-    public Host(String hostname, Login login) {
+	}
+
+	public Host(String hostname, Login login) {
 		this(Preferences.instance().getProperty("connection.protocol.default"), hostname, Integer.parseInt(Preferences.instance().getProperty("connection.port.default")), login);
-    }
-	
-    public Host(String hostname, int port, Login login) {
+	}
+
+	public Host(String hostname, int port, Login login) {
 		this(getDefaultProtocol(port), hostname, port, login);
-    }
-	
-    public Host(String protocol, String hostname, int port, Login login) {
+	}
+
+	public Host(String protocol, String hostname, int port, Login login) {
 		this(protocol, hostname, port, login, "", null);
-    }
+	}
 
 	public Host(String protocol, String hostname, int port, Login login, String defaultpath) {
 		this(protocol, hostname, port, login, defaultpath, null);
 	}
-	
+
 	public Host(String hostname, int port, Login login, String nickname) {
 		this(getDefaultProtocol(port), hostname, port, login, "", nickname);
-    }
-	
-    public Host(String protocol, String hostname, int port, Login login, String defaultpath, String nickname) {
+	}
+
+	public Host(String protocol, String hostname, int port, Login login, String defaultpath, String nickname) {
 		this.setProtocol(protocol);
 		this.setPort(port);
-        this.setHostname(hostname);
-        this.setLogin(login);
+		this.setHostname(hostname);
+		this.setLogin(login);
 		this.setNickname(nickname);
 		this.setDefaultPath(defaultpath);
 		log.debug(this.toString());
 	}
-    
-    // ----------------------------------------------------------
-	
-    public Session createSession() {
+
+	// ----------------------------------------------------------
+
+	public Session createSession() {
 		//		if(null == this.session) {
-  //			log.debug("Session is null! Constructing new one.");
-		if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
+		//			log.debug("Session is null! Constructing new one.");
+		if (this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
 			return new HTTPSession(this);
 		}
 		//  if(this.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
-  //            return new HTTPSession(this);
-  //        }
-		else if(this.getProtocol().equalsIgnoreCase(Session.FTP)) {
+//            return new HTTPSession(this);
+//        }
+		else if (this.getProtocol().equalsIgnoreCase(Session.FTP)) {
 			return new FTPSession(this);
 		}
-		else if(this.getProtocol().equalsIgnoreCase(Session.SFTP)) {
+		else if (this.getProtocol().equalsIgnoreCase(Session.SFTP)) {
 			return new SFTPSession(this);
 		}
 		else {
 			throw new IllegalArgumentException("Unknown protocol");
 		}
 		//		}
-  //		return this.session;
-    }
-		
-    public void setDefaultPath(String defaultpath) {
+		//		return this.session;
+	}
+
+	public void setDefaultPath(String defaultpath) {
 		this.defaultpath = defaultpath;
-    }
-	
-    public String getDefaultPath() {
+	}
+
+	public String getDefaultPath() {
 		return this.defaultpath;
-    }
-	
+	}
+
 	public boolean hasReasonableDefaultPath() {
 		return this.defaultpath != null && !this.defaultpath.equals("") && !this.defaultpath.equals(Path.HOME);
 //        log.debug("hasReasonableDefaultPath:"+reasonable+"("+defaultpath+")");
 //		return reasonable;
 	}
-    
+
 //    public void closeSession() {
 //      log.debug("closeSession");
 //		if(session != null) {
@@ -138,9 +139,9 @@ public class Host {
 //			this.session = null;
 //		}
 //    }
-	
-    protected static String getDefaultProtocol(int port) {
-		switch(port) {
+
+	protected static String getDefaultProtocol(int port) {
+		switch (port) {
 			case Session.HTTP_PORT:
 				return Session.HTTP;
 			case Session.FTP_PORT:
@@ -148,142 +149,142 @@ public class Host {
 			case Session.SSH_PORT:
 				return Session.SFTP;
 			default:
-				throw new IllegalArgumentException("Cannot find protocol for port number "+port);
+				throw new IllegalArgumentException("Cannot find protocol for port number " + port);
 		}
-		
-    }
-    
-    private static int getDefaultPort(String protocol) {
-		if(protocol.equals(Session.FTP))
-			return Session.FTP_PORT;
-		else if(protocol.equals(Session.SFTP))
-			return Session.SSH_PORT;
-		else if(protocol.equals(Session.HTTP))
-			return Session.HTTP_PORT;
-		throw new IllegalArgumentException("Cannot find port number for protocol "+protocol);
-    }
-    
-    // ----------------------------------------------------------
-    // Accessor methods
-    // ----------------------------------------------------------
-	
-    public void setLogin(Login login) {
-		this.login = login;
-    }
 
-    public Login getLogin() {
+	}
+
+	private static int getDefaultPort(String protocol) {
+		if (protocol.equals(Session.FTP))
+			return Session.FTP_PORT;
+		else if (protocol.equals(Session.SFTP))
+			return Session.SSH_PORT;
+		else if (protocol.equals(Session.HTTP))
+			return Session.HTTP_PORT;
+		throw new IllegalArgumentException("Cannot find port number for protocol " + protocol);
+	}
+
+	// ----------------------------------------------------------
+	// Accessor methods
+	// ----------------------------------------------------------
+
+	public void setLogin(Login login) {
+		this.login = login;
+	}
+
+	public Login getLogin() {
 		return this.login;
-    }
-	
+	}
+
 	/**
-		* @param protocol The protocol to use or null to use the default protocol for this port number
+	 * @param protocol The protocol to use or null to use the default protocol for this port number
 	 */
-    public void setProtocol(String protocol) {
-        this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
-    }
-	
-    public String getProtocol() {
+	public void setProtocol(String protocol) {
+		this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
+	}
+
+	public String getProtocol() {
 		return this.protocol;
-    }
-    
-    public String getNickname() {
+	}
+
+	public String getNickname() {
 		return this.nickname;
-    }
-    
-    public void setNickname(String nickname) {
+	}
+
+	public void setNickname(String nickname) {
 //		log.debug("setNickname:"+nickname);
-        this.nickname = nickname != null ? nickname : this.getHostname()+" ("+this.getProtocol().toUpperCase()+")";
-    }
-	
-    public String getHostname() {
+		this.nickname = nickname != null ? nickname : this.getHostname() + " (" + this.getProtocol().toUpperCase() + ")";
+	}
+
+	public String getHostname() {
 		return this.hostname;
-    }
-	
-    public void setHostname(String hostname) {
+	}
+
+	public void setHostname(String hostname) {
 //		log.debug("setHostname:"+hostname);
 		this.hostname = hostname;
-    }
-	
+	}
+
 	/**
 	 * @param port The port number to connect to or -1 to use the default port for this protocol
 	 */
-    public void setPort(int port) {
-        this.port = port != -1 ? port : this.getDefaultPort(this.getProtocol());
-    }
-    
-    public int getPort() {
-		return this.port;
-    }
-	
-    //ssh specific
-    public void setHostKeyVerificationController(HostKeyVerification h) {
-		this.hostKeyVerification = h;
-    }
-	
-    public HostKeyVerification getHostKeyVerificationController() {
-		return this.hostKeyVerification;
-    }
-		
-    /**
-		* @return The IP address of the remote host if available
-     */
-    public String getIp() {
-        //if we call getByName(null) InetAddress would return localhost
-        if(this.hostname == null)
-            return "Unknown host";
-        try {
-            return java.net.InetAddress.getByName(hostname).toString();
-        }
-        catch(java.net.UnknownHostException e) {
-            return "Unknown host";
-        }
-    }
-	
-    public String toString() {
-		return this.getURL();
-    }
-	
-	public static final String HOSTNAME = "Hostname";
-    public static final String NICKNAME = "Nickname";
-    public static final String PORT = "Port";
-    public static final String PROTOCOL = "Protocol";
-    public static final String USERNAME = "Username";
-    public static final String PATH = "Path";
-    public static final String KEYFILE = "Private Key File";
-	
-	public Host(NSDictionary dict) {
-		this((String)dict.objectForKey(Host.PROTOCOL), 
-			 (String)dict.objectForKey(Host.HOSTNAME), 
-			 Integer.parseInt((String)dict.objectForKey(Host.PORT)),
-			 new Login((String)dict.objectForKey(Host.USERNAME)),
-			 (String)dict.objectForKey(Host.PATH),
-			 (String)dict.objectForKey(Host.NICKNAME)
-			 );
-		this.getLogin().setPrivateKeyFile((String)dict.objectForKey(Host.KEYFILE));
+	public void setPort(int port) {
+		this.port = port != -1 ? port : this.getDefaultPort(this.getProtocol());
 	}
-	
+
+	public int getPort() {
+		return this.port;
+	}
+
+	//ssh specific
+	public void setHostKeyVerificationController(HostKeyVerification h) {
+		this.hostKeyVerification = h;
+	}
+
+	public HostKeyVerification getHostKeyVerificationController() {
+		return this.hostKeyVerification;
+	}
+
+	/**
+	 * @return The IP address of the remote host if available
+	 */
+	public String getIp() {
+		//if we call getByName(null) InetAddress would return localhost
+		if (this.hostname == null)
+			return "Unknown host";
+		try {
+			return java.net.InetAddress.getByName(hostname).toString();
+		}
+		catch (java.net.UnknownHostException e) {
+			return "Unknown host";
+		}
+	}
+
+	public String toString() {
+		return this.getURL();
+	}
+
+	public static final String HOSTNAME = "Hostname";
+	public static final String NICKNAME = "Nickname";
+	public static final String PORT = "Port";
+	public static final String PROTOCOL = "Protocol";
+	public static final String USERNAME = "Username";
+	public static final String PATH = "Path";
+	public static final String KEYFILE = "Private Key File";
+
+	public Host(NSDictionary dict) {
+		this((String) dict.objectForKey(Host.PROTOCOL),
+		    (String) dict.objectForKey(Host.HOSTNAME),
+		    Integer.parseInt((String) dict.objectForKey(Host.PORT)),
+		    new Login((String) dict.objectForKey(Host.USERNAME)),
+		    (String) dict.objectForKey(Host.PATH),
+		    (String) dict.objectForKey(Host.NICKNAME)
+		);
+		this.getLogin().setPrivateKeyFile((String) dict.objectForKey(Host.KEYFILE));
+	}
+
 	public NSDictionary getAsDictionary() {
 		NSMutableDictionary dict = new NSMutableDictionary();
 		dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
 		dict.setObjectForKey(this.getHostname(), Host.HOSTNAME);
-		dict.setObjectForKey(this.getPort()+"", Host.PORT);
+		dict.setObjectForKey(this.getPort() + "", Host.PORT);
 		dict.setObjectForKey(this.getProtocol(), Host.PROTOCOL);
 		dict.setObjectForKey(this.getLogin().getUsername(), Host.USERNAME);
 		dict.setObjectForKey(this.getDefaultPath(), Host.PATH);
-		if(this.getLogin().getPrivateKeyFile() != null)
+		if (this.getLogin().getPrivateKeyFile() != null)
 			dict.setObjectForKey(this.getLogin().getPrivateKeyFile(), Host.KEYFILE);
 		return dict;
 	}
-	
-    /**
-		* protocol://user@host:port
+
+	/**
+	 * protocol://user@host:port
 	 @return The URL of the remote host including user login hostname and port
-     */
-    public String getURL() {
-		return this.getProtocol()+"://"+this.getLogin().getUsername()+"@"+this.getHostname()+":"+this.getPort()+"/"+this.getDefaultPath();
-    }
-	
+	 */
+	public String getURL() {
+		return this.getProtocol() + "://" + this.getLogin().getUsername() + "@" + this.getHostname() + ":" + this.getPort() + "/" + this.getDefaultPath();
+	}
+
 	public boolean equals(Object other) {
-		return this.toString().equals(other.toString());	
+		return this.toString().equals(other.toString());
 	}
 }

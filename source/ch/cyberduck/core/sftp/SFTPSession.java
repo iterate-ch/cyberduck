@@ -34,61 +34,61 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 /**
-* Opens a connection to the remote server via sftp protocol
+ * Opens a connection to the remote server via sftp protocol
  * @version $Id$
  */
 public class SFTPSession extends Session {
-	
-    private static Logger log = Logger.getLogger(Session.class);
-	
-    protected SftpSubsystemClient SFTP;
-    private SshClient SSH;
-	
-    /**
-		* @param client The client to use which does implement the ftp protocol
-     * @param action The <code>TransferAction</code> to execute after the connection has been opened
-     * @param transfer The <code>Bookmark</code> object
-     * @param secure If the connection is secure
-     */
-    public SFTPSession(Host h) {
+
+	private static Logger log = Logger.getLogger(Session.class);
+
+	protected SftpSubsystemClient SFTP;
+	private SshClient SSH;
+
+	/**
+	 * @param client The client to use which does implement the ftp protocol
+	 * @param action The <code>TransferAction</code> to execute after the connection has been opened
+	 * @param transfer The <code>Bookmark</code> object
+	 * @param secure If the connection is secure
+	 */
+	public SFTPSession(Host h) {
 		super(h);
 //		SSH = new SshClient();
-    }
-	
-    public synchronized void close() {
+	}
+
+	public synchronized void close() {
 		this.callObservers(new Message(Message.CLOSE, "Closing session."));
 		try {
-			if(this.SFTP != null) {
+			if (this.SFTP != null) {
 				this.log("Disconnecting...", Message.PROGRESS);
 				this.SFTP.close();
 				this.SFTP = null;
 			}
-			if(this.SSH != null) {
+			if (this.SSH != null) {
 				this.log("Closing SSH Session Channel", Message.PROGRESS);
 				this.SSH.disconnect();
 				this.SSH = null;
 			}
 			this.log("Disconnected", Message.PROGRESS);
 		}
-		catch(SshException e) {
-			this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+		catch (SshException e) {
+			this.log("SSH Error: " + e.getMessage(), Message.ERROR);
 		}
-		catch(IOException e) {
-			this.log("IO Error: "+e.getMessage(), Message.ERROR);
+		catch (IOException e) {
+			this.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
 		finally {
 			this.setConnected(false);
 		}
-    }
-	
-    public synchronized void connect() throws IOException {
+	}
+
+	public synchronized void connect() throws IOException {
 		this.callObservers(new Message(Message.OPEN, "Opening session."));
-		this.log("Opening SSH connection to " + host.getIp()+"...", Message.PROGRESS);
+		this.log("Opening SSH connection to " + host.getIp() + "...", Message.PROGRESS);
 		SSH = new SshClient();
 		SshConnectionProperties properties = new SshConnectionProperties();
 		properties.setHost(host.getHostname());
 		properties.setPort(host.getPort());
-		
+
 		// Sets the prefered client->server encryption cipher
 		properties.setPrefCSEncryption(Preferences.instance().getProperty("ssh.CSEncryption"));
 		// Sets the preffered server->client encryption cipher
@@ -102,79 +102,79 @@ public class SFTPSession extends Session {
 		// Set the zlib compression
 		properties.setPrefSCComp(Preferences.instance().getProperty("ssh.compression"));
 		properties.setPrefCSComp(Preferences.instance().getProperty("ssh.compression"));
-		
+
 		this.log("Opening SSH session...", Message.PROGRESS);
 		SSH.connect(properties, host.getHostKeyVerificationController());
 		this.log("SSH connection opened", Message.PROGRESS);
 		this.log(SSH.getServerId(), Message.TRANSCRIPT);
-		
+
 		log.info(SSH.getAvailableAuthMethods(host.getLogin().getUsername()));
 		this.login();
 		this.log("Starting SFTP subsystem...", Message.PROGRESS);
-        this.SFTP = SSH.openSftpChannel();
+		this.SFTP = SSH.openSftpChannel();
 		this.log("SFTP subsystem ready", Message.PROGRESS);
 		this.setConnected(true);
-    }
-    
-    public synchronized void mount() {
+	}
+
+	public synchronized void mount() {
 		new Thread() {
 			public void run() {
 				try {
 					connect();
 					SFTPPath home;
-					if(host.hasReasonableDefaultPath()) {
-						if(host.getDefaultPath().charAt(0) != '/')
-							home = new SFTPPath(SFTPSession.this, ((SFTPPath)SFTPSession.this.workdir()).getAbsolute(), host.getDefaultPath());
+					if (host.hasReasonableDefaultPath()) {
+						if (host.getDefaultPath().charAt(0) != '/')
+							home = new SFTPPath(SFTPSession.this, ((SFTPPath) SFTPSession.this.workdir()).getAbsolute(), host.getDefaultPath());
 						else
-							home = new SFTPPath(SFTPSession.this, host.getDefaultPath());						
+							home = new SFTPPath(SFTPSession.this, host.getDefaultPath());
 					}
 					else
-						home = (SFTPPath)SFTPSession.this.workdir();
+						home = (SFTPPath) SFTPSession.this.workdir();
 					home.list();
 				}
-				catch(SshException e) {
-					SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+				catch (SshException e) {
+					SFTPSession.this.log("SSH Error: " + e.getMessage(), Message.ERROR);
 				}
-				catch(IOException e) {
-					SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+				catch (IOException e) {
+					SFTPSession.this.log("IO Error: " + e.getMessage(), Message.ERROR);
 				}
 			}
 		}.start();
-    }
-    
-    private synchronized void login() throws IOException {
+	}
+
+	private synchronized void login() throws IOException {
 		log.debug("login");
-		if(!host.getLogin().hasReasonableValues()) {
-            host.getLogin().getController().loginFailure("The username or password is not reasonable.");
+		if (!host.getLogin().hasReasonableValues()) {
+			host.getLogin().getController().loginFailure("The username or password is not reasonable.");
 		}
-		this.log("Authenticating as '"+host.getLogin().getUsername()+"'", Message.PROGRESS);
-		if(host.getLogin().usesPasswordAuthentication()) {// password authentication
+		this.log("Authenticating as '" + host.getLogin().getUsername() + "'", Message.PROGRESS);
+		if (host.getLogin().usesPasswordAuthentication()) {// password authentication
 			PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
 			auth.setUsername(host.getLogin().getUsername());
 			auth.setPassword(host.getLogin().getPassword());
-			
+
 			// Try the authentication
 			int result = SSH.authenticate(auth);
 			//	this.log(SSH.getAuthenticationBanner(100), Message.TRANSCRIPT);
-   // Evaluate the result
+// Evaluate the result
 			if (AuthenticationProtocolState.COMPLETE == result) {
 				this.log("Login sucessfull", Message.PROGRESS);
 			}
 			else {
 				this.log("Login failed", Message.PROGRESS);
 				String explanation = null;
-				if(AuthenticationProtocolState.PARTIAL == result)
-					explanation = "Authentication as user "+host.getLogin().getUsername()+" succeeded but another authentication method is required.";
+				if (AuthenticationProtocolState.PARTIAL == result)
+					explanation = "Authentication as user " + host.getLogin().getUsername() + " succeeded but another authentication method is required.";
 				else //(AuthenticationProtocolState.FAILED == result)
-					explanation = "Authentication as user "+host.getLogin().getUsername()+" failed.";
-				if(host.getLogin().getController().loginFailure(explanation))
+					explanation = "Authentication as user " + host.getLogin().getUsername() + " failed.";
+				if (host.getLogin().getController().loginFailure(explanation))
 					this.login();
 				else {
-					throw new SshException("Login as user "+host.getLogin().getUsername()+" failed.");
+					throw new SshException("Login as user " + host.getLogin().getUsername() + " failed.");
 				}
 			}
 		}
-		else if(host.getLogin().usesPublicKeyAuthentication()) {//public key authentication
+		else if (host.getLogin().usesPublicKeyAuthentication()) {//public key authentication
 			PublicKeyAuthenticationClient pk = new PublicKeyAuthenticationClient();
 			pk.setUsername(host.getLogin().getUsername());
 			// Get the private key file
@@ -182,11 +182,11 @@ public class SFTPSession extends Session {
 			// If the private key is passphrase protected then ask for the passphrase
 			String passphrase = null;
 			if (keyFile.isPassphraseProtected()) {
-				if(host.getLogin().getController().loginFailure("The Private Key is password protected. Enter the passphrase for the key file '"+host.getLogin().getPrivateKeyFile()+"'.")) {
+				if (host.getLogin().getController().loginFailure("The Private Key is password protected. Enter the passphrase for the key file '" + host.getLogin().getPrivateKeyFile() + "'.")) {
 					passphrase = host.getLogin().getPassword();
 				}
 				else {
-					throw new SshException("Login as user "+host.getLogin().getUsername()+" failed.");
+					throw new SshException("Login as user " + host.getLogin().getUsername() + " failed.");
 				}
 			}
 			// Get the key
@@ -200,44 +200,44 @@ public class SFTPSession extends Session {
 			}
 			else {
 				this.log("Login failed", Message.PROGRESS);
-				throw new SshException("Login as user "+host.getLogin().getUsername()+" failed.");
+				throw new SshException("Login as user " + host.getLogin().getUsername() + " failed.");
 			}
 		}
 		else {
 			this.log("No authentication method specified", Message.ERROR);
 		}
-    }
-	
-    public Path workdir() {
+	}
+
+	public Path workdir() {
 		try {
 			return new SFTPPath(this, SFTP.getDefaultDirectory());
 		}
-		catch(SshException e) {
-			this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+		catch (SshException e) {
+			this.log("SSH Error: " + e.getMessage(), Message.ERROR);
 		}
-		catch(IOException e) {
-			this.log("IO Error: "+e.getMessage(), Message.ERROR);
+		catch (IOException e) {
+			this.log("IO Error: " + e.getMessage(), Message.ERROR);
 		}
-		return  null;
-    }
-	
-    public void check() throws IOException {
-		log.debug(this.toString()+":check");
+		return null;
+	}
+
+	public void check() throws IOException {
+		log.debug(this.toString() + ":check");
 		this.log("Working", Message.START);
-		if(null == this.SSH || !SSH.isConnected()) {
+		if (null == this.SSH || !SSH.isConnected()) {
 			this.setConnected(false);
 			this.close();
 			this.connect();
-			while(true) {
-				if(this.isConnected())
+			while (true) {
+				if (this.isConnected())
 					return;
 				this.log("Waiting for connection...", Message.PROGRESS);
 				Thread.yield();
 			}
 		}
-    }
-	
-    public Session copy() {
+	}
+
+	public Session copy() {
 		return new SFTPSession(this.host);
-    }    
+	}
 }

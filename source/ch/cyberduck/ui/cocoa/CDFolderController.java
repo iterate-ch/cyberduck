@@ -27,57 +27,59 @@ import com.apple.cocoa.foundation.NSNotification;
 import org.apache.log4j.Logger;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDFolderController {
-    private static Logger log = Logger.getLogger(CDFolderController.class);
-	
+	private static Logger log = Logger.getLogger(CDFolderController.class);
+
 	//    private Path parent;
-    
-    private NSWindow sheet;
-    public void setSheet(NSWindow sheet) {
+
+	private NSWindow sheet;
+
+	public void setSheet(NSWindow sheet) {
 		this.sheet = sheet;
-    }
-	
-    private NSTextField folderField; /* IBOutlet */
-    public void setFolderField(NSTextField folderField) {
+	}
+
+	private NSTextField folderField; /* IBOutlet */
+
+	public void setFolderField(NSTextField folderField) {
 		this.folderField = folderField;
-    }
-	
-    public NSWindow window() {
+	}
+
+	public NSWindow window() {
 		return this.sheet;
-    }
-	
-    private static NSMutableArray allDocuments = new NSMutableArray();
-	
-    public CDFolderController() {
+	}
+
+	private static NSMutableArray allDocuments = new NSMutableArray();
+
+	public CDFolderController() {
 		allDocuments.addObject(this);
-        if (false == NSApplication.loadNibNamed("Folder", this)) {
-            log.fatal("Couldn't load Folder.nib");
-            return;
-        }
+		if (false == NSApplication.loadNibNamed("Folder", this)) {
+			log.fatal("Couldn't load Folder.nib");
+			return;
 		}
-	
-    public void windowWillClose(NSNotification notification) {
+	}
+
+	public void windowWillClose(NSNotification notification) {
 		this.window().setDelegate(null);
 		//	NSNotificationCenter.defaultCenter().removeObserver(this);
 		allDocuments.removeObject(this);
-    }
-    
-    public void closeSheet(Object sender) {
+	}
+
+	public void closeSheet(Object sender) {
 		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-		NSApplication.sharedApplication().endSheet(this.window(), ((NSButton)sender).tag());
-    }
-	
-    public void newfolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-        log.debug("newfolderSheetDidEnd");
+		NSApplication.sharedApplication().endSheet(this.window(), ((NSButton) sender).tag());
+	}
+
+	public void newfolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
+		log.debug("newfolderSheetDidEnd");
 		sheet.orderOut(null);
-		switch(returncode) {
-			case(NSAlertPanel.DefaultReturn):
-				((Path)contextInfo).mkdir(folderField.stringValue());
+		switch (returncode) {
+			case (NSAlertPanel.DefaultReturn):
+				((Path) contextInfo).mkdir(folderField.stringValue());
 				break;
-			case(NSAlertPanel.AlternateReturn):
+			case (NSAlertPanel.AlternateReturn):
 				break;
 		}
-    }
+	}
 }

@@ -25,85 +25,85 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
-* Keeps track of user bookmarks
+ * Keeps track of user bookmarks
  * The hosts are stored in a hashmap where host.getURL() is the key
  * @see ch.cyberduck.core.Host
  * @version $Id$
  */
 public abstract class Bookmarks {
-    private static Logger log = Logger.getLogger(Bookmarks.class);
-    	
-    protected List data = new ArrayList();
-		
+	private static Logger log = Logger.getLogger(Bookmarks.class);
+
+	protected List data = new ArrayList();
+
 	public Bookmarks() {
 		this.load();
-    }
-	
+	}
+
 	protected void finalize() throws Throwable {
 		super.finalize();
 		this.save();
 	}
-	
+
 	public abstract void save();
-	
-    public abstract void load();
-	
+
+	public abstract void load();
+
 	public abstract Host importBookmark(java.io.File file);
-	
+
 	public abstract void exportBookmark(Host bookmark, java.io.File file);
-		
+
 	// ----------------------------------------------------------
 	//	Data Manipulation
 	// ----------------------------------------------------------
-	
-    public void addItem(Host item) {
-		log.debug("addItem:"+item);
+
+	public void addItem(Host item) {
+		log.debug("addItem:" + item);
 		this.data.add(item);
 		this.save();
-    }
-	
+	}
+
 	public void addItem(Host item, int row) {
-		log.debug("addItem:"+item);
+		log.debug("addItem:" + item);
 		this.data.add(row, item);
 		this.save();
-    }
-	
+	}
+
 	public void removeItem(int index) {
-		log.debug("removeItem:"+index);
+		log.debug("removeItem:" + index);
 		this.data.remove(index);
 		this.save();
 	}
-	
-    public void removeItem(Host item) {
-		log.debug("removeItem:"+item);
+
+	public void removeItem(Host item) {
+		log.debug("removeItem:" + item);
 		this.removeItem(this.data.lastIndexOf(item));
-    }
-	
-    public Host getItem(int index) {
-		log.debug("getItem:"+index);
-		Host result = (Host)this.data.get(index);
-		if(null == result)
-			throw new IllegalArgumentException("No host with index "+index+" in Bookmarks.");
+	}
+
+	public Host getItem(int index) {
+		log.debug("getItem:" + index);
+		Host result = (Host) this.data.get(index);
+		if (null == result)
+			throw new IllegalArgumentException("No host with index " + index + " in Bookmarks.");
 		return result;
-    }
+	}
 
 	public int indexOf(Object o) {
 		return this.data.indexOf(o);
 	}
-		
-    public Collection values() {
+
+	public Collection values() {
 		return data;
-    }
-	
+	}
+
 	public int size() {
 		return this.data.size();
 	}
-	
+
 	public void clear() {
 		this.data.clear();
 	}
-		
-    public Iterator iterator() {
+
+	public Iterator iterator() {
 		return data.iterator();
-    }
+	}
 }

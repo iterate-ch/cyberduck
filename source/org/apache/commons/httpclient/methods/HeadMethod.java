@@ -79,61 +79,61 @@ public class HeadMethod
     extends HttpMethodBase {
 
 
-    // ----------------------------------------------------------- Constructors
+	// ----------------------------------------------------------- Constructors
 
 
-    /**
-     * No-arg constructor.
-     */
-    public HeadMethod() {
-        setFollowRedirects(true);
-    }
+	/**
+	 * No-arg constructor.
+	 */
+	public HeadMethod() {
+		setFollowRedirects(true);
+	}
 
 
-    /**
-     * Path-setting constructor.
-     * @param path the path to request
-     */
-    public HeadMethod(String path) {
-        super(path);
-        setFollowRedirects(true);
-    }
+	/**
+	 * Path-setting constructor.
+	 * @param path the path to request
+	 */
+	public HeadMethod(String path) {
+		super(path);
+		setFollowRedirects(true);
+	}
 
 
-    // ---------------------------------------------------------------- Methods
+	// ---------------------------------------------------------------- Methods
 
 
-    // override recycle to reset redirects default
-    public void recycle() {
-         super.recycle();
-         setFollowRedirects(true);
-     }
+	// override recycle to reset redirects default
+	public void recycle() {
+		super.recycle();
+		setFollowRedirects(true);
+	}
 
 
-    // --------------------------------------------------- WebdavMethod Methods
+	// --------------------------------------------------- WebdavMethod Methods
 
-    /**
-     * Returns <tt>"HEAD"</tt>.
-     * @return <tt>"HEAD"</tt>
-     */
-    public String getName() {
-        return "HEAD";
-    }
+	/**
+	 * Returns <tt>"HEAD"</tt>.
+	 * @return <tt>"HEAD"</tt>
+	 */
+	public String getName() {
+		return "HEAD";
+	}
 
-    /**
-     * Overrides {@link HttpMethodBase} method to
-     * <i>not</i> read a response body, despite the
-     * presence of a <tt>Content-Length</tt> or
-     * <tt>Bookmark-Encoding</tt> header.
-     */
-    protected void readResponseBody(HttpState state, HttpConnection conn) throws IOException, HttpException {
-        log.debug("HeadMethod.readResponseBody(HttpState,HttpConnection)");
-        return; // despite the possible presence of a content-length header, HEAD returns no response body
-    }
+	/**
+	 * Overrides {@link HttpMethodBase} method to
+	 * <i>not</i> read a response body, despite the
+	 * presence of a <tt>Content-Length</tt> or
+	 * <tt>Bookmark-Encoding</tt> header.
+	 */
+	protected void readResponseBody(HttpState state, HttpConnection conn) throws IOException, HttpException {
+		log.debug("HeadMethod.readResponseBody(HttpState,HttpConnection)");
+		return; // despite the possible presence of a content-length header, HEAD returns no response body
+	}
 
 
-    // -------------------------------------------------------------- Constants
+	// -------------------------------------------------------------- Constants
 
-    /** <tt>org.apache.commons.httpclient.methods.HeadMethod</tt> log. */
-    private static final Log log = LogSource.getInstance("org.apache.commons.httpclient.methods.HeadMethod");
+	/** <tt>org.apache.commons.httpclient.methods.HeadMethod</tt> log. */
+	private static final Log log = LogSource.getInstance("org.apache.commons.httpclient.methods.HeadMethod");
 }

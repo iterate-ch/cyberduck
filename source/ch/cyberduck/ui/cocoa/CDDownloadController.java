@@ -34,49 +34,51 @@ import java.net.URL;
 import org.apache.log4j.Logger;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDDownloadController {
-    private static Logger log = Logger.getLogger(CDDownloadController.class);
-	
-    private NSWindow window;
-    public void setWindow(NSWindow window) {
+	private static Logger log = Logger.getLogger(CDDownloadController.class);
+
+	private NSWindow window;
+
+	public void setWindow(NSWindow window) {
 		this.window = window;
-    }
-	
-    private NSTextField urlField;
-    public void setUrlField(NSTextField urlField) {
+	}
+
+	private NSTextField urlField;
+
+	public void setUrlField(NSTextField urlField) {
 		this.urlField = urlField;
-    }
-	
-    private static NSMutableArray allDocuments = new NSMutableArray();
-	
-    public CDDownloadController() {
+	}
+
+	private static NSMutableArray allDocuments = new NSMutableArray();
+
+	public CDDownloadController() {
 		allDocuments.addObject(this);
-        if (false == NSApplication.loadNibNamed("Download", this)) {
-            log.fatal("Couldn't load Download.nib");
-            return;
-        }
-    }
-	
-    public NSWindow window() {
+		if (false == NSApplication.loadNibNamed("Download", this)) {
+			log.fatal("Couldn't load Download.nib");
+			return;
+		}
+	}
+
+	public NSWindow window() {
 		return this.window;
-    }
-	
-    public void awakeFromNib() {
+	}
+
+	public void awakeFromNib() {
 		log.debug("awakeFromNib");
 		NSPoint origin = this.window.frame().origin();
 		this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
-    }
-	
-    public void windowWillClose(NSNotification notification) {
+	}
+
+	public void windowWillClose(NSNotification notification) {
 		this.window().setDelegate(null);
 		allDocuments.removeObject(this);
-    }
-    
-    public void closeWindow(NSButton sender) {
-		switch(sender.tag()) {
-			case(NSAlertPanel.DefaultReturn):
+	}
+
+	public void closeWindow(NSButton sender) {
+		switch (sender.tag()) {
+			case (NSAlertPanel.DefaultReturn):
 				URL url = null;
 				try {
 					url = new URL(urlField.stringValue());
@@ -84,39 +86,39 @@ public class CDDownloadController {
 					Session session = host.createSession();
 					Path path = null;
 					String file = url.getFile();
-					if(file.length() > 1) {
-						if(host.getProtocol().equals(Session.FTP)) {
-							path = new FTPPath((FTPSession)session, file);
+					if (file.length() > 1) {
+						if (host.getProtocol().equals(Session.FTP)) {
+							path = new FTPPath((FTPSession) session, file);
 						}
-						else if(host.getProtocol().equals(Session.HTTP)) {
-							path = new HTTPPath((HTTPSession)session, file);
+						else if (host.getProtocol().equals(Session.HTTP)) {
+							path = new HTTPPath((HTTPSession) session, file);
 						}
 						this.window().orderOut(null);
-						CDQueueController.instance().addItemAndStart(new Queue(path, 
-																		   Queue.KIND_DOWNLOAD));
+						CDQueueController.instance().addItemAndStart(new Queue(path,
+						    Queue.KIND_DOWNLOAD));
 					}
 					else
 						throw new MalformedURLException("URL must contain reference to a file");
 				}
-					catch(MalformedURLException e) {
-						NSAlertPanel.beginCriticalAlertSheet(
-										   "Error", //title
-										   "OK",// defaultbutton
-										   null,//alternative button
-										   null,//other button
-										   this.window(), //docWindow
-										   null, //modalDelegate
-										   null, //didEndSelector
-										   null, // dismiss selector
-										   null, // context
-										   e.getMessage() // message
-										   );
-						
-					}
-					break;
-			case(NSAlertPanel.AlternateReturn):
+				catch (MalformedURLException e) {
+					NSAlertPanel.beginCriticalAlertSheet(
+					    "Error", //title
+					    "OK", // defaultbutton
+					    null, //alternative button
+					    null, //other button
+					    this.window(), //docWindow
+					    null, //modalDelegate
+					    null, //didEndSelector
+					    null, // dismiss selector
+					    null, // context
+					    e.getMessage() // message
+					);
+
+				}
+				break;
+			case (NSAlertPanel.AlternateReturn):
 				this.window().orderOut(null);
 				break;
 		}
-    }
+	}
 }

@@ -3,7 +3,7 @@
  *  Copyright (C) 2000-2003  Enterprise Distributed Technologies Ltd
  *
  *  www.enterprisedt.com
- * 
+ *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
@@ -23,6 +23,9 @@
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.2  2003/12/28 00:42:51  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.1  2003/12/16 19:41:03  dkocher
  *        *** empty log message ***
  *
@@ -46,64 +49,64 @@ import java.net.Socket;
  */
 public class FTPPassiveDataSocket implements FTPDataSocket {
 
-    /**
-     *  Revision control id
-     */
-    private static String cvsId = "@(#)$Id$";
+	/**
+	 *  Revision control id
+	 */
+	private static String cvsId = "@(#)$Id$";
 
-    /**
-     *  The underlying socket 
-     */
-    private Socket sock = null;
+	/**
+	 *  The underlying socket
+	 */
+	private Socket sock = null;
 
-    /**
-     *  Constructor
-     * 
-     *  @param  sock  client socket to use
-     */
-    FTPPassiveDataSocket(Socket sock) {
-        this.sock = sock;
-    }
+	/**
+	 *  Constructor
+	 *
+	 *  @param  sock  client socket to use
+	 */
+	FTPPassiveDataSocket(Socket sock) {
+		this.sock = sock;
+	}
 
-    /**
-     *   Set the TCP timeout on the underlying control socket.
-     *
-     *   If a timeout is set, then any operation which
-     *   takes longer than the timeout value will be
-     *   killed with a java.io.InterruptedException.
-     *
-     *   @param millis The length of the timeout, in milliseconds
-     */
-    public void setTimeout(int millis) throws IOException {
-        sock.setSoTimeout(millis);
-    }
+	/**
+	 *   Set the TCP timeout on the underlying control socket.
+	 *
+	 *   If a timeout is set, then any operation which
+	 *   takes longer than the timeout value will be
+	 *   killed with a java.io.InterruptedException.
+	 *
+	 *   @param millis The length of the timeout, in milliseconds
+	 */
+	public void setTimeout(int millis) throws IOException {
+		sock.setSoTimeout(millis);
+	}
 
-    /**
-     *  If active mode, accepts the FTP server's connection - in PASV,
-     *  we are already connected. Then gets the output stream of
-     *  the connection
-     *
-     *  @return  output stream for underlying socket.
-     */
-    public OutputStream getOutputStream() throws IOException {        
-        return sock.getOutputStream();
-    }
+	/**
+	 *  If active mode, accepts the FTP server's connection - in PASV,
+	 *  we are already connected. Then gets the output stream of
+	 *  the connection
+	 *
+	 *  @return  output stream for underlying socket.
+	 */
+	public OutputStream getOutputStream() throws IOException {
+		return sock.getOutputStream();
+	}
 
-    /**
-     *  If active mode, accepts the FTP server's connection - in PASV,
-     *  we are already connected. Then gets the input stream of
-     *  the connection
-     *
-     *  @return  input stream for underlying socket.
-     */
-    public InputStream getInputStream() throws IOException {
-        return sock.getInputStream();
-    }
+	/**
+	 *  If active mode, accepts the FTP server's connection - in PASV,
+	 *  we are already connected. Then gets the input stream of
+	 *  the connection
+	 *
+	 *  @return  input stream for underlying socket.
+	 */
+	public InputStream getInputStream() throws IOException {
+		return sock.getInputStream();
+	}
 
-    /**
-     *  Closes underlying socket
-     */
-    public void close() throws IOException {
-        sock.close();
-    }
+	/**
+	 *  Closes underlying socket
+	 */
+	public void close() throws IOException {
+		sock.close();
+	}
 }

@@ -75,32 +75,32 @@ import org.apache.commons.httpclient.HttpMethodBase;
 public class DeleteMethod extends HttpMethodBase {
 
 
-    // ----------------------------------------------------------- Constructors
+	// ----------------------------------------------------------- Constructors
 
 
-    /**
-     * No-arg constructor.
-     */
-    public DeleteMethod() {
-    }
+	/**
+	 * No-arg constructor.
+	 */
+	public DeleteMethod() {
+	}
 
 
-    /**
-     * Path-setting constructor.
-     * @param path the path to request
-     */
-    public DeleteMethod(String path) {
-        super(path);
-    }
+	/**
+	 * Path-setting constructor.
+	 * @param path the path to request
+	 */
+	public DeleteMethod(String path) {
+		super(path);
+	}
 
 
-    // ----------------------------------------------------- HttpMethod Methods
+	// ----------------------------------------------------- HttpMethod Methods
 
-    /**
-     * Returns <tt>"DELETE"</tt>.
-     * @return <tt>"DELETE"</tt>
-     */
-    public String getName() {
-        return "DELETE";
-    }
+	/**
+	 * Returns <tt>"DELETE"</tt>.
+	 * @return <tt>"DELETE"</tt>
+	 */
+	public String getName() {
+		return "DELETE";
+	}
 }

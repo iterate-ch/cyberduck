@@ -70,73 +70,73 @@ package org.apache.commons.httpclient;
  */
 public class UsernamePasswordCredentials implements Credentials {
 
-    // ----------------------------------------------------------- Constructors
+	// ----------------------------------------------------------- Constructors
 
-    /**
-     * Default constructor.
-     */
-    public UsernamePasswordCredentials() {
-    }
+	/**
+	 * Default constructor.
+	 */
+	public UsernamePasswordCredentials() {
+	}
 
-    /**
-     * Constructor.
-     */
-    public UsernamePasswordCredentials(String userName, String password) {
-        this.userName = userName;
-        this.password = password;
-    }
+	/**
+	 * Constructor.
+	 */
+	public UsernamePasswordCredentials(String userName, String password) {
+		this.userName = userName;
+		this.password = password;
+	}
 
-    // ----------------------------------------------------- Instance Variables
+	// ----------------------------------------------------- Instance Variables
 
-    /**
-     * User name.
-     */
-    private String userName;
-
-
-    /**
-     * Password.
-     */
-    private String password;
+	/**
+	 * User name.
+	 */
+	private String userName;
 
 
-    // ------------------------------------------------------------- Properties
+	/**
+	 * Password.
+	 */
+	private String password;
 
 
-    /**
-     * User name property setter.
-     *
-     * @param userName
-     */
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+	// ------------------------------------------------------------- Properties
 
-    /**
-     * User name property getter.
-     *
-     * @return String userName
-     */
-    public String getUserName() {
-        return userName;
-    }
 
-    /**
-     * Password property setter.
-     *
-     * @param password
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	/**
+	 * User name property setter.
+	 *
+	 * @param userName
+	 */
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
-    /**
-     * Password property getter.
-     *
-     * @return String password
-     */
-    public String getPassword() {
-        return password;
-    }
+	/**
+	 * User name property getter.
+	 *
+	 * @return String userName
+	 */
+	public String getUserName() {
+		return userName;
+	}
+
+	/**
+	 * Password property setter.
+	 *
+	 * @param password
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	/**
+	 * Password property getter.
+	 *
+	 * @return String password
+	 */
+	public String getPassword() {
+		return password;
+	}
 
 }

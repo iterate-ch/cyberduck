@@ -29,100 +29,117 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDInfoController {
-    private static Logger log = Logger.getLogger(CDInfoController.class);
-	
-    private Path file;
-	
-    // ----------------------------------------------------------
-    // Outlets
-    // ----------------------------------------------------------
-	
-    private NSWindow window; // IBOutlet
-    public void setWindow(NSWindow window) {
+	private static Logger log = Logger.getLogger(CDInfoController.class);
+
+	private Path file;
+
+	// ----------------------------------------------------------
+	// Outlets
+	// ----------------------------------------------------------
+
+	private NSWindow window; // IBOutlet
+
+	public void setWindow(NSWindow window) {
 		this.window = window;
-    }
-    
-    private NSTextField filenameField; // IBOutlet
-    public void setFilenameField(NSTextField filenameField) {
+	}
+
+	private NSTextField filenameField; // IBOutlet
+
+	public void setFilenameField(NSTextField filenameField) {
 		this.filenameField = filenameField;
-    }
-    private NSTextField groupField; // IBOutlet
-    public void setGroupField(NSTextField groupField) {
+	}
+
+	private NSTextField groupField; // IBOutlet
+
+	public void setGroupField(NSTextField groupField) {
 		this.groupField = groupField;
-    }
-    private NSTextField kindField; // IBOutlet
-    public void setKindField(NSTextField kindField) {
+	}
+
+	private NSTextField kindField; // IBOutlet
+
+	public void setKindField(NSTextField kindField) {
 		this.kindField = kindField;
-    }
-    private NSTextField modifiedField; // IBOutlet
-    public void setModifiedField(NSTextField modifiedField) {
+	}
+
+	private NSTextField modifiedField; // IBOutlet
+
+	public void setModifiedField(NSTextField modifiedField) {
 		this.modifiedField = modifiedField;
-    }
-    private NSTextField ownerField; // IBOutlet
-    public void setOwnerField(NSTextField ownerField) {
+	}
+
+	private NSTextField ownerField; // IBOutlet
+
+	public void setOwnerField(NSTextField ownerField) {
 		this.ownerField = ownerField;
-    }
-    private NSTextField sizeField; // IBOutlet
-    public void setSizeField(NSTextField sizeField) {
+	}
+
+	private NSTextField sizeField; // IBOutlet
+
+	public void setSizeField(NSTextField sizeField) {
 		this.sizeField = sizeField;
-    }
-    private NSTextField pathField; // IBOutlet
-    public void setPathField(NSTextField pathField) {
+	}
+
+	private NSTextField pathField; // IBOutlet
+
+	public void setPathField(NSTextField pathField) {
 		this.pathField = pathField;
-    }
-    private NSBox permissionsBox; // IBOutlet
-    public void setPermissionsBox(NSBox permissionsBox) {
+	}
+
+	private NSBox permissionsBox; // IBOutlet
+
+	public void setPermissionsBox(NSBox permissionsBox) {
 		this.permissionsBox = permissionsBox;
-    }
-    
-    public NSButton ownerr; // IBOutlet
-    public NSButton ownerw; // IBOutlet
-    public NSButton ownerx; // IBOutlet
-    public NSButton groupr; // IBOutlet
-    public NSButton groupw; // IBOutlet
-    public NSButton groupx; // IBOutlet
-    public NSButton otherr; // IBOutlet
-    public NSButton otherw; // IBOutlet
-    public NSButton otherx; // IBOutlet
-	
-    private NSImageView iconImageView; // IBOutlet
-    public void setIconImageView(NSImageView iconImageView) {
+	}
+
+	public NSButton ownerr; // IBOutlet
+	public NSButton ownerw; // IBOutlet
+	public NSButton ownerx; // IBOutlet
+	public NSButton groupr; // IBOutlet
+	public NSButton groupw; // IBOutlet
+	public NSButton groupx; // IBOutlet
+	public NSButton otherr; // IBOutlet
+	public NSButton otherw; // IBOutlet
+	public NSButton otherx; // IBOutlet
+
+	private NSImageView iconImageView; // IBOutlet
+
+	public void setIconImageView(NSImageView iconImageView) {
 		this.iconImageView = iconImageView;
-    }
-	
-    private static NSMutableArray allDocuments = new NSMutableArray();
-	
-    // ----------------------------------------------------------
-    // Constructors
-    // ----------------------------------------------------------
-    
-    public CDInfoController(Path file) {
-		log.debug("CDInfoController:"+file);
+	}
+
+	private static NSMutableArray allDocuments = new NSMutableArray();
+
+	// ----------------------------------------------------------
+	// Constructors
+	// ----------------------------------------------------------
+
+	public CDInfoController(Path file) {
+		log.debug("CDInfoController:" + file);
 		this.file = file;
 		allDocuments.addObject(this);
-        if (false == NSApplication.loadNibNamed("Info", this)) {
-            log.fatal("Couldn't load Info.nib");
-            return;
-        }
+		if (false == NSApplication.loadNibNamed("Info", this)) {
+			log.fatal("Couldn't load Info.nib");
+			return;
+		}
 		//	this.init();
-    }
-	
-    public void awakeFromNib() {
+	}
+
+	public void awakeFromNib() {
 		log.debug("awakeFromNib");
 		NSPoint origin = this.window.frame().origin();
 		this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
-		
+
 		this.filenameField.setStringValue(Codec.encode(file.getName()));
 		this.pathField.setStringValue(file.getParent().getAbsolute());
 		this.groupField.setStringValue(file.attributes.getGroup());
 		this.kindField.setStringValue(file.getKind());
 		this.modifiedField.setStringValue(file.attributes.getModified());
 		this.ownerField.setStringValue(file.attributes.getOwner());
-		this.sizeField.setStringValue(Status.getSizeAsString(file.status.getSize())+" ("+file.status.getSize()+" bytes)");
-		
+		this.sizeField.setStringValue(Status.getSizeAsString(file.status.getSize()) + " (" + file.status.getSize() + " bytes)");
+
 		Permission permission = file.attributes.getPermission();
 		boolean[] ownerPerm = permission.getOwnerPermissions();
 		boolean[] groupPerm = permission.getGroupPermissions();
@@ -137,74 +154,74 @@ public class CDInfoController {
 		otherr.setState(otherPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
 		otherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
 		otherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-		
-		permissionsBox.setTitle(NSBundle.localizedString("Permissions")+" | "+permission.getString()+" ("+permission.getOctalCode()+")");
-		
-		if(file.isFile()) {
+
+		permissionsBox.setTitle(NSBundle.localizedString("Permissions") + " | " + permission.getString() + " (" + permission.getOctalCode() + ")");
+
+		if (file.isFile()) {
 			this.iconImageView.setImage(NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
 		}
-		if(file.isDirectory())
+		if (file.isDirectory())
 			this.iconImageView.setImage(NSImage.imageNamed("folder.icns"));
-		
+
 		(NSNotificationCenter.defaultCenter()).addObserver(
-													 this,
-													 new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
-													 NSControl.ControlTextDidEndEditingNotification,
-													 filenameField);
+		    this,
+		    new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
+		    NSControl.ControlTextDidEndEditingNotification,
+		    filenameField);
 		(NSNotificationCenter.defaultCenter()).addObserver(
-													 this,
-													 new NSSelector("ownerInputDidEndEditing", new Class[]{NSNotification.class}),
-													 NSControl.ControlTextDidEndEditingNotification,
-													 ownerField);
+		    this,
+		    new NSSelector("ownerInputDidEndEditing", new Class[]{NSNotification.class}),
+		    NSControl.ControlTextDidEndEditingNotification,
+		    ownerField);
 		(NSNotificationCenter.defaultCenter()).addObserver(
-													 this,
-													 new NSSelector("groupInputDidEndEditing", new Class[]{NSNotification.class}),
-													 NSControl.ControlTextDidEndEditingNotification,
-													 groupField);
-    }
-	
-    public void windowWillClose(NSNotification notification) {
-		if(!filenameField.stringValue().equals(Codec.encode(file.getName()))) {
+		    this,
+		    new NSSelector("groupInputDidEndEditing", new Class[]{NSNotification.class}),
+		    NSControl.ControlTextDidEndEditingNotification,
+		    groupField);
+	}
+
+	public void windowWillClose(NSNotification notification) {
+		if (!filenameField.stringValue().equals(Codec.encode(file.getName()))) {
 			String newName = filenameField.stringValue();
 			file.rename(newName);
 		}
 		this.window().setDelegate(null);
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 		allDocuments.removeObject(this);
-    }
-	
-	
-    public void filenameInputDidEndEditing(NSNotification sender) {
+	}
+
+
+	public void filenameInputDidEndEditing(NSNotification sender) {
 		log.debug("textInputDidEndEditing");
-		if(!filenameField.stringValue().equals(Codec.encode(file.getName()))) {
+		if (!filenameField.stringValue().equals(Codec.encode(file.getName()))) {
 			String newName = filenameField.stringValue();
 			file.rename(newName);
 		}
-    }
-    
-    public void permissionsSelectionChanged(Object sender) {
+	}
+
+	public void permissionsSelectionChanged(Object sender) {
 		log.debug("permissionsSelectionChanged");
-        boolean[][] p = new boolean[3][3];
+		boolean[][] p = new boolean[3][3];
 		p[Permission.OWNER][Permission.READ] = (ownerr.state() == NSCell.OnState);
 		p[Permission.OWNER][Permission.WRITE] = (ownerw.state() == NSCell.OnState);
 		p[Permission.OWNER][Permission.EXECUTE] = (ownerx.state() == NSCell.OnState);
-		
+
 		p[Permission.GROUP][Permission.READ] = (groupr.state() == NSCell.OnState);
 		p[Permission.GROUP][Permission.WRITE] = (groupw.state() == NSCell.OnState);
 		p[Permission.GROUP][Permission.EXECUTE] = (groupx.state() == NSCell.OnState);
-		
+
 		p[Permission.OTHER][Permission.READ] = (otherr.state() == NSCell.OnState);
 		p[Permission.OTHER][Permission.WRITE] = (otherw.state() == NSCell.OnState);
 		p[Permission.OTHER][Permission.EXECUTE] = (otherx.state() == NSCell.OnState);
-		
+
 		Permission permission = new Permission(p);
 		file.attributes.setPermission(permission);
-		
+
 		file.changePermissions(permission.getOctalCode());
-		permissionsBox.setTitle(NSBundle.localizedString("Permissions")+" | "+permission.getString()+" ("+permission.getOctalCode()+")");
-    }
-	
-    public NSWindow window() {
+		permissionsBox.setTitle(NSBundle.localizedString("Permissions") + " | " + permission.getString() + " (" + permission.getOctalCode() + ")");
+	}
+
+	public NSWindow window() {
 		return this.window;
-    }
+	}
 }

@@ -3,7 +3,7 @@
  *  Copyright (C) 2000-2003  Enterprise Distributed Technologies Ltd
  *
  *  www.enterprisedt.com
- * 
+ *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
@@ -23,6 +23,9 @@
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.2  2003/12/28 00:42:51  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.1  2003/12/16 19:41:03  dkocher
  *        *** empty log message ***
  *
@@ -47,78 +50,78 @@ import java.net.Socket;
  */
 public class FTPActiveDataSocket implements FTPDataSocket {
 
-    /**
-     *  Revision control id
-     */
-    private static String cvsId = "@(#)$Id$";
-    
-    /**
-     *  The underlying socket for Active connection.
-     */
-    private ServerSocket sock = null;
-    
-    /**
-     *  The socket accepted from server.
-     */
-    private Socket acceptedSock = null;
+	/**
+	 *  Revision control id
+	 */
+	private static String cvsId = "@(#)$Id$";
 
-    /**
-     *  Constructor
-     *  
-     *  @param sock    the server socket to use
-     */
-    FTPActiveDataSocket(ServerSocket sock) {
-         this.sock = sock;
-    }
+	/**
+	 *  The underlying socket for Active connection.
+	 */
+	private ServerSocket sock = null;
 
+	/**
+	 *  The socket accepted from server.
+	 */
+	private Socket acceptedSock = null;
 
-    /**
-     *   Set the TCP timeout on the underlying control socket.
-     *
-     *   If a timeout is set, then any operation which
-     *   takes longer than the timeout value will be
-     *   killed with a java.io.InterruptedException.
-     *
-     *   @param millis The length of the timeout, in milliseconds
-     */
-    public void setTimeout(int millis) throws IOException {
-        sock.setSoTimeout(millis);
-    }
+	/**
+	 *  Constructor
+	 *
+	 *  @param sock    the server socket to use
+	 */
+	FTPActiveDataSocket(ServerSocket sock) {
+		this.sock = sock;
+	}
 
 
-    /**
-     *  If active mode, accepts the FTP server's connection - in PASV,
-     *  we are already connected. Then gets the output stream of
-     *  the connection
-     *
-     *  @return  output stream for underlying socket.
-     */
-    public OutputStream getOutputStream() throws IOException {
-        // accept socket from server
-        acceptedSock = sock.accept();
-        return acceptedSock.getOutputStream ();
-     }
+	/**
+	 *   Set the TCP timeout on the underlying control socket.
+	 *
+	 *   If a timeout is set, then any operation which
+	 *   takes longer than the timeout value will be
+	 *   killed with a java.io.InterruptedException.
+	 *
+	 *   @param millis The length of the timeout, in milliseconds
+	 */
+	public void setTimeout(int millis) throws IOException {
+		sock.setSoTimeout(millis);
+	}
 
-    /**
-     *  If active mode, accepts the FTP server's connection - in PASV,
-     *  we are already connected. Then gets the input stream of
-     *  the connection
-     *
-     *  @return  input stream for underlying socket.
-     */
-    public InputStream getInputStream() throws IOException {
-        // accept socket from server
-        acceptedSock = sock.accept();
-        return acceptedSock.getInputStream();
-    }
 
-     /**
-      *  Closes underlying sockets
-      */
-    public void close() throws IOException {
-        if (acceptedSock != null)
-            acceptedSock.close();
-        sock.close();
-    }
+	/**
+	 *  If active mode, accepts the FTP server's connection - in PASV,
+	 *  we are already connected. Then gets the output stream of
+	 *  the connection
+	 *
+	 *  @return  output stream for underlying socket.
+	 */
+	public OutputStream getOutputStream() throws IOException {
+		// accept socket from server
+		acceptedSock = sock.accept();
+		return acceptedSock.getOutputStream();
+	}
+
+	/**
+	 *  If active mode, accepts the FTP server's connection - in PASV,
+	 *  we are already connected. Then gets the input stream of
+	 *  the connection
+	 *
+	 *  @return  input stream for underlying socket.
+	 */
+	public InputStream getInputStream() throws IOException {
+		// accept socket from server
+		acceptedSock = sock.accept();
+		return acceptedSock.getInputStream();
+	}
+
+	/**
+	 *  Closes underlying sockets
+	 */
+	public void close() throws IOException {
+		if (acceptedSock != null)
+			acceptedSock.close();
+		sock.close();
+	}
 
 }

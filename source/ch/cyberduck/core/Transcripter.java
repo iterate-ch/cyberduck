@@ -22,5 +22,5 @@ package ch.cyberduck.core;
  * @version $Id$
  */
 public interface Transcripter {
-    public void transcript(String text);
+	public void transcript(String text);
 }

@@ -24,56 +24,56 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
-* Singleton
+ * Singleton
  * @version $Id$
  */
 public class Transcript {
-    private static Logger log = Logger.getLogger(Transcript.class);
+	private static Logger log = Logger.getLogger(Transcript.class);
 
-    private static Transcript instance;
+	private static Transcript instance;
 
-    private List listeners = new ArrayList();
-    
-    private Transcript() {
-    //
-    }
-    
-    public static Transcript instance() {
-        if(null == instance) {
-	    instance = new Transcript();
+	private List listeners = new ArrayList();
+
+	private Transcript() {
+		//
 	}
-        return instance;
-     }
 
-    /**
-	* Must be overwritten by the subclass to return the view widget
-     */
+	public static Transcript instance() {
+		if (null == instance) {
+			instance = new Transcript();
+		}
+		return instance;
+	}
+
+	/**
+	 * Must be overwritten by the subclass to return the view widget
+	 */
 //    public abstract Object getView();
 
-    /**
-    * @param l Add this Transripter to the list of listeners
-    */
-    public void addListener(Transcripter l) {
-	listeners.add(l);
-    }
-    
-    /**
-    * @param l Remove this Transripter form the listeneres list
-    */
-    public void removeListener(Transcripter l) {
-	listeners.remove(listeners.indexOf(l));
-    }
+	/**
+	 * @param l Add this Transripter to the list of listeners
+	 */
+	public void addListener(Transcripter l) {
+		listeners.add(l);
+	}
 
-    /*
-     /**
-     * Inform all the concrete listeners about
-     * @param text The information to pass to the listeners
-      */
-     public synchronized void transcript(String text) {
+	/**
+	 * @param l Remove this Transripter form the listeneres list
+	 */
+	public void removeListener(Transcripter l) {
+		listeners.remove(listeners.indexOf(l));
+	}
+
+	/*
+	 /**
+	 * Inform all the concrete listeners about
+	 * @param text The information to pass to the listeners
+	  */
+	public synchronized void transcript(String text) {
 //	 log.debug("transcript:"+text);
-	 Iterator i = listeners.iterator();
-	 while(i.hasNext()) {
-	     ((Transcripter)i.next()).transcript(text);
-	 }
-     }
+		Iterator i = listeners.iterator();
+		while (i.hasNext()) {
+			((Transcripter) i.next()).transcript(text);
+		}
+	}
 }

@@ -24,88 +24,89 @@ import java.util.Observable;
 import org.apache.log4j.Logger;
 
 /**
-* Attributes of a remote directory or file.
+ * Attributes of a remote directory or file.
  * @version $Id$
  */
 public class Attributes extends Observable {
-    private static Logger log = Logger.getLogger(Attributes.class);
-	
-    private Date modified;	
-    private String owner;
-    private String group;
-    private String mode = "-rwxrwxrwx"; //defaulting to a file
-    private Permission permission;
-    private boolean visible = true;
-	
-    /**
-		* @param visible If this path should be shown in the directory listing
-     */
+	private static Logger log = Logger.getLogger(Attributes.class);
+
+	private Date modified;
+	private String owner;
+	private String group;
+	private String mode = "-rwxrwxrwx"; //defaulting to a file
+	private Permission permission;
+	private boolean visible = true;
+
+	/**
+	 * @param visible If this path should be shown in the directory listing
+	 */
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
-    /**
-		* @return If this path is shown in the directory listing
-     */
+
+	/**
+	 * @return If this path is shown in the directory listing
+	 */
 	public boolean isVisible() {
 		return this.visible;
 	}
-	
-    /**
-		* Set the modfication returned by ftp directory listings
-     */
-    public void setModified(long m) {
+
+	/**
+	 * Set the modfication returned by ftp directory listings
+	 */
+	public void setModified(long m) {
 		this.modified = new Date(m);
-    }
-	
-    /**
-		* @return the modification date of this file
-     */
-    public String getModified() {
+	}
+
+	/**
+	 * @return the modification date of this file
+	 */
+	public String getModified() {
 		return (DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)).format(this.modified);
 		//	return (DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)).format(new Date(this.modified));
-    }
-	
+	}
+
 	public Date getModifiedDate() {
 		return this.modified;
 	}
-	
-    /**
-		* @param access unix access permitions, i.e. -rwxrwxrwx
-     */
-	
-    public void setMode(String mode) {
+
+	/**
+	 * @param access unix access permitions, i.e. -rwxrwxrwx
+	 */
+
+	public void setMode(String mode) {
 		this.mode = mode;
-    }
-	
-    /**
-		* @return The unix access permissions including the the first bit
-     */
-    public String getMode() {
+	}
+
+	/**
+	 * @return The unix access permissions including the the first bit
+	 */
+	public String getMode() {
 		return this.mode;
-    }
-	
-    public void setPermission(Permission p) {
+	}
+
+	public void setPermission(Permission p) {
 //		log.debug("setPermission:"+p);
 		this.permission = p;
-    }
-	
-    public Permission getPermission() {
+	}
+
+	public Permission getPermission() {
 		return this.permission;
-    }
-	
-    public void setOwner(String o) {
+	}
+
+	public void setOwner(String o) {
 		this.owner = o;
-    }
-	
-    public String getOwner() {
+	}
+
+	public String getOwner() {
 		return this.owner;
-    }
-	
-    public void setGroup(String g) {
+	}
+
+	public void setGroup(String g) {
 		this.group = g;
-    }
-	
-    public String getGroup() {
+	}
+
+	public String getGroup() {
 		return this.group;
-    }
+	}
 }

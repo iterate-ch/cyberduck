@@ -33,21 +33,21 @@ package com.enterprisedt.net.ftp;
  *  @version    $Revision$
  *
  */
- public class FTPConnectMode {
+public class FTPConnectMode {
 
-     /**
-      *   Represents active connect mode
-      */
-     public static FTPConnectMode ACTIVE = new FTPConnectMode();
+	/**
+	 *   Represents active connect mode
+	 */
+	public static FTPConnectMode ACTIVE = new FTPConnectMode();
 
-     /**
-      *   Represents PASV connect mode
-      */
-     public static FTPConnectMode PASV = new FTPConnectMode();
+	/**
+	 *   Represents PASV connect mode
+	 */
+	public static FTPConnectMode PASV = new FTPConnectMode();
 
-     /**
-      *  Private so no-one else can instantiate this class
-      */
-     private FTPConnectMode() {
-     }
- }
+	/**
+	 *  Private so no-one else can instantiate this class
+	 */
+	private FTPConnectMode() {
+	}
+}

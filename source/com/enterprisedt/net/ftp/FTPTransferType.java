@@ -34,31 +34,31 @@ package com.enterprisedt.net.ftp;
  *  @version        $Revision$
  *
  */
- public class FTPTransferType {
+public class FTPTransferType {
 
-     /**
-      *   Represents ASCII transfer type
-      */
-     public static FTPTransferType ASCII = new FTPTransferType();
+	/**
+	 *   Represents ASCII transfer type
+	 */
+	public static FTPTransferType ASCII = new FTPTransferType();
 
-     /**
-      *   Represents Image (or binary) transfer type
-      */
-     public static FTPTransferType BINARY = new FTPTransferType();
+	/**
+	 *   Represents Image (or binary) transfer type
+	 */
+	public static FTPTransferType BINARY = new FTPTransferType();
 
-     /**
-      *   The char sent to the server to set ASCII
-      */
-     static String ASCII_CHAR = "A";
+	/**
+	 *   The char sent to the server to set ASCII
+	 */
+	static String ASCII_CHAR = "A";
 
-     /**
-      *   The char sent to the server to set BINARY
-      */
-     static String BINARY_CHAR = "I";
+	/**
+	 *   The char sent to the server to set BINARY
+	 */
+	static String BINARY_CHAR = "I";
 
-     /**
-      *  Private so no-one else can instantiate this class
-      */
-     private FTPTransferType() {
-     }
- }
+	/**
+	 *  Private so no-one else can instantiate this class
+	 */
+	private FTPTransferType() {
+	}
+}

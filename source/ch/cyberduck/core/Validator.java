@@ -19,10 +19,9 @@ package ch.cyberduck.core;
  */
 
 
-
 /**
-* @version $Id$
+ * @version $Id$
  */
 public interface Validator {
-    public boolean validate(Path path, int kind);
+	public boolean validate(Path path, int kind);
 }

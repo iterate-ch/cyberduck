@@ -34,46 +34,46 @@ public abstract class History {
 
 	public History() {
 		this.load();
-    }
+	}
 
 	public abstract void save();
-	
-    public abstract void load();
-	
+
+	public abstract void load();
+
 	public void addItem(Host h) {
-		if(this.size() == Integer.parseInt(Preferences.instance().getProperty("history.size"))) {
-			if(this.size() > 0)
+		if (this.size() == Integer.parseInt(Preferences.instance().getProperty("history.size"))) {
+			if (this.size() > 0)
 				this.removeItem(0);
 		}
 		this.data.put(h.getHostname(), h);
 		this.save();
-    }
-	
+	}
+
 	public void removeItem(int index) {
-		log.debug("removeItem:"+index);
+		log.debug("removeItem:" + index);
 		this.data.remove(this.getItem(index).getHostname());
 		this.save();
 	}
-	
-    public void removeItem(Host item) {
-		log.debug("removeItem:"+item);
+
+	public void removeItem(Host item) {
+		log.debug("removeItem:" + item);
 		this.data.remove(item.getHostname());
 		this.save();
-    }
-	
-    public Host getItem(int index) {
-		log.debug("getItem:"+index);
-		Host h = (Host)this.values().toArray()[index];
+	}
+
+	public Host getItem(int index) {
+		log.debug("getItem:" + index);
+		Host h = (Host) this.values().toArray()[index];
 		return this.getItem(h.getHostname());
 	}
-	
+
 	public Host getItem(String key) {
-		Host result = (Host)this.data.get(key);
-		if(null == result)
-			throw new IllegalArgumentException("No host with key "+key+" in History.");
+		Host result = (Host) this.data.get(key);
+		if (null == result)
+			throw new IllegalArgumentException("No host with key " + key + " in History.");
 		return result;
 	}
-	
+
 	public void clear() {
 		this.data.clear();
 	}
@@ -81,12 +81,12 @@ public abstract class History {
 	public int size() {
 		return this.data.size();
 	}
-	
+
 	public Collection values() {
 		return data.values();
-    }
-	
+	}
+
 	public Iterator iterator() {
 		return this.values().iterator();
-    }
+	}
 }

@@ -28,70 +28,70 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public abstract class Queues {
-    private static Logger log = Logger.getLogger(Queues.class);
-	
-    private List data = new ArrayList();
-		
+	private static Logger log = Logger.getLogger(Queues.class);
+
+	private List data = new ArrayList();
+
 	public Queues() {
 		this.load();
-    }
-	
-    public abstract void save();
-	
-    public abstract void load();
-	
+	}
+
+	public abstract void save();
+
+	public abstract void load();
+
 	// ----------------------------------------------------------
 	//	Data Manipulation
 	// ----------------------------------------------------------
-	
-    public void addItem(Queue item) {
-		log.debug("addItem:"+item);
+
+	public void addItem(Queue item) {
+		log.debug("addItem:" + item);
 		this.data.add(item);
 		this.save();
-    }
+	}
 
 	public void addItem(Queue item, int row) {
-		log.debug("addItem:"+item);
+		log.debug("addItem:" + item);
 		this.data.add(row, item);
 		this.save();
-    }
-	
+	}
+
 	public void removeItem(int index) {
-		log.debug("removeItem:"+index);
+		log.debug("removeItem:" + index);
 		this.data.remove(index);
 		this.save();
 	}
-	
-    public void removeItem(Queue item) {
-		log.debug("removeItem:"+item);
+
+	public void removeItem(Queue item) {
+		log.debug("removeItem:" + item);
 		this.removeItem(this.data.lastIndexOf(item));
-    }
-	
-    public Queue getItem(int index) {
+	}
+
+	public Queue getItem(int index) {
 //		log.debug("getItem:"+index);
-		Queue result = (Queue)this.data.get(index);
-		if(null == result)
-			throw new IllegalArgumentException("No host with index "+index+" in Bookmarks.");
+		Queue result = (Queue) this.data.get(index);
+		if (null == result)
+			throw new IllegalArgumentException("No host with index " + index + " in Bookmarks.");
 		return result;
-    }
-	
+	}
+
 	public int indexOf(Object o) {
 		return this.data.indexOf(o);
 	}
-	
-    public Collection values() {
+
+	public Collection values() {
 		return data;
-    }
-	
+	}
+
 	public int size() {
 		return this.data.size();
 	}
-	
+
 	public void clear() {
 		this.data.clear();
 	}
-	
-    public Iterator iterator() {
+
+	public Iterator iterator() {
 		return data.iterator();
-    }
+	}
 }

@@ -23,85 +23,85 @@ import java.util.Observable;
 import org.apache.log4j.Logger;
 
 /**
-* The Status class is the model of a download's status.
+ * The Status class is the model of a download's status.
  * The wrapper for any status informations of a transfer as the size and transferred
-  * bytes.
+ * bytes.
  * @version $Id$
  */
 public class Status extends Observable implements Serializable {
-    private static Logger log = Logger.getLogger(Status.class);
-	
-    /**
-    * Download is resumable
-     */
-    private transient boolean resume = false;
-    /**
-		* The file length
-     */
-    private long size = -1;
-    /**
-		* The number of transfered bytes. Must be less or equals size.
-     */
-    private long current = 0;
-    /**
-		* Indiciating wheter the transfer has been cancled by the user.
-     */
-    private boolean canceled;
-    /**
-		* Indicates that the last action has been completed.
-     */
-    private boolean complete = false;
-    /**
-		* The last action has been stopped, but must not be completed.
-     */
-    
-    /**
-        * Notify all observers
-     * @param arg The message to send to the observers
-     * @see ch.cyberduck.core.Message
-     */
-    public void callObservers(Message arg) {
+	private static Logger log = Logger.getLogger(Status.class);
+
+	/**
+	 * Download is resumable
+	 */
+	private transient boolean resume = false;
+	/**
+	 * The file length
+	 */
+	private long size = -1;
+	/**
+	 * The number of transfered bytes. Must be less or equals size.
+	 */
+	private long current = 0;
+	/**
+	 * Indiciating wheter the transfer has been cancled by the user.
+	 */
+	private boolean canceled;
+	/**
+	 * Indicates that the last action has been completed.
+	 */
+	private boolean complete = false;
+	/**
+	 * The last action has been stopped, but must not be completed.
+	 */
+
+	/**
+	 * Notify all observers
+	 * @param arg The message to send to the observers
+	 * @see ch.cyberduck.core.Message
+	 */
+	public void callObservers(Message arg) {
 		//	log.debug("callObserver:"+arg);
-  //	log.debug(this.countObservers()+" observers known.");
+		//	log.debug(this.countObservers()+" observers known.");
 		this.setChanged();
 		this.notifyObservers(arg);
-    }
-	
-    /**
-		* @param size the size of file in bytes.
-     */
-    public void setSize(long size) {
+	}
+
+	/**
+	 * @param size the size of file in bytes.
+	 */
+	public void setSize(long size) {
 		this.size = size;
-    }
-	
-    /**
-		* @return length the size of file in bytes.
-     */
-    public long getSize() {
+	}
+
+	/**
+	 * @return length the size of file in bytes.
+	 */
+	public long getSize() {
 		return size;
-    }
-	
-    private static final long KILO = 1024; //2^10
-    private static final long MEGA = 1048576; // 2^20
-    private static final long GIGA = 1073741824; // 2^30
-	
-    /**
-		* @return The size of the file
-     */
-    public static String getSizeAsString(long size) {
-		if(size < KILO)
+	}
+
+	private static final long KILO = 1024; //2^10
+	private static final long MEGA = 1048576; // 2^20
+	private static final long GIGA = 1073741824; // 2^30
+
+	/**
+	 * @return The size of the file
+	 */
+	public static String getSizeAsString(long size) {
+		if (size < KILO)
 			return size + "B";
-		else if(size < MEGA)
-			return new Long(size/KILO).longValue() + "kB";
-		else if(size < GIGA)
-			return new Long(size/MEGA).longValue() + "MB";
+		else if (size < MEGA)
+			return new Long(size / KILO).longValue() + "kB";
+		else if (size < GIGA)
+			return new Long(size / MEGA).longValue() + "MB";
 		else
-			return new Long(size/GIGA).longValue() + "GB";
-    }
-    
-    public void setComplete(boolean complete) {
-        this.complete = complete;
-		if(complete) {
+			return new Long(size / GIGA).longValue() + "GB";
+	}
+
+	public void setComplete(boolean complete) {
+		this.complete = complete;
+		if (complete) {
 			this.setCurrent(this.getSize());
 			this.callObservers(new Message(Message.PROGRESS, "Complete"));
 //			this.callObservers(new Message(Message.COMPLETE));
@@ -109,44 +109,44 @@ public class Status extends Observable implements Serializable {
 		else
 			this.callObservers(new Message(Message.PROGRESS, "Incomplete"));
 //			this.callObservers(new Message(Message.INCOMPLETE));
-    }
-    
-    public boolean isComplete() {
-        return this.complete;
-    }    
-    
-    public void setCanceled(boolean b) {
+	}
+
+	public boolean isComplete() {
+		return this.complete;
+	}
+
+	public void setCanceled(boolean b) {
 		canceled = b;
-    }
-	
-    public boolean isCanceled() {
+	}
+
+	public boolean isCanceled() {
 		return canceled;
-    }
-    
-    public long getCurrent() {
+	}
+
+	public long getCurrent() {
 		return this.current;
-    }
-	
-    /**
-		* @param current The currently transfered bytes
-     */
-    public void setCurrent(long current) {
+	}
+
+	/**
+	 * @param current The currently transfered bytes
+	 */
+	public void setCurrent(long current) {
 		this.current = current;
 		this.callObservers(new Message(Message.DATA, this));
-    }
-		
-    public void setResume(boolean resume) {
+	}
+
+	public void setResume(boolean resume) {
 		this.resume = resume;
-		if(!resume)
+		if (!resume)
 			this.setCurrent(0);
-    }
-    
-    public boolean isResume() {
+	}
+
+	public boolean isResume() {
 		return this.resume;
-    }
-	
-    public void reset() {
+	}
+
+	public void reset() {
 		this.complete = false;
 		this.canceled = false;
-    }
+	}
 }

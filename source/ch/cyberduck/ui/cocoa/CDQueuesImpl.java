@@ -28,94 +28,95 @@ import java.io.File;
 import org.apache.log4j.Logger;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDQueuesImpl extends Queues { //implements NSTableView.DataSource {
-    private static Logger log = Logger.getLogger(CDBookmarksImpl.class);
-	
-    private static CDQueuesImpl instance;
-	
-    private static final File QUEUE_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Queue.plist"));
-	
-    static {
+	private static Logger log = Logger.getLogger(CDBookmarksImpl.class);
+
+	private static CDQueuesImpl instance;
+
+	private static final File QUEUE_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Queue.plist"));
+
+	static {
 		QUEUE_FILE.getParentFile().mkdir();
-    }
-	
-    public static CDQueuesImpl instance() {
-		if(null == instance) {
+	}
+
+	public static CDQueuesImpl instance() {
+		if (null == instance) {
 			instance = new CDQueuesImpl();
 		}
 		return instance;
-    }
-	
+	}
+
 	protected void finalize() throws Throwable {
 		super.finalize();
 		this.save();
 	}
-	
+
 	public void save() {
 		this.save(QUEUE_FILE);
 	}
-	
+
 	private void save(java.io.File f) {
 		log.debug("save");
-		if(Preferences.instance().getProperty("queue.save").equals("true")) {
+		if (Preferences.instance().getProperty("queue.save").equals("true")) {
 			try {
 				NSMutableArray list = new NSMutableArray();
-				for(int i = 0; i < this.size(); i++) {
+				for (int i = 0; i < this.size(); i++) {
 					list.addObject(this.getItem(i).getAsDictionary());
 				}
 				NSMutableData collection = new NSMutableData();
 				String[] errorString = new String[]{null};
 				collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
-																					   list,
-																					   NSPropertyListSerialization.PropertyListXMLFormat, 
-																					   errorString)
-									  );
+				    list,
+				    NSPropertyListSerialization.PropertyListXMLFormat,
+				    errorString)
+				);
 				//				collection.appendData(NSPropertyListSerialization.XMLDataFromPropertyList(list));
-				if(errorString[0]!=null)
-					log.error("Problem writing queue file: "+errorString[0]);
-				
-				if(collection.writeToURL(f.toURL(), true))
-					log.info("Queue sucessfully saved to :"+f.toString());
+				if (errorString[0] != null)
+					log.error("Problem writing queue file: " + errorString[0]);
+
+				if (collection.writeToURL(f.toURL(), true))
+					log.info("Queue sucessfully saved to :" + f.toString());
 				else
-					log.error("Error saving Queue to :"+f.toString());
+					log.error("Error saving Queue to :" + f.toString());
 			}
-			catch(java.net.MalformedURLException e) {
+			catch (java.net.MalformedURLException e) {
 				log.error(e.getMessage());
 			}
 		}
-    }
+	}
+
 	public void load() {
 		this.load(QUEUE_FILE);
 	}
 
 	private void load(java.io.File f) {
 		log.debug("load");
-		if(f.exists()) {
-			log.info("Found Queue file: "+f.toString());			
+		if (f.exists()) {
+			log.info("Found Queue file: " + f.toString());
 			NSData plistData = new NSData(f);
 			String[] errorString = new String[]{null};
-			Object propertyListFromXMLData = 
-				NSPropertyListSerialization.propertyListFromData(plistData, 
-																 NSPropertyListSerialization.PropertyListImmutable,
-																 new int[]{NSPropertyListSerialization.PropertyListXMLFormat}, 
-																 errorString);
-			if(errorString[0]!=null)
-				log.error("Problem reading queue file: "+errorString[0]);
+			Object propertyListFromXMLData =
+			    NSPropertyListSerialization.propertyListFromData(plistData,
+			        NSPropertyListSerialization.PropertyListImmutable,
+			        new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+			        errorString);
+			if (errorString[0] != null)
+				log.error("Problem reading queue file: " + errorString[0]);
 			else
-				log.info("Successfully read Queue: "+propertyListFromXMLData);
-			if(propertyListFromXMLData instanceof NSArray) {
-				NSArray entries = (NSArray)propertyListFromXMLData;
+				log.info("Successfully read Queue: " + propertyListFromXMLData);
+			if (propertyListFromXMLData instanceof NSArray) {
+				NSArray entries = (NSArray) propertyListFromXMLData;
 				java.util.Enumeration i = entries.objectEnumerator();
 				Object element;
-				while(i.hasMoreElements()) {
+				while (i.hasMoreElements()) {
 					element = i.nextElement();
-					if(element instanceof NSDictionary) {
-						this.addItem(new Queue((NSDictionary)element));
+					if (element instanceof NSDictionary) {
+						this.addItem(new Queue((NSDictionary) element));
 					}
 				}
 			}
 		}
-    }	
+	}
 }
