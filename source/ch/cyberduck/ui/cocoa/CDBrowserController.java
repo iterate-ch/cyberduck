@@ -502,78 +502,73 @@ public class CDBrowserController extends NSObject implements Observer {
 
     public void update(final Observable o, final Object arg) {
         log.debug("update:" + o + "," + arg);
-//		ThreadUtilities.instance().invokeLater(new Runnable() {
-//			public void run() {
-				if (arg instanceof Path) {
-					browserModel.setData(((Path) arg).cache());
-					NSTableColumn selectedColumn = browserModel.selectedColumn() != null ? browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
-					browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
-					browserModel.sort(selectedColumn, browserModel.isSortedAscending());
-					browserTable.reloadData();
-					browserTable.setNeedsDisplay(true);
-					toolbar.validateVisibleItems();
-					window.makeFirstResponder(browserTable);
+		if (arg instanceof Path) {
+			browserModel.setData(((Path) arg).cache());
+			NSTableColumn selectedColumn = browserModel.selectedColumn() != null ? browserModel.selectedColumn() : browserTable.tableColumnWithIdentifier("FILENAME");
+			browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
+			browserModel.sort(selectedColumn, browserModel.isSortedAscending());
+			browserTable.reloadData();
+			browserTable.setNeedsDisplay(true);
+			toolbar.validateVisibleItems();
+			window.makeFirstResponder(browserTable);
+		}
+		else if (arg instanceof Message) {
+			Message msg = (Message) arg;
+			if (msg.getTitle().equals(Message.ERROR)) {
+				if (window().isVisible()) {
+					NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+														 null, //alternative button
+														 null, //other button
+														 window(), //docWindow
+														 null, //modalDelegate
+														 null, //didEndSelector
+														 null, // dismiss selector
+														 null, // context
+														 (String) msg.getContent() // message
+														 );
 				}
-				else if (arg instanceof Message) {
-					Message msg = (Message) arg;
-					if (msg.getTitle().equals(Message.ERROR)) {
-						if (window().isVisible()) {
-							NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-																 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-																 null, //alternative button
-																 null, //other button
-																 window(), //docWindow
-																 null, //modalDelegate
-																 null, //didEndSelector
-																 null, // dismiss selector
-																 null, // context
-																 (String) msg.getContent() // message
-																 );
-						}
-						progressIndicator.stopAnimation(this);
-						statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
-						statusIcon.setNeedsDisplay(true);
-						statusLabel.setObjectValue(msg.getContent());
-						statusLabel.display();
-					}
-					else if (msg.getTitle().equals(Message.REFRESH)) {
-						refreshButtonClicked(null);
-					}
-					// update status label
-					else if (msg.getTitle().equals(Message.PROGRESS)) {
-						statusLabel.setObjectValue(msg.getContent());
-						statusLabel.display();
-						//statusIcon.setImage(isConnected() ? NSImage.imageNamed("online.tiff") : NSImage.imageNamed("offline.tiff"));
-						//statusIcon.setNeedsDisplay(true);
-					}
-					else if (msg.getTitle().equals(Message.OPEN)) {
-						statusIcon.setImage(null);
-						statusIcon.setNeedsDisplay(true);
-						//                CDHistoryImpl.instance().addItem(((Session) o).host);
-						toolbar.validateVisibleItems();
-						window().setDocumentEdited(true);
-					}
-					else if (msg.getTitle().equals(Message.CLOSE)) {
-						window().setDocumentEdited(false);
-					}
-					else if (msg.getTitle().equals(Message.START)) {
-						progressIndicator.startAnimation(this);
-						statusIcon.setImage(null);
-						statusIcon.setNeedsDisplay(true);
-						toolbar.validateVisibleItems();
-					}
-					else if (msg.getTitle().equals(Message.STOP)) {
-						progressIndicator.stopAnimation(this);
-						statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
-						statusLabel.display();
-						//statusIcon.setImage(isConnected() ? NSImage.imageNamed("online.tiff") : NSImage.imageNamed("offline.tiff"));
-						//statusIcon.setNeedsDisplay(true);
-						toolbar.validateVisibleItems();
-					}
-				}
-//			}
-//		}
-//											   );
+				progressIndicator.stopAnimation(this);
+				statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
+				statusIcon.setNeedsDisplay(true);
+				statusLabel.setObjectValue(msg.getContent());
+				statusLabel.display();
+			}
+			else if (msg.getTitle().equals(Message.REFRESH)) {
+				refreshButtonClicked(null);
+			}
+			// update status label
+			else if (msg.getTitle().equals(Message.PROGRESS)) {
+				statusLabel.setObjectValue(msg.getContent());
+				statusLabel.display();
+				//statusIcon.setImage(isConnected() ? NSImage.imageNamed("online.tiff") : NSImage.imageNamed("offline.tiff"));
+				//statusIcon.setNeedsDisplay(true);
+			}
+			else if (msg.getTitle().equals(Message.OPEN)) {
+				statusIcon.setImage(null);
+				statusIcon.setNeedsDisplay(true);
+				//                CDHistoryImpl.instance().addItem(((Session) o).host);
+				toolbar.validateVisibleItems();
+				window().setDocumentEdited(true);
+			}
+			else if (msg.getTitle().equals(Message.CLOSE)) {
+				window().setDocumentEdited(false);
+			}
+			else if (msg.getTitle().equals(Message.START)) {
+				progressIndicator.startAnimation(this);
+				statusIcon.setImage(null);
+				statusIcon.setNeedsDisplay(true);
+				toolbar.validateVisibleItems();
+			}
+			else if (msg.getTitle().equals(Message.STOP)) {
+				progressIndicator.stopAnimation(this);
+				statusLabel.setObjectValue(NSBundle.localizedString("Idle", "No background thread is running"));
+				statusLabel.display();
+				//statusIcon.setImage(isConnected() ? NSImage.imageNamed("online.tiff") : NSImage.imageNamed("offline.tiff"));
+				//statusIcon.setNeedsDisplay(true);
+				toolbar.validateVisibleItems();
+			}
+		}
     }
 	
     // ----------------------------------------------------------

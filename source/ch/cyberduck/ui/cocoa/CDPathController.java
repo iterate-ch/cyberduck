@@ -62,8 +62,6 @@ public class CDPathController extends NSObject implements Observer {
 
     public void update(final Observable o, final Object arg) {
         log.debug("update:" + o + "," + arg);
-		//        ThreadUtilities.instance().invokeLater(new Runnable() {
-		//            public void run() {
 		if (o instanceof Session) {
 			if (arg instanceof Path) {
 				workdir = (Path) arg;
