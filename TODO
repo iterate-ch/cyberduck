@@ -1,0 +1,27 @@
+[OPEN] FTP-SSL Implementation
+	ftps-data       989/udp     # ftp protocol, data, over TLS/SSL
+	ftps-data       989/tcp     # ftp protocol, data, over TLS/SSL
+	ftps            990/udp     # ftp protocol, control, over TLS/SSL
+	ftps            990/tcp     # ftp protocol, control, over TLS/SSL
+[OPEN] NSWorkspace noteFileSystemChangedAtPath when downloading
+[OPEN] SFTP protocol version 4 (support for SSH_FILEXFER_ATTR_OWNERGROUP)
+[OPEN] Group bookmarks (Outline View)
+[OPEN] NSSegmentedControl in toolbar view to switch view
+[OPEN] Adjust icons reflecting progress when downloading files; NSFilewrapper.setIcon()
+[OPEN] Calculate folder sizes
+[OPEN] Manipulating permissions by entering octal value
+[OPEN] SSH Agent Authentication
+[OPEN] Kerberos (GSSAPI) Authentication
+[OPEN] Column View in browser window
+[DONE] Outline View in browser window
+[DONE] Set character encoding per bookmark
+[DONE] History of recently connected hosts in connection dialog
+[DONE] History of recently connected hosts in bookmark menu
+[DONE] Link to forum in Help menu
+[DONE] Selecting remote server timezone in synchronization dialog
+[DONE] Set FTP connect mode per bookmark (FTP)
+[DONE] Show folders in working directory (and autocomplete) in 'Go to Folder' dialog
+[DONE] Preferences previously only avilable using the 'defaults' command
+[DONE] Updated to use Growl 0.6
+[DONE] Manually exclude files in synchronization dialog
+
