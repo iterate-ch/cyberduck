@@ -64,8 +64,6 @@ public class CDHostTableDataSource extends NSObject {
     }
     
     public void removeEntry(int row) {
-//	Host h = (Host)data.get(row);
-//	h.closeSession();
 	data.remove(row);
     }
 }

@@ -65,9 +65,9 @@ public class CDConnectionController extends NSObject implements Observer {
     public NSTextView logView; /* IBOutlet */
     public NSProgressIndicator progressIndicator; /* IBOutlet */
     
-    public NSTableView browserTable; /* IBOutlet */
-    public NSTableView hostTable; /* IBOutlet */
-    
+    public CDBrowserView browserTable; /* IBOutlet */
+    public CDHostView hostTable; /* IBOutlet */
+  
     public CDConnectionController() {
 	super();
 	log.debug("CDConnectionController");
@@ -79,6 +79,8 @@ public class CDConnectionController extends NSObject implements Observer {
 
     public void disconnect(NSObject sender) {
 	log.debug("disconnect");
+	Host host = (Host)((CDHostTableDataSource)hostTable.dataSource()).getEntry(hostTable.selectedRow());
+	host.closeSession();
     }    
 
     public void connect(NSObject sender) {
@@ -86,7 +88,6 @@ public class CDConnectionController extends NSObject implements Observer {
 //	try {
 
             // All we need to connect - default values set in Host.class
-	    Host host = null;
             String server = null;
             String path = null;
 	    String protocol = Preferences.instance().getProperty("connection.protocol.default");
@@ -128,14 +129,13 @@ public class CDConnectionController extends NSObject implements Observer {
 		login = new CDLogin(usernameField.stringValue(), passwordField.stringValue());
 	    }
 	    log.debug(protocol+","+hostField.stringValue()+","+usernameField.stringValue()+","+passwordField.stringValue());
-            
-            ((CDHostView)hostTable).add(host = new Host(protocol, server, port, path, login));
 
-//	    host.status.fireActiveEvent();
+	    Host host = new Host(protocol, server, port, path, login);
 	    mainWindow.setTitle(host.getName());
 
-	    host.addObserver((CDBrowserView)browserTable);
-	    host.addObserver((CDHostView)hostTable);
+	    //@new host.addObserver(transferController);
+	    host.addObserver(browserTable);
+	    host.addObserver(hostTable);
 	    host.addObserver((CDPathPopUpButton)pathPopUpButton);
 	    host.addObserver((CDLogController)logController);
 //	    host.addObserver((CDLogView)logView);
@@ -170,29 +170,34 @@ public class CDConnectionController extends NSObject implements Observer {
     }
 
     public void update(Observable o, Object arg) {
-//	log.debug("update:"+arg);
+	//	log.debug("update:"+arg);
 	if(o instanceof Status) {
-	    Message msg = (Message)arg;
-	    if(msg.getTitle().equals(Message.ERROR)) {
-		//public static void beginAlertSheet( String title, String defaultButton, String alternateButton, String otherButton, NSWindow docWindow, Object modalDelegate, NSSelector didEndSelector, NSSelector didDismissSelector, Object contextInfo, String message)
-		NSAlertPanel.beginAlertSheet(
-			       "Error", //title
-			       "OK",// defaultbutton
-			       null,//alternative button
-			       null,//other button
-			       mainWindow, //docWindow
-			       null, //modalDelegate
-			       null, //didEndSelector
-			       null, // dismiss selector
-			       null, // context
-			       msg.getDescription() // message
-			       );
-	    }
-	    if(msg.getTitle().equals(Message.PROGRESS)) {
-		statusLabel.setStringValue(msg.getDescription());
+	    if(arg instanceof Message) {
+		// show error dialog
+		Message msg = (Message)arg;
+		if(msg.getTitle().equals(Message.ERROR)) {
+		    //public static void beginAlertSheet( String title, String defaultButton, String alternateButton, String otherButton, NSWindow docWindow, Object modalDelegate, NSSelector didEndSelector, NSSelector didDismissSelector, Object contextInfo, String message)
+		    NSAlertPanel.beginAlertSheet(
+				   "Error", //title
+				   "OK",// defaultbutton
+				   null,//alternative button
+				   null,//other button
+				   mainWindow, //docWindow
+				   null, //modalDelegate
+				   null, //didEndSelector
+				   null, // dismiss selector
+				   null, // context
+				   msg.getDescription() // message
+				   );
+		}
+		// update status label
+		if(msg.getTitle().equals(Message.PROGRESS)) {
+		    statusLabel.setStringValue(msg.getDescription());
+		}
 	    }
 	}
 	if(o instanceof Host) {
+	    // update window title
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.SELECTION)) {
@@ -200,6 +205,18 @@ public class CDConnectionController extends NSObject implements Observer {
 		    mainWindow.setTitle(host.getName());
 		}
 	    }
+	    // update Path Combobox
+	    /*
+	    if(arg instanceof Path) {
+		Path p = (Path)arg;
+		pathPopUpButton.removeAllItems();
+		pathPopUpButton.addItem(p);
+		while(!p.isRoot()) {
+		    p = p.getParent();
+		    pathPopUpButton.addItem(p);
+		}
+	    }
+	     */
 	}
     }
     

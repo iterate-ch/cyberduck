@@ -92,124 +92,119 @@ public class HTTPSession extends Session {
 	}
 
         public void download() {
-	    GetMethod GET = null;
-	    try {
-		//                GET = new GetMethod(Path.encode(host.getServerPathAsString()));
-		GET = new GetMethod(this.getAbsolute());
-		GET.setUseDisk(false);
-
-		if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
-		    // enter the username and password for the proxy
-		    String authString = Preferences.instance().getProperty("connection.proxy.username")+":"+Preferences.instance().getProperty("connection.proxy.password");
-		    // base64 encode the password.
-		    String auth = "Basic " + Base64.encode(authString.getBytes());
-		    // Set up the connection so it knows we are sending proxy user information
-		    GET.addRequestHeader( "Proxy-Authorization", auth );
-		}
-		GET.addRequestHeader("Accept", GET.getAcceptHeader());
-
-		GET.addRequestHeader("User-Agent", "Cyberduck/" + Preferences.instance().getProperty("cyberduck.version"));
-		if(this.status.isResume()) {
-		    GET.addRequestHeader("Range", "bytes=" + this.status.getCurrent() + "-");
-		}
-		String v = GET.isHttp11() ? "HTTP/1.1" : "HTTP/1.0";
-		HTTPSession.this.log("GET " + this.getAbsolute() + " " + v, Message.TRANSCRIPT);
-		Header[] requestHeaders = GET.getRequestHeaders();
-		for(int i = 0; i < requestHeaders.length; i++) {
-		    HTTPSession.this.log(requestHeaders[i].toExternalForm(), Message.TRANSCRIPT);
-		}
-		//                this.check();
-		int response = HTTP.executeMethod(GET);
-		HTTPSession.this.log(response + " " + HttpStatus.getStatusText(response) + "\n", Message.TRANSCRIPT);
-		Header[] responseHeaders = GET.getResponseHeaders();
-		for(int i = 0; i < responseHeaders.length; i++) {
-		    HTTPSession.this.log(responseHeaders[i].toExternalForm(), Message.TRANSCRIPT);
-		}
-		HTTPSession.this.log("\n", Message.TRANSCRIPT);
-
-		if(response == HttpStatus.SC_MOVED_PERMANENTLY || response == HttpStatus.SC_MOVED_TEMPORARILY) {
+	    new Thread() {
+		public void run() {
+		    GetMethod GET = null;
 		    try {
-			URL redirect = new URL(GET.getResponseHeader("Location").getValue());
-			//@todo                        host.setAddress(redirect);
-   //host.transfer(new TransferAction(TransferAction.GET));
-			return;
-		    }
-		    catch(MalformedURLException e) {
-			throw new HttpException(HttpStatus.getStatusText(response), response);
-		    }
-		}
+			GET = new GetMethod(HTTPFile.this.getAbsolute());
+			GET.setUseDisk(false);
+			if(Preferences.instance().getProperty("connection.proxy.authenticate").equals("true")) {
+			    // enter the username and password for the proxy
+			    String authString = Preferences.instance().getProperty("connection.proxy.username")+":"+Preferences.instance().getProperty("connection.proxy.password");
+			    // base64 encode the password.
+			    String auth = "Basic " + Base64.encode(authString.getBytes());
+			    // Set up the connection so it knows we are sending proxy user information
+			    GET.addRequestHeader( "Proxy-Authorization", auth );
+			}
+			GET.addRequestHeader("Accept", GET.getAcceptHeader());
+			GET.addRequestHeader("User-Agent", "Cyberduck/" + Preferences.instance().getProperty("cyberduck.version"));
+			if(HTTPFile.this.status.isResume()) {
+			    GET.addRequestHeader("Range", "bytes=" + HTTPFile.this.status.getCurrent() + "-");
+			}
+			String v = GET.isHttp11() ? "HTTP/1.1" : "HTTP/1.0";
+			HTTPSession.this.log("GET " + HTTPFile.this.getAbsolute() + " " + v, Message.TRANSCRIPT);
+			Header[] requestHeaders = GET.getRequestHeaders();
+			for(int i = 0; i < requestHeaders.length; i++) {
+			    HTTPSession.this.log(requestHeaders[i].toExternalForm(), Message.TRANSCRIPT);
+			}
+			int response = HTTP.executeMethod(GET);
+			HTTPSession.this.log(response + " " + HttpStatus.getStatusText(response), Message.TRANSCRIPT);
+			Header[] responseHeaders = GET.getResponseHeaders();
+			for(int i = 0; i < responseHeaders.length; i++) {
+			    HTTPSession.this.log(responseHeaders[i].toExternalForm(), Message.TRANSCRIPT);
+			}
+			if(response == HttpStatus.SC_MOVED_PERMANENTLY || response == HttpStatus.SC_MOVED_TEMPORARILY) {
+			    try {
+				URL url = new URL(GET.getResponseHeader("Location").getValue());
+				HTTPSession.this.close();
+				//@todo url.getQuery()
+				Host host = new Host(url.getProtocol(), url.getHost(), url.getPort(), url.getPath(), null);
+				HTTPFile redirect = new HTTPFile(host.getWorkdir());
+				HTTPFile.this.download();
+				return;
+			    }
+			    catch(MalformedURLException e) {
+				throw new HttpException(HttpStatus.getStatusText(response), response);
+			    }
+			}
 
-		if(!HttpStatus.isSuccessfulResponse(response)) {
-		    throw new HttpException(HttpStatus.getStatusText(response), response);
-		}
+			if(!HttpStatus.isSuccessfulResponse(response)) {
+			    throw new HttpException(HttpStatus.getStatusText(response), response);
+			}
 
-		if(this.status.isResume()) {
-		    if(GET.getStatusCode() != HttpStatus.SC_PARTIAL_CONTENT) {
-			HTTPSession.this.log("Resumption not possible.", Message.ERROR);
-			this.status.setCurrent(0);
-			this.status.setResume(false);
-		    }
-		    else {
-			HTTPSession.this.log("Resume at " + this.status.getCurrent() + ".", Message.PROGRESS);
-		    }
-		}
+			if(HTTPFile.this.status.isResume()) {
+			    if(GET.getStatusCode() != HttpStatus.SC_PARTIAL_CONTENT) {
+				HTTPSession.this.log("Resumption not possible.", Message.ERROR);
+				HTTPFile.this.status.setCurrent(0);
+				HTTPFile.this.status.setResume(false);
+			    }
+			    else {
+				HTTPSession.this.log("Resume at " + HTTPFile.this.status.getCurrent() + ".", Message.PROGRESS);
+			    }
+			}
 
-		Header rangeHeader = GET.getResponseHeader("Content-Range"); //Content-Range: bytes 21010-47021/47022
-		Header lengthHeader = GET.getResponseHeader("Content-Length");
-		Header transferEncodingHeader = GET.getResponseHeader("Bookmark-Encoding");
-		if(lengthHeader != null) {
-		    try {
-			this.attributes.setSize(Integer.parseInt(lengthHeader.getValue()));
+			Header rangeHeader = GET.getResponseHeader("Content-Range"); //Content-Range: bytes 21010-47021/47022
+			Header lengthHeader = GET.getResponseHeader("Content-Length");
+			Header transferEncodingHeader = GET.getResponseHeader("Bookmark-Encoding");
+			if(lengthHeader != null) {
+			    try {
+				HTTPFile.this.attributes.setSize(Integer.parseInt(lengthHeader.getValue()));
+			    }
+			    catch(NumberFormatException e) {
+				HTTPFile.this.attributes.setSize(-1);
+			    }
+			}
+			if(rangeHeader != null) {
+			    try {
+				String r = rangeHeader.getValue();
+				int l = Integer.parseInt(r.substring(v.indexOf('/') + 1));
+				HTTPFile.this.attributes.setSize(l);
+			    }
+			    catch(NumberFormatException e) {
+				HTTPFile.this.attributes.setSize(-1);
+			    }
+			}
+			else if(null != transferEncodingHeader) {
+			    if("chunked".equalsIgnoreCase(transferEncodingHeader.getValue())) {
+				HTTPFile.this.attributes.setSize(-1);
+			    }
+			}
+
+			OutputStream out = new FileOutputStream(HTTPFile.this.getLocal(), HTTPFile.this.status.isResume());
+			if(out == null) {
+			    throw new IOException("Unable to buffer data");
+			 }	
+			 HTTPSession.this.log("Opening data stream...", Message.PROGRESS);
+			 InputStream in = HTTP.getInputStream(GET);
+			 if(in == null) {
+			     throw new IOException("Unable opening data stream");
+			 }
+			 HTTPSession.this.log("Downloading "+HTTPFile.this.getName()+"...", Message.PROGRESS);
+			 HTTPFile.this.download(in, out);
 		    }
-		    catch(NumberFormatException e) {
-			this.attributes.setSize(-1);
+		    catch(IOException e) {
+			HTTPSession.this.log(e.getMessage(), Message.ERROR);
+		    }
+		    catch(HttpException e) {
+			Header[] responseHeaders = GET.getResponseHeaders();
+			for(int i = 0; i < responseHeaders.length; i++) {
+			    HTTPSession.this.log(responseHeaders[i].toExternalForm(), Message.TRANSCRIPT);
+			}
+			HTTPSession.this.log(e.getReplyCode() + " " +  e.getMessage(), Message.ERROR);
 		    }
 		}
-		if(rangeHeader != null) {
-		    try {
-			String r = rangeHeader.getValue();
-			int l = Integer.parseInt(r.substring(v.indexOf('/') + 1));
-			this.attributes.setSize(l);
-		    }
-		    catch(NumberFormatException e) {
-			this.attributes.setSize(-1);
-		    }
-		}
-		else if(null != transferEncodingHeader) {
-		    if("chunked".equalsIgnoreCase(transferEncodingHeader.getValue())) {
-			this.attributes.setSize(-1);
-		    }
-		}
-		/*
-		 //@todo		OutputStream out = new FileOutputStream(host.getLocalTempPath().toString(), this.status.isResume());
-		 if(out == null) {
-		     throw new IOException("Unable to buffer data");
-		 }
-		 //		this.check();
-		 this.log("Opening data stream...", Message.PROGRESS);
-		 InputStream in = HTTP.getInputStream(GET);
-		 if(in == null) {
-		     throw new IOException("Unable opening data stream");
-		 }
-		 this.log("Downloading "+host.getServerFilename()+"...", Message.PROGRESS);
-		 this.download(in, out);
-	    }
-		 */
-		//            else {
-  //                throw new HttpException("Unknown action: " + action.toString());
-  //            }
+	    }.start();
 	}
-	    catch(IOException e) {
-		HTTPSession.this.log(e.getMessage(), Message.ERROR);
-	    }
-	    catch(HttpException e) {
-		Header[] responseHeaders = GET.getResponseHeaders();
-		for(int i = 0; i < responseHeaders.length; i++) {
-		    HTTPSession.this.log(responseHeaders[i].toExternalForm(), Message.TRANSCRIPT);
-		}
-		HTTPSession.this.log(e.getReplyCode() + " " +  e.getMessage(), Message.ERROR);
-	    }
-        }
 
         public void upload() {
             HTTPSession.this.log("Invalid Operation", Message.ERROR);
@@ -226,13 +221,8 @@ public class HTTPSession extends Session {
 
     private HttpClient HTTP;
 
-    /**
-     * @param client The client to use which does implement the http protocol
-     * @param action The <code>TransferAction</code> to execute after the connection has been opened
-     * @param b The <code>Bookmark</code> object
-     * @param secure If the connection is secure
-     */
-    public HTTPSession(Host h) {//, TransferAction action) {
+
+    public HTTPSession(Host h) {
         super(h);
         this.HTTP = new HttpClient();
     }

@@ -28,7 +28,7 @@ import java.awt.Dimension;
 
 import ch.cyberduck.core.Preferences;
 
-public class PreferencesImpl extends Preferences {
+public class PreferencesImpl extends Preferences { //PreferencesImplSwing
 
     private static Logger log = Logger.getLogger(Preferences.class);
 

@@ -77,6 +77,7 @@ public class CDMainController extends NSObject {
     }
 
     public void newfolderSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+        log.debug("newfolderSheetDidEnd");
 	switch(returncode) {
 	    case(NSAlertPanel.DefaultReturn):
 		/*
@@ -90,6 +91,7 @@ public class CDMainController extends NSObject {
     }
 
     public void closeNewfolderSheet(NSObject sender) {
+        log.debug("closeNewfolderSheet");
 	NSApplication.sharedApplication().endSheet(newfolderSheet, ((NSButton)sender).tag());
     }
     
@@ -126,6 +128,7 @@ public class CDMainController extends NSObject {
 	}
 
     public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
+	log.debug("deleteSheetDidEnd");
 	sheet.close();
 	switch(returnCode) {
 	    case(NSAlertPanel.DefaultReturn):
@@ -177,6 +180,7 @@ public class CDMainController extends NSObject {
     }
 
     public void connectButtonPressed(NSObject sender) {
+	log.debug("connectButtonPressed");
 	mainWindow.makeFirstResponder(connectionSheet);
 	//NSApplication.beginSheet( NSWindow sheet, NSWindow docWindow, Object modalDelegate, NSSelector didEndSelector, Object contextInfo)
 	NSApplication.sharedApplication().beginSheet(
@@ -191,11 +195,13 @@ public class CDMainController extends NSObject {
     }
     
     public void preferencesButtonPressed(NSObject sender) {
-        NSApplication.loadNibNamed("Preferences", this);
+	log.debug("preferencesButtonPressed");
+	NSApplication.loadNibNamed("Preferences", this);
         preferencesWindow.makeKeyAndOrderFront(this);
     }
 
     public void connectionSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+	log.debug("connectionSheetDidEnd");
 	sheet.close();
     }
     
@@ -272,7 +278,7 @@ public class CDMainController extends NSObject {
     }
 
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
+	return new NSArray(new Object[] {"New Connection", "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Refresh", "Download", "Delete", "New Folder", "Get Info", NSToolbarItem.FlexibleSpaceItemIdentifier, "Toggle Drawer", NSToolbarItem.CustomizeToolbarItemIdentifier, NSToolbarItem.SpaceItemIdentifier});
     }
 
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
@@ -280,7 +286,26 @@ public class CDMainController extends NSObject {
     }
 
     public boolean validateToolbarItem(NSToolbarItem item) {
-        //@todo disable if action not possible
+//	log.debug("validateToolbarItem");
+	String label = item.label();
+	if(label.equals("Path")) {
+	    return pathPopUpButton.numberOfItems() > 0;
+	}
+	if(label.equals("Refresh")) {
+	    //return ;
+	}
+	if(label.equals("Download")) {
+	    return browserTable.numberOfRows() > 0;
+	}
+	if(label.equals("Delete")) {
+	    return browserTable.numberOfRows() > 0;
+	}
+	if(label.equals("New Folder")) {
+	    //return ;
+	}
+	if(label.equals("Get Info")) {
+	    return browserTable.numberOfRows() > 0;
+	}
 	return true;
     }
 
@@ -314,15 +339,18 @@ public class CDMainController extends NSObject {
     }
     
     public void donationSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
+	log.debug("donationSheetDidEnd");
 	sheet.close();
         NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
     }
     
     public void closeDonationSheet(NSObject sender) {
+	log.debug("closeDonationSheet");
 	NSApplication.sharedApplication().endSheet(donationSheet, NSAlertPanel.AlternateReturn);
     }
     
     public void donateButtonPressed(NSObject sender) {
+	log.debug("donateButtonPressed");
         this.closeDonationSheet(this);
 	log.debug("donate");
 	try {

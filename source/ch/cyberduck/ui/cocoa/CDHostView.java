@@ -60,14 +60,6 @@ public class CDHostView extends NSTableView implements Observer {
 //	this.tableColumnWithIdentifier("HOST").setDataCell(new CDHostCell());;
     }
 
-    public void add(Host h) {
-	model.addEntry(h);
-    }
-
-    public void remove(Host h) {
-	model.removeEntry(h);
-    }
-
     // ----------------------------------------------------------
     // Delegate methods
     // ----------------------------------------------------------
@@ -104,8 +96,11 @@ public class CDHostView extends NSTableView implements Observer {
 
     public void tableViewSelectionDidChange(NSNotification notification) {
 	log.debug("tableViewSelectionDidChange");
-	Host h = (Host)model.getEntry(this.selectedRow());
-	h.callObservers(Message.SELECTION);
+	int row = this.selectedRow();
+	if(row != -1) {
+	    Host h = (Host)model.getEntry(this.selectedRow());
+	    h.callObservers(Message.SELECTION);
+	}
     }
 
     // ----------------------------------------------------------
@@ -140,7 +135,7 @@ public class CDHostView extends NSTableView implements Observer {
 		    this.reloadData();
 		}
 		if(msg.getTitle().equals(Message.CLOSE)) {
-		    model.addEntry(o);
+		    model.removeEntry(o);
 		    this.reloadData();
 		}
 	    }

@@ -25,7 +25,7 @@ import com.apple.cocoa.application.*;
 
 import ch.cyberduck.core.Preferences;
 
-public class CDPreferencesImpl extends Preferences {
+public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
 
     private static Logger log = Logger.getLogger(Preferences.class);
 

@@ -114,6 +114,7 @@ public class CDBrowserView extends NSTableView implements Observer, NSDraggingDe
 		    model.addEntry(i.next());
 		    this.reloadData();
 		}
+		this.setNeedsDisplay(true);
 	    }
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;

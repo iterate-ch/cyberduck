@@ -65,7 +65,6 @@ public abstract class Preferences {//extends Properties {
         if(current == null) {
 //            PREFS_DIRECTORY.mkdir();
             String strVendor = System.getProperty("java.vendor");
-            log.debug(strVendor);
             if(strVendor.indexOf("Apple") != -1)
                 current = new ch.cyberduck.ui.cocoa.CDPreferencesImpl();
             else

@@ -109,7 +109,12 @@ public abstract class Session {//extends Thread {
 //        log.debug("[Session] log("+message+","+type+")");
 
 	host.status.setMessage(message, title);
-//	host.status.setMessage(host.getName()+System.getProperty("line.separator")+message, title);
+
+        if(title.equals(Message.TRANSCRIPT)) {
+            Transcript.instance().transcript(message);
+        }
+	
+	//	host.status.setMessage(host.getName()+System.getProperty("line.separator")+message, title);
 	/*
 //@todo        bookmark.status.setMessage(message, type);
         if(type.equals(Message.TRANSCRIPT)) {
