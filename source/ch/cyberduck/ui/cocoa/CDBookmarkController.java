@@ -56,9 +56,9 @@ public class CDBookmarkController extends CDController {
 		this.protocolPopup.removeAllItems();
 		this.protocolPopup.addItemsWithTitles(new NSArray(new String[] {FTP_STRING, SFTP_STRING}));
 		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalent("F");
+		this.protocolPopup.itemWithTitle(FTP_STRING).setKeyEquivalent("f");
 		this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-		this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalent("S");
+		this.protocolPopup.itemWithTitle(SFTP_STRING).setKeyEquivalent("s");
 		this.protocolPopup.setTarget(this);
 		this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[]{Object.class}));
 	}
