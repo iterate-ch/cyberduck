@@ -40,7 +40,7 @@ public class CDInfoController {
 	// Outlets
 	// ----------------------------------------------------------
 
-	private NSWindow window; // IBOutlet
+	private NSWindow window; //IBOutlet
 
 	public void setWindow(NSWindow window) {
 		this.window = window;
@@ -54,49 +54,49 @@ public class CDInfoController {
 		return this.window;
 	}
 	
-	private NSTextField filenameField; // IBOutlet
+	private NSTextField filenameField; //IBOutlet
 
 	public void setFilenameField(NSTextField filenameField) {
 		this.filenameField = filenameField;
 	}
 
-	private NSTextField groupField; // IBOutlet
+	private NSTextField groupField; //IBOutlet
 
 	public void setGroupField(NSTextField groupField) {
 		this.groupField = groupField;
 	}
 
-	private NSTextField kindField; // IBOutlet
+	private NSTextField kindField; //IBOutlet
 
 	public void setKindField(NSTextField kindField) {
 		this.kindField = kindField;
 	}
 
-	private NSTextField modifiedField; // IBOutlet
+	private NSTextField modifiedField; //IBOutlet
 
 	public void setModifiedField(NSTextField modifiedField) {
 		this.modifiedField = modifiedField;
 	}
 
-	private NSTextField ownerField; // IBOutlet
+	private NSTextField ownerField; //IBOutlet
 
 	public void setOwnerField(NSTextField ownerField) {
 		this.ownerField = ownerField;
 	}
 
-	private NSTextField sizeField; // IBOutlet
+	private NSTextField sizeField; //IBOutlet
 
 	public void setSizeField(NSTextField sizeField) {
 		this.sizeField = sizeField;
 	}
 
-	private NSTextField pathField; // IBOutlet
+	private NSTextField pathField; //IBOutlet
 
 	public void setPathField(NSTextField pathField) {
 		this.pathField = pathField;
 	}
 
-	private NSBox permissionsBox; // IBOutlet
+	private NSBox permissionsBox; //IBOutlet
 
 	public void setPermissionsBox(NSBox permissionsBox) {
 		this.permissionsBox = permissionsBox;
@@ -109,17 +109,17 @@ public class CDInfoController {
 		this.recursiveCheckbox.setState(NSCell.OffState);
 	}
 
-	public NSButton ownerr; // IBOutlet
-	public NSButton ownerw; // IBOutlet
-	public NSButton ownerx; // IBOutlet
-	public NSButton groupr; // IBOutlet
-	public NSButton groupw; // IBOutlet
-	public NSButton groupx; // IBOutlet
-	public NSButton otherr; // IBOutlet
-	public NSButton otherw; // IBOutlet
-	public NSButton otherx; // IBOutlet
+	public NSButton ownerr; //IBOutlet
+	public NSButton ownerw; //IBOutlet
+	public NSButton ownerx; //IBOutlet
+	public NSButton groupr; //IBOutlet
+	public NSButton groupw; //IBOutlet
+	public NSButton groupx; //IBOutlet
+	public NSButton otherr; //IBOutlet
+	public NSButton otherw; //IBOutlet
+	public NSButton otherx; //IBOutlet
 
-	private NSImageView iconImageView; // IBOutlet
+	private NSImageView iconImageView; //IBOutlet
 
 	public void setIconImageView(NSImageView iconImageView) {
 		this.iconImageView = iconImageView;

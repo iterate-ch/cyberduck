@@ -167,7 +167,7 @@ public class FTPPath extends Path {
 		log.debug("rename:" + filename);
 		try {
 			session.check();
-			session.FTP.chdir(this.getAbsolute());
+			session.FTP.chdir(this.getParent().getAbsolute());
 			session.log("Renaming " + this.getName() + " to " + filename, Message.PROGRESS);
 			session.FTP.rename(this.getName(), filename);
 			this.setPath(this.getParent().getAbsolute(), filename);
