@@ -66,6 +66,10 @@ public class CDBrowserTable extends NSTableView {
 
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
 	log.debug("finishedDraggingImage:"+operation);
+	Path p = (Path)browserModel.getEntry(this.selectedRow());
+	p.setLocal(new java.io.File(dropDestination.getPath(), p.getName()));
+	CDTransferController controller = new CDTransferController(p, Queue.KIND_DOWNLOAD);
+	controller.transfer(p.status.isResume());
     }
     
     public boolean ignoreModifierKeysWhileDragging() {
@@ -133,12 +137,9 @@ public class CDBrowserTable extends NSTableView {
     public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
 	log.debug("namesOfPromisedFilesDroppedAtDestination:"+dropDestination);
 	this.dropDestination = dropDestination;
-	Path p = (Path)browserModel.getEntry(CDBrowserTable.this.selectedRow());
+	Path p = (Path)browserModel.getEntry(this.selectedRow());
 
-	p.setLocal(new File(dropDestination.getPath(), p.getName()));
-	CDTransferController controller = new CDTransferController(p, Queue.KIND_DOWNLOAD);
-	controller.transfer(p.status.isResume());
-	
+	log.debug("namesOfPromisedFilesDroppedAtDestination:return:"+p.getName());
 	return new NSArray(new String[]{p.getName()});
     }
 
@@ -439,8 +440,11 @@ public class CDBrowserTable extends NSTableView {
 
 //	    pboard.declareTypes(new NSArray(NSPasteboard.FilesPromisePboardType), CDBrowserTable.this);
 //	    pboard.setStringForType(p.getName(), NSPasteboard.FilesPromisePboardType);
-//	    NSPoint dragPosition = CDBrowserTable.this.convertPointFromView(rectOfRow(selectedRow()).origin(), CDBrowserTable.this);
-	    NSPoint dragPosition = tableView.convertPointFromView(rectOfRow(selectedRow()).origin(), null);
+
+	    NSRect rowRect = tableView.convertRectFromView(tableView.rectOfRow(tableView.selectedRow()), tableView);
+	    NSPoint dragPosition = rowRect.origin();	
+
+//	    NSPoint dragPosition = tableView.convertPointFromView(rectOfRow(selectedRow()).origin(), null);
 	    NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
 	    //• 	The typeArray argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
 
