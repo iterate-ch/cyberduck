@@ -28,6 +28,20 @@
 						<key>Name</key>
 						<string>working directory</string>
 					</dict>
+					<key>encoding</key>
+					<dict>
+						<key>Description</key>
+						<string>The character set to decode filenames.</string>
+						<key>Name</key>
+						<string>encoding</string>
+					</dict>
+					<key>show hidden</key>
+					<dict>
+						<key>Description</key>
+						<string>Show hidden files.</string>
+						<key>Name</key>
+						<string>show hidden</string>
+					</dict>
 				</dict>
 				<key>Description</key>
 				<string>A Browser</string>
@@ -112,19 +126,39 @@
 				<key>Name</key>
 				<string>create folder</string>
 			</dict>
-			<key>CreateFile</key>
-			<dict>
-				<key>Description</key>
-				<string>Create a new empty file.</string>
-				<key>Name</key>
-				<string>create file</string>
-			</dict>
 			<key>DeleteFile</key>
 			<dict>
 				<key>Description</key>
 				<string>Delete file.</string>
 				<key>Name</key>
 				<string>delete file</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>Description</key>
+						<string>The filename.</string>
+						<key>Name</key>
+						<string>with name</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>EditFile</key>
+			<dict>
+				<key>Description</key>
+				<string>Edit file.</string>
+				<key>Name</key>
+				<string>edit file</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>Description</key>
+						<string>The filename.</string>
+						<key>Name</key>
+						<string>with name</string>
+					</dict>
+				</dict>
 			</dict>
 			<key>Refresh</key>
 			<dict>
@@ -139,6 +173,16 @@
 				<string>Download file.</string>
 				<key>Name</key>
 				<string>download</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>Description</key>
+						<string>The filename.</string>
+						<key>Name</key>
+						<string>with name</string>
+					</dict>
+				</dict>
 			</dict>
 			<key>Upload</key>
 			<dict>
@@ -146,6 +190,16 @@
 				<string>Upload file.</string>
 				<key>Name</key>
 				<string>upload</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>Description</key>
+						<string>The filename.</string>
+						<key>Name</key>
+						<string>with name</string>
+					</dict>
+				</dict>
 			</dict>
 			<key>Goto</key>
 			<dict>
@@ -153,6 +207,33 @@
 				<string>Go to Folder.</string>
 				<key>Name</key>
 				<string>go to</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>Description</key>
+						<string>The filename.</string>
+						<key>Name</key>
+						<string>with name</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>List</key>
+			<dict>
+				<key>Description</key>
+				<string>List folder content.</string>
+				<key>Name</key>
+				<string>list</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>Description</key>
+						<string>The filename.</string>
+						<key>Name</key>
+						<string>with name</string>
+					</dict>
+				</dict>
 			</dict>
 			<key>GetURL</key>
 			<dict>

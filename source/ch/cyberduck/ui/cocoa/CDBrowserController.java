@@ -65,15 +65,95 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 		
 	public Object handleMountScriptCommand(NSScriptCommand command) {
-		log.debug("mount:"+command);
+		log.debug("handleMountScriptCommand:"+command);
 		NSDictionary args = command.evaluatedArguments();
 		Host host = new Host((String)args.objectForKey("Protocol"),
 							 (String)args.objectForKey("Host"));
 		host.setCredentials((String)args.objectForKey("Username"), null);
 		this.mount(host);
-		return this;
+		return null;
+	}
+	
+	public Object handleDisconnectScriptCommand(NSScriptCommand command) {
+		this.unmount();
+		return null;
+	}
+	
+	public Object handleCreateFolderScriptCommand(NSScriptCommand command) {
+		if(this.isMounted()) {
+			NSDictionary args = command.evaluatedArguments();
+			Path path = PathFactory.createPath(this.workdir().getSession(), 
+												this.workdir().getAbsolute(), 
+												(String)args.objectForKey("Path"));
+			path.mkdir(false);
+			workdir.list(true);
+		}
+		return null;
 	}
 		
+	public Object handleEditFileScriptCommand(NSScriptCommand command) {
+		if(this.isMounted()) {
+			NSDictionary args = command.evaluatedArguments();
+			Path path = PathFactory.createPath(this.workdir().getSession(), 
+												this.workdir().getAbsolute(), 
+												(String)args.objectForKey("Path"));
+			Editor editor = new Editor();
+			editor.open(path);
+		}
+		return null;
+	}
+	
+	public Object handleDeleteScriptCommand(NSScriptCommand command) {
+		if(this.isMounted()) {
+			NSDictionary args = command.evaluatedArguments();
+			Path path = PathFactory.createPath(this.workdir().getSession(), 
+												this.workdir().getAbsolute(), 
+												(String)args.objectForKey("Path"));
+			path.delete();
+		}
+		return null;
+	}
+	
+	public Object handleRefreshScriptCommand(NSScriptCommand command) {
+		if(this.isMounted()) {
+			this.reloadButtonClicked(null);
+		}
+		return null;
+	}
+	
+	public Object handleGotoScriptCommand(NSScriptCommand command) {
+		if(this.isMounted()) {
+			NSDictionary args = command.evaluatedArguments();
+			Path path = PathFactory.createPath(this.workdir().getSession(), 
+											   this.workdir().getAbsolute(), 
+											   (String)args.objectForKey("Path"));
+			path.list();
+		}
+		return null;
+	}
+
+	public Object handleDownloadScriptCommand(NSScriptCommand command) {
+		if(this.isMounted()) {
+			NSDictionary args = command.evaluatedArguments();
+			Path path = PathFactory.createPath(this.workdir().getSession(), 
+											   this.workdir().getAbsolute(), 
+											   (String)args.objectForKey("Path"));
+			path.download();
+		}
+		return null;
+	}
+
+	public Object handleUploadScriptCommand(NSScriptCommand command) {
+		if(this.isMounted()) {
+			NSDictionary args = command.evaluatedArguments();
+			Path path = PathFactory.createPath(this.workdir().getSession(), 
+											   this.workdir().getAbsolute(), 
+											   new Local((String)args.objectForKey("Path")));
+			path.upload();
+		}
+		return null;
+	}
+	
 	// ----------------------------------------------------------
 	// Constructor
 	// ----------------------------------------------------------
@@ -869,16 +949,6 @@ public class CDBrowserController extends CDController implements Observer {
 		    this.workdir()); //contextInfo
 	}
 
-	public void fileButtonClicked(Object sender) {
-		log.debug("fileButtonClicked");
-		CDFileController controller = new CDFileController();
-		this.beginSheet(controller.window(), //sheet
-		    controller, //modal delegate
-		    new NSSelector("newFileSheetDidEnd",
-		        new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
-		    this.workdir()); //contextInfo
-	}
-
 	public void folderButtonClicked(Object sender) {
 		log.debug("folderButtonClicked");
 		CDFolderController controller = new CDFolderController();
@@ -1284,11 +1354,11 @@ public class CDBrowserController extends CDController implements Observer {
 				host.setHostKeyVerificationController(new CDHostKeyController(this));
 			}
 			host.setLoginController(new CDLoginController(this));
-//			new Thread() {
-//				public void run() {
-					session.mount();
-//				}
-//			}.start();
+			//			new Thread() {
+			//				public void run() {
+			session.mount();
+			//				}
+			//			}.start();
 		}
 	}
 

@@ -640,11 +640,6 @@ public class CDMainController extends NSObject {
 		return orderedDocs;
 	}
 
-	public void insertInOrderedBrowsersAtIndex(CDBrowserController doc, int index) {
-		log.debug("insertInOrderedBrowsersAtIndex"+doc);
-		doc.window().makeKeyAndOrderFront(null);
-	}
-
 	// ----------------------------------------------------------
 
 	private String readVersionInfo() {

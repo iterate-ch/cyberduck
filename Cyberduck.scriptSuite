@@ -42,6 +42,24 @@
 						<key>AppleEventCode</key>
 						<string>WoRy</string>
 						<key>ReadOnly</key>
+						<string>Yes</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+					<key>encoding</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>EnCd</string>
+						<key>ReadOnly</key>
+						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+					<key>show hidden</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>ShHd</string>
+						<key>ReadOnly</key>
 						<string>No</string>
 						<key>Type</key>
 						<string>NSString</string>
@@ -53,10 +71,12 @@
 					<string>handleMountScriptCommand:</string>
 					<key>Disconnect</key>
 					<string>handleDisconnectScriptCommand:</string>
+					<key>Refresh</key>
+					<string>handleRefreshScriptCommand:</string>
+					<key>Goto</key>
+					<string>handleGotoScriptCommand:</string>
 					<key>CreateFolder</key>
 					<string>handleCreateFolderScriptCommand:</string>
-					<key>CreateFile</key>
-					<string>handleCreateFileScriptCommand:</string>
 					<key>EditFile</key>
 					<string>handleEditFileScriptCommand:</string>
 					<key>DeleteFile</key>
@@ -65,10 +85,6 @@
 					<string>handleDownloadScriptCommand:</string>
 					<key>Upload</key>
 					<string>handleUploadScriptCommand:</string>
-					<key>Refresh</key>
-					<string>handleRefreshScriptCommand:</string>
-					<key>Goto</key>
-					<string>handleGotoScriptCommand:</string>
 				</dict>
 			</dict>
 		</dict>
@@ -160,6 +176,18 @@
 				<string>CrEr</string>
 				<key>CommandClass</key>
 				<string>NSScriptCommand</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PaTh</string>
+						<key>Optional</key>
+						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+				</dict>
 			</dict>
 			<key>DeleteFile</key>
 			<dict>
@@ -167,6 +195,37 @@
 				<string>DeLe</string>
 				<key>CommandClass</key>
 				<string>NSScriptCommand</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PaTh</string>
+						<key>Optional</key>
+						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>EditFile</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>EdIt</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PaTh</string>
+						<key>Optional</key>
+						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+				</dict>
 			</dict>
 			<key>Download</key>
 			<dict>
@@ -174,6 +233,18 @@
 				<string>DoAd</string>
 				<key>CommandClass</key>
 				<string>NSScriptCommand</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PaTh</string>
+						<key>Optional</key>
+						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+				</dict>
 			</dict>
 			<key>Upload</key>
 			<dict>
@@ -181,6 +252,18 @@
 				<string>UpAd</string>
 				<key>CommandClass</key>
 				<string>NSScriptCommand</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PaTh</string>
+						<key>Optional</key>
+						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+				</dict>
 			</dict>
 			<key>Refresh</key>
 			<dict>
@@ -195,6 +278,41 @@
 				<string>GoTo</string>
 				<key>CommandClass</key>
 				<string>NSScriptCommand</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PaTh</string>
+						<key>Optional</key>
+						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>List</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>LiSt</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PaTh</string>
+						<key>Optional</key>
+						<string>No</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+				</dict>
+				<key>ResultAppleEventCode</key>
+				<string>LiSt</string>
+				<key>Type</key>
+				<string>NSArray</string>
 			</dict>
 			<key>GetURL</key>
 			<dict>
