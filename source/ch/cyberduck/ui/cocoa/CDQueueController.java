@@ -216,7 +216,7 @@ public class CDQueueController extends CDController {
 			else {
 				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL(),
 																			  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-				this.localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiples files", ""),
+				this.localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiple files", ""),
 																				//				    +" ("+q.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
 																				TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 			}

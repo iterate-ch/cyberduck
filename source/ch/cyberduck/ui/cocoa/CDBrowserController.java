@@ -1497,7 +1497,7 @@ public class CDBrowserController extends CDController implements Observer {
 		if(itemIdentifier.equals("Synchronize")) {
 			item.setLabel(NSBundle.localizedString("Sync", "Toolbar item"));
 			item.setPaletteLabel(NSBundle.localizedString("Synchronize", "Toolbar item"));
-			item.setToolTip(NSBundle.localizedString("Synchronize local with remote files", "Toolbar item tooltip"));
+			item.setToolTip(NSBundle.localizedString("Synchronize files", "Toolbar item tooltip"));
 			item.setImage(NSImage.imageNamed("sync32.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("syncButtonClicked", new Class[]{Object.class}));
