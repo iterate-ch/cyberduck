@@ -120,7 +120,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                             if (filename.indexOf(".duck") != -1) {
                                 BookmarkList.instance().addItem(BookmarkList.instance().importBookmark(new java.io.File(filename)), row);
 								tableView.reloadData();
-                                tableView.selectRow(row, false);
+                                //tableView.selectRow(row, false);
                             }
 							// drop of a file from the finder > upload to the remote host this bookmark
 							// points to
@@ -163,7 +163,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
                             }
                             draggedRows = null;
 							tableView.reloadData();
-							tableView.selectRow(row, false);
+							//tableView.selectRow(row, false);
                             return true;
                         }
                     }

@@ -239,11 +239,13 @@
 	<target name="clean" description="Delete compiled classes and jar files">
 		<delete dir="${build.classes}"/>
 		<delete dir="${build}/Cyberduck.build"/>
-		<delete file="${build}/cocoa.jar"/>
-		<delete file="${build}/swing.jar"/>
-		<delete file="${build}/core.jar"/>
-		<delete file="${build}/ftp.jar"/>
-		<delete file="${build}/http.jar"/>
+		<delete>
+            <fileset dir="${build}" includes="*.jar"/>
+		</delete>
+		<delete>
+            <fileset dir="${build}" includes="*.jnilib"/>
+		</delete>
+		<delete dir="${build}/Cyberduck.app"/>
 	</target>
 
 

@@ -50,6 +50,7 @@ public class CDTranscriptImpl implements Transcript {
 		this.textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0), 
 															 message + "\n"); // @warning very bad performance
 		this.textView.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
-        this.textView.scrollRangeToVisible(new NSRange(textView.textStorage().length(), 0));
+		//int loc = textView.textStorage().length();
+		//this.textView.scrollRangeToVisible(new NSRange(loc, 0));
     }
 }
