@@ -366,14 +366,11 @@ public abstract class TransportProtocolCommon implements TransportProtocol,
 		if(log.isDebugEnabled()) {
 			log.info("Sending "+msg.getMessageName());
 		}
-
 		int currentState = state.getValue();
-
 		if(sender instanceof SshKeyExchange ||
 		    sender instanceof TransportProtocolCommon ||
 		    (currentState == TransportProtocolState.CONNECTED)) {
 			sshOut.sendMessage(msg);
-
 			if(currentState == TransportProtocolState.CONNECTED) {
 				if(sendIgnore) {
 					byte[] count = new byte[1];

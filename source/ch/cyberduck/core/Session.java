@@ -212,6 +212,7 @@ public abstract class Session extends Observable {
 				Session.this.noop();
 			}
 			catch(IOException e) {
+				log.error(e.getMessage());
 				this.cancel();
 			}
 		}

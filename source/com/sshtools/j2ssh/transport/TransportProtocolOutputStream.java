@@ -88,8 +88,7 @@ class TransportProtocolOutputStream {
 	 * @param msg
 	 * @throws TransportProtocolException
 	 */
-	protected synchronized void sendMessage(SshMessage msg)
-	    throws TransportProtocolException {
+	protected synchronized void sendMessage(SshMessage msg) throws TransportProtocolException {
 		try {
 			// Get the algorithm objects
 			algorithms.lock();
@@ -180,10 +179,10 @@ class TransportProtocolOutputStream {
 			}
 		}
 		catch(IOException ioe) {
-			//			if(transport.getState().getValue() != TransportProtocolState.DISCONNECTED) {
-			throw new TransportProtocolException("IO Error on socket: "+
-												 ioe.getMessage());
-			//			}
+			if(transport.getState().getValue() != TransportProtocolState.DISCONNECTED) {
+				throw new TransportProtocolException("IO Error on socket: "+
+													 ioe.getMessage());
+			}
 		}
 	}
 }
