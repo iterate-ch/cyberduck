@@ -56,7 +56,6 @@ public class CDConnectionController implements Observer {
     private NSPopUpButton historyPopup;
 
     public void setHistoryPopup(NSPopUpButton historyPopup) {
-        log.debug("setHistoryPopup");
         this.historyPopup = historyPopup;
         this.historyPopup.setImage(NSImage.imageNamed("history.tiff"));
         Iterator i = CDHistoryImpl.instance().iterator();
@@ -69,7 +68,7 @@ public class CDConnectionController implements Observer {
     }
 
     public void historySelectionChanged(Object sender) {
-        log.debug("historySelectionChanged:" + sender);
+        log.debug("historySelectionChanged");
 //		if(historyPopup.titleOfSelectedItem().equals("Clear")) {
 //			CDHistoryImpl.instance().clear();
 //			historyPopup.removeAllItems();
@@ -91,8 +90,8 @@ public class CDConnectionController implements Observer {
     }
 
     public void bookmarksSelectionChanged(Object sender) {
-        log.debug("bookmarksSelectionChanged:" + sender);
-        this.selectionChanged(CDBookmarksImpl.instance().getItem(bookmarksPopup.indexOfSelectedItem() - 1));
+        log.debug("bookmarksSelectionChanged");
+        this.selectionChanged(CDBookmarksImpl.instance().getItem(bookmarksPopup.indexOfSelectedItem()));
     }
 
     private Rendezvous rendezvous;

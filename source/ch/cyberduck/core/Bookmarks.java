@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 /**
  * Keeps track of user bookmarks
  * The hosts are stored in a hashmap where host.getURL() is the key
@@ -30,6 +32,8 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class Bookmarks {
+	private static Logger log = Logger.getLogger(Bookmarks.class);
+
 	protected List data = new ArrayList();
 
 	public Bookmarks() {
@@ -68,6 +72,7 @@ public abstract class Bookmarks {
 	}
 
 	public Host getItem(int index) {
+//		log.debug("getItem:"+index);
 		Host result = (Host) this.data.get(index);
 		if (null == result)
 			throw new IllegalArgumentException("No host with index " + index + " in Bookmarks.");

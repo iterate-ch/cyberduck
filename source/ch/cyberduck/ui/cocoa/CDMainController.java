@@ -303,11 +303,11 @@ public class CDMainController {
 
     public boolean applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
-				
-         // Writing version info
+		//Writing version info
 		//this.saveVersionInfo();
         Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
-		return this.checkForMountedBrowsers(app);
+//		return this.checkForMountedBrowsers(app);
+		return true;
     }
 	
 	private boolean checkForMountedBrowsers(NSApplication app) {

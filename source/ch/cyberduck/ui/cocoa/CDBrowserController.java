@@ -49,6 +49,7 @@ public class CDBrowserController implements Observer {
     }
 
 	public static CDBrowserController controllerForWindow(NSWindow window) {
+		//2004-02-24 23:01:38.648 Cyberduck[1096] warning: can't find Java class for Objective C class (null).  Returning com/apple/cocoa/foundation/NSObject.
         Object delegate = window.delegate();
         if (delegate != null && delegate instanceof CDBrowserController) {
             return (CDBrowserController) delegate;
@@ -195,16 +196,6 @@ public class CDBrowserController implements Observer {
             Path p = (Path) browserModel.getEntry(browserTable.selectedRow()); //last row selected
             if (p.isFile() || browserTable.numberOfSelectedRows() > 1) {
 				this.downloadButtonClicked(sender);
-                NSEnumerator enum = browserTable.selectedRowEnumerator();
-                if (this.isMounted()) {
-                    while (enum.hasMoreElements()) {
-                        Session session = pathController.workdir().getSession().copy();
-                        Path path = ((Path) browserModel.getEntry(((Integer) enum.nextElement()).intValue())).copy(session);
-                        Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
-                        CDQueuesImpl.instance().addItem(queue);
-                        CDQueueController.instance().startItem(queue);
-                    }
-                }
             }
             if (p.isDirectory()) {
                 p.list();
@@ -253,7 +244,7 @@ public class CDBrowserController implements Observer {
         NSSelector setUsesAlternatingRowBackgroundColorsSelector =
                 new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
         if (setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
-            this.bookmarkTable.setUsesAlternatingRowBackgroundColors(true);
+            this.bookmarkTable.setUsesAlternatingRowBackgroundColors(CDPreferencesImpl.instance().getProperty("browser.alternatingRows").equals("true"));
         }
         NSSelector setGridStyleMaskSelector =
                 new NSSelector("setGridStyleMask", new Class[]{int.class});
