@@ -364,7 +364,7 @@ public class CDQueueController extends CDController {
 			item.setToolTip(NSBundle.localizedString("Remove", ""));
 			item.setImage(NSImage.imageNamed("clean.tiff"));
 			item.setTarget(this);
-			item.setAction(new NSSelector("removeButtonClicked", new Class[]{Object.class}));
+			item.setAction(new NSSelector("deleteButtonClicked", new Class[]{Object.class}));
 			return item;
 		}
 		if(itemIdentifier.equals("Clear")) {
@@ -507,7 +507,7 @@ public class CDQueueController extends CDController {
 		}
 	}
 
-	public void removeButtonClicked(Object sender) {
+	public void deleteButtonClicked(Object sender) {
 		NSEnumerator enum = queueTable.selectedRowEnumerator();
 		int i = 0;
 		while(enum.hasMoreElements()) {
@@ -608,7 +608,7 @@ public class CDQueueController extends CDController {
 		if(identifier.equals("Clear")) {
 			return this.queueTable.numberOfRows() > 0;
 		}
-		if(identifier.equals("Remove") || identifier.equals("removeButtonClicked:")) {
+		if(identifier.equals("Remove") || identifier.equals("deleteButtonClicked:")) {
 			if(this.queueTable.numberOfSelectedRows() < 1) {
 				return false;
 			}

@@ -56,21 +56,30 @@
 - (void)keyDown:(NSEvent *)theEvent;
 {
     NSString *characters;
-    unichar firstCharacter;
+    unichar key;
 	
     characters = [theEvent characters];
-    firstCharacter = [characters characterAtIndex:0];
+    key = [characters characterAtIndex:0];
+	
+    if (key == NSCarriageReturnCharacter || key == NSEnterCharacter) {
+        if ([[self target] respondsToSelector:[self doubleAction]]) {
+            [[self target] performSelector:[self doubleAction] withObject:self];
+            return;
+        }
+    } 
+	else if (key == NSDeleteCharacter || key == NSBackspaceCharacter) {
+        if ([[self target] respondsToSelector:@selector(deleteButtonClicked:)]) {
+            [[self target] performSelector:@selector(deleteButtonClicked:) withObject:self];
+            return;
+        }
+    }
 	
 	NSTableColumn *typeAheadColumn = [self _typeAheadSelectionColumn];
-	if (typeAheadColumn != nil && ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:firstCharacter] || (![[NSCharacterSet controlCharacterSet] characterIsMember:firstCharacter]))) {
-
-//		int rowIndex;
+	if (typeAheadColumn != nil && ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] || (![[NSCharacterSet controlCharacterSet] characterIsMember:key]))) {
 		int count = [[self dataSource] numberOfRowsInTableView:self];
 		int startIndex = [self selectedRow];
 		int rowIndex = startIndex < count - 1 ? startIndex : -1;
 		rowIndex++;
-		
-//		for (rowIndex = 0; rowIndex < [[self dataSource] numberOfRowsInTableView: self]; rowIndex++) {
 		for (; rowIndex < count; rowIndex++) {
 			NSAttributedString *name = [[self dataSource] tableView:self 
 							   objectValueForTableColumn:typeAheadColumn
