@@ -366,7 +366,21 @@ public class CDConnectionController extends CDController {
 	public void getPasswordFromKeychain(Object sender) {
 		if(hostPopup.stringValue() != null && !hostPopup.stringValue().equals("") &&
 		    usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
-			Login l = new Login(new Host(hostPopup.stringValue(), portField.stringValue()), usernameField.stringValue(), null);
+			String protocol = null;
+			if(protocolPopup.selectedItem().title().equals(SFTP_STRING)) {
+				protocol = Session.SFTP;
+			}
+			else if(protocolPopup.selectedItem().title().equals(FTP_STRING)) {
+				protocol = Session.FTP;
+			}
+			else {
+				protocol = Preferences.instance().getProperty("connection.protocol.default");
+			}
+			Login l = new Login(new Host(protocol,
+										 hostPopup.stringValue(), 
+										 Integer.parseInt(portField.stringValue())), 
+								usernameField.stringValue(), 
+								null);
 			String passFromKeychain = l.getInternetPasswordFromKeychain();
 			if(null == passFromKeychain || passFromKeychain.equals("")) {
 				passFromKeychain = l.getPasswordFromKeychain(); //legacy support

@@ -236,7 +236,8 @@ public class Host {
 			case Session.SSH_PORT:
 				return Session.SFTP;
 		}
-		throw new IllegalArgumentException("Cannot find default protocol for port number "+port);
+		log.warn("Cannot find default protocol for port number "+port);
+		return Preferences.instance().getProperty("connection.protocol.default");
 	}
 
 	private static int getDefaultPort(String protocol) {
@@ -244,6 +245,13 @@ public class Host {
 			return Session.FTP_PORT;
 		}
 		else if(protocol.equals(Session.SFTP)) {
+			return Session.SSH_PORT;
+		}
+		log.warn("Cannot find default port number for protocol "+protocol);
+		if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP)) {
+			return Session.FTP_PORT;
+		}
+		if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP)) {
 			return Session.SSH_PORT;
 		}
 		throw new IllegalArgumentException("Unsupported protocol: "+protocol);
