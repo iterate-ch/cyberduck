@@ -46,21 +46,19 @@
  */
 package com.sshtools.j2ssh.connection;
 
-import com.sshtools.j2ssh.transport.MessageNotAvailableException;
-import com.sshtools.j2ssh.transport.MessageStoreEOFException;
-import com.sshtools.j2ssh.transport.SshMessageStore;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.sshtools.j2ssh.transport.MessageNotAvailableException;
+import com.sshtools.j2ssh.transport.MessageStoreEOFException;
+import com.sshtools.j2ssh.transport.SshMessageStore;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -89,7 +87,8 @@ public class ChannelInputStream extends InputStream {
 
         if (type != null) {
             filter[0] = SshMsgChannelExtendedData.SSH_MSG_CHANNEL_EXTENDED_DATA;
-        } else {
+        }
+        else {
             filter[0] = SshMsgChannelData.SSH_MSG_CHANNEL_DATA;
         }
     }
@@ -104,8 +103,6 @@ public class ChannelInputStream extends InputStream {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int available() {
@@ -116,7 +113,7 @@ public class ChannelInputStream extends InputStream {
 
             if (log.isDebugEnabled() && (available > 0)) {
                 log.debug(String.valueOf(available) +
-                    " bytes of channel data available");
+                        " bytes of channel data available");
             }
 
             available = (available >= 0) ? available : 0;
@@ -127,21 +124,25 @@ public class ChannelInputStream extends InputStream {
                 if (type != null) {
                     SshMsgChannelExtendedData msg = (SshMsgChannelExtendedData) messageStore.peekMessage(filter);
                     available = msg.getChannelData().length;
-                } else {
+                }
+                else {
                     SshMsgChannelData msg = (SshMsgChannelData) messageStore.peekMessage(filter);
                     available = msg.getChannelData().length;
                 }
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.valueOf(available) +
-                        " bytes of channel data available");
+                            " bytes of channel data available");
                 }
-            } catch (MessageStoreEOFException mse) {
+            }
+            catch (MessageStoreEOFException mse) {
                 log.debug("No bytes available since the MessageStore is EOF");
                 available = -1;
-            } catch (MessageNotAvailableException mna) {
+            }
+            catch (MessageNotAvailableException mna) {
                 available = 0;
-            } catch (InterruptedException ex) {
+            }
+            catch (InterruptedException ex) {
                 log.info("peekMessage was interrupted, no data available!");
                 available = 0;
             }
@@ -151,8 +152,6 @@ public class ChannelInputStream extends InputStream {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     public void close() throws IOException {
@@ -161,8 +160,6 @@ public class ChannelInputStream extends InputStream {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isClosed() {
@@ -170,8 +167,6 @@ public class ChannelInputStream extends InputStream {
     }
 
     /**
-     *
-     *
      * @param interrupt
      */
     public void setBlockInterrupt(int interrupt) {
@@ -186,10 +181,7 @@ public class ChannelInputStream extends InputStream {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws java.io.IOException
      * @throws InterruptedIOException
      */
@@ -198,23 +190,20 @@ public class ChannelInputStream extends InputStream {
             block();
 
             return msgdata[currentPos++] & 0xFF;
-        } catch (MessageStoreEOFException mse) {
+        }
+        catch (MessageStoreEOFException mse) {
             return -1;
-        } catch (InterruptedException ex) {
-            throw new InterruptedIOException(
-                "The thread was interrupted whilst waiting for channel data");
+        }
+        catch (InterruptedException ex) {
+            throw new InterruptedIOException("The thread was interrupted whilst waiting for channel data");
         }
     }
 
     /**
-     *
-     *
      * @param b
      * @param off
      * @param len
-     *
      * @return
-     *
      * @throws IOException
      * @throws IOException
      */
@@ -234,16 +223,17 @@ public class ChannelInputStream extends InputStream {
             }
 
             return actual;
-        } catch (MessageStoreEOFException mse) {
+        }
+        catch (MessageStoreEOFException mse) {
             return -1;
-        } catch (InterruptedException ex) {
-            throw new InterruptedIOException(
-                "The thread was interrupted whilst waiting for channel data");
+        }
+        catch (InterruptedException ex) {
+            throw new InterruptedIOException("The thread was interrupted whilst waiting for channel data");
         }
     }
 
     private void block()
-        throws MessageStoreEOFException, InterruptedException, IOException {
+            throws MessageStoreEOFException, InterruptedException, IOException {
         if (msgdata == null) {
             collectNextMessage();
         }
@@ -257,9 +247,9 @@ public class ChannelInputStream extends InputStream {
         synchronized (lock) {
             if (isBlocking) {
                 throw new IOException((("Cannot read from InputStream! " +
-                    blockingThread) == null) ? "**NULL THREAD**"
-                                             : (blockingThread.getName() +
-                    " is currently performing a blocking operation"));
+                        blockingThread) == null) ? "**NULL THREAD**"
+                        : (blockingThread.getName() +
+                        " is currently performing a blocking operation"));
             }
 
             log.debug("Starting blocking operation");
@@ -277,7 +267,7 @@ public class ChannelInputStream extends InputStream {
     }
 
     private void collectNextMessage()
-        throws MessageStoreEOFException, InterruptedException, IOException {
+            throws MessageStoreEOFException, InterruptedException, IOException {
         // Collect the next message
         startBlockingOperation();
 
@@ -290,7 +280,8 @@ public class ChannelInputStream extends InputStream {
                         log.debug("Waiting for extended channel data");
                         msg = (SshMsgChannelExtendedData) messageStore.getMessage(filter,
                                 interrupt);
-                    } catch (MessageNotAvailableException ex) {
+                    }
+                    catch (MessageNotAvailableException ex) {
                         // Ignore the timeout but this allows us to review the
                         // InputStreams state once in a while
                     }
@@ -299,10 +290,12 @@ public class ChannelInputStream extends InputStream {
                 if (msg != null) {
                     msgdata = msg.getChannelData();
                     currentPos = 0;
-                } else {
+                }
+                else {
                     throw new MessageStoreEOFException();
                 }
-            } else {
+            }
+            else {
                 SshMsgChannelData msg = null;
 
                 while ((msg == null) && !isClosed()) {
@@ -310,7 +303,8 @@ public class ChannelInputStream extends InputStream {
                         log.debug("Waiting for channel data");
                         msg = (SshMsgChannelData) messageStore.getMessage(filter,
                                 interrupt);
-                    } catch (MessageNotAvailableException ex1) {
+                    }
+                    catch (MessageNotAvailableException ex1) {
                         // Ignore the timeout but this allows us to review the
                         // InputStreams state once in a while
                     }
@@ -319,11 +313,13 @@ public class ChannelInputStream extends InputStream {
                 if (msg != null) {
                     msgdata = msg.getChannelData();
                     currentPos = 0;
-                } else {
+                }
+                else {
                     throw new MessageStoreEOFException();
                 }
             }
-        } finally {
+        }
+        finally {
             stopBlockingOperation();
         }
     }

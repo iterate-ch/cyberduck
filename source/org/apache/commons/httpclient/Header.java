@@ -71,54 +71,57 @@ package org.apache.commons.httpclient;
  */
 public class Header extends NameValuePair {
 
-	// ----------------------------------------------------------- Constructors
+    // ----------------------------------------------------------- Constructors
 
-	/**
-	 * Default constructor.
-	 */
-	public Header() {
-		this(null, null);
-	}
+    /**
+     * Default constructor.
+     */
+    public Header() {
+        this(null, null);
+    }
 
-	/**
-	 * Constructor.
-	 * @param name the header name
-	 * @param name the header value
-	 */
-	public Header(String name, String value) {
-		super(name, value);
-	}
+    /**
+     * Constructor.
+     *
+     * @param name the header name
+     * @param name the header value
+     */
+    public Header(String name, String value) {
+        super(name, value);
+    }
 
-	// --------------------------------------------------------- Public Methods
+    // --------------------------------------------------------- Public Methods
 
-	/**
-	 * Get a {@link String} representation of me, suitable
-	 * for use in an HTTP head.
-	 */
-	public String toExternalForm() {
-		return ((null == getName() ? "" : getName()) +
-		    ": " +
-		    (null == getValue() ? "" : getValue()) +
-		    "\r\n");
-	}
+    /**
+     * Get a {@link String} representation of me, suitable
+     * for use in an HTTP head.
+     */
+    public String toExternalForm() {
+        return ((null == getName() ? "" : getName()) +
+                ": " +
+                (null == getValue() ? "" : getValue()) +
+                "\r\n");
+    }
 
-	/**
-	 * Returns a {@link String} representation of me.
-	 * @see #toExternalForm
-	 */
-	public String toString() {
-		return ((null == getName() ? "" : getName()) +
-		    ": " +
-		    (null == getValue() ? "" : getValue()));
-	}
+    /**
+     * Returns a {@link String} representation of me.
+     *
+     * @see #toExternalForm
+     */
+    public String toString() {
+        return ((null == getName() ? "" : getName()) +
+                ": " +
+                (null == getValue() ? "" : getValue()));
+    }
 
-	/**
-	 * Returns an array of {@link HeaderElement}s
-	 * constructed from my value.
-	 * @see HeaderElement#parse
-	 */
-	public HeaderElement[] getValues() throws HttpException {
-		return HeaderElement.parse(getValue());
-	}
+    /**
+     * Returns an array of {@link HeaderElement}s
+     * constructed from my value.
+     *
+     * @see HeaderElement#parse
+     */
+    public HeaderElement[] getValues() throws HttpException {
+        return HeaderElement.parse(getValue());
+    }
 
 }

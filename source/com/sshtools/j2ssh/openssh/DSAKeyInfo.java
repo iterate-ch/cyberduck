@@ -26,21 +26,17 @@
  */
 package com.sshtools.j2ssh.openssh;
 
-import com.sshtools.j2ssh.util.SimpleASNReader;
-import com.sshtools.j2ssh.util.SimpleASNWriter;
-
 import java.io.IOException;
-
 import java.math.BigInteger;
-
 import java.security.spec.DSAPrivateKeySpec;
 import java.security.spec.DSAPublicKeySpec;
 import java.security.spec.KeySpec;
 
+import com.sshtools.j2ssh.util.SimpleASNReader;
+import com.sshtools.j2ssh.util.SimpleASNWriter;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -61,7 +57,7 @@ public class DSAKeyInfo implements KeyInfo {
      * @param y
      */
     public DSAKeyInfo(BigInteger p, BigInteger q, BigInteger g, BigInteger x,
-        BigInteger y) {
+                      BigInteger y) {
         this.p = p;
         this.q = q;
         this.g = g;
@@ -70,8 +66,6 @@ public class DSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getG() {
@@ -79,8 +73,6 @@ public class DSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getP() {
@@ -88,8 +80,6 @@ public class DSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getQ() {
@@ -97,8 +87,6 @@ public class DSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getX() {
@@ -106,8 +94,6 @@ public class DSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getY() {
@@ -115,8 +101,6 @@ public class DSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public KeySpec getPrivateKeySpec() {
@@ -124,8 +108,6 @@ public class DSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public KeySpec getPublicKeySpec() {
@@ -133,16 +115,12 @@ public class DSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @param asn
-     *
      * @return
-     *
      * @throws IOException
      */
     public static DSAKeyInfo getDSAKeyInfo(SimpleASNReader asn)
-        throws IOException {
+            throws IOException {
         asn.assertByte(0x30); // SEQUENCE
 
         int length = asn.getLength();
@@ -166,13 +144,11 @@ public class DSAKeyInfo implements KeyInfo {
         byte[] paramX = asn.getData();
 
         return new DSAKeyInfo(new BigInteger(paramP), new BigInteger(paramQ),
-            new BigInteger(paramG), new BigInteger(paramX),
-            new BigInteger(paramY));
+                new BigInteger(paramG), new BigInteger(paramX),
+                new BigInteger(paramY));
     }
 
     /**
-     *
-     *
      * @param asn
      * @param keyInfo
      */

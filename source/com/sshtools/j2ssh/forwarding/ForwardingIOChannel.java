@@ -26,18 +26,15 @@
  */
 package com.sshtools.j2ssh.forwarding;
 
-import com.sshtools.j2ssh.connection.IOChannel;
+import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-//import java.net.InetSocketAddress;
-import java.io.IOException;
+import com.sshtools.j2ssh.connection.IOChannel;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -53,18 +50,17 @@ public class ForwardingIOChannel extends IOChannel implements ForwardingChannel 
      * @param portToConnectOrBind
      * @param originatingHost
      * @param originatingPort
-     *
      * @throws ForwardingConfigurationException
+     *
      */
     public ForwardingIOChannel(String forwardType, String name, /*ForwardingConfiguration config,*/
-        String hostToConnectOrBind, int portToConnectOrBind,
-        String originatingHost, int originatingPort)
-        throws ForwardingConfigurationException {
+                               String hostToConnectOrBind, int portToConnectOrBind,
+                               String originatingHost, int originatingPort)
+            throws ForwardingConfigurationException {
         if (!forwardType.equals(LOCAL_FORWARDING_CHANNEL) &&
                 !forwardType.equals(REMOTE_FORWARDING_CHANNEL) &&
                 !forwardType.equals(X11_FORWARDING_CHANNEL)) {
-            throw new ForwardingConfigurationException(
-                "The forwarding type is invalid");
+            throw new ForwardingConfigurationException("The forwarding type is invalid");
         }
 
         channel = new ForwardingChannelImpl(forwardType, name,
@@ -73,8 +69,6 @@ public class ForwardingIOChannel extends IOChannel implements ForwardingChannel 
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getChannelOpenData() {
@@ -82,8 +76,6 @@ public class ForwardingIOChannel extends IOChannel implements ForwardingChannel 
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getChannelConfirmationData() {
@@ -95,8 +87,6 @@ public class ForwardingIOChannel extends IOChannel implements ForwardingChannel 
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getChannelType() {
@@ -104,8 +94,6 @@ public class ForwardingIOChannel extends IOChannel implements ForwardingChannel 
     }
 
     /**
-     *
-     *
      * @return
      */
     protected int getMinimumWindowSpace() {
@@ -113,8 +101,6 @@ public class ForwardingIOChannel extends IOChannel implements ForwardingChannel 
     }
 
     /**
-     *
-     *
      * @return
      */
     protected int getMaximumWindowSpace() {
@@ -122,8 +108,6 @@ public class ForwardingIOChannel extends IOChannel implements ForwardingChannel 
     }
 
     /**
-     *
-     *
      * @return
      */
     protected int getMaximumPacketSize() {
@@ -131,8 +115,6 @@ public class ForwardingIOChannel extends IOChannel implements ForwardingChannel 
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getOriginatingHost() {
@@ -140,8 +122,6 @@ public class ForwardingIOChannel extends IOChannel implements ForwardingChannel 
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getOriginatingPort() {
@@ -149,8 +129,6 @@ public class ForwardingIOChannel extends IOChannel implements ForwardingChannel 
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getHostToConnectOrBind() {
@@ -158,8 +136,6 @@ public class ForwardingIOChannel extends IOChannel implements ForwardingChannel 
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getPortToConnectOrBind() {
@@ -167,22 +143,17 @@ public class ForwardingIOChannel extends IOChannel implements ForwardingChannel 
     }
 
     /**
-     *
-     *
      * @param request
      * @param wantReply
      * @param requestData
-     *
      * @throws IOException
      */
     protected void onChannelRequest(String request, boolean wantReply,
-        byte[] requestData) throws IOException {
+                                    byte[] requestData) throws IOException {
         connection.sendChannelRequestFailure(this);
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void onChannelOpen() throws IOException {

@@ -26,16 +26,8 @@
  */
 package com.sshtools.j2ssh.transport.publickey.rsa;
 
-import com.sshtools.j2ssh.io.ByteArrayReader;
-import com.sshtools.j2ssh.io.ByteArrayWriter;
-import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
-import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
-import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
-
 import java.io.IOException;
-
 import java.math.BigInteger;
-
 import java.security.KeyFactory;
 import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
@@ -43,10 +35,14 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 
+import com.sshtools.j2ssh.io.ByteArrayReader;
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
+import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
+import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -69,7 +65,6 @@ public class SshRsaPrivateKey extends SshPrivateKey {
      * Creates a new SshRsaPrivateKey object.
      *
      * @param encoded
-     *
      * @throws InvalidSshKeyException
      */
     public SshRsaPrivateKey(byte[] encoded) throws InvalidSshKeyException {
@@ -94,16 +89,14 @@ public class SshRsaPrivateKey extends SshPrivateKey {
             KeyFactory kf = KeyFactory.getInstance("RSA");
             prvKey = (RSAPrivateKey) kf.generatePrivate(prvSpec);
             pubKey = (RSAPublicKey) kf.generatePublic(pubSpec);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new InvalidSshKeyException();
         }
     }
 
     /**
-     *
-     *
      * @param obj
-     *
      * @return
      */
     public boolean equals(Object obj) {
@@ -115,8 +108,6 @@ public class SshRsaPrivateKey extends SshPrivateKey {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int hashCode() {
@@ -124,8 +115,6 @@ public class SshRsaPrivateKey extends SshPrivateKey {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getAlgorithmName() {
@@ -133,8 +122,6 @@ public class SshRsaPrivateKey extends SshPrivateKey {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getBitLength() {
@@ -142,8 +129,6 @@ public class SshRsaPrivateKey extends SshPrivateKey {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getEncoded() {
@@ -157,14 +142,13 @@ public class SshRsaPrivateKey extends SshPrivateKey {
             baw.writeBigInteger(prvKey.getPrivateExponent());
 
             return baw.toByteArray();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             return null;
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public SshPublicKey getPublicKey() {
@@ -172,10 +156,7 @@ public class SshRsaPrivateKey extends SshPrivateKey {
     }
 
     /**
-     *
-     *
      * @param data
-     *
      * @return
      */
     public byte[] generateSignature(byte[] data) {
@@ -189,7 +170,8 @@ public class SshRsaPrivateKey extends SshPrivateKey {
             baw.writeBinaryString(sig.sign());
 
             return baw.toByteArray();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return null;
         }
     }

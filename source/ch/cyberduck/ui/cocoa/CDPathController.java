@@ -21,9 +21,8 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSPopUpButton;
 import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSSelector;
 import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.foundation.NSSelector;
 
 import java.util.ArrayList;
 import java.util.List;

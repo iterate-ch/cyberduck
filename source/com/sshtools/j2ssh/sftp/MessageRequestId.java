@@ -26,13 +26,11 @@
  */
 package com.sshtools.j2ssh.sftp;
 
-import com.sshtools.j2ssh.io.*;
+import com.sshtools.j2ssh.io.UnsignedInteger32;
 
 
 interface MessageRequestId {
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getId();

@@ -58,11 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.MatchResult;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
+import org.apache.oro.text.regex.*;
 
 import ch.cyberduck.core.Path;
 
@@ -70,50 +66,43 @@ import ch.cyberduck.core.Path;
  * Special implementation VMSFTPEntryParser with versioning turned on.
  * This parser removes all duplicates and only leaves the version with the highest
  * version number for each filename.
- * 
+ * <p/>
  * This is a sample of VMS LIST output
- *   
- *  "1-JUN.LIS;1              9/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
- *  "1-JUN.LIS;2              9/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
- *  "DATA.DIR;1               1/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
+ * <p/>
+ * "1-JUN.LIS;1              9/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
+ * "1-JUN.LIS;2              9/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
+ * "DATA.DIR;1               1/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
  * <P>
- * 
- * @author  <a href="Winston.Ojeda@qg.com">Winston Ojeda</a>
+ *
+ * @author <a href="Winston.Ojeda@qg.com">Winston Ojeda</a>
  * @author <a href="mailto:scohen@apache.org">Steve Cohen</a>
  * @author <a href="sestegra@free.fr">Stephane ESTE-GRACIAS</a>
  * @version $Id$
- * 
  * @see org.apache.commons.net.ftp.FTPFileEntryParser FTPFileEntryParser (for usage instructions)
  */
-public class VMSVersioningFTPEntryParser extends VMSFTPEntryParser
-{
+public class VMSVersioningFTPEntryParser extends VMSFTPEntryParser {
 
     private Perl5Matcher _preparse_matcher_;
     private Pattern _preparse_pattern_;
     private static final String PRE_PARSE_REGEX =
-        "(.*);([0-9]+)\\s*.*"; 
+            "(.*);([0-9]+)\\s*.*";
 
     /**
-     * Constructor for a VMSFTPEntryParser object.  Sets the versioning member 
+     * Constructor for a VMSFTPEntryParser object.  Sets the versioning member
      * to the supplied value.
-     *  
-     * @exception IllegalArgumentException
-     * Thrown if the regular expression is unparseable.  Should not be seen 
-     * under normal conditions.  It it is seen, this is a sign that 
-     * <code>REGEX</code> is  not a valid regular expression.
+     *
+     * @throws IllegalArgumentException Thrown if the regular expression is unparseable.  Should not be seen
+     *                                  under normal conditions.  It it is seen, this is a sign that
+     *                                  <code>REGEX</code> is  not a valid regular expression.
      */
-    public VMSVersioningFTPEntryParser()
-    {
+    public VMSVersioningFTPEntryParser() {
         super();
-        try 
-        {
+        try {
             _preparse_matcher_ = new Perl5Matcher();
             _preparse_pattern_ = new Perl5Compiler().compile(PRE_PARSE_REGEX);
-        } 
-        catch (MalformedPatternException e) 
-        {
-            throw new IllegalArgumentException (
-                "Unparseable regex supplied:  " + PRE_PARSE_REGEX);
+        }
+        catch (MalformedPatternException e) {
+            throw new IllegalArgumentException("Unparseable regex supplied:  " + PRE_PARSE_REGEX);
         }
 
     }
@@ -122,6 +111,7 @@ public class VMSVersioningFTPEntryParser extends VMSFTPEntryParser
     private class NameVersion {
         String name;
         int versionNumber;
+
         NameVersion(String name, String vers) {
             this.name = name;
             this.versionNumber = Integer.parseInt(vers);
@@ -134,15 +124,14 @@ public class VMSVersioningFTPEntryParser extends VMSFTPEntryParser
      * multiple files with the same name to remove the duplicates ..
      *
      * @param original Original list
-     *
      * @return Original list purged of duplicates
      */
     public List preParse(Path parent, List original) {
-    	original = super.preParse(parent, original);
+        original = super.preParse(parent, original);
         HashMap existingEntries = new HashMap();
         ListIterator iter = original.listIterator();
         while (iter.hasNext()) {
-            String entry = ((String)iter.next()).trim();
+            String entry = ((String) iter.next()).trim();
             MatchResult result = null;
             if (_preparse_matcher_.matches(entry, _preparse_pattern_)) {
                 result = _preparse_matcher_.getMatch();
@@ -158,14 +147,14 @@ public class VMSVersioningFTPEntryParser extends VMSFTPEntryParser
                 }
                 existingEntries.put(name, nv);
             }
-            
+
         }
         // we've now removed all entries less than with less than the largest
         // version number for each name that were listed after the largest.
         // we now must remove those with smaller than the largest version number
         // for each name that were found before the largest
         while (iter.hasPrevious()) {
-            String entry = ((String)iter.previous()).trim();
+            String entry = ((String) iter.previous()).trim();
             MatchResult result = null;
             if (_preparse_matcher_.matches(entry, _preparse_pattern_)) {
                 result = _preparse_matcher_.getMatch();
@@ -179,7 +168,7 @@ public class VMSVersioningFTPEntryParser extends VMSFTPEntryParser
                     }
                 }
             }
-            
+
         }
         return original;
     }

@@ -28,29 +28,27 @@ package com.sshtools.j2ssh.session;
 
 
 /**
- * <p>
+ * <p/>
  * Title:
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Description:
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Copyright: Copyright (c) 2003
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Company:
  * </p>
  *
  * @author Lee David Painter
-     * @version $Id$
+ * @version $Id$
  */
 public interface SessionOutputEcho {
     /**
-     *
-     *
      * @param msg
      */
     public void echo(String msg);

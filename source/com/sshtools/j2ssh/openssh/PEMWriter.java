@@ -26,28 +26,23 @@
  */
 package com.sshtools.j2ssh.openssh;
 
-import com.sshtools.j2ssh.configuration.ConfigurationLoader;
-import com.sshtools.j2ssh.util.Base64;
-
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
+import com.sshtools.j2ssh.configuration.ConfigurationLoader;
+import com.sshtools.j2ssh.util.Base64;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -63,10 +58,7 @@ public class PEMWriter extends PEM {
     }
 
     /**
-     *
-     *
      * @param w
-     *
      * @throws IOException
      */
     public void write(Writer w) throws IOException {
@@ -84,15 +76,17 @@ public class PEMWriter extends PEM {
                     writer.println(value.substring(0, offset) + "\\");
 
                     for (; offset < value.length();
-                            offset += MAX_LINE_LENGTH) {
+                         offset += MAX_LINE_LENGTH) {
                         if ((offset + MAX_LINE_LENGTH) >= value.length()) {
                             writer.println(value.substring(offset));
-                        } else {
+                        }
+                        else {
                             writer.println(value.substring(offset,
                                     offset + MAX_LINE_LENGTH) + "\\");
                         }
                     }
-                } else {
+                }
+                else {
                     writer.println(value);
                 }
             }
@@ -105,15 +99,12 @@ public class PEMWriter extends PEM {
     }
 
     /**
-     *
-     *
      * @param payload
      * @param passphrase
-     *
      * @throws GeneralSecurityException
      */
     public void encryptPayload(byte[] payload, String passphrase)
-        throws GeneralSecurityException {
+            throws GeneralSecurityException {
         if ((passphrase == null) || (passphrase.length() == 0)) {
             // Simple case: no passphrase means no encryption of the private key
             setPayload(payload);
@@ -145,8 +136,6 @@ public class PEMWriter extends PEM {
     }
 
     /**
-     *
-     *
      * @return
      */
     public Map getHeader() {
@@ -154,8 +143,6 @@ public class PEMWriter extends PEM {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getPayload() {
@@ -163,8 +150,6 @@ public class PEMWriter extends PEM {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getType() {
@@ -172,8 +157,6 @@ public class PEMWriter extends PEM {
     }
 
     /**
-     *
-     *
      * @param bs
      */
     public void setPayload(byte[] bs) {
@@ -181,8 +164,6 @@ public class PEMWriter extends PEM {
     }
 
     /**
-     *
-     *
      * @param string
      */
     public void setType(String string) {

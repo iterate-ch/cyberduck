@@ -26,23 +26,22 @@
  */
 package com.sshtools.j2ssh.transport;
 
-import com.sshtools.j2ssh.SshThread;
+import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
+import com.sshtools.j2ssh.SshThread;
 
 
 /**
- * <p>
+ * <p/>
  * Extends the simple <code>Service</code> class to provide an asyncronous
  * messaging service for the transport protocol.
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public abstract class AsyncService extends Service implements Runnable {
@@ -52,12 +51,11 @@ public abstract class AsyncService extends Service implements Runnable {
     protected SshThread thread;
 
     /**
-     * <p>
+     * <p/>
      * Constructs an asyncronous service.
      * </p>
      *
      * @param serviceName the name of the service
-     *
      * @since 0.2.0
      */
     public AsyncService(String serviceName) {
@@ -65,20 +63,20 @@ public abstract class AsyncService extends Service implements Runnable {
     }
 
     /**
-     * <p>
+     * <p/>
      * Implements the abstract <code>Service</code> method and starts the
      * service thread.
      * </p>
      *
      * @throws IOException if an IO error occurs
-     *
      * @since 0.2.0
      */
     protected void onStart() throws IOException {
         if (Thread.currentThread() instanceof SshThread) {
             thread = ((SshThread) Thread.currentThread()).cloneThread(this,
                     getServiceName());
-        } else {
+        }
+        else {
             thread = new SshThread(this, getServiceName(), true);
         }
 
@@ -87,7 +85,7 @@ public abstract class AsyncService extends Service implements Runnable {
     }
 
     /**
-     * <p>
+     * <p/>
      * Implements the asyncronous services message loop.
      * </p>
      *
@@ -118,9 +116,11 @@ public abstract class AsyncService extends Service implements Runnable {
                 if (log.isDebugEnabled()) {
                     log.debug("Finished processing " + msg.getMessageName());
                 }
-            } catch (MessageStoreEOFException eof) {
+            }
+            catch (MessageStoreEOFException eof) {
                 stop();
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 if ((state.getValue() != ServiceState.SERVICE_STOPPED) &&
                         transport.isConnected()) {
                     log.fatal("Service message loop failed!", ex);
@@ -135,7 +135,7 @@ public abstract class AsyncService extends Service implements Runnable {
     }
 
     /**
-     * <p>
+     * <p/>
      * The service thread calls this method when the thread is exiting.
      * </p>
      *
@@ -144,28 +144,25 @@ public abstract class AsyncService extends Service implements Runnable {
     protected abstract void onStop();
 
     /**
-     * <p>
+     * <p/>
      * Implement this method by returning the message ids of the asyncrounous
      * messages your implementation wants to receive.
      * </p>
      *
      * @return an int array of message ids
-     *
      * @since 0.2.0
      */
     protected abstract int[] getAsyncMessageFilter();
 
     /**
-     * <p>
+     * <p/>
      * Called by the service thread when an asyncronous message is received.
      * </p>
      *
      * @param msg the message received
-     *
      * @throws IOException if an IO error occurs
-     *
      * @since 0.2.0
      */
     protected abstract void onMessageReceived(SshMessage msg)
-        throws IOException;
+            throws IOException;
 }

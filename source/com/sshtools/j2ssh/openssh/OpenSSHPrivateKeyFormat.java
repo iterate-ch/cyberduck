@@ -26,6 +26,13 @@
  */
 package com.sshtools.j2ssh.openssh;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.math.BigInteger;
+import java.security.GeneralSecurityException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
@@ -33,19 +40,8 @@ import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFormat;
 import com.sshtools.j2ssh.util.SimpleASNReader;
 import com.sshtools.j2ssh.util.SimpleASNWriter;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-
-import java.math.BigInteger;
-
-import java.security.GeneralSecurityException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -57,8 +53,6 @@ public class OpenSSHPrivateKeyFormat implements SshPrivateKeyFormat {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getFormatType() {
@@ -66,8 +60,6 @@ public class OpenSSHPrivateKeyFormat implements SshPrivateKeyFormat {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String toString() {
@@ -75,17 +67,13 @@ public class OpenSSHPrivateKeyFormat implements SshPrivateKeyFormat {
     }
 
     /**
-     *
-     *
      * @param formattedKey
      * @param passphrase
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public byte[] decryptKeyblob(byte[] formattedKey, String passphrase)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         //System.err.println("Decrypting key using passphrase " + passphrase);
         try {
             Reader r = new StringReader(new String(formattedKey, "US-ASCII"));
@@ -103,7 +91,8 @@ public class OpenSSHPrivateKeyFormat implements SshPrivateKeyFormat {
                 baw.writeBigInteger(keyInfo.getX());
 
                 return baw.toByteArray();
-            } else if (PEM.RSA_PRIVATE_KEY.equals(pem.getType())) {
+            }
+            else if (PEM.RSA_PRIVATE_KEY.equals(pem.getType())) {
                 RSAKeyInfo keyInfo = RSAKeyInfo.getRSAKeyInfo(asn);
                 ByteArrayWriter baw = new ByteArrayWriter();
                 baw.writeString("ssh-rsa");
@@ -112,33 +101,30 @@ public class OpenSSHPrivateKeyFormat implements SshPrivateKeyFormat {
                 baw.writeBigInteger(keyInfo.getPrivateExponent());
 
                 return baw.toByteArray();
-            } else {
-                throw new InvalidSshKeyException("Unsupported type: " +
-                    pem.getType());
             }
-        } catch (GeneralSecurityException e) {
+            else {
+                throw new InvalidSshKeyException("Unsupported type: " +
+                        pem.getType());
+            }
+        }
+        catch (GeneralSecurityException e) {
             //e.printStackTrace();
-            throw new InvalidSshKeyException(
-                "Can't read key due to cryptography problems: " + e);
-        } catch (IOException e) {
+            throw new InvalidSshKeyException("Can't read key due to cryptography problems: " + e);
+        }
+        catch (IOException e) {
             //e.printStackTrace();
-            throw new InvalidSshKeyException(
-                "Can't read key due to internal IO problems: " + e);
+            throw new InvalidSshKeyException("Can't read key due to internal IO problems: " + e);
         }
     }
 
     /**
-     *
-     *
      * @param keyblob
      * @param passphrase
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public byte[] encryptKeyblob(byte[] keyblob, String passphrase)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         try {
             ByteArrayReader bar = new ByteArrayReader(keyblob);
             String algorithm = bar.readString(); // dsa or rsa
@@ -155,7 +141,8 @@ public class OpenSSHPrivateKeyFormat implements SshPrivateKeyFormat {
                 DSAKeyInfo.writeDSAKeyInfo(asn, keyInfo);
                 payload = asn.toByteArray();
                 pem.setType(PEM.DSA_PRIVATE_KEY);
-            } else if ("ssh-rsa".equals(algorithm)) {
+            }
+            else if ("ssh-rsa".equals(algorithm)) {
                 BigInteger e = bar.readBigInteger();
                 BigInteger n = bar.readBigInteger();
                 BigInteger p = bar.readBigInteger();
@@ -166,9 +153,9 @@ public class OpenSSHPrivateKeyFormat implements SshPrivateKeyFormat {
                 RSAKeyInfo.writeRSAKeyInfo(asn, keyInfo);
                 payload = asn.toByteArray();
                 pem.setType(PEM.RSA_PRIVATE_KEY);
-            } else {
-                throw new InvalidSshKeyException(
-                    "Unsupported J2SSH algorithm: " + algorithm);
+            }
+            else {
+                throw new InvalidSshKeyException("Unsupported J2SSH algorithm: " + algorithm);
             }
 
             pem.setPayload(payload);
@@ -178,22 +165,19 @@ public class OpenSSHPrivateKeyFormat implements SshPrivateKeyFormat {
             pem.write(w);
 
             return w.toString().getBytes("US-ASCII");
-        } catch (GeneralSecurityException e) {
+        }
+        catch (GeneralSecurityException e) {
             //e.printStackTrace();
-            throw new InvalidSshKeyException(
-                "Can't read key due to cryptography problems: " + e);
-        } catch (IOException e) {
+            throw new InvalidSshKeyException("Can't read key due to cryptography problems: " + e);
+        }
+        catch (IOException e) {
             //e.printStackTrace();
-            throw new InvalidSshKeyException(
-                "Can't read key due to internal IO problems: " + e);
+            throw new InvalidSshKeyException("Can't read key due to internal IO problems: " + e);
         }
     }
 
     /**
-     *
-     *
      * @param formattedKey
-     *
      * @return
      */
     public boolean isFormatted(byte[] formattedKey) {
@@ -202,16 +186,14 @@ public class OpenSSHPrivateKeyFormat implements SshPrivateKeyFormat {
             PEMReader pem = new PEMReader(r);
 
             return true;
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             return false;
         }
     }
 
     /**
-     *
-     *
      * @param formattedKey
-     *
      * @return
      */
     public boolean isPassphraseProtected(byte[] formattedKey) {
@@ -220,22 +202,21 @@ public class OpenSSHPrivateKeyFormat implements SshPrivateKeyFormat {
             PEMReader pem = new PEMReader(r);
 
             return pem.getHeader().containsKey("DEK-Info");
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             return true;
         }
     }
 
     /**
-     *
-     *
      * @param algorithm
-     *
      * @return
      */
     public boolean supportsAlgorithm(String algorithm) {
         if ("ssh-dss".equals(algorithm) || "ssh-rsa".equals(algorithm)) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }

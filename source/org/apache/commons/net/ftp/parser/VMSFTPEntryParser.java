@@ -56,74 +56,67 @@ package org.apache.commons.net.ftp.parser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Calendar;
-import java.util.StringTokenizer;
 
-//import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
+import org.apache.log4j.Logger;
+
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
-
-import org.apache.log4j.Logger;
 
 /**
  * Implementation FTPFileEntryParser and FTPFileListParser for VMS Systems.
  * This is a sample of VMS LIST output
- *   
- *  "1-JUN.LIS;1              9/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
- *  "1-JUN.LIS;2              9/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
- *  "DATA.DIR;1               1/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
-  * <P><B>
- * Note: VMSFTPEntryParser can only be instantiated through the 
+ * <p/>
+ * "1-JUN.LIS;1              9/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
+ * "1-JUN.LIS;2              9/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
+ * "DATA.DIR;1               1/9           2-JUN-1998 07:32:04  [GROUP,OWNER]    (RWED,RWED,RWED,RE)",
+ * <P><B>
+ * Note: VMSFTPEntryParser can only be instantiated through the
  * DefaultFTPParserFactory by classname.  It will not be chosen
  * by the autodetection scheme.
  * </B>
  * <P>
- * 
- * @author  <a href="Winston.Ojeda@qg.com">Winston Ojeda</a>
+ *
+ * @author <a href="Winston.Ojeda@qg.com">Winston Ojeda</a>
  * @author <a href="mailto:scohen@apache.org">Steve Cohen</a>
  * @author <a href="sestegra@free.fr">Stephane ESTE-GRACIAS</a>
  * @version $Id$
- * 
  * @see org.apache.commons.net.ftp.FTPFileEntryParser FTPFileEntryParser (for usage instructions)
  * @see org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory
  */
-public class VMSFTPEntryParser extends FTPFileEntryParserImpl
-{
+public class VMSFTPEntryParser extends FTPFileEntryParserImpl {
 
-	private static Logger log = Logger.getLogger(VMSFTPEntryParser.class);
+    private static Logger log = Logger.getLogger(VMSFTPEntryParser.class);
 
     /**
      * months abbreviations looked for by this parser.  Also used
      * to determine <b>which</b> month has been matched by the parser.
      */
     private static final String MONTHS =
-        "(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)";
+            "(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)";
 
     /**
      * this is the regular expression used by this parser.
      */
     private static final String REGEX =
-        "(.*;[0-9]+)\\s*" 
-        + "(\\d+)/\\d+\\s*" 
-        + "(\\d{1,2})-" 
-        + MONTHS 
-        + "-([0-9]{4})\\s*"
-        + "((?:[01]\\d)|(?:2[0-3])):([012345]\\d):([012345]\\d)\\s*"
-        + "\\[(([0-9$A-Za-z_]+)|([0-9$A-Za-z_]+),([0-9$a-zA-Z_]+))\\]?\\s*" 
-        + "\\([a-zA-Z]*,[a-zA-Z]*,[a-zA-Z]*,[a-zA-Z]*\\)";
-	
+            "(.*;[0-9]+)\\s*"
+            + "(\\d+)/\\d+\\s*"
+            + "(\\d{1,2})-"
+            + MONTHS
+            + "-([0-9]{4})\\s*"
+            + "((?:[01]\\d)|(?:2[0-3])):([012345]\\d):([012345]\\d)\\s*"
+            + "\\[(([0-9$A-Za-z_]+)|([0-9$A-Za-z_]+),([0-9$a-zA-Z_]+))\\]?\\s*"
+            + "\\([a-zA-Z]*,[a-zA-Z]*,[a-zA-Z]*,[a-zA-Z]*\\)";
+
     /**
-     * Constructor for a VMSFTPEntryParser object.   
-     * 
-     * @exception IllegalArgumentException
-     * Thrown if the regular expression is unparseable.  Should not be seen 
-     * under normal conditions.  It it is seen, this is a sign that 
-     * <code>REGEX</code> is  not a valid regular expression.
+     * Constructor for a VMSFTPEntryParser object.
+     *
+     * @throws IllegalArgumentException Thrown if the regular expression is unparseable.  Should not be seen
+     *                                  under normal conditions.  It it is seen, this is a sign that
+     *                                  <code>REGEX</code> is  not a valid regular expression.
      */
-    public VMSFTPEntryParser()
-    {
+    public VMSFTPEntryParser() {
         super(REGEX);
     }
 
@@ -133,18 +126,17 @@ public class VMSFTPEntryParser extends FTPFileEntryParserImpl
      * file listing line doesn't describe a file, <code> null </code> is
      * returned, otherwise a <code> FTPFile </code> instance representing the
      * files in the directory is returned.
-     * <p>
+     * <p/>
+     *
      * @param entry A line of text from the file listing
      * @return An FTPFile instance corresponding to the supplied entry
      */
-    public Path parseFTPEntry(Path parent, String entry)
-    {
+    public Path parseFTPEntry(Path parent, String entry) {
         //one block in VMS equals 512 bytes
         long longBlock = 512;
 
-        if (matches(entry))
-        {
-			Path f = PathFactory.createPath(parent.getSession());
+        if (matches(entry)) {
+            Path f = PathFactory.createPath(parent.getSession());
             String name = group(1);
             String size = group(2);
             String day = group(3);
@@ -154,35 +146,33 @@ public class VMSFTPEntryParser extends FTPFileEntryParserImpl
             String min = group(7);
 //            String sec = group(8);
 //            String owner = group(9);
-			/*
-            String grp;
-            String user;
-            StringTokenizer t = new StringTokenizer(owner, ",");
-            switch (t.countTokens()) {
-                case 1:
-                    grp  = null;
-                    user = t.nextToken();
-                    break;
-                case 2:
-                    grp  = t.nextToken();
-                    user = t.nextToken();
-                    break;
-                default:
-                    grp  = null;
-                    user = null;
-            }
-			 */
+            /*
+String grp;
+String user;
+StringTokenizer t = new StringTokenizer(owner, ",");
+switch (t.countTokens()) {
+case 1:
+grp  = null;
+user = t.nextToken();
+break;
+case 2:
+grp  = t.nextToken();
+user = t.nextToken();
+break;
+default:
+grp  = null;
+user = null;
+}
+             */
             
-            if (name.lastIndexOf(".DIR") != -1) 
-            {
-				f.attributes.setType(Path.DIRECTORY_TYPE);
-            } 
-            else 
-            {
-				f.attributes.setType(Path.FILE_TYPE);
+            if (name.lastIndexOf(".DIR") != -1) {
+                f.attributes.setType(Path.DIRECTORY_TYPE);
             }
-			name = name.substring(0, name.lastIndexOf(";"));
-			f.setPath(parent.getAbsolute(), name);
+            else {
+                f.attributes.setType(Path.FILE_TYPE);
+            }
+            name = name.substring(0, name.lastIndexOf(";"));
+            f.setPath(parent.getAbsolute(), name);
             //size is retreived in blocks and needs to be put in bytes
             //for us humans and added to the FTPFile array
             Long theSize = new Long(size);
@@ -219,34 +209,30 @@ public class VMSFTPEntryParser extends FTPFileEntryParserImpl
      * the default implementation of simply calling BufferedReader.readLine(),
      * because one entry may span multiple lines.
      *
-     * @param reader The BufferedReader object from which entries are to be 
-     * read.
-     *
+     * @param reader The BufferedReader object from which entries are to be
+     *               read.
      * @return A string representing the next ftp entry or null if none found.
-     * @exception IOException thrown on any IO Error reading from the reader.
+     * @throws IOException thrown on any IO Error reading from the reader.
      */
-    public String readNextEntry(BufferedReader reader) throws IOException
-    {
+    public String readNextEntry(BufferedReader reader) throws IOException {
         String line = reader.readLine();
         StringBuffer entry = new StringBuffer();
-        while (line != null)
-        {
+        while (line != null) {
             if (line.startsWith("Directory") || line.startsWith("Total")) {
                 line = reader.readLine();
                 continue;
             }
 
             entry.append(line);
-            if (line.trim().endsWith(")"))
-            {
+            if (line.trim().endsWith(")")) {
                 break;
             }
             line = reader.readLine();
         }
         return (entry.length() == 0 ? null : entry.toString());
     }
-	
-	protected boolean isVersioning() {
+
+    protected boolean isVersioning() {
         return false;
-    }	
+    }
 }

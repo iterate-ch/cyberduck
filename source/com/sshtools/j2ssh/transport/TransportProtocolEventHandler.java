@@ -28,31 +28,22 @@ package com.sshtools.j2ssh.transport;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface TransportProtocolEventHandler {
     /**
-     *
-     *
      * @param transport
      */
-    public void onSocketTimeout(
-        TransportProtocol transport /*,
+    public void onSocketTimeout(TransportProtocol transport /*,
     boolean stillConnected*/);
 
     /**
-     *
-     *
      * @param transport
      */
     public void onDisconnect(TransportProtocol transport);
 
     /**
-     *
-     *
      * @param transport
      */
     public void onConnected(TransportProtocol transport);

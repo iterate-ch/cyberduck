@@ -66,137 +66,138 @@ import java.io.Serializable;
 
 /**
  * <p>A simple class encapsulating a name/value pair.</p>
+ *
  * @author <a href="mailto:bcholmes@interlog.com">B.C. Holmes</a>
  * @version $Revision$ $Date$
  */
 public class NameValuePair implements Serializable {
 
-	// ----------------------------------------------------------- Constructors
+    // ----------------------------------------------------------- Constructors
 
-	/**
-	 * Default constructor.
-	 */
-	public NameValuePair() {
-		this(null, null);
-	}
+    /**
+     * Default constructor.
+     */
+    public NameValuePair() {
+        this(null, null);
+    }
 
-	/**
-	 * Constructor.
-	 */
-	public NameValuePair(String name, String value) {
+    /**
+     * Constructor.
+     */
+    public NameValuePair(String name, String value) {
 
-		this.name = name;
-		this.value = value;
+        this.name = name;
+        this.value = value;
 
-	}
+    }
 
-	// ----------------------------------------------------- Instance Variables
+    // ----------------------------------------------------- Instance Variables
 
-	/**
-	 * Name.
-	 */
-	private String name = null;
+    /**
+     * Name.
+     */
+    private String name = null;
 
-	/**
-	 * Value.
-	 */
-	private String value = null;
+    /**
+     * Value.
+     */
+    private String value = null;
 
-	// ------------------------------------------------------------- Properties
+    // ------------------------------------------------------------- Properties
 
-	/**
-	 * Name property setter.
-	 *
-	 * @param name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-
-	/**
-	 * Name property getter.
-	 *
-	 * @return name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Name property setter.
+     *
+     * @param name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
 
-	/**
-	 * Value property setter.
-	 *
-	 * @param value
-	 */
-	public void setValue(String value) {
-		this.value = value;
-	}
+    /**
+     * Name property getter.
+     *
+     * @return name
+     */
+    public String getName() {
+        return name;
+    }
 
 
-	/**
-	 * Value property getter.
-	 *
-	 * @return value
-	 */
-	public String getValue() {
-		return value;
-	}
+    /**
+     * Value property setter.
+     *
+     * @param value
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	// --------------------------------------------------------- Public Methods
 
-	/**
-	 * Get a String representation of this pair.
-	 */
-	public String toString() {
-		return ("name=" + name + ", " + "value=" + value);
-	}
+    /**
+     * Value property getter.
+     *
+     * @return value
+     */
+    public String getValue() {
+        return value;
+    }
 
-	/**
-	 * Test if the given <i>object</i> is equal to me.
-	 * In this implementation, an <i>object</i> is
-	 * equal to me iff it has the same runtime
-	 * type and the <i>name</i> and <i>value</i> attributes
-	 * are both <tt>equal</tt> (or <tt>==</tt>).
-	 *
-	 * @param object the {@link Object} to compare to
-	 */
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		}
-		else if (this.getClass().equals(object.getClass())) {
-			NameValuePair pair = (NameValuePair) object;
-			return ((null == name ? null == pair.name : name.equals(pair.name))
-			    && (null == value ? null == pair.value : value.equals(pair.value)));
-		}
-		else {
-			return false;
-		}
-	}
+    // --------------------------------------------------------- Public Methods
 
-	/**
-	 * Returns a hash code for this object such that
-	 * if <tt>a.{@link #equals equals}(b)</tt> then
-	 * <tt>a.hashCode() == b.hashCode()</tt>.
-	 */
-	public int hashCode() {
-		return (this.getClass().hashCode() ^
-		    (null == name ? 0 : name.hashCode()) ^
-		    (null == value ? 0 : value.hashCode()));
-	}
+    /**
+     * Get a String representation of this pair.
+     */
+    public String toString() {
+        return ("name=" + name + ", " + "value=" + value);
+    }
 
-	/*
-	public Object clone() {
-	    try {
-	        NameValuePair that = (NameValuePair)(super.clone());
-	        that.setName(this.getName());
-	        that.setValue(this.getValue());
-	        return that;
-	    } catch(CloneNotSupportedException e) {
-	        // this should never happen
-	        throw new RuntimeException("Panic. super.clone not supported in NameValuePair.");
-	    }
-	}
-	*/
+    /**
+     * Test if the given <i>object</i> is equal to me.
+     * In this implementation, an <i>object</i> is
+     * equal to me iff it has the same runtime
+     * type and the <i>name</i> and <i>value</i> attributes
+     * are both <tt>equal</tt> (or <tt>==</tt>).
+     *
+     * @param object the {@link Object} to compare to
+     */
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        else if (this.getClass().equals(object.getClass())) {
+            NameValuePair pair = (NameValuePair) object;
+            return ((null == name ? null == pair.name : name.equals(pair.name))
+                    && (null == value ? null == pair.value : value.equals(pair.value)));
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns a hash code for this object such that
+     * if <tt>a.{@link #equals equals}(b)</tt> then
+     * <tt>a.hashCode() == b.hashCode()</tt>.
+     */
+    public int hashCode() {
+        return (this.getClass().hashCode() ^
+                (null == name ? 0 : name.hashCode()) ^
+                (null == value ? 0 : value.hashCode()));
+    }
+
+    /*
+    public Object clone() {
+        try {
+            NameValuePair that = (NameValuePair)(super.clone());
+            that.setName(this.getName());
+            that.setValue(this.getValue());
+            return that;
+        } catch(CloneNotSupportedException e) {
+            // this should never happen
+            throw new RuntimeException("Panic. super.clone not supported in NameValuePair.");
+        }
+    }
+    */
 }

@@ -25,6 +25,9 @@
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.6  2004/04/07 20:26:17  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.5  2003/12/28 00:42:51  dkocher
  *        *** empty log message ***
  *
@@ -55,40 +58,40 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- *  Interface for data socket classes, whether active or passive
+ * Interface for data socket classes, whether active or passive
  *
- *  @author      Bruce Blackshaw
- *  @version     $Revision$
+ * @author Bruce Blackshaw
+ * @version $Revision$
  */
 public interface FTPDataSocket {
 
-	/**
-	 *   Set the TCP timeout on the underlying control socket.
-	 *
-	 *   If a timeout is set, then any operation which
-	 *   takes longer than the timeout value will be
-	 *   killed with a java.io.InterruptedException.
-	 *
-	 *   @param millis The length of the timeout, in milliseconds
-	 */
-	void setTimeout(int millis) throws IOException;
+    /**
+     * Set the TCP timeout on the underlying control socket.
+     * <p/>
+     * If a timeout is set, then any operation which
+     * takes longer than the timeout value will be
+     * killed with a java.io.InterruptedException.
+     *
+     * @param millis The length of the timeout, in milliseconds
+     */
+    void setTimeout(int millis) throws IOException;
 
-	/**
-	 *  Get the appropriate output stream for writing to
-	 *
-	 *  @return  output stream for underlying socket.
-	 */
-	OutputStream getOutputStream() throws IOException;
+    /**
+     * Get the appropriate output stream for writing to
+     *
+     * @return output stream for underlying socket.
+     */
+    OutputStream getOutputStream() throws IOException;
 
-	/**
-	 *  Get the appropriate input stream for reading from
-	 *
-	 *  @return  input stream for underlying socket.
-	 */
-	InputStream getInputStream() throws IOException;
+    /**
+     * Get the appropriate input stream for reading from
+     *
+     * @return input stream for underlying socket.
+     */
+    InputStream getInputStream() throws IOException;
 
-	/**
-	 *  Closes underlying socket(s)
-	 */
-	void close() throws IOException;
+    /**
+     * Closes underlying socket(s)
+     */
+    void close() throws IOException;
 }

@@ -26,15 +26,15 @@
  */
 package com.sshtools.j2ssh.sftp;
 
-import com.sshtools.j2ssh.io.UnsignedInteger32;
-import com.sshtools.j2ssh.subsystem.SubsystemMessage;
-import com.sshtools.j2ssh.subsystem.SubsystemMessageStore;
-import com.sshtools.j2ssh.util.OpenClosedState;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Iterator;
+import com.sshtools.j2ssh.io.UnsignedInteger32;
+import com.sshtools.j2ssh.subsystem.SubsystemMessage;
+import com.sshtools.j2ssh.subsystem.SubsystemMessageStore;
+import com.sshtools.j2ssh.util.OpenClosedState;
 
 
 class SftpMessageStore extends SubsystemMessageStore {
@@ -48,16 +48,12 @@ class SftpMessageStore extends SubsystemMessageStore {
     }
 
     /**
-     *
-     *
      * @param requestId
-     *
      * @return
-     *
      * @throws InterruptedException
      */
     public synchronized SubsystemMessage getMessage(UnsignedInteger32 requestId)
-        throws InterruptedException {
+            throws InterruptedException {
         Iterator it;
         SubsystemMessage msg;
 
@@ -72,7 +68,7 @@ class SftpMessageStore extends SubsystemMessageStore {
                     if (msg instanceof MessageRequestId) {
                         if (((MessageRequestId) msg).getId().equals(requestId)) {
                             messages.remove(msg);
-							//@todo write to log
+                            //@todo write to log
                             return msg;
                         }
                     }

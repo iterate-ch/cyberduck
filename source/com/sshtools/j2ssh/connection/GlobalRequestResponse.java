@@ -28,8 +28,6 @@ package com.sshtools.j2ssh.connection;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -49,8 +47,6 @@ public class GlobalRequestResponse {
     }
 
     /**
-     *
-     *
      * @param responseData
      */
     public void setResponseData(byte[] responseData) {
@@ -58,8 +54,6 @@ public class GlobalRequestResponse {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getResponseData() {
@@ -67,8 +61,6 @@ public class GlobalRequestResponse {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean hasSucceeded() {

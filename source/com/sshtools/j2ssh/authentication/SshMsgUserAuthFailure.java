@@ -26,22 +26,19 @@
  */
 package com.sshtools.j2ssh.authentication;
 
-import com.sshtools.j2ssh.io.ByteArrayReader;
-import com.sshtools.j2ssh.io.ByteArrayWriter;
-import com.sshtools.j2ssh.transport.InvalidMessageException;
-import com.sshtools.j2ssh.transport.SshMessage;
-
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import com.sshtools.j2ssh.io.ByteArrayReader;
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+import com.sshtools.j2ssh.transport.InvalidMessageException;
+import com.sshtools.j2ssh.transport.SshMessage;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -63,19 +60,16 @@ public class SshMsgUserAuthFailure extends SshMessage {
      *
      * @param auths
      * @param partialSuccess
-     *
      * @throws InvalidMessageException
      */
     public SshMsgUserAuthFailure(String auths, boolean partialSuccess)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         super(SSH_MSG_USERAUTH_FAILURE);
         loadListFromDelimString(auths);
         this.partialSuccess = partialSuccess;
     }
 
     /**
-     *
-     *
      * @return
      */
     public List getAvailableAuthentications() {
@@ -83,8 +77,6 @@ public class SshMsgUserAuthFailure extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -92,8 +84,6 @@ public class SshMsgUserAuthFailure extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean getPartialSuccess() {
@@ -101,44 +91,40 @@ public class SshMsgUserAuthFailure extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             String authMethods = null;
             Iterator it = auths.iterator();
 
             while (it.hasNext()) {
                 authMethods = ((authMethods == null) ? "" : (authMethods + ",")) +
-                    (String) it.next();
+                        (String) it.next();
             }
 
             baw.writeString(authMethods);
             baw.write((partialSuccess ? 1 : 0));
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             String auths = bar.readString();
             partialSuccess = ((bar.read() != 0) ? true : false);
             loadListFromDelimString(auths);
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }

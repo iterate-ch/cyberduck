@@ -26,17 +26,15 @@
  */
 package com.sshtools.j2ssh.authentication;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -64,7 +62,7 @@ public class SshMsgUserAuthRequest extends SshMessage {
      * @param requestData
      */
     public SshMsgUserAuthRequest(String username, String serviceName,
-        String methodName, byte[] requestData) {
+                                 String methodName, byte[] requestData) {
         super(SSH_MSG_USERAUTH_REQUEST);
         this.username = username;
         this.serviceName = serviceName;
@@ -73,8 +71,6 @@ public class SshMsgUserAuthRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -82,8 +78,6 @@ public class SshMsgUserAuthRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMethodName() {
@@ -91,8 +85,6 @@ public class SshMsgUserAuthRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getRequestData() {
@@ -100,8 +92,6 @@ public class SshMsgUserAuthRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getServiceName() {
@@ -109,8 +99,6 @@ public class SshMsgUserAuthRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getUsername() {
@@ -118,14 +106,11 @@ public class SshMsgUserAuthRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             baw.writeString(username);
             baw.writeString(serviceName);
@@ -134,20 +119,18 @@ public class SshMsgUserAuthRequest extends SshMessage {
             if (requestData != null) {
                 baw.write(requestData);
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             username = bar.readString();
             serviceName = bar.readString();
@@ -157,7 +140,8 @@ public class SshMsgUserAuthRequest extends SshMessage {
                 requestData = new byte[bar.available()];
                 bar.read(requestData);
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }

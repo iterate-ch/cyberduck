@@ -28,24 +28,22 @@ package com.sshtools.j2ssh.transport;
 
 
 /**
- * <p>
+ * <p/>
  * Thrown by <code>SshMessage</code> implementations when an invalid message is
  * found.
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public class InvalidMessageException extends TransportProtocolException {
     /**
-     * <p>
+     * <p/>
      * Constructs the message.
      * </p>
      *
      * @param msg the error description
-     *
      * @since 0.2.0
      */
     public InvalidMessageException(String msg) {

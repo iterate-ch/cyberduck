@@ -26,25 +26,22 @@
  */
 package com.sshtools.j2ssh.authentication;
 
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.transport.MessageNotAvailableException;
 import com.sshtools.j2ssh.transport.MessageStoreEOFException;
 import com.sshtools.j2ssh.transport.Service;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.IOException;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -66,8 +63,6 @@ public class AuthenticationProtocolClient extends Service {
     }
 
     /**
-     *
-     *
      * @throws java.io.IOException
      */
     protected void onServiceAccept() throws java.io.IOException {
@@ -80,33 +75,27 @@ public class AuthenticationProtocolClient extends Service {
     }
 
     /**
-     *
-     *
      * @param startMode
-     *
      * @throws java.io.IOException
      * @throws IOException
      */
     protected void onServiceInit(int startMode) throws java.io.IOException {
         if (startMode == Service.ACCEPTING_SERVICE) {
-            throw new IOException(
-                "The Authentication Protocol client cannot be accepted");
+            throw new IOException("The Authentication Protocol client cannot be accepted");
         }
 
         messageStore.registerMessage(SshMsgUserAuthFailure.SSH_MSG_USERAUTH_FAILURE,
-            SshMsgUserAuthFailure.class);
+                SshMsgUserAuthFailure.class);
         messageStore.registerMessage(SshMsgUserAuthSuccess.SSH_MSG_USERAUTH_SUCCESS,
-            SshMsgUserAuthSuccess.class);
+                SshMsgUserAuthSuccess.class);
         messageStore.registerMessage(SshMsgUserAuthBanner.SSH_MSG_USERAUTH_BANNER,
-            SshMsgUserAuthBanner.class);
+                SshMsgUserAuthBanner.class);
 
         //messageStore.registerMessage(SshMsgUserAuthPwdChangeReq.SSH_MSG_USERAUTH_PWD_CHANGEREQ,
         //    SshMsgUserAuthPwdChangeReq.class);
     }
 
     /**
-     *
-     *
      * @throws java.io.IOException
      * @throws IOException
      */
@@ -115,8 +104,6 @@ public class AuthenticationProtocolClient extends Service {
     }
 
     /**
-     *
-     *
      * @param listener
      */
     public void addEventListener(AuthenticationProtocolListener listener) {
@@ -126,18 +113,14 @@ public class AuthenticationProtocolClient extends Service {
     }
 
     /**
-     *
-     *
      * @param username
      * @param serviceName
-     *
      * @return
-     *
      * @throws IOException
      * @throws SshException
      */
     public List getAvailableAuths(String username, String serviceName)
-        throws IOException {
+            throws IOException {
         log.info("Requesting authentication methods");
 
         SshMessage msg = new SshMsgUserAuthRequest(username, serviceName,
@@ -146,32 +129,28 @@ public class AuthenticationProtocolClient extends Service {
 
         try {
             msg = messageStore.getMessage(resultFilter);
-        } catch (InterruptedException ex) {
-            throw new SshException(
-                "The thread was interrupted whilst waiting for an authentication message");
+        }
+        catch (InterruptedException ex) {
+            throw new SshException("The thread was interrupted whilst waiting for an authentication message");
         }
 
         if (msg instanceof SshMsgUserAuthFailure) {
             return ((SshMsgUserAuthFailure) msg).getAvailableAuthentications();
-        } else {
-            throw new IOException(
-                "None request returned success! Insecure feature not supported");
+        }
+        else {
+            throw new IOException("None request returned success! Insecure feature not supported");
         }
     }
 
     /**
-     *
-     *
      * @param auth
      * @param serviceToStart
-     *
      * @return
-     *
      * @throws IOException
      * @throws SshException
      */
     public int authenticate(SshAuthenticationClient auth, Service serviceToStart)
-        throws IOException {
+            throws IOException {
         try {
             if (!auth.canAuthenticate() && auth.canPrompt()) {
                 SshAuthenticationPrompt prompt = auth.getAuthenticationPrompt();
@@ -186,9 +165,9 @@ public class AuthenticationProtocolClient extends Service {
             SshMessage msg = parseMessage(messageStore.getMessage(resultFilter));
 
             // We should not get this far
-            throw new AuthenticationProtocolException(
-                "Unexpected authentication message " + msg.getMessageName());
-        } catch (TerminatedStateException tse) {
+            throw new AuthenticationProtocolException("Unexpected authentication message " + msg.getMessageName());
+        }
+        catch (TerminatedStateException tse) {
             if (tse.getState() == AuthenticationProtocolState.COMPLETE) {
                 serviceToStart.init(Service.ACCEPTING_SERVICE, transport); //, nativeSettings);
                 serviceToStart.start();
@@ -203,17 +182,14 @@ public class AuthenticationProtocolClient extends Service {
             }
 
             return tse.getState();
-        } catch (InterruptedException ex) {
-            throw new SshException(
-                "The thread was interrupted whilst waiting for an authentication message");
+        }
+        catch (InterruptedException ex) {
+            throw new SshException("The thread was interrupted whilst waiting for an authentication message");
         }
     }
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws IOException
      */
     public void sendMessage(SshMessage msg) throws IOException {
@@ -221,8 +197,6 @@ public class AuthenticationProtocolClient extends Service {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getSessionIdentifier() {
@@ -230,8 +204,6 @@ public class AuthenticationProtocolClient extends Service {
     }
 
     /**
-     *
-     *
      * @param cls
      * @param messageId
      */
@@ -240,112 +212,102 @@ public class AuthenticationProtocolClient extends Service {
     }
 
     /**
-     *
-     *
      * @param messageId
-     *
      * @return
-     *
      * @throws TerminatedStateException
      * @throws IOException
      */
     public SshMessage readMessage(int messageId)
-        throws TerminatedStateException, IOException {
+            throws TerminatedStateException, IOException {
         singleIdFilter[2] = messageId;
 
         return internalReadMessage(singleIdFilter);
     }
 
     private SshMessage internalReadMessage(int[] messageIdFilter)
-        throws TerminatedStateException, IOException {
+            throws TerminatedStateException, IOException {
         try {
             SshMessage msg = messageStore.getMessage(messageIdFilter);
 
             return parseMessage(msg);
-        } catch (MessageStoreEOFException meof) {
-            throw new AuthenticationProtocolException("Failed to read messages: "+meof.getMessage());
-        } catch (InterruptedException ex) {
-            throw new SshException(
-                "The thread was interrupted whilst waiting for an authentication message");
+        }
+        catch (MessageStoreEOFException meof) {
+            throw new AuthenticationProtocolException("Failed to read messages: " + meof.getMessage());
+        }
+        catch (InterruptedException ex) {
+            throw new SshException("The thread was interrupted whilst waiting for an authentication message");
         }
     }
 
     /**
-     *
-     *
      * @param messageId
-     *
      * @return
-     *
      * @throws TerminatedStateException
      * @throws IOException
      */
     public SshMessage readMessage(int[] messageId)
-        throws TerminatedStateException, IOException {
+            throws TerminatedStateException, IOException {
         int[] messageIdFilter = new int[messageId.length + resultFilter.length];
         System.arraycopy(resultFilter, 0, messageIdFilter, 0,
-            resultFilter.length);
+                resultFilter.length);
         System.arraycopy(messageId, 0, messageIdFilter, resultFilter.length,
-            messageId.length);
+                messageId.length);
 
         return internalReadMessage(messageIdFilter);
     }
 
     /**
-     *
-     *
      * @throws IOException
      * @throws TerminatedStateException
      */
     public void readAuthenticationState()
-        throws IOException, TerminatedStateException {
+            throws IOException, TerminatedStateException {
         internalReadMessage(resultFilter);
     }
 
     private SshMessage parseMessage(SshMessage msg)
-        throws TerminatedStateException {
+            throws TerminatedStateException {
         if (msg instanceof SshMsgUserAuthFailure) {
             if (((SshMsgUserAuthFailure) msg).getPartialSuccess()) {
                 throw new TerminatedStateException(AuthenticationProtocolState.PARTIAL);
-            } else {
+            }
+            else {
                 throw new TerminatedStateException(AuthenticationProtocolState.FAILED);
             }
-        } else if (msg instanceof SshMsgUserAuthSuccess) {
+        }
+        else if (msg instanceof SshMsgUserAuthSuccess) {
             throw new TerminatedStateException(AuthenticationProtocolState.COMPLETE);
-        } else {
+        }
+        else {
             return msg;
         }
     }
 
     /**
-     *
-     *
      * @param timeout
-     *
      * @return
-     *
      * @throws IOException
      * @throws SshException
      */
     public String getBannerMessage(int timeout) throws IOException {
         try {
-            log.debug(
-                "getBannerMessage is attempting to read the authentication banner");
+            log.debug("getBannerMessage is attempting to read the authentication banner");
 
             SshMessage msg = messageStore.peekMessage(SshMsgUserAuthBanner.SSH_MSG_USERAUTH_BANNER,
                     timeout);
 
             return ((SshMsgUserAuthBanner) msg).getBanner();
-        } catch (MessageNotAvailableException e) {
+        }
+        catch (MessageNotAvailableException e) {
             return "";
-        } catch (MessageStoreEOFException eof) {
-            log.error(
-                "Failed to retreive banner becasue the message store is EOF");
+        }
+        catch (MessageStoreEOFException eof) {
+            log.error("Failed to retreive banner becasue the message store is EOF");
 
             return "";
-        } catch (InterruptedException ex) {
-            throw new SshException(
-                "The thread was interrupted whilst waiting for an authentication message");
+        }
+        catch (InterruptedException ex) {
+            throw new SshException("The thread was interrupted whilst waiting for an authentication message");
         }
     }
 }

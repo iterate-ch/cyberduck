@@ -26,26 +26,21 @@
  */
 package com.sshtools.j2ssh.openssh;
 
-import com.sshtools.j2ssh.util.Base64;
-
-import java.io.IOException;
-import java.io.LineNumberReader;
-import java.io.Reader;
-
-import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.Reader;
+import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.sshtools.j2ssh.util.Base64;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -59,7 +54,6 @@ public class PEMReader extends PEM {
      * Creates a new PEMReader object.
      *
      * @param r
-     *
      * @throws IOException
      */
     public PEMReader(Reader r) throws IOException {
@@ -77,9 +71,10 @@ public class PEMReader extends PEM {
                             line.length() - PEM_BOUNDARY.length());
 
                     break;
-                } else {
+                }
+                else {
                     throw new IOException("Invalid PEM boundary at line " +
-                        reader.getLineNumber() + ": " + line);
+                            reader.getLineNumber() + ": " + line);
                 }
             }
         }
@@ -105,13 +100,15 @@ public class PEMReader extends PEM {
                     if (line.endsWith("\\")) {
                         value.append(" ").append(line.substring(0,
                                 line.length() - 1).trim());
-                    } else {
+                    }
+                    else {
                         value.append(" ").append(line.trim());
 
                         break;
                     }
                 }
-            } else {
+            }
+            else {
                 String value = line.substring(colon + 1).trim();
                 header.put(key, value);
             }
@@ -121,8 +118,7 @@ public class PEMReader extends PEM {
         // could be an empty line, but if there is no header and the body begins straight after the -----
         // then this line contains data
         if (line == null) {
-            throw new IOException(
-                "The key format is invalid! OpenSSH formatted keys must begin with -----BEGIN RSA or -----BEGIN DSA");
+            throw new IOException("The key format is invalid! OpenSSH formatted keys must begin with -----BEGIN RSA or -----BEGIN DSA");
         }
 
         StringBuffer body = new StringBuffer(line);
@@ -131,9 +127,10 @@ public class PEMReader extends PEM {
             if (line.startsWith(PEM_BOUNDARY) && line.endsWith(PEM_BOUNDARY)) {
                 if (line.startsWith(PEM_END + type)) {
                     break;
-                } else {
+                }
+                else {
                     throw new IOException("Invalid PEM end boundary at line " +
-                        reader.getLineNumber() + ": " + line);
+                            reader.getLineNumber() + ": " + line);
                 }
             }
 
@@ -144,8 +141,6 @@ public class PEMReader extends PEM {
     }
 
     /**
-     *
-     *
      * @return
      */
     public Map getHeader() {
@@ -153,8 +148,6 @@ public class PEMReader extends PEM {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getPayload() {
@@ -162,8 +155,6 @@ public class PEMReader extends PEM {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getType() {
@@ -171,17 +162,13 @@ public class PEMReader extends PEM {
     }
 
     /**
-     *
-     *
      * @param passphrase
-     *
      * @return
-     *
      * @throws GeneralSecurityException
      * @throws NoSuchAlgorithmException
      */
     public byte[] decryptPayload(String passphrase)
-        throws GeneralSecurityException {
+            throws GeneralSecurityException {
         String dekInfo = (String) header.get("DEK-Info");
 
         if (dekInfo != null) {
@@ -189,8 +176,7 @@ public class PEMReader extends PEM {
             String keyAlgorithm = dekInfo.substring(0, comma);
 
             if (!"DES-EDE3-CBC".equals(keyAlgorithm)) {
-                throw new NoSuchAlgorithmException(
-                    "Unsupported passphrase algorithm: " + keyAlgorithm);
+                throw new NoSuchAlgorithmException("Unsupported passphrase algorithm: " + keyAlgorithm);
             }
 
             String ivString = dekInfo.substring(comma + 1);
@@ -198,7 +184,7 @@ public class PEMReader extends PEM {
 
             for (int i = 0; i < ivString.length(); i += 2) {
                 iv[i / 2] = (byte) Integer.parseInt(ivString.substring(i, i +
-                            2), 16);
+                        2), 16);
             }
 
             Cipher cipher = Cipher.getInstance("DESede/CBC/NoPadding");
@@ -209,7 +195,8 @@ public class PEMReader extends PEM {
             cipher.update(payload, 0, payload.length, plain, 0);
 
             return plain;
-        } else {
+        }
+        else {
             return payload;
         }
     }

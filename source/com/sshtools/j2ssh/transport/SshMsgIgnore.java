@@ -26,15 +26,13 @@
  */
 package com.sshtools.j2ssh.transport;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -61,8 +59,6 @@ public class SshMsgIgnore extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getData() {
@@ -70,8 +66,6 @@ public class SshMsgIgnore extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -79,36 +73,30 @@ public class SshMsgIgnore extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             baw.writeString(data);
-        } catch (IOException ioe) {
-            throw new InvalidMessageException(
-                "Error occurred writing message data: " + ioe.getMessage());
+        }
+        catch (IOException ioe) {
+            throw new InvalidMessageException("Error occurred writing message data: " + ioe.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             data = bar.readString();
-        } catch (IOException ioe) {
-            throw new InvalidMessageException(
-                "Error occurred reading message data: " + ioe.getMessage());
+        }
+        catch (IOException ioe) {
+            throw new InvalidMessageException("Error occurred reading message data: " + ioe.getMessage());
         }
     }
 }

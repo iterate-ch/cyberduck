@@ -26,23 +26,18 @@
  */
 package com.sshtools.j2ssh.transport.hmac;
 
-import com.sshtools.j2ssh.configuration.ConfigurationException;
-import com.sshtools.j2ssh.configuration.ConfigurationLoader;
-import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -77,8 +72,6 @@ public class SshHmacFactory {
     }
 
     /**
-     *
-     *
      * @return
      */
     public final static String getDefaultHmac() {
@@ -86,8 +79,6 @@ public class SshHmacFactory {
     }
 
     /**
-     *
-     *
      * @return
      */
     public static List getSupportedMacs() {
@@ -95,21 +86,18 @@ public class SshHmacFactory {
     }
 
     /**
-     *
-     *
      * @param methodName
-     *
      * @return
-     *
      * @throws AlgorithmNotSupportedException
      */
     public static SshHmac newInstance(String methodName)
-        throws AlgorithmNotSupportedException {
+            throws AlgorithmNotSupportedException {
         try {
             return (SshHmac) ((Class) macs.get(methodName)).newInstance();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new AlgorithmNotSupportedException(methodName +
-                " is not supported!");
+                    " is not supported!");
         }
     }
 }

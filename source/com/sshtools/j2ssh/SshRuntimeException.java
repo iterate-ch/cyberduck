@@ -28,23 +28,21 @@ package com.sshtools.j2ssh;
 
 
 /**
- * <p>
+ * <p/>
  * Runtime exception's thrown by the J2SSH application framework.
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public class SshRuntimeException extends RuntimeException {
     /**
-     * <p>
+     * <p/>
      * Constructs a runtime exception.
      * </p>
      *
      * @param msg the error message
-     *
      * @since 0.2.0
      */
     public SshRuntimeException(String msg) {

@@ -26,24 +26,20 @@
  */
 package com.sshtools.j2ssh.io;
 
-import java.io.*;
-
-import java.math.*;
+import java.io.Serializable;
+import java.math.BigInteger;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public class UnsignedInteger64 extends Number implements Serializable,
-    Comparable {
+        Comparable {
     final static long serialVersionUID = 200;
 
     /**  */
-    public final static BigInteger MAX_VALUE = new BigInteger(
-            "18446744073709551615");
+    public final static BigInteger MAX_VALUE = new BigInteger("18446744073709551615");
 
     /**  */
     public final static BigInteger MIN_VALUE = new BigInteger("0");
@@ -53,7 +49,6 @@ public class UnsignedInteger64 extends Number implements Serializable,
      * Creates a new UnsignedInteger64 object.
      *
      * @param sval
-     *
      * @throws NumberFormatException
      */
     public UnsignedInteger64(String sval) throws NumberFormatException {
@@ -69,7 +64,6 @@ public class UnsignedInteger64 extends Number implements Serializable,
      * Creates a new UnsignedInteger64 object.
      *
      * @param bval
-     *
      * @throws NumberFormatException
      */
     public UnsignedInteger64(byte[] bval) throws NumberFormatException {
@@ -85,7 +79,6 @@ public class UnsignedInteger64 extends Number implements Serializable,
      * Creates a new UnsignedInteger64 object.
      *
      * @param input
-     *
      * @throws NumberFormatException
      */
     public UnsignedInteger64(BigInteger input) {
@@ -98,10 +91,7 @@ public class UnsignedInteger64 extends Number implements Serializable,
     }
 
     /**
-     *
-     *
      * @param o
-     *
      * @return
      */
     public boolean equals(Object o) {
@@ -109,15 +99,14 @@ public class UnsignedInteger64 extends Number implements Serializable,
             UnsignedInteger64 u = (UnsignedInteger64) o;
 
             return u.bigInt.equals(this.bigInt);
-        } catch (ClassCastException ce) {
+        }
+        catch (ClassCastException ce) {
             // This was not an UnsignedInt64, so equals should fail.
             return false;
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger bigIntValue() {
@@ -125,8 +114,6 @@ public class UnsignedInteger64 extends Number implements Serializable,
     }
 
     /**
-     *
-     *
      * @return
      */
     public int intValue() {
@@ -134,8 +121,6 @@ public class UnsignedInteger64 extends Number implements Serializable,
     }
 
     /**
-     *
-     *
      * @return
      */
     public long longValue() {
@@ -143,8 +128,6 @@ public class UnsignedInteger64 extends Number implements Serializable,
     }
 
     /**
-     *
-     *
      * @return
      */
     public double doubleValue() {
@@ -152,8 +135,6 @@ public class UnsignedInteger64 extends Number implements Serializable,
     }
 
     /**
-     *
-     *
      * @return
      */
     public float floatValue() {
@@ -161,10 +142,7 @@ public class UnsignedInteger64 extends Number implements Serializable,
     }
 
     /**
-     *
-     *
      * @param val
-     *
      * @return
      */
     public int compareTo(Object val) {
@@ -172,8 +150,6 @@ public class UnsignedInteger64 extends Number implements Serializable,
     }
 
     /**
-     *
-     *
      * @return
      */
     public String toString() {
@@ -181,8 +157,6 @@ public class UnsignedInteger64 extends Number implements Serializable,
     }
 
     /**
-     *
-     *
      * @return
      */
     public int hashCode() {
@@ -190,11 +164,8 @@ public class UnsignedInteger64 extends Number implements Serializable,
     }
 
     /**
-     *
-     *
      * @param x
      * @param y
-     *
      * @return
      */
     public static UnsignedInteger64 add(UnsignedInteger64 x, UnsignedInteger64 y) {
@@ -202,11 +173,8 @@ public class UnsignedInteger64 extends Number implements Serializable,
     }
 
     /**
-     *
-     *
      * @param x
      * @param y
-     *
      * @return
      */
     public static UnsignedInteger64 add(UnsignedInteger64 x, int y) {

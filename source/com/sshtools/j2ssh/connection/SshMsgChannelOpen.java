@@ -26,17 +26,15 @@
  */
 package com.sshtools.j2ssh.connection;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -59,7 +57,7 @@ public class SshMsgChannelOpen extends SshMessage {
      * @param channelData
      */
     public SshMsgChannelOpen(String channelType, long senderChannelId,
-        long initialWindowSize, long maximumPacketSize, byte[] channelData) {
+                             long initialWindowSize, long maximumPacketSize, byte[] channelData) {
         super(SSH_MSG_CHANNEL_OPEN);
         this.channelType = channelType;
         this.senderChannelId = senderChannelId;
@@ -76,8 +74,6 @@ public class SshMsgChannelOpen extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getChannelData() {
@@ -85,8 +81,6 @@ public class SshMsgChannelOpen extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getChannelType() {
@@ -94,8 +88,6 @@ public class SshMsgChannelOpen extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getInitialWindowSize() {
@@ -103,8 +95,6 @@ public class SshMsgChannelOpen extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getMaximumPacketSize() {
@@ -112,8 +102,6 @@ public class SshMsgChannelOpen extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -121,8 +109,6 @@ public class SshMsgChannelOpen extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getSenderChannelId() {
@@ -130,14 +116,11 @@ public class SshMsgChannelOpen extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             baw.writeString(channelType);
             baw.writeInt(senderChannelId);
@@ -147,20 +130,18 @@ public class SshMsgChannelOpen extends SshMessage {
             if (channelData != null) {
                 baw.write(channelData);
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Could not write message data");
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             channelType = bar.readString();
             senderChannelId = bar.readInt();
@@ -171,7 +152,8 @@ public class SshMsgChannelOpen extends SshMessage {
                 channelData = new byte[bar.available()];
                 bar.read(channelData);
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }

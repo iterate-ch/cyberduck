@@ -26,14 +26,13 @@
  */
 package com.sshtools.j2ssh.sftp;
 
-import com.sshtools.j2ssh.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 
-import java.io.*;
+import com.sshtools.j2ssh.io.UnsignedInteger64;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -45,7 +44,6 @@ public class SftpFileOutputStream extends OutputStream {
      * Creates a new SftpFileOutputStream object.
      *
      * @param file
-     *
      * @throws IOException
      */
     public SftpFileOutputStream(SftpFile file) throws IOException {
@@ -54,24 +52,20 @@ public class SftpFileOutputStream extends OutputStream {
         }
 
         if (file.getSFTPSubsystem() == null) {
-            throw new IOException(
-                "The file is not attached to an SFTP subsystem!");
+            throw new IOException("The file is not attached to an SFTP subsystem!");
         }
 
         this.file = file;
     }
 
     /**
-     *
-     *
      * @param buffer
      * @param offset
      * @param len
-     *
      * @throws IOException
      */
     public void write(byte[] buffer, int offset, int len)
-        throws IOException {
+            throws IOException {
         int pos = 0;
         int count;
         int available;
@@ -79,38 +73,33 @@ public class SftpFileOutputStream extends OutputStream {
 
         while (pos < len) {
             available = ((int) file.getSFTPSubsystem().availableWindowSpace() < max)
-                ? (int) file.getSFTPSubsystem().availableWindowSpace() : max;
+                    ? (int) file.getSFTPSubsystem().availableWindowSpace() : max;
             count = (available < (len - pos)) ? available : (len - pos);
             file.getSFTPSubsystem().writeFile(file.getHandle(), position,
-                buffer, offset + pos, count);
+                    buffer, offset + pos, count);
             position = UnsignedInteger64.add(position, count);
             pos += count;
         }
     }
 
     /**
-     *
-     *
      * @param b
-     *
      * @throws IOException
      */
     public void write(int b) throws IOException {
         byte[] buffer = new byte[1];
         buffer[0] = (byte) b;
         file.getSFTPSubsystem().writeFile(file.getHandle(), position, buffer,
-            0, 1);
+                0, 1);
         position = UnsignedInteger64.add(position, 1);
     }
 
-	public long skip(long n) {
-		position = position.add(position, (int)n);
-		return n;
-	}
-	
+    public long skip(long n) {
+        position = position.add(position, (int) n);
+        return n;
+    }
+
     /**
-     *
-     *
      * @throws IOException
      */
     public void close() throws IOException {
@@ -118,8 +107,6 @@ public class SftpFileOutputStream extends OutputStream {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void finalize() throws IOException {

@@ -27,13 +27,10 @@
 package com.sshtools.j2ssh.net;
 
 import java.io.IOException;
-
 import java.net.Socket;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -43,17 +40,14 @@ public class SocketTransportProvider extends Socket implements TransportProvider
      *
      * @param host
      * @param port
-     *
      * @throws IOException
      */
     protected SocketTransportProvider(String host, int port)
-        throws IOException {
+            throws IOException {
         super(host, port);
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getProviderDetail() {

@@ -26,26 +26,22 @@
  */
 package com.sshtools.j2ssh.agent;
 
-import com.sshtools.j2ssh.configuration.ConfigurationLoader;
-import com.sshtools.j2ssh.connection.ConnectionProtocol;
-import com.sshtools.j2ssh.util.StartStopState;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.HashMap;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
-
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-
-import java.util.HashMap;
-import java.util.Vector;
+import com.sshtools.j2ssh.configuration.ConfigurationLoader;
+import com.sshtools.j2ssh.connection.ConnectionProtocol;
+import com.sshtools.j2ssh.util.StartStopState;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -68,41 +64,38 @@ public class SshAgentForwardingListener {
         port = selectPort();
         location = "localhost:" + String.valueOf(port);
         thread = new Thread(new Runnable() {
-                    public void run() {
-                        state.setValue(StartStopState.STARTED);
+            public void run() {
+                state.setValue(StartStopState.STARTED);
 
-                        try {
-                            server = new ServerSocket(port, 5,
-                                    InetAddress.getByName("localhost"));
+                try {
+                    server = new ServerSocket(port, 5,
+                            InetAddress.getByName("localhost"));
 
-                            //server.bind(new InetSocketAddress("localhost", port));
-                            Socket socket;
+                    //server.bind(new InetSocketAddress("localhost", port));
+                    Socket socket;
 
-                            while ((state.getValue() == StartStopState.STARTED) &&
-                                    ((socket = server.accept()) != null)) {
-                                AgentSocketChannel channel = new AgentSocketChannel(true);
-                                channel.bindSocket(socket);
+                    while ((state.getValue() == StartStopState.STARTED) &&
+                            ((socket = server.accept()) != null)) {
+                        AgentSocketChannel channel = new AgentSocketChannel(true);
+                        channel.bindSocket(socket);
 
-                                if (!SshAgentForwardingListener.this.connection.openChannel(
-                                            channel)) {
-                                    log.warn(
-                                        "Failed to open agent forwarding channel");
-                                }
-                            }
-                        } catch (Exception e) {
-                            if (state.getValue() == StartStopState.STARTED) {
-                                log.warn("Forwarding agent socket failed", e);
-                            }
+                        if (!SshAgentForwardingListener.this.connection.openChannel(channel)) {
+                            log.warn("Failed to open agent forwarding channel");
                         }
-
-                        state.setValue(StartStopState.STOPPED);
                     }
-                });
+                }
+                catch (Exception e) {
+                    if (state.getValue() == StartStopState.STARTED) {
+                        log.warn("Forwarding agent socket failed", e);
+                    }
+                }
+
+                state.setValue(StartStopState.STOPPED);
+            }
+        });
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getConfiguration() {
@@ -110,8 +103,6 @@ public class SshAgentForwardingListener {
     }
 
     /**
-     *
-     *
      * @param obj
      */
     public void addReference(Object obj) {
@@ -121,8 +112,6 @@ public class SshAgentForwardingListener {
     }
 
     /**
-     *
-     *
      * @param obj
      */
     public void removeReference(Object obj) {
@@ -137,8 +126,6 @@ public class SshAgentForwardingListener {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     public void start() throws IOException {
@@ -146,8 +133,6 @@ public class SshAgentForwardingListener {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getPort() {
@@ -161,33 +146,31 @@ public class SshAgentForwardingListener {
         try {
             state.setValue(StartStopState.STOPPED);
             server.close();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
         }
     }
 
     private int selectPort() {
         return 49152 +
-        (int) Math.round(((float) 16383 * ConfigurationLoader.getRND()
-                                                             .nextFloat()));
+                (int) Math.round(((float) 16383 * ConfigurationLoader.getRND()
+                .nextFloat()));
     }
 
     /**
-     *
-     *
      * @param sessionId
      * @param connection
-     *
      * @return
-     *
      * @throws AgentNotAvailableException
      */
     public static SshAgentForwardingListener getInstance(String sessionId,
-        ConnectionProtocol connection) throws AgentNotAvailableException {
+                                                         ConnectionProtocol connection) throws AgentNotAvailableException {
         if (agents.containsKey(sessionId)) {
             SshAgentForwardingListener agent = (SshAgentForwardingListener) agents.get(sessionId);
 
             return agent;
-        } else {
+        }
+        else {
             try {
                 SshAgentForwardingListener agent = new SshAgentForwardingListener(sessionId,
                         connection);
@@ -195,7 +178,8 @@ public class SshAgentForwardingListener {
                 agents.put(sessionId, agent);
 
                 return agent;
-            } catch (IOException ex) {
+            }
+            catch (IOException ex) {
                 throw new AgentNotAvailableException();
             }
         }

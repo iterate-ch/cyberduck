@@ -30,46 +30,34 @@ import com.sshtools.j2ssh.transport.AlgorithmInitializationException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface SshHmac {
     /**
-     *
-     *
      * @return
      */
     public int getMacLength();
 
     /**
-     *
-     *
      * @param sequenceNo
      * @param data
      * @param offset
      * @param len
-     *
      * @return
      */
     public byte[] generate(long sequenceNo, byte[] data, int offset, int len);
 
     /**
-     *
-     *
      * @param keydata
-     *
      * @throws AlgorithmInitializationException
+     *
      */
     public void init(byte[] keydata) throws AlgorithmInitializationException;
 
     /**
-     *
-     *
      * @param sequenceNo
      * @param data
-     *
      * @return
      */
     public boolean verify(long sequenceNo, byte[] data);

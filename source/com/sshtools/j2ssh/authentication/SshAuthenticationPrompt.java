@@ -28,19 +28,15 @@ package com.sshtools.j2ssh.authentication;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface SshAuthenticationPrompt {
     /**
-     *
-     *
      * @return
      */
     public boolean showPrompt(SshAuthenticationClient instance)
-        throws AuthenticationProtocolException;
+            throws AuthenticationProtocolException;
 
     /**
      *

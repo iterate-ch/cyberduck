@@ -18,11 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSFont;
 import com.apple.cocoa.application.NSTextView;
-import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRange;
-import com.apple.cocoa.foundation.NSRect;
 
 import ch.cyberduck.core.Transcript;
 

@@ -26,14 +26,15 @@
  */
 package com.sshtools.j2ssh.net;
 
-import java.io.*;
-
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -53,12 +54,8 @@ public abstract class HttpHeader {
     }
 
     /**
-     *
-     *
      * @param in
-     *
      * @return
-     *
      * @throws IOException
      */
     protected String readLine(InputStream in) throws IOException {
@@ -69,8 +66,7 @@ public abstract class HttpHeader {
             c = in.read();
 
             if (c == -1) {
-                throw new IOException(
-                    "Failed to read expected HTTP header line");
+                throw new IOException("Failed to read expected HTTP header line");
             }
 
             if (c == '\n') {
@@ -79,7 +75,8 @@ public abstract class HttpHeader {
 
             if (c != '\r') {
                 lineBuf.append((char) c);
-            } else {
+            }
+            else {
                 break;
             }
         }
@@ -88,8 +85,6 @@ public abstract class HttpHeader {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getStartLine() {
@@ -97,8 +92,6 @@ public abstract class HttpHeader {
     }
 
     /**
-     *
-     *
      * @return
      */
     public Map getHeaderFields() {
@@ -106,8 +99,6 @@ public abstract class HttpHeader {
     }
 
     /**
-     *
-     *
      * @return
      */
     public Set getHeaderFieldNames() {
@@ -115,10 +106,7 @@ public abstract class HttpHeader {
     }
 
     /**
-     *
-     *
      * @param headerName
-     *
      * @return
      */
     public String getHeaderField(String headerName) {
@@ -126,8 +114,6 @@ public abstract class HttpHeader {
     }
 
     /**
-     *
-     *
      * @param headerName
      * @param value
      */
@@ -136,8 +122,6 @@ public abstract class HttpHeader {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String toString() {
@@ -155,14 +139,11 @@ public abstract class HttpHeader {
     }
 
     /**
-     *
-     *
      * @param in
-     *
      * @throws IOException
      */
     protected void processHeaderFields(InputStream in)
-        throws IOException {
+            throws IOException {
         fields = new HashMap();
 
         StringBuffer lineBuf = new StringBuffer();
@@ -182,12 +163,14 @@ public abstract class HttpHeader {
 
             if (c != '\r') {
                 lineBuf.append((char) c);
-            } else {
+            }
+            else {
                 if (lineBuf.length() != 0) {
                     String line = lineBuf.toString();
                     lastHeaderName = processNextLine(line, lastHeaderName);
                     lineBuf.setLength(0);
-                } else {
+                }
+                else {
                     break;
                 }
             }
@@ -197,7 +180,7 @@ public abstract class HttpHeader {
     }
 
     private String processNextLine(String line, String lastHeaderName)
-        throws IOException {
+            throws IOException {
         String name;
         String value;
         char c = line.charAt(0);
@@ -205,12 +188,12 @@ public abstract class HttpHeader {
         if ((c == ' ') || (c == '\t')) {
             name = lastHeaderName;
             value = getHeaderField(lastHeaderName) + " " + line.trim();
-        } else {
+        }
+        else {
             int n = line.indexOf(':');
 
             if (n == -1) {
-                throw new IOException(
-                    "HTTP Header encoutered a corrupt field: '" + line + "'");
+                throw new IOException("HTTP Header encoutered a corrupt field: '" + line + "'");
             }
 
             name = line.substring(0, n).toLowerCase();

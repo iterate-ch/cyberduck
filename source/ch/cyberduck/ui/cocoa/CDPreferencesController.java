@@ -63,7 +63,7 @@ public class CDPreferencesController extends NSObject {
     public void awakeFromNib() {
         log.debug("awakeFromNib");
         this.window.center();
-		this.transfermodeComboboxClicked(this.transfermodeCombobox);
+        this.transfermodeComboboxClicked(this.transfermodeCombobox);
     }
 
     public NSWindow window() {
@@ -82,10 +82,10 @@ public class CDPreferencesController extends NSObject {
     private static final String TRANSFERMODE_AUTO = NSBundle.localizedString("Auto", "");
     private static final String TRANSFERMODE_BINARY = NSBundle.localizedString("Binary", "");
     private static final String TRANSFERMODE_ASCII = NSBundle.localizedString("ASCII", "");
-	
-	private static final String UNIX_LINE_ENDINGS = NSBundle.localizedString("Unix Line Endings (LF)", ""); 
-	private static final String MAC_LINE_ENDINGS = NSBundle.localizedString("Mac Line Endings (CR)", "");
-	private static final String WINDOWS_LINE_ENDINGS = NSBundle.localizedString("Windows Line Endings (CRLF)", "");
+
+    private static final String UNIX_LINE_ENDINGS = NSBundle.localizedString("Unix Line Endings (LF)", "");
+    private static final String MAC_LINE_ENDINGS = NSBundle.localizedString("Mac Line Endings (CR)", "");
+    private static final String WINDOWS_LINE_ENDINGS = NSBundle.localizedString("Windows Line Endings (CRLF)", "");
 
     private static final String PROTOCOL_FTP = "FTP";
     private static final String PROTOCOL_SFTP = "SFTP";
@@ -99,82 +99,82 @@ public class CDPreferencesController extends NSObject {
     // Outlets
     // ----------------------------------------------------------
 
-	/*
-	private NSPopUpButton defaultHostCombobox;
-	private Map defaultHosts = new HashMap();
-	
-	public void setDefaultHostCombobox(NSPopUpButton defaultHostCombobox) {
-		this.defaultHostCombobox = defaultHostCombobox;
-        this.defaultHostCombobox.removeAllItems();
-        this.defaultHostCombobox.setTarget(this);
-        this.defaultHostCombobox.setAction(new NSSelector("defaultHostComboboxClicked", new Class[]{NSPopUpButton.class}));
-		this.defaultHostCombobox.addItem(NSBundle.localizedString("Empty Browser", ""));
-		for(int i = 0; i < CDBookmarksImpl.instance().size(); i++) {
-			Host  h = CDBookmarksImpl.instance().getItem(i);
-			this.defaultHostCombobox.addItem(h.getNickname());
-			this.defaultHosts.put();
-		}
-		NSData plistData = new NSData(Preferences.instance().getProperty("connection.host.default"));
-		String[] errorString = new String[]{null};
-		Object propertyListFromXMLData =
-			NSPropertyListSerialization.propertyListFromData(plistData,
-															 NSPropertyListSerialization.PropertyListImmutable,
-															 new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-															 errorString);
-		if (errorString[0] != null) {
-			log.error("Problem reading default host: " + errorString[0]);
-		}
-		else {
-			log.debug("Successfully default host: " + propertyListFromXMLData);
-		}
-		if (propertyListFromXMLData instanceof NSDictionary) {
-			NSDictionary dict = (NSDictionary)propertyListFromXMLData;
-			Host selected = new Host(dict.objectForKey("connection.host.default"));
-			this.defaultHostCombobox.setTitle(selected.getNickname());
-		}
-	}
-	 */
-	
-	/*
-	public void defaultHostComboboxClicked(NSPopUpButton sender) {
-		Host h = this.defaultHosts.get(sender);
-		NSDictionary dict = host.getAsDictionary();
-		NSMutableData plistData = new NSMutableData();
-		String[] errorString = new String[]{null};
-		plistData.appendData(NSPropertyListSerialization.dataFromPropertyList(
-																			   dict,
-																			   NSPropertyListSerialization.PropertyListXMLFormat,
-																			   errorString)
-							  );
-		String defaultHost = new String(plistData.bytes(0, data.length()));
-        Preferences.instance().setProperty("connection.host.default", defaultHost);
+    /*
+    private NSPopUpButton defaultHostCombobox;
+    private Map defaultHosts = new HashMap();
+
+    public void setDefaultHostCombobox(NSPopUpButton defaultHostCombobox) {
+        this.defaultHostCombobox = defaultHostCombobox;
+this.defaultHostCombobox.removeAllItems();
+this.defaultHostCombobox.setTarget(this);
+this.defaultHostCombobox.setAction(new NSSelector("defaultHostComboboxClicked", new Class[]{NSPopUpButton.class}));
+        this.defaultHostCombobox.addItem(NSBundle.localizedString("Empty Browser", ""));
+        for(int i = 0; i < CDBookmarksImpl.instance().size(); i++) {
+            Host  h = CDBookmarksImpl.instance().getItem(i);
+            this.defaultHostCombobox.addItem(h.getNickname());
+            this.defaultHosts.put();
+        }
+        NSData plistData = new NSData(Preferences.instance().getProperty("connection.host.default"));
+        String[] errorString = new String[]{null};
+        Object propertyListFromXMLData =
+            NSPropertyListSerialization.propertyListFromData(plistData,
+                                                             NSPropertyListSerialization.PropertyListImmutable,
+                                                             new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+                                                             errorString);
+        if (errorString[0] != null) {
+            log.error("Problem reading default host: " + errorString[0]);
+        }
+        else {
+            log.debug("Successfully default host: " + propertyListFromXMLData);
+        }
+        if (propertyListFromXMLData instanceof NSDictionary) {
+            NSDictionary dict = (NSDictionary)propertyListFromXMLData;
+            Host selected = new Host(dict.objectForKey("connection.host.default"));
+            this.defaultHostCombobox.setTitle(selected.getNickname());
+        }
     }
-	*/
-	
-	private NSPopUpButton editorCombobox;
-	
-	public void setEditorCombobox(NSPopUpButton editorCombobox) {
-		this.editorCombobox = editorCombobox;
+     */
+
+    /*
+    public void defaultHostComboboxClicked(NSPopUpButton sender) {
+        Host h = this.defaultHosts.get(sender);
+        NSDictionary dict = host.getAsDictionary();
+        NSMutableData plistData = new NSMutableData();
+        String[] errorString = new String[]{null};
+        plistData.appendData(NSPropertyListSerialization.dataFromPropertyList(
+                                                                               dict,
+                                                                               NSPropertyListSerialization.PropertyListXMLFormat,
+                                                                               errorString)
+                              );
+        String defaultHost = new String(plistData.bytes(0, data.length()));
+Preferences.instance().setProperty("connection.host.default", defaultHost);
+}
+    */
+
+    private NSPopUpButton editorCombobox;
+
+    public void setEditorCombobox(NSPopUpButton editorCombobox) {
+        this.editorCombobox = editorCombobox;
         this.editorCombobox.setTarget(this);
         this.editorCombobox.setAction(new NSSelector("editorComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.editorCombobox.removeAllItems();
-		java.util.Map editors = Editor.SUPPORTED_EDITORS;
-		String[] items = new String[editors.size()];
+        java.util.Map editors = Editor.SUPPORTED_EDITORS;
+        String[] items = new String[editors.size()];
         java.util.Iterator iterator = editors.keySet().iterator();
         int i = 0;
         while (iterator.hasNext()) {
-            items[i] = (String)iterator.next();
+            items[i] = (String) iterator.next();
             i++;
         }
         this.editorCombobox.addItemsWithTitles(new NSArray(items));
-		this.editorCombobox.setTitle(Preferences.instance().getProperty("editor.name"));
-	}
-
-	public void editorComboboxClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
-        Preferences.instance().setProperty("editor.bundleIdentifier", (String)Editor.SUPPORTED_EDITORS.get(sender.titleOfSelectedItem()));
+        this.editorCombobox.setTitle(Preferences.instance().getProperty("editor.name"));
     }
-	
+
+    public void editorComboboxClicked(NSPopUpButton sender) {
+        Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
+        Preferences.instance().setProperty("editor.bundleIdentifier", (String) Editor.SUPPORTED_EDITORS.get(sender.titleOfSelectedItem()));
+    }
+
     private NSPopUpButton encodingCombobox;
 
     public void setEncodingCombobox(NSPopUpButton encodingCombobox) {
@@ -258,15 +258,15 @@ public class CDPreferencesController extends NSObject {
         }
     }
 
-	private NSButton chmodDownloadCheckbox; //IBOutlet
-	
+    private NSButton chmodDownloadCheckbox; //IBOutlet
+
     public void setChmodDownloadCheckbox(NSButton chmodDownloadCheckbox) {
         this.chmodDownloadCheckbox = chmodDownloadCheckbox;
         this.chmodDownloadCheckbox.setTarget(this);
         this.chmodDownloadCheckbox.setAction(new NSSelector("chmodDownloadCheckboxClicked", new Class[]{NSButton.class}));
         this.chmodDownloadCheckbox.setState(Preferences.instance().getProperty("queue.download.changePermissions").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
-	
+
     public void chmodDownloadCheckboxClicked(NSButton sender) {
         switch (sender.state()) {
             case NSCell.OnState:
@@ -277,7 +277,7 @@ public class CDPreferencesController extends NSObject {
                 break;
         }
     }
-	
+
     private NSButton horizontalLinesCheckbox; //IBOutlet
 
     public void setHorizontalLinesCheckbox(NSButton horizontalLinesCheckbox) {
@@ -507,7 +507,7 @@ public class CDPreferencesController extends NSObject {
         Preferences.instance().setProperty("ssh.SCEncryption", sender.titleOfSelectedItem());
     }
 
-	
+
     //authentication algorithms
     private static final String hmac_sha1 = "hmac-sha1";
     private static final String hmac_sha1_96 = "hmac-sha1-96";
@@ -664,28 +664,28 @@ public class CDPreferencesController extends NSObject {
         Preferences.instance().setProperty("ftp.anonymous.pass", this.anonymousField.stringValue());
     }
 
-	/*
-    private NSTextField historyField; //IBOutlet
+    /*
+private NSTextField historyField; //IBOutlet
 
-    public void setHistoryField(NSTextField historyField) {
-        this.historyField = historyField;
-        this.historyField.setStringValue(Preferences.instance().getProperty("history.size"));
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("historyFieldDidChange", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidEndEditingNotification,
-                this.historyField);
-    }
+public void setHistoryField(NSTextField historyField) {
+this.historyField = historyField;
+this.historyField.setStringValue(Preferences.instance().getProperty("history.size"));
+NSNotificationCenter.defaultCenter().addObserver(this,
+new NSSelector("historyFieldDidChange", new Class[]{NSNotification.class}),
+NSControl.ControlTextDidEndEditingNotification,
+this.historyField);
+}
 
-    public void historyFieldDidChange(NSNotification sender) {
-        if (this.historyField.stringValue() != null && !this.historyField.stringValue().equals("")) {
-            int size = Integer.parseInt(this.historyField.stringValue());
-            Preferences.instance().setProperty("history.size", size);
-            while (CDHistoryImpl.instance().size() > size) {
-                CDHistoryImpl.instance().removeItem(CDHistoryImpl.instance().size() - 1);
-            }
-        }
-    }
-	 */
+public void historyFieldDidChange(NSNotification sender) {
+if (this.historyField.stringValue() != null && !this.historyField.stringValue().equals("")) {
+int size = Integer.parseInt(this.historyField.stringValue());
+Preferences.instance().setProperty("history.size", size);
+while (CDHistoryImpl.instance().size() > size) {
+CDHistoryImpl.instance().removeItem(CDHistoryImpl.instance().size() - 1);
+}
+}
+}
+     */
 
     private NSTextField downloadPathField; //IBOutlet
 
@@ -702,21 +702,21 @@ public class CDPreferencesController extends NSObject {
         Preferences.instance().setProperty("queue.download.folder", this.downloadPathField.stringValue());
     }
 
-	private NSTextField extensionsField; //IBOutlet
-	
+    private NSTextField extensionsField; //IBOutlet
+
     public void setExtensionsField(NSTextField extensionsField) {
         this.extensionsField = extensionsField;
         this.extensionsField.setStringValue(Preferences.instance().getProperty("ftp.transfermode.ascii.extensions"));
         NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("extensionsFieldDidChange", new Class[]{NSNotification.class}),
-														 NSControl.ControlTextDidChangeNotification,
-														 this.extensionsField);
+                new NSSelector("extensionsFieldDidChange", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.extensionsField);
     }
-	
+
     public void extensionsFieldDidChange(NSNotification sender) {
         Preferences.instance().setProperty("ftp.transfermode.ascii.extensions", this.extensionsField.stringValue());
     }
-	
+
     private NSTextField loginField; //IBOutlet
 
     public void setLoginField(NSTextField loginField) {
@@ -731,7 +731,7 @@ public class CDPreferencesController extends NSObject {
     public void loginFieldDidChange(NSNotification sender) {
         Preferences.instance().setProperty("connection.login.name", this.loginField.stringValue());
     }
-		
+
     private NSButton keychainCheckbox; //IBOutlet
 
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
@@ -890,9 +890,9 @@ public class CDPreferencesController extends NSObject {
             Preferences.instance().setProperty("queue.fileExists", "similar");
         }
     }
-	
-	private NSPopUpButton lineEndingCombobox; //IBOutlet
-	
+
+    private NSPopUpButton lineEndingCombobox; //IBOutlet
+
     public void setLineEndingCombobox(NSPopUpButton lineEndingCombobox) {
         this.lineEndingCombobox = lineEndingCombobox;
         this.lineEndingCombobox.setTarget(this);
@@ -907,9 +907,9 @@ public class CDPreferencesController extends NSObject {
         }
         else if (Preferences.instance().getProperty("ftp.line.separator").equals("win")) {
             this.lineEndingCombobox.setTitle(WINDOWS_LINE_ENDINGS);
-		}
+        }
     }
-	
+
     public void lineEndingComboboxClicked(NSPopUpButton sender) {
         if (sender.selectedItem().title().equals(UNIX_LINE_ENDINGS)) {
             Preferences.instance().setProperty("ftp.line.separator", "unix");
@@ -921,8 +921,8 @@ public class CDPreferencesController extends NSObject {
             Preferences.instance().setProperty("ftp.line.separator", "win");
         }
     }
-	
-		
+
+
     private NSPopUpButton transfermodeCombobox; //IBOutlet
 
     public void setTransfermodeCombobox(NSPopUpButton transfermodeCombobox) {
@@ -934,10 +934,10 @@ public class CDPreferencesController extends NSObject {
         if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
             this.transfermodeCombobox.setTitle(TRANSFERMODE_BINARY);
         }
-		else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+        else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
             this.transfermodeCombobox.setTitle(TRANSFERMODE_ASCII);
         }
-		else if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+        else if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
             this.transfermodeCombobox.setTitle(TRANSFERMODE_AUTO);
         }
     }
@@ -945,18 +945,18 @@ public class CDPreferencesController extends NSObject {
     public void transfermodeComboboxClicked(NSPopUpButton sender) {
         if (sender.selectedItem().title().equals(TRANSFERMODE_BINARY)) {
             Preferences.instance().setProperty("ftp.transfermode", "binary");
-			this.lineEndingCombobox.setEnabled(false);
-			this.extensionsField.setEnabled(false);
+            this.lineEndingCombobox.setEnabled(false);
+            this.extensionsField.setEnabled(false);
         }
         else if (sender.selectedItem().title().equals(TRANSFERMODE_ASCII)) {
             Preferences.instance().setProperty("ftp.transfermode", "ascii");
-			this.lineEndingCombobox.setEnabled(true);
-			this.extensionsField.setEnabled(false);
+            this.lineEndingCombobox.setEnabled(true);
+            this.extensionsField.setEnabled(false);
         }
         else if (sender.selectedItem().title().equals(TRANSFERMODE_AUTO)) {
             Preferences.instance().setProperty("ftp.transfermode", "auto");
-			this.lineEndingCombobox.setEnabled(true);
-			this.extensionsField.setEnabled(true);
+            this.lineEndingCombobox.setEnabled(true);
+            this.extensionsField.setEnabled(true);
         }
     }
 

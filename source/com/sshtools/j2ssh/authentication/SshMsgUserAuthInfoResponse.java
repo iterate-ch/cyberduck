@@ -26,17 +26,15 @@
  */
 package com.sshtools.j2ssh.authentication;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -71,8 +69,6 @@ public class SshMsgUserAuthInfoResponse extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -80,8 +76,6 @@ public class SshMsgUserAuthInfoResponse extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String[] getResponses() {
@@ -89,42 +83,40 @@ public class SshMsgUserAuthInfoResponse extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws com.sshtools.j2ssh.transport.InvalidMessageException {
+            throws com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             if (responses == null) {
                 baw.writeInt(0);
-            } else {
+            }
+            else {
                 baw.writeInt(responses.length);
 
                 for (int i = 0; i < responses.length; i++) {
                     baw.writeString(responses[i]);
                 }
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Failed to write message data");
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws com.sshtools.j2ssh.transport.InvalidMessageException {
+            throws com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             int num = (int) bar.readInt();
 
@@ -135,7 +127,8 @@ public class SshMsgUserAuthInfoResponse extends SshMessage {
                     responses[i] = bar.readString();
                 }
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Failed to read message data");
         }
     }

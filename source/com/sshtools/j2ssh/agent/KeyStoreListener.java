@@ -28,50 +28,36 @@ package com.sshtools.j2ssh.agent;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface KeyStoreListener {
     /**
-     *
-     *
      * @param keystore
      */
     public void onDeleteKey(KeyStore keystore);
 
     /**
-     *
-     *
      * @param keystore
      */
     public void onLock(KeyStore keystore);
 
     /**
-     *
-     *
      * @param keystore
      */
     public void onUnlock(KeyStore keystore);
 
     /**
-     *
-     *
      * @param keystore
      */
     public void onAddKey(KeyStore keystore);
 
     /**
-     *
-     *
      * @param keystore
      */
     public void onDeleteAllKeys(KeyStore keystore);
 
     /**
-     *
-     *
      * @param keystore
      * @param operation
      */

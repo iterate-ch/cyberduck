@@ -26,6 +26,18 @@
  */
 package com.sshtools.j2ssh.transport.publickey.dsa;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.KeyFactory;
+import java.security.Signature;
+import java.security.interfaces.DSAPrivateKey;
+import java.security.interfaces.DSAPublicKey;
+import java.security.spec.DSAPrivateKeySpec;
+import java.security.spec.DSAPublicKeySpec;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
@@ -33,20 +45,6 @@ import com.sshtools.j2ssh.transport.publickey.InvalidSshKeySignatureException;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import com.sshtools.j2ssh.util.SimpleASNReader;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.IOException;
-
-import java.math.BigInteger;
-
-import java.security.KeyFactory;
-import java.security.Signature;
-import java.security.interfaces.DSAPrivateKey;
-import java.security.interfaces.DSAPublicKey;
-import java.security.spec.DSAPrivateKeySpec;
-import java.security.spec.DSAPublicKeySpec;
 
 
 class SshDssPrivateKey extends SshPrivateKey {
@@ -66,7 +64,6 @@ class SshDssPrivateKey extends SshPrivateKey {
      * Creates a new SshDssPrivateKey object.
      *
      * @param key
-     *
      * @throws InvalidSshKeyException
      */
     public SshDssPrivateKey(byte[] key) throws InvalidSshKeyException {
@@ -89,16 +86,14 @@ class SshDssPrivateKey extends SshPrivateKey {
 
             KeyFactory kf = KeyFactory.getInstance("DSA");
             prvkey = (DSAPrivateKey) kf.generatePrivate(dsaKey);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new InvalidSshKeyException();
         }
     }
 
     /**
-     *
-     *
      * @param obj
-     *
      * @return
      */
     public boolean equals(Object obj) {
@@ -110,8 +105,6 @@ class SshDssPrivateKey extends SshPrivateKey {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int hashCode() {
@@ -119,8 +112,6 @@ class SshDssPrivateKey extends SshPrivateKey {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getAlgorithmName() {
@@ -128,8 +119,6 @@ class SshDssPrivateKey extends SshPrivateKey {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getBitLength() {
@@ -137,8 +126,6 @@ class SshDssPrivateKey extends SshPrivateKey {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getEncoded() {
@@ -151,14 +138,13 @@ class SshDssPrivateKey extends SshPrivateKey {
             baw.writeBigInteger(prvkey.getX());
 
             return baw.toByteArray();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             return null;
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public SshPublicKey getPublicKey() {
@@ -169,22 +155,20 @@ class SshDssPrivateKey extends SshPrivateKey {
             KeyFactory kf = KeyFactory.getInstance("DSA");
 
             return new SshDssPublicKey((DSAPublicKey) kf.generatePublic(spec));
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return null;
         }
     }
 
     /**
-     *
-     *
      * @param data
-     *
      * @return
-     *
      * @throws InvalidSshKeySignatureException
+     *
      */
     public byte[] generateSignature(byte[] data)
-        throws InvalidSshKeySignatureException {
+            throws InvalidSshKeySignatureException {
         try {
             Signature sig = Signature.getInstance("SHA1withDSA");
             sig.initSign(prvkey);
@@ -210,13 +194,15 @@ class SshDssPrivateKey extends SshPrivateKey {
 
             if (r.length >= 20) {
                 System.arraycopy(r, r.length - 20, decoded, 0, 20);
-            } else {
+            }
+            else {
                 System.arraycopy(r, 0, decoded, 20 - r.length, r.length);
             }
 
             if (s.length >= 20) {
                 System.arraycopy(s, s.length - 20, decoded, 20, 20);
-            } else {
+            }
+            else {
                 System.arraycopy(s, 0, decoded, 20 + (20 - s.length), s.length);
             }
 
@@ -245,13 +231,14 @@ class SshDssPrivateKey extends SshPrivateKey {
             baw.writeBinaryString(decoded);
 
             return baw.toByteArray();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new InvalidSshKeySignatureException(e);
         }
     }
 
     private BigInteger getY() {
         return prvkey.getParams().getG().modPow(prvkey.getX(),
-            prvkey.getParams().getP());
+                prvkey.getParams().getP());
     }
 }

@@ -26,17 +26,15 @@
  */
 package com.sshtools.j2ssh.connection;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -63,8 +61,6 @@ public class SshMsgRequestSuccess extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -72,8 +68,6 @@ public class SshMsgRequestSuccess extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getRequestData() {
@@ -81,38 +75,34 @@ public class SshMsgRequestSuccess extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             if (requestData != null) {
                 baw.write(requestData);
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             if (bar.available() > 0) {
                 requestData = new byte[bar.available()];
                 bar.read(requestData);
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }

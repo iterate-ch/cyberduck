@@ -30,7 +30,7 @@ import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 
 
 /**
- * <p>
+ * <p/>
  * A simple host key verification implementation that automatically approves
  * the servers host key. It should be noted that using this implementation
  * will render the protocol insecure against active attacks.
@@ -38,26 +38,22 @@ import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public class IgnoreHostKeyVerification implements HostKeyVerification {
     /**
-     * <p>
+     * <p/>
      * Simply returns <code>true</code> to all requests.
      * </p>
      *
      * @param host the name of the host
-     * @param pk the hosts public key
-     *
+     * @param pk   the hosts public key
      * @return <code>true</code>
-     *
      * @throws TransportProtocolException if an error occurs
-     *
      * @since 0.2.0
      */
     public boolean verifyHost(String host, SshPublicKey pk)
-        throws TransportProtocolException {
+            throws TransportProtocolException {
         return true;
     }
 }

@@ -26,6 +26,9 @@
  */
 package com.sshtools.j2ssh.transport;
 
+import java.io.IOException;
+import java.util.*;
+
 import com.sshtools.j2ssh.configuration.ConfigurationLoader;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
 import com.sshtools.j2ssh.io.ByteArrayReader;
@@ -36,18 +39,8 @@ import com.sshtools.j2ssh.transport.hmac.SshHmacFactory;
 import com.sshtools.j2ssh.transport.kex.SshKeyExchangeFactory;
 import com.sshtools.j2ssh.transport.publickey.SshKeyPairFactory;
 
-import java.io.IOException;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.StringTokenizer;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -121,8 +114,6 @@ public class SshMsgKexInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -130,8 +121,6 @@ public class SshMsgKexInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public List getSupportedCSComp() {
@@ -139,8 +128,6 @@ public class SshMsgKexInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public List getSupportedCSEncryption() {
@@ -148,8 +135,6 @@ public class SshMsgKexInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public List getSupportedCSMac() {
@@ -157,8 +142,6 @@ public class SshMsgKexInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public List getSupportedKex() {
@@ -166,8 +149,6 @@ public class SshMsgKexInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param pks
      */
     public void setSupportedPK(List pks) {
@@ -177,8 +158,6 @@ public class SshMsgKexInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public List getSupportedPublicKeys() {
@@ -186,8 +165,6 @@ public class SshMsgKexInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public List getSupportedSCComp() {
@@ -195,8 +172,6 @@ public class SshMsgKexInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public List getSupportedSCEncryption() {
@@ -204,8 +179,6 @@ public class SshMsgKexInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public List getSupportedSCMac() {
@@ -213,10 +186,7 @@ public class SshMsgKexInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param list
-     *
      * @return
      */
     public String createDelimString(List list) {
@@ -238,8 +208,6 @@ public class SshMsgKexInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String toString() {
@@ -247,36 +215,33 @@ public class SshMsgKexInit extends SshMessage {
         ret += ("Supported Kex " + supportedKex.toString() + "\n");
         ret += ("Supported Public Keys " + supportedPK.toString() + "\n");
         ret += ("Supported Encryption Client->Server " +
-        supportedEncryptCS.toString() + "\n");
+                supportedEncryptCS.toString() + "\n");
         ret += ("Supported Encryption Server->Client " +
-        supportedEncryptSC.toString() + "\n");
+                supportedEncryptSC.toString() + "\n");
         ret += ("Supported Mac Client->Server " + supportedMacCS.toString() +
-        "\n");
+                "\n");
         ret += ("Supported Mac Server->Client " + supportedMacSC.toString() +
-        "\n");
+                "\n");
         ret += ("Supported Compression Client->Server " +
-        supportedCompCS.toString() + "\n");
+                supportedCompCS.toString() + "\n");
         ret += ("Supported Compression Server->Client " +
-        supportedCompSC.toString() + "\n");
+                supportedCompSC.toString() + "\n");
         ret += ("Supported Languages Client->Server " +
-        supportedLangCS.toString() + "\n");
+                supportedLangCS.toString() + "\n");
         ret += ("Supported Languages Server->Client " +
-        supportedLangSC.toString() + "\n");
+                supportedLangSC.toString() + "\n");
         ret += ("First Kex Packet Follows [" +
-        (firstKexFollows ? "TRUE]" : "FALSE]"));
+                (firstKexFollows ? "TRUE]" : "FALSE]"));
 
         return ret;
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             baw.write(cookie);
             baw.writeString(createDelimString(supportedKex));
@@ -291,21 +256,19 @@ public class SshMsgKexInit extends SshMessage {
             baw.writeString(createDelimString(supportedLangSC));
             baw.write((firstKexFollows ? 1 : 0));
             baw.writeInt(0);
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Error writing message data: " +
-                ioe.getMessage());
+                    ioe.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             cookie = new byte[16];
             bar.read(cookie);
@@ -320,9 +283,10 @@ public class SshMsgKexInit extends SshMessage {
             supportedLangCS = loadListFromString(bar.readString());
             supportedLangSC = loadListFromString(bar.readString());
             firstKexFollows = (bar.read() == 0) ? false : true;
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Error reading message data: " +
-                ioe.getMessage());
+                    ioe.getMessage());
         }
     }
 

@@ -26,18 +26,18 @@
  */
 package com.sshtools.j2ssh.transport;
 
+import java.io.IOException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
-
 
 /**
- * <p>
+ * <p/>
  * This class implements the transport protocol service.
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * After the transport protocol negotiates the protocol version and performs
  * server authentication via key exchange, the client requests a service. The
  * service is identified by a name and currently there are 2 services defined.<br>
@@ -54,7 +54,6 @@ import java.io.IOException;
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public abstract class Service {
@@ -81,25 +80,32 @@ public abstract class Service {
      */
     protected SshMessageStore messageStore = new SshMessageStore();
 
-    /** The underlying transport protocol */
+    /**
+     * The underlying transport protocol
+     */
     protected TransportProtocol transport;
 
-    /** This instances start mode */
+    /**
+     * This instances start mode
+     */
     protected Integer startMode = null;
 
-    /** The current state of the service */
+    /**
+     * The current state of the service
+     */
     protected ServiceState state = new ServiceState();
 
-    /** The name of the service */
+    /**
+     * The name of the service
+     */
     private String serviceName;
 
     /**
-     * <p>
+     * <p/>
      * Constructs the service.
      * </p>
      *
      * @param serviceName the name of the service
-     *
      * @since 0.2.0
      */
     public Service(String serviceName) {
@@ -107,12 +113,11 @@ public abstract class Service {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the service name.
      * </p>
      *
      * @return the serivce name
-     *
      * @since 0.2.0
      */
     public final String getServiceName() {
@@ -120,12 +125,11 @@ public abstract class Service {
     }
 
     /**
-     * <p>
+     * <p/>
      * Starts the service.
      * </p>
      *
      * @throws IOException if an IO error occurs
-     *
      * @since 0.2.0
      */
     public final void start() throws IOException {
@@ -137,7 +141,8 @@ public abstract class Service {
         if (startMode.intValue() == REQUESTING_SERVICE) {
             log.info(serviceName + " has been accepted");
             onServiceAccept();
-        } else {
+        }
+        else {
             // We've recevied a request instead
             log.info(serviceName + " has been requested");
             onServiceRequest();
@@ -148,23 +153,21 @@ public abstract class Service {
     }
 
     /**
-     * <p>
+     * <p/>
      * Called when the service is started.
      * </p>
      *
      * @throws IOException if an IO error occurs
-     *
      * @since 0.2.0
      */
     protected abstract void onStart() throws IOException;
 
     /**
-     * <p>
+     * <p/>
      * Returns the state of the service.
      * </p>
      *
      * @return the state of the service
-     *
      * @see ServiceState
      * @since 0.2.0
      */
@@ -173,19 +176,17 @@ public abstract class Service {
     }
 
     /**
-     * <p>
+     * <p/>
      * Initialize the service.
      * </p>
      *
      * @param startMode the mode of the service
      * @param transport the underlying transport protocol
-     *
      * @throws IOException if an IO error occurs
-     *
      * @since 0.2.0
      */
     public void init(int startMode, TransportProtocol transport)
-        throws IOException {
+            throws IOException {
         if ((startMode != REQUESTING_SERVICE) &&
                 (startMode != ACCEPTING_SERVICE)) {
             throw new IOException("Invalid start mode!");
@@ -200,7 +201,7 @@ public abstract class Service {
     }
 
     /**
-     * <p>
+     * <p/>
      * Stops the service.
      * </p>
      *
@@ -212,45 +213,39 @@ public abstract class Service {
     }
 
     /**
-     * <p>
+     * <p/>
      * Called when the service is accepted by the remote server.
      * </p>
      *
      * @throws IOException
-     *
      * @since 0.2.0
      */
     protected abstract void onServiceAccept() throws IOException;
 
     /**
-     * <p>
+     * <p/>
      * Called when the service is intialized.
      * </p>
      *
      * @param startMode the mode of the service
-     *
      * @throws IOException if an IO error occurs
-     *
      * @since 0.2.0
      */
     protected abstract void onServiceInit(int startMode)
-        throws IOException;
+            throws IOException;
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected abstract void onServiceRequest() throws IOException;
 
     /**
-     * <p>
+     * <p/>
      * Sends the SSH_MSG_SERVICE_ACCEPT message to the client to indicate that
      * the local computer is accepting the remote computers service request.
      * </p>
      *
      * @throws IOException if an IO error occurs
-     *
      * @since 0.2.0
      */
     protected void sendServiceAccept() throws IOException {

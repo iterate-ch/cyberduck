@@ -28,8 +28,6 @@ package com.sshtools.j2ssh.forwarding;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -60,8 +58,6 @@ public class XDisplay {
     }
 
     /**
-     *
-     *
      * @param portOffset
      */
     public void setPortOffset(int portOffset) {
@@ -69,8 +65,6 @@ public class XDisplay {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getPortOffset() {
@@ -78,8 +72,6 @@ public class XDisplay {
     }
 
     /**
-     *
-     *
      * @param string
      */
     public void setString(String string) {
@@ -88,7 +80,8 @@ public class XDisplay {
         if (idx == -1) {
             display = 0;
             host = string;
-        } else {
+        }
+        else {
             host = string.substring(0, idx);
 
             String s = string.substring(idx + 1);
@@ -99,19 +92,23 @@ public class XDisplay {
 
                 try {
                     display = Integer.parseInt(s);
-                } catch (NumberFormatException nfe) {
+                }
+                catch (NumberFormatException nfe) {
                     display = 0;
                 }
-            } else {
+            }
+            else {
                 try {
                     display = Integer.parseInt(s.substring(0, idx));
-                } catch (NumberFormatException nfe) {
+                }
+                catch (NumberFormatException nfe) {
                     display = 0;
                 }
 
                 try {
                     screen = Integer.parseInt(s.substring(idx + 1));
-                } catch (NumberFormatException nfe) {
+                }
+                catch (NumberFormatException nfe) {
                     screen = 0;
                 }
             }
@@ -119,18 +116,14 @@ public class XDisplay {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getPort() {
         return (getDisplay() < getPortOffset())
-        ? (getDisplay() + getPortOffset()) : getDisplay();
+                ? (getDisplay() + getPortOffset()) : getDisplay();
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getScreen() {
@@ -138,8 +131,6 @@ public class XDisplay {
     }
 
     /**
-     *
-     *
      * @param host
      */
     public void setHost(String host) {
@@ -147,8 +138,6 @@ public class XDisplay {
     }
 
     /**
-     *
-     *
      * @param display
      */
     public void setDisplay(int display) {
@@ -156,8 +145,6 @@ public class XDisplay {
     }
 
     /**
-     *
-     *
      * @param screen
      */
     public void setScreen(int screen) {
@@ -165,8 +152,6 @@ public class XDisplay {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getHost() {
@@ -174,8 +159,6 @@ public class XDisplay {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getDisplay() {
@@ -183,12 +166,10 @@ public class XDisplay {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String toString() {
         return getHost() + ":" + getDisplay() +
-        ((getScreen() == 0) ? "" : ("." + getScreen()));
+                ((getScreen() == 0) ? "" : ("." + getScreen()));
     }
 }

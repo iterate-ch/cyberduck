@@ -26,42 +26,32 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
-import com.sshtools.j2ssh.util.Hash;
-
 import java.security.NoSuchAlgorithmException;
+
+import com.sshtools.j2ssh.util.Hash;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public abstract class SshPublicKey {
     /**
-     *
-     *
      * @return
      */
     public abstract String getAlgorithmName();
 
     /**
-     *
-     *
      * @return
      */
     public abstract int getBitLength();
 
     /**
-     *
-     *
      * @return
      */
     public abstract byte[] getEncoded();
 
     /**
-     *
-     *
      * @return
      */
     public String getFingerprint() {
@@ -77,20 +67,18 @@ public abstract class SshPublicKey {
 
             for (int i = 0; i < digest.length; i++) {
                 ret += (((i == 0) ? ":" : "") + " " +
-                Integer.toHexString(digest[i] & 0xFF));
+                        Integer.toHexString(digest[i] & 0xFF));
             }
 
             return ret;
-        } catch (NoSuchAlgorithmException nsae) {
+        }
+        catch (NoSuchAlgorithmException nsae) {
             return null;
         }
     }
 
     /**
-     *
-     *
      * @param obj
-     *
      * @return
      */
     public boolean equals(Object obj) {
@@ -102,8 +90,6 @@ public abstract class SshPublicKey {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int hashCode() {
@@ -111,15 +97,12 @@ public abstract class SshPublicKey {
     }
 
     /**
-     *
-     *
      * @param signature
      * @param exchangeHash
-     *
      * @return
-     *
      * @throws InvalidSshKeySignatureException
+     *
      */
     public abstract boolean verifySignature(byte[] signature,
-        byte[] exchangeHash) throws InvalidSshKeySignatureException;
+                                            byte[] exchangeHash) throws InvalidSshKeySignatureException;
 }

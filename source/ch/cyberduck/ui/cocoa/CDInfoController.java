@@ -33,7 +33,7 @@ import ch.cyberduck.core.Status;
 public class CDInfoController extends NSObject {
     private static Logger log = Logger.getLogger(CDInfoController.class);
 
-	private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
     private Path file;
 
@@ -130,13 +130,13 @@ public class CDInfoController extends NSObject {
     public CDInfoController(Path file) {
         this.file = file;
         instances.addObject(this);
-		OFFSET =+ 16;
+        OFFSET = +16;
         if (false == NSApplication.loadNibNamed("Info", this)) {
             log.fatal("Couldn't load Info.nib");
         }
     }
 
-	private static int OFFSET = 0;
+    private static int OFFSET = 0;
 
     public void awakeFromNib() {
         log.debug("awakeFromNib");
@@ -170,13 +170,13 @@ public class CDInfoController extends NSObject {
 
         NSImage fileIcon = null;
         if (file.isFile()) {
-			fileIcon = CDIconCache.instance().get(file.getExtension());
-			fileIcon.setSize(new NSSize(32f, 32f));
+            fileIcon = CDIconCache.instance().get(file.getExtension());
+            fileIcon.setSize(new NSSize(32f, 32f));
         }
         if (file.isDirectory()) {
             fileIcon = NSImage.imageNamed("folder32.tiff");
         }
-		this.iconImageView.setImage(fileIcon);
+        this.iconImageView.setImage(fileIcon);
 
         (NSNotificationCenter.defaultCenter()).addObserver(this,
                 new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
@@ -193,8 +193,8 @@ public class CDInfoController extends NSObject {
     }
 
     public void windowWillClose(NSNotification notification) {
-		log.debug("windowWillClose");
-		OFFSET =- 16;
+        log.debug("windowWillClose");
+        OFFSET = -16;
         if (!filenameField.stringValue().equals(file.getName())) {
             file.rename(file.getParent().getAbsolute(), filenameField.stringValue());
         }

@@ -26,21 +26,17 @@
  */
 package com.sshtools.j2ssh.openssh;
 
-import com.sshtools.j2ssh.util.SimpleASNReader;
-import com.sshtools.j2ssh.util.SimpleASNWriter;
-
 import java.io.IOException;
-
 import java.math.BigInteger;
-
 import java.security.spec.KeySpec;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 
+import com.sshtools.j2ssh.util.SimpleASNReader;
+import com.sshtools.j2ssh.util.SimpleASNWriter;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -67,9 +63,9 @@ public class RSAKeyInfo implements KeyInfo {
      * @param crtCoefficient
      */
     public RSAKeyInfo(BigInteger modulus, BigInteger publicExponent,
-        BigInteger privateExponent, BigInteger primeP, BigInteger primeQ,
-        BigInteger primeExponentP, BigInteger primeExponentQ,
-        BigInteger crtCoefficient) {
+                      BigInteger privateExponent, BigInteger primeP, BigInteger primeQ,
+                      BigInteger primeExponentP, BigInteger primeExponentQ,
+                      BigInteger crtCoefficient) {
         this.modulus = modulus;
         this.publicExponent = publicExponent;
         this.privateExponent = privateExponent;
@@ -81,8 +77,6 @@ public class RSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public KeySpec getPrivateKeySpec() {
@@ -100,8 +94,6 @@ public class RSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public KeySpec getPublicKeySpec() {
@@ -109,8 +101,6 @@ public class RSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getCrtCoefficient() {
@@ -118,8 +108,6 @@ public class RSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getModulus() {
@@ -127,8 +115,6 @@ public class RSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getPrimeExponentP() {
@@ -136,8 +122,6 @@ public class RSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getPrimeExponentQ() {
@@ -145,8 +129,6 @@ public class RSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getPrimeP() {
@@ -154,8 +136,6 @@ public class RSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getPrimeQ() {
@@ -163,8 +143,6 @@ public class RSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getPrivateExponent() {
@@ -172,8 +150,6 @@ public class RSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getPublicExponent() {
@@ -181,16 +157,12 @@ public class RSAKeyInfo implements KeyInfo {
     }
 
     /**
-     *
-     *
      * @param asn
-     *
      * @return
-     *
      * @throws IOException
      */
     public static RSAKeyInfo getRSAKeyInfo(SimpleASNReader asn)
-        throws IOException {
+            throws IOException {
         asn.assertByte(0x30); // SEQUENCE
 
         int length = asn.getLength();
@@ -223,15 +195,13 @@ public class RSAKeyInfo implements KeyInfo {
         byte[] crtCoefficient = asn.getData();
 
         return new RSAKeyInfo(new BigInteger(modulus),
-            new BigInteger(publicExponent), new BigInteger(privateExponent),
-            new BigInteger(primeP), new BigInteger(primeQ),
-            new BigInteger(primeExponentP), new BigInteger(primeExponentQ),
-            new BigInteger(crtCoefficient));
+                new BigInteger(publicExponent), new BigInteger(privateExponent),
+                new BigInteger(primeP), new BigInteger(primeQ),
+                new BigInteger(primeExponentP), new BigInteger(primeExponentQ),
+                new BigInteger(crtCoefficient));
     }
 
     /**
-     *
-     *
      * @param asn
      * @param keyInfo
      */

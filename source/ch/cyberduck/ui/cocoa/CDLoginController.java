@@ -27,7 +27,6 @@ import com.apple.cocoa.foundation.NSSelector;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Login;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.LoginController;
 
 /**
@@ -36,7 +35,7 @@ import ch.cyberduck.ui.LoginController;
 public class CDLoginController extends LoginController {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
-	private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
     // ----------------------------------------------------------
     // Outlets

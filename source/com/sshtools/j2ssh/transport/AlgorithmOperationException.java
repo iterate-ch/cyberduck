@@ -28,23 +28,21 @@ package com.sshtools.j2ssh.transport;
 
 
 /**
- * <p>
+ * <p/>
  * Thrown by the transport protocol if an algorithm operation error occurs.
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public class AlgorithmOperationException extends TransportProtocolException {
     /**
-     * <p>
+     * <p/>
      * Contructs the exception.
      * </p>
      *
      * @param msg the error message
-     *
      * @since 0.2.0
      */
     public AlgorithmOperationException(String msg) {

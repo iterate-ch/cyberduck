@@ -26,31 +26,27 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESedeKeySpec;
+import javax.crypto.spec.IvParameterSpec;
+import java.io.IOException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.KeySpec;
+
 import com.sshtools.j2ssh.configuration.ConfigurationLoader;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.util.Hash;
 
-import java.io.IOException;
-
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.KeySpec;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESedeKeySpec;
-import javax.crypto.spec.IvParameterSpec;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public class SshtoolsPrivateKeyFormat extends Base64EncodedFileFormat
-    implements SshPrivateKeyFormat {
+        implements SshPrivateKeyFormat {
     private static String BEGIN = "---- BEGIN SSHTOOLS ENCRYPTED PRIVATE KEY ----";
     private static String END = "---- END SSHTOOLS ENCRYPTED PRIVATE KEY ----";
     private int cookie = 0x52f37abe;
@@ -75,8 +71,6 @@ public class SshtoolsPrivateKeyFormat extends Base64EncodedFileFormat
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getFormatType() {
@@ -84,10 +78,7 @@ public class SshtoolsPrivateKeyFormat extends Base64EncodedFileFormat
     }
 
     /**
-     *
-     *
      * @param formattedKey
-     *
      * @return
      */
     public boolean isPassphraseProtected(byte[] formattedKey) {
@@ -102,24 +93,21 @@ public class SshtoolsPrivateKeyFormat extends Base64EncodedFileFormat
             if (type.equalsIgnoreCase("3des-cbc")) {
                 return true;
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
         }
 
         return false;
     }
 
     /**
-     *
-     *
      * @param formattedKey
      * @param passphrase
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public byte[] decryptKeyblob(byte[] formattedKey, String passphrase)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         try {
             byte[] keyblob = getKeyBlob(formattedKey);
             ByteArrayReader bar = new ByteArrayReader(keyblob);
@@ -140,33 +128,31 @@ public class SshtoolsPrivateKeyFormat extends Base64EncodedFileFormat
                 KeySpec keyspec = new DESedeKeySpec(keydata);
                 Key key = SecretKeyFactory.getInstance("DESede").generateSecret(keyspec);
                 cipher.init(Cipher.DECRYPT_MODE, key,
-                    new IvParameterSpec(iv, 0, cipher.getBlockSize()));
+                        new IvParameterSpec(iv, 0, cipher.getBlockSize()));
 
-                ByteArrayReader data = new ByteArrayReader(cipher.doFinal(
-                            keyblob));
+                ByteArrayReader data = new ByteArrayReader(cipher.doFinal(keyblob));
 
                 if (data.readInt() == cookie) {
                     keyblob = data.readBinaryString();
-                } else {
-                    throw new InvalidSshKeyException(
-                        "The host key is invalid, check the passphrase supplied");
                 }
-            } else {
+                else {
+                    throw new InvalidSshKeyException("The host key is invalid, check the passphrase supplied");
+                }
+            }
+            else {
                 keyblob = bar.readBinaryString();
             }
 
             return keyblob;
-        } catch (Exception aoe) {
+        }
+        catch (Exception aoe) {
             throw new InvalidSshKeyException("Failed to read host key");
         }
     }
 
     /**
-     *
-     *
      * @param keyblob
      * @param passphrase
-     *
      * @return
      */
     public byte[] encryptKeyblob(byte[] keyblob, String passphrase) {
@@ -184,13 +170,12 @@ public class SshtoolsPrivateKeyFormat extends Base64EncodedFileFormat
                     byte[] iv = new byte[8];
                     ConfigurationLoader.getRND().nextBytes(iv);
 
-                    Cipher cipher = Cipher.getInstance(
-                            "DESede/CBC/PKCS5Padding");
+                    Cipher cipher = Cipher.getInstance("DESede/CBC/PKCS5Padding");
                     KeySpec keyspec = new DESedeKeySpec(keydata);
                     Key key = SecretKeyFactory.getInstance("DESede")
-                                              .generateSecret(keyspec);
+                            .generateSecret(keyspec);
                     cipher.init(Cipher.ENCRYPT_MODE, key,
-                        new IvParameterSpec(iv, 0, cipher.getBlockSize()));
+                            new IvParameterSpec(iv, 0, cipher.getBlockSize()));
 
                     ByteArrayWriter data = new ByteArrayWriter();
                     baw.writeString(type);
@@ -213,16 +198,14 @@ public class SshtoolsPrivateKeyFormat extends Base64EncodedFileFormat
 
             // Now set the keyblob to our new encrpyted (or not) blob
             return formatKey(baw.toByteArray());
-        } catch (Exception ioe) {
+        }
+        catch (Exception ioe) {
             return null;
         }
     }
 
     /**
-     *
-     *
      * @param algorithm
-     *
      * @return
      */
     public boolean supportsAlgorithm(String algorithm) {
@@ -246,7 +229,8 @@ public class SshtoolsPrivateKeyFormat extends Base64EncodedFileFormat
             System.arraycopy(key2, 0, key, 16, 16);
 
             return key;
-        } catch (NoSuchAlgorithmException nsae) {
+        }
+        catch (NoSuchAlgorithmException nsae) {
             return null;
         }
     }

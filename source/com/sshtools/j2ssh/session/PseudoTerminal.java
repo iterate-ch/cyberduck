@@ -28,8 +28,6 @@ package com.sshtools.j2ssh.session;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -191,43 +189,31 @@ public interface PseudoTerminal {
     public final int TTY_OP_OSPEED = 129; //Specifies the output baud rate in bits per second.
 
     /**
-     *
-     *
      * @return
      */
     public int getColumns();
 
     /**
-     *
-     *
      * @return
      */
     public String getEncodedTerminalModes();
 
     /**
-     *
-     *
      * @return
      */
     public int getHeight();
 
     /**
-     *
-     *
      * @return
      */
     public int getRows();
 
     /**
-     *
-     *
      * @return
      */
     public String getTerm();
 
     /**
-     *
-     *
      * @return
      */
     public int getWidth();

@@ -26,15 +26,13 @@
  */
 package com.sshtools.j2ssh.authentication;
 
+import java.util.Properties;
+
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import java.util.Properties;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -42,8 +40,6 @@ public class KBIAuthenticationClient extends SshAuthenticationClient {
     KBIRequestHandler handler;
 
     /**
-     *
-     *
      * @return
      */
     public Properties getPersistableProperties() {
@@ -51,8 +47,6 @@ public class KBIAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param handler
      */
     public void setKBIRequestHandler(KBIRequestHandler handler) {
@@ -66,27 +60,24 @@ public class KBIAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param authentication
      * @param serviceToStart
-     *
      * @throws com.sshtools.j2ssh.authentication.TerminatedStateException
      *
      * @throws java.io.IOException
      * @throws AuthenticationProtocolException
+     *
      */
     public void authenticate(AuthenticationProtocolClient authentication,
-        String serviceToStart)
-        throws com.sshtools.j2ssh.authentication.TerminatedStateException, 
+                             String serviceToStart)
+            throws com.sshtools.j2ssh.authentication.TerminatedStateException,
             java.io.IOException {
         if (handler == null) {
-            throw new AuthenticationProtocolException(
-                "A request handler must be set!");
+            throw new AuthenticationProtocolException("A request handler must be set!");
         }
 
         authentication.registerMessage(SshMsgUserAuthInfoRequest.class,
-            SshMsgUserAuthInfoRequest.SSH_MSG_USERAUTH_INFO_REQUEST);
+                SshMsgUserAuthInfoRequest.SSH_MSG_USERAUTH_INFO_REQUEST);
 
         // Send the authentication request
         ByteArrayWriter baw = new ByteArrayWriter();
@@ -105,22 +96,20 @@ public class KBIAuthenticationClient extends SshAuthenticationClient {
                 SshMsgUserAuthInfoRequest request = (SshMsgUserAuthInfoRequest) msg;
                 KBIPrompt[] prompts = request.getPrompts();
                 handler.showPrompts(request.getName(),
-                    request.getInstruction(), prompts);
+                        request.getInstruction(), prompts);
 
                 // Now send the response message
                 msg = new SshMsgUserAuthInfoResponse(prompts);
                 authentication.sendMessage(msg);
-            } else {
-                throw new AuthenticationProtocolException(
-                    "Unexpected authentication message " +
-                    msg.getMessageName());
+            }
+            else {
+                throw new AuthenticationProtocolException("Unexpected authentication message " +
+                        msg.getMessageName());
             }
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean canAuthenticate() {
@@ -128,8 +117,6 @@ public class KBIAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMethodName() {
@@ -137,8 +124,6 @@ public class KBIAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param properties
      */
     public void setPersistableProperties(Properties properties) {

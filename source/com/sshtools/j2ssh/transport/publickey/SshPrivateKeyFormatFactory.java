@@ -26,30 +26,19 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
-import com.sshtools.j2ssh.configuration.ConfigurationException;
-import com.sshtools.j2ssh.configuration.ConfigurationLoader;
-import com.sshtools.j2ssh.io.IOUtil;
-import com.sshtools.j2ssh.openssh.*;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.InputStream;
-
-import java.net.URL;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Vector;
+import com.sshtools.j2ssh.configuration.ConfigurationLoader;
+import com.sshtools.j2ssh.io.IOUtil;
+import com.sshtools.j2ssh.openssh.OpenSSHPrivateKeyFormat;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -72,7 +61,7 @@ public class SshPrivateKeyFormatFactory {
 
         try {
             Enumeration enum = ConfigurationLoader.getExtensionClassLoader()
-                                                  .getResources("j2ssh.privatekey");
+                    .getResources("j2ssh.privatekey");
             URL url;
             Properties properties = new Properties();
             InputStream in;
@@ -88,7 +77,7 @@ public class SshPrivateKeyFormatFactory {
                 Class cls;
 
                 while (properties.getProperty("privatekey.name." +
-                            String.valueOf(num)) != null) {
+                        String.valueOf(num)) != null) {
                     name = properties.getProperty("privatekey.name." +
                             String.valueOf(num));
                     formats.add(properties.getProperty("privatekey.class." +
@@ -97,7 +86,8 @@ public class SshPrivateKeyFormatFactory {
                     num++;
                 }
             }
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
         }
 
         SshPrivateKeyFormat f;
@@ -112,19 +102,18 @@ public class SshPrivateKeyFormatFactory {
                 Class cls = ConfigurationLoader.getExtensionClass(classname);
                 f = (SshPrivateKeyFormat) cls.newInstance();
                 log.debug("Installing " + f.getFormatType() +
-                    " private key format");
+                        " private key format");
                 formatTypes.put(f.getFormatType(), cls);
                 types.add(f.getFormatType());
-            } catch (Throwable t) {
+            }
+            catch (Throwable t) {
                 log.warn("Private key format implemented by " + classname +
-                    " will not be available", t);
+                        " will not be available", t);
             }
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public static List getSupportedFormats() {
@@ -135,35 +124,30 @@ public class SshPrivateKeyFormatFactory {
     }
 
     /**
-     *
-     *
      * @param type
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public static SshPrivateKeyFormat newInstance(String type)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         try {
             if (formatTypes.containsKey(type)) {
                 return (SshPrivateKeyFormat) ((Class) formatTypes.get(type)).newInstance();
-            } else {
-                throw new InvalidSshKeyException("The format type " + type +
-                    " is not supported");
             }
-        } catch (IllegalAccessException iae) {
-            throw new InvalidSshKeyException(
-                "Illegal access to class implementation of " + type);
-        } catch (InstantiationException ie) {
-            throw new InvalidSshKeyException(
-                "Failed to create instance of format type " + type);
+            else {
+                throw new InvalidSshKeyException("The format type " + type +
+                        " is not supported");
+            }
+        }
+        catch (IllegalAccessException iae) {
+            throw new InvalidSshKeyException("Illegal access to class implementation of " + type);
+        }
+        catch (InstantiationException ie) {
+            throw new InvalidSshKeyException("Failed to create instance of format type " + type);
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public static String getDefaultFormatType() {

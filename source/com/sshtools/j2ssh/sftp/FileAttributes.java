@@ -26,18 +26,17 @@
  */
 package com.sshtools.j2ssh.sftp;
 
-import com.sshtools.j2ssh.io.*;
-
-import java.io.*;
-
-import java.text.*;
-
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+
+import com.sshtools.j2ssh.io.ByteArrayReader;
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+import com.sshtools.j2ssh.io.UnsignedInteger32;
+import com.sshtools.j2ssh.io.UnsignedInteger64;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -142,7 +141,7 @@ public class FileAttributes {
     UnsignedInteger32 mtime = null; // Version 3 & 4
     List acl = new Vector(); // Version 4 only
     Map extended = new HashMap(); // Version 3 & 4
-    char[] types = { 'p', 'c', 'd', 'b', '-', 'l', 's', };
+    char[] types = {'p', 'c', 'd', 'b', '-', 'l', 's', };
 
     /**
      * Creates a new FileAttributes object.
@@ -215,21 +214,18 @@ public class FileAttributes {
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getUID() {
         if (uid != null) {
             return uid;
-        } else {
+        }
+        else {
             return new UnsignedInteger32(0);
         }
     }
 
     /**
-     *
-     *
      * @param uid
      */
     public void setUID(UnsignedInteger32 uid) {
@@ -238,8 +234,6 @@ public class FileAttributes {
     }
 
     /**
-     *
-     *
      * @param gid
      */
     public void setGID(UnsignedInteger32 gid) {
@@ -248,21 +242,18 @@ public class FileAttributes {
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getGID() {
         if (gid != null) {
             return gid;
-        } else {
+        }
+        else {
             return new UnsignedInteger32(0);
         }
     }
 
     /**
-     *
-     *
      * @param size
      */
     public void setSize(UnsignedInteger64 size) {
@@ -271,20 +262,20 @@ public class FileAttributes {
         // Set the flag
         if (size != null) {
             flags |= SSH_FILEXFER_ATTR_SIZE;
-        } else {
+        }
+        else {
             flags ^= SSH_FILEXFER_ATTR_SIZE;
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger64 getSize() {
         if (size != null) {
             return size;
-        } else {
+        }
+        else {
             return new UnsignedInteger64("0");
         }
     }
@@ -319,7 +310,8 @@ public class FileAttributes {
         // Set the flag
         if (permissions != null) {
             flags |= SSH_FILEXFER_ATTR_PERMISSIONS;
-        } else {
+        }
+        else {
             flags ^= SSH_FILEXFER_ATTR_PERMISSIONS;
         }
     }
@@ -328,7 +320,6 @@ public class FileAttributes {
      * Set permissions given a UNIX style mask
      *
      * @param mask mask
-     *
      * @throws IllegalArgumentException if badly formatted string
      */
     public void setPermissionsFromMaskString(String mask) {
@@ -337,17 +328,14 @@ public class FileAttributes {
         }
 
         try {
-            setPermissions(new UnsignedInteger32(String.valueOf(
-                        Integer.parseInt(mask, 8))));
-        } catch (NumberFormatException nfe) {
-            throw new IllegalArgumentException(
-                "Mask must be 4 digit octal number.");
+            setPermissions(new UnsignedInteger32(String.valueOf(Integer.parseInt(mask, 8))));
+        }
+        catch (NumberFormatException nfe) {
+            throw new IllegalArgumentException("Mask must be 4 digit octal number.");
         }
     }
 
     /**
-     *
-     *
      * @param newPermissions
      */
     public void setPermissions(String newPermissions) {
@@ -355,80 +343,78 @@ public class FileAttributes {
 
         if (permissions != null) {
             cp = cp |
-                (((permissions.intValue() & S_IFMT) == S_IFMT) ? S_IFMT : 0);
+                    (((permissions.intValue() & S_IFMT) == S_IFMT) ? S_IFMT : 0);
             cp = cp |
-                (((permissions.intValue() & S_IFSOCK) == S_IFSOCK) ? S_IFSOCK : 0);
+                    (((permissions.intValue() & S_IFSOCK) == S_IFSOCK) ? S_IFSOCK : 0);
             cp = cp |
-                (((permissions.intValue() & S_IFLNK) == S_IFLNK) ? S_IFLNK : 0);
+                    (((permissions.intValue() & S_IFLNK) == S_IFLNK) ? S_IFLNK : 0);
             cp = cp |
-                (((permissions.intValue() & S_IFREG) == S_IFREG) ? S_IFREG : 0);
+                    (((permissions.intValue() & S_IFREG) == S_IFREG) ? S_IFREG : 0);
             cp = cp |
-                (((permissions.intValue() & S_IFBLK) == S_IFBLK) ? S_IFBLK : 0);
+                    (((permissions.intValue() & S_IFBLK) == S_IFBLK) ? S_IFBLK : 0);
             cp = cp |
-                (((permissions.intValue() & S_IFDIR) == S_IFDIR) ? S_IFDIR : 0);
+                    (((permissions.intValue() & S_IFDIR) == S_IFDIR) ? S_IFDIR : 0);
             cp = cp |
-                (((permissions.intValue() & S_IFCHR) == S_IFCHR) ? S_IFCHR : 0);
+                    (((permissions.intValue() & S_IFCHR) == S_IFCHR) ? S_IFCHR : 0);
             cp = cp |
-                (((permissions.intValue() & S_IFIFO) == S_IFIFO) ? S_IFIFO : 0);
+                    (((permissions.intValue() & S_IFIFO) == S_IFIFO) ? S_IFIFO : 0);
             cp = cp |
-                (((permissions.intValue() & S_ISUID) == S_ISUID) ? S_ISUID : 0);
+                    (((permissions.intValue() & S_ISUID) == S_ISUID) ? S_ISUID : 0);
             cp = cp |
-                (((permissions.intValue() & S_ISGID) == S_ISGID) ? S_ISGID : 0);
+                    (((permissions.intValue() & S_ISGID) == S_ISGID) ? S_ISGID : 0);
         }
 
         int len = newPermissions.length();
 
         if (len >= 1) {
             cp = cp |
-                ((newPermissions.charAt(0) == 'r') ? FileAttributes.S_IRUSR : 0);
+                    ((newPermissions.charAt(0) == 'r') ? FileAttributes.S_IRUSR : 0);
         }
 
         if (len >= 2) {
             cp = cp |
-                ((newPermissions.charAt(1) == 'w') ? FileAttributes.S_IWUSR : 0);
+                    ((newPermissions.charAt(1) == 'w') ? FileAttributes.S_IWUSR : 0);
         }
 
         if (len >= 3) {
             cp = cp |
-                ((newPermissions.charAt(2) == 'x') ? FileAttributes.S_IXUSR : 0);
+                    ((newPermissions.charAt(2) == 'x') ? FileAttributes.S_IXUSR : 0);
         }
 
         if (len >= 4) {
             cp = cp |
-                ((newPermissions.charAt(3) == 'r') ? FileAttributes.S_IRGRP : 0);
+                    ((newPermissions.charAt(3) == 'r') ? FileAttributes.S_IRGRP : 0);
         }
 
         if (len >= 5) {
             cp = cp |
-                ((newPermissions.charAt(4) == 'w') ? FileAttributes.S_IWGRP : 0);
+                    ((newPermissions.charAt(4) == 'w') ? FileAttributes.S_IWGRP : 0);
         }
 
         if (len >= 6) {
             cp = cp |
-                ((newPermissions.charAt(5) == 'x') ? FileAttributes.S_IXGRP : 0);
+                    ((newPermissions.charAt(5) == 'x') ? FileAttributes.S_IXGRP : 0);
         }
 
         if (len >= 7) {
             cp = cp |
-                ((newPermissions.charAt(6) == 'r') ? FileAttributes.S_IROTH : 0);
+                    ((newPermissions.charAt(6) == 'r') ? FileAttributes.S_IROTH : 0);
         }
 
         if (len >= 8) {
             cp = cp |
-                ((newPermissions.charAt(7) == 'w') ? FileAttributes.S_IWOTH : 0);
+                    ((newPermissions.charAt(7) == 'w') ? FileAttributes.S_IWOTH : 0);
         }
 
         if (len >= 9) {
             cp = cp |
-                ((newPermissions.charAt(8) == 'x') ? FileAttributes.S_IXOTH : 0);
+                    ((newPermissions.charAt(8) == 'x') ? FileAttributes.S_IXOTH : 0);
         }
 
         setPermissions(new UnsignedInteger32(cp));
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getPermissions() {
@@ -436,8 +422,6 @@ public class FileAttributes {
     }
 
     /**
-     *
-     *
      * @param atime
      * @param mtime
      */
@@ -448,14 +432,13 @@ public class FileAttributes {
         // Set the flag
         if (atime != null) {
             flags |= SSH_FILEXFER_ATTR_ACCESSTIME;
-        } else {
+        }
+        else {
             flags ^= SSH_FILEXFER_ATTR_ACCESSTIME;
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getAccessedTime() {
@@ -463,14 +446,13 @@ public class FileAttributes {
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getModifiedTime() {
         if (mtime != null) {
             return mtime;
-        } else {
+        }
+        else {
             return new UnsignedInteger32(0);
         }
     }
@@ -507,10 +489,7 @@ public class FileAttributes {
     }
 
     /**
-     *
-     *
      * @param flag
-     *
      * @return
      */
     public boolean isFlagSet(int flag) {
@@ -518,10 +497,7 @@ public class FileAttributes {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public byte[] toByteArray() throws IOException {
@@ -548,13 +524,15 @@ public class FileAttributes {
         if (isFlagSet(SSH_FILEXFER_ATTR_UIDGID)) {
             if (uid != null) {
                 baw.writeUINT32(uid);
-            } else {
+            }
+            else {
                 baw.writeInt(0);
             }
 
             if (gid != null) {
                 baw.writeUINT32(gid);
-            } else {
+            }
+            else {
                 baw.writeInt(0);
             }
         }
@@ -609,19 +587,20 @@ public class FileAttributes {
         v >>>= r;
 
         return (((v & 0x04) != 0) ? 4 : 0) + (((v & 0x02) != 0) ? 2 : 0) +
-        +(((v & 0x01) != 0) ? 1 : 0);
+                +(((v & 0x01) != 0) ? 1 : 0);
     }
 
     private String rwxString(int v, int r) {
         v >>>= r;
 
         String rwx = ((((v & 0x04) != 0) ? "r" : "-") +
-            (((v & 0x02) != 0) ? "w" : "-"));
+                (((v & 0x02) != 0) ? "w" : "-"));
 
         if (((r == 6) && ((permissions.intValue() & S_ISUID) == S_ISUID)) ||
                 ((r == 3) && ((permissions.intValue() & S_ISGID) == S_ISGID))) {
             rwx += (((v & 0x01) != 0) ? "s" : "S");
-        } else {
+        }
+        else {
             rwx += (((v & 0x01) != 0) ? "x" : "-");
         }
 
@@ -629,8 +608,6 @@ public class FileAttributes {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getPermissionsString() {
@@ -642,7 +619,8 @@ public class FileAttributes {
             str.append(rwxString(permissions.intValue(), 0));
 
             return str.toString();
-        } else {
+        }
+        else {
             return "";
         }
     }
@@ -665,8 +643,6 @@ public class FileAttributes {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getModTimeString() {
@@ -680,7 +656,8 @@ public class FileAttributes {
 
         if ((now - mt) > (6 * 30 * 24 * 60 * 60 * 1000L)) {
             df = new SimpleDateFormat("MMM dd  yyyy");
-        } else {
+        }
+        else {
             df = new SimpleDateFormat("MMM dd hh:mm");
         }
 
@@ -688,92 +665,85 @@ public class FileAttributes {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isDirectory() {
         if (permissions == null) {
             return false;
-        } else {
+        }
+        else {
             return (permissions.intValue() & FileAttributes.S_IFDIR) == FileAttributes.S_IFDIR;
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isFile() {
         if (permissions == null) {
             return false;
-        } else {
+        }
+        else {
             return (permissions.intValue() & FileAttributes.S_IFREG) == FileAttributes.S_IFREG;
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isLink() {
         if (permissions == null) {
             return false;
-        } else {
+        }
+        else {
             return (permissions.intValue() & FileAttributes.S_IFLNK) == FileAttributes.S_IFLNK;
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isFifo() {
         if (permissions == null) {
             return false;
-        } else {
+        }
+        else {
             return (permissions.intValue() & FileAttributes.S_IFIFO) == FileAttributes.S_IFIFO;
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isBlock() {
         if (permissions == null) {
             return false;
-        } else {
+        }
+        else {
             return (permissions.intValue() & FileAttributes.S_IFBLK) == FileAttributes.S_IFBLK;
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isCharacter() {
         if (permissions == null) {
             return false;
-        } else {
+        }
+        else {
             return (permissions.intValue() & FileAttributes.S_IFCHR) == FileAttributes.S_IFCHR;
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isSocket() {
         if (permissions == null) {
             return false;
-        } else {
+        }
+        else {
             return (permissions.intValue() & FileAttributes.S_IFSOCK) == FileAttributes.S_IFSOCK;
         }
     }

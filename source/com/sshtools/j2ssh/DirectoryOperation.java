@@ -26,11 +26,12 @@
  */
 package com.sshtools.j2ssh;
 
+import java.io.File;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
 import com.sshtools.j2ssh.sftp.SftpFile;
-
-import java.io.*;
-
-import java.util.*;
 
 
 public class DirectoryOperation {
@@ -93,14 +94,14 @@ public class DirectoryOperation {
 
     public boolean containsFile(File f) {
         return unchangedFiles.contains(f) || newFiles.contains(f) ||
-        updatedFiles.contains(f) || deletedFiles.contains(f) ||
-        recursedDirectories.contains(f);
+                updatedFiles.contains(f) || deletedFiles.contains(f) ||
+                recursedDirectories.contains(f);
     }
 
     public boolean containsFile(SftpFile f) {
         return unchangedFiles.contains(f) || newFiles.contains(f) ||
-        updatedFiles.contains(f) || deletedFiles.contains(f) ||
-        recursedDirectories.contains(f.getAbsolutePath());
+                updatedFiles.contains(f) || deletedFiles.contains(f) ||
+                recursedDirectories.contains(f.getAbsolutePath());
     }
 
     public void addDirectoryOperation(DirectoryOperation op, File f) {
@@ -138,7 +139,8 @@ public class DirectoryOperation {
                 if (file.isFile()) {
                     size += file.length();
                 }
-            } else if (obj instanceof SftpFile) {
+            }
+            else if (obj instanceof SftpFile) {
                 sftpfile = (SftpFile) obj;
 
                 if (sftpfile.isFile()) {
@@ -156,7 +158,8 @@ public class DirectoryOperation {
                 if (file.isFile()) {
                     size += file.length();
                 }
-            } else if (obj instanceof SftpFile) {
+            }
+            else if (obj instanceof SftpFile) {
                 sftpfile = (SftpFile) obj;
 
                 if (sftpfile.isFile()) {

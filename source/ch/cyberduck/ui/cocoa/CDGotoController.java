@@ -33,7 +33,7 @@ import ch.cyberduck.core.Path;
 public class CDGotoController extends NSObject {
     private static Logger log = Logger.getLogger(CDGotoController.class);
 
-	private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
     private NSWindow window; // IBOutlet
 

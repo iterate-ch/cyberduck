@@ -26,19 +26,15 @@
  */
 package com.sshtools.j2ssh.io;
 
-import java.util.*;
+import java.util.EventListener;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface IOStreamConnectorListener extends EventListener {
     /**
-     *
-     *
      * @param data
      * @param count
      */

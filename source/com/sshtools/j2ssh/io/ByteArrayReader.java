@@ -28,13 +28,10 @@ package com.sshtools.j2ssh.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
 import java.math.BigInteger;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -49,26 +46,20 @@ public class ByteArrayReader extends ByteArrayInputStream {
     }
 
     /**
-     *
-     *
      * @param data
      * @param start
-     *
      * @return
      */
     public static long readInt(byte[] data, int start) {
         long ret = (((long) (data[start] & 0xFF) << 24) & 0xFFFFFFFF) |
-            ((data[start + 1] & 0xFF) << 16) | ((data[start + 2] & 0xFF) << 8) |
-            ((data[start + 3] & 0xFF) << 0);
+                ((data[start + 1] & 0xFF) << 16) | ((data[start + 2] & 0xFF) << 8) |
+                ((data[start + 3] & 0xFF) << 0);
 
         return ret;
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public long readInt() throws IOException {
@@ -76,16 +67,13 @@ public class ByteArrayReader extends ByteArrayInputStream {
         read(raw);
 
         long ret = (((long) (raw[0] & 0xFF) << 24) & 0xFFFFFFFF) |
-            ((raw[1] & 0xFF) << 16) | ((raw[2] & 0xFF) << 8) | (raw[3] & 0xFF);
+                ((raw[1] & 0xFF) << 16) | ((raw[2] & 0xFF) << 8) | (raw[3] & 0xFF);
 
         return ret;
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public UnsignedInteger32 readUINT32() throws IOException {
@@ -93,10 +81,7 @@ public class ByteArrayReader extends ByteArrayInputStream {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public UnsignedInteger64 readUINT64() throws IOException {
@@ -107,10 +92,7 @@ public class ByteArrayReader extends ByteArrayInputStream {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public BigInteger readBigInteger() throws IOException {
@@ -122,10 +104,7 @@ public class ByteArrayReader extends ByteArrayInputStream {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public byte[] readBinaryString() throws IOException {
@@ -136,27 +115,21 @@ public class ByteArrayReader extends ByteArrayInputStream {
         return raw;
     }
 
-	/**
-	*
-     *
+    /**
      * @param data
      * @param start
-     *
      * @return
      */
     public static String readString(byte[] data, int start) {
         int len = (int) readInt(data, start);
         byte[] chars = new byte[(int) len];
         System.arraycopy(data, start + 4, chars, 0, len);
-		
-		return new String(chars);
+
+        return new String(chars);
     }
-	
+
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public String readString() throws IOException {

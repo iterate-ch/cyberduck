@@ -33,8 +33,6 @@ import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -87,7 +85,7 @@ public class SshFxpStatus extends SubsystemMessage implements MessageRequestId {
      * @param languageTag
      */
     public SshFxpStatus(UnsignedInteger32 id, UnsignedInteger32 errorCode,
-        String errorMessage, String languageTag) {
+                        String errorMessage, String languageTag) {
         super(SSH_FXP_STATUS);
         this.id = id;
         this.errorCode = errorCode;
@@ -103,8 +101,6 @@ public class SshFxpStatus extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getId() {
@@ -112,8 +108,6 @@ public class SshFxpStatus extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getErrorCode() {
@@ -121,8 +115,6 @@ public class SshFxpStatus extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getErrorMessage() {
@@ -130,8 +122,6 @@ public class SshFxpStatus extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getLanguageTag() {
@@ -139,16 +129,14 @@ public class SshFxpStatus extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructMessage(ByteArrayReader bar)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         id = bar.readUINT32();
         errorCode = bar.readUINT32();
@@ -157,8 +145,6 @@ public class SshFxpStatus extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -166,16 +152,14 @@ public class SshFxpStatus extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         baw.writeUINT32(id);
         baw.writeUINT32(errorCode);

@@ -26,28 +26,22 @@
  */
 package com.sshtools.j2ssh.transport;
 
-import com.sshtools.j2ssh.io.ByteArrayReader;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import com.sshtools.j2ssh.io.ByteArrayReader;
 
 
 /**
- * <p>
+ * <p/>
  * This class implements a message store that can be used to provide a blocking
  * mechanism for transport protocol messages.
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public final class SshMessageStore {
@@ -62,7 +56,7 @@ public final class SshMessageStore {
     private Vector listeners = new Vector();
 
     /**
-     * <p>
+     * <p/>
      * Contructs the message store.
      * </p>
      *
@@ -72,12 +66,11 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Evaluate whether the message store is closed.
      * </p>
      *
      * @return
-     *
      * @since 0.2.0
      */
     public boolean isClosed() {
@@ -91,33 +84,31 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Get a message from the store. This method will block until a message
      * with an id matching the supplied filter arrives, or the message store
      * closes. The message is removed from the store.
      * </p>
      *
      * @param messageIdFilter an array of message ids that are acceptable
-     *
      * @return the next available message
-     *
      * @throws MessageStoreEOFException if the message store is closed
-     * @throws InterruptedException if the thread was interrupted
-     *
+     * @throws InterruptedException     if the thread was interrupted
      * @since 0.2.0
      */
     public synchronized SshMessage getMessage(int[] messageIdFilter)
-        throws MessageStoreEOFException, InterruptedException {
+            throws MessageStoreEOFException, InterruptedException {
         try {
             return getMessage(messageIdFilter, 0);
-        } catch (MessageNotAvailableException e) {
+        }
+        catch (MessageNotAvailableException e) {
             // This should never happen but throw just in case
             throw new MessageStoreEOFException();
         }
     }
 
     /**
-     * <p>
+     * <p/>
      * Get a message from the store. This method will block until a message
      * with an id matching the supplied filter arrives, the specified timeout
      * is reached or the message store closes. The message is removed from the
@@ -125,20 +116,17 @@ public final class SshMessageStore {
      * </p>
      *
      * @param messageIdFilter an array of message ids that are acceptable.
-     * @param timeout the maximum number of milliseconds to block before
-     *        returning.
-     *
+     * @param timeout         the maximum number of milliseconds to block before
+     *                        returning.
      * @return the next available message
-     *
-     * @throws MessageStoreEOFException if the message store is closed
+     * @throws MessageStoreEOFException     if the message store is closed
      * @throws MessageNotAvailableException if the message is not available
-     *         after a timeout
-     * @throws InterruptedException if the thread is interrupted
-     *
+     *                                      after a timeout
+     * @throws InterruptedException         if the thread is interrupted
      * @since 0.2.0
      */
     public synchronized SshMessage getMessage(int[] messageIdFilter, int timeout)
-        throws MessageStoreEOFException, MessageNotAvailableException, 
+            throws MessageStoreEOFException, MessageNotAvailableException,
             InterruptedException {
         if ((messages.size() <= 0) && isClosed) {
             throw new MessageStoreEOFException();
@@ -161,7 +149,8 @@ public final class SshMessageStore {
 
             if (msg != null) {
                 return msg;
-            } else {
+            }
+            else {
                 // If this is the second time and there's no message, then throw
                 if (!firstPass && (timeout > 0)) {
                     throw new MessageNotAvailableException();
@@ -180,33 +169,31 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Get a message from the store. This method will block until a message
      * with an id matching the supplied id arrives, or the message store
      * closes. The message is removed from the store.
      * </p>
      *
      * @param messageId the id of the message requried
-     *
      * @return the next available message with the id supplied
-     *
      * @throws MessageStoreEOFException if the message store closed
-     * @throws InterruptedException if the thread is interrupted
-     *
+     * @throws InterruptedException     if the thread is interrupted
      * @since 0.2.0
      */
     public synchronized SshMessage getMessage(int messageId)
-        throws MessageStoreEOFException, InterruptedException {
+            throws MessageStoreEOFException, InterruptedException {
         try {
             return getMessage(messageId, 0);
-        } catch (MessageNotAvailableException e) {
+        }
+        catch (MessageNotAvailableException e) {
             // This should never happen by throw jsut in case
             throw new MessageStoreEOFException();
         }
     }
 
     /**
-     * <p>
+     * <p/>
      * Get a message from the store. This method will block until a message
      * with an id matching the supplied id arrives,the specified timeout is
      * reached or the message store closes. The message will be removed from
@@ -214,19 +201,16 @@ public final class SshMessageStore {
      * </p>
      *
      * @param messageId the id of the message requried
-     * @param timeout the maximum number of milliseconds to block before
-     *        returning.
-     *
+     * @param timeout   the maximum number of milliseconds to block before
+     *                  returning.
      * @return the next available message with the id supplied
-     *
      * @throws MessageStoreEOFException if the message store closed
-     * @throws InterruptedException if the thread is interrupted
+     * @throws InterruptedException     if the thread is interrupted
      * @throws InterruptedException
-     *
      * @since 0.2.0
      */
     public synchronized SshMessage getMessage(int messageId, int timeout)
-        throws MessageStoreEOFException, MessageNotAvailableException, 
+            throws MessageStoreEOFException, MessageNotAvailableException,
             InterruptedException {
         singleIdFilter[0] = messageId;
 
@@ -234,12 +218,11 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Evaluate whether the store has any messages.
      * </p>
      *
      * @return true if messages exist, otherwise false
-     *
      * @since 0.2.0
      */
     public boolean hasMessages() {
@@ -247,12 +230,11 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the number of messages contained within this message store.
      * </p>
      *
      * @return the number of messages
-     *
      * @since 0.2.0
      */
     public int size() {
@@ -260,14 +242,12 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Determines if the message id is a registered message of this store.
      * </p>
      *
      * @param messageId the message id
-     *
      * @return true if the message id is registered, otherwise false
-     *
      * @since 0.2.0
      */
     public boolean isRegisteredMessage(Integer messageId) {
@@ -275,21 +255,19 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Adds a raw message to the store and processes the data into a registered
      * message.
      * </p>
      *
      * @param msgdata the raw message data to process
-     *
      * @throws MessageNotRegisteredException if the message id of the raw data
-     *         is not a registered message
-     * @throws InvalidMessageException if the message is invalid
-     *
+     *                                       is not a registered message
+     * @throws InvalidMessageException       if the message is invalid
      * @since 0.2.0
      */
     public void addMessage(byte[] msgdata)
-        throws MessageNotRegisteredException, InvalidMessageException {
+            throws MessageNotRegisteredException, InvalidMessageException {
         Integer messageId = new Integer(msgdata[5]);
 
         if (!isRegisteredMessage(messageId)) {
@@ -302,29 +280,28 @@ public final class SshMessageStore {
             SshMessage msg = (SshMessage) cls.newInstance();
             msg.fromByteArray(new ByteArrayReader(msgdata));
             addMessage(msg);
-        } catch (IllegalAccessException iae) {
-            throw new InvalidMessageException(
-                "Illegal access for implementation class " + cls.getName());
-        } catch (InstantiationException ie) {
+        }
+        catch (IllegalAccessException iae) {
+            throw new InvalidMessageException("Illegal access for implementation class " + cls.getName());
+        }
+        catch (InstantiationException ie) {
             throw new InvalidMessageException("Instantiation failed for class " +
-                cls.getName());
+                    cls.getName());
         }
     }
 
     /**
-     * <p>
+     * <p/>
      * Add a formed message to the store.
      * </p>
      *
      * @param msg the message to add to the store
-     *
      * @throws MessageNotRegisteredException if the message type is not
-     *         registered with the store
-     *
+     *                                       registered with the store
      * @since 0.2.0
      */
     public synchronized void addMessage(SshMessage msg)
-        throws MessageNotRegisteredException {
+            throws MessageNotRegisteredException {
         // Add the message
         messages.add(messages.size(), msg);
 
@@ -341,7 +318,7 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Closes the store. This will cause any blocking operations on the message
      * store to return.
      * </p>
@@ -361,20 +338,18 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Get the next message in the store or wait until a new message arrives.
      * The message is removed from the store.
      * </p>
      *
      * @return the next available message.
-     *
      * @throws MessageStoreEOFException if the message store is closed
-     * @throws InterruptedException if the thread is interrupted
-     *
+     * @throws InterruptedException     if the thread is interrupted
      * @since 0.2.0
      */
     public synchronized SshMessage nextMessage()
-        throws MessageStoreEOFException, InterruptedException {
+            throws MessageStoreEOFException, InterruptedException {
         if ((messages.size() <= 0) && isClosed) {
             throw new MessageStoreEOFException();
         }
@@ -386,7 +361,8 @@ public final class SshMessageStore {
 
         if (messages.size() > 0) {
             return (SshMessage) messages.remove(0);
-        } else {
+        }
+        else {
             throw new MessageStoreEOFException();
         }
     }
@@ -399,48 +375,42 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Get a message from the store without removing or blocking if the message
      * does not exist.
      * </p>
      *
      * @param messageIdFilter the id of the message requried
-     *
      * @return the next available message with the id supplied
-     *
-     * @throws MessageStoreEOFException if the message store closed
+     * @throws MessageStoreEOFException     if the message store closed
      * @throws MessageNotAvailableException if the message is not available
-     * @throws InterruptedException if the thread is interrupted
-     *
+     * @throws InterruptedException         if the thread is interrupted
      * @since 0.2.0
      */
     public synchronized SshMessage peekMessage(int[] messageIdFilter)
-        throws MessageStoreEOFException, MessageNotAvailableException, 
+            throws MessageStoreEOFException, MessageNotAvailableException,
             InterruptedException {
         return peekMessage(messageIdFilter, 0);
     }
 
     /**
-     * <p>
+     * <p/>
      * Get a message from the store without removing it; only blocking for the
      * number of milliseconds specified in the timeout field. If timeout is
      * zero, the method will not block.
      * </p>
      *
      * @param messageIdFilter an array of acceptable message ids
-     * @param timeout the number of milliseconds to wait
-     *
+     * @param timeout         the number of milliseconds to wait
      * @return the next available message of the acceptable message ids
-     *
-     * @throws MessageStoreEOFException if the message store is closed
+     * @throws MessageStoreEOFException     if the message store is closed
      * @throws MessageNotAvailableException if the message is not available
-     * @throws InterruptedException if the thread is interrupted
-     *
+     * @throws InterruptedException         if the thread is interrupted
      * @since 0.2.0
      */
     public synchronized SshMessage peekMessage(int[] messageIdFilter,
-        int timeout)
-        throws MessageStoreEOFException, MessageNotAvailableException, 
+                                               int timeout)
+            throws MessageStoreEOFException, MessageNotAvailableException,
             InterruptedException {
         SshMessage msg;
 
@@ -455,7 +425,7 @@ public final class SshMessageStore {
         if (timeout > 0) {
             if (log.isDebugEnabled()) {
                 log.debug("No message so waiting for " +
-                    String.valueOf(timeout) + " milliseconds");
+                        String.valueOf(timeout) + " milliseconds");
             }
 
             wait(timeout);
@@ -469,7 +439,8 @@ public final class SshMessageStore {
         // Nothing even after a wait so throw the relevant exception
         if (isClosed) {
             throw new MessageStoreEOFException();
-        } else {
+        }
+        else {
             throw new MessageNotAvailableException();
         }
     }
@@ -496,33 +467,29 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Get a message from the store without removing it.
      * </p>
      *
      * @param messageId the acceptable message id
-     *
      * @return the next available message.
-     *
-     * @throws MessageStoreEOFException if the message store is closed.
+     * @throws MessageStoreEOFException     if the message store is closed.
      * @throws MessageNotAvailableException if the message is not available.
-     * @throws InterruptedException if the thread is interrupted
-     *
+     * @throws InterruptedException         if the thread is interrupted
      * @since 0.2.0
      */
     public synchronized SshMessage peekMessage(int messageId)
-        throws MessageStoreEOFException, MessageNotAvailableException, 
+            throws MessageStoreEOFException, MessageNotAvailableException,
             InterruptedException {
         return peekMessage(messageId, 0);
     }
 
     /**
-     * <p>
+     * <p/>
      * Removes a message from the message store.
      * </p>
      *
      * @param msg the message to remove
-     *
      * @since 0.2.0
      */
     public synchronized void removeMessage(SshMessage msg) {
@@ -530,24 +497,21 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Get a message from the store without removing it, only blocking for the
      * number of milliseconds specified in the timeout field.
      * </p>
      *
      * @param messageId the acceptable message id
-     * @param timeout the timeout setting in milliseconds
-     *
+     * @param timeout   the timeout setting in milliseconds
      * @return the next available message
-     *
-     * @throws MessageStoreEOFException if the message store is closed
+     * @throws MessageStoreEOFException     if the message store is closed
      * @throws MessageNotAvailableException if the message is not available
-     * @throws InterruptedException if the thread is interrupted
-     *
+     * @throws InterruptedException         if the thread is interrupted
      * @since 0.2.0
      */
     public synchronized SshMessage peekMessage(int messageId, int timeout)
-        throws MessageStoreEOFException, MessageNotAvailableException, 
+            throws MessageStoreEOFException, MessageNotAvailableException,
             InterruptedException {
         singleIdFilter[0] = messageId;
 
@@ -555,13 +519,12 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Register a message implementation with the store.
      * </p>
      *
-     * @param messageId the id of the message
+     * @param messageId   the id of the message
      * @param implementor the class of the implementation
-     *
      * @since 0.2.0
      */
     public void registerMessage(int messageId, Class implementor) {
@@ -570,12 +533,11 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns an Object array (Integers) of the registered message ids.
      * </p>
      *
      * @return the registered message id array
-     *
      * @since 0.2.0
      */
     public Object[] getRegisteredMessageIds() {
@@ -583,22 +545,19 @@ public final class SshMessageStore {
     }
 
     /**
-     * <p>
+     * <p/>
      * Create a formed message from raw message data.
      * </p>
      *
      * @param msgdata the raw message data
-     *
      * @return the formed message
-     *
      * @throws MessageNotRegisteredException if the message is not a registered
-     *         message
-     * @throws InvalidMessageException if the message is invalid
-     *
+     *                                       message
+     * @throws InvalidMessageException       if the message is invalid
      * @since 0.2.0
      */
     public SshMessage createMessage(byte[] msgdata)
-        throws MessageNotRegisteredException, InvalidMessageException {
+            throws MessageNotRegisteredException, InvalidMessageException {
         Integer messageId = SshMessage.getMessageId(msgdata);
 
         if (!isRegisteredMessage(messageId)) {
@@ -612,12 +571,13 @@ public final class SshMessageStore {
             msg.fromByteArray(new ByteArrayReader(msgdata));
 
             return msg;
-        } catch (IllegalAccessException iae) {
-            throw new InvalidMessageException(
-                "Illegal access for implementation class " + cls.getName());
-        } catch (InstantiationException ie) {
+        }
+        catch (IllegalAccessException iae) {
+            throw new InvalidMessageException("Illegal access for implementation class " + cls.getName());
+        }
+        catch (InstantiationException ie) {
             throw new InvalidMessageException("Instantiation failed for class " +
-                cls.getName());
+                    cls.getName());
         }
     }
 }

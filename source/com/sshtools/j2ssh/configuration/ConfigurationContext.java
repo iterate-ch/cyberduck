@@ -28,35 +28,24 @@ package com.sshtools.j2ssh.configuration;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface ConfigurationContext {
     /**
-     *
-     *
      * @param cls
-     *
      * @return
      */
     public boolean isConfigurationAvailable(Class cls);
 
     /**
-     *
-     *
      * @param cls
-     *
      * @return
-     *
      * @throws ConfigurationException
      */
     public Object getConfiguration(Class cls) throws ConfigurationException;
 
     /**
-     *
-     *
      * @throws ConfigurationException
      */
     public void initialize() throws ConfigurationException;

@@ -26,22 +26,19 @@
  */
 package com.sshtools.j2ssh.sftp;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 
-import java.io.IOException;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -71,8 +68,6 @@ public class SshFxpInit extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getVersion() {
@@ -80,8 +75,6 @@ public class SshFxpInit extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public Map getExtended() {
@@ -89,15 +82,12 @@ public class SshFxpInit extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws IOException
      * @throws InvalidMessageException
      */
     public void constructMessage(ByteArrayReader bar)
-        throws IOException, InvalidMessageException {
+            throws IOException, InvalidMessageException {
         version = bar.readUINT32();
         extended = new HashMap();
 
@@ -112,8 +102,6 @@ public class SshFxpInit extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -121,15 +109,12 @@ public class SshFxpInit extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws IOException
      * @throws InvalidMessageException
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws IOException, InvalidMessageException {
+            throws IOException, InvalidMessageException {
         baw.writeUINT32(version);
 
         if (extended != null) {

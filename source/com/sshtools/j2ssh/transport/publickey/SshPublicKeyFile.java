@@ -26,21 +26,18 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
-import com.sshtools.j2ssh.io.ByteArrayReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import java.util.Iterator;
+import com.sshtools.j2ssh.io.ByteArrayReader;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -62,8 +59,6 @@ public class SshPublicKeyFile {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getBytes() {
@@ -71,8 +66,6 @@ public class SshPublicKeyFile {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getComment() {
@@ -80,8 +73,6 @@ public class SshPublicKeyFile {
     }
 
     /**
-     *
-     *
      * @param comment
      */
     public void setComment(String comment) {
@@ -89,8 +80,6 @@ public class SshPublicKeyFile {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getKeyBlob() {
@@ -98,15 +87,12 @@ public class SshPublicKeyFile {
     }
 
     /**
-     *
-     *
      * @param key
      * @param format
-     *
      * @return
      */
     public static SshPublicKeyFile create(SshPublicKey key,
-        SshPublicKeyFormat format) {
+                                          SshPublicKeyFormat format) {
         SshPublicKeyFile file = new SshPublicKeyFile(key.getEncoded(), format);
         file.setComment(format.getComment());
 
@@ -114,17 +100,13 @@ public class SshPublicKeyFile {
     }
 
     /**
-     *
-     *
      * @param keyfile
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      * @throws IOException
      */
     public static SshPublicKeyFile parse(File keyfile)
-        throws InvalidSshKeyException, IOException {
+            throws InvalidSshKeyException, IOException {
         FileInputStream in = new FileInputStream(keyfile);
         byte[] data = new byte[in.available()];
         in.read(data);
@@ -134,16 +116,12 @@ public class SshPublicKeyFile {
     }
 
     /**
-     *
-     *
      * @param formattedKey
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public static SshPublicKeyFile parse(byte[] formattedKey)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         log.info("Parsing public key file");
 
         // Try the default private key format
@@ -153,11 +131,10 @@ public class SshPublicKeyFile {
         boolean valid = format.isFormatted(formattedKey);
 
         if (!valid) {
-            log.info(
-                "Public key is not in the default format, attempting parse with other supported formats");
+            log.info("Public key is not in the default format, attempting parse with other supported formats");
 
             Iterator it = SshPublicKeyFormatFactory.getSupportedFormats()
-                                                   .iterator();
+                    .iterator();
             String ft;
 
             while (it.hasNext() && !valid) {
@@ -169,20 +146,17 @@ public class SshPublicKeyFile {
         }
 
         if (valid) {
-            SshPublicKeyFile file = new SshPublicKeyFile(format.getKeyBlob(
-                        formattedKey), format);
+            SshPublicKeyFile file = new SshPublicKeyFile(format.getKeyBlob(formattedKey), format);
             file.setComment(format.getComment());
 
             return file;
-        } else {
-            throw new InvalidSshKeyException(
-                "The key format is not a supported format");
+        }
+        else {
+            throw new InvalidSshKeyException("The key format is not a supported format");
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getAlgorithm() {
@@ -190,26 +164,21 @@ public class SshPublicKeyFile {
     }
 
     /**
-     *
-     *
      * @param newFormat
-     *
      * @throws InvalidSshKeyException
      */
     public void setFormat(SshPublicKeyFormat newFormat)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         if (newFormat.supportsAlgorithm(getAlgorithm())) {
             newFormat.setComment(format.getComment());
             this.format = newFormat;
-        } else {
-            throw new InvalidSshKeyException(
-                "The format does not support the public key algorithm");
+        }
+        else {
+            throw new InvalidSshKeyException("The format does not support the public key algorithm");
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public SshPublicKeyFormat getFormat() {
@@ -217,10 +186,7 @@ public class SshPublicKeyFile {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public SshPublicKey toPublicKey() throws IOException {
@@ -232,8 +198,6 @@ public class SshPublicKeyFile {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String toString() {

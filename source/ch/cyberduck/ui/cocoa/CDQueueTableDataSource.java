@@ -64,13 +64,13 @@ public class CDQueueTableDataSource extends CDTableDataSource {
     public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
         log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
         if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
-			tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
+            tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
             return NSDraggingInfo.DragOperationCopy;
         }
         NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
         if (this.queuePboardChangeCount < pboard.changeCount()) {
             if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-				tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
+                tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
                 return NSDraggingInfo.DragOperationCopy;
             }
         }
@@ -101,29 +101,29 @@ public class CDQueueTableDataSource extends CDTableDataSource {
                                 url.getPort(),
                                 new Login(url.getHost(), url.getUserInfo(), null));
                         Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
-						Queue q = new Queue(Queue.KIND_DOWNLOAD);
-						q.addRoot(p);
-						if (row != -1) {
-							CDQueuesImpl.instance().addItem(q, row);
-							tableView.reloadData();
-							tableView.selectRow(row, false);
-						}
-						else {
-							CDQueuesImpl.instance().addItem(q);
-							tableView.reloadData();
-							tableView.selectRow(tableView.numberOfRows() - 1, false);
-						}
-						CDQueueController.instance().startItem(q);
-						return true;
+                        Queue q = new Queue(Queue.KIND_DOWNLOAD);
+                        q.addRoot(p);
+                        if (row != -1) {
+                            CDQueuesImpl.instance().addItem(q, row);
+                            tableView.reloadData();
+                            tableView.selectRow(row, false);
+                        }
+                        else {
+                            CDQueuesImpl.instance().addItem(q);
+                            tableView.reloadData();
+                            tableView.selectRow(tableView.numberOfRows() - 1, false);
+                        }
+                        CDQueueController.instance().startItem(q);
+                        return true;
                     }
-					return false;
+                    return false;
                 }
                 catch (java.net.MalformedURLException e) {
                     log.error(e.getMessage());
-					return false;
+                    return false;
                 }
             }
-			return false;
+            return false;
         }
         // we are only interested in our private pasteboard with a description of the queue
         // encoded in as a xml.

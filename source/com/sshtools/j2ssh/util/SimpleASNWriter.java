@@ -26,12 +26,10 @@
  */
 package com.sshtools.j2ssh.util;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -46,8 +44,6 @@ public class SimpleASNWriter {
     }
 
     /**
-     *
-     *
      * @param b
      */
     public void writeByte(int b) {
@@ -55,8 +51,6 @@ public class SimpleASNWriter {
     }
 
     /**
-     *
-     *
      * @param b
      */
     public void writeData(byte[] b) {
@@ -65,27 +59,29 @@ public class SimpleASNWriter {
     }
 
     /**
-     *
-     *
      * @param length
      */
     public void writeLength(int length) {
         if (length < 0x80) {
             data.write(length);
-        } else {
+        }
+        else {
             if (length < 0x100) {
                 data.write(0x81);
                 data.write(length);
-            } else if (length < 0x10000) {
+            }
+            else if (length < 0x10000) {
                 data.write(0x82);
                 data.write(length >>> 8);
                 data.write(length);
-            } else if (length < 0x1000000) {
+            }
+            else if (length < 0x1000000) {
                 data.write(0x83);
                 data.write(length >>> 16);
                 data.write(length >>> 8);
                 data.write(length);
-            } else {
+            }
+            else {
                 data.write(0x84);
                 data.write(length >>> 24);
                 data.write(length >>> 16);
@@ -96,8 +92,6 @@ public class SimpleASNWriter {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] toByteArray() {

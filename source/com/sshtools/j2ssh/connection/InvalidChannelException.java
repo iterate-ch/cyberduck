@@ -26,12 +26,10 @@
  */
 package com.sshtools.j2ssh.connection;
 
-import java.io.*;
+import java.io.IOException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */

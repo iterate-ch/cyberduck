@@ -28,8 +28,6 @@ package com.sshtools.j2ssh.transport.compression;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -40,19 +38,13 @@ public interface SshCompression {
     public void init(int type, int level);
 
     /**
-     *
-     *
      * @param data
-     *
      * @return
      */
     public byte[] compress(byte[] data, int start, int len);
 
     /**
-     *
-     *
      * @param data
-     *
      * @return
      */
     public byte[] uncompress(byte[] data, int start, int len);

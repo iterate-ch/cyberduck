@@ -26,18 +26,15 @@
  */
 package com.sshtools.j2ssh.connection;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
-
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -84,72 +81,53 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public abstract byte[] getChannelOpenData();
 
     /**
-     *
-     *
      * @return
      */
     public abstract byte[] getChannelConfirmationData();
 
     /**
-     *
-     *
      * @return
      */
     public abstract String getChannelType();
 
     /**
-     *
-     *
      * @return
      */
     protected abstract int getMinimumWindowSpace();
 
     /**
-     *
-     *
      * @return
      */
     protected abstract int getMaximumWindowSpace();
 
     /**
-     *
-     *
      * @return
      */
     protected abstract int getMaximumPacketSize();
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws IOException
      */
     protected abstract void onChannelData(SshMsgChannelData msg)
-        throws IOException;
+            throws IOException;
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws IOException
      */
     protected void processChannelData(SshMsgChannelData msg)
-        throws IOException {
+            throws IOException {
         synchronized (state) {
             if (!isClosed()) {
                 if (msg.getChannelDataLength() > localWindow.getWindowSpace()) {
-                    throw new IOException(
-                        "More data recieved than is allowed by the channel data window [" +
-                        name + "]");
+                    throw new IOException("More data recieved than is allowed by the channel data window [" +
+                            name + "]");
                 }
 
                 long windowSpace = localWindow.consumeWindowSpace(msg.getChannelData().length);
@@ -157,7 +135,7 @@ public abstract class Channel {
                 if (windowSpace < getMinimumWindowSpace()) {
                     if (log.isDebugEnabled()) {
                         log.debug("Channel " + String.valueOf(localChannelId) +
-                            " requires more window space [" + name + "]");
+                                " requires more window space [" + name + "]");
                     }
 
                     windowSpace = getMaximumWindowSpace() - windowSpace;
@@ -178,17 +156,15 @@ public abstract class Channel {
                         eventListener.onDataReceived(this, msg.getChannelData());
                     }
                 }
-            } else {
-                throw new IOException(
-                    "Channel data received but channel is closed [" + name +
-                    "]");
+            }
+            else {
+                throw new IOException("Channel data received but channel is closed [" + name +
+                        "]");
             }
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isClosed() {
@@ -198,8 +174,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isOpen() {
@@ -209,17 +183,14 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @param data
-     *
      * @throws IOException
      */
     protected 
     /*synchronized*/ void sendChannelData(byte[] data) throws IOException {
         if (!connection.isConnected()) {
             throw new IOException("The connection has been closed [" + name +
-                "]");
+                    "]");
         }
 
         if (!isClosed()) {
@@ -235,24 +206,22 @@ public abstract class Channel {
                     eventListener.onDataSent(this, data);
                 }
             }
-        } else {
+        }
+        else {
             throw new IOException("The channel is closed [" + name + "]");
         }
     }
 
     /**
-     *
-     *
      * @param type
      * @param data
-     *
      * @throws IOException
      */
     protected 
     /*synchronized*/ void sendChannelExtData(int type, byte[] data) throws IOException {
         if (!connection.isConnected()) {
             throw new IOException("The connection has been closed [" + name +
-                "]");
+                    "]");
         }
 
         if (!isClosed()) {
@@ -268,35 +237,29 @@ public abstract class Channel {
                     eventListener.onDataSent(this, data);
                 }
             }
-        } else {
+        }
+        else {
             throw new IOException("The channel is closed [" + name + "]");
         }
     }
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws IOException
      */
     protected abstract void onChannelExtData(SshMsgChannelExtendedData msg)
-        throws IOException;
+            throws IOException;
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws IOException
      */
     protected void processChannelData(SshMsgChannelExtendedData msg)
-        throws IOException {
+            throws IOException {
         synchronized (state) {
             if (msg.getChannelData().length > localWindow.getWindowSpace()) {
-                throw new IOException(
-                    "More data recieved than is allowed by the channel data window [" +
-                    name + "]");
+                throw new IOException("More data recieved than is allowed by the channel data window [" +
+                        name + "]");
             }
 
             long windowSpace = localWindow.consumeWindowSpace(msg.getChannelData().length);
@@ -304,7 +267,7 @@ public abstract class Channel {
             if (windowSpace < getMinimumWindowSpace()) {
                 if (log.isDebugEnabled()) {
                     log.debug("Channel " + String.valueOf(localChannelId) +
-                        " requires more window space [" + name + "]");
+                            " requires more window space [" + name + "]");
                 }
 
                 windowSpace = getMaximumWindowSpace() - windowSpace;
@@ -328,8 +291,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getLocalChannelId() {
@@ -337,8 +298,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getLocalPacketSize() {
@@ -346,8 +305,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public ChannelDataWindow getLocalWindow() {
@@ -355,8 +312,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getRemoteChannelId() {
@@ -364,8 +319,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getRemotePacketSize() {
@@ -373,8 +326,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public ChannelDataWindow getRemoteWindow() {
@@ -382,8 +333,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public ChannelState getState() {
@@ -391,8 +340,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     public void close() throws IOException {
@@ -407,9 +354,9 @@ public abstract class Channel {
 
                 if (log.isDebugEnabled()) {
                     log.debug("Connection is " +
-                        ((connection == null) ? "null"
-                                              : (connection.isConnected()
-                        ? "connected" : "not connected")));
+                            ((connection == null) ? "null"
+                            : (connection.isConnected()
+                            ? "connected" : "not connected")));
                 }
 
                 if (remoteHasClosed ||
@@ -422,8 +369,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void remoteClose() throws IOException {
@@ -436,8 +381,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void finalizeClose() throws IOException {
@@ -463,8 +406,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     public void setLocalEOF() throws IOException {
@@ -475,8 +416,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isLocalEOF() {
@@ -484,8 +423,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isRemoteEOF() {
@@ -493,8 +430,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void setRemoteEOF() throws IOException {
@@ -516,8 +451,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @param eventListener
      */
     public void addEventListener(ChannelEventListener eventListener) {
@@ -525,19 +458,16 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @param connection
      * @param localChannelId
      * @param senderChannelId
      * @param initialWindowSize
      * @param maximumPacketSize
-     *
      * @throws IOException
      */
     protected void init(ConnectionProtocol connection, long localChannelId,
-        long senderChannelId, long initialWindowSize, long maximumPacketSize)
-        throws IOException {
+                        long senderChannelId, long initialWindowSize, long maximumPacketSize)
+            throws IOException {
         this.localChannelId = localChannelId;
         this.remoteChannelId = senderChannelId;
         this.remotePacketSize = maximumPacketSize;
@@ -550,8 +480,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void open() throws IOException {
@@ -573,64 +501,50 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @param connection
      * @param localChannelId
      * @param senderChannelId
      * @param initialWindowSize
      * @param maximumPacketSize
      * @param eventListener
-     *
      * @throws IOException
      */
     protected void init(ConnectionProtocol connection, long localChannelId,
-        long senderChannelId, long initialWindowSize, long maximumPacketSize,
-        ChannelEventListener eventListener) throws IOException {
+                        long senderChannelId, long initialWindowSize, long maximumPacketSize,
+                        ChannelEventListener eventListener) throws IOException {
         if (eventListener != null) {
             addEventListener(eventListener);
         }
 
         init(connection, localChannelId, senderChannelId, initialWindowSize,
-            maximumPacketSize);
+                maximumPacketSize);
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected abstract void onChannelClose() throws IOException;
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected abstract void onChannelEOF() throws IOException;
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected abstract void onChannelOpen() throws IOException;
 
     /**
-     *
-     *
      * @param requestType
      * @param wantReply
      * @param requestData
-     *
      * @throws IOException
      */
     protected abstract void onChannelRequest(String requestType,
-        boolean wantReply, byte[] requestData) throws IOException;
+                                             boolean wantReply, byte[] requestData) throws IOException;
 
     /**
-     *
-     *
      * @param name
      */
     public void setName(String name) {
@@ -638,8 +552,6 @@ public abstract class Channel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getName() {

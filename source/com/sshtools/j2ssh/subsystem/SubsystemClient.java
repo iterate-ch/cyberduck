@@ -26,6 +26,13 @@
  */
 package com.sshtools.j2ssh.subsystem;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sshtools.j2ssh.SshThread;
 import com.sshtools.j2ssh.connection.ChannelState;
 import com.sshtools.j2ssh.io.ByteArrayReader;
@@ -34,17 +41,8 @@ import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.util.StartStopState;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -84,8 +82,6 @@ public abstract class SubsystemClient implements Runnable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isClosed() {
@@ -93,8 +89,6 @@ public abstract class SubsystemClient implements Runnable {
     }
 
     /**
-     *
-     *
      * @param session
      */
     public void setSessionChannel(SessionChannelClient session) {
@@ -105,8 +99,6 @@ public abstract class SubsystemClient implements Runnable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public SessionChannelClient getSessionChannel() {
@@ -114,18 +106,14 @@ public abstract class SubsystemClient implements Runnable {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean start() throws IOException {
         thread = new SshThread(this, name + " subsystem", true);
 
         if (session == null) {
-            throw new IOException(
-                "No valid session is attached to the subsystem!");
+            throw new IOException("No valid session is attached to the subsystem!");
         }
 
         if (session.getState().getValue() != ChannelState.CHANNEL_OPEN) {
@@ -138,17 +126,12 @@ public abstract class SubsystemClient implements Runnable {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     protected abstract boolean onStart() throws IOException;
 
     /**
-     *
-     *
      * @return
      */
     public String getName() {
@@ -156,15 +139,12 @@ public abstract class SubsystemClient implements Runnable {
     }
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws InvalidMessageException
      * @throws IOException
      */
     protected void sendMessage(SubsystemMessage msg) throws InvalidMessageException, IOException {
-		
+
         if (log.isDebugEnabled()) {
             log.debug("Sending " + msg.getMessageName() + " subsystem message");
         }
@@ -206,20 +186,24 @@ public abstract class SubsystemClient implements Runnable {
 
                         if (read > 0) {
                             pos += read;
-                        } else if (read == -1) {
+                        }
+                        else if (read == -1) {
                             break;
                         }
                     }
 
                     messageStore.addMessage(msg);
                     msg = null;
-                } else if (read == -1) {
+                }
+                else if (read == -1) {
                     break;
                 }
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             log.fatal("Subsystem message loop failed!", ioe);
-        } finally {
+        }
+        finally {
             state.setValue(StartStopState.STOPPED);
         }
 
@@ -227,8 +211,6 @@ public abstract class SubsystemClient implements Runnable {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     public void stop() throws IOException {

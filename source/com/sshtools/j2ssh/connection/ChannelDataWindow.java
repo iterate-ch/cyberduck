@@ -31,8 +31,6 @@ import org.apache.commons.logging.LogFactory;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -47,8 +45,6 @@ public class ChannelDataWindow {
     }
 
     /**
-     *
-     *
      * @return
      */
     public synchronized long getWindowSpace() {
@@ -56,10 +52,7 @@ public class ChannelDataWindow {
     }
 
     /**
-     *
-     *
      * @param count
-     *
      * @return
      */
     public synchronized long consumeWindowSpace(int count) {
@@ -73,8 +66,6 @@ public class ChannelDataWindow {
     }
 
     /**
-     *
-     *
      * @param count
      */
     public synchronized void increaseWindowSpace(long count) {
@@ -87,20 +78,19 @@ public class ChannelDataWindow {
     }
 
     /**
-     *
-     *
      * @param minimum
      */
     public synchronized void waitForWindowSpace(int minimum) {
         if (log.isDebugEnabled()) {
             log.debug("Waiting for " + String.valueOf(minimum) +
-                " bytes of window space");
+                    " bytes of window space");
         }
 
         while (windowSpace < minimum) {
             try {
                 wait(50);
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e) {
             }
         }
     }

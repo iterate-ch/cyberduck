@@ -43,8 +43,6 @@ class SshAgentDeleteAllKeys extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -52,30 +50,26 @@ class SshAgentDeleteAllKeys extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructMessage(ByteArrayReader bar)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
     }
 }

@@ -27,13 +27,10 @@
 package com.sshtools.j2ssh.authentication;
 
 import java.io.IOException;
-
 import java.util.Properties;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -42,41 +39,31 @@ public abstract class SshAuthenticationClient {
     private SshAuthenticationPrompt prompt;
 
     /**
-     *
-     *
      * @return
      */
     public abstract String getMethodName();
 
     /**
-     *
-     *
      * @param authentication
      * @param serviceToStart
-     *
      * @throws IOException
      * @throws TerminatedStateException
      */
-    public abstract void authenticate(
-        AuthenticationProtocolClient authentication, String serviceToStart)
-        throws IOException, TerminatedStateException;
+    public abstract void authenticate(AuthenticationProtocolClient authentication, String serviceToStart)
+            throws IOException, TerminatedStateException;
 
     /**
-     *
-     *
      * @param prompt
-     *
      * @throws AuthenticationProtocolException
+     *
      */
     public void setAuthenticationPrompt(SshAuthenticationPrompt prompt)
-        throws AuthenticationProtocolException {
+            throws AuthenticationProtocolException {
         //prompt.setInstance(this);
         this.prompt = prompt;
     }
 
     /**
-     *
-     *
      * @return
      */
     public SshAuthenticationPrompt getAuthenticationPrompt() {
@@ -84,8 +71,6 @@ public abstract class SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param username
      */
     public void setUsername(String username) {
@@ -93,8 +78,6 @@ public abstract class SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getUsername() {
@@ -102,8 +85,6 @@ public abstract class SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @return
      */
     public abstract Properties getPersistableProperties();
@@ -114,22 +95,16 @@ public abstract class SshAuthenticationClient {
     public abstract void reset();
 
     /**
-     *
-     *
      * @param properties
      */
     public abstract void setPersistableProperties(Properties properties);
 
     /**
-     *
-     *
      * @return
      */
     public abstract boolean canAuthenticate();
 
     /**
-     *
-     *
      * @return
      */
     public boolean canPrompt() {

@@ -26,18 +26,15 @@
  */
 package com.sshtools.j2ssh.util;
 
-import com.sshtools.j2ssh.io.*;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
-import java.io.*;
-
-import java.math.*;
-
-import java.security.*;
+import com.sshtools.j2ssh.io.ByteArrayWriter;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -48,7 +45,6 @@ public class Hash {
      * Creates a new Hash object.
      *
      * @param algorithm
-     *
      * @throws NoSuchAlgorithmException
      */
     public Hash(String algorithm) throws NoSuchAlgorithmException {
@@ -56,8 +52,6 @@ public class Hash {
     }
 
     /**
-     *
-     *
      * @param bi
      */
     public void putBigInteger(BigInteger bi) {
@@ -67,8 +61,6 @@ public class Hash {
     }
 
     /**
-     *
-     *
      * @param b
      */
     public void putByte(byte b) {
@@ -76,8 +68,6 @@ public class Hash {
     }
 
     /**
-     *
-     *
      * @param data
      */
     public void putBytes(byte[] data) {
@@ -85,8 +75,6 @@ public class Hash {
     }
 
     /**
-     *
-     *
      * @param i
      */
     public void putInt(int i) {
@@ -94,15 +82,14 @@ public class Hash {
 
         try {
             baw.writeInt(i);
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
         }
 
         hash.update(baw.toByteArray());
     }
 
     /**
-     *
-     *
      * @param str
      */
     public void putString(String str) {
@@ -118,17 +105,13 @@ public class Hash {
     }
 
     /**
-     *
-     *
      * @param data
      * @param algorithm
-     *
      * @return
-     *
      * @throws NoSuchAlgorithmException
      */
     public static byte[] simple(byte[] data, String algorithm)
-        throws NoSuchAlgorithmException {
+            throws NoSuchAlgorithmException {
         MessageDigest simp = MessageDigest.getInstance(algorithm);
         simp.update(data);
 
@@ -136,8 +119,6 @@ public class Hash {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] doFinal() {

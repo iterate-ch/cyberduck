@@ -30,17 +30,12 @@ import java.io.*;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public class IOUtil {
     /**
-     *
-     *
      * @param in
-     *
      * @return
      */
     public static boolean closeStream(InputStream in) {
@@ -50,16 +45,14 @@ public class IOUtil {
             }
 
             return true;
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             return false;
         }
     }
 
     /**
-     *
-     *
      * @param out
-     *
      * @return
      */
     public static boolean closeStream(OutputStream out) {
@@ -69,7 +62,8 @@ public class IOUtil {
             }
 
             return true;
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             return false;
         }
     }
@@ -77,7 +71,8 @@ public class IOUtil {
     public static boolean delTree(File file) {
         if (file.isFile()) {
             return file.delete();
-        } else {
+        }
+        else {
             File[] list = file.listFiles();
 
             for (int i = 0; i < list.length; i++) {
@@ -92,10 +87,10 @@ public class IOUtil {
 
     public static void recurseDeleteDirectory(File dir) {
         File[] files = dir.listFiles(new FileFilter() {
-                    public boolean accept(File file) {
-                        return file.isDirectory();
-                    }
-                });
+            public boolean accept(File file) {
+                return file.isDirectory();
+            }
+        });
 
         if (files == null) {
             return; // Directory could not be read
@@ -107,10 +102,10 @@ public class IOUtil {
         }
 
         files = dir.listFiles(new FileFilter() {
-                    public boolean accept(File file) {
-                        return !file.isDirectory();
-                    }
-                });
+            public boolean accept(File file) {
+                return !file.isDirectory();
+            }
+        });
 
         for (int i = 0; i < files.length; i++) {
             files[i].delete();
@@ -136,11 +131,13 @@ public class IOUtil {
                 if (children[i].isDirectory()) {
                     File f = new File(to, children[i].getName());
                     copyFile(children[i], f);
-                } else {
+                }
+                else {
                     copyFile(children[i], to);
                 }
             }
-        } else if (from.isFile() && (to.isDirectory() || to.isFile())) {
+        }
+        else if (from.isFile() && (to.isDirectory() || to.isFile())) {
             if (to.isDirectory()) {
                 to = new File(to, from.getName());
             }
@@ -160,7 +157,7 @@ public class IOUtil {
     }
 
     public static void transfer(InputStream in, OutputStream out)
-        throws IOException {
+            throws IOException {
         try {
             long bytesSoFar = 0;
             byte[] buffer = new byte[65535];
@@ -174,7 +171,8 @@ public class IOUtil {
                     bytesSoFar += read;
                 }
             }
-        } finally {
+        }
+        finally {
             closeStream(in);
             closeStream(out);
         }

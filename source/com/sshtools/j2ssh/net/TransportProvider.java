@@ -26,19 +26,17 @@
  */
 package com.sshtools.j2ssh.net;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface TransportProvider {
     /**
-     *
-     *
      * @throws IOException
      */
     public void close() throws IOException;
@@ -47,17 +45,12 @@ public interface TransportProvider {
     public InputStream getInputStream() throws IOException;
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public OutputStream getOutputStream() throws IOException;
 
     /**
-     *
-     *
      * @return
      */
     public String getProviderDetail();

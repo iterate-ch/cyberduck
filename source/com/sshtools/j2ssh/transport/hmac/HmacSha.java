@@ -26,21 +26,18 @@
  */
 package com.sshtools.j2ssh.transport.hmac;
 
-import com.sshtools.j2ssh.transport.AlgorithmInitializationException;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import com.sshtools.j2ssh.transport.AlgorithmInitializationException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -55,8 +52,6 @@ public class HmacSha implements SshHmac {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getMacLength() {
@@ -64,13 +59,10 @@ public class HmacSha implements SshHmac {
     }
 
     /**
-     *
-     *
      * @param sequenceNo
      * @param data
      * @param offset
      * @param len
-     *
      * @return
      */
     public byte[] generate(long sequenceNo, byte[] data, int offset, int len) {
@@ -87,11 +79,9 @@ public class HmacSha implements SshHmac {
     }
 
     /**
-     *
-     *
      * @param keydata
-     *
      * @throws AlgorithmInitializationException
+     *
      */
     public void init(byte[] keydata) throws AlgorithmInitializationException {
         try {
@@ -102,20 +92,18 @@ public class HmacSha implements SshHmac {
 
             SecretKeySpec keyspec = new SecretKeySpec(key, "HmacSha1");
             mac.init(keyspec);
-        } catch (NoSuchAlgorithmException nsae) {
-            throw new AlgorithmInitializationException(
-                "No provider exists for the HmacSha1 algorithm");
-        } catch (InvalidKeyException ike) {
+        }
+        catch (NoSuchAlgorithmException nsae) {
+            throw new AlgorithmInitializationException("No provider exists for the HmacSha1 algorithm");
+        }
+        catch (InvalidKeyException ike) {
             throw new AlgorithmInitializationException("Invalid key");
         }
     }
 
     /**
-     *
-     *
      * @param sequenceNo
      * @param data
-     *
      * @return
      */
     public boolean verify(long sequenceNo, byte[] data) {

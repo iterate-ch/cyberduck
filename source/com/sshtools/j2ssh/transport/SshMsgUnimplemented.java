@@ -26,15 +26,13 @@
  */
 package com.sshtools.j2ssh.transport;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -63,8 +61,6 @@ public class SshMsgUnimplemented extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -72,8 +68,6 @@ public class SshMsgUnimplemented extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getSequenceNo() {
@@ -81,36 +75,30 @@ public class SshMsgUnimplemented extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             baw.writeInt(sequenceNo);
-        } catch (IOException ioe) {
-            throw new InvalidMessageException(
-                "Error extracting SSH_MSG_UNIMPLMENTED, expected int value");
+        }
+        catch (IOException ioe) {
+            throw new InvalidMessageException("Error extracting SSH_MSG_UNIMPLMENTED, expected int value");
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             sequenceNo = bar.readInt();
-        } catch (IOException ioe) {
-            throw new InvalidMessageException(
-                "Error contructing SSH_MSG_UNIMPLEMENTED, expected int value");
+        }
+        catch (IOException ioe) {
+            throw new InvalidMessageException("Error contructing SSH_MSG_UNIMPLEMENTED, expected int value");
         }
     }
 }

@@ -28,19 +28,19 @@ package com.sshtools.j2ssh.connection;
 
 
 /**
- * <p>
+ * <p/>
  * Title:
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Description:
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Copyright: Copyright (c) 2003
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Company:
  * </p>
  *
@@ -55,32 +55,24 @@ public abstract class ChannelEventAdapter implements ChannelEventListener {
     }
 
     /**
-     *
-     *
      * @param channel
      */
     public void onChannelOpen(Channel channel) {
     }
 
     /**
-     *
-     *
      * @param channel
      */
     public void onChannelEOF(Channel channel) {
     }
 
     /**
-     *
-     *
      * @param channel
      */
     public void onChannelClose(Channel channel) {
     }
 
     /**
-     *
-     *
      * @param channel
      * @param data
      */
@@ -88,8 +80,6 @@ public abstract class ChannelEventAdapter implements ChannelEventListener {
     }
 
     /**
-     *
-     *
      * @param channel
      * @param data
      */

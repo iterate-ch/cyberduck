@@ -26,12 +26,12 @@
  */
 package com.sshtools.j2ssh.agent;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
-
-import java.io.IOException;
 
 
 class SshAgentAlive extends SubsystemMessage {
@@ -57,8 +57,6 @@ class SshAgentAlive extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getPadding() {
@@ -66,8 +64,6 @@ class SshAgentAlive extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -75,42 +71,40 @@ class SshAgentAlive extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             baw.write(padding);
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException(ioe.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     public void constructMessage(ByteArrayReader bar)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             padding = new byte[bar.available()];
             bar.read(padding);
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException(ioe.getMessage());
         }
     }

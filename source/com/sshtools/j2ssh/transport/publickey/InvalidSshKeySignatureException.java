@@ -26,12 +26,10 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
-import com.sshtools.j2ssh.transport.*;
+import com.sshtools.j2ssh.transport.TransportProtocolException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */

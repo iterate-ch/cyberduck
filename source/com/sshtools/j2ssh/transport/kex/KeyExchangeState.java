@@ -26,12 +26,10 @@
  */
 package com.sshtools.j2ssh.transport.kex;
 
-import java.math.*;
+import java.math.BigInteger;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -58,15 +56,13 @@ public class KeyExchangeState {
     }
 
     /**
-     *
-     *
      * @param exchangeHash
      * @param hostKey
      * @param signature
      * @param secret
      */
     public final synchronized void setComplete(byte[] exchangeHash,
-        byte[] hostKey, byte[] signature, BigInteger secret) {
+                                               byte[] hostKey, byte[] signature, BigInteger secret) {
         this.exchangeHash = exchangeHash;
         this.hostKey = hostKey;
         this.signature = signature;
@@ -76,8 +72,6 @@ public class KeyExchangeState {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getExchangeHash() {
@@ -85,8 +79,6 @@ public class KeyExchangeState {
     }
 
     /**
-     *
-     *
      * @param reason
      */
     public final synchronized void setFailed(String reason) {
@@ -96,8 +88,6 @@ public class KeyExchangeState {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getHostKey() {
@@ -105,8 +95,6 @@ public class KeyExchangeState {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getSecret() {
@@ -114,8 +102,6 @@ public class KeyExchangeState {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getSignature() {
@@ -123,8 +109,6 @@ public class KeyExchangeState {
     }
 
     /**
-     *
-     *
      * @return
      */
     public synchronized int getState() {
@@ -138,14 +122,13 @@ public class KeyExchangeState {
         while (state == IN_PROGRESS) {
             try {
                 wait();
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e) {
             }
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public synchronized String getFailureReason() {

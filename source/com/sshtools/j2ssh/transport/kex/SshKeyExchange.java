@@ -26,18 +26,15 @@
  */
 package com.sshtools.j2ssh.transport.kex;
 
+import java.io.IOException;
+import java.math.BigInteger;
+
 import com.sshtools.j2ssh.transport.SshMessageStore;
 import com.sshtools.j2ssh.transport.TransportProtocol;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 
-import java.io.IOException;
-
-import java.math.BigInteger;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -68,8 +65,6 @@ public abstract class SshKeyExchange { //implements Runnable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getExchangeHash() {
@@ -77,8 +72,6 @@ public abstract class SshKeyExchange { //implements Runnable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getHostKey() {
@@ -86,8 +79,6 @@ public abstract class SshKeyExchange { //implements Runnable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getSecret() {
@@ -95,8 +86,6 @@ public abstract class SshKeyExchange { //implements Runnable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getSignature() {
@@ -104,10 +93,7 @@ public abstract class SshKeyExchange { //implements Runnable {
     }
 
     /**
-     *
-     *
      * @param transport
-     *
      * @throws IOException
      */
     public void init(TransportProtocol transport) throws IOException {
@@ -117,40 +103,32 @@ public abstract class SshKeyExchange { //implements Runnable {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected abstract void onInit() throws IOException;
 
     /**
-     *
-     *
      * @param clientId
      * @param serverId
      * @param clientKexInit
      * @param serverKexInit
-     *
      * @throws IOException
      */
     public abstract void performClientExchange(String clientId,
-        String serverId, byte[] clientKexInit, byte[] serverKexInit)
-        throws IOException;
+                                               String serverId, byte[] clientKexInit, byte[] serverKexInit)
+            throws IOException;
 
     /**
-     *
-     *
      * @param clientId
      * @param serverId
      * @param clientKexInit
      * @param serverKexInit
      * @param prvkey
-     *
      * @throws IOException
      */
     public abstract void performServerExchange(String clientId,
-        String serverId, byte[] clientKexInit, byte[] serverKexInit,
-        SshPrivateKey prvkey) throws IOException;
+                                               String serverId, byte[] clientKexInit, byte[] serverKexInit,
+                                               SshPrivateKey prvkey) throws IOException;
 
     /**
      *

@@ -26,17 +26,15 @@
  */
 package com.sshtools.j2ssh.transport;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sshtools.j2ssh.transport.cipher.SshCipher;
 import com.sshtools.j2ssh.transport.compression.SshCompression;
 import com.sshtools.j2ssh.transport.hmac.SshHmac;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -54,8 +52,6 @@ public class TransportProtocolAlgorithmSync {
     }
 
     /**
-     *
-     *
      * @param cipher
      */
     public synchronized void setCipher(SshCipher cipher) {
@@ -63,8 +59,6 @@ public class TransportProtocolAlgorithmSync {
     }
 
     /**
-     *
-     *
      * @return
      */
     public synchronized SshCipher getCipher() {
@@ -72,8 +66,6 @@ public class TransportProtocolAlgorithmSync {
     }
 
     /**
-     *
-     *
      * @param compression
      */
     public synchronized void setCompression(SshCompression compression) {
@@ -81,8 +73,6 @@ public class TransportProtocolAlgorithmSync {
     }
 
     /**
-     *
-     *
      * @return
      */
     public synchronized SshCompression getCompression() {
@@ -90,8 +80,6 @@ public class TransportProtocolAlgorithmSync {
     }
 
     /**
-     *
-     *
      * @param hmac
      */
     public synchronized void setHmac(SshHmac hmac) {
@@ -99,8 +87,6 @@ public class TransportProtocolAlgorithmSync {
     }
 
     /**
-     *
-     *
      * @return
      */
     public synchronized SshHmac getHmac() {
@@ -114,7 +100,8 @@ public class TransportProtocolAlgorithmSync {
         while (isLocked) {
             try {
                 wait(50);
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e) {
             }
         }
 

@@ -53,30 +53,30 @@ public class CDConnectionController extends NSObject implements Observer {
         return this.window;
     }
 
-	/*
-    private NSPopUpButton historyPopup;
+    /*
+private NSPopUpButton historyPopup;
 
-    public void setHistoryPopup(NSPopUpButton historyPopup) {
-        this.historyPopup = historyPopup;
-        this.historyPopup.setImage(NSImage.imageNamed("history.tiff"));
-        Iterator i = CDHistoryImpl.instance().iterator();
-        while (i.hasNext()) {
-            historyPopup.addItem(i.next().toString());
-        }
+public void setHistoryPopup(NSPopUpButton historyPopup) {
+this.historyPopup = historyPopup;
+this.historyPopup.setImage(NSImage.imageNamed("history.tiff"));
+Iterator i = CDHistoryImpl.instance().iterator();
+while (i.hasNext()) {
+historyPopup.addItem(i.next().toString());
+}
 //		this.historyPopup.addItem("Clear");
-        this.historyPopup.setTarget(this);
-        this.historyPopup.setAction(new NSSelector("historySelectionChanged", new Class[]{Object.class}));
-    }
+this.historyPopup.setTarget(this);
+this.historyPopup.setAction(new NSSelector("historySelectionChanged", new Class[]{Object.class}));
+}
 
-    public void historySelectionChanged(Object sender) {
-        log.debug("historySelectionChanged");
+public void historySelectionChanged(Object sender) {
+log.debug("historySelectionChanged");
 //		if(historyPopup.titleOfSelectedItem().equals("Clear")) {
 //			CDHistoryImpl.instance().clear();
 //			historyPopup.removeAllItems();
 //		}
-        this.selectionChanged(CDHistoryImpl.instance().getItem(historyPopup.indexOfSelectedItem() - 1));
-    }
-	 */
+this.selectionChanged(CDHistoryImpl.instance().getItem(historyPopup.indexOfSelectedItem() - 1));
+}
+     */
 
     private NSPopUpButton bookmarksPopup;
 
@@ -205,30 +205,30 @@ public class CDConnectionController extends NSObject implements Observer {
 //        this.keychainCheckbox.setState(Preferences.instance().getProperty("connection.login.useKeychain").equals("true") ? NSCell.OnState : NSCell.OffState);
     }
 
-	private NSButton anonymousCheckbox; //IBOutlet
-	
+    private NSButton anonymousCheckbox; //IBOutlet
+
     public void setAnonymousCheckbox(NSButton anonymousCheckbox) {
         this.anonymousCheckbox = anonymousCheckbox;
         this.anonymousCheckbox.setTarget(this);
         this.anonymousCheckbox.setAction(new NSSelector("anonymousCheckboxClicked", new Class[]{NSButton.class}));
         this.anonymousCheckbox.setState(NSCell.OffState);
     }
-	
+
     public void anonymousCheckboxClicked(NSButton sender) {
         switch (sender.state()) {
             case NSCell.OnState:
-				this.usernameField.setEnabled(false);
-				this.usernameField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.name"));
-				this.passField.setEnabled(false);
+                this.usernameField.setEnabled(false);
+                this.usernameField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.name"));
+                this.passField.setEnabled(false);
                 break;
             case NSCell.OffState:
-				this.usernameField.setEnabled(true);
-				this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
-				this.passField.setEnabled(true);
+                this.usernameField.setEnabled(true);
+                this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
+                this.passField.setEnabled(true);
                 break;
         }
     }
-	
+
     private NSButton pkCheckbox;
 
     public void setPkCheckbox(NSButton pkCheckbox) {
@@ -241,7 +241,7 @@ public class CDConnectionController extends NSObject implements Observer {
     public void pkCheckboxSelectionChanged(Object sender) {
         log.debug("pkCheckboxSelectionChanged");
         if (this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
-			NSOpenPanel panel = NSOpenPanel.openPanel();
+            NSOpenPanel panel = NSOpenPanel.openPanel();
             panel.setCanChooseDirectories(false);
             panel.setCanChooseFiles(true);
             panel.setAllowsMultipleSelection(false);
@@ -342,9 +342,9 @@ public class CDConnectionController extends NSObject implements Observer {
 
     public void getPasswordFromKeychain(Object sender) {
         if (hostPopup.stringValue() != null &&
-			!hostPopup.stringValue().equals("") &&
-			usernameField.stringValue() != null &&
-			!usernameField.stringValue().equals("")) {
+                !hostPopup.stringValue().equals("") &&
+                usernameField.stringValue() != null &&
+                !usernameField.stringValue().equals("")) {
             Login l = new Login(hostPopup.stringValue(), usernameField.stringValue(), null);
             String passFromKeychain = l.getPasswordFromKeychain();
             if (passFromKeychain != null && !passFromKeychain.equals("")) {

@@ -28,13 +28,11 @@ package com.sshtools.j2ssh.transport.publickey;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public class SECSHPublicKeyFormat extends Base64EncodedFileFormat
-    implements SshPublicKeyFormat {
+        implements SshPublicKeyFormat {
     private static String BEGIN = "---- BEGIN SSH2 PUBLIC KEY ----";
     private static String END = "---- END SSH2 PUBLIC KEY ----";
 
@@ -58,19 +56,15 @@ public class SECSHPublicKeyFormat extends Base64EncodedFileFormat
     }
 
     /**
-     *
-     *
      * @param comment
      */
     public void setComment(String comment) {
         setHeaderValue("Comment",
-            (comment.trim().startsWith("\"") ? "" : "\"") + comment.trim() +
-            (comment.trim().endsWith("\"") ? "" : "\""));
+                (comment.trim().startsWith("\"") ? "" : "\"") + comment.trim() +
+                (comment.trim().endsWith("\"") ? "" : "\""));
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getComment() {
@@ -78,8 +72,6 @@ public class SECSHPublicKeyFormat extends Base64EncodedFileFormat
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getFormatType() {
@@ -87,10 +79,7 @@ public class SECSHPublicKeyFormat extends Base64EncodedFileFormat
     }
 
     /**
-     *
-     *
      * @param algorithm
-     *
      * @return
      */
     public boolean supportsAlgorithm(String algorithm) {

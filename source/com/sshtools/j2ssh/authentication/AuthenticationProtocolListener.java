@@ -28,19 +28,19 @@ package com.sshtools.j2ssh.authentication;
 
 
 /**
- * <p>
+ * <p/>
  * Title:
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Description:
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Copyright: Copyright (c) 2003
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Company:
  * </p>
  *

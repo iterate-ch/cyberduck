@@ -28,8 +28,6 @@ package com.sshtools.j2ssh.forwarding;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -44,36 +42,26 @@ public interface ForwardingChannel {
     public final static String REMOTE_FORWARDING_CHANNEL = "forwarded-tcpip";
 
     /**
-     *
-     *
      * @return
      */
     public String getChannelType();
 
     /**
-     *
-     *
      * @return
      */
     public String getOriginatingHost();
 
     /**
-     *
-     *
      * @return
      */
     public int getOriginatingPort();
 
     /**
-     *
-     *
      * @return
      */
     public String getHostToConnectOrBind();
 
     /**
-     *
-     *
      * @return
      */
     public int getPortToConnectOrBind();

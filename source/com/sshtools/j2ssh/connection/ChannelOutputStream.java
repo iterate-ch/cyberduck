@@ -26,16 +26,14 @@
  */
 package com.sshtools.j2ssh.connection;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -66,8 +64,6 @@ public class ChannelOutputStream extends OutputStream {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isClosed() {
@@ -75,8 +71,6 @@ public class ChannelOutputStream extends OutputStream {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     public void close() throws IOException {
@@ -90,12 +84,9 @@ public class ChannelOutputStream extends OutputStream {
     }
 
     /**
-     *
-     *
      * @param b
      * @param off
      * @param len
-     *
      * @throws IOException
      */
     public void write(byte[] b, int off, int len) throws IOException {
@@ -108,7 +99,8 @@ public class ChannelOutputStream extends OutputStream {
         if ((off > 0) || (len < b.length)) {
             data = new byte[len];
             System.arraycopy(b, off, data, 0, len);
-        } else {
+        }
+        else {
             data = b;
         }
 
@@ -116,10 +108,7 @@ public class ChannelOutputStream extends OutputStream {
     }
 
     /**
-     *
-     *
      * @param b
-     *
      * @throws IOException
      */
     public void write(int b) throws IOException {

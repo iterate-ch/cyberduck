@@ -26,17 +26,15 @@
  */
 package com.sshtools.j2ssh.connection;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -70,8 +68,6 @@ public class SshMsgChannelData extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getChannelData() {
@@ -79,8 +75,6 @@ public class SshMsgChannelData extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getChannelDataLength() {
@@ -88,8 +82,6 @@ public class SshMsgChannelData extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -97,8 +89,6 @@ public class SshMsgChannelData extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getRecipientChannel() {
@@ -106,43 +96,40 @@ public class SshMsgChannelData extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             baw.writeInt(recipientChannel);
 
             if (channelData != null) {
                 baw.writeBinaryString(channelData);
-            } else {
+            }
+            else {
                 baw.writeInt(0);
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             recipientChannel = bar.readInt();
 
             if (bar.available() > 0) {
                 channelData = bar.readBinaryString();
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }

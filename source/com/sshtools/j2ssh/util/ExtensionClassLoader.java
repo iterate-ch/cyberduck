@@ -26,28 +26,16 @@
  */
 package com.sshtools.j2ssh.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -55,6 +43,7 @@ import java.util.zip.ZipFile;
  * <p>Description: </p>
  * <p>Copyright: Copyright (c) 2003</p>
  * <p>Company: </p>
+ *
  * @author Lee David Painter
  * @version $Id$
  */
@@ -84,21 +73,21 @@ public class ExtensionClassLoader extends ClassLoader {
     public void add(File file) {
         if (!file.exists()) {
             throw new IllegalArgumentException("Classpath " +
-                file.getAbsolutePath() + " doesn't exist!");
-        } else if (!file.canRead()) {
-            throw new IllegalArgumentException(
-                "Don't have read access for file " + file.getAbsolutePath());
+                    file.getAbsolutePath() + " doesn't exist!");
+        }
+        else if (!file.canRead()) {
+            throw new IllegalArgumentException("Don't have read access for file " + file.getAbsolutePath());
         }
 
         // Check that it is a directory or jar file
         if (!(file.isDirectory() || isJarArchive(file))) {
             throw new IllegalArgumentException(file.getAbsolutePath() +
-                " is not a directory or jar file" +
-                " or if it's a jar file then it is corrupted.");
+                    " is not a directory or jar file" +
+                    " or if it's a jar file then it is corrupted.");
         }
 
         log.info("Adding " + file.getAbsolutePath() +
-            " to the extension classpath");
+                " to the extension classpath");
         this.classpath.add(file);
     }
 
@@ -108,15 +97,19 @@ public class ExtensionClassLoader extends ClassLoader {
 
         try {
             zipFile = new ZipFile(file);
-        } catch (ZipException zipCurrupted) {
+        }
+        catch (ZipException zipCurrupted) {
             isArchive = false;
-        } catch (IOException anyIOError) {
+        }
+        catch (IOException anyIOError) {
             isArchive = false;
-        } finally {
+        }
+        finally {
             if (zipFile != null) {
                 try {
                     zipFile.close();
-                } catch (IOException ignored) {
+                }
+                catch (IOException ignored) {
                 }
             }
         }
@@ -127,7 +120,8 @@ public class ExtensionClassLoader extends ClassLoader {
     public URL getResource(String name, File location) {
         if (isJarArchive(location)) {
             return findResourceInZipfile(location, name);
-        } else {
+        }
+        else {
             return findResourceInDirectory(location, name);
         }
     }
@@ -145,7 +139,8 @@ public class ExtensionClassLoader extends ClassLoader {
 
             if (file.isDirectory()) {
                 url = findResourceInDirectory(file, name);
-            } else {
+            }
+            else {
                 url = findResourceInZipfile(file, name);
             }
 
@@ -178,7 +173,8 @@ public class ExtensionClassLoader extends ClassLoader {
 
             if (file.isDirectory()) {
                 url = findResourceInDirectory(file, name);
-            } else {
+            }
+            else {
                 url = findResourceInZipfile(file, name);
             }
 
@@ -208,10 +204,12 @@ public class ExtensionClassLoader extends ClassLoader {
             try {
                 if (file.isDirectory()) {
                     classData = loadClassFromDirectory(file, name, null);
-                } else {
+                }
+                else {
                     classData = loadClassFromZipfile(file, name, null);
                 }
-            } catch (IOException ioe) {
+            }
+            catch (IOException ioe) {
                 // Error while reading in data, consider it as not found
                 classData = null;
             }
@@ -258,10 +256,12 @@ public class ExtensionClassLoader extends ClassLoader {
             try {
                 if (file.isDirectory()) {
                     classData = loadClassFromDirectory(file, name, classCache);
-                } else {
+                }
+                else {
                     classData = loadClassFromZipfile(file, name, classCache);
                 }
-            } catch (IOException ioe) {
+            }
+            catch (IOException ioe) {
                 // Error while reading in data, consider it as not found
                 classData = null;
             }
@@ -277,7 +277,7 @@ public class ExtensionClassLoader extends ClassLoader {
                 if (!packageName.equals("") &&
                         !packages.containsKey(packageName)) {
                     packages.put(packageName,
-                        definePackage(packageName, "", "", "", "", "", "", null));
+                            definePackage(packageName, "", "", "", "", "", "", null));
 
                     // Define the class
                 }
@@ -294,7 +294,7 @@ public class ExtensionClassLoader extends ClassLoader {
 
                 if (log.isDebugEnabled()) {
                     log.debug("Loaded " + name +
-                        " adding to cache and returning");
+                            " adding to cache and returning");
                 }
 
                 return c;
@@ -306,7 +306,7 @@ public class ExtensionClassLoader extends ClassLoader {
     }
 
     private byte[] loadBytesFromStream(InputStream in, int length)
-        throws IOException {
+            throws IOException {
         byte[] buf = new byte[length];
         int nRead;
         int count = 0;
@@ -320,10 +320,10 @@ public class ExtensionClassLoader extends ClassLoader {
     }
 
     private byte[] loadClassFromDirectory(File dir, String name,
-        ClassCacheEntry cache) throws IOException {
+                                          ClassCacheEntry cache) throws IOException {
         // Translate class name to file name
         String classFileName = name.replace('.', File.separatorChar) +
-            ".class";
+                ".class";
 
         // Check for garbage input at beginning of file name
         // i.e. ../ or similar
@@ -331,8 +331,7 @@ public class ExtensionClassLoader extends ClassLoader {
             // Find real beginning of class name
             int start = 1;
 
-            while (!Character.isJavaIdentifierStart(classFileName.charAt(
-                            start++))) {
+            while (!Character.isJavaIdentifierStart(classFileName.charAt(start++))) {
                 ;
             }
 
@@ -350,17 +349,19 @@ public class ExtensionClassLoader extends ClassLoader {
 
             try {
                 return loadBytesFromStream(in, (int) classFile.length());
-            } finally {
+            }
+            finally {
                 in.close();
             }
-        } else {
+        }
+        else {
             // Not found
             return null;
         }
     }
 
     private byte[] loadClassFromZipfile(File file, String name,
-        ClassCacheEntry cache) throws IOException {
+                                        ClassCacheEntry cache) throws IOException {
         // Translate class name to file name
         String classFileName = name.replace('.', '/') + ".class";
         ZipFile zipfile = new ZipFile(file);
@@ -374,12 +375,14 @@ public class ExtensionClassLoader extends ClassLoader {
                 }
 
                 return loadBytesFromStream(zipfile.getInputStream(entry),
-                    (int) entry.getSize());
-            } else {
+                        (int) entry.getSize());
+            }
+            else {
                 // Not found
                 return null;
             }
-        } finally {
+        }
+        finally {
             zipfile.close();
         }
     }
@@ -392,10 +395,12 @@ public class ExtensionClassLoader extends ClassLoader {
         if (resFile.exists()) {
             try {
                 return new FileInputStream(resFile);
-            } catch (FileNotFoundException shouldnothappen) {
+            }
+            catch (FileNotFoundException shouldnothappen) {
                 return null;
             }
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -408,10 +413,12 @@ public class ExtensionClassLoader extends ClassLoader {
         if (resFile.exists()) {
             try {
                 return resFile.toURL();
-            } catch (MalformedURLException ex) {
+            }
+            catch (MalformedURLException ex) {
                 return null;
             }
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -423,11 +430,13 @@ public class ExtensionClassLoader extends ClassLoader {
 
             if (entry != null) {
                 return new URL("jar:" + file.toURL() + "!" +
-                    (name.startsWith("/") ? "" : "/") + name);
-            } else {
+                        (name.startsWith("/") ? "" : "/") + name);
+            }
+            else {
                 return null;
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             return null;
         }
     }
@@ -439,10 +448,12 @@ public class ExtensionClassLoader extends ClassLoader {
 
             if (entry != null) {
                 return zipfile.getInputStream(entry);
-            } else {
+            }
+            else {
                 return null;
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             return null;
         }
     }

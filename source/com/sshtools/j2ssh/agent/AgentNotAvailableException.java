@@ -28,8 +28,6 @@ package com.sshtools.j2ssh.agent;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */

@@ -26,16 +26,13 @@
  */
 package com.sshtools.j2ssh.sftp;
 
+import ch.cyberduck.core.Codec;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 
-import ch.cyberduck.core.Codec;
-
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -68,8 +65,6 @@ public class SshFxpRename extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getId() {
@@ -77,8 +72,6 @@ public class SshFxpRename extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getOldPath() {
@@ -86,8 +79,6 @@ public class SshFxpRename extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getNewPath() {
@@ -95,27 +86,23 @@ public class SshFxpRename extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructMessage(ByteArrayReader bar)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         id = bar.readUINT32();
-				oldpath = Codec.decode(bar.readString());
+        oldpath = Codec.decode(bar.readString());
 //        oldpath = bar.readString();
-				newpath = Codec.decode(bar.readString());
+        newpath = Codec.decode(bar.readString());
 //        newpath = bar.readString();
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -123,21 +110,19 @@ public class SshFxpRename extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         baw.writeUINT32(id);
 //				baw.writeString(oldpath);
         baw.writeString(new String(Codec.encode(oldpath)));
 //        baw.writeString(newpath);
-		baw.writeString(new String(Codec.encode(newpath)));
-  }
+        baw.writeString(new String(Codec.encode(newpath)));
+    }
 }

@@ -26,28 +26,26 @@
  */
 package com.sshtools.j2ssh;
 
-import java.io.*;
+import java.io.IOException;
 
 
 /**
- * <p>
+ * <p/>
  * The base exception for all exceptions thrown within the J2SSH application
  * framework.
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public class SshException extends IOException {
     /**
-     * <p>
+     * <p/>
      * Constructs an exception.
      * </p>
      *
      * @param msg The error message
-     *
      * @since 0.2.0
      */
     public SshException(String msg) {
@@ -55,12 +53,11 @@ public class SshException extends IOException {
     }
 
     /**
-     * <p>
+     * <p/>
      * Constructs an exception.
      * </p>
      *
      * @param cause The cause of the exception
-     *
      * @since 0.2.1
      */
     public SshException(Throwable cause) {

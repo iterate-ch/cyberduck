@@ -26,16 +26,14 @@
  */
 package com.sshtools.j2ssh.agent;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -82,48 +80,45 @@ public class KeyConstraints {
      * Creates a new KeyConstraints object.
      *
      * @param bar
-     *
      * @throws IOException
      */
     public KeyConstraints(ByteArrayReader bar) throws IOException {
         while (bar.available() > 0) {
             switch (bar.read() & 0xFF) {
-            case SSH_AGENT_CONSTRAINT_TIMEOUT:
-                timeout = bar.readUINT32();
+                case SSH_AGENT_CONSTRAINT_TIMEOUT:
+                    timeout = bar.readUINT32();
 
-                break;
+                    break;
 
-            case SSH_AGENT_CONSTRAINT_USE_LIMIT:
-                uselimit = bar.readUINT32();
+                case SSH_AGENT_CONSTRAINT_USE_LIMIT:
+                    uselimit = bar.readUINT32();
 
-                break;
+                    break;
 
-            case SSH_AGENT_CONSTRAINT_FORWARDING_STEPS:
-                maxsteps = bar.readUINT32();
+                case SSH_AGENT_CONSTRAINT_FORWARDING_STEPS:
+                    maxsteps = bar.readUINT32();
 
-                break;
+                    break;
 
-            case SSH_AGENT_CONSTRAINT_FORWARDING_PATH:
-                forwardingpath = bar.readString();
+                case SSH_AGENT_CONSTRAINT_FORWARDING_PATH:
+                    forwardingpath = bar.readString();
 
-                break;
+                    break;
 
-            case SSH_AGENT_CONSTRAINT_SSH1_COMPAT:
-                compat = (bar.read() != 0);
+                case SSH_AGENT_CONSTRAINT_SSH1_COMPAT:
+                    compat = (bar.read() != 0);
 
-                break;
+                    break;
 
-            case SSH_AGENT_CONSTRAINT_NEED_USER_VERIFICATION:
-                userverify = (bar.read() != 0);
+                case SSH_AGENT_CONSTRAINT_NEED_USER_VERIFICATION:
+                    userverify = (bar.read() != 0);
 
-                break;
+                    break;
             }
         }
     }
 
     /**
-     *
-     *
      * @param timeout
      */
     public void setKeyTimeout(UnsignedInteger32 timeout) {
@@ -131,8 +126,6 @@ public class KeyConstraints {
     }
 
     /**
-     *
-     *
      * @param uselimit
      */
     public void setKeyUseLimit(int uselimit) {
@@ -140,8 +133,6 @@ public class KeyConstraints {
     }
 
     /**
-     *
-     *
      * @param maxsteps
      */
     public void setMaximumForwardingSteps(int maxsteps) {
@@ -149,8 +140,6 @@ public class KeyConstraints {
     }
 
     /**
-     *
-     *
      * @param forwardingpath
      */
     public void setForwardingPath(String forwardingpath) {
@@ -158,8 +147,6 @@ public class KeyConstraints {
     }
 
     /**
-     *
-     *
      * @param userverify
      */
     public void setRequiresUserVerification(boolean userverify) {
@@ -167,8 +154,6 @@ public class KeyConstraints {
     }
 
     /**
-     *
-     *
      * @param compat
      */
     public void setSSH1Compatible(boolean compat) {
@@ -176,8 +161,6 @@ public class KeyConstraints {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getKeyTimeout() {
@@ -185,8 +168,6 @@ public class KeyConstraints {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getKeyUseLimit() {
@@ -194,8 +175,6 @@ public class KeyConstraints {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getMaximumForwardingSteps() {
@@ -203,8 +182,6 @@ public class KeyConstraints {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getUsedCount() {
@@ -212,24 +189,20 @@ public class KeyConstraints {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean hasTimedOut() {
         return (timeout.longValue() != 0)
-        ? (((System.currentTimeMillis() - keyadded) / 1000) > timeout.longValue())
-        : false;
+                ? (((System.currentTimeMillis() - keyadded) / 1000) > timeout.longValue())
+                : false;
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean canUse() {
         return (uselimit.longValue() != 0) ? (usedcount < uselimit.longValue())
-                                           : true;
+                : true;
     }
 
     /**
@@ -240,8 +213,6 @@ public class KeyConstraints {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getForwardingPath() {
@@ -249,8 +220,6 @@ public class KeyConstraints {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean requiresUserVerification() {
@@ -258,8 +227,6 @@ public class KeyConstraints {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isSSH1Compatible() {
@@ -267,10 +234,7 @@ public class KeyConstraints {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public byte[] toByteArray() throws IOException {

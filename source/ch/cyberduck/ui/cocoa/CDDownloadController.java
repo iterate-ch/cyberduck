@@ -21,8 +21,8 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSSelector;
 import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.foundation.NSSelector;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -37,7 +37,7 @@ import ch.cyberduck.core.*;
 public class CDDownloadController extends NSObject {
     private static Logger log = Logger.getLogger(CDDownloadController.class);
 
-	private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
     private NSWindow window;
 
@@ -100,7 +100,7 @@ public class CDDownloadController extends NSObject {
                     if (file.length() > 1) {
                         Path path = PathFactory.createPath(SessionFactory.createSession(host), file);
                         Queue queue = new Queue(Queue.KIND_DOWNLOAD);
-						queue.addRoot(path);
+                        queue.addRoot(path);
                         CDQueuesImpl.instance().addItem(queue);
                         CDQueueController.instance().startItem(queue);
                     }

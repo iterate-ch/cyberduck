@@ -26,30 +26,22 @@
  */
 package com.sshtools.j2ssh.authentication;
 
+import java.io.FilePermission;
+import java.security.AccessControlException;
+import java.security.AccessController;
+import java.util.*;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sshtools.j2ssh.configuration.ConfigurationException;
 import com.sshtools.j2ssh.configuration.ConfigurationLoader;
 import com.sshtools.j2ssh.configuration.ExtensionAlgorithm;
 import com.sshtools.j2ssh.configuration.SshAPIConfiguration;
 import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.FilePermission;
-
-import java.security.AccessControlException;
-import java.security.AccessController;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -77,14 +69,13 @@ public class SshAuthenticationClientFactory {
         //  Only allow key authentication if we are able to open local files
         try {
             if (System.getSecurityManager() != null) {
-                AccessController.checkPermission(new FilePermission(
-                        "<<ALL FILES>>", "read"));
+                AccessController.checkPermission(new FilePermission("<<ALL FILES>>", "read"));
             }
 
             auths.put(AUTH_PK, PublicKeyAuthenticationClient.class);
-        } catch (AccessControlException ace) {
-            log.info(
-                "The security manager prevents use of Public Key Authentication on the client");
+        }
+        catch (AccessControlException ace) {
+            log.info("The security manager prevents use of Public Key Authentication on the client");
         }
 
         auths.put(AUTH_KBI, KBIAuthenticationClient.class);
@@ -92,8 +83,7 @@ public class SshAuthenticationClientFactory {
         //auths.put(AUTH_HOSTBASED, HostbasedAuthenticationClient.class);
         try {
             // Load external methods from configuration file
-            if (ConfigurationLoader.isConfigurationAvailable(
-                        SshAPIConfiguration.class)) {
+            if (ConfigurationLoader.isConfigurationAvailable(SshAPIConfiguration.class)) {
                 SshAPIConfiguration config = (SshAPIConfiguration) ConfigurationLoader.getConfiguration(SshAPIConfiguration.class);
                 List addons = config.getAuthenticationExtensions();
                 Iterator it = addons.iterator();
@@ -105,11 +95,12 @@ public class SshAuthenticationClientFactory {
 
                     if (auths.containsKey(name)) {
                         log.debug("Standard authentication implementation for " +
-                            name + " is being overidden by " +
-                            method.getImplementationClass());
-                    } else {
+                                name + " is being overidden by " +
+                                method.getImplementationClass());
+                    }
+                    else {
                         log.debug(name + " authentication is implemented by " +
-                            method.getImplementationClass());
+                                method.getImplementationClass());
                     }
 
                     try {
@@ -119,14 +110,15 @@ public class SshAuthenticationClientFactory {
                         if (obj instanceof SshAuthenticationClient) {
                             auths.put(name, cls);
                         }
-                    } catch (Exception e) {
-                        log.warn(
-                            "Failed to load extension authentication implementation" +
-                            method.getImplementationClass(), e);
+                    }
+                    catch (Exception e) {
+                        log.warn("Failed to load extension authentication implementation" +
+                                method.getImplementationClass(), e);
                     }
                 }
             }
-        } catch (ConfigurationException ex) {
+        }
+        catch (ConfigurationException ex) {
         }
     }
 
@@ -143,8 +135,6 @@ public class SshAuthenticationClientFactory {
     }
 
     /**
-     *
-     *
      * @return
      */
     public static List getSupportedMethods() {
@@ -156,21 +146,18 @@ public class SshAuthenticationClientFactory {
     }
 
     /**
-     *
-     *
      * @param methodName
-     *
      * @return
-     *
      * @throws AlgorithmNotSupportedException
      */
     public static SshAuthenticationClient newInstance(String methodName)
-        throws AlgorithmNotSupportedException {
+            throws AlgorithmNotSupportedException {
         try {
             return (SshAuthenticationClient) ((Class) auths.get(methodName)).newInstance();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new AlgorithmNotSupportedException(methodName +
-                " is not supported!");
+                    " is not supported!");
         }
     }
 }

@@ -28,23 +28,21 @@ package com.sshtools.j2ssh.transport;
 
 
 /**
- * <p>
+ * <p/>
  * Thrown by abstract host key verifications when a host file is invalid
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public class InvalidHostFileException extends TransportProtocolException {
     /**
-     * <p>
+     * <p/>
      * Contructs the exception.
      * </p>
      *
      * @param msg the error message
-     *
      * @since 0.2.0
      */
     public InvalidHostFileException(String msg) {

@@ -28,15 +28,11 @@ package com.sshtools.j2ssh.authentication;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface KBIRequestHandler {
     /**
-     *
-     *
      * @param name
      * @param instruction
      * @param prompts

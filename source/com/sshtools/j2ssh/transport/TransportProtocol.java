@@ -30,61 +30,44 @@ import java.io.IOException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface TransportProtocol {
     /**
-     *
-     *
      * @param description
      */
     public void disconnect(String description);
 
     /**
-     *
-     *
      * @param store
-     *
      * @throws MessageAlreadyRegisteredException
+     *
      */
     public void addMessageStore(SshMessageStore store)
-        throws MessageAlreadyRegisteredException;
+            throws MessageAlreadyRegisteredException;
 
     /**
-     *
-     *
      * @param ms
      * @param sender
-     *
      * @throws IOException
      */
     public void sendMessage(SshMessage ms, Object sender)
-        throws IOException;
+            throws IOException;
 
     /**
-     *
-     *
      * @param filter
-     *
      * @return
-     *
      * @throws IOException
      */
     public SshMessage readMessage(int[] filter) throws IOException;
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getSessionIdentifier();
 
     /**
-     *
-     *
      * @return
      */
     public int getConnectionId();
@@ -92,8 +75,6 @@ public interface TransportProtocol {
     public boolean isConnected();
 
     /**
-     *
-     *
      * @return
      */
     public TransportProtocolState getState();

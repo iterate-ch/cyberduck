@@ -33,8 +33,6 @@ import com.sshtools.j2ssh.transport.SshMessage;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -64,8 +62,6 @@ public class SshMsgUserAuthPwdChangeReq extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getPrompt() {
@@ -73,8 +69,6 @@ public class SshMsgUserAuthPwdChangeReq extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getLanguage() {
@@ -82,8 +76,6 @@ public class SshMsgUserAuthPwdChangeReq extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -91,35 +83,31 @@ public class SshMsgUserAuthPwdChangeReq extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             baw.writeString(prompt);
             baw.writeString(language);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             throw new InvalidMessageException(ex.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             prompt = bar.readString();
             language = bar.readString();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             throw new InvalidMessageException(ex.getMessage());
         }
     }

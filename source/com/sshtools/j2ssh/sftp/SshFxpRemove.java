@@ -26,16 +26,13 @@
  */
 package com.sshtools.j2ssh.sftp;
 
+import ch.cyberduck.core.Codec;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 
-import ch.cyberduck.core.Codec;
-
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -65,8 +62,6 @@ public class SshFxpRemove extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getId() {
@@ -74,8 +69,6 @@ public class SshFxpRemove extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getFilename() {
@@ -83,25 +76,21 @@ public class SshFxpRemove extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructMessage(ByteArrayReader bar)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         id = bar.readUINT32();
-				filename = Codec.decode(bar.readString());
+        filename = Codec.decode(bar.readString());
 //        filename = bar.readString();
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -109,19 +98,17 @@ public class SshFxpRemove extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         baw.writeUINT32(id);
-				baw.writeString(new String(Codec.encode(filename)));
+        baw.writeString(new String(Codec.encode(filename)));
 //				baw.writeString(filename);
     }
 }

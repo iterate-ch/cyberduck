@@ -26,19 +26,16 @@
  */
 package com.sshtools.j2ssh.transport.kex;
 
+import java.io.IOException;
+import java.math.BigInteger;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import java.io.IOException;
-
-import java.math.BigInteger;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -67,8 +64,6 @@ public class SshMsgKexDhInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getE() {
@@ -76,8 +71,6 @@ public class SshMsgKexDhInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -85,36 +78,32 @@ public class SshMsgKexDhInit extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             baw.writeBigInteger(e);
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Error writing message data: " +
-                ioe.getMessage());
+                    ioe.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             e = bar.readBigInteger();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Error reading message data: " +
-                ioe.getMessage());
+                    ioe.getMessage());
         }
     }
 }

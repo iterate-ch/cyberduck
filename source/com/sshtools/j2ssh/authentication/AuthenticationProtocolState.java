@@ -28,8 +28,6 @@ package com.sshtools.j2ssh.authentication;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */

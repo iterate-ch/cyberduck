@@ -31,8 +31,6 @@ import com.sshtools.j2ssh.io.ByteArrayWriter;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -48,8 +46,6 @@ public class SshMsgNewKeys extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -57,24 +53,18 @@ public class SshMsgNewKeys extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
     }
 }

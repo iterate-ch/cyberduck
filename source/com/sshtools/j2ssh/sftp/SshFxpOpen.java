@@ -26,19 +26,16 @@
  */
 package com.sshtools.j2ssh.sftp;
 
+import java.io.IOException;
+
+import ch.cyberduck.core.Codec;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 
-import java.io.IOException;
-
-import ch.cyberduck.core.Codec;
-
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -70,7 +67,7 @@ public class SshFxpOpen extends SubsystemMessage implements MessageRequestId {
 
     //public static final int FXF_TEXT = 0x00000040;
     public SshFxpOpen(UnsignedInteger32 id, String filename,
-        UnsignedInteger32 pflags, FileAttributes attrs) {
+                      UnsignedInteger32 pflags, FileAttributes attrs) {
         super(SSH_FXP_OPEN);
         this.id = id;
         this.filename = filename;
@@ -86,8 +83,6 @@ public class SshFxpOpen extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getId() {
@@ -95,8 +90,6 @@ public class SshFxpOpen extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getFilename() {
@@ -104,8 +97,6 @@ public class SshFxpOpen extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getPflags() {
@@ -113,8 +104,6 @@ public class SshFxpOpen extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @return
      */
     public FileAttributes getAttributes() {
@@ -122,25 +111,20 @@ public class SshFxpOpen extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws IOException
      * @throws InvalidMessageException
      */
     public void constructMessage(ByteArrayReader bar)
-        throws IOException, InvalidMessageException {
+            throws IOException, InvalidMessageException {
         id = bar.readUINT32();
-			filename = Codec.decode(bar.readString());
+        filename = Codec.decode(bar.readString());
 //        filename = bar.readString();
         pflags = bar.readUINT32();
         attrs = new FileAttributes(bar);
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -148,17 +132,14 @@ public class SshFxpOpen extends SubsystemMessage implements MessageRequestId {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws IOException
      * @throws InvalidMessageException
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws IOException, InvalidMessageException {
+            throws IOException, InvalidMessageException {
         baw.writeUINT32(id);
-			baw.writeString(new String(Codec.encode(filename)));
+        baw.writeString(new String(Codec.encode(filename)));
 //        baw.writeString(filename);
         baw.writeUINT32(pflags);
         baw.writeBinaryString(attrs.toByteArray());

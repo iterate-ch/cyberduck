@@ -26,12 +26,10 @@
  */
 package com.sshtools.j2ssh.transport;
 
-import com.sshtools.j2ssh.*;
+import com.sshtools.j2ssh.SshException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */

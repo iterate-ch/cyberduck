@@ -31,8 +31,6 @@ import com.sshtools.j2ssh.util.Base64;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -55,8 +53,6 @@ public class OpenSSHPublicKeyFormat implements SshPublicKeyFormat {
     }
 
     /**
-     *
-     *
      * @param comment
      */
     public void setComment(String comment) {
@@ -64,8 +60,6 @@ public class OpenSSHPublicKeyFormat implements SshPublicKeyFormat {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getComment() {
@@ -73,8 +67,6 @@ public class OpenSSHPublicKeyFormat implements SshPublicKeyFormat {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getFormatType() {
@@ -82,12 +74,8 @@ public class OpenSSHPublicKeyFormat implements SshPublicKeyFormat {
     }
 
     /**
-     *
-     *
      * @param formattedKey
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public byte[] getKeyBlob(byte[] formattedKey) throws InvalidSshKeyException {
@@ -119,10 +107,7 @@ public class OpenSSHPublicKeyFormat implements SshPublicKeyFormat {
     }
 
     /**
-     *
-     *
      * @param keyblob
-     *
      * @return
      */
     public byte[] formatKey(byte[] keyblob) {
@@ -137,10 +122,7 @@ public class OpenSSHPublicKeyFormat implements SshPublicKeyFormat {
     }
 
     /**
-     *
-     *
      * @param formattedKey
-     *
      * @return
      */
     public boolean isFormatted(byte[] formattedKey) {
@@ -148,22 +130,21 @@ public class OpenSSHPublicKeyFormat implements SshPublicKeyFormat {
 
         if (test.startsWith("ssh-dss") || test.startsWith("ssh-rsa")) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
 
     /**
-     *
-     *
      * @param algorithm
-     *
      * @return
      */
     public boolean supportsAlgorithm(String algorithm) {
         if (algorithm.equals("ssh-dss") || algorithm.equals("ssh-rsa")) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }

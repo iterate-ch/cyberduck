@@ -28,18 +28,17 @@ package com.sshtools.j2ssh.transport;
 
 
 /**
- * <p>
+ * <p/>
  * Thrown by the message store when the store reaches EOF.
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public class MessageStoreEOFException extends TransportProtocolException {
     /**
-     * <p>
+     * <p/>
      * Constructs the exception.
      * </p>
      */

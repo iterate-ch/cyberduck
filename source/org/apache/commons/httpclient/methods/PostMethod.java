@@ -84,241 +84,247 @@ import org.apache.commons.httpclient.log.LogSource;
 public class PostMethod extends GetMethod {
 
 
-	// ----------------------------------------------------------- Constructors
+    // ----------------------------------------------------------- Constructors
 
-	/**
-	 * No-arg constructor.
-	 */
-	public PostMethod() {
-		super();
-	}
+    /**
+     * No-arg constructor.
+     */
+    public PostMethod() {
+        super();
+    }
 
-	/**
-	 * Path-setting constructor.
-	 * @param path the path to request
-	 */
-	public PostMethod(String path) {
-		super(path);
-	}
+    /**
+     * Path-setting constructor.
+     *
+     * @param path the path to request
+     */
+    public PostMethod(String path) {
+        super(path);
+    }
 
-	/**
-	 * Constructor.
-	 * @param path the path to request
-	 * @param tempDir directory to store temp files in
-	 */
-	public PostMethod(String path, String tempDir) {
-		super(path, tempDir);
-	}
+    /**
+     * Constructor.
+     *
+     * @param path    the path to request
+     * @param tempDir directory to store temp files in
+     */
+    public PostMethod(String path, String tempDir) {
+        super(path, tempDir);
+    }
 
-	/**
-	 * Constructor.
-	 * @param path the path to request
-	 * @param tempDir directory to store temp files in
-	 * @param tempFile file to store temporary data in
-	 */
-	public PostMethod(String path, String tempDir, String tempFile) {
-		super(path, tempDir, tempFile);
-	}
+    /**
+     * Constructor.
+     *
+     * @param path     the path to request
+     * @param tempDir  directory to store temp files in
+     * @param tempFile file to store temporary data in
+     */
+    public PostMethod(String path, String tempDir, String tempFile) {
+        super(path, tempDir, tempFile);
+    }
 
-	// ----------------------------------------------------- HttpMethod Methods
+    // ----------------------------------------------------- HttpMethod Methods
 
-	/**
-	 * Returns <tt>"POST"</tt>.
-	 * @return <tt>"POST"</tt>
-	 */
-	public String getName() {
-		return "POST";
-	}
+    /**
+     * Returns <tt>"POST"</tt>.
+     *
+     * @return <tt>"POST"</tt>
+     */
+    public String getName() {
+        return "POST";
+    }
 
-	/**
-	 * Override method of {@link HttpMethodBase}
-	 * to clear my request body.
-	 */
-	public void recycle() {
-		super.recycle();
-		requestBody = null;
-		parameters.clear();
-	}
+    /**
+     * Override method of {@link HttpMethodBase}
+     * to clear my request body.
+     */
+    public void recycle() {
+        super.recycle();
+        requestBody = null;
+        parameters.clear();
+    }
 
-	/**
-	 * Override method of {@link HttpMethodBase}
-	 * to throw {@link IllegalStateException} if
-	 * my request body has already been generated.
-	 *
-	 * @throws IllegalStateException if my request body has already been generated.
-	 */
-	public void setParameter(String parameterName, String parameterValue) {
-		if (null != requestBody) {
-			throw new IllegalStateException("Request body already generated.");
-		}
-		parameters.put(parameterName, parameterValue);
-	}
+    /**
+     * Override method of {@link HttpMethodBase}
+     * to throw {@link IllegalStateException} if
+     * my request body has already been generated.
+     *
+     * @throws IllegalStateException if my request body has already been generated.
+     */
+    public void setParameter(String parameterName, String parameterValue) {
+        if (null != requestBody) {
+            throw new IllegalStateException("Request body already generated.");
+        }
+        parameters.put(parameterName, parameterValue);
+    }
 
-	/**
-	 * Override method of {@link HttpMethodBase}
-	 * to throw {@link IllegalStateException} if
-	 * my request body has already been generated.
-	 *
-	 * @throws IllegalStateException if my request body has already been generated.
-	 */
-	public void addParameter(String parameterName, String parameterValue) {
-		if (null != requestBody) {
-			throw new IllegalStateException("Request body already generated.");
-		}
-		Object old = parameters.put(parameterName, parameterValue);
-		if (null != old) {
-			List v = null;
-			if (old instanceof String) {
-				v = new ArrayList();
-				v.add(old);
-			}
-			else if (old instanceof List) {
-				v = (List) old;
-			}
-			else {
-				throw new ClassCastException("Didn't expect to find " +
-				    old.getClass().getName() +
-				    " as parameter value for \"" +
-				    parameterName + "\"");
-			}
-			v.add(parameterValue);
-			parameters.put(parameterName, v);
-		}
-	}
+    /**
+     * Override method of {@link HttpMethodBase}
+     * to throw {@link IllegalStateException} if
+     * my request body has already been generated.
+     *
+     * @throws IllegalStateException if my request body has already been generated.
+     */
+    public void addParameter(String parameterName, String parameterValue) {
+        if (null != requestBody) {
+            throw new IllegalStateException("Request body already generated.");
+        }
+        Object old = parameters.put(parameterName, parameterValue);
+        if (null != old) {
+            List v = null;
+            if (old instanceof String) {
+                v = new ArrayList();
+                v.add(old);
+            }
+            else if (old instanceof List) {
+                v = (List) old;
+            }
+            else {
+                throw new ClassCastException("Didn't expect to find " +
+                        old.getClass().getName() +
+                        " as parameter value for \"" +
+                        parameterName + "\"");
+            }
+            v.add(parameterValue);
+            parameters.put(parameterName, v);
+        }
+    }
 
-	/**
-	 * Override method of {@link HttpMethodBase}
-	 * to throw {@link IllegalStateException} if
-	 * my request body has already been generated.
-	 *
-	 * @throws IllegalStateException if my request body has already been generated.
-	 */
-	public void removeParameter(String paramName) {
-		if (null != requestBody) {
-			throw new IllegalStateException("Request body already generated.");
-		}
-		parameters.remove(paramName);
-	}
+    /**
+     * Override method of {@link HttpMethodBase}
+     * to throw {@link IllegalStateException} if
+     * my request body has already been generated.
+     *
+     * @throws IllegalStateException if my request body has already been generated.
+     */
+    public void removeParameter(String paramName) {
+        if (null != requestBody) {
+            throw new IllegalStateException("Request body already generated.");
+        }
+        parameters.remove(paramName);
+    }
 
-	/**
-	 * Override method of {@link HttpMethodBase}
-	 * to throw {@link IllegalStateException} if
-	 * my request body has already been generated.
-	 *
-	 * @throws IllegalStateException if my request body has already been generated.
-	 */
-	public void removeParameter(String paramName, String paramValue) {
-		if (null != requestBody) {
-			throw new IllegalStateException("Request body already generated.");
-		}
-		Object old = parameters.get(paramName);
-		if (null != old) {
-			if (paramValue.equals(old)) {
-				parameters.remove(paramName);
-			}
-			else if (old instanceof List) {
-				List list = (List) old;
-				if (list.remove(paramValue)) {
-					if (list.isEmpty()) {
-						parameters.remove(paramName);
-					}
-					else if (list.size() == 1) {
-						parameters.put(paramName, list.get(0));
-					}
-					else {
-						parameters.put(paramValue, list);
-					}
-				}
-			}
-		}
-	}
+    /**
+     * Override method of {@link HttpMethodBase}
+     * to throw {@link IllegalStateException} if
+     * my request body has already been generated.
+     *
+     * @throws IllegalStateException if my request body has already been generated.
+     */
+    public void removeParameter(String paramName, String paramValue) {
+        if (null != requestBody) {
+            throw new IllegalStateException("Request body already generated.");
+        }
+        Object old = parameters.get(paramName);
+        if (null != old) {
+            if (paramValue.equals(old)) {
+                parameters.remove(paramName);
+            }
+            else if (old instanceof List) {
+                List list = (List) old;
+                if (list.remove(paramValue)) {
+                    if (list.isEmpty()) {
+                        parameters.remove(paramName);
+                    }
+                    else if (list.size() == 1) {
+                        parameters.put(paramName, list.get(0));
+                    }
+                    else {
+                        parameters.put(paramValue, list);
+                    }
+                }
+            }
+        }
+    }
 
-	/**
-	 * Override method of {@link HttpMethodBase}
-	 * to also add <tt>Content-Type</tt> header
-	 * when appropriate.
-	 */
-	protected void addRequestHeaders(HttpState state, HttpConnection conn) throws IOException, HttpException {
-		super.addRequestHeaders(state, conn);
-		if (!parameters.isEmpty()) {
-			setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		}
-	}
+    /**
+     * Override method of {@link HttpMethodBase}
+     * to also add <tt>Content-Type</tt> header
+     * when appropriate.
+     */
+    protected void addRequestHeaders(HttpState state, HttpConnection conn) throws IOException, HttpException {
+        super.addRequestHeaders(state, conn);
+        if (!parameters.isEmpty()) {
+            setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        }
+    }
 
-	/**
-	 * Override method of {@link HttpMethodBase}
-	 * to write request parameters as the
-	 * request body.
-	 */
-	protected boolean writeRequestBody(HttpState state, HttpConnection conn) throws IOException, HttpException {
-		log.debug("PostMethod.writeRequestBody(HttpState,HttpConnection)");
-		if (null == requestBody) {
-			requestBody = generateRequestBody(parameters);
-		}
-		conn.print(requestBody);
-		return true;
-	}
+    /**
+     * Override method of {@link HttpMethodBase}
+     * to write request parameters as the
+     * request body.
+     */
+    protected boolean writeRequestBody(HttpState state, HttpConnection conn) throws IOException, HttpException {
+        log.debug("PostMethod.writeRequestBody(HttpState,HttpConnection)");
+        if (null == requestBody) {
+            requestBody = generateRequestBody(parameters);
+        }
+        conn.print(requestBody);
+        return true;
+    }
 
-	/**
-	 * Override method of {@link HttpMethodBase}
-	 * to return the length of the request body.
-	 *
-	 * Once this method has been invoked,
-	 * the request parameters cannot be altered
-	 * until I am {@link #recycle recycled}.
-	 */
-	protected int getRequestContentLength() {
-		if (null == requestBody) {
-			requestBody = generateRequestBody(parameters);
-		}
-		return requestBody.getBytes().length;
-	}
+    /**
+     * Override method of {@link HttpMethodBase}
+     * to return the length of the request body.
+     * <p/>
+     * Once this method has been invoked,
+     * the request parameters cannot be altered
+     * until I am {@link #recycle recycled}.
+     */
+    protected int getRequestContentLength() {
+        if (null == requestBody) {
+            requestBody = generateRequestBody(parameters);
+        }
+        return requestBody.getBytes().length;
+    }
 
-	protected String generateRequestBody(HashMap params) {
-		if (!params.isEmpty()) {
-			StringBuffer sb = new StringBuffer();
-			Iterator it = parameters.keySet().iterator();
-			while (it.hasNext()) {
-				String name = (String) (it.next());
-				Object value = parameters.get(name);
-				if (value instanceof List) {
-					List list = (List) value;
-					Iterator valit = list.iterator();
-					while (valit.hasNext()) {
-						if (sb.length() > 0) {
-							sb.append("&");
-						}
-						sb.append(URIUtil.encode(name, URIUtil.queryStringValueSafe(), true));
-						Object val2 = valit.next();
-						if (null != val2) {
-							sb.append("=");
-							sb.append(URIUtil.encode(String.valueOf(val2), URIUtil.queryStringValueSafe(), true));
-						}
-					}
-				}
-				else {
-					if (sb.length() > 0) {
-						sb.append("&");
-					}
-					sb.append(URIUtil.encode(name, URIUtil.queryStringValueSafe()));
-					if (null != value) {
-						sb.append("=");
-						sb.append(URIUtil.encode(String.valueOf(value), URIUtil.queryStringValueSafe(), true));
-					}
-				}
-			}
-			return sb.toString();
-		}
-		else {
-			return "";
-		}
-	}
+    protected String generateRequestBody(HashMap params) {
+        if (!params.isEmpty()) {
+            StringBuffer sb = new StringBuffer();
+            Iterator it = parameters.keySet().iterator();
+            while (it.hasNext()) {
+                String name = (String) (it.next());
+                Object value = parameters.get(name);
+                if (value instanceof List) {
+                    List list = (List) value;
+                    Iterator valit = list.iterator();
+                    while (valit.hasNext()) {
+                        if (sb.length() > 0) {
+                            sb.append("&");
+                        }
+                        sb.append(URIUtil.encode(name, URIUtil.queryStringValueSafe(), true));
+                        Object val2 = valit.next();
+                        if (null != val2) {
+                            sb.append("=");
+                            sb.append(URIUtil.encode(String.valueOf(val2), URIUtil.queryStringValueSafe(), true));
+                        }
+                    }
+                }
+                else {
+                    if (sb.length() > 0) {
+                        sb.append("&");
+                    }
+                    sb.append(URIUtil.encode(name, URIUtil.queryStringValueSafe()));
+                    if (null != value) {
+                        sb.append("=");
+                        sb.append(URIUtil.encode(String.valueOf(value), URIUtil.queryStringValueSafe(), true));
+                    }
+                }
+            }
+            return sb.toString();
+        }
+        else {
+            return "";
+        }
+    }
 
-	private String requestBody = null;
-	private HashMap parameters = new HashMap();
+    private String requestBody = null;
+    private HashMap parameters = new HashMap();
 
-	// -------------------------------------------------------------- Constants
+    // -------------------------------------------------------------- Constants
 
-	/** <tt>org.apache.commons.httpclient.methods.PostMethod</tt> log. */
-	private static final Log log = LogSource.getInstance("org.apache.commons.httpclient.methods.PostMethod");
+    /**
+     * <tt>org.apache.commons.httpclient.methods.PostMethod</tt> log.
+     */
+    private static final Log log = LogSource.getInstance("org.apache.commons.httpclient.methods.PostMethod");
 }

@@ -81,358 +81,372 @@ import org.apache.commons.httpclient.log.LogSource;
  */
 public class GetMethod extends HttpMethodBase {
 
-	// -------------------------------------------------------------- Constants
+    // -------------------------------------------------------------- Constants
 
-	/** <tt>org.apache.commons.httpclient.methods.GetMethod</tt> log. */
-	private static final Log log = LogSource.getInstance("org.apache.commons.httpclient.methods.GetMethod");
+    /**
+     * <tt>org.apache.commons.httpclient.methods.GetMethod</tt> log.
+     */
+    private static final Log log = LogSource.getInstance("org.apache.commons.httpclient.methods.GetMethod");
 
-	/** <tt>httpclient.wire</tt> log. */
-	private static final Log wireLog = LogSource.getInstance("httpclient.wire");
+    /**
+     * <tt>httpclient.wire</tt> log.
+     */
+    private static final Log wireLog = LogSource.getInstance("httpclient.wire");
 
-	/** Temporary directory. */
-	private static final String TEMP_DIR = "temp/";
+    /**
+     * Temporary directory.
+     */
+    private static final String TEMP_DIR = "temp/";
 
-	// ----------------------------------------------------------- Constructors
-
-
-	/**
-	 * No-arg constructor.
-	 */
-	public GetMethod() {
-		setFollowRedirects(true);
-	}
+    // ----------------------------------------------------------- Constructors
 
 
-	/**
-	 * Path-setting constructor.
-	 * @param path the path to request
-	 */
-	public GetMethod(String path) {
-		super(path);
-		setFollowRedirects(true);
-	}
+    /**
+     * No-arg constructor.
+     */
+    public GetMethod() {
+        setFollowRedirects(true);
+    }
 
 
-	/**
-	 * Constructor.
-	 * @param path the path to request
-	 * @param tempDir the directory in which to store temporary files
-	 */
-	public GetMethod(String path, String tempDir) {
-		super(path);
-		setUseDisk(true);
-		setTempDir(tempDir);
-		setFollowRedirects(true);
-	}
-
-	/**
-	 * Constructor.
-	 * @param path the path to request
-	 * @param tempDir the directory in which to store temporary files
-	 * @param tempFile the file (under tempDir) to buffer contents to
-	 */
-	public GetMethod(String path, String tempDir, String tempFile) {
-		super(path);
-		setUseDisk(true);
-		setTempDir(tempDir);
-		setTempFile(tempFile);
-		setFollowRedirects(true);
-	}
-
-	/**
-	 * Constructor.
-	 * @param path the path to request
-	 * @param tempFile the file to buffer contents to
-	 */
-	public GetMethod(String path, File fileData) {
-		this(path);
-		useDisk = true;
-		this.fileData = fileData;
-		setFollowRedirects(true);
-	}
-
-	// ----------------------------------------------------- Instance Variables
-
-	/**
-	 * By default, the get method will buffer read data to the memory.
-	 */
-	protected boolean useDisk = false;
+    /**
+     * Path-setting constructor.
+     *
+     * @param path the path to request
+     */
+    public GetMethod(String path) {
+        super(path);
+        setFollowRedirects(true);
+    }
 
 
-	/**
-	 * If we're not using the HD, we're using a memory byte buffer.
-	 */
-	protected byte[] memoryData;
+    /**
+     * Constructor.
+     *
+     * @param path    the path to request
+     * @param tempDir the directory in which to store temporary files
+     */
+    public GetMethod(String path, String tempDir) {
+        super(path);
+        setUseDisk(true);
+        setTempDir(tempDir);
+        setFollowRedirects(true);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param path     the path to request
+     * @param tempDir  the directory in which to store temporary files
+     * @param tempFile the file (under tempDir) to buffer contents to
+     */
+    public GetMethod(String path, String tempDir, String tempFile) {
+        super(path);
+        setUseDisk(true);
+        setTempDir(tempDir);
+        setTempFile(tempFile);
+        setFollowRedirects(true);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param path     the path to request
+     * @param tempFile the file to buffer contents to
+     */
+    public GetMethod(String path, File fileData) {
+        this(path);
+        useDisk = true;
+        this.fileData = fileData;
+        setFollowRedirects(true);
+    }
+
+    // ----------------------------------------------------- Instance Variables
+
+    /**
+     * By default, the get method will buffer read data to the memory.
+     */
+    protected boolean useDisk = false;
 
 
-	/**
-	 * File which contains the buffered data.
-	 */
-	protected File fileData;
+    /**
+     * If we're not using the HD, we're using a memory byte buffer.
+     */
+    protected byte[] memoryData;
 
 
-	/**
-	 * Temporary directory to use.
-	 */
-	protected String tempDir = TEMP_DIR;
+    /**
+     * File which contains the buffered data.
+     */
+    protected File fileData;
 
 
-	/**
-	 * Temporary file to use.
-	 */
-	protected String tempFile = null;
+    /**
+     * Temporary directory to use.
+     */
+    protected String tempDir = TEMP_DIR;
 
 
-	// ------------------------------------------------------------- Properties
+    /**
+     * Temporary file to use.
+     */
+    protected String tempFile = null;
 
 
-	/**
-	 * Use disk setter.
-	 *
-	 * @param useDisk New value of useDisk
-	 */
-	public void setUseDisk(boolean useDisk) {
-		checkNotUsed();
-		this.useDisk = useDisk;
-	}
+    // ------------------------------------------------------------- Properties
 
 
-	/**
-	 * Use disk getter.
-	 *
-	 * @param boolean useDisk value
-	 */
-	public boolean getUseDisk() {
-		return useDisk;
-	}
-
-	/**
-	 * Temporary directory setter.
-	 *
-	 * @param tempDir New value of tempDir
-	 */
-	public void setTempDir(String tempDir) {
-		checkNotUsed();
-		this.tempDir = tempDir;
-		setUseDisk(true);
-	}
+    /**
+     * Use disk setter.
+     *
+     * @param useDisk New value of useDisk
+     */
+    public void setUseDisk(boolean useDisk) {
+        checkNotUsed();
+        this.useDisk = useDisk;
+    }
 
 
-	/**
-	 * Temporary directory getter.
-	 */
-	public String getTempDir() {
-		return tempDir;
-	}
+    /**
+     * Use disk getter.
+     *
+     * @param boolean useDisk value
+     */
+    public boolean getUseDisk() {
+        return useDisk;
+    }
+
+    /**
+     * Temporary directory setter.
+     *
+     * @param tempDir New value of tempDir
+     */
+    public void setTempDir(String tempDir) {
+        checkNotUsed();
+        this.tempDir = tempDir;
+        setUseDisk(true);
+    }
 
 
-	/**
-	 * Temporary file setter.
-	 *
-	 * @param tempFile New value of tempFile
-	 */
-	public void setTempFile(String tempFile) {
-		checkNotUsed();
-		this.tempFile = tempFile;
-	}
+    /**
+     * Temporary directory getter.
+     */
+    public String getTempDir() {
+        return tempDir;
+    }
 
 
-	/**
-	 * Temporary file getter.
-	 */
-	public String getTempFile() {
-		return tempFile;
-	}
+    /**
+     * Temporary file setter.
+     *
+     * @param tempFile New value of tempFile
+     */
+    public void setTempFile(String tempFile) {
+        checkNotUsed();
+        this.tempFile = tempFile;
+    }
 
 
-	/**
-	 * File data getter.
-	 */
-	public File getFileData() {
-		return fileData;
-	}
+    /**
+     * Temporary file getter.
+     */
+    public String getTempFile() {
+        return tempFile;
+    }
 
 
-	/**
-	 * File data setter.
-	 */
-	public void setFileData(File fileData) {
-		checkNotUsed();
-		this.fileData = fileData;
-	}
+    /**
+     * File data getter.
+     */
+    public File getFileData() {
+        return fileData;
+    }
 
 
-	// --------------------------------------------------------- Public Methods
-
-	/**
-	 * Returns <tt>"GET"</tt>.
-	 * @return <tt>"GET"</tt>
-	 */
-	public String getName() {
-		return "GET";
-	}
-
-	public String getAcceptHeader() {
-		return "*/*";
-	}
+    /**
+     * File data setter.
+     */
+    public void setFileData(File fileData) {
+        checkNotUsed();
+        this.fileData = fileData;
+    }
 
 
-	// override recycle to reset redirects default
-	public void recycle() {
-		super.recycle();
-		setFollowRedirects(true);
-	}
+    // --------------------------------------------------------- Public Methods
 
-	/**
-	 * Return my response body, if any,
-	 * as a byte array.
-	 * Otherwise return <tt>null</tt>.
-	 */
-	public byte[] getResponseBody() {
-		checkUsed();
-		if (useDisk) {
-			try {
-				InputStream is = new FileInputStream(fileData);
-				byte[] buffer = new byte[4096];
-				ByteArrayOutputStream os = new ByteArrayOutputStream();
-				int nb = 0;
-				while (true) {
-					nb = is.read(buffer);
-					if (nb == -1)
-						break;
-					os.write(buffer, 0, nb);
-				}
-				is.close();
-				return os.toByteArray();
-			}
-			catch (IOException e) {
-				log.error("Exception in GetMethod.getResponseBody() while retrieving data from file \"" + fileData + "\".", e);
-				return null;
-			}
-		}
-		else {
-			return memoryData;
-		}
-	}
+    /**
+     * Returns <tt>"GET"</tt>.
+     *
+     * @return <tt>"GET"</tt>
+     */
+    public String getName() {
+        return "GET";
+    }
 
-	/**
-	 * Return my response body, if any,
-	 * as a {@link String}.
-	 * Otherwise return <tt>null</tt>.
-	 */
-	public String getResponseBodyAsString() {
-		byte[] data = getResponseBody();
-		if (null == data) {
-			return null;
-		}
-		else {
-			return new String(data);
-		}
-	}
+    public String getAcceptHeader() {
+        return "*/*";
+    }
 
 
-	/**
-	 * Return my response body, if any,
-	 * as an {@link InputStream}.
-	 * Otherwise return <tt>null</tt>.
-	 */
-	public InputStream getResponseBodyAsStream() throws IOException {
-		checkUsed();
-		if (useDisk) {
-			return new FileInputStream(fileData);
-		}
-		else {
-			if (null == memoryData) {
-				return null;
-			}
-			else {
-				return new ByteArrayInputStream(memoryData);
-			}
-		}
-	}
+    // override recycle to reset redirects default
+    public void recycle() {
+        super.recycle();
+        setFollowRedirects(true);
+    }
+
+    /**
+     * Return my response body, if any,
+     * as a byte array.
+     * Otherwise return <tt>null</tt>.
+     */
+    public byte[] getResponseBody() {
+        checkUsed();
+        if (useDisk) {
+            try {
+                InputStream is = new FileInputStream(fileData);
+                byte[] buffer = new byte[4096];
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                int nb = 0;
+                while (true) {
+                    nb = is.read(buffer);
+                    if (nb == -1) {
+                        break;
+                    }
+                    os.write(buffer, 0, nb);
+                }
+                is.close();
+                return os.toByteArray();
+            }
+            catch (IOException e) {
+                log.error("Exception in GetMethod.getResponseBody() while retrieving data from file \"" + fileData + "\".", e);
+                return null;
+            }
+        }
+        else {
+            return memoryData;
+        }
+    }
+
+    /**
+     * Return my response body, if any,
+     * as a {@link String}.
+     * Otherwise return <tt>null</tt>.
+     */
+    public String getResponseBodyAsString() {
+        byte[] data = getResponseBody();
+        if (null == data) {
+            return null;
+        }
+        else {
+            return new String(data);
+        }
+    }
 
 
-	// ----------------------------------------------------- HttpMethod Methods
+    /**
+     * Return my response body, if any,
+     * as an {@link InputStream}.
+     * Otherwise return <tt>null</tt>.
+     */
+    public InputStream getResponseBodyAsStream() throws IOException {
+        checkUsed();
+        if (useDisk) {
+            return new FileInputStream(fileData);
+        }
+        else {
+            if (null == memoryData) {
+                return null;
+            }
+            else {
+                return new ByteArrayInputStream(memoryData);
+            }
+        }
+    }
 
-	/**
-	 * Overrides method in {@link HttpMethodBase} to
-	 * write data to the appropriate buffer.
-	 */
-	protected void readResponseBody(HttpState state, HttpConnection conn) throws IOException {
-		log.debug("GetMethod.readResponseBody(HttpState,HttpConnection)");
-		OutputStream out = null;
-		if (useDisk) {
-			if (fileData == null) {
-				// Create a temporary file on the HD
-				File dir = new File(tempDir);
-				dir.deleteOnExit();
-				dir.mkdirs();
-				String tempFileName = null;
-				if (tempFile == null) {
-					String encodedPath = URLEncoder.encode(getPath(), "utf-8");
-					int length = encodedPath.length();
-					if (length > 240) {
-						encodedPath =
-						    encodedPath.substring(length - 200, length);
-					}
-					tempFileName = System.currentTimeMillis() + "-"
-					    + encodedPath + ".tmp";
-				}
-				else {
-					tempFileName = tempFile;
-				}
-				fileData = new File(tempDir, tempFileName);
-				fileData.deleteOnExit();
-			}
-			out = new FileOutputStream(fileData);
-		}
-		else {
-			out = new ByteArrayOutputStream();
-		}
 
-		int expectedLength = -1;
-		int foundLength = 0;
-		{
-			Header lengthHeader = getResponseHeader("Content-Length");
-			if (null != lengthHeader) {
-				try {
-					expectedLength = Integer.parseInt(lengthHeader.getValue());
-				}
-				catch (NumberFormatException e) {
-					// ignored
-				}
-			}
-		}
-		InputStream is = conn.getResponseInputStream(this);
-		byte[] buffer = new byte[4096];
-		int nb = 0;
-		while (true) {
-			nb = is.read(buffer);
-			if (nb == -1)
-				break;
-			if (out == null)
-				throw new IOException("Unable to buffer data");
-			if (wireLog.isInfoEnabled()) {
-				wireLog.info("<< \"" + new String(buffer, 0, nb) + "\"");
-			}
-			out.write(buffer, 0, nb);
-			foundLength += nb;
-			if (expectedLength > -1) {
-				if (foundLength == expectedLength) {
-					break;
-				}
-				else if (foundLength > expectedLength) {
-					log.warn("GetMethod.readResponseBody(): expected length (" + expectedLength + ") exceeded.  Found " + foundLength + " bytes.");
-					break;
-				}
-			}
-		}
+    // ----------------------------------------------------- HttpMethod Methods
 
-		if (!useDisk) {
-			memoryData = ((ByteArrayOutputStream) out).toByteArray();
-		}
+    /**
+     * Overrides method in {@link HttpMethodBase} to
+     * write data to the appropriate buffer.
+     */
+    protected void readResponseBody(HttpState state, HttpConnection conn) throws IOException {
+        log.debug("GetMethod.readResponseBody(HttpState,HttpConnection)");
+        OutputStream out = null;
+        if (useDisk) {
+            if (fileData == null) {
+                // Create a temporary file on the HD
+                File dir = new File(tempDir);
+                dir.deleteOnExit();
+                dir.mkdirs();
+                String tempFileName = null;
+                if (tempFile == null) {
+                    String encodedPath = URLEncoder.encode(getPath(), "utf-8");
+                    int length = encodedPath.length();
+                    if (length > 240) {
+                        encodedPath =
+                                encodedPath.substring(length - 200, length);
+                    }
+                    tempFileName = System.currentTimeMillis() + "-"
+                            + encodedPath + ".tmp";
+                }
+                else {
+                    tempFileName = tempFile;
+                }
+                fileData = new File(tempDir, tempFileName);
+                fileData.deleteOnExit();
+            }
+            out = new FileOutputStream(fileData);
+        }
+        else {
+            out = new ByteArrayOutputStream();
+        }
 
-		out.close();
-	}
+        int expectedLength = -1;
+        int foundLength = 0;
+        {
+            Header lengthHeader = getResponseHeader("Content-Length");
+            if (null != lengthHeader) {
+                try {
+                    expectedLength = Integer.parseInt(lengthHeader.getValue());
+                }
+                catch (NumberFormatException e) {
+                    // ignored
+                }
+            }
+        }
+        InputStream is = conn.getResponseInputStream(this);
+        byte[] buffer = new byte[4096];
+        int nb = 0;
+        while (true) {
+            nb = is.read(buffer);
+            if (nb == -1) {
+                break;
+            }
+            if (out == null) {
+                throw new IOException("Unable to buffer data");
+            }
+            if (wireLog.isInfoEnabled()) {
+                wireLog.info("<< \"" + new String(buffer, 0, nb) + "\"");
+            }
+            out.write(buffer, 0, nb);
+            foundLength += nb;
+            if (expectedLength > -1) {
+                if (foundLength == expectedLength) {
+                    break;
+                }
+                else if (foundLength > expectedLength) {
+                    log.warn("GetMethod.readResponseBody(): expected length (" + expectedLength + ") exceeded.  Found " + foundLength + " bytes.");
+                    break;
+                }
+            }
+        }
+
+        if (!useDisk) {
+            memoryData = ((ByteArrayOutputStream) out).toByteArray();
+        }
+
+        out.close();
+    }
 
 }

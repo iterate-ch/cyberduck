@@ -26,18 +26,15 @@
  */
 package com.sshtools.j2ssh.agent;
 
+import java.io.IOException;
+import java.net.InetAddress;
+
 import com.sshtools.j2ssh.connection.InvalidChannelException;
 import com.sshtools.j2ssh.connection.SocketChannel;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 
-import java.io.IOException;
-
-import java.net.InetAddress;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -58,8 +55,6 @@ public class AgentSocketChannel extends SocketChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getChannelType() {
@@ -74,15 +69,13 @@ public class AgentSocketChannel extends SocketChannel {
        }
      }*/
     protected void onChannelRequest(String requestType, boolean wantReply,
-        byte[] requestData) throws java.io.IOException {
+                                    byte[] requestData) throws java.io.IOException {
         if (wantReply) {
             connection.sendChannelRequestFailure(this);
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     protected int getMaximumPacketSize() {
@@ -98,8 +91,6 @@ public class AgentSocketChannel extends SocketChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     protected int getMinimumWindowSpace() {
@@ -107,20 +98,19 @@ public class AgentSocketChannel extends SocketChannel {
     }
 
     /**
-     *
-     *
-     * @throws com.sshtools.j2ssh.connection.InvalidChannelException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.connection.InvalidChannelException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidChannelException
      */
     protected void onChannelOpen()
-        throws com.sshtools.j2ssh.connection.InvalidChannelException {
+            throws com.sshtools.j2ssh.connection.InvalidChannelException {
         try {
             //if (socket != null) {
             if (isForwarding) {
                 // Were forwarding so insert the forwarding notice before any other data
                 SshAgentForwardingNotice msg = new SshAgentForwardingNotice(InetAddress.getLocalHost()
-                                                                                       .getHostName(),
+                        .getHostName(),
                         InetAddress.getLocalHost().getHostAddress(),
                         socket.getPort());
                 ByteArrayWriter baw = new ByteArrayWriter();
@@ -134,14 +124,13 @@ public class AgentSocketChannel extends SocketChannel {
             //  bindInputStream(socket.getInputStream());
             //  bindOutputStream(socket.getOutputStream());
             //}
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             throw new InvalidChannelException(ex.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     protected int getMaximumWindowSpace() {
@@ -149,8 +138,6 @@ public class AgentSocketChannel extends SocketChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getChannelConfirmationData() {

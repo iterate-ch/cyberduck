@@ -26,49 +26,44 @@
  */
 package com.sshtools.j2ssh.net;
 
-import com.sshtools.j2ssh.configuration.SshConnectionProperties;
-
 import java.io.IOException;
-
 import java.net.UnknownHostException;
+
+import com.sshtools.j2ssh.configuration.SshConnectionProperties;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public class TransportProviderFactory {
     /**
-     *
-     *
      * @param properties
      * @param socketTimeout
-     *
      * @return
-     *
      * @throws UnknownHostException
      * @throws IOException
      */
-    public static TransportProvider connectTransportProvider(
-        SshConnectionProperties properties /*, int connectTimeout*/,
-        int socketTimeout) throws UnknownHostException, IOException {
+    public static TransportProvider connectTransportProvider(SshConnectionProperties properties /*, int connectTimeout*/,
+                                                             int socketTimeout) throws UnknownHostException, IOException {
         if (properties.getTransportProvider() == SshConnectionProperties.USE_HTTP_PROXY) {
             return HttpProxySocketProvider.connectViaProxy(properties.getHost(),
-                properties.getPort(), properties.getProxyHost(),
-                properties.getProxyPort(), properties.getProxyUsername(),
-                properties.getProxyPassword(), "J2SSH");
-        } else if (properties.getTransportProvider() == SshConnectionProperties.USE_SOCKS4_PROXY) {
+                    properties.getPort(), properties.getProxyHost(),
+                    properties.getProxyPort(), properties.getProxyUsername(),
+                    properties.getProxyPassword(), "J2SSH");
+        }
+        else if (properties.getTransportProvider() == SshConnectionProperties.USE_SOCKS4_PROXY) {
             return SocksProxySocket.connectViaSocks4Proxy(properties.getHost(),
-                properties.getPort(), properties.getProxyHost(),
-                properties.getProxyPort(), properties.getProxyUsername());
-        } else if (properties.getTransportProvider() == SshConnectionProperties.USE_SOCKS5_PROXY) {
+                    properties.getPort(), properties.getProxyHost(),
+                    properties.getProxyPort(), properties.getProxyUsername());
+        }
+        else if (properties.getTransportProvider() == SshConnectionProperties.USE_SOCKS5_PROXY) {
             return SocksProxySocket.connectViaSocks5Proxy(properties.getHost(),
-                properties.getPort(), properties.getProxyHost(),
-                properties.getProxyPort(), properties.getProxyUsername(),
-                properties.getProxyPassword());
-        } else {
+                    properties.getPort(), properties.getProxyHost(),
+                    properties.getProxyPort(), properties.getProxyUsername(),
+                    properties.getProxyPassword());
+        }
+        else {
             // No proxy just attempt a standard socket connection
 
             /*SocketTransportProvider socket = new SocketTransportProvider();

@@ -30,8 +30,6 @@ import java.io.Serializable;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -49,19 +47,13 @@ public abstract class State implements Serializable {
     }
 
     /**
-     *
-     *
      * @param state
-     *
      * @return
      */
     public abstract boolean isValidState(int state);
 
     /**
-     *
-     *
      * @param state
-     *
      * @throws InvalidStateException
      */
     public synchronized void setValue(int state) throws InvalidStateException {
@@ -74,8 +66,6 @@ public abstract class State implements Serializable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public synchronized int getValue() {
@@ -90,33 +80,25 @@ public abstract class State implements Serializable {
     }
 
     /**
-     *
-     *
      * @param state
-     *
      * @return
-     *
      * @throws InvalidStateException
      * @throws InterruptedException
      */
     public synchronized boolean waitForState(int state)
-        throws InvalidStateException, InterruptedException {
+            throws InvalidStateException, InterruptedException {
         return waitForState(state, 0);
     }
 
     /**
-     *
-     *
      * @param state
      * @param timeout
-     *
      * @return
-     *
      * @throws InvalidStateException
      * @throws InterruptedException
      */
     public synchronized boolean waitForState(int state, long timeout)
-        throws InvalidStateException, InterruptedException {
+            throws InvalidStateException, InterruptedException {
         if (!isValidState(state)) {
             throw new InvalidStateException("The state is invalid");
         }
@@ -142,10 +124,7 @@ public abstract class State implements Serializable {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws InterruptedException
      */
     public synchronized int waitForStateUpdate() throws InterruptedException {

@@ -26,17 +26,15 @@
  */
 package com.sshtools.j2ssh.connection;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -69,7 +67,7 @@ public class SshMsgChannelOpenFailure extends SshMessage {
      * @param languageTag
      */
     public SshMsgChannelOpenFailure(long recipientChannel, long reasonCode,
-        String additional, String languageTag) {
+                                    String additional, String languageTag) {
         super(SSH_MSG_CHANNEL_OPEN_FAILURE);
         this.recipientChannel = recipientChannel;
         this.reasonCode = reasonCode;
@@ -85,8 +83,6 @@ public class SshMsgChannelOpenFailure extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getAdditionalText() {
@@ -94,8 +90,6 @@ public class SshMsgChannelOpenFailure extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getLanguageTag() {
@@ -103,8 +97,6 @@ public class SshMsgChannelOpenFailure extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -112,8 +104,6 @@ public class SshMsgChannelOpenFailure extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getReasonCode() {
@@ -121,8 +111,6 @@ public class SshMsgChannelOpenFailure extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getRecipientChannel() {
@@ -130,39 +118,35 @@ public class SshMsgChannelOpenFailure extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             baw.writeInt(recipientChannel);
             baw.writeInt(reasonCode);
             baw.writeString(additional);
             baw.writeString(languageTag);
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             recipientChannel = bar.readInt();
             reasonCode = bar.readInt();
             additional = bar.readString();
             languageTag = bar.readString();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }

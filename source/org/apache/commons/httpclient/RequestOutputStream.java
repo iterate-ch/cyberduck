@@ -71,216 +71,217 @@ import org.apache.commons.httpclient.log.LogSource;
 
 
 /**
- * <p>
+ * <p/>
  * {@link OutputStream} wrapper supporting the chunked transfer encoding.
  * </p>
+ *
  * @author <a href="mailto:remm@apache.org">Remy Maucherat</a>
  * @version $Revision$ $Date$
  */
 public class RequestOutputStream
-    extends OutputStream {
+        extends OutputStream {
 
-	// ----------------------------------------------------------- Constructors
+    // ----------------------------------------------------------- Constructors
 
-	/**
-	 * Construct an output stream wrapping the given stream.
-	 *
-	 * @param stream Wrapped input stream
-	 */
-	public RequestOutputStream(OutputStream stream) {
-		this.stream = stream;
-	}
+    /**
+     * Construct an output stream wrapping the given stream.
+     *
+     * @param stream Wrapped input stream
+     */
+    public RequestOutputStream(OutputStream stream) {
+        this.stream = stream;
+    }
 
-	/**
-	 * Construct an output stream wrapping the given stream.
-	 *
-	 * @param stream Wrapped input stream
-	 */
-	public RequestOutputStream(OutputStream stream, boolean useChunking) {
-		this.stream = stream;
-		this.useChunking = useChunking;
-	}
+    /**
+     * Construct an output stream wrapping the given stream.
+     *
+     * @param stream Wrapped input stream
+     */
+    public RequestOutputStream(OutputStream stream, boolean useChunking) {
+        this.stream = stream;
+        this.useChunking = useChunking;
+    }
 
-	// ------------------------------------------------------- Static Variables
+    // ------------------------------------------------------- Static Variables
 
-	static private final Log wireLog = LogSource.getInstance("httpclient.wire");
+    static private final Log wireLog = LogSource.getInstance("httpclient.wire");
 
-	// ----------------------------------------------------- Instance Variables
+    // ----------------------------------------------------- Instance Variables
 
-	/**
-	 * Has this stream been closed?
-	 */
-	private boolean closed = false;
-
-
-	/**
-	 * The underlying input stream from which we should read data.
-	 */
-	private OutputStream stream = null;
+    /**
+     * Has this stream been closed?
+     */
+    private boolean closed = false;
 
 
-	/**
-	 * True if chunking is allowed.
-	 */
-	private boolean useChunking = false;
+    /**
+     * The underlying input stream from which we should read data.
+     */
+    private OutputStream stream = null;
 
 
-	/**
-	 * True if printing a chunk.
-	 */
-	private boolean writingChunk = false;
+    /**
+     * True if chunking is allowed.
+     */
+    private boolean useChunking = false;
 
 
-	/**
-	 * End chunk.
-	 */
-	private byte endChunk[] = "\r\n".getBytes();
+    /**
+     * True if printing a chunk.
+     */
+    private boolean writingChunk = false;
 
 
-	/**
-	 * CRLF.
-	 */
-	private byte crlf[] = "\r\n".getBytes();
+    /**
+     * End chunk.
+     */
+    private byte endChunk[] = "\r\n".getBytes();
 
 
-	/**
-	 * 0.
-	 */
-	private byte zero[] = "0".getBytes();
+    /**
+     * CRLF.
+     */
+    private byte crlf[] = "\r\n".getBytes();
 
 
-	/**
-	 * 1.
-	 */
-	private byte one[] = "1".getBytes();
+    /**
+     * 0.
+     */
+    private byte zero[] = "0".getBytes();
 
 
-	// ------------------------------------------------------------- Properties
+    /**
+     * 1.
+     */
+    private byte one[] = "1".getBytes();
 
 
-	/**
-	 * Use chunking flag setter.
-	 */
-	public void setUseChunking(boolean useChunking) {
-		this.useChunking = useChunking;
-	}
+    // ------------------------------------------------------------- Properties
 
 
-	/**
-	 * Use chunking flag getter.
-	 */
-	public boolean isUseChunking() {
-		return useChunking;
-	}
+    /**
+     * Use chunking flag setter.
+     */
+    public void setUseChunking(boolean useChunking) {
+        this.useChunking = useChunking;
+    }
 
-	// --------------------------------------------------------- Public Methods
 
-	/**
-	 * Writes a <code>String</code> to the client,
-	 * without a carriage return-line feed (CRLF)
-	 * character at the end.
-	 *
-	 * @param s         the <code>String</code to send to the client
-	 * @exception IOException   if an input or output exception occurred
-	 */
-	public void print(String s) throws IOException {
-		if (s == null)
-			s = "null";
-		int len = s.length();
-		for (int i = 0; i < len; i++) {
-			write(s.charAt(i));
-		}
-	}
+    /**
+     * Use chunking flag getter.
+     */
+    public boolean isUseChunking() {
+        return useChunking;
+    }
 
-	/**
-	 * Writes a carriage return-line feed (CRLF)
-	 * to the client.
-	 *
-	 * @exception IOException   if an input or output exception occurred
-	 */
-	public void println() throws IOException {
-		print("\r\n");
-	}
+    // --------------------------------------------------------- Public Methods
 
-	/**
-	 * Writes a <code>String</code> to the client,
-	 * followed by a carriage return-line feed (CRLF).
-	 *
-	 * @param s         the </code>String</code> to write to the client
-	 * @exception IOException   if an input or output exception occurred
-	 */
-	public void println(String s) throws IOException {
-		print(s);
-		println();
-	}
+    /**
+     * Writes a <code>String</code> to the client,
+     * without a carriage return-line feed (CRLF)
+     * character at the end.
+     *
+     * @param s the <code>String</code to send to the client
+     * @throws IOException if an input or output exception occurred
+     */
+    public void print(String s) throws IOException {
+        if (s == null) {
+            s = "null";
+        }
+        int len = s.length();
+        for (int i = 0; i < len; i++) {
+            write(s.charAt(i));
+        }
+    }
 
-	// -------------------------------------------- ServletOutputStream Methods
+    /**
+     * Writes a carriage return-line feed (CRLF)
+     * to the client.
+     *
+     * @throws IOException if an input or output exception occurred
+     */
+    public void println() throws IOException {
+        print("\r\n");
+    }
 
-	/**
-	 * Write the specified byte to our output stream.
-	 *
-	 * @param b The byte to be written
-	 *
-	 * @exception IOException if an input/output error occurs
-	 */
-	public void write(int b) throws IOException {
-		if (useChunking) {
-			stream.write(one, 0, one.length);
-			stream.write(crlf, 0, crlf.length);
-			stream.write(b);
-			stream.write(endChunk, 0, endChunk.length);
-			if (wireLog.isInfoEnabled()) {
-				wireLog.info(">> byte 1 \\r\\n (chunk length \"header\")");
-				wireLog.info(">> byte " + b + "\\r\\n (chunked byte)");
-			}
-		}
-		else {
-			stream.write(b);
-			if (wireLog.isInfoEnabled()) {
-				wireLog.info(">> byte " + b);
-			}
-		}
-	}
+    /**
+     * Writes a <code>String</code> to the client,
+     * followed by a carriage return-line feed (CRLF).
+     *
+     * @param s the </code>String</code> to write to the client
+     * @throws IOException if an input or output exception occurred
+     */
+    public void println(String s) throws IOException {
+        print(s);
+        println();
+    }
 
-	/**
-	 * Write the specified byte array.
-	 */
-	public void write(byte[] b, int off, int len) throws IOException {
-		if (useChunking) {
-			byte chunkHeader[] =
-			    (Integer.toHexString(len) + "\r\n").getBytes();
-			stream.write(chunkHeader, 0, chunkHeader.length);
-			stream.write(b, off, len);
-			stream.write(endChunk, 0, endChunk.length);
-			if (wireLog.isInfoEnabled()) {
-				wireLog.info(">> byte(s)" + len + " \\r\\n (chunk length \"header\")");
-				wireLog.info(">> \"" + new String(b, off, len) + "\"\\r\\n (chunked bytes)");
-			}
-		}
-		else {
-			stream.write(b, off, len);
-			if (wireLog.isInfoEnabled() && len > 0) {
-				wireLog.info(">> \"" + new String(b, off, len) + "\"");
-			}
-		}
-	}
+    // -------------------------------------------- ServletOutputStream Methods
 
-	/**
-	 * Close this output stream, causing any buffered data to be flushed and
-	 * any further output data to throw an IOException.
-	 */
-	public void close() throws IOException {
+    /**
+     * Write the specified byte to our output stream.
+     *
+     * @param b The byte to be written
+     * @throws IOException if an input/output error occurs
+     */
+    public void write(int b) throws IOException {
+        if (useChunking) {
+            stream.write(one, 0, one.length);
+            stream.write(crlf, 0, crlf.length);
+            stream.write(b);
+            stream.write(endChunk, 0, endChunk.length);
+            if (wireLog.isInfoEnabled()) {
+                wireLog.info(">> byte 1 \\r\\n (chunk length \"header\")");
+                wireLog.info(">> byte " + b + "\\r\\n (chunked byte)");
+            }
+        }
+        else {
+            stream.write(b);
+            if (wireLog.isInfoEnabled()) {
+                wireLog.info(">> byte " + b);
+            }
+        }
+    }
 
-		if (useChunking) {
-			// Write the final chunk.
-			stream.write(zero, 0, zero.length);
-			stream.write(crlf, 0, crlf.length);
-			stream.write(endChunk, 0, endChunk.length);
-			if (wireLog.isInfoEnabled()) {
-				wireLog.info(">> byte 0 \\r\\n\\r\\n (final chunk)");
-			}
-		}
-		super.close();
-	}
+    /**
+     * Write the specified byte array.
+     */
+    public void write(byte[] b, int off, int len) throws IOException {
+        if (useChunking) {
+            byte chunkHeader[] =
+                    (Integer.toHexString(len) + "\r\n").getBytes();
+            stream.write(chunkHeader, 0, chunkHeader.length);
+            stream.write(b, off, len);
+            stream.write(endChunk, 0, endChunk.length);
+            if (wireLog.isInfoEnabled()) {
+                wireLog.info(">> byte(s)" + len + " \\r\\n (chunk length \"header\")");
+                wireLog.info(">> \"" + new String(b, off, len) + "\"\\r\\n (chunked bytes)");
+            }
+        }
+        else {
+            stream.write(b, off, len);
+            if (wireLog.isInfoEnabled() && len > 0) {
+                wireLog.info(">> \"" + new String(b, off, len) + "\"");
+            }
+        }
+    }
+
+    /**
+     * Close this output stream, causing any buffered data to be flushed and
+     * any further output data to throw an IOException.
+     */
+    public void close() throws IOException {
+
+        if (useChunking) {
+            // Write the final chunk.
+            stream.write(zero, 0, zero.length);
+            stream.write(crlf, 0, crlf.length);
+            stream.write(endChunk, 0, endChunk.length);
+            if (wireLog.isInfoEnabled()) {
+                wireLog.info(">> byte 0 \\r\\n\\r\\n (final chunk)");
+            }
+        }
+        super.close();
+    }
 
 }

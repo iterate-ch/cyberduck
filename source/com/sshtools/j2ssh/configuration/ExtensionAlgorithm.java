@@ -28,8 +28,6 @@ package com.sshtools.j2ssh.configuration;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -44,8 +42,6 @@ public class ExtensionAlgorithm {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getAlgorithmName() {
@@ -53,8 +49,6 @@ public class ExtensionAlgorithm {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getImplementationClass() {
@@ -62,8 +56,6 @@ public class ExtensionAlgorithm {
     }
 
     /**
-     *
-     *
      * @param name
      */
     public void setAlgorithmName(String name) {
@@ -71,8 +63,6 @@ public class ExtensionAlgorithm {
     }
 
     /**
-     *
-     *
      * @param implClass
      */
     public void setImplementationClass(String implClass) {

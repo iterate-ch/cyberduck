@@ -28,8 +28,6 @@ package com.sshtools.j2ssh.util;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -58,20 +56,20 @@ public class Base64 {
     private final static byte[] DECODABET = {
         -9, -9, -9, -9, -9, -9, -9, -9, -9, -5, -5, -9, -9, -5, -9, -9, -9, -9,
         -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -5, -9, -9, -9,
-        -9, -9, -9, -9, -9, -9, -9, 
+        -9, -9, -9, -9, -9, -9, -9,
         // Decimal 33 - 42
-        62, -9, -9, -9, 
+        62, -9, -9, -9,
         // Decimal 44 - 46
-        63, 
+        63,
         // Slash at decimal 47
-        52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -9, -9, -9, -1, -9, -9, -9, 
+        52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -9, -9, -9, -1, -9, -9, -9,
         // Decimal 62 - 64
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
         // Letters 'A' through 'N'
         14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -9, -9, -9, -9, -9, -9,
-        
+
         // Decimal 91 - 96
-        26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 
+        26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
         // Letters 'a' through 'm'
         39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -9, -9, -9, -9
     };
@@ -88,10 +86,7 @@ public class Base64 {
     }
 
     /**
-     *
-     *
      * @param s
-     *
      * @return
      */
     public static byte[] decode(String s) {
@@ -142,7 +137,7 @@ public class Base64 {
             // end if: white space, equals sign or better
             else {
                 System.err.println("Bad Base64 input character at " + i + ": " +
-                    source[i] + "(decimal)");
+                        source[i] + "(decimal)");
 
                 return null;
             }
@@ -169,28 +164,30 @@ public class Base64 {
 
             return ois.readObject();
         }
-        // end try
-         catch (java.io.IOException e) {
+                // end try
+        catch (java.io.IOException e) {
             e.printStackTrace();
 
             return null;
         }
-        // end catch
-         catch (java.lang.ClassNotFoundException e) {
+                // end catch
+        catch (java.lang.ClassNotFoundException e) {
             e.printStackTrace();
 
             return null;
         }
-        // end catch
-         finally {
+                // end catch
+        finally {
             try {
                 bais.close();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
             }
 
             try {
                 ois.close();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
             }
         }
 
@@ -209,10 +206,10 @@ public class Base64 {
 
     // end encodeBytes
     public static String encodeBytes(byte[] source, int off, int len,
-        boolean ignoreMaxLineLength) {
+                                     boolean ignoreMaxLineLength) {
         int len43 = (len * 4) / 3;
         byte[] outBuff = new byte[(len43) + (((len % 3) > 0) ? 4 : 0) +
-            (len43 / MAX_LINE_LENGTH)];
+                (len43 / MAX_LINE_LENGTH)];
 
         // New lines
         int d = 0;
@@ -257,27 +254,30 @@ public class Base64 {
             oos = new java.io.ObjectOutputStream(b64os);
             oos.writeObject(serializableObject);
         }
-        // end try
-         catch (java.io.IOException e) {
+                // end try
+        catch (java.io.IOException e) {
             e.printStackTrace();
 
             return null;
         }
-        // end catch
-         finally {
+                // end catch
+        finally {
             try {
                 oos.close();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
             }
 
             try {
                 b64os.close();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
             }
 
             try {
                 baos.close();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
             }
         }
 
@@ -293,34 +293,32 @@ public class Base64 {
     // end encodeString
     public static void main(String[] args) {
         String s = "P2/56wAAAgoAAAAmZGwtbW9kcHtzaWdue2RzYS1uaXN0LXNoYTF9LGRoe3Bs" +
-            "YWlufX0AAAAIM2Rlcy1jYmMAAAHIifTc7/X/swWj4OHVWX9RsUxWh4citAMwGzv6X9mUG6a" +
-            "mh5/2f6IiQ3lOeHFd5J0EAOeGNuLqE/RWJ/fFaZAzD6YTr1GZ5hflMzvRu3jbgZoLRz2TaT" +
-            "qeRs1yWrQoqANE2nBx6uDNrRahduqalLg2P/ezRCLGpqbw3HFgXmiZvzhd/rdEgZur7ZPnm" +
-            "EK7t4Ldypk/7xcK192JTbBXLDSKOEAqfYQb9CzW8MgEXde0DpMRZ9Fgm0KWPfz4CCJ0F9dd" +
-            "zcWl1nuGibL3klLKQANgecTurFlrxkBaHgxgl9nIvf24wH3nscvmD/uFOzacT/LzFaD03HFj" +
-            "/QHCiTezxVyyuJ39d3e6BBegV26vEFoGbrZ2mMf08C2MBmLmZELYdBRJ4kLpT5EZkzR8L4rT" +
-            "GxNiWkb4dGT42gHH41p2ad053lctyFWp/uQJnvJEiEm3BMURVY7k1S7zgv2FHgHE0LssXvBHx" +
-            "n/wnft0ne2NOqEXfs/Y4I39Nd7eDIupSVy/ZFfMmNPIhzKyC5lFMkjIMxPXNk548ZoP9Tnga" +
-            "4NPhHNKtcMinVvO2HT6dnIKMNb/NuXooULHIMVISpslRzXiVlTcN9vL/jhJhn9S";
+                "YWlufX0AAAAIM2Rlcy1jYmMAAAHIifTc7/X/swWj4OHVWX9RsUxWh4citAMwGzv6X9mUG6a" +
+                "mh5/2f6IiQ3lOeHFd5J0EAOeGNuLqE/RWJ/fFaZAzD6YTr1GZ5hflMzvRu3jbgZoLRz2TaT" +
+                "qeRs1yWrQoqANE2nBx6uDNrRahduqalLg2P/ezRCLGpqbw3HFgXmiZvzhd/rdEgZur7ZPnm" +
+                "EK7t4Ldypk/7xcK192JTbBXLDSKOEAqfYQb9CzW8MgEXde0DpMRZ9Fgm0KWPfz4CCJ0F9dd" +
+                "zcWl1nuGibL3klLKQANgecTurFlrxkBaHgxgl9nIvf24wH3nscvmD/uFOzacT/LzFaD03HFj" +
+                "/QHCiTezxVyyuJ39d3e6BBegV26vEFoGbrZ2mMf08C2MBmLmZELYdBRJ4kLpT5EZkzR8L4rT" +
+                "GxNiWkb4dGT42gHH41p2ad053lctyFWp/uQJnvJEiEm3BMURVY7k1S7zgv2FHgHE0LssXvBHx" +
+                "n/wnft0ne2NOqEXfs/Y4I39Nd7eDIupSVy/ZFfMmNPIhzKyC5lFMkjIMxPXNk548ZoP9Tnga" +
+                "4NPhHNKtcMinVvO2HT6dnIKMNb/NuXooULHIMVISpslRzXiVlTcN9vL/jhJhn9S";
         byte[] buf = Base64.decode(s);
         System.out.println(new String(buf).toString());
         s = "P2/56wAAAgIAAAAmZGwtbW9kcHtzaWdue2RzYS1uaXN0LXNoYTF9LGRoe3BsYWlufX0A" +
-            "AAAEbm9uZQAAAcQAAAHAAAAAAAAABACwV9/fUska/ZHWa4YzXIPFJ4RbcFqPVV0vmyWkFekw" +
-            "wKE1mA0GVDRq9X0HTjA2DZWcQ46suVP/8mLwpnjTKNiRdFvXWGkxEpavLp+bjPa/NXsEsjZL" +
-            "aeO5iPZ11Xw5lx7uor8q/Ewwo9IcYOXzuOWN1EPCpdRv5OOaO3PCMq6QSQAAA/9j/IrSUDtf" +
-            "BLBlzPHBrzboKjIMXv9O8CIRtSqnV7GV9wllgh3Cm+Eh+rd5CB698JGQD9tMdBn4s8bj/BDL" +
-            "4qsxbQbAsZOIin6fqDKNLDxFo357eXM06I5569PgC6cuBoJXOyQTg+sLrjT8/b3/1N4TjdZN" +
-            "JiKiSiuOzkn03tNSbgAAAKDJhI2ZNNvzOXhp+VFuoY//D9GvHwAAA/9NkAROm4wF7NCPsBXd" +
-            "/+QfNV3NM/FSpOonZZDg2AVnCCGdLOXCWEj60EVHWEf5FbOjJ1KynbbdZA6q5JtVDIYuU9wH" +
-            "BCsT5iCexGD5j2HYNcUXT4VG5a6qzqloR2JizlZOcjiEM2j0/hydFUei0VYmJNY5L//AprO6" +
-            "1UJL2OGFEQAAAJ0Ts+KlcAYmJjJWODOG3mYuiTgv7A==";
+                "AAAEbm9uZQAAAcQAAAHAAAAAAAAABACwV9/fUska/ZHWa4YzXIPFJ4RbcFqPVV0vmyWkFekw" +
+                "wKE1mA0GVDRq9X0HTjA2DZWcQ46suVP/8mLwpnjTKNiRdFvXWGkxEpavLp+bjPa/NXsEsjZL" +
+                "aeO5iPZ11Xw5lx7uor8q/Ewwo9IcYOXzuOWN1EPCpdRv5OOaO3PCMq6QSQAAA/9j/IrSUDtf" +
+                "BLBlzPHBrzboKjIMXv9O8CIRtSqnV7GV9wllgh3Cm+Eh+rd5CB698JGQD9tMdBn4s8bj/BDL" +
+                "4qsxbQbAsZOIin6fqDKNLDxFo357eXM06I5569PgC6cuBoJXOyQTg+sLrjT8/b3/1N4TjdZN" +
+                "JiKiSiuOzkn03tNSbgAAAKDJhI2ZNNvzOXhp+VFuoY//D9GvHwAAA/9NkAROm4wF7NCPsBXd" +
+                "/+QfNV3NM/FSpOonZZDg2AVnCCGdLOXCWEj60EVHWEf5FbOjJ1KynbbdZA6q5JtVDIYuU9wH" +
+                "BCsT5iCexGD5j2HYNcUXT4VG5a6qzqloR2JizlZOcjiEM2j0/hydFUei0VYmJNY5L//AprO6" +
+                "1UJL2OGFEQAAAJ0Ts+KlcAYmJjJWODOG3mYuiTgv7A==";
         buf = Base64.decode(s);
         System.out.println(new String(buf).toString());
-        buf = Base64.decode(
-                "P2/56wAAAi4AAAA3aWYtbW9kbntzaWdue3JzYS1wa2NzMS1zaGExfSxlbmNyeXB0e3JzYS1wa2NzMXYyLW9hZXB9fQAAAARub25lAAAB3wAAAdsAAAARAQABAAAD/iJ48YNIqLobasqkyRAD6Ejzhe0bK0Nd12iq0X9xG7M5xyVJns5SH3oAPwsa/V63omsQnm/ERG5lCnFGymTSCTpz0jGYLAh81S4XGbZEJRltP75LiM4J1OIfQkF7Zxd/mYFAYpu50fOLTrk+EwOCyQJK63uXzxQHCU1JKzt61m05AAAEALhvA6F1Ffhf/HLPKe3mp/CdTYQyioHzdL2ur6jyvh+b5wb8WuiaL+xu08vA7/Q763M/TXLX3jMWKOfV3HFn656hBCjnePwXp+uJNIQ4+oxg5H7nr8yo2Tc3Umt9fzgajoLDSd488iozmlSgKeRoVy7hKAGuveGtFqqruNAYArNfAAACALXcpb2stcqNdyTGUPIK/uUBkEeEJGgomqFPZbkMNHqZqEPLa7cJdHIl6wiol3ziQKvvUm/8ya4y7tR9Mzay/cIAAAIAwU2/rquz6oQ1GVJVRsO47Ibes2Hcl8tZRC9cBDy5vIPhzPhsD3pxxXnc1gEUybWqkuO6q1XilE/qN/eAKFSDuQAAAgD0QMX768Ucuv2Eu/ZVkebKBBV7jo4seZyd+hKloFotU4mReU7kNq+oYG19pL07n1TN4SodVoykXPSLBowCKCvX");
+        buf = Base64.decode("P2/56wAAAi4AAAA3aWYtbW9kbntzaWdue3JzYS1wa2NzMS1zaGExfSxlbmNyeXB0e3JzYS1wa2NzMXYyLW9hZXB9fQAAAARub25lAAAB3wAAAdsAAAARAQABAAAD/iJ48YNIqLobasqkyRAD6Ejzhe0bK0Nd12iq0X9xG7M5xyVJns5SH3oAPwsa/V63omsQnm/ERG5lCnFGymTSCTpz0jGYLAh81S4XGbZEJRltP75LiM4J1OIfQkF7Zxd/mYFAYpu50fOLTrk+EwOCyQJK63uXzxQHCU1JKzt61m05AAAEALhvA6F1Ffhf/HLPKe3mp/CdTYQyioHzdL2ur6jyvh+b5wb8WuiaL+xu08vA7/Q763M/TXLX3jMWKOfV3HFn656hBCjnePwXp+uJNIQ4+oxg5H7nr8yo2Tc3Umt9fzgajoLDSd488iozmlSgKeRoVy7hKAGuveGtFqqruNAYArNfAAACALXcpb2stcqNdyTGUPIK/uUBkEeEJGgomqFPZbkMNHqZqEPLa7cJdHIl6wiol3ziQKvvUm/8ya4y7tR9Mzay/cIAAAIAwU2/rquz6oQ1GVJVRsO47Ibes2Hcl8tZRC9cBDy5vIPhzPhsD3pxxXnc1gEUybWqkuO6q1XilE/qN/eAKFSDuQAAAgD0QMX768Ucuv2Eu/ZVkebKBBV7jo4seZyd+hKloFotU4mReU7kNq+oYG19pL07n1TN4SodVoykXPSLBowCKCvX");
         System.out.println(new String(buf).toString());
-        buf = Base64.decode(
-                "P2/56wAAAjsAAAA3aWYtbW9kbntzaWdue3JzYS1wa2NzMS1zaGExfSxlbmNyeXB0e3JzYS1wa2NzMXYyLW9hZXB9fQAAAAgzZGVzLWNiYwAAAegYJSJacx5dZo5rvtyJEp5qFyBXDOkcGH/H4/dJuny1cWnP5eXOaYt1hwc6ZEUIq4bUISGuXSzmRb+mpXZdkAPPt2RLhy66FnwnERnbItyWsNHrMxT5/oug/TW1l+rh0m/46edQhkla+qpgt3ZCJfBRzwihKAAeQJIt18e7XmvVT5g14Xu5fulXPfKT/cPu6Ox1pwRrOTv2ooM8alM2+K+5uCaP9C3qhEhFcyZOsKoigJt8oIZJD7TBrb2adVfzjyNWXZLw5Lq+liWmGTePvf9Mkx+MgFAyIOT4gV391+Rit8ZjSQaJ5jtsSaqw/MgqtTCWz6aXAaLnxP579a+tVubfVQrGLAa6ztGjI/0DmzEH+OvOLfXljeaEPKXhOxTf2O7Pwn8MDBStJHPXPLZZnsoUyTCajnzxw/ohqxOtgE9nqqO1QFVF6Cd74yZlhQSScRKkBcUlqcenxtruEOvvZXgAc8T5UtfvF8AooI22zltyKZDFJx3vJD6TEoFQSq4zu8H4Eipr42HPpUvIFuVAJFlZepI/RVirsU6sDjh8do0vj9ZGdhdBaD8kR7lrPHAJkmROHljJhEI97YWUJZNXS9i63gVvplsi9/x6uEWjn8eNu08IXID82X+LbvEdmTWOhuaSIqyNjyVe7g==");
+        buf = Base64.decode("P2/56wAAAjsAAAA3aWYtbW9kbntzaWdue3JzYS1wa2NzMS1zaGExfSxlbmNyeXB0e3JzYS1wa2NzMXYyLW9hZXB9fQAAAAgzZGVzLWNiYwAAAegYJSJacx5dZo5rvtyJEp5qFyBXDOkcGH/H4/dJuny1cWnP5eXOaYt1hwc6ZEUIq4bUISGuXSzmRb+mpXZdkAPPt2RLhy66FnwnERnbItyWsNHrMxT5/oug/TW1l+rh0m/46edQhkla+qpgt3ZCJfBRzwihKAAeQJIt18e7XmvVT5g14Xu5fulXPfKT/cPu6Ox1pwRrOTv2ooM8alM2+K+5uCaP9C3qhEhFcyZOsKoigJt8oIZJD7TBrb2adVfzjyNWXZLw5Lq+liWmGTePvf9Mkx+MgFAyIOT4gV391+Rit8ZjSQaJ5jtsSaqw/MgqtTCWz6aXAaLnxP579a+tVubfVQrGLAa6ztGjI/0DmzEH+OvOLfXljeaEPKXhOxTf2O7Pwn8MDBStJHPXPLZZnsoUyTCajnzxw/ohqxOtgE9nqqO1QFVF6Cd74yZlhQSScRKkBcUlqcenxtruEOvvZXgAc8T5UtfvF8AooI22zltyKZDFJx3vJD6TEoFQSq4zu8H4Eipr42HPpUvIFuVAJFlZepI/RVirsU6sDjh8do0vj9ZGdhdBaD8kR7lrPHAJkmROHljJhEI97YWUJZNXS9i63gVvplsi9/x6uEWjn8eNu08IXID82X+LbvEdmTWOhuaSIqyNjyVe7g==");
         System.out.println(new String(buf).toString());
     }
 
@@ -340,11 +338,11 @@ public class Base64 {
     }
 
     private static int decode4to3(byte[] source, int srcOffset,
-        byte[] destination, int destOffset) {
+                                  byte[] destination, int destOffset) {
         // Example: Dk==
         if (source[srcOffset + 2] == EQUALS_SIGN) {
             int outBuff = ((DECODABET[source[srcOffset]] << 24) >>> 6) |
-                ((DECODABET[source[srcOffset + 1]] << 24) >>> 12);
+                    ((DECODABET[source[srcOffset + 1]] << 24) >>> 12);
             destination[destOffset] = (byte) (outBuff >>> 16);
 
             return 1;
@@ -352,8 +350,8 @@ public class Base64 {
         // Example: DkL=
         else if (source[srcOffset + 3] == EQUALS_SIGN) {
             int outBuff = ((DECODABET[source[srcOffset]] << 24) >>> 6) |
-                ((DECODABET[source[srcOffset + 1]] << 24) >>> 12) |
-                ((DECODABET[source[srcOffset + 2]] << 24) >>> 18);
+                    ((DECODABET[source[srcOffset + 1]] << 24) >>> 12) |
+                    ((DECODABET[source[srcOffset + 2]] << 24) >>> 18);
             destination[destOffset] = (byte) (outBuff >>> 16);
             destination[destOffset + 1] = (byte) (outBuff >>> 8);
 
@@ -362,9 +360,9 @@ public class Base64 {
         // Example: DkLE
         else {
             int outBuff = ((DECODABET[source[srcOffset]] << 24) >>> 6) |
-                ((DECODABET[source[srcOffset + 1]] << 24) >>> 12) |
-                ((DECODABET[source[srcOffset + 2]] << 24) >>> 18) |
-                ((DECODABET[source[srcOffset + 3]] << 24) >>> 24);
+                    ((DECODABET[source[srcOffset + 1]] << 24) >>> 12) |
+                    ((DECODABET[source[srcOffset + 2]] << 24) >>> 18) |
+                    ((DECODABET[source[srcOffset + 3]] << 24) >>> 24);
             destination[destOffset] = (byte) (outBuff >> 16);
             destination[destOffset + 1] = (byte) (outBuff >> 8);
             destination[destOffset + 2] = (byte) (outBuff);
@@ -391,7 +389,7 @@ public class Base64 {
     }
 
     private static byte[] encode3to4(byte[] source, int srcOffset,
-        int numSigBytes, byte[] destination, int destOffset) {
+                                     int numSigBytes, byte[] destination, int destOffset) {
         //           1         2         3
         // 01234567890123456789012345678901 Bit position
         // --------000000001111111122222222 Array position from threeBytes
@@ -403,36 +401,36 @@ public class Base64 {
         // We have to shift left 24 in order to flush out the 1's that appear
         // when Java treats a value as negative that is cast from a byte to an int.
         int inBuff = ((numSigBytes > 0) ? ((source[srcOffset] << 24) >>> 8) : 0) |
-            ((numSigBytes > 1) ? ((source[srcOffset + 1] << 24) >>> 16) : 0) |
-            ((numSigBytes > 2) ? ((source[srcOffset + 2] << 24) >>> 24) : 0);
+                ((numSigBytes > 1) ? ((source[srcOffset + 1] << 24) >>> 16) : 0) |
+                ((numSigBytes > 2) ? ((source[srcOffset + 2] << 24) >>> 24) : 0);
 
         switch (numSigBytes) {
-        case 3:
-            destination[destOffset] = ALPHABET[(inBuff >>> 18)];
-            destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
-            destination[destOffset + 2] = ALPHABET[(inBuff >>> 6) & 0x3f];
-            destination[destOffset + 3] = ALPHABET[(inBuff) & 0x3f];
+            case 3:
+                destination[destOffset] = ALPHABET[(inBuff >>> 18)];
+                destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
+                destination[destOffset + 2] = ALPHABET[(inBuff >>> 6) & 0x3f];
+                destination[destOffset + 3] = ALPHABET[(inBuff) & 0x3f];
 
-            return destination;
+                return destination;
 
-        case 2:
-            destination[destOffset] = ALPHABET[(inBuff >>> 18)];
-            destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
-            destination[destOffset + 2] = ALPHABET[(inBuff >>> 6) & 0x3f];
-            destination[destOffset + 3] = EQUALS_SIGN;
+            case 2:
+                destination[destOffset] = ALPHABET[(inBuff >>> 18)];
+                destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
+                destination[destOffset + 2] = ALPHABET[(inBuff >>> 6) & 0x3f];
+                destination[destOffset + 3] = EQUALS_SIGN;
 
-            return destination;
+                return destination;
 
-        case 1:
-            destination[destOffset] = ALPHABET[(inBuff >>> 18)];
-            destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
-            destination[destOffset + 2] = EQUALS_SIGN;
-            destination[destOffset + 3] = EQUALS_SIGN;
+            case 1:
+                destination[destOffset] = ALPHABET[(inBuff >>> 18)];
+                destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
+                destination[destOffset + 2] = EQUALS_SIGN;
+                destination[destOffset + 3] = EQUALS_SIGN;
 
-            return destination;
+                return destination;
 
-        default:
-            return destination;
+            default:
+                return destination;
         }
 
         // end switch
@@ -492,8 +490,8 @@ public class Base64 {
 
                             // end if: not end of stream
                         }
-                        // end try: read
-                         catch (java.io.IOException e) {
+                                // end try: read
+                        catch (java.io.IOException e) {
                             // Only a problem if we got no data at all.
                             if (i == 0) {
                                 throw e;
@@ -522,7 +520,8 @@ public class Base64 {
 
                         do {
                             b = in.read();
-                        } while ((b >= 0) &&
+                        }
+                        while ((b >= 0) &&
                                 (DECODABET[b & 0x7f] < white_SPACE_ENC));
 
                         if (b < 0) {
@@ -571,7 +570,7 @@ public class Base64 {
 
         // end read
         public int read(byte[] dest, int off, int len)
-            throws java.io.IOException {
+                throws java.io.IOException {
             int i;
             int b;
 
@@ -635,8 +634,7 @@ public class Base64 {
                 }
                 // end if: encoding
                 else {
-                    throw new java.io.IOException(
-                        "Base64 input not properly padded.");
+                    throw new java.io.IOException("Base64 input not properly padded.");
                 }
 
                 // end else: decoding
@@ -676,7 +674,7 @@ public class Base64 {
 
         // end write
         public void write(byte[] theBytes, int off, int len)
-            throws java.io.IOException {
+                throws java.io.IOException {
             for (int i = 0; i < len; i++) {
                 write(theBytes[off + i]);
             }

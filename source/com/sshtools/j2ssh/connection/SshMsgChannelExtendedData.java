@@ -26,17 +26,15 @@
  */
 package com.sshtools.j2ssh.connection;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -58,7 +56,7 @@ public class SshMsgChannelExtendedData extends SshMessage {
      * @param channelData
      */
     public SshMsgChannelExtendedData(long recipientChannel, int dataTypeCode,
-        byte[] channelData) {
+                                     byte[] channelData) {
         super(SSH_MSG_CHANNEL_EXTENDED_DATA);
         this.recipientChannel = recipientChannel;
         this.dataTypeCode = dataTypeCode;
@@ -73,8 +71,6 @@ public class SshMsgChannelExtendedData extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getChannelData() {
@@ -82,8 +78,6 @@ public class SshMsgChannelExtendedData extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getDataTypeCode() {
@@ -91,8 +85,6 @@ public class SshMsgChannelExtendedData extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -100,8 +92,6 @@ public class SshMsgChannelExtendedData extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getRecipientChannel() {
@@ -109,37 +99,33 @@ public class SshMsgChannelExtendedData extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             baw.writeInt(recipientChannel);
             baw.writeInt(dataTypeCode);
 
             if (channelData != null) {
                 baw.writeBinaryString(channelData);
-            } else {
+            }
+            else {
                 baw.writeString("");
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             recipientChannel = bar.readInt();
             dataTypeCode = (int) bar.readInt();
@@ -147,7 +133,8 @@ public class SshMsgChannelExtendedData extends SshMessage {
             if (bar.available() > 0) {
                 channelData = bar.readBinaryString();
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }

@@ -33,8 +33,6 @@ import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -60,7 +58,7 @@ public class SshFxpFSetStat extends SubsystemMessage implements MessageRequestId
      * @param attrs
      */
     public SshFxpFSetStat(UnsignedInteger32 id, byte[] handle,
-        FileAttributes attrs) {
+                          FileAttributes attrs) {
         super(SSH_FXP_FSETSTAT);
         this.id = id;
         this.handle = handle;
@@ -68,8 +66,6 @@ public class SshFxpFSetStat extends SubsystemMessage implements MessageRequestId
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getId() {
@@ -77,8 +73,6 @@ public class SshFxpFSetStat extends SubsystemMessage implements MessageRequestId
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getHandle() {
@@ -86,8 +80,6 @@ public class SshFxpFSetStat extends SubsystemMessage implements MessageRequestId
     }
 
     /**
-     *
-     *
      * @return
      */
     public FileAttributes getAttributes() {
@@ -95,16 +87,14 @@ public class SshFxpFSetStat extends SubsystemMessage implements MessageRequestId
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructMessage(ByteArrayReader bar)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         id = bar.readUINT32();
         handle = bar.readBinaryString();
@@ -112,8 +102,6 @@ public class SshFxpFSetStat extends SubsystemMessage implements MessageRequestId
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -121,16 +109,14 @@ public class SshFxpFSetStat extends SubsystemMessage implements MessageRequestId
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         baw.writeUINT32(id);
         baw.writeBinaryString(handle);

@@ -26,13 +26,13 @@
  */
 package com.sshtools.j2ssh.agent;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
-
-import java.io.IOException;
 
 
 class SshAgentForwardingNotice extends SubsystemMessage {
@@ -57,7 +57,7 @@ class SshAgentForwardingNotice extends SubsystemMessage {
      * @param remotePort
      */
     public SshAgentForwardingNotice(String remoteHostname,
-        String remoteIPAddress, int remotePort) {
+                                    String remoteIPAddress, int remotePort) {
         super(SSH_AGENT_FORWARDING_NOTICE);
         this.remoteHostname = remoteHostname;
         this.remoteIPAddress = remoteIPAddress;
@@ -65,8 +65,6 @@ class SshAgentForwardingNotice extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getRemoteHostname() {
@@ -74,8 +72,6 @@ class SshAgentForwardingNotice extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getRemoteIPAddress() {
@@ -83,8 +79,6 @@ class SshAgentForwardingNotice extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getRemotePort() {
@@ -92,8 +86,6 @@ class SshAgentForwardingNotice extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -101,45 +93,43 @@ class SshAgentForwardingNotice extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             baw.writeString(remoteHostname);
             baw.writeString(remoteIPAddress);
             baw.writeUINT32(remotePort);
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             throw new InvalidMessageException(ex.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     public void constructMessage(ByteArrayReader bar)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             remoteHostname = bar.readString();
             remoteIPAddress = bar.readString();
             remotePort = bar.readUINT32();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             throw new InvalidMessageException(ex.getMessage());
         }
     }

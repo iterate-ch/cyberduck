@@ -26,30 +26,18 @@
  */
 package com.sshtools.j2ssh.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
+import java.io.*;
 import java.net.URL;
-
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -66,11 +54,10 @@ public class DynamicClassLoader extends ClassLoader {
      *
      * @param parent
      * @param classpath
-     *
      * @throws IllegalArgumentException
      */
     public DynamicClassLoader(ClassLoader parent, List classpath)
-        throws IllegalArgumentException {
+            throws IllegalArgumentException {
         this.parent = parent;
 
         // Create the cache to hold the loaded classes
@@ -84,26 +71,27 @@ public class DynamicClassLoader extends ClassLoader {
 
             if (obj instanceof String) {
                 f = new File((String) obj);
-            } else if (obj instanceof File) {
+            }
+            else if (obj instanceof File) {
                 f = (File) obj;
-            } else {
-                throw new IllegalArgumentException(
-                    "Entries in classpath must be either a String or File object");
+            }
+            else {
+                throw new IllegalArgumentException("Entries in classpath must be either a String or File object");
             }
 
             if (!f.exists()) {
                 throw new IllegalArgumentException("Classpath " +
-                    f.getAbsolutePath() + " doesn't exist!");
-            } else if (!f.canRead()) {
-                throw new IllegalArgumentException(
-                    "Don't have read access for file " + f.getAbsolutePath());
+                        f.getAbsolutePath() + " doesn't exist!");
+            }
+            else if (!f.canRead()) {
+                throw new IllegalArgumentException("Don't have read access for file " + f.getAbsolutePath());
             }
 
             // Check that it is a directory or jar file
             if (!(f.isDirectory() || isJarArchive(f))) {
                 throw new IllegalArgumentException(f.getAbsolutePath() +
-                    " is not a directory or jar file" +
-                    " or if it's a jar file then it is corrupted.");
+                        " is not a directory or jar file" +
+                        " or if it's a jar file then it is corrupted.");
             }
 
             this.classpath.add(f);
@@ -114,10 +102,7 @@ public class DynamicClassLoader extends ClassLoader {
     }
 
     /**
-     *
-     *
      * @param name
-     *
      * @return
      */
     public URL getResource(String name) {
@@ -142,7 +127,8 @@ public class DynamicClassLoader extends ClassLoader {
                     // Build a file:// URL form the file name
                     try {
                         return new URL("file://" + resFile.getAbsolutePath());
-                    } catch (java.net.MalformedURLException badurl) {
+                    }
+                    catch (java.net.MalformedURLException badurl) {
                         badurl.printStackTrace();
 
                         return null;
@@ -156,10 +142,7 @@ public class DynamicClassLoader extends ClassLoader {
     }
 
     /**
-     *
-     *
      * @param name
-     *
      * @return
      */
     public InputStream getResourceAsStream(String name) {
@@ -175,7 +158,8 @@ public class DynamicClassLoader extends ClassLoader {
 
                 if (file.isDirectory()) {
                     s = loadResourceFromDirectory(file, name);
-                } else {
+                }
+                else {
                     s = loadResourceFromZipfile(file, name);
                 }
 
@@ -189,8 +173,6 @@ public class DynamicClassLoader extends ClassLoader {
     }
 
     /**
-     *
-     *
      * @return
      */
     public DynamicClassLoader reinstantiate() {
@@ -198,10 +180,7 @@ public class DynamicClassLoader extends ClassLoader {
     }
 
     /**
-     *
-     *
      * @param classname
-     *
      * @return
      */
     public synchronized boolean shouldReload(String classname) {
@@ -210,10 +189,12 @@ public class DynamicClassLoader extends ClassLoader {
         if (entry == null) {
             // class wasn't even loaded
             return false;
-        } else if (entry.isSystemClass()) {
+        }
+        else if (entry.isSystemClass()) {
             // System classes cannot be reloaded
             return false;
-        } else {
+        }
+        else {
             boolean reload = (entry.origin.lastModified() != entry.lastModified);
 
             return reload;
@@ -221,8 +202,6 @@ public class DynamicClassLoader extends ClassLoader {
     }
 
     /**
-     *
-     *
      * @return
      */
     public synchronized boolean shouldReload() {
@@ -254,17 +233,13 @@ public class DynamicClassLoader extends ClassLoader {
     }
 
     /**
-     *
-     *
      * @param name
      * @param resolve
-     *
      * @return
-     *
      * @throws ClassNotFoundException
      */
     protected synchronized Class loadClass(String name, boolean resolve)
-        throws ClassNotFoundException {
+            throws ClassNotFoundException {
         // The class object that will be returned.
         Class c = null;
 
@@ -298,7 +273,8 @@ public class DynamicClassLoader extends ClassLoader {
 
                 return c;
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             c = null;
         }
 
@@ -315,10 +291,12 @@ public class DynamicClassLoader extends ClassLoader {
             try {
                 if (file.isDirectory()) {
                     classData = loadClassFromDirectory(file, name, classCache);
-                } else {
+                }
+                else {
                     classData = loadClassFromZipfile(file, name, classCache);
                 }
-            } catch (IOException ioe) {
+            }
+            catch (IOException ioe) {
                 // Error while reading in data, consider it as not found
                 classData = null;
             }
@@ -353,15 +331,19 @@ public class DynamicClassLoader extends ClassLoader {
 
         try {
             zipFile = new ZipFile(file);
-        } catch (ZipException zipCurrupted) {
+        }
+        catch (ZipException zipCurrupted) {
             isArchive = false;
-        } catch (IOException anyIOError) {
+        }
+        catch (IOException anyIOError) {
             isArchive = false;
-        } finally {
+        }
+        finally {
             if (zipFile != null) {
                 try {
                     zipFile.close();
-                } catch (IOException ignored) {
+                }
+                catch (IOException ignored) {
                 }
             }
         }
@@ -370,7 +352,7 @@ public class DynamicClassLoader extends ClassLoader {
     }
 
     private byte[] loadBytesFromStream(InputStream in, int length)
-        throws IOException {
+            throws IOException {
         byte[] buf = new byte[length];
         int nRead;
         int count = 0;
@@ -384,10 +366,10 @@ public class DynamicClassLoader extends ClassLoader {
     }
 
     private byte[] loadClassFromDirectory(File dir, String name,
-        ClassCacheEntry cache) throws IOException {
+                                          ClassCacheEntry cache) throws IOException {
         // Translate class name to file name
         String classFileName = name.replace('.', File.separatorChar) +
-            ".class";
+                ".class";
 
         // Check for garbage input at beginning of file name
         // i.e. ../ or similar
@@ -395,8 +377,7 @@ public class DynamicClassLoader extends ClassLoader {
             // Find real beginning of class name
             int start = 1;
 
-            while (!Character.isJavaIdentifierStart(classFileName.charAt(
-                            start++))) {
+            while (!Character.isJavaIdentifierStart(classFileName.charAt(start++))) {
                 ;
             }
 
@@ -412,17 +393,19 @@ public class DynamicClassLoader extends ClassLoader {
 
             try {
                 return loadBytesFromStream(in, (int) classFile.length());
-            } finally {
+            }
+            finally {
                 in.close();
             }
-        } else {
+        }
+        else {
             // Not found
             return null;
         }
     }
 
     private byte[] loadClassFromZipfile(File file, String name,
-        ClassCacheEntry cache) throws IOException {
+                                        ClassCacheEntry cache) throws IOException {
         // Translate class name to file name
         String classFileName = name.replace('.', '/') + ".class";
         ZipFile zipfile = new ZipFile(file);
@@ -434,12 +417,14 @@ public class DynamicClassLoader extends ClassLoader {
                 cache.origin = file;
 
                 return loadBytesFromStream(zipfile.getInputStream(entry),
-                    (int) entry.getSize());
-            } else {
+                        (int) entry.getSize());
+            }
+            else {
                 // Not found
                 return null;
             }
-        } finally {
+        }
+        finally {
             zipfile.close();
         }
     }
@@ -452,10 +437,12 @@ public class DynamicClassLoader extends ClassLoader {
         if (resFile.exists()) {
             try {
                 return new FileInputStream(resFile);
-            } catch (FileNotFoundException shouldnothappen) {
+            }
+            catch (FileNotFoundException shouldnothappen) {
                 return null;
             }
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -467,16 +454,18 @@ public class DynamicClassLoader extends ClassLoader {
 
             if (entry != null) {
                 return zipfile.getInputStream(entry);
-            } else {
+            }
+            else {
                 return null;
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             return null;
         }
     }
 
     private Class loadSystemClass(String name, boolean resolve)
-        throws NoClassDefFoundError, ClassNotFoundException {
+            throws NoClassDefFoundError, ClassNotFoundException {
         //        Class c = findSystemClass(name);
         Class c = parent.loadClass(name);
 
@@ -513,11 +502,12 @@ public class DynamicClassLoader extends ClassLoader {
 
             // Check if we are allowed to load the class' package
             security.checkPackageDefinition((lastDot > -1)
-                ? className.substring(0, lastDot) : "");
+                    ? className.substring(0, lastDot) : "");
 
             // Throws if not allowed
             return true;
-        } catch (SecurityException e) {
+        }
+        catch (SecurityException e) {
             return false;
         }
     }

@@ -33,8 +33,6 @@ import com.sshtools.j2ssh.transport.SshMessage;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -50,8 +48,6 @@ public class SshMsgRequestFailure extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -59,24 +55,18 @@ public class SshMsgRequestFailure extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
     }
 }

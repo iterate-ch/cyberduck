@@ -28,13 +28,11 @@ package com.sshtools.j2ssh.connection;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface ChannelFactory {
     //public List getChannelType();
     public Channel createChannel(String channelType, byte[] requestData)
-        throws InvalidChannelException;
+            throws InvalidChannelException;
 }

@@ -55,46 +55,43 @@ package org.apache.commons.net.ftp.parser;
  */
 
 import java.util.Calendar;
-//import org.apache.commons.net.ftp.FTPFile;
+
+import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
+
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.ftp.FTPPath;
-import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
 
 /**
  * Implementation of FTPFileEntryParser and FTPFileListParser for NT Systems.
- * 
- * @author  <a href="Winston.Ojeda@qg.com">Winston Ojeda</a>
+ *
+ * @author <a href="Winston.Ojeda@qg.com">Winston Ojeda</a>
  * @author <a href="mailto:scohen@apache.org">Steve Cohen</a>
  * @version $Id$
  * @see org.apache.commons.net.ftp.FTPFileEntryParser FTPFileEntryParser (for usage instructions)
  */
-public class NTFTPEntryParser extends FTPFileEntryParserImpl
-{
+public class NTFTPEntryParser extends FTPFileEntryParserImpl {
     /**
      * this is the regular expression used by this parser.
      */
     private static final String REGEX =
-        "((?:0[1-9])|(?:1[0-2]))-" 
-        + "((?:0[1-9])|(?:[1-2]\\d)|(?:3[0-1]))-" 
-        + "(\\d\\d)\\s*" 
-        + "((?:0[1-9])|(?:1[012])):" 
-        + "([0-5]\\d)\\s*" 
-        + "([AP])M\\s*" 
-        + "(<DIR>)?\\s*" 
-        + "([0-9]+)?\\s+" 
-        + "(\\S.*)";
+            "((?:0[1-9])|(?:1[0-2]))-"
+            + "((?:0[1-9])|(?:[1-2]\\d)|(?:3[0-1]))-"
+            + "(\\d\\d)\\s*"
+            + "((?:0[1-9])|(?:1[012])):"
+            + "([0-5]\\d)\\s*"
+            + "([AP])M\\s*"
+            + "(<DIR>)?\\s*"
+            + "([0-9]+)?\\s+"
+            + "(\\S.*)";
 
     /**
      * The sole constructor for an NTFTPEntryParser object.
-     * 
-     * @exception IllegalArgumentException
-     * Thrown if the regular expression is unparseable.  Should not be seen 
-     * under normal conditions.  It it is seen, this is a sign that 
-     * <code>REGEX</code> is  not a valid regular expression.
+     *
+     * @throws IllegalArgumentException Thrown if the regular expression is unparseable.  Should not be seen
+     *                                  under normal conditions.  It it is seen, this is a sign that
+     *                                  <code>REGEX</code> is  not a valid regular expression.
      */
-    public NTFTPEntryParser()
-    {
+    public NTFTPEntryParser() {
         super(REGEX);
     }
 
@@ -105,16 +102,15 @@ public class NTFTPEntryParser extends FTPFileEntryParserImpl
      * file listing line doesn't describe a file, <code> null </code> is
      * returned, otherwise a <code> FTPFile </code> instance representing the
      * files in the directory is returned.
-     * <p>
+     * <p/>
+     *
      * @param entry A line of text from the file listing
      * @return An FTPFile instance corresponding to the supplied entry
      */
-    public Path parseFTPEntry(Path parent, String entry)
-    {
-		Path f = PathFactory.createPath(parent.getSession());
-        
-        if (matches(entry))
-        {
+    public Path parseFTPEntry(Path parent, String entry) {
+        Path f = PathFactory.createPath(parent.getSession());
+
+        if (matches(entry)) {
             String mo = group(1);
             String da = group(2);
             String yr = group(3);
@@ -124,8 +120,7 @@ public class NTFTPEntryParser extends FTPFileEntryParserImpl
             String dirString = group(7);
             String size = group(8);
             String name = group(9);
-            if (null == name || name.equals(".") || name.equals(".."))
-            {
+            if (null == name || name.equals(".") || name.equals("..")) {
                 return (null);
             }
             f.setPath(parent.getAbsolute(), name);
@@ -139,8 +134,7 @@ public class NTFTPEntryParser extends FTPFileEntryParserImpl
             // Y2K stuff? this will break again in 2080 but I will
             // be sooooo dead anyways who cares.
             // SMC - IS NT's directory date REALLY still not Y2K-compliant?
-            if (year > 2080)
-            {
+            if (year > 2080) {
                 year -= 100;
             }
 
@@ -153,23 +147,19 @@ public class NTFTPEntryParser extends FTPFileEntryParserImpl
             cal.set(Calendar.DATE, day);
             cal.set(Calendar.MONTH, month);
             int ap = Calendar.AM;
-            if ("P".equals(ampm))
-            {
+            if ("P".equals(ampm)) {
                 ap = Calendar.PM;
             }
             cal.set(Calendar.AM_PM, ap);
             f.attributes.setTimestamp(cal.getTime());
 
-            if ("<DIR>".equals(dirString))
-            {
+            if ("<DIR>".equals(dirString)) {
                 f.attributes.setType(Path.DIRECTORY_TYPE);
             }
-            else
-            {
-				f.attributes.setType(Path.FILE_TYPE);
-                if (null != size)
-                {
-					f.status.setSize(Long.parseLong(size));
+            else {
+                f.attributes.setType(Path.FILE_TYPE);
+                if (null != size) {
+                    f.status.setSize(Long.parseLong(size));
                 }
             }
             return (f);

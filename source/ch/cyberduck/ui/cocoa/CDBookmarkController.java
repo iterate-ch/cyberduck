@@ -32,7 +32,7 @@ import ch.cyberduck.core.Session;
 public class CDBookmarkController extends NSObject {
     private static Logger log = Logger.getLogger(CDBookmarkController.class);
 
-	private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
     private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)", "");
     private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
@@ -55,7 +55,7 @@ public class CDBookmarkController extends NSObject {
     }
 
     public void windowWillClose(NSNotification notification) {
-		OFFSET =- 16;
+        OFFSET = -16;
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
         CDBookmarksImpl.instance().save();
@@ -123,7 +123,7 @@ public class CDBookmarkController extends NSObject {
 
     private NSTableView callback;
 
-	private static int OFFSET = 0;
+    private static int OFFSET = 0;
 
     // ----------------------------------------------------------
     // Constructors
@@ -133,7 +133,7 @@ public class CDBookmarkController extends NSObject {
         this.callback = callback;
         this.host = host;
         instances.addObject(this);
-		OFFSET =+ 16;
+        OFFSET = +16;
         if (false == NSApplication.loadNibNamed("Bookmark", this)) {
             log.fatal("Couldn't load Bookmark.nib");
         }
@@ -185,7 +185,7 @@ public class CDBookmarkController extends NSObject {
     public void pkCheckboxSelectionChanged(Object sender) {
         log.debug("pkCheckboxSelectionChanged");
         if (this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
-			NSOpenPanel panel = NSOpenPanel.openPanel();
+            NSOpenPanel panel = NSOpenPanel.openPanel();
             panel.setCanChooseDirectories(false);
             panel.setCanChooseFiles(true);
             panel.setAllowsMultipleSelection(false);

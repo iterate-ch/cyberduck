@@ -28,26 +28,24 @@ package com.sshtools.j2ssh.transport;
 
 
 /**
- * <p>
+ * <p/>
  * Thrown by the transport protocol if an algortihm cannot be agreed between
  * the client and server.
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public class AlgorithmNotAgreedException extends TransportProtocolException {
     /**
-     * <p>
+     * <p/>
      * Constructs the exception.
      * </p>
-     *
+     * <p/>
      * <p></p>
      *
      * @param msg the error message
-     *
      * @since 0.2.0
      */
     public AlgorithmNotAgreedException(String msg) {

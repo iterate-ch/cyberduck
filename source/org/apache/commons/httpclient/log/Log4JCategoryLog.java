@@ -71,94 +71,94 @@ import org.apache.log4j.Priority;
  * @version $Id$
  */
 public class Log4JCategoryLog implements Log {
-	Logger _category = null;
+    Logger _category = null;
 
-	public Log4JCategoryLog(String name) {
-		_category = Logger.getLogger(name);
-	}
+    public Log4JCategoryLog(String name) {
+        _category = Logger.getLogger(name);
+    }
 
-	public final void debug(Object message) {
-		_category.debug(message);
-	}
+    public final void debug(Object message) {
+        _category.debug(message);
+    }
 
-	public final void debug(Object message, Throwable t) {
-		_category.debug(message, t);
-	}
+    public final void debug(Object message, Throwable t) {
+        _category.debug(message, t);
+    }
 
-	public final void info(Object message) {
-		_category.info(message);
-	}
+    public final void info(Object message) {
+        _category.info(message);
+    }
 
-	public final void info(Object message, Throwable t) {
-		_category.info(message, t);
-	}
+    public final void info(Object message, Throwable t) {
+        _category.info(message, t);
+    }
 
-	public final void warn(Object message) {
-		_category.warn(message);
-	}
+    public final void warn(Object message) {
+        _category.warn(message);
+    }
 
-	public final void warn(Object message, Throwable t) {
-		_category.warn(message, t);
-	}
+    public final void warn(Object message, Throwable t) {
+        _category.warn(message, t);
+    }
 
-	public final void error(Object message) {
-		_category.error(message);
-	}
+    public final void error(Object message) {
+        _category.error(message);
+    }
 
-	public final void error(Object message, Throwable t) {
-		_category.error(message, t);
-	}
+    public final void error(Object message, Throwable t) {
+        _category.error(message, t);
+    }
 
-	public final void fatal(Object message) {
-		_category.fatal(message);
-	}
+    public final void fatal(Object message) {
+        _category.fatal(message);
+    }
 
-	public final void fatal(Object message, Throwable t) {
-		_category.fatal(message, t);
-	}
+    public final void fatal(Object message, Throwable t) {
+        _category.fatal(message, t);
+    }
 
-	public final boolean isDebugEnabled() {
-		return _category.isDebugEnabled();
-	}
+    public final boolean isDebugEnabled() {
+        return _category.isDebugEnabled();
+    }
 
-	public final boolean isInfoEnabled() {
-		return _category.isInfoEnabled();
-	}
+    public final boolean isInfoEnabled() {
+        return _category.isInfoEnabled();
+    }
 
-	public final boolean isEnabledFor(Priority p) {
-		return _category.isEnabledFor(p);
-	}
+    public final boolean isEnabledFor(Priority p) {
+        return _category.isEnabledFor(p);
+    }
 
-	public final void setLevel(int level) {
-		switch (level) {
-			case Log.DEBUG:
-				_category.setLevel(Level.DEBUG);
-				break;
-			case Log.INFO:
-				_category.setLevel(Level.INFO);
-				break;
-			case Log.WARN:
-				_category.setLevel(Level.WARN);
-				break;
-			case Log.ERROR:
-				_category.setLevel(Level.ERROR);
-				break;
-			case Log.FATAL:
-				_category.setLevel(Level.FATAL);
-				break;
-			default:
-				throw new IllegalArgumentException("" + level);
-				/*
-		    default:
-		        _category.setLevel(Level.toPriority(level));
-		        break;
-				*/
-		}
-	}
+    public final void setLevel(int level) {
+        switch (level) {
+            case Log.DEBUG:
+                _category.setLevel(Level.DEBUG);
+                break;
+            case Log.INFO:
+                _category.setLevel(Level.INFO);
+                break;
+            case Log.WARN:
+                _category.setLevel(Level.WARN);
+                break;
+            case Log.ERROR:
+                _category.setLevel(Level.ERROR);
+                break;
+            case Log.FATAL:
+                _category.setLevel(Level.FATAL);
+                break;
+            default:
+                throw new IllegalArgumentException("" + level);
+                /*
+            default:
+                _category.setLevel(Level.toPriority(level));
+                break;
+                */
+        }
+    }
 
-	public final int getLevel() {
+    public final int getLevel() {
 //        return _category.getPriority().toInt();
-		return _category.getLevel().toInt();
-	}
+        return _category.getLevel().toInt();
+    }
 
 }

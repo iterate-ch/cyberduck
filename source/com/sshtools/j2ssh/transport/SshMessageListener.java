@@ -32,8 +32,9 @@ package com.sshtools.j2ssh.transport;
  * <p>Description: </p>
  * <p>Copyright: Copyright (c) 2003</p>
  * <p>Company: </p>
+ *
  * @author Lee David Painter
-     * @version $Id$
+ * @version $Id$
  */
 public interface SshMessageListener {
     public void messageReceived(SshMessage msg);

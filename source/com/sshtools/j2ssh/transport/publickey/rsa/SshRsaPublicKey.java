@@ -26,21 +26,21 @@
  */
 package com.sshtools.j2ssh.transport.publickey.rsa;
 
-import com.sshtools.j2ssh.io.*;
-import com.sshtools.j2ssh.transport.publickey.*;
-
-import java.io.*;
-
-import java.math.*;
-
+import java.io.IOException;
+import java.math.BigInteger;
 import java.security.*;
-import java.security.interfaces.*;
-import java.security.spec.*;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPublicKeySpec;
+
+import com.sshtools.j2ssh.io.ByteArrayReader;
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
+import com.sshtools.j2ssh.transport.publickey.InvalidSshKeySignatureException;
+import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -60,7 +60,6 @@ public class SshRsaPublicKey extends SshPublicKey {
      * Creates a new SshRsaPublicKey object.
      *
      * @param encoded
-     *
      * @throws InvalidSshKeyException
      */
     public SshRsaPublicKey(byte[] encoded) throws InvalidSshKeyException {
@@ -83,19 +82,20 @@ public class SshRsaPublicKey extends SshPublicKey {
             try {
                 KeyFactory kf = KeyFactory.getInstance("RSA");
                 pubKey = (RSAPublicKey) kf.generatePublic(rsaKey);
-            } catch (NoSuchAlgorithmException nsae) {
-                throw new InvalidSshKeyException();
-            } catch (InvalidKeySpecException ikpe) {
+            }
+            catch (NoSuchAlgorithmException nsae) {
                 throw new InvalidSshKeyException();
             }
-        } catch (IOException ioe) {
+            catch (InvalidKeySpecException ikpe) {
+                throw new InvalidSshKeyException();
+            }
+        }
+        catch (IOException ioe) {
             throw new InvalidSshKeyException();
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getAlgorithmName() {
@@ -103,8 +103,6 @@ public class SshRsaPublicKey extends SshPublicKey {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getBitLength() {
@@ -112,8 +110,6 @@ public class SshRsaPublicKey extends SshPublicKey {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getEncoded() {
@@ -124,23 +120,21 @@ public class SshRsaPublicKey extends SshPublicKey {
             baw.writeBigInteger(pubKey.getModulus());
 
             return baw.toByteArray();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             return null;
         }
     }
 
     /**
-     *
-     *
      * @param signature
      * @param data
-     *
      * @return
-     *
      * @throws InvalidSshKeySignatureException
+     *
      */
     public boolean verifySignature(byte[] signature, byte[] data)
-        throws InvalidSshKeySignatureException {
+            throws InvalidSshKeySignatureException {
         try {
             // Check for older versions of the transport protocol
             if (signature.length != 128) {
@@ -160,13 +154,17 @@ public class SshRsaPublicKey extends SshPublicKey {
             s.update(data);
 
             return s.verify(signature);
-        } catch (NoSuchAlgorithmException nsae) {
+        }
+        catch (NoSuchAlgorithmException nsae) {
             throw new InvalidSshKeySignatureException();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidSshKeySignatureException();
-        } catch (InvalidKeyException ike) {
+        }
+        catch (InvalidKeyException ike) {
             throw new InvalidSshKeySignatureException();
-        } catch (SignatureException se) {
+        }
+        catch (SignatureException se) {
             throw new InvalidSshKeySignatureException();
         }
     }

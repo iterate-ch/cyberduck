@@ -18,49 +18,49 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-
-import ch.cyberduck.core.Preferences;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
+
+import ch.cyberduck.core.Preferences;
 
 public class CDBrowserTable extends NSTableView {
     private static Logger log = Logger.getLogger(CDBrowserTable.class);
 
-	public CDBrowserTable() {
-		super();
-	}
-	
-	public CDBrowserTable(NSRect frame) {
-		super(frame);
-	}
-	
-	protected CDBrowserTable(NSCoder decoder, long token) {
-		super(decoder, token);
-	}
-	
-	protected void encodeWithCoder(NSCoder encoder) {
-		super.encodeWithCoder(encoder);
-	}
-	
-	public void awakeFromNib() {
+    public CDBrowserTable() {
+        super();
+    }
+
+    public CDBrowserTable(NSRect frame) {
+        super(frame);
+    }
+
+    protected CDBrowserTable(NSCoder decoder, long token) {
+        super(decoder, token);
+    }
+
+    protected void encodeWithCoder(NSCoder encoder) {
+        super.encodeWithCoder(encoder);
+    }
+
+    public void awakeFromNib() {
         log.debug("awakeFromNib");
-        // receive drag events from types
+// receive drag events from types
         this.registerForDraggedTypes(new NSArray(new Object[]{
             NSPasteboard.FilenamesPboardType,
             "QueuePboardType"}));
         this.setRowHeight(17f);
-		
-        // setting appearance attributes
+
+// setting appearance attributes
         this.setAutoresizesAllColumnsToFit(true);
         NSSelector setUsesAlternatingRowBackgroundColorsSelector =
-			new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
+                new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
         if (setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
             this.setUsesAlternatingRowBackgroundColors(Preferences.instance().getProperty("browser.alternatingRows").equals("true"));
         }
         NSSelector setGridStyleMaskSelector =
-			new NSSelector("setGridStyleMask", new Class[]{int.class});
+                new NSSelector("setGridStyleMask", new Class[]{int.class});
         if (setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
             if (Preferences.instance().getProperty("browser.horizontalLines").equals("true") && Preferences.instance().getProperty("browser.verticalLines").equals("true")) {
                 this.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
@@ -75,8 +75,8 @@ public class CDBrowserTable extends NSTableView {
                 this.setGridStyleMask(NSTableView.GridNone);
             }
         }
-		
-        // ading table columns
+
+// ading table columns
         if (Preferences.instance().getProperty("browser.columnIcon").equals("true")) {
             NSTableColumn c = new NSTableColumn();
             c.setIdentifier("TYPE");
@@ -151,31 +151,26 @@ public class CDBrowserTable extends NSTableView {
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             this.addTableColumn(c);
         }
-		
-		(NSNotificationCenter.defaultCenter()).addObserver(this,
-														   new NSSelector("browserTableRowEdited", new Class[]{NSNotification.class}),
-														   NSText.TextDidEndEditingNotification,
-														   this);
-		
+
         this.sizeToFit();
-        // selection properties
+// selection properties
         this.setAllowsMultipleSelection(true);
         this.setAllowsEmptySelection(true);
         this.setAllowsColumnReordering(true);
-	}
-	
-	public void keyDown(NSEvent event) {
-		String chars = event.characters();
-		double timestamp = event.timestamp();
-		CDTableDataSource model = ((CDTableDataSource)this.dataSource());
-		for(int i = 0; i < model.numberOfRowsInTableView(this); i++) {
-			String filename = (String)model.tableViewObjectValueForLocation(this, this.tableColumnWithIdentifier("FILENAME"), i);
-			if(filename.toLowerCase().startsWith(chars)) {
-				this.selectRow(i, false);
-				this.scrollRowToVisible(i);
-				return;
-			}
-		}
-		super.keyDown(event);
-	}
+    }
+
+    public void keyDown(NSEvent event) {
+        String chars = event.characters();
+        double timestamp = event.timestamp();
+        CDTableDataSource model = ((CDTableDataSource) this.dataSource());
+        for (int i = 0; i < model.numberOfRowsInTableView(this); i++) {
+            String filename = (String) model.tableViewObjectValueForLocation(this, this.tableColumnWithIdentifier("FILENAME"), i);
+            if (filename.toLowerCase().startsWith(chars)) {
+                this.selectRow(i, false);
+                this.scrollRowToVisible(i);
+                return;
+            }
+        }
+        super.keyDown(event);
+    }
 }

@@ -26,31 +26,19 @@
  */
 package com.sshtools.j2ssh.transport.cipher;
 
-import com.sshtools.j2ssh.configuration.ConfigurationException;
-import com.sshtools.j2ssh.configuration.ConfigurationLoader;
-import com.sshtools.j2ssh.io.IOUtil;
-import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.InputStream;
-
-import java.net.URL;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Vector;
+import com.sshtools.j2ssh.configuration.ConfigurationLoader;
+import com.sshtools.j2ssh.io.IOUtil;
+import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -71,7 +59,7 @@ public class SshCipherFactory {
 
         try {
             Enumeration enum = ConfigurationLoader.getExtensionClassLoader()
-                                                  .getResources("j2ssh.cipher");
+                    .getResources("j2ssh.cipher");
             URL url;
             Properties properties = new Properties();
             InputStream in;
@@ -87,25 +75,26 @@ public class SshCipherFactory {
                 Class cls;
 
                 while (properties.getProperty("cipher.name." +
-                            String.valueOf(num)) != null) {
+                        String.valueOf(num)) != null) {
                     try {
                         name = properties.getProperty("cipher.name." +
                                 String.valueOf(num));
                         cls = ConfigurationLoader.getExtensionClassLoader()
-                                                 .loadClass(properties.getProperty(
-                                    "cipher.class." + String.valueOf(num)));
+                                .loadClass(properties.getProperty("cipher.class." + String.valueOf(num)));
                         cls.newInstance();
                         ciphers.put(name, cls);
                         log.info("Installed " + name + " cipher");
-                    } catch (Throwable ex) {
+                    }
+                    catch (Throwable ex) {
                         log.info("Could not install cipher class for " + name,
-                            ex);
+                                ex);
                     }
 
                     num++;
                 }
             }
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
         }
 
         // Build a list of the supported ciphers
@@ -125,8 +114,6 @@ public class SshCipherFactory {
     }
 
     /**
-     *
-     *
      * @return
      */
     public static String getDefaultCipher() {
@@ -134,8 +121,6 @@ public class SshCipherFactory {
     }
 
     /**
-     *
-     *
      * @return
      */
     public static List getSupportedCiphers() {
@@ -144,23 +129,20 @@ public class SshCipherFactory {
     }
 
     /**
-     *
-     *
      * @param algorithmName
-     *
      * @return
-     *
      * @throws AlgorithmNotSupportedException
      */
     public static SshCipher newInstance(String algorithmName)
-        throws AlgorithmNotSupportedException {
+            throws AlgorithmNotSupportedException {
         log.info("Creating new " + algorithmName + " cipher instance");
 
         try {
             return (SshCipher) ((Class) ciphers.get(algorithmName)).newInstance();
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             throw new AlgorithmNotSupportedException(algorithmName +
-                " is not supported!");
+                    " is not supported!");
         }
     }
 }

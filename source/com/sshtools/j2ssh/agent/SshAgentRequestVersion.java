@@ -26,12 +26,12 @@
  */
 package com.sshtools.j2ssh.agent;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
-
-import java.io.IOException;
 
 
 class SshAgentRequestVersion extends SubsystemMessage {
@@ -57,8 +57,6 @@ class SshAgentRequestVersion extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getVersion() {
@@ -66,8 +64,6 @@ class SshAgentRequestVersion extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -75,41 +71,39 @@ class SshAgentRequestVersion extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             baw.writeString(version);
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             throw new InvalidMessageException(ex.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     public void constructMessage(ByteArrayReader bar)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             version = bar.readString();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             throw new InvalidMessageException(ex.getMessage());
         }
     }

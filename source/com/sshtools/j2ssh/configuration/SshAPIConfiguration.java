@@ -26,117 +26,85 @@
  */
 package com.sshtools.j2ssh.configuration;
 
-import java.util.*;
+import java.util.List;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface SshAPIConfiguration {
     /**
-     *
-     *
      * @return
      */
     public List getCompressionExtensions();
 
     /**
-     *
-     *
      * @return
      */
     public List getCipherExtensions();
 
     /**
-     *
-     *
      * @return
      */
     public List getMacExtensions();
 
     /**
-     *
-     *
      * @return
      */
     public List getAuthenticationExtensions();
 
     /**
-     *
-     *
      * @return
      */
     public List getPublicKeyExtensions();
 
     /**
-     *
-     *
      * @return
      */
     public List getKeyExchangeExtensions();
 
     /**
-     *
-     *
      * @return
      */
     public String getDefaultCipher();
 
     /**
-     *
-     *
      * @return
      */
     public String getDefaultMac();
 
     /**
-     *
-     *
      * @return
      */
     public String getDefaultCompression();
 
     /**
-     *
-     *
      * @return
      */
     public String getDefaultPublicKey();
 
     /**
-     *
-     *
      * @return
      */
     public String getDefaultKeyExchange();
 
     /**
-     *
-     *
      * @return
      */
     public String getDefaultPublicKeyFormat();
 
     /**
-     *
-     *
      * @return
      */
     public String getDefaultPrivateKeyFormat();
 
     /**
-     *
-     *
      * @return
      */
     public List getPublicKeyFormats();
 
     /**
-     *
-     *
      * @return
      */
     public List getPrivateKeyFormats();

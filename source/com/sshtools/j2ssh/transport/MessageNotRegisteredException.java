@@ -30,43 +30,40 @@ import com.sshtools.j2ssh.SshException;
 
 
 /**
- * <p>
+ * <p/>
  * Thrown by the message store when a message is added which is not registered.
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public class MessageNotRegisteredException extends SshException {
     /**
-     * <p>
+     * <p/>
      * Constructs the exception.
      * </p>
      *
      * @param messageId the id of the message not registered
-     *
      * @since 0.2.0
      */
     public MessageNotRegisteredException(Integer messageId) {
         super("Message Id " + messageId.toString() +
-            " is not currently registered");
+                " is not currently registered");
     }
 
     /**
-     * <p>
+     * <p/>
      * Consructs the exception.
      * </p>
      *
      * @param messageId the id of the message not registered
-     * @param store the message store
-     *
+     * @param store     the message store
      * @since 0.2.0
      */
     public MessageNotRegisteredException(Integer messageId,
-        SshMessageStore store) {
+                                         SshMessageStore store) {
         super("Message Id " + messageId.toString() +
-            " is not registered to the message store specified");
+                " is not registered to the message store specified");
     }
 }

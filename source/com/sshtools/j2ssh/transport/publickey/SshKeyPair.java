@@ -28,8 +28,6 @@ package com.sshtools.j2ssh.transport.publickey;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -44,15 +42,11 @@ public abstract class SshKeyPair {
     }
 
     /**
-     *
-     *
      * @param bits
      */
     public abstract void generate(int bits);
 
     /**
-     *
-     *
      * @param key
      */
     public void setPrivateKey(SshPrivateKey key) {
@@ -61,24 +55,18 @@ public abstract class SshKeyPair {
     }
 
     /**
-     *
-     *
      * @param encoded
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public SshPrivateKey setPrivateKey(byte[] encoded)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         setPrivateKey(decodePrivateKey(encoded));
 
         return this.prv;
     }
 
     /**
-     *
-     *
      * @return
      */
     public SshPrivateKey getPrivateKey() {
@@ -86,16 +74,12 @@ public abstract class SshKeyPair {
     }
 
     /**
-     *
-     *
      * @param encoded
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public SshPublicKey setPublicKey(byte[] encoded)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         this.pub = decodePublicKey(encoded);
         this.prv = null;
 
@@ -103,8 +87,6 @@ public abstract class SshKeyPair {
     }
 
     /**
-     *
-     *
      * @return
      */
     public SshPublicKey getPublicKey() {
@@ -112,26 +94,18 @@ public abstract class SshKeyPair {
     }
 
     /**
-     *
-     *
      * @param encoded
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public abstract SshPrivateKey decodePrivateKey(byte[] encoded)
-        throws InvalidSshKeyException;
+            throws InvalidSshKeyException;
 
     /**
-     *
-     *
      * @param encoded
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public abstract SshPublicKey decodePublicKey(byte[] encoded)
-        throws InvalidSshKeyException;
+            throws InvalidSshKeyException;
 }

@@ -28,44 +28,30 @@ package com.sshtools.j2ssh.transport.publickey;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface SshKeyFormatConversion {
     /**
-     *
-     *
      * @return
      */
     public String getFormatType();
 
     /**
-     *
-     *
      * @param formattedKey
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public byte[] getKeyBlob(byte[] formattedKey) throws InvalidSshKeyException;
 
     /**
-     *
-     *
      * @param keyBlob
-     *
      * @return
      */
     public byte[] formatKey(byte[] keyBlob);
 
     /**
-     *
-     *
      * @param formattedKey
-     *
      * @return
      */
     public boolean isFormatted(byte[] formattedKey);

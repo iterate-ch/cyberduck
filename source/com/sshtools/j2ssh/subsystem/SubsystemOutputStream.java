@@ -26,17 +26,15 @@
  */
 package com.sshtools.j2ssh.subsystem;
 
-import com.sshtools.j2ssh.io.ByteArrayReader;
-import com.sshtools.j2ssh.transport.InvalidMessageException;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import com.sshtools.j2ssh.io.ByteArrayReader;
+import com.sshtools.j2ssh.transport.InvalidMessageException;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -57,12 +55,9 @@ public class SubsystemOutputStream extends OutputStream {
     }
 
     /**
-     *
-     *
      * @param b
      * @param off
      * @param len
-     *
      * @throws IOException
      */
     public void write(byte[] b, int off, int len) throws IOException {
@@ -72,10 +67,7 @@ public class SubsystemOutputStream extends OutputStream {
     }
 
     /**
-     *
-     *
      * @param b
-     *
      * @throws IOException
      */
     public void write(int b) throws IOException {
@@ -93,20 +85,21 @@ public class SubsystemOutputStream extends OutputStream {
 
                 // Process a message
                 System.arraycopy(buffer.toByteArray(), messageStart + 4,
-                    msgdata, 0, messageLength);
+                        msgdata, 0, messageLength);
 
                 try {
                     messageStore.addMessage(msgdata);
-                } catch (InvalidMessageException ime) {
-                    throw new IOException(
-                        "An invalid message was encountered in the outputstream: " +
-                        ime.getMessage());
+                }
+                catch (InvalidMessageException ime) {
+                    throw new IOException("An invalid message was encountered in the outputstream: " +
+                            ime.getMessage());
                 }
 
                 if (messageLength == (buffer.size() - 4)) {
                     buffer.reset();
                     messageStart = 0;
-                } else {
+                }
+                else {
                     messageStart = messageLength + 4;
                 }
             }

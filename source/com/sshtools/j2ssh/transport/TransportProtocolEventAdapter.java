@@ -28,19 +28,19 @@ package com.sshtools.j2ssh.transport;
 
 
 /**
- * <p>
+ * <p/>
  * Title:
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Description:
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Copyright: Copyright (c) 2003
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Company:
  * </p>
  *
@@ -48,7 +48,7 @@ package com.sshtools.j2ssh.transport;
  * @version $Id$
  */
 public class TransportProtocolEventAdapter
-    implements TransportProtocolEventHandler {
+        implements TransportProtocolEventHandler {
     /**
      * Creates a new TransportProtocolEventAdapter object.
      */
@@ -56,24 +56,18 @@ public class TransportProtocolEventAdapter
     }
 
     /**
-     *
-     *
      * @param transport
      */
     public void onSocketTimeout(TransportProtocol transport) {
     }
 
     /**
-     *
-     *
      * @param transport
      */
     public void onDisconnect(TransportProtocol transport) {
     }
 
     /**
-     *
-     *
      * @param transport
      */
     public void onConnected(TransportProtocol transport) {

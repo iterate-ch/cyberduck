@@ -26,21 +26,19 @@
  */
 package com.sshtools.j2ssh.transport;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.math.BigInteger;
+import java.util.Random;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sshtools.j2ssh.configuration.ConfigurationLoader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.cipher.SshCipher;
 import com.sshtools.j2ssh.transport.compression.SshCompression;
 import com.sshtools.j2ssh.transport.hmac.SshHmac;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.IOException;
-import java.io.OutputStream;
-
-import java.math.BigInteger;
-
-import java.util.Random;
 
 
 class TransportProtocolOutputStream {
@@ -62,13 +60,12 @@ class TransportProtocolOutputStream {
      * @param out
      * @param transport
      * @param algorithms
-     *
      * @throws TransportProtocolException
      */
-    public TransportProtocolOutputStream( /*Socket socket,*/
-        OutputStream out, TransportProtocolCommon transport,
-        TransportProtocolAlgorithmSync algorithms)
-        throws TransportProtocolException {
+    public TransportProtocolOutputStream(/*Socket socket,*/
+            OutputStream out, TransportProtocolCommon transport,
+            TransportProtocolAlgorithmSync algorithms)
+            throws TransportProtocolException {
         // try {
         //this.socket = socket;
         this.out = out; //socket.getOutputStream();
@@ -82,8 +79,6 @@ class TransportProtocolOutputStream {
     }
 
     /**
-     *
-     *
      * @return
      */
     protected long getNumBytesTransfered() {
@@ -91,14 +86,11 @@ class TransportProtocolOutputStream {
     }
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws TransportProtocolException
      */
     protected synchronized void sendMessage(SshMessage msg)
-        throws TransportProtocolException {
+            throws TransportProtocolException {
         try {
             // Get the algorithm objects
             algorithms.lock();
@@ -129,7 +121,7 @@ class TransportProtocolOutputStream {
 
             //Determine the padding length
             padding += ((cipherlen -
-            ((msgdata.length + 5 + padding) % cipherlen)) % cipherlen);
+                    ((msgdata.length + 5 + padding) % cipherlen)) % cipherlen);
 
             // Write the packet length field
             message.writeInt(msgdata.length + 1 + padding);
@@ -183,13 +175,15 @@ class TransportProtocolOutputStream {
             // Increment the sequence no
             if (sequenceNo < sequenceWrapLimit) {
                 sequenceNo++;
-            } else {
+            }
+            else {
                 sequenceNo = 0;
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             if (transport.getState().getValue() != TransportProtocolState.DISCONNECTED) {
                 throw new TransportProtocolException("IO Error on socket: " +
-                    ioe.getMessage());
+                        ioe.getMessage());
             }
         }
     }

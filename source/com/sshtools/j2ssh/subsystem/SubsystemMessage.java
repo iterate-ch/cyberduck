@@ -26,16 +26,14 @@
  */
 package com.sshtools.j2ssh.subsystem;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -52,15 +50,11 @@ public abstract class SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public abstract String getMessageName();
 
     /**
-     *
-     *
      * @return
      */
     public int getMessageType() {
@@ -68,32 +62,23 @@ public abstract class SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      * @throws IOException
      */
     public abstract void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException, IOException;
+            throws InvalidMessageException, IOException;
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      * @throws IOException
      */
     public abstract void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException, IOException;
+            throws InvalidMessageException, IOException;
 
     /**
-     *
-     *
      * @param data
-     *
      * @throws InvalidMessageException
      */
     public void fromByteArray(byte[] data) throws InvalidMessageException {
@@ -103,21 +88,18 @@ public abstract class SubsystemMessage {
             if (bar.available() > 0) {
                 type = bar.read();
                 constructMessage(bar);
-            } else {
-                throw new InvalidMessageException(
-                    "Not enough message data to complete the message");
             }
-        } catch (IOException ioe) {
-            throw new InvalidMessageException(
-                "The message data cannot be read!");
+            else {
+                throw new InvalidMessageException("Not enough message data to complete the message");
+            }
+        }
+        catch (IOException ioe) {
+            throw new InvalidMessageException("The message data cannot be read!");
         }
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws InvalidMessageException
      */
     public byte[] toByteArray() throws InvalidMessageException {
@@ -127,9 +109,9 @@ public abstract class SubsystemMessage {
             constructByteArray(baw);
 
             return baw.toByteArray();
-        } catch (IOException ioe) {
-            throw new InvalidMessageException(
-                "The message data cannot be written!");
+        }
+        catch (IOException ioe) {
+            throw new InvalidMessageException("The message data cannot be written!");
         }
     }
 }

@@ -26,57 +26,45 @@
  */
 package com.sshtools.j2ssh.transport.publickey.dsa;
 
-import com.sshtools.j2ssh.configuration.ConfigurationLoader;
-import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
-import com.sshtools.j2ssh.transport.publickey.SshKeyPair;
-import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
-import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
-
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.DSAPrivateKey;
 import java.security.interfaces.DSAPublicKey;
 
+import com.sshtools.j2ssh.configuration.ConfigurationLoader;
+import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
+import com.sshtools.j2ssh.transport.publickey.SshKeyPair;
+import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
+import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public class SshDssKeyPair extends SshKeyPair {
     /**
-     *
-     *
      * @param encoded
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public SshPrivateKey decodePrivateKey(byte[] encoded)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         return new SshDssPrivateKey(encoded);
     }
 
     /**
-     *
-     *
      * @param encoded
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public SshPublicKey decodePublicKey(byte[] encoded)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         return new SshDssPublicKey(encoded);
     }
 
     /**
-     *
-     *
      * @param bits
      */
     public void generate(int bits) {
@@ -93,7 +81,8 @@ public class SshDssKeyPair extends SshKeyPair {
 
             // Set the private key (the public is automatically generated)
             setPrivateKey(new SshDssPrivateKey(prvKey));
-        } catch (NoSuchAlgorithmException nsae) {
+        }
+        catch (NoSuchAlgorithmException nsae) {
         }
     }
 }

@@ -26,31 +26,19 @@
  */
 package com.sshtools.j2ssh.transport.compression;
 
-import com.sshtools.j2ssh.configuration.ConfigurationException;
-import com.sshtools.j2ssh.configuration.ConfigurationLoader;
-import com.sshtools.j2ssh.io.IOUtil;
-import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.InputStream;
-
-import java.net.URL;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Vector;
+import com.sshtools.j2ssh.configuration.ConfigurationLoader;
+import com.sshtools.j2ssh.io.IOUtil;
+import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -72,7 +60,7 @@ public class SshCompressionFactory {
 
         try {
             Enumeration enum = ConfigurationLoader.getExtensionClassLoader()
-                                                  .getResources("j2ssh.compression");
+                    .getResources("j2ssh.compression");
             URL url;
             Properties properties = new Properties();
             InputStream in;
@@ -88,25 +76,26 @@ public class SshCompressionFactory {
                 Class cls;
 
                 while (properties.getProperty("compression.name." +
-                            String.valueOf(num)) != null) {
+                        String.valueOf(num)) != null) {
                     try {
                         name = properties.getProperty("compression.name." +
                                 String.valueOf(num));
                         cls = ConfigurationLoader.getExtensionClassLoader()
-                                                 .loadClass(properties.getProperty(
-                                    "compression.class." + String.valueOf(num)));
+                                .loadClass(properties.getProperty("compression.class." + String.valueOf(num)));
                         cls.newInstance();
                         comps.put(name, cls);
                         log.info("Installed " + name + " compression");
-                    } catch (Throwable ex) {
+                    }
+                    catch (Throwable ex) {
                         log.info("Could not install cipher class for " + name,
-                            ex);
+                                ex);
                     }
 
                     num++;
                 }
             }
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
         }
     }
 
@@ -123,8 +112,6 @@ public class SshCompressionFactory {
     }
 
     /**
-     *
-     *
      * @return
      */
     public static String getDefaultCompression() {
@@ -132,8 +119,6 @@ public class SshCompressionFactory {
     }
 
     /**
-     *
-     *
      * @return
      */
     public static List getSupportedCompression() {
@@ -141,25 +126,23 @@ public class SshCompressionFactory {
     }
 
     /**
-     *
-     *
      * @param algorithmName
-     *
      * @return
-     *
      * @throws AlgorithmNotSupportedException
      */
     public static SshCompression newInstance(String algorithmName)
-        throws AlgorithmNotSupportedException {
+            throws AlgorithmNotSupportedException {
         try {
             if (algorithmName.equals(COMP_NONE)) {
                 return null;
-            } else {
+            }
+            else {
                 return (SshCompression) ((Class) comps.get(algorithmName)).newInstance();
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new AlgorithmNotSupportedException(algorithmName +
-                " is not supported!");
+                    " is not supported!");
         }
     }
 }

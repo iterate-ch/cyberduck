@@ -67,132 +67,134 @@ import org.apache.commons.httpclient.log.LogSource;
 
 /**
  * <p>Utility methods for HTTP authorization and authentication.</p>
- * <p>
+ * <p/>
  * This class provides utility methods for generating
  * responses to HTTP authentication challenges.
  * </p>
+ *
  * @author <a href="mailto:remm@apache.org">Remy Maucherat</a>
  * @author Rodney Waldhoff
  * @version $Revision$ $Date$
  */
 class Authenticator {
 
-	/**
-	 * Add requisite authentication credentials to the given
-	 * {@link HttpMethod}, if possible.
-	 *
-	 * @param method a {@link HttpMethod} which requires authentication
-	 * @param state a {@link HttpState} object providing {@link Credentials}
-	 *
-	 * @throws HttpException when a parsing or other error occurs
-	 * @throws UnsupportedOperationException when the given challenge type is not supported
-	 */
-	static boolean authenticate(HttpMethod method, HttpState state) throws HttpException {
-		log.debug("Authenticator.authenticate(HttpMethod, HttpState)");
-		Header challengeHeader = method.getResponseHeader("WWW-Authenticate");
-		if (null == challengeHeader) {
-			return false;
-		}
-		String challenge = challengeHeader.getValue();
-		if (null == challenge) {
-			return false;
-		}
+    /**
+     * Add requisite authentication credentials to the given
+     * {@link HttpMethod}, if possible.
+     *
+     * @param method a {@link HttpMethod} which requires authentication
+     * @param state  a {@link HttpState} object providing {@link Credentials}
+     * @throws HttpException                 when a parsing or other error occurs
+     * @throws UnsupportedOperationException when the given challenge type is not supported
+     */
+    static boolean authenticate(HttpMethod method, HttpState state) throws HttpException {
+        log.debug("Authenticator.authenticate(HttpMethod, HttpState)");
+        Header challengeHeader = method.getResponseHeader("WWW-Authenticate");
+        if (null == challengeHeader) {
+            return false;
+        }
+        String challenge = challengeHeader.getValue();
+        if (null == challenge) {
+            return false;
+        }
 
-		int space = challenge.indexOf(' ');
-		if (space < 0) {
-			throw new HttpException("Unable to parse authentication challenge \"" + challenge + "\", expected space");
-		}
-		String authScheme = challenge.substring(0, space);
+        int space = challenge.indexOf(' ');
+        if (space < 0) {
+            throw new HttpException("Unable to parse authentication challenge \"" + challenge + "\", expected space");
+        }
+        String authScheme = challenge.substring(0, space);
 
-		if ("basic".equalsIgnoreCase(authScheme)) {
-			// FIXME: Note that this won't work if there
-			//        is more than one realm
-			//        the challenge
-			// FIXME: We could probably make it a bit
-			//        more flexible in parsing as well.
+        if ("basic".equalsIgnoreCase(authScheme)) {
+            // FIXME: Note that this won't work if there
+            //        is more than one realm
+            //        the challenge
+            // FIXME: We could probably make it a bit
+            //        more flexible in parsing as well.
 
-			// parse the realm from the authentication challenge
-			if (challenge.length() < space + 1) {
-				throw new HttpException("Unable to parse authentication challenge \"" + challenge + "\", expected realm");
-			}
-			String realmstr = challenge.substring(space + 1, challenge.length());
-			realmstr.trim();
-			if (realmstr.length() < "realm=\"\"".length()) {
-				throw new HttpException("Unable to parse authentication challenge \"" + challenge + "\", expected realm");
-			}
-			String realm = realmstr.substring("realm=\"".length(), realmstr.length() - 1);
-			log.debug("Parsed realm \"" + realm + "\" from challenge \"" + challenge + "\".");
-			Header header = Authenticator.basic(realm, state);
-			if (null != header) {
-				method.addRequestHeader(header);
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-		else if ("digest".equalsIgnoreCase(authScheme)) {
-			throw new UnsupportedOperationException("Digest authentication is not supported.");
-		}
-		else {
-			throw new UnsupportedOperationException("Authentication type \"" + authScheme + "\" is not recognized.");
-		}
-	}
+            // parse the realm from the authentication challenge
+            if (challenge.length() < space + 1) {
+                throw new HttpException("Unable to parse authentication challenge \"" + challenge + "\", expected realm");
+            }
+            String realmstr = challenge.substring(space + 1, challenge.length());
+            realmstr.trim();
+            if (realmstr.length() < "realm=\"\"".length()) {
+                throw new HttpException("Unable to parse authentication challenge \"" + challenge + "\", expected realm");
+            }
+            String realm = realmstr.substring("realm=\"".length(), realmstr.length() - 1);
+            log.debug("Parsed realm \"" + realm + "\" from challenge \"" + challenge + "\".");
+            Header header = Authenticator.basic(realm, state);
+            if (null != header) {
+                method.addRequestHeader(header);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else if ("digest".equalsIgnoreCase(authScheme)) {
+            throw new UnsupportedOperationException("Digest authentication is not supported.");
+        }
+        else {
+            throw new UnsupportedOperationException("Authentication type \"" + authScheme + "\" is not recognized.");
+        }
+    }
 
-	/**
-	 * Create a Basic <tt>Authorization</tt> header for the given
-	 * <i>realm</i> and <i>state</i> to the given <i>method</i>.
-	 *
-	 * @param method the {@link HttpMethod} to authenticate to
-	 * @param realm the basic realm to authenticate to
-	 * @param state a {@link HttpState} object providing {@link Credentials}
-	 *
-	 * @return a basic <tt>Authorization</tt> value
-	 *
-	 * @throws HttpException when no matching credentials are available
-	 */
-	static Header basic(String realm, HttpState state) throws HttpException {
-		log.debug("Authenticator.basic(String,HttpState)");
-		UsernamePasswordCredentials cred = null;
-		try {
-			cred = (UsernamePasswordCredentials) (state.getCredentials(realm));
-		}
-		catch (ClassCastException e) {
-			throw new HttpException("UsernamePasswordCredentials required for Basic authentication.");
-		}
-		if (null == cred) {
-			if (log.isInfoEnabled()) {
-				log.info("No credentials found for realm \"" + realm + "\", attempting to use default credentials.");
-			}
-			try {
-				cred = (UsernamePasswordCredentials) (state.getCredentials(null));
-			}
-			catch (ClassCastException e) {
-				throw new HttpException("UsernamePasswordCredentials required for Basic authentication.");
-			}
-		}
-		if (null == cred) {
-			throw new HttpException("No credentials available for the Basic authentication realm \"" + realm + "\"/");
-		}
-		else {
-			return new Header("Authorization", Authenticator.basic(cred));
-		}
-	}
+    /**
+     * Create a Basic <tt>Authorization</tt> header for the given
+     * <i>realm</i> and <i>state</i> to the given <i>method</i>.
+     *
+     * @param method the {@link HttpMethod} to authenticate to
+     * @param realm  the basic realm to authenticate to
+     * @param state  a {@link HttpState} object providing {@link Credentials}
+     * @return a basic <tt>Authorization</tt> value
+     * @throws HttpException when no matching credentials are available
+     */
+    static Header basic(String realm, HttpState state) throws HttpException {
+        log.debug("Authenticator.basic(String,HttpState)");
+        UsernamePasswordCredentials cred = null;
+        try {
+            cred = (UsernamePasswordCredentials) (state.getCredentials(realm));
+        }
+        catch (ClassCastException e) {
+            throw new HttpException("UsernamePasswordCredentials required for Basic authentication.");
+        }
+        if (null == cred) {
+            if (log.isInfoEnabled()) {
+                log.info("No credentials found for realm \"" + realm + "\", attempting to use default credentials.");
+            }
+            try {
+                cred = (UsernamePasswordCredentials) (state.getCredentials(null));
+            }
+            catch (ClassCastException e) {
+                throw new HttpException("UsernamePasswordCredentials required for Basic authentication.");
+            }
+        }
+        if (null == cred) {
+            throw new HttpException("No credentials available for the Basic authentication realm \"" + realm + "\"/");
+        }
+        else {
+            return new Header("Authorization", Authenticator.basic(cred));
+        }
+    }
 
-	/**
-	 * Return a Basic <tt>Authorization</tt> header value for the
-	 * given {@link UsernamePasswordCredentials}.
-	 */
-	static String basic(UsernamePasswordCredentials cred) throws HttpException {
-		String authString = cred.getUserName() + ":" + cred.getPassword();
-		return "Basic " + new String(base64.encode(authString.getBytes()));
-	}
+    /**
+     * Return a Basic <tt>Authorization</tt> header value for the
+     * given {@link UsernamePasswordCredentials}.
+     */
+    static String basic(UsernamePasswordCredentials cred) throws HttpException {
+        String authString = cred.getUserName() + ":" + cred.getPassword();
+        return "Basic " + new String(base64.encode(authString.getBytes()));
+    }
 
-	// -------------------------------------------------------- Class Variables
+    // -------------------------------------------------------- Class Variables
 
-	/** <tt>org.apache.commons.httpclient.Authenticator</tt> log. */
-	private static final Log log = LogSource.getInstance("org.apache.commons.httpclient.Authenticator");
+    /**
+     * <tt>org.apache.commons.httpclient.Authenticator</tt> log.
+     */
+    private static final Log log = LogSource.getInstance("org.apache.commons.httpclient.Authenticator");
 
-	/** Base 64 encoder. */
-	private static Base64 base64 = new Base64();
+    /**
+     * Base 64 encoder.
+     */
+    private static Base64 base64 = new Base64();
 }

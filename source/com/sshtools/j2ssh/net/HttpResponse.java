@@ -26,14 +26,13 @@
  */
 package com.sshtools.j2ssh.net;
 
-import java.io.*;
-
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -46,7 +45,6 @@ public class HttpResponse extends HttpHeader {
      * Creates a new HttpResponse object.
      *
      * @param input
-     *
      * @throws IOException
      */
     public HttpResponse(InputStream input) throws IOException {
@@ -61,8 +59,6 @@ public class HttpResponse extends HttpHeader {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getVersion() {
@@ -70,8 +66,6 @@ public class HttpResponse extends HttpHeader {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getStatus() {
@@ -79,8 +73,6 @@ public class HttpResponse extends HttpHeader {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getReason() {
@@ -94,16 +86,16 @@ public class HttpResponse extends HttpHeader {
             version = tokens.nextToken();
             status = Integer.parseInt(tokens.nextToken());
             reason = tokens.nextToken();
-        } catch (NoSuchElementException e) {
+        }
+        catch (NoSuchElementException e) {
             throw new IOException("Failed to read HTTP repsonse header");
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e) {
             throw new IOException("Failed to read HTTP resposne header");
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getAuthenticationMethod() {
@@ -119,8 +111,6 @@ public class HttpResponse extends HttpHeader {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getAuthenticationRealm() {

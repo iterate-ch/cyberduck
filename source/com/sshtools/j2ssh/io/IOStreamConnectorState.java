@@ -30,8 +30,6 @@ import com.sshtools.j2ssh.util.State;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -56,14 +54,11 @@ public class IOStreamConnectorState extends State {
     }
 
     /**
-     *
-     *
      * @param state
-     *
      * @return
      */
     public boolean isValidState(int state) {
         return ((state == BOF) || (state == CONNECTED) || (state == EOF) ||
-        (state == CLOSED));
+                (state == CLOSED));
     }
 }

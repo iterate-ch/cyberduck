@@ -26,16 +26,14 @@
  */
 package com.sshtools.j2ssh.subsystem;
 
-import com.sshtools.j2ssh.io.ByteArrayWriter;
-import com.sshtools.j2ssh.transport.InvalidMessageException;
-
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+import com.sshtools.j2ssh.transport.InvalidMessageException;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -54,8 +52,6 @@ public class SubsystemInputStream extends InputStream {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int available() {
@@ -67,10 +63,7 @@ public class SubsystemInputStream extends InputStream {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public int read() throws IOException {
@@ -94,9 +87,9 @@ public class SubsystemInputStream extends InputStream {
             baw.writeInt(data.length);
             baw.write(data);
             msgdata = baw.toByteArray();
-        } catch (InvalidMessageException ime) {
-            throw new IOException(
-                "An invalid message was encountered in the inputstream");
+        }
+        catch (InvalidMessageException ime) {
+            throw new IOException("An invalid message was encountered in the inputstream");
         }
 
         currentPos = 0;

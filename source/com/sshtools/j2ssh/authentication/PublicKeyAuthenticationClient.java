@@ -26,22 +26,19 @@
  */
 package com.sshtools.j2ssh.authentication;
 
+import java.io.IOException;
+import java.util.Properties;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.SshMessage;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.IOException;
-
-import java.util.Properties;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -60,8 +57,6 @@ public class PublicKeyAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param key
      */
     public void setKey(SshPrivateKey key) {
@@ -85,8 +80,6 @@ public class PublicKeyAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMethodName() {
@@ -94,24 +87,19 @@ public class PublicKeyAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param authentication
      * @param username
      * @param serviceToStart
      * @param key
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean acceptsKey(AuthenticationProtocolClient authentication,
-        String username, String serviceToStart, SshPublicKey key)
-        throws IOException {
+                              String username, String serviceToStart, SshPublicKey key)
+            throws IOException {
         authentication.registerMessage(SshMsgUserAuthPKOK.class,
-            SshMsgUserAuthPKOK.SSH_MSG_USERAUTH_PK_OK);
-        log.info(
-            "Determining if server can accept public key for authentication");
+                SshMsgUserAuthPKOK.SSH_MSG_USERAUTH_PK_OK);
+        log.info("Determining if server can accept public key for authentication");
 
         ByteArrayWriter baw = new ByteArrayWriter();
 
@@ -129,30 +117,28 @@ public class PublicKeyAuthenticationClient extends SshAuthenticationClient {
 
             if (msg instanceof SshMsgUserAuthPKOK) {
                 return true;
-            } else {
-                throw new IOException(
-                    "Unexpected message returned from readMessage");
             }
-        } catch (TerminatedStateException ex) {
+            else {
+                throw new IOException("Unexpected message returned from readMessage");
+            }
+        }
+        catch (TerminatedStateException ex) {
             return false;
         }
     }
 
     /**
-     *
-     *
      * @param authentication
      * @param serviceToStart
-     *
      * @throws IOException
      * @throws TerminatedStateException
      * @throws AuthenticationProtocolException
+     *
      */
     public void authenticate(AuthenticationProtocolClient authentication,
-        String serviceToStart) throws IOException, TerminatedStateException {
+                             String serviceToStart) throws IOException, TerminatedStateException {
         if ((getUsername() == null) || (key == null)) {
-            throw new AuthenticationProtocolException(
-                "You must supply a username and a key");
+            throw new AuthenticationProtocolException("You must supply a username and a key");
         }
 
         ByteArrayWriter baw = new ByteArrayWriter();
@@ -266,8 +252,6 @@ public class PublicKeyAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param properties
      */
     public void setPersistableProperties(Properties properties) {
@@ -283,8 +267,6 @@ public class PublicKeyAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean canAuthenticate() {

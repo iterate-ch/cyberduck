@@ -26,47 +26,60 @@
  */
 package com.sshtools.j2ssh.io;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 /**
- * <p>
+ * <p/>
  * This class provides an alternative method of storing data, used within the
  * API where Piped Streams could have been used. We found that Piped streams
  * would lock if a thread attempted to read to data when the OutputStream attached
-     * was not being read; since we have no control over when the user will actually
+ * was not being read; since we have no control over when the user will actually
  * read the data, this behaviour led us to develop this dynamic buffer which
  * will automatically grow if the buffer is full.
  * </p>
- *  *
+ * *
+ *
  * @author Lee David Painter
  * @version $Revision$
  */
 public class DynamicBuffer {
     private static Log log = LogFactory.getLog(DynamicBuffer.class);
 
-    /** Buffer size when the dynamic buffer is opened */
+    /**
+     * Buffer size when the dynamic buffer is opened
+     */
     protected static final int DEFAULT_BUFFER_SIZE = 32768;
 
-    /** The buffer */
+    /**
+     * The buffer
+     */
     protected byte[] buf;
 
-    /** The current write position */
+    /**
+     * The current write position
+     */
     protected int writepos = 0;
 
-    /** The current read position */
+    /**
+     * The current read position
+     */
     protected int readpos = 0;
 
-    /** This buffers InputStream */
+    /**
+     * This buffers InputStream
+     */
     protected InputStream in;
 
-    /** This buffers OutputStream */
+    /**
+     * This buffers OutputStream
+     */
     protected OutputStream out;
     private boolean closed = false;
     private int interrupt = 5000;
@@ -119,6 +132,7 @@ public class DynamicBuffer {
 
     /**
      * Return the number of bytes of data available to be read from the buffer
+     *
      * @return
      */
     protected synchronized int available() {
@@ -153,7 +167,6 @@ public class DynamicBuffer {
      * Write a byte array to the buffer
      *
      * @param b
-     *
      * @throws IOException
      */
     protected synchronized void write(int b) throws IOException {
@@ -168,16 +181,13 @@ public class DynamicBuffer {
     }
 
     /**
-     *
-     *
      * @param data
      * @param offset
      * @param len
-     *
      * @throws IOException
      */
     protected synchronized void write(byte[] data, int offset, int len)
-        throws IOException {
+            throws IOException {
         if (closed) {
             throw new IOException("The buffer is closed");
         }
@@ -196,16 +206,15 @@ public class DynamicBuffer {
      * Read a byte from the buffer
      *
      * @return
-     *
      * @throws IOException
      * @throws InterruptedIOException
      */
     protected synchronized int read() throws IOException {
         try {
             block();
-        } catch (InterruptedException ex) {
-            throw new InterruptedIOException(
-                "The blocking operation was interrupted");
+        }
+        catch (InterruptedException ex) {
+            throw new InterruptedIOException("The blocking operation was interrupted");
         }
 
         if (closed && (available() <= 0)) {
@@ -221,19 +230,17 @@ public class DynamicBuffer {
      * @param data
      * @param offset
      * @param len
-     *
      * @return
-     *
      * @throws IOException
      * @throws InterruptedIOException
      */
     protected synchronized int read(byte[] data, int offset, int len)
-        throws IOException {
+            throws IOException {
         try {
             block();
-        } catch (InterruptedException ex) {
-            throw new InterruptedIOException(
-                "The blocking operation was interrupted");
+        }
+        catch (InterruptedException ex) {
+            throw new InterruptedIOException("The blocking operation was interrupted");
         }
 
         if (closed && (available() <= 0)) {
@@ -262,7 +269,7 @@ public class DynamicBuffer {
         }
 
         public int read(byte[] data, int offset, int len)
-            throws IOException {
+                throws IOException {
             return DynamicBuffer.this.read(data, offset, len);
         }
 
@@ -281,7 +288,7 @@ public class DynamicBuffer {
         }
 
         public void write(byte[] data, int offset, int len)
-            throws IOException {
+                throws IOException {
             DynamicBuffer.this.write(data, offset, len);
         }
 

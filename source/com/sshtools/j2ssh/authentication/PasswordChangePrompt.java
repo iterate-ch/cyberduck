@@ -28,17 +28,12 @@ package com.sshtools.j2ssh.authentication;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface PasswordChangePrompt {
     /**
-     *
-     *
      * @param prompt
-     *
      * @return
      */
     public String changePassword(String prompt);

@@ -28,20 +28,15 @@ package com.sshtools.j2ssh.connection;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface GlobalRequestHandler {
     /**
-     *
-     *
      * @param requestName
      * @param requestData
-     *
      * @return
      */
     public GlobalRequestResponse processGlobalRequest(String requestName,
-        byte[] requestData);
+                                                      byte[] requestData);
 }

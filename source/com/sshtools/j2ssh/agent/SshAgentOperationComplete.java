@@ -26,11 +26,11 @@
  */
 package com.sshtools.j2ssh.agent;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
-
-import java.io.IOException;
 
 
 class SshAgentOperationComplete extends SubsystemMessage {
@@ -56,8 +56,6 @@ class SshAgentOperationComplete extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getData() {
@@ -65,8 +63,6 @@ class SshAgentOperationComplete extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -74,38 +70,36 @@ class SshAgentOperationComplete extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             baw.writeBinaryString(data);
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructMessage(ByteArrayReader bar)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             data = bar.readBinaryString();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
         }
     }
 }

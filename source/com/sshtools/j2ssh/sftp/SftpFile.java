@@ -30,8 +30,6 @@ import java.io.IOException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -55,7 +53,8 @@ public class SftpFile implements Comparable {
 
         if (i > -1) {
             this.filename = absolutePath.substring(i + 1);
-        } else {
+        }
+        else {
             this.filename = absolutePath;
         }
 
@@ -72,8 +71,6 @@ public class SftpFile implements Comparable {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     public void delete() throws IOException {
@@ -83,16 +80,14 @@ public class SftpFile implements Comparable {
 
         if (isDirectory()) {
             sftp.removeDirectory(getAbsolutePath());
-        } else {
+        }
+        else {
             sftp.removeFile(getAbsolutePath());
         }
     }
 
     /**
-     *
-     *
      * @param newFilename
-     *
      * @throws IOException
      */
     public void rename(String newFilename) throws IOException {
@@ -104,28 +99,22 @@ public class SftpFile implements Comparable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean canWrite() {
         return (getAttributes().getPermissions().longValue() &
-        FileAttributes.S_IWUSR) == FileAttributes.S_IWUSR;
+                FileAttributes.S_IWUSR) == FileAttributes.S_IWUSR;
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean canRead() {
         return (getAttributes().getPermissions().longValue() &
-        FileAttributes.S_IRUSR) == FileAttributes.S_IRUSR;
+                FileAttributes.S_IRUSR) == FileAttributes.S_IRUSR;
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isOpen() {
@@ -137,8 +126,6 @@ public class SftpFile implements Comparable {
     }
 
     /**
-     *
-     *
      * @param handle
      */
     protected void setHandle(byte[] handle) {
@@ -146,8 +133,6 @@ public class SftpFile implements Comparable {
     }
 
     /**
-     *
-     *
      * @return
      */
     protected byte[] getHandle() {
@@ -155,8 +140,6 @@ public class SftpFile implements Comparable {
     }
 
     /**
-     *
-     *
      * @param sftp
      */
     protected void setSFTPSubsystem(SftpSubsystemClient sftp) {
@@ -164,8 +147,6 @@ public class SftpFile implements Comparable {
     }
 
     /**
-     *
-     *
      * @return
      */
     protected SftpSubsystemClient getSFTPSubsystem() {
@@ -173,8 +154,6 @@ public class SftpFile implements Comparable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getFilename() {
@@ -194,26 +173,24 @@ public class SftpFile implements Comparable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getLongname() {
         StringBuffer str = new StringBuffer();
         str.append(pad(10 - getAttributes().getPermissionsString().length()) +
-            getAttributes().getPermissionsString());
+                getAttributes().getPermissionsString());
         str.append("   1 ");
         str.append(getAttributes().getUID().toString() +
-            pad(8 - getAttributes().getUID().toString().length())); //uid
+                pad(8 - getAttributes().getUID().toString().length())); //uid
         str.append(" ");
         str.append(getAttributes().getGID().toString() +
-            pad(8 - getAttributes().getGID().toString().length())); //gid
+                pad(8 - getAttributes().getGID().toString().length())); //gid
         str.append(" ");
         str.append(pad(8 - getAttributes().getSize().toString().length()) +
-            getAttributes().getSize().toString());
+                getAttributes().getSize().toString());
         str.append(" ");
         str.append(pad(12 - getAttributes().getModTimeString().length()) +
-            getAttributes().getModTimeString());
+                getAttributes().getModTimeString());
         str.append(" ");
         str.append(filename);
 
@@ -221,8 +198,6 @@ public class SftpFile implements Comparable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public FileAttributes getAttributes() {
@@ -230,7 +205,8 @@ public class SftpFile implements Comparable {
             if (attrs == null) {
                 attrs = sftp.getAttributes(this);
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             attrs = new FileAttributes();
         }
 
@@ -238,8 +214,6 @@ public class SftpFile implements Comparable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getAbsolutePath() {
@@ -247,8 +221,6 @@ public class SftpFile implements Comparable {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     public void close() throws IOException {
@@ -256,73 +228,59 @@ public class SftpFile implements Comparable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isDirectory() {
         return (getAttributes().getPermissions().intValue() &
-        FileAttributes.S_IFDIR) == FileAttributes.S_IFDIR;
+                FileAttributes.S_IFDIR) == FileAttributes.S_IFDIR;
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isFile() {
         return (getAttributes().getPermissions().intValue() &
-        FileAttributes.S_IFREG) == FileAttributes.S_IFREG;
+                FileAttributes.S_IFREG) == FileAttributes.S_IFREG;
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isLink() {
         return (getAttributes().getPermissions().intValue() &
-        FileAttributes.S_IFLNK) == FileAttributes.S_IFLNK;
+                FileAttributes.S_IFLNK) == FileAttributes.S_IFLNK;
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isFifo() {
         return (getAttributes().getPermissions().intValue() &
-        FileAttributes.S_IFIFO) == FileAttributes.S_IFIFO;
+                FileAttributes.S_IFIFO) == FileAttributes.S_IFIFO;
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isBlock() {
         return (getAttributes().getPermissions().intValue() &
-        FileAttributes.S_IFBLK) == FileAttributes.S_IFBLK;
+                FileAttributes.S_IFBLK) == FileAttributes.S_IFBLK;
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isCharacter() {
         return (getAttributes().getPermissions().intValue() &
-        FileAttributes.S_IFCHR) == FileAttributes.S_IFCHR;
+                FileAttributes.S_IFCHR) == FileAttributes.S_IFCHR;
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isSocket() {
         return (getAttributes().getPermissions().intValue() &
-        FileAttributes.S_IFSOCK) == FileAttributes.S_IFSOCK;
+                FileAttributes.S_IFSOCK) == FileAttributes.S_IFSOCK;
     }
 
     /* (non-Javadoc)

@@ -26,19 +26,16 @@
  */
 package com.sshtools.j2ssh.transport.kex;
 
+import java.io.IOException;
+import java.math.BigInteger;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import java.io.IOException;
-
-import java.math.BigInteger;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -77,8 +74,6 @@ public class SshMsgKexDhReply extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public BigInteger getF() {
@@ -86,8 +81,6 @@ public class SshMsgKexDhReply extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getHostKey() {
@@ -95,8 +88,6 @@ public class SshMsgKexDhReply extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -104,8 +95,6 @@ public class SshMsgKexDhReply extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getSignature() {
@@ -113,40 +102,36 @@ public class SshMsgKexDhReply extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             baw.writeBinaryString(hostKey);
             baw.writeBigInteger(f);
             baw.writeBinaryString(signature);
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Error writing message data: " +
-                ioe.getMessage());
+                    ioe.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             hostKey = bar.readBinaryString();
             f = bar.readBigInteger();
             signature = bar.readBinaryString();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Error reading message data: " +
-                ioe.getMessage());
+                    ioe.getMessage());
         }
     }
 }

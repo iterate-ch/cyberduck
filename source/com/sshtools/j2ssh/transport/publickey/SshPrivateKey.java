@@ -28,8 +28,6 @@ package com.sshtools.j2ssh.transport.publickey;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -41,40 +39,29 @@ public abstract class SshPrivateKey {
     }
 
     /**
-     *
-     *
      * @return
      */
     public abstract String getAlgorithmName();
 
     /**
-     *
-     *
      * @return
      */
     public abstract int getBitLength();
 
     /**
-     *
-     *
      * @return
      */
     public abstract byte[] getEncoded();
 
     /**
-     *
-     *
      * @return
      */
     public abstract SshPublicKey getPublicKey();
 
     /**
-     *
-     *
      * @param data
-     *
      * @return
      */
     public abstract byte[] generateSignature(byte[] data)
-        throws InvalidSshKeySignatureException;
+            throws InvalidSshKeySignatureException;
 }

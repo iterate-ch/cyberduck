@@ -28,22 +28,16 @@ package com.sshtools.j2ssh.session;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface SignalListener {
     /**
-     *
-     *
      * @param signal
      */
     public void onSignal(String signal);
 
     /**
-     *
-     *
      * @param signal
      * @param coredump
      * @param message

@@ -55,10 +55,11 @@ package org.apache.commons.net.ftp.parser;
  */
 
 import java.util.Calendar;
-//import org.apache.commons.net.ftp.FTPFile;
+
+import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
+
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
 
 /**
  * Implementation of FTPFileEntryParser and FTPFileListParser for OS2 Systems.
@@ -68,33 +69,29 @@ import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
  * @version $Id$
  * @see org.apache.commons.net.ftp.FTPFileEntryParser FTPFileEntryParser (for usage instructions)
  */
-public class OS2FTPEntryParser extends FTPFileEntryParserImpl
-
-{
+public class OS2FTPEntryParser extends FTPFileEntryParserImpl {
     /**
      * this is the regular expression used by this parser.
      */
     private static final String REGEX =
-        "(\\s+|[0-9]+)\\s*" 
-        + "(\\s+|[A-Z]+)\\s*" 
-        + "(DIR|\\s+)\\s*" 
-        + "((?:0[1-9])|(?:1[0-2]))-" 
-        + "((?:0[1-9])|(?:[1-2]\\d)|(?:3[0-1]))-" 
-        + "(\\d\\d)\\s*" 
-        + "(?:([0-1]\\d)|(?:2[0-3])):" 
-        + "([0-5]\\d)\\s*" 
-        + "(\\S.*)";
-    
+            "(\\s+|[0-9]+)\\s*"
+            + "(\\s+|[A-Z]+)\\s*"
+            + "(DIR|\\s+)\\s*"
+            + "((?:0[1-9])|(?:1[0-2]))-"
+            + "((?:0[1-9])|(?:[1-2]\\d)|(?:3[0-1]))-"
+            + "(\\d\\d)\\s*"
+            + "(?:([0-1]\\d)|(?:2[0-3])):"
+            + "([0-5]\\d)\\s*"
+            + "(\\S.*)";
+
     /**
      * The sole constructor for a OS2FTPEntryParser object.
-     * 
-     * @exception IllegalArgumentException
-     * Thrown if the regular expression is unparseable.  Should not be seen 
-     * under normal conditions.  It it is seen, this is a sign that 
-     * <code>REGEX</code> is  not a valid regular expression.
+     *
+     * @throws IllegalArgumentException Thrown if the regular expression is unparseable.  Should not be seen
+     *                                  under normal conditions.  It it is seen, this is a sign that
+     *                                  <code>REGEX</code> is  not a valid regular expression.
      */
-    public OS2FTPEntryParser() 
-    {
+    public OS2FTPEntryParser() {
         super(REGEX);
     }
 
@@ -105,16 +102,15 @@ public class OS2FTPEntryParser extends FTPFileEntryParserImpl
      * file listing line doesn't describe a file, <code> null </code> is
      * returned, otherwise a <code> FTPFile </code> instance representing the
      * files in the directory is returned.
-     * <p>
+     * <p/>
+     *
      * @param entry A line of text from the file listing
      * @return An FTPFile instance corresponding to the supplied entry
      */
-    public Path parseFTPEntry(Path parent, String entry)
-    {
-		Path f = PathFactory.createPath(parent.getSession());
+    public Path parseFTPEntry(Path parent, String entry) {
+        Path f = PathFactory.createPath(parent.getSession());
 
-        if (matches(entry))
-        {
+        if (matches(entry)) {
             String size = group(1);
             String attrib = group(2);
             String dirString = group(3);
@@ -126,13 +122,11 @@ public class OS2FTPEntryParser extends FTPFileEntryParserImpl
             String name = group(9);
 
             //is it a DIR or a file
-            if (dirString.trim().equals("DIR") || attrib.trim().equals("DIR"))
-          {
-				f.attributes.setType(Path.DIRECTORY_TYPE);
+            if (dirString.trim().equals("DIR") || attrib.trim().equals("DIR")) {
+                f.attributes.setType(Path.DIRECTORY_TYPE);
             }
-            else
-            {
-				f.attributes.setType(Path.FILE_TYPE);
+            else {
+                f.attributes.setType(Path.FILE_TYPE);
             }
 
             Calendar cal = Calendar.getInstance();
@@ -148,8 +142,7 @@ public class OS2FTPEntryParser extends FTPFileEntryParserImpl
             // Y2K stuff? this will break again in 2080 but I will
             // be sooooo dead anyways who cares.
             // SMC - IS OS2's directory date REALLY still not Y2K-compliant?
-            if (year > 2080) 
-            {
+            if (year > 2080) {
                 year -= 100;
             }
 
@@ -161,7 +154,7 @@ public class OS2FTPEntryParser extends FTPFileEntryParserImpl
             cal.set(Calendar.DATE, day);
             cal.set(Calendar.MONTH, month);
 //            f.setTimestamp(cal);
-			f.attributes.setTimestamp(cal.getTime());
+            f.attributes.setTimestamp(cal.getTime());
 
             //set the name
             f.setPath(parent.getAbsolute(), name.trim());

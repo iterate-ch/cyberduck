@@ -26,15 +26,13 @@
  */
 package com.sshtools.j2ssh.transport;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -75,8 +73,6 @@ public class SshMsgDebug extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean getDisplayAlways() {
@@ -84,8 +80,6 @@ public class SshMsgDebug extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getLanguageTag() {
@@ -93,8 +87,6 @@ public class SshMsgDebug extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessage() {
@@ -102,8 +94,6 @@ public class SshMsgDebug extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -111,42 +101,38 @@ public class SshMsgDebug extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             // Write the data
             baw.write(alwaysDisplay ? 1 : 0);
             baw.writeString(message);
             baw.writeString(langTag);
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Error writing message data: " +
-                ioe.getMessage());
+                    ioe.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             // Extract the message information
             alwaysDisplay = (bar.read() == 0) ? false : true;
             message = bar.readString();
             langTag = bar.readString();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Error reading message data: " +
-                ioe.getMessage());
+                    ioe.getMessage());
         }
     }
 }

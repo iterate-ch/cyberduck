@@ -26,25 +26,22 @@
  */
 package com.sshtools.j2ssh.transport;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
+import java.math.BigInteger;
+import java.net.SocketException;
+import java.util.Iterator;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.cipher.SshCipher;
 import com.sshtools.j2ssh.transport.compression.SshCompression;
 import com.sshtools.j2ssh.transport.hmac.SshHmac;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InterruptedIOException;
-
-import java.math.BigInteger;
-
-import java.net.SocketException;
-
-import java.util.Iterator;
 
 
 class TransportProtocolInputStream {
@@ -80,14 +77,13 @@ class TransportProtocolInputStream {
      * @param transport
      * @param in
      * @param algorithms
-     *
      * @throws IOException
      */
     public TransportProtocolInputStream(TransportProtocolCommon transport,
-        
-    /*Socket socket,*/
-    InputStream in, TransportProtocolAlgorithmSync algorithms)
-        throws IOException {
+
+                                        /*Socket socket,*/
+                                        InputStream in, TransportProtocolAlgorithmSync algorithms)
+            throws IOException {
         this.transport = transport;
 
         this.in = new BufferedInputStream(in); //socket.getInputStream());
@@ -96,8 +92,6 @@ class TransportProtocolInputStream {
     }
 
     /**
-     *
-     *
      * @return
      */
     public synchronized long getSequenceNo() {
@@ -105,8 +99,6 @@ class TransportProtocolInputStream {
     }
 
     /**
-     *
-     *
      * @return
      */
     protected long getNumBytesTransfered() {
@@ -114,8 +106,6 @@ class TransportProtocolInputStream {
     }
 
     /**
-     *
-     *
      * @return
      */
     protected int available() {
@@ -123,18 +113,14 @@ class TransportProtocolInputStream {
     }
 
     /**
-     *
-     *
      * @param buf
      * @param off
      * @param len
-     *
      * @return
-     *
      * @throws IOException
      */
     protected int readBufferedData(byte[] buf, int off, int len)
-        throws IOException {
+            throws IOException {
         int read;
 
         if ((endpos - startpos) < len) {
@@ -146,7 +132,7 @@ class TransportProtocolInputStream {
 
                 // no it does not odds are that the startpos is too high
                 System.arraycopy(buffered, startpos, buffered, 0,
-                    endpos - startpos);
+                        endpos - startpos);
 
                 endpos -= startpos;
 
@@ -169,7 +155,8 @@ class TransportProtocolInputStream {
                     (transport.getState().getValue() != TransportProtocolState.DISCONNECTED)) {
                 try {
                     read = in.read(buffered, endpos, (buffered.length - endpos));
-                } catch (InterruptedIOException ex) {
+                }
+                catch (InterruptedIOException ex) {
                     // We have an interrupted io; inform the event handler
                     read = ex.bytesTransferred;
 
@@ -194,7 +181,8 @@ class TransportProtocolInputStream {
 
         try {
             System.arraycopy(buffered, startpos, buf, off, len);
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             System.out.println();
         }
 
@@ -219,10 +207,7 @@ class TransportProtocolInputStream {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws SocketException
      * @throws IOException
      */
@@ -244,7 +229,8 @@ class TransportProtocolInputStream {
         // we have the correct blocksize
         if (cipher != null) {
             cipherlen = cipher.getBlockSize();
-        } else {
+        }
+        else {
             cipherlen = 8;
         }
 
@@ -269,7 +255,8 @@ class TransportProtocolInputStream {
         // Record the mac length
         if (hmac != null) {
             maclen = hmac.getMacLength();
-        } else {
+        }
+        else {
             maclen = 0;
         }
 
@@ -298,8 +285,8 @@ class TransportProtocolInputStream {
 
             // Decrypt the data and/or write it to the message
             message.write((cipher == null) ? data
-                                           : cipher.transform(data, 0, read),
-                0, read);
+                    : cipher.transform(data, 0, read),
+                    0, read);
         }
 
         synchronized (sequenceLock) {
@@ -317,7 +304,8 @@ class TransportProtocolInputStream {
             // Increment the sequence no
             if (sequenceNo < sequenceWrapLimit) {
                 sequenceNo++;
-            } else {
+            }
+            else {
                 sequenceNo = 0;
             }
         }

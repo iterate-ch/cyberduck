@@ -26,23 +26,21 @@
  */
 package com.sshtools.j2ssh.subsystem;
 
-import com.sshtools.j2ssh.transport.InvalidMessageException;
-import com.sshtools.j2ssh.transport.MessageNotAvailableException;
-import com.sshtools.j2ssh.transport.MessageStoreEOFException;
-import com.sshtools.j2ssh.util.OpenClosedState;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.sshtools.j2ssh.transport.InvalidMessageException;
+import com.sshtools.j2ssh.transport.MessageNotAvailableException;
+import com.sshtools.j2ssh.transport.MessageStoreEOFException;
+import com.sshtools.j2ssh.util.OpenClosedState;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -67,14 +65,12 @@ public class SubsystemMessageStore {
     }
 
     /**
-     *
-     *
      * @param msg
      */
     public synchronized void addMessage(SubsystemMessage msg) {
         if (log.isDebugEnabled()) {
             log.debug("Received " + msg.getMessageName() +
-                " subsystem message");
+                    " subsystem message");
         }
 
         // Add the message
@@ -85,20 +81,17 @@ public class SubsystemMessageStore {
     }
 
     /**
-     *
-     *
      * @param msgdata
-     *
      * @throws InvalidMessageException
      */
     public synchronized void addMessage(byte[] msgdata)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             Class impl = (Class) registeredMessages.get(new Integer(msgdata[0]));
 
             if (impl == null) {
                 throw new InvalidMessageException("The message with id " +
-                    String.valueOf(msgdata[0]) + " is not implemented");
+                        String.valueOf(msgdata[0]) + " is not implemented");
             }
 
             SubsystemMessage msg = (SubsystemMessage) impl.newInstance();
@@ -106,41 +99,37 @@ public class SubsystemMessageStore {
             addMessage(msg);
 
             return;
-        } catch (IllegalAccessException iae) {
-        } catch (InstantiationException ie) {
+        }
+        catch (IllegalAccessException iae) {
+        }
+        catch (InstantiationException ie) {
         }
 
         throw new InvalidMessageException("Could not instantiate message class");
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws MessageStoreEOFException
      */
     public synchronized SubsystemMessage nextMessage()
-        throws MessageStoreEOFException {
+            throws MessageStoreEOFException {
         try {
             return nextMessage(0);
-        } catch (MessageNotAvailableException mnae) {
+        }
+        catch (MessageNotAvailableException mnae) {
             return null;
         }
     }
 
     /**
-     *
-     *
      * @param timeout
-     *
      * @return
-     *
      * @throws MessageStoreEOFException
      * @throws MessageNotAvailableException
      */
     public synchronized SubsystemMessage nextMessage(int timeout)
-        throws MessageStoreEOFException, MessageNotAvailableException {
+            throws MessageStoreEOFException, MessageNotAvailableException {
         // If there are no messages available then wait untill there are.
         timeout = (timeout > 0) ? timeout : 0;
 
@@ -151,7 +140,8 @@ public class SubsystemMessageStore {
                 if (timeout > 0) {
                     break;
                 }
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e) {
             }
         }
 
@@ -161,14 +151,13 @@ public class SubsystemMessageStore {
 
         if (messages.size() > 0) {
             return (SubsystemMessage) messages.remove(0);
-        } else {
+        }
+        else {
             throw new MessageNotAvailableException();
         }
     }
 
     /**
-     *
-     *
      * @param messageId
      * @param implementor
      */
@@ -177,8 +166,6 @@ public class SubsystemMessageStore {
     }
 
     /**
-     *
-     *
      * @return
      */
     public OpenClosedState getState() {

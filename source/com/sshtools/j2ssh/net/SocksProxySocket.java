@@ -29,7 +29,6 @@ package com.sshtools.j2ssh.net;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -37,8 +36,6 @@ import java.net.UnknownHostException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -68,8 +65,8 @@ public class SocksProxySocket extends Socket implements TransportProvider {
     private String providerDetail;
 
     private SocksProxySocket(String remoteHost, int remotePort,
-        String proxyHost, int proxyPort)
-        throws IOException, UnknownHostException {
+                             String proxyHost, int proxyPort)
+            throws IOException, UnknownHostException {
         super(proxyHost, proxyPort);
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
@@ -78,23 +75,19 @@ public class SocksProxySocket extends Socket implements TransportProvider {
     }
 
     /**
-     *
-     *
      * @param remoteHost
      * @param remotePort
      * @param proxyHost
      * @param proxyPort
      * @param userId
-     *
      * @return
-     *
      * @throws IOException
      * @throws UnknownHostException
      * @throws SocketException
      */
     public static SocksProxySocket connectViaSocks4Proxy(String remoteHost,
-        int remotePort, String proxyHost, int proxyPort, String userId)
-        throws IOException, UnknownHostException {
+                                                         int remotePort, String proxyHost, int proxyPort, String userId)
+            throws IOException, UnknownHostException {
         SocksProxySocket proxySocket = new SocksProxySocket(remoteHost,
                 remotePort, proxyHost, proxyPort);
 
@@ -115,47 +108,44 @@ public class SocksProxySocket extends Socket implements TransportProvider {
 
             if (res == -1) {
                 throw new IOException("SOCKS4 server " + proxyHost + ":" +
-                    proxyPort + " disconnected");
+                        proxyPort + " disconnected");
             }
 
             if (res != 0x00) {
                 throw new IOException("Invalid response from SOCKS4 server (" +
-                    res + ") " + proxyHost + ":" + proxyPort);
+                        res + ") " + proxyHost + ":" + proxyPort);
             }
 
             int code = proxyIn.read();
 
             if (code != 90) {
                 if ((code > 90) && (code < 93)) {
-                    throw new IOException(
-                        "SOCKS4 server unable to connect, reason: " +
-                        SOCKSV4_ERROR[code - 91]);
-                } else {
-                    throw new IOException(
-                        "SOCKS4 server unable to connect, reason: " + code);
+                    throw new IOException("SOCKS4 server unable to connect, reason: " +
+                            SOCKSV4_ERROR[code - 91]);
+                }
+                else {
+                    throw new IOException("SOCKS4 server unable to connect, reason: " + code);
                 }
             }
 
             byte[] data = new byte[6];
 
             if (proxyIn.read(data, 0, 6) != 6) {
-                throw new IOException(
-                    "SOCKS4 error reading destination address/port");
+                throw new IOException("SOCKS4 error reading destination address/port");
             }
 
             proxySocket.providerDetail = data[2] + "." + data[3] + "." +
-                data[4] + "." + data[5] + ":" + ((data[0] << 8) | data[1]);
-        } catch (SocketException e) {
+                    data[4] + "." + data[5] + ":" + ((data[0] << 8) | data[1]);
+        }
+        catch (SocketException e) {
             throw new SocketException("Error communicating with SOCKS4 server " +
-                proxyHost + ":" + proxyPort + ", " + e.getMessage());
+                    proxyHost + ":" + proxyPort + ", " + e.getMessage());
         }
 
         return proxySocket;
     }
 
     /**
-     *
-     *
      * @param remoteHost
      * @param remotePort
      * @param proxyHost
@@ -163,17 +153,15 @@ public class SocksProxySocket extends Socket implements TransportProvider {
      * @param localLookup
      * @param username
      * @param password
-     *
      * @return
-     *
      * @throws IOException
      * @throws UnknownHostException
      * @throws SocketException
      */
     public static SocksProxySocket connectViaSocks5Proxy(String remoteHost,
-        int remotePort, String proxyHost, int proxyPort, boolean localLookup,
-        String username, String password)
-        throws IOException, UnknownHostException {
+                                                         int remotePort, String proxyHost, int proxyPort, boolean localLookup,
+                                                         String username, String password)
+            throws IOException, UnknownHostException {
         SocksProxySocket proxySocket = new SocksProxySocket(remoteHost,
                 remotePort, proxyHost, proxyPort);
 
@@ -191,29 +179,28 @@ public class SocksProxySocket extends Socket implements TransportProvider {
 
             if (res == -1) {
                 throw new IOException("SOCKS5 server " + proxyHost + ":" +
-                    proxyPort + " disconnected");
+                        proxyPort + " disconnected");
             }
 
             if (res != 0x05) {
                 throw new IOException("Invalid response from SOCKS5 server (" +
-                    res + ") " + proxyHost + ":" + proxyPort);
+                        res + ") " + proxyHost + ":" + proxyPort);
             }
 
             int method = proxyIn.read();
 
             switch (method) {
-            case 0x00:
-                break;
+                case 0x00:
+                    break;
 
-            case 0x02:
-                performAuthentication(proxyIn, proxyOut, username, password,
-                    proxyHost, proxyPort);
+                case 0x02:
+                    performAuthentication(proxyIn, proxyOut, username, password,
+                            proxyHost, proxyPort);
 
-                break;
+                    break;
 
-            default:
-                throw new IOException(
-                    "SOCKS5 server does not support our authentication methods");
+                default:
+                    throw new IOException("SOCKS5 server does not support our authentication methods");
             }
 
             if (localLookup) {
@@ -221,20 +208,22 @@ public class SocksProxySocket extends Socket implements TransportProvider {
 
                 try {
                     hostAddr = InetAddress.getByName(remoteHost);
-                } catch (UnknownHostException e) {
+                }
+                catch (UnknownHostException e) {
                     throw new IOException("Can't do local lookup on: " +
-                        remoteHost + ", try socks5 without local lookup");
+                            remoteHost + ", try socks5 without local lookup");
                 }
 
-                request = new byte[] {
-                        (byte) SOCKS5, (byte) 0x01, (byte) 0x00, (byte) 0x01
-                    };
+                request = new byte[]{
+                    (byte) SOCKS5, (byte) 0x01, (byte) 0x00, (byte) 0x01
+                };
                 proxyOut.write(request);
                 proxyOut.write(hostAddr.getAddress());
-            } else {
-                request = new byte[] {
-                        (byte) SOCKS5, (byte) 0x01, (byte) 0x00, (byte) 0x03
-                    };
+            }
+            else {
+                request = new byte[]{
+                    (byte) SOCKS5, (byte) 0x01, (byte) 0x00, (byte) 0x03
+                };
                 proxyOut.write(request);
                 proxyOut.write(remoteHost.length());
                 proxyOut.write(remoteHost.getBytes());
@@ -247,19 +236,18 @@ public class SocksProxySocket extends Socket implements TransportProvider {
 
             if (res != 0x05) {
                 throw new IOException("Invalid response from SOCKS5 server (" +
-                    res + ") " + proxyHost + ":" + proxyPort);
+                        res + ") " + proxyHost + ":" + proxyPort);
             }
 
             int status = proxyIn.read();
 
             if (status != 0x00) {
                 if ((status > 0) && (status < 9)) {
-                    throw new IOException(
-                        "SOCKS5 server unable to connect, reason: " +
-                        SOCKSV5_ERROR[status]);
-                } else {
-                    throw new IOException(
-                        "SOCKS5 server unable to connect, reason: " + status);
+                    throw new IOException("SOCKS5 server unable to connect, reason: " +
+                            SOCKSV5_ERROR[status]);
+                }
+                else {
+                    throw new IOException("SOCKS5 server unable to connect, reason: " + status);
                 }
             }
 
@@ -269,32 +257,32 @@ public class SocksProxySocket extends Socket implements TransportProvider {
             byte[] data = new byte[255];
 
             switch (aType) {
-            case 0x01:
+                case 0x01:
 
-                if (proxyIn.read(data, 0, 4) != 4) {
-                    throw new IOException("SOCKS5 error reading address");
-                }
+                    if (proxyIn.read(data, 0, 4) != 4) {
+                        throw new IOException("SOCKS5 error reading address");
+                    }
 
-                proxySocket.providerDetail = data[0] + "." + data[1] + "." +
-                    data[2] + "." + data[3];
+                    proxySocket.providerDetail = data[0] + "." + data[1] + "." +
+                            data[2] + "." + data[3];
 
-                break;
+                    break;
 
-            case 0x03:
+                case 0x03:
 
-                int n = proxyIn.read();
+                    int n = proxyIn.read();
 
-                if (proxyIn.read(data, 0, n) != n) {
-                    throw new IOException("SOCKS5 error reading address");
-                }
+                    if (proxyIn.read(data, 0, n) != n) {
+                        throw new IOException("SOCKS5 error reading address");
+                    }
 
-                proxySocket.providerDetail = new String(data);
+                    proxySocket.providerDetail = new String(data);
 
-                break;
+                    break;
 
-            default:
-                throw new IOException("SOCKS5 gave unsupported address type: " +
-                    aType);
+                default:
+                    throw new IOException("SOCKS5 gave unsupported address type: " +
+                            aType);
             }
 
             if (proxyIn.read(data, 0, 2) != 2) {
@@ -302,17 +290,16 @@ public class SocksProxySocket extends Socket implements TransportProvider {
             }
 
             proxySocket.providerDetail += (":" + ((data[0] << 8) | data[1]));
-        } catch (SocketException e) {
+        }
+        catch (SocketException e) {
             throw new SocketException("Error communicating with SOCKS5 server " +
-                proxyHost + ":" + proxyPort + ", " + e.getMessage());
+                    proxyHost + ":" + proxyPort + ", " + e.getMessage());
         }
 
         return proxySocket;
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getProviderDetail() {
@@ -320,8 +307,8 @@ public class SocksProxySocket extends Socket implements TransportProvider {
     }
 
     private static void performAuthentication(InputStream proxyIn,
-        OutputStream proxyOut, String username, String password,
-        String proxyHost, int proxyPort) throws IOException {
+                                              OutputStream proxyOut, String username, String password,
+                                              String proxyHost, int proxyPort) throws IOException {
         proxyOut.write(0x01);
         proxyOut.write(username.length());
         proxyOut.write(username.getBytes());
@@ -332,7 +319,7 @@ public class SocksProxySocket extends Socket implements TransportProvider {
 
         if ((res != 0x01) && (res != 0x05)) {
             throw new IOException("Invalid response from SOCKS5 server (" +
-                res + ") " + proxyHost + ":" + proxyPort);
+                    res + ") " + proxyHost + ":" + proxyPort);
         }
 
         if (proxyIn.read() != 0x00) {
@@ -341,35 +328,29 @@ public class SocksProxySocket extends Socket implements TransportProvider {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String toString() {
         return "SocksProxySocket[addr=" + getInetAddress() + ",port=" +
-        getPort() + ",localport=" + getLocalPort() + "]";
+                getPort() + ",localport=" + getLocalPort() + "]";
     }
 
     /**
-     *
-     *
      * @param remoteHost
      * @param remotePort
      * @param proxyHost
      * @param proxyPort
      * @param username
      * @param password
-     *
      * @return
-     *
      * @throws IOException
      * @throws UnknownHostException
      */
     public static SocksProxySocket connectViaSocks5Proxy(String remoteHost,
-        int remotePort, String proxyHost, int proxyPort, String username,
-        String password) throws IOException, UnknownHostException {
+                                                         int remotePort, String proxyHost, int proxyPort, String username,
+                                                         String password) throws IOException, UnknownHostException {
         return connectViaSocks5Proxy(remoteHost, remotePort, proxyHost,
-            proxyPort, false, username, password);
+                proxyPort, false, username, password);
     }
 
     /*public boolean isConnected() {

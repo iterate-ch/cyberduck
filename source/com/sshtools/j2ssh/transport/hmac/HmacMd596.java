@@ -28,8 +28,6 @@ package com.sshtools.j2ssh.transport.hmac;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -41,8 +39,6 @@ public class HmacMd596 extends HmacMd5 {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getMacLength() {
@@ -50,13 +46,10 @@ public class HmacMd596 extends HmacMd5 {
     }
 
     /**
-     *
-     *
      * @param sequenceNo
      * @param data
      * @param offset
      * @param len
-     *
      * @return
      */
     public byte[] generate(long sequenceNo, byte[] data, int offset, int len) {

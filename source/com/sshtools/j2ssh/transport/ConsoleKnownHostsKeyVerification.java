@@ -26,35 +26,33 @@
  */
 package com.sshtools.j2ssh.transport;
 
-import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
+
 
 /**
- * <p>
+ * <p/>
  * Implements the <code>AbstractKnownHostsKeyVerification</code> to provide
  * host key verification through the console.
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public class ConsoleKnownHostsKeyVerification
-    extends AbstractKnownHostsKeyVerification {
+        extends AbstractKnownHostsKeyVerification {
     /**
-     * <p>
+     * <p/>
      * Constructs the verification instance with the default known_hosts file
      * from $HOME/.ssh/known_hosts.
      * </p>
      *
      * @throws InvalidHostFileException if the known_hosts file is invalid.
-     *
      * @since 0.2.0
      */
     public ConsoleKnownHostsKeyVerification() throws InvalidHostFileException {
@@ -63,73 +61,70 @@ public class ConsoleKnownHostsKeyVerification
     }
 
     /**
-     * <p>
+     * <p/>
      * Constructs the verification instance with the specified known_hosts
      * file.
      * </p>
      *
      * @param knownhosts the path to the known_hosts file
-     *
      * @throws InvalidHostFileException if the known_hosts file is invalid.
-     *
      * @since 0.2.0
      */
     public ConsoleKnownHostsKeyVerification(String knownhosts)
-        throws InvalidHostFileException {
+            throws InvalidHostFileException {
         super(knownhosts);
     }
 
     /**
-     * <p>
+     * <p/>
      * Prompts the user through the console to verify the host key.
      * </p>
      *
-     * @param host the name of the host
-     * @param pk the current public key of the host
+     * @param host   the name of the host
+     * @param pk     the current public key of the host
      * @param actual the actual public key supplied by the host
-     *
      * @since 0.2.0
      */
     public void onHostKeyMismatch(String host, SshPublicKey pk,
-        SshPublicKey actual) {
+                                  SshPublicKey actual) {
         try {
             System.out.println("The host key supplied by " + host + " is: " +
-                actual.getFingerprint());
+                    actual.getFingerprint());
             System.out.println("The current allowed key for " + host + " is: " +
-                pk.getFingerprint());
+                    pk.getFingerprint());
             getResponse(host, pk);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * <p>
+     * <p/>
      * Prompts the user through the console to verify the host key.
      * </p>
      *
      * @param host the name of the host
-     * @param pk the public key supplied by the host
-     *
+     * @param pk   the public key supplied by the host
      * @since 0.2.0
      */
     public void onUnknownHost(String host, SshPublicKey pk) {
         try {
             System.out.println("The host " + host +
-                " is currently unknown to the system");
+                    " is currently unknown to the system");
             System.out.println("The host key fingerprint is: " +
-                pk.getFingerprint());
+                    pk.getFingerprint());
             getResponse(host, pk);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void getResponse(String host, SshPublicKey pk)
-        throws InvalidHostFileException, IOException {
+            throws InvalidHostFileException, IOException {
         String response = "";
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    System.in));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
         while (!(response.equalsIgnoreCase("YES") ||
                 response.equalsIgnoreCase("NO") ||
@@ -137,12 +132,11 @@ public class ConsoleKnownHostsKeyVerification
             String options = (isHostFileWriteable() ? "Yes|No|Always" : "Yes|No");
 
             if (!isHostFileWriteable()) {
-                System.out.println(
-                    "Always option disabled, host file is not writeable");
+                System.out.println("Always option disabled, host file is not writeable");
             }
 
             System.out.print("Do you want to allow this host key? [" + options +
-                "]: ");
+                    "]: ");
             response = reader.readLine();
         }
 

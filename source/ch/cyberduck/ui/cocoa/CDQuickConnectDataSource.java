@@ -19,10 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.NSComboBox;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
-
-import ch.cyberduck.core.Host;
 
 /**
  * @version $Id$
@@ -35,37 +31,37 @@ public class CDQuickConnectDataSource { //implements NSComboBox.DataSource, NSTa
 
     public int numberOfItemsInComboBox(NSComboBox combo) {
 //        return CDHistoryImpl.instance().size();
-		return CDBookmarksImpl.instance().size();
+        return CDBookmarksImpl.instance().size();
     }
 
     public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
 //        Host h = (Host) CDHistoryImpl.instance().values().toArray()[row];
 //        return h.getHostname();
-		return CDBookmarksImpl.instance().getItem(row).getHostname();
+        return CDBookmarksImpl.instance().getItem(row).getHostname();
     }
 
     // ----------------------------------------------------------
     // NSTableView.DataSource
     // ----------------------------------------------------------
 
-	/*
-    public int numberOfRowsInTableView(NSTableView tableView) {
+    /*
+public int numberOfRowsInTableView(NSTableView tableView) {
 //        return CDHistoryImpl.instance().values().size();
-		return CDBookmarksImpl.instance().size();
-    }
+        return CDBookmarksImpl.instance().size();
+}
 
-    //getValue()
-    public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-        if (row < this.numberOfRowsInTableView(tableView)) {
-            String identifier = (String) tableColumn.identifier();
-            if (identifier.equals("URL")) {
-                Host h = (Host) CDBookmarksImpl.instance().getItem(row);
+//getValue()
+public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
+if (row < this.numberOfRowsInTableView(tableView)) {
+String identifier = (String) tableColumn.identifier();
+if (identifier.equals("URL")) {
+Host h = (Host) CDBookmarksImpl.instance().getItem(row);
 //                Host h = (Host) CDHistoryImpl.instance().getItem(row);
-                return h.getHostname();
-            }
-            throw new IllegalArgumentException("Unknown identifier: " + identifier);
-        }
-        return null;
-    }
-	 */
+return h.getHostname();
+}
+throw new IllegalArgumentException("Unknown identifier: " + identifier);
+}
+return null;
+}
+     */
 }

@@ -26,13 +26,18 @@
  */
 package com.sshtools.j2ssh.subsystem;
 
-import com.sshtools.j2ssh.connection.*;
-import com.sshtools.j2ssh.io.*;
-import com.sshtools.j2ssh.transport.*;
+import java.io.IOException;
 
-import org.apache.commons.logging.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import java.io.*;
+import com.sshtools.j2ssh.connection.Channel;
+import com.sshtools.j2ssh.connection.SshMsgChannelData;
+import com.sshtools.j2ssh.connection.SshMsgChannelExtendedData;
+import com.sshtools.j2ssh.io.ByteArrayReader;
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+import com.sshtools.j2ssh.io.DynamicBuffer;
+import com.sshtools.j2ssh.transport.InvalidMessageException;
 
 
 public abstract class SubsystemChannel extends Channel {
@@ -58,28 +63,29 @@ public abstract class SubsystemChannel extends Channel {
     }
 
     protected void sendMessage(SubsystemMessage msg) throws InvalidMessageException, IOException {
-		//@todo write to log
-		if (log.isDebugEnabled()) {
-			log.debug("Sending " + msg.getMessageName() + " subsystem message");
-		}
-		
-		byte[] msgdata = msg.toByteArray();
-		
-		// Write the message length
-		sendChannelData(ByteArrayWriter.encodeInt(msgdata.length));
-		
-		// Write the message data
-		sendChannelData(msgdata);
-	}
-	
+        //@todo write to log
+        if (log.isDebugEnabled()) {
+            log.debug("Sending " + msg.getMessageName() + " subsystem message");
+        }
+
+        byte[] msgdata = msg.toByteArray();
+
+        // Write the message length
+        sendChannelData(ByteArrayWriter.encodeInt(msgdata.length));
+
+        // Write the message data
+        sendChannelData(msgdata);
+    }
+
     protected void onChannelRequest(String requestType, boolean wantReply,
-        byte[] requestData) throws java.io.IOException {
+                                    byte[] requestData) throws java.io.IOException {
         log.debug("Channel Request received: " + requestType);
 
         if (requestType.equals("exit-status")) {
             exitCode = new Integer((int) ByteArrayReader.readInt(requestData, 0));
             log.debug("Exit code of " + exitCode.toString() + " received");
-        } else if (requestType.equals("exit-signal")) {
+        }
+        else if (requestType.equals("exit-signal")) {
             ByteArrayReader bar = new ByteArrayReader(requestData);
             String signal = bar.readString();
             boolean coredump = bar.read() != 0;
@@ -92,18 +98,21 @@ public abstract class SubsystemChannel extends Channel {
             /*if (signalListener != null) {
               signalListener.onExitSignal(signal, coredump, message);
                        }*/
-        } else if (requestType.equals("xon-xoff")) {
+        }
+        else if (requestType.equals("xon-xoff")) {
             /*if (requestData.length >= 1) {
               localFlowControl = (requestData[0] != 0);
                        }*/
-        } else if (requestType.equals("signal")) {
+        }
+        else if (requestType.equals("signal")) {
             String signal = ByteArrayReader.readString(requestData, 0);
             log.debug("Signal " + signal + " received");
 
             /*if (signalListener != null) {
               signalListener.onSignal(signal);
                        }*/
-        } else {
+        }
+        else {
             if (wantReply) {
                 connection.sendChannelRequestFailure(this);
             }
@@ -111,11 +120,11 @@ public abstract class SubsystemChannel extends Channel {
     }
 
     protected void onChannelExtData(SshMsgChannelExtendedData msg)
-        throws java.io.IOException {
+            throws java.io.IOException {
     }
 
     protected void onChannelData(SshMsgChannelData msg)
-        throws java.io.IOException {
+            throws java.io.IOException {
         // Write the data to a temporary buffer that may also contain data
         // that has not been processed
         buffer.getOutputStream().write(msg.getChannelData());
@@ -141,7 +150,8 @@ public abstract class SubsystemChannel extends Channel {
                 buffer.getInputStream().read(msgdata);
                 messageStore.addMessage(msgdata);
                 nextMessageLength = -1;
-            } else {
+            }
+            else {
                 break;
             }
         }
@@ -167,7 +177,7 @@ public abstract class SubsystemChannel extends Channel {
         baw.writeString(name);
 
         return connection.sendChannelRequest(this, "subsystem", true,
-            baw.toByteArray());
+                baw.toByteArray());
     }
 
     public byte[] getChannelConfirmationData() {

@@ -26,17 +26,15 @@
  */
 package com.sshtools.j2ssh.authentication;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -63,7 +61,7 @@ public class SshMsgUserAuthInfoRequest extends SshMessage {
      * @param langtag
      */
     public SshMsgUserAuthInfoRequest(String name, String instruction,
-        String langtag) {
+                                     String langtag) {
         super(SSH_MSG_USERAUTH_INFO_REQUEST);
         this.name = name;
         this.instruction = instruction;
@@ -71,8 +69,6 @@ public class SshMsgUserAuthInfoRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param prompt
      * @param echo
      */
@@ -80,7 +76,8 @@ public class SshMsgUserAuthInfoRequest extends SshMessage {
         if (prompts == null) {
             prompts = new KBIPrompt[1];
             prompts[0] = new KBIPrompt(prompt, echo);
-        } else {
+        }
+        else {
             KBIPrompt[] temp = new KBIPrompt[prompts.length + 1];
             System.arraycopy(prompts, 0, temp, 0, prompts.length);
             prompts = temp;
@@ -89,8 +86,6 @@ public class SshMsgUserAuthInfoRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public KBIPrompt[] getPrompts() {
@@ -98,8 +93,6 @@ public class SshMsgUserAuthInfoRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getName() {
@@ -107,8 +100,6 @@ public class SshMsgUserAuthInfoRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getInstruction() {
@@ -116,8 +107,6 @@ public class SshMsgUserAuthInfoRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getLanguageTag() {
@@ -125,8 +114,6 @@ public class SshMsgUserAuthInfoRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -134,38 +121,40 @@ public class SshMsgUserAuthInfoRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws com.sshtools.j2ssh.transport.InvalidMessageException {
+            throws com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             if (name != null) {
                 baw.writeString(name);
-            } else {
+            }
+            else {
                 baw.writeString("");
             }
 
             if (instruction != null) {
                 baw.writeString(instruction);
-            } else {
+            }
+            else {
                 baw.writeString("");
             }
 
             if (langtag != null) {
                 baw.writeString(langtag);
-            } else {
+            }
+            else {
                 baw.writeString("");
             }
 
             if (prompts == null) {
                 baw.writeInt(0);
-            } else {
+            }
+            else {
                 baw.writeInt(prompts.length);
 
                 for (int i = 0; i < prompts.length; i++) {
@@ -173,22 +162,21 @@ public class SshMsgUserAuthInfoRequest extends SshMessage {
                     baw.write(prompts[i].echo() ? 1 : 0);
                 }
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Failed to write message data");
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws com.sshtools.j2ssh.transport.InvalidMessageException {
+            throws com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             name = bar.readString();
             instruction = bar.readString();
@@ -203,7 +191,8 @@ public class SshMsgUserAuthInfoRequest extends SshMessage {
                 echo = (bar.read() == 1);
                 addPrompt(prompt, echo);
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Failed to read message data");
         }
     }

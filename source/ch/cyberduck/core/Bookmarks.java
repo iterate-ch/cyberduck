@@ -28,74 +28,76 @@ import org.apache.log4j.Logger;
 /**
  * Keeps track of user bookmarks
  * The hosts are stored in a hashmap where host.getURL() is the key
- * @see ch.cyberduck.core.Host
+ *
  * @version $Id$
+ * @see ch.cyberduck.core.Host
  */
 public abstract class Bookmarks {
-	private static Logger log = Logger.getLogger(Bookmarks.class);
+    private static Logger log = Logger.getLogger(Bookmarks.class);
 
-	protected List data = new ArrayList();
+    protected List data = new ArrayList();
 
-	public Bookmarks() {
-		this.load();
-	}
+    public Bookmarks() {
+        this.load();
+    }
 
-	public abstract void save();
+    public abstract void save();
 
-	public abstract void load();
+    public abstract void load();
 
-	public abstract Host importBookmark(java.io.File file);
+    public abstract Host importBookmark(java.io.File file);
 
-	public abstract void exportBookmark(Host bookmark, java.io.File file);
+    public abstract void exportBookmark(Host bookmark, java.io.File file);
 
-	// ----------------------------------------------------------
-	//	Data Manipulation
-	// ----------------------------------------------------------
+    // ----------------------------------------------------------
+    //	Data Manipulation
+    // ----------------------------------------------------------
 
-	public void addItem(Host item) {
-		this.data.add(item);
-		this.save();
-	}
+    public void addItem(Host item) {
+        this.data.add(item);
+        this.save();
+    }
 
-	public void addItem(Host item, int row) {
-		this.data.add(row, item);
-		this.save();
-	}
+    public void addItem(Host item, int row) {
+        this.data.add(row, item);
+        this.save();
+    }
 
-	public void removeItem(int index) {
-		this.data.remove(index);
-		this.save();
-	}
+    public void removeItem(int index) {
+        this.data.remove(index);
+        this.save();
+    }
 
-	public void removeItem(Host item) {
-		this.removeItem(this.data.lastIndexOf(item));
-	}
+    public void removeItem(Host item) {
+        this.removeItem(this.data.lastIndexOf(item));
+    }
 
-	public Host getItem(int index) {
+    public Host getItem(int index) {
 //		log.debug("getItem:"+index);
-		Host result = (Host) this.data.get(index);
-		if (null == result)
-			throw new IllegalArgumentException("No host with index " + index + " in Bookmarks.");
-		return result;
-	}
+        Host result = (Host) this.data.get(index);
+        if (null == result) {
+            throw new IllegalArgumentException("No host with index " + index + " in Bookmarks.");
+        }
+        return result;
+    }
 
-	public int indexOf(Object o) {
-		return this.data.indexOf(o);
-	}
+    public int indexOf(Object o) {
+        return this.data.indexOf(o);
+    }
 
-	public Collection values() {
-		return data;
-	}
+    public Collection values() {
+        return data;
+    }
 
-	public int size() {
-		return this.data.size();
-	}
+    public int size() {
+        return this.data.size();
+    }
 
-	public void clear() {
-		this.data.clear();
-	}
+    public void clear() {
+        this.data.clear();
+    }
 
-	public Iterator iterator() {
-		return data.iterator();
-	}
+    public Iterator iterator() {
+        return data.iterator();
+    }
 }

@@ -26,22 +26,20 @@
  */
 package com.sshtools.j2ssh.connection;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sshtools.j2ssh.io.IOStreamConnector;
 import com.sshtools.j2ssh.transport.MessageNotAvailableException;
 import com.sshtools.j2ssh.transport.MessageStoreEOFException;
 import com.sshtools.j2ssh.transport.SshMessageStore;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -69,28 +67,23 @@ public abstract class IOChannel extends Channel {
     protected IOStreamConnector ios = null;
 
     /**
-     *
-     *
      * @param connection
      * @param localChannelId
      * @param senderChannelId
      * @param initialWindowSize
      * @param maximumPacketSize
-     *
      * @throws IOException
      */
     protected void init(ConnectionProtocol connection, long localChannelId,
-        long senderChannelId, long initialWindowSize, long maximumPacketSize)
-        throws IOException {
+                        long senderChannelId, long initialWindowSize, long maximumPacketSize)
+            throws IOException {
         this.in = new ChannelInputStream(incoming); //ChannelInputStream.createStandard(incoming);
         this.out = new ChannelOutputStream(this);
         super.init(connection, localChannelId, senderChannelId,
-            initialWindowSize, maximumPacketSize);
+                initialWindowSize, maximumPacketSize);
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void open() throws IOException {
@@ -110,8 +103,6 @@ public abstract class IOChannel extends Channel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public ChannelInputStream getInputStream() {
@@ -119,8 +110,6 @@ public abstract class IOChannel extends Channel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public ChannelOutputStream getOutputStream() {
@@ -128,14 +117,11 @@ public abstract class IOChannel extends Channel {
     }
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws IOException
      */
     protected void onChannelData(SshMsgChannelData msg)
-        throws IOException {
+            throws IOException {
         // Synchronize on the message store to ensure that another thread
         // does not try to read its data. This will make sure that the incoming
         // messages are not being flushed to an outputstream after a bind
@@ -143,21 +129,20 @@ public abstract class IOChannel extends Channel {
             if (boundOutputStream != null) {
                 try {
                     boundOutputStream.write(msg.getChannelData());
-                } catch (IOException ex) {
-                    log.info(
-                        "Could not route data to the bound OutputStream; Closing channel.");
+                }
+                catch (IOException ex) {
+                    log.info("Could not route data to the bound OutputStream; Closing channel.");
                     log.info(ex.getMessage());
                     close();
                 }
-            } else {
+            }
+            else {
                 incoming.addMessage(msg);
             }
         }
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     public void setLocalEOF() throws IOException {
@@ -169,8 +154,6 @@ public abstract class IOChannel extends Channel {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void onChannelEOF() throws IOException {
@@ -180,8 +163,6 @@ public abstract class IOChannel extends Channel {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void onChannelClose() throws IOException {
@@ -206,14 +187,11 @@ public abstract class IOChannel extends Channel {
     }
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws IOException
      */
     protected void onChannelExtData(SshMsgChannelExtendedData msg)
-        throws IOException {
+            throws IOException {
         // This class will not deal with extended data
         // incoming.addMessage(msg);
     }
@@ -260,7 +238,7 @@ public abstract class IOChannel extends Channel {
         });
      }*/
     public void bindOutputStream(OutputStream boundOutputStream)
-        throws IOException {
+            throws IOException {
         // Synchronize on the incoming message store to ensure that no other
         // messages are added whilst we transfer to a bound state
         synchronized (incoming) {
@@ -273,14 +251,11 @@ public abstract class IOChannel extends Channel {
     }
 
     /**
-     *
-     *
      * @param boundInputStream
-     *
      * @throws IOException
      */
     public void bindInputStream(InputStream boundInputStream)
-        throws IOException {
+            throws IOException {
         this.boundInputStream = boundInputStream;
         this.ios = new IOStreamConnector();
 
@@ -305,15 +280,19 @@ public abstract class IOChannel extends Channel {
                     // Write the message out to the bound OutputStream
                     try {
                         boundOutputStream.write(msg.getChannelData());
-                    } catch (IOException ex1) {
+                    }
+                    catch (IOException ex1) {
                         //log.info("Could not write outstanding messages to the bound OutputStream: "  +ex1.getMessage());
                         close();
                     }
-                } catch (MessageStoreEOFException ex) {
+                }
+                catch (MessageStoreEOFException ex) {
                     break;
-                } catch (MessageNotAvailableException ex) {
+                }
+                catch (MessageNotAvailableException ex) {
                     break;
-                } catch (InterruptedException ex) {
+                }
+                catch (InterruptedException ex) {
                     throw new IOException("The thread was interrupted");
                 }
             }

@@ -26,20 +26,17 @@
  */
 package com.sshtools.j2ssh.authentication;
 
-import com.sshtools.j2ssh.io.ByteArrayWriter;
+import java.io.IOException;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
-
-import java.util.Properties;
+import com.sshtools.j2ssh.io.ByteArrayWriter;
 
 //import ch.cyberduck.core.Codec;
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -51,8 +48,6 @@ public class PasswordAuthenticationClient extends SshAuthenticationClient {
     protected String password = null;
 
     /**
-     *
-     *
      * @return
      */
     public final String getMethodName() {
@@ -60,8 +55,6 @@ public class PasswordAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param password
      */
     public final void setPassword(String password) {
@@ -76,8 +69,6 @@ public class PasswordAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param changePrompt
      */
     public void setPasswordChangePrompt(PasswordChangePrompt changePrompt) {
@@ -111,14 +102,13 @@ public class PasswordAuthenticationClient extends SshAuthenticationClient {
     /*public void setAuthenticatedTokens(Map tokens) {
       }*/
     public void authenticate(AuthenticationProtocolClient authentication,
-        String serviceToStart) throws IOException, TerminatedStateException {
+                             String serviceToStart) throws IOException, TerminatedStateException {
         if ((getUsername() == null) || (password == null)) {
-            throw new AuthenticationProtocolException(
-                "Username and password cannot be null!");
+            throw new AuthenticationProtocolException("Username and password cannot be null!");
         }
 
         authentication.registerMessage(SshMsgUserAuthPwdChangeReq.class,
-            SshMsgUserAuthPwdChangeReq.SSH_MSG_USERAUTH_PWD_CHANGEREQ);
+                SshMsgUserAuthPwdChangeReq.SSH_MSG_USERAUTH_PWD_CHANGEREQ);
 
         // Send a password authentication request
         ByteArrayWriter baw = new ByteArrayWriter();
@@ -146,17 +136,17 @@ public class PasswordAuthenticationClient extends SshAuthenticationClient {
                 msg = new SshMsgUserAuthRequest(getUsername(), serviceToStart,
                         "password", baw.toByteArray());
                 authentication.sendMessage(msg);
-            } else {
+            }
+            else {
                 throw new TerminatedStateException(AuthenticationProtocolState.FAILED);
             }
-        } else {
+        }
+        else {
             throw new TerminatedStateException(AuthenticationProtocolState.FAILED);
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public Properties getPersistableProperties() {
@@ -170,8 +160,6 @@ public class PasswordAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param properties
      */
     public void setPersistableProperties(Properties properties) {
@@ -183,8 +171,6 @@ public class PasswordAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean canAuthenticate() {

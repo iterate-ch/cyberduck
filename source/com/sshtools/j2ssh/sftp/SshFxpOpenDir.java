@@ -26,16 +26,13 @@
  */
 package com.sshtools.j2ssh.sftp;
 
+import ch.cyberduck.core.Codec;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 
-import ch.cyberduck.core.Codec;
-
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -65,8 +62,6 @@ public class SshFxpOpenDir extends SubsystemMessage implements MessageRequestId 
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getId() {
@@ -74,8 +69,6 @@ public class SshFxpOpenDir extends SubsystemMessage implements MessageRequestId 
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getPath() {
@@ -83,25 +76,21 @@ public class SshFxpOpenDir extends SubsystemMessage implements MessageRequestId 
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructMessage(ByteArrayReader bar)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         id = bar.readUINT32();
-				path = Codec.decode(bar.readString());
+        path = Codec.decode(bar.readString());
 //        path = bar.readString();
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -109,19 +98,17 @@ public class SshFxpOpenDir extends SubsystemMessage implements MessageRequestId 
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws java.io.IOException, 
-		com.sshtools.j2ssh.transport.InvalidMessageException {
-			baw.writeUINT32(id);
-			baw.writeString(new String(Codec.encode(path)));
-			//        baw.writeString(path);
-		}
+            throws java.io.IOException,
+            com.sshtools.j2ssh.transport.InvalidMessageException {
+        baw.writeUINT32(id);
+        baw.writeString(new String(Codec.encode(path)));
+        //        baw.writeString(path);
+    }
 }

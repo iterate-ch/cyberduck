@@ -26,8 +26,11 @@
  */
 package com.sshtools.j2ssh.transport.cipher;
 
-import com.sshtools.j2ssh.transport.AlgorithmOperationException;
-
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESedeKeySpec;
+import javax.crypto.spec.IvParameterSpec;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -35,16 +38,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESedeKeySpec;
-import javax.crypto.spec.IvParameterSpec;
+import com.sshtools.j2ssh.transport.AlgorithmOperationException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -60,8 +57,6 @@ public class TripleDesCbc extends SshCipher {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getBlockSize() {
@@ -69,16 +64,13 @@ public class TripleDesCbc extends SshCipher {
     }
 
     /**
-     *
-     *
      * @param mode
      * @param iv
      * @param keydata
-     *
      * @throws AlgorithmOperationException
      */
     public void init(int mode, byte[] iv, byte[] keydata)
-        throws AlgorithmOperationException {
+            throws AlgorithmOperationException {
         try {
             KeySpec keyspec;
             Key key;
@@ -91,35 +83,35 @@ public class TripleDesCbc extends SshCipher {
             keyspec = new DESedeKeySpec(actualKey);
             key = SecretKeyFactory.getInstance("DESede").generateSecret(keyspec);
             cipher.init(((mode == ENCRYPT_MODE) ? Cipher.ENCRYPT_MODE
-                                                : Cipher.DECRYPT_MODE), key,
-                new IvParameterSpec(iv, 0, cipher.getBlockSize()));
-        } catch (NoSuchPaddingException nspe) {
+                    : Cipher.DECRYPT_MODE), key,
+                    new IvParameterSpec(iv, 0, cipher.getBlockSize()));
+        }
+        catch (NoSuchPaddingException nspe) {
             throw new AlgorithmOperationException("Padding not supported");
-        } catch (NoSuchAlgorithmException nsae) {
+        }
+        catch (NoSuchAlgorithmException nsae) {
             throw new AlgorithmOperationException("Algorithm not supported");
-        } catch (InvalidKeyException ike) {
+        }
+        catch (InvalidKeyException ike) {
             throw new AlgorithmOperationException("Invalid encryption key");
-        } catch (InvalidKeySpecException ispe) {
-            throw new AlgorithmOperationException(
-                "Invalid encryption key specification");
-        } catch (InvalidAlgorithmParameterException ape) {
+        }
+        catch (InvalidKeySpecException ispe) {
+            throw new AlgorithmOperationException("Invalid encryption key specification");
+        }
+        catch (InvalidAlgorithmParameterException ape) {
             throw new AlgorithmOperationException("Invalid algorithm parameter");
         }
     }
 
     /**
-     *
-     *
      * @param data
      * @param offset
      * @param len
-     *
      * @return
-     *
      * @throws AlgorithmOperationException
      */
     public byte[] transform(byte[] data, int offset, int len)
-        throws AlgorithmOperationException {
+            throws AlgorithmOperationException {
         return cipher.update(data, offset, len);
     }
 }

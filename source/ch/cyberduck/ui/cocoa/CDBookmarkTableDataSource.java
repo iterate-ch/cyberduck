@@ -23,13 +23,7 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.*;
 
 /**
  * @version $Id$
@@ -42,8 +36,8 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
     public int numberOfRowsInTableView(NSTableView tableView) {
         return CDBookmarksImpl.instance().size();
     }
-	
-	private static NSImage documentIcon = NSImage.imageNamed("cyberduck-document.icns");
+
+    private static NSImage documentIcon = NSImage.imageNamed("cyberduck-document.icns");
 
     //getValue()
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
@@ -69,33 +63,33 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
         log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
         NSPasteboard pboard = info.draggingPasteboard();
         if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-			tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
-			return NSDraggingInfo.DragOperationCopy;
-			/*
-            Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
-            log.debug("tableViewValidateDrop:" + o);
-            if (o != null) {
-                if (o instanceof NSArray) {
-                    NSArray filesList = (NSArray) o;
-                    for (int i = 0; i < filesList.count(); i++) {
-                        String file = (String) filesList.objectAtIndex(i);
-                        log.debug(file);
-                        if (file.indexOf(".duck") != -1) {
-							return NSDraggingInfo.DragOperationCopy;
+            tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
+            return NSDraggingInfo.DragOperationCopy;
+            /*
+Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
+log.debug("tableViewValidateDrop:" + o);
+if (o != null) {
+if (o instanceof NSArray) {
+NSArray filesList = (NSArray) o;
+for (int i = 0; i < filesList.count(); i++) {
+String file = (String) filesList.objectAtIndex(i);
+log.debug(file);
+if (file.indexOf(".duck") != -1) {
+                            return NSDraggingInfo.DragOperationCopy;
 //                            return NSDraggingInfo.DragOperationGeneric;
-                        }
-						return NSDraggingInfo.DragOperationGeneric;
+}
+                        return NSDraggingInfo.DragOperationGeneric;
 //                        return NSDraggingInfo.DragOperationNone;
-                    }
-                }
-            }
-            return NSDraggingInfo.DragOperationNone;
-			 */
+}
+}
+}
+return NSDraggingInfo.DragOperationNone;
+             */
         }
         if (draggedRows != null) {
             NSPasteboard bookmarkPboard = NSPasteboard.pasteboardWithName("BookmarkPBoard");
             if (bookmarkPboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")) != null) {
-				tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
+                tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
                 return NSDraggingInfo.DragOperationMove;
 //                return NSDraggingInfo.DragOperationGeneric;
             }
@@ -113,73 +107,73 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
      */
     public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
         log.debug("tableViewAcceptDrop:row:" + row + ",operation:" + operation);
-		if (row != -1 && row < tableView.numberOfRows()) {
-			NSPasteboard pboard = info.draggingPasteboard();
-			if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-				Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
-				log.debug("tableViewAcceptDrop:" + o);
-				if (o != null) {
-					if (o instanceof NSArray) {
-						NSArray filesList = (NSArray) o;
-						Queue q = new Queue(Queue.KIND_UPLOAD);
-						Host h =  CDBookmarksImpl.instance().getItem(row);
-						Session session = SessionFactory.createSession(h);
-						for (int i = 0; i < filesList.count(); i++) {
-							String filename = (String) filesList.objectAtIndex(i);
-							if (filename.indexOf(".duck") != -1) {
-								CDBookmarksImpl.instance().addItem(CDBookmarksImpl.instance().importBookmark(new java.io.File(filename)), row);
-								tableView.reloadData();
-								//@todo tableView.selectRow(row, false);
-							}
-							else {
-								Path p = PathFactory.createPath(session,
-																h.getDefaultPath(),
-																new java.io.File(filename).getName());
-								p.setLocal(new Local(filename));
-								q.addRoot(p);
-							}
-						}
-						if(q.numberOfRoots() > 0) {
-							CDQueuesImpl.instance().addItem(q);
-							CDQueueController.instance().startItem(q);
-						}
-						return true;
-					}
-				}
-			}
-			if (draggedRows != null) {
-				NSPasteboard bookmarkPboard = NSPasteboard.pasteboardWithName("BookmarkPBoard");
-				log.debug("availableTypeFromArray:BookmarkPBoardType: " + bookmarkPboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")));
-				if (bookmarkPboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")) != null) {
-					Object o = bookmarkPboard.propertyListForType("BookmarkPBoardType");// get the data from paste board
-					log.debug("tableViewAcceptDrop:" + o);
-					if (o != null) {
-						if (o instanceof NSArray) {
-							for (int i = 0; i < draggedRows.count(); i++) {
-								CDBookmarksImpl.instance().removeItem(((Integer) draggedRows.objectAtIndex(i)).intValue());
-								//							tableView.reloadData();
-							}
-							NSArray elements = (NSArray) o;
-							for (int i = 0; i < elements.count(); i++) {
-								NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-								if (row != -1 && row < CDBookmarksImpl.instance().size() - 1) {
-									CDBookmarksImpl.instance().addItem(new Host(dict), row);
-									tableView.reloadData();
-									//								tableView.selectRow(row, false);
-								}
-								else {
-									CDBookmarksImpl.instance().addItem(new Host(dict));
-									tableView.reloadData();
-									//								tableView.selectRow(tableView.numberOfRows() - 1, false);
-								}
-							}
-							draggedRows = null;
-							return true;
-						}
-					}
-				}
-			}
-		}
+        if (row != -1 && row < tableView.numberOfRows()) {
+            NSPasteboard pboard = info.draggingPasteboard();
+            if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+                Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
+                log.debug("tableViewAcceptDrop:" + o);
+                if (o != null) {
+                    if (o instanceof NSArray) {
+                        NSArray filesList = (NSArray) o;
+                        Queue q = new Queue(Queue.KIND_UPLOAD);
+                        Host h = CDBookmarksImpl.instance().getItem(row);
+                        Session session = SessionFactory.createSession(h);
+                        for (int i = 0; i < filesList.count(); i++) {
+                            String filename = (String) filesList.objectAtIndex(i);
+                            if (filename.indexOf(".duck") != -1) {
+                                CDBookmarksImpl.instance().addItem(CDBookmarksImpl.instance().importBookmark(new java.io.File(filename)), row);
+                                tableView.reloadData();
+                                //@todo tableView.selectRow(row, false);
+                            }
+                            else {
+                                Path p = PathFactory.createPath(session,
+                                        h.getDefaultPath(),
+                                        new java.io.File(filename).getName());
+                                p.setLocal(new Local(filename));
+                                q.addRoot(p);
+                            }
+                        }
+                        if (q.numberOfRoots() > 0) {
+                            CDQueuesImpl.instance().addItem(q);
+                            CDQueueController.instance().startItem(q);
+                        }
+                        return true;
+                    }
+                }
+            }
+            if (draggedRows != null) {
+                NSPasteboard bookmarkPboard = NSPasteboard.pasteboardWithName("BookmarkPBoard");
+                log.debug("availableTypeFromArray:BookmarkPBoardType: " + bookmarkPboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")));
+                if (bookmarkPboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")) != null) {
+                    Object o = bookmarkPboard.propertyListForType("BookmarkPBoardType");// get the data from paste board
+                    log.debug("tableViewAcceptDrop:" + o);
+                    if (o != null) {
+                        if (o instanceof NSArray) {
+                            for (int i = 0; i < draggedRows.count(); i++) {
+                                CDBookmarksImpl.instance().removeItem(((Integer) draggedRows.objectAtIndex(i)).intValue());
+                                //							tableView.reloadData();
+                            }
+                            NSArray elements = (NSArray) o;
+                            for (int i = 0; i < elements.count(); i++) {
+                                NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+                                if (row != -1 && row < CDBookmarksImpl.instance().size() - 1) {
+                                    CDBookmarksImpl.instance().addItem(new Host(dict), row);
+                                    tableView.reloadData();
+                                    //								tableView.selectRow(row, false);
+                                }
+                                else {
+                                    CDBookmarksImpl.instance().addItem(new Host(dict));
+                                    tableView.reloadData();
+                                    //								tableView.selectRow(tableView.numberOfRows() - 1, false);
+                                }
+                            }
+                            draggedRows = null;
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
         return false;
     }
 

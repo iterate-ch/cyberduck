@@ -26,6 +26,16 @@
  */
 package com.sshtools.j2ssh.transport.publickey.dsa;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.*;
+import java.security.interfaces.DSAPublicKey;
+import java.security.spec.DSAPublicKeySpec;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
@@ -33,26 +43,8 @@ import com.sshtools.j2ssh.transport.publickey.InvalidSshKeySignatureException;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import com.sshtools.j2ssh.util.SimpleASNWriter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import java.math.BigInteger;
-
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.security.interfaces.DSAPublicKey;
-import java.security.spec.DSAPublicKeySpec;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -73,7 +65,6 @@ public class SshDssPublicKey extends SshPublicKey {
      * Creates a new SshDssPublicKey object.
      *
      * @param key
-     *
      * @throws InvalidSshKeyException
      */
     public SshDssPublicKey(byte[] key) throws InvalidSshKeyException {
@@ -96,14 +87,13 @@ public class SshDssPublicKey extends SshPublicKey {
 
             KeyFactory kf = KeyFactory.getInstance("DSA");
             pubkey = (DSAPublicKey) kf.generatePublic(dsaKey);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new InvalidSshKeyException();
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getAlgorithmName() {
@@ -111,8 +101,6 @@ public class SshDssPublicKey extends SshPublicKey {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getBitLength() {
@@ -120,8 +108,6 @@ public class SshDssPublicKey extends SshPublicKey {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getEncoded() {
@@ -134,23 +120,21 @@ public class SshDssPublicKey extends SshPublicKey {
             baw.writeBigInteger(pubkey.getY());
 
             return baw.toByteArray();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             return null;
         }
     }
 
     /**
-     *
-     *
      * @param signature
      * @param data
-     *
      * @return
-     *
      * @throws InvalidSshKeySignatureException
+     *
      */
     public boolean verifySignature(byte[] signature, byte[] data)
-        throws InvalidSshKeySignatureException {
+            throws InvalidSshKeySignatureException {
         try {
             // Check for differing version of the transport protocol
             if (signature.length != 40) {
@@ -179,7 +163,8 @@ public class SshDssPublicKey extends SshPublicKey {
             if (((signature[0] & 0x80) == 0x80) && (signature[0] != 0x00)) {
                 r.write(0);
                 r.write(signature, 0, 20);
-            } else {
+            }
+            else {
                 r.write(signature, 0, 20);
             }
 
@@ -189,7 +174,8 @@ public class SshDssPublicKey extends SshPublicKey {
             if (((signature[20] & 0x80) == 0x80) && (signature[20] != 0x00)) {
                 s.write(0);
                 s.write(signature, 20, 20);
-            } else {
+            }
+            else {
                 s.write(signature, 20, 20);
             }
 
@@ -204,7 +190,7 @@ public class SshDssPublicKey extends SshPublicKey {
             if (log.isDebugEnabled()) {
                 log.debug("Verifying host key signature");
                 log.debug("Signature length is " +
-                    String.valueOf(signature.length));
+                        String.valueOf(signature.length));
 
                 String hex = "";
 
@@ -250,13 +236,17 @@ public class SshDssPublicKey extends SshPublicKey {
             sig.update(data);
 
             return sig.verify(encoded);
-        } catch (NoSuchAlgorithmException nsae) {
+        }
+        catch (NoSuchAlgorithmException nsae) {
             throw new InvalidSshKeySignatureException();
-        } catch (InvalidKeyException ike) {
+        }
+        catch (InvalidKeyException ike) {
             throw new InvalidSshKeySignatureException();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidSshKeySignatureException();
-        } catch (SignatureException se) {
+        }
+        catch (SignatureException se) {
             throw new InvalidSshKeySignatureException();
         }
     }

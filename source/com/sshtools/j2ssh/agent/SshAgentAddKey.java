@@ -26,6 +26,8 @@
  */
 package com.sshtools.j2ssh.agent;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
@@ -33,8 +35,6 @@ import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.publickey.SshKeyPairFactory;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
-
-import java.io.IOException;
 
 
 class SshAgentAddKey extends SubsystemMessage {
@@ -61,7 +61,7 @@ class SshAgentAddKey extends SubsystemMessage {
      * @param constraints
      */
     public SshAgentAddKey(SshPrivateKey prvkey, SshPublicKey pubkey,
-        String description, KeyConstraints constraints) {
+                          String description, KeyConstraints constraints) {
         super(SSH_AGENT_ADD_KEY);
         this.prvkey = prvkey;
         this.pubkey = pubkey;
@@ -70,8 +70,6 @@ class SshAgentAddKey extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public SshPrivateKey getPrivateKey() {
@@ -79,8 +77,6 @@ class SshAgentAddKey extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public SshPublicKey getPublicKey() {
@@ -88,8 +84,6 @@ class SshAgentAddKey extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getDescription() {
@@ -97,8 +91,6 @@ class SshAgentAddKey extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public KeyConstraints getKeyConstraints() {
@@ -106,8 +98,6 @@ class SshAgentAddKey extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -115,47 +105,45 @@ class SshAgentAddKey extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             baw.writeBinaryString(prvkey.getEncoded());
             baw.writeBinaryString(pubkey.getEncoded());
             baw.writeString(description);
             baw.write(constraints.toByteArray());
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             throw new InvalidMessageException(ex.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     public void constructMessage(ByteArrayReader bar)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             prvkey = SshKeyPairFactory.decodePrivateKey(bar.readBinaryString());
             pubkey = SshKeyPairFactory.decodePublicKey(bar.readBinaryString());
             description = bar.readString();
             constraints = new KeyConstraints(bar);
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             throw new InvalidMessageException(ex.getMessage());
         }
     }

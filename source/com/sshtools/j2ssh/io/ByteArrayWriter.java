@@ -28,13 +28,10 @@ package com.sshtools.j2ssh.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import java.math.BigInteger;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -46,10 +43,7 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
     }
 
     /**
-     *
-     *
      * @param bi
-     *
      * @throws IOException
      */
     public void writeBigInteger(BigInteger bi) throws IOException {
@@ -59,10 +53,7 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
     }
 
     /**
-     *
-     *
      * @param b
-     *
      * @throws IOException
      */
     public void writeBoolean(boolean b) throws IOException {
@@ -70,10 +61,7 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
     }
 
     /**
-     *
-     *
      * @param data
-     *
      * @throws IOException
      */
     public void writeBinaryString(byte[] data) throws IOException {
@@ -82,10 +70,7 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
     }
 
     /**
-     *
-     *
      * @param i
-     *
      * @throws IOException
      */
     public void writeInt(long i) throws IOException {
@@ -98,10 +83,7 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
     }
 
     /**
-     *
-     *
      * @param i
-     *
      * @throws IOException
      */
     public void writeInt(int i) throws IOException {
@@ -114,10 +96,7 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
     }
 
     /**
-     *
-     *
      * @param i
-     *
      * @return
      */
     public static byte[] encodeInt(int i) {
@@ -131,10 +110,7 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
     }
 
     /**
-     *
-     *
      * @param value
-     *
      * @throws IOException
      */
     public void writeUINT32(UnsignedInteger32 value) throws IOException {
@@ -142,10 +118,7 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
     }
 
     /**
-     *
-     *
      * @param value
-     *
      * @throws IOException
      */
     public void writeUINT64(UnsignedInteger64 value) throws IOException {
@@ -158,20 +131,16 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
     }
 
     /**
-     *
-     *
      * @param array
      * @param pos
      * @param value
-     *
      * @throws IOException
      */
     public static void writeIntToArray(byte[] array, int pos, int value)
-        throws IOException {
+            throws IOException {
         if ((array.length - pos) < 4) {
-            throw new IOException(
-                "Not enough data in array to write integer at position " +
-                String.valueOf(pos));
+            throw new IOException("Not enough data in array to write integer at position " +
+                    String.valueOf(pos));
         }
 
         array[pos] = (byte) (value >> 24);
@@ -181,19 +150,16 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
     }
 
     /**
-     *
-     *
      * @param str
-     *
      * @throws IOException
      */
     public void writeString(String str) throws IOException {
         if (str == null) {
             writeInt(0);
-        } 
-		else {
+        }
+        else {
             writeInt(str.getBytes().length);
-			write(str.getBytes());
+            write(str.getBytes());
 //            write(str.getBytes("US-ASCII"));
         }
     }

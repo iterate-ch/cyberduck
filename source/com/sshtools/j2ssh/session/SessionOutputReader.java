@@ -26,11 +26,12 @@
  */
 package com.sshtools.j2ssh.session;
 
-import com.sshtools.j2ssh.connection.*;
+import com.sshtools.j2ssh.connection.Channel;
+import com.sshtools.j2ssh.connection.ChannelEventListener;
 
 
 /**
- * <p>
+ * <p/>
  * This class provides a utility to read and parse the output a session,
  * providing methods to wait for specific strings such as the prompt or
  * command input requests.
@@ -38,7 +39,6 @@ import com.sshtools.j2ssh.connection.*;
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.1
  */
 public class SessionOutputReader {
@@ -48,7 +48,7 @@ public class SessionOutputReader {
     String output = "";
 
     /**
-     * <p>
+     * <p/>
      * Contructs the session reader.
      * </p>
      *
@@ -69,7 +69,7 @@ public class SessionOutputReader {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the current position of the session input pointer. This pointer
      * is set to the position of the matched string everytime a match is found
      * during a call by <code>waitForString</code>
@@ -98,7 +98,7 @@ public class SessionOutputReader {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns a string containing the session output from the current marked
      * position to the end of the output.
      * </p>
@@ -111,81 +111,70 @@ public class SessionOutputReader {
     }
 
     /**
-     * <p>
+     * <p/>
      * Wait for a given String in the output buffer.
      * </p>
      *
-     * @param str the string to wait for
+     * @param str  the string to wait for
      * @param echo a callback interface to receive the session output whilst
-     *        the no match for the string is found
-     *
+     *             the no match for the string is found
      * @return true if the string was found, otherwise false
-     *
      * @throws InterruptedException if the thread is interrupted
-     *
      * @see waitForString(String, int, SessionOutputEcho)
      */
     public synchronized boolean waitForString(String str, SessionOutputEcho echo)
-        throws InterruptedException {
+            throws InterruptedException {
         return waitForString(str, 0, echo);
     }
 
     /**
-     * <p>
+     * <p/>
      * Wait for a given String in the output buffer. This method will block
      * until the string is found.
      * </p>
      *
      * @param str the string to wait for
-     *
      * @return true if the string was found, otherwise false
-     *
      * @throws InterruptedException if the thread is interrupted
-     *
      * @see waitForString(String, int, SessionOutputEcho)
      */
     public synchronized boolean waitForString(String str)
-        throws InterruptedException {
+            throws InterruptedException {
         return waitForString(str, 0, null);
     }
 
     /**
-     * <p>
+     * <p/>
      * Wait for a given String in the output buffer.
      * </p>
      *
-     * @param str the string to wait for
+     * @param str     the string to wait for
      * @param timeout the number of milliseconds to wait
-     *
      * @return true if the string was found, otherwise false
-     *
      * @throws InterruptedException if the thread is interrupted
-     *
      * @see waitForString(String, int, SessionOutputEcho)
      */
     public synchronized boolean waitForString(String str, int timeout)
-        throws InterruptedException {
+            throws InterruptedException {
         return waitForString(str, timeout, null);
     }
 
     /**
-     * <p>
+     * <p/>
      * Wait for a given String in the output buffer. When this method is called
      * the method will block unitil either the String arrives in the input
      * buffer or the timeout specified has elasped.
      * </p>
      *
-     * @param str the string to wait for
+     * @param str     the string to wait for
      * @param timeout the number of milliseconds to wait, 0=infinite
-     * @param echo a callback interface to receive the session output whilst
-     *        the no match for the string is found
-     *
+     * @param echo    a callback interface to receive the session output whilst
+     *                the no match for the string is found
      * @return true if the string was found, otherwise false
-     *
      * @throws InterruptedException if the thread is interrupted
      */
     public synchronized boolean waitForString(String str, int timeout,
-        SessionOutputEcho echo) throws InterruptedException {
+                                              SessionOutputEcho echo) throws InterruptedException {
         long time = System.currentTimeMillis();
 
         while ((output.indexOf(str, pos) == -1) &&
@@ -193,7 +182,7 @@ public class SessionOutputReader {
                 (timeout == 0))) {
             int tmp = output.length();
             wait((timeout > 0) ? (timeout -
-                (System.currentTimeMillis() - time)) : 0);
+                    (System.currentTimeMillis() - time)) : 0);
 
             if ((output.length() > tmp) && (echo != null)) {
                 echo.echo(output.substring(tmp, output.length()));
@@ -204,20 +193,18 @@ public class SessionOutputReader {
             pos = output.indexOf(str, pos) + str.length();
 
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
 
     /**
-     *
-     *
      * @param echo
-     *
      * @throws InterruptedException
      */
     public synchronized void echoLineByLineToClose(SessionOutputEcho echo)
-        throws InterruptedException {
+            throws InterruptedException {
         while (session.isOpen()) {
             waitForString("\n", 1000, echo);
         }

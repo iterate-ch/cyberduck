@@ -26,18 +26,19 @@
  */
 package com.sshtools.j2ssh.agent;
 
-import com.sshtools.j2ssh.transport.publickey.*;
-
-import org.apache.commons.logging.*;
-
-import java.io.*;
-
+import java.io.IOException;
 import java.util.*;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
+import com.sshtools.j2ssh.transport.publickey.InvalidSshKeySignatureException;
+import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
+import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -57,8 +58,6 @@ public class KeyStore {
     }
 
     /**
-     *
-     *
      * @return
      */
     public Map getPublicKeys() {
@@ -66,10 +65,7 @@ public class KeyStore {
     }
 
     /**
-     *
-     *
      * @param key
-     *
      * @return
      */
     public int indexOf(SshPublicKey key) {
@@ -77,10 +73,7 @@ public class KeyStore {
     }
 
     /**
-     *
-     *
      * @param i
-     *
      * @return
      */
     public SshPublicKey elementAt(int i) {
@@ -88,10 +81,7 @@ public class KeyStore {
     }
 
     /**
-     *
-     *
      * @param key
-     *
      * @return
      */
     public String getDescription(SshPublicKey key) {
@@ -99,10 +89,7 @@ public class KeyStore {
     }
 
     /**
-     *
-     *
      * @param key
-     *
      * @return
      */
     public KeyConstraints getKeyConstraints(SshPublicKey key) {
@@ -110,8 +97,6 @@ public class KeyStore {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int size() {
@@ -119,8 +104,6 @@ public class KeyStore {
     }
 
     /**
-     *
-     *
      * @param listener
      */
     public void addKeyStoreListener(KeyStoreListener listener) {
@@ -128,8 +111,6 @@ public class KeyStore {
     }
 
     /**
-     *
-     *
      * @param listener
      */
     public void removeKeyStoreListener(KeyStoreListener listener) {
@@ -137,19 +118,15 @@ public class KeyStore {
     }
 
     /**
-     *
-     *
      * @param prvkey
      * @param pubkey
      * @param description
      * @param cs
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean addKey(SshPrivateKey prvkey, SshPublicKey pubkey,
-        String description, KeyConstraints cs) throws IOException {
+                          String description, KeyConstraints cs) throws IOException {
         synchronized (publickeys) {
             if (!publickeys.containsKey(pubkey)) {
                 publickeys.put(pubkey, description);
@@ -166,7 +143,8 @@ public class KeyStore {
                 }
 
                 return true;
-            } else {
+            }
+            else {
                 return false;
             }
         }
@@ -193,21 +171,18 @@ public class KeyStore {
     }
 
     /**
-     *
-     *
      * @param pubkey
      * @param forwardingNodes
      * @param data
-     *
      * @return
-     *
      * @throws KeyTimeoutException
      * @throws InvalidSshKeyException
      * @throws InvalidSshKeySignatureException
+     *
      */
     public byte[] performHashAndSign(SshPublicKey pubkey, List forwardingNodes,
-        byte[] data)
-        throws KeyTimeoutException, InvalidSshKeyException, 
+                                     byte[] data)
+            throws KeyTimeoutException, InvalidSshKeyException,
             InvalidSshKeySignatureException {
         synchronized (publickeys) {
             if (privatekeys.containsKey(pubkey)) {
@@ -228,30 +203,29 @@ public class KeyStore {
                         }
 
                         return sig;
-                    } else {
+                    }
+                    else {
                         throw new KeyTimeoutException();
                     }
-                } else {
+                }
+                else {
                     throw new KeyTimeoutException();
                 }
-            } else {
+            }
+            else {
                 throw new InvalidSshKeyException("The key does not exist");
             }
         }
     }
 
     /**
-     *
-     *
      * @param pubkey
      * @param description
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean deleteKey(SshPublicKey pubkey, String description)
-        throws IOException {
+            throws IOException {
         synchronized (publickeys) {
             if (publickeys.containsKey(pubkey)) {
                 String desc = (String) publickeys.get(pubkey);
@@ -279,12 +253,8 @@ public class KeyStore {
     }
 
     /**
-     *
-     *
      * @param password
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean lock(String password) throws IOException {
@@ -301,19 +271,16 @@ public class KeyStore {
                 }
 
                 return true;
-            } else {
+            }
+            else {
                 return false;
             }
         }
     }
 
     /**
-     *
-     *
      * @param password
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean unlock(String password) throws IOException {

@@ -18,42 +18,45 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
-
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Host;
+import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSCoder;
+import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
 
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Preferences;
+
 public class CDBookmarkTable extends NSTableView {
     private static Logger log = Logger.getLogger(CDBookmarkTable.class);
-	
-	public CDBookmarkTable() {
-		super();
-	}
-	
-	public CDBookmarkTable(NSRect frame) {
-		super(frame);
-	}
-	
-	protected CDBookmarkTable(NSCoder decoder, long token) {
-		super(decoder, token);
-	}
-	
-	protected void encodeWithCoder(NSCoder encoder) {
-		super.encodeWithCoder(encoder);
-	}
-	
-	public void awakeFromNib() {
+
+    public CDBookmarkTable() {
+        super();
+    }
+
+    public CDBookmarkTable(NSRect frame) {
+        super(frame);
+    }
+
+    protected CDBookmarkTable(NSCoder decoder, long token) {
+        super(decoder, token);
+    }
+
+    protected void encodeWithCoder(NSCoder encoder) {
+        super.encodeWithCoder(encoder);
+    }
+
+    public void awakeFromNib() {
         log.debug("awakeFromNib");
-        // receive drag events from types
+// receive drag events from types
         this.registerForDraggedTypes(new NSArray(new Object[]{"BookmarkPboardType",
-			NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
-			NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as BookmarkPboardType
-															   ));
+                                                              NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
+                                                              NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as BookmarkPboardType
+        ));
         this.setRowHeight(45f);
-		
+
         NSTableColumn iconColumn = new NSTableColumn();
         iconColumn.setIdentifier("ICON");
         iconColumn.setMinWidth(32f);
@@ -63,7 +66,7 @@ public class CDBookmarkTable extends NSTableView {
         iconColumn.setResizable(true);
         iconColumn.setDataCell(new NSImageCell());
         this.addTableColumn(iconColumn);
-		
+
         NSTableColumn bookmarkColumn = new NSTableColumn();
         bookmarkColumn.setIdentifier("BOOKMARK");
         bookmarkColumn.setMinWidth(50f);
@@ -73,46 +76,41 @@ public class CDBookmarkTable extends NSTableView {
         bookmarkColumn.setResizable(true);
         bookmarkColumn.setDataCell(new CDBookmarkCell());
         this.addTableColumn(bookmarkColumn);
-		
-        // setting appearance attributes
+
+// setting appearance attributes
         this.setAutoresizesAllColumnsToFit(true);
         NSSelector setUsesAlternatingRowBackgroundColorsSelector =
-			new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
+                new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
         if (setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
             this.setUsesAlternatingRowBackgroundColors(Preferences.instance().getProperty("browser.alternatingRows").equals("true"));
         }
         NSSelector setGridStyleMaskSelector =
-			new NSSelector("setGridStyleMask", new Class[]{int.class});
+                new NSSelector("setGridStyleMask", new Class[]{int.class});
         if (setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
             this.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
         }
         this.setAutoresizesAllColumnsToFit(true);
-		
-        // selection properties
+
+// selection properties
         this.setAllowsMultipleSelection(false);
         this.setAllowsEmptySelection(true);
         this.setAllowsColumnReordering(false);
-		
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
-														   new NSSelector("bookmarkSelectionDidChange", new Class[]{NSNotification.class}),
-														   NSTableView.TableViewSelectionDidChangeNotification,
-														   this);
-		
+
         this.sizeToFit();
-	}
-	
-	public void keyDown(NSEvent event) {
-		String chars = event.characters();
-		double timestamp = event.timestamp();
-		CDTableDataSource model = ((CDTableDataSource)this.dataSource());
-		for(int i = 0; i < model.numberOfRowsInTableView(this); i++) {
-			Host h = (Host)model.tableViewObjectValueForLocation(this, this.tableColumnWithIdentifier("BOOKMARK"), i);
-			if(h.getNickname().toLowerCase().startsWith(chars)) {
-				this.selectRow(i, false);
-				this.scrollRowToVisible(i);
-				return;
-			}
-		}
-		super.keyDown(event);
-	}
+    }
+
+    public void keyDown(NSEvent event) {
+        String chars = event.characters();
+        double timestamp = event.timestamp();
+        CDTableDataSource model = ((CDTableDataSource) this.dataSource());
+        for (int i = 0; i < model.numberOfRowsInTableView(this); i++) {
+            Host h = (Host) model.tableViewObjectValueForLocation(this, this.tableColumnWithIdentifier("BOOKMARK"), i);
+            if (h.getNickname().toLowerCase().startsWith(chars)) {
+                this.selectRow(i, false);
+                this.scrollRowToVisible(i);
+                return;
+            }
+        }
+        super.keyDown(event);
+    }
 }

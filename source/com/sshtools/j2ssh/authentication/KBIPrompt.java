@@ -28,8 +28,6 @@ package com.sshtools.j2ssh.authentication;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -50,8 +48,6 @@ public class KBIPrompt {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getPrompt() {
@@ -59,8 +55,6 @@ public class KBIPrompt {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean echo() {
@@ -68,8 +62,6 @@ public class KBIPrompt {
     }
 
     /**
-     *
-     *
      * @param response
      */
     public void setResponse(String response) {
@@ -77,8 +69,6 @@ public class KBIPrompt {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getResponse() {

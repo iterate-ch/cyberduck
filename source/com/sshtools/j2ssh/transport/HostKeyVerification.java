@@ -30,32 +30,28 @@ import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 
 
 /**
- * <p>
+ * <p/>
  * An interface to allow the transport protocol to verify the public key
  * supplied by the server during key-exchange
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public interface HostKeyVerification {
     /**
-     * <p>
+     * <p/>
      * Called by the transport protocol to verify the identity of the server
      * through the supplied public key.
      * </p>
      *
      * @param host the name of the host
-     * @param pk the public key supplied during key-exchange
-     *
+     * @param pk   the public key supplied during key-exchange
      * @return true if the host is acceptable, otherwise false
-     *
      * @throws TransportProtocolException if an error occurs
-     *
      * @since 0.2.0
      */
     public boolean verifyHost(String host, SshPublicKey pk)
-        throws TransportProtocolException;
+            throws TransportProtocolException;
 }

@@ -26,6 +26,12 @@
  */
 package com.sshtools.j2ssh.configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sshtools.j2ssh.forwarding.ForwardingConfiguration;
 import com.sshtools.j2ssh.transport.cipher.SshCipherFactory;
 import com.sshtools.j2ssh.transport.compression.SshCompressionFactory;
@@ -33,16 +39,8 @@ import com.sshtools.j2ssh.transport.hmac.SshHmacFactory;
 import com.sshtools.j2ssh.transport.kex.SshKeyExchangeFactory;
 import com.sshtools.j2ssh.transport.publickey.SshKeyPairFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.util.HashMap;
-import java.util.Map;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -119,8 +117,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param host
      */
     public void setHost(String host) {
@@ -128,8 +124,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getHost() {
@@ -137,8 +131,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param port
      */
     public void setPort(int port) {
@@ -146,8 +138,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getPort() {
@@ -155,8 +145,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getTransportProvider() {
@@ -164,46 +152,47 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param name
      */
     public void setTransportProviderString(String name) {
         if (name != null) {
             if (name.equalsIgnoreCase("http")) {
                 transportProvider = USE_HTTP_PROXY;
-            } else if (name.equalsIgnoreCase("socks4")) {
+            }
+            else if (name.equalsIgnoreCase("socks4")) {
                 transportProvider = USE_SOCKS4_PROXY;
-            } else if (name.equalsIgnoreCase("socks5")) {
+            }
+            else if (name.equalsIgnoreCase("socks5")) {
                 transportProvider = USE_SOCKS5_PROXY;
-            } else {
+            }
+            else {
                 transportProvider = USE_STANDARD_SOCKET;
             }
-        } else {
+        }
+        else {
             transportProvider = USE_STANDARD_SOCKET;
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getTransportProviderString() {
         if (transportProvider == USE_HTTP_PROXY) {
             return "http";
-        } else if (transportProvider == USE_SOCKS4_PROXY) {
+        }
+        else if (transportProvider == USE_SOCKS4_PROXY) {
             return "socks4";
-        } else if (transportProvider == USE_SOCKS5_PROXY) {
+        }
+        else if (transportProvider == USE_SOCKS5_PROXY) {
             return "socks5";
-        } else {
+        }
+        else {
             return "socket";
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getProxyHost() {
@@ -216,8 +205,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getProxyPort() {
@@ -225,8 +212,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getProxyUsername() {
@@ -234,8 +219,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getProxyPassword() {
@@ -243,8 +226,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param transportProvider
      */
     public void setTransportProvider(int transportProvider) {
@@ -252,8 +233,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param proxyHostname
      */
     public void setProxyHost(String proxyHostname) {
@@ -261,8 +240,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param proxyPort
      */
     public void setProxyPort(int proxyPort) {
@@ -270,8 +247,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param proxyUsername
      */
     public void setProxyUsername(String proxyUsername) {
@@ -279,8 +254,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param proxyPassword
      */
     public void setProxyPassword(String proxyPassword) {
@@ -288,8 +261,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param pref
      */
     public void setPrefCSComp(String pref) {
@@ -297,8 +268,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getPrefCSComp() {
@@ -306,8 +275,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param pref
      */
     public void setPrefCSEncryption(String pref) {
@@ -315,8 +282,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getPrefCSEncryption() {
@@ -324,8 +289,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param pref
      */
     public void setPrefCSMac(String pref) {
@@ -333,8 +296,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getPrefCSMac() {
@@ -342,8 +303,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param pref
      */
     public void setPrefKex(String pref) {
@@ -351,8 +310,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getPrefKex() {
@@ -360,8 +317,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param pref
      */
     public void setPrefPublicKey(String pref) {
@@ -369,8 +324,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getPrefPublicKey() {
@@ -378,8 +331,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param pref
      */
     public void setPrefSCComp(String pref) {
@@ -387,8 +338,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getPrefSCComp() {
@@ -396,8 +345,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param pref
      */
     public void setPrefSCEncryption(String pref) {
@@ -405,8 +352,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getPrefSCEncryption() {
@@ -438,8 +383,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param pref
      */
     public void setPrefSCMac(String pref) {
@@ -447,8 +390,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getPrefSCMac() {
@@ -456,8 +397,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @param username
      */
     public void setUsername(String username) {
@@ -465,8 +404,6 @@ public class SshConnectionProperties {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getUsername() {

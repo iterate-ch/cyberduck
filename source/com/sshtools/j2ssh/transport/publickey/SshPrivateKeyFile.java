@@ -26,22 +26,19 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
-import com.sshtools.j2ssh.io.ByteArrayReader;
-import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import java.util.Iterator;
+import com.sshtools.j2ssh.io.ByteArrayReader;
+import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -62,8 +59,6 @@ public class SshPrivateKeyFile {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getBytes() {
@@ -71,12 +66,8 @@ public class SshPrivateKeyFile {
     }
 
     /**
-     *
-     *
      * @param passphrase
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public byte[] getKeyBlob(String passphrase) throws InvalidSshKeyException {
@@ -84,30 +75,23 @@ public class SshPrivateKeyFile {
     }
 
     /**
-     *
-     *
      * @param oldPassphrase
      * @param newPassphrase
-     *
      * @throws InvalidSshKeyException
      */
     public void changePassphrase(String oldPassphrase, String newPassphrase)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         byte[] raw = format.decryptKeyblob(keyblob, oldPassphrase);
         keyblob = format.encryptKeyblob(raw, newPassphrase);
     }
 
     /**
-     *
-     *
      * @param formattedKey
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public static SshPrivateKeyFile parse(byte[] formattedKey)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         if (formattedKey == null) {
             throw new InvalidSshKeyException("Key data is null");
         }
@@ -121,11 +105,10 @@ public class SshPrivateKeyFile {
         boolean valid = format.isFormatted(formattedKey);
 
         if (!valid) {
-            log.info(
-                "Private key is not in the default format, attempting parse with other supported formats");
+            log.info("Private key is not in the default format, attempting parse with other supported formats");
 
             Iterator it = SshPrivateKeyFormatFactory.getSupportedFormats()
-                                                    .iterator();
+                    .iterator();
             String ft;
 
             while (it.hasNext() && !valid) {
@@ -138,36 +121,34 @@ public class SshPrivateKeyFile {
 
         if (valid) {
             return new SshPrivateKeyFile(formattedKey, format);
-        } else {
-            throw new InvalidSshKeyException(
-                "The key format is not a supported format");
+        }
+        else {
+            throw new InvalidSshKeyException("The key format is not a supported format");
         }
     }
 
     /**
-     *
-     *
      * @param keyfile
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      * @throws IOException
      */
     public static SshPrivateKeyFile parse(File keyfile)
-        throws InvalidSshKeyException, IOException {
+            throws InvalidSshKeyException, IOException {
         FileInputStream in = new FileInputStream(keyfile);
         byte[] data = null;
 
         try {
             data = new byte[in.available()];
             in.read(data);
-        } finally {
+        }
+        finally {
             try {
                 if (in != null) {
                     in.close();
                 }
-            } catch (IOException ex) {
+            }
+            catch (IOException ex) {
             }
         }
 
@@ -175,8 +156,6 @@ public class SshPrivateKeyFile {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isPassphraseProtected() {
@@ -188,31 +167,26 @@ public class SshPrivateKeyFile {
      keyblob = format.changePassphrase(keyblob, oldPassphrase, newPassphrase);
       }*/
     public static SshPrivateKeyFile create(SshPrivateKey key,
-        String passphrase, SshPrivateKeyFormat format)
-        throws InvalidSshKeyException {
+                                           String passphrase, SshPrivateKeyFormat format)
+            throws InvalidSshKeyException {
         byte[] keyblob = format.encryptKeyblob(key.getEncoded(), passphrase);
 
         return new SshPrivateKeyFile(keyblob, format);
     }
 
     /**
-     *
-     *
      * @param newFormat
      * @param passphrase
-     *
      * @throws InvalidSshKeyException
      */
     public void setFormat(SshPrivateKeyFormat newFormat, String passphrase)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         byte[] raw = this.format.decryptKeyblob(keyblob, passphrase);
         format = newFormat;
         keyblob = format.encryptKeyblob(raw, passphrase);
     }
 
     /**
-     *
-     *
      * @return
      */
     public SshPrivateKeyFormat getFormat() {
@@ -220,30 +194,24 @@ public class SshPrivateKeyFile {
     }
 
     /**
-     *
-     *
      * @param passphrase
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public SshPrivateKey toPrivateKey(String passphrase)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         try {
             byte[] raw = format.decryptKeyblob(keyblob, passphrase);
             SshKeyPair pair = SshKeyPairFactory.newInstance(getAlgorithm(raw));
 
             return pair.decodePrivateKey(raw);
-        } catch (AlgorithmNotSupportedException anse) {
-            throw new InvalidSshKeyException(
-                "The public key algorithm for this private key is not supported");
+        }
+        catch (AlgorithmNotSupportedException anse) {
+            throw new InvalidSshKeyException("The public key algorithm for this private key is not supported");
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public String toString() {

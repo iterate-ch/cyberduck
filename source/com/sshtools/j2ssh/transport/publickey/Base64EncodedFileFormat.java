@@ -26,24 +26,17 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
-import com.sshtools.j2ssh.io.ByteArrayWriter;
-import com.sshtools.j2ssh.util.Base64;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
+import java.io.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+import com.sshtools.j2ssh.util.Base64;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -68,8 +61,6 @@ public abstract class Base64EncodedFileFormat implements SshKeyFormatConversion 
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getFormatType() {
@@ -77,10 +68,7 @@ public abstract class Base64EncodedFileFormat implements SshKeyFormatConversion 
     }
 
     /**
-     *
-     *
      * @param formattedKey
-     *
      * @return
      */
     public boolean isFormatted(byte[] formattedKey) {
@@ -88,14 +76,13 @@ public abstract class Base64EncodedFileFormat implements SshKeyFormatConversion 
 
         if ((test.indexOf(begin) >= 0) && (test.indexOf(end) > 0)) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
 
     /**
-     *
-     *
      * @param headerTag
      * @param headerValue
      */
@@ -104,10 +91,7 @@ public abstract class Base64EncodedFileFormat implements SshKeyFormatConversion 
     }
 
     /**
-     *
-     *
      * @param headerTag
-     *
      * @return
      */
     public String getHeaderValue(String headerTag) {
@@ -115,17 +99,12 @@ public abstract class Base64EncodedFileFormat implements SshKeyFormatConversion 
     }
 
     /**
-     *
-     *
      * @param formattedKey
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public byte[] getKeyBlob(byte[] formattedKey) throws InvalidSshKeyException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    new ByteArrayInputStream(formattedKey)));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(formattedKey)));
         String line;
         String headerTag;
         String headerValue;
@@ -163,8 +142,7 @@ public abstract class Base64EncodedFileFormat implements SshKeyFormatConversion 
                         String tmp = reader.readLine();
 
                         if (tmp == null) {
-                            throw new InvalidSshKeyException(
-                                "Incorrect file format!");
+                            throw new InvalidSshKeyException("Incorrect file format!");
                         }
 
                         line += tmp;
@@ -174,7 +152,8 @@ public abstract class Base64EncodedFileFormat implements SshKeyFormatConversion 
                     headerTag = line.substring(0, index);
                     headerValue = line.substring(index + 2);
                     headers.put(headerTag, headerValue);
-                } else {
+                }
+                else {
                     break;
                 }
             }
@@ -197,16 +176,14 @@ public abstract class Base64EncodedFileFormat implements SshKeyFormatConversion 
 
             // Convert the blob to some useful data
             return Base64.decode(blob);
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidSshKeyException();
         }
     }
 
     /**
-     *
-     *
      * @param keyblob
-     *
      * @return
      */
     public byte[] formatKey(byte[] keyblob) {
@@ -233,7 +210,7 @@ public abstract class Base64EncodedFileFormat implements SshKeyFormatConversion 
                     line = header.substring(pos,
                             (((pos + MAX_LINE_LENGTH) < header.length())
                             ? (pos + MAX_LINE_LENGTH) : header.length())) +
-                        (((pos + MAX_LINE_LENGTH) < header.length()) ? "\\" : "");
+                            (((pos + MAX_LINE_LENGTH) < header.length()) ? "\\" : "");
                     out.write(line.getBytes());
                     out.write('\n');
                     pos += MAX_LINE_LENGTH;
@@ -247,7 +224,8 @@ public abstract class Base64EncodedFileFormat implements SshKeyFormatConversion 
             out.write('\n');
 
             return out.toByteArray();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             return null;
         }
     }

@@ -26,14 +26,14 @@
  */
 package com.sshtools.j2ssh.agent;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.publickey.SshKeyPairFactory;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
-
-import java.io.IOException;
 
 
 class SshAgentDeleteKey extends SubsystemMessage {
@@ -62,8 +62,6 @@ class SshAgentDeleteKey extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public SshPublicKey getPublicKey() {
@@ -71,8 +69,6 @@ class SshAgentDeleteKey extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getDescription() {
@@ -80,8 +76,6 @@ class SshAgentDeleteKey extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -89,43 +83,41 @@ class SshAgentDeleteKey extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             baw.writeBinaryString(pubkey.getEncoded());
             baw.writeString(description);
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             throw new InvalidMessageException(ex.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     public void constructMessage(ByteArrayReader bar)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             pubkey = SshKeyPairFactory.decodePublicKey(bar.readBinaryString());
             description = bar.readString();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             throw new InvalidMessageException(ex.getMessage());
         }
     }

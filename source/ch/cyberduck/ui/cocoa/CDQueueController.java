@@ -28,13 +28,12 @@ import java.util.Observer;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.ftp.FTPPath;
 
 public class CDQueueController extends NSObject implements Observer {
     private static Logger log = Logger.getLogger(CDQueueController.class);
-	
-    private static NSMutableArray instances = new NSMutableArray();
-	
+
+//    private static NSMutableArray instances = new NSMutableArray();
+
     private static CDQueueController instance;
 
     /**
@@ -56,12 +55,12 @@ public class CDQueueController extends NSObject implements Observer {
     }
 
     private CDQueueController() {
-        instances.addObject(this);
+//        instances.addObject(this);
     }
 
     public void windowWillClose(NSNotification notification) {
         CDQueuesImpl.instance().save();
-        instances.removeObject(this);
+//        instances.removeObject(this);
         instance = null;
     }
 
@@ -182,23 +181,23 @@ public class CDQueueController extends NSObject implements Observer {
         if (arg instanceof Message) {
             Message msg = (Message) arg;
             if (msg.getTitle().equals(Message.PROGRESS) || msg.getTitle().equals(Message.ERROR)) {
-				if (this.window.isVisible()) {
-					if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
-						int row = CDQueuesImpl.instance().indexOf((Queue) observable);
-						NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
-						this.queueTable.setNeedsDisplay(queueRect);
-					}
-				}
-			}
+                if (this.window.isVisible()) {
+                    if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
+                        int row = CDQueuesImpl.instance().indexOf((Queue) observable);
+                        NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
+                        this.queueTable.setNeedsDisplay(queueRect);
+                    }
+                }
+            }
             else if (msg.getTitle().equals(Message.DATA)) {
-				if (this.window.isVisible()) {
-					if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
-						int row = CDQueuesImpl.instance().indexOf((Queue) observable);
-						NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
-						this.queueTable.setNeedsDisplay(progressRect);
-					}
-				}
-			}
+                if (this.window.isVisible()) {
+                    if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
+                        int row = CDQueuesImpl.instance().indexOf((Queue) observable);
+                        NSRect progressRect = this.queueTable.frameOfCellAtLocation(1, row);
+                        this.queueTable.setNeedsDisplay(progressRect);
+                    }
+                }
+            }
             else if (msg.getTitle().equals(Message.QUEUE_START)) {
                 this.toolbar.validateVisibleItems();
             }
@@ -214,7 +213,7 @@ public class CDQueueController extends NSObject implements Observer {
                     }
                     if (Queue.KIND_UPLOAD == queue.kind()) {
                         if (callback != null) {
-							log.debug("Telling observable to refresh directory listing");
+                            log.debug("Telling observable to refresh directory listing");
                             callback.update(observable, new Message(Message.REFRESH));
                         }
                     }
@@ -333,9 +332,9 @@ public class CDQueueController extends NSObject implements Observer {
     public void revealButtonClicked(Object sender) {
         if (this.queueTable.selectedRow() != -1) {
             Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-			Path f = item.getRoot();
+            Path f = item.getRoot();
 //			String file = f.status.isComplete() ? item.getRoot().getLocal().toString() : item.getRoot().getLocal().getTemp().toString();
-			String file = item.getRoot().getLocal().toString();
+            String file = item.getRoot().getLocal().toString();
             if (!NSWorkspace.sharedWorkspace().selectFile(file, "")) {
                 if (item.isComplete()) {
                     NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Could not show the file in the Finder", ""), //title
@@ -381,29 +380,29 @@ public class CDQueueController extends NSObject implements Observer {
         this.queueTable.reloadData();
     }
 
-	public void clearButtonClicked(Object sender) {
-		for(Iterator iter = CDQueuesImpl.instance().iterator(); iter.hasNext(); ) {
-			Queue q = (Queue)iter.next();
-			if(q.getSize() == q.getCurrent() && q.getSize() > 0) {
-				iter.remove();
-			}
+    public void clearButtonClicked(Object sender) {
+        for (Iterator iter = CDQueuesImpl.instance().iterator(); iter.hasNext();) {
+            Queue q = (Queue) iter.next();
+            if (q.getSize() == q.getCurrent() && q.getSize() > 0) {
+                iter.remove();
+            }
         }
         this.queueTable.reloadData();
     }
-	
-	public boolean validateMenuItem(_NSObsoleteMenuItemProtocol cell) {
+
+    public boolean validateMenuItem(_NSObsoleteMenuItemProtocol cell) {
         String sel = cell.action().name();
-		log.debug("validateMenuItem:"+sel);
+        log.debug("validateMenuItem:" + sel);
         return this.validateItem(sel);
     }
-	
+
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
             "Resume",
             "Reload",
             "Stop",
             "Remove",
-			"Clear",
+            "Clear",
             NSToolbarItem.FlexibleSpaceItemIdentifier,
             "Show"
         });
@@ -415,7 +414,7 @@ public class CDQueueController extends NSObject implements Observer {
             "Reload",
             "Stop",
             "Remove",
-			"Clear",
+            "Clear",
             "Show",
             NSToolbarItem.CustomizeToolbarItemIdentifier,
             NSToolbarItem.SpaceItemIdentifier,
@@ -426,10 +425,10 @@ public class CDQueueController extends NSObject implements Observer {
 
     public boolean validateToolbarItem(NSToolbarItem item) {
         String identifier = item.itemIdentifier();
-		return this.validateItem(identifier);
-	}
-	
-	private boolean validateItem(String identifier) {
+        return this.validateItem(identifier);
+    }
+
+    private boolean validateItem(String identifier) {
         if (identifier.equals("Stop") || identifier.equals("stopButtonClicked:")) {
             if (this.queueTable.numberOfSelectedRows() < 1) {
                 return false;
@@ -444,45 +443,45 @@ public class CDQueueController extends NSObject implements Observer {
             return true;
         }
         if (identifier.equals("Resume") || identifier.equals("resumeButtonClicked:")) {
-			if(this.queueTable.numberOfSelectedRows() == 1) {
+            if (this.queueTable.numberOfSelectedRows() == 1) {
                 Queue queue = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-				return !queue.isRunning() && !queue.isComplete();
-			}
-			return false;
-			/*			
-            if (this.queueTable.numberOfSelectedRows() < 1) {
-                return false;
+                return !queue.isRunning() && !queue.isComplete();
             }
-            NSEnumerator enum = queueTable.selectedRowEnumerator();
-            while (enum.hasMoreElements()) {
-                Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
+            return false;
+            /*
+if (this.queueTable.numberOfSelectedRows() < 1) {
+return false;
+}
+NSEnumerator enum = queueTable.selectedRowEnumerator();
+while (enum.hasMoreElements()) {
+Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
 //                if (!(queue.isCanceled() && !(queue.remainingJobs() == 0) && (queue.getRoot() instanceof FTPPath))) {
-                if (!(queue.isCanceled() && !(queue.remainingJobs() == 0))) {
-                    return false;
-                }
-            }
-            return true;
-			*/
+if (!(queue.isCanceled() && !(queue.remainingJobs() == 0))) {
+return false;
+}
+}
+return true;
+            */
         }
         if (identifier.equals("Reload") || identifier.equals("reloadButtonClicked:")) {
-			if(this.queueTable.numberOfSelectedRows() == 1) {
+            if (this.queueTable.numberOfSelectedRows() == 1) {
                 Queue queue = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-				return !queue.isRunning();
-			}
-			return false;
-				/*
-            if (this.queueTable.numberOfSelectedRows() < 1) {
-                return false;
+                return !queue.isRunning();
             }
-            NSEnumerator enum = queueTable.selectedRowEnumerator();
-            while (enum.hasMoreElements()) {
-                Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
-                if (queue.isRunning()) {
-                    return false;
-                }
-            }
-            return true;
-			 */
+            return false;
+            /*
+if (this.queueTable.numberOfSelectedRows() < 1) {
+return false;
+}
+NSEnumerator enum = queueTable.selectedRowEnumerator();
+while (enum.hasMoreElements()) {
+Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
+if (queue.isRunning()) {
+return false;
+}
+}
+return true;
+         */
         }
         if (identifier.equals("Show") || identifier.equals("revealButtonClicked:")) {
             return this.queueTable.numberOfSelectedRows() == 1;

@@ -75,197 +75,201 @@ import org.apache.commons.httpclient.log.LogSource;
  * @author <a href="mailto:remm@apache.org">Remy Maucherat</a>
  */
 public class PutMethod
-    extends HttpMethodBase {
+        extends HttpMethodBase {
 
 
-	// ----------------------------------------------------------- Constructors
+    // ----------------------------------------------------------- Constructors
 
 
-	/**
-	 * No-arg constructor.
-	 */
-	public PutMethod() {
-	}
+    /**
+     * No-arg constructor.
+     */
+    public PutMethod() {
+    }
 
 
-	/**
-	 * Path-setting constructor.
-	 * @param path the path to request
-	 */
-	public PutMethod(String path) {
-		super(path);
-	}
+    /**
+     * Path-setting constructor.
+     *
+     * @param path the path to request
+     */
+    public PutMethod(String path) {
+        super(path);
+    }
 
 
-	// ------------------------------------------------------- Instance Methods
+    // ------------------------------------------------------- Instance Methods
 
 
-	/**
-	 * Request body content to be sent.
-	 */
-	private byte[] data = null;
+    /**
+     * Request body content to be sent.
+     */
+    private byte[] data = null;
 
 
-	/**
-	 * Request body content to be sent.
-	 */
-	private File file = null;
+    /**
+     * Request body content to be sent.
+     */
+    private File file = null;
 
 
-	/**
-	 * Request body content to be sent.
-	 */
-	private URL url = null;
+    /**
+     * Request body content to be sent.
+     */
+    private URL url = null;
 
 
-	// --------------------------------------------------------- Public Methods
+    // --------------------------------------------------------- Public Methods
 
-	/**
-	 * Return <tt>"PUT"</tt>.
-	 * @return <tt>"PUT"</tt>
-	 */
-	public String getName() {
-		return "PUT";
-	}
+    /**
+     * Return <tt>"PUT"</tt>.
+     *
+     * @return <tt>"PUT"</tt>
+     */
+    public String getName() {
+        return "PUT";
+    }
 
-	/**
-	 * Set my request body content to the contents of a file.
-	 */
-	public void setRequestBody(File file) throws IOException {
-		checkNotUsed();
-		this.file = file;
-	}
+    /**
+     * Set my request body content to the contents of a file.
+     */
+    public void setRequestBody(File file) throws IOException {
+        checkNotUsed();
+        this.file = file;
+    }
 
-	/**
-	 * Set my request body content to the resource at the specified URL.
-	 */
-	public void setRequestBody(URL url) throws IOException {
-		checkNotUsed();
-		this.url = url;
-	}
+    /**
+     * Set my request body content to the resource at the specified URL.
+     */
+    public void setRequestBody(URL url) throws IOException {
+        checkNotUsed();
+        this.url = url;
+    }
 
-	/**
-	 * Set my request body content to the contents of a byte array.
-	 */
-	public void setRequestBody(byte[] bodydata) {
-		checkNotUsed();
-		this.data = bodydata;
-	}
+    /**
+     * Set my request body content to the contents of a byte array.
+     */
+    public void setRequestBody(byte[] bodydata) {
+        checkNotUsed();
+        this.data = bodydata;
+    }
 
-	/**
-	 * Set my request body content to the contents of a string.
-	 */
-	public void setRequestBody(String bodydata) {
-		checkNotUsed();
-		setRequestBody(bodydata.getBytes());
-	}
+    /**
+     * Set my request body content to the contents of a string.
+     */
+    public void setRequestBody(String bodydata) {
+        checkNotUsed();
+        setRequestBody(bodydata.getBytes());
+    }
 
-	/**
-	 * Set my request body content to the contents of an input stream.
-	 * The contents will be buffered into
-	 * memory. To upload large entities, it is recommended to first buffer the
-	 * data into a temporary file, and then send that file.
-	 */
-	public void setRequestBody(InputStream is) throws IOException {
-		checkNotUsed();
-		byte[] buffer = new byte[4096];
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		int nb = 0;
-		while (true) {
-			nb = is.read(buffer);
-			if (nb == -1) {
-				break;
-			}
-			os.write(buffer, 0, nb);
-		}
-		data = os.toByteArray();
-	}
+    /**
+     * Set my request body content to the contents of an input stream.
+     * The contents will be buffered into
+     * memory. To upload large entities, it is recommended to first buffer the
+     * data into a temporary file, and then send that file.
+     */
+    public void setRequestBody(InputStream is) throws IOException {
+        checkNotUsed();
+        byte[] buffer = new byte[4096];
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        int nb = 0;
+        while (true) {
+            nb = is.read(buffer);
+            if (nb == -1) {
+                break;
+            }
+            os.write(buffer, 0, nb);
+        }
+        data = os.toByteArray();
+    }
 
 
-	// ------------------------------------------------- HttpMethodBase Methods
+    // ------------------------------------------------- HttpMethodBase Methods
 
-	/**
-	 * Override the method of {@link HttpMethodBase}
-	 * to set the <tt>Expect</tt> header if it has
-	 * not already been set, in addition to the "standard"
-	 * set of headers.
-	 */
-	protected void addRequestHeaders(HttpState state, HttpConnection conn) throws IOException, HttpException {
-		super.addRequestHeaders(state, conn);
-		// Send expectation header
-		if (isHttp11() && null == getRequestHeader("expect")) {
-			setRequestHeader("Expect", "100-continue");
-		}
-	}
+    /**
+     * Override the method of {@link HttpMethodBase}
+     * to set the <tt>Expect</tt> header if it has
+     * not already been set, in addition to the "standard"
+     * set of headers.
+     */
+    protected void addRequestHeaders(HttpState state, HttpConnection conn) throws IOException, HttpException {
+        super.addRequestHeaders(state, conn);
+        // Send expectation header
+        if (isHttp11() && null == getRequestHeader("expect")) {
+            setRequestHeader("Expect", "100-continue");
+        }
+    }
 
-	/**
-	 * Override the method of {@link HttpMethodBase}
-	 * to not send any data until
-	 * the <tt>100 Continue</tt> status has not be
-	 * read.
-	 */
-	protected boolean writeRequestBody(HttpState state, HttpConnection conn) throws IOException, HttpException {
-		if (null != getRequestHeader("expect") && getStatusCode() != HttpStatus.SC_CONTINUE) {
-			return false;
-		}
-		OutputStream out = conn.getRequestOutputStream((isHttp11() && (null == getRequestHeader("Content-Length"))));
+    /**
+     * Override the method of {@link HttpMethodBase}
+     * to not send any data until
+     * the <tt>100 Continue</tt> status has not be
+     * read.
+     */
+    protected boolean writeRequestBody(HttpState state, HttpConnection conn) throws IOException, HttpException {
+        if (null != getRequestHeader("expect") && getStatusCode() != HttpStatus.SC_CONTINUE) {
+            return false;
+        }
+        OutputStream out = conn.getRequestOutputStream((isHttp11() && (null == getRequestHeader("Content-Length"))));
 
-		InputStream inputStream = null;
-		if (file != null) {
-			inputStream = new FileInputStream(file);
-		}
-		else if (url != null) {
-			inputStream = url.openConnection().getInputStream();
-		}
-		else if (data != null) {
-			inputStream = new ByteArrayInputStream(data);
-		}
-		else {
-			return true;
-		}
+        InputStream inputStream = null;
+        if (file != null) {
+            inputStream = new FileInputStream(file);
+        }
+        else if (url != null) {
+            inputStream = url.openConnection().getInputStream();
+        }
+        else if (data != null) {
+            inputStream = new ByteArrayInputStream(data);
+        }
+        else {
+            return true;
+        }
 
-		byte[] buffer = new byte[4096];
-		int nb = 0;
-		while (true) {
-			nb = inputStream.read(buffer);
-			if (nb == -1) {
-				break;
-			}
-			out.write(buffer, 0, nb);
-		}
-		inputStream.close();
-		out.close();
-		return true;
-	}
+        byte[] buffer = new byte[4096];
+        int nb = 0;
+        while (true) {
+            nb = inputStream.read(buffer);
+            if (nb == -1) {
+                break;
+            }
+            out.write(buffer, 0, nb);
+        }
+        inputStream.close();
+        out.close();
+        return true;
+    }
 
-	/**
-	 * Override the method of {@link HttpMethodBase}
-	 * to return the appropriate content length.
-	 */
-	protected int getRequestContentLength() {
-		if (null != data) {
-			return data.length;
-		}
-		else if (null != file) {
-			return (int) (file.length());
-		}
-		else if (url != null) {
-			return -1;
-		}
-		else {
-			return 0;
-		}
-	}
+    /**
+     * Override the method of {@link HttpMethodBase}
+     * to return the appropriate content length.
+     */
+    protected int getRequestContentLength() {
+        if (null != data) {
+            return data.length;
+        }
+        else if (null != file) {
+            return (int) (file.length());
+        }
+        else if (url != null) {
+            return -1;
+        }
+        else {
+            return 0;
+        }
+    }
 
-	/**
-	 */
-	public void recycle() {
-		super.recycle();
-		data = null;
-		url = null;
-		file = null;
-	}
+    /**
+     */
+    public void recycle() {
+        super.recycle();
+        data = null;
+        url = null;
+        file = null;
+    }
 
-	/** <tt>org.apache.commons.httpclient.methods.PutMethod</tt> log. */
-	private static final Log log = LogSource.getInstance("org.apache.commons.httpclient.methods.PutMethod");
+    /**
+     * <tt>org.apache.commons.httpclient.methods.PutMethod</tt> log.
+     */
+    private static final Log log = LogSource.getInstance("org.apache.commons.httpclient.methods.PutMethod");
 }

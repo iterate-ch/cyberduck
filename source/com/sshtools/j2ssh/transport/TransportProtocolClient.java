@@ -26,6 +26,13 @@
  */
 package com.sshtools.j2ssh.transport;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.transport.cipher.SshCipher;
 import com.sshtools.j2ssh.transport.cipher.SshCipherFactory;
@@ -37,19 +44,8 @@ import com.sshtools.j2ssh.transport.publickey.SshKeyPair;
 import com.sshtools.j2ssh.transport.publickey.SshKeyPairFactory;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 
-import java.io.IOException;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -64,20 +60,16 @@ public class TransportProtocolClient extends TransportProtocolCommon {
      * Creates a new TransportProtocolClient object.
      *
      * @param hosts
-     *
      * @throws TransportProtocolException
      */
     public TransportProtocolClient(HostKeyVerification hosts)
-        throws TransportProtocolException {
+            throws TransportProtocolException {
         super();
         this.hosts = hosts;
     }
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws IOException
      */
     public void onMessageReceived(SshMessage msg) throws IOException {
@@ -85,23 +77,19 @@ public class TransportProtocolClient extends TransportProtocolCommon {
     }
 
     /**
-     *
-     *
      * @throws MessageAlreadyRegisteredException
+     *
      */
     public void registerTransportMessages()
-        throws MessageAlreadyRegisteredException {
+            throws MessageAlreadyRegisteredException {
         // Setup our private message store, we wont be registering any direct messages
         ms.registerMessage(SshMsgServiceAccept.SSH_MSG_SERVICE_ACCEPT,
-            SshMsgServiceAccept.class);
+                SshMsgServiceAccept.class);
         this.addMessageStore(ms);
     }
 
     /**
-     *
-     *
      * @param service
-     *
      * @throws IOException
      * @throws SshException
      */
@@ -118,7 +106,8 @@ public class TransportProtocolClient extends TransportProtocolCommon {
 
         try {
             state.waitForState(TransportProtocolState.CONNECTED);
-        } catch (InterruptedException ie) {
+        }
+        catch (InterruptedException ie) {
             throw new IOException("The operation was interrupted");
         }
 
@@ -135,9 +124,9 @@ public class TransportProtocolClient extends TransportProtocolCommon {
             // Wait for the accept message, if the service is not accepted the
             // transport protocol disconencts which should cause an excpetion
             msg = ms.getMessage(SshMsgServiceAccept.SSH_MSG_SERVICE_ACCEPT);
-        } catch (InterruptedException ex) {
-            throw new SshException(
-                "The thread was interrupted whilst waiting for a transport protocol message");
+        }
+        catch (InterruptedException ex) {
+            throw new SshException("The thread was interrupted whilst waiting for a transport protocol message");
         }
 
         return;
@@ -159,55 +148,43 @@ public class TransportProtocolClient extends TransportProtocolCommon {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws AlgorithmNotAgreedException
      */
     protected String getDecryptionAlgorithm()
-        throws AlgorithmNotAgreedException {
+            throws AlgorithmNotAgreedException {
         return determineAlgorithm(clientKexInit.getSupportedSCEncryption(),
-            serverKexInit.getSupportedSCEncryption());
+                serverKexInit.getSupportedSCEncryption());
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws AlgorithmNotAgreedException
      */
     protected String getEncryptionAlgorithm()
-        throws AlgorithmNotAgreedException {
+            throws AlgorithmNotAgreedException {
         return determineAlgorithm(clientKexInit.getSupportedCSEncryption(),
-            serverKexInit.getSupportedCSEncryption());
+                serverKexInit.getSupportedCSEncryption());
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws AlgorithmNotAgreedException
      */
     protected String getInputStreamCompAlgortihm()
-        throws AlgorithmNotAgreedException {
+            throws AlgorithmNotAgreedException {
         return determineAlgorithm(clientKexInit.getSupportedSCComp(),
-            serverKexInit.getSupportedSCComp());
+                serverKexInit.getSupportedSCComp());
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws AlgorithmNotAgreedException
      */
     protected String getInputStreamMacAlgorithm()
-        throws AlgorithmNotAgreedException {
+            throws AlgorithmNotAgreedException {
         return determineAlgorithm(clientKexInit.getSupportedSCMac(),
-            serverKexInit.getSupportedSCMac());
+                serverKexInit.getSupportedSCMac());
     }
 
     /**
@@ -215,12 +192,10 @@ public class TransportProtocolClient extends TransportProtocolCommon {
      */
     protected void setLocalIdent() {
         clientIdent = "SSH-" + PROTOCOL_VERSION + "-" +
-            SOFTWARE_VERSION_COMMENTS + " [CLIENT]";
+                SOFTWARE_VERSION_COMMENTS + " [CLIENT]";
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getLocalId() {
@@ -228,8 +203,6 @@ public class TransportProtocolClient extends TransportProtocolCommon {
     }
 
     /**
-     *
-     *
      * @param msg
      */
     protected void setLocalKexInit(SshMsgKexInit msg) {
@@ -238,8 +211,6 @@ public class TransportProtocolClient extends TransportProtocolCommon {
     }
 
     /**
-     *
-     *
      * @return
      */
     protected SshMsgKexInit getLocalKexInit() {
@@ -247,34 +218,26 @@ public class TransportProtocolClient extends TransportProtocolCommon {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws AlgorithmNotAgreedException
      */
     protected String getOutputStreamCompAlgorithm()
-        throws AlgorithmNotAgreedException {
+            throws AlgorithmNotAgreedException {
         return determineAlgorithm(clientKexInit.getSupportedCSComp(),
-            serverKexInit.getSupportedCSComp());
+                serverKexInit.getSupportedCSComp());
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws AlgorithmNotAgreedException
      */
     protected String getOutputStreamMacAlgorithm()
-        throws AlgorithmNotAgreedException {
+            throws AlgorithmNotAgreedException {
         return determineAlgorithm(clientKexInit.getSupportedCSMac(),
-            serverKexInit.getSupportedCSMac());
+                serverKexInit.getSupportedCSMac());
     }
 
     /**
-     *
-     *
      * @param ident
      */
     protected void setRemoteIdent(String ident) {
@@ -282,8 +245,6 @@ public class TransportProtocolClient extends TransportProtocolCommon {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getRemoteId() {
@@ -291,8 +252,6 @@ public class TransportProtocolClient extends TransportProtocolCommon {
     }
 
     /**
-     *
-     *
      * @param msg
      */
     protected void setRemoteKexInit(SshMsgKexInit msg) {
@@ -300,8 +259,6 @@ public class TransportProtocolClient extends TransportProtocolCommon {
     }
 
     /**
-     *
-     *
      * @return
      */
     protected SshMsgKexInit getRemoteKexInit() {
@@ -309,8 +266,6 @@ public class TransportProtocolClient extends TransportProtocolCommon {
     }
 
     /**
-     *
-     *
      * @return
      */
     public SshPublicKey getServerHostKey() {
@@ -318,8 +273,6 @@ public class TransportProtocolClient extends TransportProtocolCommon {
     }
 
     /**
-     *
-     *
      * @throws IOException
      * @throws TransportProtocolException
      */
@@ -328,7 +281,8 @@ public class TransportProtocolClient extends TransportProtocolCommon {
                 (state.getValue() != TransportProtocolState.DISCONNECTED)) {
             try {
                 state.waitForStateUpdate();
-            } catch (InterruptedException ex) {
+            }
+            catch (InterruptedException ex) {
                 throw new IOException("The operation was interrupted");
             }
         }
@@ -336,55 +290,49 @@ public class TransportProtocolClient extends TransportProtocolCommon {
         if (state.getValue() == TransportProtocolState.DISCONNECTED) {
             if (state.hasError()) {
                 throw state.getLastError();
-            } else {
-                throw new TransportProtocolException(
-                    "The connection did not complete");
+            }
+            else {
+                throw new TransportProtocolException("The connection did not complete");
             }
         }
     }
 
     /**
-     *
-     *
      * @param kex
-     *
      * @throws IOException
      */
     protected void performKeyExchange(SshKeyExchange kex)
-        throws IOException {
+            throws IOException {
         // Start the key exchange instance
         kex.performClientExchange(clientIdent, serverIdent,
-            clientKexInit.toByteArray(), serverKexInit.toByteArray());
+                clientKexInit.toByteArray(), serverKexInit.toByteArray());
 
         // Verify the hoskey
         if (!verifyHostKey(kex.getHostKey(), kex.getSignature(),
-                    kex.getExchangeHash())) {
+                kex.getExchangeHash())) {
             sendDisconnect(SshMsgDisconnect.HOST_KEY_NOT_VERIFIABLE,
-                "The host key supplied was not valid",
-                new KeyExchangeException(
-                    "The host key is invalid or was not accepted!"));
+                    "The host key supplied was not valid",
+                    new KeyExchangeException("The host key is invalid or was not accepted!"));
         }
     }
 
     /**
-     *
-     *
      * @param encryptCSKey
      * @param encryptCSIV
      * @param encryptSCKey
      * @param encryptSCIV
      * @param macCSKey
      * @param macSCKey
-     *
      * @throws AlgorithmNotAgreedException
      * @throws AlgorithmOperationException
      * @throws AlgorithmNotSupportedException
      * @throws AlgorithmInitializationException
+     *
      */
     protected void setupNewKeys(byte[] encryptCSKey, byte[] encryptCSIV,
-        byte[] encryptSCKey, byte[] encryptSCIV, byte[] macCSKey,
-        byte[] macSCKey)
-        throws AlgorithmNotAgreedException, AlgorithmOperationException, 
+                                byte[] encryptSCKey, byte[] encryptSCIV, byte[] macCSKey,
+                                byte[] macSCKey)
+            throws AlgorithmNotAgreedException, AlgorithmOperationException,
             AlgorithmNotSupportedException, AlgorithmInitializationException {
         // Setup the encryption cipher
         SshCipher sshCipher = SshCipherFactory.newInstance(getEncryptionAlgorithm());
@@ -406,22 +354,17 @@ public class TransportProtocolClient extends TransportProtocolCommon {
     }
 
     /**
-     *
-     *
      * @param key
      * @param sig
      * @param sigdata
-     *
      * @return
-     *
      * @throws TransportProtocolException
      */
     protected boolean verifyHostKey(byte[] key, byte[] sig, byte[] sigdata)
-        throws TransportProtocolException {
+            throws TransportProtocolException {
         // Determine the public key algorithm and obtain an instance
-        SshKeyPair pair = SshKeyPairFactory.newInstance(determineAlgorithm(
-                    clientKexInit.getSupportedPublicKeys(),
-                    serverKexInit.getSupportedPublicKeys()));
+        SshKeyPair pair = SshKeyPairFactory.newInstance(determineAlgorithm(clientKexInit.getSupportedPublicKeys(),
+                serverKexInit.getSupportedPublicKeys()));
 
         // Iniialize the public key instance
         pk = pair.setPublicKey(key);
@@ -434,12 +377,14 @@ public class TransportProtocolClient extends TransportProtocolCommon {
 
             if (!addr.getHostAddress().equals(properties.getHost())) {
                 host = addr.getHostName() + "," + addr.getHostAddress();
-            } else {
+            }
+            else {
                 host = addr.getHostAddress();
             }
-        } catch (UnknownHostException ex) {
+        }
+        catch (UnknownHostException ex) {
             log.info("The host " + properties.getHost() +
-                " could not be resolved");
+                    " could not be resolved");
             host = properties.getHost();
         }
 
@@ -451,7 +396,7 @@ public class TransportProtocolClient extends TransportProtocolCommon {
 
         boolean result = pk.verifySignature(sig, sigdata);
         log.info("The host key signature is " +
-            (result ? " valid" : "invalid"));
+                (result ? " valid" : "invalid"));
 
         return result;
     }

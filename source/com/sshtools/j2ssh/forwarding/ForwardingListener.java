@@ -26,28 +26,25 @@
  */
 package com.sshtools.j2ssh.forwarding;
 
-import com.sshtools.j2ssh.SshThread;
-import com.sshtools.j2ssh.connection.ConnectionProtocol;
-import com.sshtools.j2ssh.util.StartStopState;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
-
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.sshtools.j2ssh.SshThread;
+import com.sshtools.j2ssh.connection.ConnectionProtocol;
+import com.sshtools.j2ssh.util.StartStopState;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public abstract class ForwardingListener extends ForwardingConfiguration
-    implements Runnable {
+        implements Runnable {
     private static Log log = LogFactory.getLog(ForwardingListener.class);
     private ConnectionProtocol connection;
     private ServerSocket server;
@@ -65,8 +62,8 @@ public abstract class ForwardingListener extends ForwardingConfiguration
      * @param portToConnect
      */
     public ForwardingListener(String name, ConnectionProtocol connection,
-        String addressToBind, int portToBind, String hostToConnect,
-        int portToConnect) {
+                              String addressToBind, int portToBind, String hostToConnect,
+                              int portToConnect) {
         super(name, addressToBind, portToBind, hostToConnect, portToConnect);
         log.info("Creating forwarding listener named '" + name + "'");
         this.connection = connection;
@@ -87,14 +84,12 @@ public abstract class ForwardingListener extends ForwardingConfiguration
      * @param portToBind
      */
     public ForwardingListener(ConnectionProtocol connection,
-        String addressToBind, int portToBind) {
+                              String addressToBind, int portToBind) {
         this(addressToBind + ":" + String.valueOf(portToBind), connection,
-            addressToBind, portToBind, "[Specified by connecting computer]", -1);
+                addressToBind, portToBind, "[Specified by connecting computer]", -1);
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getLocalPort() {
@@ -102,8 +97,6 @@ public abstract class ForwardingListener extends ForwardingConfiguration
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isListening() {
@@ -140,34 +133,37 @@ public abstract class ForwardingListener extends ForwardingConfiguration
 
                     if (connection.openChannel(channel)) {
                         log.info("Forwarding channel for '" + name +
-                            "' is open");
-                    } else {
+                                "' is open");
+                    }
+                    else {
                         log.warn("Failed to open forwarding chanel " + name);
                         socket.close();
                     }
-                } catch (Exception ex) {
+                }
+                catch (Exception ex) {
                     log.warn("Failed to open forwarding chanel " + name, ex);
 
                     try {
                         socket.close();
-                    } catch (IOException ioe) {
+                    }
+                    catch (IOException ioe) {
                     }
                 }
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             /* only warn if the forwarding has not been stopped */
             if (state.getValue() == StartStopState.STARTED) {
                 log.warn("Local forwarding listener to " + hostToConnect + ":" +
-                    String.valueOf(portToConnect) + " has failed", ioe);
+                        String.valueOf(portToConnect) + " has failed", ioe);
             }
-        } finally {
+        }
+        finally {
             stop();
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isRunning() {
@@ -175,8 +171,6 @@ public abstract class ForwardingListener extends ForwardingConfiguration
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     public void start() throws IOException {
@@ -187,7 +181,8 @@ public abstract class ForwardingListener extends ForwardingConfiguration
         try {
             server = new ServerSocket(getPortToBind(), 50,
                     InetAddress.getByName(getAddressToBind()));
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             super.stop();
             throw ioe;
         }
@@ -212,7 +207,8 @@ public abstract class ForwardingListener extends ForwardingConfiguration
             if (server != null) {
                 server.close();
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             log.warn("Forwarding listener failed to stop", ioe);
         }
 
@@ -221,17 +217,13 @@ public abstract class ForwardingListener extends ForwardingConfiguration
     }
 
     /**
-     *
-     *
      * @param hostToConnect
      * @param portToConnect
      * @param socket
-     *
      * @return
-     *
      * @throws ForwardingConfigurationException
+     *
      */
-    protected abstract ForwardingSocketChannel createChannel(
-        String hostToConnect, int portToConnect, Socket socket)
-        throws ForwardingConfigurationException;
+    protected abstract ForwardingSocketChannel createChannel(String hostToConnect, int portToConnect, Socket socket)
+            throws ForwardingConfigurationException;
 }

@@ -30,8 +30,6 @@ import com.sshtools.j2ssh.util.State;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -53,14 +51,11 @@ public class ChannelState extends State {
     }
 
     /**
-     *
-     *
      * @param state
-     *
      * @return
      */
     public boolean isValidState(int state) {
         return ((state == CHANNEL_UNINITIALIZED) || (state == CHANNEL_OPEN) ||
-        (state == CHANNEL_CLOSED));
+                (state == CHANNEL_CLOSED));
     }
 }

@@ -20,8 +20,9 @@ package ch.cyberduck.core;
 
 /**
  * Singleton
+ *
  * @version $Id$
  */
 public interface Transcript {
-	 public abstract void log(String message);
+    public abstract void log(String message);
 }

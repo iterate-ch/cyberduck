@@ -26,17 +26,15 @@
  */
 package com.sshtools.j2ssh.connection;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -57,7 +55,7 @@ public class SshMsgChannelRequest extends SshMessage {
      * @param channelData
      */
     public SshMsgChannelRequest(long recipientChannel, String requestType,
-        boolean wantReply, byte[] channelData) {
+                                boolean wantReply, byte[] channelData) {
         super(SSH_MSG_CHANNEL_REQUEST);
         this.recipientChannel = recipientChannel;
         this.requestType = requestType;
@@ -73,8 +71,6 @@ public class SshMsgChannelRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getChannelData() {
@@ -82,8 +78,6 @@ public class SshMsgChannelRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -91,8 +85,6 @@ public class SshMsgChannelRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getRecipientChannel() {
@@ -100,8 +92,6 @@ public class SshMsgChannelRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getRequestType() {
@@ -109,8 +99,6 @@ public class SshMsgChannelRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean getWantReply() {
@@ -118,14 +106,11 @@ public class SshMsgChannelRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             baw.writeInt(recipientChannel);
             baw.writeString(requestType);
@@ -134,20 +119,18 @@ public class SshMsgChannelRequest extends SshMessage {
             if (channelData != null) {
                 baw.write(channelData);
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             recipientChannel = bar.readInt();
             requestType = bar.readString();
@@ -157,7 +140,8 @@ public class SshMsgChannelRequest extends SshMessage {
                 channelData = new byte[bar.available()];
                 bar.read(channelData);
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }

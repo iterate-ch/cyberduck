@@ -26,14 +26,13 @@
  */
 package com.sshtools.j2ssh.sftp;
 
-import com.sshtools.j2ssh.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
-import java.io.*;
+import com.sshtools.j2ssh.io.UnsignedInteger64;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -45,7 +44,6 @@ public class SftpFileInputStream extends InputStream {
      * Creates a new SftpFileInputStream object.
      *
      * @param file
-     *
      * @throws IOException
      */
     public SftpFileInputStream(SftpFile file) throws IOException {
@@ -54,26 +52,21 @@ public class SftpFileInputStream extends InputStream {
         }
 
         if (file.getSFTPSubsystem() == null) {
-            throw new IOException(
-                "The file is not attached to an SFTP subsystem!");
+            throw new IOException("The file is not attached to an SFTP subsystem!");
         }
 
         this.file = file;
     }
 
     /**
-     *
-     *
      * @param buffer
      * @param offset
      * @param len
-     *
      * @return
-     *
      * @throws IOException
      */
     public int read(byte[] buffer, int offset, int len)
-        throws IOException {
+            throws IOException {
         int read = file.getSFTPSubsystem().readFile(file.getHandle(), position,
                 buffer, offset, len);
 
@@ -85,10 +78,7 @@ public class SftpFileInputStream extends InputStream {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws java.io.IOException
      */
     public int read() throws java.io.IOException {
@@ -99,20 +89,18 @@ public class SftpFileInputStream extends InputStream {
 
         return buffer[0] & 0xFF;
     }
-	
-	/*
-	 * The skip method of InputStream creates a  byte array and then repeatedly reads into 
-	 * it until n bytes have been read or the end of the stream has been reached. 
-	 * Subclasses are  encouraged to provide a more efficient implementation of this method.
-	 */
-	public long skip(long n) {
-		position = position.add(position, (int)n);
-		return n;
-	}
+
+    /*
+     * The skip method of InputStream creates a  byte array and then repeatedly reads into
+     * it until n bytes have been read or the end of the stream has been reached.
+     * Subclasses are  encouraged to provide a more efficient implementation of this method.
+     */
+    public long skip(long n) {
+        position = position.add(position, (int) n);
+        return n;
+    }
 
     /**
-     *
-     *
      * @throws IOException
      */
     public void close() throws IOException {
@@ -120,8 +108,6 @@ public class SftpFileInputStream extends InputStream {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void finalize() throws IOException {

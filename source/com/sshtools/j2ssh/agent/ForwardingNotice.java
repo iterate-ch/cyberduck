@@ -39,15 +39,13 @@ class ForwardingNotice {
      * @param remotePort
      */
     public ForwardingNotice(String remoteHostname, String remoteIPAddress,
-        int remotePort) {
+                            int remotePort) {
         this.remoteHostname = remoteHostname;
         this.remoteIPAddress = remoteIPAddress;
         this.remotePort = remotePort;
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getRemoteHostname() {
@@ -55,8 +53,6 @@ class ForwardingNotice {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getRemoteIPAddress() {
@@ -64,8 +60,6 @@ class ForwardingNotice {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getRemotePort() {

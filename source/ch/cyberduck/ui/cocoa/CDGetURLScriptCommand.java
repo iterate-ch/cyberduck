@@ -53,7 +53,7 @@ public class CDGetURLScriptCommand extends NSScriptCommand {
                 if (null != p.getExtension()) {
                     log.debug("Assume downloading");
                     Queue queue = new Queue(Queue.KIND_DOWNLOAD);
-					queue.addRoot(p);
+                    queue.addRoot(p);
                     CDQueuesImpl.instance().addItem(queue);
                     CDQueueController.instance().startItem(queue);
                     return null;

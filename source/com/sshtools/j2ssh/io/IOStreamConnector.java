@@ -26,18 +26,18 @@
  */
 package com.sshtools.j2ssh.io;
 
-import com.sshtools.j2ssh.*;
+import javax.swing.event.EventListenerList;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import org.apache.commons.logging.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import java.io.*;
-
-import javax.swing.event.*;
+import com.sshtools.j2ssh.SshThread;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -71,8 +71,6 @@ public class IOStreamConnector {
     }
 
     /**
-     *
-     *
      * @return
      */
     public IOStreamConnectorState getState() {
@@ -80,8 +78,6 @@ public class IOStreamConnector {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     public void close() throws IOException {
@@ -100,8 +96,6 @@ public class IOStreamConnector {
     }
 
     /**
-     *
-     *
      * @param closeInput
      */
     public void setCloseInput(boolean closeInput) {
@@ -109,8 +103,6 @@ public class IOStreamConnector {
     }
 
     /**
-     *
-     *
      * @param closeOutput
      */
     public void setCloseOutput(boolean closeOutput) {
@@ -118,8 +110,6 @@ public class IOStreamConnector {
     }
 
     /**
-     *
-     *
      * @param in
      * @param out
      */
@@ -134,8 +124,6 @@ public class IOStreamConnector {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long getBytes() {
@@ -143,8 +131,6 @@ public class IOStreamConnector {
     }
 
     /**
-     *
-     *
      * @param l
      */
     public void addIOStreamConnectorListener(IOStreamConnectorListener l) {
@@ -152,8 +138,6 @@ public class IOStreamConnector {
     }
 
     /**
-     *
-     *
      * @param l
      */
     public void removeIOStreamConnectorListener(IOStreamConnectorListener l) {
@@ -206,15 +190,17 @@ public class IOStreamConnector {
                         for (int i = (l.length - 1); i >= 0; i--) {
                             l[i].data(buffer, count);
                         }
-                    } else {
+                    }
+                    else {
                         log.debug("Blocking read returned with " +
-                            String.valueOf(read));
+                                String.valueOf(read));
 
                         if (read < 0) {
                             state.setValue(IOStreamConnectorState.EOF);
                         }
                     }
-                } catch (IOException ioe) {
+                }
+                catch (IOException ioe) {
                     // only warn if were supposed to be still connected, as we will ignore close exceptions
                     if (state.getValue() == IOStreamConnectorState.CONNECTED) {
                         log.debug(ioe.getMessage());
@@ -228,7 +214,8 @@ public class IOStreamConnector {
                 if (state.getValue() != IOStreamConnectorState.CLOSED) {
                     close();
                 }
-            } catch (IOException ioe) {
+            }
+            catch (IOException ioe) {
             }
 
             log.info("IOStreamConnectorThread is exiting");

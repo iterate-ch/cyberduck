@@ -26,27 +26,20 @@
  */
 package com.sshtools.j2ssh.connection;
 
-import com.sshtools.j2ssh.SshException;
-import com.sshtools.j2ssh.transport.AsyncService;
-import com.sshtools.j2ssh.transport.MessageStoreEOFException;
-import com.sshtools.j2ssh.transport.ServiceState;
-import com.sshtools.j2ssh.transport.SshMessage;
-import com.sshtools.j2ssh.transport.TransportProtocolState;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.sshtools.j2ssh.SshException;
+import com.sshtools.j2ssh.transport.*;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -66,21 +59,16 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @param channelName
      * @param cf
-     *
      * @throws IOException
      */
     public void addChannelFactory(String channelName, ChannelFactory cf)
-        throws IOException {
+            throws IOException {
         allowedChannels.put(channelName, cf);
     }
 
     /**
-     *
-     *
      * @param channelName
      */
     public void removeChannelFactory(String channelName) {
@@ -88,10 +76,7 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @param channelName
-     *
      * @return
      */
     public boolean containsChannelFactory(String channelName) {
@@ -99,64 +84,53 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @param requestName
      * @param handler
      */
     public void allowGlobalRequest(String requestName,
-        GlobalRequestHandler handler) {
+                                   GlobalRequestHandler handler) {
         globalRequests.put(requestName, handler);
     }
 
     /**
-     *
-     *
      * @param channel
-     *
      * @return
-     *
      * @throws IOException
      */
     public synchronized boolean openChannel(Channel channel)
-        throws IOException {
+            throws IOException {
         return openChannel(channel, null);
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isConnected() {
         return ((transport.getState().getValue() == TransportProtocolState.CONNECTED) ||
-        (transport.getState().getValue() == TransportProtocolState.PERFORMING_KEYEXCHANGE)) &&
-        (getState().getValue() == ServiceState.SERVICE_STARTED);
+                (transport.getState().getValue() == TransportProtocolState.PERFORMING_KEYEXCHANGE)) &&
+                (getState().getValue() == ServiceState.SERVICE_STARTED);
     }
 
     private Long getChannelId() {
         synchronized (activeChannels) {
             if (reusableChannels.size() <= 0) {
                 return new Long(nextChannelId++);
-            } else {
+            }
+            else {
                 return (Long) reusableChannels.iterator().next();
             }
         }
     }
 
     /**
-     *
-     *
      * @param channel
      * @param eventListener
-     *
      * @return
-     *
      * @throws IOException
      * @throws SshException
      */
     public synchronized boolean openChannel(Channel channel,
-        ChannelEventListener eventListener) throws IOException {
+                                            ChannelEventListener eventListener) throws IOException {
         synchronized (activeChannels) {
             Long channelId = getChannelId();
 
@@ -182,25 +156,27 @@ public class ConnectionProtocol extends AsyncService {
                     activeChannels.put(channelId, channel);
                     log.debug("Initiating channel");
                     channel.init(this, channelId.longValue(),
-                        conf.getSenderChannel(), conf.getInitialWindowSize(),
-                        conf.getMaximumPacketSize(), eventListener);
+                            conf.getSenderChannel(), conf.getInitialWindowSize(),
+                            conf.getMaximumPacketSize(), eventListener);
                     channel.open();
                     log.info("Channel " +
-                        String.valueOf(channel.getLocalChannelId()) +
-                        " is open [" + channel.getName() + "]");
+                            String.valueOf(channel.getLocalChannelId()) +
+                            " is open [" + channel.getName() + "]");
 
                     return true;
-                } else {
+                }
+                else {
                     // Make sure the channels state is closed
                     channel.getState().setValue(ChannelState.CHANNEL_CLOSED);
 
                     return false;
                 }
-            } catch (MessageStoreEOFException mse) {
+            }
+            catch (MessageStoreEOFException mse) {
                 throw new IOException(mse.getMessage());
-            } catch (InterruptedException ex) {
-                throw new SshException(
-                    "The thread was interrupted whilst waiting for a connection protocol message");
+            }
+            catch (InterruptedException ex) {
+                throw new SshException("The thread was interrupted whilst waiting for a connection protocol message");
             }
         }
     }
@@ -220,33 +196,31 @@ public class ConnectionProtocol extends AsyncService {
                 if (channel != null) {
                     if (log.isDebugEnabled()) {
                         log.debug("Closing " + channel.getName() + " id=" +
-                            String.valueOf(channel.getLocalChannelId()));
+                                String.valueOf(channel.getLocalChannelId()));
                     }
 
                     channel.close();
                 }
             }
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
         }
 
         activeChannels.clear();
     }
 
     /**
-     *
-     *
      * @param channel
      * @param data
-     *
      * @throws IOException
      */
     public synchronized void sendChannelData(Channel channel, byte[] data)
-        throws IOException {
+            throws IOException {
         synchronized (channel.getState()) {
             if (log.isDebugEnabled()) {
                 log.debug("Sending " + String.valueOf(data.length) +
-                    " bytes for channel id " +
-                    String.valueOf(channel.getLocalChannelId()));
+                        " bytes for channel id " +
+                        String.valueOf(channel.getLocalChannelId()));
             }
 
             int sent = 0;
@@ -259,8 +233,8 @@ public class ConnectionProtocol extends AsyncService {
             while (sent < data.length) {
                 remaining = data.length - sent;
                 max = ((window.getWindowSpace() < channel.getRemotePacketSize()) &&
-                    (window.getWindowSpace() > 0)) ? window.getWindowSpace()
-                                                   : channel.getRemotePacketSize();
+                        (window.getWindowSpace() > 0)) ? window.getWindowSpace()
+                        : channel.getRemotePacketSize();
                 block = (max < remaining) ? (int) max : remaining;
                 channel.remoteWindow.consumeWindowSpace(block);
                 buffer = new byte[block];
@@ -281,23 +255,19 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @param channel
-     *
      * @throws IOException
      */
     public void sendChannelEOF(Channel channel) throws IOException {
         synchronized (activeChannels) {
             if (!activeChannels.containsValue(channel)) {
-                throw new IOException(
-                    "Attempt to send EOF for a non existent channel " +
-                    String.valueOf(channel.getLocalChannelId()));
+                throw new IOException("Attempt to send EOF for a non existent channel " +
+                        String.valueOf(channel.getLocalChannelId()));
             }
 
             log.info("Local computer has set channel " +
-                String.valueOf(channel.getLocalChannelId()) + " to EOF [" +
-                channel.getName() + "]");
+                    String.valueOf(channel.getLocalChannelId()) + " to EOF [" +
+                    channel.getName() + "]");
 
             SshMsgChannelEOF msg = new SshMsgChannelEOF(channel.getRemoteChannelId());
             transport.sendMessage(msg, this);
@@ -305,16 +275,13 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @param channel
      * @param extendedType
      * @param data
-     *
      * @throws IOException
      */
     public synchronized void sendChannelExtData(Channel channel,
-        int extendedType, byte[] data) throws IOException {
+                                                int extendedType, byte[] data) throws IOException {
         channel.getRemoteWindow().consumeWindowSpace(data.length);
 
         int sent = 0;
@@ -327,8 +294,8 @@ public class ConnectionProtocol extends AsyncService {
         while (sent < data.length) {
             remaining = data.length - sent;
             max = ((window.getWindowSpace() < channel.getRemotePacketSize()) &&
-                (window.getWindowSpace() > 0)) ? window.getWindowSpace()
-                                               : channel.getRemotePacketSize();
+                    (window.getWindowSpace() > 0)) ? window.getWindowSpace()
+                    : channel.getRemotePacketSize();
             block = (max < remaining) ? (int) max : remaining;
             channel.remoteWindow.consumeWindowSpace(block);
             buffer = new byte[block];
@@ -348,24 +315,20 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @param channel
      * @param requestType
      * @param wantReply
      * @param requestData
-     *
      * @return
-     *
      * @throws IOException
      * @throws SshException
      */
     public synchronized boolean sendChannelRequest(Channel channel,
-        String requestType, boolean wantReply, byte[] requestData)
-        throws IOException {
+                                                   String requestType, boolean wantReply, byte[] requestData)
+            throws IOException {
         boolean success = true;
         log.debug("Sending " + requestType + " request for the " +
-            channel.getChannelType() + " channel");
+                channel.getChannelType() + " channel");
 
         SshMsgChannelRequest msg = new SshMsgChannelRequest(channel.getRemoteChannelId(),
                 requestType, wantReply, requestData);
@@ -384,23 +347,25 @@ public class ConnectionProtocol extends AsyncService {
                 SshMessage reply = messageStore.getMessage(messageIdFilter);
 
                 switch (reply.getMessageId()) {
-                case SshMsgChannelSuccess.SSH_MSG_CHANNEL_SUCCESS: {
-                    log.debug("Channel request succeeded");
-                    success = true;
+                    case SshMsgChannelSuccess.SSH_MSG_CHANNEL_SUCCESS:
+                        {
+                            log.debug("Channel request succeeded");
+                            success = true;
 
-                    break;
-                }
+                            break;
+                        }
 
-                case SshMsgChannelFailure.SSH_MSG_CHANNEL_FAILURE: {
-                    log.debug("Channel request failed");
-                    success = false;
+                    case SshMsgChannelFailure.SSH_MSG_CHANNEL_FAILURE:
+                        {
+                            log.debug("Channel request failed");
+                            success = false;
 
-                    break;
+                            break;
+                        }
                 }
-                }
-            } catch (InterruptedException ex) {
-                throw new SshException(
-                    "The thread was interrupted whilst waiting for a connection protocol message");
+            }
+            catch (InterruptedException ex) {
+                throw new SshException("The thread was interrupted whilst waiting for a connection protocol message");
             }
         }
 
@@ -408,43 +373,34 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @param channel
-     *
      * @throws IOException
      */
     public void sendChannelRequestFailure(Channel channel)
-        throws IOException {
+            throws IOException {
         SshMsgChannelFailure msg = new SshMsgChannelFailure(channel.getRemoteChannelId());
         transport.sendMessage(msg, this);
     }
 
     /**
-     *
-     *
      * @param channel
-     *
      * @throws IOException
      */
     public void sendChannelRequestSuccess(Channel channel)
-        throws IOException {
+            throws IOException {
         SshMsgChannelSuccess msg = new SshMsgChannelSuccess(channel.getRemoteChannelId());
         transport.sendMessage(msg, this);
     }
 
     /**
-     *
-     *
      * @param channel
      * @param bytesToAdd
-     *
      * @throws IOException
      */
     public void sendChannelWindowAdjust(Channel channel, long bytesToAdd)
-        throws IOException {
+            throws IOException {
         log.debug("Increasing window size by " + String.valueOf(bytesToAdd) +
-            " bytes");
+                " bytes");
 
         SshMsgChannelWindowAdjust msg = new SshMsgChannelWindowAdjust(channel.getRemoteChannelId(),
                 bytesToAdd);
@@ -452,19 +408,15 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @param requestName
      * @param wantReply
      * @param requestData
-     *
      * @return
-     *
      * @throws IOException
      * @throws SshException
      */
     public synchronized byte[] sendGlobalRequest(String requestName,
-        boolean wantReply, byte[] requestData) throws IOException {
+                                                 boolean wantReply, byte[] requestData) throws IOException {
         boolean success = true;
         SshMsgGlobalRequest msg = new SshMsgGlobalRequest(requestName, true,
                 requestData);
@@ -482,20 +434,22 @@ public class ConnectionProtocol extends AsyncService {
                 SshMessage reply = messageStore.getMessage(messageIdFilter);
 
                 switch (reply.getMessageId()) {
-                case SshMsgRequestSuccess.SSH_MSG_REQUEST_SUCCESS: {
-                    log.debug("Global request succeeded");
+                    case SshMsgRequestSuccess.SSH_MSG_REQUEST_SUCCESS:
+                        {
+                            log.debug("Global request succeeded");
 
-                    return ((SshMsgRequestSuccess) reply).getRequestData();
-                }
+                            return ((SshMsgRequestSuccess) reply).getRequestData();
+                        }
 
-                case SshMsgRequestFailure.SSH_MSG_REQUEST_FAILURE: {
-                    log.debug("Global request failed");
-                    throw new SshException("The request failed");
+                    case SshMsgRequestFailure.SSH_MSG_REQUEST_FAILURE:
+                        {
+                            log.debug("Global request failed");
+                            throw new SshException("The request failed");
+                        }
                 }
-                }
-            } catch (InterruptedException ex) {
-                throw new SshException(
-                    "The thread was interrupted whilst waiting for a connection protocol message");
+            }
+            catch (InterruptedException ex) {
+                throw new SshException("The thread was interrupted whilst waiting for a connection protocol message");
             }
         }
 
@@ -503,8 +457,6 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @return
      */
     protected int[] getAsyncMessageFilter() {
@@ -522,36 +474,31 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @param channel
-     *
      * @throws IOException
      */
     protected void closeChannel(Channel channel) throws IOException {
         SshMsgChannelClose msg = new SshMsgChannelClose(channel.getRemoteChannelId());
         log.info("Local computer has closed channel " +
-            String.valueOf(channel.getLocalChannelId()) + "[" +
-            channel.getName() + "]");
+                String.valueOf(channel.getLocalChannelId()) + "[" +
+                channel.getName() + "]");
         transport.sendMessage(msg, this);
     }
 
     /**
-     *
-     *
      * @param requestName
      * @param wantReply
      * @param requestData
-     *
      * @throws IOException
      */
     protected void onGlobalRequest(String requestName, boolean wantReply,
-        byte[] requestData) throws IOException {
+                                   byte[] requestData) throws IOException {
         log.debug("Processing " + requestName + " global request");
 
         if (!globalRequests.containsKey(requestName)) {
             sendGlobalRequestFailure();
-        } else {
+        }
+        else {
             GlobalRequestHandler handler = (GlobalRequestHandler) globalRequests.get(requestName);
             GlobalRequestResponse response = handler.processGlobalRequest(requestName,
                     requestData);
@@ -559,7 +506,8 @@ public class ConnectionProtocol extends AsyncService {
             if (wantReply) {
                 if (response.hasSucceeded()) {
                     sendGlobalRequestSuccess(response.getResponseData());
-                } else {
+                }
+                else {
                     sendGlobalRequestFailure();
                 }
             }
@@ -567,68 +515,74 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws IOException
      */
     protected void onMessageReceived(SshMessage msg) throws IOException {
         // Route the message to the correct handling function
         switch (msg.getMessageId()) {
-        case SshMsgGlobalRequest.SSH_MSG_GLOBAL_REQUEST: {
-            onMsgGlobalRequest((SshMsgGlobalRequest) msg);
+            case SshMsgGlobalRequest.SSH_MSG_GLOBAL_REQUEST:
+                {
+                    onMsgGlobalRequest((SshMsgGlobalRequest) msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshMsgChannelOpen.SSH_MSG_CHANNEL_OPEN: {
-            onMsgChannelOpen((SshMsgChannelOpen) msg);
+            case SshMsgChannelOpen.SSH_MSG_CHANNEL_OPEN:
+                {
+                    onMsgChannelOpen((SshMsgChannelOpen) msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshMsgChannelClose.SSH_MSG_CHANNEL_CLOSE: {
-            onMsgChannelClose((SshMsgChannelClose) msg);
+            case SshMsgChannelClose.SSH_MSG_CHANNEL_CLOSE:
+                {
+                    onMsgChannelClose((SshMsgChannelClose) msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshMsgChannelEOF.SSH_MSG_CHANNEL_EOF: {
-            onMsgChannelEOF((SshMsgChannelEOF) msg);
+            case SshMsgChannelEOF.SSH_MSG_CHANNEL_EOF:
+                {
+                    onMsgChannelEOF((SshMsgChannelEOF) msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshMsgChannelData.SSH_MSG_CHANNEL_DATA: {
-            onMsgChannelData((SshMsgChannelData) msg);
+            case SshMsgChannelData.SSH_MSG_CHANNEL_DATA:
+                {
+                    onMsgChannelData((SshMsgChannelData) msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshMsgChannelExtendedData.SSH_MSG_CHANNEL_EXTENDED_DATA: {
-            onMsgChannelExtendedData((SshMsgChannelExtendedData) msg);
+            case SshMsgChannelExtendedData.SSH_MSG_CHANNEL_EXTENDED_DATA:
+                {
+                    onMsgChannelExtendedData((SshMsgChannelExtendedData) msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshMsgChannelRequest.SSH_MSG_CHANNEL_REQUEST: {
-            onMsgChannelRequest((SshMsgChannelRequest) msg);
+            case SshMsgChannelRequest.SSH_MSG_CHANNEL_REQUEST:
+                {
+                    onMsgChannelRequest((SshMsgChannelRequest) msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshMsgChannelWindowAdjust.SSH_MSG_CHANNEL_WINDOW_ADJUST: {
-            onMsgChannelWindowAdjust((SshMsgChannelWindowAdjust) msg);
+            case SshMsgChannelWindowAdjust.SSH_MSG_CHANNEL_WINDOW_ADJUST:
+                {
+                    onMsgChannelWindowAdjust((SshMsgChannelWindowAdjust) msg);
 
-            break;
-        }
+                    break;
+                }
 
-        default: {
-            // If we never registered it why are we getting it?
-            log.debug("Message not handled");
-            throw new IOException("Unregistered message received!");
-        }
+            default:
+                {
+                    // If we never registered it why are we getting it?
+                    log.debug("Message not handled");
+                    throw new IOException("Unregistered message received!");
+                }
         }
     }
 
@@ -639,42 +593,39 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @param startMode
-     *
      * @throws IOException
      */
     protected void onServiceInit(int startMode) throws IOException {
         log.info("Registering connection protocol messages");
         messageStore.registerMessage(SshMsgChannelOpenConfirmation.SSH_MSG_CHANNEL_OPEN_CONFIRMATION,
-            SshMsgChannelOpenConfirmation.class);
+                SshMsgChannelOpenConfirmation.class);
         messageStore.registerMessage(SshMsgChannelOpenFailure.SSH_MSG_CHANNEL_OPEN_FAILURE,
-            SshMsgChannelOpenFailure.class);
+                SshMsgChannelOpenFailure.class);
         messageStore.registerMessage(SshMsgChannelOpen.SSH_MSG_CHANNEL_OPEN,
-            SshMsgChannelOpen.class);
+                SshMsgChannelOpen.class);
         messageStore.registerMessage(SshMsgChannelClose.SSH_MSG_CHANNEL_CLOSE,
-            SshMsgChannelClose.class);
+                SshMsgChannelClose.class);
         messageStore.registerMessage(SshMsgChannelEOF.SSH_MSG_CHANNEL_EOF,
-            SshMsgChannelEOF.class);
+                SshMsgChannelEOF.class);
         messageStore.registerMessage(SshMsgChannelData.SSH_MSG_CHANNEL_DATA,
-            SshMsgChannelData.class);
+                SshMsgChannelData.class);
         messageStore.registerMessage(SshMsgChannelExtendedData.SSH_MSG_CHANNEL_EXTENDED_DATA,
-            SshMsgChannelExtendedData.class);
+                SshMsgChannelExtendedData.class);
         messageStore.registerMessage(SshMsgChannelFailure.SSH_MSG_CHANNEL_FAILURE,
-            SshMsgChannelFailure.class);
+                SshMsgChannelFailure.class);
         messageStore.registerMessage(SshMsgChannelRequest.SSH_MSG_CHANNEL_REQUEST,
-            SshMsgChannelRequest.class);
+                SshMsgChannelRequest.class);
         messageStore.registerMessage(SshMsgChannelSuccess.SSH_MSG_CHANNEL_SUCCESS,
-            SshMsgChannelSuccess.class);
+                SshMsgChannelSuccess.class);
         messageStore.registerMessage(SshMsgChannelWindowAdjust.SSH_MSG_CHANNEL_WINDOW_ADJUST,
-            SshMsgChannelWindowAdjust.class);
+                SshMsgChannelWindowAdjust.class);
         messageStore.registerMessage(SshMsgGlobalRequest.SSH_MSG_GLOBAL_REQUEST,
-            SshMsgGlobalRequest.class);
+                SshMsgGlobalRequest.class);
         messageStore.registerMessage(SshMsgRequestFailure.SSH_MSG_REQUEST_FAILURE,
-            SshMsgRequestFailure.class);
+                SshMsgRequestFailure.class);
         messageStore.registerMessage(SshMsgRequestSuccess.SSH_MSG_REQUEST_SUCCESS,
-            SshMsgRequestSuccess.class);
+                SshMsgRequestSuccess.class);
     }
 
     /**
@@ -684,27 +635,21 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @param channel
-     *
      * @throws IOException
      */
     protected void sendChannelFailure(Channel channel)
-        throws IOException {
+            throws IOException {
         SshMsgChannelFailure msg = new SshMsgChannelFailure(channel.getRemoteChannelId());
         transport.sendMessage(msg, this);
     }
 
     /**
-     *
-     *
      * @param channel
-     *
      * @throws IOException
      */
     protected void sendChannelOpenConfirmation(Channel channel)
-        throws IOException {
+            throws IOException {
         SshMsgChannelOpenConfirmation msg = new SshMsgChannelOpenConfirmation(channel.getRemoteChannelId(),
                 channel.getLocalChannelId(),
                 channel.getLocalWindow().getWindowSpace(),
@@ -714,26 +659,21 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @param remoteChannelId
      * @param reasonCode
      * @param additionalInfo
      * @param languageTag
-     *
      * @throws IOException
      */
     protected void sendChannelOpenFailure(long remoteChannelId,
-        long reasonCode, String additionalInfo, String languageTag)
-        throws IOException {
+                                          long reasonCode, String additionalInfo, String languageTag)
+            throws IOException {
         SshMsgChannelOpenFailure msg = new SshMsgChannelOpenFailure(remoteChannelId,
                 reasonCode, additionalInfo, languageTag);
         transport.sendMessage(msg, this);
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void sendGlobalRequestFailure() throws IOException {
@@ -742,14 +682,11 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     /**
-     *
-     *
      * @param requestData
-     *
      * @throws IOException
      */
     protected void sendGlobalRequestSuccess(byte[] requestData)
-        throws IOException {
+            throws IOException {
         SshMsgRequestSuccess msg = new SshMsgRequestSuccess(requestData);
         transport.sendMessage(msg, this);
     }
@@ -760,7 +697,7 @@ public class ConnectionProtocol extends AsyncService {
 
             if (!activeChannels.containsKey(l)) {
                 throw new IOException("Non existent channel " + l.toString() +
-                    " requested");
+                        " requested");
             }
 
             return (Channel) activeChannels.get(l);
@@ -768,19 +705,19 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     private void onMsgChannelClose(SshMsgChannelClose msg)
-        throws IOException {
+            throws IOException {
         Channel channel = getChannel(msg.getRecipientChannel());
 
         // If we have not already closed it then inform the subclasses
         if (channel == null) {
             throw new IOException("Remote computer tried to close a " +
-                "non existent channel " +
-                String.valueOf(msg.getRecipientChannel()));
+                    "non existent channel " +
+                    String.valueOf(msg.getRecipientChannel()));
         }
 
         log.info("Remote computer has closed channel " +
-            String.valueOf(channel.getLocalChannelId()) + "[" +
-            channel.getName() + "]");
+                String.valueOf(channel.getLocalChannelId()) + "[" +
+                channel.getName() + "]");
 
         // If the channel is not already closed then close it
         if (channel.getState().getValue() != ChannelState.CHANNEL_CLOSED) {
@@ -789,12 +726,12 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     private void onMsgChannelData(SshMsgChannelData msg)
-        throws IOException {
+            throws IOException {
         if (log.isDebugEnabled()) {
             log.debug("Received " +
-                String.valueOf(msg.getChannelData().length) +
-                " bytes of data for channel id " +
-                String.valueOf(msg.getRecipientChannel()));
+                    String.valueOf(msg.getChannelData().length) +
+                    " bytes of data for channel id " +
+                    String.valueOf(msg.getRecipientChannel()));
         }
 
         // Get the data's channel
@@ -803,26 +740,26 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     private void onMsgChannelEOF(SshMsgChannelEOF msg)
-        throws IOException {
+            throws IOException {
         Channel channel = getChannel(msg.getRecipientChannel());
 
         try {
             log.info("Remote computer has set channel " +
-                String.valueOf(msg.getRecipientChannel()) + " to EOF [" +
-                channel.getName() + "]");
+                    String.valueOf(msg.getRecipientChannel()) + " to EOF [" +
+                    channel.getName() + "]");
             channel.setRemoteEOF();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             log.info("Failed to close the ChannelInputStream after EOF event");
         }
     }
 
     private void onMsgChannelExtendedData(SshMsgChannelExtendedData msg)
-        throws IOException {
+            throws IOException {
         Channel channel = getChannel(msg.getRecipientChannel());
 
         if (channel == null) {
-            throw new IOException(
-                "Remote computer sent data for non existent channel");
+            throw new IOException("Remote computer sent data for non existent channel");
         }
 
         channel.getLocalWindow().consumeWindowSpace(msg.getChannelData().length);
@@ -830,20 +767,20 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     private void onMsgChannelOpen(SshMsgChannelOpen msg)
-        throws IOException {
+            throws IOException {
         synchronized (activeChannels) {
             log.info("Request for " + msg.getChannelType() +
-                " channel recieved");
+                    " channel recieved");
 
             // Try to get the channel implementation from the allowed channels
             ChannelFactory cf = (ChannelFactory) allowedChannels.get(msg.getChannelType());
 
             if (cf == null) {
                 sendChannelOpenFailure(msg.getSenderChannelId(),
-                    SshMsgChannelOpenFailure.SSH_OPEN_CONNECT_FAILED,
-                    "The channel type is not supported", "");
+                        SshMsgChannelOpenFailure.SSH_OPEN_CONNECT_FAILED,
+                        "The channel type is not supported", "");
                 log.info("Request for channel type " + msg.getChannelType() +
-                    " refused");
+                        " refused");
 
                 return;
             }
@@ -859,8 +796,8 @@ public class ConnectionProtocol extends AsyncService {
 
                 Long channelId = getChannelId();
                 channel.init(this, channelId.longValue(),
-                    msg.getSenderChannelId(), msg.getInitialWindowSize(),
-                    msg.getMaximumPacketSize());
+                        msg.getSenderChannelId(), msg.getInitialWindowSize(),
+                        msg.getMaximumPacketSize());
                 activeChannels.put(channelId, channel);
                 log.info("Sending channel open confirmation");
 
@@ -869,63 +806,62 @@ public class ConnectionProtocol extends AsyncService {
 
                 // Open the channel for real
                 channel.open();
-            } catch (InvalidChannelException ice) {
+            }
+            catch (InvalidChannelException ice) {
                 sendChannelOpenFailure(msg.getSenderChannelId(),
-                    SshMsgChannelOpenFailure.SSH_OPEN_CONNECT_FAILED,
-                    ice.getMessage(), "");
+                        SshMsgChannelOpenFailure.SSH_OPEN_CONNECT_FAILED,
+                        ice.getMessage(), "");
             }
         }
     }
 
     private void onMsgChannelRequest(SshMsgChannelRequest msg)
-        throws IOException {
+            throws IOException {
         Channel channel = getChannel(msg.getRecipientChannel());
 
         if (channel == null) {
             log.warn("Remote computer tried to make a request for " +
-                "a non existence channel!");
+                    "a non existence channel!");
         }
 
         channel.onChannelRequest(msg.getRequestType(), msg.getWantReply(),
-            msg.getChannelData());
+                msg.getChannelData());
     }
 
     private void onMsgChannelWindowAdjust(SshMsgChannelWindowAdjust msg)
-        throws IOException {
+            throws IOException {
         Channel channel = getChannel(msg.getRecipientChannel());
 
         if (channel == null) {
             throw new IOException("Remote computer tried to increase " +
-                "window space for non existent channel " +
-                String.valueOf(msg.getRecipientChannel()));
+                    "window space for non existent channel " +
+                    String.valueOf(msg.getRecipientChannel()));
         }
 
         channel.getRemoteWindow().increaseWindowSpace(msg.getBytesToAdd());
 
         if (log.isDebugEnabled()) {
             log.debug(String.valueOf(msg.getBytesToAdd()) +
-                " bytes added to remote window");
+                    " bytes added to remote window");
             log.debug("Remote window space is " +
-                String.valueOf(channel.getRemoteWindow().getWindowSpace()));
+                    String.valueOf(channel.getRemoteWindow().getWindowSpace()));
         }
     }
 
     private void onMsgGlobalRequest(SshMsgGlobalRequest msg)
-        throws IOException {
+            throws IOException {
         onGlobalRequest(msg.getRequestName(), msg.getWantReply(),
-            msg.getRequestData());
+                msg.getRequestData());
     }
 
     /**
-     *
-     *
      * @param channel
      */
     protected void freeChannel(Channel channel) {
         synchronized (activeChannels) {
             log.info("Freeing channel " +
-                String.valueOf(channel.getLocalChannelId()) + " [" +
-                channel.getName() + "]");
+                    String.valueOf(channel.getLocalChannelId()) + " [" +
+                    channel.getName() + "]");
 
             Long channelId = new Long(channel.getLocalChannelId());
             activeChannels.remove(channelId);

@@ -24,24 +24,24 @@ import com.apple.cocoa.application.NSWorkspace;
 import java.util.HashMap;
 
 public class CDIconCache extends HashMap {
-	private static CDIconCache instance;
+    private static CDIconCache instance;
 
-	public static CDIconCache instance() {
+    public static CDIconCache instance() {
         if (null == instance) {
             instance = new CDIconCache();
         }
         return instance;
-	}
-	
-	public void put(String extension, NSImage image) {
-		super.put(extension, image);
-	}
+    }
 
-	public NSImage get(String key) {
-		NSImage img = (NSImage)super.get(key);
-		if(null == img) {
-			this.put(key, img = NSWorkspace.sharedWorkspace().iconForFileType(key));
-		}
-		return img;
-	}
+    public void put(String extension, NSImage image) {
+        super.put(extension, image);
+    }
+
+    public NSImage get(String key) {
+        NSImage img = (NSImage) super.get(key);
+        if (null == img) {
+            this.put(key, img = NSWorkspace.sharedWorkspace().iconForFileType(key));
+        }
+        return img;
+    }
 }

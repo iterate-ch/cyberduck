@@ -28,8 +28,6 @@ package com.sshtools.j2ssh.util;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -53,10 +51,7 @@ public class StartStopState extends State {
     }
 
     /**
-     *
-     *
      * @param state
-     *
      * @return
      */
     public boolean isValidState(int state) {

@@ -26,17 +26,15 @@
  */
 package com.sshtools.j2ssh.connection;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -55,7 +53,7 @@ public class SshMsgGlobalRequest extends SshMessage {
      * @param requestData
      */
     public SshMsgGlobalRequest(String requestName, boolean wantReply,
-        byte[] requestData) {
+                               byte[] requestData) {
         super(SSH_MSG_GLOBAL_REQUEST);
         this.requestName = requestName;
         this.wantReply = wantReply;
@@ -70,8 +68,6 @@ public class SshMsgGlobalRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -79,8 +75,6 @@ public class SshMsgGlobalRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getRequestData() {
@@ -88,8 +82,6 @@ public class SshMsgGlobalRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getRequestName() {
@@ -97,8 +89,6 @@ public class SshMsgGlobalRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean getWantReply() {
@@ -106,14 +96,11 @@ public class SshMsgGlobalRequest extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             baw.writeString(requestName);
             baw.write((wantReply ? 1 : 0));
@@ -121,20 +108,18 @@ public class SshMsgGlobalRequest extends SshMessage {
             if (requestData != null) {
                 baw.write(requestData);
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             requestName = bar.readString();
             wantReply = ((bar.read() == 0) ? false : true);
@@ -143,7 +128,8 @@ public class SshMsgGlobalRequest extends SshMessage {
                 requestData = new byte[bar.available()];
                 bar.read(requestData);
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Invalid message data");
         }
     }

@@ -64,10 +64,11 @@ package org.apache.commons.httpclient;
 
 /**
  * <p>Authentication credentials.</p>
- * <p>
- *  This is just a marker interface, the
- *  current implementation has no methods.
+ * <p/>
+ * This is just a marker interface, the
+ * current implementation has no methods.
  * </p>
+ *
  * @version $Revision$ $Date$
  */
 public interface Credentials {

@@ -26,23 +26,19 @@
  */
 package com.sshtools.j2ssh.authentication;
 
-import com.sshtools.j2ssh.io.ByteArrayWriter;
-import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
-import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
-
-import java.net.InetAddress;
-
-import java.util.Properties;
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
+import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -62,8 +58,6 @@ public class HostbasedAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param key
      */
     public void setKey(SshPrivateKey key) {
@@ -80,8 +74,6 @@ public class HostbasedAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param clientUser
      */
     public void setClientUsername(String clientUser) {
@@ -89,8 +81,6 @@ public class HostbasedAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMethodName() {
@@ -98,20 +88,17 @@ public class HostbasedAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param authentication
      * @param serviceToStart
-     *
      * @throws IOException
      * @throws TerminatedStateException
      * @throws AuthenticationProtocolException
+     *
      */
     public void authenticate(AuthenticationProtocolClient authentication,
-        String serviceToStart) throws IOException, TerminatedStateException {
+                             String serviceToStart) throws IOException, TerminatedStateException {
         if ((getUsername() == null) || (key == null)) {
-            throw new AuthenticationProtocolException(
-                "You must supply a username and a key");
+            throw new AuthenticationProtocolException("You must supply a username and a key");
         }
 
         ByteArrayWriter baw = new ByteArrayWriter();
@@ -129,7 +116,8 @@ public class HostbasedAuthenticationClient extends SshAuthenticationClient {
 
         if (clientUser != null) {
             baw.writeString(clientUser);
-        } else {
+        }
+        else {
             baw.writeString(getUsername());
         }
 
@@ -146,7 +134,8 @@ public class HostbasedAuthenticationClient extends SshAuthenticationClient {
 
         if (clientUser != null) {
             data.writeString(clientUser);
-        } else {
+        }
+        else {
             data.writeString(getUsername());
         }
 
@@ -250,8 +239,6 @@ public class HostbasedAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param properties
      */
     public void setPersistableProperties(Properties properties) {
@@ -267,8 +254,6 @@ public class HostbasedAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean canAuthenticate() {

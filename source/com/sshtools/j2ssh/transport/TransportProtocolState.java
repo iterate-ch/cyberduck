@@ -26,14 +26,12 @@
  */
 package com.sshtools.j2ssh.transport;
 
-import com.sshtools.j2ssh.util.State;
-
 import java.io.IOException;
+
+import com.sshtools.j2ssh.util.State;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -67,8 +65,6 @@ public class TransportProtocolState extends State {
     }
 
     /**
-     *
-     *
      * @param lastError
      */
     protected void setLastError(IOException lastError) {
@@ -76,8 +72,6 @@ public class TransportProtocolState extends State {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean hasError() {
@@ -85,8 +79,6 @@ public class TransportProtocolState extends State {
     }
 
     /**
-     *
-     *
      * @return
      */
     public IOException getLastError() {
@@ -94,8 +86,6 @@ public class TransportProtocolState extends State {
     }
 
     /**
-     *
-     *
      * @param reason
      */
     protected void setDisconnectReason(String reason) {
@@ -103,8 +93,6 @@ public class TransportProtocolState extends State {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getDisconnectReason() {
@@ -112,15 +100,12 @@ public class TransportProtocolState extends State {
     }
 
     /**
-     *
-     *
      * @param state
-     *
      * @return
      */
     public boolean isValidState(int state) {
         return ((state == UNINITIALIZED) || (state == NEGOTIATING_PROTOCOL) ||
-        (state == PERFORMING_KEYEXCHANGE) || (state == CONNECTED) ||
-        (state == DISCONNECTED));
+                (state == PERFORMING_KEYEXCHANGE) || (state == CONNECTED) ||
+                (state == DISCONNECTED));
     }
 }

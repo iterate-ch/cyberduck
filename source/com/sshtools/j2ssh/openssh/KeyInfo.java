@@ -26,12 +26,10 @@
  */
 package com.sshtools.j2ssh.openssh;
 
-import java.security.spec.*;
+import java.security.spec.KeySpec;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */

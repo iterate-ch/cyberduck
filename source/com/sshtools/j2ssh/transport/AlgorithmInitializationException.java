@@ -28,24 +28,22 @@ package com.sshtools.j2ssh.transport;
 
 
 /**
- * <p>
+ * <p/>
  * Thrown by the transport protocol if an error occurs during any type of
  * algorithm initialization.
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public class AlgorithmInitializationException extends TransportProtocolException {
     /**
-     * <p>
+     * <p/>
      * Constructs the exception.
      * </p>
      *
      * @param msg the error message
-     *
      * @since 0.2.0
      */
     public AlgorithmInitializationException(String msg) {

@@ -26,18 +26,15 @@
  */
 package com.sshtools.j2ssh.openssh;
 
-import java.io.*;
-
-import java.security.*;
-import java.security.spec.*;
-
-import javax.crypto.*;
-import javax.crypto.spec.*;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -65,28 +62,24 @@ public class PEM {
     private final static int MD5_HASH_BYTES = 0x10;
 
     /**
-     *
-     *
      * @param passphrase
      * @param iv
      * @param keySize
-     *
      * @return
-     *
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeySpecException
      * @throws Error
      */
     protected static SecretKey getKeyFromPassphrase(String passphrase,
-        byte[] iv, int keySize)
-        throws NoSuchAlgorithmException, InvalidKeySpecException {
+                                                    byte[] iv, int keySize)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] passphraseBytes;
 
         try {
             passphraseBytes = passphrase.getBytes("US-ASCII");
-        } catch (UnsupportedEncodingException e) {
-            throw new Error(
-                "Mandatory US-ASCII character encoding is not supported by the VM");
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new Error("Mandatory US-ASCII character encoding is not supported by the VM");
         }
 
         /*
@@ -107,7 +100,7 @@ public class PEM {
         byte[] previous;
 
         for (int index = 0; (index + MD5_HASH_BYTES) <= hashes.length;
-                hash.update(previous, 0, previous.length)) {
+             hash.update(previous, 0, previous.length)) {
             hash.update(passphraseBytes, 0, passphraseBytes.length);
             hash.update(iv, 0, iv.length);
             previous = hash.digest();

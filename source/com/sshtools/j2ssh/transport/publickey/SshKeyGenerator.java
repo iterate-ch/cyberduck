@@ -26,15 +26,10 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
-import com.sshtools.j2ssh.SshThread;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
+import java.io.*;
 import java.lang.reflect.Method;
+
+import com.sshtools.j2ssh.SshThread;
 
 
 /*import java.util.logging.FileHandler;
@@ -42,6 +37,7 @@ import java.lang.reflect.Method;
  import java.util.logging.Level;
  import java.util.logging.Logger;
  import java.util.logging.SimpleFormatter;*/
+
 public class SshKeyGenerator {
     private static String filename = null;
     private static String type = "dsa";
@@ -57,7 +53,8 @@ public class SshKeyGenerator {
         try {
             Class.forName("com.sshtools.j2ssh.keygen.Main");
             guiAvailable = true;
-        } catch (ClassNotFoundException cnfe) {
+        }
+        catch (ClassNotFoundException cnfe) {
         }
     }
 
@@ -68,18 +65,15 @@ public class SshKeyGenerator {
     }
 
     /**
-     *
-     *
      * @param type
      * @param bits
      * @param filename
      * @param username
      * @param passphrase
-     *
      * @throws IOException
      */
     public void generateKeyPair(String type, int bits, String filename,
-        String username, String passphrase) throws IOException {
+                                String username, String passphrase) throws IOException {
         System.out.println("****Sshtools.com SSH Key Pair Generator****");
 
         String keyType = type;
@@ -94,13 +88,13 @@ public class SshKeyGenerator {
 
         final SshKeyPair pair = SshKeyPairFactory.newInstance(keyType);
         System.out.println("Generating " + String.valueOf(bits) + " bit " +
-            keyType + " key pair");
+                keyType + " key pair");
 
         Thread thread = new SshThread(new Runnable() {
-                    public void run() {
-                        pair.generate(SshKeyGenerator.this.bits);
-                    }
-                }, "Key generator", true);
+            public void run() {
+                pair.generate(SshKeyGenerator.this.bits);
+            }
+        }, "Key generator", true);
         thread.start();
 
         while (thread.isAlive()) {
@@ -108,7 +102,8 @@ public class SshKeyGenerator {
 
             try {
                 Thread.sleep(100);
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e) {
             }
         }
 
@@ -118,7 +113,7 @@ public class SshKeyGenerator {
         // Now save the files
         SshPublicKeyFile pub = SshPublicKeyFile.create(pair.getPublicKey(),
                 new SECSHPublicKeyFormat(username,
-                    String.valueOf(bits) + "-bit " + type));
+                        String.valueOf(bits) + "-bit " + type));
         FileOutputStream out = new FileOutputStream(filename + ".pub");
         out.write(pub.getBytes());
         out.close();
@@ -131,15 +126,13 @@ public class SshKeyGenerator {
         SshPrivateKeyFile prv = SshPrivateKeyFile.create(pair.getPrivateKey(),
                 passphrase,
                 new SshtoolsPrivateKeyFormat(username,
-                    String.valueOf(bits) + "-bit " + type));
+                        String.valueOf(bits) + "-bit " + type));
         out = new FileOutputStream(filename);
         out.write(prv.getBytes());
         out.close();
     }
 
     /**
-     *
-     *
      * @param args
      */
     public static void main(String[] args) {
@@ -155,9 +148,10 @@ public class SshKeyGenerator {
              Logger.getLogger("com.sshtools").setLevel(Level.ALL);*/
             if (useGUI) {
                 Class c = Class.forName("com.sshtools.j2ssh.keygen.Main");
-                Method m = c.getMethod("main", new Class[] { args.getClass() });
-                m.invoke(null, new Object[] { new String[] {  } });
-            } else {
+                Method m = c.getMethod("main", new Class[]{args.getClass()});
+                m.invoke(null, new Object[]{new String[]{}});
+            }
+            else {
                 File f = new File(filename);
 
                 if (filename == null) {
@@ -168,7 +162,7 @@ public class SshKeyGenerator {
                 if (toOpenSSH || toSECSH) {
                     if (!f.exists()) {
                         System.err.print("The file " + f.getAbsolutePath() +
-                            " does not exist!");
+                                " does not exist!");
                         System.exit(1);
                     }
 
@@ -176,16 +170,18 @@ public class SshKeyGenerator {
                         if (toOpenSSH) {
                             System.out.print(convertPublicKeyFile(f,
                                     new OpenSSHPublicKeyFormat()));
-                        } else {
+                        }
+                        else {
                             System.out.print(convertPublicKeyFile(f,
                                     new SECSHPublicKeyFormat()));
                         }
-                    } catch (InvalidSshKeyException e) {
+                    }
+                    catch (InvalidSshKeyException e) {
                         System.err.println("The key format is invalid!");
-                    } catch (IOException ioe) {
-                        System.err.println(
-                            "An error occurs whilst reading the file " +
-                            f.getAbsolutePath());
+                    }
+                    catch (IOException ioe) {
+                        System.err.println("An error occurs whilst reading the file " +
+                                f.getAbsolutePath());
                     }
 
                     System.exit(0);
@@ -194,26 +190,26 @@ public class SshKeyGenerator {
                 if (changePass) {
                     if (!f.exists()) {
                         System.err.print("The file " + f.getAbsolutePath() +
-                            " does not exist!");
+                                " does not exist!");
                         System.exit(1);
                     }
 
                     changePassphrase(f);
-                } else {
+                }
+                else {
                     SshKeyGenerator generator = new SshKeyGenerator();
                     String username = System.getProperty("user.name");
                     generator.generateKeyPair(type, bits, filename, username,
-                        null);
+                            null);
                 }
             }
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             t.printStackTrace();
         }
     }
 
     /**
-     *
-     *
      * @param args
      */
     public static void processCommandLine(String[] args) {
@@ -221,17 +217,23 @@ public class SshKeyGenerator {
             for (int i = 0; i < args.length; i++) {
                 if (args[i].equalsIgnoreCase("-b")) {
                     bits = Integer.parseInt(args[++i]);
-                } else if (args[i].equalsIgnoreCase("-t")) {
+                }
+                else if (args[i].equalsIgnoreCase("-t")) {
                     type = args[++i];
-                } else if (args[i].equalsIgnoreCase("-p")) {
+                }
+                else if (args[i].equalsIgnoreCase("-p")) {
                     changePass = true;
-                } else if (args[i].equalsIgnoreCase("-g") && guiAvailable) {
+                }
+                else if (args[i].equalsIgnoreCase("-g") && guiAvailable) {
                     useGUI = true;
-                } else if (args[i].equalsIgnoreCase("-i")) {
+                }
+                else if (args[i].equalsIgnoreCase("-i")) {
                     toOpenSSH = true;
-                } else if (args[i].equalsIgnoreCase("-e")) {
+                }
+                else if (args[i].equalsIgnoreCase("-e")) {
                     toSECSH = true;
-                } else if (!args[i].startsWith("-")) {
+                }
+                else if (!args[i].startsWith("-")) {
                     if (filename != null) {
                         printUsage();
                         System.exit(1);
@@ -253,31 +255,30 @@ public class SshKeyGenerator {
 
         try {
             System.out.println("Opening Private Key file " +
-                f.getAbsolutePath());
+                    f.getAbsolutePath());
 
             String oldPassphrase = promptForPassphrase(false);
             String newPassphrase = promptForPassphrase(true);
             changePassphrase(f, oldPassphrase, newPassphrase);
-        } catch (InvalidSshKeyException e) {
+        }
+        catch (InvalidSshKeyException e) {
             System.err.println("The key format is invalid!");
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             System.err.println("An error occurs whilst reading the file " +
-                f.getAbsolutePath());
+                    f.getAbsolutePath());
         }
     }
 
     /**
-     *
-     *
      * @param f
      * @param oldPassphrase
      * @param newPassphrase
-     *
      * @throws IOException
      * @throws InvalidSshKeyException
      */
     public static void changePassphrase(File f, String oldPassphrase,
-        String newPassphrase) throws IOException, InvalidSshKeyException {
+                                        String newPassphrase) throws IOException, InvalidSshKeyException {
         // Open up the file with its current format
         SshPrivateKeyFile file = SshPrivateKeyFile.parse(f);
         System.out.println("Saving Private Key file with new passphrase");
@@ -288,7 +289,8 @@ public class SshKeyGenerator {
         try {
             out = new FileOutputStream(f);
             out.write(file.getBytes());
-        } finally {
+        }
+        finally {
             if (out != null) {
                 out.close();
             }
@@ -296,18 +298,14 @@ public class SshKeyGenerator {
     }
 
     /**
-     *
-     *
      * @param f
      * @param convert
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      * @throws IOException
      */
     public static String convertPublicKeyFile(File f, SshPublicKeyFormat convert)
-        throws InvalidSshKeyException, IOException {
+            throws InvalidSshKeyException, IOException {
         // Open up the file with its current format
         SshPublicKeyFile file = SshPublicKeyFile.parse(f);
 
@@ -321,15 +319,11 @@ public class SshKeyGenerator {
     private static void printUsage() {
         System.out.println("Usage: SshKeyGenerator [options] filename");
         System.out.println("Options:");
-        System.out.println(
-            "-b bits        Number of bits in the key to create.");
-        System.out.println(
-            "-e             Convert OpenSSH to IETF SECSH key file.");
-        System.out.println(
-            "-i             Convert IETF SECSH to OpenSSH key file.");
+        System.out.println("-b bits        Number of bits in the key to create.");
+        System.out.println("-e             Convert OpenSSH to IETF SECSH key file.");
+        System.out.println("-i             Convert IETF SECSH to OpenSSH key file.");
         System.out.println("-t type        The type of key to create.");
-        System.out.println(
-            "-p             Change the passphrase of the private key file.");
+        System.out.println("-p             Change the passphrase of the private key file.");
 
         if (guiAvailable) {
             System.out.println("-g \t\tUse GUI to create key");
@@ -337,10 +331,9 @@ public class SshKeyGenerator {
     }
 
     private static String promptForPassphrase(boolean confirm)
-        throws IOException {
+            throws IOException {
         // Confirm the passphrase
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    System.in));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String pass1 = "";
         String pass2 = "";
 
@@ -357,19 +350,19 @@ public class SshKeyGenerator {
 
             if (pass1.equals(pass2)) {
                 if (pass1.trim().length() == 0) {
-                    System.out.print(
-                        "You supplied an empty passphrase, are you sure? [Yes|No]: ");
+                    System.out.print("You supplied an empty passphrase, are you sure? [Yes|No]: ");
                     pass2 = reader.readLine();
 
                     if (pass2.equalsIgnoreCase("YES")) {
                         break;
                     }
-                } else {
+                }
+                else {
                     break;
                 }
-            } else {
-                System.out.println(
-                    "The passphrases supplied were not indentical! Try again");
+            }
+            else {
+                System.out.println("The passphrases supplied were not indentical! Try again");
             }
         }
 

@@ -26,21 +26,18 @@
  */
 package com.sshtools.j2ssh.agent;
 
-import com.sshtools.j2ssh.util.StartStopState;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
-
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.sshtools.j2ssh.util.StartStopState;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -57,14 +54,13 @@ public class SshAgentSocketListener {
      * Creates a new SshAgentSocketListener object.
      *
      * @param location the location of the listening agent. This should be a
-     *        random port on the localhost such as localhost:15342
+     *                 random port on the localhost such as localhost:15342
      * @param keystore the keystore for agent operation
-     *
      * @throws AgentNotAvailableException if the location specifies an invalid
-     *         location
+     *                                    location
      */
     public SshAgentSocketListener(String location, KeyStore keystore)
-        throws AgentNotAvailableException {
+            throws AgentNotAvailableException {
         log.info("New SshAgent instance created");
 
         // Verify the agent location
@@ -88,7 +84,8 @@ public class SshAgentSocketListener {
 
         try {
             server = new ServerSocket(port, 5, InetAddress.getByName(host));
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -107,27 +104,29 @@ public class SshAgentSocketListener {
      */
     public void start() {
         thread = new Thread(new Runnable() {
-                    public void run() {
-                        try {
-                            Socket socket;
-                            System.setProperty("sshtools.agent", location);
-                            state.setValue(StartStopState.STARTED);
+            public void run() {
+                try {
+                    Socket socket;
+                    System.setProperty("sshtools.agent", location);
+                    state.setValue(StartStopState.STARTED);
 
-                            while ((socket = server.accept()) != null) {
-                                SshAgentConnection agentClient = new SshAgentConnection(keystore,
-                                        socket.getInputStream(),
-                                        socket.getOutputStream());
-                            }
-
-                            thread = null;
-                        } catch (IOException ex) {
-                            log.info("The agent listener closed: " +
-                                ex.getMessage());
-                        } finally {
-                            state.setValue(StartStopState.STOPPED);
-                        }
+                    while ((socket = server.accept()) != null) {
+                        SshAgentConnection agentClient = new SshAgentConnection(keystore,
+                                socket.getInputStream(),
+                                socket.getOutputStream());
                     }
-                });
+
+                    thread = null;
+                }
+                catch (IOException ex) {
+                    log.info("The agent listener closed: " +
+                            ex.getMessage());
+                }
+                finally {
+                    state.setValue(StartStopState.STOPPED);
+                }
+            }
+        });
         thread.start();
     }
 
@@ -146,7 +145,8 @@ public class SshAgentSocketListener {
     public void stop() {
         try {
             server.close();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
         }
     }
 
@@ -180,23 +180,23 @@ public class SshAgentSocketListener {
         if (args.length > 0) {
             if (args[0].equals("-start")) {
                 Thread thread = new Thread(new Runnable() {
-                            public void run() {
-                                try {
-                                    SshAgentSocketListener agent = new SshAgentSocketListener(System.getProperty(
-                                                "sshtools.agent"),
-                                            new KeyStore());
-                                    agent.start();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        });
+                    public void run() {
+                        try {
+                            SshAgentSocketListener agent = new SshAgentSocketListener(System.getProperty("sshtools.agent"),
+                                    new KeyStore());
+                            agent.start();
+                        }
+                        catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                });
                 thread.start();
             }
 
             if (args[0].equals("-configure")) {
                 System.out.println("SET SSHTOOLS_AGENT=localhost:" +
-                    String.valueOf(configureNewLocation()));
+                        String.valueOf(configureNewLocation()));
             }
         }
     }

@@ -26,33 +26,25 @@
  */
 package com.sshtools.j2ssh.session;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.Socket;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.agent.AgentSocketChannel;
 import com.sshtools.j2ssh.agent.SshAgentClient;
-import com.sshtools.j2ssh.connection.Channel;
-import com.sshtools.j2ssh.connection.ChannelFactory;
-import com.sshtools.j2ssh.connection.ChannelInputStream;
-import com.sshtools.j2ssh.connection.IOChannel;
-import com.sshtools.j2ssh.connection.InvalidChannelException;
-import com.sshtools.j2ssh.connection.SshMsgChannelExtendedData;
+import com.sshtools.j2ssh.connection.*;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.subsystem.SubsystemClient;
 import com.sshtools.j2ssh.transport.SshMessageStore;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import java.net.Socket;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -64,9 +56,8 @@ public class SessionChannelClient extends IOChannel {
     private boolean localFlowControl = false;
     private SignalListener signalListener;
     private SshMessageStore errorMessages = new SshMessageStore();
-    private ChannelInputStream stderr = new ChannelInputStream(
-        /*ChannelInputStream.createExtended(*/
-        errorMessages,
+    private ChannelInputStream stderr = new ChannelInputStream(/*ChannelInputStream.createExtended(*/
+            errorMessages,
             new Integer(SshMsgChannelExtendedData.SSH_EXTENDED_DATA_STDERR));
 
     //  new Integer(SshMsgChannelExtendedData.SSH_EXTENDED_DATA_STDERR));
@@ -80,8 +71,6 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getChannelOpenData() {
@@ -89,8 +78,6 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getChannelConfirmationData() {
@@ -98,8 +85,6 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getChannelType() {
@@ -107,8 +92,6 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     protected int getMinimumWindowSpace() {
@@ -116,8 +99,6 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     protected int getMaximumWindowSpace() {
@@ -125,8 +106,6 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     protected int getMaximumPacketSize() {
@@ -134,8 +113,6 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @param signalListener
      */
     public void setSignalListener(SignalListener signalListener) {
@@ -143,33 +120,26 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @param name
      * @param value
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean setEnvironmentVariable(String name, String value)
-        throws IOException {
+            throws IOException {
         log.debug("Requesting environment variable to be set [" + name + "=" +
-            value + "]");
+                value + "]");
 
         ByteArrayWriter baw = new ByteArrayWriter();
         baw.writeString(name);
         baw.writeString(value);
 
         return connection.sendChannelRequest(this, "env", true,
-            baw.toByteArray());
+                baw.toByteArray());
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      * @throws SshException
      * @throws InvalidChannelException
@@ -178,8 +148,7 @@ public class SessionChannelClient extends IOChannel {
         log.info("Requesting agent forwarding for the session");
 
         if (System.getProperty("sshtools.agent") == null) {
-            throw new SshException(
-                "Agent not found! 'sshtools.agent' system property should identify the agent location");
+            throw new SshException("Agent not found! 'sshtools.agent' system property should identify the agent location");
         }
 
         boolean success = connection.sendChannelRequest(this, "auth-agent-req",
@@ -188,40 +157,36 @@ public class SessionChannelClient extends IOChannel {
         if (success) {
             // Allow an Agent Channel to be opened
             connection.addChannelFactory(AgentSocketChannel.AGENT_FORWARDING_CHANNEL,
-                new ChannelFactory() {
-                    public Channel createChannel(String channelType,
-                        byte[] requestData) throws InvalidChannelException {
-                        try {
-                            AgentSocketChannel channel = new AgentSocketChannel(false);
-                            Socket socket = SshAgentClient.connectAgentSocket(System.getProperty(
-                                        "sshtools.agent") /*, 5*/);
-                            channel.bindSocket(socket);
+                    new ChannelFactory() {
+                        public Channel createChannel(String channelType,
+                                                     byte[] requestData) throws InvalidChannelException {
+                            try {
+                                AgentSocketChannel channel = new AgentSocketChannel(false);
+                                Socket socket = SshAgentClient.connectAgentSocket(System.getProperty("sshtools.agent") /*, 5*/);
+                                channel.bindSocket(socket);
 
-                            return channel;
-                        } catch (Exception ex) {
-                            throw new InvalidChannelException(ex.getMessage());
+                                return channel;
+                            }
+                            catch (Exception ex) {
+                                throw new InvalidChannelException(ex.getMessage());
+                            }
                         }
-                    }
-                });
+                    });
         }
 
         return success;
     }
 
     /**
-     *
-     *
      * @param display
      * @param cookie
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean requestX11Forwarding(int display, String cookie)
-        throws IOException {
+            throws IOException {
         log.debug("Requesting X11 forwarding for display " + display +
-            " using cookie " + cookie);
+                " using cookie " + cookie);
 
         ByteArrayWriter baw = new ByteArrayWriter();
         baw.writeBoolean(false);
@@ -230,12 +195,10 @@ public class SessionChannelClient extends IOChannel {
         baw.writeUINT32(new UnsignedInteger32(String.valueOf(display)));
 
         return connection.sendChannelRequest(this, "x11-req", true,
-            baw.toByteArray());
+                baw.toByteArray());
     }
 
     /**
-     *
-     *
      * @return
      */
     public Integer getExitCode() {
@@ -243,14 +206,11 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @param term
-     *
      * @throws IOException
      */
     public void changeTerminalDimensions(PseudoTerminal term)
-        throws IOException {
+            throws IOException {
         log.debug("Changing terminal dimensions");
 
         ByteArrayWriter baw = new ByteArrayWriter();
@@ -259,16 +219,12 @@ public class SessionChannelClient extends IOChannel {
         baw.writeInt(term.getWidth());
         baw.writeInt(term.getHeight());
         connection.sendChannelRequest(this, "window-change", false,
-            baw.toByteArray());
+                baw.toByteArray());
     }
 
     /**
-     *
-     *
      * @param command
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean executeCommand(String command) throws IOException {
@@ -284,27 +240,24 @@ public class SessionChannelClient extends IOChannel {
             }
 
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
 
     /**
-     *
-     *
      * @param term
      * @param cols
      * @param rows
      * @param width
      * @param height
      * @param terminalModes
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean requestPseudoTerminal(String term, int cols, int rows,
-        int width, int height, String terminalModes) throws IOException {
+                                         int width, int height, String terminalModes) throws IOException {
         log.info("Requesting pseudo terminal");
 
         if (log.isDebugEnabled()) {
@@ -325,30 +278,23 @@ public class SessionChannelClient extends IOChannel {
         baw.writeString(terminalModes);
 
         return connection.sendChannelRequest(this, "pty-req", true,
-            baw.toByteArray());
+                baw.toByteArray());
     }
 
     /**
-     *
-     *
      * @param term
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean requestPseudoTerminal(PseudoTerminal term)
-        throws IOException {
+            throws IOException {
         return requestPseudoTerminal(term.getTerm(), term.getColumns(),
-            term.getRows(), term.getWidth(), term.getHeight(),
-            term.getEncodedTerminalModes());
+                term.getRows(), term.getWidth(), term.getHeight(),
+                term.getEncodedTerminalModes());
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean startShell() throws IOException {
@@ -361,18 +307,15 @@ public class SessionChannelClient extends IOChannel {
             }
 
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
 
     /**
-     *
-     *
      * @param subsystem
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean startSubsystem(String subsystem) throws IOException {
@@ -382,28 +325,25 @@ public class SessionChannelClient extends IOChannel {
         baw.writeString(subsystem);
 
         if (connection.sendChannelRequest(this, "subsystem", true,
-                    baw.toByteArray())) {
+                baw.toByteArray())) {
             if (sessionType.equals("Uninitialized")) {
                 sessionType = subsystem;
             }
 
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
 
     /**
-     *
-     *
      * @param subsystem
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean startSubsystem(SubsystemClient subsystem)
-        throws IOException {
+            throws IOException {
         boolean result = startSubsystem(subsystem.getName());
 
         if (result) {
@@ -416,8 +356,6 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean isLocalFlowControlEnabled() {
@@ -425,8 +363,6 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getSessionType() {
@@ -434,8 +370,6 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @param sessionType
      */
     public void setSessionType(String sessionType) {
@@ -443,8 +377,6 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public SubsystemClient getSubsystem() {
@@ -452,8 +384,6 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void onChannelClose() throws IOException {
@@ -461,7 +391,8 @@ public class SessionChannelClient extends IOChannel {
 
         try {
             stderr.close();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
         }
 
         Integer exitCode = getExitCode();
@@ -472,18 +403,13 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void onChannelOpen() throws IOException {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public InputStream getStderrInputStream() throws IOException {
@@ -494,34 +420,29 @@ public class SessionChannelClient extends IOChannel {
     }
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws IOException
      */
     protected void onChannelExtData(SshMsgChannelExtendedData msg)
-        throws IOException {
+            throws IOException {
         errorMessages.addMessage(msg);
     }
 
     /**
-     *
-     *
      * @param requestType
      * @param wantReply
      * @param requestData
-     *
      * @throws IOException
      */
     protected void onChannelRequest(String requestType, boolean wantReply,
-        byte[] requestData) throws IOException {
+                                    byte[] requestData) throws IOException {
         log.debug("Channel Request received: " + requestType);
 
         if (requestType.equals("exit-status")) {
             exitCode = new Integer((int) ByteArrayReader.readInt(requestData, 0));
             log.debug("Exit code of " + exitCode.toString() + " received");
-        } else if (requestType.equals("exit-signal")) {
+        }
+        else if (requestType.equals("exit-signal")) {
             ByteArrayReader bar = new ByteArrayReader(requestData);
             String signal = bar.readString();
             boolean coredump = bar.read() != 0;
@@ -534,18 +455,21 @@ public class SessionChannelClient extends IOChannel {
             if (signalListener != null) {
                 signalListener.onExitSignal(signal, coredump, message);
             }
-        } else if (requestType.equals("xon-xoff")) {
+        }
+        else if (requestType.equals("xon-xoff")) {
             if (requestData.length >= 1) {
                 localFlowControl = (requestData[0] != 0);
             }
-        } else if (requestType.equals("signal")) {
+        }
+        else if (requestType.equals("signal")) {
             String signal = ByteArrayReader.readString(requestData, 0);
             log.debug("Signal " + signal + " received");
 
             if (signalListener != null) {
                 signalListener.onSignal(signal);
             }
-        } else {
+        }
+        else {
             if (wantReply) {
                 connection.sendChannelRequestFailure(this);
             }

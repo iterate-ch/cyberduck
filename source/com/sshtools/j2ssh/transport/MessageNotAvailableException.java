@@ -28,18 +28,17 @@ package com.sshtools.j2ssh.transport;
 
 
 /**
- * <p>
+ * <p/>
  * Thrown by the message store when a message is not available.
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public class MessageNotAvailableException extends Exception {
     /**
-     * <p>
+     * <p/>
      * Constructs the excpetion.
      * </p>
      */

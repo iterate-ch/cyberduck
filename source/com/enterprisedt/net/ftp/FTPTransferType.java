@@ -26,39 +26,38 @@
 package com.enterprisedt.net.ftp;
 
 /**
- *  Enumerates the transfer types possible. We
- *  support only the two common types, ASCII and
- *  Image (often called binary).
+ * Enumerates the transfer types possible. We
+ * support only the two common types, ASCII and
+ * Image (often called binary).
  *
- *  @author             Bruce Blackshaw
- *  @version        $Revision$
- *
+ * @author Bruce Blackshaw
+ * @version $Revision$
  */
 public class FTPTransferType {
 
-	/**
-	 *   Represents ASCII transfer type
-	 */
-	public static FTPTransferType ASCII = new FTPTransferType();
+    /**
+     * Represents ASCII transfer type
+     */
+    public static FTPTransferType ASCII = new FTPTransferType();
 
-	/**
-	 *   Represents Image (or binary) transfer type
-	 */
-	public static FTPTransferType BINARY = new FTPTransferType();
+    /**
+     * Represents Image (or binary) transfer type
+     */
+    public static FTPTransferType BINARY = new FTPTransferType();
 
-	/**
-	 *   The char sent to the server to set ASCII
-	 */
-	static String ASCII_CHAR = "A";
+    /**
+     * The char sent to the server to set ASCII
+     */
+    static String ASCII_CHAR = "A";
 
-	/**
-	 *   The char sent to the server to set BINARY
-	 */
-	static String BINARY_CHAR = "I";
+    /**
+     * The char sent to the server to set BINARY
+     */
+    static String BINARY_CHAR = "I";
 
-	/**
-	 *  Private so no-one else can instantiate this class
-	 */
-	private FTPTransferType() {
-	}
+    /**
+     * Private so no-one else can instantiate this class
+     */
+    private FTPTransferType() {
+    }
 }

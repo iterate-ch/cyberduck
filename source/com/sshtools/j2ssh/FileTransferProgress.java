@@ -28,19 +28,19 @@ package com.sshtools.j2ssh;
 
 
 /**
- * <p>
+ * <p/>
  * Title:
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Description:
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Copyright: Copyright (c) 2003
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * Company:
  * </p>
  *
@@ -49,23 +49,17 @@ package com.sshtools.j2ssh;
  */
 public interface FileTransferProgress {
     /**
-     *
-     *
      * @param bytesTotal
      * @param remoteFile
      */
     public void started(long bytesTotal, String remoteFile);
 
     /**
-     *
-     *
      * @return
      */
     public boolean isCancelled();
 
     /**
-     *
-     *
      * @param bytesSoFar
      */
     public void progressed(long bytesSoFar);

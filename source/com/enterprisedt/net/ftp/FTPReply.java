@@ -25,6 +25,9 @@
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.8  2004/04/07 20:26:17  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.7  2004/03/24 16:28:09  dkocher
  *        *** empty log message ***
  *
@@ -47,53 +50,53 @@
 package com.enterprisedt.net.ftp;
 
 /**
- *  Encapsulates the FTP server reply
+ * Encapsulates the FTP server reply
  *
- *  @author      Bruce Blackshaw
- *  @version     $Revision$
+ * @author Bruce Blackshaw
+ * @version $Revision$
  */
 public class FTPReply {
 
-	/**
-	 *  Reply code
-	 */
-	private String replyCode;
+    /**
+     * Reply code
+     */
+    private String replyCode;
 
-	/**
-	 *  Reply text
-	 */
-	private String replyText;
+    /**
+     * Reply text
+     */
+    private String replyText;
 
-	
-	/**
-	 *  Constructor. Only to be constructed
-	 *  by this package, hence package access
-	 *
-	 *  @param  replyCode  the server's reply code
-	 *  @param  replyText  the server's reply text
-	 */
-	FTPReply(String replyCode, String replyText) {
-		this.replyCode = replyCode;
-		this.replyText = replyText;
-	}
 
-	/**
-	 *  Getter for reply code
-	 *
-	 *  @return server's reply code
-	 */
-	public String getReplyCode() {
-		return replyCode;
-	}
+    /**
+     * Constructor. Only to be constructed
+     * by this package, hence package access
+     *
+     * @param replyCode the server's reply code
+     * @param replyText the server's reply text
+     */
+    FTPReply(String replyCode, String replyText) {
+        this.replyCode = replyCode;
+        this.replyText = replyText;
+    }
 
-	/**
-	 *  Getter for reply text
-	 *
-	 *  @return server's reply text
-	 */
-	public String getReplyText() {
-		return replyText;
-	}
+    /**
+     * Getter for reply code
+     *
+     * @return server's reply code
+     */
+    public String getReplyCode() {
+        return replyCode;
+    }
+
+    /**
+     * Getter for reply text
+     *
+     * @return server's reply text
+     */
+    public String getReplyText() {
+        return replyText;
+    }
 }
 
 /*

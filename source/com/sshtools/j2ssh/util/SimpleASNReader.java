@@ -26,12 +26,10 @@
  */
 package com.sshtools.j2ssh.util;
 
-import java.io.*;
+import java.io.IOException;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -50,10 +48,7 @@ public class SimpleASNReader {
     }
 
     /**
-     *
-     *
      * @param b
-     *
      * @throws IOException
      */
     public void assertByte(int b) throws IOException {
@@ -61,14 +56,12 @@ public class SimpleASNReader {
 
         if (x != b) {
             throw new IOException("Assertion failed, next byte value is " +
-                Integer.toHexString(x) + " instead of asserted " +
-                Integer.toHexString(b));
+                    Integer.toHexString(x) + " instead of asserted " +
+                    Integer.toHexString(b));
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getByte() {
@@ -76,8 +69,6 @@ public class SimpleASNReader {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getData() {
@@ -87,8 +78,6 @@ public class SimpleASNReader {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getLength() {
@@ -117,8 +106,6 @@ public class SimpleASNReader {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean hasMoreData() {

@@ -33,7 +33,7 @@ import ch.cyberduck.core.Path;
 public class CDFolderController extends NSObject {
     private static Logger log = Logger.getLogger(CDFolderController.class);
 
-	private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
     private NSWindow window;
 
@@ -74,6 +74,7 @@ public class CDFolderController extends NSObject {
         switch (returncode) {
             case (NSAlertPanel.DefaultReturn):
                 ((Path) contextInfo).mkdir(folderField.stringValue());
+                ((Path) contextInfo).list(true);
                 break;
             case (NSAlertPanel.AlternateReturn):
                 break;

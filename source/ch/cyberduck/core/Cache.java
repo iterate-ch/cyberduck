@@ -18,23 +18,23 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class Cache extends HashMap {
-	public List get(String path) {
-		List childs = (List)super.get(path);
-		if(null == childs)
-			childs = new ArrayList();
-		return childs;
-	}
-	
-	public void put(String path, List childs) {
-		super.put(path, childs);
-	}
+    public List get(String path) {
+        List childs = (List) super.get(path);
+        if (null == childs) {
+            childs = new ArrayList();
+        }
+        return childs;
+    }
+
+    public void put(String path, List childs) {
+        super.put(path, childs);
+    }
 }

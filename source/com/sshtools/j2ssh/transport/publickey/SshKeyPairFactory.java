@@ -26,6 +26,12 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
+import java.io.IOException;
+import java.util.*;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sshtools.j2ssh.configuration.ConfigurationException;
 import com.sshtools.j2ssh.configuration.ConfigurationLoader;
 import com.sshtools.j2ssh.configuration.ExtensionAlgorithm;
@@ -35,21 +41,8 @@ import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 import com.sshtools.j2ssh.transport.publickey.dsa.SshDssKeyPair;
 import com.sshtools.j2ssh.transport.publickey.rsa.SshRsaKeyPair;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.IOException;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -66,8 +59,7 @@ public class SshKeyPairFactory {
 
         try {
             // Load external pks from configuration file
-            if (ConfigurationLoader.isConfigurationAvailable(
-                        SshAPIConfiguration.class)) {
+            if (ConfigurationLoader.isConfigurationAvailable(SshAPIConfiguration.class)) {
                 SshAPIConfiguration config = (SshAPIConfiguration) ConfigurationLoader.getConfiguration(SshAPIConfiguration.class);
 
                 if (config != null) {
@@ -82,21 +74,22 @@ public class SshKeyPairFactory {
 
                             if (pks.containsKey(name)) {
                                 log.debug("Standard public key " + name +
-                                    " is being overidden by " +
-                                    algorithm.getImplementationClass());
-                            } else {
+                                        " is being overidden by " +
+                                        algorithm.getImplementationClass());
+                            }
+                            else {
                                 log.debug(algorithm.getAlgorithmName() +
-                                    " public key is implemented by " +
-                                    algorithm.getImplementationClass());
+                                        " public key is implemented by " +
+                                        algorithm.getImplementationClass());
                             }
 
                             try {
                                 pks.put(algorithm.getAlgorithmName(),
-                                    ConfigurationLoader.getExtensionClass(
-                                        algorithm.getImplementationClass()));
-                            } catch (ClassNotFoundException cnfe) {
+                                        ConfigurationLoader.getExtensionClass(algorithm.getImplementationClass()));
+                            }
+                            catch (ClassNotFoundException cnfe) {
                                 log.error("Could not locate " +
-                                    algorithm.getImplementationClass());
+                                        algorithm.getImplementationClass());
                             }
                         }
                     }
@@ -104,7 +97,8 @@ public class SshKeyPairFactory {
                     defaultAlgorithm = config.getDefaultPublicKey();
                 }
             }
-        } catch (ConfigurationException ex) {
+        }
+        catch (ConfigurationException ex) {
         }
 
         if ((defaultAlgorithm == null) || !pks.containsKey(defaultAlgorithm)) {
@@ -128,8 +122,6 @@ public class SshKeyPairFactory {
     }
 
     /**
-     *
-     *
      * @return
      */
     public static String getDefaultPublicKey() {
@@ -137,8 +129,6 @@ public class SshKeyPairFactory {
     }
 
     /**
-     *
-     *
      * @return
      */
     public static List getSupportedKeys() {
@@ -147,29 +137,23 @@ public class SshKeyPairFactory {
     }
 
     /**
-     *
-     *
      * @param methodName
-     *
      * @return
-     *
      * @throws AlgorithmNotSupportedException
      */
     public static SshKeyPair newInstance(String methodName)
-        throws AlgorithmNotSupportedException {
+            throws AlgorithmNotSupportedException {
         try {
             return (SshKeyPair) ((Class) pks.get(methodName)).newInstance();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new AlgorithmNotSupportedException(methodName +
-                " is not supported!");
+                    " is not supported!");
         }
     }
 
     /**
-     *
-     *
      * @param algorithm
-     *
      * @return
      */
     public static boolean supportsKey(String algorithm) {
@@ -177,17 +161,13 @@ public class SshKeyPairFactory {
     }
 
     /**
-     *
-     *
      * @param encoded
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      * @throws AlgorithmNotSupportedException
      */
     public static SshPrivateKey decodePrivateKey(byte[] encoded)
-        throws InvalidSshKeyException, AlgorithmNotSupportedException {
+            throws InvalidSshKeyException, AlgorithmNotSupportedException {
         try {
             ByteArrayReader bar = new ByteArrayReader(encoded);
             String algorithm = bar.readString();
@@ -196,27 +176,25 @@ public class SshKeyPairFactory {
                 SshKeyPair pair = newInstance(algorithm);
 
                 return pair.decodePrivateKey(encoded);
-            } else {
-                throw new AlgorithmNotSupportedException(algorithm +
-                    " is not supported");
             }
-        } catch (IOException ioe) {
+            else {
+                throw new AlgorithmNotSupportedException(algorithm +
+                        " is not supported");
+            }
+        }
+        catch (IOException ioe) {
             throw new InvalidSshKeyException(ioe.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @param encoded
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      * @throws AlgorithmNotSupportedException
      */
     public static SshPublicKey decodePublicKey(byte[] encoded)
-        throws InvalidSshKeyException, AlgorithmNotSupportedException {
+            throws InvalidSshKeyException, AlgorithmNotSupportedException {
         try {
             ByteArrayReader bar = new ByteArrayReader(encoded);
             String algorithm = bar.readString();
@@ -225,11 +203,13 @@ public class SshKeyPairFactory {
                 SshKeyPair pair = newInstance(algorithm);
 
                 return pair.decodePublicKey(encoded);
-            } else {
-                throw new AlgorithmNotSupportedException(algorithm +
-                    " is not supported");
             }
-        } catch (IOException ioe) {
+            else {
+                throw new AlgorithmNotSupportedException(algorithm +
+                        " is not supported");
+            }
+        }
+        catch (IOException ioe) {
             throw new InvalidSshKeyException(ioe.getMessage());
         }
     }

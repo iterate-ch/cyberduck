@@ -35,485 +35,493 @@ import org.apache.log4j.Logger;
  * start the the connections in the order the have been added to me.
  * Useful for actions where the order of the taken actions
  * is important, i.e. deleting directories or uploading directories.
+ *
  * @version $Id$
  */
 public class Queue extends Observable implements Observer { //Thread {
-	private static Logger log = Logger.getLogger(Queue.class);
+    private static Logger log = Logger.getLogger(Queue.class);
 
-	/**
-	 * Estimation time till end of processing
-	 */
-	private Timer leftTimer;
-	/**
-	 * File transfer pogress
-	 */
-	private Timer progressTimer;
-	/**
-	 * Time left since start of processing
-	 */
-	private Timer elapsedTimer;
+    /**
+     * Estimation time till end of processing
+     */
+    private Timer leftTimer;
+    /**
+     * File transfer pogress
+     */
+    private Timer progressTimer;
+    /**
+     * Time left since start of processing
+     */
+    private Timer elapsedTimer;
 
-	private Calendar calendar = Calendar.getInstance();
+    private Calendar calendar = Calendar.getInstance();
 
-	public static final int KIND_DOWNLOAD = 0;
-	public static final int KIND_UPLOAD = 1;
-	/**
-	 * What kind of this, either KIND_DOWNLOAD or KIND_UPLOAD
-	 */
-	private int kind;
+    public static final int KIND_DOWNLOAD = 0;
+    public static final int KIND_UPLOAD = 1;
+    /**
+     * What kind of this, either KIND_DOWNLOAD or KIND_UPLOAD
+     */
+    private int kind;
 
-	/**
-	 * The file currently beeing processed in the queue
-	 */
-	private Path currentJob;
-	
-	/**
-		* The root of the queue; either the file itself or the parent directory of all files
-	 */
-	private List roots = new ArrayList();
-	
-	public Path getRoot() {
-		return (Path)roots.get(0);
-	}
+    /**
+     * The file currently beeing processed in the queue
+     */
+    private Path currentJob;
 
-	/**
-	 * This has the same size as the roots and contains the root
-	 * path itself and all subelements (in case of a directory)
-	 */
-	private List jobs = new ArrayList();
+    /**
+     * The root of the queue; either the file itself or the parent directory of all files
+     */
+    private List roots = new ArrayList();
 
-	/**
-	 * The this has been canceled from processing for any reason
-	 */
-	private boolean running;
+    public Path getRoot() {
+        return (Path) roots.get(0);
+    }
 
-	/*
-	 * 	current speed (bytes/second)
-	 */
-	private long speed;
+    /**
+     * This has the same size as the roots and contains the root
+     * path itself and all subelements (in case of a directory)
+     */
+    private List jobs = new ArrayList();
 
-	private long timeLeft = -1;
+    /**
+     * The this has been canceled from processing for any reason
+     */
+    private boolean running;
 
-	private String status = "";
-	private String error = "";
-	
-	/**
-		* Creating an empty queue containing no items. Items have to be added later
-	 * using the <code>addRoot</code> method.
-	 * @param kind Either <code>KIND_DOWNLOAD</code> or <code>KIND_UPLOAD</code>
-	 */
-	public Queue(int kind) {
-		this.kind = kind;
-		this.init();
-	}
-	
-	public Queue(NSDictionary dict) {
-		Object kindObj = dict.objectForKey("Kind");
-		if(kindObj != null)
-			this.kind = Integer.parseInt((String)kindObj);
-		Object hostObj = dict.objectForKey("Host");
-		if(hostObj != null) {
-			Host host = new Host((NSDictionary) hostObj);
-			Session s = SessionFactory.createSession(host);
-			Object rootsObj = dict.objectForKey("Roots");
-			if(rootsObj != null) {
-				NSArray r = (NSArray) rootsObj;
-				for (int i = 0; i < r.count(); i++) {
-					this.addRoot(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
-				}
-			}
-			Object itemsObj = dict.objectForKey("Items");
-			if(itemsObj != null) {
-				NSArray items = (NSArray) itemsObj;
-				if(null != items) {
-					for (int i = 0; i < items.count(); i++) {
-						this.jobs.add(PathFactory.createPath(s, (NSDictionary) items.objectAtIndex(i)));
-					}
-				}
-			}
-		}
-		Object statusObj = dict.objectForKey("Status");
-		if(statusObj != null)
-			this.status = (String) statusObj;
-		this.init();
-	}
+    /*
+     * 	current speed (bytes/second)
+     */
+    private long speed;
 
-	public NSDictionary getAsDictionary() {
-		NSMutableDictionary dict = new NSMutableDictionary();
-		dict.setObjectForKey(this.status, "Status");
-		dict.setObjectForKey(this.kind+"", "Kind");
-		dict.setObjectForKey(this.getRoot().getHost().getAsDictionary(), "Host");
-		NSMutableArray r = new NSMutableArray();
-		for (Iterator iter = this.roots.iterator() ; iter.hasNext() ;) {
-			r.addObject(((Path)iter.next()).getAsDictionary());
-		}
-		dict.setObjectForKey(r, "Roots");
-		NSMutableArray items = new NSMutableArray();
-		for (Iterator iter = jobs.iterator() ; iter.hasNext() ;) {
-			items.addObject(((Path)iter.next()).getAsDictionary());
-		}
-		dict.setObjectForKey(items, "Items");
-		return dict;
-	}
-	
-	/**
-		* Add an item to the queue
-	 * @param item The path to be added in the queue
-	 */
-	public void addRoot(Path item) {
-		log.debug("add:"+item);
-		this.roots.add(item);
-	}
-	
-	public List getRoots() {
-		return this.roots;
-	}
-	
-	/**
-		* @return Either <code>KIND_DOWNLOAD</code> or <code>KIND_UPLOAD</code>
-	 */
-	public int kind() {
-		return this.kind;
-	}
+    private long timeLeft = -1;
 
-	public void callObservers(Object arg) {
-		this.setChanged();
-		this.notifyObservers(arg);
-	}
+    private String status = "";
+    private String error = "";
 
-	public void update(Observable o, Object arg) {
-		if (arg instanceof Message) {
-			Message msg = (Message) arg;
-			if (msg.getTitle().equals(Message.DATA)) {
-				this.callObservers(arg);
-				//this.currentJob.getLocal().setIcon();
-				//100*this.currentJob.status.getCurrent()/this.currentJob.status.getTotal()
-			}
-			else if (msg.getTitle().equals(Message.PROGRESS)) {
-				this.status = (String) msg.getContent();
-				this.callObservers(arg);
-			}
-			else if (msg.getTitle().equals(Message.ERROR)) {
-				this.error = " : "+(String) msg.getContent();
-				this.callObservers(arg);
-			}
-		}
-	}
+    /**
+     * Creating an empty queue containing no items. Items have to be added later
+     * using the <code>addRoot</code> method.
+     *
+     * @param kind Either <code>KIND_DOWNLOAD</code> or <code>KIND_UPLOAD</code>
+     */
+    public Queue(int kind) {
+        this.kind = kind;
+        this.init();
+    }
 
-	/**
-	 * Process the queue. All files will be downloaded or uploaded rerspectively.
-	 * @param validator A callback class where the user can decide what to do if
-	 * the file already exists at the download location
-	 */
-	public void start(final Validator validator, final Observer observer) {
-		log.debug("start");
-		this.error = "";
-		this.jobs.clear();
-		new Thread() {
-			public void run() {
-				Queue.this.addObserver(observer);
-				
-				Queue.this.elapsedTimer.start();
-				Queue.this.running = true;
-				Queue.this.callObservers(new Message(Message.QUEUE_START, Queue.this));
-				
-				Queue.this.getRoot().getSession().addObserver(Queue.this);
-				Queue.this.getRoot().getSession().cache().clear();
-				for (Iterator i = roots.iterator() ; i.hasNext() && !Queue.this.isCanceled(); ) {
-					Path r = (Path)i.next();
-					log.debug("Iterating over childs of "+r);
-					Iterator childs = r.getChilds(Queue.this.kind).iterator();
-					while(childs.hasNext() && !Queue.this.isCanceled()) {
-						log.debug("Adding child to queue...");
-						Queue.this.jobs.add((Path)childs.next());
-					}
-				}
+    public Queue(NSDictionary dict) {
+        Object kindObj = dict.objectForKey("Kind");
+        if (kindObj != null) {
+            this.kind = Integer.parseInt((String) kindObj);
+        }
+        Object hostObj = dict.objectForKey("Host");
+        if (hostObj != null) {
+            Host host = new Host((NSDictionary) hostObj);
+            Session s = SessionFactory.createSession(host);
+            Object rootsObj = dict.objectForKey("Roots");
+            if (rootsObj != null) {
+                NSArray r = (NSArray) rootsObj;
+                for (int i = 0; i < r.count(); i++) {
+                    this.addRoot(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
+                }
+            }
+            Object itemsObj = dict.objectForKey("Items");
+            if (itemsObj != null) {
+                NSArray items = (NSArray) itemsObj;
+                if (null != items) {
+                    for (int i = 0; i < items.count(); i++) {
+                        this.jobs.add(PathFactory.createPath(s, (NSDictionary) items.objectAtIndex(i)));
+                    }
+                }
+            }
+        }
+        Object statusObj = dict.objectForKey("Status");
+        if (statusObj != null) {
+            this.status = (String) statusObj;
+        }
+        this.init();
+    }
 
-				for (Iterator iter = jobs.iterator() ; iter.hasNext() && !Queue.this.isCanceled(); ) {
-					Path item = (Path)iter.next();
-					log.debug("Validating "+item.toString());
-					if (!validator.validate(item)) {
-						iter.remove();
-					}
-					item.status.reset();
-				}
+    public NSDictionary getAsDictionary() {
+        NSMutableDictionary dict = new NSMutableDictionary();
+        dict.setObjectForKey(this.status, "Status");
+        dict.setObjectForKey(this.kind + "", "Kind");
+        dict.setObjectForKey(this.getRoot().getHost().getAsDictionary(), "Host");
+        NSMutableArray r = new NSMutableArray();
+        for (Iterator iter = this.roots.iterator(); iter.hasNext();) {
+            r.addObject(((Path) iter.next()).getAsDictionary());
+        }
+        dict.setObjectForKey(r, "Roots");
+        NSMutableArray items = new NSMutableArray();
+        for (Iterator iter = jobs.iterator(); iter.hasNext();) {
+            items.addObject(((Path) iter.next()).getAsDictionary());
+        }
+        dict.setObjectForKey(items, "Items");
+        return dict;
+    }
 
-				for (Iterator iter = jobs.iterator() ; iter.hasNext() && !Queue.this.isCanceled(); ) {
-					Queue.this.run((Path)iter.next());
-				}
+    /**
+     * Add an item to the queue
+     *
+     * @param item The path to be added in the queue
+     */
+    public void addRoot(Path item) {
+        log.debug("add:" + item);
+        this.roots.add(item);
+    }
 
-				Queue.this.running = false;
-				Queue.this.elapsedTimer.stop();
-				Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
+    public List getRoots() {
+        return this.roots;
+    }
 
-				Queue.this.getRoot().getSession().close();
-				Queue.this.getRoot().getSession().deleteObserver(Queue.this);
+    /**
+     * @return Either <code>KIND_DOWNLOAD</code> or <code>KIND_UPLOAD</code>
+     */
+    public int kind() {
+        return this.kind;
+    }
 
-				Queue.this.deleteObserver(observer);
-			}
-		}.start();
-	}
-	
-	private void run(Path job) {
-		this.currentJob = job;
+    public void callObservers(Object arg) {
+        this.setChanged();
+        this.notifyObservers(arg);
+    }
 
-		this.progressTimer.start();
-		this.leftTimer.start();
+    public void update(Observable o, Object arg) {
+        if (arg instanceof Message) {
+            Message msg = (Message) arg;
+            if (msg.getTitle().equals(Message.DATA)) {
+                this.callObservers(arg);
+                //this.currentJob.getLocal().setIcon();
+                //100*this.currentJob.status.getCurrent()/this.currentJob.status.getTotal()
+            }
+            else if (msg.getTitle().equals(Message.PROGRESS)) {
+                this.status = (String) msg.getContent();
+                this.callObservers(arg);
+            }
+            else if (msg.getTitle().equals(Message.ERROR)) {
+                this.error = " : " + (String) msg.getContent();
+                this.callObservers(arg);
+            }
+        }
+    }
 
-		job.status.addObserver(this);
-		
-		switch (kind) {
-			case KIND_DOWNLOAD:
-				job.download();
-				break;
-			case KIND_UPLOAD:
-				job.upload();
-				break;
-		}
+    /**
+     * Process the queue. All files will be downloaded or uploaded rerspectively.
+     *
+     * @param validator A callback class where the user can decide what to do if
+     *                  the file already exists at the download location
+     */
+    public void start(final Validator validator, final Observer observer) {
+        log.debug("start");
+        this.error = "";
+        this.jobs.clear();
+        new Thread() {
+            public void run() {
+                Queue.this.addObserver(observer);
 
-		job.status.deleteObserver(this);
-		
-		this.progressTimer.stop();
-		this.leftTimer.stop();
-	}
-	
-	/**
-	 * Stops the currently running thread processing the queue.
-	 * @pre The thread must be running
-	 */
-	public void cancel() {
-		if(this.isRunning()) {
-			this.running = false;
-			for (Iterator iter = jobs.iterator() ; iter.hasNext(); ) {
-				((Path)iter.next()).status.setCanceled(true);
-			}
-		}
-	}
+                Queue.this.elapsedTimer.start();
+                Queue.this.running = true;
+                Queue.this.callObservers(new Message(Message.QUEUE_START, Queue.this));
 
-	/**
-	 * @return True if this queue's thread is running
-	 */
-	public boolean isRunning() {
-		return this.running;
-	}
+                Queue.this.getRoot().getSession().addObserver(Queue.this);
+                Queue.this.getRoot().getSession().cache().clear();
+                for (Iterator i = roots.iterator(); i.hasNext() && !Queue.this.isCanceled();) {
+                    Path r = (Path) i.next();
+                    log.debug("Iterating over childs of " + r);
+                    Iterator childs = r.getChilds(Queue.this.kind).iterator();
+                    while (childs.hasNext() && !Queue.this.isCanceled()) {
+                        log.debug("Adding child to queue...");
+                        Queue.this.jobs.add((Path) childs.next());
+                    }
+                }
 
-	/**
-	 * @return True if the processing of the queue has been stopped,
-	 * either becasuse the transfers have all been completed or
-	 * been cancled by the user.
-	 */
-	public boolean isCanceled() {
-		return !this.isRunning();
-	}
-	
-	public int numberOfRoots() {
-		return this.roots.size();
-	}
+                for (Iterator iter = jobs.iterator(); iter.hasNext() && !Queue.this.isCanceled();) {
+                    Path item = (Path) iter.next();
+                    log.debug("Validating " + item.toString());
+                    if (!validator.validate(item)) {
+                        iter.remove();
+                    }
+                    item.status.reset();
+                }
 
-	/**
-	 * @return Number of jobs in the this.
-	 */
-	public int numberOfJobs() {
-		return this.jobs.size();
-	}
-	
-	/**
-	 * @return rue if all items in the this queue have been processed sucessfully.
-	 */
-	public boolean isComplete() {
-		return this.getSize() == this.getCurrent();
-	}
+                for (Iterator iter = jobs.iterator(); iter.hasNext() && !Queue.this.isCanceled();) {
+                    Queue.this.run((Path) iter.next());
+                }
 
-	public String getStatus() {
-		return this.getElapsedTime()+" "+this.status+" "+error;
-	}
+                Queue.this.running = false;
+                Queue.this.elapsedTimer.stop();
+                Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
 
-	public String getProgress() {
-		return this.getCurrentAsString()+" of "+this.getSizeAsString();
-	}
+                Queue.this.getRoot().getSession().close();
+                Queue.this.getRoot().getSession().deleteObserver(Queue.this);
 
-	/**
-	 * @return The cummulative file size of all files remaining in the this
-	 */
-	public long getSize() {
-		return this.calculateTotalSize();
-	}
+                Queue.this.deleteObserver(observer);
+            }
+        }.start();
+    }
+
+    private void run(Path job) {
+        this.currentJob = job;
+
+        this.progressTimer.start();
+        this.leftTimer.start();
+
+        job.status.addObserver(this);
+
+        switch (kind) {
+            case KIND_DOWNLOAD:
+                job.download();
+                break;
+            case KIND_UPLOAD:
+                job.upload();
+                break;
+        }
+
+        job.status.deleteObserver(this);
+
+        this.progressTimer.stop();
+        this.leftTimer.stop();
+    }
+
+    /**
+     * Stops the currently running thread processing the queue.
+     *
+     * @pre The thread must be running
+     */
+    public void cancel() {
+        if (this.isRunning()) {
+            this.running = false;
+            for (Iterator iter = jobs.iterator(); iter.hasNext();) {
+                ((Path) iter.next()).status.setCanceled(true);
+            }
+        }
+    }
+
+    /**
+     * @return True if this queue's thread is running
+     */
+    public boolean isRunning() {
+        return this.running;
+    }
+
+    /**
+     * @return True if the processing of the queue has been stopped,
+     *         either becasuse the transfers have all been completed or
+     *         been cancled by the user.
+     */
+    public boolean isCanceled() {
+        return !this.isRunning();
+    }
+
+    public int numberOfRoots() {
+        return this.roots.size();
+    }
+
+    /**
+     * @return Number of jobs in the this.
+     */
+    public int numberOfJobs() {
+        return this.jobs.size();
+    }
+
+    /**
+     * @return rue if all items in the this queue have been processed sucessfully.
+     */
+    public boolean isComplete() {
+        return this.getSize() == this.getCurrent();
+    }
+
+    public String getStatus() {
+        return this.getElapsedTime() + " " + this.status + " " + error;
+    }
+
+    public String getProgress() {
+        return this.getCurrentAsString() + " of " + this.getSizeAsString();
+    }
+
+    /**
+     * @return The cummulative file size of all files remaining in the this
+     */
+    public long getSize() {
+        return this.calculateTotalSize();
+    }
 
 
-	private long calculateTotalSize() {
-		long value = 0;
-		for (Iterator iter = jobs.iterator() ; iter.hasNext() ;) {
-			value += ((Path) iter.next()).status.getSize();
-		}
-		return value;
-	}
+    private long calculateTotalSize() {
+        long value = 0;
+        for (Iterator iter = jobs.iterator(); iter.hasNext();) {
+            value += ((Path) iter.next()).status.getSize();
+        }
+        return value;
+    }
 
-	public String getSizeAsString() {
-		return Status.getSizeAsString(this.getSize());
-	}
+    public String getSizeAsString() {
+        return Status.getSizeAsString(this.getSize());
+    }
 
-	/**
-	 * @return The number of bytes already processed of all elements in the whole this.
-	 */
-	public long getCurrent() {
-		return this.calculateCurrentSize();
-	}
+    /**
+     * @return The number of bytes already processed of all elements in the whole this.
+     */
+    public long getCurrent() {
+        return this.calculateCurrentSize();
+    }
 
-	private long calculateCurrentSize() {
-		long value = 0;
-		for (Iterator iter = jobs.iterator() ; iter.hasNext() ;) {
-			value += ((Path)iter.next()).status.getCurrent();
-		}
-		return value;
-	}
+    private long calculateCurrentSize() {
+        long value = 0;
+        for (Iterator iter = jobs.iterator(); iter.hasNext();) {
+            value += ((Path) iter.next()).status.getCurrent();
+        }
+        return value;
+    }
 
-	public String getCurrentAsString() {
-		return Status.getSizeAsString(this.getCurrent());
-	}
+    public String getCurrentAsString() {
+        return Status.getSizeAsString(this.getCurrent());
+    }
 
-	/**
-	 * @return double current bytes/second
-	 */
-	public String getSpeedAsString() {
-		if (this.isRunning())
-			if (this.getSpeed() > -1)
-				return Status.getSizeAsString(this.getSpeed()) + "/sec";
-		return "";
-	}
-	
-	/**
-	 @return The bytes being processed per second
-	 */
-	public long getSpeed() {
-		return this.speed;
-	}
+    /**
+     * @return double current bytes/second
+     */
+    public String getSpeedAsString() {
+        if (this.isRunning()) {
+            if (this.getSpeed() > -1) {
+                return Status.getSizeAsString(this.getSpeed()) + "/sec";
+            }
+        }
+        return "";
+    }
 
-	private void setSpeed(long s) {
-		this.speed = s;
-	}
+    /**
+     * @return The bytes being processed per second
+     */
+    public long getSpeed() {
+        return this.speed;
+    }
 
-	private void setTimeLeft(int seconds) {
-		this.timeLeft = seconds;
-	}
+    private void setSpeed(long s) {
+        this.speed = s;
+    }
 
-	public String getTimeLeft() {
-		if (this.isRunning()) {
-			//@todo: implementation of better 'time left' management.
-			if (this.timeLeft != -1) {
-				if (this.timeLeft >= 60) {
-					return (int) this.timeLeft / 60 + " minutes remaining.";
-				}
-				else {
-					return this.timeLeft + " seconds remaining.";
-				}
-			}
-		}
-		return "";
-	}
+    private void setTimeLeft(int seconds) {
+        this.timeLeft = seconds;
+    }
 
-	public String getElapsedTime() {
-		if (calendar.get(Calendar.HOUR) > 0) {
-			return this.parseTime(calendar.get(Calendar.HOUR))
-			    + ":"
-			    + parseTime(calendar.get(Calendar.MINUTE))
-			    + ":"
-			    + parseTime(calendar.get(Calendar.SECOND));
-		}
-		else {
-			return this.parseTime(calendar.get(Calendar.MINUTE))
-			    + ":"
-			    + parseTime(calendar.get(Calendar.SECOND));
-		}
-	}
+    public String getTimeLeft() {
+        if (this.isRunning()) {
+            //@todo: implementation of better 'time left' management.
+            if (this.timeLeft != -1) {
+                if (this.timeLeft >= 60) {
+                    return (int) this.timeLeft / 60 + " minutes remaining.";
+                }
+                else {
+                    return this.timeLeft + " seconds remaining.";
+                }
+            }
+        }
+        return "";
+    }
 
-	private String parseTime(int t) {
-		if (t > 9) {
-			return String.valueOf(t);
-		}
-		else {
-			return "0" + t;
-		}
-	}
+    public String getElapsedTime() {
+        if (calendar.get(Calendar.HOUR) > 0) {
+            return this.parseTime(calendar.get(Calendar.HOUR))
+                    + ":"
+                    + parseTime(calendar.get(Calendar.MINUTE))
+                    + ":"
+                    + parseTime(calendar.get(Calendar.SECOND));
+        }
+        else {
+            return this.parseTime(calendar.get(Calendar.MINUTE))
+                    + ":"
+                    + parseTime(calendar.get(Calendar.SECOND));
+        }
+    }
 
-	private void init() {
-		log.debug("init");
-				
-		this.calendar.set(Calendar.HOUR, 0);
-		this.calendar.set(Calendar.MINUTE, 0);
-		this.calendar.set(Calendar.SECOND, 0);
-		this.calendar.set(Calendar.HOUR, 0);
-		this.calendar.set(Calendar.MINUTE, 0);
-		this.calendar.set(Calendar.SECOND, 0);
-		this.elapsedTimer = new Timer(1000,
-		    new ActionListener() {
-			    int seconds = 0;
-			    int minutes = 0;
-			    int hours = 0;
+    private String parseTime(int t) {
+        if (t > 9) {
+            return String.valueOf(t);
+        }
+        else {
+            return "0" + t;
+        }
+    }
 
-			    public void actionPerformed(ActionEvent event) {
-				    seconds++;
-				    // calendar.set(year, mont, date, hour, minute, second)
-				    // >= one hour
-				    if (seconds >= 3600) {
-					    hours = (int) (seconds / 60 / 60);
-					    minutes = (int) ((seconds - hours * 60 * 60) / 60);
-					    calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), hours, minutes, seconds - minutes * 60);
-				    }
-				    else {
-					    // >= one minute
-					    if (seconds >= 60) {
-						    minutes = (int) (seconds / 60);
-						    calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), minutes, seconds - minutes * 60);
-					    }
-					    // only seconds
-					    else {
-						    calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), seconds);
-					    }
-				    }
-				    Queue.this.callObservers(new Message(Message.PROGRESS));
-			    }
-		    }
-		);
+    private void init() {
+        log.debug("init");
 
-		this.progressTimer = new Timer(500,
-		    new ActionListener() {
-			    int i = 0;
-			    long current;
-			    long last;
-			    long[] speeds = new long[8];
+        this.calendar.set(Calendar.HOUR, 0);
+        this.calendar.set(Calendar.MINUTE, 0);
+        this.calendar.set(Calendar.SECOND, 0);
+        this.calendar.set(Calendar.HOUR, 0);
+        this.calendar.set(Calendar.MINUTE, 0);
+        this.calendar.set(Calendar.SECOND, 0);
+        this.elapsedTimer = new Timer(1000,
+                new ActionListener() {
+                    int seconds = 0;
+                    int minutes = 0;
+                    int hours = 0;
 
-			    public void actionPerformed(ActionEvent e) {
-				    long diff = 0;
-				    current = currentJob.status.getCurrent(); // Bytes
-				    if (current <= 0) {
-					    setSpeed(0);
-				    }
-				    else {
-					    speeds[i] = (current - last) * 2; // Bytes per second
-					    i++;
-					    last = current;
-					    if (i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
-						    i = 0;
-					    }
-					    for (int k = 0; k < speeds.length; k++) {
-						    diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
-					    }
-					    Queue.this.setSpeed((diff / speeds.length)); //Bytes per second
-				    }
+                    public void actionPerformed(ActionEvent event) {
+                        seconds++;
+                        // calendar.set(year, mont, date, hour, minute, second)
+                        // >= one hour
+                        if (seconds >= 3600) {
+                            hours = (int) (seconds / 60 / 60);
+                            minutes = (int) ((seconds - hours * 60 * 60) / 60);
+                            calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), hours, minutes, seconds - minutes * 60);
+                        }
+                        else {
+                            // >= one minute
+                            if (seconds >= 60) {
+                                minutes = (int) (seconds / 60);
+                                calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), minutes, seconds - minutes * 60);
+                            }
+                            // only seconds
+                            else {
+                                calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), seconds);
+                            }
+                        }
+                        Queue.this.callObservers(new Message(Message.PROGRESS));
+                    }
+                });
 
-			    }
-		    }
-		);
+        this.progressTimer = new Timer(500,
+                new ActionListener() {
+                    int i = 0;
+                    long current;
+                    long last;
+                    long[] speeds = new long[8];
 
-		this.leftTimer = new Timer(1000,
-		    new ActionListener() {
-			    public void actionPerformed(ActionEvent e) {
-				    if (getSpeed() > 0)
-					    Queue.this.setTimeLeft((int) ((Queue.this.getSize() - currentJob.status.getCurrent()) / getSpeed()));
-				    else
-					    Queue.this.setTimeLeft(-1);
-			    }
-		    }
-		);
-	}
+                    public void actionPerformed(ActionEvent e) {
+                        long diff = 0;
+                        current = currentJob.status.getCurrent(); // Bytes
+                        if (current <= 0) {
+                            setSpeed(0);
+                        }
+                        else {
+                            speeds[i] = (current - last) * 2; // Bytes per second
+                            i++;
+                            last = current;
+                            if (i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
+                                i = 0;
+                            }
+                            for (int k = 0; k < speeds.length; k++) {
+                                diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
+                            }
+                            Queue.this.setSpeed((diff / speeds.length)); //Bytes per second
+                        }
+
+                    }
+                });
+
+        this.leftTimer = new Timer(1000,
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        if (getSpeed() > 0) {
+                            Queue.this.setTimeLeft((int) ((Queue.this.getSize() - currentJob.status.getCurrent()) / getSpeed()));
+                        }
+                        else {
+                            Queue.this.setTimeLeft(-1);
+                        }
+                    }
+                });
+    }
 }

@@ -26,33 +26,24 @@
  */
 package com.sshtools.j2ssh.agent;
 
-import com.sshtools.j2ssh.SshClient;
-import com.sshtools.j2ssh.authentication.AuthenticationProtocolClient;
-import com.sshtools.j2ssh.authentication.AuthenticationProtocolException;
-import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
-import com.sshtools.j2ssh.authentication.PublicKeyAuthenticationClient;
-import com.sshtools.j2ssh.authentication.SshAuthenticationClient;
-import com.sshtools.j2ssh.authentication.SshMsgUserAuthPKOK;
-import com.sshtools.j2ssh.authentication.SshMsgUserAuthRequest;
-import com.sshtools.j2ssh.authentication.TerminatedStateException;
-import com.sshtools.j2ssh.io.ByteArrayWriter;
-import com.sshtools.j2ssh.transport.SshMessage;
-import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.awt.Component;
-
+import java.awt.*;
 import java.io.IOException;
-
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.sshtools.j2ssh.SshClient;
+import com.sshtools.j2ssh.authentication.*;
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+import com.sshtools.j2ssh.transport.SshMessage;
+import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
+
 
 /**
- * <p>
+ * <p/>
  * Provides an application with an authentication mechanism that links to the
  * sshtools agent; the agent stores private keys and can hash and sign data
  * for the public key authentication request.
@@ -88,8 +79,6 @@ public class AgentAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMethodName() {
@@ -97,24 +86,19 @@ public class AgentAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param authentication
      * @param username
      * @param serviceToStart
      * @param key
-     *
      * @return
-     *
      * @throws IOException
      */
     public boolean acceptsKey(AuthenticationProtocolClient authentication,
-        String username, String serviceToStart, SshPublicKey key)
-        throws IOException {
+                              String username, String serviceToStart, SshPublicKey key)
+            throws IOException {
         authentication.registerMessage(SshMsgUserAuthPKOK.class,
-            SshMsgUserAuthPKOK.SSH_MSG_USERAUTH_PK_OK);
-        log.info(
-            "Determining if server can accept public key for authentication");
+                SshMsgUserAuthPKOK.SSH_MSG_USERAUTH_PK_OK);
+        log.info("Determining if server can accept public key for authentication");
 
         ByteArrayWriter baw = new ByteArrayWriter();
 
@@ -132,30 +116,28 @@ public class AgentAuthenticationClient extends SshAuthenticationClient {
 
             if (msg instanceof SshMsgUserAuthPKOK) {
                 return true;
-            } else {
-                throw new IOException(
-                    "Unexpected message returned from readMessage");
             }
-        } catch (TerminatedStateException ex) {
+            else {
+                throw new IOException("Unexpected message returned from readMessage");
+            }
+        }
+        catch (TerminatedStateException ex) {
             return false;
         }
     }
 
     /**
-     *
-     *
      * @param authentication
      * @param serviceToStart
-     *
      * @throws IOException
      * @throws TerminatedStateException
      * @throws AuthenticationProtocolException
+     *
      */
     public void authenticate(AuthenticationProtocolClient authentication,
-        String serviceToStart) throws IOException, TerminatedStateException {
+                             String serviceToStart) throws IOException, TerminatedStateException {
         if ((getUsername() == null) || (agent == null)) {
-            throw new AuthenticationProtocolException(
-                "You must supply a username and agent");
+            throw new AuthenticationProtocolException("You must supply a username and agent");
         }
 
         // Iterate the agents keys, find an acceptable key and authenticate
@@ -173,8 +155,8 @@ public class AgentAuthenticationClient extends SshAuthenticationClient {
             acceptable = acceptsKey(authentication, getUsername(),
                     serviceToStart, key);
             log.info("Agent authentication with key " + key.getFingerprint() +
-                " [" + description + "] is " +
-                (acceptable ? " acceptable" : " not acceptable"));
+                    " [" + description + "] is " +
+                    (acceptable ? " acceptable" : " not acceptable"));
 
             if (acceptable) {
                 ByteArrayWriter baw = new ByteArrayWriter();
@@ -206,7 +188,8 @@ public class AgentAuthenticationClient extends SshAuthenticationClient {
 
                 try {
                     authentication.readAuthenticationState();
-                } catch (TerminatedStateException ex) {
+                }
+                catch (TerminatedStateException ex) {
                     if (ex.getState() == AuthenticationProtocolState.COMPLETE) {
                         throw ex;
                     }
@@ -218,10 +201,7 @@ public class AgentAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param parent
-     *
      * @return
      */
     public boolean showAuthenticationDialog(Component parent) {
@@ -229,8 +209,6 @@ public class AgentAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @return
      */
     public Properties getPersistableProperties() {
@@ -240,16 +218,12 @@ public class AgentAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param properties
      */
     public void setPersistableProperties(Properties properties) {
     }
 
     /**
-     *
-     *
      * @return
      */
     public boolean canAuthenticate() {
@@ -257,10 +231,7 @@ public class AgentAuthenticationClient extends SshAuthenticationClient {
     }
 
     /**
-     *
-     *
      * @param ssh
-     *
      * @return
      */
     public boolean hasAcceptableKey(SshClient ssh) {
@@ -275,7 +246,8 @@ public class AgentAuthenticationClient extends SshAuthenticationClient {
                     return true;
                 }
             }
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
         }
 
         return false;

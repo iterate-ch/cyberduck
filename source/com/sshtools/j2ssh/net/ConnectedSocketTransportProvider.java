@@ -29,13 +29,10 @@ package com.sshtools.j2ssh.net;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.net.Socket;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -52,8 +49,6 @@ public class ConnectedSocketTransportProvider implements TransportProvider {
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     public void close() throws IOException {
@@ -68,10 +63,7 @@ public class ConnectedSocketTransportProvider implements TransportProvider {
     }
 
     /**
-     *
-     *
      * @return
-     *
      * @throws IOException
      */
     public OutputStream getOutputStream() throws IOException {
@@ -79,8 +71,6 @@ public class ConnectedSocketTransportProvider implements TransportProvider {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getProviderDetail() {

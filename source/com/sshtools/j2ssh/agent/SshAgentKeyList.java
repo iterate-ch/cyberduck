@@ -26,18 +26,17 @@
  */
 package com.sshtools.j2ssh.agent;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.publickey.SshKeyPairFactory;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
-
-import java.io.IOException;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 
 class SshAgentKeyList extends SubsystemMessage {
@@ -64,8 +63,6 @@ class SshAgentKeyList extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public Map getKeys() {
@@ -73,8 +70,6 @@ class SshAgentKeyList extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -82,17 +77,15 @@ class SshAgentKeyList extends SubsystemMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             baw.writeInt(keys.size());
@@ -109,23 +102,22 @@ class SshAgentKeyList extends SubsystemMessage {
                 baw.writeBinaryString(key.getEncoded());
                 baw.writeString(description);
             }
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             throw new InvalidMessageException("Failed to write message data");
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                                 DOCUMENT
+     *                                 ME!
      * @throws InvalidMessageException
      */
     public void constructMessage(ByteArrayReader bar)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         try {
             int num = (int) bar.readInt();
@@ -139,7 +131,8 @@ class SshAgentKeyList extends SubsystemMessage {
                 description = bar.readString();
                 keys.put(key, description);
             }
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             throw new InvalidMessageException("Failed to read message data");
         }
     }

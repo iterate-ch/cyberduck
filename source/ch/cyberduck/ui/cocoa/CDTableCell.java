@@ -20,9 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSCoder;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSRect;
-import com.apple.cocoa.foundation.NSCoder;
 
 public class CDTableCell extends NSCell {
 
@@ -34,31 +34,31 @@ public class CDTableCell extends NSCell {
     private static NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT;
     private static NSMutableParagraphStyle PARAGRAPH_STYLE_RIGHT_ALIGNMENT;
 
-	public CDTableCell() {
-		super();
-	}
-	
-	protected CDTableCell(NSCoder decoder, long token) {
-		super(decoder, token);
-	}
-	
-	protected void encodeWithCoder(NSCoder encoder) {
-		super.encodeWithCoder(encoder);
-	}
-	
+    public CDTableCell() {
+        super();
+    }
+
+    protected CDTableCell(NSCoder decoder, long token) {
+        super(decoder, token);
+    }
+
+    protected void encodeWithCoder(NSCoder encoder) {
+        super.encodeWithCoder(encoder);
+    }
+
     static {
         PARAGRAPH_STYLE_LEFT_ALIGNMENT = new NSMutableParagraphStyle();
         PARAGRAPH_STYLE_LEFT_ALIGNMENT.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle());
-		PARAGRAPH_STYLE_LEFT_ALIGNMENT.setAlignment(NSText.LeftTextAlignment);
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT.setAlignment(NSText.LeftTextAlignment);
         PARAGRAPH_STYLE_LEFT_ALIGNMENT.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
     }
-	
-	static {
+
+    static {
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT = new NSMutableParagraphStyle();
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle());
-		PARAGRAPH_STYLE_RIGHT_ALIGNMENT.setAlignment(NSText.RightTextAlignment);
+        PARAGRAPH_STYLE_RIGHT_ALIGNMENT.setAlignment(NSText.RightTextAlignment);
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
-	}
+    }
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         this.highlighted = this.isHighlighted() && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(NSColor.secondarySelectedControlColor());
@@ -87,7 +87,7 @@ public class CDTableCell extends NSCell {
                 //								   NSAttributedString.ForegroundColorAttributeName,
                 NSAttributedString.ParagraphStyleAttributeName} //keys
     );
-	
+
     static protected NSDictionary NORMAL_FONT = new NSDictionary(new Object[]{
         NSFont.systemFontOfSize(10.0f),
         //								   NSColor.darkGrayColor(),
@@ -97,7 +97,7 @@ public class CDTableCell extends NSCell {
                 //								   NSAttributedString.ForegroundColorAttributeName,
                 NSAttributedString.ParagraphStyleAttributeName} //keys
     );
-	
+
     static protected NSDictionary TINY_FONT = new NSDictionary(new Object[]{
         NSFont.systemFontOfSize(10.0f),
         NSColor.darkGrayColor(),
@@ -105,19 +105,17 @@ public class CDTableCell extends NSCell {
             new Object[]{
                 NSAttributedString.FontAttributeName,
                 NSAttributedString.ForegroundColorAttributeName,
-                NSAttributedString.ParagraphStyleAttributeName}
-	);
+                NSAttributedString.ParagraphStyleAttributeName});
 
-	static protected NSDictionary TINY_FONT_RIGHT = new NSDictionary(new Object[]{
+    static protected NSDictionary TINY_FONT_RIGHT = new NSDictionary(new Object[]{
         NSFont.systemFontOfSize(10.0f),
         NSColor.darkGrayColor(),
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT},
-															   new Object[]{
-																   NSAttributedString.FontAttributeName,
-																   NSAttributedString.ForegroundColorAttributeName,
-																   NSAttributedString.ParagraphStyleAttributeName}
-															   );
-	
+            new Object[]{
+                NSAttributedString.FontAttributeName,
+                NSAttributedString.ForegroundColorAttributeName,
+                NSAttributedString.ParagraphStyleAttributeName});
+
     static protected NSDictionary BOLD_FONT_HIGHLIGHTED = new NSDictionary(new Object[]{
         NSFont.boldSystemFontOfSize(11.0f),
         NSColor.whiteColor(),
@@ -127,7 +125,7 @@ public class CDTableCell extends NSCell {
                 NSAttributedString.ForegroundColorAttributeName,
                 NSAttributedString.ParagraphStyleAttributeName} //keys
     );
-	
+
     static protected NSDictionary NORMAL_FONT_HIGHLIGHTED = new NSDictionary(new Object[]{
         NSFont.systemFontOfSize(10.0f),
         NSColor.whiteColor(),
@@ -137,7 +135,7 @@ public class CDTableCell extends NSCell {
                 NSAttributedString.ForegroundColorAttributeName,
                 NSAttributedString.ParagraphStyleAttributeName} //keys
     );
-	
+
     static protected NSDictionary TINY_FONT_HIGHLIGHTED = new NSDictionary(new Object[]{
         NSFont.systemFontOfSize(10.0f),
         NSColor.whiteColor(),
@@ -147,12 +145,12 @@ public class CDTableCell extends NSCell {
                 NSAttributedString.ForegroundColorAttributeName,
                 NSAttributedString.ParagraphStyleAttributeName});
 
-	static protected NSDictionary TINY_FONT_HIGHLIGHTED_RIGHT = new NSDictionary(new Object[]{
+    static protected NSDictionary TINY_FONT_HIGHLIGHTED_RIGHT = new NSDictionary(new Object[]{
         NSFont.systemFontOfSize(10.0f),
         NSColor.whiteColor(),
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT},
-																		   new Object[]{
-																			   NSAttributedString.FontAttributeName,
-																			   NSAttributedString.ForegroundColorAttributeName,
-																			   NSAttributedString.ParagraphStyleAttributeName});
+            new Object[]{
+                NSAttributedString.FontAttributeName,
+                NSAttributedString.ForegroundColorAttributeName,
+                NSAttributedString.ParagraphStyleAttributeName});
 }

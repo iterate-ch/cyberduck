@@ -28,44 +28,32 @@ package com.sshtools.j2ssh.connection;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
 public interface ChannelEventListener {
     /**
-     *
-     *
      * @param channel
      */
     public void onChannelOpen(Channel channel);
 
     /**
-     *
-     *
      * @param channel
      */
     public void onChannelEOF(Channel channel);
 
     /**
-     *
-     *
      * @param channel
      */
     public void onChannelClose(Channel channel);
 
     /**
-     *
-     *
      * @param channel
      * @param data
      */
     public void onDataReceived(Channel channel, byte[] data);
 
     /**
-     *
-     *
      * @param channel
      * @param data
      */

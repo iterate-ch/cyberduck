@@ -26,27 +26,25 @@
  */
 package com.sshtools.j2ssh.transport;
 
-import com.sshtools.j2ssh.*;
+import com.sshtools.j2ssh.SshException;
 
 
 /**
- * <p>
+ * <p/>
  * Thrown by message store when a message is already registered
  * </p>
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public class MessageAlreadyRegisteredException extends SshException {
     /**
-     * <p>
+     * <p/>
      * Constructs the exception.
      * </p>
      *
      * @param messageId the id of the message already registered
-     *
      * @since 0.2.0
      */
     public MessageAlreadyRegisteredException(Integer messageId) {

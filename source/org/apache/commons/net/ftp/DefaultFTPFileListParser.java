@@ -64,22 +64,21 @@ import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
  * Sometimes you will want to parse unusual listing formats, in which
  * case you would create your own implementation of FTPFileListParser and
  * if necessary, subclass FTPFile.
- * <p>
+ * <p/>
  * As of version 1.2, this class merely extends UnixFTPEntryParser.
  * It will be removed in version 2.0.
- * <p>
+ * <p/>
+ *
  * @author Daniel F. Savarese
  * @see FTPFileListParser
  * @see FTPFile
  * @see FTPClient#listFiles
  * @see org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory
- * @deprecated This class is deprecated as of version 1.2 and will be 
- * removed in version 2.0 -- use the autodetect mechanism in 
- * DefaultFTPFileEntryParserFactory instead.
+ * @deprecated This class is deprecated as of version 1.2 and will be
+ *             removed in version 2.0 -- use the autodetect mechanism in
+ *             DefaultFTPFileEntryParserFactory instead.
  */
-public final class DefaultFTPFileListParser extends UnixFTPEntryParser
-{
-
+public final class DefaultFTPFileListParser extends UnixFTPEntryParser {
 
 
 }

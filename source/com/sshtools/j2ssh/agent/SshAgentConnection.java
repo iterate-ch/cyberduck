@@ -26,18 +26,21 @@
  */
 package com.sshtools.j2ssh.agent;
 
-import com.sshtools.j2ssh.configuration.*;
-import com.sshtools.j2ssh.io.*;
-import com.sshtools.j2ssh.subsystem.*;
-import com.sshtools.j2ssh.transport.publickey.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.util.Vector;
 
-import org.apache.commons.logging.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import java.io.*;
-
-import java.net.*;
-
-import java.util.*;
+import com.sshtools.j2ssh.configuration.ConfigurationLoader;
+import com.sshtools.j2ssh.io.ByteArrayReader;
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+import com.sshtools.j2ssh.subsystem.SubsystemMessage;
+import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
 
 
 /**
@@ -64,7 +67,7 @@ public class SshAgentConnection implements Runnable {
     }
 
     SshAgentConnection(KeyStore keystore, Socket socket)
-        throws IOException {
+            throws IOException {
         this.keystore = keystore;
         this.in = socket.getInputStream();
         this.out = socket.getOutputStream();
@@ -88,7 +91,6 @@ public class SshAgentConnection implements Runnable {
      * Send a failure message
      *
      * @param errorcode the error code of the failure
-     *
      * @throws IOException if an IO error occurs
      */
     protected void sendAgentFailure(int errorcode) throws IOException {
@@ -121,7 +123,6 @@ public class SshAgentConnection implements Runnable {
      * Send the completed signing operation data.
      *
      * @param data the data generating from the signing operation
-     *
      * @throws IOException if an IO error occurs
      */
     protected void sendOperationComplete(byte[] data) throws IOException {
@@ -133,7 +134,6 @@ public class SshAgentConnection implements Runnable {
      * Send some random data to the remote side.
      *
      * @param data some random data
-     *
      * @throws IOException if an IO error occurs
      */
     protected void sendRandomData(byte[] data) throws IOException {
@@ -146,7 +146,6 @@ public class SshAgentConnection implements Runnable {
      * still active
      *
      * @param padding some random padding for the message
-     *
      * @throws IOException if an IO error occurs
      */
     protected void sendAgentAlive(byte[] padding) throws IOException {
@@ -158,7 +157,6 @@ public class SshAgentConnection implements Runnable {
      * Sends a subsystem message.
      *
      * @param msg the subsystem message to send
-     *
      * @throws IOException if an IO error occurs
      */
     protected void sendMessage(SubsystemMessage msg) throws IOException {
@@ -185,11 +183,10 @@ public class SshAgentConnection implements Runnable {
      * protocol.
      *
      * @param msg the version request message
-     *
      * @throws IOException if an IO error occurs
      */
     protected void onRequestVersion(SshAgentRequestVersion msg)
-        throws IOException {
+            throws IOException {
         sendVersionResponse();
     }
 
@@ -197,14 +194,14 @@ public class SshAgentConnection implements Runnable {
      * Called when the remote side adds a key the agent.
      *
      * @param msg the message containing the key
-     *
      * @throws IOException if an IO error occurs
      */
     protected void onAddKey(SshAgentAddKey msg) throws IOException {
         if (keystore.addKey(msg.getPrivateKey(), msg.getPublicKey(),
-                    msg.getDescription(), msg.getKeyConstraints())) {
+                msg.getDescription(), msg.getKeyConstraints())) {
             sendAgentSuccess();
-        } else {
+        }
+        else {
             sendAgentFailure(SshAgentFailure.SSH_AGENT_ERROR_FAILURE);
         }
     }
@@ -214,11 +211,10 @@ public class SshAgentConnection implements Runnable {
      * agent.
      *
      * @param msg the delete all keys message
-     *
      * @throws IOException if an IO error occurs
      */
     protected void onDeleteAllKeys(SshAgentDeleteAllKeys msg)
-        throws IOException {
+            throws IOException {
         keystore.deleteAllKeys();
         sendAgentSuccess();
     }
@@ -227,7 +223,6 @@ public class SshAgentConnection implements Runnable {
      * Called by the remote side when a list of the agents keys is required
      *
      * @param msg the list all keys message
-     *
      * @throws IOException if an IO error occurs
      */
     protected void onListKeys(SshAgentListKeys msg) throws IOException {
@@ -238,28 +233,33 @@ public class SshAgentConnection implements Runnable {
      * Called by the remote side to initiate a private key operation.
      *
      * @param msg the private key operation message
-     *
      * @throws IOException if an IO error occurs
      */
     protected void onPrivateKeyOp(SshAgentPrivateKeyOp msg)
-        throws IOException {
+            throws IOException {
         try {
             if (msg.getOperation().equals("sign")) {
                 sendAgentFailure(SshAgentFailure.SSH_AGENT_ERROR_KEY_NOT_SUITABLE);
-            } else if (msg.getOperation().equals("hash-and-sign")) {
+            }
+            else if (msg.getOperation().equals("hash-and-sign")) {
                 byte[] sig = keystore.performHashAndSign(msg.getPublicKey(),
                         forwardingNodes, msg.getOperationData());
                 sendOperationComplete(sig);
-            } else if (msg.getOperation().equals("decrypt")) {
+            }
+            else if (msg.getOperation().equals("decrypt")) {
                 sendAgentFailure(SshAgentFailure.SSH_AGENT_ERROR_KEY_NOT_SUITABLE);
-            } else if (msg.getOperation().equals("ssh1-challenge-response")) {
+            }
+            else if (msg.getOperation().equals("ssh1-challenge-response")) {
                 sendAgentFailure(SshAgentFailure.SSH_AGENT_ERROR_KEY_NOT_SUITABLE);
-            } else {
+            }
+            else {
                 sendAgentFailure(SshAgentFailure.SSH_AGENT_ERROR_UNSUPPORTED_OP);
             }
-        } catch (KeyTimeoutException ex) {
+        }
+        catch (KeyTimeoutException ex) {
             sendAgentFailure(SshAgentFailure.SSH_AGENT_ERROR_TIMEOUT);
-        } catch (InvalidSshKeyException ex) {
+        }
+        catch (InvalidSshKeyException ex) {
             sendAgentFailure(SshAgentFailure.SSH_AGENT_ERROR_KEY_NOT_FOUND);
         }
     }
@@ -268,13 +268,13 @@ public class SshAgentConnection implements Runnable {
      * Called by the remote side to delete a key from the agent
      *
      * @param msg the message containin the key to delete
-     *
      * @throws IOException if an IO error occurs
      */
     protected void onDeleteKey(SshAgentDeleteKey msg) throws IOException {
         if (keystore.deleteKey(msg.getPublicKey(), msg.getDescription())) {
             sendAgentSuccess();
-        } else {
+        }
+        else {
             sendAgentFailure(SshAgentFailure.SSH_AGENT_ERROR_KEY_NOT_FOUND);
         }
     }
@@ -283,13 +283,13 @@ public class SshAgentConnection implements Runnable {
      * Called by the remote side when the agent is to be locked
      *
      * @param msg the message containing a password
-     *
      * @throws IOException if an IO error occurs
      */
     protected void onLock(SshAgentLock msg) throws IOException {
         if (keystore.lock(msg.getPassword())) {
             sendAgentSuccess();
-        } else {
+        }
+        else {
             sendAgentFailure(SshAgentFailure.SSH_AGENT_ERROR_DENIED);
         }
     }
@@ -298,13 +298,13 @@ public class SshAgentConnection implements Runnable {
      * Called by the remote side when the agent is to be unlocked
      *
      * @param msg the message containin the password
-     *
      * @throws IOException if an IO error occurs
      */
     protected void onUnlock(SshAgentUnlock msg) throws IOException {
         if (keystore.unlock(msg.getPassword())) {
             sendAgentSuccess();
-        } else {
+        }
+        else {
             sendAgentFailure(SshAgentFailure.SSH_AGENT_ERROR_DENIED);
         }
     }
@@ -313,7 +313,6 @@ public class SshAgentConnection implements Runnable {
      * Called when a ping message is received
      *
      * @param msg the ping message containing some padding
-     *
      * @throws IOException if an IO error occurs
      */
     protected void onPing(SshAgentPing msg) throws IOException {
@@ -324,7 +323,6 @@ public class SshAgentConnection implements Runnable {
      * Called when the remote side sends a random message
      *
      * @param msg the random message
-     *
      * @throws IOException if an IO error occurs
      */
     protected void onRandom(SshAgentRandom msg) throws IOException {
@@ -332,7 +330,8 @@ public class SshAgentConnection implements Runnable {
             byte[] random = new byte[msg.getLength()];
             ConfigurationLoader.getRND().nextBytes(random);
             sendRandomData(random);
-        } else {
+        }
+        else {
             sendAgentFailure(SshAgentFailure.SSH_AGENT_ERROR_FAILURE);
         }
     }
@@ -361,12 +360,14 @@ public class SshAgentConnection implements Runnable {
 
                         if (read >= 0) {
                             len += read;
-                        } else {
+                        }
+                        else {
                             alive = false;
 
                             break;
                         }
-                    } catch (InterruptedIOException ex) {
+                    }
+                    catch (InterruptedIOException ex) {
                         if (ex.bytesTransferred > 0) {
                             len += ex.bytesTransferred;
                         }
@@ -381,7 +382,8 @@ public class SshAgentConnection implements Runnable {
                     while (len < msgdata.length) {
                         try {
                             len += in.read(msgdata, len, msgdata.length - len);
-                        } catch (InterruptedIOException ex1) {
+                        }
+                        catch (InterruptedIOException ex1) {
                             len += ex1.bytesTransferred;
                         }
                     }
@@ -389,12 +391,15 @@ public class SshAgentConnection implements Runnable {
                     onMessageReceived(msgdata);
                 }
             }
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             log.info("The agent connection terminated");
-        } finally {
+        }
+        finally {
             try {
                 socket.close();
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
             }
         }
 
@@ -405,124 +410,134 @@ public class SshAgentConnection implements Runnable {
      * Process a message and route to the handler method
      *
      * @param msgdata the raw message received
-     *
      * @throws IOException if an IO error occurs
      */
     protected void onMessageReceived(byte[] msgdata) throws IOException {
         switch ((int) (msgdata[0] & 0xFF)) {
-        case SshAgentForwardingNotice.SSH_AGENT_FORWARDING_NOTICE: {
-            log.info("Agent forwarding notice received");
+            case SshAgentForwardingNotice.SSH_AGENT_FORWARDING_NOTICE:
+                {
+                    log.info("Agent forwarding notice received");
 
-            SshAgentForwardingNotice msg = new SshAgentForwardingNotice();
-            msg.fromByteArray(msgdata);
-            onForwardingNotice(msg);
+                    SshAgentForwardingNotice msg = new SshAgentForwardingNotice();
+                    msg.fromByteArray(msgdata);
+                    onForwardingNotice(msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshAgentRequestVersion.SSH_AGENT_REQUEST_VERSION: {
-            log.info("Agent version request received");
+            case SshAgentRequestVersion.SSH_AGENT_REQUEST_VERSION:
+                {
+                    log.info("Agent version request received");
 
-            SshAgentRequestVersion msg = new SshAgentRequestVersion();
-            msg.fromByteArray(msgdata);
-            onRequestVersion(msg);
+                    SshAgentRequestVersion msg = new SshAgentRequestVersion();
+                    msg.fromByteArray(msgdata);
+                    onRequestVersion(msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshAgentAddKey.SSH_AGENT_ADD_KEY: {
-            log.info("Adding key to agent");
+            case SshAgentAddKey.SSH_AGENT_ADD_KEY:
+                {
+                    log.info("Adding key to agent");
 
-            SshAgentAddKey msg = new SshAgentAddKey();
-            msg.fromByteArray(msgdata);
-            onAddKey(msg);
+                    SshAgentAddKey msg = new SshAgentAddKey();
+                    msg.fromByteArray(msgdata);
+                    onAddKey(msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshAgentDeleteAllKeys.SSH_AGENT_DELETE_ALL_KEYS: {
-            log.info("Deleting all keys from agent");
+            case SshAgentDeleteAllKeys.SSH_AGENT_DELETE_ALL_KEYS:
+                {
+                    log.info("Deleting all keys from agent");
 
-            SshAgentDeleteAllKeys msg = new SshAgentDeleteAllKeys();
-            msg.fromByteArray(msgdata);
-            onDeleteAllKeys(msg);
+                    SshAgentDeleteAllKeys msg = new SshAgentDeleteAllKeys();
+                    msg.fromByteArray(msgdata);
+                    onDeleteAllKeys(msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshAgentListKeys.SSH_AGENT_LIST_KEYS: {
-            log.info("Listing agent keys");
+            case SshAgentListKeys.SSH_AGENT_LIST_KEYS:
+                {
+                    log.info("Listing agent keys");
 
-            SshAgentListKeys msg = new SshAgentListKeys();
-            msg.fromByteArray(msgdata);
-            onListKeys(msg);
+                    SshAgentListKeys msg = new SshAgentListKeys();
+                    msg.fromByteArray(msgdata);
+                    onListKeys(msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshAgentPrivateKeyOp.SSH_AGENT_PRIVATE_KEY_OP: {
-            log.info("Performing agent private key operation");
+            case SshAgentPrivateKeyOp.SSH_AGENT_PRIVATE_KEY_OP:
+                {
+                    log.info("Performing agent private key operation");
 
-            SshAgentPrivateKeyOp msg = new SshAgentPrivateKeyOp();
-            msg.fromByteArray(msgdata);
-            onPrivateKeyOp(msg);
+                    SshAgentPrivateKeyOp msg = new SshAgentPrivateKeyOp();
+                    msg.fromByteArray(msgdata);
+                    onPrivateKeyOp(msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshAgentDeleteKey.SSH_AGENT_DELETE_KEY: {
-            log.info("Deleting key from agent");
+            case SshAgentDeleteKey.SSH_AGENT_DELETE_KEY:
+                {
+                    log.info("Deleting key from agent");
 
-            SshAgentDeleteKey msg = new SshAgentDeleteKey();
-            msg.fromByteArray(msgdata);
-            onDeleteKey(msg);
+                    SshAgentDeleteKey msg = new SshAgentDeleteKey();
+                    msg.fromByteArray(msgdata);
+                    onDeleteKey(msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshAgentLock.SSH_AGENT_LOCK: {
-            log.info("Locking agent");
+            case SshAgentLock.SSH_AGENT_LOCK:
+                {
+                    log.info("Locking agent");
 
-            SshAgentLock msg = new SshAgentLock();
-            msg.fromByteArray(msgdata);
-            onLock(msg);
+                    SshAgentLock msg = new SshAgentLock();
+                    msg.fromByteArray(msgdata);
+                    onLock(msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshAgentUnlock.SSH_AGENT_UNLOCK: {
-            log.info("Unlocking agent");
+            case SshAgentUnlock.SSH_AGENT_UNLOCK:
+                {
+                    log.info("Unlocking agent");
 
-            SshAgentUnlock msg = new SshAgentUnlock();
-            msg.fromByteArray(msgdata);
-            onUnlock(msg);
+                    SshAgentUnlock msg = new SshAgentUnlock();
+                    msg.fromByteArray(msgdata);
+                    onUnlock(msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshAgentPing.SSH_AGENT_PING: {
-            log.info("Ping Ping Ping Ping Ping");
+            case SshAgentPing.SSH_AGENT_PING:
+                {
+                    log.info("Ping Ping Ping Ping Ping");
 
-            SshAgentPing msg = new SshAgentPing();
-            msg.fromByteArray(msgdata);
-            onPing(msg);
+                    SshAgentPing msg = new SshAgentPing();
+                    msg.fromByteArray(msgdata);
+                    onPing(msg);
 
-            break;
-        }
+                    break;
+                }
 
-        case SshAgentRandom.SSH_AGENT_RANDOM: {
-            log.info("Random message received");
+            case SshAgentRandom.SSH_AGENT_RANDOM:
+                {
+                    log.info("Random message received");
 
-            SshAgentRandom msg = new SshAgentRandom();
-            msg.fromByteArray(msgdata);
-            onRandom(msg);
+                    SshAgentRandom msg = new SshAgentRandom();
+                    msg.fromByteArray(msgdata);
+                    onRandom(msg);
 
-            break;
-        }
+                    break;
+                }
 
-        default:
-            throw new IOException("Unrecognized message type " +
-                String.valueOf(msgdata[0]) + " received");
+            default:
+                throw new IOException("Unrecognized message type " +
+                        String.valueOf(msgdata[0]) + " received");
         }
     }
 }

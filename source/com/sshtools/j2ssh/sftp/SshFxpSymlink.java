@@ -26,16 +26,13 @@
  */
 package com.sshtools.j2ssh.sftp;
 
+import ch.cyberduck.core.Codec;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 
-import ch.cyberduck.core.Codec;
-
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -61,7 +58,7 @@ public class SshFxpSymlink extends SubsystemMessage implements MessageRequestId 
      * @param linkpath
      */
     public SshFxpSymlink(UnsignedInteger32 id, String targetpath,
-        String linkpath) {
+                         String linkpath) {
         super(SSH_FXP_SYMLINK);
         this.id = id;
         this.linkpath = linkpath;
@@ -69,8 +66,6 @@ public class SshFxpSymlink extends SubsystemMessage implements MessageRequestId 
     }
 
     /**
-     *
-     *
      * @return
      */
     public UnsignedInteger32 getId() {
@@ -78,8 +73,6 @@ public class SshFxpSymlink extends SubsystemMessage implements MessageRequestId 
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getLinkPath() {
@@ -87,8 +80,6 @@ public class SshFxpSymlink extends SubsystemMessage implements MessageRequestId 
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getTargetPath() {
@@ -96,16 +87,14 @@ public class SshFxpSymlink extends SubsystemMessage implements MessageRequestId 
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructMessage(ByteArrayReader bar)
-        throws java.io.IOException, 
+            throws java.io.IOException,
             com.sshtools.j2ssh.transport.InvalidMessageException {
         id = bar.readUINT32();
         linkpath = bar.readString();
@@ -113,8 +102,6 @@ public class SshFxpSymlink extends SubsystemMessage implements MessageRequestId 
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -122,21 +109,19 @@ public class SshFxpSymlink extends SubsystemMessage implements MessageRequestId 
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws java.io.IOException
-     * @throws com.sshtools.j2ssh.transport.InvalidMessageException DOCUMENT
-     *         ME!
+     * @throws com.sshtools.j2ssh.transport.InvalidMessageException
+     *                             DOCUMENT
+     *                             ME!
      */
     public void constructByteArray(ByteArrayWriter baw)
-        throws java.io.IOException, 
-		com.sshtools.j2ssh.transport.InvalidMessageException {
-			baw.writeUINT32(id);
-			baw.writeString(new String(Codec.encode(linkpath)));
-			//        baw.writeString(linkpath);
-			baw.writeString(new String(Codec.encode(targetpath)));
-			//        baw.writeString(targetpath);
+            throws java.io.IOException,
+            com.sshtools.j2ssh.transport.InvalidMessageException {
+        baw.writeUINT32(id);
+        baw.writeString(new String(Codec.encode(linkpath)));
+        //        baw.writeString(linkpath);
+        baw.writeString(new String(Codec.encode(targetpath)));
+        //        baw.writeString(targetpath);
     }
 }

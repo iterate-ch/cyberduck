@@ -26,22 +26,20 @@
  */
 package com.sshtools.j2ssh.transport.publickey.rsa;
 
-import com.sshtools.j2ssh.configuration.ConfigurationLoader;
-import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
-import com.sshtools.j2ssh.transport.publickey.SshKeyPair;
-import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
-import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
-
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
+import com.sshtools.j2ssh.configuration.ConfigurationLoader;
+import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
+import com.sshtools.j2ssh.transport.publickey.SshKeyPair;
+import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
+import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -56,36 +54,26 @@ public class SshRsaKeyPair extends SshKeyPair {
     }
 
     /**
-     *
-     *
      * @param encoded
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public SshPrivateKey decodePrivateKey(byte[] encoded)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         return new SshRsaPrivateKey(encoded);
     }
 
     /**
-     *
-     *
      * @param encoded
-     *
      * @return
-     *
      * @throws InvalidSshKeyException
      */
     public SshPublicKey decodePublicKey(byte[] encoded)
-        throws InvalidSshKeyException {
+            throws InvalidSshKeyException {
         return new SshRsaPublicKey(encoded);
     }
 
     /**
-     *
-     *
      * @param bits
      */
     public void generate(int bits) {
@@ -97,10 +85,10 @@ public class SshRsaKeyPair extends SshKeyPair {
             KeyPair pair = keyGen.generateKeyPair();
 
             // Get the keys and set
-            setPrivateKey(new SshRsaPrivateKey(
-                    (RSAPrivateKey) pair.getPrivate(),
+            setPrivateKey(new SshRsaPrivateKey((RSAPrivateKey) pair.getPrivate(),
                     (RSAPublicKey) pair.getPublic()));
-        } catch (NoSuchAlgorithmException nsae) {
+        }
+        catch (NoSuchAlgorithmException nsae) {
             prvKey = null;
             pubKey = null;
         }

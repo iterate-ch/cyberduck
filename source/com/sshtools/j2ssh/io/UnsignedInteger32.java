@@ -26,12 +26,10 @@
  */
 package com.sshtools.j2ssh.io;
 
-import java.io.*;
+import java.io.Serializable;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -49,7 +47,6 @@ public class UnsignedInteger32 extends Number implements Serializable {
      * Creates a new UnsignedInteger32 object.
      *
      * @param a
-     *
      * @throws NumberFormatException
      */
     public UnsignedInteger32(long a) {
@@ -64,7 +61,6 @@ public class UnsignedInteger32 extends Number implements Serializable {
      * Creates a new UnsignedInteger32 object.
      *
      * @param a
-     *
      * @throws NumberFormatException
      */
     public UnsignedInteger32(String a) throws NumberFormatException {
@@ -79,8 +75,6 @@ public class UnsignedInteger32 extends Number implements Serializable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte byteValue() {
@@ -88,8 +82,6 @@ public class UnsignedInteger32 extends Number implements Serializable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public short shortValue() {
@@ -97,8 +89,6 @@ public class UnsignedInteger32 extends Number implements Serializable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int intValue() {
@@ -106,8 +96,6 @@ public class UnsignedInteger32 extends Number implements Serializable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public long longValue() {
@@ -115,8 +103,6 @@ public class UnsignedInteger32 extends Number implements Serializable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public float floatValue() {
@@ -124,8 +110,6 @@ public class UnsignedInteger32 extends Number implements Serializable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public double doubleValue() {
@@ -133,8 +117,6 @@ public class UnsignedInteger32 extends Number implements Serializable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String toString() {
@@ -142,8 +124,6 @@ public class UnsignedInteger32 extends Number implements Serializable {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int hashCode() {
@@ -151,10 +131,7 @@ public class UnsignedInteger32 extends Number implements Serializable {
     }
 
     /**
-     *
-     *
      * @param o
-     *
      * @return
      */
     public boolean equals(Object o) {
@@ -166,11 +143,8 @@ public class UnsignedInteger32 extends Number implements Serializable {
     }
 
     /**
-     *
-     *
      * @param x
      * @param y
-     *
      * @return
      */
     public static UnsignedInteger32 add(UnsignedInteger32 x, UnsignedInteger32 y) {
@@ -178,11 +152,8 @@ public class UnsignedInteger32 extends Number implements Serializable {
     }
 
     /**
-     *
-     *
      * @param x
      * @param y
-     *
      * @return
      */
     public static UnsignedInteger32 add(UnsignedInteger32 x, int y) {

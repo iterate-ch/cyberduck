@@ -21,8 +21,6 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
-//import com.apple.cocoa.application.NSFileWrapper;
-
 import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
@@ -31,59 +29,61 @@ import org.apache.log4j.Logger;
 
 /**
  * A path is a local directory or file.
+ *
  * @version $Id$
  */
 public class Local extends File {
-	private static Logger log = Logger.getLogger(Local.class);
+    private static Logger log = Logger.getLogger(Local.class);
 
-	public Local(File parent, String name) {
-		super(parent, name);
-	}
+    public Local(File parent, String name) {
+        super(parent, name);
+    }
 
-	public Local(String parent, String name) {
-		super(parent, name);
-	}
+    public Local(String parent, String name) {
+        super(parent, name);
+    }
 
-	public Local(String path) {
-		super(path);
-	}
-	
-	public File getTemp() {
-		return this;
+    public Local(String path) {
+        super(path);
+    }
+
+    public File getTemp() {
+        return this;
 //		return new File(super.getAbsolutePath()+".part");
-	}
-	
-	public String getAbsolute() {
-		return super.getAbsolutePath();
-	}
+    }
+
+    public String getAbsolute() {
+        return super.getAbsolutePath();
+    }
 //	public NSFileWrapper getWrapper() {
 //		return new NSFileWrapper(this.getTemp().getAbsolutePath(), false);
 //		//this.getWrapper().setIcon(NSImage.imageNamed(img));
 //	}
 
-	public Permission getPermission() {
-		NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
-		return new Permission(((Integer) fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue());
-	}
-	
-	public void setPermission(Permission p) {
-		boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(), 
-										  new NSDictionary(new Integer(p.getDecimalCode()), 
-														   NSPathUtilities.FilePosixPermissions));
-		log.debug("Setting permissions on local file suceeded:"+success);
-	}
+    public Permission getPermission() {
+        NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
+        return new Permission(((Integer) fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue());
+    }
 
-	public String getTimestampAsString() {
-		return (DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)).format(new Date(super.lastModified()));
-	}
+    public void setPermission(Permission p) {
+        boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(),
+                new NSDictionary(new Integer(p.getDecimalCode()),
+                        NSPathUtilities.FilePosixPermissions));
+        log.debug("Setting permissions on local file suceeded:" + success);
+    }
 
-	public Date getTimestamp() {
-		return new Date(super.lastModified());
-	}
+    public String getTimestampAsString() {
+        return (DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)).format(new Date(super.lastModified()));
+    }
 
-	public boolean equals(Object other) {
-		if(other instanceof Local)
-			return this.getAbsolutePath().equals(((Local)other).getAbsolutePath());// && this.attributes.getTimestamp().equals(((Local)other).attributes.getTimestamp());
-		return false;
-	}
+    public Date getTimestamp() {
+        return new Date(super.lastModified());
+    }
+
+    public boolean equals(Object other) {
+        if (other instanceof Local) {
+            return this.getAbsolutePath().equals(((Local) other).getAbsolutePath());// && this.attributes.getTimestamp().equals(((Local)other).attributes.getTimestamp());
+        }
+        return false;
+    }
 }

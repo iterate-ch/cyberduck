@@ -26,16 +26,22 @@
  */
 package com.sshtools.j2ssh;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolClient;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
 import com.sshtools.j2ssh.authentication.PublicKeyAuthenticationClient;
 import com.sshtools.j2ssh.authentication.SshAuthenticationClient;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
-import com.sshtools.j2ssh.connection.Channel;
-import com.sshtools.j2ssh.connection.ChannelEventAdapter;
-import com.sshtools.j2ssh.connection.ChannelEventListener;
-import com.sshtools.j2ssh.connection.ChannelFactory;
-import com.sshtools.j2ssh.connection.ConnectionProtocol;
+import com.sshtools.j2ssh.connection.*;
 import com.sshtools.j2ssh.forwarding.ForwardingClient;
 import com.sshtools.j2ssh.net.TransportProvider;
 import com.sshtools.j2ssh.net.TransportProviderFactory;
@@ -48,34 +54,22 @@ import com.sshtools.j2ssh.transport.TransportProtocolState;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import com.sshtools.j2ssh.util.State;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.net.UnknownHostException;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
 
 /**
- * <p>
+ * <p/>
  * Implements an SSH client with methods to connect to a remote server and
  * perform all necersary SSH functions such as SCP, SFTP, executing commands,
  * starting the users shell and perform port forwarding.
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * There are several steps to perform prior to performing the desired task.
  * This involves the making the initial connection, authenticating the user
  * and creating a session to execute a command, shell or subsystem and/or
  * configuring the port forwarding manager.
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * To create a connection use the following code:<br>
  * <blockquote><pre>
  * // Create a instance and connect SshClient
@@ -99,7 +93,7 @@ import java.util.Vector;
  * // Open a session channel
  * SessionChannelClient session =
  *                      ssh.openSessionChannel();
- *
+ * <p/>
  * // Request a pseudo terminal, if you do not you may not see the prompt
  * if(session.requestPseudoTerminal("ansi", 80, 24, 0, 0, "") {
  *      // Start the users shell
@@ -114,7 +108,6 @@ import java.util.Vector;
  *
  * @author Lee David Painter
  * @version $Revision$
- *
  * @since 0.2.0
  */
 public class SshClient {
@@ -135,13 +128,19 @@ public class SshClient {
      */
     protected ConnectionProtocol connection;
 
-    /** Provides a high level management interface for SSH port forwarding. */
+    /**
+     * Provides a high level management interface for SSH port forwarding.
+     */
     protected ForwardingClient forwarding;
 
-    /** The SSH Transport protocol implementation for this SSH Client. */
+    /**
+     * The SSH Transport protocol implementation for this SSH Client.
+     */
     protected TransportProtocolClient transport;
 
-    /** The current state of the authentication for the current connection. */
+    /**
+     * The current state of the authentication for the current connection.
+     */
     protected int authenticationState = AuthenticationProtocolState.READY;
 
     /**
@@ -156,7 +155,9 @@ public class SshClient {
      */
     protected SshEventAdapter eventHandler = null;
 
-    /** The currently active channels for this SSH Client connection. */
+    /**
+     * The currently active channels for this SSH Client connection.
+     */
     protected Vector activeChannels = new Vector();
 
     /**
@@ -171,11 +172,13 @@ public class SshClient {
      */
     protected boolean useDefaultForwarding = true;
 
-    /** The currently active Sftp clients */
+    /**
+     * The currently active Sftp clients
+     */
     private Vector activeSftpClients = new Vector();
 
     /**
-     * <p>
+     * <p/>
      * Contructs an unitilialized SshClient ready for connecting.
      * </p>
      */
@@ -183,92 +186,87 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the server's authentication banner.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * In some jurisdictions, sending a warning message before authentication
      * may be relevant for getting legal protection.  Many UNIX machines, for
      * example, normally display text from `/etc/issue', or use "tcp wrappers"
      * or similar software to display a banner before issuing a login prompt.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * The server may or may not send this message. Call this method to
      * retrieve the message, specifying a timeout limit to wait for the
      * message.
      * </p>
      *
      * @param timeout The number of milliseconds to wait for the banner message
-     *        before returning
-     *
+     *                before returning
      * @return The server's banner message
-     *
-     * @exception IOException If an IO error occurs reading the message
-     *
+     * @throws IOException If an IO error occurs reading the message
      * @since 0.2.0
      */
     public String getAuthenticationBanner(int timeout)
-        throws IOException {
+            throws IOException {
         if (authentication == null) {
             return "";
-        } else {
+        }
+        else {
             return authentication.getBannerMessage(timeout);
         }
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the list of available authentication methods for a given user.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * A client may request a list of authentication methods that may continue
      * by using the "none" authentication method.This method calls the "none"
      * method and returns the available authentication methods.
      * </p>
      *
      * @param username The name of the account for which you require the
-     *        available authentication methods
-     *
+     *                 available authentication methods
      * @return A list of Strings, for example "password", "publickey" &
      *         "keyboard-interactive"
-     *
-     * @exception IOException If an IO error occurs during the operation
-     *
+     * @throws IOException If an IO error occurs during the operation
      * @since 0.2.0
      */
     public List getAvailableAuthMethods(String username)
-        throws IOException {
+            throws IOException {
         if (authentication != null) {
             return authentication.getAvailableAuths(username,
-                connection.getServiceName());
-        } else {
+                    connection.getServiceName());
+        }
+        else {
             return null;
         }
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the connection state of the client.
      * </p>
      *
      * @return true if the client is connected, false otherwise
-     *
      * @since 0.2.0
      */
     public boolean isConnected() {
         State state = (transport == null) ? null : transport.getState();
         int value = (state == null) ? TransportProtocolState.DISCONNECTED
-                                    : state.getValue();
+                : state.getValue();
 
         return ((value == TransportProtocolState.CONNECTED) ||
-        (value == TransportProtocolState.PERFORMING_KEYEXCHANGE));
+                (value == TransportProtocolState.PERFORMING_KEYEXCHANGE));
     }
 
     /**
-     * <p>
+     * <p/>
      * Evaluate whether the client has successfully authenticated.
      * </p>
      *
@@ -279,13 +277,12 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the identification string sent by the server during protocol
      * negotiation. For example "SSH-2.0-OpenSSH_p3.4".
      * </p>
      *
      * @return The server's identification string.
-     *
      * @since 0.2.0
      */
     public String getServerId() {
@@ -293,12 +290,11 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the server's public key supplied during key exchange.
      * </p>
      *
      * @return the server's public key
-     *
      * @since 0.2.0
      */
     public SshPublicKey getServerHostKey() {
@@ -306,12 +302,11 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the transport protocol's connection state.
      * </p>
      *
      * @return The transport protocol's state
-     *
      * @since 0.2.0
      */
     public TransportProtocolState getConnectionState() {
@@ -319,12 +314,11 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the default port forwarding manager.
      * </p>
      *
      * @return This connection's forwarding client
-     *
      * @since 0.2.0
      */
     public ForwardingClient getForwardingClient() {
@@ -332,14 +326,13 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Return's a rough guess at the server's EOL setting. This is simply
      * derived from the identification string and should not be used as a cast
      * iron proof on the EOL setting.
      * </p>
      *
      * @return The transport protocol's EOL constant
-     *
      * @since 0.2.0
      */
     public int getRemoteEOL() {
@@ -347,17 +340,17 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Set the event handler for the underlying transport protocol.
      * </p>
      * <blockquote>
      * <pre>
      * ssh.setEventHandler(new TransportProtocolEventHandler() {
-     *
+     * <p/>
      *   public void onSocketTimeout(TransportProtocol transport) {<br>
      *     // Do something to handle the socket timeout<br>
      *   }
-     *
+     * <p/>
      *   public void onDisconnect(TransportProtocol transport) {
      *     // Perhaps some clean up?
      *   }
@@ -366,8 +359,7 @@ public class SshClient {
      * </blockquote>
      *
      * @param eventHandler The event handler instance to receive transport
-     *        protocol events
-     *
+     *                     protocol events
      * @see com.sshtools.j2ssh.transport.TransportProtocolEventHandler
      * @since 0.2.0
      */
@@ -376,13 +368,14 @@ public class SshClient {
         if (transport != null) {
             transport.addEventHandler(eventHandler);
             authentication.addEventListener(eventHandler);
-        } else {
+        }
+        else {
             this.eventHandler = eventHandler;
         }
     }
 
     /**
-     * <p>
+     * <p/>
      * Set's the socket timeout (in milliseconds) for the underlying transport
      * provider. This MUST be called prior to connect.
      * </p>
@@ -393,8 +386,7 @@ public class SshClient {
      * </blockquote>
      *
      * @param milliseconds The number of milliseconds without activity before
-     *        the timeout event occurs
-     *
+     *                     the timeout event occurs
      * @since 0.2.0
      */
     public void setSocketTimeout(int milliseconds) {
@@ -402,19 +394,18 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Return's a rough guess at the server's EOL setting. This is simply
      * derived from the identification string and should not be used as a cast
      * iron proof on the EOL setting.
      * </p>
      *
      * @return The EOL string
-     *
      * @since 0.2.0
      */
     public String getRemoteEOLString() {
         return ((transport.getRemoteEOL() == TransportProtocolClient.EOL_CRLF)
-        ? "\r\n" : "\n");
+                ? "\r\n" : "\n");
     }
 
     /**
@@ -427,11 +418,11 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Authenticate the user on the remote host.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * To authenticate the user, create an <code>SshAuthenticationClient</code>
      * instance and configure it with the authentication details.
      * </p>
@@ -439,8 +430,8 @@ public class SshClient {
      * PasswordAuthenticationClient(); pwd.setUsername("root");
      * pwd.setPassword("xxxxxxxxx"); int result = ssh.authenticate(pwd);
      * </code>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * The method returns a result value will one of the public static values
      * defined in <code>AuthenticationProtocolState</code>. These are<br>
      * <br>
@@ -453,16 +444,13 @@ public class SshClient {
      * </p>
      *
      * @param auth A configured SshAuthenticationClient instance ready for
-     *        authentication
-     *
+     *             authentication
      * @return The authentication result
-     *
-     * @exception IOException If an IO error occurs during authentication
-     *
+     * @throws IOException If an IO error occurs during authentication
      * @since 0.2.0
      */
     public int authenticate(SshAuthenticationClient auth)
-        throws IOException {
+            throws IOException {
         // Do the authentication
         authenticationState = authentication.authenticate(auth, connection);
 
@@ -476,12 +464,12 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Determine whether a private/public key pair will be accepted for public
      * key authentication.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * When using public key authentication, the signing of data could take
      * some time depending upon the available machine resources. By calling
      * this method, you can determine whether the server will accept a key for
@@ -492,33 +480,31 @@ public class SshClient {
      * </p>
      *
      * @param username The username for authentication
-     * @param key The public key for which authentication will be attempted
-     *
+     * @param key      The public key for which authentication will be attempted
      * @return true if the server will accept the key, otherwise false
-     *
-     * @exception IOException If an IO error occurs during the operation
+     * @throws IOException  If an IO error occurs during the operation
      * @throws SshException
-     *
      * @since 0.2.0
      */
     public boolean acceptsKey(String username, SshPublicKey key)
-        throws IOException {
+            throws IOException {
         if (authenticationState != AuthenticationProtocolState.COMPLETE) {
             PublicKeyAuthenticationClient pk = new PublicKeyAuthenticationClient();
 
             return pk.acceptsKey(authentication, username,
-                connection.getServiceName(), key);
-        } else {
+                    connection.getServiceName(), key);
+        }
+        else {
             throw new SshException("Authentication has been completed!");
         }
     }
 
     /**
-     * <p>
+     * <p/>
      * Connect the client to the server using default connection properties.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * This call attempts to connect to the hostname specified on the standard
      * SSH port of 22 and uses all the default connection properties. This
      * call is the equivilent of calling:
@@ -531,10 +517,8 @@ public class SshClient {
      * </pre></blockquote>
      *
      * @param hostname The hostname of the server to connect
-     *
-     * @exception IOException If an IO error occurs during the connect
-     *            operation
-     *
+     * @throws IOException If an IO error occurs during the connect
+     *                     operation
      * @see #connect(com.sshtools.j2ssh.configuration.SshConnectionProperties)
      * @since 0.2.0
      */
@@ -543,12 +527,12 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Connect the client to the server using the default connection
      * properties.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * This call attempts to connect to the hostname specified on the standard
      * SSH port of 22 and uses all the default connection properties. When
      * this method returns the connection has been established, the server's
@@ -563,52 +547,48 @@ public class SshClient {
      * ssh.connect("hostname", new
      *                 IgnoreHostKeyVerification());
      * </pre></blockquote>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * You can provide your own host key verification process by implementing
      * the <code>HostKeyVerification</code> interface.
      * </p>
      *
      * @param hostname The hostname of the server to connect
-     * @param hosts The host key verification instance to consult for host key
-     *        validation
-     *
-     * @exception IOException If an IO error occurs during the connect
-     *            operation
-     *
+     * @param hosts    The host key verification instance to consult for host key
+     *                 validation
+     * @throws IOException If an IO error occurs during the connect
+     *                     operation
      * @see #connect(com.sshtools.j2ssh.configuration.SshConnectionProperties,
-     *      com.sshtools.j2ssh.transport.HostKeyVerification)
+            *      com.sshtools.j2ssh.transport.HostKeyVerification)
      * @since 0.2.0
      */
     public void connect(String hostname, HostKeyVerification hosts)
-        throws IOException {
+            throws IOException {
         connect(hostname, 22, hosts);
     }
 
     /**
-     * <p>
+     * <p/>
      * Connect the client to the server on a specified port with default
      * connection properties.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * This call attempts to connect to the hostname and port specified. This
      * call is the equivilent of calling:
      * </p>
      * <blockquote></pre>
      * SshConnectionProperties properties = new
-     *                               SshConnectionProperties();
+     * SshConnectionProperties();
      * properties.setHostname("hostname");
      * properties.setPort(10022);
      * ssh.connect(properties);
      * </pre></blockquote>
      *
      * @param hostname The hostname of the server to connect
-     * @param port The port to connect
-     *
-     * @exception IOException If an IO error occurs during the connect
-     *            operation
-     *
+     * @param port     The port to connect
+     * @throws IOException If an IO error occurs during the connect
+     *                     operation
      * @see #connect(com.sshtools.j2ssh.configuration.SshConnectionProperties)
      * @since 0.2.0
      */
@@ -617,12 +597,12 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Connect the client to the server on a specified port with default
      * connection properties.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * This call attempts to connect to the hostname and port specified. When
      * this method returns the connection has been established, the server's
      * identity been verified and the connection is ready for user
@@ -636,26 +616,24 @@ public class SshClient {
      * ssh.connect("hostname", new
      *                 IgnoreHostKeyVerification());
      * </pre></blockquote>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * You can provide your own host key verification process by implementing
      * the <code>HostKeyVerification</code> interface.
      * </p>
      *
      * @param hostname The hostname of the server to connect
-     * @param port The port to connect
-     * @param hosts The host key verification instance to consult for host key
-     *        validation
-     *
-     * @exception IOException If an IO error occurs during the connect
-     *            operation
-     *
+     * @param port     The port to connect
+     * @param hosts    The host key verification instance to consult for host key
+     *                 validation
+     * @throws IOException If an IO error occurs during the connect
+     *                     operation
      * @see #connect(com.sshtools.j2ssh.configuration.SshConnectionProperties,
-     *      com.sshtools.j2ssh.transport.HostKeyVerification)
+            *      com.sshtools.j2ssh.transport.HostKeyVerification)
      * @since 0.2.0
      */
     public void connect(String hostname, int port, HostKeyVerification hosts)
-        throws IOException {
+            throws IOException {
         SshConnectionProperties properties = new SshConnectionProperties();
         properties.setHost(hostname);
         properties.setPort(port);
@@ -663,11 +641,11 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Connect the client to the server with the specified properties.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * This call attempts to connect to using the connection properties
      * specified. When this method returns the connection has been
      * established, the server's identity been verified and the connection is
@@ -682,8 +660,8 @@ public class SshClient {
      * properties.setPrefCSEncryption("blowfish-cbc");
      * ssh.connect(properties);
      * </pre></blockquote>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * Host key verification will be performed using
      * <code>ConsoleKnownHostsKeyVerification</code> and so this call is the
      * equivilent of calling:
@@ -691,8 +669,8 @@ public class SshClient {
      * <blockquote><pre>
      * ssh.connect("hostname", new ConsoleKnownHostsKeyVerification());
      * </pre></blockquote>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * If the key is not matched to any keys already in the
      * $HOME/.ssh/known_hosts file, the user will be prompted via the console
      * to confirm the identity of the remote server. The user will receive the
@@ -702,30 +680,28 @@ public class SshClient {
      * The host key fingerprint is: 1024: 4c 68 3 d4 5c 58 a6 1d 9d 17 13 24
      * 14 48 ba 99 Do you want to allow this host key? [Yes|No|Always]:
      * </code>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * Selecting the "always" option will write the key to the known_hosts
      * file.
      * </p>
      *
      * @param properties The connection properties
-     *
-     * @exception IOException If an IO error occurs during the connect
-     *            operation
-     *
+     * @throws IOException If an IO error occurs during the connect
+     *                     operation
      * @since 0.2.0
      */
     public void connect(SshConnectionProperties properties)
-        throws IOException {
+            throws IOException {
         connect(properties, new ConsoleKnownHostsKeyVerification());
     }
 
     /**
-     * <p>
+     * <p/>
      * Connect the client to the server with the specified properties.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * This call attempts to connect to using the connection properties
      * specified. When this method returns the connection has been
      * established, the server's identity been verified and the connection is
@@ -743,8 +719,8 @@ public class SshClient {
      * ssh.setPrefSCEncrpyion("3des-cbc");
      * ssh.connect(properties);
      * </pre></blockquote>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * Host key verification will be performed using the host key verification
      * instance provided:<br>
      * <blockquote><pre>
@@ -758,19 +734,17 @@ public class SshClient {
      * <code>HostKeyVerification</code> interface.
      * </p>
      *
-     * @param properties The connection properties
+     * @param properties       The connection properties
      * @param hostVerification The host key verification instance to consult
-     *        for host  key validation
-     *
-     * @exception UnknownHostException If the host is unknown
-     * @exception IOException If an IO error occurs during the connect
-     *            operation
-     *
+     *                         for host  key validation
+     * @throws UnknownHostException If the host is unknown
+     * @throws IOException          If an IO error occurs during the connect
+     *                              operation
      * @since 0.2.0
      */
     public void connect(SshConnectionProperties properties,
-        HostKeyVerification hostVerification)
-        throws UnknownHostException, IOException {
+                        HostKeyVerification hostVerification)
+            throws UnknownHostException, IOException {
         TransportProvider provider = TransportProviderFactory.connectTransportProvider(properties /*, connectTimeout*/,
                 socketTimeout);
 
@@ -791,20 +765,18 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Sets the timeout value for the key exchange.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * When this time limit is reached the transport protocol will initiate a
      * key re-exchange. The default value is one hour with the minumin timeout
      * being 60 seconds.
      * </p>
      *
      * @param seconds The number of seconds beofre key re-exchange
-     *
-     * @exception IOException If the timeout value is invalid
-     *
+     * @throws IOException If the timeout value is invalid
      * @since 0.2.0
      */
     public void setKexTimeout(long seconds) throws IOException {
@@ -812,37 +784,35 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Sets the key exchance transfer limit in kilobytes.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * Once this amount of data has been transfered the transport protocol will
      * initiate a key re-exchange. The default value is one gigabyte of data
      * with the mimimun value of 10 kilobytes.
      * </p>
      *
      * @param kilobytes The data transfer limit in kilobytes
-     *
-     * @exception IOException If the data transfer limit is invalid
+     * @throws IOException If the data transfer limit is invalid
      */
     public void setKexTransferLimit(long kilobytes) throws IOException {
         transport.setKexTransferLimit(kilobytes);
     }
 
     /**
-     * <p>
+     * <p/>
      * Set's the send ignore flag to send random data packets.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * If this flag is set to true, then the transport protocol will send
      * additional SSH_MSG_IGNORE packets with random data.
      * </p>
      *
      * @param sendIgnore true if you want to turn on random packet data,
-     *        otherwise false
-     *
+     *                   otherwise false
      * @since 0.2.0
      */
     public void setSendIgnore(boolean sendIgnore) {
@@ -850,19 +820,18 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Turn the default forwarding manager on/off.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * If this flag is set to false before connection, the client will not
      * create a port forwarding manager. Use this to provide you own
      * forwarding implementation.
      * </p>
      *
      * @param useDefaultForwarding Set to false if you not wish to use the
-     *        default forwarding manager.
-     *
+     *                             default forwarding manager.
      * @since 0.2.0
      */
     public void setUseDefaultForwarding(boolean useDefaultForwarding) {
@@ -870,7 +839,7 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Disconnect the client.
      * </p>
      *
@@ -887,12 +856,11 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the number of bytes transmitted to the remote server.
      * </p>
      *
      * @return The number of bytes transmitted
-     *
      * @since 0.2.0
      */
     public long getOutgoingByteCount() {
@@ -900,12 +868,11 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the number of bytes received from the remote server.
      * </p>
      *
      * @return The number of bytes received
-     *
      * @since 0.2.0
      */
     public long getIncomingByteCount() {
@@ -913,17 +880,16 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the number of active channels for this client.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * This is the total count of sessions, port forwarding, sftp, scp and
      * custom channels currently open.
      * </p>
      *
      * @return The number of active channels
-     *
      * @since 0.2.0
      */
     public int getActiveChannelCount() {
@@ -933,12 +899,11 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the list of active channels.
      * </p>
      *
      * @return The list of active channels
-     *
      * @since 0.2.0
      */
     public List getActiveChannels() {
@@ -948,12 +913,12 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns true if there is an active session channel of the specified
      * type.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * When a session is created, it is assigned a default type. For instance,
      * when a session is created it as a type of "uninitialized"; however when
      * a shell is started on the session, the type is set to "shell". This
@@ -972,9 +937,7 @@ public class SshClient {
      * </pre></blockquote>
      *
      * @param type The string specifying the channel type
-     *
      * @return true if an active session channel exists, otherwise false
-     *
      * @since 0.2.0
      */
     public boolean hasActiveSession(String type) {
@@ -995,20 +958,17 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Returns the active session channel of the given type.
      * </p>
      *
      * @param type The type fo session channel
-     *
      * @return The session channel instance
-     *
-     * @exception IOException If the session type does not exist
-     *
+     * @throws IOException If the session type does not exist
      * @since 0.2.0
      */
     public SessionChannelClient getActiveSession(String type)
-        throws IOException {
+            throws IOException {
         Iterator it = activeChannels.iterator();
         Object obj;
 
@@ -1029,7 +989,6 @@ public class SshClient {
      * Determine whether the channel supplied is an active channel
      *
      * @param channel
-     *
      * @return
      */
     public boolean isActiveChannel(Channel channel) {
@@ -1037,21 +996,19 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Open's a session channel on the remote server.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * A session channel may be used to start the user's shell, execute a
      * command or start a subsystem such as SFTP.
      * </p>
      *
      * @return An new session channel
-     *
-     * @exception IOException If authentication has not been completed, the
-     *            server refuses to open the channel or a general IO error
-     *            occurs
-     *
+     * @throws IOException If authentication has not been completed, the
+     *                     server refuses to open the channel or a general IO error
+     *                     occurs
      * @see com.sshtools.j2ssh.session.SessionChannelClient
      * @since 0.2.0
      */
@@ -1060,25 +1017,21 @@ public class SshClient {
     }
 
     /**
-     *
-     * <p>
+     * <p/>
      * Open's a session channel on the remote server.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * A session channel may be used to start the user's shell, execute a
      * command or start a subsystem such as SFTP.
      * </p>
      *
      * @param eventListener an event listner interface to add to the channel
-     *
      * @return
-     *
      * @throws IOException
      * @throws SshException
      */
-    public SessionChannelClient openSessionChannel(
-        ChannelEventListener eventListener) throws IOException {
+    public SessionChannelClient openSessionChannel(ChannelEventListener eventListener) throws IOException {
         if (authenticationState != AuthenticationProtocolState.COMPLETE) {
             throw new SshException("Authentication has not been completed!");
         }
@@ -1165,12 +1118,12 @@ public class SshClient {
 //    }
 
     /**
-     * <p>
+     * <p/>
      * Open an SCP client for file transfer operations where SFTP is not
      * supported.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * Sets the local working directory to the user's home directory
      * </p>
      * <blockquote><pre>
@@ -1179,24 +1132,22 @@ public class SshClient {
      * </pre></blockquote>
      *
      * @return An initialized SCP client
-     *
-     * @exception IOException If an IO error occurs during the operation
-     *
+     * @throws IOException If an IO error occurs during the operation
      * @see ScpClient
      * @since 0.2.0
      */
     public ScpClient openScpClient() throws IOException {
         return new ScpClient(new File(System.getProperty("user.home")), this,
-            false, activeChannelListener);
+                false, activeChannelListener);
     }
 
     /**
-     * <p>
+     * <p/>
      * Open an SCP client for file transfer operations where SFTP is not
      * supported.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * This method sets a local current working directory.
      * </p>
      * <blockquote><pre>
@@ -1205,11 +1156,8 @@ public class SshClient {
      * </pre></blockquote>
      *
      * @param cwd The local directory as the base for all local files
-     *
      * @return An intialized SCP client
-     *
-     * @exception IOException If an IO error occurs during the operation
-     *
+     * @throws IOException If an IO error occurs during the operation
      * @see SftpClient
      * @since 0.2.0
      */
@@ -1218,20 +1166,18 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Open's an Sftp channel.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * Use this sftp channel if you require a lower level api into the SFTP
      * protocol.
      * </p>
      *
      * @return an initialized sftp subsystem instance
-     *
      * @throws IOException if an IO error occurs or the channel cannot be
-     *         opened
-     *
+     *                     opened
      * @since 0.2.0
      */
     public SftpSubsystemClient openSftpChannel() throws IOException {
@@ -1242,14 +1188,11 @@ public class SshClient {
      * Open an SftpSubsystemChannel. For advanced use only
      *
      * @param eventListener
-     *
      * @return
-     *
      * @throws IOException
      * @throws SshException
      */
-    public SftpSubsystemClient openSftpChannel(
-        ChannelEventListener eventListener) throws IOException {
+    public SftpSubsystemClient openSftpChannel(ChannelEventListener eventListener) throws IOException {
         SessionChannelClient session = openSessionChannel(eventListener);
         SftpSubsystemClient sftp = new SftpSubsystemClient();
 
@@ -1259,19 +1202,18 @@ public class SshClient {
 
         // Initialize SFTP
         if (!sftp.initialize()) {
-            throw new SshException(
-                "The SFTP Subsystem could not be initialized");
+            throw new SshException("The SFTP Subsystem could not be initialized");
         }
 
         return sftp;
     }
 
     /**
-     * <p>
+     * <p/>
      * Open's a channel.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * Call this method to open a custom channel. This method is used by all
      * other channel opening methods. For example the openSessionChannel
      * method could be implemented as:<br>
@@ -1285,12 +1227,9 @@ public class SshClient {
      * </p>
      *
      * @param channel
-     *
      * @return true if the channel was opened, otherwise false
-     *
-     * @exception IOException if an IO error occurs
+     * @throws IOException  if an IO error occurs
      * @throws SshException
-     *
      * @since 0.2.0
      */
     public boolean openChannel(Channel channel) throws IOException {
@@ -1303,12 +1242,12 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Instructs the underlying connection protocol to allow channels of the
      * given type to be opened by the server.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * The client does not allow channels to be opened by default. Call this
      * method to allow the server to open channels by providing a
      * <code>ChannelFactory</code> implementation to create instances upon
@@ -1316,27 +1255,23 @@ public class SshClient {
      * </p>
      *
      * @param channelName The channel type name
-     * @param cf The factory implementation that will create instances of the
-     *        channel when a channel open request is recieved.
-     *
-     * @exception IOException if an IO error occurs
-     *
+     * @param cf          The factory implementation that will create instances of the
+     *                    channel when a channel open request is recieved.
+     * @throws IOException if an IO error occurs
      * @since 0.2.0
      */
     public void allowChannelOpen(String channelName, ChannelFactory cf)
-        throws IOException {
+            throws IOException {
         connection.addChannelFactory(channelName, cf);
     }
 
     /**
-     * <p>
+     * <p/>
      * Stops the specified channel type from being opended.
      * </p>
      *
      * @param channelName The channel type name
-     *
      * @throws IOException if an IO error occurs
-     *
      * @since 0.2.1
      */
     public void denyChannelOpen(String channelName) throws IOException {
@@ -1344,11 +1279,11 @@ public class SshClient {
     }
 
     /**
-     * <p>
+     * <p/>
      * Send a global request to the server.
      * </p>
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * The SSH specification provides a global request mechanism which is used
      * for starting/stopping remote forwarding. This is a general mechanism
      * which can be used for other purposes if the server supports the global
@@ -1356,30 +1291,27 @@ public class SshClient {
      * </p>
      *
      * @param requestName The name of the global request
-     * @param wantReply true if the server should send an explict reply
+     * @param wantReply   true if the server should send an explict reply
      * @param requestData the global request data
-     *
      * @return true if the global request succeeded or wantReply==false,
      *         otherwise false
-     *
      * @throws IOException if an IO error occurs
-     *
      * @since 0.2.0
      */
     public byte[] sendGlobalRequest(String requestName, boolean wantReply,
-        byte[] requestData) throws IOException {
+                                    byte[] requestData) throws IOException {
         return connection.sendGlobalRequest(requestName, wantReply, requestData);
     }
 
     /**
-     * <p>
+     * <p/>
      * Implements the <code>ChannelEventListener</code> interface to provide
      * real time tracking of active channels.
      * </p>
      */
     class ActiveChannelEventListener extends ChannelEventAdapter {
         /**
-         * <p>
+         * <p/>
          * Adds the channel to the active channel list.
          * </p>
          *
@@ -1392,7 +1324,7 @@ public class SshClient {
         }
 
         /**
-         * <p>
+         * <p/>
          * Removes the closed channel from the clients active channels list.
          * </p>
          *

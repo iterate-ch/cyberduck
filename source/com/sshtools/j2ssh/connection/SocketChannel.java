@@ -26,21 +26,18 @@
  */
 package com.sshtools.j2ssh.connection;
 
-import com.sshtools.j2ssh.io.ByteArrayWriter;
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.Socket;
+import java.net.SocketException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
-import java.io.InterruptedIOException;
-
-import java.net.Socket;
-import java.net.SocketException;
+import com.sshtools.j2ssh.io.ByteArrayWriter;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -52,39 +49,32 @@ public abstract class SocketChannel extends Channel {
     Thread thread;
 
     /**
-     *
-     *
      * @param socket
-     *
      * @throws IOException
      */
     public void bindSocket(Socket socket) throws IOException {
         if (state.getValue() == ChannelState.CHANNEL_UNINITIALIZED) {
             this.socket = socket;
-        } else {
-            throw new IOException(
-                "The socket can only be bound to an unitialized channel");
+        }
+        else {
+            throw new IOException("The socket can only be bound to an unitialized channel");
         }
     }
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws IOException
      */
     protected void onChannelData(SshMsgChannelData msg)
-        throws IOException {
+            throws IOException {
         try {
             socket.getOutputStream().write(msg.getChannelData());
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
         }
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void onChannelEOF() throws IOException {
@@ -95,36 +85,32 @@ public abstract class SocketChannel extends Channel {
             socket.shutdownOutput();
 
             // }
-        } catch (IOException ex) {
-            log.info(
-                "Failed to shutdown Socket OutputStream in response to EOF event: " +
-                ex.getMessage());
+        }
+        catch (IOException ex) {
+            log.info("Failed to shutdown Socket OutputStream in response to EOF event: " +
+                    ex.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void onChannelClose() throws IOException {
         try {
             socket.close();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             log.info("Failed to close socket on channel close event: " +
-                ex.getMessage());
+                    ex.getMessage());
         }
     }
 
     /**
-     *
-     *
      * @throws IOException
      */
     protected void onChannelOpen() throws IOException {
         if (socket == null) {
-            throw new IOException(
-                "The socket must be bound to the channel before opening");
+            throw new IOException("The socket must be bound to the channel before opening");
         }
 
         thread = new Thread(new SocketReader());
@@ -132,14 +118,11 @@ public abstract class SocketChannel extends Channel {
     }
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws IOException
      */
     protected void onChannelExtData(SshMsgChannelExtendedData msg)
-        throws IOException {
+            throws IOException {
         // We do not have an extended data channel for the socket so ignore
     }
 
@@ -150,7 +133,8 @@ public abstract class SocketChannel extends Channel {
 
             try {
                 socket.setSoTimeout(2000);
-            } catch (SocketException ex2) {
+            }
+            catch (SocketException ex2) {
             }
 
             try {
@@ -159,7 +143,8 @@ public abstract class SocketChannel extends Channel {
                 while ((read >= 0) && !isClosed()) {
                     try {
                         read = socket.getInputStream().read(buffer);
-                    } catch (InterruptedIOException ex1) {
+                    }
+                    catch (InterruptedIOException ex1) {
                         read = ex1.bytesTransferred;
                     }
 
@@ -175,7 +160,8 @@ public abstract class SocketChannel extends Channel {
                         }
                     }
                 }
-            } catch (IOException ex) {
+            }
+            catch (IOException ex) {
                 // Break out of the while loop
             }
 
@@ -189,9 +175,10 @@ public abstract class SocketChannel extends Channel {
                         close();
                     }
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 log.info("Failed to send channel EOF message: " +
-                    ex.getMessage());
+                        ex.getMessage());
             }
 
             thread = null;

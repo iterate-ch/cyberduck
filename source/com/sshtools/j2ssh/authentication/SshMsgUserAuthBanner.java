@@ -26,17 +26,15 @@
  */
 package com.sshtools.j2ssh.authentication;
 
+import java.io.IOException;
+
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
 
-import java.io.IOException;
-
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -65,8 +63,6 @@ public class SshMsgUserAuthBanner extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getBanner() {
@@ -74,8 +70,6 @@ public class SshMsgUserAuthBanner extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getLanguageTag() {
@@ -83,8 +77,6 @@ public class SshMsgUserAuthBanner extends SshMessage {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getMessageName() {
@@ -92,35 +84,31 @@ public class SshMsgUserAuthBanner extends SshMessage {
     }
 
     /**
-     *
-     *
      * @param baw
-     *
      * @throws InvalidMessageException
      */
     protected void constructByteArray(ByteArrayWriter baw)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             baw.writeString(banner);
             baw.writeString(languageTag);
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Error writing the message data");
         }
     }
 
     /**
-     *
-     *
      * @param bar
-     *
      * @throws InvalidMessageException
      */
     protected void constructMessage(ByteArrayReader bar)
-        throws InvalidMessageException {
+            throws InvalidMessageException {
         try {
             banner = bar.readString();
             languageTag = bar.readString();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new InvalidMessageException("Error reading the message data");
         }
     }

@@ -26,17 +26,15 @@
  */
 package com.sshtools.j2ssh.forwarding;
 
-import com.sshtools.j2ssh.io.ByteArrayWriter;
+import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
+import com.sshtools.j2ssh.io.ByteArrayWriter;
 
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -57,18 +55,17 @@ public class ForwardingChannelImpl implements ForwardingChannel {
      * @param portToConnectOrBind
      * @param originatingHost
      * @param originatingPort
-     *
      * @throws ForwardingConfigurationException
+     *
      */
     public ForwardingChannelImpl(String forwardType, String name, /*ForwardingConfiguration config,*/
-        String hostToConnectOrBind, int portToConnectOrBind,
-        String originatingHost, int originatingPort)
-        throws ForwardingConfigurationException {
+                                 String hostToConnectOrBind, int portToConnectOrBind,
+                                 String originatingHost, int originatingPort)
+            throws ForwardingConfigurationException {
         if (!forwardType.equals(LOCAL_FORWARDING_CHANNEL) &&
                 !forwardType.equals(REMOTE_FORWARDING_CHANNEL) &&
                 !forwardType.equals(X11_FORWARDING_CHANNEL)) {
-            throw new ForwardingConfigurationException(
-                "The forwarding type is invalid");
+            throw new ForwardingConfigurationException("The forwarding type is invalid");
         }
 
         //this.config = config;
@@ -85,8 +82,6 @@ public class ForwardingChannelImpl implements ForwardingChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getHostToConnectOrBind() {
@@ -94,8 +89,6 @@ public class ForwardingChannelImpl implements ForwardingChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getPortToConnectOrBind() {
@@ -103,8 +96,6 @@ public class ForwardingChannelImpl implements ForwardingChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getChannelOpenData() {
@@ -116,14 +107,13 @@ public class ForwardingChannelImpl implements ForwardingChannel {
             baw.writeInt(originatingPort);
 
             return baw.toByteArray();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             return null;
         }
     }
 
     /**
-     *
-     *
      * @return
      */
     public byte[] getChannelConfirmationData() {
@@ -131,8 +121,6 @@ public class ForwardingChannelImpl implements ForwardingChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getChannelType() {
@@ -140,8 +128,6 @@ public class ForwardingChannelImpl implements ForwardingChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public String getOriginatingHost() {
@@ -149,8 +135,6 @@ public class ForwardingChannelImpl implements ForwardingChannel {
     }
 
     /**
-     *
-     *
      * @return
      */
     public int getOriginatingPort() {

@@ -26,18 +26,15 @@
  */
 package com.sshtools.j2ssh.connection;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
-
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 /**
- *
- *
  * @author $author$
  * @version $Revision$
  */
@@ -51,8 +48,6 @@ public abstract class BindingChannel extends Channel {
     protected Vector messages = new Vector();
 
     /**
-     *
-     *
      * @return
      */
     public boolean isBound() {
@@ -60,23 +55,20 @@ public abstract class BindingChannel extends Channel {
     }
 
     /**
-     *
-     *
      * @param boundChannel
-     *
      * @throws IOException
      */
     public void bindChannel(BindingChannel boundChannel)
-        throws IOException {
+            throws IOException {
         if (boundChannel == null) {
             throw new IOException("[" + getName() +
-                "] Bound channel cannot be null");
+                    "] Bound channel cannot be null");
         }
 
         if (isBound()) {
             throw new IOException("[" + getName() +
-                "] This channel is already bound to another channel [" +
-                boundChannel.getName() + "]");
+                    "] This channel is already bound to another channel [" +
+                    boundChannel.getName() + "]");
         }
 
         this.boundChannel = boundChannel;
@@ -89,11 +81,12 @@ public abstract class BindingChannel extends Channel {
                     sendOutstandingMessages();
                 }
             }
-        } else {
+        }
+        else {
             if (!boundChannel.boundChannel.equals(this)) {
                 throw new IOException("[" + getName() +
-                    "] Channel is already bound to an another channel [" +
-                    boundChannel.boundChannel.getName() + "]");
+                        "] Channel is already bound to an another channel [" +
+                        boundChannel.boundChannel.getName() + "]");
             }
         }
     }
@@ -112,12 +105,14 @@ public abstract class BindingChannel extends Channel {
 
                 if (obj instanceof SshMsgChannelData) {
                     boundChannel.sendChannelData(((SshMsgChannelData) obj).getChannelData());
-                } else if (obj instanceof SshMsgChannelExtendedData) {
+                }
+                else if (obj instanceof SshMsgChannelExtendedData) {
                     boundChannel.sendChannelExtData(((SshMsgChannelExtendedData) obj).getDataTypeCode(),
-                        ((SshMsgChannelExtendedData) obj).getChannelData());
-                } else {
+                            ((SshMsgChannelExtendedData) obj).getChannelData());
+                }
+                else {
                     throw new IOException("[" + getName() +
-                        "] Invalid message type in pre bound message list!");
+                            "] Invalid message type in pre bound message list!");
                 }
             }
 
@@ -126,20 +121,18 @@ public abstract class BindingChannel extends Channel {
     }
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws java.io.IOException
      */
     protected void onChannelExtData(SshMsgChannelExtendedData msg)
-        throws java.io.IOException {
+            throws java.io.IOException {
         synchronized (messages) {
             if (boundChannel != null) {
                 if (boundChannel.isOpen()) {
                     boundChannel.sendChannelExtData(msg.getDataTypeCode(),
-                        msg.getChannelData());
-                } else {
+                            msg.getChannelData());
+                }
+                else {
                     messages.add(msg);
                 }
             }
@@ -147,19 +140,17 @@ public abstract class BindingChannel extends Channel {
     }
 
     /**
-     *
-     *
      * @param msg
-     *
      * @throws java.io.IOException
      */
     protected void onChannelData(SshMsgChannelData msg)
-        throws java.io.IOException {
+            throws java.io.IOException {
         synchronized (messages) {
             if (boundChannel != null) {
                 if (boundChannel.isOpen()) {
                     boundChannel.sendChannelData(msg.getChannelData());
-                } else {
+                }
+                else {
                     messages.add(msg);
                 }
             }
@@ -182,7 +173,7 @@ public abstract class BindingChannel extends Channel {
 
             if (!boundChannel.isLocalEOF()) {
                 log.info("onRemoteEOF [" + getName() + "] is setting " +
-                    boundChannel.getName() + " to EOF");
+                        boundChannel.getName() + " to EOF");
                 boundChannel.setLocalEOF();
 
                 //boundChannel.setRemoteEOF();
@@ -191,16 +182,12 @@ public abstract class BindingChannel extends Channel {
     }
 
     /**
-     *
-     *
      * @throws java.io.IOException
      */
     protected void onChannelEOF() throws java.io.IOException {
     }
 
     /**
-     *
-     *
      * @throws java.io.IOException
      */
     protected void onChannelClose() throws java.io.IOException {
@@ -213,8 +200,6 @@ public abstract class BindingChannel extends Channel {
     }
 
     /**
-     *
-     *
      * @throws java.io.IOException
      */
     protected void onChannelOpen() throws java.io.IOException {

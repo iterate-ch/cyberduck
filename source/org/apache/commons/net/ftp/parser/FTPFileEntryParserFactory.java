@@ -53,9 +53,10 @@ package org.apache.commons.net.ftp.parser;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import org.apache.commons.net.ftp.FTPFileEntryParser;
 
 import java.io.IOException;
+
+import org.apache.commons.net.ftp.FTPFileEntryParser;
 
 /**
  * The interface describes a factory for creating FTPFileEntryParsers
@@ -65,15 +66,13 @@ public interface FTPFileEntryParserFactory {
      * Implementation should be a method that decodes the
      * supplied key and creates an object implementing the
      * interface FTPFileEntryParser.
-     * 
-     * @param key    A string that somehow identifies an
-     *               FTPFileEntryParser to be created.
-     * 
+     *
+     * @param key A string that somehow identifies an
+     *            FTPFileEntryParser to be created.
      * @return the FTPFileEntryParser created.
-     * @exception ParserInitializationException
-     *                   Thrown on any exception in instantiation
+     * @throws ParserInitializationException Thrown on any exception in instantiation
      * @see org.apache.commons.net.ftp.parser.ParserInitializationException
      */
     public FTPFileEntryParser createFileEntryParser(String key) throws IOException;
-;
+    ;
 }
