@@ -158,7 +158,7 @@ public class FTPSession extends Session {
 	
 	
     public void check() throws IOException {
-		log.debug("check");
+		log.debug(this.toString()+":check");
 		this.log("Working", Message.START);
 		if(null == this.FTP || !this.FTP.isAlive()) {
 			this.setConnected(false);

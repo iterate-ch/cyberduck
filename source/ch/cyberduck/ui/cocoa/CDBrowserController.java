@@ -39,7 +39,11 @@ public class CDBrowserController implements Observer {
     public void setMainWindow(NSWindow mainWindow) {
 		this.mainWindow = mainWindow;
     }
-		
+
+	public NSWindow window() {
+		return this.mainWindow;
+    }
+	
     private CDBrowserTableDataSource browserModel;
     private NSTableView browserTable; // IBOutlet
     public void setBrowserTable(NSTableView browserTable) {
@@ -59,6 +63,7 @@ public class CDBrowserController implements Observer {
 			if(p.isFile() || browserTable.numberOfSelectedRows() > 1) {
 				NSEnumerator enum = browserTable.selectedRowEnumerator();
 				List items = new ArrayList();
+//				Session session = this.session.copy();
 				Session session = browserModel.workdir().getSession().copy();
 				while(enum.hasMoreElements()) {
 					items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
@@ -170,18 +175,18 @@ public class CDBrowserController implements Observer {
     }
 	
 	public void addBookmarkButtonClicked(Object sender) {
-		Host item = this.host;
-		if(item != null) {
-			CDBookmarksImpl.instance().addItem(item);
-			this.bookmarkTable.reloadData();
-		}
-		else {
-			item = new Host("", new Login());
-			CDBookmarksImpl.instance().addItem(item);
-			this.bookmarkTable.reloadData();
-		}
-		CDBookmarkController controller = new CDBookmarkController(item);
-		controller.window().makeKeyAndOrderFront(null);
+//		Host item = this.session.getHost();
+//		if(item != null) {
+//			CDBookmarksImpl.instance().addItem(item);
+//			this.bookmarkTable.reloadData();
+//		}
+//		else {
+//			item = new Host("", new Login());
+//			CDBookmarksImpl.instance().addItem(item);
+//			this.bookmarkTable.reloadData();
+//		}
+//		CDBookmarkController controller = new CDBookmarkController(item);
+//		controller.window().makeKeyAndOrderFront(null);
     }
 	
     private NSButton removeBookmarkButton; // IBOutlet
@@ -272,13 +277,14 @@ public class CDBrowserController implements Observer {
     private static NSMutableArray allDocuments = new NSMutableArray();
     
     private CDPathController pathController;
-    
-    private NSToolbar toolbar;
 	
+	private NSToolbar toolbar;
+
     /**
 		* The host this browser window is associated with
      */
-    private Host host;
+//	private Session session;
+//    private Host host;
 	
     // ----------------------------------------------------------
     // Constructor
@@ -436,11 +442,7 @@ public class CDBrowserController implements Observer {
 			NSToolbarItem.FlexibleSpaceItemIdentifier
 		});
 	}
-	
-    public NSWindow window() {
-		return this.mainWindow;
-    }
-	
+		
     public void update(Observable o, Object arg) {
 		log.debug("update:"+o+","+arg);
 		if(o instanceof Session) {
@@ -486,10 +488,11 @@ public class CDBrowserController implements Observer {
 					statusLabel.setObjectValue(msg.getContent());
 				}
 				else if(msg.getTitle().equals(Message.OPEN)) {
-					progressIndicator.startAnimation(this);
-					browserModel.clear();
-					browserTable.reloadData();
-					mainWindow.setTitle(host.getProtocol()+":"+host.getHostname());
+					//					statusIcon.setImage(NSImage.imageNamed("online.tiff"));
+//					progressIndicator.startAnimation(this);
+//					browserModel.clear();
+//					browserTable.reloadData();
+//					mainWindow.setTitle(this.session.getHost().getProtocol()+":"+this.session.getHost().getHostname());
 				}
 				else if(msg.getTitle().equals(Message.CLOSE)) {
 //					statusIcon.setImage(NSImage.imageNamed("offline.tiff"));
@@ -497,7 +500,6 @@ public class CDBrowserController implements Observer {
 				}
 				
 				else if(msg.getTitle().equals(Message.START)) {
-//					statusIcon.setImage(NSImage.imageNamed("online.tiff"));
 					progressIndicator.startAnimation(this);
 					//@todo disable toolbar
 				}
@@ -630,14 +632,13 @@ public class CDBrowserController implements Observer {
 		panel.setCanChooseDirectories(true);
 		panel.setCanChooseFiles(true);
 		panel.setAllowsMultipleSelection(true);
-		panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, mainWindow, this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+		panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, mainWindow, this, new NSSelector("uploadPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }
 	
-    public void openPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
+    public void uploadPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
 		sheet.orderOut(null);
 		switch(returnCode) {
 			case(NSPanel.OKButton): {
-				//		Path parent = (Path)pathController.getItem(0);
 				Path parent = browserModel.workdir();
 				// selected files on the local filesystem
 				NSArray selected = sheet.filenames();
@@ -666,7 +667,7 @@ public class CDBrowserController implements Observer {
 
     public void backButtonClicked(Object sender) {
 		log.debug("backButtonClicked");
-		host.getSession().getPreviousPath().list();
+		browserModel.workdir().getSession().getPreviousPath().list();
     }
 	
 	public void upButtonClicked(Object sender) {
@@ -676,7 +677,6 @@ public class CDBrowserController implements Observer {
     
     public void connectButtonClicked(Object sender) {
 		log.debug("connectButtonClicked");
-		//todo keep reference?
 		CDConnectionController controller = new CDConnectionController(this);
 		NSApplication.sharedApplication().beginSheet(
 											   controller.window(),//sheet
@@ -699,15 +699,20 @@ public class CDBrowserController implements Observer {
     public void mount(Host host) {
 		log.debug("mount:"+host);
 		this.isMounting = true;
-//		this.window().makeKeyAndOrderFront(null);
 		this.unmount();
-		this.host = host;
-		this.host.getSession().addObserver((Observer)this);
-		this.host.getSession().addObserver((Observer)pathController);
+//		this.host = host;
+		Session session = host.createSession();
+		session.addObserver((Observer)this);
+		session.addObserver((Observer)pathController);
 		
-		if(this.host.getProtocol().equals(Session.SFTP)) {
+		progressIndicator.startAnimation(this);
+		browserModel.clear();
+		browserTable.reloadData();
+		mainWindow.setTitle(host.getProtocol()+":"+host.getHostname());
+		
+		if(host.getProtocol().equals(Session.SFTP)) {
 			try {
-				this.host.setHostKeyVerificationController(new CDHostKeyController(this.window()));
+				host.setHostKeyVerificationController(new CDHostKeyController(this.window()));
 			}
 			catch(com.sshtools.j2ssh.transport.InvalidHostFileException e) {
 				//This exception is thrown whenever an exception occurs open or reading from the host file.
@@ -726,24 +731,23 @@ public class CDBrowserController implements Observer {
 			}
 		}
 		
-		Login login = this.host.getLogin();
-		login.setController(new CDLoginController(this.window(), host.getLogin()));
-		//	if(!login.hasReasonableValues()) {
-  //            login.getController().loginFailure("Enter your login name and password:");
-  //	}
-		this.host.getSession().mount();
-		CDHistoryImpl.instance().addItem(host);
+		host.getLogin().setController(new CDLoginController(this.window(), host.getLogin()));
+		session.mount();
 		this.isMounting = false;
 		this.mounted = true;
+		if(session.isConnected())
+			CDHistoryImpl.instance().addItem(host);
     }
 	
     public void unmount() {
 		log.debug("unmount");
-		if(host != null) {
-			this.host.closeSession();
-			this.host.getSession().deleteObserver((Observer)this);
-			this.host.getSession().deleteObserver((Observer)pathController);
+		if(mounted) {
+//			this.host.closeSession();
+			browserModel.workdir().getSession().close();
+			browserModel.workdir().getSession().deleteObserver((Observer)this);
+			browserModel.workdir().getSession().deleteObserver((Observer)pathController);
 		}
+//		this.session = null;
 //		this.mounted = false;
     }
         
@@ -753,10 +757,10 @@ public class CDBrowserController implements Observer {
     // ----------------------------------------------------------
 	
     public boolean windowShouldClose(NSWindow sender) {
-		if(host != null) {
-			if(host.getSession().isConnected()) {
+		if(mounted) {
+			if(browserModel.workdir().getSession().isConnected()) {
 				NSAlertPanel.beginCriticalAlertSheet(
-										 NSBundle.localizedString("Disconnect from"+" "+host.getHostname()), //title
+										 NSBundle.localizedString("Disconnect from"+" "+browserModel.workdir().getSession().getHost().getHostname()), //title
 										 NSBundle.localizedString("Disconnect"),// defaultbutton
 										 NSBundle.localizedString("Cancel"),//alternative button
 										 null,//other button
@@ -782,6 +786,7 @@ public class CDBrowserController implements Observer {
 	
     public void windowWillClose(NSNotification notification) {
 		this.window().setDelegate(null);
+		NSNotificationCenter.defaultCenter().removeObserver(this);
 		allDocuments.removeObject(this);
     }
 	
@@ -827,7 +832,7 @@ public class CDBrowserController implements Observer {
 			return !this.isMounting && this.mounted && browserTable.selectedRow() != -1;
 		}
 		else if (label.equals(NSBundle.localizedString("Disconnect"))) {
-			return !this.isMounting && this.mounted && host.getSession().isConnected();
+			return !this.isMounting && this.mounted && browserModel.workdir().getSession().isConnected();
 		}
 		return true;
     }

@@ -49,8 +49,6 @@ public class CDFolderController {
     private static NSMutableArray allDocuments = new NSMutableArray();
 	
     public CDFolderController() {
-		//    public CDFolderController(Path parent) {
-  //	this.parent = parent;
 		allDocuments.addObject(this);
         if (false == NSApplication.loadNibNamed("Folder", this)) {
             log.fatal("Couldn't load Folder.nib");
@@ -80,5 +78,4 @@ public class CDFolderController {
 				break;
 		}
     }
-    
-	}
+}

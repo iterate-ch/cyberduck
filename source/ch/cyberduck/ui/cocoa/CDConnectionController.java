@@ -57,11 +57,9 @@ public class CDConnectionController implements Observer {
     public void setBookmarksPopup(NSPopUpButton bookmarksPopup) {
 		this.bookmarksPopup = bookmarksPopup;
 		this.bookmarksPopup.setImage(NSImage.imageNamed("bookmarks.tiff"));
-		
 		Iterator i = CDBookmarksImpl.instance().iterator();
 		while(i.hasNext())
 			bookmarksPopup.addItem(i.next().toString());
-		
 		this.bookmarksPopup.setTarget(this);
 		this.bookmarksPopup.setAction(new NSSelector("bookmarksSelectionChanged", new Class[] {Object.class}));
     }

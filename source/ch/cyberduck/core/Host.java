@@ -32,7 +32,7 @@ public class Host {
     private String nickname;
     private String defaultpath;
     private transient HostKeyVerification hostKeyVerification;
-    private transient Session session;
+//    private transient Session session;
     private transient Login login;
 	
     /**
@@ -87,26 +87,26 @@ public class Host {
     
     // ----------------------------------------------------------
 	
-    public Session getSession() {
-		if(null == this.session) {
-			log.debug("***Session is null! Constructing new one.");
-			if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
-				this.session = new HTTPSession(this);
-			}
-			//  if(this.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
-   //            return new HTTPSession(this);
-   //        }
-			else if(this.getProtocol().equalsIgnoreCase(Session.FTP)) {
-				this.session = new FTPSession(this);
-			}
-			else if(this.getProtocol().equalsIgnoreCase(Session.SFTP)) {
-				this.session = new SFTPSession(this);
-			}
-			else {
-				throw new IllegalArgumentException("Unknown protocol");
-			}
+    public Session createSession() {
+		//		if(null == this.session) {
+  //			log.debug("Session is null! Constructing new one.");
+		if(this.getProtocol().equalsIgnoreCase(Session.HTTP)) {
+			return new HTTPSession(this);
 		}
-		return this.session;
+		//  if(this.getProtocol().equalsIgnoreCase(Session.HTTPS)) {
+  //            return new HTTPSession(this);
+  //        }
+		else if(this.getProtocol().equalsIgnoreCase(Session.FTP)) {
+			return new FTPSession(this);
+		}
+		else if(this.getProtocol().equalsIgnoreCase(Session.SFTP)) {
+			return new SFTPSession(this);
+		}
+		else {
+			throw new IllegalArgumentException("Unknown protocol");
+		}
+		//		}
+  //		return this.session;
     }
 	
     public void setDefaultPath(String defaultpath) {
@@ -123,13 +123,13 @@ public class Host {
 //		return reasonable;
 	}
     
-    public void closeSession() {
-        log.debug("closeSession");
-		if(session != null) {
-			this.session.close();
-			this.session = null;
-		}
-    }
+//    public void closeSession() {
+//      log.debug("closeSession");
+//		if(session != null) {
+//			this.session.close();
+//			this.session = null;
+//		}
+//    }
 	
     private static String getDefaultProtocol(int port) {
 		switch(port) {

@@ -151,7 +151,7 @@ public abstract class Session extends Observable {
 		else if(1 == size) {
 			return (Path)history.get(size-1);
 		}
-		return null;
+		return workdir();
     }
     
     public void log(String message, String title) {

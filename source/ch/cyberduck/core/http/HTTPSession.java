@@ -79,10 +79,10 @@ public class HTTPSession extends Session {
     
     public synchronized void mount() {
 		this.log("Invalid Operation", Message.ERROR);
-    }
-	
+	}
+				
     public void check() throws IOException {
-		log.debug("check");
+		log.debug(this.toString()+":check");
 		this.log("Working", Message.START);
 		if(null == HTTP || !HTTP.isAlive()) {
 			this.setConnected(false);

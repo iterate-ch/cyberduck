@@ -79,11 +79,11 @@ public class CDPathController implements Observer {
 	
     public void addItem(Path p) {
 		this.items.add(p);
-		combo.addItem(p.getAbsolute());
+		this.combo.addItem(p.getAbsolute());
 		if(p.isRoot())
-			combo.itemAtIndex(combo.numberOfItems()-1).setImage(NSImage.imageNamed("disk.tiff"));
+			this.combo.itemAtIndex(this.combo.numberOfItems()-1).setImage(NSImage.imageNamed("disk.tiff"));
 		else
-			combo.itemAtIndex(combo.numberOfItems()-1).setImage(NSImage.imageNamed("folder.tiff"));
+			this.combo.itemAtIndex(this.combo.numberOfItems()-1).setImage(NSImage.imageNamed("folder.tiff"));
     }
 	
     public Path getItem(int row) {
@@ -92,6 +92,6 @@ public class CDPathController implements Observer {
 	
     public void removeAllItems() {
 		this.items.clear();
-		combo.removeAllItems();
+		this.combo.removeAllItems();
     }
 }
