@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import ch.cyberduck.core.*;
 
 /**
+* @version $Id$
  * @author Stuart A. Malone
  */
 public class CDGetURLScriptCommand extends NSScriptCommand {

@@ -23,6 +23,9 @@ import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.Queue;
 
+/**
+* @version $Id$
+ */
 public class CDProgressCell extends CDTableCell {
 
     private Queue queue;

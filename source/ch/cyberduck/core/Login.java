@@ -24,6 +24,9 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.ui.LoginController;
 
+/**
+* @version $Id$
+ */
 public class Login {
     private static Logger log = Logger.getLogger(Login.class);
 

@@ -24,6 +24,9 @@ import com.apple.cocoa.foundation.NSCoder;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSRect;
 
+/**
+* @version $Id$
+ */
 public class CDTableCell extends NSCell {
 
     protected boolean highlighted;

@@ -26,6 +26,9 @@ import com.apple.cocoa.foundation.NSRect;
 
 import org.apache.log4j.Logger;
 
+/**
+* @version $Id$
+ */
 public class CDBrowserTable extends NSTableView {
     private static Logger log = Logger.getLogger(CDBrowserTable.class);
 

@@ -29,6 +29,9 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
 
+/**
+* @version $Id$
+ */
 public class CDQueueController extends NSObject {
     private static Logger log = Logger.getLogger(CDQueueController.class);
 
