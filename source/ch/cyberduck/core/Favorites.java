@@ -34,6 +34,13 @@ import java.util.Map;
 public abstract class Favorites {
     private static Logger log = Logger.getLogger(Favorites.class);
     
+	public static final String HOSTNAME = "Hostname";
+    public static final String NICKNAME = "Nickname";
+    public static final String PORT = "Port";
+    public static final String PROTOCOL = "Protocol";
+    public static final String USERNAME = "Username";
+    public static final String PATH = "Path";
+	
     private Map data = new HashMap();
 	
     public Favorites() {

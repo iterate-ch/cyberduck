@@ -240,6 +240,10 @@ public class CDBrowserTableDataSource {//implements NSTableView.DataSource {
 		return true;
     }
     
+	// ----------------------------------------------------------
+ // Drag methods
+ // ----------------------------------------------------------
+	
     
     /**    Invoked by tableView after it has been determined that a drag should begin, but before the drag has been started.
 		* The drag image and other drag-related information will be set up and provided by the table view once this call
@@ -253,11 +257,10 @@ public class CDBrowserTableDataSource {//implements NSTableView.DataSource {
 		Session session = this.workdir().getSession().copy(); //new
 		if(rows.count() > 0) {
 			this.promisedDragPaths = new Path[rows.count()];
-			//		Path[] draggedPaths = new Path[rows.count()];
+			// The types argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
 			NSMutableArray types = new NSMutableArray();
 			for(int i = 0; i < rows.count(); i++) {
 				promisedDragPaths[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue()).copy(session);
-				//		    draggedPaths[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue());
 				if(promisedDragPaths[i].isFile()) {
 					if(promisedDragPaths[i].getExtension() != null)
 						types.addObject(promisedDragPaths[i].getExtension());
@@ -270,27 +273,17 @@ public class CDBrowserTableDataSource {//implements NSTableView.DataSource {
 				else
 					types.addObject(NSPathUtilities.FileTypeUnknown);
 			}
-			
-			
 			NSEvent event = NSApplication.sharedApplication().currentEvent();
 			NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
 			NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
 			
 			tableView.dragPromisedFilesOfTypes(types, imageRect, this, true, event);
-			//	    CDBrowserTable.this.dragPromisedFilesOfTypes(types, imageRect, this, true, event);
-			
-			// The types argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
 		}
 		// we return false because we don't want the table to draw the drag image
 		return false;
     }
     
-    
-    // ----------------------------------------------------------
-    // Drag methods
-    // ----------------------------------------------------------
-    
-    
+	
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
 		log.debug("finishedDraggingImage:"+operation);
 		if(! (NSDraggingInfo.DragOperationNone == operation)) {
@@ -300,7 +293,6 @@ public class CDBrowserTableDataSource {//implements NSTableView.DataSource {
 				promisedDragPaths = null;
 			}
 		}
-		//todo CDBrowserTable.this.deselectAll(null);
     }
     
     public boolean ignoreModifierKeysWhileDragging() {

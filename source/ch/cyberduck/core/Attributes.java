@@ -30,84 +30,84 @@ import java.util.Observable;
  */
 public class Attributes extends Observable {
     private static Logger log = Logger.getLogger(Path.class);
-
+	
     private Date modified;
-//    private long modified;
-
+	//    private long modified;
+	
     private String owner;
     private String group;
     private String mode = "-rwxrwxrwx"; //defaulting to a file
     private Permission permission;
     private boolean visible = true;
-
+	
     /**
-	* @param visible If this path should be shown in the directory listing
+		* @param visible If this path should be shown in the directory listing
      */
-     public void setVisible(boolean visible) {
-	 this.visible = visible;
-     }
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
     /**
-	* @return If this path is shown in the directory listing
+		* @return If this path is shown in the directory listing
      */
-     public boolean isVisible() {
-	 return this.visible;
-     }
-
+	public boolean isVisible() {
+		return this.visible;
+	}
+	
     /**
-	* Set the modfication returned by ftp directory listings
+		* Set the modfication returned by ftp directory listings
      */
     public void setModified(long m) {
-	this.modified = new Date(m);
+		this.modified = new Date(m);
     }
-
+	
     /**
-	* @return the modification date of this file
+		* @return the modification date of this file
      */
     public String getModified() {
-	return (DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)).format(this.modified);
-//	return (DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)).format(new Date(this.modified));
+		return (DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)).format(this.modified);
+		//	return (DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)).format(new Date(this.modified));
     }
-
-     public Date getModifiedDate() {
-	 return this.modified;
-     }
-
+	
+	public Date getModifiedDate() {
+		return this.modified;
+	}
+	
     /**
-	* @param access unix access permitions, i.e. -rwxrwxrwx
+		* @param access unix access permitions, i.e. -rwxrwxrwx
      */
-
+	
     public void setMode(String mode) {
-	this.mode = mode;
+		this.mode = mode;
     }
-
+	
     /**
-	* @return The unix access permissions including the the first bit
+		* @return The unix access permissions including the the first bit
      */
     public String getMode() {
-	return this.mode;
+		return this.mode;
     }
-
+	
     public void setPermission(Permission p) {
-	this.permission = p;
+		this.permission = p;
     }
-
+	
     public Permission getPermission() {
-	return this.permission;
+		return this.permission;
     }
-
+	
     public void setOwner(String o) {
-	this.owner = o;
+		this.owner = o;
     }
-
+	
     public String getOwner() {
-	return this.owner;
+		return this.owner;
     }
-
+	
     public void setGroup(String g) {
-	this.group = g;
+		this.group = g;
     }
-
+	
     public String getGroup() {
-	return this.group;
+		return this.group;
     }
 }

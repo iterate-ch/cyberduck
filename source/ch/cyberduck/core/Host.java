@@ -119,9 +119,9 @@ public class Host {
     }
 	
 	public boolean hasReasonableDefaultPath() {
-		boolean v = (this.defaultpath != null) && (this.defaultpath != "") && (this.defaultpath != Path.HOME);
-        log.debug("hasReasonableDefaultPath:"+v+"("+defaultpath+")");
-		return v;
+		boolean reasonable = this.defaultpath != null && this.defaultpath != "" && this.defaultpath != Path.HOME;
+        log.debug("hasReasonableDefaultPath:"+reasonable+"("+defaultpath+")");
+		return reasonable;
 	}
     
     public void closeSession() {

@@ -36,62 +36,62 @@ import java.util.Observer;
  */
 public class CDPathController implements Observer {
     private static Logger log = Logger.getLogger(CDPathController.class);
-
+	
     private NSPopUpButton combo;
     private List items = new ArrayList();
-
+	
     public CDPathController(NSPopUpButton combo) {
-	log.debug("CDPathController");
-	this.combo = combo;
-	this.combo.setTarget(this);
-	this.combo.setAction(new NSSelector("selectionChanged", new Class[] { Object.class } ));
+		log.debug("CDPathController");
+		this.combo = combo;
+		this.combo.setTarget(this);
+		this.combo.setAction(new NSSelector("selectionChanged", new Class[] { Object.class } ));
     }
-
+	
     public NSView view() {
-	return this.combo;
+		return this.combo;
     }
     
     public void update(Observable o, Object arg) {
-	log.debug("update:"+o+","+arg);
-	if(o instanceof Session) {
-	    if(arg instanceof Path) {
-		Path p = (Path)arg;
-		this.removeAllItems();
-		// current path has index 0
-		this.addItem(p);
-		// root path has index numberOfItems()-1
-		while(!p.isRoot()) {
-		    p = p.getParent();
-		    this.addItem(p);
+		log.debug("update:"+o+","+arg);
+		if(o instanceof Session) {
+			if(arg instanceof Path) {
+				Path p = (Path)arg;
+				this.removeAllItems();
+				// current path has index 0
+				this.addItem(p);
+				// root path has index numberOfItems()-1
+				while(!p.isRoot()) {
+					p = p.getParent();
+					this.addItem(p);
+				}
+			}
 		}
-	    }
-	}
     }
-
+	
     public int numberOfItems() {
-	return items.size();
+		return items.size();
     }
-
+	
     public void selectionChanged(Object sender) {
-	Path p = (Path)items.get(combo.indexOfSelectedItem());
-	p.list();
+		Path p = (Path)items.get(combo.indexOfSelectedItem());
+		p.list();
     }
-
+	
     public void addItem(Path p) {
-	this.items.add(p);
-	combo.addItem(p.getAbsolute());
-	if(p.isRoot())
-	    combo.itemAtIndex(combo.numberOfItems()-1).setImage(NSImage.imageNamed("disk.tiff"));
-	else
-	    combo.itemAtIndex(combo.numberOfItems()-1).setImage(NSImage.imageNamed("folder.tiff"));
+		this.items.add(p);
+		combo.addItem(p.getAbsolute());
+		if(p.isRoot())
+			combo.itemAtIndex(combo.numberOfItems()-1).setImage(NSImage.imageNamed("disk.tiff"));
+		else
+			combo.itemAtIndex(combo.numberOfItems()-1).setImage(NSImage.imageNamed("folder.tiff"));
     }
-
+	
     public Path getItem(int row) {
-	return (Path)items.get(row);
+		return (Path)items.get(row);
     }
-
+	
     public void removeAllItems() {
-	this.items.clear();
-	combo.removeAllItems();
+		this.items.clear();
+		combo.removeAllItems();
     }
 }

@@ -21,13 +21,13 @@ package ch.cyberduck.core;
 import java.util.Arrays;
 
 /**
- * Encapsulating unix file permissions.
+* Encapsulating unix file permissions.
  * @version $Id$
  */
 public class Permission {//implements java.io.Serializable {
-
+	
     /**
-     * Index of OWNER bit
+	* Index of OWNER bit
      */
     public static final int OWNER = 0;
     /**
@@ -35,20 +35,20 @@ public class Permission {//implements java.io.Serializable {
      */
     public static final int GROUP = 1;
     /**
-	* Index of OTHER bit
+		* Index of OTHER bit
      */
     public static final int OTHER = 2;
-
+	
     /**
-	* Index of READ bit
+		* Index of READ bit
      */
     public static final int READ = 0;
     /**
-	* Index of WRITE bit
+		* Index of WRITE bit
      */
     public static final int WRITE = 1;
     /**
-	* Index of EXECUTE bit
+		* Index of EXECUTE bit
      */
     public static final int EXECUTE = 2;
     
@@ -56,9 +56,9 @@ public class Permission {//implements java.io.Serializable {
     private boolean[] owner = new boolean[3];
     private boolean[] group = new boolean[3];
     private boolean[] other = new boolean[3];
-
+	
     /**
-     * @param s the access string to parse the permissions from.
+		* @param s the access string to parse the permissions from.
      * Must be someting like -rwxrwxrwx
      */
     public Permission(String s) {
@@ -66,34 +66,34 @@ public class Permission {//implements java.io.Serializable {
         this.group = this.getGroupPermissions(s);
         this.other = this.getOtherPermissions(s);
     }
-
+	
     /**
-     * @param p A 3*3 boolean array representing read, write and execute permissions
+		* @param p A 3*3 boolean array representing read, write and execute permissions
      * by owner, group and others. (1,1) is the owner's read permission
      */
     public Permission(boolean[][] p) {
-    	this.owner[READ] = p[OWNER][READ];
-    	this.owner[WRITE] = p[OWNER][WRITE];
-    	this.owner[EXECUTE] = p[OWNER][EXECUTE];
-    	
-    	this.group[READ] = p[GROUP][READ];
-    	this.group[WRITE] = p[GROUP][WRITE];
-    	this.group[EXECUTE] = p[GROUP][EXECUTE];
-    	
-    	this.other[READ] = p[OTHER][READ];
-    	this.other[WRITE] = p[OTHER][WRITE];
-    	this.other[EXECUTE] = p[OTHER][EXECUTE];
+		this.owner[READ] = p[OWNER][READ];
+		this.owner[WRITE] = p[OWNER][WRITE];
+		this.owner[EXECUTE] = p[OWNER][EXECUTE];
+		
+		this.group[READ] = p[GROUP][READ];
+		this.group[WRITE] = p[GROUP][WRITE];
+		this.group[EXECUTE] = p[GROUP][EXECUTE];
+		
+		this.other[READ] = p[OTHER][READ];
+		this.other[WRITE] = p[OTHER][WRITE];
+		this.other[EXECUTE] = p[OTHER][EXECUTE];
     }
-
+	
     /**
-     * @return a thee-dimensional boolean array representing read, write
+		* @return a thee-dimensional boolean array representing read, write
      * and execute permissions (in that order) of the file owner.
      */
     public boolean[] getOwnerPermissions() {
         return owner;
     }
     /**
-     * @return a thee-dimensional boolean array representing read, write
+		* @return a thee-dimensional boolean array representing read, write
      * and execute permissions (in that order) of the group
      */
     public boolean[] getGroupPermissions() {
@@ -121,16 +121,16 @@ public class Permission {//implements java.io.Serializable {
         boolean[] b = {s.charAt(7) == 'r', s.charAt(8) == 'w', s.charAt(9) == 'x' || s.charAt(9) == 't' || s.charAt(9) == 'T'};
         return b;
     }
-
+	
     /**
-     * @return i.e. rwxrwxrwx (777)
+		* @return i.e. rwxrwxrwx (777)
      */
     public String toString() {
-    	return this.getString()+" ("+this.getCode()+")";
+		return this.getString()+" ("+this.getCode()+")";
     }
-
+	
     /**
-     * @return The unix equivalent access string like rwxrwxrwx
+		* @return The unix equivalent access string like rwxrwxrwx
      */
     public String getString() {
         String owner = this.getAccessString(this.getOwnerPermissions());
@@ -138,9 +138,9 @@ public class Permission {//implements java.io.Serializable {
         String other = this.getAccessString(this.getOtherPermissions());
         return owner+group+other;
     }
-
+	
     /**
-     * @return The unix equivalent access code like 777
+		* @return The unix equivalent access code like 777
      */
     public int getCode() {
         String owner = ""+ this.getAccessNumber(this.getOwnerPermissions());
@@ -148,20 +148,20 @@ public class Permission {//implements java.io.Serializable {
         String other = ""+ this.getAccessNumber(this.getOtherPermissions());
         return Integer.parseInt(owner+group+other);
     }
-   
-   /* 
-*	0 = no permissions whatsoever; this person cannot read, write, or execute the file 
-*	1 = execute only 
-*	2 = write only 
-*	3 = write and execute (1+2) 
-*	4 = read only 
-*	5 = read and execute (4+1) 
-*	6 = read and write (4+2) 
-*	7 = read and write and execute (4+2+1)
-    */
-
+	
+	/* 
+		*	0 = no permissions whatsoever; this person cannot read, write, or execute the file 
+	 *	1 = execute only 
+	 *	2 = write only 
+	 *	3 = write and execute (1+2) 
+	 *	4 = read only 
+	 *	5 = read and execute (4+1) 
+	 *	6 = read and write (4+2) 
+	 *	7 = read and write and execute (4+2+1)
+	 */
+	
     //-rwxrwxrwx
-
+	
     private int getAccessNumber(boolean[] permissions) {
         if(Arrays.equals(permissions, new boolean[]{false, false, false}))
             return 0;
@@ -181,22 +181,22 @@ public class Permission {//implements java.io.Serializable {
             return 7;
         return -1;
     }
-
+	
     private String getAccessString(boolean[] permissions) {
         String read = permissions[READ] ? "r" : "-";
         String write = permissions[WRITE] ? "w" : "-";
         String execute = permissions[EXECUTE] ? "x" : "-";
         return read+write+execute;
     }
-
+	
     /*
- 	public static final int --- = 0; {false, false, false}
- 	public static final int --x = 1; {false, false, true}
- 	public static final int -w- = 2; {false, true, false}
- 	public static final int -wx = 3; {false, true, true}
- 	public static final int r-- = 4; {true, false, false}
- 	public static final int r-x = 5; {true, false, true}
- 	public static final int rw- = 6; {true, true, false}
- 	public static final int rwx = 7; {true, true, true}
- 	*/
+	 public static final int --- = 0; {false, false, false}
+	 public static final int --x = 1; {false, false, true}
+	 public static final int -w- = 2; {false, true, false}
+	 public static final int -wx = 3; {false, true, true}
+	 public static final int r-- = 4; {true, false, false}
+	 public static final int r-x = 5; {true, false, true}
+	 public static final int rw- = 6; {true, true, false}
+	 public static final int rwx = 7; {true, true, true}
+	 */
 }

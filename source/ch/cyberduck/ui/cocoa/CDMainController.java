@@ -19,6 +19,9 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Favorites;
+import ch.cyberduck.core.Login;
+import ch.cyberduck.core.Host;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Level;
@@ -210,14 +213,16 @@ public class CDMainController {
 		controller.window().makeKeyAndOrderFront(null);
     }
 	
-    public void newDownloadMenuClicked(Object sender) {
+    public CDDownloadController newDownloadMenuClicked(Object sender) {
 		CDDownloadController controller = new CDDownloadController();
 		controller.window().makeKeyAndOrderFront(null);
+		return controller;
     }
 	
-    public void newBrowserMenuClicked(Object sender) {
+    public CDBrowserController newBrowserMenuClicked(Object sender) {
 		CDBrowserController controller = new CDBrowserController();
 		controller.window().makeKeyAndOrderFront(null);
+		return controller;
     }
 	
     
@@ -225,6 +230,32 @@ public class CDMainController {
     // Application delegate methods
     // ----------------------------------------------------------
 	
+	public boolean applicationOpenFile(NSApplication app, String filename) {
+		log.debug("applicationOpenFile:"+filename);
+		File f = new File(filename);
+		if(f.exists()) {
+			log.info("Found file: "+f.toString());
+			NSData plistData = new NSData(f);
+			Object propertyListFromXMLData = NSPropertyListSerialization.propertyListFromXMLData(plistData);
+			log.info("Successfully read file: "+propertyListFromXMLData);
+			if(propertyListFromXMLData instanceof NSDictionary) {
+				NSDictionary a = (NSDictionary)propertyListFromXMLData;
+				   Host host = new Host(
+				(String)a.objectForKey(Favorites.PROTOCOL), 
+				(String)a.objectForKey(Favorites.NICKNAME),
+				(String)a.objectForKey(Favorites.HOSTNAME), 
+				Integer.parseInt((String)a.objectForKey(Favorites.PORT)),
+				new Login((String)a.objectForKey(Favorites.USERNAME)),
+				(String)a.objectForKey(Favorites.PATH)
+						 );
+				   CDBrowserController controller = newBrowserMenuClicked(null);
+				   controller.mount(host);
+			}
+			return true;
+		}
+		return false;
+	}
+
     public void applicationDidFinishLaunching (NSNotification notification) {
         // To get service requests to go to the controller...
 		//        NSApplication.sharedApplication().setServicesProvider(this);
@@ -233,10 +264,6 @@ public class CDMainController {
 			this.newBrowserMenuClicked(null);
 		}
     }
-	
-	//    public boolean applicationOpenFile (NSApplication app, String filename) {
-	//
- //  }
 	
     public int applicationShouldTerminate (NSApplication app) {
 		log.debug("applicationShouldTerminate");
