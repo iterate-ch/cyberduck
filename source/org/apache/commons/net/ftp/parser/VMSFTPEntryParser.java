@@ -64,7 +64,6 @@ import java.util.StringTokenizer;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
-import org.apache.commons.net.ftp.FTPListParseEngine;
 
 /**
  * Implementation FTPFileEntryParser and FTPFileListParser for VMS Systems.

@@ -36,6 +36,7 @@ public class Host {
 	private int port;
 	private String hostname;
 	private String nickname;
+	private String identification;
 	private String defaultpath = Path.HOME;
 	private transient HostKeyVerification hostKeyVerification;
 	private transient Login login;
@@ -203,7 +204,18 @@ public class Host {
 	public String getProtocol() {
 		return this.protocol;
 	}
+	
+	/**
+		*@return The remote host identification such as the response to the SYST command in FTP
+	 */
+	public String getIdentification() {
+		return this.identification;
+	}
 
+	public void setIdentification(String id) {
+		this.identification = id;
+	}
+	
 	public String getNickname() {
 		return this.nickname;
 	}

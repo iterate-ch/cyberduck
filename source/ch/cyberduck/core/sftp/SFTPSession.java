@@ -70,7 +70,7 @@ public class SFTPSession extends Session {
 			if (this.SFTP != null) {
 				this.log("Disconnecting...", Message.PROGRESS);
 				this.SFTP.close();
-				this.getHost().getLogin().setPassword(null);
+				this.host.getLogin().setPassword(null);
 				this.SFTP = null;
 			}
 			if (this.SSH != null) {
@@ -118,7 +118,9 @@ public class SFTPSession extends Session {
 		this.log("Opening SSH session...", Message.PROGRESS);
 		SSH.connect(properties, host.getHostKeyVerificationController());
 		this.log("SSH connection opened", Message.PROGRESS);
-		this.log(SSH.getServerId(), Message.TRANSCRIPT);
+		String id = SSH.getServerId();
+		this.host.setIdentification(id);
+		this.log(id, Message.TRANSCRIPT);
 
 		log.info(SSH.getAvailableAuthMethods(host.getLogin().getUsername()));
 		this.login();

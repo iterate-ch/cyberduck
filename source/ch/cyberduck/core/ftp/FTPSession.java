@@ -35,10 +35,6 @@ import org.apache.log4j.Logger;
 public class FTPSession extends Session {
 	private static Logger log = Logger.getLogger(Session.class);
 
-//	private String systemName;
-//	private FTPFileEntryParserFactory parserFactory;	
-//    private FTPFileEntryParser entryParser;
-	
 	static {
 		SessionFactory.addFactory(Session.FTP, new Factory());
 	}
@@ -57,11 +53,8 @@ public class FTPSession extends Session {
 	 * @param transfer The <code>Bookmark</code> object
 	 * @param secure If the connection is secure
 	 */
-	public FTPSession(Host h) {//, TransferAction action) {
+	public FTPSession(Host h) {
 		super(h);
-		// System.getProperties().put("proxySet", Preferences.instance().getProperty("connection.proxy"));
-		// System.getProperties().put("proxyHost", Preferences.instance().getProperty("connection.proxy.host"));
-		// System.getProperties().put("proxyPort", Preferences.instance().getProperty("connection.proxy.port"));
 	}
 	
 	public synchronized void close() {
@@ -70,7 +63,7 @@ public class FTPSession extends Session {
 			if (this.FTP != null) {
 				this.log("Disconnecting...", Message.PROGRESS);
 				this.FTP.quit();
-				this.getHost().getLogin().setPassword(null);
+				this.host.getLogin().setPassword(null);
 				this.FTP = null;
 			}
 			this.log("Disconnected", Message.PROGRESS);
@@ -102,7 +95,7 @@ public class FTPSession extends Session {
 		this.log("FTP connection opened", Message.PROGRESS);
 		this.login();
 		if(Preferences.instance().getProperty("ftp.sendSystemCommand").equals("true")) {
-			this.FTP.system();
+			this.host.setIdentification(this.FTP.system());
 		}
 		this.setConnected(true);
 	}

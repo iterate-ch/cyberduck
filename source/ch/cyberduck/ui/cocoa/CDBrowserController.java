@@ -610,7 +610,7 @@ public class CDBrowserController implements Observer {
 			else if (msg.getTitle().equals(Message.OPEN)) {
 				this.statusIcon.setImage(null);
 				this.statusIcon.setNeedsDisplay(true);
-				CDHistoryImpl.instance().addItem(((Session)o).getHost());
+				CDHistoryImpl.instance().addItem(((Session)o).host);
 //					this.statusIcon.setImage(NSImage.imageNamed("online.tiff"));
 				this.toolbar.validateVisibleItems();
 			}

@@ -125,11 +125,9 @@ public class FTPPath extends Path {
 				session.FTP.setTransferType(FTPTransferType.ASCII);
 				session.FTP.chdir(this.getAbsolute());
 
-				FTPFileEntryParser parser =  new DefaultFTPFileEntryParserFactory().createFileEntryParser(session.FTP.system()); //todo cache
+				FTPFileEntryParser parser =  new DefaultFTPFileEntryParserFactory().createFileEntryParser(session.host.getIdentification()); //todo cache
 				
 				String[] lines = session.FTP.dir();
-				//@todo replace with new FTPListParseEngine(parser)
-				// engine.getFiles()
 				for (int i = 0; i < lines.length; i++) {
 					Path p = parser.parseFTPEntry(this, lines[i]);
 					if(p != null) {
@@ -143,7 +141,6 @@ public class FTPPath extends Path {
 				}
 				
 				this.setCache(files);
-//				this.setCache(files = FTPParser.instance().parseList(this, session.FTP.dir(), showHidden));
 			}
 			catch (FTPException e) {
 				session.log("FTP Error: " + e.getMessage(), Message.ERROR);

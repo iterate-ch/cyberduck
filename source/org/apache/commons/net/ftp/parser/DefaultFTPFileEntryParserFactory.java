@@ -68,31 +68,9 @@ import org.apache.commons.net.ftp.FTPFileEntryParser;
  */
 public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFactory{
 	
-	private DefaultFTPFileEntryParserFactory() {
-		super();
-	}
-	
     /**
      * This default implementation of the FTPFileEntryParserFactory
-     * interface works according to the following logic:
-     * First it attempts to interpret the supplied key as a fully
-     * qualified classname of a class implementing the
-     * FTPFileEntryParser interface.  If that succeeds, a parser 
-     * object of this class is instantiated and is returned.
-     * <p>
-     * If <code>key</code> is not recognized as a fully qualified
-     * classname known to the system, this method will then attempt
-     * to see whether it <b>contains</b> a string identifying one of
-     * the known parsers.  This comparison is <b>case-insensitive</b>.
-     * The intent here is where possible, to select as keys strings
-     * which are returned by the SYST command on the systems which
-     * the corresponding parser successfully parses.  This enables 
-     * this factory to be used in the auto-detection system. 
-     * <p/>
-     * @param key    should be a fully qualified classname corresponding to
-     *               a class implementing the FTPFileEntryParser interface<br/>
-     *               OR<br/>
-     *               a string containing (case-insensitively) one of the
+     * @param key    a string containing (case-insensitively) one of the
      *               following keywords:
      *               <ul>
      *               <li><code>unix</code></li>
@@ -102,12 +80,9 @@ public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFacto
      *               </ul>
      * 
      * @return the FTPFileEntryParser corresponding to the supplied key.
-     * @exception ParserInitializationException
-     *                   thrown if for any reason the factory cannot resolve 
-     *                   the supplied key into an FTPFileEntryParser.
      * @see FTPFileEntryParser
      */
-    public static FTPFileEntryParser createFileEntryParser(String key) {
+    public FTPFileEntryParser createFileEntryParser(String key) {
 		String ukey = null;
 		if (null != key) {
 			ukey = key.toUpperCase();

@@ -75,8 +75,6 @@ public abstract class Session extends Observable {
 		this.host = h;
 		this.history = new ArrayList();
 		this.transcript = TranscriptFactory.getImpl(host.getHostname());
-//		this.transcript.log("-------" + new java.util.Date().toString());
-//		this.transcript.log("-------" + host.getIp());
 	}
 
 	public void callObservers(Object arg) {
