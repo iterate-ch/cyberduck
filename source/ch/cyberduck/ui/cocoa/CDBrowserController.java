@@ -1,8 +1,8 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2002 David Kocher. All rights reserved.
- *  http://icu.unizh.ch/~dkocher/
+ *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -585,6 +585,7 @@ public class CDBrowserController implements Observer {
 
     public void connectButtonClicked(Object sender) {
 	log.debug("connectButtonClicked");
+	//todo keep reference?
 	CDConnectionController controller = new CDConnectionController(this);
 	NSApplication.sharedApplication().beginSheet(
 					      controller.window(),//sheet

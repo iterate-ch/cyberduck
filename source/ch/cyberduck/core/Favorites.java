@@ -1,8 +1,8 @@
 package ch.cyberduck.core;
 
 /*
- *  Copyright (c) 2002 David Kocher. All rights reserved.
- *  http://icu.unizh.ch/~dkocher/
+ *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,42 +24,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
+import java.net.URL;
 
 /**
 * Keeps track of recently connected hosts
  * @version $Id$
  */
-public abstract class Favorites extends Observable {
+public abstract class Favorites {
     private static Logger log = Logger.getLogger(History.class);
-
-    private static Favorites instance;
-    private List data;
-
-    /*
-     * Use #instance instead.
-     */
-    public Favorites() {
-	this.data = new ArrayList();
-    }
-
-    public static Favorites instance() {
-        if(null == instance) {
-            String strVendor = System.getProperty("java.vendor");
-            if(strVendor.indexOf("Apple") != -1)
-                instance = new ch.cyberduck.ui.cocoa.CDFavoritesImpl();
-            else
-//@todo                instance = new ch.cyberduck.ui.swing.FavoritesImpl();
-            instance.setDefaults();
-            instance.load();
-	}
-        return instance;
-    }
-
-    public void callObservers(Object arg) {
-        log.debug("callObservers:"+arg.toString());
-	this.setChanged();
-	this.notifyObservers(arg);
-    }
+    
+    private List data = new ArrayList();
 
     /**
 	* Ensure persistency.
@@ -71,31 +45,23 @@ public abstract class Favorites extends Observable {
      */
     public abstract void load();
 
-    public void add(Host h) {
-	data.add(h);
-	this.callObservers(h);
+    public void add(Object h) {
+	this.data.add(h);
+	this.save();
     }
 
-    public Host get(String name) {
+    public Object get(String name) {
 	Iterator i = data.iterator();
-	Host h;
+	Object h;
 	while(i.hasNext()) {
-	    h = (Host)i.next();
-	    if(h.getName().equals(name))
+	    h = i.next();
+	    if(h.toString().equals(name.toString()))
 		return h;
 	}
 	throw new IllegalArgumentException("Host "+name+" not found in Favorites.");
     }
 
-    public Iterator iterator() {
+    public Iterator getIterator() {
 	return data.iterator();
-    }
-
-    public void setDefaults() {
-	//@todo add any default hosts?
-    }
-
-    public List getData() {
-	return data;
     }
 }

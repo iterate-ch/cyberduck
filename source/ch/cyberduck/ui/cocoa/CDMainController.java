@@ -1,8 +1,8 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2002 David Kocher. All rights reserved.
- *  http://icu.unizh.ch/~dkocher/
+ *  Copyright (c) 2003 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -47,11 +47,6 @@ public class CDMainController {
 //	controller.connectButtonClicked(this);
     }
 
-    public void finalize() throws Throwable {
-	log.debug("finalize");
-	super.finalize();
-    }
-        
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
@@ -261,7 +256,7 @@ public class CDMainController {
 	Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses"))+1);
         Preferences.instance().save();
 	History.instance().save();
-	Favorites.instance().save();
+	//Favorites.instance().save();
 
 	/*
 	if(Integer.parseInt(Preferences.instance().getProperty("uses")) > 5 && Preferences.instance().getProperty("donate").equals("true")) {
