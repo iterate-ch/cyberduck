@@ -549,6 +549,7 @@ public class CDBrowserController implements Observer {
 
     public void unmount() {
 	log.debug("unmount");
+	if(this.isMounted()) {
 	//this.mounted = false;
 //	if(this.host != null) {
 //	    if(host.getSession() != null) {
@@ -556,8 +557,8 @@ public class CDBrowserController implements Observer {
 //		host.getSession().deleteObserver((Observer)browserTable);
 //		host.getSession().deleteObserver((Observer)pathController);
 //	    }
-	this.host.closeSession();
-//	}
+	    this.host.closeSession();
+	}
     }
     
         // ----------------------------------------------------------
