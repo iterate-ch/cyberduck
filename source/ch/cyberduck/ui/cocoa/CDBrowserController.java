@@ -59,25 +59,28 @@ public class CDBrowserController implements Observer {
 //	this.mainWindow.setDelegate(this);
     }
 
+    private CDBrowserTableDataSource browserModel;
+    private CDBrowserTableDelegate browserDelegate;
     private NSTableView browserTable; // IBOutlet
     public void setBrowserTable(NSTableView browserTable) {
 	this.browserTable = browserTable;
 	this.browserTable.setDataSource(browserModel = new CDBrowserTableDataSource());
-	this.browserTable.setDelegate(new BrowserTableDelegate());
-	this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
+	this.browserTable.setDelegate(browserDelegate = new CDBrowserTableDelegate());
 	this.browserTable.setTarget(this);
 	this.browserTable.setDrawsGrid(false);
 	this.browserTable.setAutoresizesAllColumnsToFit(true);
 	this.browserTable.setDoubleAction(new NSSelector("browserTableViewDidClickTableRow", new Class[] {Object.class}));
-	this.browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
 	this.browserTable.setAutosaveTableColumns(true);
+	this.browserTable.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
+	this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
     }
 
     private NSTableView favoritesTable; // IBOutlet
+    private CDFavoritesTableDelegate favoritesDelegate;
     public void setFavoritesTable(NSTableView favoritesTable) {
 	this.favoritesTable = favoritesTable;
 	this.favoritesTable.setDataSource(CDFavoritesImpl.instance());
-//@todo	this.favoritesTable.setDelegate(new FavoritesTableDelegate());
+	this.favoritesTable.setDelegate(favoritesDelegate = new CDFavoritesTableDelegate());
 	this.favoritesTable.setTarget(this);
 	this.favoritesTable.setDrawsGrid(false);
 	this.favoritesTable.setAutoresizesAllColumnsToFit(true);
@@ -85,8 +88,6 @@ public class CDBrowserController implements Observer {
 	this.favoritesTable.setAutosaveTableColumns(true);
     }
     
-    private CDBrowserTableDataSource browserModel;
-
     private NSComboBox quickConnectPopup;
     public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
 	this.quickConnectPopup = quickConnectPopup;
@@ -253,7 +254,7 @@ public class CDBrowserController implements Observer {
     // BrowserTable delegate methods
     // ----------------------------------------------------------
 
-    private class BrowserTableDelegate {
+    private class CDBrowserTableDelegate {
 
 	public void tableViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
 	    log.debug("tableViewDidClickTableColumn");
@@ -379,9 +380,6 @@ public class CDBrowserController implements Observer {
 	    *The delegate can implemen this method to disallow editing of specific cells.
 	    */
 	public boolean tableViewShouldEditLocation( NSTableView view, NSTableColumn tableColumn, int row) {
-//        String identifier = (String)tableColumn.identifier();
-//	if(identifier.equals("FILENAME"))
-//	    return true;
 	    return false;
 	}
     }
@@ -391,11 +389,7 @@ public class CDBrowserController implements Observer {
     // FavoritesTable delegate methods
     // ----------------------------------------------------------
 
-    private class FavoritesTableDelegate {
-
-	public void tableViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
-	    log.debug("tableViewDidClickTableColumn");
-	}
+    private class CDFavoritesTableDelegate {
 
 	public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn column, int row) {
 	    if(cell instanceof NSTextFieldCell) {
@@ -422,10 +416,10 @@ public class CDBrowserController implements Observer {
 	    *The delegate can implemen this method to disallow editing of specific cells.
 	    */
 	public boolean tableViewShouldEditLocation( NSTableView view, NSTableColumn tableColumn, int row) {
-	    return true;
+//@todo	    return true;
+	    return false;
 	}
     }
-    
 
     // ----------------------------------------------------------
     // 

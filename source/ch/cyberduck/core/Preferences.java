@@ -99,9 +99,6 @@ public abstract class Preferences {//extends Properties {
 	defaults.put("transfer.close", "false");
 	defaults.put("history.size", "10");
 
-	defaults.put("sshtools.home", System.getProperty("user.dir"));
-	System.setProperty("sshtools.home", System.getProperty("user.dir"));
-
         defaults.put("connection.login.name", System.getProperty("user.name"));
         defaults.put("connection.download.folder", System.getProperty("user.home"));
         defaults.put("connection.download.duplicate.ask", "true");
