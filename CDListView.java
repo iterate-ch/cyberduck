@@ -1,5 +1,7 @@
 /* CDListView */
 
+package ch.cyberduck.ui.cocoa;
+
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
@@ -10,13 +12,15 @@ public class CDListView extends NSView {
 
     public CDListView() {
 	super();
+	log.debug("CDListView");
     }
 
     public CDListView(NSRect frameRect) {
 	super(frameRect);
+	log.debug("CDListView(NSRect)");
     }
 
     public void awakeFromNib() {
-	log.debug("***superview of CDListView:"+this.superview().toString());
+	log.debug("CDListView:awakeFromNib");
     }    
 }

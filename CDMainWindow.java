@@ -19,13 +19,15 @@
  *  dkocher@cyberduck.ch
  */
 
+package ch.cyberduck.ui.cocoa;
+
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
 //import java.util.Observer;
 //import java.util.Observable;
 
-//import ch.cyberduck.connection.Status;
+//import ch.cyberduck.core.Status;
 //import ch.cyberduck.ui.ObserverList;
 
 import org.apache.log4j.Logger;

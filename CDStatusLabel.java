@@ -1,4 +1,5 @@
 /* CDStatusLabel */
+package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
@@ -7,6 +8,7 @@ import org.apache.log4j.Appender; //Implement this interface for your own strate
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.Filter;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Layout;
 
@@ -69,7 +71,8 @@ public class CDStatusLabel extends NSTextField implements Appender {
     }
     
     public void doAppend(LoggingEvent event) {
-	this.setStringValue(event.getRenderedMessage());
+	if(event.getLevel().equals(Level.INFO))
+	    this.setStringValue(event.getRenderedMessage());
     }
 
     private class LabelLayout extends Layout {

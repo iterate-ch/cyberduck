@@ -19,8 +19,17 @@
  *  dkocher@cyberduck.ch
  */
 
+package ch.cyberduck.ui.cocoa;
+
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
+
+import java.io.IOException;
+
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.http.*;
+import ch.cyberduck.core.sftp.*;
+import ch.cyberduck.core.ftp.*;
 
 import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.transport.InvalidHostFileException;
@@ -30,12 +39,7 @@ import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
 import com.sshtools.j2ssh.sftp.*;
 import com.sshtools.j2ssh.*;
 
-import ch.cyberduck.connection.Bookmark;
-//import ch.cyberduck.connection.Path;
-//import ch.cyberduck.connection.Status;
-//import ch.cyberduck.connection.Message;
-//import ch.cyberduck.connection.Session;
-
+import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 
 public class CDConnectionController extends NSObject {
@@ -54,6 +58,7 @@ public class CDConnectionController extends NSObject {
     public NSTextField usernameField; /* IBOutlet */
     public NSTextView logTextView; /* IBOutlet */
     public NSProgressIndicator progressIndicator; /* IBOutlet */
+    
     public NSTextField statusLabel; /* IBOutlet */
     public NSTableView browserTable;  /* IBOutlet */
     public NSView connectedListView; /* IBOutlet */
@@ -66,32 +71,54 @@ public class CDConnectionController extends NSObject {
     }
 
     public void awakeFromNib() {
-	org.apache.log4j.BasicConfigurator.configure();
-
 //	log.addAppender(statusLabel);
     }
 
 
     public void connect(NSObject sender) {
-	log.debug("CDConnectionController:connect");
-	Host host = null;
-    //	Path b = new Path();
-	//	if(sender instanceof NSMenu
-	//NSMenuItem item = menu.getSelectedItem()
-	//host = item.
-	if(sender instanceof NSTextField) {
-	    host = new Host(Host.SFTP, ((NSControl)sender).stringValue(), 22, null, null);
+	log.debug("connect");
+	try {
+	    Host host = null;
+	    String protocol = null;
+	    int tag = protocolPopup.selectedItem().tag();
+	    switch(tag) {
+		case(1):
+		    protocol = Session.SFTP;
+		    break;
+		case(2):
+		    protocol = Session.FTP;
+		    break;
+//		case(3):
+//		    protocol = Session.HTTP;
+//		    break;
+	    }
+
+	    //@todo new connection via menu item recent connection
+     //	if(sender instanceof NSMenu
+     //NSMenuItem item = menu.getSelectedItem()
+     //host = item.
+
+	    if(sender instanceof NSTextField) {
+		host = new Host(protocol, ((NSControl)sender).stringValue(), 22, null, null);
+	    }
+	    if(sender instanceof NSButton) {
+		NSApplication.sharedApplication().endSheet(connectionSheet, NSAlertPanel.AlternateReturn);
+		host = new Host(protocol, hostField.stringValue(), 22, usernameField.stringValue(), passwordField.stringValue());
+	    }
+	    
+	    mainWindow.setTitle(host.getName());
+	    Session session = host.getSession(new TransferAction(TransferAction.LIST));
+
+//	    log.debug(session.toString());
 	}
-	if(sender instanceof NSButton) {
-	    NSApplication.sharedApplication().endSheet(connectionSheet, NSAlertPanel.AlternateReturn);
-	    host = new Host(Host.SFTP, hostField.stringValue(), 22, usernameField.stringValue(), passwordField.stringValue());
+	catch(IOException e) {
+	    log.error(e.toString());
 	}
-	mainWindow.setTitle(host.getHostname());
-	connectedListView.addSubview(new CDConnectedItemView(host));
-	connectedListView.setNeedsDisplay(true);
-	Thread session = new Session(host);
-	session.start();
-	
+	//	connectedListView.addSubview(new CDConnectedItemView(host));
+//	connectedListView.setNeedsDisplay(true);
+
+//	Thread session = new Session(host);
+//	session.start();	
 
  //                // Now try to write to a file without creating it!
  //SftpFile file = sftp.openFile("shinning.txt",
@@ -99,21 +126,14 @@ public class CDConnectionController extends NSObject {
  //                          | SftpSubsystemClient.OPEN_WRITE);
 
 
-	/*
-	Bookmark b = new Bookmark();
-	b.setProtocol(Session.FTP);
-	b.setTransferType(com.enterprisedt.net.ftp.FTPTransferType.ASCII);
-	 b.setPort(Session.FTP_PORT);
-	b.setHost(hostField.stringValue());
-	b.setServerPath(pathField.stringValue());
-	b.transfer();
- */
     }
 
     public void disconnect(NSObject sender) {
-	log.debug("CDConnectionController:disconnect");
+	log.debug("disconnect");
     }
 
+
+    /*
     private class Session extends Thread {
 	private Host host;
 	
@@ -170,6 +190,8 @@ public class CDConnectionController extends NSObject {
 	}	
     }
 
+     */
+
     public void closeLoginSheet(NSObject sender) {
 	// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
 	NSApplication.sharedApplication().endSheet(loginSheet, NSAlertPanel.AlternateReturn);
@@ -187,7 +209,7 @@ public class CDConnectionController extends NSObject {
 
 	public CDHostKeyVerification() throws InvalidHostFileException {
 	    super();
-	    log.debug("CDHostKeyVerification()");
+	    log.debug("CDHostKeyVerification");
 	}
 
 	public CDHostKeyVerification(String hostFile) throws InvalidHostFileException {
@@ -195,7 +217,7 @@ public class CDConnectionController extends NSObject {
 	}
 
 	public void onDeniedHost(String hostname) {
-	    log.debug("CDHostKeyVerification():onDeniedHost");
+	    log.debug("onDeniedHost");
 	    NSAlertPanel.beginInformationalAlertSheet(
 				  "Access denied", //title
 				  "OK",// defaultbutton
@@ -226,7 +248,7 @@ public class CDConnectionController extends NSObject {
 	}
 	
 	public void onHostKeyMismatch(String host, String fingerprint, String actualHostKey) {
-	    log.debug("CDHostKeyVerification():onHostKeyMismatch");
+	    log.debug("onHostKeyMismatch");
 	    this.host = host;
 	    this.fingerprint = fingerprint;
 	    NSAlertPanel.beginInformationalAlertSheet(
@@ -262,7 +284,7 @@ public class CDConnectionController extends NSObject {
 
 
 	public void onUnknownHost(String host, String fingerprint) {
-	    log.debug("CDHostKeyVerification():onUnknownHost");
+	    log.debug("onUnknownHost");
 	    this.host = host;
 	    this.fingerprint = fingerprint;
 	    NSAlertPanel.beginInformationalAlertSheet(
@@ -296,13 +318,13 @@ public class CDConnectionController extends NSObject {
 
 
 	public void deniedHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	    log.debug("CDHostKeyVerification():deniedHostSheetDidEnd");
+	    log.debug("deniedHostSheetDidEnd");
 	    sheet.close();
 	    done = true;
 	}
 
 	public void keyMismatchSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	    log.debug("CDHostKeyVerification():keyMismatchSheetDidEnd");
+	    log.debug("keyMismatchSheetDidEnd");
 	    try {
 		if(returncode == NSAlertPanel.DefaultReturn)
 		    allowHost(host, fingerprint, false);
@@ -332,7 +354,7 @@ public class CDConnectionController extends NSObject {
 	}
 
 	public void unknownHostSheetDidEnd(NSWindow sheet, int returncode, NSWindow main) {
-	    log.debug("CDHostKeyVerification():unknownHostSheetDidEnd");
+	    log.debug("unknownHostSheetDidEnd");
 	    try {
 		if(returncode == NSAlertPanel.DefaultReturn)
 		    allowHost(host, fingerprint, false); // allow host

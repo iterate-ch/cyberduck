@@ -1,7 +1,10 @@
 /* CDServerItemView */
+package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
+
+import ch.cyberduck.core.Host;
 
 import org.apache.log4j.Logger;
 
@@ -10,13 +13,19 @@ public class CDConnectedItemView extends NSView {
 
     public NSTextField hostname; /* IBOutlet */
     public NSTextField username; /* IBOutlet */
-    public NSImageView icon; /* IBOutlet */
+//    public NSImageView icon; /* IBOutlet */
 
+    private Host host;
+    
     public CDConnectedItemView(Host host) {
 	super();
-	//this.setHostname(host.getHostname());
-	//this.setUsername(host.getUsername());
+	this.host = host;
 	log.debug("CDConnectedItemView");
+	this.setHostname(host.getName());
+	this.setUsername(host.getUsername());
+	NSTextField f = new NSTextField();
+	f.setStringValue("you are connected to this host.");
+	this.addSubview(f);
     }
 
     public CDConnectedItemView() {
@@ -26,16 +35,20 @@ public class CDConnectedItemView extends NSView {
 
     public CDConnectedItemView(NSRect rect) {
 	super(rect);
-	log.debug("CDConnectedItemView");
+	log.debug("CDConnectedItemView(NSRect)");
     }
 
     public void awakeFromNib() {
 	log.debug("CDConnectedItemView:awakeFromNib");
+
+	NSTextField f = new NSTextField();
+	f.setStringValue("you are connected to this host.");
+	this.addSubview(f);
     }
 
     public void setHostname(String hostname) {
 	log.debug("CDConnectedItemView:setHostname");
-	this.hostname.setStringValue(hostname);
+//	this.hostname.setStringValue(hostname);
     }
 
     public void setIcon(Object icon) {
@@ -44,6 +57,6 @@ public class CDConnectedItemView extends NSView {
 
     public void setUsername(String username) {
 	log.debug("CDConnectedItemView:setUsername");
-	this.username.setStringValue(username);
+//	this.username.setStringValue(username);
     }
 }

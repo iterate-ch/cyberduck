@@ -18,32 +18,42 @@
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
+package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
+import org.apache.log4j.Logger;
+
 public class CDSplitView extends NSSplitView {
+
+    private static Logger log = Logger.getLogger(CDSplitView.class);
 
     public NSView browserView;
     public NSView transferView;
     
     public CDSplitView() {
 	super();
+	log.debug("CDSplitView");
     }
 
     public CDSplitView(NSRect frameRect) {
 	super(frameRect);
+	log.debug("CDSplitView");
     }
 
     public boolean splitViewCanCollapseSubview( NSSplitView sender, NSView subview) {
+	log.debug("CDSplitView:splitViewCanCollapseSubview");
 	return true;
     }
     
     public boolean canCollapseSubview(NSView subview) {
+	log.debug("CDSplitView:canCollapseSubview");
 	return (subview == transferView);
     }
 
     public void awakeFromNib() {
+	log.debug("CDSplitView:awakeFromNib");
 	this.setDelegate(this);
 	this.setVertical(false);
 	this.addSubview(browserView);

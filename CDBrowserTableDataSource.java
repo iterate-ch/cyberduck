@@ -19,6 +19,8 @@
  *  dkocher@cyberduck.ch
  */
 
+package ch.cyberduck.ui.cocoa;
+
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
@@ -29,9 +31,8 @@ import com.sshtools.j2ssh.sftp.SftpFile;
 import java.util.List;
 import java.util.ArrayList;
 
-import ch.cyberduck.ui.ObserverList;
-//import ch.cyberduck.connection.Bookmark;
-//import ch.cyberduck.connection.Path;
+//import ch.cyberduck.core.Bookmark;
+//import ch.cyberduck.core.Path;
 
 import org.apache.log4j.Logger;
 

@@ -19,6 +19,8 @@
  *  dkocher@cyberduck.ch
  */
 
+package ch.cyberduck.ui.cocoa;
+
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
@@ -30,11 +32,12 @@ public class CDMainController extends NSObject {
 
     public CDMainController() {
 	super();
+	org.apache.log4j.BasicConfigurator.configure();
 	log.debug("CDMainController");
     }
 
     public void awakeFromNib() {
-	org.apache.log4j.BasicConfigurator.configure();
+
     }
 
 /*

@@ -1,4 +1,5 @@
 /* CDConnectedScrollView */
+package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
@@ -15,7 +16,7 @@ public class CDConnectedScrollView extends NSScrollView {
 
     public CDConnectedScrollView(NSRect frameRect) {
 	super(frameRect);
-	log.debug("CDConnectedScrollView");
+	log.debug("CDConnectedScrollView(NSRect)");
     }
 
     public void awakeFromNib() {

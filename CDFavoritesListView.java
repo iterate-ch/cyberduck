@@ -1,5 +1,7 @@
 /* CDFavoritesListView */
 
+package ch.cyberduck.ui.cocoa;
+
 import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.*;
 
@@ -10,9 +12,11 @@ public class CDFavoritesListView extends CDListView {
 
     public CDFavoritesListView() {
 	super();
+	log.debug("CDFavoritesListView");
     }
 
     public CDFavoritesListView(NSRect frameRect) {
 	super(frameRect);
+	log.debug("CDFavoritesListView");
     }
 }
