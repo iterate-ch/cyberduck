@@ -34,7 +34,8 @@ mkdir -p $language.lproj
 for nibfile in `ls English.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; do
     echo Copying $nibfile
     cp -R English.lproj/$nibfile $language.lproj/$nibfile
-    nibtool --localizable-strings $language.lproj/$nibfile > $language.lproj/$nib.strings
+    rm -rf $language.lproj/$nibfile/CVS
+    nibtool --localizable-strings $language.lproj/$nibfile > $language.lproj/$nibfile.strings
 done
 
 exit 0
