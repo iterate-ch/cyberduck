@@ -162,18 +162,20 @@ public class CDBrowserTable extends NSTableView {
     }
 	
     public void keyDown(NSEvent event) {
-        String chars = event.characters();
-        double timestamp = event.timestamp();
-		Object ds = this.dataSource();
-		if(ds instanceof CDTableDataSource) {
-			CDTableDataSource model = (CDTableDataSource)ds;
-			for (int i = 0; i < model.numberOfRowsInTableView(this); i++) {
-				NSAttributedString s = (NSAttributedString) model.tableViewObjectValueForLocation(this, this.tableColumnWithIdentifier("FILENAME"), i);
-				String filename = s.stringReference().string();
-				if (filename.toLowerCase().startsWith(chars)) {
-					this.selectRow(i, false);
-					this.scrollRowToVisible(i);
-					return;
+		if(!event.isARepeat()) {
+			String chars = event.characters();
+			//double timestamp = event.timestamp();
+			Object ds = this.dataSource();
+			if(ds instanceof CDTableDataSource) {
+				CDTableDataSource model = (CDTableDataSource)ds;
+				for (int i = 0; i < model.numberOfRowsInTableView(this); i++) {
+					NSAttributedString s = (NSAttributedString) model.tableViewObjectValueForLocation(this, this.tableColumnWithIdentifier("FILENAME"), i);
+					String filename = s.stringReference().string();
+					if (filename.toLowerCase().startsWith(chars)) {
+						this.selectRow(i, false);
+						this.scrollRowToVisible(i);
+						return;
+					}
 				}
 			}
 		}
