@@ -65,10 +65,6 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 		return instance;
 	}
 
-	public int numberOfRowsInTableView(NSTableView tableView) {
-		return this.size();
-	}
-
 	public void sort(NSTableColumn tableColumn, final boolean ascending) {
 		final int higher = ascending ? 1 : -1;
 		final int lower = ascending ? -1 : 1;

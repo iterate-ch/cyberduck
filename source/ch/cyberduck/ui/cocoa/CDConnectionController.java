@@ -24,6 +24,7 @@ import com.apple.cocoa.foundation.*;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.io.File;
 
 import org.apache.log4j.Logger;
 
@@ -34,6 +35,8 @@ import ch.cyberduck.core.*;
  */
 public class CDConnectionController extends CDController {
 	private static Logger log = Logger.getLogger(CDConnectionController.class);
+
+	private static final File HISTORY_FOLDER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
 
 	private static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer)", "");
 	private static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
@@ -53,14 +56,39 @@ public class CDConnectionController extends CDController {
 			bookmarksPopup.addItem(i.next().toString());
 		}
 		this.bookmarksPopup.setTarget(this);
-		this.bookmarksPopup.setAction(new NSSelector("bookmarksSelectionChanged", new Class[]{Object.class}));
+		this.bookmarksPopup.setAction(new NSSelector("bookmarksPopupSelectionChanged", new Class[]{Object.class}));
 	}
 
-	public void bookmarksSelectionChanged(Object sender) {
+	public void bookmarksPopupSelectionChanged(Object sender) {
 		int index = CDBookmarkTableDataSource.instance().indexOf(bookmarksPopup.titleOfSelectedItem());
 		this.bookmarkSelectionDidChange((Host)CDBookmarkTableDataSource.instance().get(index));
 	}
 
+	private NSPopUpButton historyPopup;
+	private CDTableDataSource history;
+
+	public void setHistoryPopup(NSPopUpButton historyPopup) {
+		this.historyPopup = historyPopup;
+		this.history = new CDTableDataSource() {
+			
+		};
+		this.historyPopup.setImage(NSImage.imageNamed("history.tiff"));
+		this.historyPopup.setToolTip(NSBundle.localizedString("History", ""));
+		File[] files = HISTORY_FOLDER.listFiles();
+		for(int i = 0; i < files.length; i++) {
+			Host h = CDBookmarkTableDataSource.instance().importBookmark(files[i]);
+			history.add(h);
+			historyPopup.addItem(h.toString());
+		}
+		this.historyPopup.setTarget(this);
+		this.historyPopup.setAction(new NSSelector("historyPopupSelectionChanged", new Class[]{Object.class}));
+	}
+	
+	public void historyPopupSelectionChanged(Object sender) {
+		int index = history.indexOf(historyPopup.titleOfSelectedItem());
+		this.bookmarkSelectionDidChange((Host)history.get(index));
+	}
+	
 	private Rendezvous rendezvous;
 	private NSPopUpButton rendezvousPopup;
 	

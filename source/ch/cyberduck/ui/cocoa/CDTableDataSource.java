@@ -29,11 +29,15 @@ import java.util.Iterator;
 /**
  * @version $Id$
  */
-public abstract class CDTableDataSource extends ArrayList {//implements NSTableView.DataSource {
+public class CDTableDataSource extends ArrayList {//implements NSTableView.DataSource {
 
-	public abstract int numberOfRowsInTableView(NSTableView tableView);
+	public int numberOfRowsInTableView(NSTableView tableView) {
+		return this.size();
+	}
 
-	public abstract Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row);
+	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
+		return this.get(row);
+	}
 
 	public boolean selectionShouldChangeInTableView(NSTableView tableView) {
 		return true;
@@ -70,7 +74,9 @@ public abstract class CDTableDataSource extends ArrayList {//implements NSTableV
 	private NSTableColumn selectedColumn = null;
 	private boolean sortAscending = true;
 
-	public abstract void sort(NSTableColumn tableColumn, final boolean ascending);
+	public void sort(NSTableColumn tableColumn, final boolean ascending) {
+		// override
+	}
 
 	// ----------------------------------------------------------
 	// TableView Delegate methods
