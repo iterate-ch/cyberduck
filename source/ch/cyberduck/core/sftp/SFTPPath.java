@@ -307,12 +307,8 @@ public class SFTPPath extends Path {
         OutputStream out = null;
         try {
             log.debug("download:" + this.toString());
-            session.check();
-//            this.getLocal().getParentFile().mkdirs();
-			if(this.isDirectory()) {
-				this.getLocal().mkdirs();
-			}
-			else {
+			if(!this.isDirectory()) {
+				session.check();
 				out = new FileOutputStream(this.getLocal().getTemp(), this.status.isResume());
 				if (out == null) {
 					throw new IOException("Unable to buffer data");
@@ -373,16 +369,8 @@ public class SFTPPath extends Path {
         SftpFileOutputStream out = null;
         try {
             log.debug("upload:" + this.toString());
-            session.check();
-			//            if (!this.getParent().exists()) {
-			//                PathFactory.createPath(session, this.getParent().getParent().getAbsolute(), this.getParent().getName()).mkdir(true);
-			//            }
-			if(this.isDirectory()) {
-				if (!this.exists()) {
-					this.mkdir(false);
-				}
-			}
-			else {
+			if(!this.isDirectory()) {
+				session.check();
 				in = new FileInputStream(this.getLocal());
 				if (in == null) {
 					throw new IOException("Unable to buffer data");

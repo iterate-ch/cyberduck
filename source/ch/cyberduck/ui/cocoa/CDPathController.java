@@ -31,6 +31,7 @@ import java.util.Observer;
 
 import org.apache.log4j.Logger;
 
+import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 
@@ -75,7 +76,13 @@ public class CDPathController extends NSObject implements Observer {
                     addItem(p);
                 }
             }
-        }
+//			else if (arg instanceof Message) {
+//				Message msg = (Message)arg;
+//				if (msg.getTitle().equals(Message.CLOSE)) {
+//					this.removeAllItems();
+//				}
+//			}
+		}
     }
 
     public int numberOfItems() {

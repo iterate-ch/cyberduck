@@ -42,7 +42,7 @@ public class CDQueueController extends NSObject implements Observer {
     private Observer callback;
 
     private NSToolbar toolbar;
-
+	
     public static CDQueueController instance() {
         log.debug("instance");
         if (null == instance) {
@@ -58,6 +58,43 @@ public class CDQueueController extends NSObject implements Observer {
         instances.addObject(this);
     }
 
+
+	/*
+	 public int checkForRunningTransfers() {
+		Iterator iter = CDQueueList.instance().iterator();
+		while(iter.hasNext()) {
+			ch.cyberduck.core.Queue q = (ch.cyberduck.core.Queue)iter.next();
+			if(q.isRunning()) {
+				NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Transfers in progress", ""), //title
+													 NSBundle.localizedString("Cancel", ""), // defaultbutton
+													 NSBundle.localizedString("Quit", ""), //alternative button
+													 null, //other button
+													 this.window(), //window
+													 this, //delegate
+													 new NSSelector("checkForRunningTransfersSheetDidEnd",
+																	new Class[]{NSWindow.class, int.class, Object.class}),
+													 null, // dismiss selector
+													 null, // context
+													 NSBundle.localizedString("There are items in the queue currently being transferred. Quit anyway?", "") // message
+													 );
+				return NSApplication.TerminateLater; //break
+			}
+		}
+		return NSApplication.TerminateNow;
+	}
+	 */
+	
+	public void checkForRunningTransfersSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+        sheet.orderOut(null);
+        if (returncode == NSAlertPanel.AlternateReturn) {
+			this.stopAllButtonClicked(null);
+			NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
+		}
+        if (returncode == NSAlertPanel.DefaultReturn) {
+			NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
+		}
+	}
+	
     public boolean windowShouldClose(NSWindow sender) {
         log.debug("windowShouldClose" + sender);
         return true;
@@ -138,7 +175,7 @@ public class CDQueueController extends NSObject implements Observer {
 
         this.queueTable.sizeToFit();
     }
-
+	
     public void startItem(Queue queue) {
         this.startItem(queue, false);
     }
@@ -285,7 +322,7 @@ public class CDQueueController extends NSObject implements Observer {
         }
         if (itemIdentifier.equals("Open")) {
             item.setLabel(NSBundle.localizedString("Open", ""));
-            item.setPaletteLabel(NSBundle.localizedString("Open with default application", ""));
+            item.setPaletteLabel(NSBundle.localizedString("Open", ""));
             item.setImage(NSImage.imageNamed("open.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("openButtonClicked", new Class[]{Object.class}));
@@ -333,6 +370,16 @@ public class CDQueueController extends NSObject implements Observer {
             }
         }
     }
+
+	public void stopAllButtonClicked(Object sender) {
+		Iterator iter = CDQueueList.instance().iterator();
+		while(iter.hasNext()) {
+			Queue q = (Queue)iter.next();
+			if(q.isRunning()) {
+				q.cancel();
+			}
+		}
+	}
 
     public void resumeButtonClicked(Object sender) {
         NSEnumerator enum = queueTable.selectedRowEnumerator();
@@ -468,6 +515,7 @@ public class CDQueueController extends NSObject implements Observer {
             "Remove",
             "Clear",
             NSToolbarItem.FlexibleSpaceItemIdentifier,
+			"Open",
             "Show"
         });
     }
@@ -480,7 +528,7 @@ public class CDQueueController extends NSObject implements Observer {
             "Remove",
             "Clear",
             "Show",
-			//"Open",
+			"Open",
             NSToolbarItem.CustomizeToolbarItemIdentifier,
             NSToolbarItem.SpaceItemIdentifier,
             NSToolbarItem.SeparatorItemIdentifier,
@@ -549,6 +597,9 @@ return true;
          */
         }
         if (identifier.equals("Show") || identifier.equals("revealButtonClicked:")) {
+            return this.queueTable.numberOfSelectedRows() == 1;
+        }
+        if (identifier.equals("Open") || identifier.equals("openButtonClicked:")) {
             return this.queueTable.numberOfSelectedRows() == 1;
         }
         if (identifier.equals("Clear")) {

@@ -56,7 +56,7 @@ public class CDPreferencesImpl extends Preferences {
             log.debug("setProperty(" + property + ", " + value + ")");
         }
         this.props.setObjectForKey(value, property);
-        this.save();
+        //this.save();
     }
 
     public void setProperty(String property, boolean v) {
@@ -69,7 +69,7 @@ public class CDPreferencesImpl extends Preferences {
         }
         //Sets the value of the default identified by defaultName in the standard application domain. Setting a default has no effect on the value returned by the objectForKey method if the same key exists in a domain that precedes the application domain in the search list.
         this.props.setObjectForKey(value, property);
-        this.save();
+        //this.save();
     }
 
     public void setProperty(String property, int v) {
@@ -78,7 +78,7 @@ public class CDPreferencesImpl extends Preferences {
         }
         String value = String.valueOf(v);
         this.props.setObjectForKey(value, property);
-        this.save();
+        //this.save();
     }
 
     public void setDefaults() {

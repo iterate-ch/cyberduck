@@ -90,7 +90,7 @@ do
             shift;
             force=true
         ;;
-        *)  echo "Option [$1] not one of  [--langauge, --nib]";       # Error (!)
+        *)  echo "Option [$1] not one of  [--language, --nib]";       # Error (!)
             exit 1
         ;; # Abort Script Now
     esac;

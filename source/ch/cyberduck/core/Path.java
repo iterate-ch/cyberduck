@@ -231,10 +231,13 @@ public abstract class Path {
     public abstract void changePermissions(Permission perm, boolean recursive);
 
     public boolean exists() {
+		boolean exists;
         if (this.isRoot()) {
-            return true;
+            exists = true;
         }
-        return /*this.getParent().exists() &&*/ this.getParent().list(false, true).contains(this);
+		exists = /*this.getParent().exists() &&*/ this.getParent().list(false, true).contains(this);
+		log.info(this.getName()+" exists:"+exists);
+        return exists;
     }
 
     public boolean isFile() {

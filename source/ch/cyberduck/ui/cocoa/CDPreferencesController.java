@@ -574,7 +574,7 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
         panel.setCanChooseFiles(false);
         panel.setCanChooseDirectories(true);
         panel.setAllowsMultipleSelection(false);
-        panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window, this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+        panel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }
 
     public void openPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {

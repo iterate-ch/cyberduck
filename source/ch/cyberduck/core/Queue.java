@@ -226,8 +226,9 @@ public class Queue extends Observable implements Observer { //Thread {
                     log.debug("Iterating over childs of " + r);
                     Iterator childs = r.getChilds(Queue.this.kind).iterator();
                     while (childs.hasNext() && !Queue.this.isCanceled()) {
-                        log.debug("Adding child to queue...");
-                        Queue.this.jobs.add((Path)childs.next());
+						Path child = (Path)childs.next();
+						log.debug("Adding "+child.getName()+" as child to queue.");
+                        Queue.this.jobs.add(child);
                     }
                 }
 

@@ -22,6 +22,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.Observer;
 import java.util.Observable;
 import java.util.HashMap;
@@ -542,16 +543,19 @@ public class CDMainController extends NSObject {
         }
     }
 
-    public boolean applicationShouldTerminate(NSApplication app) {
+    public int applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
+		return this.checkForMountedBrowsers(app);
+    }
+	
+	public void applicationWillTerminate(NSNotification notification) {
         //Writing version info
         this.saveVersionInfo();
         //Writing usage info
         Preferences.instance().setProperty("uses", Integer.parseInt(Preferences.instance().getProperty("uses")) + 1);
-        return this.checkForMountedBrowsers(app);
-//        return true;
-    }
-	
+		Preferences.instance().save();
+	}
+
     // ----------------------------------------------------------
     // AppleScript support (NOT TESTED - FOR FURTURE USE)
     // ----------------------------------------------------------
@@ -586,54 +590,42 @@ public class CDMainController extends NSObject {
         log.debug("insertInOrderedDocumentsAtIndex" + doc);
         doc.window().makeKeyAndOrderFront(null);
     }
-
-    private boolean checkForMountedBrowsers(NSApplication app) {
+	
+    private int checkForMountedBrowsers(NSApplication app) {
         NSArray windows = app.windows();
         int count = windows.count();
-        boolean needsConfirm = false;
-
         // Determine if there are any open connections
-        while (!needsConfirm && (0 != count--)) {
+        while (0 != count--) {
             NSWindow window = (NSWindow)windows.objectAtIndex(count);
-            if (window.isVisible()) { //@workaround
-                CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-                if (null != controller) {
-                    if (controller.isConnected()) {
-                        needsConfirm = true;
-                    }
-                }
-            }
-        }
-
-        if (needsConfirm) {
-            int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
-                    NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
-                    NSBundle.localizedString("Review...", ""), //default
-                    NSBundle.localizedString("Quit Anyway", ""), //alternate
-                    NSBundle.localizedString("Cancel", "")); //other
-
-            if (choice == NSAlertPanel.OtherReturn) {
-				// Cancel
-                return false;
-            }
-            else if (choice != NSAlertPanel.AlternateReturn) {
-				// Review unsaved; Quit Anyway falls through
-                count = windows.count();
-                while (0 != count--) {
-                    NSWindow window = (NSWindow)windows.objectAtIndex(count);
-                    CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-                    if (null != controller) {
-                        window.makeKeyAndOrderFront(null);
-                        if (false == controller.windowShouldClose(window)) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-        return true;
+			CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+			if (null != controller) {
+				if (controller.isConnected()) {
+					int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
+													   NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
+													   NSBundle.localizedString("Review...", ""), //default
+													   NSBundle.localizedString("Quit Anyway", ""), //alternate
+													   NSBundle.localizedString("Cancel", "")); //other
+					if (choice == NSAlertPanel.AlternateReturn) {
+						// Quit
+						return NSApplication.TerminateNow;
+					}
+					if (choice == NSAlertPanel.OtherReturn) {
+						// Cancel
+						return NSApplication.TerminateCancel;
+					}
+					if (choice == NSAlertPanel.DefaultReturn) {
+						// Review
+						// if at least one window reqested to terminate later, we shall wait
+						CDBrowserController.reviewMountedBrowsers(true);
+						return NSApplication.TerminateLater;
+					}
+				}
+			}
+		}
+//		return CDQueueController.instance().checkForRunningTransfers();
+		return NSApplication.TerminateNow;
     }
-
+	
     private String readVersionInfo() {
         if (VERSION_FILE.exists()) {
             NSData plistData = new NSData(VERSION_FILE);

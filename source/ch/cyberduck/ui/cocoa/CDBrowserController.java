@@ -611,7 +611,7 @@ public class CDBrowserController extends NSObject implements Observer {
             browserTable.setIndicatorImage(browserModel.isSortedAscending() ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
             browserModel.sort(selectedColumn, browserModel.isSortedAscending());
             browserTable.reloadData();
-            browserTable.setNeedsDisplay(true);
+//            browserTable.setNeedsDisplay(true);
             toolbar.validateVisibleItems();
             window.makeFirstResponder(browserTable);
         }
@@ -656,6 +656,8 @@ public class CDBrowserController extends NSObject implements Observer {
             }
             else if (msg.getTitle().equals(Message.CLOSE)) {
                 window().setDocumentEdited(false);
+//				browserModel.clear();
+//				browserTable.reloadData();
             }
             else if (msg.getTitle().equals(Message.START)) {
                 progressIndicator.startAnimation(this);
@@ -792,7 +794,7 @@ public class CDBrowserController extends NSObject implements Observer {
                     panel.setPrompt(NSBundle.localizedString("Download", ""));
                     panel.setTitle("Download");
                     panel.setCanCreateDirectories(true);
-                    panel.beginSheetForDirectory(System.getProperty("user.home"),
+                    panel.beginSheetForDirectory(null,
                             path.getLocal().getName(),
                             this.window(),
                             this,
@@ -847,7 +849,7 @@ public class CDBrowserController extends NSObject implements Observer {
         panel.setCanChooseDirectories(true);
         panel.setCanChooseFiles(true);
         panel.setAllowsMultipleSelection(true);
-        panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, this.window(), this, new NSSelector("uploadPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+        panel.beginSheetForDirectory(null, null, null, this.window(), this, new NSSelector("uploadPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }
 
     public void uploadPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
@@ -863,7 +865,6 @@ public class CDBrowserController extends NSObject implements Observer {
                 while (enumerator.hasMoreElements()) {
                     Path item = parent.copy(session);
                     item.setPath(parent.getAbsolute(), new Local((String)enumerator.nextElement()));
-                    //                    Queue queue = new Queue(item, Queue.KIND_UPLOAD);
                     q.addRoot(item);
                 }
                 QueueList.instance().addItem(q);
@@ -970,14 +971,15 @@ public class CDBrowserController extends NSObject implements Observer {
     }
 
     /**
-     * @return True if the unmount process has finished, false if the user has to agree first
+     * @return True if the unmount process has finished, false if the user has to agree first to close the connection
      */
-    public boolean unmount(NSSelector selector, Host context) {
+    public boolean unmount(NSSelector selector, Object context) {
         log.debug("unmount");
+		//this.window().makeKeyAndOrderFront(null);
         if (this.isConnected()) {
             NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + pathController.workdir().getSession().getHost().getHostname(), //title
                     NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
-                    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+                    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
                     null, //other button
                     this.window(), //window
                     this, //delegate
@@ -991,13 +993,39 @@ public class CDBrowserController extends NSObject implements Observer {
         return true;
     }
 
-    public void unmountSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-        sheet.orderOut(null);
-        if (returncode == NSAlertPanel.DefaultReturn) {
-            pathController.workdir().getSession().close();
-        }
-    }
-
+	public static void reviewMountedBrowsers(boolean proceed) {
+		// Determine if there are any open connections
+		if(proceed) {
+			NSArray windows = NSApplication.sharedApplication().windows();
+			int count = windows.count();
+			log.debug("Number of open windows:"+count);
+			int terminateReturnValue = NSApplication.TerminateNow;
+			while (0 != count--) {
+				NSWindow window = (NSWindow)windows.objectAtIndex(count);
+				CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+				if (null != controller) {
+					log.debug("Window with index number "+count+" has a controller attached");
+					if(!controller.unmount(new NSSelector("terminateReviewSheetDidEnd",
+												   new Class[]{NSWindow.class, int.class, Object.class}),
+									null
+									)) {
+						return; 
+					}
+				}
+			}
+		}
+		// also check if the transfer queue has items running
+		/*
+		if(CDQueueController.instance().checkForRunningTransfers() == NSApplication.TerminateLater) {
+			// the transfer queue must be cancled first and wil then send the application terminate answer event itself
+			NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
+			return;
+		}
+		 */
+		// no running transfer, we quit if the user didn't choose to !procceed
+		NSApplication.sharedApplication().replyToApplicationShouldTerminate(proceed);
+	}
+	
     // ----------------------------------------------------------
     // Window delegate methods
     // ----------------------------------------------------------
@@ -1008,12 +1036,35 @@ public class CDBrowserController extends NSObject implements Observer {
         );
     }
 
+	public void unmountSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+		sheet.orderOut(null);
+		if (returncode == NSAlertPanel.DefaultReturn) {
+			pathController.workdir().getSession().close();
+		}
+        if (returncode == NSAlertPanel.AlternateReturn) {
+			//
+        }
+	}
+
     public void closeSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         this.unmountSheetDidEnd(sheet, returncode, contextInfo);
         if (returncode == NSAlertPanel.DefaultReturn) {
             this.window().close();
         }
+        if (returncode == NSAlertPanel.AlternateReturn) {
+			//
+        }
     }
+	
+	public void terminateReviewSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+        this.closeSheetDidEnd(sheet, returncode, contextInfo);
+        if (returncode == NSAlertPanel.DefaultReturn) {
+			CDBrowserController.reviewMountedBrowsers(true);
+        }
+        if (returncode == NSAlertPanel.AlternateReturn) {
+			CDBrowserController.reviewMountedBrowsers(false);
+        }
+	}
 
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose");
@@ -1372,7 +1423,7 @@ public class CDBrowserController extends NSObject implements Observer {
             log.debug("tableViewAcceptDrop:row:" + row + ",operation:" + operation);
             NSPasteboard infoPboard = info.draggingPasteboard();
             if (infoPboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-                NSArray filesList = (NSArray)infoPboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
+                NSArray filesList = (NSArray)infoPboard.propertyListForType(NSPasteboard.FilenamesPboardType);
 				Queue q = new Queue(Queue.KIND_UPLOAD);
 				Session session = pathController.workdir().getSession().copy();
 				for (int i = 0; i < filesList.count(); i++) {

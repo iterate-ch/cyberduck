@@ -55,6 +55,11 @@ public abstract class Validator {
             return false;
         }
 		if(path.isDirectory()) {
+			if(Queue.KIND_DOWNLOAD == kind)
+				path.getLocal().mkdirs();
+			if(Queue.KIND_UPLOAD == kind)
+				if(!path.exists())
+					path.mkdir(false);
 			return true; // directory won't need validation, will get created if missing otherwise ignored
 		}
         if (resumeRequested) {

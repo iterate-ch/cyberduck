@@ -19,11 +19,6 @@
 #import "Editor.h"
 #import "ODBEditor.h"
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
-{
-    return JNI_VERSION_1_4;
-}
-
 // Simple utility to convert java strings to NSStrings
 NSString *convertToNSString(JNIEnv *env, jstring javaString)
 {

@@ -188,7 +188,7 @@ public class FTPPath extends Path {
             this.getParent().invalidate();
         }
         catch (FTPException e) {
-            session.log("FTP Error: " + e.getMessage(), Message.ERROR);
+			session.log("FTP Error: " + e.getMessage(), Message.ERROR);
         }
         catch (IOException e) {
             session.log("IO Error: " + e.getMessage(), Message.ERROR);
@@ -280,12 +280,8 @@ public class FTPPath extends Path {
     public synchronized void download() {
         try {
             log.debug("download:" + this.toString());
-            session.check();
-			if(this.isDirectory()) {
-				this.getLocal().mkdirs();
-			}
-			//            this.getLocal().getParentFile().mkdirs();
-			else {
+			if(!this.isDirectory()) {
+				session.check();
 				if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
 					if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
 						this.downloadASCII();
@@ -462,16 +458,8 @@ public class FTPPath extends Path {
     public synchronized void upload() {
         log.debug("upload:" + this.toString());
         try {
-            session.check();
-//            if (!this.getParent().exists()) {
-//                PathFactory.createPath(session, this.getParent().getParent().getAbsolute(), this.getParent().getName()).mkdir(true);
-//            }
-			if(this.isDirectory()) {
-				if (!this.exists()) {
-					this.mkdir(false);
-				}
-			}
-			else {
+			if(!this.isDirectory()) {
+				session.check();
 				if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
 					if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
 						this.uploadASCII();
