@@ -289,7 +289,7 @@
     <first-group selected-file="file://$PROJECT_DIR$/Changelog.txt">
       <entry file="file://$PROJECT_DIR$/Changelog.txt" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="5" column="5" selection-start="175" selection-end="175" vertical-scroll-proportion="0.075566754">
+          <state line="5" column="5" selection-start="175" selection-end="175" vertical-scroll-proportion="0.07566204">
             <folding />
           </state>
         </provider>
@@ -450,26 +450,26 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="3" y="22" width="1280" height="961" extended-state="0" />
+    <frame x="3" y="22" width="1280" height="960" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
-      <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="-1" />
+      <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="2" />
-      <window_info id="CVS File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="-1" />
+      <window_info id="CVS File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="7" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.4" order="0" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.2913961" order="0" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.2857143" order="0" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="3" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.3298611" order="1" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="sliding" type="sliding" visible="false" weight="0.33" order="8" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
-      <window_info id="Cvs" active="true" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.5900474" order="5" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="0" />
       <window_info id="EJB" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="4" />
+      <window_info id="Cvs" active="true" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.5900474" order="5" />
     </layout>
   </component>
   <component name="VCS.FileViewConfiguration">
@@ -544,7 +544,7 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Changelog.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="5" selection-start="175" selection-end="175" vertical-scroll-proportion="0.075566754">
+        <state line="5" column="5" selection-start="175" selection-end="175" vertical-scroll-proportion="0.07566204">
           <folding />
         </state>
       </provider>

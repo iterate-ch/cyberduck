@@ -8,10 +8,17 @@
 	<string>Cyberduck-2.2beta3.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.2b4
+- Fixed a bug that with some FTP servers the permissions could not be modified
+- When addding a transfer to the queue it is highlighted
+- Improved login process
+- Updated Japanese localization
+
 2.2b3
 - Caching folder listings
 - Auto-refresh the folder listing after uploading a file
 - Sending 'LIST -a' to list directories with FTP
+- Fixed a bug where entries in the queue would be deleted too early
 
 2.2b2
 - Updated Japanese localization
@@ -25,6 +32,7 @@
 - Keychain integration
 - New file transfer manager
 - Full Unicode support
+- Choose character encoding for file listings
 - Support for public key authentication (SSH)
 - Live filtering directory listings
 - Improved Rendezvous support (jmDNS 0.2)
@@ -36,7 +44,11 @@
 - Portuguese Localization
 - Spanish Localization
 - French Localization
-- Various improvements and bug fixes
+- Option to disable 'CHMOD' after upload
+- Option to disable sending the 'SYST' command
+- When clicking the dock icon and now window is active, a new browser window is opened
+- Bookmarks can be rearranged
+- When login credentials aren't reasonable, ask before trying to login
 
 2.1
 - Bookmarks can now be edited

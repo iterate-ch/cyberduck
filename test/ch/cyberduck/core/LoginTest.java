@@ -31,29 +31,41 @@ public class LoginTest extends TestCase {
 	}
 
 	public void testLoginReasonable() {
-		Login login = new Login("example.net", "dkocher", "changeme", true);
+		Login login = new Login("example.net", 
+								"dkocher", 
+								"changeme");
 		assertTrue(login.hasReasonableValues());
 		login.setUsername(null);
 		assertFalse(login.hasReasonableValues());
 		login.setPassword(null);
 		assertFalse(login.hasReasonableValues());
 	}
-		
+	
+	public void testLoginWithoutUsername() {
+		Login login = new Login("example.net",
+								null, //login should insert default username
+								"changeme");
+		assertTrue(login.hasReasonableValues());
+	}
+
 	public void testLoginWithoutPass() {
-		Login login = new Login("example.net", "dkocher", null, false);
+		Login login = new Login("example.net",
+								"dkocher", 
+								null);
 		assertFalse(login.hasReasonableValues());
 	}
-	
+
 	public void testLoginAnonymous1() {
 		Login login = new Login("example.net", 
-		Preferences.instance().getProperty("ftp.anonymous.name"), 
-		Preferences.instance().getProperty("ftp.anonymous.pass"), 
-		false);
+								Preferences.instance().getProperty("ftp.anonymous.name"), 
+								Preferences.instance().getProperty("ftp.anonymous.pass"));
 		assertTrue(login.hasReasonableValues());
 	}
 
 	public void testLoginAnonymous2() {
-		Login login = new Login("example.net", null, null, false);
+		Login login = new Login("example.net", 
+								Preferences.instance().getProperty("ftp.anonymous.name"), 
+								null);
 		assertTrue(login.hasReasonableValues());
 	}
 	

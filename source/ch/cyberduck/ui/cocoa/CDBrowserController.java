@@ -557,18 +557,20 @@ public class CDBrowserController implements Observer {
 		else if(arg instanceof Message) {
 			Message msg = (Message) arg;
 			if (msg.getTitle().equals(Message.ERROR)) {
-				NSAlertPanel.beginCriticalAlertSheet(
-				    NSBundle.localizedString("Error", "Alert sheet title"), //title
-				    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-				    null, //alternative button
-				    null, //other button
-				    this.window, //docWindow
-				    null, //modalDelegate
-				    null, //didEndSelector
-				    null, // dismiss selector
-				    null, // context
-				    (String) msg.getContent() // message
-				);
+				//if(this.window.isVisible()) {
+					NSAlertPanel.beginCriticalAlertSheet(
+														 NSBundle.localizedString("Error", "Alert sheet title"), //title
+														 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+														 null, //alternative button
+														 null, //other button
+														 this.window, //docWindow
+														 null, //modalDelegate
+														 null, //didEndSelector
+														 null, // dismiss selector
+														 null, // context
+														 (String) msg.getContent() // message
+														 );
+				//}
 				this.progressIndicator.stopAnimation(this);
 				this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
 				this.statusLabel.setObjectValue(msg.getContent());
