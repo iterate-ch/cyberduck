@@ -24,12 +24,13 @@ public abstract class LoginController {
 
 //	protected Login login;
 
-	/**
-	 * Call this to allow the user to reenter the new login credentials.
-	 * A concrete sublcass could eg. display a panel.
-	 * @return true If we whould try again with new login
-	 * @param explanation Any additional information why the login failed.
-	 */
-	public abstract boolean promptUser(Login login, String explanation);
+    /**
+     * Call this to allow the user to reenter the new login credentials.
+     * A concrete sublcass could eg. display a panel.
+     *
+     * @param explanation Any additional information why the login failed.
+     * @return true If we whould try again with new login
+     */
+    public abstract boolean promptUser(Login login, String explanation);
 
 }

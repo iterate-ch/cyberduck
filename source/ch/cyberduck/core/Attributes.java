@@ -35,11 +35,10 @@ public class Attributes extends Observable {
 	private static Logger log = Logger.getLogger(Attributes.class);
 
 	private Date modified = new Date();
-	private String owner = null;
-	private String group = null;
+	private String owner = "Unknown";
+	private String group = "Unknown";
 	private int type = Path.FILE_TYPE;
 	protected Permission permission = new Permission();
-	private boolean visible = true;
 	
 	public Attributes() {
 		super();

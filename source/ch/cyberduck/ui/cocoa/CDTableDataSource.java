@@ -27,43 +27,45 @@ import com.apple.cocoa.application.NSTableView;
  */
 public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 
-	public abstract int numberOfRowsInTableView(NSTableView tableView);
+    public abstract int numberOfRowsInTableView(NSTableView tableView);
 
 //	public abstract void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row);
 
-	public abstract Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row);
+    public abstract Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row);
 
-	// ----------------------------------------------------------
-	// TableView Delegate methods
-	// ----------------------------------------------------------
+    // ----------------------------------------------------------
+    // TableView Delegate methods
+    // ----------------------------------------------------------
 
-	/**	Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
-	 * The delegate can implement this method to disallow selection of particular rows.
-	 */
-	public boolean tableViewShouldSelectRow(NSTableView aTableView, int rowIndex) {
-		return true;
-	}
+    /**
+     * Returns true to permit aTableView to select the row at rowIndex, false to deny permission.
+     * The delegate can implement this method to disallow selection of particular rows.
+     */
+    public boolean tableViewShouldSelectRow(NSTableView aTableView, int rowIndex) {
+        return true;
+    }
 
 
-	/**	Returns true to permit aTableView to edit the cell at rowIndex in aTableColumn, false to deny permission.
-	 *The delegate can implemen this method to disallow editing of specific cells.
-	 */
-	public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-		return false;
-	}
+    /**
+     * Returns true to permit aTableView to edit the cell at rowIndex in aTableColumn, false to deny permission.
+     * The delegate can implemen this method to disallow editing of specific cells.
+     */
+    public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
+        return false;
+    }
 
-	// ----------------------------------------------------------
-	//	NSDraggingSource
-	// ----------------------------------------------------------
+    // ----------------------------------------------------------
+    //	NSDraggingSource
+    // ----------------------------------------------------------
 
-	public boolean ignoreModifierKeysWhileDragging() {
-		return false;
-	}
+    public boolean ignoreModifierKeysWhileDragging() {
+        return false;
+    }
 
-	public int draggingSourceOperationMaskForLocal(boolean local) {
+    public int draggingSourceOperationMaskForLocal(boolean local) {
 //		if (local)
 //			return NSDraggingInfo.DragOperationNone;
 //		else
-			return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
-	}
+        return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
+    }
 }

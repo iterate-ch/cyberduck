@@ -18,8 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
-
 import com.apple.cocoa.application.NSDraggingInfo;
 import com.apple.cocoa.application.NSPasteboard;
 import com.apple.cocoa.application.NSTableColumn;
@@ -31,129 +29,132 @@ import java.net.URL;
 
 import org.apache.log4j.Logger;
 
+import ch.cyberduck.core.*;
+
 /**
  * @version $Id$
  */
 public class CDQueueTableDataSource extends CDTableDataSource {
-	private static Logger log = Logger.getLogger(CDQueueTableDataSource.class);
+    private static Logger log = Logger.getLogger(CDQueueTableDataSource.class);
 
-	private int queuePboardChangeCount = NSPasteboard.pasteboardWithName("QueuePBoard").changeCount();
+    private int queuePboardChangeCount = NSPasteboard.pasteboardWithName("QueuePBoard").changeCount();
 
-	public int numberOfRowsInTableView(NSTableView tableView) {
-		return CDQueuesImpl.instance().size();
-	}
-	
-	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-		if(row < numberOfRowsInTableView(tableView)) {
-			String identifier = (String)tableColumn.identifier();
-			if(identifier.equals("DATA")) {
-				return CDQueuesImpl.instance().getItem(row);
-			}
-			if(identifier.equals("PROGRESS")) {
-				return CDQueuesImpl.instance().getItem(row);
-			}
-			throw new IllegalArgumentException("Unknown identifier: " + identifier);
-		}
-		return null;
-	}
-	
-	// ----------------------------------------------------------
-	// Drop methods
-	// ----------------------------------------------------------
+    public int numberOfRowsInTableView(NSTableView tableView) {
+        return CDQueuesImpl.instance().size();
+    }
 
-	public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-		log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
-		if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
-			return NSDraggingInfo.DragOperationCopy;
+    public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
+        if (row < numberOfRowsInTableView(tableView)) {
+            String identifier = (String) tableColumn.identifier();
+            if (identifier.equals("DATA")) {
+                return CDQueuesImpl.instance().getItem(row);
+            }
+            if (identifier.equals("PROGRESS")) {
+                return CDQueuesImpl.instance().getItem(row);
+            }
+            throw new IllegalArgumentException("Unknown identifier: " + identifier);
+        }
+        return null;
+    }
+
+    // ----------------------------------------------------------
+    // Drop methods
+    // ----------------------------------------------------------
+
+    public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+        log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
+        if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
+            return NSDraggingInfo.DragOperationCopy;
 //			return NSDraggingInfo.DragOperationGeneric;
-		}
-		NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-		if (this.queuePboardChangeCount < pboard.changeCount()) {
-			if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-				log.debug("tableViewValidateDrop:DragOperationGeneric");
-				// means the drag operation can be desided by the table view
-				// the tableview will draw rectangles or lines
+        }
+        NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+        if (this.queuePboardChangeCount < pboard.changeCount()) {
+            if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+                log.debug("tableViewValidateDrop:DragOperationGeneric");
+                // means the drag operation can be desided by the table view
+                // the tableview will draw rectangles or lines
 //				return NSDraggingInfo.DragOperationGeneric;
-				return NSDraggingInfo.DragOperationCopy;
-			}
-		}
-		log.debug("tableViewValidateDrop:DragOperationNone");
-		return NSDraggingInfo.DragOperationNone;
-	}
+                return NSDraggingInfo.DragOperationCopy;
+            }
+        }
+        log.debug("tableViewValidateDrop:DragOperationNone");
+        return NSDraggingInfo.DragOperationNone;
+    }
 
-	/**
-	 * Invoked by tableView when the mouse button is released over a table view that previously decided to allow a drop.
-	 * @param info contains details on this dragging operation.
-	 * @param row The proposed location is row and action is operation.
-	 * The data source should
-	 * incorporate the data from the dragging pasteboard at this time.
-	 */
-	public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-		log.debug("tableViewAcceptDrop:row:" + row + ",operation:" + operation);
-		if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
-			String droppedText = info.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
-			if (droppedText != null) {
-				log.info("NSPasteboard.StringPboardType:" + droppedText);
-				try {
-					URL url = new URL(droppedText);
-					String file = url.getFile();
-					if (file.length() > 1) {
-						Host h = new Host(url.getProtocol(), 
-										  url.getHost(), 
-										  url.getPort(), 
-										  new Login(url.getHost(), url.getUserInfo(), null));
-						Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
-						// we assume a file has an extension
-						if (null != p.getExtension()) {
-							Queue q = new Queue(p, Queue.KIND_DOWNLOAD);
-							if (row != -1) {
-								CDQueuesImpl.instance().addItem(q, row);
-								tableView.reloadData();
-								tableView.selectRow(row, false);
-							}
-							else {
-								CDQueuesImpl.instance().addItem(q);
-								tableView.reloadData();
-								tableView.selectRow(tableView.numberOfRows() - 1, false);
-							}
-							CDQueueController.instance().startItem(q);
-							return true;
-						}
-					}
-				}
-				catch (java.net.MalformedURLException e) {
-					log.error(e.getMessage());
-				}
-			}
-		}
-		// we are only interested in our private pasteboard with a description of the queue
-		// encoded in as a xml.
-		NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-		if (this.queuePboardChangeCount < pboard.changeCount()) {
-			log.debug("availableTypeFromArray:QueuePBoardType: " + pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
-			if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-				Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
-				log.debug("tableViewAcceptDrop:" + o);
-				if (o != null) {
-					NSArray elements = (NSArray) o;
-					for (int i = 0; i < elements.count(); i++) {
-						NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-						if (row != -1) {
-							CDQueuesImpl.instance().addItem(new Queue(dict), row);
-							tableView.reloadData();
-							tableView.selectRow(row, false);
-						}
-						else {
-							CDQueuesImpl.instance().addItem(new Queue(dict));
-							tableView.reloadData();
-							tableView.selectRow(tableView.numberOfRows() - 1, false);
-						}
-					}
-					this.queuePboardChangeCount++;
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+    /**
+     * Invoked by tableView when the mouse button is released over a table view that previously decided to allow a drop.
+     *
+     * @param info contains details on this dragging operation.
+     * @param row  The proposed location is row and action is operation.
+     *             The data source should
+     *             incorporate the data from the dragging pasteboard at this time.
+     */
+    public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+        log.debug("tableViewAcceptDrop:row:" + row + ",operation:" + operation);
+        if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
+            String droppedText = info.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
+            if (droppedText != null) {
+                log.info("NSPasteboard.StringPboardType:" + droppedText);
+                try {
+                    URL url = new URL(droppedText);
+                    String file = url.getFile();
+                    if (file.length() > 1) {
+                        Host h = new Host(url.getProtocol(),
+                                url.getHost(),
+                                url.getPort(),
+                                new Login(url.getHost(), url.getUserInfo(), null));
+                        Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
+                        // we assume a file has an extension
+                        if (null != p.getExtension()) {
+                            Queue q = new Queue(p, Queue.KIND_DOWNLOAD);
+                            if (row != -1) {
+                                CDQueuesImpl.instance().addItem(q, row);
+                                tableView.reloadData();
+                                tableView.selectRow(row, false);
+                            }
+                            else {
+                                CDQueuesImpl.instance().addItem(q);
+                                tableView.reloadData();
+                                tableView.selectRow(tableView.numberOfRows() - 1, false);
+                            }
+                            CDQueueController.instance().startItem(q);
+                            return true;
+                        }
+                    }
+                }
+                catch (java.net.MalformedURLException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
+        // we are only interested in our private pasteboard with a description of the queue
+        // encoded in as a xml.
+        NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+        if (this.queuePboardChangeCount < pboard.changeCount()) {
+            log.debug("availableTypeFromArray:QueuePBoardType: " + pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
+            if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+                Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
+                log.debug("tableViewAcceptDrop:" + o);
+                if (o != null) {
+                    NSArray elements = (NSArray) o;
+                    for (int i = 0; i < elements.count(); i++) {
+                        NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+                        if (row != -1) {
+                            CDQueuesImpl.instance().addItem(new Queue(dict), row);
+                            tableView.reloadData();
+                            tableView.selectRow(row, false);
+                        }
+                        else {
+                            CDQueuesImpl.instance().addItem(new Queue(dict));
+                            tableView.reloadData();
+                            tableView.selectRow(tableView.numberOfRows() - 1, false);
+                        }
+                    }
+                    this.queuePboardChangeCount++;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

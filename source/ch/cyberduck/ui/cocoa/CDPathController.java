@@ -18,10 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Codec;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
-
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSPopUpButton;
 import com.apple.cocoa.application.NSView;
@@ -34,74 +30,79 @@ import java.util.Observer;
 
 import org.apache.log4j.Logger;
 
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
+
 /**
  * @version $Id$
  */
 public class CDPathController implements Observer {
-	private static Logger log = Logger.getLogger(CDPathController.class);
+    private static Logger log = Logger.getLogger(CDPathController.class);
 
-	private NSPopUpButton combo;
-	private List items = new ArrayList();
+    private NSPopUpButton combo;
+    private List items = new ArrayList();
 
-	public CDPathController(NSPopUpButton combo) {
-		log.debug("CDPathController");
-		this.combo = combo;
-		this.combo.setTarget(this);
-		this.combo.setAction(new NSSelector("selectionChanged", new Class[]{Object.class}));
-	}
+    public CDPathController(NSPopUpButton combo) {
+        log.debug("CDPathController");
+        this.combo = combo;
+        this.combo.setTarget(this);
+        this.combo.setAction(new NSSelector("selectionChanged", new Class[]{Object.class}));
+    }
 
-	public NSView view() {
-		return this.combo;
-	}
+    public NSView view() {
+        return this.combo;
+    }
 
-	private Path workdir;
+    private Path workdir;
 
-	public Path workdir() {
-		return this.workdir;
-	}
-		
-	public void update(Observable o, Object arg) {
-		log.debug("update:" + o + "," + arg);
-		if (o instanceof Session) {
-			if (arg instanceof Path) {
-				this.workdir = (Path) arg;
-				this.removeAllItems();
-				// current path has index 0
-				this.addItem(this.workdir);
-				// root path has index numberOfItems()-1
-				Path p = this.workdir;
-				while (!p.isRoot()) {
-					p = p.getParent();
-					this.addItem(p);
-				}
-			}
-		}
-	}
+    public Path workdir() {
+        return this.workdir;
+    }
 
-	public int numberOfItems() {
-		return items.size();
-	}
+    public void update(Observable o, Object arg) {
+        log.debug("update:" + o + "," + arg);
+        if (o instanceof Session) {
+            if (arg instanceof Path) {
+                this.workdir = (Path) arg;
+                this.removeAllItems();
+                // current path has index 0
+                this.addItem(this.workdir);
+                // root path has index numberOfItems()-1
+                Path p = this.workdir;
+                while (!p.isRoot()) {
+                    p = p.getParent();
+                    this.addItem(p);
+                }
+            }
+        }
+    }
 
-	public void selectionChanged(Object sender) {
-		Path p = (Path) items.get(combo.indexOfSelectedItem());
-		p.list();
-	}
+    public int numberOfItems() {
+        return items.size();
+    }
 
-	public void addItem(Path p) {
-		this.items.add(p);
-		this.combo.addItem(p.getAbsolute());
-		if (p.isRoot())
-			this.combo.itemAtIndex(this.combo.numberOfItems() - 1).setImage(NSImage.imageNamed("disk.tiff"));
-		else
-			this.combo.itemAtIndex(this.combo.numberOfItems() - 1).setImage(NSImage.imageNamed("folder16.tiff"));
-	}
+    public void selectionChanged(Object sender) {
+        Path p = (Path) items.get(combo.indexOfSelectedItem());
+        p.list();
+    }
 
-	public Path getItem(int row) {
-		return (Path) items.get(row);
-	}
+    public void addItem(Path p) {
+        this.items.add(p);
+        this.combo.addItem(p.getAbsolute());
+        if (p.isRoot()) {
+            this.combo.itemAtIndex(this.combo.numberOfItems() - 1).setImage(NSImage.imageNamed("disk.tiff"));
+        }
+        else {
+            this.combo.itemAtIndex(this.combo.numberOfItems() - 1).setImage(NSImage.imageNamed("folder16.tiff"));
+        }
+    }
 
-	public void removeAllItems() {
-		this.items.clear();
-		this.combo.removeAllItems();
-	}
+    public Path getItem(int row) {
+        return (Path) items.get(row);
+    }
+
+    public void removeAllItems() {
+        this.items.clear();
+        this.combo.removeAllItems();
+    }
 }

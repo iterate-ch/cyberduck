@@ -18,67 +18,66 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Codec;
-import ch.cyberduck.core.Path;
-
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 
 import org.apache.log4j.Logger;
 
+import ch.cyberduck.core.Path;
+
 /**
  * @version $Id$
  */
 public class CDFolderController {
-	private static Logger log = Logger.getLogger(CDFolderController.class);
+    private static Logger log = Logger.getLogger(CDFolderController.class);
 
-	//    private Path parent;
+    //    private Path parent;
 
-	private NSWindow window;
+    private NSWindow window;
 
-	public void setWindow(NSWindow window) {
-		this.window = window;
-		this.window.setDelegate(this);
-	}
+    public void setWindow(NSWindow window) {
+        this.window = window;
+        this.window.setDelegate(this);
+    }
 
-	private NSTextField folderField; /* IBOutlet */
+    private NSTextField folderField; /* IBOutlet */
 
-	public void setFolderField(NSTextField folderField) {
-		this.folderField = folderField;
-	}
+    public void setFolderField(NSTextField folderField) {
+        this.folderField = folderField;
+    }
 
-	public NSWindow window() {
-		return this.window;
-	}
+    public NSWindow window() {
+        return this.window;
+    }
 
-	private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
-	public CDFolderController() {
-		instances.addObject(this);
-		if (false == NSApplication.loadNibNamed("Folder", this)) {
-			log.fatal("Couldn't load Folder.nib");
-		}
-	}
+    public CDFolderController() {
+        instances.addObject(this);
+        if (false == NSApplication.loadNibNamed("Folder", this)) {
+            log.fatal("Couldn't load Folder.nib");
+        }
+    }
 
-	public void windowWillClose(NSNotification notification) {
-		instances.removeObject(this);
-	}
+    public void windowWillClose(NSNotification notification) {
+        instances.removeObject(this);
+    }
 
-	public void closeSheet(Object sender) {
-		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-		NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
-	}
+    public void closeSheet(Object sender) {
+        // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
+        NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
+    }
 
-	public void newfolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-		log.debug("newfolderSheetDidEnd");
-		sheet.orderOut(null);
-		switch (returncode) {
-			case (NSAlertPanel.DefaultReturn):
-				((Path) contextInfo).mkdir(folderField.stringValue());
-				break;
-			case (NSAlertPanel.AlternateReturn):
-				break;
-		}
-	}
+    public void newfolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
+        log.debug("newfolderSheetDidEnd");
+        sheet.orderOut(null);
+        switch (returncode) {
+            case (NSAlertPanel.DefaultReturn):
+                ((Path) contextInfo).mkdir(folderField.stringValue());
+                break;
+            case (NSAlertPanel.AlternateReturn):
+                break;
+        }
+    }
 }

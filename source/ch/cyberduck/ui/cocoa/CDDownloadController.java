@@ -18,8 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
-
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
@@ -30,104 +28,102 @@ import java.net.URL;
 
 import org.apache.log4j.Logger;
 
+import ch.cyberduck.core.*;
+
 /**
  * @version $Id$
  */
 public class CDDownloadController {
-	private static Logger log = Logger.getLogger(CDDownloadController.class);
+    private static Logger log = Logger.getLogger(CDDownloadController.class);
 
-	private NSWindow window;
+    private NSWindow window;
 
-	public void setWindow(NSWindow window) {
-		this.window = window;
-		this.window.setDelegate(this);
-	}
+    public void setWindow(NSWindow window) {
+        this.window = window;
+        this.window.setDelegate(this);
+    }
 
-	public NSWindow window() {
-		return this.window;
-	}
+    public NSWindow window() {
+        return this.window;
+    }
 
-	private NSTextField urlField;
+    private NSTextField urlField;
 
-	public void setUrlField(NSTextField urlField) {
-		this.urlField = urlField;
-	}
+    public void setUrlField(NSTextField urlField) {
+        this.urlField = urlField;
+    }
 
-	private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
-	public CDDownloadController() {
-		instances.addObject(this);
-		if (false == NSApplication.loadNibNamed("Download", this)) {
-			log.fatal("Couldn't load Download.nib");
-		}
-		this.window().makeKeyAndOrderFront(null);
-	}
+    public CDDownloadController() {
+        instances.addObject(this);
+        if (false == NSApplication.loadNibNamed("Download", this)) {
+            log.fatal("Couldn't load Download.nib");
+        }
+        this.window().makeKeyAndOrderFront(null);
+    }
 
-	public void awakeFromNib() {
-		log.debug("awakeFromNib");
-		CDQueueController controller = CDQueueController.instance();
-		controller.window().makeKeyAndOrderFront(null);
-		NSApplication.sharedApplication().beginSheet(
-		    this.window, //sheet
-		    controller.window(),
-		    this, //modalDelegate
-		    new NSSelector(
-		        "downloadSheetDidEnd",
-		        new Class[]{NSWindow.class, int.class, Object.class}
-		    ), // did end selector
-		    null); //contextInfo
-	}
+    public void awakeFromNib() {
+        log.debug("awakeFromNib");
+        CDQueueController controller = CDQueueController.instance();
+        controller.window().makeKeyAndOrderFront(null);
+        NSApplication.sharedApplication().beginSheet(this.window, //sheet
+                controller.window(),
+                this, //modalDelegate
+                new NSSelector("downloadSheetDidEnd",
+                        new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
+                null); //contextInfo
+    }
 
-	public void windowWillClose(NSNotification notification) {
-		instances.removeObject(this);
-	}
+    public void windowWillClose(NSNotification notification) {
+        instances.removeObject(this);
+    }
 
-	public void closeSheet(Object sender) {
-		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-		NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
-	}
+    public void closeSheet(Object sender) {
+        // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
+        NSApplication.sharedApplication().endSheet(this.window, ((NSButton) sender).tag());
+    }
 
-	public void downloadSheetDidEnd(NSWindow sheet, int returncode, Object context) {
-		log.debug("loginSheetDidEnd");
-		this.window.orderOut(null);
-		switch (returncode) {
-			case (NSAlertPanel.DefaultReturn):
-				try {
-					URL url = new URL(urlField.stringValue());
-					Host host = new Host(url.getProtocol(), 
-										 url.getHost(), 
-										 url.getPort(), 
-										 new Login(url.getHost(), url.getUserInfo(), null));
-					Session session = SessionFactory.createSession(host);
-					String file = url.getFile();
-					if (file.length() > 1) {
-						Path path = PathFactory.createPath(SessionFactory.createSession(host), file);
-						Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
-						CDQueuesImpl.instance().addItem(queue);
-						CDQueueController.instance().startItem(queue);
-					}
-					else {
-						throw new MalformedURLException("URL must contain reference to a file");
-					}
-				}
-				catch (MalformedURLException e) {
-					NSAlertPanel.beginCriticalAlertSheet(
-					    "Error", //title
-					    "OK", // defaultbutton
-					    null, //alternative button
-					    null, //other button
-					    this.window, //docWindow
-					    null, //modalDelegate
-					    null, //didEndSelector
-					    null, // dismiss selector
-					    null, // context
-					    e.getMessage() // message
-					);
+    public void downloadSheetDidEnd(NSWindow sheet, int returncode, Object context) {
+        log.debug("loginSheetDidEnd");
+        this.window.orderOut(null);
+        switch (returncode) {
+            case (NSAlertPanel.DefaultReturn):
+                try {
+                    URL url = new URL(urlField.stringValue());
+                    Host host = new Host(url.getProtocol(),
+                            url.getHost(),
+                            url.getPort(),
+                            new Login(url.getHost(), url.getUserInfo(), null));
+                    Session session = SessionFactory.createSession(host);
+                    String file = url.getFile();
+                    if (file.length() > 1) {
+                        Path path = PathFactory.createPath(SessionFactory.createSession(host), file);
+                        Queue queue = new Queue(path, Queue.KIND_DOWNLOAD);
+                        CDQueuesImpl.instance().addItem(queue);
+                        CDQueueController.instance().startItem(queue);
+                    }
+                    else {
+                        throw new MalformedURLException("URL must contain reference to a file");
+                    }
+                }
+                catch (MalformedURLException e) {
+                    NSAlertPanel.beginCriticalAlertSheet("Error", //title
+                            "OK", // defaultbutton
+                            null, //alternative button
+                            null, //other button
+                            this.window, //docWindow
+                            null, //modalDelegate
+                            null, //didEndSelector
+                            null, // dismiss selector
+                            null, // context
+                            e.getMessage() // message
+                    );
 
-				}
-				break;
-			case (NSAlertPanel.AlternateReturn):
-				break;
-		}
-	}
+                }
+                break;
+            case (NSAlertPanel.AlternateReturn):
+                break;
+        }
+    }
 }

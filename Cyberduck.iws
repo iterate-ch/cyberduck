@@ -55,7 +55,7 @@
         <option name="USE_DATE" value="false" />
       </value>
     </option>
-    <option name="SHOW_OUTPUT" value="false" />
+    <option name="SHOW_OUTPUT" value="true" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="UPDATE_GROUP_BY_PACKAGES" value="false" />
     <option name="ADD_WATCH_INDEX" value="0" />
@@ -286,10 +286,88 @@
     <option name="HIDE_WARNINGS" value="false" />
   </component>
   <component name="FileEditorManager" split-orientation="horizontal" split-proportion="0.5">
-    <first-group selected-file="file://$PROJECT_DIR$/Changelog.txt">
+    <first-group selected-file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser/NTFTPEntryParser.java">
       <entry file="file://$PROJECT_DIR$/Changelog.txt" pinned="false">
         <provider selected="true" editor-type-id="text-editor">
-          <state line="5" column="5" selection-start="175" selection-end="175" vertical-scroll-proportion="0.07566204">
+          <state line="5" column="5" selection-start="175" selection-end="175" vertical-scroll-proportion="0.07782101">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/Credits.html" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Attributes.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="43" column="16" selection-start="1406" selection-end="1406" vertical-scroll-proportion="0.15776081">
+            <folding>
+              <marker date="1077463285000" expanded="true" signature="2148:2173" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="2605:2629" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="3132:3157" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="3082:3104" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="2653:2677" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="2176:2231" placeholder="/**...*/" />
+              <marker date="1077463285000" expanded="true" signature="2710:2768" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="2076:2111" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="3191:3213" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="2477:2504" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="2541:2571" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="1776:1970" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="937:1063" placeholder="/**...*/" />
+              <marker date="1077463285000" expanded="true" signature="1974:2041" placeholder="/**...*/" />
+              <marker date="1077463285000" expanded="true" signature="1394:1409" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="2796:2849" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="2406:2434" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="2270:2376" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="1449:1732" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="2888:2950" placeholder="{...}" />
+              <marker date="1077463285000" expanded="true" signature="3241:3266" placeholder="{...}" />
+            </folding>
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Bookmarks.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="31" column="22" selection-start="1061" selection-end="1061" vertical-scroll-proportion="0.33333334">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Codec.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="25" column="13" selection-start="840" selection-end="840" vertical-scroll-proportion="0.33333334">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/History.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="18" column="3" selection-start="716" selection-end="716" vertical-scroll-proportion="0.27480915">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/DefaultFTPFileListParser.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="79" column="19" selection-start="3692" selection-end="3692" vertical-scroll-proportion="0.8167939">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser/FTPFileEntryParserFactory.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="60" column="17" selection-start="2848" selection-end="2848" vertical-scroll-proportion="0.66412216">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser/NTFTPEntryParser.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="9" column="69" selection-start="389" selection-end="1169" vertical-scroll-proportion="0.13740458">
             <folding />
           </state>
         </provider>
@@ -320,16 +398,29 @@
     <option name="ADD_LABEL_ON_UNIT_TEST" value="true" />
     <option name="MARK_EXTERNAL_CHANGES_AS_UP_TO_DATE" value="true" />
   </component>
-  <component name="PackagesPane" />
+  <component name="PackagesPane">
+    <expanded_node url="" module="Cyberduck" type="module" />
+  </component>
   <component name="ProjectPane">
     <expanded_node url="file://$PROJECT_DIR$" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source" module="Cyberduck" type="directory" />
+    <expanded_node url="" module="Cyberduck" type="module" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/org/apache" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/org" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/org/apache/commons/net" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/ch/cyberduck/core" module="Cyberduck" type="directory" />
+    <expanded_node url="file://$PROJECT_DIR$/source/org/apache/commons" module="Cyberduck" type="directory" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" splitterProportion="0.5">
       <flattenPackages />
       <showMembers />
+      <showModules />
       <showLibraryContents />
-      <flattenPackages />
       <hideEmptyPackages />
       <showStructure PackagesPane="false" ProjectPane="false" />
       <autoscrollToSource />
@@ -402,7 +493,7 @@
       <LaunchServer>false</LaunchServer>
     </configuration>
     <configuration name="&lt;template&gt;" type="WebLogic Instance" default="true" selected="false">
-      <option name="WEBLOGIC_INSTANCE_CONFIGURATION_NAME" />
+      <setting name="WEBLOGIC_INSTANCE_CONFIGURATION_NAME" value="" />
     </configuration>
   </component>
   <component name="SelectInManager" />
@@ -450,22 +541,22 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="3" y="22" width="1280" height="960" extended-state="0" />
+    <frame x="1050" y="234" width="1280" height="960" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="2" />
-      <window_info id="CVS File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="7" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.4" order="0" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.2857143" order="0" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="3" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.28003246" order="0" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.3298611" order="1" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="sliding" type="sliding" visible="false" weight="0.33" order="8" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="2" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
+      <window_info id="CVS File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="3" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.4" order="0" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="0" />
       <window_info id="EJB" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="4" />
@@ -542,9 +633,87 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Credits.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Changelog.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="5" selection-start="175" selection-end="175" vertical-scroll-proportion="0.07566204">
+        <state line="5" column="5" selection-start="175" selection-end="175" vertical-scroll-proportion="0.07782101">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Attributes.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="16" selection-start="1406" selection-end="1406" vertical-scroll-proportion="0.15776081">
+          <folding>
+            <marker date="1077463285000" expanded="true" signature="2148:2173" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="2605:2629" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="3132:3157" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="3082:3104" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="2653:2677" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="2176:2231" placeholder="/**...*/" />
+            <marker date="1077463285000" expanded="true" signature="2710:2768" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="2076:2111" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="3191:3213" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="2477:2504" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="2541:2571" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="1776:1970" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="937:1063" placeholder="/**...*/" />
+            <marker date="1077463285000" expanded="true" signature="1974:2041" placeholder="/**...*/" />
+            <marker date="1077463285000" expanded="true" signature="1394:1409" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="2796:2849" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="2406:2434" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="2270:2376" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="1449:1732" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="2888:2950" placeholder="{...}" />
+            <marker date="1077463285000" expanded="true" signature="3241:3266" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Bookmarks.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="31" column="22" selection-start="1061" selection-end="1061" vertical-scroll-proportion="0.33333334">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/History.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="3" selection-start="716" selection-end="716" vertical-scroll-proportion="0.27480915">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Codec.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="13" selection-start="840" selection-end="840" vertical-scroll-proportion="0.33333334">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/DefaultFTPFileListParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="79" column="19" selection-start="3692" selection-end="3692" vertical-scroll-proportion="0.8167939">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser/NTFTPEntryParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="69" selection-start="389" selection-end="1169" vertical-scroll-proportion="0.13740458">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/org/apache/commons/net/ftp/parser/FTPFileEntryParserFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="60" column="17" selection-start="2848" selection-end="2848" vertical-scroll-proportion="0.66412216">
           <folding />
         </state>
       </provider>

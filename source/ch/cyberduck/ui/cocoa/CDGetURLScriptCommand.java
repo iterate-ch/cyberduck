@@ -17,8 +17,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
-
 import com.apple.cocoa.foundation.NSScriptCommand;
 import com.apple.cocoa.foundation.NSScriptCommandDescription;
 
@@ -26,45 +24,47 @@ import java.net.URL;
 
 import org.apache.log4j.Logger;
 
+import ch.cyberduck.core.*;
+
 /**
  * @author Stuart A. Malone
  */
 public class CDGetURLScriptCommand extends NSScriptCommand {
-	private static Logger log = Logger.getLogger(CDGetURLScriptCommand.class);
+    private static Logger log = Logger.getLogger(CDGetURLScriptCommand.class);
 
-	public CDGetURLScriptCommand(NSScriptCommandDescription commandDescription) {
-		super(commandDescription);
-	}
+    public CDGetURLScriptCommand(NSScriptCommandDescription commandDescription) {
+        super(commandDescription);
+    }
 
-	public Object performDefaultImplementation() {
-		String arg = (String) this.directParameter();
-		log.debug("Received URL from Apple Event: " + arg);
-		try {
-			URL url = new URL(arg);
-			String file = url.getFile();
-			log.debug("File:" + file);
-			Host h = new Host(url.getProtocol(), 
-							  url.getHost(), 
-							  url.getPort(), 
-							  new Login(url.getHost(), url.getUserInfo(), null));
-			if (file.length() > 1) {
-				Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
-				// we assume a file has an extension
-				if (null != p.getExtension()) {
-					log.debug("Assume downloading");
-					Queue queue = new Queue(p, Queue.KIND_DOWNLOAD);
-					CDQueuesImpl.instance().addItem(queue);
-					CDQueueController.instance().startItem(queue);
-					return null;
-				}
-			}
-			log.debug("Assume browsing");
-			CDBrowserController controller = new CDBrowserController();
-			controller.mount(h);
-		}
-		catch (java.net.MalformedURLException e) {
-			log.error(e.getMessage());
-		}
-		return null;
-	}
+    public Object performDefaultImplementation() {
+        String arg = (String) this.directParameter();
+        log.debug("Received URL from Apple Event: " + arg);
+        try {
+            URL url = new URL(arg);
+            String file = url.getFile();
+            log.debug("File:" + file);
+            Host h = new Host(url.getProtocol(),
+                    url.getHost(),
+                    url.getPort(),
+                    new Login(url.getHost(), url.getUserInfo(), null));
+            if (file.length() > 1) {
+                Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
+                // we assume a file has an extension
+                if (null != p.getExtension()) {
+                    log.debug("Assume downloading");
+                    Queue queue = new Queue(p, Queue.KIND_DOWNLOAD);
+                    CDQueuesImpl.instance().addItem(queue);
+                    CDQueueController.instance().startItem(queue);
+                    return null;
+                }
+            }
+            log.debug("Assume browsing");
+            CDBrowserController controller = new CDBrowserController();
+            controller.mount(h);
+        }
+        catch (java.net.MalformedURLException e) {
+            log.error(e.getMessage());
+        }
+        return null;
+    }
 }

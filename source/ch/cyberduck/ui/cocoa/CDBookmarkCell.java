@@ -18,8 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-
 import com.apple.cocoa.application.NSGraphics;
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSView;
@@ -28,33 +26,29 @@ import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRect;
 import com.apple.cocoa.foundation.NSSize;
 
+import ch.cyberduck.core.Host;
+
 public class CDBookmarkCell extends CDTableCell {
-	private Host bookmark;
+    private Host bookmark;
 //	private static final NSImage image = NSImage.imageNamed("cyberduck-document.icns");
 
-	public void setObjectValue(Object bookmark) {
-		this.bookmark = (Host) bookmark;
-	}
-	
-	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
-		super.drawInteriorWithFrameInView(cellFrame, controlView);
-		if(bookmark != null) {
-			
-			NSPoint cellPoint = cellFrame.origin();
-			NSSize cellSize = cellFrame.size();
-			
-			NSGraphics.drawAttributedString(
-											new NSAttributedString(bookmark.getNickname(), boldFont),
-											new NSRect(cellPoint.x(), cellPoint.y() + 1, cellSize.width() - 5, cellSize.height())
-											);
-			NSGraphics.drawAttributedString(
-											new NSAttributedString(bookmark.getLogin().getUsername(), tinyFont),
-											new NSRect(cellPoint.x(), cellPoint.y() + 14, cellSize.width() - 5, cellSize.height())
-											);
-			NSGraphics.drawAttributedString(
-											new NSAttributedString(bookmark.getHostname()+bookmark.getDefaultPath(), tinyFont),
-											new NSRect(cellPoint.x(), cellPoint.y() + 27, cellSize.width() - 5, cellSize.height())
-											);
-		}
-	}
+    public void setObjectValue(Object bookmark) {
+        this.bookmark = (Host) bookmark;
+    }
+
+    public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
+        super.drawInteriorWithFrameInView(cellFrame, controlView);
+        if (bookmark != null) {
+
+            NSPoint cellPoint = cellFrame.origin();
+            NSSize cellSize = cellFrame.size();
+
+            NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(), boldFont),
+                    new NSRect(cellPoint.x(), cellPoint.y() + 1, cellSize.width() - 5, cellSize.height()));
+            NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getLogin().getUsername(), tinyFont),
+                    new NSRect(cellPoint.x(), cellPoint.y() + 14, cellSize.width() - 5, cellSize.height()));
+            NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getHostname() + bookmark.getDefaultPath(), tinyFont),
+                    new NSRect(cellPoint.x(), cellPoint.y() + 27, cellSize.width() - 5, cellSize.height()));
+        }
+    }
 }

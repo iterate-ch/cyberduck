@@ -27,62 +27,63 @@ import java.util.Map;
  * @version $Id$
  */
 public abstract class History {
-	private Map data = new HashMap();
+    private Map data = new HashMap();
 
-	public History() {
-		this.load();
-	}
+    public History() {
+        this.load();
+    }
 
-	public abstract void save();
+    public abstract void save();
 
-	public abstract void load();
+    public abstract void load();
 
-	public void addItem(Host h) {
-		if (this.size() >= Integer.parseInt(Preferences.instance().getProperty("history.size"))) {
-			if (this.size() > 0)
-				this.removeItem(0);
-		}
-		if(Integer.parseInt(Preferences.instance().getProperty("history.size")) > 0) {
-			this.data.put(h.getHostname(), h);
-			this.save();
-		}
-	}
+    public void addItem(Host h) {
+        if (this.size() >= Integer.parseInt(Preferences.instance().getProperty("history.size"))) {
+            if (this.size() > 0) {
+                this.removeItem(0);
+            }
+        }
+        if (Integer.parseInt(Preferences.instance().getProperty("history.size")) > 0) {
+            this.data.put(h.getHostname(), h);
+            this.save();
+        }
+    }
 
-	public void removeItem(int index) {
-		this.data.remove(this.getItem(index).getHostname());
-		this.save();
-	}
+    public void removeItem(int index) {
+        this.data.remove(this.getItem(index).getHostname());
+        this.save();
+    }
 
-	public void removeItem(Host item) {
-		this.data.remove(item.getHostname());
-		this.save();
-	}
+    public void removeItem(Host item) {
+        this.data.remove(item.getHostname());
+        this.save();
+    }
 
-	public Host getItem(int index) {
-		Host h = (Host) this.values().toArray()[index];
-		return this.getItem(h.getHostname());
-	}
+    public Host getItem(int index) {
+        Host h = (Host) this.values().toArray()[index];
+        return this.getItem(h.getHostname());
+    }
 
-	public Host getItem(String key) {
-		Host result = (Host) this.data.get(key);
+    public Host getItem(String key) {
+        Host result = (Host) this.data.get(key);
 //		if (null == result)
 //			throw new IllegalArgumentException("No host with key " + key + " in History.");
-		return result;
-	}
+        return result;
+    }
 
-	public void clear() {
-		this.data.clear();
-	}
+    public void clear() {
+        this.data.clear();
+    }
 
-	public int size() {
-		return this.data.size();
-	}
+    public int size() {
+        return this.data.size();
+    }
 
-	public Collection values() {
-		return data.values();
-	}
+    public Collection values() {
+        return data.values();
+    }
 
-	public Iterator iterator() {
-		return this.values().iterator();
-	}
+    public Iterator iterator() {
+        return this.values().iterator();
+    }
 }

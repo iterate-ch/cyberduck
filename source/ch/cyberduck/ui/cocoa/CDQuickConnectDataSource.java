@@ -18,48 +18,48 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-
 import com.apple.cocoa.application.NSComboBox;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
+
+import ch.cyberduck.core.Host;
 
 /**
  * @version $Id$
  */
 public class CDQuickConnectDataSource { //implements NSComboBox.DataSource, NSTableView.DataSource {
 
-	// ----------------------------------------------------------
-	// NSComboBox.DataSource
-	// ----------------------------------------------------------
+    // ----------------------------------------------------------
+    // NSComboBox.DataSource
+    // ----------------------------------------------------------
 
-	public int numberOfItemsInComboBox(NSComboBox combo) {
-		return CDHistoryImpl.instance().size();
-	}
+    public int numberOfItemsInComboBox(NSComboBox combo) {
+        return CDHistoryImpl.instance().size();
+    }
 
-	public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-		Host h = (Host) CDHistoryImpl.instance().values().toArray()[row];
-		return h.getHostname();
-	}
+    public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
+        Host h = (Host) CDHistoryImpl.instance().values().toArray()[row];
+        return h.getHostname();
+    }
 
-	// ----------------------------------------------------------
-	// NSTableView.DataSource
-	// ----------------------------------------------------------
+    // ----------------------------------------------------------
+    // NSTableView.DataSource
+    // ----------------------------------------------------------
 
-	public int numberOfRowsInTableView(NSTableView tableView) {
-		return CDHistoryImpl.instance().values().size();
-	}
-	
-	//getValue()
-	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-		if(row < this.numberOfRowsInTableView(tableView)) {
-			String identifier = (String) tableColumn.identifier();
-			if (identifier.equals("URL")) {
-				Host h = (Host) CDHistoryImpl.instance().getItem(row);
-				return h.getHostname();
-			}
-			throw new IllegalArgumentException("Unknown identifier: " + identifier);
-		}
-		return null;
-	}
+    public int numberOfRowsInTableView(NSTableView tableView) {
+        return CDHistoryImpl.instance().values().size();
+    }
+
+    //getValue()
+    public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
+        if (row < this.numberOfRowsInTableView(tableView)) {
+            String identifier = (String) tableColumn.identifier();
+            if (identifier.equals("URL")) {
+                Host h = (Host) CDHistoryImpl.instance().getItem(row);
+                return h.getHostname();
+            }
+            throw new IllegalArgumentException("Unknown identifier: " + identifier);
+        }
+        return null;
+    }
 }
