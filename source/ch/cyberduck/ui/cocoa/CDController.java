@@ -93,7 +93,8 @@ public abstract class CDController {
         synchronized(this) {
             while(this.hasSheet()) {
                 try {
-                    if(Thread.currentThread().getName().equals("main")) {
+                    if(Thread.currentThread().getName().equals("main")
+                    || Thread.currentThread().getName().equals("AWT-AppKit")) {
                         log.warn("Waiting on main thread; will run modal!");
                         NSApplication app = NSApplication.sharedApplication();
                         modalSession = NSApplication.sharedApplication().beginModalSessionForWindow(
@@ -114,25 +115,6 @@ public abstract class CDController {
         }
     }
 
-//    public void waitForSheetDisplay(NSWindow sheet) {
-//        log.debug("waitForSheetDisplay:"+sheet);
-//        synchronized(this) {
-//            while(this.window().attachedSheet() != sheet) {
-//                try {
-//                    if(Thread.currentThread().getName().equals("main")) {
-//                        return;
-//                    }
-//                    log.debug("Sleeping:waitForSheetDisplay...");
-//                    this.wait();
-//                    log.debug("Awakened:waitForSheetDisplay");
-//                }
-//                catch(InterruptedException e) {
-//                    log.error(e.getMessage());
-//                }
-//            }
-//        }
-//    }
-
     public void sheetWithoutTargetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         this.endSheet(sheet, returncode);
         sheet.orderOut(null);
@@ -146,14 +128,6 @@ public abstract class CDController {
                             NSWindow.class, int.class, Object.class
                         }), null); // end selector);
     }
-//
-//    public void beginSheet(NSWindow sheet, NSSelector endSelector) {
-//        this.beginSheet(sheet, endSelector, null);
-//    }
-//
-//    public void beginSheet(NSWindow sheet, NSSelector endSelector, Object contextInfo) {
-//        this.beginSheet(sheet, this, endSelector, contextInfo);
-//    }
 
     public void beginSheet(final NSWindow sheet, final Object delegate, final NSSelector endSelector, final Object contextInfo) {
         log.debug("beginSheet:"+sheet);

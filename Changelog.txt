@@ -5,6 +5,7 @@ Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
 2.4.1
+- [Feature] FTP using TLS support (using AUTH TLS as in draft-murray-auth-ftp-ssl-16) for the control channel (sending login credentials) and optionally the data channel (file listings and transfers) if the server is capable of.
 - [Feature] History of recently connected hosts in connection dialog
 - [Feature] History of recently connected hosts in bookmark menu
 - [Feature] Selecting remote server timezone in synchronization dialog
@@ -16,11 +17,19 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] Apply button in File Info dialog
 - [Feature] Duplicate files on server
 
+2.4.1
+- [Localize] Hungarian Localization
+- [Bugfix] Modification date changed when uploading files from the external editor
+- [Bugfix] Browser window could lock up when reconnecting and login was needed
+- [Feature] Disconnect item in menubar
+
 2.4
 - [Localize] Swedish Localization
 - [Feature] Additional encryption ciphers supported (SFTP)
 - [Feature] Action dropdown menu in toolbar
 - [Feature] Added Jedit X to the list of supported editors (http://www.artman21.net/product/JeditX/)
+- [Feature] Added mi to the list of supported editors (http://mimikaki.net/)
+- [Feature] Added Smultron to the list of supported editors (http://smultron.sourceforge.net/)
 - [Bugfix] Rendezvous implementation updated 
 - [Bugfix] Folder to synchronize not selectable in some cases
 - [Bugfix] Fallback to default directory when specified directory doesn't exist
