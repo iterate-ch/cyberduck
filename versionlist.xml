@@ -10,7 +10,7 @@
         <string>Changelog:
 2.4b3
 - [Feature] Preliminary AppleScript support (see .scpt script samples)
-- [Feature] Quick Connect field accepts URLs as input
+- [Feature] Quick Connect field and hostname field in connection dialog accept URLs as input
 - [Feature] Reordering bookmarks using drag and drop
 - [Bugfix] Deleting more than 10 files at once
 - [Bugfix] Typing in transfer window causes crash
@@ -20,6 +20,7 @@
 - [Bugfix] Incompatiblity with Filezilla Server (FTP)
 - [Bugfix] Synchronizing current working directory
 - [Bugfix] Graceful failure on SSH connection problems
+- [Bugfix] Correctly resolving '~' in filenames
 
 2.4b2
 - [Feature] Allow the selection of files in the browser by typing more than just the first character of the filename

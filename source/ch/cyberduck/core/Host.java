@@ -185,13 +185,13 @@ public class Host {
 				String portString;
 				if(input.indexOf('/', begin) != -1) {
 					portString = input.substring(begin, input.indexOf('/', begin));
+					begin += portString.length()+1;
+					path = input.substring(begin, input.length());
 				}
 				else {
 					portString = input.substring(begin, input.length());
 				}
 				port = Integer.parseInt(portString);
-				begin += portString.length()+1;
-				path = input.substring(begin, input.length());
 			}
 			catch(NumberFormatException e) {
 				throw new MalformedURLException("Invalid port number given");

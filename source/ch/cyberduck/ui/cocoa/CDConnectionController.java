@@ -149,6 +149,7 @@ public class CDConnectionController extends CDController {
 		try {
 			Host h = Host.parse(hostPopup.stringValue());
 			this.hostPopup.setStringValue(h.getHostname());
+			this.protocolPopup.selectItemWithTitle(h.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 			this.portField.setStringValue(String.valueOf(h.getPort()));
 			this.usernameField.setStringValue(h.getCredentials().getUsername());
 			this.pathField.setStringValue(h.getDefaultPath());
