@@ -379,25 +379,29 @@ public class CDBrowserController extends CDController implements Observer {
 		{NSPasteboard.FilenamesPboardType})); //accept bookmark files dragged from the Finder
 		this.bookmarkTable.setRowHeight(45f);
 
-		NSTableColumn iconColumn = new NSTableColumn();
-		iconColumn.setIdentifier("ICON");
-		iconColumn.setMinWidth(32f);
-		iconColumn.setWidth(32f);
-		iconColumn.setMaxWidth(32f);
-		iconColumn.setEditable(false);
-		iconColumn.setResizable(true);
-		iconColumn.setDataCell(new NSImageCell());
-		this.bookmarkTable.addTableColumn(iconColumn);
-
-		NSTableColumn bookmarkColumn = new NSTableColumn();
-		bookmarkColumn.setIdentifier("BOOKMARK");
-		bookmarkColumn.setMinWidth(50f);
-		bookmarkColumn.setWidth(200f);
-		bookmarkColumn.setMaxWidth(500f);
-		bookmarkColumn.setEditable(false);
-		bookmarkColumn.setResizable(true);
-		bookmarkColumn.setDataCell(new CDBookmarkCell());
-		this.bookmarkTable.addTableColumn(bookmarkColumn);
+		{
+			NSTableColumn c = new NSTableColumn();
+			c.setIdentifier("ICON");
+			c.setMinWidth(32f);
+			c.setWidth(32f);
+			c.setMaxWidth(32f);
+			c.setEditable(false);
+			c.setResizable(true);
+			c.setDataCell(new NSImageCell());
+			this.bookmarkTable.addTableColumn(c);
+		}
+		
+		{
+			NSTableColumn c = new NSTableColumn();
+			c.setIdentifier("BOOKMARK");
+			c.setMinWidth(50f);
+			c.setWidth(200f);
+			c.setMaxWidth(500f);
+			c.setEditable(false);
+			c.setResizable(true);
+			c.setDataCell(new CDBookmarkCell());
+			this.bookmarkTable.addTableColumn(c);
+		}
 
 		// setting appearance attributes
 		this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
@@ -417,7 +421,6 @@ public class CDBrowserController extends CDController implements Observer {
 		this.bookmarkTable.setAllowsMultipleSelection(false);
 		this.bookmarkTable.setAllowsEmptySelection(true);
 		this.bookmarkTable.setAllowsColumnReordering(false);
-
 		this.bookmarkTable.sizeToFit();
 
 		(NSNotificationCenter.defaultCenter()).addObserver(this,
