@@ -140,34 +140,32 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 
 - (void)registerGrowlWithContext:(void*)context
 {
-	if(!registered) {
-		NSArray *allNotifications = [NSArray arrayWithObjects:
-			GROWL_DOWNLOAD_COMPLETE,
-			GROWL_UPLOAD_COMPLETE,
-			GROWL_SYNCHRONIZATION_COMPLETE,
-			GROWL_CONNECTION_OPENED,
-			GROWL_CONNECTION_FAILED,
-			GROWL_RENDEZVOUS_FOUND_SERVICE,
-			nil];
-		NSArray *defaultNotifications = [NSArray arrayWithObjects:
-			GROWL_DOWNLOAD_COMPLETE,
-			GROWL_UPLOAD_COMPLETE,
-			GROWL_SYNCHRONIZATION_COMPLETE,
-			GROWL_CONNECTION_OPENED,
-			GROWL_CONNECTION_FAILED,
-			nil];
-		
-		NSDictionary *registrationDict = [NSDictionary dictionaryWithObjectsAndKeys:
-			@"Cyberduck", GROWL_APP_NAME,
-			allNotifications, GROWL_NOTIFICATIONS_ALL,
-			defaultNotifications, GROWL_NOTIFICATIONS_DEFAULT,
-			nil];
-		
-		[[NSDistributedNotificationCenter defaultCenter] postNotificationName:GROWL_APP_REGISTRATION
-																	   object:nil
-																	 userInfo:registrationDict];
-	}
-//	registered = YES;
+	NSArray *allNotifications = [NSArray arrayWithObjects:
+		GROWL_DOWNLOAD_COMPLETE,
+		GROWL_UPLOAD_COMPLETE,
+		GROWL_SYNCHRONIZATION_COMPLETE,
+		GROWL_CONNECTION_OPENED,
+		GROWL_CONNECTION_FAILED,
+		GROWL_RENDEZVOUS_FOUND_SERVICE,
+		nil];
+	NSArray *defaultNotifications = [NSArray arrayWithObjects:
+		GROWL_DOWNLOAD_COMPLETE,
+		GROWL_UPLOAD_COMPLETE,
+		GROWL_SYNCHRONIZATION_COMPLETE,
+		GROWL_CONNECTION_OPENED,
+		GROWL_CONNECTION_FAILED,
+		nil];
+	
+	NSDictionary *registrationDict = [NSDictionary dictionaryWithObjectsAndKeys:
+		@"Cyberduck", GROWL_APP_NAME,
+		allNotifications, GROWL_NOTIFICATIONS_ALL,
+		defaultNotifications, GROWL_NOTIFICATIONS_DEFAULT,
+		nil];
+	
+	[[NSDistributedNotificationCenter defaultCenter] postNotificationName:GROWL_APP_REGISTRATION
+																   object:nil
+																 userInfo:registrationDict];
+	registered = YES;
 }
 
 - (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImageName:(NSString *) image
