@@ -168,7 +168,7 @@ public class CDInfoController {
 
         NSImage fileIcon = null;
         if (file.isFile()) {
-            this.iconImageView.setImage(fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension()));
+            this.iconImageView.setImage(fileIcon = CDIconCache.instance().get(file.getExtension()));
         }
         if (file.isDirectory()) {
             this.iconImageView.setImage(fileIcon = NSImage.imageNamed("folder32.tiff"));

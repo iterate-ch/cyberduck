@@ -41,9 +41,6 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Login_getPasswordFromKeychain(J
 	(*env)->ReleaseStringUTFChars(env, service, serviceChar);
 	(*env)->ReleaseStringUTFChars(env, account, accountChar);
 	
-//	jstring value = (*env)->NewStringUTF(env, password);
-//	free( password );
-//	return value;
 	return (*env)->NewStringUTF(env, password);
 }
 

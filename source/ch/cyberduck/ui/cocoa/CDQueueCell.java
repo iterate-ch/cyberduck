@@ -24,9 +24,6 @@ import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRect;
 import com.apple.cocoa.foundation.NSSize;
 
-import java.util.Map;
-import java.util.HashMap;
-
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Queue;
@@ -36,11 +33,8 @@ public class CDQueueCell extends CDTableCell {
 
     private Queue queue;
 	
-	private static Map icons = new HashMap();
-
     public void setObjectValue(Object q) {
         this.queue = (Queue) q;
-		icons.put(this.queue.getRoot().getExtension(), NSWorkspace.sharedWorkspace().iconForFileType(this.queue.getRoot().getExtension()));
     }
 
     public static NSMenu defaultMenu() {
@@ -71,7 +65,7 @@ public class CDQueueCell extends CDTableCell {
                 case Queue.KIND_DOWNLOAD:
                     arrowIcon = arrowDownIcon;
                     if (queue.getRoot().isFile()) {
-						fileIcon = (NSImage)icons.get(queue.getRoot().getExtension());
+						fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
                     }
 					else if (queue.getRoot().isDirectory()) {
 						fileIcon = folderIcon;
@@ -81,7 +75,7 @@ public class CDQueueCell extends CDTableCell {
                     arrowIcon = arrowUpIcon;
                     if (queue.getRoot().getLocal().isFile()) {
 						if(queue.getRoot().getLocal().exists()) {
-							fileIcon = (NSImage)icons.get(queue.getRoot().getExtension());
+							fileIcon = CDIconCache.instance().get(queue.getRoot().getExtension());
 						}
 						else { 
 							fileIcon = notFoundIcon;

@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import com.apple.cocoa.foundation.NSBundle;
 
@@ -34,7 +34,7 @@ public abstract class Preferences {
 	private static Logger log = Logger.getLogger(Preferences.class);
 
 	private static Preferences current = null;
-	private Hashtable defaults;
+	private HashMap defaults;
 
 	//	System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", Preferences.instance().getProperty("http.wire.logging"));
 	//	System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", Preferences.instance().getProperty("http.logging"));
@@ -73,7 +73,7 @@ public abstract class Preferences {
 	 * setting the default prefs values
 	 */
 	public void setDefaults() {
-		this.defaults = new Hashtable();
+		this.defaults = new HashMap();
 
 		defaults.put("logging", "WARN");
 		defaults.put("uses", "0");

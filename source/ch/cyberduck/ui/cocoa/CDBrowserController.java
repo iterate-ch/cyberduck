@@ -1157,7 +1157,8 @@ public class CDBrowserController implements Observer {
 						icon = folderIcon;
 					}
 					else if (p.attributes.isFile()) {
-						icon = NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
+						icon = CDIconCache.instance().get(p.getExtension());
+//						icon = NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
 					}
 					else {
 						icon = notFoundIcon;
@@ -1178,7 +1179,8 @@ public class CDBrowserController implements Observer {
                     return p.attributes.getOwner();
                 }
                 else if (identifier.equals("PERMISSIONS")) {
-                    return p.attributes.getPermission().toString();
+					return p.attributes.getPermission().getMask();
+//                    return p.attributes.getPermission().toString();
                 }
                 throw new IllegalArgumentException("Unknown identifier: " + identifier);
             }
