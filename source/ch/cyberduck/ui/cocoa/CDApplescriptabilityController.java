@@ -58,8 +58,10 @@ public class CDApplescriptabilityController extends NSScriptCommand {
 					CDQueueController.instance().startItem(q);
 				}
 			}
-			CDBrowserController controller = new CDBrowserController();
-			controller.mount(h);
+			else {
+				CDBrowserController controller = new CDBrowserController();
+				controller.mount(h);
+			}
 		}
 		catch(java.io.UnsupportedEncodingException e) {
 			log.error(e.getMessage());

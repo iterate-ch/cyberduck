@@ -50,16 +50,6 @@ public class FTPControlSocket {
 	public static final int CONTROL_PORT = 21;
 
 	/**
-	 * Used to flag messages
-	 */
-	private static final String DEBUG_ARROW = "---> ";
-
-	/**
-	 * Start of password message
-	 */
-	private static final String PASSWORD_MESSAGE = DEBUG_ARROW+"PASS";
-
-	/**
 	 * Use strict return codes if true
 	 */
 	private boolean strictReturnCodes = true;
@@ -609,8 +599,8 @@ public class FTPControlSocket {
 	 * @param reply true if a response, false otherwise
 	 */
 	private void log(String msg, boolean command) {
-		if(msg.startsWith(PASSWORD_MESSAGE))
-			msg = PASSWORD_MESSAGE+" ********";
+		if(msg.startsWith("PASS"))
+			msg = "PASS ********";
 		if(messageListener != null)
 			if(command)
 				messageListener.logCommand(msg);

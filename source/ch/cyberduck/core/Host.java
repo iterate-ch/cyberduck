@@ -91,9 +91,8 @@ public class Host {
 		Host copy = new Host(this.getProtocol(),
 							 this.getHostname(),
 							 this.getPort(), 
-							 this.getDefaultPath(),
-							 this.getNickname());
-		copy.login = this.login;
+							 this.getDefaultPath());
+		copy.setCredentials(this.login.getUsername(), this.login.getPassword());
 		return copy;
 	}
 	
@@ -142,24 +141,17 @@ public class Host {
 	 * @param login    The login credentials to use
 	 */
 	public Host(String protocol, String hostname, int port) {
-		this(protocol, hostname, port, "", null);
+		this(protocol, hostname, port, null);
 	}
 
 	public Host(String protocol, String hostname, int port, String defaultpath) {
-		this(protocol, hostname, port, defaultpath, null);
-	}
-
-	public Host(String hostname, int port, Login login, String nickname) {
-		this(getDefaultProtocol(port), hostname, port, "", nickname);
-	}
-
-	public Host(String protocol, String hostname, int port, String defaultpath, String nickname) {
 		this.setProtocol(protocol);
 		this.setPort(port);
 		this.setHostname(hostname);
 		this.setNickname(nickname);
 		this.setDefaultPath(defaultpath);
 		this.setCredentials(null, null);
+		
 		log.debug(this.toString());
 	}
 
@@ -167,12 +159,12 @@ public class Host {
 
 	public void setDefaultPath(String defaultpath) {
 		this.defaultpath = defaultpath;
-		if(this.defaultpath == null || this.defaultpath.equals("")) {
-			this.defaultpath = Path.HOME;
-		}
 	}
 
 	public String getDefaultPath() {
+		if(this.defaultpath == null || this.defaultpath.equals("")) {
+			return Path.HOME;
+		}
 		return this.defaultpath;
 	}
 
@@ -248,11 +240,11 @@ public class Host {
 	}
 
 	public String getNickname() {
-		return this.nickname;
+		return this.nickname != null ? this.nickname : this.getHostname()+" ("+this.getProtocol().toUpperCase()+")";
 	}
 
 	public void setNickname(String nickname) {
-		this.nickname = nickname != null ? nickname : this.getHostname()+" ("+this.getProtocol().toUpperCase()+")";
+		this.nickname = nickname;
 	}
 
 	public String getHostname() {
