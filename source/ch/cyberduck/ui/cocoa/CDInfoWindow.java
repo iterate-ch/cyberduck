@@ -25,7 +25,7 @@ import com.apple.cocoa.application.*;
 
 import org.apache.log4j.Logger;
 
-public class CDInfoWindow extends NSWindow {
+public class CDInfoWindow extends NSPanel {
 
     public Object filenameField; /* IBOutlet */
     public Object groupField; /* IBOutlet */
