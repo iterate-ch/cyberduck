@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import org.apache.commons.httpclient.*;
 import org.apache.log4j.Logger;
+
 import java.io.IOException;
 
 /**

@@ -20,12 +20,10 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
-import java.util.Iterator;
 import java.util.Collection;
-import java.util.Map;
 import java.util.HashMap;
-
-import ch.cyberduck.core.Host;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
 * Keeps track of recently connected hosts.

@@ -25,20 +25,12 @@
 
 package com.enterprisedt.net.ftp;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-
-import java.net.Socket;
-import java.net.ServerSocket;
-import java.net.InetAddress;
-
 import ch.cyberduck.core.Transcript;
+
+import java.io.*;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  *  Supports client-side FTP operations

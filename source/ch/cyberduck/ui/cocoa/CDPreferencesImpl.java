@@ -22,6 +22,7 @@ import ch.cyberduck.core.Preferences;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
+
 import java.io.File;
 
 /**

@@ -20,13 +20,10 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
-//import com.sshtools.j2ssh.transport.AbstractHostKeyVerification;
 import com.sshtools.j2ssh.transport.AbstractKnownHostsKeyVerification;
 import com.sshtools.j2ssh.transport.InvalidHostFileException;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import org.apache.log4j.Logger;
-
-import ch.cyberduck.core.Preferences;
 
 /**
 * @version $Id$

@@ -18,14 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Observable;
-import java.util.Observer;
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Host;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Observable;
 
 /**
 * @version $Id$

@@ -20,11 +20,11 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Favorites;
 import ch.cyberduck.core.Host;
-
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
-import java.io.File;
 import org.apache.log4j.Logger;
+
+import java.io.File;
 import java.util.Iterator;
 
 /**

@@ -20,17 +20,18 @@ package ch.cyberduck.core.http;
 
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Session;
-import org.apache.log4j.Logger;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
-import java.io.*;
-import java.net.URL;
-import java.net.MalformedURLException;
-import ch.cyberduck.core.Preferences;
+import org.apache.log4j.Logger;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
 * @version $Id$

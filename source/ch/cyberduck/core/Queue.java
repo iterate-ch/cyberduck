@@ -18,18 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Message;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Vector;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Calendar;
+import org.apache.log4j.Logger;
+
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.apache.log4j.Logger;
+import java.util.*;
 
 /**
 * Used to queue multiple connections. <code>queue.start()</code> will

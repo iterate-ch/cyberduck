@@ -18,26 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Login;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Rendezvous;
-import ch.cyberduck.core.Favorites;
-
+import ch.cyberduck.core.*;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+import com.strangeberry.rendezvous.ServiceInfo;
 import org.apache.log4j.Logger;
-import java.util.Observable;
-import java.util.Observer;
+
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-
-import com.strangeberry.rendezvous.ServiceInfo;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
 * @version $Id$

@@ -18,25 +18,20 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import com.sshtools.j2ssh.SshException;
-import com.sshtools.j2ssh.sftp.SftpFile;
 import com.sshtools.j2ssh.sftp.FileAttributes;
+import com.sshtools.j2ssh.sftp.SftpFile;
 import com.sshtools.j2ssh.sftp.SftpFileInputStream;
 import com.sshtools.j2ssh.sftp.SftpFileOutputStream;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

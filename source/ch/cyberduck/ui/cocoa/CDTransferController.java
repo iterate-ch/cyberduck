@@ -18,13 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.*;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
