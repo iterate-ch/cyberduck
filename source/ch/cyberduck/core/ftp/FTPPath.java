@@ -157,27 +157,7 @@ public class FTPPath extends Path {
 		session.callObservers(this);
 		return files;
 	}
-	
-	/**
-		* @return true if the file exists
-	 */
-	public boolean exists() {
-		try {
-			session.check();
-			session.FTP.stat(this.getAbsolute());
-			return true;
-		}
-		catch(FTPException e) {
-			if(e.isNegativeTransient()) //450 File not available
-				return false;
-			return true;
-		}
-		catch (IOException e) {
-			session.log("IO Error: " + e.getMessage(), Message.ERROR);
-			return false;
-		}
-	}
-	
+		
 	public void delete() {
 		log.debug("delete:" + this.toString());
 		try {
@@ -347,52 +327,52 @@ public class FTPPath extends Path {
 
 	public void download() {
 		try {
-			log.debug("download:" + this.toString());
-			if (this.isDirectory()) {
-				throw new IOException("Download must be a file.");
+			log.debug("download:"+this.toString());
+			this.session.check();
+//			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
+			if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+				this.session.FTP.setTransferType(FTPTransferType.BINARY);
+				this.getLocal().getParentFile().mkdirs();
+				OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
+				if (out == null) {
+					throw new IOException("Unable to buffer data");
+				}
+				java.io.InputStream in = this.session.FTP.getBinary(this.getAbsolute(), this.status.isResume() ? this.getLocal().length() : 0);
+				if (in == null) {
+					throw new IOException("Unable opening data stream");
+				}
+				if(this.status.isResume()) {
+					this.status.setCurrent(this.getLocal().length());
+				}
+				this.download(in, out);
+				if (this.status.isComplete()) {
+					this.session.FTP.validateTransfer();
+				}
+				if(status.isCanceled()) {
+					this.session.FTP.abor();
+				}
+			}
+			else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+				this.session.FTP.setTransferType(FTPTransferType.ASCII);
+				this.getLocal().getParentFile().mkdirs();
+				java.io.Writer out = new FileWriter(this.getLocal(), this.status.isResume());
+				if (out == null) {
+					throw new IOException("Unable to buffer data");
+				}
+				java.io.Reader in = this.session.FTP.getASCII(this.getName(), this.status.isResume() ? this.getLocal().length() : 0);
+				if (in == null) {
+					throw new IOException("Unable opening data stream");
+				}
+				this.download(in, out);
+				if (this.status.isComplete()) {
+					this.session.FTP.validateTransfer();
+				}
+				if(status.isCanceled()) {
+					this.session.FTP.abor();
+				}
 			}
 			else {
-				this.session.check();
-				this.status.setSize(this.session.FTP.size(this.getAbsolute()));
-				if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
-					this.session.FTP.setTransferType(FTPTransferType.BINARY);
-					this.getLocal().getParentFile().mkdirs();
-					OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
-					if (out == null) {
-						throw new IOException("Unable to buffer data");
-					}
-					java.io.InputStream in = this.session.FTP.getBinary(this.getAbsolute(), this.status.isResume() ? this.getLocal().length() : 0);
-					if (in == null) {
-						throw new IOException("Unable opening data stream");
-					}
-					this.download(in, out);
-					if (this.status.isComplete())
-						this.session.FTP.validateTransfer();
-					if(status.isCanceled()) {
-						this.session.FTP.abor();
-					}
-				}
-				else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
-					this.session.FTP.setTransferType(FTPTransferType.ASCII);
-					this.getLocal().getParentFile().mkdirs();
-					java.io.Writer out = new FileWriter(this.getLocal(), this.status.isResume());
-					if (out == null) {
-						throw new IOException("Unable to buffer data");
-					}
-					java.io.Reader in = this.session.FTP.getASCII(this.getName(), this.status.isResume() ? this.getLocal().length() : 0);
-					if (in == null) {
-						throw new IOException("Unable opening data stream");
-					}
-					this.download(in, out);
-					if (this.status.isComplete())
-						this.session.FTP.validateTransfer();
-					if(status.isCanceled()) {
-						this.session.FTP.abor();
-					}
-				}
-				else {
-					throw new FTPException("Transfer type not set");
-				}
+				throw new FTPException("Transfer type not set");
 			}
 		}
 		catch (FTPException e) {
@@ -409,8 +389,8 @@ public class FTPPath extends Path {
 	private List getUploadQueue(List queue) throws IOException {
 		if (this.getLocal().isDirectory()) {
 			this.session.check();
-//			if(!this.exists())
-			session.FTP.mkdir(this.getAbsolute());
+			if(!this.exists())
+				session.FTP.mkdir(this.getAbsolute());
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
 				Path p = PathFactory.createPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
@@ -418,7 +398,7 @@ public class FTPPath extends Path {
 			}
 		}
 		else if (this.getLocal().isFile()) {
-			this.status.setSize(this.getLocal().length());
+			this.status.setSize(this.getLocal().length()); //setting the file size to the known size of the local file
 			queue.add(this);
 		}
 		return queue;
@@ -426,29 +406,29 @@ public class FTPPath extends Path {
 
 	public void upload() {
 		try {
-			log.debug("upload:" + this.toString());
+			log.debug("upload:"+this.toString());
 			this.session.check();
-			this.status.setSize(this.getLocal().length());
 			if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
 				this.session.FTP.setTransferType(FTPTransferType.BINARY);
 				java.io.InputStream in = new FileInputStream(this.getLocal());
 				if (in == null) {
 					throw new IOException("Unable to buffer data");
 				}
-				if(this.status.isResume()) {
-					log.info("Skipping "+in.skip(this.status.getCurrent())+" bytes");
-				}
 				java.io.OutputStream out = this.session.FTP.putBinary(this.getAbsolute(), this.status.isResume());
 				if (out == null) {
 					throw new IOException("Unable opening data stream");
 				}
+				if(this.status.isResume()) {
+					this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
+				}
 				this.upload(out, in);
-				if (this.status.isComplete())
+				if (this.status.isComplete()) {
 					this.session.FTP.validateTransfer();
-				if(status.isCanceled()) {
+				}
+				if (status.isCanceled()) {
 					this.session.FTP.abor();
 				}				
-				if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
+				if (Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {
 					this.changePermissions(this.getLocal().getPermission(), false);
 				}
 			}
@@ -458,9 +438,6 @@ public class FTPPath extends Path {
 				if (in == null) {
 					throw new IOException("Unable to buffer data");
 				}
-				if(this.status.isResume()) {
-					log.info("Skipping "+in.skip(this.status.getCurrent())+" bytes");
-				}
 				java.io.Writer out = this.session.FTP.putASCII(this.getAbsolute(), this.status.isResume());
 				if (out == null) {
 					throw new IOException("Unable opening data stream");
@@ -468,7 +445,7 @@ public class FTPPath extends Path {
 				this.upload(out, in);
 				if (this.status.isComplete())
 					this.session.FTP.validateTransfer();
-				if(status.isCanceled()) {
+				if (status.isCanceled()) {
 					this.session.FTP.abor();
 				}
 				if(Preferences.instance().getProperty("queue.upload.changePermissions").equals("true")) {

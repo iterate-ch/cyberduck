@@ -185,10 +185,6 @@ public class SFTPPath extends Path {
 		return files;
 	}
 
-	public boolean exists() {
-		return false;
-	}
-	
 	public void delete() {
 		log.debug("delete:" + this.toString());
 		try {
@@ -362,26 +358,27 @@ public class SFTPPath extends Path {
 
 	public void download() {
 		try {
-			log.debug("download:" + this.toString());
-			if (this.isDirectory()) {
-				throw new IOException("Download must be a file.");
+			log.debug("download:"+this.toString());
+			this.session.check();
+			this.getLocal().getParentFile().mkdirs();
+			OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
+			if (out == null) {
+				throw new IOException("Unable to buffer data");
 			}
-			else {
-				this.session.check();
-				this.getLocal().getParentFile().mkdirs();
-				OutputStream out = new FileOutputStream(this.getLocal(), this.status.isResume());
-				if (out == null) {
-					throw new IOException("Unable to buffer data");
-				}
-				SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-				this.status.setCurrent(0); // sftp resume not possible
-				this.status.setSize(p.getAttributes().getSize().intValue());
-				SftpFileInputStream in = new SftpFileInputStream(p);
-				if (in == null) {
-					throw new IOException("Unable opening data stream");
-				}
-				this.download(in, out);
+			SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
+//			this.status.setSize(p.getAttributes().getSize().intValue());
+			SftpFileInputStream in = new SftpFileInputStream(p);
+			if (in == null) {
+				throw new IOException("Unable opening data stream");
 			}
+			if(this.status.isResume()) {
+				this.status.setCurrent(this.getLocal().length());
+				long skipped = skipped = in.skip(this.status.getCurrent());
+				log.info("Skipping "+skipped+" bytes");
+				if(skipped < this.status.getCurrent())
+					throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
+			}
+			this.download(in, out);
 		}
 		catch (SshException e) {
 			this.session.log("SSH Error: " + e.getMessage(), Message.ERROR);
@@ -397,7 +394,9 @@ public class SFTPPath extends Path {
 	private List getUploadQueue(List queue) throws IOException {
 		if (this.getLocal().isDirectory()) {
 			this.session.check();
-			this.session.SFTP.makeDirectory(this.getAbsolute());
+			if(!this.exists()) {
+				this.session.SFTP.makeDirectory(this.getAbsolute());
+			}
 			File[] files = this.getLocal().listFiles();
 			for (int i = 0; i < files.length; i++) {
 				Path p = PathFactory.createPath(this.session, this.getAbsolute(), new Local(files[i].getAbsolutePath()));
@@ -405,7 +404,7 @@ public class SFTPPath extends Path {
 			}
 		}
 		else if (this.getLocal().isFile()) {
-			this.status.setSize(this.getLocal().length());
+			this.status.setSize(this.getLocal().length()); //setting the file size to the known size of the local file
 			queue.add(this);
 		}
 		return queue;
@@ -413,18 +412,27 @@ public class SFTPPath extends Path {
 
 	public void upload() {
 		try {
-			log.debug("upload:" + this.toString());
+			log.debug("upload:"+this.toString());
 			this.session.check();
-			this.status.setSize(this.getLocal().length());
 			java.io.InputStream in = new FileInputStream(this.getLocal());
 			if (in == null) {
 				throw new IOException("Unable to buffer data");
 			}
-			SftpFile p = this.session.SFTP.openFile(this.getAbsolute(), 
-													SftpSubsystemClient.OPEN_CREATE | 
-													SftpSubsystemClient.OPEN_WRITE |
-													SftpSubsystemClient.OPEN_TRUNCATE);
+			SftpFile p = null;
+			if(this.status.isResume()) {
+				p = this.session.SFTP.openFile(this.getAbsolute(), 
+											   SftpSubsystemClient.OPEN_WRITE | // File open flag, opens the file for writing.
+											   SftpSubsystemClient.OPEN_APPEND); //File open flag, forces all writes to append data at the end of the file.
+			}
+			else
+				p = this.session.SFTP.openFile(this.getAbsolute(), 
+											   SftpSubsystemClient.OPEN_CREATE | //File open flag, if specified a new file will be created if one does not  already exist.
+											   SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
+											   SftpSubsystemClient.OPEN_TRUNCATE); //ile open flag, forces an existing file with the same name to be  truncated to zero length when creating a file by specifying OPEN_CREATE.
 			this.changePermissions(this.getLocal().getPermission(), false);
+			if(this.status.isResume()) {
+				this.status.setCurrent(p.getAttributes().getSize().intValue());
+			}
 			SftpFileOutputStream out = new SftpFileOutputStream(p);
 			if (out == null) {
 				throw new IOException("Unable opening data stream");

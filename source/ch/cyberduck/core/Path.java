@@ -214,7 +214,9 @@ public abstract class Path {
 	 */
 	public abstract void changePermissions(Permission perm, boolean recursive);
 	
-	public abstract boolean exists();
+	public boolean exists() {
+		return this.getParent().list(true, true).contains(this);
+	}
 
 	public boolean isFile() {
 		if (this.attributes.isSymbolicLink())
@@ -339,6 +341,12 @@ public abstract class Path {
 	public void upload(java.io.Writer writer, java.io.Reader reader) throws IOException {
 		log.debug("upload(" + writer.toString() + ", " + reader.toString());
 		this.getSession().log("Uploading " + this.getName() + " (ASCII)", Message.PROGRESS);
+		if(this.status.isResume()) {
+			long skipped = skipped = reader.skip(this.status.getCurrent());
+			log.info("Skipping "+skipped+" bytes");
+			if(skipped < this.status.getCurrent())
+				throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
+		}
 		this.transfer(reader, writer);
 	}
 
@@ -350,6 +358,12 @@ public abstract class Path {
 	public void upload(java.io.OutputStream o, java.io.InputStream i) throws IOException {
 		log.debug("upload(" + o.toString() + ", " + i.toString());
 		this.getSession().log("Uploading " + this.getName(), Message.PROGRESS);
+		if(this.status.isResume()) {
+			long skipped = skipped = i.skip(this.status.getCurrent());
+			log.info("Skipping "+skipped+" bytes");
+			if(skipped < this.status.getCurrent())
+				throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
+		}
 		this.transfer(i, o);
 	}
 
@@ -447,18 +461,12 @@ public abstract class Path {
 	}
 
 	public boolean equals(Object other) {
-		if (other instanceof Path) {
-			Path path = (Path) other;
-			return this.getAbsolute().equals(path.getAbsolute());
-		}
-		if (other instanceof Local) {
-			Local local = (Local) other;
-			return this.getName().equals(local.getName()) && this.attributes.getTimestamp().equals(local.getTimestamp());
-		}
+		if(other instanceof Path)
+			return this.getAbsolute().equals(((Path)other).getAbsolute());
 		return false;
 	}
-
-//@todo	public String toString() {
-//		return this.getAbsolute();
-//	}
+	
+	public String toString() {
+		return this.getName()+"["+this.status.getCurrent()+";"+this.status.getSize()+"]";
+	}
 }

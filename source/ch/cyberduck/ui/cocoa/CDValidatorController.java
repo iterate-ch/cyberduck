@@ -32,8 +32,8 @@ import org.apache.log4j.Logger;
 public class CDValidatorController extends Validator {
     private static Logger log = Logger.getLogger(CDValidatorController.class);
 	
-	public CDValidatorController(boolean resume) {
-		super(resume);
+	public CDValidatorController(int kind, boolean resume) {
+		super(kind, resume);
 	}
 	
 	private NSImageView iconView; // IBOutlet
@@ -66,8 +66,14 @@ public class CDValidatorController extends Validator {
         return this.window;
     }
 	
+	/*
+	 * Use the same settings for all succeeding items to check
+	 */
 	private boolean applyToAll = false;
-    private boolean proceed = false;
+	/**
+		* Include this file in the transfer queue
+	 */
+    private boolean include = false;
     private boolean done = true;
 	
 	public boolean prompt(Path path) {
@@ -77,7 +83,12 @@ public class CDValidatorController extends Validator {
 				log.fatal("Couldn't load Validator.nib");
 			}
 			this.resumeButton.setEnabled(!path.status.isComplete());
-			this.alertTextField.setStringValue(NSBundle.localizedString("The file", "")+" '"+path.getLocal().getAbsolutePath()+"' "+NSBundle.localizedString("already exists.", "")); // message
+			String file = null;
+			if (Queue.KIND_DOWNLOAD == kind)
+				file = path.getLocal().getAbsolutePath();
+			if (Queue.KIND_UPLOAD == kind)
+				file = path.getAbsolute();
+			this.alertTextField.setStringValue(NSBundle.localizedString("The file", "")+" '"+file+"' "+NSBundle.localizedString("already exists.", "")); // message
 			NSImage img = NSWorkspace.sharedWorkspace().iconForFileType(path.getExtension());
 			img.setScalesWhenResized(true);
 			img.setSize(new NSSize(64f, 64f));
@@ -102,61 +113,76 @@ public class CDValidatorController extends Validator {
 			}
 		}
 		path.status.setResume(resume);
-		log.debug("return:" + proceed);
-		return proceed;
+		log.debug("return:" + include);
+		return include;
 	}
 
     public void resumeActionFired(NSButton sender) {
 		log.debug("resumeActionFired");
 		this.applyToAll = (applyCheckbox.state() == NSCell.OnState);
 		this.resume = true;
-		this.proceed = true;
+		this.include = true;
+        NSApplication.sharedApplication().endSheet(this.window, sender.tag());
+	}
+	
+	public void closeSheet(NSButton sender) {
+		this.applyToAll = (applyCheckbox.state() == NSCell.OnState);
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
 
+	/*
 	public void overwriteActionFired(NSButton sender) {
 		log.debug("overwriteActionFired");
 		this.applyToAll = (applyCheckbox.state() == NSCell.OnState);
 		this.resume = false;
-		this.proceed = true;
+		this.include = true;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
 	
     public void skipActionFired(NSButton sender) {
 		log.debug("skipActionFired");
 		this.applyToAll = (applyCheckbox.state() == NSCell.OnState);
-		this.resume = false;
-		this.proceed = false;
+//		this.resume = false;
+		this.include = false;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
 	
 	public void cancelActionFired(NSButton sender) {
 		log.debug("cancelActionFired");
-		this.applyToAll = true;
-		this.resume = true;
-		this.proceed = false;
+		this.canceled = true;
+//		this.applyToAll = true;
+//		this.resume = true;
+		this.include = false;
         NSApplication.sharedApplication().endSheet(this.window, sender.tag());
 	}
+	 */
 	
     public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         this.window().close();
-/*        Path item = (Path) contextInfo;
+        Path item = (Path) contextInfo;
         switch (returncode) {
-            case NSAlertPanel.DefaultReturn: //Overwrite
+			case 0: //Cancel
+				log.debug("Canceled");
                 item.status.setResume(false);
-				this.resume = false;
-                this.proceed = true;
+				this.include = false;
+				this.canceled = true;
                 break;
-            case NSAlertPanel.AlternateReturn: //Resume
+            case 1://NSAlertPanel.DefaultReturn //Overwrite
+				log.debug("Overwrite");
+                item.status.setResume(false);
+				this.include = true;
+                break;
+            case -1://NSAlertPanel.AlternateReturn: //Resume
+				log.debug("Resume");
                 item.status.setResume(true);
-				this.resume = true;
-                this.proceed = true;
+                this.include = true;
                 break;
-            case NSAlertPanel.OtherReturn: //Cancel
-                this.proceed = false;
+            case 2://NSAlertPanel.OtherReturn: //Skip
+				log.debug("Skipped");
+                item.status.setResume(false);
+                this.include = false;
                 break;
         }
-		*/
         this.done = true;
     }
 }

@@ -52,7 +52,6 @@ public class CDQueueController extends NSObject implements Observer {
                 log.fatal("Couldn't load Queue.nib");
             }
         }
-//		instance.window().makeKeyAndOrderFront(null);
         return instance;
     }
 
@@ -151,10 +150,10 @@ public class CDQueueController extends NSObject implements Observer {
         this.queueTable.scrollRowToVisible(CDQueuesImpl.instance().indexOf(queue));
 
         if (Preferences.instance().getProperty("queue.orderFrontOnTransfer").equals("true")) {
-            this.window.makeKeyAndOrderFront(null);
+            this.window().makeKeyAndOrderFront(null);
         }
 
-        queue.getRoot().getHost().getLogin().setController(new CDLoginController(this.window));
+        queue.getRoot().getHost().getLogin().setController(new CDLoginController(this.window()));
         if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
             try {
                 queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(this.window));
@@ -166,7 +165,7 @@ public class CDQueueController extends NSObject implements Observer {
                         NSBundle.localizedString("OK", ""), // defaultbutton
                         null, //alternative button
                         null, //other button
-                        this.window, //docWindow
+                        this.window(), //docWindow
                         null, //modalDelegate
                         null, //didEndSelector
                         null, // dismiss selector
@@ -175,7 +174,7 @@ public class CDQueueController extends NSObject implements Observer {
                 );
             }
         }
-        queue.start(new CDValidatorController(resume), this);
+        queue.start(new CDValidatorController(queue.kind(), resume), this);
     }
 
     public void update(Observable observable, Object arg) {
@@ -208,7 +207,7 @@ public class CDQueueController extends NSObject implements Observer {
             else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
                 this.toolbar.validateVisibleItems();
                 Queue queue = (Queue) observable;
-                if (queue.isEmpty()) {
+                if (queue.isComplete()) {
                     if (Queue.KIND_DOWNLOAD == queue.kind()) {
                         if (Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
                             boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
@@ -237,7 +236,7 @@ public class CDQueueController extends NSObject implements Observer {
         this.toolbar.setDelegate(this);
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
-        this.window.setToolbar(toolbar);
+        this.window().setToolbar(toolbar);
     }
 
     // ----------------------------------------------------------
@@ -294,7 +293,7 @@ public class CDQueueController extends NSObject implements Observer {
     public void queueTableRowDoubleClicked(Object sender) {
         if (this.queueTable.selectedRow() != -1) {
             Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-            if (item.isEmpty()) {
+            if (item.isComplete()) {
                 this.revealButtonClicked(sender);
             }
             else {
@@ -337,12 +336,12 @@ public class CDQueueController extends NSObject implements Observer {
         if (this.queueTable.selectedRow() != -1) {
             Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
             if (!NSWorkspace.sharedWorkspace().selectFile(item.getRoot().getLocal().toString(), "")) {
-                if (item.isEmpty()) {
+                if (item.isComplete()) {
                     NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Could not show the file in the Finder", ""), //title
                             NSBundle.localizedString("OK", ""), // defaultbutton
                             null, //alternative button
                             null, //other button
-                            this.window, //docWindow
+                            this.window(), //docWindow
                             null, //modalDelegate
                             null, //didEndSelector
                             null, // dismiss selector
@@ -357,7 +356,7 @@ public class CDQueueController extends NSObject implements Observer {
                             NSBundle.localizedString("OK", ""), // defaultbutton
                             null, //alternative button
                             null, //other button
-                            this.window, //docWindow
+                            this.window(), //docWindow
                             null, //modalDelegate
                             null, //didEndSelector
                             null, // dismiss selector
@@ -394,62 +393,7 @@ public class CDQueueController extends NSObject implements Observer {
 	public boolean validateMenuItem(_NSObsoleteMenuItemProtocol cell) {
         String sel = cell.action().name();
 		log.debug("validateMenuItem:"+sel);
-		if (sel.equals("removeButtonClicked:")) {
-            if (this.queueTable.numberOfSelectedRows() < 1) {
-                return false;
-            }
-            NSEnumerator enum = queueTable.selectedRowEnumerator();
-            while (enum.hasMoreElements()) {
-                Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
-                if (!queue.isCanceled()) {
-                    return false;
-                }
-            }
-            return true;
-		}
-		if (sel.equals("revealButtonClicked:")) {
-            return this.queueTable.numberOfSelectedRows() == 1;
-		}
-		if (sel.equals("reloadButtonClicked:")) {
-            if (this.queueTable.numberOfSelectedRows() < 1) {
-                return false;
-            }
-            NSEnumerator enum = queueTable.selectedRowEnumerator();
-            while (enum.hasMoreElements()) {
-                Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
-                if (queue.isRunning()) {
-                    return false;
-                }
-            }
-            return true;
-		}
-		if (sel.equals("stopButtonClicked:")) {
-            if (this.queueTable.numberOfSelectedRows() < 1) {
-                return false;
-            }
-            NSEnumerator enum = queueTable.selectedRowEnumerator();
-            while (enum.hasMoreElements()) {
-                Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
-                if (!queue.isRunning()) {
-                    return false;
-                }
-            }
-            return true;
-		}
-		if (sel.equals("resumeButtonClicked:")) {
-            if (this.queueTable.numberOfSelectedRows() < 1) {
-                return false;
-            }
-            NSEnumerator enum = queueTable.selectedRowEnumerator();
-            while (enum.hasMoreElements()) {
-                Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
-                if (!(queue.isCanceled() && !(queue.remainingJobs() == 0) && (queue.getRoot() instanceof FTPPath))) {
-                    return false;
-                }
-            }
-            return true;
-		}
-        return true;
+        return this.validateItem(sel);
     }
 	
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
@@ -481,7 +425,11 @@ public class CDQueueController extends NSObject implements Observer {
 
     public boolean validateToolbarItem(NSToolbarItem item) {
         String identifier = item.itemIdentifier();
-        if (identifier.equals("Stop")) {
+		return this.validateItem(identifier);
+	}
+	
+	private boolean validateItem(String identifier) {
+        if (identifier.equals("Stop") || identifier.equals("stopButtonClicked:")) {
             if (this.queueTable.numberOfSelectedRows() < 1) {
                 return false;
             }
@@ -494,20 +442,34 @@ public class CDQueueController extends NSObject implements Observer {
             }
             return true;
         }
-        if (identifier.equals("Resume")) {
+        if (identifier.equals("Resume") || identifier.equals("resumeButtonClicked:")) {
+			if(this.queueTable.numberOfSelectedRows() == 1) {
+                Queue queue = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
+				return !queue.isRunning() && !(queue.isComplete());
+			}
+			return false;
+			/*			
             if (this.queueTable.numberOfSelectedRows() < 1) {
                 return false;
             }
             NSEnumerator enum = queueTable.selectedRowEnumerator();
             while (enum.hasMoreElements()) {
                 Queue queue = CDQueuesImpl.instance().getItem(((Integer) enum.nextElement()).intValue());
-                if (!(queue.isCanceled() && !(queue.remainingJobs() == 0) && (queue.getRoot() instanceof FTPPath))) {
+//                if (!(queue.isCanceled() && !(queue.remainingJobs() == 0) && (queue.getRoot() instanceof FTPPath))) {
+                if (!(queue.isCanceled() && !(queue.remainingJobs() == 0))) {
                     return false;
                 }
             }
             return true;
+			*/
         }
-        if (identifier.equals("Reload")) {
+        if (identifier.equals("Reload") || identifier.equals("reloadButtonClicked:")) {
+			if(this.queueTable.numberOfSelectedRows() == 1) {
+                Queue queue = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
+				return !queue.isRunning();
+			}
+			return false;
+				/*
             if (this.queueTable.numberOfSelectedRows() < 1) {
                 return false;
             }
@@ -519,14 +481,15 @@ public class CDQueueController extends NSObject implements Observer {
                 }
             }
             return true;
+			 */
         }
-        if (identifier.equals("Show")) {
+        if (identifier.equals("Show") || identifier.equals("revealButtonClicked:")) {
             return this.queueTable.numberOfSelectedRows() == 1;
         }
         if (identifier.equals("Clear")) {
             return this.queueTable.numberOfRows() > 0;
         }
-        if (identifier.equals("Remove")) {
+        if (identifier.equals("Remove") || identifier.equals("removeButtonClicked:")) {
             if (this.queueTable.numberOfSelectedRows() < 1) {
                 return false;
             }

@@ -35,6 +35,8 @@ de.lproj/Queue.nib/keyedobjects.nib -text
 de.lproj/Queue.strings svneol=native#unset
 de.lproj/Update.nib/keyedobjects.nib -text
 de.lproj/Update.strings svneol=native#unset
+de.lproj/Validator.nib/keyedobjects.nib -text
+de.lproj/Validator.strings svneol=native#unset
 en.lproj/Bookmark.nib/keyedobjects.nib -text
 en.lproj/Bookmark.strings svneol=native#unset
 en.lproj/Browser.nib/keyedobjects.nib -text
@@ -63,6 +65,8 @@ en.lproj/Queue.nib/keyedobjects.nib -text
 en.lproj/Queue.strings svneol=native#unset
 en.lproj/Update.nib/keyedobjects.nib -text
 en.lproj/Update.strings svneol=native#unset
+en.lproj/Validator.nib/keyedobjects.nib -text
+en.lproj/Validator.strings svneol=native#unset
 es.lproj/Bookmark.nib/keyedobjects.nib -text
 es.lproj/Bookmark.strings svneol=native#unset
 es.lproj/Browser.nib/keyedobjects.nib -text
@@ -91,6 +95,8 @@ es.lproj/Queue.nib/keyedobjects.nib -text
 es.lproj/Queue.strings svneol=native#unset
 es.lproj/Update.nib/keyedobjects.nib -text
 es.lproj/Update.strings svneol=native#unset
+es.lproj/Validator.nib/keyedobjects.nib -text
+es.lproj/Validator.strings svneol=native#unset
 fr.lproj/Bookmark.nib/keyedobjects.nib -text
 fr.lproj/Bookmark.strings svneol=native#unset
 fr.lproj/Browser.nib/keyedobjects.nib -text
@@ -119,6 +125,8 @@ fr.lproj/Queue.nib/keyedobjects.nib -text
 fr.lproj/Queue.strings svneol=native#unset
 fr.lproj/Update.nib/keyedobjects.nib -text
 fr.lproj/Update.strings svneol=native#unset
+fr.lproj/Validator.nib/keyedobjects.nib -text
+fr.lproj/Validator.strings svneol=native#unset
 /generic-document.icns -text
 /generic-document.tiff -text
 img/add.tiff svneol=native#unset
@@ -194,6 +202,8 @@ it.lproj/Queue.nib/keyedobjects.nib -text
 it.lproj/Queue.strings svneol=native#unset
 it.lproj/Update.nib/keyedobjects.nib -text
 it.lproj/Update.strings svneol=native#unset
+it.lproj/Validator.nib/keyedobjects.nib -text
+it.lproj/Validator.strings svneol=native#unset
 ja.lproj/Bookmark.nib/keyedobjects.nib -text
 ja.lproj/Bookmark.strings svneol=native#unset
 ja.lproj/Browser.nib/keyedobjects.nib -text
@@ -223,9 +233,12 @@ ja.lproj/Queue.nib/keyedobjects.nib -text
 ja.lproj/Queue.strings svneol=native#unset
 ja.lproj/Update.nib/keyedobjects.nib -text
 ja.lproj/Update.strings svneol=native#unset
+ja.lproj/Validator.nib/keyedobjects.nib -text
+ja.lproj/Validator.strings svneol=native#unset
 ko.lproj/Bookmark.nib/keyedobjects.nib -text
 ko.lproj/Bookmark.strings svneol=native#unset
 ko.lproj/Browser.nib/keyedobjects.nib -text
+ko.lproj/Browser.strings svneol=native#unset
 ko.lproj/Connection.nib/keyedobjects.nib -text
 ko.lproj/Connection.strings svneol=native#unset
 ko.lproj/Donate.nib/keyedobjects.nib -text
@@ -239,15 +252,19 @@ ko.lproj/Goto.strings svneol=native#unset
 ko.lproj/Info.nib/keyedobjects.nib -text
 ko.lproj/Info.strings svneol=native#unset
 ko.lproj/InfoPlist.strings svneol=native#unset
+ko.lproj/Localizable.strings svneol=native#unset
 ko.lproj/Login.nib/keyedobjects.nib -text
 ko.lproj/Login.strings svneol=native#unset
 ko.lproj/Main.nib/keyedobjects.nib -text
 ko.lproj/Main.strings svneol=native#unset
 ko.lproj/Preferences.nib/keyedobjects.nib -text
+ko.lproj/Preferences.strings svneol=native#unset
 ko.lproj/Queue.nib/keyedobjects.nib -text
 ko.lproj/Queue.strings svneol=native#unset
 ko.lproj/Update.nib/keyedobjects.nib -text
 ko.lproj/Update.strings svneol=native#unset
+ko.lproj/Validator.nib/keyedobjects.nib -text
+ko.lproj/Validator.strings svneol=native#unset
 lib/ext/ant.jar -text
 lib/ext/junit.jar -text
 lib/jmdns.jar -text
@@ -273,6 +290,8 @@ nl.lproj/Preferences.nib/keyedobjects.nib -text
 nl.lproj/Preferences.strings svneol=native#unset
 nl.lproj/Queue.nib/keyedobjects.nib -text
 nl.lproj/Update.nib/keyedobjects.nib -text
+nl.lproj/Validator.nib/keyedobjects.nib -text
+nl.lproj/Validator.strings svneol=native#unset
 pt.lproj/Bookmark.nib/keyedobjects.nib -text
 pt.lproj/Bookmark.strings svneol=native#unset
 pt.lproj/Browser.nib/keyedobjects.nib -text
@@ -301,6 +320,8 @@ pt.lproj/Queue.nib/keyedobjects.nib -text
 pt.lproj/Queue.strings svneol=native#unset
 pt.lproj/Update.nib/keyedobjects.nib -text
 pt.lproj/Update.strings svneol=native#unset
+pt.lproj/Validator.nib/keyedobjects.nib -text
+pt.lproj/Validator.strings svneol=native#unset
 source/ch/cyberduck/Attic/connection/.DS_Store svneol=native#unset
 source/ch/cyberduck/Attic/connection/ftp/.DS_Store svneol=native#unset
 source/ch/cyberduck/Attic/connection/http/.DS_Store svneol=native#unset
@@ -333,3 +354,5 @@ zh_TW.lproj/Queue.nib/keyedobjects.nib -text
 zh_TW.lproj/Queue.strings svneol=native#unset
 zh_TW.lproj/Update.nib/keyedobjects.nib -text
 zh_TW.lproj/Update.strings svneol=native#unset
+zh_TW.lproj/Validator.nib/keyedobjects.nib -text
+zh_TW.lproj/Validator.strings svneol=native#unset

@@ -38,8 +38,8 @@ import java.io.*;
  * @version $Revision$
  */
 public class SftpFileInputStream extends InputStream {
-    SftpFile file;
-    UnsignedInteger64 position = new UnsignedInteger64("0");
+    private SftpFile file;
+    private UnsignedInteger64 position = new UnsignedInteger64("0");
 
     /**
      * Creates a new SftpFileInputStream object.
@@ -99,6 +99,16 @@ public class SftpFileInputStream extends InputStream {
 
         return buffer[0] & 0xFF;
     }
+	
+	/*
+	 * The skip method of InputStream creates a  byte array and then repeatedly reads into 
+	 * it until n bytes have been read or the end of the stream has been reached. 
+	 * Subclasses are  encouraged to provide a more efficient implementation of this method.
+	 */
+	public long skip(long n) {
+		position = position.add(position, (int)n);
+		return n;
+	}
 
     /**
      *

@@ -106,24 +106,22 @@ public class Status extends Observable implements Serializable {
 	 * @return The size of the file
 	 */
 	public static String getSizeAsString(long size) {
+		//@todo fix GB limitation
+		//@todo return correct size
 		if (size < KILO)
 			return size + "B";
 		else if (size < MEGA)
-			return new Long(size / KILO).longValue() + "kB";
+			return new Double(size / KILO).doubleValue() + "kB";
 		else if (size < GIGA)
-			return new Long(size / MEGA).longValue() + "MB";
+			return new Double(size / MEGA).doubleValue() + "MB";
 		else
-			return new Long(size / GIGA).longValue() + "GB";
+			return new Double(size / GIGA).doubleValue() + "GB";
 	}
 
 	public void setComplete(boolean complete) {
 		this.complete = complete;
-		if (complete) {
-			this.setCurrent(this.getSize());
-//			this.callObservers(new Message(Message.PROGRESS, "Complete"));
-		}
-//		else
-//			this.callObservers(new Message(Message.PROGRESS, "Incomplete"));
+//		if (complete)
+//			this.setCurrent(this.getSize());
 	}
 
 	public boolean isComplete() {
@@ -153,8 +151,8 @@ public class Status extends Observable implements Serializable {
 
 	public void setResume(boolean resume) {
 		this.resume = resume;
-		if (!resume)
-			this.setCurrent(0);
+//		if (!resume)
+//			this.setCurrent(0);
 	}
 
 	public boolean isResume() {
@@ -162,10 +160,12 @@ public class Status extends Observable implements Serializable {
 	}
 
 	public void reset() {
+		log.debug("reset");
 		this.complete = false;
 		this.canceled = false;
 		if(!this.isResume()) {
-			this.current = 0;
+			log.debug("***reset>Setting current to 0, no resume***");
+			this.setCurrent(0);
 		}
 	}
 }

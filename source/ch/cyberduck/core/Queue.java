@@ -61,22 +61,11 @@ public class Queue extends Observable implements Observer { //Thread {
 	 * What kind of this, either KIND_DOWNLOAD or KIND_UPLOAD
 	 */
 	private int kind;
-	/**
-	 * Number of jobs handled in the queue. Completed and currently being processed
-	 */
-	private int processedJobs = 0;
-	/**
-	 * Number of completed jobs in the queue
-	 */
-	private int completedJobs = 0;
+
 	/**
 	 * The file currently beeing processed in the queue
 	 */
 	private Path currentJob;
-
-//	public Path getCurrentJob() {
-//		return this.currentJob;
-//	}
 	
 	/**
 		* The root of the queue; either the file itself or the parent directory of all files
@@ -107,22 +96,10 @@ public class Queue extends Observable implements Observer { //Thread {
 
 	private String status = "";
 	private String error = "";
-
-	/**
-		* @param root Usually the parent directory of serveral files
-	 * @param kind Either <code>KIND_DOWNLOAD</code> or <code>KIND_UPLOAD</code>
-	 */
-//	public Queue(Path root, int kind) {
-//		this.root = root;
-//		this.kind = kind;
-//		this.add(root);
-//		this.init();
-//	}
 	
 	/**
 		* Creating an empty queue containing no items. Items have to be added later
-	 * using the <code>add</code> method.
-		* The root will be determined by runtime as the currently processed job
+	 * using the <code>addRoot</code> method.
 	 * @param kind Either <code>KIND_DOWNLOAD</code> or <code>KIND_UPLOAD</code>
 	 */
 	public Queue(int kind) {
@@ -172,7 +149,6 @@ public class Queue extends Observable implements Observer { //Thread {
 	public void addRoot(Path item) {
 		log.debug("add:"+item);
 		this.roots.add(item);
-//		this.currentJob = item;
 	}
 	
 	/**
@@ -211,8 +187,6 @@ public class Queue extends Observable implements Observer { //Thread {
 	 */
 	public void start(final Validator validator, final Observer observer) {
 		log.debug("start");
-		this.completedJobs = 0;
-		this.processedJobs = 0;
 		this.error = "";
 		this.jobs.clear();
 		new Thread() {
@@ -227,7 +201,6 @@ public class Queue extends Observable implements Observer { //Thread {
 				for (Iterator i = roots.iterator() ; i.hasNext() && !Queue.this.isCanceled(); ) {
 					Path r = (Path)i.next();
 					log.debug("Iterating over childs of "+r);
-					//					for (Iterator k = ((Path)i.next()).getChilds(Queue.this.kind).iterator() ; k.hasNext() && !Queue.this.isCanceled();) {
 					Iterator childs = r.getChilds(Queue.this.kind).iterator();
 					while(childs.hasNext() && !Queue.this.isCanceled()) {
 						log.debug("Adding child to queue...");
@@ -238,7 +211,7 @@ public class Queue extends Observable implements Observer { //Thread {
 				for (Iterator iter = jobs.iterator() ; iter.hasNext() && !Queue.this.isCanceled(); ) {
 					Path item = (Path)iter.next();
 					log.debug("Validating "+item.toString());
-					if (!validator.validate(item, Queue.this.kind)) {
+					if (!validator.validate(item)) {
 						iter.remove();
 					}
 					item.status.reset();
@@ -268,7 +241,6 @@ public class Queue extends Observable implements Observer { //Thread {
 
 		job.status.addObserver(this);
 		
-		this.processedJobs++;
 		switch (kind) {
 			case KIND_DOWNLOAD:
 				job.download();
@@ -278,7 +250,7 @@ public class Queue extends Observable implements Observer { //Thread {
 				break;
 		}
 		if (job.status.isComplete()) {
-			this.completedJobs++;
+			//
 		}
 		
 		job.status.deleteObserver(this);
@@ -315,28 +287,6 @@ public class Queue extends Observable implements Observer { //Thread {
 	public boolean isCanceled() {
 		return !this.isRunning();
 	}
-
-	/**
-	 * @return The number of remaining items to be processed in the this queue.
-	 */
-	public int remainingJobs() {
-		return this.numberOfJobs() - this.completedJobs();
-	}
-
-	/**
-	 * @return Number of completed (totally transferred) items in the this queue.
-	 */
-	public int completedJobs() {
-//		log.debug("completedJobs:"+completedJobs);
-		return this.completedJobs;
-	}
-
-	/**
-	 * @return The number of jobs completed or currently being transferred
-	 */
-	public int processedJobs() {
-		return this.processedJobs;
-	}
 	
 	public int numberOfRoots() {
 		return this.roots.size();
@@ -351,10 +301,10 @@ public class Queue extends Observable implements Observer { //Thread {
 	}
 	
 	/**
-	 * @return rue if all items in the this have been processed sucessfully.
+	 * @return rue if all items in the this queue have been processed sucessfully.
 	 */
-	public boolean isEmpty() {
-		return this.remainingJobs() == 0;
+	public boolean isComplete() {
+		return this.getSize() == this.getCurrent();
 	}
 
 	public String getStatus() {
@@ -382,9 +332,6 @@ public class Queue extends Observable implements Observer { //Thread {
 		for (Iterator iter = jobs.iterator() ; iter.hasNext() ;) {
 			value += ((Path) iter.next()).status.getSize();
 		}
-//		if (value > 0)
-//			this.size = value;
-//		log.debug(this.toString()+">calculateTotalSize:"+this.size);
 		return value;
 	}
 
@@ -404,9 +351,6 @@ public class Queue extends Observable implements Observer { //Thread {
 		for (Iterator iter = jobs.iterator() ; iter.hasNext() ;) {
 			value += ((Path)iter.next()).status.getCurrent();
 		}
-//		if (value > 0)
-//			this.current = value;
-//		log.debug(this.toString()+">calculateCurrentSize:"+this.size);
 		return value;
 	}
 
@@ -433,12 +377,10 @@ public class Queue extends Observable implements Observer { //Thread {
 
 	private void setSpeed(long s) {
 		this.speed = s;
-//		this.callObservers(new Message(Message.DATA));
 	}
 
 	private void setTimeLeft(int seconds) {
 		this.timeLeft = seconds;
-//		this.callObservers(new Message(Message.PROGRESS));
 	}
 
 	public String getTimeLeft() {

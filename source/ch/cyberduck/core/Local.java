@@ -60,14 +60,8 @@ public class Local extends File {
 	}
 
 	public boolean equals(Object other) {
-		if (other instanceof Local) {
-			Local local = (Local) other;
-			return this.getAbsolutePath().equals(local.getAbsolutePath());
-		}
-		if (other instanceof Path) {
-			Path remote = (Path) other;
-			return this.getName().equals(remote.getName()) && this.getTimestamp().equals(remote.attributes.getTimestamp());
-		}
+		if(other instanceof Local)
+			return this.getAbsolutePath().equals(((Local)other).getAbsolutePath());// && this.attributes.getTimestamp().equals(((Local)other).attributes.getTimestamp());
 		return false;
 	}
 }

@@ -163,7 +163,6 @@ public class NTFTPEntryParser extends FTPFileEntryParserImpl
             if ("<DIR>".equals(dirString))
             {
                 f.attributes.setType(Path.DIRECTORY_TYPE);
-                f.status.setSize(0);
             }
             else
             {

@@ -26,148 +26,96 @@ import org.apache.log4j.Logger;
 public abstract class Validator {
 	private static Logger log = Logger.getLogger(Validator.class);
 	
+	protected boolean canceled = false;
 	protected boolean resume = false;
-
-	public Validator(boolean resume) {
+	protected int kind;
+	
+	public Validator(int kind, boolean resume) {
+		this.kind = kind;
 		this.resume = resume;
 	}
 	
     /**
 	* @return true if validation suceeded, false if !proceed
      */
-    public boolean validate(Path path, int kind) {
-		//        boolean resume = path.status.isResume();
-		//        this.proceed = false;
+    public boolean validate(Path path) {
         log.debug("validate:"+path);
-        if (Queue.KIND_DOWNLOAD == kind) {
-            log.debug("validating download");
-            if (resume) {
-				log.debug("resume:true");
-                if (path.status.isComplete()) {
-                    log.debug("complete:true");
-                    log.debug("return:true");
-                    return true;
-                }
-                else if (!path.status.isComplete()) {
-                    log.debug("complete:false");
-                    path.status.setResume(path.getLocal().exists());
-                    log.debug("return:true");
-                    return true;
-                }
-            }
-            if (!resume) {
-                log.debug("resume:false");
-                if (path.getLocal().exists()) {
-                    log.debug("local path exists:true");
-                    if (Preferences.instance().getProperty("queue.download.duplicate").equals("ask")) {
-                        log.debug("queue.download.duplicate:ask");
-                        // Waiting for other alert sheets open to be closed first
-						return this.prompt(path);
-                    }
-                    else if (Preferences.instance().getProperty("queue.download.duplicate").equals("similar")) {
-                        log.debug("queue.download.duplicate:similar");
-                        path.status.setResume(false);
-                        String proposal = null;
-                        String parent = path.getLocal().getParent();
-                        String filename = path.getLocal().getName();
-                        int no = 1;
-                        int index = filename.lastIndexOf(".");
-                        while (path.getLocal().exists()) {
-                            if (index != -1) {
-                                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
-                            }
-                            else {
-                                proposal = filename + "-" + no;
-                            }
-                            path.setLocal(new Local(parent, proposal));
-                            no++;
-                        }
-                        log.debug("return:true");
-                        return true;
-                    }
-                    else if (Preferences.instance().getProperty("queue.download.duplicate").equals("resume")) {
-                        log.debug("queue.download.duplicate:resume");
-                        path.status.setResume(true);
-                        log.debug("return:true");
-                        return true;
-                    }
-                    else if (Preferences.instance().getProperty("queue.download.duplicate").equals("overwrite")) {
-                        log.debug("queue.download.duplicate:overwrite");
-                        path.status.setResume(false);
-                        log.debug("return:true");
-                        return true;
-                    }
-                }
-                log.debug("local path exists:false");
-                log.debug("return:true");
-                return true;
-            }
-        }
-        else if (Queue.KIND_UPLOAD == kind) {
-            log.debug("Validating upload");
-            if (resume) {
-				log.debug("resume:true");
-                if (path.status.isComplete()) {
-                    log.debug("complete:true");
-                    log.debug("return:true");
-                    return true;
-                }
-                else if (!path.status.isComplete()) {
-                    log.debug("complete:false");
-                    path.status.setResume(path.exists());
-                    log.debug("return:true");
-                    return true;
-                }
-            }
-            if (!resume) {
-                log.debug("resume:false");
-                if (path.exists()) {
-                    log.debug("local path exists:true");
-                    if (Preferences.instance().getProperty("queue.download.duplicate").equals("ask")) {
-                        log.debug("queue.download.duplicate:ask");
-                        // Waiting for other alert sheets open to be closed first
-						return this.prompt(path);
-                    }
-                    else if (Preferences.instance().getProperty("queue.download.duplicate").equals("similar")) {
-                        log.debug("queue.download.duplicate:similar");
-                        path.status.setResume(false);
-                        String proposal = null;
-                        String parent = path.getParent().getAbsolute();
-                        String filename = path.getName();
-                        int no = 1;
-                        int index = filename.lastIndexOf(".");
-                        while (path.exists()) {
-                            if (index != -1) {
-                                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
-                            }
-                            else {
-                                proposal = filename + "-" + no;
-                            }
-                            path.setPath(parent, proposal);
-                            no++;
-                        }
-                        log.debug("return:true");
-                        return true;
-                    }
-                    else if (Preferences.instance().getProperty("queue.download.duplicate").equals("resume")) {
-                        log.debug("queue.download.duplicate:resume");
-                        path.status.setResume(true);
-                        log.debug("return:true");
-                        return true;
-                    }
-                    else if (Preferences.instance().getProperty("queue.download.duplicate").equals("overwrite")) {
-                        log.debug("queue.download.duplicate:overwrite");
-                        path.status.setResume(false);
-                        log.debug("return:true");
-                        return true;
-                    }
-                }
-                log.debug("local path exists:false");
-                log.debug("return:true");
-                return true;
-            }
-        }
-        return false;
+		if(canceled)
+			return false;
+		boolean exists = false;
+		if (Queue.KIND_DOWNLOAD == kind)
+			exists = path.getLocal().exists();
+		if (Queue.KIND_UPLOAD == kind)
+			exists = path.exists();
+		if (resume) {
+			if (path.status.isComplete()) {
+				return true;
+			}
+			else if (!path.status.isComplete()) {
+				path.status.setResume(exists);
+				return true;
+			}
+		}
+		if (exists) {
+			log.debug("File "+path.getName()+" exists");
+			if (Preferences.instance().getProperty("queue.download.duplicate").equals("ask")) {
+				log.debug("Prompt user");
+				// @todo Waiting for other alert sheets open to be closed first
+				return this.prompt(path);
+			}
+			else if (Preferences.instance().getProperty("queue.download.duplicate").equals("similar")) {
+				log.debug("Using similar name");
+				path.status.setResume(false);
+				if (Queue.KIND_DOWNLOAD == kind) {
+					String parent = path.getLocal().getParent();
+					String filename = path.getLocal().getName();
+					String proposal = filename;
+					int no = 0;
+					int index = filename.lastIndexOf(".");
+					do {
+						path.setLocal(new Local(parent, proposal));
+						no++;
+						if (index != -1) {
+							proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
+						}
+						else {
+							proposal = filename + "-" + no;
+						}
+					}
+					while (path.getLocal().exists());
+				}
+				if (Queue.KIND_UPLOAD == kind) {
+					String parent = path.getParent().getAbsolute();
+					String filename = path.getName();
+					String proposal = filename;
+					int no = 0;
+					int index = filename.lastIndexOf(".");
+					do {
+						path.setPath(parent, proposal);
+						no++;
+						if (index != -1) {
+							proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
+						}
+						else {
+							proposal = filename + "-" + no;
+						}
+					}
+					while (path.exists());
+				}
+				return true;
+			}
+			else if (Preferences.instance().getProperty("queue.download.duplicate").equals("resume")) {
+				log.debug("Resume");
+				path.status.setResume(true);
+				return true;
+			}
+			else if (Preferences.instance().getProperty("queue.download.duplicate").equals("overwrite")) {
+				log.debug("Overwrite");
+				path.status.setResume(false);
+				return true;
+			}
+		}
+		return true;
     }
 	
 	public abstract boolean prompt(Path path);

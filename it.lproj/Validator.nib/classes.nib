@@ -1,0 +1,19 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {closeSheet = id; }; 
+            CLASS = CDValidatorController; 
+            LANGUAGE = Java; 
+            OUTLETS = {
+                alertTextField = NSTextField; 
+                applyCheckbox = NSButton; 
+                iconView = NSImageView; 
+                resumeButton = NSButton; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
+    ); 
+    IBVersion = 1; 
+}

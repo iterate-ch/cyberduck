@@ -124,7 +124,7 @@ public abstract class Preferences {
 		defaults.put("connection.buffer.default", "16384");
 		defaults.put("connection.port.default", "21");
 		defaults.put("connection.protocol.default", "ftp");
-		defaults.put("connection.host.default", NSBundle.localizedString("Empty Browser", ""));
+//		defaults.put("connection.host.default", NSBundle.localizedString("None", ""));
 
 		//ftp properties
 		defaults.put("ftp.anonymous.name", "anonymous");

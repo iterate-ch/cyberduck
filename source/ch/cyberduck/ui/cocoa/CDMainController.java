@@ -334,7 +334,8 @@ public class CDMainController extends NSObject {
         if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
 			CDBrowserController controller = new CDBrowserController();
 			controller.window().makeKeyAndOrderFront(null);
-			if (!Preferences.instance().getProperty("connection.host.default").equals(NSBundle.localizedString("Empty Browser", ""))) {
+			/*
+			if (!Preferences.instance().getProperty("connection.host.default").equals(NSBundle.localizedString("None", ""))) {
 				try {
 					controller.mount(new Host(Preferences.instance().getProperty("connection.host.default")));
 				}
@@ -342,6 +343,7 @@ public class CDMainController extends NSObject {
 					log.error(e.getMessage());
 				}
 			}
+			 */
         }
         if (Preferences.instance().getProperty("queue.openByDefault").equals("true")) {
             this.showTransferQueueClicked(null);
