@@ -22,6 +22,7 @@
 - [Bugfix] Synchronizing current working directory
 - [Bugfix] Graceful failure on SSH connection problems
 - [Bugfix] Correctly resolving '~' in filenames
+- [Bugfix] Bug fixes
 
 2.4b2
 - [Feature] Allow the selection of files in the browser by typing more than just the first character of the filename
