@@ -182,13 +182,15 @@ public class CDInfoController extends NSObject {
                     this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (Folder)", ""));
                 }
             }
-            if (file.attributes.isFile()) {
+            else if (file.attributes.isFile()) {
                 this.kindField.setStringValue(NSBundle.localizedString("File", ""));
             }
-            if (file.attributes.isDirectory()) {
+            else if (file.attributes.isDirectory()) {
                 this.kindField.setStringValue(NSBundle.localizedString("Folder", ""));
             }
-            this.kindField.setStringValue(NSBundle.localizedString("Unknown", ""));
+			else {
+				this.kindField.setStringValue(NSBundle.localizedString("Unknown", ""));
+			}
         }
 
         this.modifiedField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :

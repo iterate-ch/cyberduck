@@ -129,19 +129,6 @@ public class SFTPPath extends Path {
                             p.attributes.setGroup(x.getAttributes().getGID().toString());
                             p.status.setSize(x.getAttributes().getSize().intValue());
                             p.attributes.setTimestamp(Long.parseLong(x.getAttributes().getModifiedTime().toString()) * 1000L);
-//							if(x.getAttributes().isFile()) {
-//								p.attributes.setType(Path.FILE_TYPE);
-//							}
-//							else if(x.getAttributes().isDirectory()) {
-//								p.attributes.setType(Path.DIRECTORY_TYPE);
-//							}
-//							else if(x.getAttributes().isLink()) {
-//								p.attributes.setType(Path.SYMBOLIC_LINK_TYPE);
-//							}
-//							else {
-//								p.attributes.setType(Path.FILE_TYPE);
-//							}
-                            //hack
                             String permStr = x.getAttributes().getPermissionsString();
                             if (permStr.charAt(0) == 'd') {
                                 p.attributes.setType(Path.DIRECTORY_TYPE);
@@ -193,8 +180,7 @@ public class SFTPPath extends Path {
     }
 
     public synchronized void cwdir() throws IOException {
-        session.check();
-        session.SFTP.openDirectory(this.getParent().getAbsolute());
+        session.SFTP.openDirectory(this.getAbsolute());
     }
 
     public void mkdir(boolean recursive) {
@@ -246,27 +232,19 @@ public class SFTPPath extends Path {
                 session.SFTP.removeFile(this.getAbsolute());
             }
             else if (this.attributes.isDirectory()) {
-//				session.SFTP.openDirectory(this.getParent().getAbsolute());
                 List files = this.list(true, true);
                 java.util.Iterator iterator = files.iterator();
                 Path file = null;
                 while (iterator.hasNext()) {
                     file = (Path)iterator.next();
-                    if (file.attributes.isDirectory()) {
-                        if (file.attributes.isSymbolicLink()) {
-                            session.log("Deleting " + this.getName(), Message.PROGRESS);
-                            session.SFTP.removeFile(file.getAbsolute());
-                        }
-                        else {
-                            file.delete();
-                        }
-                    }
-                    if (file.attributes.isFile()) {
+                    if (file.attributes.isFile() || file.attributes.isSymbolicLink()) {
                         session.log("Deleting " + this.getName(), Message.PROGRESS);
                         session.SFTP.removeFile(file.getAbsolute());
                     }
+                    if (file.attributes.isDirectory()) {
+						file.delete();
+                    }
                 }
-//                session.SFTP.openDirectory(this.getParent().getAbsolute());
                 session.log("Deleting " + this.getName(), Message.PROGRESS);
                 session.SFTP.removeDirectory(this.getAbsolute());
             }

@@ -159,7 +159,6 @@ public class FTPPath extends Path {
     }
 
     public synchronized void cwdir() throws IOException {
-        session.check();
         session.FTP.chdir(this.getAbsolute());
     }
 
@@ -206,30 +205,24 @@ public class FTPPath extends Path {
     public synchronized void delete() {
         log.debug("delete:" + this.toString());
         try {
-            session.check();
             if (this.attributes.isFile()) {
+				session.check();
+				session.FTP.chdir(this.getParent().getAbsolute());
                 session.log("Deleting " + this.getName(), Message.PROGRESS);
                 session.FTP.delete(this.getName());
             }
             else if (this.attributes.isDirectory()) {
-                session.FTP.chdir(this.getAbsolute());
                 List files = this.list(true, true);
                 java.util.Iterator iterator = files.iterator();
                 Path file = null;
                 while (iterator.hasNext()) {
                     file = (Path)iterator.next();
-                    if (file.attributes.isDirectory()) {
-                        if (file.attributes.isSymbolicLink()) {
-                            session.log("Deleting " + this.getName(), Message.PROGRESS);
-                            session.FTP.delete(file.getName());
-                        }
-                        else {
-                            file.delete();
-                        }
-                    }
-                    if (file.attributes.isFile()) {
+                    if (file.attributes.isFile() || file.attributes.isSymbolicLink()) {
                         session.log("Deleting " + this.getName(), Message.PROGRESS);
                         session.FTP.delete(file.getName());
+                    }
+                    if (file.attributes.isDirectory()) {
+						file.delete();
                     }
                 }
                 session.FTP.cdup();

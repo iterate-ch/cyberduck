@@ -128,7 +128,7 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
                     type = Path.DIRECTORY_TYPE;
                     break;
                 case 'l':
-                    type = Path.SYMBOLIC_LINK_TYPE;
+					type = Path.SYMBOLIC_LINK_TYPE;
                     break;
                 case 'b':
                 case 'c':
@@ -197,16 +197,23 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
                         f.setPath(parent.getAbsolute(), name);
                     }
                     else {
-                        //Path orig = PathFactory.createPath(parent.getSession(), parent.getAbsolute(), name.substring(end+4));
                         f.setPath(parent.getAbsolute(), name.substring(0, end));
-                        //f.setLink(name.substring(end + 4));
                     }
                 }
                 else {
                     f.setPath(parent.getAbsolute(), name);
                 }
             }
-            return f;
+			if (Path.SYMBOLIC_LINK_TYPE == type) {
+				try {
+					f.cwdir();
+					f.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+				}
+				catch (java.io.IOException e) {
+					f.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+				}
+			}
+			return f;
         }
         return null;
     }

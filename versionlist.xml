@@ -8,6 +8,9 @@
 	<string>Cyberduck-2.3.2.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.3.3
+- [Bugfix] Correctly parsing symbolic links
+
 2.3.2
 - [Feature] Slovak Localization
 - [Feature] Czech Localization
