@@ -32,6 +32,7 @@ de.lproj/Main.strings svneol=native#unset
 de.lproj/Preferences.nib/keyedobjects.nib -text
 de.lproj/Preferences.strings svneol=native#unset
 de.lproj/Queue.nib/keyedobjects.nib -text
+de.lproj/Queue.strings svneol=native#unset
 de.lproj/Update.nib/keyedobjects.nib -text
 de.lproj/Update.strings svneol=native#unset
 en.lproj/Bookmark.nib/keyedobjects.nib -text
