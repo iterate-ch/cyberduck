@@ -188,7 +188,7 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
                 // oddball cases like symbolic links, file names
                 // with spaces in them.
                 name += endtoken;
-                if (Path.SYMBOLIC_LINK_TYPE == type) {
+                if (Path.SYMBOLIC_LINK_TYPE == (Path.SYMBOLIC_LINK_TYPE & type)) {
                     int end = name.indexOf(" -> ");
                     // Give up if no link indicator is present
                     if (-1 == end) {
@@ -199,11 +199,10 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
 					}
 					try {
 						f.cwdir();
-						f.attributes.setType(Path.SYMBOLIC_LINK_TYPE & Path.DIRECTORY_TYPE);
-						parent.cwdir(); //@todo obsolete?
+						f.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
 					}
 					catch(java.io.IOException e) {
-						f.attributes.setType(Path.SYMBOLIC_LINK_TYPE & Path.FILE_TYPE);
+						f.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
 					}
 					//						String link = name.substring(end + 4);
 					//						if(link.charAt(0) == '/') {

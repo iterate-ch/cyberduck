@@ -100,21 +100,19 @@ public class Attributes extends Observable {
     }
 
     public boolean isDirectory() {
-        return (this.type == Path.DIRECTORY_TYPE);
+        return (this.type & Path.DIRECTORY_TYPE) == (Path.DIRECTORY_TYPE);
     }
 
     public boolean isFile() {
-        return (this.type == Path.FILE_TYPE);
+        return (this.type & Path.FILE_TYPE) == (Path.FILE_TYPE);
     }
-
+	
     public boolean isSymbolicLink() {
-        return (this.type == (Path.SYMBOLIC_LINK_TYPE & Path.FILE_TYPE) || 
-				this.type == (Path.SYMBOLIC_LINK_TYPE & Path.DIRECTORY_TYPE)
-				);
+        return (this.type & Path.SYMBOLIC_LINK_TYPE) == (Path.SYMBOLIC_LINK_TYPE);
     }
 	
 //    public boolean isUnknown() {
-//        return (this.type == Path.UNKNOWN_TYPE);
+//  	return (this.type & Path.UNKNOWN_TYPE) == (Path.UNKNOWN_TYPE);
 //    }
 
     public void setOwner(String o) {

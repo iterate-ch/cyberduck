@@ -42,9 +42,9 @@ public abstract class Path {
     public Status status = new Status();
     public Attributes attributes = new Attributes();
 
-    public static final int FILE_TYPE = 0;
-    public static final int DIRECTORY_TYPE = 1;
-    public static final int SYMBOLIC_LINK_TYPE = 2;
+    public static final int FILE_TYPE = 1;
+    public static final int DIRECTORY_TYPE = 2;
+    public static final int SYMBOLIC_LINK_TYPE = 4;
 //  public static final int UNKNOWN_TYPE = 3;
 
     public static final String HOME = "~";
@@ -278,22 +278,6 @@ public abstract class Path {
 //        return !this.linksToFile() && this.attributes.permission.getOwnerPermissions()[Permission.EXECUTE];
     }
 	 */
-
-    /**
-     * @return The file type
-     */
-    public String getKind() {
-        if (this.attributes.isSymbolicLink()) {
-            return "Symbolic Link";
-        }
-        if (this.attributes.isFile()) {
-            return "File";
-        }
-        if (this.attributes.isDirectory()) {
-            return "Folder";
-        }
-        return "Unknown";
-    }
 
     /**
      * @return true if this paths points to '/'

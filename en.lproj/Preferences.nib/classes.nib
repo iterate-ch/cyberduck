@@ -34,6 +34,12 @@
                 newBrowserCheckbox = NSButton; 
                 processCheckbox = NSButton; 
                 protocolCombobox = NSPopUpButton; 
+                proxyAuthenticationCheckbox = NSButton; 
+                proxyCheckbox = NSButton; 
+                proxyHostField = NSTextField; 
+                proxyPasswordField = NSTextField; 
+                proxyPortField = NSTextField; 
+                proxyUsernameField = NSTextField; 
                 publickeyCombobox = NSPopUpButton; 
                 removeFromQueueCheckbox = NSButton; 
                 scAuthenticationCombobox = NSPopUpButton; 

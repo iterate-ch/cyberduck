@@ -143,7 +143,24 @@ public class CDInfoController extends NSObject {
         this.filenameField.setStringValue(this.file.getName());
         this.pathField.setStringValue(this.file.getParent().getAbsolute());
         this.groupField.setStringValue(this.file.attributes.getGroup());
-        this.kindField.setStringValue(this.file.getKind());
+		if (this.file..attributes.isSymbolicLink()) {
+			if (this.file.attributes.isFile()) {
+				this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (File)", ""));
+			}
+			if (this.file.attributes.isDirectory()) {
+				this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (Folder)", ""));
+			}
+		}
+		if (this.file.attributes.isFile()) {
+			this.kindField.setStringValue(NSBundle.localizedString("File", ""));
+			return "File";
+		}
+		if (this.file.attributes.isDirectory()) {
+			this.kindField.setStringValue(NSBundle.localizedString("Folder", ""));
+			return "Folder";
+		}
+		this.kindField.setStringValue(NSBundle.localizedString("Unknown", ""));
+		
         this.modifiedField.setStringValue(this.file.attributes.getTimestampAsString());
         this.ownerField.setStringValue(this.file.attributes.getOwner());
         this.sizeField.setStringValue(Status.getSizeAsString(this.file.status.getSize()) + " (" + this.file.status.getSize() + " bytes)");

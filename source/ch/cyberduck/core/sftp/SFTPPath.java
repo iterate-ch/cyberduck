@@ -147,7 +147,13 @@ public class SFTPPath extends Path {
                                 p.attributes.setType(Path.DIRECTORY_TYPE);
                             }
                             else if (permStr.charAt(0) == 'l') {
-                                p.attributes.setType(Path.SYMBOLIC_LINK_TYPE);
+								try {
+									p.cwdir();
+									p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+								}
+								catch(java.io.IOException e) {
+									p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+								}
                             }
                             else {
                                 p.attributes.setType(Path.FILE_TYPE);
