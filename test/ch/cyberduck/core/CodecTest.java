@@ -37,12 +37,12 @@ public class CodecTest extends TestCase {
 			{
                 String decoded = Codec.decode(testString);
                 String encoded = new String(Codec.encode(decoded));
-				assertTrue(testString.equals(encoded));
+				assertTrue("Teststring not equal to encoded/decoded string", testString.equals(encoded));
 			}
 			{
                 String decoded = Codec.decode(testString, "ISO-8859-1");
                 String encoded = new String(Codec.encode(decoded, "ISO-8859-1"));
-				assertTrue(testString.equals(encoded));
+				assertTrue("Teststring not equal to encoded/decoded string", testString.equals(encoded));
 			}
 		}
 		catch(java.lang.UnsatisfiedLinkError e) {}

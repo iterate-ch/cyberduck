@@ -82,7 +82,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         assertEquals("owner", "Unknown", parsed.attributes.getOwner());
         assertEquals("group", "Unknown", parsed.attributes.getGroup());
         
-//        assertEquals("permissions", "r--r--r-- (444)", parsed.attributes.getPermission().toString());
+        assertEquals("permissions", "r--r--r-- (444)", parsed.attributes.getPermission().toString());
     }
     
     public void testReadonlyDirectory() {
@@ -105,7 +105,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         assertEquals("owner", "Unknown", parsed.attributes.getOwner());
         assertEquals("group", "Unknown", parsed.attributes.getGroup());
         
-//        assertEquals("permissions", "r-xr-xr-x (555)", parsed.attributes.getPermission().toString());
+        assertEquals("permissions", "r-xr-xr-x (555)", parsed.attributes.getPermission().toString());
     }
     
     public void testSpecifiedPermissionsOverrideStandardDirPermissions() {
@@ -113,7 +113,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         assertTrue("is dir", parsed.attributes.isDirectory());
         assertEquals("type", Path.DIRECTORY_TYPE, parsed.attributes.getType());
         assertTrue("attr is dir", parsed.attributes.isDirectory());
-//        assertEquals("--xr-x-wx (153)", parsed.attributes.getPermission().toString());
+        assertEquals("--xr-x-wx (153)", parsed.attributes.getPermission().toString());
     }
     
     public void testSpecifiedPermissionsDoesntRemoveDirTag() {
@@ -121,7 +121,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         assertTrue("is dir", parsed.attributes.isDirectory());
         assertEquals("type", Path.DIRECTORY_TYPE, parsed.attributes.getType());
         assertTrue("attr is dir", parsed.attributes.isDirectory());
-//        assertEquals("--xr-x-wx (153)", parsed.attributes.getPermission().toString());
+        assertEquals("--xr-x-wx (153)", parsed.attributes.getPermission().toString());
     }
     
     public void testSpecifiedPermissionsOverrideStandardFilePermissions() {
@@ -129,7 +129,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         assertFalse("is dir", parsed.attributes.isDirectory());
         assertEquals("type", Path.FILE_TYPE, parsed.attributes.getType());
         assertTrue("attr is file", parsed.attributes.isFile());
-//        assertEquals("--xr-x-wx (153)", parsed.attributes.getPermission().toString());
+        assertEquals("--xr-x-wx (153)", parsed.attributes.getPermission().toString());
     }
     
     public void testHideUnreadableFilesAndDirs() {
