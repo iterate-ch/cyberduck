@@ -146,10 +146,8 @@ public abstract class Queue extends Observable implements Observer {
 	}
 
 	protected void setJobs(List jobs) {
-		if(jobs.size() > 0) {
-			this.jobs = jobs;
-			this.reset();
-		}
+		this.jobs = jobs;
+		this.reset();
 	}
 	
 	public Path getRoot() {
@@ -256,12 +254,15 @@ public abstract class Queue extends Observable implements Observer {
 				
 		public void run() {
 			this.init();
-			this.queue.setJobs(this.validator.validate(this.queue));
-			for(Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
-				Path job = (Path)iter.next();
-				job.status.addObserver(queue);
-				this.queue.process(job);
-				job.status.deleteObserver(queue);
+			List jobs = this.validator.validate(queue);
+			if(jobs.size() > 0) {
+				this.queue.setJobs(jobs);
+				for(Iterator iter = jobs.iterator(); iter.hasNext() && !this.isCanceled(); ) {
+					Path job = (Path)iter.next();
+					job.status.addObserver(queue);
+					this.queue.process(job);
+					job.status.deleteObserver(queue);
+				}
 			}
 			this.finish();
 		}

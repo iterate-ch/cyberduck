@@ -214,6 +214,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 
 	public void resumeActionFired(NSButton sender) {
+		this.setCanceled(false);
 		for(Iterator i = this.workset.iterator(); i.hasNext();) {
 			((Path)i.next()).status.setResume(true);
 		}
@@ -221,6 +222,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 
 	public void overwriteActionFired(NSButton sender) {
+		this.setCanceled(false);
 		for(Iterator i = this.workset.iterator(); i.hasNext();) {
 			((Path)i.next()).status.setResume(false);
 		}
@@ -228,6 +230,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 
 	public void skipActionFired(NSButton sender) {
+		this.setCanceled(false);
 		this.workset.clear();
 		NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
 	}
