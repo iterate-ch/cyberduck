@@ -26,7 +26,7 @@ usage() {
 updateNibFromStrings() {
     nib=`basename $nibfile .nib`
 
-    echo "Updating $nib in $language.lproj..."
+    echo "Updating $nib..."
 
     rm -rf $language.lproj/$nibfile.bak
     mv $language.lproj/$nibfile $language.lproj/$nibfile.bak
@@ -55,43 +55,82 @@ updateNibFromStrings() {
 #    done;
 #}
 
+language="all";
+nibfile="all";
 
-if [ $# = 2 ] ; then
+while [ "$1" != "" ]                    # When there are arguments...
+do
+    case "$1" in 
+        -h | --help) 
+            usage;
+            exit 0;
+        ;; 
+        -l | --language) 
+            shift;
+            language=$1
+        ;;
+        -n | --nib) 
+            shift;
+            nibfile=$1
+        ;;
+        *)  echo "Option [$1] not one of  [--langauge, --nib]";       # Error (!)
+            exit 1
+        ;;                          # Abort Script Now
+    esac;
+    shift;
+done;
+
+echo "Language:$language";
+echo "Nib:$nibfile";
+
+if [ "$language" == "all" ] ; then
     {
-        language=$1;
-        nibfile=$2;
-        echo "*** Updating $language Localization..."
-        # First update the nib file with the modifications in the .strings file. 
-        # The .strings file is always assumed to be newer - this means that all 
-        # modifications should not be made in the .nib file directly but in 
-        # the .strings file instead.
-        updateNibFromStrings;
-        exit 0;
-    }
-fi;
-if [ $# = 1 ] ; then
-    {
-       nibfile=$1;
+        echo "*** Updating all localizations...";
         for lproj in `ls . | grep lproj`; do
             language=`basename $lproj .lproj`
             
             if [ $language != "English" ]; then
             {
-                echo "*** Updating $language Localization..."
-    
-#                for nibfile in `ls $language.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; do
-            
-                # Update the nib file with the modifications in the .strings file. 
-                # The .strings file is always assumed to be newer - this means that all 
-                # modifications should not be made in the .nib file directly but in 
-                # the .strings file instead.
-                updateNibFromStrings;
- #               done;
+                echo "*** Updating $language Localization...";
+                if [ nibfile == "all" ] ; then
+                    echo "*** Updating all NIBs...";
+                    for nibfile in `ls $language.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; do
+                        updateNibFromStrings;
+                    done;
+                fi;
+                if [ nibfile != "all" ] ; then
+                        updateNibFromStrings;
+                fi;
             }
             fi;
         done;
-        exit 0;
     }
+    echo "*** Done.";
+    exit 0;
 fi;
-usage;
+
+
+if [ "$language" != "all" ] ; then
+    {
+        echo "*** Updating $language Localization...";
+        if [ nibfile == "all" ] ; then
+            echo "*** Updating all NIBs...";
+            for nibfile in `ls $language.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; do
+                updateNibFromStrings;
+            done;
+        fi;
+        if [ nibfile != "all" ] ; then
+        {
+            updateNibFromStrings;
+        }
+        fi;
+    }
+    echo "*** Done.";
+    exit 0;
+fi;
+
 exit 1;
+
+
+
+
