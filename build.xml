@@ -64,10 +64,12 @@
 		<echo message=""/>
 		<echo message=" available targets are:"/>
 		<echo message=""/>
-		<echo message="   all --> build all targets"/>
-		<echo message="   doc --> javadoc"/>
-		<echo message="   compile --> comile sources"/>
-		<echo message="   clean --> delete class and jar files"/>
+		<echo message="   all-modules --> build all modules"/>
+		<echo message="   core --> build cyberduck-core"/>
+		<echo message="   cocoa --> build cocoa gui classes"/>
+		<echo message="   ssh --> build ssh tool library"/>
+		<echo message="   ftp --> build ftp tool library"/>
+		<echo message="   http --> build jakarta http library"/>
 		<echo message="   ---------------------------------------------------------------"/>
 	</target>
 	
@@ -82,7 +84,15 @@
 
 	<target name="all-modules" depends="core,ftp,ssh,http,cocoa"></target>
 	
-	<target name="core">
+	<target name="libraries">
+	    <copy todir="${app.jar}">
+		<fileset dir="${lib}">
+		    <include name="*.jar" />
+		</fileset>
+	    </copy>
+	</target>
+	
+	<target name="core" depends="init, libraries">
 	    <mkdir dir="${classes}/core" />
 	    <javac 
 		debug="${debug}"
@@ -107,7 +117,7 @@
 	    </copy>
 	</target>
 	
-	<target name="cocoa">
+	<target name="cocoa" depends="init">
 	    <mkdir dir="${classes}/cocoa" />
 	    <javac 
 		debug="${debug}"
@@ -133,7 +143,7 @@
 	</target>
 
 
-	<target name="ssh">
+	<target name="ssh" depends="init">
 	    <mkdir dir="${classes}/ssh" />
 	    <javac 
 		debug="${debug}"
@@ -159,7 +169,7 @@
 	</target>
 
 
-	<target name="ftp">
+	<target name="ftp" depends="init">
 	    <mkdir dir="${classes}/ftp" />
 	    <javac 
 		debug="${debug}"
@@ -184,7 +194,7 @@
 	    </copy>
 	</target>
 	
-	<target name="http">
+	<target name="http" depends="init">
 	    <mkdir dir="${classes}/http" />
 	    <javac 
 		debug="${debug}"

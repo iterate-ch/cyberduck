@@ -118,7 +118,7 @@ public class CDConnectionController extends NSObject {
 	    }
 	    host.setHostKeyVerification(new CDHostKeyVerification());
 	    mainWindow.setTitle(host.getName());
-	    host.addObserver((Observer)browserTable);
+	    host.addObserver((CDBrowserView)browserTable);
 	    Session session = host.getSession();
 	    session.start();
 	}

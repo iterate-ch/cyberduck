@@ -15,12 +15,32 @@ import org.apache.log4j.Logger;
 public class CDBrowserView extends NSTableView implements Observer {
     private static Logger log = Logger.getLogger(CDBrowserView.class);
 
+    public CDBrowserView(NSCoder decoder, long token) {
+	super(decoder, token);
+    }
+
     public CDBrowserView() {
 	super();
     }
 
     public CDBrowserView(NSRect frame) {
 	super(frame);
+    }
+
+    public void awakeFromNib() {
+	this.setTarget(this);
+    }
+
+    public void mouseUp(NSEvent event) {
+	log.debug(event.toString());
+	if(event.clickCount() == 2) {
+	    // Double click
+	    log.debug("I got double click!");
+	}
+    }
+    
+    public void encodeWithCoder(NSCoder encoder) {
+	super.encodeWithCoder(encoder);
     }
 
     public void update(Observable o, Object arg) {

@@ -21,10 +21,18 @@ public class CDStatusLabel extends NSTextField implements Appender {
 	super();
     }
 
+    public CDStatusLabel(NSCoder decoder, long token) {
+	super(decoder, token);
+    }
+    
     public CDStatusLabel(NSRect frameRect) {
 	super(frameRect);
     }
 
+    public void encodeWithCoder(NSCoder encoder) {
+	super.encodeWithCoder(encoder);
+    }
+    
     public String getName() {
 	return this.name;
     }
