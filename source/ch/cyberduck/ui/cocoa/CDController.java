@@ -104,7 +104,6 @@ public abstract class CDController {
 	}
 
 	public void beginSheet(NSWindow sheet, Object delegate, NSSelector endSelector, Object contextInfo) {
-		//this.endSheet();
 		synchronized(this) {
 			log.debug("beginSheet");
 			this.waitForSheet();

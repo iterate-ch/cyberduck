@@ -96,7 +96,7 @@ public class FTPControlSocket {
 	 * @param encoding        character encoding used for data
 	 * @param messageListener listens for messages
 	 */
-	FTPControlSocket(InetAddress remoteAddr, int controlPort, int timeout,
+	protected FTPControlSocket(InetAddress remoteAddr, int controlPort, int timeout,
 	                 String encoding, FTPMessageListener messageListener)
 	    throws IOException, FTPException {
 
@@ -161,7 +161,7 @@ public class FTPControlSocket {
 	 *
 	 * @return remote host name
 	 */
-	String getRemoteHostName() {
+	public String getRemoteHostName() {
 		InetAddress addr = controlSock.getInetAddress();
 		return addr.getHostName();
 	}
@@ -173,7 +173,7 @@ public class FTPControlSocket {
 	 *
 	 * @param strict true for strict checking, false for loose checking
 	 */
-	void setStrictReturnCodes(boolean strict) {
+	public void setStrictReturnCodes(boolean strict) {
 		this.strictReturnCodes = strict;
 	}
 
@@ -186,7 +186,7 @@ public class FTPControlSocket {
 	 *
 	 * @param millis The length of the timeout, in milliseconds
 	 */
-	void setTimeout(int millis)
+	public void setTimeout(int millis)
 	    throws IOException {
 
 		if(controlSock == null)
@@ -201,7 +201,7 @@ public class FTPControlSocket {
 	 *
 	 * @param listener message listener
 	 */
-	void setMessageListener(FTPMessageListener listener) {
+	public void setMessageListener(FTPMessageListener listener) {
 		this.messageListener = listener;
 	}
 
@@ -243,14 +243,14 @@ public class FTPControlSocket {
 	 *               in passive mode
 	 * @return connected data socket
 	 */
-	FTPDataSocket createDataSocket(FTPConnectMode connectMode)
+	private FTPDataSocket createDataSocket(FTPConnectMode connectMode)
 	    throws IOException, FTPException {
 
 		if(connectMode == FTPConnectMode.ACTIVE) {
-			return createDataSocketActive();
+			return this.createDataSocketActive();
 		}
 		else { // PASV
-			return createDataSocketPASV();
+			return this.createDataSocketPASV();
 		}
 	}
 
@@ -260,7 +260,7 @@ public class FTPControlSocket {
 	 *
 	 * @return not connected data socket
 	 */
-	FTPDataSocket createDataSocketActive()
+	private FTPDataSocket createDataSocketActive()
 	    throws IOException, FTPException {
 
 		// use any available port
@@ -336,7 +336,7 @@ public class FTPControlSocket {
 	 *
 	 * @return connected data socket
 	 */
-	FTPDataSocket createDataSocketPASV()
+	private FTPDataSocket createDataSocketPASV()
 	    throws IOException, FTPException {
 
 		// PASSIVE command - tells the server to listen for
@@ -354,45 +354,13 @@ public class FTPControlSocket {
 		// NOTE: PASV command in IBM/Mainframe returns the string
 		// 227 Entering Passive Mode 128,3,122,1,15,87	(missing
 		// brackets)
-
-		// extract the IP data string from between the brackets
-		int startIP = reply.indexOf('(');
-		int endIP = reply.indexOf(')');
-
-		// allow for IBM missing brackets around IP address
-		if(startIP < 0 && endIP < 0) {
-			startIP = reply.toUpperCase().lastIndexOf("MODE")+4;
-			endIP = reply.length();
-		}
-
-		String ipData = reply.substring(startIP+1, endIP);
-		int parts[] = new int[6];
-
-		int len = ipData.length();
-		int partCount = 0;
-		StringBuffer buf = new StringBuffer();
-
-		// loop thru and examine each char
-		for(int i = 0; i < len && partCount <= 6; i++) {
-
-			char ch = ipData.charAt(i);
-			if(Character.isDigit(ch))
-				buf.append(ch);
-			else if(ch != ',') {
-				throw new FTPException("Malformed PASV reply: "+reply);
-			}
-
-			// get the part
-			if(ch == ',' || i+1 == len) { // at end or at separator
-				try {
-					parts[partCount++] = Integer.parseInt(buf.toString());
-					buf.setLength(0);
-				}
-				catch(NumberFormatException ex) {
-					throw new FTPException("Malformed PASV reply: "+reply);
-				}
-			}
-		}
+        //
+        // Improvement: The first digit found after the reply code
+        // is considered start of IP. End of IP can be EOL or random
+        // characters. Should take care of all PASV reponse lines,
+        // right?
+		
+        int parts[] = this.parsePASVResponse(reply);
 
 		// assemble the IP address
 		// we try connecting, so we don't bother checking digits etc
@@ -406,15 +374,12 @@ public class FTPControlSocket {
 		return new FTPPassiveDataSocket(new Socket(ipAddress, port));
 	}
 
-	/*
 	private int[] parsePASVResponse(String response)  throws FTPException {
 		int startIP = 0;
 		for (int i = 4; i < response.length(); i++) {
 			if (Character.isDigit(response.charAt(i))) { startIP = i; break; }
 		}
-
-		int i;
-		int j = startIP;
+		int i; int j = startIP;
 		int parts[] = new int[6];
 		for (i = 0; i < 6; i++) {
 			StringBuffer buf = new StringBuffer();
@@ -422,11 +387,12 @@ public class FTPControlSocket {
 				char c = response.charAt(j);
 				if (Character.isDigit(c)) {
 					buf.append(c);
-				} else if (i < 5 && c != ',') {
+				} 
+				else if (i < 5 && c != ',') {
 					throw new FTPException("Malformed PASV reply: " + response);
-				} else {
-					j += 1;
-					break;
+				} 
+				else {
+					j += 1; break;
 				}
 			}
 			if (buf.length() == 0) throw new FTPException("Malformed PASV reply: " + response);
@@ -434,7 +400,6 @@ public class FTPControlSocket {
 		}
 		return parts;
 	}
-	 */
 
 	/**
 	 * Send a command to the FTP server and
@@ -459,7 +424,7 @@ public class FTPControlSocket {
 	 *
 	 * @param command command to send
 	 */
-	void writeCommand(String command)
+	private void writeCommand(String command)
 	    throws IOException {
 
 		log(command, true);
@@ -479,7 +444,7 @@ public class FTPControlSocket {
 	 *
 	 * @return structured reply object
 	 */
-	FTPReply readReply()
+	private FTPReply readReply()
 	    throws IOException {
 
 		String line = reader.readLine();
@@ -540,7 +505,7 @@ public class FTPControlSocket {
 	 * @param reply             the entire reply string we received
 	 * @param expectedReplyCode the reply we expected to receive
 	 */
-	FTPReply validateReply(String reply, String expectedReplyCode)
+	private FTPReply validateReply(String reply, String expectedReplyCode)
 	    throws FTPException {
 
 		FTPReply replyObj = new FTPReply(reply);
@@ -643,7 +608,7 @@ public class FTPControlSocket {
 	 * @param msg   message to log
 	 * @param reply true if a response, false otherwise
 	 */
-	void log(String msg, boolean command) {
+	private void log(String msg, boolean command) {
 		if(msg.startsWith(PASSWORD_MESSAGE))
 			msg = PASSWORD_MESSAGE+" ********";
 		if(messageListener != null)

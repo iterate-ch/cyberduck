@@ -385,7 +385,12 @@ public class CDQueueController extends CDController {
 	public void queueTableRowDoubleClicked(Object sender) {
 		if(this.queueTable.selectedRow() != -1) {
 			Queue item = this.queueModel.getItem(this.queueTable.selectedRow());
-			this.reloadButtonClicked(sender);
+			if(item.isRunning()) {
+				this.stopButtonClicked(sender);
+			}
+			else {
+				this.reloadButtonClicked(sender);
+			}
 		}
 	}
 
@@ -568,8 +573,7 @@ public class CDQueueController extends CDController {
 	}
 
 	public boolean validateToolbarItem(NSToolbarItem item) {
-		String identifier = item.itemIdentifier();
-		return this.validateItem(identifier);
+		return this.validateItem(item.itemIdentifier());
 	}
 
 	private boolean validateItem(String identifier) {

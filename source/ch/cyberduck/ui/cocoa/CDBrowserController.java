@@ -1214,7 +1214,7 @@ public class CDBrowserController extends CDController implements Observer {
 			TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(logView));
 
 			Session session = SessionFactory.createSession(host);
-			this.workdir = PathFactory.createPath(session, host.getDefaultPath());
+			//this.workdir = PathFactory.createPath(session, host.getDefaultPath());
 			session.addObserver((Observer)this);
 
 			if(session instanceof ch.cyberduck.core.sftp.SFTPSession) {
@@ -1469,7 +1469,7 @@ public class CDBrowserController extends CDController implements Observer {
 			return this.isMounted();
 		}
 		if(identifier.equals("Get Info") || identifier.equals("infoButtonClicked:")) {
-			return this.isMounted() && browserTable.selectedRow() != -1;
+			return this.isMounted() && this.browserTable.selectedRow() != -1;
 		}
 		if(identifier.equals("New Folder") || identifier.equals("folderButtonClicked:")) {
 			return this.isMounted();
@@ -1478,25 +1478,25 @@ public class CDBrowserController extends CDController implements Observer {
 			return this.isMounted();
 		}
 		if(identifier.equals("Delete") || identifier.equals("deleteFileButtonClicked:")) {
-			return this.isMounted() && browserTable.selectedRow() != -1;
+			return this.isMounted() && this.browserTable.selectedRow() != -1;
 		}
 		if(identifier.equals("Refresh") || identifier.equals("reloadButtonClicked:")) {
 			return this.isMounted();
 		}
 		if(identifier.equals("Download") || identifier.equals("downloadButtonClicked:")) {
-			return this.isMounted() && browserTable.selectedRow() != -1;
+			return this.isMounted() && this.browserTable.selectedRow() != -1;
 		}
 		if(identifier.equals("Upload") || identifier.equals("downloadButtonClicked:")) {
 			return this.isMounted();
 		}
 		if(identifier.equals("Synchronize") || identifier.equals("syncButtonClicked:")) {
-			return this.isMounted() && browserTable.numberOfSelectedRows() == 1 && this.browserModel.getEntry(browserTable.selectedRow()).attributes.isDirectory();
+			return this.isMounted() && this.browserTable.numberOfSelectedRows() == 1 && this.browserModel.getEntry(this.browserTable.selectedRow()).attributes.isDirectory();
 		}
 		if(identifier.equals("Download As") || identifier.equals("downloadAsButtonClicked:")) {
-			return this.isMounted() && browserTable.numberOfSelectedRows() == 1;
+			return this.isMounted() && this.browserTable.numberOfSelectedRows() == 1;
 		}
 		if(identifier.equals("insideButtonClicked:")) {
-			return this.isMounted() && browserTable.selectedRow() != -1;
+			return this.isMounted() && this.browserTable.selectedRow() != -1;
 		}
 		if(identifier.equals("upButtonClicked:")) {
 			return this.isMounted();

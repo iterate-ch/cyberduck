@@ -85,7 +85,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 	
 	protected void prompt(Path p) {
-		p.reset();
 		if(!this.hasPrompt()) {
 			this.load();
 			this.windowController.beginSheet(this.window());

@@ -291,11 +291,12 @@ public class Permission {
 	/**
 	 * @return The unix equivalent octal access code like 777
 	 */
-	public int getOctalCode() {
+	public String getOctalCode() {
 		String owner = ""+this.getOctalAccessNumber(this.getOwnerPermissions());
 		String group = ""+this.getOctalAccessNumber(this.getGroupPermissions());
 		String other = ""+this.getOctalAccessNumber(this.getOtherPermissions());
-		return Integer.parseInt(owner+group+other);
+//		return Integer.parseInt(owner+group+other);
+		return owner+group+other;
 	}
 
 	public int getDecimalCode() {
