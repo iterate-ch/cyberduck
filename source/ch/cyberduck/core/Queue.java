@@ -18,7 +18,10 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import javax.swing.*;
 import java.util.ArrayList;

@@ -23,7 +23,7 @@
 package com.sshtools.ext.bouncycastle.cipher;
 
 public class Twofish256Cbc extends CbcBlockCipher {
-	public Twofish256Cbc() {
-		super(256, new TwofishEngine());
-	}
+    public Twofish256Cbc() {
+        super(256, new TwofishEngine());
+    }
 }

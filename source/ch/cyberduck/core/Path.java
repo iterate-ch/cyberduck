@@ -21,7 +21,9 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.log4j.Logger;

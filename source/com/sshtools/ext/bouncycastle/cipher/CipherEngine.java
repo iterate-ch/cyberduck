@@ -25,10 +25,10 @@ package com.sshtools.ext.bouncycastle.cipher;
 import com.sshtools.j2ssh.transport.AlgorithmOperationException;
 
 public interface CipherEngine {
-	public void init(boolean forEncryption, byte[] key);
-	
-	public int getBlockSize();
-	
-	public int processBlock(byte[] in, int inOff, byte[] out, int outOff) throws
-		AlgorithmOperationException;
+    public void init(boolean forEncryption, byte[] key);
+
+    public int getBlockSize();
+
+    public int processBlock(byte[] in, int inOff, byte[] out, int outOff) throws
+            AlgorithmOperationException;
 }

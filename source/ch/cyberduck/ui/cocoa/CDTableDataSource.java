@@ -24,7 +24,6 @@ import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * @version $Id$

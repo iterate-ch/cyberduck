@@ -23,7 +23,7 @@
 package com.sshtools.ext.bouncycastle.cipher;
 
 public class CAST128Cbc extends CbcBlockCipher {
-	public CAST128Cbc() {
-		super(128, new CAST5Engine());
-	}
+    public CAST128Cbc() {
+        super(128, new CAST5Engine());
+    }
 }

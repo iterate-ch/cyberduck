@@ -19,15 +19,10 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.application.NSMutableParagraphStyle;
 import com.apple.cocoa.application.NSParagraphStyle;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.application.NSWindow;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 

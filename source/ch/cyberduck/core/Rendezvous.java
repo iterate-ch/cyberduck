@@ -19,9 +19,9 @@ package ch.cyberduck.core;
  */
 
 import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
-import javax.jmdns.ServiceEvent;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

@@ -21,10 +21,10 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
-import java.io.File;
 
 import org.apache.log4j.Logger;
 

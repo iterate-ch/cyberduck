@@ -23,7 +23,7 @@
 package com.sshtools.ext.bouncycastle.cipher;
 
 public class AES192Cbc extends CbcBlockCipher {
-	public AES192Cbc() {
-		super(192, new AESEngine());
-	}
+    public AES192Cbc() {
+        super(192, new AESEngine());
+    }
 }

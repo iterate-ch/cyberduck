@@ -22,8 +22,8 @@ import com.apple.cocoa.foundation.*;
 
 import java.io.File;
 import java.util.Calendar;
-import java.util.TimeZone;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 

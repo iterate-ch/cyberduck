@@ -25,8 +25,8 @@ import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 
-import java.net.MalformedURLException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import org.apache.log4j.Logger;
 
