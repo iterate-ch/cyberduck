@@ -73,10 +73,12 @@ public class SFTPSession extends Session {
             }
         }
         catch (SshException e) {
-            this.log("SSH Error: " + e.getMessage(), Message.ERROR);
+            log.error("SSH Error: " + e.getMessage());
+//            this.log("SSH Error: " + e.getMessage(), Message.ERROR);
         }
         catch (IOException e) {
-            this.log("IO Error: " + e.getMessage(), Message.ERROR);
+            log.error("IO Error: " + e.getMessage());
+//            this.log("IO Error: " + e.getMessage(), Message.ERROR);
         }
         finally {
             this.log("Disconnected", Message.PROGRESS);
@@ -117,7 +119,6 @@ public class SFTPSession extends Session {
 //			}
 		}
 
-        this.log("Opening SSH session...", Message.PROGRESS);
         SSH.connect(properties, host.getHostKeyVerificationController());
         this.log("SSH connection opened", Message.PROGRESS);
         String id = SSH.getServerId();
@@ -250,7 +251,6 @@ public class SFTPSession extends Session {
     }
 
     public synchronized void check() throws IOException {
-        log.debug(this.toString() + ":check");
         this.log("Working", Message.START);
 //		this.log("Checking connection...", Message.PROGRESS);
         if (null == this.SSH || !SSH.isConnected()) {

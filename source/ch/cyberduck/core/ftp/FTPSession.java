@@ -62,10 +62,12 @@ public class FTPSession extends Session {
             }
         }
         catch (FTPException e) {
-            this.log("FTP Error: " + e.getMessage(), Message.ERROR);
+            log.error("FTP Error: " + e.getMessage());
+//            this.log("FTP Error: " + e.getMessage(), Message.ERROR);
         }
         catch (IOException e) {
-            this.log("IO Error: " + e.getMessage(), Message.ERROR);
+            log.error("IO Error: " + e.getMessage());
+//            this.log("IO Error: " + e.getMessage(), Message.ERROR);
         }
         finally {
             this.log("Disconnected", Message.PROGRESS);
@@ -140,9 +142,6 @@ public class FTPSession extends Session {
     }
 
     public synchronized void check() throws IOException {
-        if (log.isDebugEnabled()) {
-            log.debug(this.toString() + ":check");
-        }
         this.log("Working", Message.START);
 //		this.log("Checking connection...", Message.PROGRESS);
         if (null == this.FTP || !this.FTP.isAlive()) {

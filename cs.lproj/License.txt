@@ -1,280 +1,291 @@
-		    GNU GENERAL PUBLIC LICENSE
-		       Version 2, June 1991
+{\rtf1\mac\ansicpg10029\cocoartf102
+{\fonttbl\f0\fnil\fcharset77 Geneva;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11320\viewh18080\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
 
-  Copyright (C) 1989, 1991 Free Software Foundation, Inc.
-59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-Everyone is permitted to copy and distribute verbatim copies
-of this license document, but changing it is not allowed.
+\f0\fs24 \cf0 Obecn\'87 ve\uc0\u345 ejn\'87 licence GNU \u268 esk\u253  p\u345 eklad verze 2, \u269 erven 1991\
+\
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. 675 Mass Ave,\
+Cambridge, MA 02139, USA\
+\
+Kop\'92rov\'87n\'92 a distribuce doslovn\uc0\u253 ch kopi\'92 tohoto licen\u269 n\'92ho dokumentu\
+jsou dovoleny komukoliv, jeho zm\uc0\u283 ny jsou v\u353 ak zak\'87z\'87ny.\
 
-		Preamble
-
-  The licenses for most software are designed to take away your
-freedom to share and change it.  By contrast, the GNU General Public
-License is intended to guarantee your freedom to share and change free
-software--to make sure the software is free for all its users.  This
-General Public License applies to most of the Free Software
-Foundation's software and to any other program whose authors commit to
-using it.  (Some other Free Software Foundation software is covered by
-the GNU Library General Public License instead.)  You can apply it to
-your programs, too.
-
-  When we speak of free software, we are referring to freedom, not
-price.  Our General Public Licenses are designed to make sure that you
-have the freedom to distribute copies of free software (and charge for
-this service if you wish), that you receive source code or can get it
-if you want it, that you can change the software or use pieces of it
-in new free programs; and that you know you can do these things.
-
-  To protect your rights, we need to make restrictions that forbid
-anyone to deny you these rights or to ask you to surrender the rights.
-These restrictions translate to certain responsibilities for you if you
-distribute copies of the software, or if you modify it.
-
-  For example, if you distribute copies of such a program, whether
-gratis or for a fee, you must give the recipients all the rights that
-you have.  You must make sure that they, too, receive or can get the
-source code.  And you must show them these terms so they know their
-rights.
-
-  We protect your rights with two steps: (1) copyright the software, and
-(2) offer you this license which gives you legal permission to copy,
-distribute and/or modify the software.
-
-  Also, for each author's protection and ours, we want to make certain
-that everyone understands that there is no warranty for this free
-software.  If the software is modified by someone else and passed on, we
-want its recipients to know that what they have is not the original, so
-that any problems introduced by others will not reflect on the original
-authors' reputations.
-
-  Finally, any free program is threatened constantly by software
-patents.  We wish to avoid the danger that redistributors of a free
-program will individually obtain patent licenses, in effect making the
-program proprietary.  To prevent this, we have made it clear that any
-patent must be licensed for everyone's free use or not licensed at all.
-
-  The precise terms and conditions for copying, distribution and
-modification follow.
-
-		    GNU GENERAL PUBLIC LICENSE
-   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-
-  0. This License applies to any program or other work which contains
-a notice placed by the copyright holder saying it may be distributed
-under the terms of this General Public License.  The "Program", below,
-refers to any such program or work, and a "work based on the Program"
-means either the Program or any derivative work under copyright law:
-that is to say, a work containing the Program or a portion of it,
-either verbatim or with modifications and/or translated into another
-language.  (Hereinafter, translation is included without limitation in
-the term "modification".)  Each licensee is addressed as "you".
-
-Activities other than copying, distribution and modification are not
-covered by this License; they are outside its scope.  The act of
-running the Program is not restricted, and the output from the Program
-is covered only if its contents constitute a work based on the
-Program (independent of having been made by running the Program).
-Whether that is true depends on what the Program does.
-
-  1. You may copy and distribute verbatim copies of the Program's
-source code as you receive it, in any medium, provided that you
-conspicuously and appropriately publish on each copy an appropriate
-copyright notice and disclaimer of warranty; keep intact all the
-notices that refer to this License and to the absence of any warranty;
-and give any other recipients of the Program a copy of this License
-along with the Program.
-
-You may charge a fee for the physical act of transferring a copy, and
-you may at your option offer warranty protection in exchange for a fee.
-
-  2. You may modify your copy or copies of the Program or any portion
-of it, thus forming a work based on the Program, and copy and
-distribute such modifications or work under the terms of Section 1
-above, provided that you also meet all of these conditions:
-
-    a) You must cause the modified files to carry prominent notices
-    stating that you changed the files and the date of any change.
-
-    b) You must cause any work that you distribute or publish, that in
-    whole or in part contains or is derived from the Program or any
-    part thereof, to be licensed as a whole at no charge to all third
-    parties under the terms of this License.
-
-    c) If the modified program normally reads commands interactively
-    when run, you must cause it, when started running for such
-    interactive use in the most ordinary way, to print or display an
-    announcement including an appropriate copyright notice and a
-    notice that there is no warranty (or else, saying that you provide
-    a warranty) and that users may redistribute the program under
-    these conditions, and telling the user how to view a copy of this
-    License.  (Exception: if the Program itself is interactive but
-    does not normally print such an announcement, your work based on
-    the Program is not required to print an announcement.)
-
-These requirements apply to the modified work as a whole.  If
-identifiable sections of that work are not derived from the Program,
-and can be reasonably considered independent and separate works in
-themselves, then this License, and its terms, do not apply to those
-sections when you distribute them as separate works.  But when you
-distribute the same sections as part of a whole which is a work based
-on the Program, the distribution of the whole must be on the terms of
-this License, whose permissions for other licensees extend to the
-entire whole, and thus to each and every part regardless of who wrote it.
-
-Thus, it is not the intent of this section to claim rights or contest
-your rights to work written entirely by you; rather, the intent is to
-exercise the right to control the distribution of derivative or
-collective works based on the Program.
-
-In addition, mere aggregation of another work not based on the Program
-with the Program (or with a work based on the Program) on a volume of
-a storage or distribution medium does not bring the other work under
-the scope of this License.
-
-  3. You may copy and distribute the Program (or a work based on it,
-under Section 2) in object code or executable form under the terms of
-Sections 1 and 2 above provided that you also do one of the following:
-
-    a) Accompany it with the complete corresponding machine-readable
-    source code, which must be distributed under the terms of Sections
-    1 and 2 above on a medium customarily used for software interchange; or,
-
-    b) Accompany it with a written offer, valid for at least three
-    years, to give any third party, for a charge no more than your
-    cost of physically performing source distribution, a complete
-    machine-readable copy of the corresponding source code, to be
-    distributed under the terms of Sections 1 and 2 above on a medium
-    customarily used for software interchange; or,
-
-    c) Accompany it with the information you received as to the offer
-    to distribute corresponding source code.  (This alternative is
-    allowed only for noncommercial distribution and only if you
-    received the program in object code or executable form with such
-    an offer, in accord with Subsection b above.)
-
-The source code for a work means the preferred form of the work for
-making modifications to it.  For an executable work, complete source
-code means all the source code for all modules it contains, plus any
-associated interface definition files, plus the scripts used to
-control compilation and installation of the executable.  However, as a
-special exception, the source code distributed need not include
-anything that is normally distributed (in either source or binary
-form) with the major components (compiler, kernel, and so on) of the
-operating system on which the executable runs, unless that component
-itself accompanies the executable.
-
-If distribution of executable or object code is made by offering
-access to copy from a designated place, then offering equivalent
-access to copy the source code from the same place counts as
-distribution of the source code, even though third parties are not
-compelled to copy the source along with the object code.
-
-  4. You may not copy, modify, sublicense, or distribute the Program
-except as expressly provided under this License.  Any attempt
-otherwise to copy, modify, sublicense or distribute the Program is
-void, and will automatically terminate your rights under this License.
-However, parties who have received copies, or rights, from you under
-this License will not have their licenses terminated so long as such
-parties remain in full compliance.
-
-  5. You are not required to accept this License, since you have not
-signed it.  However, nothing else grants you permission to modify or
-distribute the Program or its derivative works.  These actions are
-prohibited by law if you do not accept this License.  Therefore, by
-modifying or distributing the Program (or any work based on the
-Program), you indicate your acceptance of this License to do so, and
-all its terms and conditions for copying, distributing or modifying
-the Program or works based on it.
-
-  6. Each time you redistribute the Program (or any work based on the
-Program), the recipient automatically receives a license from the
-original licensor to copy, distribute or modify the Program subject to
-these terms and conditions.  You may not impose any further
-restrictions on the recipients' exercise of the rights granted herein.
-You are not responsible for enforcing compliance by third parties to
-this License.
-
-  7. If, as a consequence of a court judgment or allegation of patent
-infringement or for any other reason (not limited to patent issues),
-conditions are imposed on you (whether by court order, agreement or
-otherwise) that contradict the conditions of this License, they do not
-excuse you from the conditions of this License.  If you cannot
-distribute so as to satisfy simultaneously your obligations under this
-License and any other pertinent obligations, then as a consequence you
-may not distribute the Program at all.  For example, if a patent
-license would not permit royalty-free redistribution of the Program by
-all those who receive copies directly or indirectly through you, then
-the only way you could satisfy both it and this License would be to
-refrain entirely from distribution of the Program.
-
-If any portion of this section is held invalid or unenforceable under
-any particular circumstance, the balance of the section is intended to
-apply and the section as a whole is intended to apply in other
-circumstances.
-
-It is not the purpose of this section to induce you to infringe any
-patents or other property right claims or to contest validity of any
-such claims; this section has the sole purpose of protecting the
-integrity of the free software distribution system, which is
-implemented by public license practices.  Many people have made
-generous contributions to the wide range of software distributed
-through that system in reliance on consistent application of that
-system; it is up to the author/donor to decide if he or she is willing
-to distribute software through any other system and a licensee cannot
-impose that choice.
-
-This section is intended to make thoroughly clear what is believed to
-be a consequence of the rest of this License.
-
-  8. If the distribution and/or use of the Program is restricted in
-certain countries either by patents or by copyrighted interfaces, the
-original copyright holder who places the Program under this License
-may add an explicit geographical distribution limitation excluding
-those countries, so that distribution is permitted only in or among
-countries not thus excluded.  In such case, this License incorporates
-the limitation as if written in the body of this License.
-
-  9. The Free Software Foundation may publish revised and/or new versions
-of the General Public License from time to time.  Such new versions will
-be similar in spirit to the present version, but may differ in detail to
-address new problems or concerns.
-
-Each version is given a distinguishing version number.  If the Program
-specifies a version number of this License which applies to it and "any
-later version", you have the option of following the terms and conditions
-either of that version or of any later version published by the Free
-Software Foundation.  If the Program does not specify a version number of
-this License, you may choose any version ever published by the Free Software
-Foundation.
-
-  10. If you wish to incorporate parts of the Program into other free
-programs whose distribution conditions are different, write to the author
-to ask for permission.  For software which is copyrighted by the Free
-Software Foundation, write to the Free Software Foundation; we sometimes
-make exceptions for this.  Our decision will be guided by the two goals
-of preserving the free status of all derivatives of our free software and
-of promoting the sharing and reuse of software generally.
-
-		NO WARRANTY
-
-  11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
-FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
-OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
-PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED
-OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS
-TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE
-PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,
-REPAIR OR CORRECTION.
-
-  12. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
-WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
-REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES,
-INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING
-OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED
-TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY
-YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
-PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGES.
-
-		END OF TERMS AND CONDITIONS
+\fs20 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
+\cf0 Preambule\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+\cf0 \
+Softwarov\'8e licence jsou v\uc0\u283 t\u353 inou navr\u382 eny tak, \u382 e v\'87m odeb\'92raj\'92 pr\'87vo\
+voln\'8eho sd\'92len\'92 a \'9cprav program\uc0\u367 . Smyslem Obecn\'8e ve\u345 ejn\'8e licence GNU je\
+naproti tomu zaru\uc0\u269 it volnost ke sd\'92len\'92 a \'9cprav\'87m voln\'8eho softwaru--pro\
+zaji\uc0\u353 t\u283 n\'92 voln\'8eho p\u345 \'92stupu k tomuto softwaru pro v\u353 echny jeho u\u382 ivatele.\
+Tato Obecn\'87 ve\uc0\u345 ejn\'87 licence GNU se vztahuje na v\u283 t\u353 inu softwaru nadace\
+Free Software Foundation a na jak\uc0\u253 koli jin\u253  program, jeho\u382  autor se\
+p\uc0\u345 iklon\'92 k jej\'92mu pou\u382 \'92v\'87n\'92. (N\u283 kter\u253  dal\u353 \'92 software od Free Software\
+Foundation je nam\'92sto toho pokryt Obecnou knihovn\'92 ve\uc0\u345 ejnou licenc\'92\
+GNU.) M\uc0\u367 \u382 ete ji rovn\u283 \u382  pou\u382 \'92t pro sv\'8e programy.\
+\
+Pokud mluv\'92me o voln\'8em softwaru, m\'87me na mysli volnost, nikoliv cenu.\
+Na\uc0\u353 e Obecn\'87 ve\u345 ejn\'87 licence je navr\u382 ena pro zaji\u353 t\u283 n\'92 toho, \u382 e m\u367 \u382 ete\
+voln\uc0\u283  \u353 \'92\u345 it kopie voln\'8eho softwaru (a \'9c\u269 tovat si poplatek za tuto\
+slu\uc0\u382 bu, pokud chcete), \u382 e obdr\u382 \'92te zdrojov\u253  k\'97d anebo jej m\u367 \u382 ete z\'92skat,\
+pokud ho chcete, \uc0\u382 e m\u367 \u382 ete tento software modifikovat nebo jeho \u269 \'87sti\
+pou\uc0\u382 \'92t v nov\u253 ch voln\u253 ch programech; a \u382 e v\'92te, \u382 e tyto v\u283 ci sm\'92te d\u283 lat.\
+\
+Abychom mohli va\uc0\u353 e pr\'87va chr\'87nit, mus\'92me vytvo\u345 it omezen\'92, kter\'87 zak\'87\u382 \'92\
+komukoli v\'87m tato pr\'87va odep\'92rat nebo v\'87s \uc0\u382 \'87dat, abyste se t\u283 chto pr\'87v\
+vzdal. Tato omezen\'92 se prom\'92taj\'92 do jist\uc0\u253 ch povinnost\'92, kter\u253 m mus\'92te\
+dost\'87t, pokud \uc0\u353 \'92\u345 \'92te kopie doty\u269 n\'8eho softwaru anebo ho modifikujete.\
+\
+Nap\uc0\u345 \'92klad, \u353 \'92\u345 \'92te-li kopie takov\'8eho programu, a\u357  ji\u382  zdarma nebo za\
+poplatek, mus\'92te poskytnout p\uc0\u345 \'92jemc\u367 m v\u353 echna pr\'87va, kter\'87 m\'87te s\'87m.\
+Mus\'92te zaru\uc0\u269 it, \u382 e p\u345 \'92jemci rovn\u283 \u382  dostanou anebo mohou z\'92skat zdrojov\u253 \
+k\'97d. A mus\'92te jim uk\'87zat tyto podm\'92nky, aby znali sv\'87 pr\'87va.\
+\
+Va\uc0\u353 e pr\'87va chr\'87n\'92me ve dvou kroc\'92ch:\
+(1)\'caautorizac\'92 softwaru, a\
+(2)\'canab\'92dkou t\'8eto licence, kter\'87 v\'87m d\'87v\'87 pr\'87voplatn\'8e svolen\'92 ke\
+kop\'92rov\'87n\'92, \uc0\u353 \'92\u345 en\'92 a modifikaci softwaru.\
+\
+Kv\uc0\u367 li ochran\u283  ka\u382 d\'8eho autora i n\'87s samotn\u253 ch chceme zajistit, aby ka\u382 d\u253 \
+ch\'87pal skute\uc0\u269 nost, \u382 e pro voln\u253  software neplat\'92 \u382 \'87dn\'8e z\'87ruky. Je-li\
+software n\uc0\u283 k\u253 m jin\u253 m modifikov\'87n a posl\'87n d\'87le, chceme, aby p\u345 \'92jemci\
+v\uc0\u283 d\u283 li, \u382 e to, co maj\'92, nen\'92 origin\'87l, tak\u382 e jak\'8ekoliv probl\'8emy vnesen\'8e\
+jin\uc0\u253 mi se neodraz\'92 na reputaci p\u367 vodn\'92ch autor\u367 .\
+\
+Kone\uc0\u269 n\u283 , ka\u382 d\u253  voln\u253  program je neust\'87le ohro\u382 en softwarov\u253 mi patenty.\
+P\uc0\u345 ejeme si zamezit nebezpe\u269 \'92, \u382 e redistributo\u345 i voln\'8eho programu obdr\u382 \'92\
+samostatn\uc0\u283  patentov\'87 osv\u283 d\u269 en\'92 a t\'92m u\u269 in\'92 program v\'87zan\u253 m. Abychom tomu\
+zamezili, deklarovali jsme, \uc0\u382 e ka\u382 d\u253  patent mus\'92 b\u253 t bu\u271  vyd\'87n s t\'92m, \u382 e\
+umo\uc0\u382 \u328 uje ka\u382 d\'8emu voln\'8e u\u382 it\'92, anebo nesm\'92 b\u253 t vyd\'87n v\u367 bec.\
+\
+P\uc0\u345 esn\'87 ustanoven\'92 a podm\'92nky pro kop\'92rov\'87n\'92, \u353 \'92\u345 en\'92 a modifikaci jsou\
+uvedeny d\'87le.\
+\
+Ustanoven\'92 a podm\'92nky pro kop\'92rov\'87n\'92, distribuci a modifikaci\
+\
+0. Tato licence se vztahuje na kter\uc0\u253 koliv program \u269 i jin\'8e d\'92lo, kter\'8e\
+obsahuje zm\'92nku, um\'92st\uc0\u283 nou v n\u283 m dr\u382 itelem autorsk\u253 ch pr\'87v, o tom, \u382 e\
+d\'92lo m\uc0\u367 \u382 e b\u253 t \u353 \'92\u345 eno podle ustanoven\'92 Obecn\'8e ve\u345 ejn\'8e licence GNU. V\
+dal\uc0\u353 \'92m textu znamen\'87 "program" ka\u382 d\u253  takov\u253  program nebo d\'92lo a "d\'92lo\
+zalo\uc0\u382 en\'8e na programu" znamen\'87 bu\u271  program samotn\u253  anebo ka\u382 d\'8e jin\'8e d\'92lo\
+z n\uc0\u283 j odvozen\'8e, kter\'8e podl\'8eh\'87 autorsk\'8emu z\'87konu: t\'92m se m\'92n\'92 d\'92lo\
+obsahuj\'92c\'92 program nebo jeho \uc0\u269 \'87st, bu\u271  doslovn\u283  anebo s modifikacemi,\
+pop\uc0\u345 \'92pad\u283  v p\u345 ekladu do jin\'8eho jazyka. (Nad\'87le je p\u345 eklad zahrnov\'87n bez\
+omezen\'92 pod pojem "modifikace".) Ka\uc0\u382 d\u253  u\u382 ivatel licence je ozna\u269 ov\'87n\
+jako "vy".\
+\
+Jin\'8e \uc0\u269 innosti ne\u382  kop\'92rov\'87n\'92, \u353 \'92\u345 en\'92 a modifikace nejsou pokryty touto\
+licenc\'92; sahaj\'92 mimo jej\'92 r\'87mec. Akt spu\uc0\u353 t\u283 n\'92 programu nen\'92 omezen a\
+v\uc0\u253 stup z programu je pokryt pouze tehdy, jestli\u382 e obsah v\u253 stupu tvo\u345 \'92\
+d\'92lo zalo\uc0\u382 en\'8e na programu (nez\'87visle na tom, zda bylo vytvo\u345 eno \u269 innost\'92\
+programu). Posouzen\'92 platnosti p\uc0\u345 edchoz\'92 v\u283 ty z\'87vis\'92 na tom, co program\
+d\uc0\u283 l\'87.\
+\
+1. Sm\'92te kop\'92rovat a \uc0\u353 \'92\u345 it doslovn\'8e kopie zdrojov\'8eho k\'97du programu tak,\
+jak jste jej obdr\uc0\u382 el, a na libovoln\'8em m\'8ediu, za p\u345 edpokladu, \u382 e na ka\u382 d\'8e\
+kopii viditeln\uc0\u283  a n\'87le\u382 it\u283  zve\u345 ejn\'92te zm\'92nku o autorsk\u253 ch pr\'87vech a\
+absenci z\'87ruky; ponech\'87te nedot\uc0\u269 en\'8e v\u353 echny zm\'92nky vztahuj\'92c\'92 se k t\'8eto\
+licenci a k absenci z\'87ruky; a d\'87te ka\uc0\u382 d\'8emu p\u345 \'92jemci spolu s programem\
+kopii t\'8eto licence.\
+\
+Za fyzick\uc0\u253  akt p\u345 enesen\'92 kopie m\u367 \u382 ete \u382 \'87dat poplatek a podle vlastn\'92ho\
+uv\'87\uc0\u382 en\'92 m\u367 \u382 ete nab\'92dnout za poplatek z\'87ru\u269 n\'92 ochranu.\
+\
+2. M\uc0\u367 \u382 ete modifikovat va\u353 i kopii \u269 i kopie programu anebo kter\'8ekoliv jeho\
+\uc0\u269 \'87sti, a tak vytvo\u345 it d\'92lo zalo\u382 en\'8e na programu, a kop\'92rovat a\
+roz\uc0\u353 i\u345 ovat takov\'8e modifikace \u269 i d\'92lo podle podm\'92nek paragrafu\'ca1 v\u253 \u353 e, za\
+p\uc0\u345 edpokladu, \u382 e spln\'92te v\u353 echny tyto podm\'92nky: a) Modifikovan\'8e soubory\
+mus\'92te opat\uc0\u345 it z\u345 etelnou zm\'92nkou uv\'87d\u283 j\'92c\'92, \u382 e jste soubory zm\u283 nil a\
+datum ka\uc0\u382 d\'8e zm\u283 ny. b) Mus\'92te umo\u382 nit, aby jak\'8ekoliv v\'87mi publikovan\'8e \u269 i\
+roz\uc0\u353 i\u345 ovan\'8e d\'92lo, kter\'8e obsahuje zcela nebo z\u269 \'87sti program nebo\
+jakoukoli jeho \uc0\u269 \'87st, pop\u345 \'92pad\u283  je z programu nebo jeho \u269 \'87sti odvozeno,\
+mohlo b\uc0\u253 t jako celek bezplatn\u283  poskytnuto ka\u382 d\'8e t\u345 et\'92 osob\u283  v souladu s\
+ustanoven\'92mi t\'8eto licence. c) Pokud modifikovan\uc0\u253  program pracuje\
+norm\'87ln\uc0\u283  tak, \u382 e \u269 te interaktivn\u283  povely, mus\'92te zajistit, \u382 e p\u345 i\
+nejb\uc0\u283 \u382 n\u283 j\u353 \'92m zp\u367 sobu jeho spu\u353 t\u283 n\'92 vytiskne nebo zobraz\'92 hl\'87\u353 en\'92\
+zahrnuj\'92c\'92 p\uc0\u345 \'92slu\u353 nou zm\'92nku o autorsk\'8em pr\'87vu a uvede, \u382 e neexistuje\
+\uc0\u382 \'87dn\'87 z\'87ruka (nebo p\u345 \'92padn\u283 , \u382 e z\'87ruku poskytujete vy), a \u382 e u\u382 ivatel\'8e\
+mohou za t\uc0\u283 chto podm\'92nek program redistribuovat, a mus\'92 u\u382 ivateli\
+sd\uc0\u283 lit, jak\u253 m zp\u367 sobem m\u367 \u382 e nahl\'8ednout do kopie t\'8eto licence. (V\u253 jimka:\
+v p\uc0\u345 \'92pad\u283 , \u382 e s\'87m program je interaktivn\'92, av\u353 ak \u382 \'87dn\'8e takov\'8e hl\'87\u353 en\'92\
+nevypisuje, nepo\uc0\u382 aduje se, aby va\u353 e d\'92lo zalo\u382 en\'8e na programu takov\'8e\
+hl\'87\uc0\u353 en\'92 vypisovalo.)\
+\
+Tyto po\uc0\u382 adavky se vztahuj\'92 k modifikovan\'8emu d\'92lu jako celku. Pokud lze\
+identifikovat \uc0\u269 \'87sti takov\'8eho d\'92la, kter\'8e z\u345 ejm\u283  nejsou odvozeny z\
+programu a mohou b\uc0\u253 t samy o sob\u283  rozumn\u283  pova\u382 ov\'87ny za nez\'87visl\'87 a\
+samostatn\'87 d\'92la, pak se tato licence a jej\'92 ustanoven\'92 nevztahuj\'92 na\
+tyto \uc0\u269 \'87sti, jsou-li \u353 \'92\u345 eny jako nez\'87visl\'87 d\'92la. Av\u353 ak jakmile tyt\'8e\u382 \
+\uc0\u269 \'87sti roz\u353 i\u345 ujete jako \u269 \'87st celku, j\'92m\u382  je d\'92lo zalo\u382 en\'8e na programu,\
+mus\'92 b\uc0\u253 t roz\u353 i\u345 ov\'87n\'92 tohoto celku pod\u345 \'92zeno ustanoven\'92m t\'8eto licence\
+tak, \uc0\u382 e povolen\'92 poskytnut\'87 dal\u353 \'92m u\u382 ivatel\u367 m se roz\u353 \'92\u345 \'92 na cel\'8e d\'92lo,\
+tedy na v\uc0\u353 echny jeho \u269 \'87sti bez ohledu na to, kdo kterou \u269 \'87st napsal.\
+\
+Smyslem tohoto paragrafu tedy nen\'92 z\'92sk\'87n\'92 pr\'87v na d\'92lo zcela napsan\'8e\
+v\'87mi ani pop\'92r\'87n\'92 va\uc0\u353 ich pr\'87v v\u367 \u269 i n\u283 mu; skute\u269 n\u253 m smyslem je v\u253 kon\
+pr\'87va na \uc0\u345 \'92zen\'92 distribuce odvozen\u253 ch nebo kolektivn\'92ch d\u283 l zalo\u382 en\u253 ch\
+na programu.\
+\
+Pouh\'8e spojen\'92 jin\'8eho d\'92la, je\uc0\u382  nen\'92 na programu zalo\u382 eno, s programem\
+(anebo d\'92lem zalo\uc0\u382 en\u253 m na programu) na pam\u283 \u357 ov\'8em nebo distribu\u269 n\'92m m\'8ediu\
+neuvazuje toto jin\'8e d\'92lo do p\uc0\u367 sobnosti t\'8eto licence.\
+\
+3. M\uc0\u367 \u382 ete kop\'92rovat a roz\u353 i\u345 ovat program (nebo d\'92lo na n\u283 m zalo\u382 en\'8e, viz\
+paragraf 2) v objektov\'8e anebo spustiteln\'8e podob\uc0\u283  podle ustanoven\'92\
+paragraf\uc0\u367  1 a\'ca2 v\u253 \u353 e, pokud spln\'92te n\u283 kterou z n\'87sleduj\'92c\'92ch\
+n\'87le\uc0\u382 itost\'92: a) Doprovod\'92te jej zdrojov\u253 m k\'97dem ve strojov\u283  \u269 iteln\'8e\
+form\uc0\u283 . Zdrojov\u253  k\'97d mus\'92 b\u253 t roz\u353 i\u345 ov\'87n podle ustanoven\'92 paragraf\u367  1 a\'ca2\
+v\uc0\u253 \u353 e, a to na m\'8ediu b\u283 \u382 n\u283  pou\u382 \'92van\'8em pro v\u253 m\u283 nu softwaru; nebo b)\
+Doprovod\'92te jej p\'92semnou nab\'92dkou s platnost\'92 nejm\'8en\uc0\u283  t\u345 i roky, podle\
+n\'92\uc0\u382  poskytnete jak\'8ekoli t\u345 et\'92 stran\u283 , za poplatek nep\u345 evy\u353 uj\'92c\'92 va\u353 e\
+v\uc0\u253 daje vynalo\u382 en\'8e na fyzickou v\u253 robou zdrojov\'8e distribuce, kompletn\'92\
+strojov\uc0\u283  \u269 itelnou kopii odpov\'92daj\'92c\'92ho zdrojov\'8eho k\'97du, jen\u382  mus\'92 b\u253 t\
+\uc0\u353 \'92\u345 en podle ustanoven\'92 paragraf\u367  1 a\'ca2 v\u253 \u353 e na m\'8ediu b\u283 \u382 n\u283  pou\u382 \'92van\'8em\
+pro v\uc0\u253 m\u283 nu softwaru; nebo c) Doprovod\'92te jej informacemi, kter\'8e jste\
+dostal ohledn\uc0\u283  nab\'92dky na poskytnut\'92 zdrojov\'8eho k\'97du. (Tato alternativa\
+je povolena jen pro nekomer\uc0\u269 n\'92 \u353 \'92\u345 en\'92 a jenom tehdy, pokud jste obdr\u382 el\
+program v objektov\'8em nebo spustiteln\'8em tvaru spolu s takovou nab\'92dkou, v\
+souladu s polo\uc0\u382 kou b v\u253 \u353 e.)\
+\
+Zdrojov\uc0\u253  k\'97d k d\'92lu je nejvhodn\u283 j\u353 \'92 formou d\'92la z hlediska jeho\
+p\uc0\u345 \'92padn\u253 ch modifikac\'92. Pro d\'92lo ve spustiteln\'8em tvaru znamen\'87 \'9cpln\u253 \
+zdrojov\uc0\u253  k\'97d ve\u353 ker\u253  zdrojov\u253  k\'97d pro v\u353 echny moduly, kter\'8e obsahuje,\
+plus jak\'8ekoli dal\uc0\u353 \'92 soubory pro definici rozhran\'92, plus d\'87vkov\'8e soubory\
+pot\uc0\u345 ebn\'8e pro kompilaci a instalaci spustiteln\'8eho programu. Zvl\'87\u353 tn\'92\
+v\uc0\u253 jimkou jsou v\u353 ak ty softwarov\'8e komponenty, kter\'8e jsou norm\'87ln\u283  \u353 \'92\u345 eny\
+(bu\uc0\u271  ve zdrojov\'8e nebo bin\'87rn\'92 form\u283 ) s hlavn\'92mi sou\u269 \'87stmi opera\u269 n\'92ho\
+syst\'8emu, na n\uc0\u283 m\u382  spustiteln\u253  program b\u283 \u382 \'92 (tj. s p\u345 eklada\u269 em, j\'87drem\
+apod.). Tyto komponenty nemus\'92 b\uc0\u253 t \u353 \'92\u345 eny se zdrojov\u253 m k\'97dem, pokud\
+ov\uc0\u353 em komponenta sama nedoprov\'87z\'92 spustitelnou podobu d\'92la.\
+\
+Je-li \uc0\u353 \'92\u345 en\'92 objektov\'8eho nebo spustiteln\'8eho k\'97du \u269 in\u283 no nab\'92dkou\
+p\uc0\u345 \'92stupu ke kop\'92rov\'87n\'92 z ur\u269 it\'8eho m\'92sta, potom se za distribuci\
+zdrojov\'8eho k\'97du po\uc0\u269 \'92t\'87 i nab\'92dnut\'92 ekvivalentn\'92ho p\u345 \'92stupu ke kop\'92rov\'87n\'92\
+zdrojov\'8eho k\'97du ze stejn\'8eho m\'92sta, by\uc0\u357  p\u345 itom nejsou t\u345 et\'92 strany nuceny\
+ke zkop\'92rov\'87n\'92 zdrojov\'8eho k\'97du spolu s objektov\uc0\u253 m.\
+\
+4. Nesm\'92te kop\'92rovat, modifikovat, poskytovat sublicence anebo \uc0\u353 \'92\u345 it\
+program jin\uc0\u253 m zp\u367 sobem ne\u382  v\u253 slovn\u283  uveden\u253 m v t\'8eto licenci. Jak\u253 koli\
+jin\uc0\u253  pokus o kop\'92rov\'87n\'92, modifikov\'87n\'92, poskytnut\'92 sublicence anebo\
+\uc0\u353 \'92\u345 en\'92 programu je neplatn\u253  a automaticky ukon\u269 \'92 va\u353 e pr\'87va dan\'87 touto\
+licenc\'92. Strany, kter\'8e od v\'87s obdr\uc0\u382 ely kopie anebo pr\'87va v souladu s\
+touto licenc\'92, v\uc0\u353 ak nemaj\'92 sv\'8e licence ukon\u269 eny, dokud se jim pln\u283 \
+pod\uc0\u345 izuj\'92.\
+\
+5. Nen\'92 va\uc0\u353 \'92 povinost\'92 tuto licenci p\u345 ijmout, proto\u382 e jste ji\
+nepodepsal. Nic jin\'8eho v\'87m v\uc0\u353 ak ned\'87v\'87 mo\u382 nost kop\'92rovat nebo \u353 \'92\u345 it\
+program nebo odvozen\'87 d\'92la. V p\uc0\u345 \'92pad\u283 , \u382 e tuto licenci nep\u345 ijmete, jsou\
+tyto \uc0\u269 innosti z\'87konem zak\'87z\'87ny. T\'92m p\'87dem modifikac\'92 anebo \u353 \'92\u345 en\'92m\
+programu (anebo ka\uc0\u382 d\'8eho d\'92la zalo\u382 en\'8eho na programu) vyjad\u345 ujete sv\'8e\
+pod\uc0\u345 \'92zen\'92 se licenci a v\u353 em jej\'92m ustanoven\'92m a podm\'92nk\'87m pro\
+kop\'92rovan\'92, modifikov\'87n\'92 a \uc0\u353 \'92\u345 en\'92 programu a d\u283 l na n\u283 m zalo\u382 en\u253 ch.\
+\
+6. Poka\uc0\u382 d\'8e, kdy\u382  redistribuujete program (nebo d\'92lo zalo\u382 en\'8e na\
+programu), z\'92sk\'87v\'87 p\uc0\u345 \'92jemce od p\u367 vodn\'92ho dr\u382 itele licence pr\'87vo\
+kop\'92rovat, modifikovat a \uc0\u353 \'92\u345 it program v souladu s t\u283 mito ustanoven\'92mi a\
+podm\'92nkami. Nesm\'92te kl\'87st \uc0\u382 \'87dn\'8e dal\u353 \'92 p\u345 ek\'87\u382 ky v\u253 konu zde zaru\u269 en\u253 ch\
+p\uc0\u345 \'92jemcov\u253 ch pr\'87v. Nejste odpov\u283 dn\u253  za vym\'87h\'87n\'92 dodr\u382 ov\'87n\'92 t\'8eto licence\
+t\uc0\u345 et\'92mi stranami.\
+\
+7. Jsou-li v\'87m z rozhodnut\'92 soudu, obvin\uc0\u283 n\'92m z poru\u353 en\'92 patentu nebo z\
+jak\'8ehokoli jin\'8eho d\uc0\u367 vodu (nejen v souvislosti s patenty) ulo\u382 eny takov\'8e\
+podm\'92nky (a\uc0\u357  ji\u382  p\u345 \'92kazem soudu, smlouvou nebo jinak), kter\'8e se vylu\u269 uj\'92\
+s podm\'92nkami t\'8eto licence, nejste t\'92m osvobozen od podm\'92nek t\'8eto\
+licence. Pokud nem\uc0\u367 \u382 ete \u353 \'92\u345 it program tak, abyste vyhov\u283 l z\'87rove\u328  sv\u253 m\
+z\'87vazk\uc0\u367 m vypl\u253 vaj\'92c\'92m z t\'8eto licence a jin\u253 m platn\u253 m z\'87vazk\u367 m, nesm\'92te\
+jej v d\uc0\u367 sledku toho \u353 \'92\u345 it v\u367 bec. Pokud by nap\u345 \'92klad patentov\'8e osv\u283 d\u269 en\'92\
+nepovolovalo bezplatnou redistribuci programu v\uc0\u353 emi, kdo va\u353 \'92m\
+p\uc0\u345 i\u269 in\u283 n\'92m z\'92skaj\'92 p\u345 \'92mo nebo nep\u345 \'92mo jeho kopie, pak by jedin\u253  mo\u382 n\u253 \
+zp\uc0\u367 sob jak vyhov\u283 t z\'87rove\u328  patentov\'8emu osv\u283 d\u269 en\'92 i t\'8eto licenci spo\u269 \'92val\
+v ukon\uc0\u269 en\'92 distribuce programu.\
+\
+Pokud by se za n\uc0\u283 jak\u253 ch specifick\u253 ch okolnost\'92 jevila n\u283 kter\'87 \u269 \'87st\
+tohoto paragrafu jako neplatn\'87 nebo nevynutiteln\'87, pova\uc0\u382 uje se za\
+sm\uc0\u283 rodatnou rovnov\'87ha vyj\'87d\u345 en\'87 t\'92mto paragrafem a paragraf jako celek\
+se pova\uc0\u382 uje za sm\u283 rodatn\u253  za jin\u253 ch okolnost\'92.\
+\
+Smyslem tohoto paragrafu nen\'92 nav\'87d\uc0\u283 t v\'87s k poru\u353 ov\'87n\'92 patent\u367  \u269 i jin\u253 ch\
+ustanoven\'92 vlastnick\'8eho pr\'87va, anebo tato ustanoven\'92 zpochyb\uc0\u328 ovat;\
+jedin\uc0\u253 m jeho smyslem je ochrana integrity syst\'8emu \u353 \'92\u345 en\'92 voln\'8eho\
+softwaru, kter\uc0\u253  je podlo\u382 en ve\u345 ejn\u253 mi licen\u269 n\'92mi p\u345 edpisy. Mnoz\'92 lid\'8e\
+poskytli sv\'8e p\uc0\u345 \'92sp\u283 vky do \u353 irok\'8eho okruhu softwaru \u353 \'92\u345 en\'8eho t\'92mto\
+syst\'8emem, spolehnuv\uc0\u353 e se na jeho d\u367 sledn\'8e uplat\u328 ov\'87n\'92; z\'87le\u382 \'92 na\
+autorovi/d\'87rci, aby rozhodl, zda si p\uc0\u345 eje \u353 \'92\u345 it software pomoc\'92 n\u283 jak\'8eho\
+jin\'8eho syst\'8emu a \uc0\u382 \'87dn\u253  u\u382 ivatel licence nem\u367 \u382 e takov\'8e rozhodnut\'92\
+zpochyb\uc0\u328 ovat.\
+\
+Smyslem tohoto paragrafu je zevrubn\uc0\u283  osv\u283 tlit to, co je pova\u382 ov\'87no za\
+d\uc0\u367 sledek plynouc\'92 ze zbytku t\'8eto licence.\
+\
+8. Pokud je \uc0\u353 \'92\u345 en\'92 \u269 i pou\u382 it\'92 programu v n\u283 kter\u253 ch zem\'92ch omezeno bu\u271 \
+patenty anebo autorsky chr\'87n\uc0\u283 n\u253 mi rozhran\'92mi, m\u367 \u382 e dr\u382 itel p\u367 vodn\'92ch\
+autorsk\uc0\u253 ch pr\'87v, kter\u253  sv\u283 \u345 uje program do p\u367 sobnosti t\'8eto licence,\
+p\uc0\u345 idat v\u253 slovn\'8e omezen\'92 pro geografick\'8e \u353 \'92\u345 en\'92, vylu\u269 uj\'92c\'92 takov\'8e zem\u283 ,\
+tak\uc0\u382 e \u353 \'92\u345 en\'92 je povoleno jen v t\u283 ch zem\'92ch nebo mezi t\u283 mi zem\u283 mi, kter\'8e\
+nejsou t\'92mto zp\uc0\u367 sobem vylou\u269 eny. Tato licence zahrnuje v tomto p\u345 \'92pad\u283 \
+takov\'8e omezen\'92 p\uc0\u345 esn\u283  tak, jako by bylo zaps\'87no v textu t\'8eto licence.\
+\
+9. Free Software Foundation m\uc0\u367 \u382 e \u269 as od \u269 asu vyd\'87vat upraven\'8e nebo nov\'8e\
+verze Obecn\'8e ve\uc0\u345 ejn\'8e licence. Takov\'8e nov\'8e verze se budou sv\u253 m duchem\
+podobat sou\uc0\u269 asn\'8e verzi, v jednotlivostech se v\u353 ak mohou li\u353 it s ohledem\
+na nov\'8e probl\'8emy \uc0\u269 i z\'87jmy.\
+\
+Ka\uc0\u382 d\'8e verzi je p\u345 id\u283 leno rozli\u353 uj\'92c\'92 \u269 \'92slo verze. Pokud program\
+specifikuje \uc0\u269 \'92slo verze, kter\'87 se na n\u283 j vztahuje, a "v\u353 echny\
+n\'87sleduj\'92c\'92 verze", m\uc0\u367 \u382 ete se podle uv\'87\u382 en\'92 \u345 \'92dit ustanoven\'92mi a\
+podm\'92nkami bu\uc0\u271 to on\'8e konkr\'8etn\'92 verze anebo kter\'8ekoliv n\'87sleduj\'92c\'92 verze,\
+kterou vydala Free Software Foundation. Jestli\uc0\u382 e program nespecifikuje\
+\uc0\u269 \'92slo verze t\'8eto licence, m\u367 \u382 ete si vybrat libovolnou verzi, kterou kdy\
+Free Software Foundation vydala.\
+\
+10. Pokud si p\uc0\u345 ejete zahrnout \u269 \'87sti programu do jin\u253 ch voln\u253 ch program\u367 ,\
+jejich\uc0\u382  distribu\u269 n\'92 podm\'92nky jsou odli\u353 n\'8e, za\u353 lete autorovi \u382 \'87dost o\
+povolen\'92. V p\uc0\u345 \'92pad\u283  softwaru, k n\u283 mu\u382  vlastn\'92 autorsk\'87 pr\'87va Free\
+Software Foundation, napi\uc0\u353 te Free Software Foundation; n\u283 kdy \u269 in\'92me\
+v\uc0\u253 jimky ze zde uveden\u253 ch ustanoven\'92. Na\u353 e rozhodnut\'92 bude vedeno dv\u283 ma\
+c\'92li: zachov\'87n\'92m voln\'8e povahy v\uc0\u353 ech odvozenin na\u353 eho voln\'8eho softwaru a\
+podporou sd\'92len\'92 a op\uc0\u283 tovn\'8eho vyu\u382 it\'92 softwaru obecn\u283 .\
+\
+Z\'e7RUKA SE NEPOSKYTUJE\
+\
+11. VZHLEDEM K BEZPLATN\'83MU POSKYTNUT\'ea LICENCE K PROGRAMU SE NA PROGRAM\
+NEVZTAHUJE \uc0\u381 \'e7DN\'e7 Z\'e7RUKA, A TO V M\'ea\u344 E POVOLEN\'83 PLATN\u221 M Z\'e7KONEM. POKUD\
+NEN\'ea P\'eaSEMN\uc0\u282  STANOVENO JINAK, POSKYTUJ\'ea DR\u381 ITEL\'83 AUTORSK\u221 CH PR\'e7V\
+POP\uc0\u344 \'eaPAD\u282  JIN\'83 STRANY PROGRAM "TAK, JAK JE", BEZ Z\'e7RUKY JAK\'83HOKOLI\
+DRUHU, A\uc0\u356  V\u221 SLOVN\'83 NEBO VYPL\u221 VAJ\'eaC\'ea, V\u268 ETN\u282 , ALE NIKOLI JEN, Z\'e7RUK\
+PRODEJNOSTI A VHODNOSTI PRO UR\uc0\u268 IT\u221  \'f2\u268 EL. POKUD JDE O KVALITU A V\u221 KONNOST\
+PROGRAMU, LE\uc0\u381 \'ea VE\u352 KER\'83 RIZIKO NA V\'e7S. POKUD BY SE U PROGRAMU PROJEVILY\
+Z\'e7VADY, PADAJ\'ea N\'e7KLADY ZA V\uc0\u352 ECHNU POT\u344 EBNOU \'f2DR\u381 BU, OPRAVU \u268 I N\'e7PRAVU NA\
+V\'e7\uc0\u352  VRUB.\
+\
+12. V \uc0\u381 \'e7DN\'83M P\u344 \'eaPAD\u282 , S V\u221 JIMKOU TOHO, KDY\u381  TO VY\u381 ADUJE PLATN\u221  Z\'e7KON,\
+ANEBO KDY\uc0\u381  TO BYLO P\'eaSEMN\u282  ODSOUHLASENO, V\'e7M NEBUDE \u381 \'e7DN\u221  Z DR\u381 ITEL\u366 \
+AUTORSK\uc0\u221 CH PR\'e7V ANI \u381 \'e7DN\'e7 JIN\'e7 STRANA, KTER\'e7 SM\'ea MODIFIKOVAT \u268 I \u352 \'ea\u344 IT\
+PROGRAM V SOULADU S P\uc0\u344 EDCHOZ\'eaMI USTANOVEN\'eaMI, ODPOV\u282 DNI ZA \u352 KODY, V\u268 ETN\u282 \
+V\uc0\u352 ECH OBECN\u221 CH, SPECI\'e7LN\'eaCH, NAHODIL\u221 CH NEBO N\'e7SLEDN\u221 CH \u352 KOD\
+VYPL\uc0\u221 VAJ\'eaC\'eaCH Z U\u381 \'eaV\'e7N\'ea ANEBO NESCHOPNOSTI U\u381 \'eaVAT PROGRAMU (V\u268 ETN\u282 , ALE\
+NIKOLI JEN, ZTR\'e7TY NEBO ZKRESLEN\'ea DAT, NEBO TRVAL\uc0\u221 CH \u352 KOD ZP\u366 SOBEN\u221 CH\
+V\'e7M NEBO T\uc0\u344 ET\'eaM STRAN\'e7M, NEBO SELH\'e7N\'ea FUNKCE PROGRAMU V SOU\u268 INNOSTI S\
+JIN\uc0\u221 MI PROGRAMY), A TO I V P\u344 \'eaPAD\u282 , \u381 E TAKOV\u221  DR\u381 ITEL AUTORSK\u221 CH PR\'e7V\
+NEBO JIN\'e7 STRANA BYLI UPOZORN\uc0\u282 NI NA MO\u381 NOST TAKOV\u221 CH \u352 KOD.\
+\
+KONEC USTANOVEN\'ea A PODM\'eaNEK\
+\
+\
+Tento text je neofici\'87ln\'92m p\uc0\u345 ekladem Obecn\'8e ve\u345 ejn\'8e licence GNU (GNU\
+General Public License, GNU GPL). Nebyl vyd\'87n nadac\'92 Free Software\
+Foundation a nevyjad\uc0\u345 uje pr\'87vn\'92 podstatu podm\'92nek pro \u353 \'92\u345 en\'92 softwaru\
+pou\uc0\u382 \'92vaj\'92c\'92ho GNU GPL--tomuto \'9c\u269 elu slou\u382 \'92 v\u253 hradn\u283  p\u367 vodn\'92 anglick\'87\
+verze GNU GPL. P\uc0\u345 esto douf\'87me, \u382 e tento p\u345 eklad pom\u367 \u382 e \u269 esk\u253 m \u269 ten\'87\u345 \u367 m\
+l\'8epe porozum\uc0\u283 t licenci GNU GPL.\
+\
+This is an unofficial translation of the GNU General Public License into\
+Czech. It was not published by the Free Software Foundation, and does\
+not legally state the distribution terms for software that uses the GNU\
+GPL--only the original English text of the GNU GPL does that. However,\
+we hope that this translation will help Czech speakers understand the\
+GNU GPL better.}

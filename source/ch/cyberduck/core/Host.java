@@ -277,16 +277,12 @@ public class Host {
     /**
      * @return The IP address of the remote host if available
      */
-    public String getIp() {
-        //if we call getByName(null) InetAddress would return localhost
-        if (this.hostname == null) {
-            return "Unknown host";
-        }
+    public String getIp() throws java.net.UnknownHostException {
         try {
             return java.net.InetAddress.getByName(hostname).toString();
         }
         catch (java.net.UnknownHostException e) {
-            return "Unknown host";
+            throw new java.net.UnknownHostException("Hostname cannot be resolved");
         }
     }
 

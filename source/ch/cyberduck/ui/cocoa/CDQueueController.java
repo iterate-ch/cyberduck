@@ -234,13 +234,38 @@ public class CDQueueController extends NSObject implements Controller {
 		if(this.isVisible()) {
 			if (arg instanceof Message) {
 				Message msg = (Message)arg;
-				if (msg.getTitle().equals(Message.PROGRESS) || msg.getTitle().equals(Message.ERROR)) {
+				if (msg.getTitle().equals(Message.PROGRESS)) {// || msg.getTitle().equals(Message.ERROR)) {
 					if (this.window().isVisible()) {
 						if (this.queueTable.visibleRect() != NSRect.ZeroRect) {
 							int row = QueueList.instance().indexOf(observable);
 							NSRect queueRect = this.queueTable.frameOfCellAtLocation(0, row);
 							this.queueTable.setNeedsDisplay(queueRect);
 						}
+					}
+				}
+				else if (msg.getTitle().equals(Message.ERROR)) {
+					while (this.window().attachedSheet() != null) {
+						try {
+							log.debug("Sleeping...");
+							Thread.sleep(1000); //milliseconds
+						}
+						catch (InterruptedException e) {
+							log.error(e.getMessage());
+						}
+					}
+					synchronized(this) {
+						this.window().makeKeyAndOrderFront(null);
+						NSAlertPanel.beginCriticalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+															 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+															 null, //alternative button
+															 null, //other button
+															 this.window(), //docWindow
+															 null, //modalDelegate
+															 null, //didEndSelector
+															 null, // dismiss selector
+															 null, // context
+															 (String)msg.getContent() // message
+															 );						
 					}
 				}
 				else if (msg.getTitle().equals(Message.DATA)) {
@@ -530,12 +555,10 @@ public class CDQueueController extends NSObject implements Controller {
         this.queueTable.reloadData();
     }
 
-    public boolean validateMenuItem(_NSObsoleteMenuItemProtocol cell) {
-        String sel = cell.action().name();
-        log.debug("validateMenuItem:" + sel);
-        return this.validateItem(sel);
+    public boolean validateMenuItem(NSMenuItem item) {
+        return this.validateItem(item.action().name());
     }
-
+	
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
             "Resume",

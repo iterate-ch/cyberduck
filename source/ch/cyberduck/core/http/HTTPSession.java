@@ -62,7 +62,8 @@ public class HTTPSession extends Session {
             }
         }
         catch (IOException e) {
-            this.log("IO Error: " + e.getMessage(), Message.ERROR);
+            log.error("IO Error: " + e.getMessage());
+//            this.log("IO Error: " + e.getMessage(), Message.ERROR);
         }
         finally {
             this.log("Disconnected", Message.PROGRESS);
@@ -91,7 +92,6 @@ public class HTTPSession extends Session {
     }
 
     public synchronized void check() throws IOException {
-        log.debug(this.toString() + ":check");
         this.log("Working", Message.START);
 //		this.log("Checking connection...", Message.PROGRESS);
         if (null == HTTP || !HTTP.isAlive()) {

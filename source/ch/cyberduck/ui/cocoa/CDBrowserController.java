@@ -1098,10 +1098,8 @@ public class CDBrowserController extends NSObject implements Controller, Observe
         instances.removeObject(this);
     }
 
-    public boolean validateMenuItem(_NSObsoleteMenuItemProtocol cell) {
-        boolean v = this.validateItem(cell.action().name());
-        log.debug("validateMenuItem:" + cell.action().name() + "->" + v);
-        return v;
+    public boolean validateMenuItem(NSMenuItem item) {
+        return this.validateItem(item.action().name());
     }
 
     private boolean validateItem(String identifier) {

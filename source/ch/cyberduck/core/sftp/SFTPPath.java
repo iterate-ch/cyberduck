@@ -168,14 +168,13 @@ public class SFTPPath extends Path {
             }
             catch (SshException e) {
                 session.log("SSH Error: " + e.getMessage(), Message.ERROR);
-				return null;
+				return files;
             }
             catch (IOException e) {
                 session.log("IO Error: " + e.getMessage(), Message.ERROR);
-				return null;
+				return files;
             }
 			finally {
-//				this.setCache(files);
 				if (workingDirectory != null) {
                     try {
                         workingDirectory.close();

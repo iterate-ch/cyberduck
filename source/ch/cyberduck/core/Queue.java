@@ -96,7 +96,7 @@ public class Queue implements Observer { //Thread {
     private long timeLeft = -1;
 
     private String status = "";
-    private String error = "";
+//    private String error = "";
 
     /**
      * Creating an empty queue containing no items. Items have to be added later
@@ -188,17 +188,14 @@ public class Queue implements Observer { //Thread {
             Message msg = (Message)arg;
             if (msg.getTitle().equals(Message.DATA)) {
 				CDQueueController.instance().update(this, arg);
-//                this.callObservers(arg);
             }
             else if (msg.getTitle().equals(Message.PROGRESS)) {
                 this.status = (String)msg.getContent();
 				CDQueueController.instance().update(this, arg);
-//                this.callObservers(arg);
             }
             else if (msg.getTitle().equals(Message.ERROR)) {
-                this.error = " : "+(String)msg.getContent();
+				// this.error = " : "+(String)msg.getContent();
 				CDQueueController.instance().update(this, arg);
-//                this.callObservers(arg);
             }
         }
     }
@@ -211,13 +208,11 @@ public class Queue implements Observer { //Thread {
      */
     public synchronized void start(final Validator validator) {
         log.debug("start");
-        this.error = "";
+//        this.error = "";
         this.jobs.clear();
         new Thread() {
             public void run() {
                 int mypool = NSAutoreleasePool.push();
-
-//                Queue.this.addObserver(observer);
 
                 Queue.this.elapsedTimer.start();
                 Queue.this.running = true;
@@ -275,8 +270,6 @@ public class Queue implements Observer { //Thread {
 				CDQueueController.instance().update(Queue.this, new Message(Message.QUEUE_STOP));
 //                Queue.this.callObservers(new Message(Message.QUEUE_STOP, Queue.this));
 
-//                Queue.this.deleteObserver(observer);
-
                 NSAutoreleasePool.pop(mypool);
             }
         }.start();
@@ -293,7 +286,6 @@ public class Queue implements Observer { //Thread {
             ((Path)iter.next()).status.setCanceled(true);
         }
         this.canceled = true;
-        //            this.running = false;
     }
 
     /**
@@ -332,7 +324,8 @@ public class Queue implements Observer { //Thread {
     }
 
     public String getStatus() {
-        return this.getElapsedTime() + " " + this.status + " " + error;
+        return this.getElapsedTime() + " " + this.status;
+//        return this.getElapsedTime() + " " + this.status + " " + error;
     }
 
     public String getProgress() {

@@ -147,15 +147,12 @@ public class FTPPath extends Path {
             }
             catch (FTPException e) {
                 session.log("FTP Error: " + e.getMessage(), Message.ERROR);
-				return null;
+				return files;
             }
             catch (IOException e) {
                 session.log("IO Error: " + e.getMessage(), Message.ERROR);
-				return null;
+				return files;
             }
-//			finally {
-//				this.setCache(files);
-//			}
         }
 		session.callObservers(this);
         return files;
