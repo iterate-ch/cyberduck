@@ -145,6 +145,7 @@
 		</copy>
 	</target>
 
+
 	<target name="repace-tokens">
 		<replace
 			dir="${app.contents}"
