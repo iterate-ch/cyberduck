@@ -34,12 +34,12 @@ import java.io.IOException;
  * @version $Revision$
  */
 public class AuthenticationProtocolException extends IOException {
-	/**
-	 * Creates a new AuthenticationProtocolException object.
-	 *
-	 * @param msg
-	 */
-	public AuthenticationProtocolException(String msg) {
-		super(msg);
-	}
+    /**
+     * Creates a new AuthenticationProtocolException object.
+     *
+     * @param msg
+     */
+    public AuthenticationProtocolException(String msg) {
+        super(msg);
+    }
 }

@@ -26,10 +26,10 @@
  */
 package com.sshtools.j2ssh.authentication;
 
-import java.util.Properties;
-
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.SshMessage;
+
+import java.util.Properties;
 
 
 /**
@@ -37,116 +37,116 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class KBIAuthenticationClient extends SshAuthenticationClient {
-	KBIRequestHandler handler;
+    KBIRequestHandler handler;
 
-	/**
-	 * @return
-	 */
-	public Properties getPersistableProperties() {
-		return new Properties();
-	}
+    /**
+     * @return
+     */
+    public Properties getPersistableProperties() {
+        return new Properties();
+    }
 
-	/**
-	 * @param handler
-	 */
-	public void setKBIRequestHandler(KBIRequestHandler handler) {
-		this.handler = handler;
-	}
+    /**
+     * @param handler
+     */
+    public void setKBIRequestHandler(KBIRequestHandler handler) {
+        this.handler = handler;
+    }
 
-	/**
-	 *
-	 */
-	public void reset() {
-	}
+    /**
+     *
+     */
+    public void reset() {
+    }
 
-	/**
-	 * @param authentication
-	 * @param serviceToStart
-	 * @throws com.sshtools.j2ssh.authentication.TerminatedStateException
-	 *
-	 * @throws java.io.IOException
-	 * @throws AuthenticationProtocolException
-	 *
-	 */
-	public void authenticate(AuthenticationProtocolClient authentication,
-	                         String serviceToStart)
-	    throws com.sshtools.j2ssh.authentication.TerminatedStateException,
-	    java.io.IOException {
-		if(handler == null) {
-			throw new AuthenticationProtocolException("A request handler must be set!");
-		}
+    /**
+     * @param authentication
+     * @param serviceToStart
+     * @throws com.sshtools.j2ssh.authentication.TerminatedStateException
+     *
+     * @throws java.io.IOException
+     * @throws AuthenticationProtocolException
+     *
+     */
+    public void authenticate(AuthenticationProtocolClient authentication,
+                             String serviceToStart)
+            throws com.sshtools.j2ssh.authentication.TerminatedStateException,
+            java.io.IOException {
+        if (handler == null) {
+            throw new AuthenticationProtocolException("A request handler must be set!");
+        }
 
-		authentication.registerMessage(SshMsgUserAuthInfoRequest.class,
-		    SshMsgUserAuthInfoRequest.SSH_MSG_USERAUTH_INFO_REQUEST);
+        authentication.registerMessage(SshMsgUserAuthInfoRequest.class,
+                SshMsgUserAuthInfoRequest.SSH_MSG_USERAUTH_INFO_REQUEST);
 
-		// Send the authentication request
-		ByteArrayWriter baw = new ByteArrayWriter();
-		baw.writeString("");
-		baw.writeString("");
+        // Send the authentication request
+        ByteArrayWriter baw = new ByteArrayWriter();
+        baw.writeString("");
+        baw.writeString("");
 
-		SshMessage msg = new SshMsgUserAuthRequest(getUsername(),
-		    serviceToStart, getMethodName(), baw.toByteArray());
-		authentication.sendMessage(msg);
+        SshMessage msg = new SshMsgUserAuthRequest(getUsername(),
+                serviceToStart, getMethodName(), baw.toByteArray());
+        authentication.sendMessage(msg);
 
-		// Read a message
-		while(true) {
-			msg = authentication.readMessage(SshMsgUserAuthInfoRequest.SSH_MSG_USERAUTH_INFO_REQUEST);
+        // Read a message
+        while (true) {
+            msg = authentication.readMessage(SshMsgUserAuthInfoRequest.SSH_MSG_USERAUTH_INFO_REQUEST);
 
-			if(msg instanceof SshMsgUserAuthInfoRequest) {
-				SshMsgUserAuthInfoRequest request = (SshMsgUserAuthInfoRequest)msg;
-				KBIPrompt[] prompts = request.getPrompts();
-				handler.showPrompts(request.getName(),
-				    request.getInstruction(), prompts);
+            if (msg instanceof SshMsgUserAuthInfoRequest) {
+                SshMsgUserAuthInfoRequest request = (SshMsgUserAuthInfoRequest) msg;
+                KBIPrompt[] prompts = request.getPrompts();
+                handler.showPrompts(request.getName(),
+                        request.getInstruction(), prompts);
 
-				// Now send the response message
-				msg = new SshMsgUserAuthInfoResponse(prompts);
-				authentication.sendMessage(msg);
-			}
-			else {
-				throw new AuthenticationProtocolException("Unexpected authentication message "+
-				    msg.getMessageName());
-			}
-		}
-	}
+                // Now send the response message
+                msg = new SshMsgUserAuthInfoResponse(prompts);
+                authentication.sendMessage(msg);
+            }
+            else {
+                throw new AuthenticationProtocolException("Unexpected authentication message " +
+                        msg.getMessageName());
+            }
+        }
+    }
 
-	/**
-	 * @return
-	 */
-	public boolean canAuthenticate() {
-		return true;
-	}
+    /**
+     * @return
+     */
+    public boolean canAuthenticate() {
+        return true;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getMethodName() {
-		return "keyboard-interactive";
-	}
+    /**
+     * @return
+     */
+    public String getMethodName() {
+        return "keyboard-interactive";
+    }
 
-	/**
-	 * @param properties
-	 */
-	public void setPersistableProperties(Properties properties) {
-	}
+    /**
+     * @param properties
+     */
+    public void setPersistableProperties(Properties properties) {
+    }
 
-	/* public boolean showAuthenticationDialog(Component parent)
-	  throws java.io.IOException {
-	  final Component myparent = parent;
-	  this.handler = new KBIRequestHandlerDialog();
-	  //        this.handler = new KBIRequestHandler() {
-	  //                    public void showPrompts(String name, String instructions,
-	  //                        KBIPrompt[] prompts) {
-	  //                        if (prompts != null) {
-	  //                            for (int i = 0; i < prompts.length; i++) {
-	  //                                // We can echo the response back to the client
-	  //                                prompts[i].setResponse((JOptionPane
-	  //                                    .showInputDialog(myparent,
-	  //                                        prompts[i].getPrompt(), name,
-	  //                                        JOptionPane.QUESTION_MESSAGE)));
-	  //                            }
-	  //                        }
-	  //                    }
-	  //                };
-	  return true;
-	   }*/
+    /* public boolean showAuthenticationDialog(Component parent)
+      throws java.io.IOException {
+      final Component myparent = parent;
+      this.handler = new KBIRequestHandlerDialog();
+      //        this.handler = new KBIRequestHandler() {
+      //                    public void showPrompts(String name, String instructions,
+      //                        KBIPrompt[] prompts) {
+      //                        if (prompts != null) {
+      //                            for (int i = 0; i < prompts.length; i++) {
+      //                                // We can echo the response back to the client
+      //                                prompts[i].setResponse((JOptionPane
+      //                                    .showInputDialog(myparent,
+      //                                        prompts[i].getPrompt(), name,
+      //                                        JOptionPane.QUESTION_MESSAGE)));
+      //                            }
+      //                        }
+      //                    }
+      //                };
+      return true;
+       }*/
 }

@@ -32,20 +32,20 @@ package com.sshtools.j2ssh.authentication;
  * @version $Revision$
  */
 public interface SshAuthenticationPrompt {
-	/**
-	 * @return
-	 */
-	public boolean showPrompt(SshAuthenticationClient instance)
-	    throws AuthenticationProtocolException;
+    /**
+     * @return
+     */
+    public boolean showPrompt(SshAuthenticationClient instance)
+            throws AuthenticationProtocolException;
 
-	/**
-	 *
-	 *
-	 * @param instance
-	 *
-	 * @throws AuthenticationProtocolException
-	 */
+    /**
+     *
+     *
+     * @param instance
+     *
+     * @throws AuthenticationProtocolException
+     */
 
-	/* public void setInstance(SshAuthenticationClient instance)
-	     throws AuthenticationProtocolException;*/
+    /* public void setInstance(SshAuthenticationClient instance)
+         throws AuthenticationProtocolException;*/
 }

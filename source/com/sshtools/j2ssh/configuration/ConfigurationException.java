@@ -34,12 +34,12 @@ import com.sshtools.j2ssh.SshException;
  * @version $Revision$
  */
 public class ConfigurationException extends SshException {
-	/**
-	 * Creates a new ConfigurationException object.
-	 *
-	 * @param msg
-	 */
-	public ConfigurationException(String msg) {
-		super(msg);
-	}
+    /**
+     * Creates a new ConfigurationException object.
+     *
+     * @param msg
+     */
+    public ConfigurationException(String msg) {
+        super(msg);
+    }
 }

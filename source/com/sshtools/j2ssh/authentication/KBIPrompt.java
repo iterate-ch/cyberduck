@@ -32,46 +32,46 @@ package com.sshtools.j2ssh.authentication;
  * @version $Revision$
  */
 public class KBIPrompt {
-	private String prompt;
-	private String response;
-	private boolean echo;
+    private String prompt;
+    private String response;
+    private boolean echo;
 
-	/**
-	 * Creates a new KBIPrompt object.
-	 *
-	 * @param prompt
-	 * @param echo
-	 */
-	protected KBIPrompt(String prompt, boolean echo) {
-		this.prompt = prompt;
-		this.echo = echo;
-	}
+    /**
+     * Creates a new KBIPrompt object.
+     *
+     * @param prompt
+     * @param echo
+     */
+    protected KBIPrompt(String prompt, boolean echo) {
+        this.prompt = prompt;
+        this.echo = echo;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getPrompt() {
-		return prompt;
-	}
+    /**
+     * @return
+     */
+    public String getPrompt() {
+        return prompt;
+    }
 
-	/**
-	 * @return
-	 */
-	public boolean echo() {
-		return echo;
-	}
+    /**
+     * @return
+     */
+    public boolean echo() {
+        return echo;
+    }
 
-	/**
-	 * @param response
-	 */
-	public void setResponse(String response) {
-		this.response = response;
-	}
+    /**
+     * @param response
+     */
+    public void setResponse(String response) {
+        this.response = response;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getResponse() {
-		return response;
-	}
+    /**
+     * @return
+     */
+    public String getResponse() {
+        return response;
+    }
 }

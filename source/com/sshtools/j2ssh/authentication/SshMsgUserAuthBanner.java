@@ -26,12 +26,12 @@
  */
 package com.sshtools.j2ssh.authentication;
 
-import java.io.IOException;
-
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
+
+import java.io.IOException;
 
 
 /**
@@ -39,77 +39,77 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class SshMsgUserAuthBanner extends SshMessage {
-	/**  */
-	public final static int SSH_MSG_USERAUTH_BANNER = 53;
-	private String banner;
-	private String languageTag;
+    /**  */
+    public final static int SSH_MSG_USERAUTH_BANNER = 53;
+    private String banner;
+    private String languageTag;
 
-	/**
-	 * Creates a new SshMsgUserAuthBanner object.
-	 */
-	public SshMsgUserAuthBanner() {
-		super(SSH_MSG_USERAUTH_BANNER);
-	}
+    /**
+     * Creates a new SshMsgUserAuthBanner object.
+     */
+    public SshMsgUserAuthBanner() {
+        super(SSH_MSG_USERAUTH_BANNER);
+    }
 
-	/**
-	 * Creates a new SshMsgUserAuthBanner object.
-	 *
-	 * @param banner
-	 */
-	public SshMsgUserAuthBanner(String banner) {
-		super(SSH_MSG_USERAUTH_BANNER);
-		this.banner = banner;
-		this.languageTag = "";
-	}
+    /**
+     * Creates a new SshMsgUserAuthBanner object.
+     *
+     * @param banner
+     */
+    public SshMsgUserAuthBanner(String banner) {
+        super(SSH_MSG_USERAUTH_BANNER);
+        this.banner = banner;
+        this.languageTag = "";
+    }
 
-	/**
-	 * @return
-	 */
-	public String getBanner() {
-		return banner;
-	}
+    /**
+     * @return
+     */
+    public String getBanner() {
+        return banner;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getLanguageTag() {
-		return languageTag;
-	}
+    /**
+     * @return
+     */
+    public String getLanguageTag() {
+        return languageTag;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getMessageName() {
-		return "SSH_MSG_USERAUTH_BANNER";
-	}
+    /**
+     * @return
+     */
+    public String getMessageName() {
+        return "SSH_MSG_USERAUTH_BANNER";
+    }
 
-	/**
-	 * @param baw
-	 * @throws InvalidMessageException
-	 */
-	protected void constructByteArray(ByteArrayWriter baw)
-	    throws InvalidMessageException {
-		try {
-			baw.writeString(banner);
-			baw.writeString(languageTag);
-		}
-		catch(IOException ioe) {
-			throw new InvalidMessageException("Error writing the message data");
-		}
-	}
+    /**
+     * @param baw
+     * @throws InvalidMessageException
+     */
+    protected void constructByteArray(ByteArrayWriter baw)
+            throws InvalidMessageException {
+        try {
+            baw.writeString(banner);
+            baw.writeString(languageTag);
+        }
+        catch (IOException ioe) {
+            throw new InvalidMessageException("Error writing the message data");
+        }
+    }
 
-	/**
-	 * @param bar
-	 * @throws InvalidMessageException
-	 */
-	protected void constructMessage(ByteArrayReader bar)
-	    throws InvalidMessageException {
-		try {
-			banner = bar.readString();
-			languageTag = bar.readString();
-		}
-		catch(IOException ioe) {
-			throw new InvalidMessageException("Error reading the message data");
-		}
-	}
+    /**
+     * @param bar
+     * @throws InvalidMessageException
+     */
+    protected void constructMessage(ByteArrayReader bar)
+            throws InvalidMessageException {
+        try {
+            banner = bar.readString();
+            languageTag = bar.readString();
+        }
+        catch (IOException ioe) {
+            throw new InvalidMessageException("Error reading the message data");
+        }
+    }
 }

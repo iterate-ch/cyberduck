@@ -35,79 +35,79 @@ import java.util.Properties;
  * @version $Revision$
  */
 public abstract class SshAuthenticationClient {
-	private String username;
-	private SshAuthenticationPrompt prompt;
+    private String username;
+    private SshAuthenticationPrompt prompt;
 
-	/**
-	 * @return
-	 */
-	public abstract String getMethodName();
+    /**
+     * @return
+     */
+    public abstract String getMethodName();
 
-	/**
-	 * @param authentication
-	 * @param serviceToStart
-	 * @throws IOException
-	 * @throws TerminatedStateException
-	 */
-	public abstract void authenticate(AuthenticationProtocolClient authentication, String serviceToStart)
-	    throws IOException, TerminatedStateException;
+    /**
+     * @param authentication
+     * @param serviceToStart
+     * @throws IOException
+     * @throws TerminatedStateException
+     */
+    public abstract void authenticate(AuthenticationProtocolClient authentication, String serviceToStart)
+            throws IOException, TerminatedStateException;
 
-	/**
-	 * @param prompt
-	 * @throws AuthenticationProtocolException
-	 *
-	 */
-	public void setAuthenticationPrompt(SshAuthenticationPrompt prompt)
-	    throws AuthenticationProtocolException {
-		//prompt.setInstance(this);
-		this.prompt = prompt;
-	}
+    /**
+     * @param prompt
+     * @throws AuthenticationProtocolException
+     *
+     */
+    public void setAuthenticationPrompt(SshAuthenticationPrompt prompt)
+            throws AuthenticationProtocolException {
+        //prompt.setInstance(this);
+        this.prompt = prompt;
+    }
 
-	/**
-	 * @return
-	 */
-	public SshAuthenticationPrompt getAuthenticationPrompt() {
-		return prompt;
-	}
+    /**
+     * @return
+     */
+    public SshAuthenticationPrompt getAuthenticationPrompt() {
+        return prompt;
+    }
 
-	/**
-	 * @param username
-	 */
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    /**
+     * @param username
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getUsername() {
-		return username;
-	}
+    /**
+     * @return
+     */
+    public String getUsername() {
+        return username;
+    }
 
-	/**
-	 * @return
-	 */
-	public abstract Properties getPersistableProperties();
+    /**
+     * @return
+     */
+    public abstract Properties getPersistableProperties();
 
-	/**
-	 *
-	 */
-	public abstract void reset();
+    /**
+     *
+     */
+    public abstract void reset();
 
-	/**
-	 * @param properties
-	 */
-	public abstract void setPersistableProperties(Properties properties);
+    /**
+     * @param properties
+     */
+    public abstract void setPersistableProperties(Properties properties);
 
-	/**
-	 * @return
-	 */
-	public abstract boolean canAuthenticate();
+    /**
+     * @return
+     */
+    public abstract boolean canAuthenticate();
 
-	/**
-	 * @return
-	 */
-	public boolean canPrompt() {
-		return prompt != null;
-	}
+    /**
+     * @return
+     */
+    public boolean canPrompt() {
+        return prompt != null;
+    }
 }

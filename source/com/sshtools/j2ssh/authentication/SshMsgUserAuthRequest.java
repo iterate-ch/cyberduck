@@ -26,12 +26,12 @@
  */
 package com.sshtools.j2ssh.authentication;
 
-import java.io.IOException;
-
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.SshMessage;
+
+import java.io.IOException;
 
 
 /**
@@ -39,110 +39,110 @@ import com.sshtools.j2ssh.transport.SshMessage;
  * @version $Revision$
  */
 public class SshMsgUserAuthRequest extends SshMessage {
-	/**  */
-	public final static int SSH_MSG_USERAUTH_REQUEST = 50;
-	private String methodName;
-	private String serviceName;
-	private String username;
-	private byte[] requestData;
+    /**  */
+    public final static int SSH_MSG_USERAUTH_REQUEST = 50;
+    private String methodName;
+    private String serviceName;
+    private String username;
+    private byte[] requestData;
 
-	/**
-	 * Creates a new SshMsgUserAuthRequest object.
-	 */
-	public SshMsgUserAuthRequest() {
-		super(SSH_MSG_USERAUTH_REQUEST);
-	}
+    /**
+     * Creates a new SshMsgUserAuthRequest object.
+     */
+    public SshMsgUserAuthRequest() {
+        super(SSH_MSG_USERAUTH_REQUEST);
+    }
 
-	/**
-	 * Creates a new SshMsgUserAuthRequest object.
-	 *
-	 * @param username
-	 * @param serviceName
-	 * @param methodName
-	 * @param requestData
-	 */
-	public SshMsgUserAuthRequest(String username, String serviceName,
-	                             String methodName, byte[] requestData) {
-		super(SSH_MSG_USERAUTH_REQUEST);
-		this.username = username;
-		this.serviceName = serviceName;
-		this.methodName = methodName;
-		this.requestData = requestData;
-	}
+    /**
+     * Creates a new SshMsgUserAuthRequest object.
+     *
+     * @param username
+     * @param serviceName
+     * @param methodName
+     * @param requestData
+     */
+    public SshMsgUserAuthRequest(String username, String serviceName,
+                                 String methodName, byte[] requestData) {
+        super(SSH_MSG_USERAUTH_REQUEST);
+        this.username = username;
+        this.serviceName = serviceName;
+        this.methodName = methodName;
+        this.requestData = requestData;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getMessageName() {
-		return "SSH_MSG_USERAUTH_REQUEST";
-	}
+    /**
+     * @return
+     */
+    public String getMessageName() {
+        return "SSH_MSG_USERAUTH_REQUEST";
+    }
 
-	/**
-	 * @return
-	 */
-	public String getMethodName() {
-		return methodName;
-	}
+    /**
+     * @return
+     */
+    public String getMethodName() {
+        return methodName;
+    }
 
-	/**
-	 * @return
-	 */
-	public byte[] getRequestData() {
-		return requestData;
-	}
+    /**
+     * @return
+     */
+    public byte[] getRequestData() {
+        return requestData;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getServiceName() {
-		return serviceName;
-	}
+    /**
+     * @return
+     */
+    public String getServiceName() {
+        return serviceName;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getUsername() {
-		return username;
-	}
+    /**
+     * @return
+     */
+    public String getUsername() {
+        return username;
+    }
 
-	/**
-	 * @param baw
-	 * @throws InvalidMessageException
-	 */
-	protected void constructByteArray(ByteArrayWriter baw)
-	    throws InvalidMessageException {
-		try {
-			baw.writeString(username);
-			baw.writeString(serviceName);
-			baw.writeString(methodName);
+    /**
+     * @param baw
+     * @throws InvalidMessageException
+     */
+    protected void constructByteArray(ByteArrayWriter baw)
+            throws InvalidMessageException {
+        try {
+            baw.writeString(username);
+            baw.writeString(serviceName);
+            baw.writeString(methodName);
 
-			if(requestData != null) {
-				baw.write(requestData);
-			}
-		}
-		catch(IOException ioe) {
-			throw new InvalidMessageException("Invalid message data");
-		}
-	}
+            if (requestData != null) {
+                baw.write(requestData);
+            }
+        }
+        catch (IOException ioe) {
+            throw new InvalidMessageException("Invalid message data");
+        }
+    }
 
-	/**
-	 * @param bar
-	 * @throws InvalidMessageException
-	 */
-	protected void constructMessage(ByteArrayReader bar)
-	    throws InvalidMessageException {
-		try {
-			username = bar.readString();
-			serviceName = bar.readString();
-			methodName = bar.readString();
+    /**
+     * @param bar
+     * @throws InvalidMessageException
+     */
+    protected void constructMessage(ByteArrayReader bar)
+            throws InvalidMessageException {
+        try {
+            username = bar.readString();
+            serviceName = bar.readString();
+            methodName = bar.readString();
 
-			if(bar.available() > 0) {
-				requestData = new byte[bar.available()];
-				bar.read(requestData);
-			}
-		}
-		catch(IOException ioe) {
-			throw new InvalidMessageException("Invalid message data");
-		}
-	}
+            if (bar.available() > 0) {
+                requestData = new byte[bar.available()];
+                bar.read(requestData);
+            }
+        }
+        catch (IOException ioe) {
+            throw new InvalidMessageException("Invalid message data");
+        }
+    }
 }

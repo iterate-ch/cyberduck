@@ -26,10 +26,6 @@
  */
 package com.sshtools.j2ssh.transport.publickey;
 
-import com.sshtools.j2ssh.configuration.ConfigurationException;
-import com.sshtools.j2ssh.configuration.ConfigurationLoader;
-import com.sshtools.j2ssh.configuration.ExtensionAlgorithm;
-import com.sshtools.j2ssh.configuration.SshAPIConfiguration;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 import com.sshtools.j2ssh.transport.publickey.dsa.SshDssKeyPair;
@@ -47,170 +43,126 @@ import org.apache.commons.logging.LogFactory;
  * @version $Revision$
  */
 public class SshKeyPairFactory {
-	private static Map pks;
-	private static String defaultAlgorithm;
-	private static Log log = LogFactory.getLog(SshKeyPairFactory.class);
+    private static Map pks;
+    private static String defaultAlgorithm;
+    private static Log log = LogFactory.getLog(SshKeyPairFactory.class);
 
-	static {
-		pks = new HashMap();
-		log.info("Loading public key algorithms");
-		pks.put("ssh-dss", SshDssKeyPair.class);
-		pks.put("ssh-rsa", SshRsaKeyPair.class);
+    static {
+        pks = new HashMap();
+        log.info("Loading public key algorithms");
+        pks.put("ssh-dss", SshDssKeyPair.class);
+        pks.put("ssh-rsa", SshRsaKeyPair.class);
 
-		try {
-			// Load external pks from configuration file
-			if(ConfigurationLoader.isConfigurationAvailable(SshAPIConfiguration.class)) {
-				SshAPIConfiguration config = (SshAPIConfiguration)ConfigurationLoader.getConfiguration(SshAPIConfiguration.class);
+        if ((defaultAlgorithm == null) || !pks.containsKey(defaultAlgorithm)) {
+            log.debug("The default public key is not set! using first in list");
 
-				if(config != null) {
-					List list = config.getPublicKeyExtensions();
+            Iterator it = pks.keySet().iterator();
+            defaultAlgorithm = (String) it.next();
+        }
+    }
 
-					if(list != null) {
-						Iterator it = list.iterator();
+    /**
+     * Creates a new SshKeyPairFactory object.
+     */
+    protected SshKeyPairFactory() {
+    }
 
-						while(it.hasNext()) {
-							ExtensionAlgorithm algorithm = (ExtensionAlgorithm)it.next();
-							String name = algorithm.getAlgorithmName();
+    /**
+     *
+     */
+    public static void initialize() {
+    }
 
-							if(pks.containsKey(name)) {
-								log.debug("Standard public key "+name+
-								    " is being overidden by "+
-								    algorithm.getImplementationClass());
-							}
-							else {
-								log.debug(algorithm.getAlgorithmName()+
-								    " public key is implemented by "+
-								    algorithm.getImplementationClass());
-							}
+    /**
+     * @return
+     */
+    public static String getDefaultPublicKey() {
+        return defaultAlgorithm;
+    }
 
-							try {
-								pks.put(algorithm.getAlgorithmName(),
-								    ConfigurationLoader.getExtensionClass(algorithm.getImplementationClass()));
-							}
-							catch(ClassNotFoundException cnfe) {
-								log.error("Could not locate "+
-								    algorithm.getImplementationClass());
-							}
-						}
-					}
+    /**
+     * @return
+     */
+    public static List getSupportedKeys() {
+        // Get the list of pks
+        return new ArrayList(pks.keySet());
+    }
 
-					defaultAlgorithm = config.getDefaultPublicKey();
-				}
-			}
-		}
-		catch(ConfigurationException ex) {
-		}
+    /**
+     * @param methodName
+     * @return
+     * @throws AlgorithmNotSupportedException
+     */
+    public static SshKeyPair newInstance(String methodName)
+            throws AlgorithmNotSupportedException {
+        try {
+            return (SshKeyPair) ((Class) pks.get(methodName)).newInstance();
+        }
+        catch (Exception e) {
+            throw new AlgorithmNotSupportedException(methodName +
+                    " is not supported!");
+        }
+    }
 
-		if((defaultAlgorithm == null) || !pks.containsKey(defaultAlgorithm)) {
-			log.debug("The default public key is not set! using first in list");
+    /**
+     * @param algorithm
+     * @return
+     */
+    public static boolean supportsKey(String algorithm) {
+        return pks.containsKey(algorithm);
+    }
 
-			Iterator it = pks.keySet().iterator();
-			defaultAlgorithm = (String)it.next();
-		}
-	}
+    /**
+     * @param encoded
+     * @return
+     * @throws InvalidSshKeyException
+     * @throws AlgorithmNotSupportedException
+     */
+    public static SshPrivateKey decodePrivateKey(byte[] encoded)
+            throws InvalidSshKeyException, AlgorithmNotSupportedException {
+        try {
+            ByteArrayReader bar = new ByteArrayReader(encoded);
+            String algorithm = bar.readString();
 
-	/**
-	 * Creates a new SshKeyPairFactory object.
-	 */
-	protected SshKeyPairFactory() {
-	}
+            if (supportsKey(algorithm)) {
+                SshKeyPair pair = newInstance(algorithm);
 
-	/**
-	 *
-	 */
-	public static void initialize() {
-	}
+                return pair.decodePrivateKey(encoded);
+            }
+            else {
+                throw new AlgorithmNotSupportedException(algorithm +
+                        " is not supported");
+            }
+        }
+        catch (IOException ioe) {
+            throw new InvalidSshKeyException(ioe.getMessage());
+        }
+    }
 
-	/**
-	 * @return
-	 */
-	public static String getDefaultPublicKey() {
-		return defaultAlgorithm;
-	}
+    /**
+     * @param encoded
+     * @return
+     * @throws InvalidSshKeyException
+     * @throws AlgorithmNotSupportedException
+     */
+    public static SshPublicKey decodePublicKey(byte[] encoded)
+            throws InvalidSshKeyException, AlgorithmNotSupportedException {
+        try {
+            ByteArrayReader bar = new ByteArrayReader(encoded);
+            String algorithm = bar.readString();
 
-	/**
-	 * @return
-	 */
-	public static List getSupportedKeys() {
-		// Get the list of pks
-		return new ArrayList(pks.keySet());
-	}
+            if (supportsKey(algorithm)) {
+                SshKeyPair pair = newInstance(algorithm);
 
-	/**
-	 * @param methodName
-	 * @return
-	 * @throws AlgorithmNotSupportedException
-	 */
-	public static SshKeyPair newInstance(String methodName)
-	    throws AlgorithmNotSupportedException {
-		try {
-			return (SshKeyPair)((Class)pks.get(methodName)).newInstance();
-		}
-		catch(Exception e) {
-			throw new AlgorithmNotSupportedException(methodName+
-			    " is not supported!");
-		}
-	}
-
-	/**
-	 * @param algorithm
-	 * @return
-	 */
-	public static boolean supportsKey(String algorithm) {
-		return pks.containsKey(algorithm);
-	}
-
-	/**
-	 * @param encoded
-	 * @return
-	 * @throws InvalidSshKeyException
-	 * @throws AlgorithmNotSupportedException
-	 */
-	public static SshPrivateKey decodePrivateKey(byte[] encoded)
-	    throws InvalidSshKeyException, AlgorithmNotSupportedException {
-		try {
-			ByteArrayReader bar = new ByteArrayReader(encoded);
-			String algorithm = bar.readString();
-
-			if(supportsKey(algorithm)) {
-				SshKeyPair pair = newInstance(algorithm);
-
-				return pair.decodePrivateKey(encoded);
-			}
-			else {
-				throw new AlgorithmNotSupportedException(algorithm+
-				    " is not supported");
-			}
-		}
-		catch(IOException ioe) {
-			throw new InvalidSshKeyException(ioe.getMessage());
-		}
-	}
-
-	/**
-	 * @param encoded
-	 * @return
-	 * @throws InvalidSshKeyException
-	 * @throws AlgorithmNotSupportedException
-	 */
-	public static SshPublicKey decodePublicKey(byte[] encoded)
-	    throws InvalidSshKeyException, AlgorithmNotSupportedException {
-		try {
-			ByteArrayReader bar = new ByteArrayReader(encoded);
-			String algorithm = bar.readString();
-
-			if(supportsKey(algorithm)) {
-				SshKeyPair pair = newInstance(algorithm);
-
-				return pair.decodePublicKey(encoded);
-			}
-			else {
-				throw new AlgorithmNotSupportedException(algorithm+
-				    " is not supported");
-			}
-		}
-		catch(IOException ioe) {
-			throw new InvalidSshKeyException(ioe.getMessage());
-		}
-	}
+                return pair.decodePublicKey(encoded);
+            }
+            else {
+                throw new AlgorithmNotSupportedException(algorithm +
+                        " is not supported");
+            }
+        }
+        catch (IOException ioe) {
+            throw new InvalidSshKeyException(ioe.getMessage());
+        }
+    }
 }
