@@ -32,20 +32,16 @@ import ch.cyberduck.core.Validator;
 /**
  * @version $Id$
  */
-public class CDValidatorController extends Validator {
-    private static Logger log = Logger.getLogger(CDValidatorController.class);
+public abstract class CDValidatorController implements Validator {
+    protected static Logger log = Logger.getLogger(CDValidatorController.class);
 
     private static NSMutableArray instances = new NSMutableArray();
 
     private CDController windowController;
 
-    public CDValidatorController(CDController windowController, int kind, boolean resume) {
-        super(kind, resume);
+    public CDValidatorController(CDController windowController) {
         this.windowController = windowController;
         instances.addObject(this);
-        if (false == NSApplication.loadNibNamed("Validator", this)) {
-            log.fatal("Couldn't load Validator.nib");
-        }
     }
 
     private NSImageView iconView; // IBOutlet
@@ -87,6 +83,21 @@ public class CDValidatorController extends Validator {
         instances.removeObject(this);
     }
 
+	protected Validator validator;
+
+	/**
+		* The user canceled this request, no further validation should be taken
+     */
+    private boolean isCanceled = false;
+	
+	public boolean isCanceled() {
+		return this.isCanceled;
+	}
+	
+	public void setCanceled(boolean c) {
+		this.isCanceled = c;
+	}
+	
     /*
      * Use the same settings for all succeeding items to check
      */
@@ -100,6 +111,17 @@ public class CDValidatorController extends Validator {
      */
     private boolean resumeChoosen = false;
 
+	public boolean validate(Path p) {
+        if (!this.isCanceled()) {
+			if(this.validator.validate(p)) {
+				return true;
+			}
+			return this.prompt(p);
+        }
+        log.info("Canceled " + p.getName() + " - no further validation needed");
+        return false;
+	}
+		
     public boolean prompt(final Path path) {
         while (windowController.window().attachedSheet() != null) {
             try {
@@ -140,7 +162,7 @@ public class CDValidatorController extends Validator {
                         new NSSelector("validateSheetDidEnd",
                                 new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
                         path); //contextInfo
-//@todo?                CDQueueController.instance().window().makeKeyAndOrderFront(null);
+				windowController.window().makeKeyAndOrderFront(null);
                 // Waiting for user to make choice
                 while (windowController.window().attachedSheet() != null) {
                     try {
@@ -186,7 +208,7 @@ public class CDValidatorController extends Validator {
 
     public void cancelActionFired(NSButton sender) {
         log.debug("cancelActionFired");
-        this.isCanceled = true;
+        this.setCanceled(true);
         this.include = false;
         this.resumeChoosen = true;
         NSApplication.sharedApplication().endSheet(this.window(), sender.tag());

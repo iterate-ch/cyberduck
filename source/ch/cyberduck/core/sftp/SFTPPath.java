@@ -275,14 +275,7 @@ public class SFTPPath extends Path {
 					Path file = null;
 					while (iterator.hasNext()) {
 						file = (Path)iterator.next();
-						if (file.attributes.isFile() && !file.attributes.isSymbolicLink()) {
-							session.log("Changing permission to "+perm.getOctalCode()+" on "+file.getName(), Message.PROGRESS);
-							session.SFTP.changePermissions(file.getAbsolute(), perm.getDecimalCode());
-							file.getParent().invalidate();
-						}
-						if (file.attributes.isDirectory()) {
-							file.changePermissions(perm, recursive);
-						}
+						file.changePermissions(perm, recursive);
 					}
 				}
             }

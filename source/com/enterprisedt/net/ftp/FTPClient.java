@@ -73,48 +73,7 @@ public class FTPClient {
 		* SOCKS host property name
 		*/
     final private static String SOCKS_HOST = "socksProxyHost";
-    
-    /**
-		* Major version (substituted by ant)
-		*/
-    private static String majorVersion = "@major_ver@";
-    
-    /**
-		* Middle version (substituted by ant)
-		*/
-    private static String middleVersion = "@middle_ver@";
-    
-    /**
-		* Middle version (substituted by ant)
-		*/
-    private static String minorVersion = "@minor_ver@";
-    
-    /**
-		* Full version
-		*/
-    private static int[] version;
-    
-    /**
-		* Timestamp of build
-		*/
-    private static String buildTimestamp = "@date_time@";
-    
-    
-    /**
-		* Work out the version array
-		*/
-    static {
-        try {
-            version = new int[3];
-            version[0] = Integer.parseInt(majorVersion);
-            version[1] = Integer.parseInt(middleVersion);
-            version[2] = Integer.parseInt(minorVersion);
-        }
-        catch (NumberFormatException ex) {
-            System.err.println("Failed to calculate version: " + ex.getMessage());
-        }
-    }
-    
+        
     /**
 		*  Format to interpret MTDM timestamp
 		*/
@@ -187,26 +146,7 @@ public class FTPClient {
         tsFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     }  
     
-    
-    /**
-		* Get the version of edtFTPj
-		* 
-		* @return int array of {major,middle,minor} version numbers 
-		*/
-    public static int[] getVersion() {
-        return version;
-    }
-    
-    /**
-		* Get the build timestamp
-		* 
-		* @return d-MMM-yyyy HH:mm:ss z build timestamp 
-		*/
-    public static String getBuildTimestamp() {
-        return buildTimestamp;
-    }
-	
-    /**
+	/**
 		*  Constructor. Creates the control
 		*  socket
 		*

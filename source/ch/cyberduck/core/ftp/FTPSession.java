@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import ch.cyberduck.core.*;
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
+import com.enterprisedt.net.ftp.FTPMessageListener;
 import com.enterprisedt.net.ftp.FTPException;
 
 /**
@@ -80,7 +81,17 @@ public class FTPSession extends Session {
         this.log("Opening FTP connection to " + host.getIp() + "...", Message.PROGRESS);
         this.log(new java.util.Date().toString(), Message.TRANSCRIPT);
         this.log(host.getIp(), Message.TRANSCRIPT);
-        this.FTP = new FTPClient();
+        this.FTP = new FTPClient(host.getHostname(), host.getPort());
+		this.FTP.setMessageListener(new FTPMessageListener() {
+			public void logCommand(String cmd) {
+				FTPSession.this.log(cmd, Message.TRANSCRIPT);
+			}
+			
+			public void logReply(String reply) {
+				FTPSession.this.log(reply, Message.TRANSCRIPT);
+			}
+		});
+		this.FTP.setStrictReturnCodes(false); //@todo
         if (Preferences.instance().getProperty("connection.proxy.useProxy").equals("true")) {
             this.FTP.initSOCKS(Preferences.instance().getProperty("connection.proxy.host"),
                     Preferences.instance().getProperty("connection.proxy.port"));
@@ -95,7 +106,7 @@ public class FTPSession extends Session {
         else {
             this.FTP.setConnectMode(FTPConnectMode.PASV);
         }
-        this.FTP.connect(host.getHostname(), host.getPort());
+//        this.FTP.connect(host.getHostname(), host.getPort());
         this.log("FTP connection opened", Message.PROGRESS);
 		this.FTP.setTimeout(Integer.parseInt(Preferences.instance().getProperty("ftp.timeout")));
         this.login();

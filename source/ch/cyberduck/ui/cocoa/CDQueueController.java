@@ -253,6 +253,7 @@ if (returncode == NSAlertPanel.DefaultReturn) {
 			((NSView)this.queueTable.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
 		}
 		this.queueTable.reloadData();
+		this.tableViewSelectionChange();
 	}
 
 	public void addItem(Queue queue) {
@@ -296,7 +297,19 @@ if (returncode == NSAlertPanel.DefaultReturn) {
                 );
             }
         }
-        queue.start(new CDValidatorController(this, queue.kind(), resumeRequested));
+		switch(queue.kind()) {
+			case Queue.KIND_DOWNLOAD:
+				queue.start(new CDDownloadValidatorController(this, resumeRequested));
+				break;
+			case Queue.KIND_UPLOAD:
+				queue.start(new CDUploadValidatorController(this, resumeRequested));
+				break;
+			case Queue.KIND_SYNC:
+				queue.start(new CDSyncValidatorController(this, resumeRequested));
+				break;
+			default:
+				throw new IllegalArgumentException("Unknown queuing action");
+		}
     }
 
     public boolean isVisible() {

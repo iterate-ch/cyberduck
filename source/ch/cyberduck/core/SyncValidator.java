@@ -18,12 +18,24 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 /**
 * @version $Id$
  */
-public interface Validator {
+public class SyncValidator extends AbstractValidator {
+    private static Logger log = Logger.getLogger(Validator.class);
 	
-//    public boolean prompt(Path path);
+	public SyncValidator(boolean resumeRequested) {
+        super(resumeRequested);
+    }
+		
+	protected boolean validateDirectory(Path path) {
+		return true;
+	}
 	
-	public boolean validate(Path path);
-}
+	protected boolean validateFile(Path path) {
+		return true;
+	}
+	
+}	

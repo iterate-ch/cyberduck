@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.ui.cocoa;
 
 /*
  *  Copyright (c) 2004 David Kocher. All rights reserved.
@@ -18,12 +18,26 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.application.NSApplication;
+
+import ch.cyberduck.core.Validator;
+import ch.cyberduck.core.SyncValidator;
+import ch.cyberduck.core.Path;
+
 /**
 * @version $Id$
  */
-public interface Validator {
+public class CDSyncValidatorController extends CDValidatorController implements Validator {
+
+    public CDSyncValidatorController(CDController windowController, boolean resume) {
+        super(windowController);
+        if (false == NSApplication.loadNibNamed("Sync", this)) {
+            log.fatal("Couldn't load Sync.nib");
+        }
+		this.validator = new SyncValidator(resume);
+    }
 	
-//    public boolean prompt(Path path);
-	
-	public boolean validate(Path path);
+	public boolean prompt(Path p) {
+		return true; //@todo
+	}
 }

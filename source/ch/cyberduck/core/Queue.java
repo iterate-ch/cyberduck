@@ -35,8 +35,10 @@ import ch.cyberduck.ui.cocoa.CDQueueController;
 public class Queue extends Observable implements Observer {
     private static Logger log = Logger.getLogger(Queue.class);
 
-    public static final int KIND_DOWNLOAD = 0;
-    public static final int KIND_UPLOAD = 1;
+    public static final int KIND_DOWNLOAD = 1;
+    public static final int KIND_UPLOAD = 2;
+    public static final int KIND_SYNC = 4;
+
     /**
      * What kind of this, either KIND_DOWNLOAD or KIND_UPLOAD
      */
@@ -210,17 +212,6 @@ public class Queue extends Observable implements Observer {
 				}
 			}
 		}
-		/*
-		for (Iterator iter = jobs.iterator(); iter.hasNext() && !worker.isCanceled(); ) {
-			Path item = (Path)iter.next();
-			log.debug("Validating " + item.toString());
-			if (!this.validator.validate(item)) {
-				iter.remove();
-			}
-			item.status.reset();
-			this.size += item.status.getSize();
-		}
-		 */
 		this.progress = new Timer(500,
 								  new ActionListener() {
 									  int i = 0;
@@ -267,15 +258,11 @@ public class Queue extends Observable implements Observer {
 	
 	private class Worker extends Thread {		
 		private Queue queue;
-//		private Validator validator;
 		private boolean running;
 		private boolean canceled;
-//        private long size;
 		
 		public Worker(Queue queue) {
 			this.queue = queue;
-//			this.validator = validator;
-//			this.init();
 		}
 		
 		public void cancel() {

@@ -257,14 +257,7 @@ public class FTPPath extends Path {
 					Path file = null;
 					while (iterator.hasNext()) {
 						file = (Path)iterator.next();
-						if (file.attributes.isFile() && !file.attributes.isSymbolicLink()) {
-							session.log("Changing permission to "+perm.getOctalCode()+" on "+file.getName(), Message.PROGRESS);
-							session.FTP.site(command+" "+perm.getOctalCode()+" "+file.getAbsolute());
-							file.getParent().invalidate();
-						}
-						if (file.attributes.isDirectory()) {
-							file.changePermissions(perm, recursive);
-						}
+						file.changePermissions(perm, recursive);
 					}
 				}
             }
@@ -278,7 +271,7 @@ public class FTPPath extends Path {
             session.log("IO Error: " + e.getMessage(), Message.ERROR);
         }
     }
-
+	
     public synchronized void download() {
         try {
             log.debug("download:" + this.toString());

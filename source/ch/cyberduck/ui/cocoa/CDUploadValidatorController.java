@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.ui.cocoa;
 
 /*
  *  Copyright (c) 2004 David Kocher. All rights reserved.
@@ -18,12 +18,22 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.application.NSApplication;
+
+import ch.cyberduck.core.Validator;
+import ch.cyberduck.core.UploadValidator;
+import ch.cyberduck.core.Path;
+
 /**
 * @version $Id$
  */
-public interface Validator {
+public class CDUploadValidatorController extends CDValidatorController implements Validator {
 	
-//    public boolean prompt(Path path);
-	
-	public boolean validate(Path path);
+    public CDUploadValidatorController(CDController windowController, boolean resume) {
+        super(windowController);
+        if (false == NSApplication.loadNibNamed("Validator", this)) {
+            log.fatal("Couldn't load Validator.nib");
+        }
+		this.validator = new UploadValidator(resume);
+    }
 }

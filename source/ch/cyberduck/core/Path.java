@@ -145,10 +145,6 @@ public abstract class Path {
     public void setPath(String p) {
         this.path = p;
     }
-	
-//	public void setLinkedPath(Path linkedPath) {
-//		this.linkedPath = linkedPath;
-//	}
 
     /**
      * @return My parent directory
@@ -231,9 +227,40 @@ public abstract class Path {
         }
         return this.getParent().list(false, true).contains(this);
     }
+	
+	public synchronized void sync(int kind) {
+		this.sync(false, kind);
+	}	
 
-    //	public abstract void sync(Local local, boolean recursive, boolean commit, int kind);
-
+	public synchronized void sync(boolean recursive, int kind) {
+        try {
+            this.getSession().check();
+            if (this.attributes.isFile()) {
+				if(this.getLocal().getTimestamp().before(this.attributes.getTimestamp())) {
+					if(kind == 0) this.download(); else this.upload();
+				}
+				if(this.getLocal().getTimestamp().after(this.attributes.getTimestamp())) {
+					if(kind == 0) this.upload(); else this.download();
+				}
+            }
+            else if (this.attributes.isDirectory()) {
+				if(recursive) {
+					List files = this.list(false, true);
+					java.util.Iterator iterator = files.iterator();
+					Path file = null;
+					while (iterator.hasNext()) {
+						file = (Path)iterator.next();
+						file.sync(recursive, kind);
+					}
+				}
+            }
+            this.getSession().log("Idle", Message.STOP);
+        }
+        catch (IOException e) {
+            this.getSession().log("IO Error: " + e.getMessage(), Message.ERROR);
+        }
+	}
+	
     /**
      * @return true if this paths points to '/'
      */
