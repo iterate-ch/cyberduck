@@ -28,6 +28,7 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Status;
 
@@ -37,7 +38,7 @@ import ch.cyberduck.core.Status;
 public class CDInfoController extends CDController {
 	private static Logger log = Logger.getLogger(CDInfoController.class);
 
-//	private static NSMutableArray instances = new NSMutableArray();
+	private static NSMutableArray instances = new NSMutableArray();
 
 	private List files;
 
@@ -129,7 +130,7 @@ public class CDInfoController extends CDController {
 	public CDInfoController(Path file) {
 		this.files = new ArrayList();
 		this.files.add(file);
-		//instances.addObject(this);
+		instances.addObject(this);
 		if(false == NSApplication.loadNibNamed("Info", this)) {
 			log.fatal("Couldn't load Info.nib");
 		}
@@ -137,7 +138,7 @@ public class CDInfoController extends CDController {
 
 	public CDInfoController(List files) {
 		this.files = files;
-		//instances.addObject(this);
+		instances.addObject(this);
 		if(false == NSApplication.loadNibNamed("Info", this)) {
 			log.fatal("Couldn't load Info.nib");
 		}
@@ -305,8 +306,10 @@ public class CDInfoController extends CDController {
 
 	public void windowWillClose(NSNotification notification) {
 		log.debug("windowWillClose");
-//		NSNotificationCenter.defaultCenter().removeObserver(this);
-//		instances.removeObject(this);
+		if(Preferences.instance().getProperty("browser.info.isInspector").equals("true")) {
+			NSNotificationCenter.defaultCenter().removeObserver(this);
+			instances.removeObject(this);
+		}
 	}
 
 	private int numberOfFiles() {
