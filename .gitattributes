@@ -12,6 +12,7 @@ en.lproj/InfoPlist.strings -text
 en.lproj/Localizable.strings -text svneol=unset#application/octet-stream
 img/add.tiff svneol=native#unset
 img/addPressed.tiff svneol=native#unset
+img/alert.tiff -text
 img/arrow.tiff svneol=native#unset
 img/back.tiff svneol=native#unset
 img/back32.tiff -text
@@ -29,6 +30,8 @@ img/favorites.tiff svneol=native#unset
 img/folder.tiff -text
 img/info.tiff svneol=native#unset
 img/newfolder.icns svneol=native#unset
+img/offline.tiff -text
+img/online.tiff -text
 img/refresh.tiff svneol=native#unset
 img/reload.tiff svneol=native#unset
 img/remove.tiff svneol=native#unset
