@@ -148,7 +148,7 @@ public class CDQueueController extends CDController {
 		if(this.queueTable.selectedRow() != -1) {
 			Queue q = this.queueModel.getItem(this.queueTable.selectedRow());
 			if(q.numberOfRoots() == 1) {
-				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()+q.getRoot().getAbsolute(),
+				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()+"/"+q.getRoot().getAbsolute(),
 				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 				this.localField.setAttributedStringValue(new NSAttributedString(q.getRoot().getLocal().getAbsolute(),
 				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));

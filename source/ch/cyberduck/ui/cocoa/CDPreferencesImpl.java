@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 import ch.cyberduck.core.Preferences;
 
 /**
- * Concrete subclass using the Cocoao Preferences classes.
+ * Concrete subclass using the Cocoa Preferences classes.
  *
  * @version $Id$
  * @see com.apple.cocoa.foundation.NSUserDefaults
@@ -93,11 +93,7 @@ public class CDPreferencesImpl extends Preferences {
 	}
 
 	public void save() {
-		// Saves any modifications to the persistent domains and updates all persistent domains that were not modified to
-		// what is on disk. Returns false if it could not save data to disk. Because synchronize is automatically invoked at
-		// periodic intervals, use this method only if you cannot wait for the automatic synchronization (for example, if your
-		// application is about to exit) or if you want to update user props to what is on disk even though you have not made
-		// any changes.
+		// Saves any modifications to the persistent domains and updates all persistent domains that were not modified to  what is on disk. Returns false if it could not save data to disk. Because synchronize is automatically invoked at  periodic intervals, use this method only if you cannot wait for the automatic synchronization (for example, if your application is about to exit) or if you want to update user props to what is on disk even though you have not made any changes.
 		this.props.synchronize();
 	}
 }

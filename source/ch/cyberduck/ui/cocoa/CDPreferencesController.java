@@ -748,6 +748,9 @@ public class CDPreferencesController extends NSObject {
 
 	public void concurrentConnectionsFieldDidChange(NSNotification sender) {
 		Preferences.instance().setProperty("connection.pool.max", this.concurrentConnectionsField.stringValue());
+		synchronized(this) {
+			SessionPool.instance().notify();
+		}
 	}
 
 	private NSTextField concurrentConnectionsTimeoutField; //IBOutlet

@@ -290,7 +290,7 @@ public class Host {
 	 * @return The URL of the remote host including user login hostname and port
 	 */
 	public String getURL() {
-		return this.getProtocol()+"://"+this.getLogin().getUsername()+"@"+this.getHostname()+":"+this.getPort();// + "/" + this.getDefaultPath();
+		return this.getProtocol()+"://"+this.getLogin().getUsername()+"@"+this.getHostname()+":"+this.getPort();//+"/"+this.getDefaultPath();
 	}
 
 	public boolean equals(Object other) {
