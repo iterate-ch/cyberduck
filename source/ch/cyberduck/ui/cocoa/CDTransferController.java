@@ -220,6 +220,16 @@ public class CDTransferController implements Observer, Validator {
 		this.stopButton.setEnabled(true);
 		this.resumeButton.setEnabled(false);
 		this.reloadButton.setEnabled(false);
+
+//		if(Queue.KIND_DOWNLOAD == kind) {
+//		    String creatorCodeString = (String)NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleSignature");
+//		    Integer creatorCode = new Integer(
+//					NSHFSFileTypes.hfsTypeCodeFromFileType("'"+creatorCodeString+"'"));
+//		    
+//		    NSPathUtilities.setFileAttributes(
+//					root.getLocal().toString(),
+//					new NSDictionary(creatorCode, NSPathUtilities.FileHFSCreatorCode));
+//		}
 	    }	    
 	    // STOP
 	    else if(msg.getTitle().equals(Message.STOP)) {

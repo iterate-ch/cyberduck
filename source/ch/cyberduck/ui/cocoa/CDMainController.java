@@ -69,14 +69,18 @@ public class CDMainController {
 	NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().pathForResource("Help", "rtfd")).toString());
     }
 
+    public void faqMenuClicked(Object sender) {
+	NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().pathForResource("Cyberduck FAQ", "rtfd")).toString());
+    }
+    
     public void licenseMenuClicked(Object sender) {
 	NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().pathForResource("License", "txt")).toString());
     }
 
     public void updateMenuClicked(Object sender) {
 	try {
-	    NSBundle bundle = NSBundle.bundleForClass(this.getClass());
-	    String currentVersionNumber = (String)bundle.objectForInfoDictionaryKey("CFBundleVersion");
+//	    NSBundle bundle = NSBundle.bundleForClass(this.getClass());
+	    String currentVersionNumber = (String)NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
 	    log.info("Current version:"+currentVersionNumber);
 
 	    NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.update.xml")));

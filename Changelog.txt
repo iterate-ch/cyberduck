@@ -6,6 +6,13 @@ You can open connections to multiple servers thanks to its document based interf
 Drag and drop is supported for both downloading and uploading files. Just drag the file(s) or folder from the Finder to the browser window or vice versa to start the transfer. 
 File deletion and renaming, checking and changing of permissions is possible with a Finder-like info panel.
 
+2.1beta4
+- Cyberduck now has the official creator code 'CYCK' and can handle URL events from other applications. See "http://www.monkeyfood.com/software/moreInternet/" to configure Cyberduck as the default FTP helper application.
+- Smaller bug fixes.
+
+http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1beta4.dmg.gz
+http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta4.tar.gz
+
 2.1beta3
 - Localization support
 - Files and foldes can now be dragged to the Finder to download them.
@@ -17,8 +24,7 @@ File deletion and renaming, checking and changing of permissions is possible wit
 - When deleting multiple files and directores, the file list will now only get updated at the end because of performance.
 - If multiples have been selected to transfer, Cyberduck now puts them in the same queue and opens only one connection to the server.
 - There is a new command 'Go to folder' for changing the working directory quickly.
-- Cyberduck now has the official creator code 'CYCK' and can handle URL events from other applications. See http://www.monkeyfood.com/software/moreInternet/ to configure as the default FTP helper application.
-- Smaller bug fixes.
+- Many smaller bug fixes.
 
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?Cyberduck-2.1beta3.dmg.gz
 http://icu.unizh.ch/~dkocher/cyberduck/download.php?cyberduck-src-2.1beta3.tar.gz
