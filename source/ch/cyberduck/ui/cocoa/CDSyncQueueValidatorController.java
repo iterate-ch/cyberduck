@@ -101,6 +101,8 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			if (!(p.getRemote().attributes.getSize() == p.getLocal().getSize())) {
 				this.prompt(p);
 			}
+			//@todo what about same file sizes and different modification dates;
+			//problem: when uploading files the modification date on the remote site changes.
 		}
 		else {
 			this.prompt(p);

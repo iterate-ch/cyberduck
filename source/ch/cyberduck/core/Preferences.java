@@ -139,7 +139,7 @@ public abstract class Preferences {
 		defaults.put("queue.transformer.illegalCharacters", "");
 		defaults.put("queue.transformer.substituteCharacter", "");
 
-			//ftp properties
+		//ftp properties
 		defaults.put("ftp.anonymous.name", "anonymous");
 		defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
 		defaults.put("ftp.connectmode", "passive");
