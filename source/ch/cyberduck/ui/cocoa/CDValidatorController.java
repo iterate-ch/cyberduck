@@ -85,13 +85,8 @@ public abstract class CDValidatorController extends AbstractValidator {
 	
 	protected void prompt(Path p) {
 		if(!this.hasPrompt()) {
-			//			this.windowController.waitForSheetEnd();
-			//			ThreadUtilities.instance().invokeLater(new Runnable() {
-			//				public void run() {
 			this.windowController.beginSheet(this.window());
 			this.statusIndicator.startAnimation(null);
-			//				}
-			//			});
 			this.windowController.waitForSheetDisplay(this.window());
 			this.hasPrompt = true;
 		}

@@ -155,19 +155,8 @@
 			<include name="*.lproj/InfoPlist.strings"/>
 		</replace>
 	</target>
-
-
-	<target name="headers" description="Generate header files for JNI">
-		<!--
-		<javah 
-			outputFile="${source}/ch/cyberduck/core/Login.h"
-			classpath="${build.classes}">
-			<class name="ch.cyberduck.core.Login"/>
-		</javah>
-		-->
-	</target>
-  
-  
+	  
+	
 	<target name="compile" depends="init" description="Compile the source tree">
 		<javac
 			debug="${debug}"
@@ -176,7 +165,6 @@
 			destdir="${build.classes}">
 			<classpath refid="build.classpath"/>
 		</javac>
-		<antcall target="headers"/>
 	</target>
   
   

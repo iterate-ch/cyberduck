@@ -85,10 +85,10 @@ force=false;
 while [ "$1" != "" ] # When there are arguments...
 do
     case "$1" in 
-		  -g | --genstrings)
-				init;
-				exit 0;
-		  ;;
+		-g | --genstrings)
+			init;
+			exit 0;
+		;;
         -h | --help) 
             usage;
             exit 0;

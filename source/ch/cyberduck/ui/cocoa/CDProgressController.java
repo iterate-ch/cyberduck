@@ -78,67 +78,63 @@ public class CDProgressController extends NSObject implements Observer {
 	
 	public void update(final Observable o, final Object arg) {
 		if(arg instanceof Message) {
-//			ThreadUtilities.instance().invokeLater(new Runnable() {
-//				public void run() {
-					Message msg = (Message)arg;
-					if(msg.getTitle().equals(Message.PROGRESS)) {
-						statusText = (String)msg.getContent();
-						this.updateProgressfield();
+			Message msg = (Message)arg;
+			if(msg.getTitle().equals(Message.PROGRESS)) {
+				statusText = (String)msg.getContent();
+				this.updateProgressfield();
+			}
+			else if(msg.getTitle().equals(Message.ERROR)) {
+				this.errorText.append("\n"+(String)msg.getContent());
+				this.alertIcon.setHidden(false);
+			}
+			else if(msg.getTitle().equals(Message.QUEUE_START)) {
+				this.progressBar.setIndeterminate(true);
+				this.progressBar.startAnimation(null);
+				this.errorText = new StringBuffer();
+				this.alertIcon.setHidden(true);
+				this.progressTimer = new NSTimer(0.5, //seconds
+												 CDProgressController.this, //target
+												 new NSSelector("update", new Class[]{NSTimer.class}),
+												 getQueue(), //userInfo
+												 true); //repeating
+				ThreadUtilities.instance().invokeLater(new Runnable() {
+					public void run() {
+						NSRunLoop.currentRunLoop().addTimerForMode(progressTimer, 
+																   NSRunLoop.DefaultRunLoopMode);
 					}
-					else if(msg.getTitle().equals(Message.ERROR)) {
-						this.errorText.append("\n"+(String)msg.getContent());
-						this.alertIcon.setHidden(false);
-					}
-					else if(msg.getTitle().equals(Message.QUEUE_START)) {
-						this.progressBar.setIndeterminate(true);
-						this.progressBar.startAnimation(null);
-						this.errorText = new StringBuffer();
-						this.alertIcon.setHidden(true);
-						this.progressTimer = new NSTimer(0.5, //seconds
-													CDProgressController.this, //target
-													new NSSelector("update", new Class[]{NSTimer.class}),
-													getQueue(), //userInfo
-													true); //repeating
-						ThreadUtilities.instance().invokeLater(new Runnable() {
-							public void run() {
-								NSRunLoop.currentRunLoop().addTimerForMode(progressTimer, 
-																		   NSRunLoop.DefaultRunLoopMode);
-							}
-						});
-					}
-					else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
-						this.updateProgressbar();
-						this.updateProgressfield();
-						this.progressBar.stopAnimation(null);
-						this.progressBar.setIndeterminate(false);
-						if(queue.isComplete() && !queue.isCanceled()) {
-							if(queue instanceof DownloadQueue) {
-								Growl.instance().notify(NSBundle.localizedString("Download complete",
-																				 "Growl Notification"),
-														queue.getName());
-								if(Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
-									boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
-									log.debug("Success opening file:"+success);
-								}
-							}
-							if(queue instanceof UploadQueue) {
-								Growl.instance().notify(NSBundle.localizedString("Upload complete",
-																				 "Growl Notification"),
-														queue.getName());
-							}
-							if(queue instanceof SyncQueue) {
-								Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
-																				 "Growl Notification"),
-														queue.getName());
-							}
-							if(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
-								CDQueueController.instance().removeItem(queue);
-							}
+				});
+			}
+			else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
+				this.updateProgressbar();
+				this.updateProgressfield();
+				this.progressBar.stopAnimation(null);
+				this.progressBar.setIndeterminate(false);
+				if(queue.isComplete() && !queue.isCanceled()) {
+					if(queue instanceof DownloadQueue) {
+						Growl.instance().notify(NSBundle.localizedString("Download complete",
+																		 "Growl Notification"),
+												queue.getName());
+						if(Preferences.instance().getProperty("queue.postProcessItemWhenComplete").equals("true")) {
+							boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+							log.debug("Success opening file:"+success);
 						}
-						this.progressTimer.invalidate();
 					}
-//				}
-//			});
+					if(queue instanceof UploadQueue) {
+						Growl.instance().notify(NSBundle.localizedString("Upload complete",
+																		 "Growl Notification"),
+												queue.getName());
+					}
+					if(queue instanceof SyncQueue) {
+						Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
+																		 "Growl Notification"),
+												queue.getName());
+					}
+					if(Preferences.instance().getProperty("queue.removeItemWhenComplete").equals("true")) {
+						CDQueueController.instance().removeItem(queue);
+					}
+				}
+				this.progressTimer.invalidate();
+			}
 		}
 	}
 	
