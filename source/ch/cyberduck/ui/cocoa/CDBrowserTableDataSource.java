@@ -118,7 +118,7 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
      * DragOperationNone. One may choose to retarget for various reasons (e.g. for better visual
 																		  * feedback when inserting into a sorted position).
      */
-    public int tableViewValidateDrop( NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+    public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 		log.debug("tableViewValidateDrop");
 		tableView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
 		return NSTableView.DropAbove;
@@ -133,35 +133,37 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
      */
     public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 		log.debug("tableViewAcceptDrop:"+row+","+operation);
-		// Get the drag-n-drop pasteboard
-		NSPasteboard pasteboard = info.draggingPasteboard();
+		NSPasteboard pboard = info.draggingPasteboard();
 		// What type of data are we going to allow to be dragged?  The pasteboard might contain different formats
-		NSArray formats = new NSArray(NSPasteboard.FilenamesPboardType);
-		
-		// find the best match of the types we'll accept and what's actually on the pasteboard
-  // In the file format type that we're working with, get all data on the pasteboard
-		NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
-//		List roots = new ArrayList();
-//		Session session = this.workdir().getSession().copy();
-		for(int i = 0; i < filesList.count(); i++) {
-			Session session = this.workdir().getSession().copy();
-			log.debug(filesList.objectAtIndex(i));
-			Path p = null;
-			if(this.workdir() instanceof FTPPath)
-				p = new FTPPath((FTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i)));
-			if(this.workdir() instanceof SFTPPath)
-				p = new SFTPPath((SFTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i)));
-			CDQueueController.instance().addItemAndStart(new Queue(p, 
-															   Queue.KIND_UPLOAD));
+		if(pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+			Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
+			log.debug("tableViewAcceptDrop:"+o);
+			if(o != null) {
+				if(o instanceof NSArray) {
+					NSArray filesList = (NSArray)o;
+					//					NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
+					for(int i = 0; i < filesList.count(); i++) {
+						Session session = this.workdir().getSession().copy();
+						log.debug(filesList.objectAtIndex(i));
+						Path p = null;
+						if(this.workdir() instanceof FTPPath)
+							p = new FTPPath((FTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i)));
+						if(this.workdir() instanceof SFTPPath)
+							p = new SFTPPath((SFTPSession)session, this.workdir().getAbsolute(), new Local((String)filesList.objectAtIndex(i)));
+						CDQueueController.instance().addItemAndStart(new Queue(p, 
+																			   Queue.KIND_UPLOAD));
+					}
+					return true;
+				}
+			}
 		}
-//		CDQueueController.instance().addTransfer(roots, Queue.KIND_UPLOAD);
-		return true;
-    }
+		return false;
+	}
     
+	
 	// ----------------------------------------------------------
  // Drag methods
  // ----------------------------------------------------------
-	
     
     /**    Invoked by tableView after it has been determined that a drag should begin, but before the drag has been started.
 		* The drag image and other drag-related information will be set up and provided by the table view once this call
@@ -177,31 +179,52 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 			this.promisedDragPaths = new Path[rows.count()];
 			// The types argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
 			NSMutableArray types = new NSMutableArray();
+			NSMutableArray queues = new NSMutableArray();
+			// declare our dragged type in the paste board
+			pboard.declareTypes(new NSArray(
+											new Object[]{"QueuePBoardType", NSPasteboard.FilesPromisePboardType}),
+								null);
 			for(int i = 0; i < rows.count(); i++) {
 				Session session = this.workdir().getSession().copy();
 				promisedDragPaths[i] = (Path)this.getEntry(((Integer)rows.objectAtIndex(i)).intValue()).copy(session);
+
+				queues.addObject(new Queue(promisedDragPaths[i], Queue.KIND_DOWNLOAD).getAsDictionary());
+								 
 				if(promisedDragPaths[i].isFile()) {
+//					types.addObject(NSPathUtilities.FileTypeRegular);
 					if(promisedDragPaths[i].getExtension() != null)
 						types.addObject(promisedDragPaths[i].getExtension());
 					else
 						types.addObject(NSPathUtilities.FileTypeUnknown);
 				}
 				else if(promisedDragPaths[i].isDirectory()) {
+//					types.addObject(NSPathUtilities.FileTypeDirectory);
 					types.addObject("'fldr'");
 				}
 				else
 					types.addObject(NSPathUtilities.FileTypeUnknown);
 			}
-			NSEvent event = NSApplication.sharedApplication().currentEvent();
+			if(pboard.setPropertyListForType(queues, "QueuePBoardType"))
+				log.debug("QueuePBoardType data sucessfully written to pasteboard");
+			else
+				log.error("Could not write QueuePBoardType data to pasteboard");
+			if(pboard.setPropertyListForType(types, NSPasteboard.FilesPromisePboardType))
+				log.debug("FilesPromisePboardType data sucessfully written to pasteboard");
+			else
+				log.error("Could not write FilenamesPboardType data to pasteboard");
+			
+/*			NSEvent event = NSApplication.sharedApplication().currentEvent();
 			NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
 			NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
 			
 			tableView.dragPromisedFilesOfTypes(types, imageRect, this, true, event);
+			*/
+			return true;
 		}
 		// we return false because we don't want the table to draw the drag image
 		return false;
     }
-    
+
 	
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
 		log.debug("finishedDraggingImage:"+operation);
@@ -211,8 +234,6 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
 					CDQueueController.instance().addItemAndStart(new Queue(promisedDragPaths[i], 
 																	   Queue.KIND_DOWNLOAD));
 				}
-				
-				//				CDQueueController.instance().addTransfer(Arrays.asList(promisedDragPaths), Queue.KIND_DOWNLOAD);
 				promisedDragPaths = null;
 			}
 		}
@@ -227,18 +248,23 @@ public class CDBrowserTableDataSource extends CDTableDataSource {
      */
     public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
 		log.debug("namesOfPromisedFilesDroppedAtDestination:"+dropDestination);
-		NSMutableArray promisedDragNames = new NSMutableArray();
-		for(int i = 0; i < promisedDragPaths.length; i++) {
-			try {
-				//@todo check if url decoding still needed
-				promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), Codec.encode(promisedDragPaths[i].getName())));
-				promisedDragNames.addObject(Codec.encode(promisedDragPaths[i].getName()));
-			}
-			catch(java.io.UnsupportedEncodingException e) {
-				log.error(e.getMessage());	
-			}
+		if(null == dropDestination) {
+			return null; //return paths for interapplication communication
 		}
-		return promisedDragNames;
+		else {
+			NSMutableArray promisedDragNames = new NSMutableArray();
+			for(int i = 0; i < promisedDragPaths.length; i++) {
+				try {
+					//@todo url decoding still needed?
+					promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), Codec.encode(promisedDragPaths[i].getName())));
+					promisedDragNames.addObject(Codec.encode(promisedDragPaths[i].getName()));
+				}
+				catch(java.io.UnsupportedEncodingException e) {
+					log.error(e.getMessage());	
+				}
+			}
+			return promisedDragNames;
+		}
     }
 	
 	// ----------------------------------------------------------

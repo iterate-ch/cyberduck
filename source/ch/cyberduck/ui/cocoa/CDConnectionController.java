@@ -57,21 +57,18 @@ public class CDConnectionController implements Observer {
 		Iterator i = CDHistoryImpl.instance().iterator();
 		while(i.hasNext())
 			historyPopup.addItem(i.next().toString());
-		this.historyPopup.addItem("Clear");
+//		this.historyPopup.addItem("Clear");
 		this.historyPopup.setTarget(this);
 		this.historyPopup.setAction(new NSSelector("historySelectionChanged", new Class[] {Object.class}));
     }
     
 	public void historySelectionChanged(Object sender) {
 		log.debug("historySelectionChanged:"+sender);
-		if(historyPopup.titleOfSelectedItem().equals("Clear")) {
-			CDHistoryImpl.instance().clear();
-			historyPopup.removeAllItems();
-		}
-		else {
-			this.updateFields(CDHistoryImpl.instance().getItem(historyPopup.indexOfSelectedItem()-1));
-			this.updateLabel(sender);
-		}
+//		if(historyPopup.titleOfSelectedItem().equals("Clear")) {
+//			CDHistoryImpl.instance().clear();
+//			historyPopup.removeAllItems();
+//		}
+		this.selectionChanged(CDHistoryImpl.instance().getItem(historyPopup.indexOfSelectedItem()-1));
     }
 	
     private NSPopUpButton bookmarksPopup;
@@ -87,8 +84,7 @@ public class CDConnectionController implements Observer {
     
 	public void bookmarksSelectionChanged(Object sender) {
 		log.debug("bookmarksSelectionChanged:"+sender);
-		this.updateFields(CDBookmarksImpl.instance().getItem(bookmarksPopup.indexOfSelectedItem()));
-		this.updateLabel(sender);
+		this.selectionChanged(CDBookmarksImpl.instance().getItem(bookmarksPopup.indexOfSelectedItem()));
     }
 	
 	private Rendezvous rendezvous;
@@ -105,8 +101,7 @@ public class CDConnectionController implements Observer {
 	
 	public void rendezvousSelectionChanged(Object sender) {
 		log.debug("rendezvousSelectionChanged:"+sender);
-		this.updateFields((Host)rendezvous.getService(rendezvousPopup.titleOfSelectedItem()));
-		this.updateLabel(sender);
+		this.selectionChanged((Host)rendezvous.getService(rendezvousPopup.titleOfSelectedItem()));
     }
 	
 	public void update(Observable o, Object arg) {
@@ -133,7 +128,8 @@ public class CDConnectionController implements Observer {
 	public void protocolSelectionChanged(Object sender) {
 		log.debug("protocolSelectionChanged:"+sender);
 		this.portField.setIntValue(protocolPopup.selectedItem().tag());
-		this.updateLabel(sender);
+		this.pkCheckbox.setEnabled(protocolPopup.selectedItem().title().equals(SFTP_STRING));
+		this.updateURLLabel(sender);
     }
 		
     private NSComboBox hostPopup;
@@ -150,9 +146,9 @@ public class CDConnectionController implements Observer {
 		log.debug("hostSelectionChanged:"+sender);
 		int index = hostPopup.indexOfSelectedItem();
 		if(index != -1) {
-			this.updateFields(((CDHistoryImpl)CDHistoryImpl.instance()).getItem(index));
+			this.selectionChanged(((CDHistoryImpl)CDHistoryImpl.instance()).getItem(index));
 		}
-		this.updateLabel(sender);
+		this.updateURLLabel(sender);
     }
 	
     private NSTextField pathField;
@@ -271,25 +267,25 @@ public class CDConnectionController implements Observer {
 	
     private void awakeFromNib() {
 		log.debug("awakeFromNib");
-		// Notify the updateLabel() method if the user types.
+		// Notify the updateURLLabel() method if the user types.
 		NSNotificationCenter.defaultCenter().addObserver(
 												   this,
-												   new NSSelector("updateLabel", new Class[]{Object.class}),
+												   new NSSelector("updateURLLabel", new Class[]{Object.class}),
 												   NSControl.ControlTextDidChangeNotification,
 												   hostPopup);
 		NSNotificationCenter.defaultCenter().addObserver(
 												   this,
-												   new NSSelector("updateLabel", new Class[]{Object.class}),
+												   new NSSelector("updateURLLabel", new Class[]{Object.class}),
 												   NSControl.ControlTextDidChangeNotification,
 												   pathField);
 		NSNotificationCenter.defaultCenter().addObserver(
 												   this,
-												   new NSSelector("updateLabel", new Class[]{Object.class}),
+												   new NSSelector("updateURLLabel", new Class[]{Object.class}),
 												   NSControl.ControlTextDidChangeNotification,
 												   portField);
 		NSNotificationCenter.defaultCenter().addObserver(
 												   this,
-												   new NSSelector("updateLabel", new Class[]{Object.class}),
+												   new NSSelector("updateURLLabel", new Class[]{Object.class}),
 												   NSControl.ControlTextDidChangeNotification,
 												   usernameField);
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
@@ -298,8 +294,8 @@ public class CDConnectionController implements Observer {
 		this.pkCheckbox.setEnabled(Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP));
     }
 	
-    public void updateFields(Host selectedItem) {
-		log.debug("updateFields:"+selectedItem);
+    private void selectionChanged(Host selectedItem) {
+		log.debug("selectionChanged:"+selectedItem);
 		this.protocolPopup.selectItemWithTitle(selectedItem.getProtocol().equals(Session.FTP) ? FTP_STRING : SFTP_STRING);
 		this.hostPopup.setStringValue(selectedItem.getHostname());
 		this.pathField.setStringValue(selectedItem.getDefaultPath());
@@ -312,9 +308,10 @@ public class CDConnectionController implements Observer {
 		}
 		else
 			this.pkCheckbox.setState(NSCell.OffState);
+		this.updateURLLabel(null);
     }
 	
-    public void updateLabel(Object sender) {
+    private void updateURLLabel(Object sender) {
 		NSMenuItem selectedItem = protocolPopup.selectedItem();
 		String protocol = null;
 		if(selectedItem.tag() == Session.SSH_PORT)

@@ -57,6 +57,11 @@ public abstract class Bookmarks {
 		this.data.add(item);
     }
 	
+	public void addItem(Host item, int row) {
+		log.debug("addItem:"+item);
+		this.data.add(row, item);
+    }
+	
 	public void removeItem(int index) {
 		log.debug("removeItem:"+index);
 		this.data.remove(index);

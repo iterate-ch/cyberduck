@@ -27,4 +27,5 @@ public interface LoginController {
      * @param explanation Any additional information why the login failed.
      */
     public boolean loginFailure(String explanation);
+
 }

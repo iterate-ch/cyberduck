@@ -122,6 +122,9 @@ public class FTPSession extends Session {
     
     private synchronized void login() throws IOException {
         log.debug("login");
+		if(!host.getLogin().hasReasonableValues()) {
+            host.getLogin().getController().loginFailure("The username or password is not reasonable.");
+		}
         try {
             this.log("Authenticating as " + host.getLogin().getUsername() + "...", Message.PROGRESS);
             this.FTP.login(host.getLogin().getUsername(), host.getLogin().getPassword());

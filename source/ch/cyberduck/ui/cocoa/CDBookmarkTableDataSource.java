@@ -34,6 +34,8 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 	
 	private Bookmarks bookmarks = CDBookmarksImpl.instance();
 	
+	private NSArray draggedRows;	// keep track of which row got dragged
+
 	public int numberOfRowsInTableView(NSTableView tableView) {
 		return bookmarks.size();
 	}
@@ -61,17 +63,25 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 
 	public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 		log.debug("tableViewValidateDrop");
-		NSPasteboard pasteboard = info.draggingPasteboard();
-		NSArray formats = new NSArray(NSPasteboard.FilenamesPboardType);
-		NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
-		for(int i = 0; i < filesList.count(); i++) {
-			String file = (String)filesList.objectAtIndex(i);
-			log.debug(file);
-			if(file.indexOf(".duck") != -1) {
-				tableView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-				return NSTableView.DropAbove;	  		
+		NSPasteboard pboard = info.draggingPasteboard();
+//		NSArray formats = new NSArray(NSPasteboard.FilenamesPboardType);
+//		NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
+		if(pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+			Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
+			log.debug("tableViewValidateDrop:"+o);
+			if(o != null) {
+				if(o instanceof NSArray) {
+					NSArray filesList = (NSArray)o;
+					for(int i = 0; i < filesList.count(); i++) {
+						String file = (String)filesList.objectAtIndex(i);
+						log.debug(file);
+						if(file.indexOf(".duck") != -1) {
+							return NSDraggingInfo.DragOperationGeneric;
+						}
+						return NSDraggingInfo.DragOperationNone;
+					}
+				}
 			}
-			return NSDraggingInfo.DragOperationNone;
 		}
 		return NSDraggingInfo.DragOperationNone;
 	}
@@ -85,19 +95,57 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
      */
     public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
 		log.debug("tableViewAcceptDrop:"+row+","+operation);
-		// Get the drag-n-drop pasteboard
-		NSPasteboard pasteboard = info.draggingPasteboard();
+		NSPasteboard pboard = info.draggingPasteboard();
 		// What type of data are we going to allow to be dragged?  The pasteboard might contain different formats
-		NSArray formats = new NSArray(NSPasteboard.FilenamesPboardType);
-		
-		// find the best match of the types we'll accept and what's actually on the pasteboard
-  // In the file format type that we're working with, get all data on the pasteboard
-		NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
-		for(int i = 0; i < filesList.count(); i++) {
-			CDBookmarksImpl.instance().addItem(CDBookmarksImpl.instance().importBookmark(new java.io.File((String)filesList.objectAtIndex(i))));
-			tableView.reloadData();
+//		NSArray formats = new NSArray(NSPasteboard.FilenamesPboardType);
+		if(pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+			Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
+			log.debug("tableViewAcceptDrop:"+o);
+			if(o != null) {
+				if(o instanceof NSArray) {
+					NSArray filesList = (NSArray)o;
+					//				NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
+					for(int i = 0; i < filesList.count(); i++) {
+						Host h = CDBookmarksImpl.instance().importBookmark(new java.io.File((String)filesList.objectAtIndex(i)));
+						if(row != -1) {
+							CDBookmarksImpl.instance().addItem(h, row);
+							tableView.selectRow(row, false);
+						}
+						else {
+							CDBookmarksImpl.instance().addItem(h);
+							tableView.selectRow(tableView.numberOfRows()-1, false);
+						}
+						tableView.reloadData();
+					}
+					return true;
+				}
+			}
 		}
-		return true;
+		else if(pboard.availableTypeFromArray(new NSArray("BookmarkPBoardType")) != null) {
+			// test to see if the string for the type we defined in the paste board.
+			// if doesn't, do nothing.
+			Object o = pboard.propertyListForType("BookmarkPBoardType");// get the data from paste board
+			log.debug("tableViewAcceptDrop:"+o);
+			if(o != null) {
+				if(o instanceof NSArray) {
+					for(int i = 0; i < draggedRows.count(); i++) {
+						CDBookmarksImpl.instance().removeItem(((Integer)draggedRows.objectAtIndex(i)).intValue());
+						tableView.reloadData();
+					}
+					NSArray elements = (NSArray)o;
+					for(int i = 0; i < elements.count(); i++) {
+						NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
+						if(row != -1)
+							CDBookmarksImpl.instance().addItem(new Host(dict), row);
+						else
+							CDBookmarksImpl.instance().addItem(new Host(dict));
+						tableView.reloadData();
+					}
+					return true;
+				}
+			}
+		}
+		return false;
     }
 	
 	// ----------------------------------------------------------
@@ -120,24 +168,19 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
     public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
 		log.debug("tableViewWriteRowsToPasteboard:"+rows);
 		if(rows.count() > 0) {
-//			if(pboard.equals(NSPasteboard.pasteboardWithName("BookmarkPboardType"))) {
-//				pboard.setPropertyListForType(new NSArray(this.getEntry(((Integer)rows.objectAtIndex(rows.count()-1)).intValue())), "BookmarkPboardType");
-//				return true;
-//			}
-//			if(pboard.equals(NSPasteboard.FilenamesPboardType)) {
-				this.promisedDragBookmarks = new Host[rows.count()];
-				this.promisedDragBookmarksFiles = new java.io.File[rows.count()];
-				// The types argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
-				NSMutableArray types = new NSMutableArray();
-				for(int i = 0; i < rows.count(); i++) {
-					promisedDragBookmarks[i] = (Host)bookmarks.getItem(((Integer)rows.objectAtIndex(i)).intValue());
-					types.addObject("duck");
-				}
-				NSEvent event = NSApplication.sharedApplication().currentEvent();
-				NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
-				NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
-				tableView.dragPromisedFilesOfTypes(types, imageRect, this, true, event);
-//			}
+			this.draggedRows = rows;
+			this.promisedDragBookmarks = new Host[rows.count()];
+			this.promisedDragBookmarksFiles = new java.io.File[rows.count()];
+			// The types argument is the list of file types being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
+			NSMutableArray types = new NSMutableArray();
+			for(int i = 0; i < rows.count(); i++) {
+				promisedDragBookmarks[i] = (Host)bookmarks.getItem(((Integer)rows.objectAtIndex(i)).intValue());
+				types.addObject("duck");
+			}
+			NSEvent event = NSApplication.sharedApplication().currentEvent();
+			NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
+			NSRect imageRect = new NSRect(new NSPoint(dragPosition.x()-16, dragPosition.y()-16), new NSSize(32, 32));
+			tableView.dragPromisedFilesOfTypes(types, imageRect, this, true, event);
 		}
 		// we return false because we don't want the table to draw the drag image
 		return false;
@@ -152,6 +195,7 @@ public class CDBookmarkTableDataSource extends CDTableDataSource {
 				}
 				promisedDragBookmarks = null;
 				promisedDragBookmarksFiles = null;
+				draggedRows = null;
 			}
 		}
 	}

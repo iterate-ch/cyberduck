@@ -53,6 +53,8 @@ public class CDBrowserController implements Observer {
 		this.browserTable.setDoubleAction(new NSSelector("browserTableRowDoubleClicked", new Class[] {Object.class}));
 		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
 		this.browserTable.setDelegate(this.browserModel);
+		// receive drag events from types
+		this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType, "BookmarkPboardType"));
 		this.browserTable.setRowHeight(17f);
 		
 		// setting appearance attributes
@@ -151,16 +153,11 @@ public class CDBrowserController implements Observer {
 			this.browserTable.addTableColumn(c);
 		}
 		
-		this.browserTable.sizeToFit();
-		
+		this.browserTable.sizeToFit();		
 		// selection properties
 		this.browserTable.setAllowsMultipleSelection(true);
 		this.browserTable.setAllowsEmptySelection(true);
 		this.browserTable.setAllowsColumnReordering(true);
-		
-		// receive drag events from types
-		this.browserTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
-		
     }
 		
 	public void browserTableRowDoubleClicked(Object sender) {
@@ -196,6 +193,12 @@ public class CDBrowserController implements Observer {
 		this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableRowDoubleClicked", new Class[] {Object.class}));
 		this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
 		this.bookmarkTable.setDelegate(this.bookmarkModel);
+		// receive drag events from types
+		this.bookmarkTable.registerForDraggedTypes(new NSArray(
+															   new Object[]{"BookmarkPboardType", 
+																   NSPasteboard.FilenamesPboardType}
+															   )
+												   );
 		this.bookmarkTable.setRowHeight(45f);
 	
 		NSTableColumn iconColumn = new NSTableColumn();
@@ -236,9 +239,6 @@ public class CDBrowserController implements Observer {
 		this.bookmarkTable.setAllowsMultipleSelection(false);
 		this.bookmarkTable.setAllowsEmptySelection(true);
 		this.bookmarkTable.setAllowsColumnReordering(false);
-
-		// receive drag events from types
-		this.bookmarkTable.registerForDraggedTypes(new NSArray(NSPasteboard.FilenamesPboardType));
 		
 		(NSNotificationCenter.defaultCenter()).addObserver(
 													 this,
@@ -820,15 +820,11 @@ public class CDBrowserController implements Observer {
     public void downloadButtonClicked(Object sender) {
 		log.debug("downloadButtonClicked");
 		NSEnumerator enum = browserTable.selectedRowEnumerator();
-//		Session session = browserModel.workdir().getSession().copy();
-//		List items = new ArrayList();
 		while(enum.hasMoreElements()) {
 			Session session = browserModel.workdir().getSession().copy();
-			//			items.add(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session));
 			CDQueueController.instance().addItemAndStart(new Queue(((Path)browserModel.getEntry(((Integer)enum.nextElement()).intValue())).copy(session), 
 															   Queue.KIND_DOWNLOAD));
 		}
-		//		CDQueueController.instance().addTransfer(items, Queue.KIND_DOWNLOAD);
     }
     
     public void uploadButtonClicked(Object sender) {

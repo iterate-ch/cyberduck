@@ -144,8 +144,10 @@ public class SFTPSession extends Session {
     
     private synchronized void login() throws IOException {
 		log.debug("login");
+		if(!host.getLogin().hasReasonableValues()) {
+            host.getLogin().getController().loginFailure("The username or password is not reasonable.");
+		}
 		this.log("Authenticating as '"+host.getLogin().getUsername()+"'", Message.PROGRESS);
-		
 		if(host.getLogin().usesPasswordAuthentication()) {// password authentication
 			PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
 			auth.setUsername(host.getLogin().getUsername());

@@ -446,7 +446,11 @@ public class CDPreferencesController {
     }
 	
     public void historyFieldDidChange(NSNotification sender) {
-		Preferences.instance().setProperty("history.size", this.historyField.stringValue());
+		int size = Integer.parseInt(this.historyField.stringValue());
+		Preferences.instance().setProperty("history.size", size);
+		while(CDHistoryImpl.instance().size() > size) {
+			CDHistoryImpl.instance().removeItem(CDHistoryImpl.instance().size()-1);//@todo bug
+		}
     }
 
     private NSTextField downloadPathField; //IBOutlet

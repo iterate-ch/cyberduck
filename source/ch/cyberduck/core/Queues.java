@@ -44,6 +44,11 @@ public abstract class Queues {
 		log.debug("addItem:"+item);
 		this.data.add(item);
     }
+
+	public void addItem(Queue item, int row) {
+		log.debug("addItem:"+item);
+		this.data.add(row, item);
+    }
 	
 	public void removeItem(int index) {
 		log.debug("removeItem:"+index);

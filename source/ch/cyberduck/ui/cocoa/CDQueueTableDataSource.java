@@ -21,9 +21,9 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Queues;
 
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSArray;
 
 import org.apache.log4j.Logger;
 
@@ -50,4 +50,53 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 		}
 		throw new IllegalArgumentException("Unknown identifier: "+identifier);
 	}
-}	
+	
+	// ----------------------------------------------------------
+	// Drop methods
+	// ----------------------------------------------------------
+	
+	public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+		log.debug("tableViewValidateDrop");
+		// means the drag operation can be desided by the destination
+		return NSDraggingInfo.DragOperationGeneric;
+	}
+	
+	/**
+		* Invoked by tableView when the mouse button is released over a table view that previously decided to allow a drop.
+     * @param info contains details on this dragging operation.
+     * @param row The proposed location is row and action is operation.
+     * The data source should
+     * incorporate the data from the dragging pasteboard at this time.
+     */
+    public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+		log.debug("tableViewAcceptDrop:"+row+","+operation);
+		NSPasteboard pboard = info.draggingPasteboard();
+		log.debug("availableTypeFromArray:"+pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
+		if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+			// test to see if the string for the type we defined in the paste board.
+			// if doesn't, do nothing.
+			Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
+			log.debug("tableViewAcceptDrop:"+o);
+			if(o != null) {
+				NSArray elements = (NSArray)o;
+				for(int i = 0; i < elements.count(); i++) {
+					NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
+					if(row != -1) {
+						CDQueuesImpl.instance().addItem(new Queue(dict), row);
+						tableView.selectRow(row, false);
+					}
+					else {
+						CDQueuesImpl.instance().addItem(new Queue(dict));
+						tableView.selectRow(tableView.numberOfRows()-1, false);
+					}
+					tableView.reloadData();
+				}
+				return true;
+			}
+		}
+//		else if(pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
+//			NSArray queueElements = info.namesOfPromisedFilesDroppedAtDestination(null);
+//		}
+		return false;
+	}
+}

@@ -67,6 +67,9 @@ public class CDQueueController implements Observer, Validator {
 		this.queueTable.setDoubleAction(new NSSelector("resumeButtonClicked", new Class[] {Object.class}));
 		this.queueTable.setDataSource(this.queueModel = new CDQueueTableDataSource());
 		this.queueTable.setDelegate(this.queueModel);
+		// receive drag events from types
+		this.queueTable.registerForDraggedTypes(new NSArray("QueuePBoardType"));
+
 		this.queueTable.setRowHeight(50f);
 
 		NSTableColumn dataColumn = new NSTableColumn();
@@ -101,13 +104,18 @@ public class CDQueueController implements Observer, Validator {
 		}
 
 		this.queueTable.sizeToFit();
+
+		// selection properties
+		this.queueTable.setAllowsMultipleSelection(true);
+		this.queueTable.setAllowsEmptySelection(true);
+		this.queueTable.setAllowsColumnReordering(false);
     }
 		
 	public void addItem(Queue queue) {
 		this.window().makeKeyAndOrderFront(null);
 		CDQueuesImpl.instance().addItem(queue);
 		this.queueTable.reloadData();
-		this.queueTable.selectRow(this.queueTable.numberOfRows(), false);
+		this.queueTable.selectRow(this.queueTable.numberOfRows()-1, false);
 	}
 	
 	public void addItemAndStart(Queue queue) {
@@ -144,12 +152,16 @@ public class CDQueueController implements Observer, Validator {
 	public void update(Observable observable, Object arg) {
 //		log.debug("update:"+observable+","+arg);
 		if(arg instanceof Message) {
-			Message msg = (Message)arg;
-//			if(msg.getTitle().equals(Message.CLOCK)
+			Message msg = (Message)arg;	
+	//			if(msg.getTitle().equals(Message.CLOCK)
 //			   || msg.getTitle().equals(Message.DATA)
 //			   || msg.getTitle().equals(Message.PROGRESS)) {
+			
 			this.queueTable.reloadData(); //@todo only let the table redraw the cells affected.
-			if(msg.getTitle().equals(Message.START)) {
+			if(msg.getTitle().equals(Message.QUEUE_START) || msg.getTitle().equals(Message.QUEUE_STOP)) {
+				this.toolbar.validateVisibleItems();
+			}
+			else if(msg.getTitle().equals(Message.START)) {
 				log.debug("************START***********");
 				this.toolbar.validateVisibleItems();
 			}
@@ -258,14 +270,18 @@ public class CDQueueController implements Observer, Validator {
 	
 	public void resumeButtonClicked(Object sender) {
 		Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-		item.getRoot().status.setResume(true);
-		this.startItem(item);
+		if(!item.isRunning()) {
+			item.getRoot().status.setResume(true);
+			this.startItem(item);
+		}
 	}
 	
 	public void reloadButtonClicked(Object sender) {
 		Queue item = CDQueuesImpl.instance().getItem(this.queueTable.selectedRow());
-		item.getRoot().status.setResume(false);
-		this.startItem(item);
+		if(!item.isRunning()) {
+			item.getRoot().status.setResume(false);
+			this.startItem(item);
+		}
 	}
 
 	public void revealButtonClicked(Object sender) {
