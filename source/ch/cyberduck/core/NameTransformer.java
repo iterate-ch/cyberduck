@@ -70,6 +70,7 @@ public class NameTransformer {
 	
 	public String transform(String originalName) {
 		String transformName = originalName;
+		String extension = NSPathUtilities.pathExtension(transformName);
 		if(Preferences.instance().getProperty("queue.transformer.keepsFilenameExtensions").equals("true")) {
 			transformName = NSPathUtilities.stringByDeletingPathExtension(originalName);
 		} 
@@ -107,7 +108,7 @@ public class NameTransformer {
 		
 		transformName = this.handleIllegalCharacters(transformName);
 		transformName = this.transformByHonoringMaxLength(transformName);
-		transformName = this.fixExtension(transformName);
+		transformName = this.fixExtension(transformName, extension);
 		
 		log.debug("NameTransformer done transforming: "+transformName);
 		return transformName;
@@ -169,9 +170,11 @@ public class NameTransformer {
 		return transformName;
 	}		
 	
-	private String fixExtension(String transformName) {
-		if(Preferences.instance().getProperty("queue.transformer.keepsFilenameExtensions").equals("true") && NSPathUtilities.pathExtension(transformName) != null) {
-			transformName = NSPathUtilities.stringByAppendingPathExtension(transformName, NSPathUtilities.pathExtension(transformName));
+	private String fixExtension(String transformName, String extension) {
+		if(null != extension && extension.length() > 0) {
+			if(Preferences.instance().getProperty("queue.transformer.keepsFilenameExtensions").equals("true") && NSPathUtilities.pathExtension(transformName) != null) {
+				transformName = NSPathUtilities.stringByAppendingPathExtension(transformName, extension);
+			}
 		}
 		return transformName;
 	}		
