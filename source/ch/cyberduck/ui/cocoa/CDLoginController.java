@@ -115,6 +115,7 @@ public class CDLoginController implements LoginController {
 	this.window().makeKeyAndOrderFront(null);
 	while(!done) {
 	    try {
+		log.debug("Sleeping...");
 		Thread.sleep(500); //milliseconds
 	    }
 	    catch(InterruptedException e) {

@@ -101,6 +101,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 					   + allowedHostKey.getFingerprint() +"\nDo you want to allow the host access?");
 	while(!this.done) {
 	    try {
+		log.debug("Sleeping...");
 		Thread.sleep(500); //milliseconds
 	    }
 	    catch(InterruptedException e) {
@@ -136,6 +137,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 //	this.window().makeKeyAndOrderFront(null);
 	while(!this.done) {
 	    try {
+		log.debug("Sleeping...");
 		Thread.sleep(500); //milliseconds
 	    }
 	    catch(InterruptedException e) {

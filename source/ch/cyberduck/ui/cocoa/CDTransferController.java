@@ -39,8 +39,8 @@ public class CDTransferController implements Observer, Validator {
     private NSWindow window;
     public void setWindow(NSWindow window) {
 	this.window = window;
-	NSPoint origin = this.window().frame().origin();
-	this.window().setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
+	NSPoint origin = this.window.frame().origin();
+	this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
     }
 
     public NSWindow window() {

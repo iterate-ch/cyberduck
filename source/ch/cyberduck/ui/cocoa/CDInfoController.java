@@ -36,6 +36,13 @@ public class CDInfoController {//implements Observer {
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
+
+    private NSWindow window;
+    public void setWindow(NSWindow window) {
+	this.window = window;
+	NSPoint origin = this.window.frame().origin();
+	this.window.setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
+    }
     
     private NSTextField filenameField; // IBOutlet
     public void setFilenameField(NSTextField filenameField) {
@@ -85,11 +92,6 @@ public class CDInfoController {//implements Observer {
 	this.iconImageView = iconImageView;
     }
 
-    private NSWindow window;
-    public void setWindow(NSWindow window) {
-	this.window = window;
-    }
-
     private static NSMutableArray allDocuments = new NSMutableArray();
 
     // ----------------------------------------------------------
@@ -109,8 +111,6 @@ public class CDInfoController {//implements Observer {
 
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
-	NSPoint origin = this.window().frame().origin();
-	this.window().setFrameOrigin(new NSPoint(origin.x() + 16, origin.y() - 16));
 
 	this.filenameField.setStringValue(file.getName());
 	this.pathField.setStringValue(file.getParent().getAbsolute());
