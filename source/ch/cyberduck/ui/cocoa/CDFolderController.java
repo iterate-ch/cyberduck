@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 * @version $Id$
  */
 public class CDFolderController {
-    private static Logger log = Logger.getLogger(CDFolderSheet.class);
+    private static Logger log = Logger.getLogger(CDFolderController.class);
 
     private Path parent;
     

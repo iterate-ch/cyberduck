@@ -224,7 +224,8 @@ public class CDTransferController implements Observer {
 
 		    this.fileDataField.setStringValue(msg.getDescription());
 //		    this.fileDataField.sizeToFit();
-		    this.totalDataField.setStringValue(Status.parseDouble(currentQueue/1024)+" of "+Status.parseDouble(queue.getSize()/1024) + " kBytes.");
+		    this.totalDataField.setStringValue(currentQueue/queue.getSize()*100+"%");
+//		    this.totalDataField.setStringValue(Status.parseDouble(currentQueue/1024)+" of "+Status.parseDouble(queue.getSize()/1024) + " kBytes.");
 		    this.totalDataField.sizeToFit();
 		}
 		else if(msg.getTitle().equals(Message.CLOCK)) {

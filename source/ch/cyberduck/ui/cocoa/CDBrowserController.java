@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -396,13 +398,14 @@ public class CDBrowserController implements Observer {
     
     public void folderButtonClicked(Object sender) {
         log.debug("folderButtonClicked");
-//	CDFolderSheet sheet = new CDFolderSheet(host.getSession().workdir());
+//	CDFolderController sheet = new CDFolderController(host.getSession().workdir());
 	Path parent = (Path)pathController.getItem(0);
-	CDFolderSheet sheet = new CDFolderSheet(parent);
+	CDFolderController controller = new CDFolderController(parent);
+	this.references = references.arrayByAddingObject(controller);
 	NSApplication.sharedApplication().beginSheet(
-					      sheet.window(),//sheet
+					      controller.window(),//sheet
 					      mainWindow, //docwindow
-					      sheet, //modal delegate
+					      controller, //modal delegate
 					      new NSSelector(
 			  "newfolderSheetDidEnd",
 			  new Class[] { NSPanel.class, int.class, Object.class }
@@ -493,7 +496,7 @@ public class CDBrowserController implements Observer {
 	NSOpenPanel panel = new NSOpenPanel();
 	panel.setCanChooseDirectories(true);
 	panel.setCanChooseFiles(true);
-	panel.setAllowsMultipleSelection(false);
+	panel.setAllowsMultipleSelection(true);
 	panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, mainWindow, this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }
 
@@ -503,7 +506,9 @@ public class CDBrowserController implements Observer {
 	    case(NSPanel.OKButton): {
 		NSArray selected = sheet.filenames();
 		String filename;
-		if((filename = (String)selected.lastObject()) != null) { // only one selection allowed
+		java.util.Enumeration enumerator = selected.objectEnumerator();
+		while (enumerator.hasMoreElements()) {
+		    filename = (String)enumerator.nextElement();
 		    log.debug(filename+" selected to upload");
 		    Session session = host.getSession().copy();
 		    Path path = null;
@@ -514,12 +519,9 @@ public class CDBrowserController implements Observer {
 		    else if(session instanceof ch.cyberduck.core.sftp.SFTPSession) {
 			path = new SFTPPath((SFTPSession)session, parent.getAbsolute(), new java.io.File(filename));
 		    }
-		    	//@todo keep reference?
 		    CDTransferController controller = new CDTransferController(path, Queue.KIND_UPLOAD);
 		    this.references = references.arrayByAddingObject(controller);
 		    controller.start(path.status.isResume());
-//		    controller.window().makeKeyAndOrderFront(null);
-//		    path.upload();
 		}
 		break;
 	    }
@@ -759,7 +761,7 @@ public class CDBrowserController implements Observer {
 
 	 
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Quick Connect", NSToolbarItem.SeparatorItemIdentifier, "Path", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info"});
+	return new NSArray(new Object[] {"New Connection", NSToolbarItem.SeparatorItemIdentifier, "Path", "Refresh", "Download", "Upload", "Delete", "New Folder", "Get Info"});
     }
 
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
@@ -876,4 +878,189 @@ public class CDBrowserController implements Observer {
         }
         return true;
     }
+
+
+    // ----------------------------------------------------------
+    // Model
+    // ----------------------------------------------------------
+    
+    class CDBrowserTableDataSource implements NSTableView.DataSource {
+	private List data;
+
+	public CDBrowserTableDataSource() {
+	    super();
+	    this.data = new ArrayList();
+	    log.debug("CDBrowserTableDataSource");
+	}
+
+	public int numberOfRowsInTableView(NSTableView tableView) {
+	    return data.size();
+	}
+	
+    //getValue()
+	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
+//	log.debug("tableViewObjectValueForLocation:"+tableColumn.identifier()+","+row);
+	    String identifier = (String)tableColumn.identifier();
+	    Path p = (Path)data.get(row);
+	    if(identifier.equals("TYPE")) {
+//	    tableView.tableColumnWithIdentifier("TYPE").setDataCell(new NSImageCell());
+		if(p.isDirectory()) {
+		    return NSImage.imageNamed("folder.tiff");
+		}
+		return NSWorkspace.sharedWorkspace().iconForFileType(p.getExtension());
+	    }
+	    if(identifier.equals("FILENAME"))
+		return p.getName();
+	    else if(identifier.equals("SIZE"))
+		return p.status.getSizeAsString();
+	    else if(identifier.equals("MODIFIED"))
+		return p.attributes.getModified();
+	    else if(identifier.equals("OWNER"))
+		return p.attributes.getOwner();
+	    else if(identifier.equals("PERMISSION"))
+		return p.attributes.getPermission().toString();
+	    throw new IllegalArgumentException("Unknown identifier: "+identifier);
+	}
+	
+    //setValue()
+	public void tableViewSetObjectValueForLocation(NSTableView tableView, Object value, NSTableColumn tableColumn, int row) {
+	    log.debug("tableViewSetObjectValueForLocation:"+row);
+	    Path p = (Path)data.get(row);
+	    p.rename((String)value);
+	}
+
+	
+    // ----------------------------------------------------------
+    // Drag&Drop methods
+    // ----------------------------------------------------------
+
+	/**
+	    * Used by tableView to determine a valid drop target. info contains details on this dragging operation. The proposed
+	 * location is row is and action is operation. Based on the mouse position, the table view will suggest a proposed drop location.
+	 * This method must return a value that indicates which dragging operation the data source will perform. The data source may
+	 * "retarget" a drop if desired by calling setDropRowAndDropOperation and returning something other than NSDraggingInfo.
+	 * DragOperationNone. One may choose to retarget for various reasons (e.g. for better visual feedback when inserting into a sorted
+								       * position).
+	 */
+	public int tableViewValidateDrop( NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+	    log.debug("tableViewValidateDrop");
+	    tableView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+	//tableView.setDropRowAndDropOperation(tableView.numberOfRows(), NSTableView.DropAbove);
+//	    return NSTableView.DropOn;
+	    return NSTableView.DropAbove;
+	}
+
+	/**
+	    * Invoked by tableView when the mouse button is released over a table view that previously decided to allow a drop.
+	 * @param info contains details on this dragging operation.
+	 * @param row The proposed location is row and action is operation.
+	 * The data source should
+	 * incorporate the data from the dragging pasteboard at this time.
+	 */
+	public boolean tableViewAcceptDrop( NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+	    log.debug("tableViewAcceptDrop");
+	    if(host != null) {
+	// Get the drag-n-drop pasteboard
+		NSPasteboard pasteboard = info.draggingPasteboard();
+	// What type of data are we going to allow to be dragged?  The pasteboard
+ // might contain different formats
+		NSArray formats = new NSArray(NSPasteboard.FilenamesPboardType);
+		
+	// find the best match of the types we'll accept and what's actually on the pasteboard
+	// In the file format type that we're working with, get all data on the pasteboard
+		NSArray filesList = (NSArray)pasteboard.propertyListForType(pasteboard.availableTypeFromArray(formats));
+		int i = 0;
+		for(i = 0; i < filesList.count(); i++) {
+		    log.debug(filesList.objectAtIndex(i));
+		    String filename = (String)filesList.objectAtIndex(i);
+		    Session session = host.getSession().copy();
+		    Path path = null;
+		    Path parent = (Path)pathController.getItem(0);
+		    if(session instanceof ch.cyberduck.core.ftp.FTPSession) {
+			path = new FTPPath((FTPSession)session, parent.getAbsolute(), new java.io.File(filename));
+		    }
+		    else if(session instanceof ch.cyberduck.core.sftp.SFTPSession) {
+			path = new SFTPPath((SFTPSession)session, parent.getAbsolute(), new java.io.File(filename));
+		    }
+		    CDTransferController controller = new CDTransferController(path, Queue.KIND_UPLOAD);
+		    references = references.arrayByAddingObject(controller);
+		    controller.start(path.status.isResume());
+		}
+		tableView.reloadData();
+		tableView.setNeedsDisplay(true);
+	// Select the last song.
+		tableView.selectRow(row+i-1, false);
+		return true;
+	    }
+	    return false;
+	}
+
+	/**    Invoked by tableView after it has been determined that a drag should begin, but before the drag has been started.
+	    * The drag image and other drag-related information will be set up and provided by the table view once this call
+	    * returns with true.
+	    * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard
+	    * (data, owner, and so on).
+	    *@param rows is the list of row numbers that will be participating in the drag.
+	    */
+	public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
+	    if(rows.count() > 1)
+		return false;
+
+	    Path p = (Path)this.getEntry(((Integer)rows.objectAtIndex(0)).intValue());
+	    String filename = p.getLocal().getAbsolutePath();
+	    pboard.declareTypes(new NSArray(NSPasteboard.FilenamesPboardType), this);
+	    pboard.setPropertyListForType(new NSArray(filename), NSPasteboard.FilenamesPboardType);
+	    
+//	    [self dragImage:iconImage at:dragPoint offset:NSMakeSize(0,0)
+//	       event:event
+//	  pasteboard:pb source:self slideBack:YES];
+	//@todo
+//	Path p = (Path)this.getEntry(((Integer)rows.objectAtIndex(0)).intValue());
+//	pboard.declareTypes(new NSArray(NSPasteboard.FilenamesPboardType), null);
+//	pboard.setStringForType(p.getLocal().toString(), NSPasteboard.FilenamesPboardType);
+	    return true;
+	}
+
+
+	
+    // ----------------------------------------------------------
+    // Data access
+    // ----------------------------------------------------------
+
+	public void clear() {
+	    log.debug("clear");
+	    this.data.clear();
+	}
+
+	public void addEntry(Path entry, int row) {
+//	log.debug("addEntry:"+entry);
+	    this.data.add(row, entry);
+	}
+
+	public void addEntry(Path entry) {
+//	log.debug("addEntry:"+entry);
+	    if(entry.attributes.isVisible())
+		this.data.add(entry);
+	}
+
+	public Object getEntry(int row) {
+	    return this.data.get(row);
+	}
+
+	public void removeEntry(Path o) {
+	    data.remove(data.indexOf(o));
+	}
+
+	public void removeEntry(int row) {
+	    data.remove(row);
+	}
+
+	public int indexOf(Path o) {
+	    return data.indexOf(o);
+	}
+
+	public List list() {
+	    return this.data;
+	}
+    }    
 }

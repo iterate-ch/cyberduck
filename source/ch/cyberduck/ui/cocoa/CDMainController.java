@@ -34,8 +34,8 @@ public class CDMainController {
 	org.apache.log4j.BasicConfigurator.configure();
 	Logger log = Logger.getRootLogger();
 //	log.setLevel(Level.OFF);
-	log.setLevel(Level.DEBUG);
-//	log.setLevel(Level.INFO);
+//	log.setLevel(Level.DEBUG);
+	log.setLevel(Level.INFO);
 //	log.setLevel(Level.WARN);
 //	log.setLevel(Level.ERROR);
 //	log.setLevel(Level.FATAL);
