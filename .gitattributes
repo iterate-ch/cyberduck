@@ -2,11 +2,11 @@
 /Cyberduck[!!-~]Website.webloc -text svneol=unset#application/octet-stream
 /Donate.webloc -text svneol=unset#application/octet-stream
 /cyberduck-application.icns svneol=native#unset
-/cyberduck-application.jpg -text
 /cyberduck-application.psd -text
-/cyberduck-application.tiff -text
+/cyberduck-application.tif -text
 /cyberduck-document.icns svneol=native#unset
-/cyberduck-document.tiff -text
+/cyberduck-document.psd -text
+/cyberduck-document.tif -text
 de.lproj/Bookmark.nib/keyedobjects.nib -text
 de.lproj/Bookmark.strings svneol=native#unset
 de.lproj/Browser.nib/keyedobjects.nib -text
@@ -213,6 +213,7 @@ ja.lproj/Goto.strings svneol=native#unset
 ja.lproj/Info.nib/keyedobjects.nib -text
 ja.lproj/Info.strings svneol=native#unset
 ja.lproj/InfoPlist.strings svneol=native#unset
+ja.lproj/License.txt svneol=native#unset
 ja.lproj/Localizable.strings svneol=native#unset
 ja.lproj/Login.nib/keyedobjects.nib -text
 ja.lproj/Login.strings svneol=native#unset
