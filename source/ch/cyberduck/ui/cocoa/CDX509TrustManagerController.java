@@ -67,9 +67,12 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
             this.allowClientCertificate = true;
         }
         catch(CertificateException e) {
+            String cert = "";
+            if(x509Certificates.length > 0)
+                cert = x509Certificates[0].toString();
             NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Certificate", ""), //title
-                    NSBundle.localizedString("There is a problem with the client certificate:", "")+": "
-                    +e.getMessage(),
+                    NSBundle.localizedString("There is a problem with the client certificate. Reason:", "")+e.getMessage()
+                    +"\n"+cert,
                     NSBundle.localizedString("Disconnect", ""), // defaultbutton
                     NSBundle.localizedString("Continue", ""),//alternate button
                     null); // other button
@@ -109,9 +112,12 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
             this.allowServerCertificate = true;
         }
         catch(CertificateException e) {
+            String cert = "";
+            if(x509Certificates.length > 0)
+                cert = x509Certificates[0].toString();
             NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Certificate", ""), //title
-                    NSBundle.localizedString("There is a problem with the server certificate:", "")+": "
-                    +e.getMessage(),
+                    NSBundle.localizedString("There is a problem with the client certificate. Reason:", "")+e.getMessage()
+                    +"\n"+cert,
                     NSBundle.localizedString("Disconnect", ""), // defaultbutton
                     NSBundle.localizedString("Continue", ""),//alternate button
                     null); // other button
