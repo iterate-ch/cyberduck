@@ -61,14 +61,11 @@
 	<target name="usage">
 		<echo message="ant version:   ${ant.version}"/>
 		<echo message="java version:  ${ant.java.version}"/>
-		<echo message="java compiler: ${java.compiler}"/>
-		<echo message="jdk home:      ${jdk.home}"/>
 		<echo message=""/>
 		<echo message="   ---------------------------------------------------------------"/>
 		<echo message="   project home:		${home}"/>
 		<echo message="   project build:  	${build}"/>
 		<echo message="   project source:	${source}"/>
-		<echo message="   project classpath:    ${classpath}"/>
 		<echo message="   ---------------------------------------------------------------"/>
 		<echo message=""/>
 		<echo message=" available targets are:"/>
@@ -100,7 +97,7 @@
 	    -->
 	</target>
 
-	<target name="all-modules" depends="core,ftp,http,cocoa,swing"></target>
+	<target name="all-modules" depends="core,ftp,cocoa,swing"></target>
 	
 	<target name="core" depends="init">
 	    <mkdir dir="${classes}/core" />
