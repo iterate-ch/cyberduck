@@ -56,6 +56,11 @@ public class CDPreferencesController {
 	this.showHiddenCheckbox = showHiddenCheckbox;
     }
 
+    private NSButton newBrowserCheckbox;
+    public void setNewBrowserCheckbox(NSButton newBrowserCheckbox) {
+	this.newBrowserCheckbox = newBrowserCheckbox;
+    }
+
     private NSPopUpButton transfermodeCombo;
     public void setTransfermodeCombo(NSPopUpButton transfermodeCombo) {
 	this.transfermodeCombo = transfermodeCombo;
@@ -113,6 +118,8 @@ public class CDPreferencesController {
 	anonymousField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.pass"));
 	downloadPathField.setStringValue(Preferences.instance().getProperty("download.path"));
 	showHiddenCheckbox.setState(Preferences.instance().getProperty("listing.showHidden").equals("true") ? NSCell.OnState : NSCell.OffState);
+	newBrowserCheckbox.setState(Preferences.instance().getProperty("open.newbrowser").equals("true") ? NSCell.OnState : NSCell.OffState);
+
 	    
 	connectmodeCombo.removeAllItems();
 	connectmodeCombo.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
@@ -172,6 +179,18 @@ public class CDPreferencesController {
 	}
     }
 
+
+    public void newBrowserCheckboxClicked(NSButton sender) {
+	switch(sender.state()) {
+	    case NSCell.OnState:
+		Preferences.instance().setProperty("open.newbrowser", "true");
+		return;
+	    case NSCell.OffState:
+		Preferences.instance().setProperty("open.newbrowser", "false");
+		return;
+	}
+    }
+    
     public void downloadPathButtonClicked(NSButton sender) {
 	NSOpenPanel panel = new NSOpenPanel();
 	panel.setCanChooseFiles(false);

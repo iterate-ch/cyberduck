@@ -40,7 +40,7 @@ public class Message {//{implements java.io.Serializable {
 
     // connection state of host
     public static final String OPEN = "OPEN";
-    public static final String CONNECTED = "CONNECTED";
+//    public static final String CONNECTED = "CONNECTED";
     public static final String CLOSE = "CLOSE";
 
     // connection state of file

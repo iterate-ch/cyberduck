@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
-import com.apple.cocoa.foundation.*;
-import com.apple.cocoa.application.*;
 import ch.cyberduck.core.Preferences;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
+import org.apache.log4j.Logger;
 
 /**
 * Concrete subclass using the Cocoao Preferences classes.
@@ -66,8 +66,8 @@ public class CDPreferencesImpl extends Preferences { //CDPreferencesImplCocoa
     public void setDefaults() {
 	super.setDefaults();
 //	log.debug(NSBundle.mainBundle().resourcePath());
-//	System.setProperty("sshtools.home", NSBundle.mainBundle().resourcePath());
-	System.setProperty("sshtools.config", NSBundle.mainBundle().resourcePath());
+	System.setProperty("sshtools.home", NSBundle.mainBundle().resourcePath());
+//	System.setProperty("sshtools.config", NSBundle.mainBundle().resourcePath());
     }
 
     /**

@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Message;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Status;
 import com.apple.cocoa.application.*;
@@ -34,12 +35,11 @@ import java.util.Observer;
 public class CDTransferController implements Observer {
     private static Logger log = Logger.getLogger(CDTransferController.class);
 
-//  @todo  public static final int KIND_DOWNLOAD = 0;
-  //  public static final int KIND_UPLOAD = 1;
+    public static final int KIND_DOWNLOAD = 0;
+    public static final int KIND_UPLOAD = 1;
 
+    private int kind;
     private Path file;
-//@todo open new session for transfer
-    //private Session session;
 
     // ----------------------------------------------------------
     // Outlets
@@ -54,6 +54,11 @@ public class CDTransferController implements Observer {
     public void setUrlField(NSTextField urlField) {
 	this.urlField = urlField;
     }
+
+    private NSTextField clockField;
+    public void setClockField(NSTextField clockField) {
+	this.clockField = clockField;
+    }
     
     private NSTextField fileField;
     public void setFileField(NSTextField fileField) {
@@ -66,7 +71,7 @@ public class CDTransferController implements Observer {
     }
 
     private NSProgressIndicator progressBar;
-    public void setProgressField(NSProgressIndicator progressBar) {
+    public void setProgressBar(NSProgressIndicator progressBar) {
 	this.progressBar = progressBar;
 	this.progressBar.setIndeterminate(true);
 	this.progressBar.setUsesThreadedAnimation(true);
@@ -93,13 +98,16 @@ public class CDTransferController implements Observer {
     }
 
 
-    
-    public CDTransferController(Path file) {
+    /**
+	* @param kind Tag specifiying if it is a download or upload.
+     */
+    public CDTransferController(Path file, int kind) {
 	super();
 	this.file = file;
+	this.kind = kind;
 	//register for events
 	file.status.addObserver(this);
-//@todo!!!	file.session.addObserver(this);
+	file.getSession().addObserver(this);
 	
         if (false == NSApplication.loadNibNamed("Transfer", this)) {
             log.error("Couldn't load Transfer.nib");
@@ -114,26 +122,65 @@ public class CDTransferController implements Observer {
 	this.urlField.setStringValue(file.getAbsolute()); //@todo url
 	this.fileField.setStringValue(file.getLocal().toString());
 	this.window().setTitle(file.getName());
-	this.progressBar.setMinValue(0);
-	this.progressBar.setMaxValue(file.status.getSize());
 	this.progressField.setStringValue("");
+	switch(kind) {
+	    case KIND_DOWNLOAD:
+		iconView.setImage(NSImage.imageNamed("download.tiff"));
+		return;
+	    case KIND_UPLOAD:
+		iconView.setImage(NSImage.imageNamed("upload.tiff"));
+		return;
+	}
+    }
+
+    public void start() {
+	this.window().makeKeyAndOrderFront(null);
+	switch(kind) {
+	    case KIND_DOWNLOAD:
+		file.download();
+		return;
+	    case KIND_UPLOAD:
+		file.upload();
+		return;
+	}
     }
 
     public void update(Observable o, Object arg) {
-	log.debug("update:"+o+","+arg);
+//	log.debug("update:"+o+","+arg);
 	if(o instanceof Status) {
+	    //@todo get session messages
 	    if(arg instanceof Message) {
 		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.DATA)) {
 		    this.progressBar.setIndeterminate(false);
+		    this.progressBar.setMinValue(0);
+		    this.progressBar.setMaxValue(file.status.getSize());
 		    this.progressBar.setDoubleValue((double)file.status.getCurrent());
 		    this.progressField.setStringValue(msg.getDescription());
-		    return;
 		}
-		if(msg.getTitle().equals(Message.PROGRESS)) {
-		    //@todo
-		    return;
+		else if(msg.getTitle().equals(Message.CLOCK)) {
+		    clockField.setStringValue(msg.getDescription());
 		}
+		else if(msg.getTitle().equals(Message.START)) {
+		    this.resumeButton.setTitle("Resume");
+		    this.progressBar.startAnimation(null);
+		}
+		else if(msg.getTitle().equals(Message.STOP)) {
+		    this.progressBar.stopAnimation(null);
+		    this.stopButton.setEnabled(false);
+		    this.resumeButton.setEnabled(true);
+		}
+		else if(msg.getTitle().equals(Message.COMPLETE)) {
+		    this.progressBar.setDoubleValue((double)file.status.getCurrent());
+		    this.resumeButton.setTitle("Reload");
+		    this.stopButton.setEnabled(false);
+		    this.resumeButton.setEnabled(true);
+		}
+	    }
+	}
+	if(o instanceof Session) {
+	    if(arg instanceof Message) {
+		Message msg = (Message)arg;
 		if(msg.getTitle().equals(Message.ERROR)) {
 		    NSAlertPanel.beginAlertSheet(
 				   "Error", //title
@@ -147,42 +194,11 @@ public class CDTransferController implements Observer {
 				   null, // context
 				   msg.getDescription() // message
 				   );
-		    this.stopButton.setEnabled(false);
-		    this.resumeButton.setEnabled(true);
-		    return;
-		}
-		if(msg.getTitle().equals(Message.START)) {
-		    this.resumeButton.setTitle("Resume");
-		    this.progressBar.startAnimation(null);
-		    return;
-		}
-		if(msg.getTitle().equals(Message.STOP)) {
-		    this.progressBar.stopAnimation(this);
-		    this.stopButton.setEnabled(false);
-		    this.resumeButton.setEnabled(true);
-		    return;
-		}
-		if(msg.getTitle().equals(Message.COMPLETE)) {
-		    this.progressBar.setDoubleValue((double)file.status.getCurrent());
-		    this.resumeButton.setTitle("Reload");
-		    this.stopButton.setEnabled(false);
-		    this.resumeButton.setEnabled(true);
-		    return;
+		    this.stopButtonClicked(null);
+
 		}
 	    }
 	}
-    }
-
-    public void download() {
-	iconView.setImage(NSImage.imageNamed("download.tiff"));
-	this.window().makeKeyAndOrderFront(null);
-	this.file.download();
-    }
-
-    public void upload() {
-	iconView.setImage(NSImage.imageNamed("upload.tiff"));
-	this.window().makeKeyAndOrderFront(null);
-	this.file.upload();
     }
 
     public NSWindow window() {
@@ -194,7 +210,7 @@ public class CDTransferController implements Observer {
 	    this.file.status.setResume(true);
 	this.stopButton.setEnabled(true);
 	this.resumeButton.setEnabled(false);
-	this.file.download();
+	this.start();
     }
 
     public void stopButtonClicked(NSButton sender) {

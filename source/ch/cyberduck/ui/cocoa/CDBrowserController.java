@@ -87,9 +87,10 @@ public class CDBrowserController implements Observer {
 
 //    private NSMutableDictionary toolbarItems;
 
-//    private CDConnectionSheet connectionSheet;
+    private CDConnectionSheet connectionSheet;
     private CDPathController pathController;
 
+    private NSToolbar toolbar;
     private NSToolbarItem pathItem;
     private NSToolbarItem quickConnectItem;
 
@@ -125,7 +126,7 @@ public class CDBrowserController implements Observer {
 	browserTable.setIndicatorImage(NSImage.imageNamed("NSAscendingSortIndicator"), browserTable.tableColumnWithIdentifier("FILENAME"));
 
 	pathController = new CDPathController(pathPopup);
-//	connectionSheet = new CDConnectionSheet(this);
+	connectionSheet = new CDConnectionSheet(this);
 
 	this.setupToolbar();
     }
@@ -261,8 +262,8 @@ public class CDBrowserController implements Observer {
     
     public void folderButtonClicked(Object sender) {
         log.debug("folderButtonClicked");
-//@todo	CDFolderSheet sheet = new CDFolderSheet(host.getSession().workdir());
-	CDFolderSheet sheet = new CDFolderSheet((Path)pathController.getItem(pathController.numberOfItems()-1));
+	CDFolderSheet sheet = new CDFolderSheet(host.getSession().workdir());
+//	CDFolderSheet sheet = new CDFolderSheet((Path)pathController.getItem(pathController.numberOfItems()-1));
 	NSApplication.sharedApplication().beginSheet(
 					      sheet.window(),//sheet
 					      mainWindow, //docwindow
@@ -322,22 +323,25 @@ public class CDBrowserController implements Observer {
 
     public void refreshButtonClicked(Object sender) {
 	log.debug("refreshButtonClicked");
-//@todo	Path p = host.getSession().workdir();
-	Path p = (Path)pathController.getItem(0);
+	Path p = host.getSession().workdir();
+//	Path p = (Path)pathController.getItem(0);
 	p.list(true);
     }
 
     public void downloadButtonClicked(Object sender) {
 	log.debug("downloadButtonClicked");
 	Path path = (Path)model.getEntry(browserTable.selectedRow());
-	CDTransferController controller = new CDTransferController(path);
-	controller.download();
+	//@todo keep reference?
+	CDTransferController controller = new CDTransferController(path, CDTransferController.KIND_DOWNLOAD);
+	controller.start();
+//	controller.window().makeKeyAndOrderFront(null);
+//	path.download();
     }
 
     public void uploadButtonClicked(Object sender) {
-	// @todo drag and drop
 	log.debug("uploadButtonClicked");
 	NSOpenPanel panel = new NSOpenPanel();
+	panel.setCanChooseDirectories(true);
 	panel.setCanChooseFiles(true);
 	panel.setAllowsMultipleSelection(false);
 	panel.beginSheetForDirectory(System.getProperty("user.home"), null, null, mainWindow, this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
@@ -347,7 +351,6 @@ public class CDBrowserController implements Observer {
 	sheet.orderOut(null);
 	switch(returnCode) {
 	    case(NSPanel.OKButton): {
-		try {
 		NSArray selected = sheet.filenames();
 		String filename;
 		if((filename = (String)selected.lastObject()) != null) { // only one selection allowed
@@ -358,14 +361,13 @@ public class CDBrowserController implements Observer {
 			path = new ch.cyberduck.core.ftp.FTPPath((ch.cyberduck.core.ftp.FTPSession)session, host.getSession().workdir().getAbsolute(), new java.io.File(filename));
 		    }
 		    else if(session instanceof ch.cyberduck.core.sftp.SFTPSession) {
-//			path = new SFTPPath(session, host.getSession().workdir(), new java.io.File(filename));
+			path = new ch.cyberduck.core.sftp.SFTPPath((ch.cyberduck.core.sftp.SFTPSession)session, host.getSession().workdir().getAbsolute(), new java.io.File(filename));
 		    }
-		    CDTransferController controller = new CDTransferController(path);
-		    controller.upload();
-		}
-		}
-		catch(java.io.IOException e) {
-		    log.error(e.getMessage());
+		    	//@todo keep reference?
+		    CDTransferController controller = new CDTransferController(path, CDTransferController.KIND_UPLOAD);
+		    controller.start();
+//		    controller.window().makeKeyAndOrderFront(null);
+//		    path.upload();
 		}
 		return;
 	    }
@@ -399,11 +401,11 @@ public class CDBrowserController implements Observer {
 
     public void connectButtonClicked(Object sender) {
 	log.debug("connectButtonClicked");
-	CDConnectionSheet sheet = new CDConnectionSheet(this);
+//keep a reference instead	CDConnectionSheet sheet = new CDConnectionSheet(this);
 	NSApplication.sharedApplication().beginSheet(
-					      sheet.window(),//sheet
+					      connectionSheet.window(),//sheet
 					      mainWindow, //docwindow
-					      sheet, //modal delegate
+					      connectionSheet, //modal delegate
 					      new NSSelector(
 		      "connectionSheetDidEnd",
 		      new Class[] { NSWindow.class, int.class, NSWindow.class }
@@ -412,6 +414,8 @@ public class CDBrowserController implements Observer {
     }
 
     public void mount(Host host) {
+	if(this.host != null)
+	    this.unmount();
 	this.host = host;
 	Session session = host.getSession();
 	
@@ -422,9 +426,9 @@ public class CDBrowserController implements Observer {
 	session.mount();
     }
 
-    public void unmount(Host host) {
-	host.getSession().deleteObservers();
-	host.closeSession();
+    public void unmount() {
+	this.host.getSession().deleteObservers();
+	this.host.closeSession();
     }
 
         // ----------------------------------------------------------
@@ -432,7 +436,7 @@ public class CDBrowserController implements Observer {
     // ----------------------------------------------------------
 
     private void setupToolbar() {
-	NSToolbar toolbar = new NSToolbar("Cyberduck Toolbar");
+	this.toolbar = new NSToolbar("Cyberduck Toolbar");
 	toolbar.setDelegate(this);
 	toolbar.setAllowsUserCustomization(true);
 	toolbar.setAutosavesConfiguration(true);
@@ -680,7 +684,7 @@ public class CDBrowserController implements Observer {
 	// if multi window app only close the one window with main.close()
 	sheet.orderOut(null);
 	if(returncode == NSAlertPanel.DefaultReturn) {
-	    this.unmount(host);
+	    this.unmount();
 	    this.window().close();
 	}
     }

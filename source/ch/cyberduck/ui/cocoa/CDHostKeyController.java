@@ -101,7 +101,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 					   this, // context
 					   "The host key supplied by " + host + " is: "
 					   + actualHostKey +
-					   "The current allowed key for " + host + " is: "
+					   "\nThe current allowed key for " + host + " is: "
 					   + fingerprint +"\nDo you want to allow the host access?");
 	while(!this.done) {
 	    try {
@@ -176,7 +176,7 @@ public class CDHostKeyController extends AbstractHostKeyVerification {
 		log.info("Cannot continue without a valid host key");
 	    }
 	    if(returncode == NSAlertPanel.OtherReturn) {
-		    //
+		allowHost(host, fingerprint, true); // always allow host
 	    }
 	    done = true;
 	}

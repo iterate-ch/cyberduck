@@ -33,18 +33,21 @@ public class CDMainController {
 	org.apache.log4j.BasicConfigurator.configure();
 	Logger log = Logger.getRootLogger();
 //	log.setLevel(Level.OFF);
-//	log.setLevel(Level.WARN);
 	log.setLevel(Level.DEBUG);
 //	log.setLevel(Level.INFO);
+//	log.setLevel(Level.WARN);
+//	log.setLevel(Level.ERROR);
+//	log.setLevel(Level.FATAL);
     }
 
     public void awakeFromNib() {
-	CDBrowserController controller = new CDBrowserController();
-	controller.window().makeKeyAndOrderFront(null);
-	controller.connectButtonClicked(this);
+//	CDBrowserController controller = new CDBrowserController();
+//	controller.window().makeKeyAndOrderFront(null);
+//	controller.connectButtonClicked(this);
     }
 
     private NSArray references = new NSArray();
+    private CDDownloadSheet downloadSheet;
     
     // ----------------------------------------------------------
     // Outlets
@@ -64,7 +67,39 @@ public class CDMainController {
     }
 
     public void updateMenuClicked(Object sender) {
+	/*
+	String currentVersionNumber = NSBundle.bundleForClass(this);
+	    infoDictionary] objectForKey:@"CFBundleVersion"];
 
+	NSDictionary dict = NSDictionary.dictionaryWithContentsOfURL:
+	    [NSURL URLWithString:@"http://www.cyberduck.ch/versionlist.xml"]];
+
+	String latestVersionNumber = [productVersionDict.valueForKey:@"Cyberduck"];
+
+	 if(currentVersionNumber.equals(latestVersionNumber)) {
+	     public static int runInformationalAlert( String title, String message, String defaultButton, String alternateButton, String otherButton)
+	     NSAlertPanel.runInformationalAlert(
+						"No update", //title
+					 "No newer version available. Cyberduck "+currentVersionNumber+" is up to date.",
+						"OK",// defaultbutton
+						null,//alternative button
+						null,//other button
+					 );
+	 }
+	 else {
+	     int selection = NSAlertPanel.runInformationalAlert(
+					 "New version", //title
+					 "Cyberduck "+currentVersionNumber+" is out of date. The current version is Cyberduck "+currentVersionNumber,
+					 "Download",// defaultbutton
+					 "Later",//alternative button
+					 null,//other button
+					 );
+	     if(NSAlertPanel.DefaultReturn == selection) {
+		 NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")));
+
+	 }
+	 */
+	
     }
     
     public void websiteMenuClicked(Object sender) {
@@ -149,8 +184,8 @@ public class CDMainController {
     }
 
     public void newDownloadMenuClicked(Object sender) {
-	CDDownloadSheet controller = new CDDownloadSheet();
-	controller.window().makeKeyAndOrderFront(null);
+	this.downloadSheet = new CDDownloadSheet();
+	downloadSheet.window().makeKeyAndOrderFront(null);
     }
 
     public void newBrowserMenuClicked(Object sender) {
@@ -164,10 +199,16 @@ public class CDMainController {
     // Application delegate methods
     // ----------------------------------------------------------
 
-//    public void applicationDidFinishLaunching (NSNotification notification) {
+    public void applicationDidFinishLaunching (NSNotification notification) {
         // To get service requests to go to the controller...
 //        NSApplication.sharedApplication().setServicesProvider(this);
-  //  }
+	if(Preferences.instance().getProperty("open.newbrowser").equals("true")) {
+	    CDBrowserController controller = new CDBrowserController();
+	    this.references = references.arrayByAddingObject(controller);
+	    controller.window().makeKeyAndOrderFront(null);
+	    controller.connectButtonClicked(null);
+	}
+    }
 
 
 //    public boolean applicationOpenFile (NSApplication app, String filename) {

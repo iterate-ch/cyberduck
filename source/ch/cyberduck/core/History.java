@@ -19,13 +19,11 @@ package ch.cyberduck.core;
  */
 
 import org.apache.log4j.Logger;
-import ch.cyberduck.core.Host;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Observer;
 import java.util.Observable;
-import org.apache.log4j.Logger;
 
 /**
  * Keeps track of recently connected hosts

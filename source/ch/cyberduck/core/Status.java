@@ -18,24 +18,16 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import javax.swing.BoundedRangeModel;
-import javax.swing.DefaultBoundedRangeModel;
-import javax.swing.Timer;
-import java.applet.Applet;
-import java.applet.AudioClip;
+import org.apache.log4j.Logger;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Vector;
-import java.net.URL;
-import org.apache.log4j.Logger;
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.ui.ObserverList;
 
 /**
   * The Status class is the model of a download's status. The view of this is represented by
@@ -66,7 +58,7 @@ public class Status extends Observable implements Serializable {
      */
     private int size = -1;
 
-    private transient Timer currentSpeedTimer, overallSpeedTimer, timeLeftTimer, chronoTimer;
+    private transient Timer currentSpeedTimer, overallSpeedTimer, chronoTimer;//timeLeftTimer;
 
     /**
     * Progress trackers.
@@ -152,7 +144,7 @@ public class Status extends Observable implements Serializable {
     
     private void setStopped(boolean b) {
         this.stopped = b;
-	this.callObservers(new Message("Idle", Message.PROGRESS));
+//	this.callObservers(new Message("Idle", Message.PROGRESS));
     }
     public boolean isStopped() {
         return this.stopped;
@@ -160,6 +152,12 @@ public class Status extends Observable implements Serializable {
 
     public void setCanceled(boolean b) {
         canceled = b;
+	if(this.currentSpeedTimer != null)
+	    this.currentSpeedTimer.stop();
+	if(this.overallSpeedTimer != null)
+	    this.overallSpeedTimer.stop();
+	if(this.chronoTimer != null)
+	    this.chronoTimer.stop();
     }
 
     public boolean isCancled() {
@@ -178,6 +176,7 @@ public class Status extends Observable implements Serializable {
 //        this.chronoTimer.start();
 	this.overallSpeedTimer.start();
 	this.currentSpeedTimer.start();
+	this.chronoTimer.start();
 	this.callObservers(new Message(Message.START));
     }
 
@@ -194,6 +193,8 @@ public class Status extends Observable implements Serializable {
 	    this.currentSpeedTimer.stop();
 	if(this.overallSpeedTimer != null)
 	    this.overallSpeedTimer.stop();
+	if(this.chronoTimer != null)
+	    this.chronoTimer.stop();
 	this.setResume(false);
 	this.callObservers(new Message(Message.STOP));
     }
@@ -208,6 +209,7 @@ public class Status extends Observable implements Serializable {
 	this.setComplete(true);
 	this.currentSpeedTimer.stop();
 	this.overallSpeedTimer.stop();
+	this.chronoTimer.stop();
 	this.setResume(false);
 	this.callObservers(new Message(Message.COMPLETE));
     }
@@ -237,24 +239,23 @@ public class Status extends Observable implements Serializable {
 	//        log.debug("setCurrent(" + c + ")");
 	this.current = c;
 
-	Message msg = null;
 	if(this.getSpeed() <= 0 && this.getOverall() <= 0) {
-	    msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of " + this.parseDouble(this.getSize()/1024) + " kBytes.");
+	    this.callObservers(new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of " + this.parseDouble(this.getSize()/1024) + " kBytes."));
 	}
 	else {
 	    if(this.getOverall() <= 0) {
-		msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of "
+		this.callObservers(new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of "
 		    + this.parseDouble(this.getSize()/1024) + " kBytes. Current: " +
-		    + this.parseDouble(this.getSpeed()/1024) + "kB/s."); //\n" + this.getTimeLeftMessage());
+		    + this.parseDouble(this.getSpeed()/1024) + "kB/s.")); //\n" + this.getTimeLeftMessage());
 	    }
 	    else {
-		msg = new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of "
+		this.callObservers(new Message(Message.DATA, this.parseDouble(this.getCurrent()/1024) + " of "
 		    + this.parseDouble(this.getSize()/1024) + " kBytes. Current: "
 		    + this.parseDouble(this.getSpeed()/1024) + "kB/s, Overall: "
-		    + this.parseDouble(this.getOverall()/1024) + " kB/s.");// \n" + this.getTimeLeftMessage());
+		    + this.parseDouble(this.getOverall()/1024) + " kB/s."));// \n" + this.getTimeLeftMessage());
 	    }
 	}
-	this.callObservers(msg);
+//	this.callObservers(msg);
     }
 
     /**

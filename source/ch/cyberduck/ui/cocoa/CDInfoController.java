@@ -18,14 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
-import com.apple.cocoa.application.*;
-import org.apache.log4j.Logger;
-import java.util.Observer;
-import java.util.Observable;
 import ch.cyberduck.core.Path;
-//import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Permission;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
+import org.apache.log4j.Logger;
 //import ch.cyberduck.ui.ObserverList;
 
 /**

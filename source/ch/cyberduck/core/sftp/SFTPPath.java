@@ -55,6 +55,11 @@ public class SFTPPath extends Path {
 	this.session = session;
     }
 
+    public SFTPPath(SFTPSession session, String parent, java.io.File file) {
+	super(parent, file);
+	this.session = session;
+    }
+    
     public Path getParent() {
 	String abs = this.getAbsolute();
 	if((null == parent)) {// && !abs.equals("/")) {
@@ -272,6 +277,7 @@ public class SFTPPath extends Path {
 
 	    private void downloadFolder(Path file) throws IOException {
 		log.error("not implemented");
+		downloadSession.log("Not implemented.", Message.ERROR);
 		/*
 		 java.util.List files = file.list(); //@todo
 		 File dir = file.getLocal();
@@ -300,9 +306,9 @@ public class SFTPPath extends Path {
 		try {
 		    uploadSession = (SFTPSession)session.copy();
 		    uploadSession.connect();
-		    if(isDirectory())
+		    if(SFTPPath.this.getLocal().isDirectory())
 			this.uploadFolder(SFTPPath.this);
-		    if(isFile())
+		    if(SFTPPath.this.getLocal().isFile())
 			this.uploadFile(SFTPPath.this);
 		}
 		catch(SshException e) {
@@ -333,7 +339,7 @@ public class SFTPPath extends Path {
 
 	    private void uploadFolder(Path file) throws IOException {
 		log.debug("not implemented");
-		    //@todo
+		uploadSession.log("Not implemented.", Message.ERROR);
 	    }	    
 	}.start();
     }

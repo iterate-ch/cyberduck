@@ -70,10 +70,10 @@ public class SFTPSession extends Session {
 	    this.log("Disconnected", Message.PROGRESS);
 	}
 	catch(SshException e) {
-	    SFTPSession.this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	    this.log("SSH Error: "+e.getMessage(), Message.ERROR);
 	}
 	catch(IOException e) {
-	    SFTPSession.this.log("IO Error: "+e.getMessage(), Message.ERROR);
+	    this.log("IO Error: "+e.getMessage(), Message.ERROR);
 	}
 	finally {
 	    this.setConnected(false);
@@ -177,8 +177,18 @@ public class SFTPSession extends Session {
 	
     }
 
-    public Path workdir() throws IOException {
-	return new SFTPPath(this, SFTP.getDefaultDirectory());
+    public Path workdir() {
+	try {
+	    this.check();
+	    return new SFTPPath(this, SFTP.getDefaultDirectory());
+	}
+	catch(SshException e) {
+	    this.log("SSH Error: "+e.getMessage(), Message.ERROR);
+	}
+	catch(IOException e) {
+	    this.log("IO Error: "+e.getMessage(), Message.ERROR);
+	}
+	return  null;
     }
 
     public void check() throws IOException {

@@ -18,8 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.Hashtable;
 import org.apache.log4j.Logger;
+
+import java.util.Hashtable;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading
@@ -90,58 +91,60 @@ public abstract class Preferences {//extends Properties {
 	defaults.put("donate", "true");
 	defaults.put("mail", "mailto:dkocher@cyberduck.ch");
 	defaults.put("donate.url" , "http://www.cyberduck.ch/donate/");
+	defaults.put("website.update" , "http://www.cyberduck.ch/Cyberduck.dmg");
 	defaults.put("website.url" , "http://www.cyberduck.ch/");
-        defaults.put("laf.default", javax.swing.UIManager.getSystemLookAndFeelClassName());
+	defaults.put("open.newbrowser", "true");
+//        defaults.put("laf.default", javax.swing.UIManager.getSystemLookAndFeelClassName());
         //defaults.put("laf.default", javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
 //        defaults.put("bookmarks.default", "My Bookmarks");
 //        defaults.put("interface.multiplewindow", "false");
-        defaults.put("interface.error-dialog", "false");
+//        defaults.put("interface.error-dialog", "false");
         //Paths
         defaults.put("download.path", System.getProperty("user.dir"));
 
         // font sizes
-        String font_small = "10";
-        String font_normal = "12";
-        if(System.getProperty("java.vendor").indexOf("Microsoft") != -1) {
-            font_small = "12";
-            font_normal = "12";
-        }
-        defaults.put("font.small", font_small);
-        defaults.put("font.normal", font_normal);
+//        String font_small = "10";
+//        String font_normal = "12";
+//        if(System.getProperty("java.vendor").indexOf("Microsoft") != -1) {
+//            font_small = "12";
+//            font_normal = "12";
+//        }
+//        defaults.put("font.small", font_small);
+//        defaults.put("font.normal", font_normal);
         //Sound clips
-        defaults.put("status.sound.stop", "false");
-        defaults.put("status.sound.start", "true");
-        defaults.put("status.sound.complete", "true");
+//        defaults.put("status.sound.stop", "false");
+//        defaults.put("status.sound.start", "true");
+ //       defaults.put("status.sound.complete", "true");
     
         //defaults.put("files.encode", "true");
-        defaults.put("files.postprocess", "false");
-        defaults.put("files.removeCompleted", "false");
+ //       defaults.put("files.postprocess", "false");
+   //     defaults.put("files.removeCompleted", "false");
         
         //BookmarkTable properties
         //defaults.put("table.save", "true");
         //BookmarkTable column locations
-        /*
-        defaults.put("table.column0.position", "0");
-        defaults.put("table.column1.position", "1");
-        defaults.put("table.column2.position", "2");
-        defaults.put("table.column3.position", "3");
-         */
+
+ //       defaults.put("table.column0.position", "0");
+//        defaults.put("table.column1.position", "1");
+//        defaults.put("table.column2.position", "2");
+//        defaults.put("table.column3.position", "3");
         //BookmarkTable column widths
-        defaults.put("table.column0.width", "12");
-        defaults.put("table.column1.width", "500");
-        defaults.put("table.column2.width", "15");
-        defaults.put("table.column3.width", "150");
+//        defaults.put("table.column0.width", "12");
+  //      defaults.put("table.column1.width", "500");
+    //    defaults.put("table.column2.width", "15");
+      //  defaults.put("table.column3.width", "150");
         
         //Duplicate files
-        defaults.put("duplicate.ask", "true");
-        defaults.put("duplicate.similar", "false");
-        defaults.put("duplicate.resume", "false");
-        defaults.put("duplicate.overwrite", "false");
+    //    defaults.put("duplicate.ask", "true");
+  //      defaults.put("duplicate.similar", "false");
+      //  defaults.put("duplicate.resume", "false");
+      //  defaults.put("duplicate.overwrite", "false");
         
         //Connection
         //defaults.put("connection.log", "true");
 //        defaults.put("connection.log.file", "cyberduck.connection.log");
-        defaults.put("connection.buffer", "4096");
+//@todo        defaults.put("connection.buffer", "4096");
+        defaults.put("connection.buffer", "16384");
 //        defaults.put("connection.log.speech", "false");
         defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
@@ -166,32 +169,32 @@ public abstract class Preferences {//extends Properties {
 
 	//listing properties
         defaults.put("listing.showHidden", "false");
-        defaults.put("listing.showType", "true");
-        defaults.put("listing.showFilenames", "true");
-        defaults.put("listing.showSize", "true");
-        defaults.put("listing.showDate", "true");
-	defaults.put("listing.showOwner", "true");
-	defaults.put("listing.showAccess", "false");
+//        defaults.put("listing.showType", "true");
+  //      defaults.put("listing.showFilenames", "true");
+   //     defaults.put("listing.showSize", "true");
+    //    defaults.put("listing.showDate", "true");
+//	defaults.put("listing.showOwner", "true");
+//	defaults.put("listing.showAccess", "false");
         
         //frame sizes
-        defaults.put("frame.width", "560");
-        defaults.put("frame.height", "480");
+ //       defaults.put("frame.width", "560");
+   //     defaults.put("frame.height", "480");
 //     @todo   defaults.put("frame.x", getXLocation(560));
 //@todo        defaults.put("frame.y", getYLocation(480));
-        defaults.put("transcriptdialog.width", "520");
-        defaults.put("transcriptdialog.height", "550");
+    //    defaults.put("transcriptdialog.width", "520");
+      //  defaults.put("transcriptdialog.height", "550");
 //        defaults.put("transcriptdialog.x", getXLocation(520));
 //        defaults.put("transcriptdialog.y", getYLocation(550));
-        defaults.put("logdialog.width", "500");
-        defaults.put("logdialog.height", "300");
+    //    defaults.put("logdialog.width", "500");
+      //  defaults.put("logdialog.height", "300");
 //        defaults.put("logdialog.x", getXLocation(500));
 //        defaults.put("logdialog.y", getYLocation(300));
-        defaults.put("preferencesdialog.width", "500");
-        defaults.put("preferencesdialog.height", "485");
+    //    defaults.put("preferencesdialog.width", "500");
+      //  defaults.put("preferencesdialog.height", "485");
 //        defaults.put("preferencesdialog.x", getXLocation(500));
 //        defaults.put("preferencesdialog.y", getYLocation(485));
-        defaults.put("newconnectiondialog.width", "500");
-        defaults.put("newconnectiondialog.height", "300");
+     //   defaults.put("newconnectiondialog.width", "500");
+     //   defaults.put("newconnectiondialog.height", "300");
 //        defaults.put("newconnectiondialog.x", getXLocation(500));
 //        defaults.put("newconnectiondialog.y", getYLocation(300));
     }

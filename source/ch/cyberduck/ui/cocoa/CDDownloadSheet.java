@@ -18,10 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
-import com.apple.cocoa.application.*;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.http.*;
+import ch.cyberduck.core.ftp.*;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 /**
@@ -118,23 +121,27 @@ public class CDDownloadSheet {
     
     public void closeSheet(NSButton sender) {
 	this.window().close();
+	//@ todo url field
 	switch(sender.tag()) {
 	    case(NSAlertPanel.DefaultReturn):
 		int tag = protocolPopup.selectedItem().tag();
-		Host host;
-//		Path file;
+		Path file = null;
+		Session session = null;
 		switch(tag) {
 		    case(Session.FTP_PORT):
-			host = new Host(Session.FTP, hostField.stringValue(), Session.FTP_PORT, new CDLoginController(this.window()));
-			//file = new FTPFile(pathField.stringValue());
+			session = new FTPSession(new Host(Session.FTP, hostField.stringValue(), Session.FTP_PORT, new CDLoginController(this.window())));
+			file = new FTPPath((FTPSession)session, pathField.stringValue());
 			break;
 		    case(Session.HTTP_PORT):
-			host = new Host(Session.HTTP, hostField.stringValue(), Session.HTTP_PORT, new CDLoginController(this.window()));
-			//file = new HTTPFile(pathField.stringValue());
+			session = new HTTPSession(new Host(Session.HTTP, hostField.stringValue(), Session.HTTP_PORT, new CDLoginController(this.window())));
+			file = new HTTPPath((HTTPSession)session, pathField.stringValue());
 			break;
 		}
-		//CDTransferController controller = new CDTransferController(file);
-		//controller.download();
+		    	//@todo keep reference?
+		CDTransferController controller = new CDTransferController(file, CDTransferController.KIND_DOWNLOAD);
+		controller.start();
+//		controller.window().makeKeyAndOrderFront(null);
+//		file.download();
 	    case(NSAlertPanel.AlternateReturn):
 		//
 	}
