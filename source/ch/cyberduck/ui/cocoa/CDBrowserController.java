@@ -82,122 +82,6 @@ public class CDBrowserController extends NSObject implements Observer {
         this.browserTable.setDoubleAction(new NSSelector("browserTableRowDoubleClicked", new Class[]{Object.class}));
         this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
         this.browserTable.setDelegate(this.browserModel);
-        // receive drag events from types
-        this.browserTable.registerForDraggedTypes(new NSArray(new Object[]{
-            NSPasteboard.FilenamesPboardType,
-            "QueuePboardType"}));
-        this.browserTable.setRowHeight(17f);
-
-        // setting appearance attributes
-        this.browserTable.setAutoresizesAllColumnsToFit(true);
-        NSSelector setUsesAlternatingRowBackgroundColorsSelector =
-                new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
-        if (setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
-            this.browserTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getProperty("browser.alternatingRows").equals("true"));
-        }
-        NSSelector setGridStyleMaskSelector =
-                new NSSelector("setGridStyleMask", new Class[]{int.class});
-        if (setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
-            if (Preferences.instance().getProperty("browser.horizontalLines").equals("true") && CDPreferencesImpl.instance().getProperty("browser.verticalLines").equals("true")) {
-                this.browserTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
-            }
-            else if (Preferences.instance().getProperty("browser.verticalLines").equals("true")) {
-                this.browserTable.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
-            }
-            else if (Preferences.instance().getProperty("browser.horizontalLines").equals("true")) {
-                this.browserTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
-            }
-            else {
-                this.browserTable.setGridStyleMask(NSTableView.GridNone);
-            }
-        }
-
-        // ading table columns
-        if (Preferences.instance().getProperty("browser.columnIcon").equals("true")) {
-            NSTableColumn c = new NSTableColumn();
-            c.setIdentifier("TYPE");
-            c.headerCell().setStringValue("");
-            c.setMinWidth(20f);
-            c.setWidth(20f);
-            c.setMaxWidth(20f);
-            c.setResizable(true);
-            c.setEditable(false);
-            c.setDataCell(new NSImageCell());
-            c.dataCell().setAlignment(NSText.CenterTextAlignment);
-            this.browserTable.addTableColumn(c);
-        }
-        if (Preferences.instance().getProperty("browser.columnFilename").equals("true")) {
-            NSTableColumn c = new NSTableColumn();
-            c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
-            c.setIdentifier("FILENAME");
-            c.setMinWidth(100f);
-            c.setWidth(250f);
-            c.setMaxWidth(1000f);
-            c.setResizable(true);
-            c.setEditable(false);
-            c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setAlignment(NSText.LeftTextAlignment);
-            this.browserTable.addTableColumn(c);
-        }
-        if (Preferences.instance().getProperty("browser.columnSize").equals("true")) {
-            NSTableColumn c = new NSTableColumn();
-            c.headerCell().setStringValue(NSBundle.localizedString("Size", "A column in the browser"));
-            c.setIdentifier("SIZE");
-            c.setMinWidth(50f);
-            c.setWidth(80f);
-            c.setMaxWidth(100f);
-            c.setResizable(true);
-            c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setAlignment(NSText.RightTextAlignment);
-            this.browserTable.addTableColumn(c);
-        }
-        if (Preferences.instance().getProperty("browser.columnModification").equals("true")) {
-            NSTableColumn c = new NSTableColumn();
-            c.headerCell().setStringValue(NSBundle.localizedString("Modified", "A column in the browser"));
-            c.setIdentifier("MODIFIED");
-            c.setMinWidth(100f);
-            c.setWidth(180f);
-            c.setMaxWidth(500f);
-            c.setResizable(true);
-            c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setAlignment(NSText.LeftTextAlignment);
-            this.browserTable.addTableColumn(c);
-        }
-        if (Preferences.instance().getProperty("browser.columnOwner").equals("true")) {
-            NSTableColumn c = new NSTableColumn();
-            c.headerCell().setStringValue(NSBundle.localizedString("Owner", "A column in the browser"));
-            c.setIdentifier("OWNER");
-            c.setMinWidth(100f);
-            c.setWidth(80f);
-            c.setMaxWidth(500f);
-            c.setResizable(true);
-            c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setAlignment(NSText.LeftTextAlignment);
-            this.browserTable.addTableColumn(c);
-        }
-        if (Preferences.instance().getProperty("browser.columnPermissions").equals("true")) {
-            NSTableColumn c = new NSTableColumn();
-            c.headerCell().setStringValue(NSBundle.localizedString("Permissions", "A column in the browser"));
-            c.setIdentifier("PERMISSIONS");
-            c.setMinWidth(100f);
-            c.setWidth(100f);
-            c.setMaxWidth(800f);
-            c.setResizable(true);
-            c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setAlignment(NSText.LeftTextAlignment);
-            this.browserTable.addTableColumn(c);
-        }
-
-		(NSNotificationCenter.defaultCenter()).addObserver(this,
-														   new NSSelector("browserTableRowEdited", new Class[]{NSNotification.class}),
-														   NSText.TextDidEndEditingNotification,
-														   this.browserTable);
-		
-        this.browserTable.sizeToFit();
-        // selection properties
-        this.browserTable.setAllowsMultipleSelection(true);
-        this.browserTable.setAllowsEmptySelection(true);
-        this.browserTable.setAllowsColumnReordering(true);
     }
 
     public void browserTableRowDoubleClicked(Object sender) {
@@ -228,58 +112,6 @@ public class CDBrowserController extends NSObject implements Observer {
         this.bookmarkTable.setDoubleAction(new NSSelector("bookmarkTableRowDoubleClicked", new Class[]{Object.class}));
         this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
         this.bookmarkTable.setDelegate(this.bookmarkModel);
-        // receive drag events from types
-        this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]{"BookmarkPboardType",
-                                                                            NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
-                                                                            NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as BookmarkPboardType
-        ));
-        this.bookmarkTable.setRowHeight(45f);
-
-        NSTableColumn iconColumn = new NSTableColumn();
-        iconColumn.setIdentifier("ICON");
-        iconColumn.setMinWidth(32f);
-        iconColumn.setWidth(32f);
-        iconColumn.setMaxWidth(32f);
-        iconColumn.setEditable(false);
-        iconColumn.setResizable(true);
-        iconColumn.setDataCell(new NSImageCell());
-        this.bookmarkTable.addTableColumn(iconColumn);
-
-        NSTableColumn bookmarkColumn = new NSTableColumn();
-        bookmarkColumn.setIdentifier("BOOKMARK");
-        bookmarkColumn.setMinWidth(50f);
-        bookmarkColumn.setWidth(200f);
-        bookmarkColumn.setMaxWidth(500f);
-        bookmarkColumn.setEditable(false);
-        bookmarkColumn.setResizable(true);
-        bookmarkColumn.setDataCell(new CDBookmarkCell());
-        this.bookmarkTable.addTableColumn(bookmarkColumn);
-
-        // setting appearance attributes
-        this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
-        NSSelector setUsesAlternatingRowBackgroundColorsSelector =
-                new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
-        if (setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
-            this.bookmarkTable.setUsesAlternatingRowBackgroundColors(CDPreferencesImpl.instance().getProperty("browser.alternatingRows").equals("true"));
-        }
-        NSSelector setGridStyleMaskSelector =
-                new NSSelector("setGridStyleMask", new Class[]{int.class});
-        if (setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
-            this.bookmarkTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
-        }
-        this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
-
-        // selection properties
-        this.bookmarkTable.setAllowsMultipleSelection(false);
-        this.bookmarkTable.setAllowsEmptySelection(true);
-        this.bookmarkTable.setAllowsColumnReordering(false);
-
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("bookmarkSelectionDidChange", new Class[]{NSNotification.class}),
-                NSTableView.TableViewSelectionDidChangeNotification,
-                this.bookmarkTable);
-
-        this.bookmarkTable.sizeToFit();
     }
 
     public void bookmarkSelectionDidChange(NSNotification notification) {
@@ -1634,6 +1466,7 @@ public class CDBrowserController extends NSObject implements Observer {
         }
 
 		public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
+			log.debug("tableViewShouldEditLocation:"+row);
 			if(tableColumn.identifier().equals("FILENAME"))
 				return true;
 			return false;

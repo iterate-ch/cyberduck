@@ -85,7 +85,7 @@ public class Editor extends NSObject {
 		}
 		while (this.file.getLocal().exists());
 		this.file.download();
-		this.edit(file.getLocal().getAbsolutePath());
+		this.edit(file.getLocal().getAbsolute());
 	}
 	
 	private native void edit(String path);

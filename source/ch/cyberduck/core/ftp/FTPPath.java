@@ -27,6 +27,8 @@ import com.enterprisedt.net.ftp.FTPTransferType;
 
 import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.apache.commons.net.io.FromNetASCIIOutputStream;
+import org.apache.commons.net.io.ToNetASCIIInputStream;
 
 import java.io.*;
 import java.util.Iterator;
@@ -127,7 +129,7 @@ public class FTPPath extends Path {
 				session.FTP.setTransferType(FTPTransferType.ASCII);
 				session.FTP.chdir(this.getAbsolute());
 
-				FTPFileEntryParser parser =  new DefaultFTPFileEntryParserFactory().createFileEntryParser(session.host.getIdentification());
+				FTPFileEntryParser parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(session.host.getIdentification());
 				
 				String[] lines = session.FTP.dir();
 				for (int i = 0; i < lines.length; i++) {
@@ -371,8 +373,8 @@ public class FTPPath extends Path {
 	}
 	
 	private void downloadASCII() {
-		java.io.Reader in = null;
-		java.io.Writer out = null;
+		InputStream in = null;
+		OutputStream out = null;
 		try {
 			this.session.FTP.setTransferType(FTPTransferType.ASCII);
 			this.status.setSize(this.session.FTP.size(this.getAbsolute()));
@@ -380,11 +382,11 @@ public class FTPPath extends Path {
 				this.status.setCurrent(this.getLocal().getTemp().length());
 			}
 			this.getLocal().getParentFile().mkdirs();
-			out = new FileWriter(this.getLocal().getTemp(), this.status.isResume());
+			out = new FromNetASCIIOutputStream(new FileOutputStream(this.getLocal().getTemp(), this.status.isResume()));
 			if (out == null) {
 				throw new IOException("Unable to buffer data");
 			}
-			in = this.session.FTP.getASCII(this.getName(), this.status.isResume() ? this.getLocal().getTemp().length() : 0);
+			in = this.session.FTP.getASCII(this.getAbsolute(), this.status.isResume() ? this.getLocal().getTemp().length() : 0);
 			if (in == null) {
 				throw new IOException("Unable opening data stream");
 			}
@@ -511,15 +513,16 @@ public class FTPPath extends Path {
 	}
 	
 	private void uploadASCII() {
-		java.io.Reader in = null;
-		java.io.Writer out = null;
+		InputStream in = null;
+		OutputStream out = null;
 		try {
 			this.session.FTP.setTransferType(FTPTransferType.ASCII);
 			this.status.setSize(this.getLocal().length());
 			if(this.status.isResume()) {
 				this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
 			}
-			in = new FileReader(this.getLocal());
+			in = new ToNetASCIIInputStream(new FileInputStream(this.getLocal()));
+//			in = new FileReader(this.getLocal());
 			if (in == null) {
 				throw new IOException("Unable to buffer data");
 			}

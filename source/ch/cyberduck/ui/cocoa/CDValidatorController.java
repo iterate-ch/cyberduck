@@ -88,12 +88,17 @@ public class CDValidatorController extends Validator {
 				log.fatal("Couldn't load Validator.nib");
 			}
 			this.resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
-			String file = null;
-			if (Queue.KIND_DOWNLOAD == kind)
-				file = path.getLocal().getAbsolutePath();
-			if (Queue.KIND_UPLOAD == kind)
-				file = path.getAbsolute();
-			this.alertTextField.setStringValue(NSBundle.localizedString("The file", "")+" '"+file+"' "+NSBundle.localizedString("already exists.", "")); // message
+			String alertText = 
+				NSBundle.localizedString("Local:")+"\n"
+				+"\t"+NSBundle.localizedString("Filename:")+" "+path.getLocal().getAbsolute()+"\n"
+				+"\t"+NSBundle.localizedString("Size:")+" "+Status.getSizeAsString(path.getLocal().length())+"\n"
+				+"\t"+NSBundle.localizedString("Modified:")+" "+path.getLocal().getTimestampAsString()+"\n"
+				+NSBundle.localizedString("Remote:")+"\n"
+				+"\t"+NSBundle.localizedString("Filename:")+" "+path.getAbsolute()+"\n"
+				+"\t"+NSBundle.localizedString("Size:")+" "+Status.getSizeAsString(path.status.getSize())+"\n"
+				+"\t"+NSBundle.localizedString("Modified:")+" "+path.attributes.getTimestampAsString()+"\n"
+				;
+			this.alertTextField.setStringValue(alertText); // message
 			NSImage img = NSWorkspace.sharedWorkspace().iconForFileType(path.getExtension());
 			img.setScalesWhenResized(true);
 			img.setSize(new NSSize(64f, 64f));
@@ -159,29 +164,6 @@ public class CDValidatorController extends Validator {
         this.window().close();
 		this.applySettingsToAll = (applyCheckbox.state() == NSCell.OnState);
 		log.info("*** Action will applied to all subsequent validated items");
-		/*
-        switch (returncode) {
-			case 0: //Cancel
-				log.debug("Canceled");
-				this.include = false;
-				this.isCanceled = true;
-                break;
-            case 1://NSAlertPanel.DefaultReturn //Overwrite
-				log.debug("Overwrite");
-                ((Path) contextInfo).status.setResume(false);
-				this.include = true;
-                break;
-            case -1://NSAlertPanel.AlternateReturn: //Resume
-				log.debug("Resume");
-                ((Path) contextInfo).status.setResume(true);
-                this.include = true;
-                break;
-            case 2://NSAlertPanel.OtherReturn: //Skip
-				log.debug("Skipped");
-                this.include = false;
-                break;
-        }
-		 */
         this.sheetClosedAndSelectionMade = true;
     }
 }

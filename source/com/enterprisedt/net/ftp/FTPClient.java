@@ -40,6 +40,9 @@ import java.util.Properties;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import org.apache.commons.net.io.FromNetASCIIInputStream;
+import org.apache.commons.net.io.ToNetASCIIOutputStream;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -52,6 +55,9 @@ import org.apache.log4j.Logger;
  *  Change Log:
  *
  *        $Log$
+ *        Revision 1.37  2004/04/05 23:08:02  dkocher
+ *        *** empty log message ***
+ *
  *        Revision 1.36  2004/04/05 00:10:55  dkocher
  *        *** empty log message ***
  *
@@ -361,11 +367,15 @@ public class FTPClient {
 	 *  @param remoteFile  name of remote file we are writing to
 	 *  @param  append      true if appending, false otherwise
 	 */
-	public java.io.Writer putASCII(String remoteFile, boolean append) throws IOException, FTPException {
+//	public java.io.Writer putASCII(String remoteFile, boolean append) throws IOException, FTPException {
+//		this.initPut(remoteFile, append);
+//		return new OutputStreamWriter(data.getOutputStream());
+//	}
+	public java.io.OutputStream putASCII(String remoteFile, boolean append) throws IOException, FTPException {
 		this.initPut(remoteFile, append);
-		return new OutputStreamWriter(data.getOutputStream());
+		return new ToNetASCIIOutputStream(data.getOutputStream());
 	}
-
+	
 	/**
 	 *  Put as binary, i.e. read and write raw bytes
 	 *
@@ -385,11 +395,15 @@ public class FTPClient {
 	 *  @param localPath   full path of local file to write to
 	 *  @param remoteFile  name of remote file
 	 */
-	public java.io.Reader getASCII(String remoteFile, long resume) throws IOException, FTPException {
+//	public java.io.Reader getASCII(String remoteFile, long resume) throws IOException, FTPException {
+//		this.initGet(remoteFile, resume);
+//		return new InputStreamReader(data.getInputStream());
+//	}
+	public java.io.InputStream getASCII(String remoteFile, long resume) throws IOException, FTPException {
 		this.initGet(remoteFile, resume);
-		return new InputStreamReader(data.getInputStream());
+		return new FromNetASCIIInputStream(data.getInputStream());
 	}
-
+	
 	/**
 	 *  Get as binary file, i.e. straight transfer of data
 	 *

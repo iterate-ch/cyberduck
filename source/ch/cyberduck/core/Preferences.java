@@ -132,6 +132,7 @@ public abstract class Preferences {
 		defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
 		defaults.put("ftp.connectmode", "passive");
 		defaults.put("ftp.transfermode", "binary");
+		defaults.put("ftp.line.separator", "unix");
 		defaults.put("ftp.sendSystemCommand", "true");
 		defaults.put("ftp.sendExtendedListCommand", "true");
 

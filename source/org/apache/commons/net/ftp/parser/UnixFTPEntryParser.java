@@ -181,18 +181,6 @@ public class UnixFTPEntryParser extends FTPFileEntryParserImpl
 			f.attributes.setPermission(new Permission(typeStr+permStr));
             f.attributes.setOwner(usr);
             f.attributes.setGroup(grp);
-			
-//			if (!isDevice)
-//            {
-//                try
-//                {
-//                    f.setHardLinkCount(Integer.parseInt(hardLinkCount));
-//                }
-//              catch (NumberFormatException e)
-//                {
-//                    // intentionally do nothing
-//                }
-//            }
 
             try
             {
@@ -260,6 +248,7 @@ public class UnixFTPEntryParser extends FTPFileEntryParserImpl
                     }
                     else
                     {
+						//Path orig = PathFactory.createPath(parent.getSession(), parent.getAbsolute(), name.substring(end+4, name.length()-1));
                         f.setPath(parent.getAbsolute(), name.substring(0, end));
                     }
 

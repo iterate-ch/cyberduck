@@ -63,6 +63,7 @@ public class CDPreferencesController extends NSObject {
     public void awakeFromNib() {
         log.debug("awakeFromNib");
         this.window.center();
+		this.transfermodeComboboxClicked(this.transfermodeCombobox);
     }
 
     public NSWindow window() {
@@ -80,6 +81,10 @@ public class CDPreferencesController extends NSObject {
 
     private static final String TRANSFERMODE_BINARY = NSBundle.localizedString("Binary", "");
     private static final String TRANSFERMODE_ASCII = NSBundle.localizedString("ASCII", "");
+	
+	private static final String UNIX_LINE_ENDINGS = NSBundle.localizedString("Unix Line Endings (LF)", ""); 
+	private static final String MAC_LINE_ENDINGS = NSBundle.localizedString("Mac Line Endings (CR)", "");
+	private static final String WINDOWS_LINE_ENDINGS = NSBundle.localizedString("Windows Line Endings (CRLF)", "");
 
     private static final String PROTOCOL_FTP = "FTP";
     private static final String PROTOCOL_SFTP = "SFTP";
@@ -867,7 +872,39 @@ public class CDPreferencesController extends NSObject {
             Preferences.instance().setProperty("queue.fileExists", "similar");
         }
     }
-
+	
+	private NSPopUpButton lineEndingCombobox; //IBOutlet
+	
+    public void setLineEndingCombobox(NSPopUpButton lineEndingCombobox) {
+        this.lineEndingCombobox = lineEndingCombobox;
+        this.lineEndingCombobox.setTarget(this);
+        this.lineEndingCombobox.setAction(new NSSelector("lineEndingComboboxClicked", new Class[]{NSPopUpButton.class}));
+        this.lineEndingCombobox.removeAllItems();
+        this.lineEndingCombobox.addItemsWithTitles(new NSArray(new String[]{UNIX_LINE_ENDINGS, MAC_LINE_ENDINGS, WINDOWS_LINE_ENDINGS}));
+        if (Preferences.instance().getProperty("ftp.line.separator").equals("unix")) {
+            this.lineEndingCombobox.setTitle(UNIX_LINE_ENDINGS);
+        }
+        else if (Preferences.instance().getProperty("ftp.line.separator").equals("mac")) {
+            this.lineEndingCombobox.setTitle(MAC_LINE_ENDINGS);
+        }
+        else if (Preferences.instance().getProperty("ftp.line.separator").equals("win")) {
+            this.lineEndingCombobox.setTitle(WINDOWS_LINE_ENDINGS);
+		}
+    }
+	
+    public void lineEndingComboboxClicked(NSPopUpButton sender) {
+        if (sender.selectedItem().title().equals(UNIX_LINE_ENDINGS)) {
+            Preferences.instance().setProperty("ftp.line.separator", "unix");
+        }
+        else if (sender.selectedItem().title().equals(MAC_LINE_ENDINGS)) {
+            Preferences.instance().setProperty("ftp.line.separator", "mac");
+        }
+        else if (sender.selectedItem().title().equals(WINDOWS_LINE_ENDINGS)) {
+            Preferences.instance().setProperty("ftp.line.separator", "win");
+        }
+    }
+	
+		
     private NSPopUpButton transfermodeCombobox; //IBOutlet
 
     public void setTransfermodeCombobox(NSPopUpButton transfermodeCombobox) {
@@ -885,11 +922,13 @@ public class CDPreferencesController extends NSObject {
     }
 
     public void transfermodeComboboxClicked(NSPopUpButton sender) {
-        if (sender.selectedItem().title().equals(TRANSFERMODE_ASCII)) {
-            Preferences.instance().setProperty("ftp.transfermode", "ascii");
-        }
-        else {
+        if (sender.selectedItem().title().equals(TRANSFERMODE_BINARY)) {
             Preferences.instance().setProperty("ftp.transfermode", "binary");
+			this.lineEndingCombobox.setEnabled(false);
+        }
+        else if (sender.selectedItem().title().equals(TRANSFERMODE_ASCII)) {
+            Preferences.instance().setProperty("ftp.transfermode", "ascii");
+			this.lineEndingCombobox.setEnabled(true);
         }
     }
 
@@ -913,7 +952,7 @@ public class CDPreferencesController extends NSObject {
         if (sender.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
             Preferences.instance().setProperty("ftp.connectmode", "active");
         }
-        else {
+        else if (sender.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
             Preferences.instance().setProperty("ftp.connectmode", "passive");
         }
     }

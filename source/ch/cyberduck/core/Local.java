@@ -53,6 +53,9 @@ public class Local extends File {
 //		return new File(super.getAbsolutePath()+".part");
 	}
 	
+	public String getAbsolute() {
+		return super.getAbsolutePath();
+	}
 //	public NSFileWrapper getWrapper() {
 //		return new NSFileWrapper(this.getTemp().getAbsolutePath(), false);
 //		//this.getWrapper().setIcon(NSImage.imageNamed(img));

@@ -27,6 +27,7 @@
                 historyField = NSTextField; 
                 horizontalLinesCheckbox = NSButton; 
                 keychainCheckbox = NSButton; 
+                lineEndingCombobox = NSPopUpButton; 
                 listCheckbox = NSButton; 
                 loginField = NSTextField; 
                 newBrowserCheckbox = NSButton; 
