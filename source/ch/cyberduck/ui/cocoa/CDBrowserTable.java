@@ -12,8 +12,6 @@ public class CDBrowserTable extends NSTableView {
     
     private static final NSColor TABLE_CELL_SHADED_COLOR = NSColor.colorWithCalibratedRGB(0.929f, 0.953f, 0.996f, 1.0f);
 
-//    private static NSMutableArray allDocuments = new NSMutableArray();
-
     private CDBrowserTableDataSource browserModel;
     private CDBrowserTableDelegate browserDelegate;
 
@@ -37,7 +35,6 @@ public class CDBrowserTable extends NSTableView {
 
     public void awakeFromNib() {
 	log.debug("awakeFromNib");
-//	allDocuments.addObject(this);
 	this.setDataSource(this.browserModel = new CDBrowserTableDataSource());
 	this.setDelegate(this.browserDelegate = new CDBrowserTableDelegate());
 	this.setDrawsGrid(false);
