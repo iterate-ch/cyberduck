@@ -96,11 +96,11 @@ public class CDLoginController extends LoginController {
         this.window.setDelegate(this);
     }
 
-    private NSWindow parentWindow;
+	private Controller windowController;
 
-    public CDLoginController(NSWindow parentWindow) {
+    public CDLoginController(Controller windowController) {
         instances.addObject(this);
-        this.parentWindow = parentWindow;
+        this.windowController = windowController;
         if (false == NSApplication.loadNibNamed("Login", this)) {
             log.fatal("Couldn't load Login.nib");
         }
@@ -115,29 +115,34 @@ public class CDLoginController extends LoginController {
         NSNotificationCenter.defaultCenter().removeObserver(this);
     }
 
-    private boolean done = false;
+//    private boolean done = false;
     private boolean tryAgain = false;
 
-    public boolean promptUser(final Login l, final String message) {
-		if(null == parentWindow || null == parentWindow.delegate()) {
-			log.error("Parent window or its delegate is null; cannot begin sheet!");
-			return false;
-		}
-        this.done = false;
-        ThreadUtilities.instance().invokeLater(new Runnable() {
-            public void run() {
-                textField.setStringValue(message);
-                userField.setStringValue(l.getUsername());
-                NSApplication.sharedApplication().beginSheet(window, //sheet
-                        parentWindow,
-                        CDLoginController.this, //modalDelegate
-                        new NSSelector("loginSheetDidEnd",
-                                new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
-                        l); //contextInfo
-                window().makeKeyAndOrderFront(null);
+    public synchronized boolean promptUser(final Login l, final String message) {
+        while (windowController.window().attachedSheet() != null) {
+            try {
+                log.debug("----------  Waiting for attached sheet to be closed first...");
+                Thread.sleep(1000); //milliseconds
             }
-        });
-        while (!done) {
+            catch (InterruptedException e) {
+                log.error(e.getMessage());
+            }
+        }
+//		if(null == windowController.window() || null == windowController.window().delegate()) {
+//			log.error("Parent window or its delegate is null; cannot begin sheet!");
+//			return false;
+//		}
+//        this.done = false;
+		textField.setStringValue(message);
+		userField.setStringValue(l.getUsername());
+		NSApplication.sharedApplication().beginSheet(window, //sheet
+													 windowController.window(),
+													 CDLoginController.this, //modalDelegate
+													 new NSSelector("loginSheetDidEnd",
+																	new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
+													 l); //contextInfo
+		window().makeKeyAndOrderFront(null);
+        while (windowController.window().attachedSheet() != null) {
             try {
                 log.debug("Sleeping...");
                 Thread.sleep(1000); //milliseconds
@@ -182,6 +187,6 @@ public class CDLoginController extends LoginController {
                 this.tryAgain = false;
                 break;
         }
-        this.done = true;
+//        this.done = true;
     }
 }

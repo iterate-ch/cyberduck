@@ -55,7 +55,7 @@ public class CDQueueCell extends CDTableCell {
 
     private static final NSImage arrowUpIcon = NSImage.imageNamed("arrowUp.tiff");
     private static final NSImage arrowDownIcon = NSImage.imageNamed("arrowDown.tiff");
-    private static final NSImage multipleDocumentsIcon = NSImage.imageNamed("multipleDocuments.tiff");
+    private static final NSImage multipleDocumentsIcon = NSImage.imageNamed("multipleDocuments32.tiff");
     private static final NSImage folderIcon = NSImage.imageNamed("folder32.tiff");
     private static final NSImage notFoundIcon = NSImage.imageNamed("notfound.tiff");
 

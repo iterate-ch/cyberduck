@@ -69,15 +69,15 @@ public class CDValidatorController extends Validator {
         this.resumeButton = resumeButton;
     }
 
-    private NSWindow window; // IBOutlet
+    private NSWindow sheet; // IBOutlet
 
-    public void setWindow(NSWindow window) {
-        this.window = window;
-        this.window.setDelegate(this);
+    public void setWindow(NSWindow sheet) {
+        this.sheet = sheet;
+        this.sheet.setDelegate(this);
     }
 
     public NSWindow window() {
-        return this.window;
+        return this.sheet;
     }
 
     public void windowWillClose(NSNotification notification) {
@@ -97,48 +97,55 @@ public class CDValidatorController extends Validator {
      */
     private boolean resumeChoosen = false;
 
-    private boolean sheetClosedAndSelectionMade = true;
-
+//    private boolean sheetClosedAndSelectionMade = true;
+	
     public boolean prompt(final Path path) {
-        if (!applySettingsToAll) {
-            sheetClosedAndSelectionMade = false;
-            ThreadUtilities.instance().invokeLater(new Runnable() {
-                public void run() {
-                    resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
-					Path remote = path;
-					List list = path.getParent().list(); //List cache = path.getParent().cache();
-					int i = list.indexOf(path);
-					if(i != -1) {
-						remote = (Path)list.get(i);
-					}
-                    String alertText =
-                            NSBundle.localizedString("Local", "") + ":\n"
-                            + "\t" + path.getLocal().getAbsolute() + "\n"
-                            + "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(path.getLocal().length()) + "\n"
-                            + "\t" + NSBundle.localizedString("Modified", "") + ": " + path.getLocal().getTimestampAsString() + "\n"
-                            + NSBundle.localizedString("Remote", "") + ":\n"
-                            + "\t" + remote.getAbsolute() + "\n"
-                            + "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(remote.status.getSize()) + "\n"
-                            + "\t" + NSBundle.localizedString("Modified", "") + ": " + remote.attributes.getTimestampAsString() + "\n"
-                            ;
-                    alertTextField.setStringValue(alertText); // message
-                    NSImage img = NSWorkspace.sharedWorkspace().iconForFileType(path.getExtension());
-                    img.setScalesWhenResized(true);
-                    img.setSize(new NSSize(64f, 64f));
-                    iconView.setImage(img);
-                    CDQueueController.instance().window().makeKeyAndOrderFront(null);
-                    NSApplication.sharedApplication().beginSheet(window, //sheet
-                            CDQueueController.instance().window(),
-                            CDValidatorController.this, //modalDelegate
-                            new NSSelector("validateSheetDidEnd",
-                                    new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
-                            path); //contextInfo
-                    window.makeKeyAndOrderFront(null);
-                }
-            });
+		Controller windowController = CDQueueController.instance();
+		log.debug("******** Attached sheet:"+windowController.window().attachedSheet());
+        while (windowController.window().attachedSheet() != null) {
+            try {
+                log.debug("----------  Waiting for attached sheet to be closed first...");
+                Thread.sleep(1000); //milliseconds
+            }
+            catch (InterruptedException e) {
+                log.error(e.getMessage());
+            }
         }
+        if (!applySettingsToAll) {
+//            sheetClosedAndSelectionMade = false;
+			resumeButton.setEnabled(path.status.getCurrent() < path.status.getSize());
+			Path remote = path;
+			List list = path.getParent().list(); //List cache = path.getParent().cache();
+			int i = list.indexOf(path);
+			if(i != -1) {
+				remote = (Path)list.get(i);
+			}
+			String alertText =
+				NSBundle.localizedString("Local", "") + ":\n"
+				+ "\t" + path.getLocal().getAbsolute() + "\n"
+				+ "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(path.getLocal().length()) + "\n"
+				+ "\t" + NSBundle.localizedString("Modified", "") + ": " + path.getLocal().getTimestampAsString() + "\n"
+				+ NSBundle.localizedString("Remote", "") + ":\n"
+				+ "\t" + remote.getAbsolute() + "\n"
+				+ "\t" + NSBundle.localizedString("Size", "") + ": " + Status.getSizeAsString(remote.status.getSize()) + "\n"
+				+ "\t" + NSBundle.localizedString("Modified", "") + ": " + remote.attributes.getTimestampAsString() + "\n"
+				;
+			alertTextField.setStringValue(alertText); // message
+			NSImage img = NSWorkspace.sharedWorkspace().iconForFileType(path.getExtension());
+			img.setScalesWhenResized(true);
+			img.setSize(new NSSize(64f, 64f));
+			iconView.setImage(img);
+			CDQueueController.instance().window().makeKeyAndOrderFront(null);
+			NSApplication.sharedApplication().beginSheet(sheet, //sheet
+														 windowController.window(),
+														 CDValidatorController.this, //modalDelegate
+														 new NSSelector("validateSheetDidEnd",
+																		new Class[]{NSWindow.class, int.class, Object.class}), // did end selector
+														 path); //contextInfo
+			CDQueueController.instance().window().makeKeyAndOrderFront(null);
+		}
         // Waiting for user to make choice
-        while (!sheetClosedAndSelectionMade) {
+        while (windowController.window().attachedSheet() != null) {
             try {
                 log.debug("Sleeping...");
                 Thread.sleep(1000); //milliseconds
@@ -154,28 +161,28 @@ public class CDValidatorController extends Validator {
 
     public void closeSheet(NSButton sender) {
         this.applySettingsToAll = (applyCheckbox.state() == NSCell.OnState);
-        NSApplication.sharedApplication().endSheet(this.window, sender.tag());
+        NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 
     public void resumeActionFired(NSButton sender) {
         log.debug("resumeActionFired");
         this.resumeChoosen = true;
         this.include = true;
-        NSApplication.sharedApplication().endSheet(this.window, sender.tag());
+        NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 
     public void overwriteActionFired(NSButton sender) {
         log.debug("overwriteActionFired");
         this.resumeChoosen = false;
         this.include = true;
-        NSApplication.sharedApplication().endSheet(this.window, sender.tag());
+        NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 
     public void skipActionFired(NSButton sender) {
         log.debug("skipActionFired");
         this.resumeChoosen = true;
         this.include = false;
-        NSApplication.sharedApplication().endSheet(this.window, sender.tag());
+        NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 
     public void cancelActionFired(NSButton sender) {
@@ -183,13 +190,13 @@ public class CDValidatorController extends Validator {
         this.isCanceled = true;
         this.include = false;
         this.resumeChoosen = true;
-        NSApplication.sharedApplication().endSheet(this.window, sender.tag());
+        NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 
     public void validateSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         this.window().close();
         this.applySettingsToAll = (applyCheckbox.state() == NSCell.OnState);
         log.info("Action will applied to all subsequent validated items");
-        this.sheetClosedAndSelectionMade = true;
+//        this.sheetClosedAndSelectionMade = true;
     }
 }

@@ -34,7 +34,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public class CDDownloadController extends NSObject {
+public class CDDownloadController extends NSObject implements Controller {
     private static Logger log = Logger.getLogger(CDDownloadController.class);
 
     private static NSMutableArray instances = new NSMutableArray();

@@ -14,7 +14,6 @@ package org.apache.commons.net.ftp.parser;
  *  GNU General Public License for more details.
  *
  *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
  *  malte@tancred.com
  */
 
@@ -142,50 +141,59 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
         public void conclude() {
             if (hasMayCWDToFact()) {
                 path.attributes.setType(Path.DIRECTORY_TYPE);
-                if (hasSpecifiedPermissionsFact()) createAndSetSpecifiedDirPermission();
-                else createAndSetStandardDirPermission();
+//                if (hasSpecifiedPermissionsFact()) 
+//					createAndSetSpecifiedDirPermission();
+//              else 
+//					createAndSetStandardDirPermission();
                 
-            } else if (hasMayBeRetreivedFact()) {
+            } 
+			else if (hasMayBeRetreivedFact()) {
                 path.attributes.setType(Path.FILE_TYPE);
-                if (hasSpecifiedPermissionsFact()) createAndSetSpecifiedPermission();
-                else createAndSetStandardPermission();
             }
+			if (hasSpecifiedPermissionsFact()) 
+				createAndSetSpecifiedPermission();
+			else 
+				createAndSetStandardPermission();
         }
         
-        private void createAndSetSpecifiedDirPermission() {
-            Permission newPermission = createSpecifiedDirPermission();
-            if (newPermission != null) path.attributes.setPermission(newPermission);
-        }
+//        private void createAndSetSpecifiedDirPermission() {
+//            Permission newPermission = createSpecifiedDirPermission();
+//            if (newPermission != null) 
+//				path.attributes.setPermission(newPermission);
+//        }
 
-        private Permission createSpecifiedDirPermission() {
-            try {
-                int perm = Integer.valueOf((String)facts.get("up"), 8).intValue();
-                Permission permission = new Permission(perm);
-                String newMask = "d" + permission.getMask().substring(1);
-                return new Permission(newMask);
-            } catch (NumberFormatException ignored) {}
-            return null;
-        }
+//        private Permission createSpecifiedDirPermission() {
+//            try {
+//                int perm = Integer.valueOf((String)facts.get("up"), 8).intValue();
+//                Permission permission = new Permission(perm);
+//                String newMask = "d" + permission.getMask().substring(1);
+//                return new Permission(newMask);
+//            } 
+//			catch (NumberFormatException ignored) {}
+//            return null;
+//        }
 
-        private void createAndSetStandardDirPermission() {
-            path.attributes.setPermission(new Permission("dr-xr-xr-x"));
-        }
+//        private void createAndSetStandardDirPermission() {
+//            path.attributes.setPermission(new Permission("dr-xr-xr-x"));
+//        }
 
         private void createAndSetSpecifiedPermission() {
             Permission newPermission = createSpecifiedPermission();
-            if (newPermission != null) path.attributes.setPermission(newPermission);
+            if (newPermission != null) 
+				path.attributes.setPermission(newPermission);
         }
         
         private Permission createSpecifiedPermission() {
             try {
                 int perm = Integer.valueOf((String)facts.get("up"), 8).intValue();
                 return new Permission(perm);
-            } catch (NumberFormatException ignored) {}
+            } 
+			catch (NumberFormatException ignored) {}
             return null;
         }
         
         private void createAndSetStandardPermission() {
-            path.attributes.setPermission(new Permission("-r--r--r--"));
+            path.attributes.setPermission(new Permission("r--r--r--"));
         }
     }
 }

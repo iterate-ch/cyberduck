@@ -158,21 +158,24 @@ public class SFTPPath extends Path {
                             else {
                                 p.attributes.setType(Path.FILE_TYPE);
                             }
-                            p.attributes.setPermission(new Permission(permStr));
+                            p.attributes.setPermission(new Permission(permStr.substring(1, permStr.length())));
                             files.add(p);
                         }
                     }
                 }
+				this.setCache(files);
                 session.log("Idle", Message.STOP);
             }
             catch (SshException e) {
                 session.log("SSH Error: " + e.getMessage(), Message.ERROR);
+				return null;
             }
             catch (IOException e) {
                 session.log("IO Error: " + e.getMessage(), Message.ERROR);
+				return null;
             }
 			finally {
-				this.setCache(files);
+//				this.setCache(files);
 				if (workingDirectory != null) {
                     try {
                         workingDirectory.close();

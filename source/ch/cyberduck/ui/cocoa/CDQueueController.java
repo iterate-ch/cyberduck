@@ -32,7 +32,7 @@ import ch.cyberduck.core.*;
 /**
 * @version $Id$
  */
-public class CDQueueController extends NSObject {
+public class CDQueueController extends NSObject implements Controller {
     private static Logger log = Logger.getLogger(CDQueueController.class);
 
     private static CDQueueController instance;
@@ -95,16 +95,14 @@ public class CDQueueController extends NSObject {
 		}
 	}
 	 */
-
 	
     public boolean windowShouldClose(NSWindow sender) {
-        log.debug("windowShouldClose" + sender);
+        log.debug("windowShouldClose");
         return true;
     }
 
     public void windowWillClose(NSNotification notification) {
-        log.debug("windowWillClose:" + notification);
-		//@todo this controller may still be the observer of a queue item
+        log.debug("windowWillClose");
 		instances.removeObject(this);
 		instance = null;
     }
@@ -117,6 +115,7 @@ public class CDQueueController extends NSObject {
     }
 
     public NSWindow window() {
+		log.debug("******* CONTROLLER WINDOW:"+this.window);
         return this.window;
     }
 
@@ -199,10 +198,10 @@ public class CDQueueController extends NSObject {
         }
 
 		//@todo reference to this.window() may become invalid
-        queue.getRoot().getHost().getLogin().setController(new CDLoginController(this.window()));
+        queue.getRoot().getHost().getLogin().setController(new CDLoginController(this));
         if (queue.getRoot().getHost().getProtocol().equals(Session.SFTP)) {
             try {
-                queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(this.window()));
+                queue.getRoot().getHost().setHostKeyVerificationController(new CDHostKeyController(this));
             }
             catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
                 this.window().makeKeyAndOrderFront(null);
@@ -571,20 +570,20 @@ public class CDQueueController extends NSObject {
             }
             return false;
             /*
-if (this.queueTable.numberOfSelectedRows() < 1) {
-return false;
-}
-NSEnumerator enum = queueTable.selectedRowEnumerator();
-while (enum.hasMoreElements()) {
-Queue queue = QueueList.instance().getItem(((Integer) enum.nextElement()).intValue());
-//                if (!(queue.isCanceled() && !(queue.remainingJobs() == 0) && (queue.getRoot() instanceof FTPPath))) {
-if (!(queue.isCanceled() && !(queue.remainingJobs() == 0))) {
-return false;
-}
-}
-return true;
-            */
-        }
+			 if (this.queueTable.numberOfSelectedRows() < 1) {
+				 return false;
+			 }
+			 NSEnumerator enum = queueTable.selectedRowEnumerator();
+			 while (enum.hasMoreElements()) {
+				 Queue queue = QueueList.instance().getItem(((Integer) enum.nextElement()).intValue());
+				 //                if (!(queue.isCanceled() && !(queue.remainingJobs() == 0) && (queue.getRoot() instanceof FTPPath))) {
+				 if (!(queue.isCanceled() && !(queue.remainingJobs() == 0))) {
+					 return false;
+				 }
+				 }
+			 return true;
+			 */
+			 }
         if (identifier.equals("Reload") || identifier.equals("reloadButtonClicked:")) {
             if (this.queueTable.numberOfSelectedRows() == 1) {
                 Queue queue = QueueList.instance().getItem(this.queueTable.selectedRow());
@@ -592,18 +591,18 @@ return true;
             }
             return false;
             /*
-if (this.queueTable.numberOfSelectedRows() < 1) {
-return false;
-}
-NSEnumerator enum = queueTable.selectedRowEnumerator();
-while (enum.hasMoreElements()) {
-Queue queue = QueueList.instance().getItem(((Integer) enum.nextElement()).intValue());
-if (queue.isRunning()) {
-return false;
-}
-}
-return true;
-         */
+			 if (this.queueTable.numberOfSelectedRows() < 1) {
+				 return false;
+			 }
+			 NSEnumerator enum = queueTable.selectedRowEnumerator();
+			 while (enum.hasMoreElements()) {
+				 Queue queue = QueueList.instance().getItem(((Integer) enum.nextElement()).intValue());
+				 if (queue.isRunning()) {
+					 return false;
+				 }
+			 }
+			 return true;
+			 */
         }
         if (identifier.equals("Show") || identifier.equals("revealButtonClicked:")) {
             return this.queueTable.numberOfSelectedRows() == 1;

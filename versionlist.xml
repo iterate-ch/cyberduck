@@ -9,7 +9,13 @@
 	<key>comment</key>
         <string>Changelog:
 2.3.2
-
+- [Feature] Support for EPFL file listings to support servers running "publicfile" (FTP)
+- [Bugfix] Improved PASV response parsing (FTP)
+- [Bugfix] Better parsing symbolic links
+- [Bugfix] Ignoring errors caused by servers not supporting the SIZE command
+- [Feature] Supporting SOCKS proxies
+- [Feature] Change file permissions on multiple files
+- [Feature] Copy the URL of a remote site
 
 2.3.1
 - [Feature] Chinese (Simplified) Localization

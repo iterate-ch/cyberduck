@@ -92,10 +92,10 @@ public class CDGotoController extends NSObject {
                 if (name.charAt(0) != '/') {
                     go.setPath(current.getAbsolute(), name);
                 }
-                else {
-                    go.setPath(name);
-                }
-                go.list();
+					else {
+						go.setPath(name);
+					}
+						go.list();
                 break;
             case (NSAlertPanel.AlternateReturn):
                 break;

@@ -101,7 +101,7 @@ public abstract class Preferences {
         defaults.put("browser.horizontalLines", "true");
         defaults.put("browser.openByDefault", "true");
         defaults.put("browser.showHidden", "false");
-        defaults.put("browser.charset.encoding", "UTF-8");
+        defaults.put("browser.charset.encoding", "ISO-8859-1");
         defaults.put("browser.doubleClickOnFile", "download"); //"edit"
 
         defaults.put("editor.name", "SubEthaEdit");
@@ -120,7 +120,7 @@ public abstract class Preferences {
         defaults.put("queue.download.folder", System.getProperty("user.home"));
         defaults.put("queue.fileExists", "ask");
 		defaults.put("queue.permissions.useDefault", "false");
-		defaults.put("queue.permissions.default", "rw-r--r--");
+		defaults.put("queue.permissions.default", "-rw-r--r--");
         defaults.put("queue.upload.changePermissions", "true");
         defaults.put("queue.download.changePermissions", "true");
         defaults.put("queue.download.preserveDate", "true");
@@ -133,12 +133,12 @@ public abstract class Preferences {
         defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
 
-		defaults.put("connection.proxy.useProxy", "false");
-		defaults.put("connection.proxy.host", "");
-		defaults.put("connection.proxy.port", "1080");
-		defaults.put("connection.proxy.useAuthentication", "false");
-		defaults.put("connection.proxy.username", System.getProperty("user.name"));
-		defaults.put("connection.proxy.password", "");
+		defaults.put("connection.proxy.useProxy", Proxy.isSOCKSProxyEnabled() ? "true" : "false");
+		defaults.put("connection.proxy.host", Proxy.getSOCKSProxyHost());
+		defaults.put("connection.proxy.port", Proxy.getSOCKSProxyPort());
+//		defaults.put("connection.proxy.useAuthentication", "false");
+//		defaults.put("connection.proxy.username", System.getProperty("user.name"));
+//		defaults.put("connection.proxy.password", "");
 
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");
@@ -148,7 +148,7 @@ public abstract class Preferences {
         defaults.put("ftp.transfermode.ascii.extensions", "txt cgi htm html shtml xml xsl php php3 js css asp java c cp cpp m h pl py rb sh");
         defaults.put("ftp.line.separator", "unix");
         defaults.put("ftp.sendSystemCommand", "true");
-        defaults.put("ftp.sendExtendedListCommand", "true");
+        defaults.put("ftp.sendExtendedListCommand", "false");
 
         defaults.put("http.agent", "Cyberduck/" + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
         defaults.put("http.acceptheader", "*/*");

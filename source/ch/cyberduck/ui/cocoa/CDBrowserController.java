@@ -31,7 +31,7 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 /**
  * @version $Id$
  */
-public class CDBrowserController extends NSObject implements Observer {
+public class CDBrowserController extends NSObject implements Controller, Observer {
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
     /**
@@ -52,6 +52,7 @@ public class CDBrowserController extends NSObject implements Observer {
     }
 
     public NSWindow window() {
+		log.debug("******* CONTROLLER WINDOW:"+this.window);
         return this.window;
     }
 
@@ -169,8 +170,7 @@ public class CDBrowserController extends NSObject implements Observer {
             c.setResizable(true);
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
-			//@todo put into prefs
-			log.info("Using date formatter with scheme "+NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString));
+			//log.info("Using date formatter with scheme "+NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString));
 			c.dataCell().setFormatter(new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), 
 																   true));
             this.browserTable.addTableColumn(c);
@@ -495,10 +495,10 @@ public class CDBrowserController extends NSObject implements Observer {
 		if(!pboard.setStringForType(h.getURL(), NSPasteboard.StringPboardType)) {
 			log.error("Error writing URL to NSPasteboard.StringPboardType.");
 		}
-		pboard.declareTypes(new NSArray(NSPasteboard.URLPboardType), null);
-		if(!pboard.setStringForType(h.getURL(), NSPasteboard.URLPboardType)) {
-			log.error("Error writing URL to NSPasteboard.URLPboardType.");
-		}
+//		pboard.declareTypes(new NSArray(NSPasteboard.URLPboardType), null);
+//		if(!pboard.setStringForType(h.getURL(), NSPasteboard.URLPboardType)) {
+//			log.error("Error writing URL to NSPasteboard.URLPboardType.");
+//		}
 	}
 	
     // ----------------------------------------------------------
@@ -598,9 +598,9 @@ public class CDBrowserController extends NSObject implements Observer {
     }
 
     public void awakeFromNib() {
-        NSPoint origin = this.window.frame().origin();
         this.window.setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
-        this.window.setFrameOrigin(this.window.cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y())));
+//        NSPoint origin = this.window.frame().origin();
+//        this.window.setFrameOrigin(this.window.cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y())));
         this.pathController = new CDPathController(pathPopup);
         // Drawer states
         if (Preferences.instance().getProperty("logDrawer.isOpen").equals("true")) {
@@ -963,7 +963,7 @@ public class CDBrowserController extends NSObject implements Observer {
 
             if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
                 try {
-                    host.setHostKeyVerificationController(new CDHostKeyController(this.window()));
+                    host.setHostKeyVerificationController(new CDHostKeyController(this));
                 }
                 catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
                     //This exception is thrown whenever an exception occurs open or reading from the host file.
@@ -980,7 +980,7 @@ public class CDBrowserController extends NSObject implements Observer {
                     );
                 }
             }
-            host.getLogin().setController(new CDLoginController(this.window()));
+            host.getLogin().setController(new CDLoginController(this));
             session.mount();
         }
     }
@@ -1194,6 +1194,9 @@ public class CDBrowserController extends NSObject implements Observer {
             return item;
         }
         if (itemIdentifier.equals("Bookmarks")) {
+//            item.setLabel(NSBundle.localizedString("Bookmarks", "Toolbar item"));
+//            item.setPaletteLabel(NSBundle.localizedString("Bookmarks", "Toolbar item"));
+//            item.setToolTip(NSBundle.localizedString("Toggle Bookmarks", "Toolbar item tooltip"));
             item.setView(showBookmarkButton);
             item.setMinSize(showBookmarkButton.frame().size());
             item.setMaxSize(showBookmarkButton.frame().size());
@@ -1414,10 +1417,10 @@ public class CDBrowserController extends NSObject implements Observer {
          */
         private Path[] promisedDragPaths;
 
-// ----------------------------------------------------------
-// Drop methods
-// ----------------------------------------------------------
-
+		// ----------------------------------------------------------
+		// Drop methods
+		// ----------------------------------------------------------
+		
         public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
             log.info("tableViewValidateDrop:row:" + row + ",operation:" + operation);
             if (isMounted()) {

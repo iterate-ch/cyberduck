@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 public class Permission {
     private static Logger log = Logger.getLogger(Permission.class);
 
-    private static final String DEFAULT_MASK = "----------";
+    private static final String DEFAULT_MASK = "---------";
     private String mask;
 
     public Permission(NSDictionary dict) {
@@ -85,8 +85,8 @@ public class Permission {
     }
 
     /**
-     * @param s the access string to parse the permissions from.
-     *          Must be someting like -rwxrwxrwx
+     * @param s the access string to parse the permissions from. 
+	 * Must be something between --------- and rwxrwxrwx
      */
     public Permission(String mask) {
         this.mask = mask;
@@ -253,25 +253,25 @@ public class Permission {
 
     private boolean[] getOwnerPermissions(String s) {
         boolean[] b = {
-            s.charAt(1) == 'r',
-            s.charAt(2) == 'w',
-            s.charAt(3) == 'x' || s.charAt(3) == 's' || s.charAt(3) == 'S' || s.charAt(3) == 't' || s.charAt(3) == 'T' || s.charAt(3) == 'L'};
+            s.charAt(0) == 'r',
+            s.charAt(1) == 'w',
+            s.charAt(2) == 'x' || s.charAt(2) == 's' || s.charAt(2) == 'S' || s.charAt(2) == 't' || s.charAt(2) == 'T' || s.charAt(2) == 'L'};
         return b;
     }
 
     private boolean[] getGroupPermissions(String s) {
         boolean[] b = {
-            s.charAt(4) == 'r',
-            s.charAt(5) == 'w',
-            s.charAt(6) == 'x' || s.charAt(6) == 's' || s.charAt(6) == 'S' || s.charAt(6) == 't' || s.charAt(6) == 'T' || s.charAt(6) == 'L'};
+            s.charAt(3) == 'r',
+            s.charAt(4) == 'w',
+            s.charAt(5) == 'x' || s.charAt(5) == 's' || s.charAt(5) == 'S' || s.charAt(5) == 't' || s.charAt(5) == 'T' || s.charAt(5) == 'L'};
         return b;
     }
 
     private boolean[] getOtherPermissions(String s) {
         boolean[] b = {
-            s.charAt(7) == 'r',
-            s.charAt(8) == 'w',
-            s.charAt(9) == 'x' || s.charAt(9) == 's' || s.charAt(9) == 'S' || s.charAt(9) == 't' || s.charAt(9) == 'T' || s.charAt(9) == 'L'};
+            s.charAt(6) == 'r',
+            s.charAt(7) == 'w',
+            s.charAt(8) == 'x' || s.charAt(8) == 's' || s.charAt(8) == 'S' || s.charAt(8) == 't' || s.charAt(8) == 'T' || s.charAt(8) == 'L'};
         return b;
     }
 

@@ -248,7 +248,7 @@ public class CDMainController extends NSObject {
 		}
 		
 		public int numberOfItemsInMenu(NSMenu menu) {
-			log.debug("numberOfItemsInMenu"+menu);
+			//log.debug("numberOfItemsInMenu"+menu);
 			if(items.size() > 0)
 				return items.size();
 			return 1;
@@ -263,7 +263,7 @@ public class CDMainController extends NSObject {
          * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-			log.debug("menuUpdateItemAtIndex:"+index);
+			//log.debug("menuUpdateItemAtIndex:"+index);
 			if(items.size() == 0) {
 				sender.setTitle(NSBundle.localizedString("No Rendezvous services available", ""));
 				sender.setEnabled(false);
@@ -280,7 +280,7 @@ public class CDMainController extends NSObject {
         }
 		
         public void rendezvousMenuClicked(NSMenuItem sender) {
-            log.debug("rendezvousMenuClicked:" + sender);
+            //log.debug("rendezvousMenuClicked:" + sender);
             CDBrowserController controller = new CDBrowserController();
             controller.window().makeKeyAndOrderFront(null);
             controller.mount((Host)items.get(sender.title()));
@@ -475,6 +475,8 @@ public class CDMainController extends NSObject {
     public void newBrowserMenuClicked(Object sender) {
         CDBrowserController controller = new CDBrowserController();
         controller.window().makeKeyAndOrderFront(null);
+        NSPoint origin = controller.window().frame().origin();
+        controller.window().setFrameOrigin(controller.window().cascadeTopLeftFromPoint(new NSPoint(origin.x(), origin.y())));
     }
 
     public void showTransferQueueClicked(Object sender) {
@@ -527,7 +529,8 @@ public class CDMainController extends NSObject {
             return true;
         }
         if (Preferences.instance().getProperty("browser.openByDefault").equals("true")) {
-            this.newBrowserMenuClicked(null);
+			CDBrowserController controller = new CDBrowserController();
+			controller.window().makeKeyAndOrderFront(null);
             return false;
         }
         return true;
@@ -561,7 +564,7 @@ public class CDMainController extends NSObject {
             this.checkForUpdate(false);
         }
 		this.rendezvous.init();
-    }
+	}
 
 	public void applicationShouldSleep(Object o) {
         log.debug("applicationShouldSleep");

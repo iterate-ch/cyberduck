@@ -142,17 +142,20 @@ public class FTPPath extends Path {
                         }
                     }
                 }
+				this.setCache(files);
                 session.log("Idle", Message.STOP);
             }
             catch (FTPException e) {
                 session.log("FTP Error: " + e.getMessage(), Message.ERROR);
+				return null;
             }
             catch (IOException e) {
                 session.log("IO Error: " + e.getMessage(), Message.ERROR);
+				return null;
             }
-			finally {
-				this.setCache(files);
-			}
+//			finally {
+//				this.setCache(files);
+//			}
         }
 		session.callObservers(this);
         return files;

@@ -220,6 +220,7 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
         }
     }
 
+	/*
 	private NSButton proxyAuthenticationCheckbox; //IBOutlet
 	
 	public void setProxyAuthenticationCheckbox(NSButton proxyAuthenticationCheckbox) {
@@ -343,6 +344,7 @@ Preferences.instance().setProperty("connection.host.default", defaultHost);
     public void proxyPasswordFieldDidChange(NSNotification sender) {
         Preferences.instance().setProperty("connection.proxy.password", this.proxyPasswordField.stringValue());
     }
+	 */
 	
     private NSButton systCheckbox; //IBOutlet
 

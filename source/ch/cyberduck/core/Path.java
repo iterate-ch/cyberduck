@@ -363,7 +363,7 @@ public abstract class Path {
     private List getDownloadQueue(List queue) {
 		log.debug("Adding "+this.toString()+" to download queue.");
 		queue.add(this);
-        if (this.attributes.isDirectory()) {
+        if (this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
 			this.status.setSize(0);
             for (Iterator i = this.list(false, true).iterator(); i.hasNext();) {
                 Path p = (Path)i.next();

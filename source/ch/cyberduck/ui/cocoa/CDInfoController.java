@@ -190,7 +190,7 @@ public class CDInfoController extends NSObject {
 			}
 			this.kindField.setStringValue(NSBundle.localizedString("Unknown", ""));
 		}
-		
+
         this.modifiedField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
 										  file.attributes.getTimestampAsString());
         this.ownerField.setStringValue(this.numberOfFiles() > 1 ? NSBundle.localizedString("(Multiple files)", "") :
@@ -203,7 +203,9 @@ public class CDInfoController extends NSObject {
 
 		Permission permission = null;
 		for(Iterator i = files.iterator(); i.hasNext();) {
-			permission = file.attributes.getPermission();
+			log.debug("awakeFromNib-iterator");
+			//@todo set mixed state
+			permission = ((Path)i.next()).attributes.getPermission();
 			boolean[] ownerPerm = permission.getOwnerPermissions();
 			boolean[] groupPerm = permission.getGroupPermissions();
 			boolean[] otherPerm = permission.getOtherPermissions();
@@ -221,7 +223,6 @@ public class CDInfoController extends NSObject {
 		}
 		
 //		octalField.setStringValue(""+file.getOctalCode());
-
         permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
 
         NSImage fileIcon = null;
@@ -256,6 +257,7 @@ public class CDInfoController extends NSObject {
         //				new NSSelector("groupInputDidEndEditing", new Class[]{NSNotification.class}),
         //				NSControl.ControlTextDidEndEditingNotification,
         //				groupField);
+        log.debug("awakeFromNib-end");
     }
 
     public boolean windowShouldClose(NSWindow sender) {

@@ -43,7 +43,8 @@ public class CDPathController extends NSObject implements Observer {
 
     private NSPopUpButton combo;
     private List items = new ArrayList();
-
+    private Path workdir;
+	
     public CDPathController(NSPopUpButton combo) {
         log.debug("CDPathController");
         this.combo = combo;
@@ -54,8 +55,6 @@ public class CDPathController extends NSObject implements Observer {
     public NSView view() {
         return this.combo;
     }
-
-    private Path workdir;
 
     public Path workdir() {
         return this.workdir;
