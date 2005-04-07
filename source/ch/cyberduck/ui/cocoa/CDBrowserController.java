@@ -1997,7 +1997,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             NSToolbarItem.SeparatorItemIdentifier,
             "Bookmarks",
             "Quick Connect",
-            "Action",
+			"Tools",
             NSToolbarItem.SeparatorItemIdentifier,
             "Refresh",
             "Edit",
