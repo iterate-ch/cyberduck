@@ -1,16 +1,17 @@
 /*
- *  Copyright (c) 2004 Werner Randelshofer
- *  Staldenmattweg 2, Immensee, CH-6405, Switzerland.
- *  All rights reserved.
+ *  Copyright (c) 2004 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
  *
- *  This software is the confidential and proprietary information of
- *  Werner Randelshofer. ("Confidential Information").  You shall not
- *  disclose such Confidential Information and shall use it only in
- *  accordance with the terms of the license agreement you entered into
- *  with Werner Randelshofer.
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
  *
- *  Changes by David Kocher <dkocher@cyberduck.ch>
- * 
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
