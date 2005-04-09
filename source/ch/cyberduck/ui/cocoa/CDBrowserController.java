@@ -1216,7 +1216,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 	}
 
 	public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
-		log.debug("deleteSheetDidEnd");
 		sheet.orderOut(null);
 		switch(returnCode) {
 			case (NSAlertPanel.DefaultReturn):
