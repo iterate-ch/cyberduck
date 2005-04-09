@@ -33,7 +33,7 @@ import ch.cyberduck.core.PathFactory;
 /**
  * @version $Id$
  */
-public class CDFolderController extends CDController {
+public class CDFolderController extends CDWindowController {
 	private static Logger log = Logger.getLogger(CDFolderController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -52,6 +52,8 @@ public class CDFolderController extends CDController {
 	}
 
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(true);
 	}
 
@@ -102,7 +104,7 @@ public class CDFolderController extends CDController {
 	public Path create(Path workdir, String filename) {
 		Path folder = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
 		folder.mkdir(false);
-		List l = workdir.list(true);
+		List l = workdir.list(true, filename.charAt(0) == '.');
 		if(l.contains(folder))
 			return (Path)l.get(l.indexOf(folder));
 		return null;

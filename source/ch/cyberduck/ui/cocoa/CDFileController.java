@@ -36,7 +36,7 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 /**
  * @version $Id$
  */
-public class CDFileController extends CDController {
+public class CDFileController extends CDWindowController {
 	private static Logger log = Logger.getLogger(CDFileController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -48,6 +48,8 @@ public class CDFileController extends CDController {
 	}
 
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(true);
 	}
 
@@ -136,7 +138,7 @@ public class CDFileController extends CDController {
 				log.error(e.getMessage());
 			}
 		}
-		List l = workdir.list(true);
+		List l = workdir.list(true, filename.charAt(0) == '.');
 		if(l.contains(file))
 		   return (Path)l.get(l.indexOf(file));
 		return null;
