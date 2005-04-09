@@ -58,6 +58,7 @@ public class CDDownloadController extends CDWindowController {
 
 		this.window().setReleasedWhenClosed(true);
 		CDQueueController controller = CDQueueController.instance();
+        controller.window().makeKeyAndOrderFront(null);
 		controller.beginSheet(this.window());
 	}
 
