@@ -122,9 +122,9 @@ public class CDProgressController extends CDController implements Observer {
                     public void run() {
                         progressTimer.invalidate();
                         updateProgressfield();
-                        progressBar.setIndeterminate(true);
                         progressBar.stopAnimation(null);
                         progressBar.setHidden(true);
+                        progressBar.setIndeterminate(true);
                         if (queue.isComplete() && !queue.isCanceled()) {
                             if (queue instanceof DownloadQueue) {
                                 if (Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
